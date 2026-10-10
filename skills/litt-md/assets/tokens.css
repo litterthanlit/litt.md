@@ -87,12 +87,25 @@
   --container-wide: 80rem;     /* 1280 */
   --header-h: 64px;
 
-  /* Shape */
-  --radius-control: 6px;       /* buttons, inputs, chips */
-  --radius-card: 8px;          /* cards, list containers */
-  --radius-panel: 12px;        /* large glass panels, modals, command menu */
-  --radius-pill: 999px;        /* tags and avatars only */
+  /* Shape: binary. Everything is square (0); full round only for chips, tags,
+     avatars, status dots and icon-only buttons. */
+  --radius-pill: 999px;
   --hairline: 1px;
+
+  /* Controls (P10): buttons and inputs share one height scale. Labels are
+     trimmed to the cap height (.litt-trim), so the side padding roughly equals
+     the vertical air and every button reads as evenly roomy. */
+  --control-sm: 32px;          /* dense UI: table rows, toolbars */
+  --control-md: 44px;          /* default */
+  --control-lg: 56px;          /* hero and form CTAs */
+  --control-pad-sm: 12px;
+  --control-pad-md: 16px;
+  --control-pad-lg: 24px;
+  --control-text-sm: 0.8125rem; /* 13 */
+  --control-text-md: 0.9375rem; /* 15 */
+  --control-text-lg: 1rem;      /* 16 */
+  --control-gap: 8px;          /* icon to label */
+  --control-group-gap: 12px;   /* between grouped buttons */
 
   /* Motion: invisible and fast. Only opacity and transform animate. */
   --dur-instant: 120ms;        /* hover, press */
@@ -155,8 +168,10 @@
   --glass-bg-solid: rgba(255, 255, 255, 0.94);
   --glass-border: rgba(14, 15, 17, 0.07);
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  --occlusion: 0 1px 2px rgba(14, 15, 17, 0.04), 0 8px 24px -12px rgba(14, 15, 17, 0.10);
-  --occlusion-subtle: 0 1px 2px rgba(14, 15, 17, 0.04);
+  /* Depth (P4): zero-offset glow plus a 1px ring, on floating surfaces only. */
+  --shadow-tooltip: 0 0 2px rgba(14, 15, 17, 0.08), 0 0 0 1px rgba(14, 15, 17, 0.06);
+  --shadow-float: 0 0 8px rgba(14, 15, 17, 0.08), 0 0 24px rgba(14, 15, 17, 0.06), 0 0 0 1px rgba(14, 15, 17, 0.06);
+  --shadow-modal: 0 0 40px rgba(14, 15, 17, 0.10), 0 0 72px rgba(14, 15, 17, 0.06), 0 0 0 1px rgba(14, 15, 17, 0.06);
   --light-strength: 12%;
   --glow-strength: 28%;
   --grain-opacity: 0.02;
@@ -196,8 +211,9 @@
   --glass-bg-solid: rgba(15, 16, 17, 0.94);
   --glass-border: rgba(255, 255, 255, 0.08);
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --occlusion: 0 0 0 1px rgba(0, 0, 0, 0.4);
-  --occlusion-subtle: 0 0 0 transparent;
+  --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.5);
+  --shadow-float: 0 0 8px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
+  --shadow-modal: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 72px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
   --light-strength: 22%;
   --glow-strength: 40%;
   --grain-opacity: 0.04;
@@ -238,8 +254,9 @@
     --glass-bg-solid: rgba(15, 16, 17, 0.94);
     --glass-border: rgba(255, 255, 255, 0.08);
     --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --occlusion: 0 0 0 1px rgba(0, 0, 0, 0.4);
-    --occlusion-subtle: 0 0 0 transparent;
+    --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.5);
+    --shadow-float: 0 0 8px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
+    --shadow-modal: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 72px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
     --light-strength: 22%;
     --glow-strength: 40%;
     --grain-opacity: 0.04;
@@ -259,7 +276,7 @@
              transparent 65%);
   /* The glow reserved for the one primary action (P1). */
   --glow: 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent),
-          0 8px 24px -8px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
+          0 0 24px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
 }
 
@@ -292,6 +309,8 @@
   /* Nothing renders above 400 (P9): override bold browser defaults and block faux bold. */
   html { font-synthesis-weight: none; }
   h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: var(--weight); }
+  /* Binary radius: no browser-default rounding on controls. */
+  button, input, select, textarea { border-radius: 0; }
 
   :focus-visible {
     outline: 2px solid var(--focus);
@@ -300,7 +319,8 @@
 }
 
 @layer components {
-  /* Glass, only for surfaces floating over content (P3).
+  /* Glass, only for surfaces floating over content (P3). Set --glass-shadow
+     to var(--shadow-modal) on dialogs.
      The blur lives on ::before so fixed or absolute children aren't trapped
      by the containing block that backdrop-filter creates. */
   .litt-glass {
@@ -316,15 +336,22 @@
     background: var(--glass-bg);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    box-shadow: inset 0 0 0 1px var(--glass-border), var(--highlight), var(--occlusion);
+    box-shadow: inset 0 0 0 1px var(--glass-border), var(--highlight), var(--glass-shadow, var(--shadow-float));
     pointer-events: none;
   }
 
-  /* A solid raised surface: cards in the page flow (P4). */
+  /* A solid raised surface: cards in the page flow. Square, no shadow (P4):
+     a hairline and the top highlight carry the depth. */
   .litt-raised {
     background: var(--surface-1);
-    border-radius: var(--radius-card);
-    box-shadow: inset 0 0 0 1px var(--line), var(--highlight), var(--occlusion-subtle);
+    box-shadow: inset 0 0 0 1px var(--line), var(--highlight);
+  }
+
+  /* Trim a label to its cap height so padding equals visible air (P10).
+     Browsers without text-box still center the label through flex. */
+  .litt-trim {
+    line-height: 1;
+    text-box: trim-both cap alphabetic;
   }
 
   /* The light source: put it on a hero or section, once per view (P2). */

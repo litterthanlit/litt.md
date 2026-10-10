@@ -40,17 +40,18 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 
 `area` is one of: type, color, material, motion, layout, component, interaction, process.
 
-## The nine signature rules
+## The ten signature rules
 
 1. **P1 Light, not paint.** The accent appears as light (`--light`, `--glow`, `--focus`). At most one accent fill per view, on the primary action.
 2. **P2 One light source.** Light comes from the top. Highlights sit on top edges only.
 3. **P3 Glass is earned.** Glass only for floating surfaces: header, command menu, popovers, modals, toasts.
-4. **P4 Depth without shadows.** Depth comes from stepped surfaces plus a highlight. Light mode gets a whisper of occlusion.
+4. **P4 Depth without drop shadows.** Cards stay flat (hairline plus highlight). Floating surfaces get a zero-offset glow plus a 1px ring.
 5. **P5 Material is static.** Glow, grain, gradients and light never animate.
 6. **P6 Precision.** 8px grid (4px inside components), 1px hairlines, tracking tightens as size grows.
 7. **P7 Airy rhythm.** One idea per section, 128 / 96 / 64px between sections, asymmetric and left-aligned by default.
 8. **P8 Designed, not inverted.** Each theme has its own material strengths. Both are first-class.
 9. **P9 One weight.** Everything at 400, headings and buttons included. Hierarchy comes from size, color and tracking.
+10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them. Hero and form CTAs are lg (56).
 
 Each rule's Check line, the dos and don'ts, and the open questions are in `taste/profile.md`.
 
@@ -61,7 +62,7 @@ These change only when Nick changes them.
 - **Themes:** light and dark both first-class.
 - **Type:** Geist + Geist Mono only, at weight 400 only.
 - **Color:** cool neutrals at one OKLCH hue (about 262), monochrome, one accent per project.
-- **Density:** airy. **Shape:** 6 / 8 / 12px radii.
+- **Density:** airy. **Shape:** square everywhere; pills only for chips, tags, avatars and icon-only buttons.
 - **Motion:** 120–200ms ease-out, 240ms ceiling; transform and opacity only.
 
 ## Never, unless Nick asks
@@ -74,8 +75,8 @@ These change only when Nick changes them.
 - An arrow suffix on every link
 - The same uppercase mono eyebrow over every section
 - An accent-colored headline word
-- `rounded-lg` everywhere
-- Visible drop shadows
+- Rounded corners (anything other than square or pill)
+- Drop shadows with an offset, or shadows on cards in the flow
 - Springs, scroll reveals, parallax, marquee
 - A second typeface
 - Any font weight above 400
@@ -87,13 +88,15 @@ These change only when Nick changes them.
 - **Text:** `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled`
 - **Accent:** `--accent`, `--accent-hover`, `--accent-fg`, `--accent-tint`, `--focus`
 - **Status:** `--success`, `--warning`, `--danger`
-- **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--occlusion`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`.
+- **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
+- **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
 - **Type:** `--font-sans`, `--font-mono`, `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
-- **Shape:** `--radius-control` (6), `--radius-card` (8), `--radius-panel` (12), `--radius-pill`
+- **Shape:** square by default; `--radius-pill` for chips, tags and avatars
+- **Controls:** `--control-{sm,md,lg}` (32/44/56), `--control-pad-{sm,md,lg}` (12/16/24), `--control-text-{sm,md,lg}`, `--control-gap`, `--control-group-gap`
 - **Motion:** `--dur-{instant,reveal,panel,max}`, `--ease-out`, `--press-scale`
 
-For Tailwind v4, use `assets/tailwind.css`, which provides `bg-canvas`, `text-fg-muted`, `border-line`, `rounded-card`, `py-section`, `shadow-glow` and similar. To see everything rendered, open `assets/specimen.html`.
+For Tailwind v4, use `assets/tailwind.css`, which provides `bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `rounded-pill`, `shadow-float`, `py-section`, `shadow-glow` and similar. To see everything rendered, open `assets/specimen.html`.
 
 ## Scripts
 

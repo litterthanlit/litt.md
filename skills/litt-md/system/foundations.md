@@ -69,6 +69,8 @@ Run `node scripts/check.mjs` to confirm. The placeholder signal blue stays only 
 
 **Scale.** `--space-1` to `--space-40`: 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160. The names match Tailwind's multiplier, so `--space-6` is `p-6`. Off-scale values (20, 28, 36, 40 as spacing) fail P6. 4px and 12px are for inside components only.
 
+**Control heights (P10).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero and form CTAs). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 15 / 16). Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
+
 **Section rhythm (P7).** `--section-y` is the distance between sections: 64 mobile, 96 from 640px, 128 from 1024px. Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
 
 **Grid.** 12 columns, `--grid-gap` between them (16 mobile, 24 from 640px), and `--gutter` page padding (16 / 24 / 32).
@@ -90,15 +92,12 @@ Run `node scripts/check.mjs` to confirm. The placeholder signal blue stays only 
 
 ## 4. Shape
 
-| Variable | Value role | Use |
-|---|---|---|
-| `--radius-control` | 6 | Buttons, inputs, chips, menu rows, kbd |
-| `--radius-card` | 8 | Cards, list containers, tiles |
-| `--radius-panel` | 12 | Large glass panels, modals, command menu, toasts |
-| `--radius-pill` | 999 | Tags and avatars only |
+**Binary radius.** Everything is square: buttons, inputs, cards, tiles, glass panels, menus, modals, toasts, kbd. The only other value is full round (`--radius-pill`), for chips, tags, avatars, status dots and icon-only buttons. There are no in-between radii, so no nested-radius math either.
 
-- A nested radius is the outer radius minus the padding, never the same value. A card at 8 with 8px padding holds a 0–4 inner radius (use `--radius-control` if that reads better).
+Why: square, generously padded controls read as roomy and crisp at once, and the pills stand out because they are the only round things on the page. `tokens.css` resets the browser's default rounding on `button`, `input`, `select` and `textarea`.
+
 - Borders are 1px (`--hairline`), drawn as `inset 0 0 0 1px var(--line)` so they don't change layout.
+- In Tailwind, square is the default (no `rounded-*` class). `rounded-pill` is the only radius utility; strict mode removes the rest.
 
 ## 5. Motion
 
@@ -124,7 +123,7 @@ Motion is invisible and fast. It confirms an action and never performs.
 These are not negotiable, whatever the taste:
 - Body text reaches 4.5:1 or more, large text 3:1 or more, control outlines and the focus ring 3:1 or more, in both themes. Run `node scripts/check.mjs`.
 - A visible focus indicator on every interactive element: `:focus-visible` gets a 2px `--focus` outline at 2px offset (already in `tokens.css`), or `--focus-ring` on inputs.
-- Hit targets are at least 40px tall for primary controls and at least 24px for dense secondary ones.
+- Hit targets are at least 44px tall for primary controls (`--control-md`) and at least 32px for dense secondary ones (`--control-sm`).
 - Use semantic elements first (`button`, `a`, `dialog`, `fieldset`); ARIA only to fill gaps.
 - Respect `prefers-reduced-motion` and `prefers-reduced-transparency` (glass becomes solid).
 - Never use color as the only signal. Pair status color with text or an icon.

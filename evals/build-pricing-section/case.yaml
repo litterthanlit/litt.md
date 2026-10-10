@@ -23,11 +23,16 @@ graders:
   # Token-named utilities from assets/tailwind.css, not raw Tailwind palette colors.
   - type: regex
     name: uses-litt-tokens
-    pattern: '\b(bg-canvas|bg-surface-[123]|text-fg(-muted|-subtle)?|border-line|rounded-(control|card|panel)|py-section)\b'
+    pattern: '\b(bg-canvas|bg-surface-[123]|text-fg(-muted|-subtle)?|border-line|h-control-(sm|md|lg)|shadow-float|py-section)\b'
     match: contains
   - type: regex
     name: no-raw-palette
     pattern: 'class="[^"]*\b(bg|text|border|from|to|via)-(slate|gray|zinc|neutral|stone|blue|indigo|violet|purple|sky)-\d{2,3}\b'
+    match: not_contains
+  # Binary radius: square, or rounded-pill only.
+  - type: regex
+    name: no-rounded-corners
+    pattern: 'class="[^"]*\brounded(-(xs|sm|md|lg|xl|2xl|3xl|4xl|control|card|panel))?(?=[\s"])'
     match: not_contains
   - type: llm
     name: composition-and-accent

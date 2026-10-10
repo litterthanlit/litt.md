@@ -43,3 +43,11 @@ This file is append-only: never edit or delete old entries. Each entry records o
 - 2026-10-10 · layout · saved boards · Swiss and editorial grids with exposed structure recur on the web board · ? · - · → Q11 · audit:pinterest-web
 - 2026-10-10 · type · Vercel display tracking · −0.06em at 56px, tighter than the profile's −0.03em · ? · test tighter display tracking · open · audit:vercel
 - 2026-10-10 · type · font weight · hate weights above 400 · "fonts are too wide" · no font-weight above 400; hierarchy from size, color and tracking · → P9 · chat
+- 2026-10-10 · component · Ramp buttons · love · "feel more roomy" · buttons get a roomier size scale with a large tier and near-square optical padding · open · chat
+- 2026-10-10 · type · Ramp type weights · confirms P9 (marketing 400 only, product 300/400) · ? · - · → P9 · audit:ramp
+- 2026-10-10 · type · Ramp two-tone headlines · second clause in 60% ink · ? · headline hierarchy by color, not weight · open · audit:ramp
+- 2026-10-10 · material · Ramp shadows · zero-offset glow plus a 1px ring on floating surfaces · ? · floating surfaces use glow + ring, never offset drop shadows · open · audit:ramp
+- 2026-10-10 · component · Ramp product radius · binary: 0 on controls, full round on chips/avatars, 4px on nav items · ? · - · → Q13 · audit:ramp
+- 2026-10-10 · component · button scale after the Ramp audit · chose a roomy size scale (sm 32 / md 44 / lg 56, shared with inputs, labels trimmed to cap height) over keeping one 40px size · "feel more roomy" · - · → P10 · interview
+- 2026-10-10 · material · depth after the Ramp audit · chose zero-offset glow + 1px ring on floating surfaces over offset shadows · ? · - · → P4 · interview
+- 2026-10-10 · component · corner radius after the Ramp audit · chose binary (0, or pill for chips and avatars) over keeping 6/8/12 and over splitting app and marketing · ? · - · → decision · interview

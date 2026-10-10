@@ -19,13 +19,14 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] **P1** At most one accent fill in the view, on the primary action. The accent otherwise appears as light (`--light`, glow, focus).
 - [ ] **P2** One light source, from the top. Highlights only on top edges.
 - [ ] **P3** Glass only on floating surfaces, with content behind it. No glass on glass.
-- [ ] **P4** No visible neutral drop shadows. Depth comes from surface steps and the highlight.
+- [ ] **P4** No drop shadow with an offset. Cards in the flow have no shadow; floating surfaces use a zero-offset glow plus a 1px ring.
 - [ ] **P5** Nothing material animates (glow, grain, gradients, light).
 
 **B. Structure**
 - [ ] **P6** Spacing on the 8px grid (4px inside components). 1px hairlines. Tracking tightens on large type.
 - [ ] **P7** One idea per section. Section spacing near 128 / 96 / 64. Left-aligned and asymmetric by default.
-- [ ] Radii only from 6 / 8 / 12 (pill only on tags and avatars).
+- [ ] Radius is binary: square everywhere, pills only on chips, tags, avatars, status dots and icon-only buttons.
+- [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero and form CTAs are lg.
 - [ ] Cards used only for independent objects, not as the default layout.
 
 **C. Themes**
@@ -53,7 +54,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 **G. Accessibility**
 - [ ] Text contrast 4.5:1 or better (3:1 for large text). Control outlines and the focus ring 3:1 or better, in both themes.
 - [ ] A visible focus state on every interactive element.
-- [ ] Hit targets 40px or more for primary controls.
+- [ ] Hit targets 44px or more for primary controls.
 - [ ] Semantic structure (landmarks, headings in order, real buttons and links, labels on inputs).
 - [ ] Color is never the only signal.
 
@@ -63,7 +64,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 ## Critique: <subject>
 
 **Verdict:** <one sentence: how close is this to litt.md, and what's the biggest gap>
-**Score:** A x/5 · B x/4 · C x/2 · D x/4 · E x/3 · F x/5 · G x/5
+**Score:** A x/5 · B x/5 · C x/2 · D x/4 · E x/3 · F x/5 · G x/5
 
 ### Fix first (ranked by impact)
 1. <element> breaks <rule>. Fix: <specific change in token terms, e.g. "swap the purple gradient for `.litt-lit` on the hero; accent at 22% in dark">

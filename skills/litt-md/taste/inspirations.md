@@ -70,6 +70,60 @@ Each entry is an audited reference: what to take from it and what to leave. Entr
 
 Entries from `workflows/audit.md` go below this line, newest first.
 
+### Ramp · ramp.com, app.ramp.com/sign-in, support.ramp.com · reference · 2026-10-10
+**What it is:** a fintech company with an in-house design system called Ryu. Nick likes the buttons: "feel more roomy".
+
+**Measured: marketing site**
+- Type: TWK Lausanne. Every element computes at weight 400, with zero tracking.
+- Type scale: 64/48/40/28/24 for headlines, 20/18/16/14/13 for body.
+- Text: ink `#0c0a08`; "hushed" text is the same ink at 60%.
+- Colors: white page, warm grays `#f4f2f0` and `#d2cecb`, solar accent `#e4f222` on under 1% of the page area.
+- Buttons, three tiers:
+  - nav: 34px tall, 14px text;
+  - body: 42.8px tall, 16px text, 16px padding all round, 6px radius;
+  - hero: 52px tall, 20px padding, 8px radius, concentric inside a 12px-radius form.
+- Button line-height is collapsed to the cap height (`leading-[.675rem]`), so the padding is all visible air. Optical padding is close to square, horizontal about 1.02–1.07 times vertical.
+- Hover is a color-only 300ms fade, with no transform and no shadow.
+
+**Measured: product (Ryu tokens on the sign-in page and help center)**
+- Shared button and input heights: 24/32/40/56. The L button is 56px tall with 24px side padding and 16px text, a 3.5× height-to-text ratio and 1.5em side padding.
+- Radius is binary: 0 on buttons, inputs, modals and menus; full round on chips, avatars and icon buttons; 4px only on nav and menu items.
+- Weights: body 300, headings and controls 400.
+- Hover is instant: the label gets an underline. Focus is a 2px inset outline.
+- Tables: 64px rows, two-line cells (14px primary over 12px muted), numbers right-aligned.
+- Status pills: tinted fill, a 1px border in the text color, and an icon.
+- Shadows are zero-offset glows plus a 1px warm ring.
+- Neutrals are warm (hue about 20–30°).
+- Icons are 1.25px stroke at 16px.
+
+**Why the buttons feel roomy:** at the default size Ramp's button is about the same as litt.md's (42.8 vs 40px, both weight 400). The roominess comes from four things:
+1. a big hero tier (52–56px, 20–24px padding);
+2. optical, near-square padding, because line-height is trimmed to the cap height;
+3. small, light ink in a big box (the cap height is 22–29% of the button height);
+4. full-width stacked buttons in forms and cards, where the label fills only 28–49% of the width.
+
+**Steal:**
+- A button size scale whose tiers grow in air faster than in text, with a large tier for the hero and primary CTA (new).
+- Button and input heights from one shared scale (new).
+- Text-box trim so spacing values equal visible space (new).
+- Concentric radii, where the inner radius equals the outer radius minus the inset (→ components).
+- Two-tone headlines: the first clause in ink, the second in the 60% "hushed" color. This is hierarchy by color, which fits P9.
+- Shadows as zero-offset glows plus a 1px ring (→ P4).
+- Status pills built from paired fg/bg tokens.
+- The table recipe.
+- Taste written as checkable criteria, with agents as a third user of the system. This confirms litt.md's own approach.
+
+**Reject:**
+- Warm neutrals (they break the cool decision; evidence for Q9).
+- A 300ms hover fade (breaks the 240ms ceiling).
+- Scroll-reveal entrances.
+- A centered hero on secondary pages.
+
+**Question:**
+- The product's binary radius (0 or full round) contradicts the 6/8/12 decision. Raised as Q13.
+
+**Rule candidate:** "Buttons come in sm/md/lg tiers on one height scale shared with inputs (32/44/56). Optical padding is near-square because line-height is trimmed to the cap height. Primary CTAs on marketing pages use the lg tier."
+
 ### Pinterest "OS" board · pinterest.com/litterthanli7/os · moodboard · 2026-10-10
 **What it is:** 90 pins saved for "OS" work. Pinterest's own tags for it: "dot graph, data visualization design, dot matrix pattern".
 **Measured:** partial. A login modal covers the board, so only the pins around its edges were read (about 15). No attempt was made to get past the login.

@@ -13,7 +13,7 @@ An elliptical radial gradient anchored above the top edge, tinted with the accen
 - **Don't:** animate it, follow the cursor, add a second colored light, or use it as a full-bleed gradient wallpaper.
 
 ### 2. Glass: `.litt-glass` (P3)
-`--glass-bg` (72% of the surface color) plus `blur(var(--glass-blur)) saturate(var(--glass-saturate))`, with a 1px `--glass-border`, a `--highlight` on the top edge and `--occlusion` underneath.
+`--glass-bg` (72% of the surface color) plus `blur(var(--glass-blur)) saturate(var(--glass-saturate))`, with a 1px `--glass-border`, a `--highlight` on the top edge and a zero-offset glow + ring around it (`--shadow-float`, or `--shadow-modal` via `--glass-shadow` on dialogs).
 
 - **Allowed on:** sticky header, command menu, popovers, dropdowns, modals, toasts. These are things that float over content.
 - **Never on:** cards in the page flow, sections, buttons, inputs, or glass on top of glass.
@@ -36,13 +36,18 @@ A static SVG fractal-noise tile at `--grain-opacity` (2% light, 4% dark). It als
 - **Where:** lit areas (hero, covers). Add `.litt-grain-fade` where a lit section meets plain canvas, so no hard edge shows.
 - **Never:** animated, on a `position: fixed` full-screen layer with blend modes (it repaints on scroll), or at an opacity you can consciously see.
 
-### 5. Depth and occlusion: `--occlusion`, `--occlusion-subtle` (P4)
-- **Dark:** depth comes from stepping `--surface-1` → `--surface-3` plus the highlight. `--occlusion` is a zero-blur contact ring (`0 0 0 1px` black at 40%) that separates floating glass from content. `--occlusion-subtle` is nothing.
-- **Light:** `--occlusion` is a whisper (a 2px soft shadow at 4% plus a 24px shadow at 10% pulled in by 12px). `--occlusion-subtle` is just the 2px contact shadow.
-- **Never:** a large, dark, visible drop shadow (see the P4 check).
+### 5. Depth: glow + ring (P4)
+- **Cards in the page flow:** no shadow at all. Depth comes from stepping `--surface-1` → `--surface-3`, the hairline and the top highlight.
+- **Floating surfaces:** a zero-offset glow plus a 1px ring, so the surface lifts evenly on every side instead of casting a shadow in one direction.
+  - `--shadow-tooltip`: a 2px glow and the ring.
+  - `--shadow-float` (menus, popovers, toasts, the glass header): 8px and 24px glows and the ring.
+  - `--shadow-modal` (dialogs, command menu): 40px and 72px glows and the ring.
+- **Light:** cool ink at 6–10% for the glows and 6% for the ring.
+- **Dark:** black at 30–50%. The glows darken the content around the panel, and the ring separates it.
+- **Never:** a shadow with an x or y offset, or any outer shadow on a card in the flow (see the P4 check).
 
 ## Glow: `--glow` (P1)
-A 1px accent ring plus a soft accent light under the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (P5).
+A 1px accent ring plus a soft, zero-offset accent light around the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (P5).
 
 ## Per-theme tuning (P8)
 
@@ -52,7 +57,7 @@ A 1px accent ring plus a soft accent light under the element. It is reserved for
 | `--grain-opacity` | 0.02 | 0.04 | Noise is more visible on light grounds |
 | `--glow-strength` | 28% | 40% | The glow needs more energy to read against dark |
 | `--glass-border` | dark ink at 7% | white at 8% | The edge is defined by ink in light and by light in dark |
-| `--occlusion` | soft shadow | contact ring | Shadows vanish on dark, so a ring separates instead |
+| `--shadow-float`, `--shadow-modal` | ink glows at 6–10%, ink ring | black glows at 30–50%, black ring | Glows vanish on dark at low strength, so dark needs more energy and leans on the ring |
 
 When tuning, change both columns deliberately. Never derive one from the other.
 
@@ -68,7 +73,7 @@ When tuning, change both columns deliberately. Never derive one from the other.
 .site-header { position: sticky; top: 0; z-index: 20; } /* plus class="litt-glass" */
 ```
 
-**Floating menu over content.** Use `<dialog class="litt-glass">` with `border-radius: var(--radius-panel)` and `background: transparent`. The `::before` supplies the glass, and `::backdrop` is `color-mix(in oklab, var(--canvas) 55%, transparent)`, a tint with no blur, so there is no glass on glass.
+**Floating menu over content.** Use `<dialog class="litt-glass">` square, with `background: transparent` and `--glass-shadow: var(--shadow-modal)`. The `::before` supplies the glass, and `::backdrop` is `color-mix(in oklab, var(--canvas) 55%, transparent)`, a tint with no blur, so there is no glass on glass.
 
 **Primary button.**
 ```css

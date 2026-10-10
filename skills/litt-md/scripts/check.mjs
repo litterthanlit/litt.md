@@ -12,7 +12,9 @@
  * 4. Coverage:  every themed token is defined in both light and dark (P8).
  * 5. Contrast:  text, control lines, focus, accent and status pairs meet WCAG.
  * 6. Weight:    nothing goes above font-weight 400 (P9).
- * 7. Frontmatter: SKILL.md name and description follow the skill rules.
+ * 7. Radius:    corners are square or pill, nothing in between.
+ * 8. Shadows:   no outer shadow has an x or y offset (P4).
+ * 9. Frontmatter: SKILL.md name and description follow the skill rules.
  *
  * Exits 1 if anything fails.
  */
@@ -137,7 +139,58 @@ for (const f of assetFiles) {
 }
 weightFails.length ? weightFails.forEach(fail) : ok(`no weight above 400 in ${assetFiles.length} asset files`);
 
-// 7. Frontmatter ----------------------------------------------------------
+// 7. Binary radius -------------------------------------------------------
+console.log("Radius (square or pill)");
+const radiusFails = [];
+const allowedRadius = new Set(["0", "0px", "inherit", "var(--radius-pill)", "999px", "50%"]);
+for (const f of assetFiles) {
+  const text = read(f).replace(/\/\*[\s\S]*?\*\//g, "").replace(/<!--[\s\S]*?-->/g, "");
+  for (const m of text.matchAll(/border(?:-[a-z]+)*-radius\s*:\s*([^;}"]+)/g)) {
+    const v = m[1].trim();
+    if (!allowedRadius.has(v)) radiusFails.push(`${f}: border-radius ${v}`);
+  }
+  for (const m of text.matchAll(/--radius-(?!pill\b)[\w-]+\s*:/g)) radiusFails.push(`${f}: defines ${m[0].slice(0, -1).trim()}`);
+  for (const m of text.matchAll(/class="[^"]*\brounded(-(xs|sm|md|lg|xl|2xl|3xl|4xl|control|card|panel))?(?=[\s"])/g)) radiusFails.push(`${f}: uses ${m[0].split(/\s/).pop()}`);
+}
+radiusFails.length ? radiusFails.forEach(fail) : ok("every corner is square or pill");
+
+// 8. Zero-offset shadows (P4) ---------------------------------------------
+console.log("Shadows (zero offset)");
+const shadowFails = [];
+const splitLayers = (v) => {
+  const out = []; let depth = 0, cur = "";
+  for (const ch of v) {
+    if (ch === "(") depth++;
+    if (ch === ")") depth--;
+    if (ch === "," && depth === 0) { out.push(cur.trim()); cur = ""; } else cur += ch;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+};
+for (const f of assetFiles) {
+  const text = read(f).replace(/\/\*[\s\S]*?\*\//g, "").replace(/<!--[\s\S]*?-->/g, "");
+  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--highlight)\s*:\s*([^;}]+)/g)) {
+    for (const layer of splitLayers(m[2])) {
+      if (/^var\(/.test(layer) || layer === "none") continue;
+      // Strip colors so only lengths remain, then read the first two lengths as x/y offsets.
+      const lengths = layer.replace(/(rgba?|hsla?|oklch|oklab|color-mix)\([^()]*(\([^()]*\)[^()]*)*\)/g, "").replace(/var\([^)]*\)/g, "")
+        .replace(/\b(white|black|transparent|currentcolor)\b/gi, "").trim().split(/\s+/).filter(Boolean);
+      const inset = lengths[0] === "inset";
+      const nums = (inset ? lengths.slice(1) : lengths).map((n) => parseFloat(n));
+      const [x = 0, y = 0, blur = 0, spread = 0] = nums;
+      if (inset) {
+        const highlight = x === 0 && y === 1 && blur === 0;
+        const hairline = x === 0 && y === 0 && blur === 0;
+        if (!highlight && !hairline) shadowFails.push(`${f}: inset layer "${layer}" (only the top highlight or a hairline)`);
+      } else if (x !== 0 || y !== 0) {
+        shadowFails.push(`${f}: offset shadow "${layer}" in ${m[1]}`);
+      }
+    }
+  }
+}
+shadowFails.length ? shadowFails.forEach(fail) : ok("no shadow has an offset");
+
+// 9. Frontmatter ----------------------------------------------------------
 console.log("SKILL.md frontmatter");
 const fm = read("SKILL.md").match(/^---\n([\s\S]*?)\n---/);
 if (!fm) fail("SKILL.md has no frontmatter");

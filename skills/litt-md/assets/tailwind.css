@@ -21,6 +21,7 @@
 @theme {
   --color-*: initial;
   --radius-*: initial;
+  --shadow-*: initial;
   --font-weight-*: initial;
   --font-weight-normal: 400;
 }
@@ -53,7 +54,7 @@
   /* Type: each size carries its own leading and tracking (P6).
      font-sans / font-mono need no mapping here. tokens.css declares
      --font-sans and --font-mono unlayered, so it wins over Tailwind's defaults.
-     The same rule makes the radius and container keys below safe: Tailwind's
+     The same rule makes the control, radius, shadow and container keys below safe: Tailwind's
      layered copy loses to the unlayered value in tokens.css. */
   --text-display: var(--type-display-size);
   --text-display--line-height: var(--type-display-leading);
@@ -99,18 +100,27 @@
   /* Layout: py-section, max-w-content, etc. */
   --spacing-section: var(--section-y);
   --spacing-gutter: var(--gutter);
+  /* Controls (P10): h-control-md, px-control-md, gap-control */
+  --spacing-control-sm: var(--control-sm);
+  --spacing-control-md: var(--control-md);
+  --spacing-control-lg: var(--control-lg);
+  --spacing-control-pad-sm: var(--control-pad-sm);
+  --spacing-control-pad-md: var(--control-pad-md);
+  --spacing-control-pad-lg: var(--control-pad-lg);
+  --spacing-control: var(--control-gap);
   --container-reading: var(--container-reading);
   --container-content: var(--container-content);
   --container-wide: var(--container-wide);
 
-  /* Shape: rounded-control / rounded-card / rounded-panel instead of rounded-lg everywhere. */
-  --radius-control: var(--radius-control);
-  --radius-card: var(--radius-card);
-  --radius-panel: var(--radius-panel);
+  /* Shape: binary. Square by default (no rounded-* class); rounded-pill only on
+     chips, tags, avatars, status dots and icon-only buttons. */
+  --radius-pill: var(--radius-pill);
 
-  /* Depth: shadow-float, shadow-raised, shadow-glow (one per view, P1). */
-  --shadow-float: var(--occlusion);
-  --shadow-raised: var(--occlusion-subtle);
+  /* Depth (P4): zero-offset glow + 1px ring, floating surfaces only.
+     shadow-glow is the accent glow, one per view (P1). */
+  --shadow-tooltip: var(--shadow-tooltip);
+  --shadow-float: var(--shadow-float);
+  --shadow-modal: var(--shadow-modal);
   --shadow-glow: var(--glow);
   --inset-shadow-highlight: var(--highlight);
 
