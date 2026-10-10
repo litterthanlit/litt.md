@@ -1,0 +1,364 @@
+/* ==========================================================================
+   litt.md tokens · v0.1
+   This is the ONLY file where litt.md values live. Markdown docs refer to
+   these variable names; change a value here, then follow the propagation
+   checklist in workflows/evolve.md.
+
+   Plain CSS: works in any project, the specimen, Framer custom code, or
+   Tailwind v4 (import assets/tailwind.css instead, which imports this file).
+
+   Theme model
+   - :root defaults to light.
+   - [data-theme="dark"] forces dark on any element, including nested sections.
+   - With no data-theme set, the system preference decides.
+   The dark values appear twice (the attribute block and the media block).
+   scripts/check.mjs verifies the two copies are identical.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Theme-independent tokens
+   -------------------------------------------------------------------------- */
+:root {
+  /* Type: Geist carries everything; Geist Mono for code, keys and data. */
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Type scale: tracking tightens as size grows (P6). */
+  --type-display-size: clamp(3.5rem, 2.6rem + 2.8vw, 4.5rem); /* 56 → 72 */
+  --type-display-leading: 1.05;
+  --type-display-tracking: -0.03em;
+
+  --type-h1-size: 2.5rem;      /* 40 */
+  --type-h1-leading: 1.1;
+  --type-h1-tracking: -0.025em;
+
+  --type-h2-size: 2rem;        /* 32 */
+  --type-h2-leading: 1.15;
+  --type-h2-tracking: -0.022em;
+
+  --type-h3-size: 1.5rem;      /* 24 */
+  --type-h3-leading: 1.25;
+  --type-h3-tracking: -0.018em;
+
+  --type-h4-size: 1.25rem;     /* 20 */
+  --type-h4-leading: 1.3;
+  --type-h4-tracking: -0.012em;
+
+  --type-reading-size: 1.0625rem; /* 17: long-form text */
+  --type-reading-leading: 1.65;
+  --type-reading-tracking: -0.006em;
+
+  --type-body-size: 0.9375rem;    /* 15: UI body */
+  --type-body-leading: 1.55;
+  --type-body-tracking: -0.003em;
+
+  --type-small-size: 0.8125rem;   /* 13 */
+  --type-small-leading: 1.5;
+  --type-small-tracking: 0em;
+
+  --type-caption-size: 0.75rem;   /* 12 */
+  --type-caption-leading: 1.4;
+  --type-caption-tracking: 0.01em;
+
+  --measure: 65ch;
+
+  /* Space: 4px base, 8px grid. Names match Tailwind's multiplier (space-6 = p-6 = 24px). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
+  --space-40: 160px;
+
+  /* Layout: 12 columns; breakpoints 640 / 1024 / 1280. */
+  --section-y: 64px;           /* airy rhythm (P7): 64 mobile, 96 tablet, 128 desktop */
+  --gutter: 16px;              /* page side padding */
+  --grid-gap: 16px;
+  --container-reading: 40rem;  /* 640 */
+  --container-content: 67.5rem;/* 1080 */
+  --container-wide: 80rem;     /* 1280 */
+  --header-h: 64px;
+
+  /* Shape */
+  --radius-control: 6px;       /* buttons, inputs, chips */
+  --radius-card: 8px;          /* cards, list containers */
+  --radius-panel: 12px;        /* large glass panels, modals, command menu */
+  --radius-pill: 999px;        /* tags and avatars only */
+  --hairline: 1px;
+
+  /* Motion: invisible and fast. Only opacity and transform animate. */
+  --dur-instant: 120ms;        /* hover, press */
+  --dur-reveal: 160ms;         /* tooltip, dropdown, small reveals */
+  --dur-panel: 200ms;          /* sheets, modals, command menu */
+  --dur-max: 240ms;            /* hard ceiling; nothing exceeds it */
+  --dur-exit-reveal: 128ms;    /* exits run at about 80% of the enter */
+  --dur-exit-panel: 160ms;
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --press-scale: 0.98;
+
+  /* Material constants */
+  --glass-blur: 20px;
+  --glass-saturate: 140%;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (min-width: 40rem) {
+  :root { --section-y: 96px; --gutter: 24px; --grid-gap: 24px; }
+}
+@media (min-width: 64rem) {
+  :root { --section-y: 128px; --gutter: 32px; }
+}
+
+/* --------------------------------------------------------------------------
+   Light theme (default)
+   Neutrals sit on one OKLCH hue (about 262), so "cool" is checkable.
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --canvas: #fafbfc;
+  --surface-1: #ffffff;
+  --surface-2: #f4f5f7;
+  --surface-3: #ebedf0;
+
+  --line: #e3e5e9;             /* decorative hairline */
+  --line-strong: #cfd2d8;
+  --line-control: #82868e;     /* input/checkbox outlines, at least 3:1 */
+
+  --fg: #0e0f11;               /* headlines, key values */
+  --fg-muted: #3c3f45;         /* body */
+  --fg-subtle: #64686f;        /* supporting */
+  --fg-disabled: #9a9ea6;      /* disabled only, exempt from contrast */
+
+  /* Accent: PLACEHOLDER signal blue. Swap per project (see profile Q2). */
+  --accent: #1a73d5;
+  --accent-hover: #0961bb;
+  --accent-fg: #ffffff;        /* text on accent, at least 4.5:1 */
+  --accent-tint: #e1f0ff;
+  --focus: #1a73d5;            /* focus ring, at least 3:1 on canvas and surfaces */
+
+  --success: #007c3b;
+  --warning: #9c5a00;
+  --danger: #be2e31;
+
+  /* Material, tuned for light (P8) */
+  --glass-bg: rgba(255, 255, 255, 0.72);
+  --glass-bg-solid: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(14, 15, 17, 0.07);
+  --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --occlusion: 0 1px 2px rgba(14, 15, 17, 0.04), 0 8px 24px -12px rgba(14, 15, 17, 0.10);
+  --occlusion-subtle: 0 1px 2px rgba(14, 15, 17, 0.04);
+  --light-strength: 12%;
+  --glow-strength: 28%;
+  --grain-opacity: 0.02;
+}
+
+/* --------------------------------------------------------------------------
+   Dark theme: explicit attribute
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --canvas: #08090a;
+  --surface-1: #0f1011;
+  --surface-2: #161719;
+  --surface-3: #1c1e20;
+
+  --line: #232529;
+  --line-strong: #313439;
+  --line-control: #656970;
+
+  --fg: #f7f8f9;
+  --fg-muted: #d0d6e0;
+  --fg-subtle: #8a8f98;
+  --fg-disabled: #62666d;
+
+  --accent: #4c9fff;
+  --accent-hover: #6bb3ff;
+  --accent-fg: #08090a;
+  --accent-tint: #0e2440;
+  --focus: #4c9fff;
+
+  --success: #4bc680;
+  --warning: #e19b1b;
+  --danger: #ff756f;
+
+  --glass-bg: rgba(15, 16, 17, 0.72);
+  --glass-bg-solid: rgba(15, 16, 17, 0.94);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --occlusion: 0 0 0 1px rgba(0, 0, 0, 0.4);
+  --occlusion-subtle: 0 0 0 transparent;
+  --light-strength: 22%;
+  --glow-strength: 40%;
+  --grain-opacity: 0.04;
+}
+
+/* --------------------------------------------------------------------------
+   Dark theme: system preference (must stay identical to the block above)
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --canvas: #08090a;
+    --surface-1: #0f1011;
+    --surface-2: #161719;
+    --surface-3: #1c1e20;
+
+    --line: #232529;
+    --line-strong: #313439;
+    --line-control: #656970;
+
+    --fg: #f7f8f9;
+    --fg-muted: #d0d6e0;
+    --fg-subtle: #8a8f98;
+    --fg-disabled: #62666d;
+
+    --accent: #4c9fff;
+    --accent-hover: #6bb3ff;
+    --accent-fg: #08090a;
+    --accent-tint: #0e2440;
+    --focus: #4c9fff;
+
+    --success: #4bc680;
+    --warning: #e19b1b;
+    --danger: #ff756f;
+
+    --glass-bg: rgba(15, 16, 17, 0.72);
+    --glass-bg-solid: rgba(15, 16, 17, 0.94);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --occlusion: 0 0 0 1px rgba(0, 0, 0, 0.4);
+    --occlusion-subtle: 0 0 0 transparent;
+    --light-strength: 22%;
+    --glow-strength: 40%;
+    --grain-opacity: 0.04;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Derived material tokens
+   Declared on every theme root so nested [data-theme] sections recompute
+   them with their own accent and strengths.
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme] {
+  /* One light source, from the top (P2), tinted by the accent (P1). */
+  --light: radial-gradient(120% 70% at 50% -10%,
+             color-mix(in oklab, var(--accent) var(--light-strength), transparent) 0%,
+             transparent 65%);
+  /* The glow reserved for the one primary action (P1). */
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent),
+          0 8px 24px -8px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+}
+
+@supports not (color: color-mix(in oklab, red, blue)) {
+  :root,
+  [data-theme] {
+    --light: none;
+    --glow: 0 0 0 1px var(--accent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 0ms;
+    --dur-reveal: 0ms;
+    --dur-panel: 0ms;
+    --dur-max: 0ms;
+    --dur-exit-reveal: 0ms;
+    --dur-exit-panel: 0ms;
+    --press-scale: 1;
+  }
+}
+
+/* ==========================================================================
+   Material primitives
+   In Tailwind v4 these merge into its components layer, so utilities
+   still override them.
+   ========================================================================== */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Glass, only for surfaces floating over content (P3).
+     The blur lives on ::before so fixed or absolute children aren't trapped
+     by the containing block that backdrop-filter creates. */
+  .litt-glass {
+    position: relative;
+    isolation: isolate;
+  }
+  .litt-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+    box-shadow: inset 0 0 0 1px var(--glass-border), var(--highlight), var(--occlusion);
+    pointer-events: none;
+  }
+
+  /* A solid raised surface: cards in the page flow (P4). */
+  .litt-raised {
+    background: var(--surface-1);
+    border-radius: var(--radius-card);
+    box-shadow: inset 0 0 0 1px var(--line), var(--highlight), var(--occlusion-subtle);
+  }
+
+  /* The light source: put it on a hero or section, once per view (P2). */
+  .litt-lit {
+    background-image: var(--light);
+    background-repeat: no-repeat;
+  }
+
+  /* Grain: static (P5) and non-interactive; it also dithers gradient banding. */
+  .litt-grain {
+    position: relative;
+  }
+  .litt-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-image: var(--grain);
+    opacity: var(--grain-opacity);
+    pointer-events: none;
+  }
+  /* Fade the grain out toward the bottom where a lit section meets plain canvas,
+     so no hard edge shows. */
+  .litt-grain-fade::after {
+    -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 95%);
+    mask-image: linear-gradient(to bottom, black 30%, transparent 95%);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .litt-glass::before { background: var(--glass-bg-solid); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .litt-glass::before {
+    background: var(--surface-1);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

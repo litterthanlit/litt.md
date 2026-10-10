@@ -1,0 +1,25 @@
+schema_version: "1.0"
+name: build-pricing-section
+description: A plain UI build request should load litt-md and follow its build workflow.
+tags: [trigger, build]
+runs: 1
+execution:
+  prompt: |
+    Build a pricing section for my design studio's website: three tiers (Sprint, Studio, Retainer).
+    Give me the HTML and Tailwind classes. No need to write files, just show the code.
+  max_turns: 12
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - type: tool_used
+    name: loads-litt-md
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?litt-md"'
+    min: 1
+  - type: llm
+    name: applies-the-language
+    criteria: |
+      Pass if the answer applies the litt.md language: Geist (not Inter) as the font, token-named
+      utilities or variables (e.g. bg-canvas, text-fg-muted, rounded-card, border-line) rather than
+      raw Tailwind palette colors, at most ONE tier highlighted with the accent fill/glow, no
+      purple-to-blue gradient, no emoji icons, no arrow suffix on every button, and spacing on the
+      8px grid. Fail if it reads like a generic SaaS pricing table with gradients and rounded-lg everywhere.
