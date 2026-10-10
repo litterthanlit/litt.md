@@ -51,3 +51,4 @@ This file is append-only: never edit or delete old entries. Each entry records o
 - 2026-10-10 · component · button scale after the Ramp audit · chose a roomy size scale (sm 32 / md 44 / lg 56, shared with inputs, labels trimmed to cap height) over keeping one 40px size · "feel more roomy" · - · → P10 · interview
 - 2026-10-10 · material · depth after the Ramp audit · chose zero-offset glow + 1px ring on floating surfaces over offset shadows · ? · - · → P4 · interview
 - 2026-10-10 · component · corner radius after the Ramp audit · chose binary (0, or pill for chips and avatars) over keeping 6/8/12 and over splitting app and marketing · ? · - · → decision · interview
+- 2026-10-10 · type · Geist as the sans · dislike · "Im tired of geist", wants to try Inter or another sans · - · open · chat
