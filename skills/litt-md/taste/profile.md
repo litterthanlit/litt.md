@@ -1,12 +1,12 @@
 # litt.md taste profile
 
-> v0.1 · built from 1 interview (3 rounds), 1 audit (6 sources), 25 journal entries · October 2026
+> v0.2 · built from 1 interview (3 rounds), 1 audit (6 sources), 26 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
 ## Point of view
 
-**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, tight type, one font family. The one place it gets bold is light and material. Surfaces have physicality: glass that floats, a soft light source falling from the top, edges that catch the light, a trace of grain. Color barely appears, and where it does, it behaves like light.
+**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, tight type, one font family at one weight. The one place it gets bold is light and material. Surfaces have physicality: glass that floats, a soft light source falling from the top, edges that catch the light, a trace of grain. Color barely appears, and where it does, it behaves like light.
 
 Five words: **precise, lit, airy, calm, exact.**
 
@@ -16,7 +16,7 @@ Five words: **precise, lit, airy, calm, exact.**
 |---|---|---|
 | Character | Technical precision (Linear/Vercel lineage) | Interfaces should feel engineered and inevitable, not decorated. |
 | Themes | Light and dark are both first-class | Neither theme is an afterthought or a mechanical inversion. |
-| Type | Geist + Geist Mono, nothing else | One grotesk carries everything; mono is for code, keys and data. |
+| Type | Geist + Geist Mono, nothing else, weight 400 only | One grotesk carries everything; mono is for code, keys and data. Heavier weights read too wide (P9). |
 | Signature | Light and material | This is where the boldness goes, and it is what separates litt.md from generic dark mode. |
 | Color | Cool neutrals (OKLCH hue about 262), monochrome, one accent per project | Hierarchy comes from tone. The accent is chosen per project. |
 | Density | Airy | One idea per section, with generous negative space. |
@@ -49,9 +49,12 @@ Five words: **precise, lit, airy, calm, exact.**
 **P8. Designed, not inverted.** Each theme has its own material values: grain is 2% in light and 4% in dark, the light tint is 12% in light and 22% in dark, glass opacity and borders are tuned separately. A theme produced by flipping the other's colors fails.
 - *Check:* both themes are specified for every surface and material token in `tokens.css`. The check script verifies this.
 
+**P9. One weight.** Geist and Geist Mono at 400 only. Heavier weights read too wide. Hierarchy comes from scale, color and tracking, never weight. That includes labels, buttons, headings and the wordmark.
+- *Check:* any computed font-weight above 400 fails, including browser defaults on `h1`–`h6`, `b`, `strong` and `th` (`tokens.css` resets them). `font-medium`, `font-semibold` or `font-bold` in markup fails. The check script scans the assets.
+
 ## Do
 
-- Let type do the hierarchy. Use scale jumps (72 against 15) and weight (600 against 400) before color.
+- Let type do the hierarchy. Use scale jumps (72 against 15) first, then color (`--fg` against `--fg-muted`), then tracking. Never weight.
 - Use `--fg-subtle` for supporting text and `--fg-muted` for body. Keep pure `--fg` for headlines and key values.
 - Give the primary action the only accent fill on the page, and let it glow (`--glow`).
 - Put busy content behind glass, because that is where glass earns its blur.
@@ -62,6 +65,7 @@ Five words: **precise, lit, airy, calm, exact.**
 ## Don't
 
 - Add a second typeface, a serif display, or a "fun" font for one section.
+- Use a weight above 400 (medium, semibold or bold), even for a small label or button.
 - Use gradients as decoration (purple-to-blue heroes, gradient text, gradient borders).
 - Animate anything for longer than 240ms, or animate layout properties (width, height, top, left).
 - Add motion that is not a response to the user: no autoplaying reveals, no parallax, no marquee.
@@ -108,4 +112,5 @@ The interview workflow works through these. When one is answered, move the answe
 
 ## Changelog
 
+- **v0.2, October 2026.** Nick said "fonts are too wide, don't go over 400". New rule P9 caps every weight at 400. The Type decision now reads weight 400 only, and `tokens.css` keeps a single `--weight` token.
 - **v0.1, October 2026.** First profile, from a 3-round interview. P1–P8 seeded. Q1–Q6 opened. First audit (Cursor, Vercel, litt.design, Cosmos UX, Pinterest web and OS) opened Q7–Q12 and added evidence to Q2, Q3 and Q5. No rule was changed.

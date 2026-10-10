@@ -16,13 +16,13 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 **Families.** `--font-sans` (Geist) for everything. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. No third family, ever.
 
-**Weights.** `--weight-regular` 400 is for body text. `--weight-medium` 500 is for labels, buttons, H3/H4 and emphasis in UI. `--weight-semibold` 600 is for display, H1 and H2. Bold (700+) is not part of the system.
+**Weight (P9).** One weight: `--weight` (400) for everything, including display, headings, labels, buttons and the wordmark. Medium, semibold and bold read too wide and are not part of the system. `tokens.css` resets the bold browser defaults (`h1`–`h6`, `b`, `strong`, `th`) and turns off faux bold. Only the 400 faces need to load.
 
 **Scale.** Each step bundles size, leading and tracking (`--type-<step>-size`, `-leading`, `-tracking`). Tracking tightens as size grows (P6).
 
 | Step | Size | Use |
 |---|---|---|
-| display | 56→72 fluid | One per page, hero statement only |
+| display | 56→72 fluid | One per page, hero statement only. Regular weight, so size and tracking carry it. |
 | h1 | 40 | Page title |
 | h2 | 32 | Section title on content pages |
 | h3 | 24 | Subsection, card group title |
@@ -32,7 +32,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 | small | 13 | Supporting text, table cells, helper text, nav |
 | caption | 12 | Timestamps, fine print |
 
-**Hierarchy order.** Get hierarchy from scale first, then weight, then color (`--fg` → `--fg-muted` → `--fg-subtle`). Color is the last resort, never the first.
+**Hierarchy order.** Get hierarchy from scale first, then color (`--fg` → `--fg-muted` → `--fg-subtle`), then tracking. Never from weight. When a label needs to stand out at the same size, make it `--fg` and its neighbours `--fg-subtle`.
 
 **Rules.**
 - Display and headings use `text-wrap: balance`.

@@ -11,7 +11,8 @@
  * 3. Parity:    the two dark blocks in tokens.css are identical.
  * 4. Coverage:  every themed token is defined in both light and dark (P8).
  * 5. Contrast:  text, control lines, focus, accent and status pairs meet WCAG.
- * 6. Frontmatter: SKILL.md name and description follow the skill rules.
+ * 6. Weight:    nothing goes above font-weight 400 (P9).
+ * 7. Frontmatter: SKILL.md name and description follow the skill rules.
  *
  * Exits 1 if anything fails.
  */
@@ -121,7 +122,22 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
 }
 if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes`);
 
-// 6. Frontmatter ----------------------------------------------------------
+// 6. Weight ceiling (P9) ------------------------------------------------
+console.log("Weight ceiling (P9)");
+const weightFails = [];
+const assetFiles = fs.readdirSync(path.join(skillDir, "assets")).filter((f) => /\.(css|html)$/.test(f)).map((f) => `assets/${f}`);
+for (const f of assetFiles) {
+  // Comments may name the forbidden weights ("so font-semibold doesn't exist"), so skip them.
+  const text = read(f).replace(/\/\*[\s\S]*?\*\//g, "").replace(/<!--[\s\S]*?-->/g, "");
+  for (const m of text.matchAll(/font-weight\s*:\s*(\d{3})/g)) if (Number(m[1]) > 400) weightFails.push(`${f}: font-weight ${m[1]}`);
+  for (const m of text.matchAll(/--[\w-]*weight[\w-]*\s*:\s*(\d{3})/g)) if (Number(m[1]) > 400) weightFails.push(`${f}: weight token ${m[0]}`);
+  for (const m of text.matchAll(/wght@([\d;.]+)/g)) if (m[1].split(/[;.]/).some((w) => Number(w) > 400)) weightFails.push(`${f}: Google Fonts loads wght@${m[1]}`);
+  for (const m of text.matchAll(/--weight-(medium|semibold|bold)\b/g)) weightFails.push(`${f}: references ${m[0]}`);
+  for (const m of text.matchAll(/\bfont-(medium|semibold|bold|extrabold|black)\b/g)) weightFails.push(`${f}: uses ${m[0]}`);
+}
+weightFails.length ? weightFails.forEach(fail) : ok(`no weight above 400 in ${assetFiles.length} asset files`);
+
+// 7. Frontmatter ----------------------------------------------------------
 console.log("SKILL.md frontmatter");
 const fm = read("SKILL.md").match(/^---\n([\s\S]*?)\n---/);
 if (!fm) fail("SKILL.md has no frontmatter");

@@ -42,3 +42,4 @@ This file is append-only: never edit or delete old entries. Each entry records o
 - 2026-10-10 · component · saved boards · thin 1.5px line-icon sets (4 Cosmos pins) · ? · icons are 1.5px stroke · → Q3 · audit:cosmos-ux
 - 2026-10-10 · layout · saved boards · Swiss and editorial grids with exposed structure recur on the web board · ? · - · → Q11 · audit:pinterest-web
 - 2026-10-10 · type · Vercel display tracking · −0.06em at 56px, tighter than the profile's −0.03em · ? · test tighter display tracking · open · audit:vercel
+- 2026-10-10 · type · font weight · hate weights above 400 · "fonts are too wide" · no font-weight above 400; hierarchy from size, color and tracking · → P9 · chat

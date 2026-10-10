@@ -28,7 +28,7 @@ Reading, Body, Small, Caption → P tag
 Mono     → for kbd, data, versions
 ```
 
-Weights: Regular 400, Medium 500, Semibold 600. Never Bold.
+Weight: Regular 400 only, for every text style (P9). Never Medium, Semibold or Bold. Hierarchy comes from size and color styles. Only add Geist Regular and Geist Mono Regular to the project.
 
 ## 3. Layout
 
@@ -65,7 +65,7 @@ To use the exact tokens in code components or embeds, paste `assets/tokens.css` 
 
 ## 7. Framer review checklist
 - [ ] Every color comes from a color style with both modes set.
-- [ ] Every text layer uses a text style. No local overrides of size or tracking.
+- [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Nothing above Regular 400.
 - [ ] Gaps and paddings are on the scale.
 - [ ] Glass only on floating frames (header, menus, modals, toasts).
 - [ ] One accent fill and one glow per page.

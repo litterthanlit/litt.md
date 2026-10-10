@@ -6,7 +6,7 @@ allowed-tools: Bash(node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs *), Bash
 
 # litt.md
 
-**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface, cool neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
+**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface at one weight, cool neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
 
 Skill directory: `${CLAUDE_SKILL_DIR}`. Every path below is relative to it.
 
@@ -40,7 +40,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 
 `area` is one of: type, color, material, motion, layout, component, interaction, process.
 
-## The eight signature rules
+## The nine signature rules
 
 1. **P1 Light, not paint.** The accent appears as light (`--light`, `--glow`, `--focus`). At most one accent fill per view, on the primary action.
 2. **P2 One light source.** Light comes from the top. Highlights sit on top edges only.
@@ -50,6 +50,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 6. **P6 Precision.** 8px grid (4px inside components), 1px hairlines, tracking tightens as size grows.
 7. **P7 Airy rhythm.** One idea per section, 128 / 96 / 64px between sections, asymmetric and left-aligned by default.
 8. **P8 Designed, not inverted.** Each theme has its own material strengths. Both are first-class.
+9. **P9 One weight.** Everything at 400, headings and buttons included. Hierarchy comes from size, color and tracking.
 
 Each rule's Check line, the dos and don'ts, and the open questions are in `taste/profile.md`.
 
@@ -58,7 +59,7 @@ Each rule's Check line, the dos and don'ts, and the open questions are in `taste
 These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
-- **Type:** Geist + Geist Mono only.
+- **Type:** Geist + Geist Mono only, at weight 400 only.
 - **Color:** cool neutrals at one OKLCH hue (about 262), monochrome, one accent per project.
 - **Density:** airy. **Shape:** 6 / 8 / 12px radii.
 - **Motion:** 120–200ms ease-out, 240ms ceiling; transform and opacity only.
@@ -77,6 +78,7 @@ These change only when Nick changes them.
 - Visible drop shadows
 - Springs, scroll reveals, parallax, marquee
 - A second typeface
+- Any font weight above 400
 
 ## Token quick view (values live only in `assets/tokens.css`)
 

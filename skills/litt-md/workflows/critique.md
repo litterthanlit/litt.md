@@ -34,7 +34,8 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 
 **D. Type**
 - [ ] Geist and Geist Mono only. Mono used only for code, keys and data.
-- [ ] Hierarchy comes from scale and weight before color. One display size per page.
+- [ ] Hierarchy comes from scale and color. One display size per page.
+- [ ] **P9** Nothing above weight 400: no medium, semibold or bold, including headings and buttons.
 - [ ] Body text 13px or larger. Long text at a 65ch measure or narrower.
 
 **E. Motion** (`n/a` for static input)
@@ -62,7 +63,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 ## Critique: <subject>
 
 **Verdict:** <one sentence: how close is this to litt.md, and what's the biggest gap>
-**Score:** A x/5 · B x/4 · C x/2 · D x/3 · E x/3 · F x/5 · G x/5
+**Score:** A x/5 · B x/4 · C x/2 · D x/4 · E x/3 · F x/5 · G x/5
 
 ### Fix first (ranked by impact)
 1. <element> breaks <rule>. Fix: <specific change in token terms, e.g. "swap the purple gradient for `.litt-lit` on the hero; accent at 22% in dark">

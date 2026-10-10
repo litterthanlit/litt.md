@@ -16,10 +16,13 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* Opt-in strict mode for new projects: uncomment to delete Tailwind's default
-   palette and radii, so off-system values (bg-blue-500, rounded-lg) don't exist.
+   palette, radii and weights, so off-system values (bg-blue-500, rounded-lg,
+   font-semibold) don't exist.
 @theme {
   --color-*: initial;
   --radius-*: initial;
+  --font-weight-*: initial;
+  --font-weight-normal: 400;
 }
 */
 
@@ -55,27 +58,27 @@
   --text-display: var(--type-display-size);
   --text-display--line-height: var(--type-display-leading);
   --text-display--letter-spacing: var(--type-display-tracking);
-  --text-display--font-weight: var(--weight-semibold);
+  --text-display--font-weight: var(--weight);
 
   --text-h1: var(--type-h1-size);
   --text-h1--line-height: var(--type-h1-leading);
   --text-h1--letter-spacing: var(--type-h1-tracking);
-  --text-h1--font-weight: var(--weight-semibold);
+  --text-h1--font-weight: var(--weight);
 
   --text-h2: var(--type-h2-size);
   --text-h2--line-height: var(--type-h2-leading);
   --text-h2--letter-spacing: var(--type-h2-tracking);
-  --text-h2--font-weight: var(--weight-semibold);
+  --text-h2--font-weight: var(--weight);
 
   --text-h3: var(--type-h3-size);
   --text-h3--line-height: var(--type-h3-leading);
   --text-h3--letter-spacing: var(--type-h3-tracking);
-  --text-h3--font-weight: var(--weight-medium);
+  --text-h3--font-weight: var(--weight);
 
   --text-h4: var(--type-h4-size);
   --text-h4--line-height: var(--type-h4-leading);
   --text-h4--letter-spacing: var(--type-h4-tracking);
-  --text-h4--font-weight: var(--weight-medium);
+  --text-h4--font-weight: var(--weight);
 
   --text-reading: var(--type-reading-size);
   --text-reading--line-height: var(--type-reading-leading);

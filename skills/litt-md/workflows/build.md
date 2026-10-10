@@ -47,6 +47,7 @@ Go through the plan line by line. If any item matches, revise that line before b
 - [ ] The same uppercase mono eyebrow over every section
 - [ ] One accent-colored word in the headline
 - [ ] `rounded-lg` everywhere instead of the control/card/panel radii
+- [ ] Any font weight above 400 (`font-medium`, `font-semibold`, `font-bold`, or 500/600 in CSS)
 - [ ] More than one accent fill or glow per view
 - [ ] Glass on something that doesn't float
 - [ ] Motion that isn't a response to the user (reveals, parallax, marquee)

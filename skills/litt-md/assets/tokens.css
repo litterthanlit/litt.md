@@ -23,9 +23,8 @@
   --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --weight-regular: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
+  /* One weight (P9). Hierarchy comes from size, color and tracking, never weight. */
+  --weight: 400;
 
   /* Type scale: tracking tightens as size grows (P6). */
   --type-display-size: clamp(3.5rem, 2.6rem + 2.8vw, 4.5rem); /* 56 → 72 */
@@ -290,6 +289,10 @@
    still override them.
    ========================================================================== */
 @layer base {
+  /* Nothing renders above 400 (P9): override bold browser defaults and block faux bold. */
+  html { font-synthesis-weight: none; }
+  h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: var(--weight); }
+
   :focus-visible {
     outline: 2px solid var(--focus);
     outline-offset: 2px;

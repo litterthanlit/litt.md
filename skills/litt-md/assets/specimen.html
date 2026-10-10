@@ -16,7 +16,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Geist+Mono:wght@400&display=swap">
 <link rel="stylesheet" href="./tokens.css">
 <style>
   /* Specimen layout. Every value comes from tokens.css. */
@@ -42,7 +42,7 @@
   .skip {
     position: absolute; left: var(--space-4); top: -100px; z-index: 100;
     padding: var(--space-2) var(--space-4); border-radius: var(--radius-control);
-    background: var(--accent); color: var(--accent-fg); font-weight: var(--weight-medium);
+    background: var(--accent); color: var(--accent-fg); font-weight: var(--weight);
   }
   .skip:focus { top: var(--space-4); }
   .visually-hidden {
@@ -55,7 +55,7 @@
   /* Header: glass, because it floats over content (P3) */
   .site-header { position: sticky; top: 0; z-index: 20; }
   .site-header .wrap { height: var(--header-h); display: flex; align-items: center; gap: var(--space-6); }
-  .mark { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg); font-weight: var(--weight-semibold); letter-spacing: -0.01em; }
+  .mark { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg); font-weight: var(--weight); letter-spacing: -0.01em; }
   .mark i {
     width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--accent);
     box-shadow: 0 0 12px 2px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
@@ -88,7 +88,7 @@
   kbd {
     display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px;
     border-radius: 4px; background: var(--surface-2); color: var(--fg-subtle);
-    font-size: 11px; font-weight: var(--weight-medium); line-height: 1;
+    font-size: 11px; font-weight: var(--weight); line-height: 1;
     box-shadow: inset 0 0 0 1px var(--line), inset 0 -1px 0 var(--line-strong);
   }
 
@@ -105,7 +105,7 @@
   }
   .display {
     color: var(--fg); font-size: var(--type-display-size); line-height: var(--type-display-leading);
-    letter-spacing: var(--type-display-tracking); font-weight: var(--weight-semibold);
+    letter-spacing: var(--type-display-tracking); font-weight: var(--weight);
     text-wrap: balance;
   }
   .lede { margin-top: var(--space-6); max-width: 36ch; color: var(--fg-subtle); font-size: var(--type-reading-size); line-height: var(--type-reading-leading); letter-spacing: var(--type-reading-tracking); }
@@ -115,7 +115,7 @@
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
     height: 40px; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-control);
-    font: inherit; font-weight: var(--weight-medium); white-space: nowrap; cursor: pointer;
+    font: inherit; font-weight: var(--weight); white-space: nowrap; cursor: pointer;
     transition: background-color var(--dur-instant) var(--ease-out), color var(--dur-instant) var(--ease-out), transform var(--dur-instant) var(--ease-out);
   }
   .btn:active:not(:disabled) { transform: scale(var(--press-scale)); }
@@ -131,10 +131,10 @@
   .hero-visual { position: relative; padding-bottom: var(--space-12); }
   .window { overflow: hidden; }
   .window-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); }
-  .window-bar strong { color: var(--fg); font-weight: var(--weight-medium); font-size: var(--type-small-size); }
+  .window-bar strong { color: var(--fg); font-weight: var(--weight); font-size: var(--type-small-size); }
   .chips { display: flex; gap: var(--space-1); }
   .tag {
-    display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 var(--space-2);
+    display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 var(--space-2);
     border-radius: var(--radius-pill); background: var(--surface-2); color: var(--fg-subtle);
     font-size: var(--type-caption-size); box-shadow: inset 0 0 0 1px var(--line);
   }
@@ -166,7 +166,7 @@
     .section-head { grid-column: 1 / span 3; position: sticky; top: calc(var(--header-h) + var(--space-8)); align-self: start; }
     .section-body { grid-column: 4 / span 9; }
   }
-  .section-head h2 { color: var(--fg); font-size: var(--type-h4-size); line-height: var(--type-h4-leading); letter-spacing: var(--type-h4-tracking); font-weight: var(--weight-medium); }
+  .section-head h2 { color: var(--fg); font-size: var(--type-h4-size); line-height: var(--type-h4-leading); letter-spacing: var(--type-h4-tracking); font-weight: var(--weight); }
   .section-head p { margin-top: var(--space-2); max-width: 28ch; color: var(--fg-subtle); font-size: var(--type-small-size); line-height: var(--type-small-leading); }
 
   /* Type specimen */
@@ -174,12 +174,12 @@
   .type-row:first-child { border-top: 0; padding-top: 0; }
   @media (min-width: 40rem) { .type-row { grid-template-columns: 1fr 200px; align-items: baseline; gap: var(--space-8); } }
   .spec { color: var(--fg-subtle); font-family: var(--font-mono); font-size: var(--type-caption-size); line-height: var(--type-caption-leading); }
-  .spec b { display: block; color: var(--fg-muted); font-weight: var(--weight-medium); }
-  .t-display { color: var(--fg); font-size: var(--type-display-size); line-height: var(--type-display-leading); letter-spacing: var(--type-display-tracking); font-weight: var(--weight-semibold); }
-  .t-h1 { color: var(--fg); font-size: var(--type-h1-size); line-height: var(--type-h1-leading); letter-spacing: var(--type-h1-tracking); font-weight: var(--weight-semibold); }
-  .t-h2 { color: var(--fg); font-size: var(--type-h2-size); line-height: var(--type-h2-leading); letter-spacing: var(--type-h2-tracking); font-weight: var(--weight-semibold); }
-  .t-h3 { color: var(--fg); font-size: var(--type-h3-size); line-height: var(--type-h3-leading); letter-spacing: var(--type-h3-tracking); font-weight: var(--weight-medium); }
-  .t-h4 { color: var(--fg); font-size: var(--type-h4-size); line-height: var(--type-h4-leading); letter-spacing: var(--type-h4-tracking); font-weight: var(--weight-medium); }
+  .spec b { display: block; color: var(--fg-muted); font-weight: var(--weight); }
+  .t-display { color: var(--fg); font-size: var(--type-display-size); line-height: var(--type-display-leading); letter-spacing: var(--type-display-tracking); font-weight: var(--weight); }
+  .t-h1 { color: var(--fg); font-size: var(--type-h1-size); line-height: var(--type-h1-leading); letter-spacing: var(--type-h1-tracking); font-weight: var(--weight); }
+  .t-h2 { color: var(--fg); font-size: var(--type-h2-size); line-height: var(--type-h2-leading); letter-spacing: var(--type-h2-tracking); font-weight: var(--weight); }
+  .t-h3 { color: var(--fg); font-size: var(--type-h3-size); line-height: var(--type-h3-leading); letter-spacing: var(--type-h3-tracking); font-weight: var(--weight); }
+  .t-h4 { color: var(--fg); font-size: var(--type-h4-size); line-height: var(--type-h4-leading); letter-spacing: var(--type-h4-tracking); font-weight: var(--weight); }
   .t-reading { max-width: var(--measure); font-size: var(--type-reading-size); line-height: var(--type-reading-leading); letter-spacing: var(--type-reading-tracking); }
   .t-body { max-width: var(--measure); }
   .t-small { font-size: var(--type-small-size); line-height: var(--type-small-leading); color: var(--fg-subtle); }
@@ -190,12 +190,12 @@
   .themes { display: grid; gap: var(--grid-gap); }
   @media (min-width: 48rem) { .themes { grid-template-columns: 1fr 1fr; } }
   .theme-panel { padding: var(--space-6); border-radius: var(--radius-panel); background: var(--canvas); color: var(--fg-muted); box-shadow: inset 0 0 0 1px var(--line); }
-  .theme-panel h3 { color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight-medium); margin-bottom: var(--space-4); }
+  .theme-panel h3 { color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight); margin-bottom: var(--space-4); }
   .swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
   .swatch { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
   .chip { flex: none; width: 32px; height: 32px; border-radius: var(--radius-control); box-shadow: inset 0 0 0 1px var(--line); }
   .swatch-text { min-width: 0; font-size: var(--type-caption-size); line-height: 1.35; }
-  .swatch-text b { display: block; color: var(--fg); font-weight: var(--weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .swatch-text b { display: block; color: var(--fg); font-weight: var(--weight); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .swatch-text span { font-family: var(--font-mono); color: var(--fg-subtle); }
   .group-label { grid-column: 1 / -1; margin-top: var(--space-4); color: var(--fg-subtle); font-size: var(--type-caption-size); }
   .group-label:first-child { margin-top: 0; }
@@ -204,7 +204,7 @@
   .materials { display: grid; gap: var(--grid-gap); }
   @media (min-width: 40rem) { .materials { grid-template-columns: 1fr 1fr; } }
   .tile { position: relative; overflow: hidden; min-height: 240px; padding: var(--space-6); border-radius: var(--radius-card); background: var(--surface-1); box-shadow: inset 0 0 0 1px var(--line); display: flex; flex-direction: column; justify-content: flex-end; }
-  .tile h3 { position: relative; z-index: 2; color: var(--fg); font-size: var(--type-body-size); font-weight: var(--weight-medium); }
+  .tile h3 { position: relative; z-index: 2; color: var(--fg); font-size: var(--type-body-size); font-weight: var(--weight); }
   .tile p { position: relative; z-index: 2; margin-top: var(--space-1); color: var(--fg-subtle); font-size: var(--type-small-size); max-width: 34ch; }
   .tile .rule { font-family: var(--font-mono); color: var(--fg-subtle); }
   .tile-lit { background-color: var(--canvas); }
@@ -220,11 +220,11 @@
 
   /* Components */
   .comp-grid { display: grid; gap: var(--space-12); }
-  .comp h3 { color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight-medium); margin-bottom: var(--space-4); }
+  .comp h3 { color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight); margin-bottom: var(--space-4); }
   .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
   .fields { display: grid; gap: var(--space-6); }
   @media (min-width: 40rem) { .fields { grid-template-columns: 1fr 1fr; } }
-  .field label { display: block; margin-bottom: var(--space-2); color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight-medium); }
+  .field label { display: block; margin-bottom: var(--space-2); color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight); }
   .input {
     width: 100%; height: 40px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-control);
     background: var(--surface-1); color: var(--fg); font: inherit;
@@ -243,7 +243,7 @@
   .card { padding: var(--space-2); }
   .card-cover { position: relative; height: 160px; border-radius: var(--radius-control); background-color: var(--surface-2); overflow: hidden; }
   .card-body { padding: var(--space-4) var(--space-3) var(--space-3); }
-  .card-body h4 { color: var(--fg); font-size: var(--type-body-size); font-weight: var(--weight-medium); }
+  .card-body h4 { color: var(--fg); font-size: var(--type-body-size); font-weight: var(--weight); }
   .card-body p { margin-top: var(--space-1); color: var(--fg-subtle); font-size: var(--type-small-size); }
   .toast { display: inline-flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-panel); color: var(--fg); font-size: var(--type-small-size); }
   .toast .dot { width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--success); }
@@ -257,7 +257,7 @@
   .m-track { position: relative; height: 32px; margin-bottom: var(--space-6); border-radius: var(--radius-control); background: var(--surface-2); overflow: hidden; }
   .m-dot { position: absolute; top: 8px; left: 8px; width: 16px; height: 16px; border-radius: 4px; background: var(--fg); transition-property: transform; transition-timing-function: var(--ease-out); }
   .m-tile:hover .m-dot, .m-tile:focus-visible .m-dot { transform: translateX(calc(var(--track-w, 200px) - 32px)); }
-  .m-tile b { display: block; color: var(--fg); font-weight: var(--weight-medium); }
+  .m-tile b { display: block; color: var(--fg); font-weight: var(--weight); }
   .m-tile span { font-size: var(--type-small-size); color: var(--fg-subtle); }
   .m1 .m-dot { transition-duration: var(--dur-instant); }
   .m2 .m-dot { transition-duration: var(--dur-reveal); }
@@ -268,7 +268,7 @@
   @media (min-width: 40rem) { .rules { grid-template-columns: 1fr 1fr; } }
   .rules li { display: grid; grid-template-columns: 32px 1fr; gap: var(--space-2); }
   .rules .id { padding-top: 2px; color: var(--fg-subtle); font-family: var(--font-mono); font-size: var(--type-caption-size); }
-  .rules b { display: block; color: var(--fg); font-weight: var(--weight-medium); }
+  .rules b { display: block; color: var(--fg); font-weight: var(--weight); }
   .rules p { margin-top: var(--space-1); color: var(--fg-subtle); font-size: var(--type-small-size); }
 
   .site-footer { padding-block: var(--space-16); border-top: 1px solid var(--line); color: var(--fg-subtle); font-size: var(--type-small-size); }
@@ -370,12 +370,12 @@
         <p>Geist for everything, Geist Mono for code, keys and data. Tracking tightens as size grows.</p>
       </div>
       <div class="section-body">
-        <div class="type-row"><p class="t-display">Inevitable.</p><p class="spec"><b>Display</b>56→72 · 1.05 · −0.03em · 600</p></div>
-        <div class="type-row"><p class="t-h1">Interfaces with intent</p><p class="spec"><b>H1</b>40 · 1.1 · −0.025em · 600</p></div>
-        <div class="type-row"><p class="t-h2">Structure carries the weight</p><p class="spec"><b>H2</b>32 · 1.15 · −0.022em · 600</p></div>
-        <div class="type-row"><p class="t-h3">Light is the only ornament</p><p class="spec"><b>H3</b>24 · 1.25 · −0.018em · 500</p></div>
-        <div class="type-row"><p class="t-h4">One idea per section</p><p class="spec"><b>H4</b>20 · 1.3 · −0.012em · 500</p></div>
-        <div class="type-row"><p class="t-reading">Reading text sits at seventeen pixels with generous leading and a sixty-five character measure, so long-form pages breathe without feeling empty. Hierarchy comes from scale and weight before color.</p><p class="spec"><b>Reading</b>17 · 1.65 · 65ch</p></div>
+        <div class="type-row"><p class="t-display">Inevitable.</p><p class="spec"><b>Display</b>56→72 · 1.05 · −0.03em · 400</p></div>
+        <div class="type-row"><p class="t-h1">Interfaces with intent</p><p class="spec"><b>H1</b>40 · 1.1 · −0.025em · 400</p></div>
+        <div class="type-row"><p class="t-h2">Structure carries the weight</p><p class="spec"><b>H2</b>32 · 1.15 · −0.022em · 400</p></div>
+        <div class="type-row"><p class="t-h3">Light is the only ornament</p><p class="spec"><b>H3</b>24 · 1.25 · −0.018em · 400</p></div>
+        <div class="type-row"><p class="t-h4">One idea per section</p><p class="spec"><b>H4</b>20 · 1.3 · −0.012em · 400</p></div>
+        <div class="type-row"><p class="t-reading">Reading text sits at seventeen pixels with generous leading and a sixty-five character measure, so long-form pages breathe without feeling empty. Hierarchy comes from scale and color, never weight.</p><p class="spec"><b>Reading</b>17 · 1.65 · 65ch</p></div>
         <div class="type-row"><p class="t-body">UI body runs at fifteen pixels. It is the workhorse for interfaces: settings, lists, descriptions and dialogs.</p><p class="spec"><b>Body</b>15 · 1.55</p></div>
         <div class="type-row"><p class="t-small">Small text for supporting detail, table cells and helper copy.</p><p class="spec"><b>Small</b>13 · 1.5</p></div>
         <div class="type-row"><p class="t-caption">Caption for timestamps and fine print.</p><p class="spec"><b>Caption</b>12 · 1.4 · +0.01em</p></div>

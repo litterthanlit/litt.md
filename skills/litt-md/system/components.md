@@ -8,7 +8,7 @@ Button · Input · Checkbox and radio · Segmented control · Tag · Kbd · Card
 ---
 
 ## Button
-Height 40px (32px compact), horizontal padding `--space-4`, `--radius-control`, `--type-body-size` at `--weight-medium`. The transition covers background-color and color at `--dur-instant`. Press is `scale(var(--press-scale))`.
+Height 40px (32px compact), horizontal padding `--space-4`, `--radius-control`, `--type-body-size` at `--weight` (400). The transition covers background-color and color at `--dur-instant`. Press is `scale(var(--press-scale))`.
 
 | Variant | Fill | Text | Edge | Use |
 |---|---|---|---|---|
@@ -25,7 +25,7 @@ Height 40px (32px compact), horizontal padding `--space-4`, `--radius-control`, 
 Height 40px, padding `0 var(--space-3)`, `--radius-control`, background `--surface-1`, text `--fg`, placeholder `--fg-subtle`. The edge is `inset 0 0 0 1px var(--line-control)`.
 - **Focus:** edge `--focus` plus `--focus-ring`. Remove the default outline only when you replace it this way.
 - **Error:** edge `--danger`, set `aria-invalid="true"`, and add help text in `--danger` linked with `aria-describedby`. The message says how to fix it.
-- **Label:** above the field, `--type-small-size` at `--weight-medium` in `--fg`, `--space-2` gap. Placeholders are never labels.
+- **Label:** above the field, `--type-small-size` at `--weight` in `--fg` (color, not weight, sets it apart), `--space-2` gap. Placeholders are never labels.
 - **Help text:** `--type-small-size` in `--fg-subtle`, `--space-2` below.
 
 ## Checkbox and radio
@@ -35,10 +35,10 @@ Native inputs at 16px with `accent-color: var(--accent)`. The label is on the ri
 A track with fill at fg 5%, an inset `--line` edge, 2px padding and `--radius-control`. Each segment is caption size in `--fg-subtle`. The selected segment gets `--surface-1`, `--fg`, an inset `--line`, `--highlight` and `--occlusion-subtle`. Build it from `fieldset` and radio inputs, with a visually hidden legend.
 
 ## Tag
-22px tall, `--radius-pill`, `--surface-2` fill, inset `--line`, caption size in `--fg-subtle`. A status tag colors the text and a 6px dot with the status color, never the fill.
+24px tall, `--radius-pill`, `--surface-2` fill, inset `--line`, caption size in `--fg-subtle`. A status tag colors the text and a 6px dot with the status color, never the fill.
 
 ## Kbd
-`--font-mono` at 11px and weight 500, a 20px chip, 4px radius, `--surface-2`, inset `--line` plus `inset 0 -1px 0 var(--line-strong)` to suggest a keycap. Use it for real shortcuts only.
+`--font-mono` at 11px and weight 400, a 20px chip, 4px radius, `--surface-2`, inset `--line` plus `inset 0 -1px 0 var(--line-strong)` to suggest a keycap. Use it for real shortcuts only.
 
 ## Card
 `.litt-raised`: `--surface-1`, `--radius-card`, inset `--line`, `--highlight`, `--occlusion-subtle`. Padding `--space-6` (or `--space-2` around a cover, then `--space-4`/`--space-3` for the body).
