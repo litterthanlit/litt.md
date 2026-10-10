@@ -1,0 +1,43 @@
+schema_version: "1.0"
+name: build-pricing-section
+description: A plain UI build request should load litt-md and follow its build workflow.
+tags: [trigger, build]
+runs: 1
+execution:
+  prompt: |
+    Build a pricing section for my design studio's website: three tiers (Sprint, Studio, Retainer).
+    Give me the HTML and Tailwind classes. No need to write files, just show the code.
+  max_turns: 12
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - type: tool_used
+    name: loads-litt-md
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?litt-md"'
+    min: 1
+  # P9: no weight above 400 in markup or CSS (prose that mentions the classes is fine).
+  - type: regex
+    name: no-heavy-weights
+    pattern: 'class="[^"]*\bfont-(medium|semibold|bold|extrabold|black)\b|font-weight:\s*[5-9]00'
+    match: not_contains
+  # Token-named utilities from assets/tailwind.css, not raw Tailwind palette colors.
+  - type: regex
+    name: uses-litt-tokens
+    pattern: '\b(bg-canvas|bg-surface-[123]|text-fg(-muted|-subtle)?|border-line|h-control-(sm|md|lg)|shadow-float|py-section)\b'
+    match: contains
+  - type: regex
+    name: no-raw-palette
+    pattern: 'class="[^"]*\b(bg|text|border|from|to|via)-(slate|gray|zinc|neutral|stone|blue|indigo|violet|purple|sky)-\d{2,3}\b'
+    match: not_contains
+  # Binary radius: square, or rounded-pill only.
+  - type: regex
+    name: no-rounded-corners
+    pattern: 'class="[^"]*\brounded(-(xs|sm|md|lg|xl|2xl|3xl|4xl|control|card|panel))?(?=[\s"])'
+    match: not_contains
+  - type: llm
+    name: composition-and-accent
+    criteria: |
+      Pass if, in the code shown, at most ONE tier or button uses the accent fill or glow (the
+      others are neutral), there is no gradient background or gradient text, no emoji, no arrow
+      suffix on every button, and the section is not simply everything centered. Judge only these
+      points; ignore other style choices.

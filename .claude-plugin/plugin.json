@@ -1,0 +1,9 @@
+{
+  "name": "litt-md",
+  "displayName": "litt.md",
+  "description": "litt.md: Nick's design language and taste for web and product UI, motion and interaction, plus interview, audit and journal workflows that keep developing it.",
+  "author": { "name": "Nick", "url": "https://github.com/litterthanlit" },
+  "homepage": "https://github.com/litterthanlit/litt.md",
+  "repository": "https://github.com/litterthanlit/litt.md",
+  "keywords": ["design", "taste", "design-language", "ui", "motion", "tokens"]
+}

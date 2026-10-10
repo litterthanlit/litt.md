@@ -1,0 +1,7 @@
+# packaged skill zips (python -m scripts.package_skill ...)
+dist/
+# audit screenshots and raw extracts; only the written findings are kept
+captures/
+.DS_Store
+node_modules/
+evals/results/

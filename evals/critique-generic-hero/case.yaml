@@ -1,0 +1,27 @@
+schema_version: "1.0"
+name: critique-generic-hero
+description: A critique request should load litt-md and flag the generic-AI tells.
+tags: [trigger, critique]
+runs: 1
+execution:
+  prompt: |
+    Critique this hero I'm considering: everything centered, a purple-to-blue gradient background,
+    Inter at 64px with the word "faster" in gradient text, three equal feature cards with emoji icons
+    below, two buttons that both say "Get started →" and "Learn more →", and cards that lift with a big
+    drop shadow and a springy bounce on hover.
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - type: tool_used
+    name: loads-litt-md
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?litt-md"'
+    min: 1
+  - type: llm
+    name: flags-the-tells
+    criteria: |
+      Pass if the critique flags most of: the purple-blue gradient and gradient text, centered
+      everything, three equal emoji cards, arrow suffixes on every button, Inter instead of Geist,
+      the visible drop shadow and the springy hover motion. It should give no more than about three
+      ranked fixes expressed in litt.md terms (e.g. light source from the top, one accent fill,
+      asymmetric layout, 120ms ease-out), not just generic advice.

@@ -1,0 +1,12 @@
+{
+  "name": "litt",
+  "description": "Nick's personal Claude Code marketplace: the litt.md design language and taste skill.",
+  "owner": { "name": "Nick", "url": "https://github.com/litterthanlit" },
+  "plugins": [
+    {
+      "name": "litt-md",
+      "source": "./",
+      "category": "design"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+schema_version: "1.0"
+name: log-reaction
+description: A taste reaction should load litt-md and produce a journal entry in the right format.
+tags: [trigger, evolve]
+runs: 1
+execution:
+  prompt: |
+    Ugh, I hate the springy bounce on the card hovers in that last design. Feels like 2019 Dribbble. Log it.
+  max_turns: 10
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - type: tool_used
+    name: loads-litt-md
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?litt-md"'
+    min: 1
+  - type: llm
+    name: journal-entry-format
+    criteria: |
+      Pass if the answer produces (or appends) one journal entry in the litt.md format
+      "date · area · subject · verdict · why · rule candidate · status · source", with area motion
+      (or interaction), a dislike/hate verdict, the user's own reason ("feels like 2019 Dribbble")
+      as the why, status open, and source chat. Since the skill folder is not a writable git
+      checkout here, a paste-ready block is the correct behaviour.

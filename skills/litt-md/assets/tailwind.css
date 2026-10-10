@@ -1,0 +1,143 @@
+/* ==========================================================================
+   litt.md × Tailwind v4
+   Usage: copy tokens.css and this file into your project and import this one
+   as your main stylesheet (or paste its contents into your existing entry CSS).
+
+   - Prefer token utilities (bg-canvas, text-fg-muted, border-line). They
+     switch theme on their own, nested sections included. Reach for dark:
+     only for genuinely different layouts.
+   - If you do use dark:, set data-theme on <html> before first paint
+     (inline head script), because the variant keys off the attribute.
+   ========================================================================== */
+
+@import "tailwindcss";
+@import "./tokens.css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Opt-in strict mode for new projects: uncomment to delete Tailwind's default
+   palette, radii and weights, so off-system values (bg-blue-500, rounded-lg,
+   font-semibold) don't exist.
+@theme {
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --font-weight-*: initial;
+  --font-weight-normal: 400;
+}
+*/
+
+/* `inline` matters: it makes utilities read the variables where they're used,
+   so nested [data-theme] sections switch correctly. */
+@theme inline {
+  /* Color */
+  --color-canvas: var(--canvas);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-line-control: var(--line-control);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-fg-disabled: var(--fg-disabled);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-tint: var(--accent-tint);
+  --color-focus: var(--focus);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  /* Type: each size carries its own leading and tracking (P6).
+     font-sans / font-mono need no mapping here. tokens.css declares
+     --font-sans and --font-mono unlayered, so it wins over Tailwind's defaults.
+     The same rule makes the control, radius, shadow and container keys below safe: Tailwind's
+     layered copy loses to the unlayered value in tokens.css. */
+  --text-display: var(--type-display-size);
+  --text-display--line-height: var(--type-display-leading);
+  --text-display--letter-spacing: var(--type-display-tracking);
+  --text-display--font-weight: var(--weight);
+
+  --text-h1: var(--type-h1-size);
+  --text-h1--line-height: var(--type-h1-leading);
+  --text-h1--letter-spacing: var(--type-h1-tracking);
+  --text-h1--font-weight: var(--weight);
+
+  --text-h2: var(--type-h2-size);
+  --text-h2--line-height: var(--type-h2-leading);
+  --text-h2--letter-spacing: var(--type-h2-tracking);
+  --text-h2--font-weight: var(--weight);
+
+  --text-h3: var(--type-h3-size);
+  --text-h3--line-height: var(--type-h3-leading);
+  --text-h3--letter-spacing: var(--type-h3-tracking);
+  --text-h3--font-weight: var(--weight);
+
+  --text-h4: var(--type-h4-size);
+  --text-h4--line-height: var(--type-h4-leading);
+  --text-h4--letter-spacing: var(--type-h4-tracking);
+  --text-h4--font-weight: var(--weight);
+
+  --text-reading: var(--type-reading-size);
+  --text-reading--line-height: var(--type-reading-leading);
+  --text-reading--letter-spacing: var(--type-reading-tracking);
+
+  --text-body: var(--type-body-size);
+  --text-body--line-height: var(--type-body-leading);
+  --text-body--letter-spacing: var(--type-body-tracking);
+
+  --text-small: var(--type-small-size);
+  --text-small--line-height: var(--type-small-leading);
+  --text-small--letter-spacing: var(--type-small-tracking);
+
+  --text-caption: var(--type-caption-size);
+  --text-caption--line-height: var(--type-caption-leading);
+  --text-caption--letter-spacing: var(--type-caption-tracking);
+
+  /* Layout: py-section, max-w-content, etc. */
+  --spacing-section: var(--section-y);
+  --spacing-gutter: var(--gutter);
+  /* Controls (P10): h-control-md, px-control-md, gap-control */
+  --spacing-control-sm: var(--control-sm);
+  --spacing-control-md: var(--control-md);
+  --spacing-control-lg: var(--control-lg);
+  --spacing-control-pad-sm: var(--control-pad-sm);
+  --spacing-control-pad-md: var(--control-pad-md);
+  --spacing-control-pad-lg: var(--control-pad-lg);
+  --spacing-control: var(--control-gap);
+  --container-reading: var(--container-reading);
+  --container-content: var(--container-content);
+  --container-wide: var(--container-wide);
+
+  /* Shape: binary. Square by default (no rounded-* class); rounded-pill only on
+     chips, tags, avatars, status dots and icon-only buttons. */
+  --radius-pill: var(--radius-pill);
+
+  /* Depth (P4): zero-offset glow + 1px ring, floating surfaces only.
+     shadow-glow is the accent glow, one per view (P1). */
+  --shadow-tooltip: var(--shadow-tooltip);
+  --shadow-float: var(--shadow-float);
+  --shadow-modal: var(--shadow-modal);
+  --shadow-glow: var(--glow);
+  --inset-shadow-highlight: var(--highlight);
+
+  /* Motion: every `transition` utility defaults to the litt.md timing. */
+  --ease-litt: var(--ease-out);
+  --default-transition-duration: var(--dur-instant);
+  --default-transition-timing-function: var(--ease-out);
+}
+
+@layer base {
+  html {
+    background: var(--canvas);
+    color: var(--fg-muted);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}

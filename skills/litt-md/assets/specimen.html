@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>litt.md Specimen</title>
+<meta name="description" content="The litt.md design language rendered in light and dark: type, color, material, components and motion.">
+<script>
+  /* Apply the saved theme before first paint. */
+  (function () {
+    try {
+      var t = localStorage.getItem("litt-theme");
+      if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400&family=Geist+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="./tokens.css">
+<style>
+  /* Specimen layout. Every value comes from tokens.css. */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + var(--space-6)); }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--fg-muted);
+    font-family: var(--font-sans);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-leading);
+    letter-spacing: var(--type-body-tracking);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  code, kbd, .mono { font-family: var(--font-mono); }
+
+  .skip {
+    position: absolute; left: var(--space-4); top: -100px; z-index: 100;
+    padding: var(--space-2) var(--space-4); border-radius: 0;
+    background: var(--accent); color: var(--accent-fg); font-weight: var(--weight);
+  }
+  .skip:focus { top: var(--space-4); }
+  .visually-hidden {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  .wrap { width: 100%; max-width: var(--container-wide); margin-inline: auto; padding-inline: var(--gutter); }
+
+  /* Header: glass, because it floats over content (P3) */
+  .site-header { position: sticky; top: 0; z-index: 20; }
+  .site-header .wrap { height: var(--header-h); display: flex; align-items: center; gap: var(--space-6); }
+  .mark { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg); font-weight: var(--weight); letter-spacing: -0.01em; }
+  .mark i {
+    width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--accent);
+    box-shadow: 0 0 12px 2px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
+  }
+  .nav { display: none; gap: var(--space-1); margin-left: var(--space-4); }
+  .nav a { padding: var(--space-1) var(--space-3); border-radius: 0; color: var(--fg-subtle); font-size: var(--type-small-size); transition: color var(--dur-instant) var(--ease-out), background-color var(--dur-instant) var(--ease-out); }
+  .nav a:hover { color: var(--fg); background: color-mix(in oklab, var(--fg) 6%, transparent); }
+  .header-actions { margin-left: auto; display: flex; align-items: center; gap: var(--space-3); }
+  @media (min-width: 64rem) { .nav { display: flex; } }
+
+  .k-trigger {
+    display: inline-flex; align-items: center; gap: var(--space-2); height: 32px; padding: 0 var(--space-2) 0 var(--space-3);
+    border: 0; border-radius: 0; background: color-mix(in oklab, var(--fg) 5%, transparent);
+    color: var(--fg-subtle); font: inherit; font-size: var(--type-small-size); cursor: pointer;
+    box-shadow: inset 0 0 0 1px var(--line);
+    transition: color var(--dur-instant) var(--ease-out), background-color var(--dur-instant) var(--ease-out);
+  }
+  .k-trigger:hover { color: var(--fg); background: color-mix(in oklab, var(--fg) 8%, transparent); }
+  .k-trigger span { display: none; }
+  @media (min-width: 40rem) { .k-trigger span { display: inline; } }
+
+  /* Segmented control: theme */
+  .segmented { display: inline-flex; padding: 2px; border: 0; margin: 0; border-radius: 0; background: color-mix(in oklab, var(--fg) 5%, transparent); box-shadow: inset 0 0 0 1px var(--line); }
+  .segmented label { position: relative; }
+  .segmented input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .segmented span { display: block; padding: 4px var(--space-2); border-radius: 0; font-size: var(--type-caption-size); color: var(--fg-subtle); transition: color var(--dur-instant) var(--ease-out), background-color var(--dur-instant) var(--ease-out); }
+  .segmented input:checked + span { background: var(--surface-1); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line), var(--highlight); }
+  .segmented input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+  kbd {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px;
+    border-radius: 0; background: var(--surface-2); color: var(--fg-subtle);
+    font-size: 11px; font-weight: var(--weight); line-height: 1;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+
+  /* Hero: the one light source of the page (P2) */
+  .hero { overflow: clip; }
+  .hero .wrap {
+    display: grid; gap: var(--space-16); align-items: center;
+    padding-block: var(--space-24) 0;
+  }
+  @media (min-width: 64rem) {
+    .hero .wrap { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--grid-gap); padding-block: var(--space-32) 0; }
+    .hero-copy { grid-column: 1 / span 5; }
+    .hero-visual { grid-column: 7 / span 6; }
+  }
+  .display {
+    color: var(--fg); font-size: var(--type-display-size); line-height: var(--type-display-leading);
+    letter-spacing: var(--type-display-tracking); font-weight: var(--weight);
+    text-wrap: balance;
+  }
+  .lede { margin-top: var(--space-6); max-width: 36ch; color: var(--fg-subtle); font-size: var(--type-reading-size); line-height: var(--type-reading-leading); letter-spacing: var(--type-reading-tracking); }
+  .actions { display: flex; flex-wrap: wrap; gap: var(--control-group-gap); margin-top: var(--space-8); }
+
+  /* Buttons */
+  /* Buttons (P10): one height scale shared with inputs; labels trimmed to the
+     cap height, so side padding is about equal to the vertical air. */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--control-gap);
+    height: var(--control-md); padding: 0 var(--control-pad-md); border: 0; border-radius: 0;
+    font: inherit; font-size: var(--control-text-md); font-weight: var(--weight); white-space: nowrap; cursor: pointer;
+    transition: background-color var(--dur-instant) var(--ease-out), color var(--dur-instant) var(--ease-out), transform var(--dur-instant) var(--ease-out);
+  }
+  .btn-sm { height: var(--control-sm); padding: 0 var(--control-pad-sm); font-size: var(--control-text-sm); }
+  .btn-lg { height: var(--control-lg); padding: 0 var(--control-pad-lg); font-size: var(--control-text-lg); }
+  .btn-block { width: 100%; }
+  .btn:active:not(:disabled) { transform: scale(var(--press-scale)); }
+  .btn-primary { background: var(--accent); color: var(--accent-fg); box-shadow: var(--glow), inset 0 1px 0 color-mix(in oklab, white 22%, transparent); }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: var(--surface-1); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line-strong), var(--highlight); }
+  .btn-secondary:hover { background: var(--surface-2); }
+  .btn-ghost { background: transparent; color: var(--fg-muted); }
+  .btn-ghost:hover { background: color-mix(in oklab, var(--fg) 6%, transparent); color: var(--fg); }
+  .btn:disabled { background: var(--surface-2); color: var(--fg-disabled); box-shadow: none; cursor: not-allowed; }
+
+  /* Hero visual: a raised app window with a glass command menu floating over it */
+  .hero-visual { position: relative; padding-bottom: var(--space-12); }
+  .window { overflow: hidden; }
+  .window-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); }
+  .window-bar strong { color: var(--fg); font-weight: var(--weight); font-size: var(--type-small-size); }
+  .chips { display: flex; gap: var(--space-1); }
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 var(--space-2);
+    border-radius: var(--radius-pill); background: var(--surface-2); color: var(--fg-subtle);
+    font-size: var(--type-caption-size); box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .tag .dot { width: 6px; height: 6px; border-radius: var(--radius-pill); background: currentColor; }
+  .tag.ok { color: var(--success); } .tag.warn { color: var(--warning); }
+  .rows li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); font-size: var(--type-small-size); }
+  .rows li:last-child { border-bottom: 0; }
+  .rows .name { color: var(--fg); }
+  .rows .meta { display: flex; align-items: center; gap: var(--space-3); color: var(--fg-subtle); }
+  .rows .date { font-family: var(--font-mono); font-size: var(--type-caption-size); }
+  @media (max-width: 39.99rem) { .rows .date { display: none; } }
+
+  .menu { position: absolute; right: calc(var(--space-4) * -1); bottom: 0; width: min(340px, 88%); border-radius: 0; }
+  @media (max-width: 63.99rem) { .menu { right: var(--space-4); } }
+  .menu-input { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--glass-border); color: var(--fg-subtle); font-size: var(--type-small-size); }
+  .menu-input svg { flex: none; }
+  .menu-list { padding: var(--space-2); }
+  .menu-list li { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-2) var(--space-3); border-radius: 0; color: var(--fg-muted); font-size: var(--type-small-size); }
+  .menu-list li[aria-selected="true"] { background: color-mix(in oklab, var(--fg) 7%, transparent); color: var(--fg); }
+  .menu-list .keys { display: inline-flex; gap: 4px; }
+
+  /* Sections: asymmetric 3/9 split, label column left (P7) */
+  /* --section-y is the distance BETWEEN sections: padding-top on each, bottom on the last. */
+  .section { padding-top: var(--section-y); }
+  .section:last-child { padding-bottom: var(--section-y); }
+  .section .wrap { display: grid; gap: var(--space-8); }
+  @media (min-width: 64rem) {
+    .section .wrap { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--grid-gap); }
+    .section-head { grid-column: 1 / span 3; position: sticky; top: calc(var(--header-h) + var(--space-8)); align-self: start; }
+    .section-body { grid-column: 4 / span 9; }
+  }
+  .section-head h2 { color: var(--fg); font-size: var(--type-h4-size); line-height: var(--type-h4-leading); letter-spacing: var(--type-h4-tracking); font-weight: var(--weight); }
+  .section-head p { margin-top: var(--space-2); max-width: 28ch; color: var(--fg-subtle); font-size: var(--type-small-size); line-height: var(--type-small-leading); }
+
+  /* Type specimen */
+  .type-row { display: grid; gap: var(--space-2); padding-block: var(--space-6); border-top: 1px solid var(--line); }
+  .type-row:first-child { border-top: 0; padding-top: 0; }
+  @media (min-width: 40rem) { .type-row { grid-template-columns: 1fr 200px; align-items: baseline; gap: var(--space-8); } }
+  .spec { color: var(--fg-subtle); font-family: var(--font-mono); font-size: var(--type-caption-size); line-height: var(--type-caption-leading); }
+  .spec b { display: block; color: var(--fg-muted); font-weight: var(--weight); }
+  .t-display { color: var(--fg); font-size: var(--type-display-size); line-height: var(--type-display-leading); letter-spacing: var(--type-display-tracking); font-weight: var(--weight); }
+  .t-h1 { color: var(--fg); font-size: var(--type-h1-size); line-height: var(--type-h1-leading); letter-spacing: var(--type-h1-tracking); font-weight: var(--weight); }
+  .t-h2 { color: var(--fg); font-size: var(--type-h2-size); line-height: var(--type-h2-leading); letter-spacing: var(--type-h2-tracking); font-weight: var(--weight); }
+  .t-h3 { color: var(--fg); font-size: var(--type-h3-size); line-height: var(--type-h3-leading); letter-spacing: var(--type-h3-tracking); font-weight: var(--weight); }
+  .t-h4 { color: var(--fg); font-size: var(--type-h4-size); line-height: var(--type-h4-leading); letter-spacing: var(--type-h4-tracking); font-weight: var(--weight); }
+  .t-reading { max-width: var(--measure); font-size: var(--type-reading-size); line-height: var(--type-reading-leading); letter-spacing: var(--type-reading-tracking); }
+  .t-body { max-width: var(--measure); }
+  .t-small { font-size: var(--type-small-size); line-height: var(--type-small-leading); color: var(--fg-subtle); }
+  .t-caption { font-size: var(--type-caption-size); line-height: var(--type-caption-leading); letter-spacing: var(--type-caption-tracking); color: var(--fg-subtle); }
+  .t-mono { font-family: var(--font-mono); font-size: var(--type-small-size); color: var(--fg-muted); }
+
+  /* Color: both themes side by side, each a nested [data-theme] (P8) */
+  .themes { display: grid; gap: var(--grid-gap); }
+  @media (min-width: 48rem) { .themes { grid-template-columns: 1fr 1fr; } }
+  .theme-panel { padding: var(--space-6); border-radius: 0; background: var(--canvas); color: var(--fg-muted); box-shadow: inset 0 0 0 1px var(--line); }
+  .theme-panel h3 { color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight); margin-bottom: var(--space-4); }
+  .swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+  .swatch { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+  .chip { flex: none; width: 32px; height: 32px; border-radius: 0; box-shadow: inset 0 0 0 1px var(--line); }
+  .swatch-text { min-width: 0; font-size: var(--type-caption-size); line-height: 1.35; }
+  .swatch-text b { display: block; color: var(--fg); font-weight: var(--weight); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .swatch-text span { font-family: var(--font-mono); color: var(--fg-subtle); }
+  .group-label { grid-column: 1 / -1; margin-top: var(--space-4); color: var(--fg-subtle); font-size: var(--type-caption-size); }
+  .group-label:first-child { margin-top: 0; }
+
+  /* Material tiles */
+  .materials { display: grid; gap: var(--grid-gap); }
+  @media (min-width: 40rem) { .materials { grid-template-columns: 1fr 1fr; } }
+  .tile { position: relative; overflow: hidden; min-height: 240px; padding: var(--space-6); border-radius: 0; background: var(--surface-1); box-shadow: inset 0 0 0 1px var(--line); display: flex; flex-direction: column; justify-content: flex-end; }
+  .tile h3 { position: relative; z-index: 2; color: var(--fg); font-size: var(--type-body-size); font-weight: var(--weight); }
+  .tile p { position: relative; z-index: 2; margin-top: var(--space-1); color: var(--fg-subtle); font-size: var(--type-small-size); max-width: 34ch; }
+  .tile .rule { font-family: var(--font-mono); color: var(--fg-subtle); }
+  .tile-lit { background-color: var(--canvas); }
+  .busy { position: absolute; inset: 0; padding: var(--space-6); display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-2); align-content: start; }
+  .busy span { height: 10px; border-radius: 0; background: var(--fg-subtle); opacity: .5; }
+  .busy span:nth-child(3n) { background: var(--accent); opacity: .8; }
+  .busy span:nth-child(4n+1) { grid-column: span 2; }
+  .glass-card { position: relative; z-index: 1; margin-bottom: var(--space-2); padding: var(--space-4); border-radius: 0; color: var(--fg); font-size: var(--type-small-size); }
+  .tile-grain .grain-demo { position: absolute; inset: 0 50% 0 0; background-image: var(--grain); opacity: calc(var(--grain-opacity) * 6); }
+  .tile-grain .grain-demo.actual { inset: 0 0 0 50%; opacity: var(--grain-opacity); border-left: 1px dashed var(--line); }
+  .grain-labels { position: absolute; top: var(--space-4); left: var(--space-6); right: var(--space-6); display: flex; justify-content: space-between; color: var(--fg-subtle); font-family: var(--font-mono); font-size: var(--type-caption-size); z-index: 2; }
+  .edge-demo { position: absolute; left: var(--space-6); right: var(--space-6); top: var(--space-8); height: 96px; }
+
+  /* Components */
+  .comp-grid { display: grid; gap: var(--space-12); }
+  .comp h3 { color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight); margin-bottom: var(--space-4); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--control-group-gap); }
+  .sizes { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-8); }
+  .sizes figure { display: grid; gap: var(--space-3); justify-items: start; }
+  .inline-form { display: grid; gap: var(--space-2); max-width: 560px; }
+  @media (min-width: 40rem) { .inline-form { grid-template-columns: 1fr auto; } }
+  .fields { display: grid; gap: var(--space-6); }
+  @media (min-width: 40rem) { .fields { grid-template-columns: 1fr 1fr; } }
+  .field label { display: block; margin-bottom: var(--space-2); color: var(--fg); font-size: var(--type-small-size); font-weight: var(--weight); }
+  .input {
+    width: 100%; height: var(--control-md); padding: 0 var(--control-pad-md); border: 0; border-radius: 0;
+    font-size: var(--control-text-md);
+    background: var(--surface-1); color: var(--fg); font: inherit;
+    box-shadow: inset 0 0 0 1px var(--line-control);
+    transition: box-shadow var(--dur-instant) var(--ease-out);
+  }
+  .input-lg { height: var(--control-lg); padding: 0 var(--control-pad-lg); font-size: var(--control-text-lg); }
+  .input::placeholder { color: var(--fg-subtle); }
+  .input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--focus), var(--focus-ring); }
+  .input[aria-invalid="true"] { box-shadow: inset 0 0 0 1px var(--danger); }
+  .help { margin-top: var(--space-2); color: var(--fg-subtle); font-size: var(--type-small-size); }
+  .help.error { color: var(--danger); }
+  .check { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg-muted); font-size: var(--type-small-size); cursor: pointer; }
+  .check input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+  .cards { display: grid; gap: var(--grid-gap); }
+  @media (min-width: 40rem) { .cards { grid-template-columns: 1.4fr 1fr; } }
+  .card { padding: var(--space-2); }
+  .card-cover { position: relative; height: 160px; border-radius: 0; background-color: var(--surface-2); overflow: hidden; }
+  .card-body { padding: var(--space-4) var(--space-3) var(--space-3); }
+  .card-body h4 { color: var(--fg); font-size: var(--type-body-size); font-weight: var(--weight); }
+  .card-body p { margin-top: var(--space-1); color: var(--fg-subtle); font-size: var(--type-small-size); }
+  .toast { display: inline-flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: 0; color: var(--fg); font-size: var(--type-small-size); }
+  .toast .dot { width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--success); }
+  .toast-stage { position: relative; padding: var(--space-12) var(--space-6); border-radius: 0; overflow: hidden; background: var(--surface-2); }
+  .toast-stage .busy { opacity: .7; }
+
+  /* Motion */
+  .motion { display: grid; gap: var(--grid-gap); }
+  @media (min-width: 40rem) { .motion { grid-template-columns: repeat(3, 1fr); } }
+  .m-tile { padding: var(--space-6); border: 0; border-radius: 0; background: var(--surface-1); box-shadow: inset 0 0 0 1px var(--line); color: var(--fg-muted); font: inherit; text-align: left; cursor: pointer; }
+  .m-track { position: relative; height: 32px; margin-bottom: var(--space-6); border-radius: 0; background: var(--surface-2); overflow: hidden; }
+  .m-dot { position: absolute; top: 8px; left: 8px; width: 16px; height: 16px; border-radius: 0; background: var(--fg); transition-property: transform; transition-timing-function: var(--ease-out); }
+  .m-tile:hover .m-dot, .m-tile:focus-visible .m-dot { transform: translateX(calc(var(--track-w, 200px) - 32px)); }
+  .m-tile b { display: block; color: var(--fg); font-weight: var(--weight); }
+  .m-tile span { font-size: var(--type-small-size); color: var(--fg-subtle); }
+  .m1 .m-dot { transition-duration: var(--dur-instant); }
+  .m2 .m-dot { transition-duration: var(--dur-reveal); }
+  .m3 .m-dot { transition-duration: var(--dur-panel); }
+
+  /* Rules */
+  .rules { display: grid; gap: var(--space-8) var(--grid-gap); }
+  @media (min-width: 40rem) { .rules { grid-template-columns: 1fr 1fr; } }
+  .rules li { display: grid; grid-template-columns: 32px 1fr; gap: var(--space-2); }
+  .rules .id { padding-top: 2px; color: var(--fg-subtle); font-family: var(--font-mono); font-size: var(--type-caption-size); }
+  .rules b { display: block; color: var(--fg); font-weight: var(--weight); }
+  .rules p { margin-top: var(--space-1); color: var(--fg-subtle); font-size: var(--type-small-size); }
+
+  .site-footer { padding-block: var(--space-16); border-top: 1px solid var(--line); color: var(--fg-subtle); font-size: var(--type-small-size); }
+  .site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-4); }
+  .site-footer a:hover { color: var(--fg); }
+
+  /* Command dialog: glass in the top layer */
+  dialog.cmdk {
+    position: fixed; --glass-shadow: var(--shadow-modal);
+    width: min(560px, calc(100vw - 2 * var(--gutter))); margin: 15vh auto auto; padding: 0;
+    border: 0; border-radius: 0; background: transparent; color: var(--fg-muted); overflow: visible;
+  }
+  dialog.cmdk::backdrop { background: color-mix(in oklab, var(--canvas) 55%, transparent); }
+  dialog.cmdk[open] { animation: cmdk-in var(--dur-panel) var(--ease-out); }
+  @keyframes cmdk-in { from { opacity: 0; transform: translateY(4px) scale(var(--press-scale)); } }
+  .cmdk-input { width: 100%; height: 52px; padding: 0 var(--space-4) 0 var(--space-12); border: 0; border-bottom: 1px solid var(--glass-border); background: transparent; color: var(--fg); font: inherit; font-size: var(--type-body-size); outline: none; }
+  .cmdk-field { position: relative; }
+  .cmdk-field svg { position: absolute; left: var(--space-4); top: 50%; transform: translateY(-50%); color: var(--fg-subtle); }
+  .cmdk-list { max-height: 320px; overflow: auto; padding: var(--space-2); }
+  .cmdk-list [role="option"] { display: flex; align-items: center; justify-content: space-between; padding: var(--space-2) var(--space-3); border-radius: 0; color: var(--fg-muted); font-size: var(--type-small-size); cursor: pointer; }
+  .cmdk-list [role="option"][aria-selected="true"] { background: color-mix(in oklab, var(--fg) 7%, transparent); color: var(--fg); }
+  .cmdk-empty { padding: var(--space-6) var(--space-3); color: var(--fg-subtle); font-size: var(--type-small-size); }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header litt-glass">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="litt.md, back to top"><i aria-hidden="true"></i>litt.md</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#type">Type</a>
+      <a href="#color">Color</a>
+      <a href="#material">Material</a>
+      <a href="#components">Components</a>
+      <a href="#motion">Motion</a>
+      <a href="#rules">Rules</a>
+    </nav>
+    <div class="header-actions">
+      <button class="k-trigger" type="button" data-open-cmdk aria-haspopup="dialog">
+        <span>Jump to</span><kbd aria-hidden="true">⌘K</kbd><span class="visually-hidden">Open command menu</span>
+      </button>
+      <fieldset class="segmented" aria-label="Theme">
+        <legend class="visually-hidden">Theme</legend>
+        <label><input type="radio" name="theme" value="system" checked><span>System</span></label>
+        <label><input type="radio" name="theme" value="light"><span>Light</span></label>
+        <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      </fieldset>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero litt-lit litt-grain litt-grain-fade" id="top" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div class="hero-copy">
+        <h1 class="display" id="hero-title">Precise structure, lit from above.</h1>
+        <p class="lede">litt.md is Nick's design language for web and product UI. The grid is exact, the type is one family, the neutrals are cool. Light is the only ornament.</p>
+        <div class="actions">
+          <a class="btn btn-lg btn-primary" href="#rules"><span class="litt-trim">Read the rules</span></a>
+          <a class="btn btn-lg btn-secondary" href="#color"><span class="litt-trim">See the tokens</span></a>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="Example: a project list with a glass command menu floating over it" role="img">
+        <div class="window litt-raised">
+          <div class="window-bar">
+            <strong>Projects</strong>
+            <div class="chips"><span class="tag">All</span><span class="tag">Active</span></div>
+          </div>
+          <ul class="rows">
+            <li><span class="name">litt.design v3</span><span class="meta"><span class="tag ok"><span class="dot"></span>Live</span><span class="date">2026-10-02</span></span></li>
+            <li><span class="name">Gallery identity</span><span class="meta"><span class="tag warn"><span class="dot"></span>Review</span><span class="date">2026-09-28</span></span></li>
+            <li><span class="name">Founder landing</span><span class="meta"><span class="tag"><span class="dot"></span>Draft</span><span class="date">2026-09-21</span></span></li>
+            <li><span class="name">Framer template 14</span><span class="meta"><span class="tag ok"><span class="dot"></span>Live</span><span class="date">2026-09-14</span></span></li>
+            <li><span class="name">Motion study: light</span><span class="meta"><span class="tag"><span class="dot"></span>Draft</span><span class="date">2026-09-09</span></span></li>
+            <li><span class="name">Studio site refresh</span><span class="meta"><span class="tag"><span class="dot"></span>Idea</span><span class="date">2026-09-01</span></span></li>
+          </ul>
+        </div>
+        <div class="menu litt-glass" aria-hidden="true">
+          <div class="menu-input">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.75"/><path d="m10.5 10.5 3 3" stroke-linecap="round"/></svg>
+            Jump to…
+          </div>
+          <ul class="menu-list">
+            <li aria-selected="true">Type scale <span class="keys"><kbd>↵</kbd></span></li>
+            <li>Color tokens <span class="keys"><kbd>G</kbd><kbd>C</kbd></span></li>
+            <li>Material <span class="keys"><kbd>G</kbd><kbd>M</kbd></span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="type" aria-labelledby="type-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="type-title">Type</h2>
+        <p>Geist for everything, Geist Mono for code, keys and data. Tracking tightens as size grows.</p>
+      </div>
+      <div class="section-body">
+        <div class="type-row"><p class="t-display">Inevitable.</p><p class="spec"><b>Display</b>56→72 · 1.05 · −0.03em · 400</p></div>
+        <div class="type-row"><p class="t-h1">Interfaces with intent</p><p class="spec"><b>H1</b>40 · 1.1 · −0.025em · 400</p></div>
+        <div class="type-row"><p class="t-h2">Structure carries the weight</p><p class="spec"><b>H2</b>32 · 1.15 · −0.022em · 400</p></div>
+        <div class="type-row"><p class="t-h3">Light is the only ornament</p><p class="spec"><b>H3</b>24 · 1.25 · −0.018em · 400</p></div>
+        <div class="type-row"><p class="t-h4">One idea per section</p><p class="spec"><b>H4</b>20 · 1.3 · −0.012em · 400</p></div>
+        <div class="type-row"><p class="t-reading">Reading text sits at seventeen pixels with generous leading and a sixty-five character measure, so long-form pages breathe without feeling empty. Hierarchy comes from scale and color, never weight.</p><p class="spec"><b>Reading</b>17 · 1.65 · 65ch</p></div>
+        <div class="type-row"><p class="t-body">UI body runs at fifteen pixels. It is the workhorse for interfaces: settings, lists, descriptions and dialogs.</p><p class="spec"><b>Body</b>15 · 1.55</p></div>
+        <div class="type-row"><p class="t-small">Small text for supporting detail, table cells and helper copy.</p><p class="spec"><b>Small</b>13 · 1.5</p></div>
+        <div class="type-row"><p class="t-caption">Caption for timestamps and fine print.</p><p class="spec"><b>Caption</b>12 · 1.4 · +0.01em</p></div>
+        <div class="type-row"><p class="t-mono">⌘K &nbsp; v0.1.0 &nbsp; 128px &nbsp; --surface-2</p><p class="spec"><b>Mono</b>Geist Mono 13</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="color" aria-labelledby="color-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="color-title">Color</h2>
+        <p>Cool neutrals on one hue. Each theme is designed, not inverted. Values and contrast ratios are read live from tokens.css.</p>
+      </div>
+      <div class="section-body">
+        <div class="themes">
+          <div class="theme-panel" data-theme="light"><h3>Light</h3><div class="swatches" data-swatches></div></div>
+          <div class="theme-panel" data-theme="dark"><h3>Dark</h3><div class="swatches" data-swatches></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="material" aria-labelledby="material-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="material-title">Material</h2>
+        <p>Where the boldness goes. One light source from the top, glass only when floating, edges that catch the light, a trace of grain. None of it moves.</p>
+      </div>
+      <div class="section-body">
+        <div class="materials">
+          <div class="tile tile-lit litt-lit">
+            <h3>Light source</h3>
+            <p><span class="rule">P1 P2</span> &nbsp;The accent appears as light falling from the top, tinted 12% in light and 22% in dark.</p>
+          </div>
+          <div class="tile">
+            <div class="busy" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            <div class="glass-card litt-glass">Glass blurs what it floats over.</div>
+            <h3>Glass</h3>
+            <p><span class="rule">P3</span> &nbsp;Only for header, menus, popovers, modals, toasts. Never for cards in flow.</p>
+          </div>
+          <div class="tile">
+            <div class="edge-demo litt-raised" aria-hidden="true"></div>
+            <h3>Edge highlight</h3>
+            <p><span class="rule">P4</span> &nbsp;Depth from stepped surfaces and a top highlight, not drop shadows.</p>
+          </div>
+          <div class="tile tile-grain">
+            <div class="grain-demo" aria-hidden="true"></div>
+            <div class="grain-demo actual" aria-hidden="true"></div>
+            <div class="grain-labels" aria-hidden="true"><span>6× for visibility</span><span>actual</span></div>
+            <h3>Grain</h3>
+            <p><span class="rule">P5 P8</span> &nbsp;Static noise at 2% in light, 4% in dark. It dithers gradient banding.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="components" aria-labelledby="components-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="components-title">Components</h2>
+        <p>One accent fill per view, on the primary action. Everything else is tone and hairline.</p>
+      </div>
+      <div class="section-body comp-grid">
+        <div class="comp">
+          <h3>Buttons</h3>
+          <div class="row">
+            <button class="btn btn-primary" type="button"><span class="litt-trim">Start a project</span></button>
+            <button class="btn btn-secondary" type="button"><span class="litt-trim">View work</span></button>
+            <button class="btn btn-ghost" type="button"><span class="litt-trim">Cancel</span></button>
+            <button class="btn btn-secondary" type="button" disabled><span class="litt-trim">Disabled</span></button>
+          </div>
+        </div>
+        <div class="comp">
+          <h3>Sizes</h3>
+          <div class="sizes">
+            <figure><button class="btn btn-sm btn-secondary" type="button"><span class="litt-trim">Small</span></button><figcaption class="spec">sm · 32 · pad 12 · 13</figcaption></figure>
+            <figure><button class="btn btn-secondary" type="button"><span class="litt-trim">Medium</span></button><figcaption class="spec">md · 44 · pad 16 · 15</figcaption></figure>
+            <figure><button class="btn btn-lg btn-secondary" type="button"><span class="litt-trim">Large</span></button><figcaption class="spec">lg · 56 · pad 24 · 16</figcaption></figure>
+          </div>
+        </div>
+        <div class="comp">
+          <h3>Inline form</h3>
+          <form class="inline-form" aria-label="Start a project" novalidate>
+            <label class="visually-hidden" for="f-inline">Work email</label>
+            <input class="input input-lg" id="f-inline" type="email" placeholder="you@studio.com" autocomplete="email">
+            <button class="btn btn-lg btn-primary" type="submit"><span class="litt-trim">Start a project</span></button>
+          </form>
+          <p class="help" id="f-inline-status" role="status"></p>
+        </div>
+        <div class="comp">
+          <h3>Fields</h3>
+          <div class="fields">
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input class="input" id="f-email" type="email" placeholder="you@studio.com" aria-describedby="f-email-help">
+              <p class="help" id="f-email-help">We reply within a day.</p>
+            </div>
+            <div class="field">
+              <label for="f-budget">Budget</label>
+              <input class="input" id="f-budget" type="text" value="12k" aria-invalid="true" aria-describedby="f-budget-help">
+              <p class="help error" id="f-budget-help">Enter an amount in dollars, for example 12000.</p>
+            </div>
+          </div>
+          <div class="row" style="margin-top: var(--space-6)">
+            <label class="check"><input type="checkbox" checked> Include motion study</label>
+            <label class="check"><input type="checkbox"> Send me the template</label>
+          </div>
+        </div>
+        <div class="comp">
+          <h3>Cards and tags</h3>
+          <div class="cards">
+            <article class="card litt-raised">
+              <div class="card-cover litt-lit litt-grain" aria-hidden="true"></div>
+              <div class="card-body">
+                <h4>Gallery identity</h4>
+                <p>Identity and site for a contemporary art space.</p>
+                <div class="row" style="margin-top: var(--space-3)"><span class="tag">Brand</span><span class="tag">Web</span></div>
+              </div>
+            </article>
+            <div class="toast-stage">
+              <div class="busy" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="toast litt-glass" role="status"><span class="dot" aria-hidden="true"></span>Changes saved <kbd aria-hidden="true">⌘Z</kbd></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="motion" aria-labelledby="motion-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="motion-title">Motion</h2>
+        <p>Invisible and fast. Ease-out, transform and opacity only, 240ms ceiling. Reduced motion sets every duration to zero.</p>
+      </div>
+      <div class="section-body">
+        <div class="motion">
+          <button class="m-tile m1" type="button"><div class="m-track"><div class="m-dot"></div></div><b>120ms</b><span>Hover and press</span></button>
+          <button class="m-tile m2" type="button"><div class="m-track"><div class="m-dot"></div></div><b>160ms</b><span>Tooltips, dropdowns</span></button>
+          <button class="m-tile m3" type="button"><div class="m-track"><div class="m-dot"></div></div><b>200ms</b><span>Panels, modals, ⌘K</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="rules" aria-labelledby="rules-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="rules-title">Rules</h2>
+        <p>The ten signature rules. Each one is checkable; the critique workflow scores against them.</p>
+      </div>
+      <div class="section-body">
+        <ol class="rules">
+          <li><span class="id">P1</span><div><b>Light, not paint</b><p>The accent shows up as light. At most one flat accent fill per view.</p></div></li>
+          <li><span class="id">P2</span><div><b>One light source</b><p>Light comes from the top. Highlights on top edges, glows never contradict.</p></div></li>
+          <li><span class="id">P3</span><div><b>Glass is earned</b><p>Only floating surfaces are glass. Cards in flow are solid.</p></div></li>
+          <li><span class="id">P4</span><div><b>Depth without drop shadows</b><p>Cards stay flat. Floating surfaces get a zero-offset glow and a 1px ring.</p></div></li>
+          <li><span class="id">P5</span><div><b>Material is static</b><p>Glow, grain and gradients never animate.</p></div></li>
+          <li><span class="id">P6</span><div><b>Precision</b><p>8px grid, 1px hairlines, tracking tightens with size.</p></div></li>
+          <li><span class="id">P7</span><div><b>Airy rhythm</b><p>One idea per section, 128/96/64 spacing, asymmetric by default.</p></div></li>
+          <li><span class="id">P8</span><div><b>Designed, not inverted</b><p>Each theme has its own material values.</p></div></li>
+          <li><span class="id">P9</span><div><b>One weight</b><p>Everything at 400. Hierarchy comes from size, color and tracking.</p></div></li>
+          <li><span class="id">P10</span><div><b>Roomy controls</b><p>Buttons and inputs share 32 / 44 / 56. Padding equals the air around the label.</p></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>litt.md v0.1, October 2026</span>
+    <a href="https://github.com/litterthanlit/litt.md">github.com/litterthanlit/litt.md</a>
+  </div>
+</footer>
+
+<dialog class="cmdk litt-glass" aria-label="Command menu">
+  <div class="cmdk-field">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="4.75"/><path d="m10.5 10.5 3 3" stroke-linecap="round"/></svg>
+    <input class="cmdk-input" type="text" placeholder="Jump to a section…" role="combobox" aria-expanded="true" aria-controls="cmdk-list" aria-autocomplete="list" autocomplete="off">
+  </div>
+  <div class="cmdk-list" id="cmdk-list" role="listbox" aria-label="Sections"></div>
+</dialog>
+
+<script>
+(function () {
+  var root = document.documentElement;
+
+  /* Theme control */
+  var radios = document.querySelectorAll('input[name="theme"]');
+  var current = root.getAttribute("data-theme") || "system";
+  radios.forEach(function (r) {
+    r.checked = r.value === current;
+    r.addEventListener("change", function () {
+      if (r.value === "system") root.removeAttribute("data-theme");
+      else root.setAttribute("data-theme", r.value);
+      try { localStorage.setItem("litt-theme", r.value); } catch (e) {}
+    });
+  });
+
+  /* Swatches: values and contrast are read from tokens.css, never hard-coded */
+  var groups = [
+    ["Surfaces", ["canvas", "surface-1", "surface-2", "surface-3"]],
+    ["Lines", ["line", "line-strong", "line-control", "focus"]],
+    ["Text", ["fg", "fg-muted", "fg-subtle", "fg-disabled"]],
+    ["Accent and status", ["accent", "accent-tint", "success", "danger"]]
+  ];
+  function rgb(hex) {
+    hex = hex.replace("#", "");
+    if (hex.length === 3) hex = hex.split("").map(function (c) { return c + c; }).join("");
+    return [0, 2, 4].map(function (i) { return parseInt(hex.slice(i, i + 2), 16) / 255; });
+  }
+  function lum(hex) {
+    var c = rgb(hex).map(function (v) { return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function ratio(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  document.querySelectorAll("[data-swatches]").forEach(function (box) {
+    var cs = getComputedStyle(box);
+    var canvas = cs.getPropertyValue("--canvas").trim();
+    groups.forEach(function (g) {
+      var label = document.createElement("p");
+      label.className = "group-label";
+      label.textContent = g[0];
+      box.appendChild(label);
+      g[1].forEach(function (name) {
+        var val = cs.getPropertyValue("--" + name).trim();
+        var note = val.toUpperCase();
+        if (/^fg|^line-control$|^focus$|^accent$|^success$|^danger$/.test(name) && name !== "fg-disabled" && /^#/.test(val)) {
+          note += "  " + ratio(val, canvas).toFixed(1) + ":1";
+        }
+        var el = document.createElement("div");
+        el.className = "swatch";
+        el.innerHTML = '<span class="chip" style="background: var(--' + name + ')"></span><span class="swatch-text"><b>--' + name + '</b><span></span></span>';
+        el.querySelector(".swatch-text span").textContent = note;
+        box.appendChild(el);
+      });
+    });
+  });
+
+  /* Motion tiles: measure the track so the dot travels the full width */
+  function sizeTracks() {
+    document.querySelectorAll(".m-track").forEach(function (t) { t.parentElement.style.setProperty("--track-w", t.clientWidth + "px"); });
+  }
+  sizeTracks();
+  window.addEventListener("resize", sizeTracks);
+
+  /* Command menu: native <dialog> (top layer), combobox + listbox pattern */
+  var dlg = document.querySelector("dialog.cmdk");
+  var input = dlg.querySelector(".cmdk-input");
+  var list = dlg.querySelector(".cmdk-list");
+  var items = [
+    ["Type", "#type"], ["Color", "#color"], ["Material", "#material"],
+    ["Components", "#components"], ["Motion", "#motion"], ["Rules", "#rules"]
+  ];
+  var active = 0, shown = [];
+  function render() {
+    var q = input.value.trim().toLowerCase();
+    shown = items.filter(function (i) { return i[0].toLowerCase().indexOf(q) !== -1; });
+    active = Math.min(active, Math.max(shown.length - 1, 0));
+    list.innerHTML = "";
+    if (!shown.length) {
+      var empty = document.createElement("p");
+      empty.className = "cmdk-empty";
+      empty.textContent = "No section matches “" + input.value + "”.";
+      list.appendChild(empty);
+      input.removeAttribute("aria-activedescendant");
+      return;
+    }
+    shown.forEach(function (it, i) {
+      var o = document.createElement("div");
+      o.id = "cmdk-opt-" + i;
+      o.setAttribute("role", "option");
+      o.setAttribute("aria-selected", i === active ? "true" : "false");
+      o.innerHTML = "<span></span>" + (i === active ? "<kbd aria-hidden=\"true\">↵</kbd>" : "");
+      o.firstChild.textContent = it[0];
+      o.addEventListener("mousemove", function () { if (active !== i) { active = i; render(); } });
+      o.addEventListener("click", function () { go(i); });
+      list.appendChild(o);
+    });
+    input.setAttribute("aria-activedescendant", "cmdk-opt-" + active);
+  }
+  function go(i) { var it = shown[i]; if (!it) return; dlg.close(); location.hash = it[1]; }
+  function open() { input.value = ""; active = 0; render(); dlg.showModal(); input.focus(); }
+  document.querySelectorAll("[data-open-cmdk]").forEach(function (b) { b.addEventListener("click", open); });
+  document.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); dlg.open ? dlg.close() : open(); }
+  });
+  input.addEventListener("input", function () { active = 0; render(); });
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown") { e.preventDefault(); active = (active + 1) % Math.max(shown.length, 1); render(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); active = (active - 1 + shown.length) % Math.max(shown.length, 1); render(); }
+    else if (e.key === "Enter") { e.preventDefault(); go(active); }
+  });
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+
+  /* Inline form demo: this is a specimen, so nothing is sent. */
+  var inlineForm = document.querySelector(".inline-form");
+  inlineForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    document.getElementById("f-inline-status").textContent = "This is a specimen, so nothing was sent.";
+  });
+})();
+</script>
+</body>
+</html>
