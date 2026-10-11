@@ -7,7 +7,7 @@ Use this when building or restyling anything visual: a page, section, component,
 1. **Nick's words in this session win.** If they ask for something the profile forbids (a serif, a centered hero), do it, and offer to log it as a journal entry (it may be taste changing).
 2. **An existing project system comes next.** If the project already has tokens or a design system, map litt.md onto it (its colors, its components) rather than replacing it. Apply litt.md's *rules* (the P# rules in `taste/profile.md`) within that system.
 3. **Know the target.** Ask if it isn't obvious:
-   - **Code (Tailwind v4):** copy `assets/tokens.css` and `assets/tailwind.css` into the project and import `tailwind.css`. Use token utilities (`bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `px-control-pad-md`, `shadow-float`, `py-section`). Leave corners square (no `rounded-*` class); `rounded-pill` only for chips, tags and avatars.
+   - **Code (Tailwind v4):** copy `assets/tokens.css` and `assets/tailwind.css` into the project and import `tailwind.css`. Use token utilities (`bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `px-control-pad-md`, `shadow-float`, `py-section`). Radius: `rounded-control` on buttons and inputs, `rounded-surface` on cards, menus, dialogs and toasts, `rounded-pill` only on chips, tags, avatars and status dots. No other `rounded-*`.
    - **Code (plain CSS or another framework):** copy `assets/tokens.css` and use the variables and `.litt-*` primitives.
    - **Framer:** read `system/framer.md` and work in Framer terms (color styles, text styles, stacks, tween presets).
 4. **Client work or Litt's own?** Open question Q6 asks whether the full light-and-material signature applies to client work. Until it's answered, ask Nick the first time on any client project, then log the answer.
@@ -46,13 +46,14 @@ Go through the plan line by line. If any item matches, revise that line before b
 - [ ] An accent bar or rail on cards; an arrow suffix on every link
 - [ ] The same uppercase mono eyebrow over every section
 - [ ] One accent-colored word in the headline
-- [ ] Rounded corners (`rounded-lg`, `rounded-md`, any radius other than square or pill)
+- [ ] A radius off the scale (`rounded-lg`, `rounded-md`, anything but control, surface or pill)
 - [ ] A drop shadow with an offset, or any shadow on a card in the flow
 - [ ] Buttons off the 32/44/56 scale, or a hero/form CTA smaller than lg
 - [ ] Any font weight above 400 (`font-medium`, `font-semibold`, `font-bold`, or 500/600 in CSS)
 - [ ] More than one accent fill or glow per view
 - [ ] Glass on something that doesn't float
 - [ ] Motion that isn't a response to the user (reveals, parallax, marquee)
+- [ ] Bounce on the responsive tier or on an exit, `transition-all`, or a second expressive moment
 - [ ] Nothing in the design is specific to this subject
 
 Then ask: **"If I removed the light and material, would this still look like every other dark SaaS page?"** If it would, the signature is decorative, not structural. Move the light so it lands on the content that matters.
@@ -62,9 +63,9 @@ Then ask: **"If I removed the light and material, would this still look like eve
 - **Semantic HTML first:** `header`, `nav`, `main`, `section` with `aria-labelledby`, `button` versus `a` used correctly, and `dialog` for modals.
 - **Mobile-first:** start at 390px, then 640, then 1024. Check that nothing scrolls horizontally.
 - **Primitives:** `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-glass`, `.litt-raised`. Component specs are in `system/components.md`, and working code is in `assets/specimen.html`.
-- **Spacing** only from the scale. **Radius** square, or pill for chips, tags and avatars. **Controls** only from the 32/44/56 scale. **Color** only from tokens. Never write a hex value in a component.
-- **Motion** only through the `--dur-*` and `--ease-out` variables, so reduced motion keeps working.
-- **Performance:** lazy-load images below the fold (`loading="lazy"`), set explicit width and height on media, animate only opacity and transform, keep glass to a few elements per screen, and never put blend modes on fixed layers.
+- **Spacing** only from the scale. **Radius** control (4), surface (8) or pill. **Controls** only from the 32/44/56 scale. **Color** only from tokens. Never write a hex value in a component.
+- **Motion** only through the tier tokens: `--dur-instant` with `--ease-out`, `--dur-responsive` with `--ease-responsive`, `--dur-expressive` with `--ease-expressive`, exits on `--dur-exit-*` with `--ease-out`, plus `--stagger` and `--travel`, so reduced motion keeps working.
+- **Performance:** lazy-load images below the fold (`loading="lazy"`), set explicit width and height on media, animate only opacity and transform (color fades at instant), keep glass to a few elements per screen, and never put blend modes on fixed layers.
 
 ## 4. Self-critique
 

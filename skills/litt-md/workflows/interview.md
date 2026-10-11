@@ -51,7 +51,7 @@ Use these as starting points. Adapt the previews to Nick's current work.
 
 **Motion and interaction**
 12. Hover feedback: fill change / text color only / underline / subtle 1px lift
-13. Page transitions: none (instant) / 120ms crossfade / shared-element morph within 240ms
+13. Page transitions: none (instant) / 100ms crossfade (instant tier) / shared-element morph on the responsive spring
 14. Command menu (⌘K): on every product / only on content-heavy sites / never on marketing sites
 
 **Layout**

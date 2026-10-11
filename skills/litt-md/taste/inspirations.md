@@ -47,7 +47,7 @@ Each entry is an audited reference: what to take from it and what to leave. Entr
 **What it is:** a design tool with an editorial, warm-on-black site.
 **Measured:** unmeasured. Notes say a `#080808` background, cream text `#f0efe4`, a 796px content width, and a 24px dot grid at 7% opacity.
 **Steal:**
-- A narrow measure for long-form text (→ `--measure` at 65ch, `--container-prose`).
+- A narrow measure for long-form text (→ `--measure` at 65ch, `--container-reading`).
 - Texture as a quiet material layer. The dot grid is a cousin of grain, so it may be a P5-compatible alternative and is worth testing.
 **Reject:**
 - Warm cream text, because the neutrals are cool.

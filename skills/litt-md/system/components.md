@@ -1,14 +1,14 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` holds a working implementation of each one, so copy from there. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the litt-ui gallery. Tooltip, tabs, modal, tables and empty and loading states are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Checkbox and radio · Segmented control · Tag · Kbd · Card · Glass header · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Empty and loading states
+Button · Input · Checkbox and radio · Segmented control · Tabs · Tag · Kbd · Card · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Empty and loading states
 
 ---
 
 ## Button
-Square. Three sizes on the shared control scale (P10); the label is wrapped in `.litt-trim` so the padding equals the visible air:
+`--radius-control`. Three sizes on the shared control scale (P10); the label is wrapped in `.litt-trim` so the padding equals the visible air:
 
 | Size | Height | Side padding | Label | Use |
 |---|---|---|---|---|
@@ -16,7 +16,7 @@ Square. Three sizes on the shared control scale (P10); the label is wrapped in `
 | md | `--control-md` 44 | `--control-pad-md` 16 | 15 | Default |
 | lg | `--control-lg` 56 | `--control-pad-lg` 24 | 16 | Hero CTAs and the submit in a form; full width in narrow forms |
 
-Weight 400 at every size, no tracking. The transition covers background-color and color at `--dur-instant`. Press is `scale(var(--press-scale))`. Grouped buttons sit `--control-group-gap` (12) apart.
+Weight 400 at every size, no tracking. Hover changes the fill and color, and press scales to `--press-scale`, both on the instant tier (`--dur-instant`, `--ease-out`). The box never moves. Grouped buttons sit `--control-group-gap` (12) apart.
 
 | Variant | Fill | Text | Edge | Use |
 |---|---|---|---|---|
@@ -30,7 +30,7 @@ Weight 400 at every size, no tracking. The transition covers background-color an
 - **No arrow suffix by default.** An arrow is allowed only when the button navigates away from the site.
 
 ## Input
-Square, on the same control scale as buttons: `--control-md` (44, padding 16, 15px text) by default, `--control-lg` (56, padding 24, 16px) next to an lg button, `--control-sm` (32) in tables and toolbars. Background `--surface-1`, text `--fg`, placeholder `--fg-subtle`. The edge is `inset 0 0 0 1px var(--line-control)`.
+`--radius-control`, on the same control scale as buttons: `--control-md` (44, padding 16, 15px text) by default, `--control-lg` (56, padding 24, 16px) next to an lg button, `--control-sm` (32) in tables and toolbars. Background `--surface-1`, text `--fg`, placeholder `--fg-subtle`. The edge is `inset 0 0 0 1px var(--line-control)`.
 - **Inline form:** an lg input and an lg primary button side by side (`1fr auto`, `--space-2` apart), stacking full width below 640px.
 - **Focus:** edge `--focus` plus `--focus-ring`. Remove the default outline only when you replace it this way.
 - **Error:** edge `--danger`, set `aria-invalid="true"`, and add help text in `--danger` linked with `aria-describedby`. The message says how to fix it.
@@ -38,47 +38,73 @@ Square, on the same control scale as buttons: `--control-md` (44, padding 16, 15
 - **Help text:** `--type-small-size` in `--fg-subtle`, `--space-2` below.
 
 ## Checkbox and radio
-Native inputs at 16px with `accent-color: var(--accent)`. The label is on the right, `--space-2` gap, `--type-small-size`. The whole label is clickable.
+Native inputs at 16px with `accent-color: var(--accent)`. A drawn checkbox is a 20px chip at `--radius-control`. The label is on the right, `--space-2` gap, `--type-small-size`. The whole label is clickable.
 
 ## Segmented control
-A square track with fill at fg 5%, an inset `--line` edge and 2px padding. Each segment is caption size in `--fg-subtle`. The selected segment gets `--surface-1`, `--fg`, an inset `--line` and `--highlight`. Build it from `fieldset` and radio inputs, with a visually hidden legend.
+A `--radius-surface` track with fill at fg 5%, an inset `--line` edge and 4px (`--space-1`) padding, so the segments inside it, at `--radius-control`, stay concentric. Each segment is caption size in `--fg-subtle`. The selected segment gets `--surface-1`, `--fg`, an inset `--line` and `--highlight`. Build it from `fieldset` and radio inputs, with a visually hidden legend.
+
+## Tabs
+Underline or segmented. Use the ARIA tabs pattern (`tablist`, `tab`, `tabpanel`); arrow keys move between tabs.
+- **Indicator:** slides to the picked tab (transform, responsive tier).
+- **Label:** changes color only, on the instant tier.
+- **Panel:** fades in from the side of the picked tab (opacity plus a short translate, responsive tier).
 
 ## Tag
 24px tall, `--radius-pill`, `--surface-2` fill, inset `--line`, caption size in `--fg-subtle`. A status tag colors the text and a 6px dot with the status color, never the fill.
 
 ## Kbd
-`--font-mono` at 11px and weight 400, a square 20px chip, `--surface-2`, inset `--line`. Use it for real shortcuts only.
+`--font-mono` at 11px and weight 400, a 20px chip at `--radius-control`, `--surface-2`, inset `--line`. Use it for real shortcuts only.
 
 ## Card
-`.litt-raised`: square, `--surface-1`, inset `--line`, `--highlight`, and no outer shadow (P4). Padding `--space-6` (or `--space-2` around a cover, then `--space-4`/`--space-3` for the body).
-- A cover is square, optionally `.litt-lit .litt-grain` as the card's own top light.
+`.litt-raised`: `--radius-surface`, `--surface-1`, inset `--line`, `--highlight`, and no outer shadow (P4). Padding `--space-6` (or `--space-1` around a cover, then `--space-4` above and at the sides and `--space-3` below for the body).
+- A cover is `--radius-control` when the card pads it by 4px, and takes the card's `--radius-surface` when full-bleed. Optionally `.litt-lit .litt-grain` as the card's own top light.
 - Hover (when the card links somewhere): the fill moves one step (`--surface-2`). No lift, no shadow growth, no scale.
 - Cards are never glass (P3), never have an accent rail, and are not the default layout for features.
 
 ## Glass header
 Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
 - Order: wordmark → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
+- It is full-bleed, so it sets `border-radius: 0` (`.litt-glass` carries the surface radius).
 - On mobile, hide the nav behind the command menu or a menu button. Don't squeeze it.
 
+## Tooltip
+Solid, not glass, with `--shadow-tooltip`, `--radius-control` and small type in `--fg`.
+- **Delay:** opens after a 200ms hover delay, and at once on focus.
+- **Motion:** responsive tier. It grows from the trigger from `--press-scale` (0.98) and travels in a quarter of `--travel` from the side it renders on.
+- **Exit:** `--dur-exit-responsive` with `--ease-out`.
+
 ## Command menu
-A native `<dialog>` in the top layer, `.litt-glass` with `--glass-shadow: var(--shadow-modal)`, square, max width 560px, 15vh from the top.
+A native `<dialog>` in the top layer, `.litt-glass` with `--glass-shadow: var(--shadow-modal)`, `--radius-surface`, max width 560px, 15vh from the top.
 - **Input:** 52px tall, 16px search icon in `--fg-subtle`, no visible border except a bottom `--glass-border`.
-- **Rows:** small size, square, padding `--space-2`/`--space-3`. The selected row gets an fg-7% fill and `--fg`, plus a `↵` kbd hint.
-- **Behavior:** the combobox + listbox pattern (`aria-activedescendant`); ArrowUp and ArrowDown move, Enter selects, Esc closes (native), and a backdrop click closes.
-- **Motion:** enters over `--dur-panel` with opacity, 4px translate and scale 0.98. No exit animation needed.
+- **Rows:** small size, `--radius-control`, padding `--space-2`/`--space-3`, in a list padded `--space-1` so the corners stay concentric. The lit row gets an fg-7% fill and `--fg`, plus a `↵` kbd hint.
+- **Behavior:** the combobox + listbox pattern (`aria-activedescendant`). The first enabled row is always lit. ArrowUp and ArrowDown move, wrap and skip disabled rows. Enter fires only on the lit row. Esc clears the query first, then closes. A backdrop click closes.
+- **Filtering:** typing changes the list instantly, in the original order, and the panel never animates its height. The empty state says nothing matches and drops the Enter hint.
+- **Motion:** responsive tier. It drops in over a dimmed canvas (`--dur-responsive`, `--ease-responsive`) with opacity, a quarter of `--travel` and `--press-scale`, and leaves on `--dur-exit-responsive`. One gliding highlight (transform, responsive) follows the lit row. The specimen shows the entrance and a per-row fill; the glide is built in the gallery.
 - Open with ⌘K or Ctrl+K and a visible trigger button.
 
 ## Popover and dropdown
-Glass with `--shadow-float`, square, padding `--space-1`, rows as in the command menu. Positioned in the top layer (`popover` attribute) or a portal. Enter over `--dur-reveal` with opacity and 4px translate from the anchor side. Exit over `--dur-exit-reveal`.
+Glass with `--shadow-float`, `--radius-surface`, padding `--space-1`, rows at `--radius-control` as in the command menu. Positioned in the top layer (`popover` attribute) or a portal.
+- **Motion:** responsive tier. It grows from the trigger's corner from `--press-scale` (0.98) and slides a quarter of `--travel`. One gliding highlight (transform, responsive) follows the lit row. Exit on `--dur-exit-responsive`.
+- **Open:** a pointer open lights nothing until the pointer moves. A keyboard open (Enter or ArrowDown) lights the first row with a focus ring.
+- **Submenus** are solid, because glass never sits on glass.
+- **Checkbox and radio rows** keep the check in a fixed 16px cell, so labels never shift, and the menu stays open while options change.
+- **Edges:** near the bottom edge the menu flips up, and the entrance follows the side it opens on.
 
 ## Modal
-Square glass panel with `--glass-shadow: var(--shadow-modal)`, padding `--space-8`, max width 480px (forms) or 640px. The title is `--type-h4` in `--fg`. Actions sit bottom right: primary last, secondary or ghost before it. The backdrop tint is `color-mix(in oklab, var(--canvas) 55%, transparent)`.
+Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, padding `--space-8`, max width 480px (forms) or 640px. The title is `--type-h4` in `--fg`. Actions sit bottom right: primary last, secondary or ghost before it. The backdrop tint is `color-mix(in oklab, var(--canvas) 55%, transparent)`.
+- **Motion:** the view's expressive moment: placed, not thrown. It rises by `--travel` and settles from `--press-scale` (0.98), and may bounce slightly (`--dur-expressive`, `--ease-expressive`). If the view has already used its expressive moment, the dialog uses the responsive tier.
+- **Exit:** `--dur-exit-expressive` with `--ease-out`. It never bounces.
 
 ## Toast
-Square glass with `--shadow-float`, padding `--space-3`/`--space-4`, small size in `--fg`, an 8px status dot. Bottom right on desktop, bottom center on mobile. `role="status"` (or `alert` for errors). Auto-dismiss after 5s, but never for errors. An undo action sits on the right as a ghost button or kbd hint.
+Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-4`, small size in `--fg`, an 8px status dot. Bottom right on desktop, bottom center on mobile. `role="status"` (or `alert` for errors). Auto-dismiss after 5s, but never for errors. An undo action sits on the right as a ghost button or kbd hint.
+- **Motion:** it arrives from just below its corner and settles. That is the expressive tier when the toast is the view's moment, otherwise the responsive tier. It leaves sideways by the same small distance, on the exit token for its tier.
+- **Stacking:** older toasts stack behind the newest and open into a list on hover or focus.
 
 ## Table and list rows
 Rows are separated by 1px `--line`, padding `--space-3`/`--space-4`, small size. The primary cell is `--fg`; the rest are `--fg-subtle`. Numbers and dates use `--font-mono` caption size, right-aligned. Hover is an fg-4% fill. A sticky header row is caption size in `--fg-subtle`, sentence case.
+- **Hover:** the fg-4% fill is for airy lists (project rows, tables). Dense lists (menus, the command menu) use the gliding highlight. Hover never moves anything.
+- **Entrance:** rows and raised cards arrive in one staggered cascade (`--stagger`, `--travel`, expressive tier). That cascade is the page's single expressive moment.
+- **Filter and insert:** responsive and position-only (FLIP via transform), so text never stretches.
 
 ## Empty and loading states
 - **Empty:** one sentence saying what will appear here and one action to make it appear. Left-aligned in the container. No illustration unless art direction (Q5) says so.
