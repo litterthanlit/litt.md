@@ -68,3 +68,5 @@ This file is append-only: never edit or delete old entries. Each entry records o
 - 2026-10-11 · color · Fluid Functionalism neutrals · true neutral gray at chroma 0 · ? · - · → Q9 · audit:fluid-functionalism
 - 2026-10-11 · process · Fluid Functionalism audit tooling · motion values checked by script against known-bad and known-good pages · ? · check.mjs fails durations over 240ms, transition: all and animated layout properties · open · audit:fluid-functionalism
 - 2026-10-11 · motion · motion personality after the motion lab · wants to try motion-led and find a sweet spot between it and invisible & fast · "we need a sweetspot" · - · → Q18 · chat
+- 2026-10-11 · motion · motion dial in the litt-ui gallery · chose the sweet spot over invisible and expressive · "I think sweet spot is where its at" · instant 100ms; responsive spring 200ms bounce 0; expressive spring 350ms bounce 0.12, 40ms stagger, 16px travel · → Q18 · chat
+- 2026-10-11 · component · corner radius in the litt-ui gallery · wants a slight radius back instead of binary square · "add slight radius" · controls about 4px, surfaces concentric at 8px, pills unchanged · → Q19 · chat

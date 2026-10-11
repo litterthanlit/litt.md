@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.4 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 51 journal entries · October 2026
+> v0.4 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 53 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -121,6 +121,8 @@ The interview workflow works through these. When one is answered, move the answe
 - **Q17.** Which properties may transition? The docs say transform and opacity only, but the specimen fades color, background-color and the focus box-shadow, and Fluid Functionalism fades color at 80ms. Allow color and fill fades at `--dur-instant`, or hold the line?
 - **Q18.** Motion personality: the Motion decision says invisible and fast, but Nick wants to try motion-led and find the sweet spot between them. A components gallery with a motion dial is the instrument. The decision stands until Nick picks a setting.
   - *Evidence:* the motion lab (three personalities, four curves, three hover speeds, per-row versus gliding hover).
+  - *Evidence:* in the litt-ui gallery Nick said "sweet spot is where its at". Lock it once all eight components are built.
+- **Q19.** Shape: the v0.3 decision is binary (square, pills only). Nick asked for "slight radius" in the gallery. The trial runs 4px on controls and 8px on surfaces (concentric), with a shape control from 0 to 6px. Settle the value, then rewrite the Shape decision.
 
 ## Changelog
 
