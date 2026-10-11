@@ -1,14 +1,9 @@
-/** The gallery shell: glass header, page list, the page, and the motion instrument. */
+/** The gallery shell: glass header, page list and the page. Only the Playground tunes motion. */
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { MotionDialProvider, useExit, useTransition, useTravel } from "@/motion";
-import { pages } from "./registry";
+import { MotionDialProvider } from "@/motion";
+import { pages, type PageEntry } from "./registry";
+import { useRoute } from "./route";
 import { TooltipProvider } from "@/components/tooltip";
-import { MotionPanel } from "./motion-panel";
-import { Button } from "@/components/button";
-import { SlidersIcon, XIcon } from "@/components/icons";
-
-const readHash = () => decodeURIComponent(location.hash.replace(/^#/, "")) || pages[0]?.id || "";
 
 type ThemeChoice = "system" | "light" | "dark";
 function ThemeSwitch() {
@@ -21,7 +16,7 @@ function ThemeSwitch() {
     if (t === "system") document.documentElement.removeAttribute("data-theme");
     else document.documentElement.setAttribute("data-theme", t);
     try {
-      localStorage.setItem("litt-ui-theme", t);
+      localStorage.setItem("litt-gallery:theme", t);
     } catch {
       /* ignore */
     }
@@ -40,55 +35,15 @@ function ThemeSwitch() {
   );
 }
 
-function MobileSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const enter = useTransition("responsive");
-  const exit = useExit("responsive");
-  const travel = useTravel();
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          role="dialog" aria-label="Tune" aria-modal="false"
-          className="litt-glass fixed inset-x-0 bottom-0 z-40 max-h-[78vh] rounded-t-surface overflow-y-auto px-gutter pt-4 pb-[calc(env(safe-area-inset-bottom,0px)+24px)] [--glass-shadow:var(--shadow-modal)] xl:hidden"
-          initial={{ opacity: 0, y: travel }}
-          animate={{ opacity: 1, y: 0, transition: enter }}
-          exit={{ opacity: 0, y: travel, transition: exit }}
-        >
-          <div className="mb-2 flex justify-end">
-            <Button iconOnly size="sm" variant="ghost" aria-label="Close tune panel" onClick={onClose}>
-              <XIcon />
-            </Button>
-          </div>
-          <MotionPanel />
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-function Shell() {
-  const [route, setRoute] = useState(readHash);
-  const [panelOpen, setPanelOpen] = useState(false);
+function Shell({ page }: { page: PageEntry | undefined }) {
   const mainRef = useRef<HTMLElement>(null);
 
+  /* Each page names itself in the tab, so history and screen readers can tell them apart. */
   useEffect(() => {
-    const onHash = () => {
-      setRoute(readHash());
-      window.scrollTo({ top: 0 });
-    };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
+    document.title = !page || page.id === pages[0]?.id ? "litt.md Gallery" : `${page.title} · litt.md Gallery`;
+  }, [page]);
 
-  const page = pages.find((p) => p.id === route) ?? pages[0];
-
-  const navLink = (p: (typeof pages)[number], compact = false) => (
+  const navLink = (p: PageEntry, compact = false) => (
     <a
       key={p.id}
       href={`#${p.id}`}
@@ -116,24 +71,20 @@ function Shell() {
         Skip to content
       </button>
 
-      <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30">
+      {/* Full-bleed, so no corners: .litt-glass carries the surface radius. */}
+      <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none">
         <div className="mx-auto flex h-16 max-w-wide items-center justify-between gap-4 px-gutter">
           <a href={`#${pages[0]?.id ?? ""}`} className="flex items-baseline gap-2 text-body text-fg">
             litt.md <span className="text-fg-subtle">Gallery</span>
           </a>
-          <div className="flex items-center gap-3">
-            <ThemeSwitch />
-            <Button size="sm" variant="secondary" icon={<SlidersIcon />} className="xl:hidden" onClick={() => setPanelOpen((v) => !v)} aria-expanded={panelOpen}>
-              Tune
-            </Button>
-          </div>
+          <ThemeSwitch />
         </div>
         <nav aria-label="Components" className="flex overflow-x-auto border-t border-line px-[calc(var(--gutter)-12px)] [scrollbar-width:none] lg:hidden">
           {pages.map((p) => navLink(p, true))}
         </nav>
       </header>
 
-      <div className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)] xl:grid-cols-[176px_minmax(0,1fr)_304px]">
+      <div className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
         <nav aria-label="Components" className="hidden lg:block">
           <div className="sticky top-16 grid gap-1 pt-24">{pages.map((p) => navLink(p))}</div>
         </nav>
@@ -141,32 +92,27 @@ function Shell() {
         <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-16 outline-none lg:pt-24">
           {page ? <page.Component key={page.id} /> : <p>No pages yet.</p>}
         </main>
-
-        <aside aria-label="Tune" className="hidden xl:block">
-          <div className="sticky top-16 max-h-[calc(100vh-4rem)] overflow-y-auto pt-24 pb-12 [scrollbar-width:thin]">
-            <MotionPanel />
-          </div>
-        </aside>
       </div>
 
       <footer className="border-t border-line">
         <div className="mx-auto flex max-w-wide flex-wrap justify-between gap-4 px-gutter py-8 text-caption text-fg-subtle">
-          <span>litt.md Gallery v0.1 · tokens synced from litt.md v0.4</span>
+          <span>litt.md Gallery v{__GALLERY_VERSION__} · tokens from litt.md v{__LITT_MD_VERSION__}</span>
           <span>Light and material stay still. Only objects move.</span>
         </div>
       </footer>
-
-      <MobileSheet open={panelOpen} onClose={() => setPanelOpen(false)} />
     </div>
   );
 }
 
 export function App() {
+  const route = useRoute();
+  const page = pages.find((p) => p.id === route) ?? pages[0];
   return (
-    <MotionDialProvider>
-      {/* One provider for the whole gallery, so the 300ms skip window carries across pages. */}
+    /* One provider for the whole gallery, so the 300ms tooltip skip window carries across pages.
+       It writes no CSS variables unless the page sets `tune`. */
+    <MotionDialProvider tuning={page?.tune === true}>
       <TooltipProvider>
-        <Shell />
+        <Shell page={page} />
       </TooltipProvider>
     </MotionDialProvider>
   );

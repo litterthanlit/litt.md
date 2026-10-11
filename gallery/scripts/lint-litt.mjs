@@ -1,8 +1,13 @@
 #!/usr/bin/env node
 /**
- * litt-ui: rule lint. Fails on anything that breaks litt.md's hard rules.
- * Scans src/ except the synced styles and the motion engine.
+ * litt.md gallery: rule lint. Fails on anything that breaks litt.md's hard rules.
+ * Scans src/ except the synced styles and the motion engine (src/motion holds
+ * the token reader and the rules mirror, not UI).
  * Put `litt-allow` on a line (in a comment) to exempt it, with a reason.
+ *
+ * Checks: weight 400, the three radii, zero-offset shadows, no `transition-all`,
+ * only transform, opacity and color-family fades, duration and ease classes
+ * that pair by tier, no literal timings or easings, no raw or quoted colors.
  *
  *   node scripts/lint-litt.mjs [files...]
  */
@@ -44,6 +49,23 @@ function badShadow(value) {
   return null;
 }
 
+/* Motion tiers: each duration token pairs with one ease. Exits use the instant ease-out. */
+const TIER_EASE = {
+  instant: "ease-litt",
+  responsive: "ease-responsive",
+  expressive: "ease-expressive",
+  "exit-responsive": "ease-litt",
+  "exit-expressive": "ease-litt",
+};
+/* Only these may animate (check.mjs, check 9): movement, and color-family fades at the instant tier. */
+const MOVEMENT = new Set(["transform", "opacity", "translate", "scale", "rotate"]);
+const FADES = new Set(["color", "background-color", "border-color", "fill", "box-shadow"]);
+const TRANSITION_CLASSES = new Set(["transition-colors", "transition-opacity", "transition-transform", "transition-none"]);
+/** The string literals on a line that look like class lists, joined. Prose (sentence punctuation) is dropped. */
+const classSegments = (code) =>
+  [...code.matchAll(/(["'`])((?:\\.|(?!\1).)*)\1/g)].map((m) => m[2]).filter((t) => !/[.,;:!?](\s|$)/.test(t)).join(" ");
+const isCommentLine = (line) => /^\s*(\*|\/\/|\/\*)/.test(line);
+
 const MOTION_PROPS = /\b(initial|animate|exit|whileHover|whileTap|whileFocus|whileInView|whileDrag)=\{\{/g;
 const LAYOUT_KEYS = /(^|[\s,{])(width|height|top|left|right|bottom|margin\w*|padding\w*|fontWeight|letterSpacing|filter|backdropFilter|boxShadow|backgroundImage)\s*:/;
 
@@ -76,10 +98,46 @@ for (const f of files) {
     if (/\btransition-all\b|transition:\s*['"]?all\b|transitionProperty:\s*['"]all/.test(line)) fail("transition-all: name the properties (transform, opacity, color, background-color)");
     if (/\b(duration|delay)-(\d+|\[\d)/.test(line)) fail("literal duration/delay class: use duration-(--dur-instant) or the motion hooks");
     if (/(?:^|[{,]\s*)(visualDuration|stiffness|damping|mass|bounce|duration|delay|staggerChildren|delayChildren)\s*:\s*[\d.]/.test(line)) fail("literal motion timing: use useTransition/useExit/useStagger from @/motion");
-    if (/\bease\s*:\s*['"](linear|easeIn|easeInOut|circIn|backIn|backOut|anticipate)['"]/.test(line)) fail("easing: litt.md uses ease-out or the dial's springs");
+    if (/\bease\s*:\s*['"](linear|easeIn|easeInOut|circIn|backIn|backOut|anticipate)['"]/.test(line)) fail("easing: litt.md uses --ease-out or the spring tokens");
     if (/transition=\{\{/.test(line)) fail("inline transition object: use useTransition()/useExit() from @/motion");
     if (/\banimate-(?!spin\b)[\w-]+/.test(line) || /\banimate-spin\b/.test(line)) fail("looping CSS animation: only the loading spinner may loop (mark it litt-allow)");
     if (/(bg|text|border|fill|stroke|outline|ring|shadow|from|to|via|accent|caret|decoration)-\[#|color\s*:\s*['"]#|\b(rgb|rgba|hsl|hsla)\(/.test(line)) fail("raw color: use token utilities (bg-surface-1, text-fg-muted, border-line…)");
+    /* The class checks read class lists only. Comments and prose captions may name
+       the things they forbid ("a short ease-out tween"), so they are skipped. */
+    const code = isCommentLine(line) ? "" : line;
+    const isCss = f.endsWith(".css");
+    const classes = isCss ? code : classSegments(code);
+    if (!isCss || classes) {
+      // Tier and ease pairing: each --dur-* token goes with its own ease, and no other.
+      const durations = [...classes.matchAll(/(?<![\w-])duration-\((--dur-[\w-]+)\)/g)].map((m) => m[1].slice("--dur-".length));
+      const eases = [...classes.matchAll(/(?<![\w-])ease-([\w[\]().,-]+)/g)].map((m) => `ease-${m[1]}`);
+      if (!isCss) {
+        for (const d of durations) {
+          if (!(d in TIER_EASE)) fail(`duration-(--dur-${d}): not a tier (instant, responsive, expressive, exit-responsive, exit-expressive)`);
+          else if (!eases.length || eases.some((e) => e !== TIER_EASE[d])) fail(`duration-(--dur-${d}) pairs with ${TIER_EASE[d]}${eases.length ? `, not ${eases.join(" or ")}` : ""}`);
+        }
+        for (const e of eases) if (!Object.values(TIER_EASE).includes(e)) fail(`${e}: use ease-litt (instant and exits), ease-responsive or ease-expressive`);
+        // Transitions: name transform, opacity or color-family properties; never all, never layout.
+        for (const m of classes.matchAll(/(?<![\w-])transition(?:-(\[[^\]]*\]|[\w-]+))?(?![\w[-])/g)) {
+          const cls = m[0];
+          const arg = m[1];
+          if (arg && arg.startsWith("[")) {
+            const bad = arg.slice(1, -1).split(",").map((x) => x.trim().replace(/_/g, " ")).filter((x) => !MOVEMENT.has(x) && !FADES.has(x));
+            if (bad.length) fail(`transition-[${bad.join(",")}]: only transform, opacity and color-family fades may animate`);
+          } else if (cls !== "transition-all" && !TRANSITION_CLASSES.has(cls)) { // transition-all has its own message above
+            fail(`${cls}: name the properties with transition-colors, transition-opacity, transition-transform or transition-[...] (transform, opacity, color family only)`);
+          }
+        }
+        // Color-family fades happen at the instant tier only.
+        const fades = /(?<![\w-])transition-colors(?![\w-])/.test(classes) ||
+          [...classes.matchAll(/(?<![\w-])transition-\[([^\]]*)\]/g)].some((m) => m[1].split(",").some((x) => FADES.has(x.trim())));
+        if (fades) for (const d of classes.matchAll(/(?<![\w-])duration-\((--dur-[\w-]+)\)/g)) if (d[1] !== "--dur-instant") fail(`color fades run at --dur-instant only, not ${d[1]}`);
+      }
+    }
+    // Raw colors: any quoted hex, and color functions Tailwind's token utilities replace.
+    if (/(['"`])#[0-9a-fA-F]{3,8}\1/.test(code)) fail("quoted hex color: use token utilities (bg-surface-1, text-fg-muted, border-line…) or var(--token)");
+    if (isCss && /:\s*[^;{}]*#[0-9a-fA-F]{3,8}\b/.test(code)) fail("hex color in CSS: colors live in tokens.css");
+    if (/\b(oklch|oklab|lab|lch|hwb)\(/.test(code)) fail("raw color function: use token utilities, or color-mix(in oklab, var(--token) …)");
     if (/\buppercase\b/.test(line)) warn("uppercase: sentence case everywhere (Q1 is open)");
     if (/\btracking-/.test(line)) warn("tracking class: tracking comes with the text-* tokens");
     if (/\btext-\[\d/.test(line)) warn("arbitrary text size: use text-display, text-h1…h4, text-reading, text-body, text-small, text-caption");

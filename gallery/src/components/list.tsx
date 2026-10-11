@@ -4,7 +4,7 @@
  * "Placed, not thrown": things arrive with intent and settle.
  *
  * - ProjectList is the page's ONE expressive moment. Rows fade in and rise from
- *   the dial's travel to rest, each waiting index x stagger. The cascade is
+ *   the travel token's distance to rest, each waiting index x stagger. The cascade is
  *   capped at six, so row 7 onward arrive with row 6 and a long list never drags.
  * - ProjectGrid is responsive. Filtering re-flows the grid with Motion `layout`
  *   (position only, so text never stretches). Leaving cards fade and shrink to

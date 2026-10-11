@@ -1,145 +1,215 @@
 /**
- * The motion dial: the gallery's tuning instrument.
+ * Motion for the gallery: the locked litt.md values everywhere, and a dial on
+ * the Playground only.
  *
  * Three tiers (see CONTRIBUTING.md):
  * - instant     hover, press, toggles. A short ease-out tween. Invisible.
- * - responsive  menus, tabs, tooltips, the gliding highlight. A spring, normally no bounce.
+ * - responsive  menus, tabs, tooltips, the gliding highlight. A spring with no bounce.
  * - expressive  one signature moment per view: dialog, toasts, the list entrance.
  *
- * Components never write durations or springs. They ask the dial through the
- * hooks below, so every component follows the dial (and reduced motion) live.
+ * tokens.css owns every number. On every page the provider writes no CSS
+ * variables at all, and the hooks below return values parsed from the same
+ * tokens (tokens.ts), so CSS and JS springs agree by construction.
+ *
+ * On a page that sets `tune` (the Playground) the provider lets the dial
+ * override the tokens: it writes inline variables on <html>, and removes them
+ * again the moment the page is left. Components never write durations or
+ * springs. They ask these hooks, so they follow the dial and reduced motion.
  */
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { MotionConfig, useReducedMotion, type Transition } from "motion/react";
 import { toCss, type Spring } from "./spring";
+import { readLocked, surfaceRadius, type Dial, type Locked } from "./tokens";
+
+export { surfaceRadius, type Dial };
 
 export type Tier = "instant" | "responsive" | "expressive";
-export type Travel = 4 | 8 | 16 | 24;
-export type Dial = {
-  instant: number; // ms
-  responsive: Spring;
-  expressive: Spring;
-  stagger: number; // ms between items in an expressive entrance
-  travel: Travel; // px, the furthest anything moves on entry (8px grid)
-  exit: number; // exits run at this fraction of the enter time, as a tween, never bouncing
-};
-export type PresetName = "invisible" | "sweet" | "expressive";
-/** Corner radius for controls, in px. Surfaces get this plus the 4px inset (concentric). 0 is litt.md v0.3 square. */
-export type Radius = 0 | 2 | 4 | 6;
-export const surfaceRadius = (r: Radius) => (r === 0 ? 0 : r + 4);
+export type PresetName = "locked" | "invisible" | "expressive";
 
-export const PRESETS: Record<PresetName, Dial> = {
-  invisible: { instant: 120, responsive: { time: 0.16, bounce: 0 }, expressive: { time: 0.2, bounce: 0 }, stagger: 0, travel: 4, exit: 0.8 },
-  sweet: { instant: 100, responsive: { time: 0.2, bounce: 0 }, expressive: { time: 0.35, bounce: 0.12 }, stagger: 40, travel: 16, exit: 0.75 },
-  expressive: { instant: 120, responsive: { time: 0.28, bounce: 0.15 }, expressive: { time: 0.5, bounce: 0.25 }, stagger: 60, travel: 24, exit: 0.75 },
-};
-export const PRESET_LABEL: Record<PresetName, string> = { invisible: "Invisible", sweet: "Sweet spot", expressive: "Expressive" };
+/** The choices the Playground offers for the discrete controls. */
+export const TRAVELS = [4, 8, 16, 24] as const;
+export const RADII = [0, 2, 4, 6] as const;
 
-/** litt.md's --ease-out as a cubic-bezier array for Motion. */
-export const EASE_OUT: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94];
+export const PRESET_LABEL: Record<PresetName, string> = {
+  locked: `Locked (v${__LITT_MD_VERSION__})`,
+  invisible: "Invisible",
+  expressive: "Expressive",
+};
+
+/** Locked is whatever tokens.css says. The other two are trials to compare against it. */
+export function makePresets(locked: Dial): Record<PresetName, Dial> {
+  return {
+    locked,
+    invisible: { instant: 120, responsive: { time: 0.16, bounce: 0 }, expressive: { time: 0.2, bounce: 0 }, stagger: 0, travel: 4, exit: 0.8 },
+    expressive: { instant: 120, responsive: { time: 0.28, bounce: 0.15 }, expressive: { time: 0.5, bounce: 0.25 }, stagger: 60, travel: 24, exit: 0.75 },
+  };
+}
 
 type Ctx = {
+  /** The values the hooks use: the locked tokens, or the dial's on a tuning page. */
   dial: Dial;
+  /** The tokens.css values, always. */
+  locked: Locked;
+  presets: Record<PresetName, Dial>;
   preset: PresetName | "custom";
+  /** True on a page that sets `tune`. */
+  tuning: boolean;
+  /** True when something on the Playground differs from the tokens. */
+  modified: boolean;
   setPreset: (p: PresetName) => void;
   update: (patch: Partial<Dial>) => void;
+  /** Back to the tokens: dial, radius, slow motion and the reduced preview. */
+  reset: () => void;
   slow: number;
   setSlow: (n: number) => void;
   reducedPreview: boolean;
   setReducedPreview: (b: boolean) => void;
   /** True when the system asks for reduced motion or the preview switch is on. */
   reduced: boolean;
-  radius: Radius;
-  setRadius: (r: Radius) => void;
+  /** Control radius in px. Surfaces get this plus the 4px inset. */
+  radius: number;
+  setRadius: (r: number) => void;
 };
 
 const DialContext = createContext<Ctx | null>(null);
-const STORE = "litt-ui-dial";
 
-function load(): { dial: Dial; preset: PresetName | "custom" } {
+/* The Playground remembers a change, and only a change. An untouched visit
+   writes nothing, so a later change to tokens.css is never shadowed. */
+const DIAL_KEY = "litt-gallery:dial";
+const RADIUS_KEY = "litt-gallery:radius";
+
+const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+const isSpring = (v: unknown): v is Spring =>
+  typeof v === "object" && v !== null && isNum((v as Spring).time) && isNum((v as Spring).bounce) &&
+  (v as Spring).time >= 0.05 && (v as Spring).time <= 2 && (v as Spring).bounce >= 0 && (v as Spring).bounce <= 1;
+
+function readStoredDial(): Dial | null {
   try {
-    const raw = JSON.parse(localStorage.getItem(STORE) || "null");
-    if (raw && raw.dial && raw.preset) return raw;
+    const raw = JSON.parse(localStorage.getItem(DIAL_KEY) || "null") as Partial<Dial> | null;
+    if (raw && isNum(raw.instant) && isNum(raw.stagger) && isNum(raw.travel) && isNum(raw.exit) && isSpring(raw.responsive) && isSpring(raw.expressive)) {
+      return { instant: raw.instant, responsive: raw.responsive, expressive: raw.expressive, stagger: raw.stagger, travel: raw.travel, exit: raw.exit };
+    }
   } catch {
-    /* storage can be unavailable; fall back to the sweet spot */
+    /* storage can be unavailable or hold something else; fall back to the tokens */
   }
-  return { dial: PRESETS.sweet, preset: "sweet" };
+  return null;
 }
 
-function sameDial(a: Dial, b: Dial) {
-  return JSON.stringify(a) === JSON.stringify(b);
+function readStoredRadius(): number | null {
+  try {
+    const v = localStorage.getItem(RADIUS_KEY);
+    const r = v === null ? NaN : Number(v);
+    if ((RADII as readonly number[]).includes(r)) return r;
+  } catch {
+    /* ignore */
+  }
+  return null;
 }
 
-export function MotionDialProvider({ children }: { children: ReactNode }) {
-  const initial = useMemo(load, []);
-  const [dial, setDial] = useState<Dial>(initial.dial);
+const sameDial = (a: Dial, b: Dial) => JSON.stringify(a) === JSON.stringify(b);
+
+/** Every inline variable the Playground can write. All of them are removed on leave. */
+const VARS = [
+  "--dur-instant",
+  "--ease-responsive",
+  "--dur-responsive",
+  "--ease-expressive",
+  "--dur-expressive",
+  "--dur-exit-responsive",
+  "--dur-exit-expressive",
+  "--stagger",
+  "--travel",
+  "--radius-control",
+  "--radius-surface",
+  "--press-scale",
+] as const;
+
+export function MotionDialProvider({ tuning, children }: { tuning: boolean; children: ReactNode }) {
+  const system = useReducedMotion() ?? false;
+  const locked = useMemo(() => readLocked(system), [system]);
+  const presets = useMemo(() => makePresets(locked.dial), [locked]);
+
+  const [tuned, setTuned] = useState<Dial | null>(readStoredDial);
+  const [radiusTuned, setRadiusTuned] = useState<number | null>(readStoredRadius);
   const [slow, setSlow] = useState(1);
   const [reducedPreview, setReducedPreview] = useState(false);
-  const [radius, setRadius] = useState<Radius>(() => {
-    try {
-      const r = Number(localStorage.getItem("litt-ui-radius"));
-      if ([0, 2, 4, 6].includes(r) && localStorage.getItem("litt-ui-radius") !== null) return r as Radius;
-    } catch {
-      /* ignore */
-    }
-    return 4;
-  });
-  const system = useReducedMotion() ?? false;
-  const reduced = system || reducedPreview;
 
-  const preset = (Object.keys(PRESETS) as PresetName[]).find((k) => sameDial(PRESETS[k], dial)) ?? "custom";
+  const dial = tuning && tuned ? tuned : locked.dial;
+  const radius = tuning && radiusTuned !== null ? radiusTuned : locked.radius;
+  const slowNow = tuning ? slow : 1;
+  const reduced = system || (tuning && reducedPreview);
+  const modified = tuned !== null || radiusTuned !== null || slow !== 1 || reducedPreview;
+
+  const preset = (Object.keys(presets) as PresetName[]).find((k) => sameDial(presets[k], dial)) ?? "custom";
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORE, JSON.stringify({ dial, preset }));
+      if (tuned) localStorage.setItem(DIAL_KEY, JSON.stringify(tuned));
+      else localStorage.removeItem(DIAL_KEY);
+      if (radiusTuned !== null) localStorage.setItem(RADIUS_KEY, String(radiusTuned));
+      else localStorage.removeItem(RADIUS_KEY);
     } catch {
       /* ignore */
     }
-  }, [dial, preset]);
+  }, [tuned, radiusTuned]);
 
-  useEffect(() => {
-    const s = document.documentElement.style;
-    s.setProperty("--radius-control", `${radius}px`);
-    s.setProperty("--radius-surface", `${surfaceRadius(radius)}px`);
-    try {
-      localStorage.setItem("litt-ui-radius", String(radius));
-    } catch {
-      /* ignore */
-    }
-  }, [radius]);
-
-  /* Mirror the dial into CSS variables so CSS-only parts follow it too. */
-  useEffect(() => {
+  /* Mirror the dial into CSS variables so CSS-only parts follow it too. Only
+     on a tuning page, only while something differs from the tokens, and always
+     cleaned up. A layout effect, so a page change never paints a stale value. */
+  useLayoutEffect(() => {
+    if (!tuning || !modified) return;
     const s = document.documentElement.style;
     const r = toCss(dial.responsive);
     const e = toCss(dial.expressive);
     const z = reduced ? 0 : 1;
-    s.setProperty("--dur-instant", `${dial.instant * slow * z}ms`);
-    s.setProperty("--ease-responsive", r.easing);
-    s.setProperty("--dur-responsive", `${r.duration * slow * z}ms`);
-    s.setProperty("--ease-expressive", e.easing);
-    s.setProperty("--dur-expressive", `${e.duration * slow * z}ms`);
-    s.setProperty("--stagger", `${dial.stagger * slow * z}ms`);
-    s.setProperty("--travel", `${dial.travel * z}px`);
-  }, [dial, slow, reduced]);
+    const k = slowNow * z;
+    const exit = (sp: Spring) => Math.round(Math.round(sp.time * 1000) * dial.exit);
+    const set = (name: (typeof VARS)[number], value: string) => s.setProperty(name, value);
+    set("--dur-instant", `${dial.instant * k}ms`);
+    set("--ease-responsive", r.easing);
+    set("--dur-responsive", `${r.duration * k}ms`);
+    set("--ease-expressive", e.easing);
+    set("--dur-expressive", `${e.duration * k}ms`);
+    set("--dur-exit-responsive", `${exit(dial.responsive) * k}ms`);
+    set("--dur-exit-expressive", `${exit(dial.expressive) * k}ms`);
+    set("--stagger", `${dial.stagger * k}ms`);
+    set("--travel", `${dial.travel * z}px`);
+    set("--radius-control", `${radius}px`);
+    set("--radius-surface", `${surfaceRadius(radius)}px`);
+    /* Inline variables beat tokens.css's reduced-motion block, so mirror its press rule too. */
+    if (reduced) set("--press-scale", "1");
+    return () => VARS.forEach((n) => s.removeProperty(n));
+  }, [tuning, modified, dial, slowNow, reduced, radius]);
+
+  const commit = (next: Dial) => setTuned(sameDial(next, locked.dial) ? null : next);
 
   const value: Ctx = {
     dial,
+    locked,
+    presets,
     preset,
-    setPreset: (p) => setDial(PRESETS[p]),
-    update: (patch) => setDial((d) => ({ ...d, ...patch })),
+    tuning,
+    modified,
+    setPreset: (p) => commit(presets[p]),
+    update: (patch) => commit({ ...dial, ...patch }),
+    reset: () => {
+      setTuned(null);
+      setRadiusTuned(null);
+      setSlow(1);
+      setReducedPreview(false);
+    },
     slow,
     setSlow,
     reducedPreview,
     setReducedPreview,
     reduced,
     radius,
-    setRadius,
+    setRadius: (r) => setRadiusTuned(r === locked.radius ? null : r),
   };
 
   return (
     <DialContext.Provider value={value}>
-      <MotionConfig reducedMotion={reducedPreview ? "always" : "user"}>{children}</MotionConfig>
+      <MotionConfig reducedMotion={tuning && reducedPreview ? "always" : "user"}>{children}</MotionConfig>
     </DialContext.Provider>
   );
 }
@@ -152,19 +222,21 @@ export function useMotionDial() {
 
 /** The enter transition for a tier. Pass it to a motion component's `transition`. */
 export function useTransition(tier: Tier): Transition {
-  const { dial, slow, reduced } = useMotionDial();
+  const { dial, locked, slow, reduced, tuning } = useMotionDial();
   if (reduced) return { duration: 0 };
-  if (tier === "instant") return { type: "tween", duration: (dial.instant / 1000) * slow, ease: EASE_OUT };
+  const k = tuning ? slow : 1;
+  if (tier === "instant") return { type: "tween", duration: (dial.instant / 1000) * k, ease: locked.easeOut };
   const sp = dial[tier];
-  return { type: "spring", visualDuration: sp.time * slow, bounce: sp.bounce };
+  return { type: "spring", visualDuration: sp.time * k, bounce: sp.bounce };
 }
 
 /** The exit transition for a tier: quicker than the enter, a plain ease-out tween, never a bounce. */
 export function useExit(tier: Tier): Transition {
-  const { dial, slow, reduced } = useMotionDial();
+  const { dial, locked, slow, reduced, tuning } = useMotionDial();
   if (reduced) return { duration: 0 };
+  const k = tuning ? slow : 1;
   const base = tier === "instant" ? dial.instant / 1000 : dial[tier].time;
-  return { type: "tween", duration: base * dial.exit * slow, ease: EASE_OUT };
+  return { type: "tween", duration: base * dial.exit * k, ease: locked.easeOut };
 }
 
 /** How far things travel on entry, in px (0 under reduced motion). Use fractions of it, never more. */
@@ -175,6 +247,6 @@ export function useTravel(): number {
 
 /** Seconds between items in an expressive entrance (0 under reduced motion). */
 export function useStagger(): number {
-  const { dial, slow, reduced } = useMotionDial();
-  return reduced ? 0 : (dial.stagger / 1000) * slow;
+  const { dial, slow, reduced, tuning } = useMotionDial();
+  return reduced ? 0 : (dial.stagger / 1000) * (tuning ? slow : 1);
 }

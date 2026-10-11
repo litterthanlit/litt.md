@@ -110,7 +110,7 @@ export default function ToastPage() {
         <Stage
           title="Saved"
           tier="expressive"
-          caption="The toast rises from the dial's travel distance below its place while it fades in and settles from 0.98, on the expressive tier. It dismisses itself after about four seconds."
+          caption="The toast rises from the travel token's distance below its place while it fades in and settles from 0.98, on the expressive tier. It dismisses itself after about four seconds."
         >
           <SavedDemo />
         </Stage>

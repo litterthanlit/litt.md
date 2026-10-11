@@ -8,7 +8,7 @@
  *   surface, so it is solid (bg-surface-2 + shadow-float), never glass on glass.
  * - Motion, responsive tier. The panel grows from the trigger: Radix gives
  *   --radix-dropdown-menu-content-transform-origin, and it travels a quarter of
- *   the dial's travel from the side it actually opens on (after collision
+ *   the travel token from the side it actually opens on (after collision
  *   flipping). We wait for Radix to place it, then read data-side. Exit uses
  *   useExit. AnimatePresence + forceMount + controlled open lets the exit play.
  * - The highlight inside is the shared glide (glide.tsx). Radix keeps the active

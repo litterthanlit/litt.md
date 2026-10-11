@@ -38,14 +38,25 @@ export function overshoot(spring: Spring) {
   return Math.max(0, ...simulate(spring).pts.map(([, x]) => x - 1));
 }
 
-/** A CSS linear() easing that reproduces the spring, plus its settle duration in ms. */
+/**
+ * A CSS linear() easing that reproduces the spring, plus its settle duration in ms.
+ *
+ * litt.md's check.mjs wants the list to start at 0 and end at exactly 1, and a
+ * bounce-0 spring never passes 1. The solver is a fixed-step integration, so
+ * the last sample lands a hair off the target and a critically damped spring
+ * can creep a hair past it. Both are numerical noise, so they are corrected
+ * here and the pasted tokens pass the check.
+ */
 export function toCss(spring: Spring, points = 40) {
   const { pts, settle } = simulate(spring);
-  const out: string[] = [];
+  const out: number[] = [];
   for (let i = 0; i <= points; i++) {
     const idx = Math.round((i / points) * (pts.length - 1));
-    out.push(+pts[idx][1].toFixed(4) + "");
+    const v = pts[idx][1];
+    out.push(+(spring.bounce === 0 ? Math.min(v, 1) : v).toFixed(4));
   }
+  out[0] = 0;
+  out[out.length - 1] = 1;
   return { easing: `linear(${out.join(", ")})`, duration: Math.round(settle * 1000) };
 }
 

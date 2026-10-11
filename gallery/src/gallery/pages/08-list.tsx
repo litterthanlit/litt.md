@@ -9,6 +9,7 @@ import {
   type Project,
   type ProjectFilter,
 } from "@/components/list";
+import { PROJECTS } from "../fixtures";
 import { Page, Stage, useReplay, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -19,97 +20,6 @@ export const meta: PageMeta = {
     "Airy project rows and raised cards. The rows arrive in one staggered cascade, this page's single expressive moment; filtering and inserting stay responsive, and hover never moves anything.",
   tiers: ["instant", "responsive", "expressive"],
 };
-
-const PROJECTS: Project[] = [
-  {
-    id: "litt-design-v3",
-    name: "litt.design v3",
-    client: "Litt Studio",
-    deploy: "Deployed 2 days ago",
-    status: "live",
-    updated: "2026-10-10",
-    description: "The studio site on litt.md.",
-    tags: ["Framer", "Site"],
-    cover: "system",
-  },
-  {
-    id: "gallery-identity",
-    name: "Gallery identity",
-    client: "Halden Gallery",
-    deploy: "No deploy yet",
-    status: "review",
-    updated: "2026-10-09",
-    description: "Wordmark, grid and color.",
-    tags: ["Identity"],
-    cover: "identity",
-  },
-  {
-    id: "founder-landing",
-    name: "Founder landing",
-    client: "Marlow Labs",
-    deploy: "Deployed 5 days ago",
-    status: "live",
-    updated: "2026-10-06",
-    description: "A launch page for a dev tool.",
-    tags: ["Framer", "Landing"],
-    cover: "landing",
-  },
-  {
-    id: "framer-template-14",
-    name: "Framer template 14",
-    client: "Litt Templates",
-    deploy: "Published 3 weeks ago",
-    status: "live",
-    updated: "2026-09-22",
-    description: "A portfolio with twelve pages.",
-    tags: ["Template", "Framer"],
-    cover: "template",
-  },
-  {
-    id: "motion-study-light",
-    name: "Motion study: light",
-    client: "Internal",
-    deploy: "No deploy yet",
-    status: "draft",
-    updated: "2026-10-08",
-    description: "How light moves across objects.",
-    tags: ["Research", "Motion"],
-    cover: "motion",
-  },
-  {
-    id: "studio-site-refresh",
-    name: "Studio site refresh",
-    client: "Litt Studio",
-    deploy: "Preview deployed yesterday",
-    status: "review",
-    updated: "2026-10-10",
-    description: "Tighter type, faster pages.",
-    tags: ["Framer", "Site"],
-    cover: "refresh",
-  },
-  {
-    id: "type-foundry-site",
-    name: "Type foundry site",
-    client: "Grotta Type",
-    deploy: "No deploy yet",
-    status: "idea",
-    updated: "2026-10-02",
-    description: "A specimen-first foundry site.",
-    tags: ["Site", "Type"],
-    cover: "type",
-  },
-  {
-    id: "fintech-dashboard",
-    name: "Fintech dashboard",
-    client: "Kassa",
-    deploy: "Staging deployed 4 days ago",
-    status: "draft",
-    updated: "2026-10-07",
-    description: "Cash, invoices and runway.",
-    tags: ["Product", "App"],
-    cover: "dashboard",
-  },
-];
 
 /** What "New project" inserts, in turn. */
 const FRESH: Pick<Project, "name" | "client" | "description" | "tags">[] = [
@@ -202,7 +112,7 @@ export default function ListPage() {
         tier="expressive"
         align="start"
         onReplay={replayList}
-        caption="Each row fades in and rises from the dial's travel to rest, on the expressive tier. Row n waits n times the stagger, and the stagger is set on the dial. The cascade stops counting at six: rows seven and eight arrive with row six, so a long list never drags. Hover only changes the fill and a row never moves. Change the dial, then press Replay."
+        caption="Each row fades in and rises from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token. The cascade stops counting at six: rows seven and eight arrive with row six, so a long list never drags. Hover only changes the fill and a row never moves. Press Replay to watch it again."
       >
         <ProjectList key={listKey} projects={PROJECTS} className="max-w-3xl" />
       </Stage>

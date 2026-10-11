@@ -32,7 +32,7 @@ export default function ButtonPage() {
       <Stage
         title="Variants"
         tier="instant"
-        caption="Primary is the one accent fill in a view and carries the glow. Hover swaps the fill over the instant duration; press scales to 0.98. Drag the instant slider and try again."
+        caption="Primary is the one accent fill in a view and carries the glow. Hover swaps the fill over the instant duration; press scales to 0.98. To feel other durations, open the Playground."
       >
         <div className="flex flex-wrap items-center gap-3">
           <Button variant="primary">Start a project</Button>

@@ -1,14 +1,14 @@
 /**
  * Button: the reference component. Read this before writing another one.
  *
- * - Square, three sizes on the shared control scale (P10). Labels sit in
+ * - Slightly rounded, three sizes on the shared control scale (P10). Labels sit in
  *   .litt-trim, so side padding equals the visible air.
  * - Weight 400 always (P9). State changes color and fill only; the box never
  *   moves or resizes (loading keeps the label mounted at opacity 0).
  * - Motion: the instant tier. Hover and press are CSS transitions on
- *   --dur-instant, which the dial rewrites live. Press is scale(--press-scale).
- * - Corners: rounded-control (the shape trial, litt.md Q19). Icon-only buttons
- *   are round (pill) and need an aria-label.
+ *   --dur-instant, which tokens.css owns. Press is scale(--press-scale).
+ * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
+ *   round (pill) and need an aria-label.
  */
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 

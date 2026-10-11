@@ -6,16 +6,17 @@ export const meta: PageMeta = {
   title: "Overview",
   order: 0,
   summary:
-    "litt.md is trying motion-led. This gallery is the instrument for finding the sweet spot: move the dial, then use each component. Light and material stay still; only objects move.",
+    "Every page here runs the motion and shape locked in litt.md's tokens. Use each component and feel the sweet spot. Light and material stay still; only objects move. The Playground is the one place to try other values.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
 export default function Overview() {
-  const list = pages.filter((p) => p.id !== meta.id);
+  const list = pages.filter((p) => p.id !== meta.id && !p.tune);
+  const playground = pages.find((p) => p.tune);
   return (
     <article aria-labelledby="page-overview" className="grid gap-16 pb-24">
       <header className="grid gap-4">
-        <h1 id="page-overview" className="text-display text-fg text-balance">Eight components, one dial.</h1>
+        <h1 id="page-overview" className="text-display text-fg text-balance">Eight components on locked tokens.</h1>
         <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
       </header>
 
@@ -27,7 +28,7 @@ export default function Overview() {
             ["responsive", "Menus, tabs, tooltips and the gliding highlight. A spring, normally without bounce."],
             ["expressive", "One signature moment per view: a dialog, a toast, the list entrance. Bounce and stagger live here."],
           ].map(([t, d]) => (
-            <div key={t} className="litt-raised grid content-start gap-3 rounded-surface p-6">
+            <div key={t} className="litt-raised grid content-start justify-items-start gap-3 rounded-surface p-6">
               <TierChip tier={t as "instant"} />
               <p className="text-small text-fg-muted">{d}</p>
             </div>
@@ -53,6 +54,20 @@ export default function Overview() {
           </ul>
         )}
       </section>
+
+      {playground && (
+        <section className="grid gap-6" aria-labelledby="playground-title">
+          <h2 id="playground-title" className="text-h4 text-fg">Try other values</h2>
+          <a
+            href={`#${playground.id}`}
+            className="litt-raised grid content-start justify-items-start gap-3 rounded-surface p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2"
+          >
+            <span className="text-body text-fg">{playground.title}</span>
+            <span className="max-w-[56ch] text-small text-fg-subtle">{playground.summary}</span>
+            <span className="flex flex-wrap gap-2">{playground.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
+          </a>
+        </section>
+      )}
     </article>
   );
 }

@@ -15,6 +15,12 @@ export type PageMeta = {
   /** One sentence: what the component is and what its motion does. */
   summary: string;
   tiers: Tier[];
+  /**
+   * The page may override the locked tokens with the motion dial. Every page
+   * leaves this off except the Playground; the dial's CSS variables exist only
+   * while a page with `tune` is open.
+   */
+  tune?: boolean;
 };
 
 const TIER_LABEL: Record<Tier, string> = { instant: "Instant", responsive: "Responsive", expressive: "Expressive" };

@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   title: "Dialog",
   order: 6,
   summary:
-    "The one expressive moment. The panel is placed, not thrown: it rises by the dial's travel distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce.",
+    "The one expressive moment. The panel is placed, not thrown: it rises by the travel token's distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce.",
   tiers: ["instant", "expressive"],
 };
 
@@ -126,9 +126,9 @@ function InviteDemo() {
           footer={
             <>
               <DialogClose asChild>
-                <Button>Cancel</Button>
+                <Button size="lg">Cancel</Button>
               </DialogClose>
-              <Button variant="primary" type="submit" form="invite-form">
+              <Button size="lg" variant="primary" type="submit" form="invite-form">
                 Send invite
               </Button>
             </>
@@ -250,9 +250,9 @@ function SheetDemo() {
           footer={
             <>
               <DialogClose asChild>
-                <Button>Cancel</Button>
+                <Button size="lg">Cancel</Button>
               </DialogClose>
-              <Button variant="primary" type="submit" form="settings-form">
+              <Button size="lg" variant="primary" type="submit" form="settings-form">
                 Save changes
               </Button>
             </>
@@ -304,7 +304,7 @@ export default function DialogPage() {
       <Stage
         title="Confirm"
         tier="expressive"
-        caption="The panel fades in, rises by the dial's travel distance and settles from 0.98 to full size on the expressive tier. The overlay only fades. Closing is quicker and never bounces. Esc, Cancel or a click outside closes it, and focus returns to the button."
+        caption="The panel fades in, rises by the travel token's distance and settles from 0.98 to full size on the expressive tier. The overlay only fades. Closing is quicker and never bounces. Esc, Cancel or a click outside closes it, and focus returns to the button."
       >
         <PublishDemo />
       </Stage>
@@ -328,7 +328,7 @@ export default function DialogPage() {
       <Stage
         title="Side sheet"
         tier="expressive"
-        caption="The sheet is 400px wide and full height, but it travels only the dial's travel distance on x, never its own width. It fades in at the right edge and settles. The footer stays pinned while the body scrolls."
+        caption="The sheet is 400px wide and full height, but it travels only the travel token's distance on x, never its own width. It fades in at the right edge and settles. The footer stays pinned while the body scrolls."
       >
         <SheetDemo />
       </Stage>

@@ -2,8 +2,10 @@
 /**
  * Copy litt.md's tokens into the gallery. litt.md stays the single source of
  * truth: never edit src/styles/tokens.css or src/styles/litt.css by hand.
+ * Both files are generated and gitignored. predev, prebuild and verify run
+ * this script, so the gallery can never ship stale tokens.
  *
- *   node scripts/sync-tokens.mjs            copy from ../litt.md (or $LITT_MD)
+ *   node scripts/sync-tokens.mjs            copy from the repo root (or $LITT_MD)
  *   node scripts/sync-tokens.mjs --check    fail if the copies have drifted
  *
  * litt.css is litt.md's tailwind.css with strict mode switched on, so
@@ -15,7 +17,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const littMd = path.resolve(process.env.LITT_MD || path.join(root, "..", "litt.md"));
+// gallery/ sits at the root of the litt.md repo, so the skill is one level up.
+const littMd = path.resolve(process.env.LITT_MD || path.join(root, ".."));
 const assets = path.join(littMd, "skills", "litt-md", "assets");
 const check = process.argv.includes("--check");
 
@@ -38,6 +41,7 @@ for (const [rel, text] of out) {
     const cur = fs.existsSync(dest) ? fs.readFileSync(dest, "utf8") : "";
     if (cur !== text) { drift++; console.log(`✗ ${rel} differs from litt.md`); } else console.log(`✓ ${rel}`);
   } else {
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.writeFileSync(dest, text);
     console.log(`synced ${rel}`);
   }

@@ -6,12 +6,13 @@
  * - Controlled open state plus AnimatePresence plus forceMount, so exits
  *   animate before Radix unmounts anything.
  * - Panel enter (expressive tier): opacity 0 to 1, y from useTravel() to 0,
- *   scale 0.98 to 1. It may bounce slightly, as the dial says. The side sheet
+ *   scale 0.98 to 1. It may bounce slightly, as the tokens allow. The side sheet
  *   travels the same small distance on x, never its own width.
  * - Exit: useExit("expressive"), quicker and never bouncing.
  * - Overlay: a canvas tint that only fades (instant tier). No blur.
  * - Corners: the panel is rounded-surface; the sheet hugs the right edge, so
- *   only its left corners are rounded.
+ *   only its left corners are rounded. .litt-glass carries the surface radius,
+ *   so the right corners are reset to square.
  * - Slots: title, description, body (children), footer. Footer buttons are
  *   right-aligned, 12px apart, primary last.
  */
@@ -134,7 +135,7 @@ export function DialogContent({
                 className={
                   "litt-glass grid grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] [--glass-shadow:var(--shadow-modal)] " +
                   (sheet
-                    ? "h-full w-[400px] max-w-[calc(100%-2rem)] rounded-l-surface "
+                    ? "h-full w-[400px] max-w-[calc(100%-2rem)] rounded-l-surface rounded-r-none "
                     : "max-h-full w-full max-w-[480px] rounded-surface ") +
                   className
                 }
