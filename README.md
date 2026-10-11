@@ -33,6 +33,10 @@ skills/litt-md/
 └── scripts/
     ├── extract-styles.mjs  measure a site's real tokens / capture a moodboard (Playwright)
     └── check.mjs           links, hex drift, dark parity, contrast, weight, radius, shadows, motion
+
+gallery/                the components gallery: React, Tailwind v4 and Motion, built on the locked tokens
+└── README.md           run, check and deploy notes (tokens sync one way from skills/litt-md/assets)
+vercel.json             Vercel config: builds the gallery from the repo root
 ```
 
 ## Install
@@ -105,5 +109,17 @@ node skills/litt-md/scripts/check.mjs                     # links, drift, parity
 claude --plugin-dir . plugin details litt-md              # component inventory and token cost
 claude plugin eval .                                      # trigger evals in evals/
 ```
+
+### Gallery
+
+`gallery/` shows the eight components running the locked v0.5 motion and shape, with a Playground for trying other values. Its tokens are copied from `skills/litt-md/assets/` on every run, so it never drifts. There is no root `package.json`, so use `--prefix gallery`:
+
+```bash
+npm ci --prefix gallery
+npm run dev --prefix gallery                              # http://localhost:5173
+npm run verify --prefix gallery && npm run build --prefix gallery   # tokens sync, typecheck, litt rules, build
+```
+
+Vercel builds it from `vercel.json` on every push: a branch becomes a preview and `main` is production. See [`gallery/README.md`](gallery/README.md).
 
 Repo rules for Claude live in [`.claude/CLAUDE.md`](.claude/CLAUDE.md).

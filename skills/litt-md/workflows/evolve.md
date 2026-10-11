@@ -66,10 +66,12 @@ Whenever a value changes (a color, a duration, a radius, a material strength), u
 4. **SKILL.md**: the token quick view, if a name changed.
 5. **`system/*.md`**: the rationale and any mention of the changed variable. Never paste hex values into Markdown.
 6. **`taste/profile.md`**: any percentages or numbers quoted in rules (for example P8's per-theme strengths).
+7. **The gallery** (`gallery/` in this repo). Tokens reach it automatically, because its sync step copies `assets/tokens.css` and `assets/tailwind.css` on every dev, build and verify. If a bound in `scripts/check.mjs` changes (a motion limit or the radius rule), update `gallery/src/motion/rules.ts` in the same commit. Then run the gallery check.
 
 Then run:
 ```
 node <skill-dir>/scripts/check.mjs
+npm ci --prefix gallery && npm run verify --prefix gallery && npm run build --prefix gallery   # from the repo root, when a token or a bound changed
 ```
 It verifies that linked files exist, that no Markdown hex is missing from tokens.css, that the dark blocks match, that every contrast pair passes, and that the assets keep the weight, radius, shadow and motion rules. Fix any failure before committing.
 

@@ -1,6 +1,6 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the litt-ui gallery. Tooltip, tabs, modal, tables and empty and loading states are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables and empty and loading states are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
 Button · Input · Checkbox and radio · Segmented control · Tabs · Tag · Kbd · Card · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Empty and loading states

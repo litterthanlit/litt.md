@@ -1,12 +1,12 @@
-# Building a litt-ui component
+# Building a gallery component
 
-litt-ui is the components gallery for **litt.md**, Nick's design language. Right now it is a **tuning instrument**: litt.md is trying motion-led, and the gallery's motion dial is how Nick finds the sweet spot. Every component must follow the dial live.
+The gallery is the components gallery for **litt.md**, Nick's design language. Every page runs the locked v0.5 tokens. The Playground is the one place that tunes motion and shape, and Nick finds the next sweet spot there. So every component must follow `tokens.css`, and on the Playground it must follow the dial live.
 
 We studied Fluid Functionalism for ideas. **We are not copying it.** Take principles, never its look: no weight changes, no gray Inter UI, no bounce on small things. This is litt.
 
 ## Read first
 
-The rules live in the litt.md repo next to this one (`../litt.md/skills/litt-md/`):
+The rules live in the litt.md skill, one level up from this folder (`../skills/litt-md/`):
 
 - `taste/profile.md`: the rules P1 to P10, the fixed decisions, Do and Don't.
 - `system/components.md`: the component specs. Read your component's section.
@@ -27,13 +27,13 @@ Create only your own files:
 - `src/components/<name>.tsx`, plus `src/components/<name>-*.ts(x)` helpers if needed.
 - `src/gallery/pages/<NN>-<name>.tsx`, which registers itself automatically.
 
-**Do not edit shared files**: `src/motion/*`, `src/gallery/kit.tsx`, `src/gallery/app.tsx`, `src/gallery/motion-panel.tsx`, `src/components/button.tsx`, `src/components/icons.tsx`, `src/styles/*`, `scripts/*`. If you need an icon that is missing, define it inside your own file using the same 16px, 1.5px-stroke pattern. If you need a shared change, say so in your report.
+**Do not edit shared files**: `src/motion/*`, `src/gallery/kit.tsx`, `src/gallery/app.tsx`, `src/gallery/route.ts`, `src/gallery/motion-panel.tsx`, `src/components/button.tsx`, `src/components/icons.tsx`, `src/styles/*`, `scripts/*`. If you need an icon that is missing, define it inside your own file using the same 16px, 1.5px-stroke pattern. If you need a shared change, say so in your report.
 
 You may import `Button` from `@/components/button` and icons from `@/components/icons`. Do not import another agent's component; they are being built at the same time.
 
 ## Motion contract
 
-There are three tiers, and the dial owns all of their numbers:
+There are three tiers, and `tokens.css` owns all of their numbers. The Playground overrides them on its own page only:
 
 | Tier | For | How |
 |---|---|---|
@@ -54,7 +54,7 @@ const travel = useTravel(); // px, already 0 under reduced motion
 />
 ```
 
-- **Never write a duration, delay, spring or easing value.** Use the hooks, or the CSS variables the dial writes: `--dur-instant`, `--ease-responsive`/`--dur-responsive`, `--ease-expressive`/`--dur-expressive`, `--stagger`, `--travel`. The lint fails any literal.
+- **Never write a duration, delay, spring or easing value.** Use the hooks, or the CSS variables from `tokens.css` (the Playground overrides them on its page only): `--dur-instant`, `--ease-responsive`/`--dur-responsive`, `--ease-expressive`/`--dur-expressive`, `--dur-exit-responsive`/`--dur-exit-expressive`, `--stagger`, `--travel`. A duration class and its ease must pair by tier: `duration-(--dur-instant)` with `ease-litt`, `--dur-responsive` with `ease-responsive`, `--dur-expressive` with `ease-expressive`, and every exit with `ease-litt`. The lint fails any literal and any mismatch.
 - **Only transform (x, y, scale) and opacity animate.** Color and background-color may change on the instant tier. Size changes use Motion's `layout` or `layoutId`, which animate through transform; use `layout="position"` where text would stretch.
 - **Never animate** width, height, top, left, margins, font-weight, letter-spacing, filter or blur, box-shadow, or anything material (glow, grain, gradients, backdrop) (P5).
 - **Exits** use `useExit(tier)`: quicker than the enter, a tween, never a bounce.
@@ -72,7 +72,7 @@ These come from the audit and are candidate rules (P11 to P13). Build them in.
 
 ## Visual rules
 
-- **Slight radius (trial, litt.md Q19; Nick asked for it), and it must stay concentric.** The tune panel sets the values live (default 4px and 8px):
+- **Slight radius (litt.md v0.5), and it must stay concentric.** `tokens.css` sets it, 4px and 8px, and the Playground can try other values live:
   - `rounded-control` on buttons, inputs, menu and list rows, tabs, segmented groups (with `overflow-hidden`), kbd and tooltips;
   - `rounded-surface` on cards, stages, menus, popovers, dialogs, toasts and the command menu;
   - `rounded-pill` only on chips, tags, avatars, status dots and icon-only buttons.
@@ -89,10 +89,11 @@ These come from the audit and are candidate rules (P11 to P13). Build them in.
 - **Glass (`litt-glass`) only on floating surfaces:** menus, popovers, tooltips, dialogs, toasts, the command menu. Set its shadow with `[--glass-shadow:var(--shadow-modal)]` for dialogs (the default is `--shadow-float`).
   - A floating surface opened **inside** another floating surface is solid (`bg-surface-2` or `bg-surface-3`) with `shadow-float`, never glass on glass.
   - Cards in the page flow use `litt-raised` and no shadow.
+  - `.litt-glass` carries the surface radius (v0.5). A glass surface that is full-bleed or hugs an edge resets the corners it should not have: `rounded-none` on the header, `rounded-r-none` on the right-edge sheet.
 - **Depth:** `shadow-float`, `shadow-modal`, `shadow-tooltip`, `shadow-glow` (the primary action only). There are no offset shadows. Hairlines are `shadow-[inset_0_0_0_1px_var(--line)]` or `border-line`.
 - **One accent fill per view,** on the primary action (P1). Accent can also mark a selected dot or a focus ring.
 - **Never add `litt-lit` light inside a stage.** The page already has its one light source (P2).
-- **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`).
+- **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). A form's submit and its paired Cancel are `size="lg"` (P10: a form CTA below lg fails).
 - **Utility classes from tokens.css:** `litt-glass`, `litt-raised`, `litt-trim` (cap-height labels).
 
 ## Your gallery page
@@ -112,15 +113,15 @@ export default function MenuPage() {
 
 - Use two to four stages. Each caption says what moves, on which tier, and why. Make every demo realistic: Nick's studio, projects, Framer sites and builds; no lorem ipsum.
 - Add a Replay button (`useReplay()` and `onReplay`) wherever an entrance matters.
-- Captions are written for Nick: short, plain sentences, no em dashes.
+- Captions are written for Nick: short, plain sentences, no em dashes. Say "the travel token" or "the stagger token", not "the dial", and avoid quoting the tunable numbers (durations, travel, stagger), so the copy cannot drift from `tokens.css`.
+- Leave `tune` off in your page meta. Only the Playground sets it, because it is the one page allowed to override the tokens.
 
 ## Verify before you report
 
-Run these from `/home/user/litt-ui`. Never run `npm run build`, `npm run dev`, or anything long-lived; `dist/` is shared.
+Run these from `gallery/`. In an agent session, never run `npm run dev` or anything long-lived, and build into your own `--outDir` so parallel runs do not collide.
 
 ```bash
-npm run typecheck
-npm run lint:litt
+npm run verify   # syncs the tokens, then typechecks and runs the litt rule lint
 npx vite build --outDir .agent-dist/<you> --emptyOutDir --logLevel warn
 node scripts/shot.mjs --dist .agent-dist/<you> --page <id> --out .agent-shots/<you> \
   [--click "<selector>"] [--keys ArrowDown,ArrowDown] [--hover "<selector>"] [--wait 600]
