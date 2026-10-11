@@ -1,0 +1,6 @@
+@import "./styles/litt.css";
+
+@layer base {
+  body { min-height: 100vh; background: var(--canvas); }
+  ::selection { background: color-mix(in oklab, var(--accent) 22%, transparent); }
+}

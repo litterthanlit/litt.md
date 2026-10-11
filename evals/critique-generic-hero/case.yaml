@@ -22,6 +22,7 @@ graders:
     criteria: |
       Pass if the critique flags most of: the purple-blue gradient and gradient text, centered
       everything, three equal emoji cards, arrow suffixes on every button, Inter instead of Hanken Grotesk,
-      the visible drop shadow and the springy hover motion. It should give no more than about three
-      ranked fixes expressed in litt.md terms (e.g. light source from the top, one accent fill,
-      asymmetric layout, 120ms ease-out), not just generic advice.
+      the visible drop shadow and the lift-and-bounce on card hover (hover is an instant tween and
+      moves nothing). It should give no more than about three ranked fixes expressed in litt.md
+      terms (e.g. light source from the top, one accent fill, asymmetric layout, 100ms ease-out),
+      not just generic advice.

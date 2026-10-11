@@ -39,7 +39,7 @@ Weight: Regular 400 only, for every text style (P9). Never Medium, Semibold or B
 - **Gaps:** only values from the space scale (4, 8, 12, 16, 24, 32, 48, 64, 96, 128).
 
 ### Corners and controls
-- **Corners:** every frame is square (radius 0). Full round only on chips, tags, avatars, status dots and icon-only buttons.
+- **Corners:** controls (buttons, inputs, tabs) radius 4. Surfaces (cards, panels, menus, dialogs, toasts) radius 8. Chips, tags, avatars, status dots and icon-only buttons are fully round. A control 4px inside a surface keeps the corners concentric.
 - **Button component:** one component with a Size variant.
   - sm: 32 tall, 12 side padding, 13px label.
   - md: 44 tall, 16 side padding, 15px label.
@@ -51,9 +51,9 @@ Weight: Regular 400 only, for every text style (P9). Never Medium, Semibold or B
 
 | Material | Framer recipe |
 |---|---|
-| **Glass** | Frame fill = Surface/1 at 72% opacity, **Background Blur** 20, border 1px (white 8% dark / ink 7% light), **Inner Shadow** y 1, blur 0, white at 6% dark / 90% light (the highlight). Floating frames only. |
-| **Raised card** | Square. Fill Surface/1, border 1px Line/Default, inner shadow y 1 blur 0 (highlight). No drop shadow. |
-| **Floating panel** (menu, toast, modal) | Square glass as above, plus drop shadows with **x 0, y 0**: blur 8 and 24 (menus) or 40 and 72 (modals), ink 6–10% light / black 30–50% dark, plus a 1px border ring. Never an offset shadow. |
+| **Glass** | Frame fill = Surface/1 at 72% opacity, **Background Blur** 20, border 1px (white 8% dark / ink 7% light), **Inner Shadow** y 1, blur 0, white at 6% dark / 90% light (the highlight). Floating frames only, radius 8 (0 on the full-bleed header). |
+| **Raised card** | Radius 8. Fill Surface/1, border 1px Line/Default, inner shadow y 1 blur 0 (highlight). No drop shadow. |
+| **Floating panel** (menu, toast, modal) | Radius 8 glass as above, plus drop shadows with **x 0, y 0**: blur 8 and 24 (menus) or 40 and 72 (modals), ink 6–10% light / black 30–50% dark, plus a 1px border ring. Never an offset shadow. |
 | **Light source** | Add a second fill layer to the hero frame: a radial gradient centered at the top edge (position 50% / −10%), from the accent at 12% light / 22% dark to transparent by about 65%. |
 | **Grain** | Add a top layer: an image fill using a 160px fractal-noise PNG tile at 2% light / 4% dark opacity, set to not capture pointer events. Export the tile once from `--grain` and reuse it. |
 | **Glow (primary button)** | Border 1px accent at 55%, plus a drop shadow of x 0, y 0, blur 24, accent at 28% light / 40% dark. One per page. |
@@ -62,11 +62,14 @@ Never animate these layers (P5).
 
 ## 5. Motion
 
-- **Transition preset** (save as the default): **Tween**, duration `0.12`, bezier `0.25, 0.46, 0.45, 0.94`.
-- Also save: Reveal `0.16`, Panel `0.2`, with the same curve. Nothing over `0.24`.
-- **Never use springs.** Overshoot reads as performance, not confirmation.
+- **Save three transition presets.**
+  - Instant: **Tween**, duration `0.1`, bezier `0.25, 0.46, 0.45, 0.94`. Hover, press, toggles.
+  - Responsive: **Spring**, Time `0.2`, Bounce `0`. Menus, tabs, tooltips, the gliding highlight.
+  - Expressive: **Spring**, Time `0.35`, Bounce `0.12`. One signature moment per view.
+- **Exits** run at 0.75× the spring's time and never bounce: a Tween with the instant bezier at `0.15` (responsive) or `0.26` (expressive).
+- The instant tween stays at `0.24` or under. Bounce stays at `0.12` or under, and is `0` on responsive and on every exit.
 - Hover variants change fill or color only. Press variants scale to `0.98`.
-- **No** Appear effects, scroll transforms, parallax, ticker or marquee components (motion rules in `foundations.md`).
+- No scroll-triggered Appear effects, scroll transforms, parallax, ticker or marquee. The list entrance is one stagger group on load (`0.04`, Y `16`).
 - Framer respects reduced motion for its own effects. Custom code components must check `useReducedMotion()`.
 
 ## 6. Custom code (optional)
@@ -78,8 +81,8 @@ To use the exact tokens in code components or embeds, paste `assets/tokens.css` 
 - [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Nothing above Regular 400.
 - [ ] Gaps and paddings are on the scale.
 - [ ] Glass only on floating frames (header, menus, modals, toasts).
-- [ ] Every frame is square, with pills only on chips, tags and avatars. Buttons and inputs use the 32/44/56 sizes.
+- [ ] Corners: 4 on controls, 8 on surfaces, pills only on chips, tags, avatars, status dots and icon-only buttons. Buttons and inputs use the 32/44/56 sizes.
 - [ ] No drop shadow with an x or y offset.
 - [ ] One accent fill and one glow per page.
-- [ ] Every transition uses the saved tween preset. No springs, no Appear effects.
+- [ ] Every transition uses one of the three saved presets. Bounce only on expressive, never on exits. No scroll Appear effects.
 - [ ] Preview in light, dark and Phone before publishing.

@@ -25,7 +25,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 **B. Structure**
 - [ ] **P6** Spacing on the 8px grid (4px inside components). 1px hairlines. Tracking tightens on large type.
 - [ ] **P7** One idea per section. Section spacing near 128 / 96 / 64. Left-aligned and asymmetric by default.
-- [ ] Radius is binary: square everywhere, pills only on chips, tags, avatars, status dots and icon-only buttons.
+- [ ] Radius is on the scale: 4px controls, 8px surfaces (a surface is a control plus the 4px inset), pills only on chips, tags, avatars, status dots and icon-only buttons. No `rounded-lg`-style classes.
 - [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero and form CTAs are lg.
 - [ ] Cards used only for independent objects, not as the default layout.
 
@@ -40,7 +40,9 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] Body text 13px or larger. Long text at a 65ch measure or narrower.
 
 **E. Motion** (`n/a` for static input)
-- [ ] Durations of 240ms or less, ease-out, transform and opacity only.
+- [ ] Three tiers only: instant tween (240ms or less), responsive spring (bounce 0), expressive spring (bounce 0.12 or less). Exits at 0.75× with no bounce.
+- [ ] At most one expressive moment per view.
+- [ ] Only transform and opacity animate. Color, fill and the focus ring fade at instant. No layout properties, no `transition: all`.
 - [ ] No unprompted motion (scroll reveals, parallax, autoplay, marquee).
 - [ ] Reduced motion respected.
 
@@ -64,7 +66,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 ## Critique: <subject>
 
 **Verdict:** <one sentence: how close is this to litt.md, and what's the biggest gap>
-**Score:** A x/5 · B x/5 · C x/2 · D x/4 · E x/3 · F x/5 · G x/5
+**Score:** A x/5 · B x/5 · C x/2 · D x/4 · E x/5 · F x/5 · G x/5
 
 ### Fix first (ranked by impact)
 1. <element> breaks <rule>. Fix: <specific change in token terms, e.g. "swap the purple gradient for `.litt-lit` on the hero; accent at 22% in dark">

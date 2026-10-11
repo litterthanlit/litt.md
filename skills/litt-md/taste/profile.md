@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.4 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 53 journal entries · October 2026
+> v0.5 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 54 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -20,8 +20,8 @@ Five words: **precise, lit, airy, calm, exact.**
 | Signature | Light and material | This is where the boldness goes, and it is what separates litt.md from generic dark mode. |
 | Color | Cool neutrals (OKLCH hue about 262), monochrome, one accent per project | Hierarchy comes from tone. The accent is chosen per project. |
 | Density | Airy | One idea per section, with generous negative space. |
-| Shape | Binary radius: everything square (0); full round only for chips, tags, avatars, status dots and icon-only buttons | Square, generously padded controls read as roomy and crisp at once. No in-between "friendly" radii. |
-| Motion | Invisible and fast: 100–200ms ease-out, 240ms ceiling | Motion confirms actions. It never performs. |
+| Shape | Slight radius: controls 4px, surfaces 8px, pills for chips, tags, avatars, status dots and icon-only buttons | A little radius softens the precision and stays exact. A surface is a control plus the 4px inset, so corners nest. Two sizes and the pill, nothing in between. |
+| Motion | Sweet spot, three tiers. Instant: 100ms ease-out tween. Responsive: spring, 200ms, bounce 0. Expressive: spring, 350ms, bounce 0.12, one moment per view. Exits run at 0.75× and never bounce | Fast by default, with one signature moment per view. Motion confirms actions and never performs. Only transform and opacity animate, plus color fades at instant. |
 
 ## Signature rules
 
@@ -64,15 +64,19 @@ Five words: **precise, lit, airy, calm, exact.**
 - Use the mono (`--font-mono`) for real code, keyboard shortcuts (`⌘K`), numbers in tables, and version strings.
 - Design the empty, loading, error and focus states with the same care as the default.
 - Keep a visible focus ring: 2px `--focus` at a 2px offset.
+- In menus, the command menu and dense lists, use one highlight that glides from row to row. Airy content layouts keep the per-row fill.
+- Keep corners concentric. A surface is 8px, and a control 4px inside it sits 4px from its edge.
+- Give each view one expressive moment: a dialog, a toast or a list entrance. Everything else is instant or responsive.
 
 ## Don't
 
 - Add a second typeface, a serif display, or a "fun" font for one section.
 - Use a weight above 400 (medium, semibold or bold), even for a small label or button.
 - Use gradients as decoration (purple-to-blue heroes, gradient text, gradient borders).
-- Animate anything for longer than 240ms, or animate layout properties (width, height, top, left).
-- Add motion that is not a response to the user: no autoplaying reveals, no parallax, no marquee.
-- Round corners. Everything is square; pills only for chips, tags, avatars, status dots and icon-only buttons.
+- Bounce a spring past 0.12, bounce on the responsive tier or on any exit, or give a view more than one expressive moment. The instant tween stays at or under 240ms.
+- Animate layout properties (width, height, top, left), use `transition: all`, or animate anything but transform and opacity. Color, background-color, border-color, fill and the focus ring may fade at `--dur-instant`.
+- Add motion that is not a response to the user: no scroll-triggered reveals, no looping autoplay, no parallax, no marquee. The one expressive entrance per view plays once, on arrival.
+- Use a radius off the scale. Controls are 4px, surfaces 8px, and pills are only for chips, tags, avatars, status dots and icon-only buttons.
 - Put a drop shadow with an offset on anything, or any shadow on a card in the page flow.
 - Fill backgrounds with accent color. Tint the light instead.
 - Put glass on static cards, or stack glass on glass.
@@ -86,7 +90,7 @@ Claude's default output drifts toward these. Each one is banned unless the sessi
 - Everything centered, section after section.
 - An accent bar or rail on the left edge of rounded cards.
 - An arrow suffix (`→`) on every link and button.
-- `rounded-lg` (or any single radius) applied to everything.
+- One radius (`rounded-lg`, 12px, 16px) applied to every element. Litt has two on purpose: 4px controls and 8px surfaces, plus the pill.
 - The same uppercase mono eyebrow above every section ("01 / FEATURES").
 - Three equal feature cards with an icon, a title and two lines, as the default answer to every section.
 - One word of the headline picked out in accent color.
@@ -116,16 +120,10 @@ The interview workflow works through these. When one is answered, move the answe
 - **Q12.** Which theme comes first on marketing pages when the system preference is unknown? Cursor, Vercel and litt.design are all light-first.
 - **Q14.** Mono: keep Geist Mono next to Hanken Grotesk, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
   - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The type trial paired Hanken Grotesk with JetBrains Mono by default.
-- **Q15.** Instant speed: keep `--dur-instant` at 120ms, or go faster? litt.design uses 100ms on 370 of 416 transitions, and Fluid Functionalism uses 80ms on 358 of 378.
-- **Q16.** Hover in menus, the command menu and dense lists: one highlight that glides from row to row (Fluid Functionalism), or the current per-row fill? A glide would stay out of airy content layouts either way.
-- **Q17.** Which properties may transition? The docs say transform and opacity only, but the specimen fades color, background-color and the focus box-shadow, and Fluid Functionalism fades color at 80ms. Allow color and fill fades at `--dur-instant`, or hold the line?
-- **Q18.** Motion personality: the Motion decision says invisible and fast, but Nick wants to try motion-led and find the sweet spot between them. A components gallery with a motion dial is the instrument. The decision stands until Nick picks a setting.
-  - *Evidence:* the motion lab (three personalities, four curves, three hover speeds, per-row versus gliding hover).
-  - *Evidence:* in the litt-ui gallery Nick said "sweet spot is where its at". Lock it once all eight components are built.
-- **Q19.** Shape: the v0.3 decision is binary (square, pills only). Nick asked for "slight radius" in the gallery. The trial runs 4px on controls and 8px on surfaces (concentric), with a shape control from 0 to 6px. Settle the value, then rewrite the Shape decision.
 
 ## Changelog
 
+- **v0.5, October 2026.** In the litt-ui gallery Nick said "sweet spot is where its at" and "add slight radius". Motion is now three tiers: instant (100ms tween), responsive (spring, 200ms, bounce 0) and expressive (spring, 350ms, bounce 0.12, one per view), with a 40ms stagger and 16px travel. Exits run at 0.75× the spring's time as an ease-out tween and never bounce. Springs are time plus bounce. Only transform and opacity animate, plus color, background-color, border-color, fill and the focus ring at instant. Menus, the command menu and dense lists get one gliding highlight; airy layouts keep the per-row fill. Shape is slight radius: controls 4px, surfaces 8px, pills unchanged, and the binary-radius rule is retired. `--dur-reveal` and `--dur-panel` became `--dur-responsive`, `--dur-max` is gone, and `--dur-exit-*` now derive from the springs. Q15 to Q19 closed.
 - **v0.4, October 2026.** Nick said "Im tired of geist", then picked Hanken Grotesk from a 14-face type trial ("Hanken Grotesk is lit!"). The Type decision now reads Hanken Grotesk + Geist Mono; the mono stays until Q14 is settled. Nick also cut the display headline from 56→72 to 40, so h1 and h2 step down to 32 and 28 to keep the scale descending, and the "72 against 15" line now reads 40 against 15.
 - **v0.3, October 2026.** From the Ramp audit, Nick chose a roomy button scale (new rule P10), glow + ring depth (P4 rewritten: no offset shadows, cards flat), and binary radius (Shape decision: everything square, pills only for chips, tags and avatars). Q10 and Q13 closed.
 - **v0.2, October 2026.** Nick said "fonts are too wide, don't go over 400". New rule P9 caps every weight at 400. The Type decision now reads weight 400 only, and `tokens.css` keeps a single `--weight` token.

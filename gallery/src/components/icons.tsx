@@ -1,0 +1,34 @@
+/** Icons: 16px, 1.5px stroke, currentColor (litt.md components.md). Decorative unless labelled. */
+import type { SVGProps } from "react";
+
+type IconProps = SVGProps<SVGSVGElement> & { size?: number };
+
+function Icon({ size = 16, children, ...rest }: IconProps & { children: React.ReactNode }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}
+      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" {...rest}>
+      {children}
+    </svg>
+  );
+}
+
+export const SearchIcon = (p: IconProps) => <Icon {...p}><circle cx="7" cy="7" r="4.75" /><path d="m10.5 10.5 3 3" /></Icon>;
+export const CheckIcon = (p: IconProps) => <Icon {...p}><path d="m3.5 8.5 3 3 6-7" /></Icon>;
+export const ChevronRightIcon = (p: IconProps) => <Icon {...p}><path d="m6 3.5 4.5 4.5L6 12.5" /></Icon>;
+export const ChevronDownIcon = (p: IconProps) => <Icon {...p}><path d="m3.5 6 4.5 4.5L12.5 6" /></Icon>;
+export const XIcon = (p: IconProps) => <Icon {...p}><path d="m4 4 8 8M12 4l-8 8" /></Icon>;
+export const PlusIcon = (p: IconProps) => <Icon {...p}><path d="M8 3v10M3 8h10" /></Icon>;
+export const CopyIcon = (p: IconProps) => <Icon {...p}><rect x="5.25" y="5.25" width="7.5" height="7.5" /><path d="M3.25 10.25V3.25h7" /></Icon>;
+export const ArrowUpRightIcon = (p: IconProps) => <Icon {...p}><path d="M5 11 11 5M6 5h5v5" /></Icon>;
+export const MoreIcon = (p: IconProps) => <Icon {...p}><circle cx="3.5" cy="8" r=".75" /><circle cx="8" cy="8" r=".75" /><circle cx="12.5" cy="8" r=".75" /></Icon>;
+export const SettingsIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="8" r="2" /><path d="M8 1.75v2M8 12.25v2M1.75 8h2M12.25 8h2M3.6 3.6 5 5M11 11l1.4 1.4M3.6 12.4 5 11M11 5l1.4-1.4" /></Icon>;
+export const UserIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="5.5" r="2.75" /><path d="M2.75 13.75c.8-2.4 2.9-3.75 5.25-3.75s4.45 1.35 5.25 3.75" /></Icon>;
+export const TrashIcon = (p: IconProps) => <Icon {...p}><path d="M2.75 4.25h10.5M6.25 4.25V2.75h3.5v1.5M4.25 4.25l.6 9h6.3l.6-9" /></Icon>;
+export const ArchiveIcon = (p: IconProps) => <Icon {...p}><rect x="2.25" y="2.75" width="11.5" height="3" /><path d="M3.25 5.75v7.5h9.5v-7.5M6.5 8.5h3" /></Icon>;
+export const ShareIcon = (p: IconProps) => <Icon {...p}><path d="M8 10V2.5M5 5.25 8 2.25l3 3M3.25 8.5v5h9.5v-5" /></Icon>;
+export const FileIcon = (p: IconProps) => <Icon {...p}><path d="M4 1.75h5l3 3v9.5H4z" /><path d="M9 1.75v3h3" /></Icon>;
+export const FolderIcon = (p: IconProps) => <Icon {...p}><path d="M1.75 3.25h4.5l1.5 1.5h6.5v8H1.75z" /></Icon>;
+export const BellIcon = (p: IconProps) => <Icon {...p}><path d="M4 11.25V7a4 4 0 0 1 8 0v4.25l1 1H3zM6.5 13.75h3" /></Icon>;
+export const InfoIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="8" r="6.25" /><path d="M8 7.25v4M8 4.75v.01" /></Icon>;
+export const SunIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="8" r="2.75" /><path d="M8 1.75v1.5M8 12.75v1.5M1.75 8h1.5M12.75 8h1.5M3.6 3.6l1 1M11.4 11.4l1 1M3.6 12.4l1-1M11.4 4.6l1-1" /></Icon>;
+export const SlidersIcon = (p: IconProps) => <Icon {...p}><path d="M2.5 4.5h7M12.5 4.5h1M2.5 11.5h1M6.5 11.5h7" /><circle cx="11" cy="4.5" r="1.5" /><circle cx="5" cy="11.5" r="1.5" /></Icon>;

@@ -29,11 +29,16 @@ graders:
     name: no-raw-palette
     pattern: 'class="[^"]*\b(bg|text|border|from|to|via)-(slate|gray|zinc|neutral|stone|blue|indigo|violet|purple|sky)-\d{2,3}\b'
     match: not_contains
-  # Binary radius: square, or rounded-pill only.
+  # Slight radius: rounded-control, rounded-surface or rounded-pill only (a side such as
+  # rounded-t-surface or a variant such as md:rounded-surface is fine). Catches class= and className=.
   - type: regex
-    name: no-rounded-corners
-    pattern: 'class="[^"]*\brounded(-(xs|sm|md|lg|xl|2xl|3xl|4xl|control|card|panel))?(?=[\s"])'
+    name: no-off-scale-radius
+    pattern: 'class(?:Name)?="[^"]*\brounded(?!(?:-(?:t|r|b|l|s|e|tl|tr|bl|br|ss|se|es|ee))?-(?:control|surface|pill|none)(?=[\s"]))(?=[-\s"])'
     match: not_contains
+  - type: regex
+    name: uses-radius-scale
+    pattern: '\brounded-(control|surface|pill)\b'
+    match: contains
   - type: llm
     name: composition-and-accent
     criteria: |

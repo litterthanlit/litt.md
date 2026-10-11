@@ -73,7 +73,7 @@ When tuning, change both columns deliberately. Never derive one from the other.
 .site-header { position: sticky; top: 0; z-index: 20; } /* plus class="litt-glass" */
 ```
 
-**Floating menu over content.** Use `<dialog class="litt-glass">` square, with `background: transparent` and `--glass-shadow: var(--shadow-modal)`. The `::before` supplies the glass, and `::backdrop` is `color-mix(in oklab, var(--canvas) 55%, transparent)`, a tint with no blur, so there is no glass on glass.
+**Floating menu over content.** Use `<dialog class="litt-glass">` at `--radius-surface`, with `background: transparent` and `--glass-shadow: var(--shadow-modal)`. The `::before` supplies the glass, and `::backdrop` is `color-mix(in oklab, var(--canvas) 55%, transparent)`, a tint with no blur, so there is no glass on glass.
 
 **Primary button.**
 ```css

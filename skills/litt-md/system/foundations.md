@@ -94,31 +94,40 @@ Run `node scripts/check.mjs` to confirm. The placeholder signal blue stays only 
 
 ## 4. Shape
 
-**Binary radius.** Everything is square: buttons, inputs, cards, tiles, glass panels, menus, modals, toasts, kbd. The only other value is full round (`--radius-pill`), for chips, tags, avatars, status dots and icon-only buttons. There are no in-between radii, so no nested-radius math either.
+**Slight radius.** Two radii and a pill.
 
-Why: square, generously padded controls read as roomy and crisp at once, and the pills stand out because they are the only round things on the page. `tokens.css` resets the browser's default rounding on `button`, `input`, `select` and `textarea`.
+| Variable | Value | Use |
+|---|---|---|
+| `--radius-control` | 4px | Buttons, inputs, selects, tabs, kbd, menu rows, tooltips |
+| `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
+| `--radius-pill` | 999px | Chips, tags, avatars, status dots, icon-only buttons |
 
+**Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
+
+- `tokens.css` gives `button`, `input`, `select` and `textarea` the control radius, and `.litt-raised` and `.litt-glass` the surface radius. A full-bleed bar like the header sets `border-radius: 0`.
 - Borders are 1px (`--hairline`), drawn as `inset 0 0 0 1px var(--line)` so they don't change layout.
-- In Tailwind, square is the default (no `rounded-*` class). `rounded-pill` is the only radius utility; strict mode removes the rest.
+- In Tailwind: `rounded-control`, `rounded-surface`, `rounded-pill`, nothing else.
 
 ## 5. Motion
 
-Motion is invisible and fast. It confirms an action and never performs.
+Fast by default, with one signature moment per view. Motion confirms an action and never performs.
 
-| Variable | Duration | Use |
-|---|---|---|
-| `--dur-instant` | 120ms | Hover, press, toggle |
-| `--dur-reveal` | 160ms | Tooltip, dropdown, popover |
-| `--dur-panel` | 200ms | Sheet, modal, command menu |
-| `--dur-max` | 240ms | Hard ceiling. Nothing exceeds it, page transitions included. |
-| `--dur-exit-reveal`, `--dur-exit-panel` | 128 / 160ms | Exits run at about 80% of the enter |
+| Tier | Type | Time | Bounce | Variables | Use |
+|---|---|---|---|---|---|
+| Instant | Tween | 100ms | none | `--dur-instant`, `--ease-out` | Hover, press, toggles, color fades |
+| Responsive | Spring | 200ms | 0 | `--spring-responsive`, `--ease-responsive`, `--dur-responsive` | Menus, tabs, tooltips, the gliding highlight, filter and insert |
+| Expressive | Spring | 350ms | 0.12 | `--spring-expressive`, `--ease-expressive`, `--dur-expressive` | One moment per view: dialog, toast or list entrance |
 
-- **Easing.** `--ease-out` for everything. No spring overshoot, no bounce, no ease-in on entry.
-- **Properties.** Only `opacity` and `transform` animate. Background-color and color transitions are allowed on hover. Never animate layout (width, height, top, left) or material (P5).
-- **Press.** `transform: scale(var(--press-scale))` (0.98) on `:active`.
-- **Entry.** A modal enters with opacity 0→1, translateY 4px→0 and scale 0.98→1 over `--dur-panel`. Nothing travels more than 8px.
-- **Never.** Scroll-triggered reveals, parallax, autoplay, marquee, staggered list entrances, skeleton shimmer longer than 240ms per pass, cursor-following effects.
-- **Reduced motion.** `tokens.css` sets every duration to 0 and the press scale to 1 under `prefers-reduced-motion: reduce`. Always use the variables, so this works automatically.
+- **Springs are time plus bounce.** Motion takes `visualDuration` and `bounce`; Framer takes Time and Bounce. CSS can't run a spring, so `--ease-responsive` and `--ease-expressive` are `linear()` approximations, and `--dur-responsive` and `--dur-expressive` are their settle times. Use the `--spring-*` pair in JS and the `--ease-*` + `--dur-*` pair in CSS.
+- **Exits.** An element leaving runs at `--exit` (0.75×) of the spring's visual time, as an `--ease-out` tween, and never bounces: `--dur-exit-responsive` (150ms), `--dur-exit-expressive` (263ms). Un-hover and un-press are not exits; they stay instant.
+- **Stagger and travel.** `--stagger` (40ms) separates siblings in one cascade. `--travel` (16px) is the entrance offset. Menus and tooltips use a quarter of it.
+- **Properties.** Transform and opacity animate. Color, background-color, border-color, fill and the focus ring may fade, at `--dur-instant` only. Never layout (width, height, top, left, margin, padding), never `transition: all`, never material (P5).
+- **Press.** `transform: scale(var(--press-scale))` (0.98) on `:active`, instant tier. A state change never moves the box otherwise.
+- **One expressive moment per view.** A second one uses the responsive tier.
+- **Ceilings.** The instant tween stays at or under 240ms. Spring visual time stays at or under 350ms, and bounce at or under 0.12. `scripts/check.mjs` enforces both.
+- **Never.** Scroll-triggered reveals, parallax, looping autoplay, marquee, bounce on exits or on the responsive tier, skeleton shimmer longer than 240ms per pass, cursor-following effects.
+- **Reduced motion.** `tokens.css` sets every `--dur-*`, `--stagger` and `--travel` to 0 and the press scale to 1. In JS, let the library honor it (`MotionConfig reducedMotion="user"`, Framer `useReducedMotion()`).
+- **Retired in v0.5.** `--dur-reveal` and `--dur-panel` became `--dur-responsive` (or `--dur-expressive` for a dialog). `--dur-max` has no replacement. The old `--dur-exit-reveal` and `--dur-exit-panel` became `--dur-exit-responsive` and `--dur-exit-expressive`.
 
 ## 6. Accessibility floor
 
