@@ -1,0 +1,18 @@
+@import "./styles/litt.css";
+
+/* Shape trial (litt.md Q19): slight radius, concentric. The tune panel rewrites
+   these live. Declared unlayered so they win over Tailwind's layered copy,
+   the same pattern litt.md uses for --radius-pill. */
+:root {
+  --radius-control: 4px;  /* buttons, inputs, rows, tabs, kbd */
+  --radius-surface: 8px;  /* cards, stages, menus, dialogs, toasts: control + the 4px inset */
+}
+@theme inline {
+  --radius-control: var(--radius-control);
+  --radius-surface: var(--radius-surface);
+}
+
+@layer base {
+  body { min-height: 100vh; background: var(--canvas); }
+  ::selection { background: color-mix(in oklab, var(--accent) 22%, transparent); }
+}
