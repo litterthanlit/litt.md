@@ -12,7 +12,7 @@ Open [`skills/litt-md/assets/specimen.html`](skills/litt-md/assets/specimen.html
 skills/litt-md/
 ├── SKILL.md            router: which files to read for build / critique / interview / audit / log / distill
 ├── taste/              YOURS: changes as your taste develops
-│   ├── profile.md      rules P1–P8 with checks, dos and don'ts, open questions, changelog
+│   ├── profile.md      P# rules with checks, dos and don'ts, open questions, changelog
 │   ├── journal.md      append-only log of reactions
 │   └── inspirations.md audited references: Steal / Reject
 ├── system/             specs (variable names and reasoning; values live in tokens.css)
@@ -32,7 +32,7 @@ skills/litt-md/
 │   └── specimen.html   living specimen
 └── scripts/
     ├── extract-styles.mjs  measure a site's real tokens / capture a moodboard (Playwright)
-    └── check.mjs           links, hex drift, dark-block parity, contrast, frontmatter
+    └── check.mjs           links, hex drift, dark parity, contrast, weight, radius, shadows, motion
 ```
 
 ## Install
@@ -101,7 +101,7 @@ Claude loads the skill on its own when you build, restyle or review UI. You can 
 
 ```bash
 claude plugin validate .                                  # manifests and skill structure
-node skills/litt-md/scripts/check.mjs                     # links, drift, parity, contrast, frontmatter
+node skills/litt-md/scripts/check.mjs                     # links, drift, parity, contrast, weight, radius, shadows, motion
 claude --plugin-dir . plugin details litt-md              # component inventory and token cost
 claude plugin eval .                                      # trigger evals in evals/
 ```

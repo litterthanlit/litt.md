@@ -14,7 +14,10 @@
  * 6. Weight:    nothing goes above font-weight 400 (P9).
  * 7. Radius:    corners are square or pill, nothing in between.
  * 8. Shadows:   no outer shadow has an x or y offset (P4).
- * 9. Frontmatter: SKILL.md name and description follow the skill rules.
+ * 9. Motion:    durations stay under the 240ms ceiling, reduced motion zeroes them,
+ *               transitions use the duration and easing tokens, and nothing
+ *               animates layout properties or `all`.
+ * 10. Frontmatter: SKILL.md name and description follow the skill rules.
  *
  * Exits 1 if anything fails.
  */
@@ -190,7 +193,36 @@ for (const f of assetFiles) {
 }
 shadowFails.length ? shadowFails.forEach(fail) : ok("no shadow has an offset");
 
-// 9. Frontmatter ----------------------------------------------------------
+// 9. Motion ---------------------------------------------------------------
+console.log("Motion (240ms ceiling)");
+const motionFails = [];
+const ms = (v) => (/ms$/.test(v) ? parseFloat(v) : /s$/.test(v) ? parseFloat(v) * 1000 : NaN);
+const reducedBlock = (css.match(/@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\}/) || [])[1] || "";
+const durTokens = new Map();
+for (const m of css.replace(reducedBlock, "").matchAll(/(--dur-[\w-]+)\s*:\s*([\d.]+m?s)/g)) durTokens.set(m[1], ms(m[2]));
+if (!durTokens.size) motionFails.push("tokens.css: no --dur-* tokens found");
+for (const [name, v] of durTokens) if (!(v <= 240)) motionFails.push(`tokens.css: ${name} is ${v}ms, over the 240ms ceiling`);
+const zeroed = new Set([...reducedBlock.matchAll(/(--dur-[\w-]+)\s*:\s*0m?s/g)].map((m) => m[1]));
+for (const name of durTokens.keys()) if (!zeroed.has(name)) motionFails.push(`tokens.css: ${name} is not zeroed under prefers-reduced-motion`);
+const layoutProps = /\b(width|height|min-width|max-width|min-height|max-height|top|right|bottom|left|inset|margin(-[a-z]+)?|padding(-[a-z]+)?|all)\b/;
+for (const f of assetFiles) {
+  const text = read(f).replace(/\/\*[\s\S]*?\*\//g, "").replace(/<!--[\s\S]*?-->/g, "");
+  for (const m of text.matchAll(/(?<![\w-])(transition|transition-property|transition-duration|transition-timing-function|animation|animation-duration|animation-timing-function)\s*:\s*([^;}"]+)/g)) {
+    const [, prop, value] = m;
+    const bare = value.replace(/var\([^)]*\)/g, " ");
+    if (/^transition(-property)?$/.test(prop)) {
+      for (const part of value.split(",")) {
+        const first = part.trim().split(/\s+/)[0];
+        if (layoutProps.test(first) && !/^var\(/.test(first)) motionFails.push(`${f}: ${prop} animates "${first}"`);
+      }
+    }
+    for (const t of bare.match(/\b\d*\.?\d+m?s\b/g) || []) if (ms(t) !== 0) motionFails.push(`${f}: ${prop} uses a literal ${t}; use a --dur-* token`);
+    if (/cubic-bezier|steps\(|\b(ease|ease-in|ease-in-out|linear)\b/.test(bare)) motionFails.push(`${f}: ${prop} uses a literal easing; use var(--ease-out)`);
+  }
+}
+motionFails.length ? motionFails.forEach(fail) : ok(`${durTokens.size} durations at or under 240ms, all zeroed for reduced motion; transitions use tokens and skip layout properties`);
+
+// 10. Frontmatter ---------------------------------------------------------
 console.log("SKILL.md frontmatter");
 const fm = read("SKILL.md").match(/^---\n([\s\S]*?)\n---/);
 if (!fm) fail("SKILL.md has no frontmatter");

@@ -71,7 +71,7 @@ Then run:
 ```
 node <skill-dir>/scripts/check.mjs
 ```
-It verifies that linked files exist, that no Markdown hex is missing from tokens.css, that the dark blocks match, and that every contrast pair passes. Fix any failure before committing.
+It verifies that linked files exist, that no Markdown hex is missing from tokens.css, that the dark blocks match, that every contrast pair passes, and that the assets keep the weight, radius, shadow and motion rules. Fix any failure before committing.
 
 ## 5. What never changes without Nick
 

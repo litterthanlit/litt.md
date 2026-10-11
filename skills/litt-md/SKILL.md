@@ -107,7 +107,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs site <url> --out captures/<s
 # Audit a moodboard (Cosmos, Pinterest): scroll and save screenshots to read
 node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs board <url> --out captures/<slug>
 
-# After any change to tokens or docs: links, hex drift, dark-block parity, contrast
+# After any change to tokens or docs: links, hex drift, dark parity, contrast, weight, radius, shadows, motion
 node ${CLAUDE_SKILL_DIR}/scripts/check.mjs
 ```
 
