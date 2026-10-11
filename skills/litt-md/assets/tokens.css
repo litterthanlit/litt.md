@@ -19,25 +19,26 @@
    Theme-independent tokens
    -------------------------------------------------------------------------- */
 :root {
-  /* Type: Geist carries everything; Geist Mono for code, keys and data. */
-  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Type: Hanken Grotesk carries everything; Geist Mono for code, keys and data. */
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   /* One weight (P9). Hierarchy comes from size, color and tracking, never weight. */
   --weight: 400;
 
-  /* Type scale: tracking tightens as size grows (P6). */
-  --type-display-size: clamp(3.5rem, 2.6rem + 2.8vw, 4.5rem); /* 56 → 72 */
-  --type-display-leading: 1.05;
-  --type-display-tracking: -0.03em;
+  /* Type scale: tracking tightens as size grows (P6). Headlines stay
+     restrained: display tops out at 40, at every breakpoint. */
+  --type-display-size: 2.5rem; /* 40 */
+  --type-display-leading: 1.1;
+  --type-display-tracking: -0.025em;
 
-  --type-h1-size: 2.5rem;      /* 40 */
-  --type-h1-leading: 1.1;
-  --type-h1-tracking: -0.025em;
+  --type-h1-size: 2rem;        /* 32 */
+  --type-h1-leading: 1.15;
+  --type-h1-tracking: -0.022em;
 
-  --type-h2-size: 2rem;        /* 32 */
-  --type-h2-leading: 1.15;
-  --type-h2-tracking: -0.022em;
+  --type-h2-size: 1.75rem;     /* 28 */
+  --type-h2-leading: 1.2;
+  --type-h2-tracking: -0.02em;
 
   --type-h3-size: 1.5rem;      /* 24 */
   --type-h3-leading: 1.25;

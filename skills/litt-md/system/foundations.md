@@ -14,7 +14,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 ## 1. Type
 
-**Families.** `--font-sans` (Geist) for everything. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. No third family, ever.
+**Families.** `--font-sans` (Hanken Grotesk) for everything. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. No third family, ever.
 
 **Weight (P9).** One weight: `--weight` (400) for everything, including display, headings, labels, buttons and the wordmark. Medium, semibold and bold read too wide and are not part of the system. `tokens.css` resets the bold browser defaults (`h1`–`h6`, `b`, `strong`, `th`) and turns off faux bold. Only the 400 faces need to load.
 
@@ -22,15 +22,17 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 | Step | Size | Use |
 |---|---|---|
-| display | 56→72 fluid | One per page, hero statement only. Regular weight, so size and tracking carry it. |
-| h1 | 40 | Page title |
-| h2 | 32 | Section title on content pages |
+| display | 40 | One per page, hero statement only. The same size at every breakpoint. |
+| h1 | 32 | Page title |
+| h2 | 28 | Section title on content pages |
 | h3 | 24 | Subsection, card group title |
 | h4 | 20 | Section label in the asymmetric left column |
 | reading | 17 | Long-form text, at a `--measure` (65ch) line length |
 | body | 15 | UI body: settings, lists, dialogs |
 | small | 13 | Supporting text, table cells, helper text, nav |
 | caption | 12 | Timestamps, fine print |
+
+**Restrained headlines.** Display stops at 40. The hero gets its presence from space, light and the product, not from poster-sized type, so the jump to 15px body is enough on its own.
 
 **Hierarchy order.** Get hierarchy from scale first, then color (`--fg` → `--fg-muted` → `--fg-subtle`), then tracking. Never from weight. When a label needs to stand out at the same size, make it `--fg` and its neighbours `--fg-subtle`.
 

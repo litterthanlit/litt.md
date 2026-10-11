@@ -5,7 +5,7 @@ Use this when building or restyling anything visual: a page, section, component,
 ## 0. Read the situation
 
 1. **Nick's words in this session win.** If they ask for something the profile forbids (a serif, a centered hero), do it, and offer to log it as a journal entry (it may be taste changing).
-2. **An existing project system comes next.** If the project already has tokens or a design system, map litt.md onto it (its colors, its components) rather than replacing it. Apply litt.md's *rules* (P1–P8) within that system.
+2. **An existing project system comes next.** If the project already has tokens or a design system, map litt.md onto it (its colors, its components) rather than replacing it. Apply litt.md's *rules* (the P# rules in `taste/profile.md`) within that system.
 3. **Know the target.** Ask if it isn't obvious:
    - **Code (Tailwind v4):** copy `assets/tokens.css` and `assets/tailwind.css` into the project and import `tailwind.css`. Use token utilities (`bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `px-control-pad-md`, `shadow-float`, `py-section`). Leave corners square (no `rounded-*` class); `rounded-pill` only for chips, tags and avatars.
    - **Code (plain CSS or another framework):** copy `assets/tokens.css` and use the variables and `.litt-*` primitives.

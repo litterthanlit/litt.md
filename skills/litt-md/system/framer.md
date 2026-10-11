@@ -19,16 +19,16 @@ Set the project to follow the system theme. Preview both modes before publishing
 
 ## 2. Text styles
 
-Font: **Geist** (Google Fonts, available in Framer) and **Geist Mono**. Create text styles from the scale in `foundations.md`, with the size, line height and letter spacing taken from the `--type-*` tokens. Framer takes letter spacing in em, so enter the token value directly (for example −0.03em for display).
+Font: **Hanken Grotesk** (Google Fonts, available in Framer) and **Geist Mono**. Create text styles from the scale in `foundations.md`, with the size, line height and letter spacing taken from the `--type-*` tokens. Framer takes letter spacing in em, so enter the token value directly (for example −0.025em for display).
 
 ```
-Display  → H1 tag on the hero only (fluid: 72 desktop / 56 phone via breakpoints)
+Display  → H1 tag on the hero only (40 on every breakpoint)
 H1, H2, H3, H4 → their tags
 Reading, Body, Small, Caption → P tag
 Mono     → for kbd, data, versions
 ```
 
-Weight: Regular 400 only, for every text style (P9). Never Medium, Semibold or Bold. Hierarchy comes from size and color styles. Only add Geist Regular and Geist Mono Regular to the project.
+Weight: Regular 400 only, for every text style (P9). Never Medium, Semibold or Bold. Hierarchy comes from size and color styles. Only add Hanken Grotesk Regular and Geist Mono Regular to the project.
 
 ## 3. Layout
 

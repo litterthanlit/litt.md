@@ -1,6 +1,6 @@
 ---
 name: litt-md
-description: litt.md is Nick's personal design language and taste for web and product UI, motion and interaction. Use it whenever you build, restyle or review anything visual for Nick (websites, landing pages, app screens, components, prototypes or Framer sites, in React, Tailwind, HTML or CSS), when choosing type, color, spacing, radius, glass, light, shadows or motion, or when critiquing a screenshot, URL or design. Also use it for taste work - interviewing Nick about preferences, auditing a reference site, moodboard or Nick's own work, logging a reaction such as love this, hate this or more like that, and distilling the taste journal into rules. Its rules override the visual defaults of frontend-design and design-systems. Signature - technical precision, cool neutrals, Geist, airy layouts, light and material, fast invisible motion, light and dark both first-class.
+description: litt.md is Nick's personal design language and taste for web and product UI, motion and interaction. Use it whenever you build, restyle or review anything visual for Nick (websites, landing pages, app screens, components, prototypes or Framer sites, in React, Tailwind, HTML or CSS), when choosing type, color, spacing, radius, glass, light, shadows or motion, or when critiquing a screenshot, URL or design. Also use it for taste work - interviewing Nick about preferences, auditing a reference site, moodboard or Nick's own work, logging a reaction such as love this, hate this or more like that, and distilling the taste journal into rules. Its rules override the visual defaults of frontend-design and design-systems. Signature - technical precision, cool neutrals, Hanken Grotesk, airy layouts, light and material, fast invisible motion, light and dark both first-class.
 allowed-tools: Bash(node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs *), Bash(node ${CLAUDE_SKILL_DIR}/scripts/check.mjs*)
 ---
 
@@ -60,7 +60,7 @@ Each rule's Check line, the dos and don'ts, and the open questions are in `taste
 These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
-- **Type:** Geist + Geist Mono only, at weight 400 only.
+- **Type:** Hanken Grotesk + Geist Mono only, at weight 400 only. Display stops at 40.
 - **Color:** cool neutrals at one OKLCH hue (about 262), monochrome, one accent per project.
 - **Density:** airy. **Shape:** square everywhere; pills only for chips, tags, avatars and icon-only buttons.
 - **Motion:** 120–200ms ease-out, 240ms ceiling; transform and opacity only.
@@ -107,7 +107,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs site <url> --out captures/<s
 # Audit a moodboard (Cosmos, Pinterest): scroll and save screenshots to read
 node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs board <url> --out captures/<slug>
 
-# After any change to tokens or docs: links, hex drift, dark-block parity, contrast
+# After any change to tokens or docs: links, hex drift, dark parity, contrast, weight, radius, shadows, motion
 node ${CLAUDE_SKILL_DIR}/scripts/check.mjs
 ```
 
