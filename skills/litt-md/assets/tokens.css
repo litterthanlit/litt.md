@@ -1,5 +1,5 @@
 /* ==========================================================================
-   litt.md tokens · v0.1
+   litt.md tokens · v0.5
    This is the ONLY file where litt.md values live. Markdown docs refer to
    these variable names; change a value here, then follow the propagation
    checklist in workflows/evolve.md.
@@ -88,9 +88,11 @@
   --container-wide: 80rem;     /* 1280 */
   --header-h: 64px;
 
-  /* Shape: binary. Everything is square (0); full round only for chips, tags,
-     avatars, status dots and icon-only buttons. */
-  --radius-pill: 999px;
+  /* Shape: slight radius. Two sizes and the pill. A surface is a control plus
+     the 4px inset (--space-1) around it, so nested corners stay concentric. */
+  --radius-control: 4px;       /* buttons, inputs, tabs, kbd, menu rows, tooltips */
+  --radius-surface: 8px;       /* cards, panels, menus, dialogs, toasts (control + 4) */
+  --radius-pill: 999px;        /* chips, tags, avatars, status dots, icon-only buttons */
   --hairline: 1px;
 
   /* Controls (P10): buttons and inputs share one height scale. Labels are
@@ -108,15 +110,44 @@
   --control-gap: 8px;          /* icon to label */
   --control-group-gap: 12px;   /* between grouped buttons */
 
-  /* Motion: invisible and fast. Only opacity and transform animate. */
-  --dur-instant: 120ms;        /* hover, press */
-  --dur-reveal: 160ms;         /* tooltip, dropdown, small reveals */
-  --dur-panel: 200ms;          /* sheets, modals, command menu */
-  --dur-max: 240ms;            /* hard ceiling; nothing exceeds it */
-  --dur-exit-reveal: 128ms;    /* exits run at about 80% of the enter */
-  --dur-exit-panel: 160ms;
-  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Motion: three tiers. Springs are defined as visual time plus bounce, which
+     is what Motion (visualDuration + bounce) and Framer (Time + Bounce) take.
+     CSS cannot run a spring, so each one also ships a linear() approximation
+     and the time it takes to settle. Use --spring-* in JS, and --ease-* with
+     --dur-* in CSS. Only transform and opacity animate, plus color-family
+     fades at the instant tier. */
+
+  /* Instant: a tween. Hover, press, toggles, color fades. */
+  --dur-instant: 100ms;
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);   /* instant tier and every exit */
   --press-scale: 0.98;
+
+  /* Responsive: bounce 0. Menus, tabs, tooltips, the gliding highlight. */
+  --spring-responsive: 200ms 0;      /* visual time, bounce */
+  --dur-responsive: 425ms;           /* settle time of the spring above */
+  --ease-responsive: linear(0, 0.0609, 0.1306, 0.2509, 0.3322, 0.4472, 0.5167, 0.6085, 0.6615, 0.7293,
+                       0.7846, 0.8154, 0.854, 0.8753, 0.9017, 0.9163, 0.9342, 0.944, 0.956, 0.9626,
+                       0.9707, 0.977, 0.9805, 0.9847, 0.987, 0.9898, 0.9914, 0.9932, 0.9943, 0.9955,
+                       0.9965, 0.997, 0.9977, 0.998, 0.9984, 0.9987, 0.999, 0.9991, 0.9993, 0.9994,
+                       1);
+
+  /* Expressive: one signature moment per view (dialog, toast, list entrance). */
+  --spring-expressive: 350ms 0.12;   /* visual time, bounce */
+  --dur-expressive: 529ms;           /* settle time of the spring above */
+  --ease-expressive: linear(0, 0.0216, 0.0673, 0.1514, 0.2238, 0.2991, 0.3741, 0.4465, 0.5149, 0.5982,
+                       0.6541, 0.7044, 0.7492, 0.7885, 0.8229, 0.8617, 0.886, 0.9067, 0.9242, 0.939,
+                       0.9549, 0.9644, 0.9723, 0.9787, 0.9839, 0.9881, 0.9923, 0.9947, 0.9966, 0.998,
+                       0.9991, 0.9998, 1.0005, 1.0009, 1.0011, 1.0012, 1.0012, 1.0012, 1.0012, 1.0011,
+                       1);
+
+  /* Exits: 0.75x the spring's visual time, as an --ease-out tween. Never bounce. */
+  --exit: 0.75;
+  --dur-exit-responsive: 150ms;
+  --dur-exit-expressive: 263ms;
+
+  /* Cascades and entrances. */
+  --stagger: 40ms;                   /* between siblings in a cascade */
+  --travel: 16px;                    /* entrance offset; menus and tooltips use a quarter */
 
   /* Material constants */
   --glass-blur: 20px;
@@ -292,12 +323,16 @@
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-instant: 0ms;
-    --dur-reveal: 0ms;
-    --dur-panel: 0ms;
-    --dur-max: 0ms;
-    --dur-exit-reveal: 0ms;
-    --dur-exit-panel: 0ms;
+    --dur-responsive: 0ms;
+    --dur-expressive: 0ms;
+    --dur-exit-responsive: 0ms;
+    --dur-exit-expressive: 0ms;
+    --stagger: 0ms;
+    --travel: 0px;
     --press-scale: 1;
+    /* --spring-* stay as they are. They feed JS springs, and the library honors
+       reduced motion (MotionConfig reducedMotion="user", Framer useReducedMotion).
+       A zero visual time can break a spring solver. */
   }
 }
 
@@ -310,8 +345,8 @@
   /* Nothing renders above 400 (P9): override bold browser defaults and block faux bold. */
   html { font-synthesis-weight: none; }
   h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: var(--weight); }
-  /* Binary radius: no browser-default rounding on controls. */
-  button, input, select, textarea { border-radius: 0; }
+  /* Controls take the control radius, not the browser's default rounding. */
+  button, input, select, textarea { border-radius: var(--radius-control); }
 
   :focus-visible {
     outline: 2px solid var(--focus);
@@ -327,6 +362,7 @@
   .litt-glass {
     position: relative;
     isolation: isolate;
+    border-radius: var(--radius-surface);
   }
   .litt-glass::before {
     content: "";
@@ -341,10 +377,11 @@
     pointer-events: none;
   }
 
-  /* A solid raised surface: cards in the page flow. Square, no shadow (P4):
-     a hairline and the top highlight carry the depth. */
+  /* A solid raised surface: cards in the page flow. Surface radius, no shadow
+     (P4): a hairline and the top highlight carry the depth. */
   .litt-raised {
     background: var(--surface-1);
+    border-radius: var(--radius-surface);
     box-shadow: inset 0 0 0 1px var(--line), var(--highlight);
   }
 

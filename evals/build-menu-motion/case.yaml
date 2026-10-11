@@ -1,0 +1,31 @@
+schema_version: "1.0"
+name: build-menu-motion
+description: A menu build request should load litt-md and use its motion tiers, not generic animation defaults.
+tags: [trigger, build]
+runs: 1
+execution:
+  prompt: |
+    Build a dropdown menu component for a project list (React + Tailwind) with an open and close
+    animation. No need to write files, just show the code.
+  max_turns: 12
+  allowed_tools: [Read, Glob, Grep, Skill]
+graders:
+  - type: tool_used
+    name: loads-litt-md
+    tool: Skill
+    input_match: '"skill"\s*:\s*"(?:[\w-]+:)?litt-md"'
+    min: 1
+  # Springs are allowed now, but only inside their tiers. No Tailwind motion defaults, no
+  # literal durations, no bounce of 0.2 or more.
+  - type: regex
+    name: no-generic-motion
+    pattern: 'transition-all|\bduration-\d|ease-in-out|\bease-in\b|animate-bounce|bounce:\s*(?:1|0?\.[2-9])'
+    match: not_contains
+  - type: llm
+    name: responsive-tier-motion
+    criteria: |
+      Pass if, in the code shown, the open animation uses the responsive tier (a spring with bounce 0,
+      or --ease-responsive with --dur-responsive), the close is quicker than the open and does not
+      bounce, only transform and opacity animate (color fades on hover are fine), and the menu uses
+      rounded-surface with its rows at rounded-control. Judge only these points; ignore other style
+      choices.
