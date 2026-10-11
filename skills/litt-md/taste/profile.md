@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.4 · built from 2 interviews, 2 audits (7 sources), 1 type trial (14 faces), 37 journal entries · October 2026
+> v0.4 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 50 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -97,6 +97,7 @@ Claude's default output drifts toward these. Each one is banned unless the sessi
 The interview workflow works through these. When one is answered, move the answer into a rule (`P#`) or decision and delete it here.
 
 - **Q1.** How often may uppercase mono labels appear? Never, once per view, or as a system for metadata only?
+  - *Evidence:* Fluid Functionalism bans uppercase, eyebrow labels and letter-spacing outright, enforced by lint.
 - **Q2.** What is the default accent for Litt's own properties (litt.design, templates)? `tokens.css` holds a placeholder signal blue until this is decided.
   - *Evidence:* litt.design already uses a lime accent, only on status dots.
 - **Q3.** Icon style: stroke weight (1.25, 1.5 or 2), set (Lucide, Phosphor, custom), and size relative to text.
@@ -110,10 +111,14 @@ The interview workflow works through these. When one is answered, move the answe
 - **Q8.** Light: one accent-tinted source from the top (P2 today), or soft multi-hue ambient fields?
   - *Evidence:* litt.design uses peach and blue blobs at the sides, and Cosmos has warm gradient fields.
 - **Q9.** Neutral temperature: the interview chose cool, but litt.design and Vercel are true neutral gray, and Cursor and Ramp are warm. Keep cool?
+  - *Evidence:* Fluid Functionalism is true neutral gray too (chroma 0).
 - **Q11.** Exposed editorial structure (visible column rules, index numbers) shows up a lot on the Pinterest "web" board. Allow it as a secondary device on content pages, or keep the language purely light-and-material?
 - **Q12.** Which theme comes first on marketing pages when the system preference is unknown? Cursor, Vercel and litt.design are all light-first.
 - **Q14.** Mono: keep Geist Mono next to Hanken Grotesk, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
   - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The type trial paired Hanken Grotesk with JetBrains Mono by default.
+- **Q15.** Instant speed: keep `--dur-instant` at 120ms, or go faster? litt.design uses 100ms on 370 of 416 transitions, and Fluid Functionalism uses 80ms on 358 of 378.
+- **Q16.** Hover in menus, the command menu and dense lists: one highlight that glides from row to row (Fluid Functionalism), or the current per-row fill? A glide would stay out of airy content layouts either way.
+- **Q17.** Which properties may transition? The docs say transform and opacity only, but the specimen fades color, background-color and the focus box-shadow, and Fluid Functionalism fades color at 80ms. Allow color and fill fades at `--dur-instant`, or hold the line?
 
 ## Changelog
 

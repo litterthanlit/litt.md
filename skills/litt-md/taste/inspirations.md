@@ -70,6 +70,48 @@ Each entry is an audited reference: what to take from it and what to leave. Entr
 
 Entries from `workflows/audit.md` go below this line, newest first.
 
+### Fluid Functionalism · fluidfunctionalism.com, github.com/mickadesign/fluid-functionalism · reference · 2026-10-11
+**What it is:** a shadcn/ui component registry by Micka, pitched as "refined UI components with satisfying hover". It ships with its own agent skill and audit scripts. Audited from the source (four parallel passes: motion, tokens, components, tooling) and measured on three live pages.
+
+**Measured: live site (home, button, motion pages)**
+- Type: Inter Variable. 13px body on about 70% of text, a 28px page title, no tracking anywhere.
+- Weight: 400 on nearly everything. Headings and selected labels go to 550 or 700 through `wght` and `opsz`.
+- Color: true neutral gray (chroma 0), not cool. Muted text is used on about two thirds of the text.
+- Radius: 8px dominant, 12px containers, and a global Rounded/Pill switch.
+- Shadows: small offset drops (0 1px 2px) in light, plus a dark recipe with an inset top highlight that strengthens with elevation.
+- Transitions: 80ms on 358 of 378 transitions on the home page.
+
+**Measured: source**
+- Motion: three spring tiers in one file, 80 / 160 / 240ms. Exits run one tier quicker, at 60 / 120 / 160ms. The 240ms ceiling matches litt.md exactly.
+- Controls: one height shared by buttons, inputs and menu rows: 36 default, 28 compact. Labels are trimmed to the cap height.
+- Hover: one highlight element per list glides to the row nearest the pointer. It fades in where it starts and fades out in place, so the list never goes dark between rows.
+- State without shift: a hidden heaviest-weight copy reserves the label's width while the visible label changes weight.
+- Touch: field text goes to 16px on coarse pointers so iOS does not zoom. Hover-only controls stay visible when the device can't hover.
+- Focus: a gate hides the focus ring in a popup opened by pointer until a navigation key is pressed.
+- Tooling: a headless audit that flags off-scale durations, `transition: all`, per-row hover blink and selection shift, tested against a known-bad page and a known-good page.
+
+**Steal:**
+- A state change never moves the box: the label and icon keep the same width in every state (→ P9, new).
+- Touch parity: hover fills only where hover exists, hover-revealed controls always visible on touch, 16px fields on coarse pointers (new).
+- Focus by modality: a click never draws a ring, and a keyboard-highlighted row needs more than a faint fill (new).
+- A floating surface opened inside another floating surface steps up one surface and stays solid (→ P3).
+- Exits quicker than enters, entry offset from the side the popover actually opens on, and a 200ms tooltip delay (→ motion).
+- Motion values audited mechanically, not just written down (→ check.mjs).
+
+**Reject:**
+- Weight as a state (400 → 550 on hover and selection). It breaks P9.
+- Rounded radii and the Rounded/Pill switch. They break the binary radius.
+- Offset drop shadows in light. They break P4.
+- Bounce on the slow tier, looping shimmer and morphs, and blur on icon swaps. They break "invisible and fast".
+
+**Question:**
+- 80ms as the instant tier (Q15).
+- The gliding hover highlight (Q16).
+- Which properties may transition (Q17).
+- Evidence for Q1 (it lints out uppercase and eyebrows entirely) and Q9 (true neutral gray).
+
+**Rule candidate:** "Hover, selected and active change color or fill only. The label and icon box is identical in every state."
+
 ### Ramp · ramp.com, app.ramp.com/sign-in, support.ramp.com · reference · 2026-10-10
 **What it is:** a fintech company with an in-house design system called Ryu. Nick likes the buttons: "feel more roomy".
 
