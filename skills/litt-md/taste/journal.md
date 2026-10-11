@@ -67,3 +67,4 @@ This file is append-only: never edit or delete old entries. Each entry records o
 - 2026-10-11 · type · Fluid Functionalism text lint · no letter-spacing, no uppercase, no eyebrow labels, enforced by ESLint · ? · - · → Q1 · audit:fluid-functionalism
 - 2026-10-11 · color · Fluid Functionalism neutrals · true neutral gray at chroma 0 · ? · - · → Q9 · audit:fluid-functionalism
 - 2026-10-11 · process · Fluid Functionalism audit tooling · motion values checked by script against known-bad and known-good pages · ? · check.mjs fails durations over 240ms, transition: all and animated layout properties · open · audit:fluid-functionalism
+- 2026-10-11 · motion · motion personality after the motion lab · wants to try motion-led and find a sweet spot between it and invisible & fast · "we need a sweetspot" · - · → Q18 · chat
