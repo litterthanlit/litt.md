@@ -15,7 +15,7 @@
  * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill.
  * 8. Shadows:   no outer shadow has an x or y offset (P4).
  * 9. Motion:    three tiers (instant tween at most 240ms; springs with visual time at most
- *               350ms, bounce at most 0.15 and 0 on responsive; settle at most 600ms; exits
+ *               350ms, bounce at most 0.12 and 0 on responsive; settle at most 600ms; exits
  *               at visual time x --exit with --ease-out); reduced motion zeroes every --dur-*,
  *               --stagger and --travel; transitions use the tier tokens and animate only
  *               transform, opacity and color fades; no layout properties and no `all`.
@@ -240,7 +240,7 @@ for (const tier of ["responsive", "expressive"]) {
   const [time, bounce] = [+m[1], +m[2]];
   springTime[tier] = time;
   if (time > 350) motionFails.push(`tokens.css: --spring-${tier} visual time ${time}ms is over 350ms`);
-  if (bounce > 0.15) motionFails.push(`tokens.css: --spring-${tier} bounce ${bounce} is over 0.15`);
+  if (bounce > 0.12) motionFails.push(`tokens.css: --spring-${tier} bounce ${bounce} is over 0.12`);
   if (tier === "responsive" && bounce !== 0) motionFails.push("tokens.css: --spring-responsive must have bounce 0");
   if (time > (durTokens.get(`--dur-${tier}`) ?? 0)) motionFails.push(`tokens.css: --dur-${tier} (settle) is shorter than the spring's visual time`);
   const pts = ((tok(`--ease-${tier}`) || "").match(/^linear\((.*)\)$/s) || [])[1]?.split(",").map(Number);
