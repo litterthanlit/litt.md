@@ -22,5 +22,5 @@ The repo root is the plugin root, and the skill lives in `skills/litt-md/`.
 
 ```
 claude plugin validate .
-node skills/litt-md/scripts/check.mjs        # links, hex drift, dark-block parity, contrast
+node skills/litt-md/scripts/check.mjs        # every mechanical check (the list is in the script header)
 ```

@@ -2,7 +2,7 @@
 
 Nick's design language and taste for web and product UI, motion and interaction, packaged as a Claude skill that keeps developing.
 
-> **Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, Hanken Grotesk, cool neutrals. The only bold move is light and material: glass that floats, light falling from the top, edges that catch it, a trace of grain. Motion is fast and invisible. Light and dark are both first-class.
+> **Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, Hanken Grotesk, cool neutrals. The only bold move is light and material: glass that floats, light falling from the top, edges that catch it, a trace of grain. Motion is quick, with one spring moment per view. Light and dark are both first-class.
 
 Open [`skills/litt-md/assets/specimen.html`](skills/litt-md/assets/specimen.html) in a browser to see the whole system rendered.
 
@@ -28,7 +28,7 @@ skills/litt-md/
 │   └── evolve.md       the one write-back protocol: log, distill, propagate
 ├── assets/
 │   ├── tokens.css      the ONLY place values live (plain CSS, both themes, material primitives)
-│   ├── tailwind.css    Tailwind v4 mapping (bg-canvas, text-fg-muted, rounded-card, py-section…)
+│   ├── tailwind.css    Tailwind v4 mapping (bg-canvas, text-fg-muted, rounded-control, rounded-surface, rounded-pill, py-section…)
 │   └── specimen.html   living specimen
 └── scripts/
     ├── extract-styles.mjs  measure a site's real tokens / capture a moodboard (Playwright)
@@ -62,7 +62,7 @@ claude plugin marketplace add litterthanlit/litt.md
 claude plugin install litt-md@litt
 ```
 
-This clones the default branch (`main`). Until the work is merged there, pin the branch instead: `claude plugin marketplace add litterthanlit/litt.md#claude/tender-davinci-p7ezt7`.
+This clones the default branch (`main`).
 
 Auto-update is off by default for personal marketplaces. Pull new taste with `claude plugin update litt-md@litt`, or turn on auto-update in `/plugin` → Marketplaces.
 
