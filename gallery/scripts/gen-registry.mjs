@@ -779,11 +779,6 @@ const COPY = {
     description: "The one expressive moment. The panel is placed, not thrown: it rises a short distance and settles, and exits are quicker and never bounce.",
     docs: "Import Dialog, DialogTrigger, DialogContent and DialogClose from components/litt/dialog. Pair a form's submit with a Cancel, both at size lg.",
   },
-  "dialog-fields": {
-    title: "Dialog fields",
-    description: "A text field and a segmented radio on the 44px control scale, made for forms inside a dialog.",
-    docs: "Import TextField and SegmentedRadio from components/litt/dialog-fields. Inputs use 16px text on touch screens.",
-  },
   toast: {
     title: "Toast",
     description: "Toasts arrive from just below the corner and leave sideways. Older ones stack behind the newest and open into a list on hover or focus.",
@@ -801,48 +796,48 @@ const COPY = {
   },
   input: {
     title: "Input",
-    description: "TODO(input): one or two plain sentences, from the page summary.",
-    docs: "TODO(input): where it installs and what to import.",
+    description: "A roomy, slightly rounded text field on the 32, 44 and 56 scale, with a label above and a hint or an error below. Focus and error turn the edge on the instant tier, and the box never moves.",
+    docs: "Import TextField, Input and Textarea from components/litt/input. TextField wires the label, hint and error for you, and a bare Input needs an aria-label. Text is 16px on touch screens.",
   },
   checkbox: {
     title: "Checkbox and radio",
-    description: "TODO(checkbox): one or two plain sentences, from the page summary.",
-    docs: "TODO(checkbox): where it installs and what to import.",
+    description: "Real checkboxes and radios drawn in the litt look, with the label on the right and the whole row clickable. A group is a fieldset with a legend, and a select-all box can show the mixed state.",
+    docs: "Import Checkbox, CheckboxGroup, Radio and RadioGroup from components/litt/checkbox. They are native inputs, so name and value work in a form. Pass appearance=\"native\" for the browser's own 16px box.",
   },
   segmented: {
     title: "Segmented control",
-    description: "TODO(segmented): one or two plain sentences, from the page summary.",
-    docs: "TODO(segmented): where it installs and what to import.",
+    description: "A short choice of two to five options in one track. The selected surface glides to your pick, and the control is built from native radios, so the arrow keys work.",
+    docs: "Import Segmented from components/litt/segmented. Give it a legend, a value, onValueChange and options. In a form, pass showLegend and block.",
   },
   tag: {
     title: "Tag",
-    description: "TODO(tag): one or two plain sentences, from the page summary.",
-    docs: "TODO(tag): where it installs and what to import.",
+    description: "A small pill that names a thing or reports its state. A status tag colors its text and a 6px dot, never the fill, and always says the status in words.",
+    docs: "Import Tag from components/litt/tag. Leave status out for a plain label, or set it to success, warning, danger or neutral. Add hollow so two neutral statuses differ without color.",
   },
   popover: {
     title: "Popover",
-    description: "TODO(popover): one or two plain sentences, from the page summary.",
-    docs: "TODO(popover): where it installs and what to import.",
+    description: "A floating glass panel for a small form, a share link or a detail card. It grows from its trigger's corner, slides in from the side it really opens on, and flips near an edge.",
+    docs: "Import Popover, PopoverTrigger, PopoverContent and PopoverClose from components/litt/popover. It turns solid when its trigger sits inside glass.",
   },
   header: {
     title: "Glass header",
-    description: "TODO(header): one or two plain sentences, from the page summary.",
-    docs: "TODO(header): where it installs and what to import.",
+    description: "A sticky glass bar with a wordmark, a nav and your actions. The page blurs under it as it scrolls, and on a narrow bar the links fold behind a menu button instead of squeezing.",
+    docs: "Import Header from components/litt/header. Pass a wordmark, links with a current flag and your actions. It needs no router and no provider; pass renderLink and onNavigate to use yours.",
   },
   card: {
     title: "Card",
-    description: "TODO(card): one or two plain sentences, from the page summary.",
-    docs: "TODO(card): where it installs and what to import.",
+    description: "A raised surface for one object that links somewhere. A linked card is one real link stretched over the whole card, and hover moves the fill one step, with no lift, growth or scale.",
+    docs: "Import Card, CardCover, CardBody, CardTitle, CardDescription and CardLink from components/litt/card. Put CardLink around the title to make the card a link. Anything else you can press inside it needs relative.",
   },
   table: {
     title: "Table",
-    description: "TODO(table): one or two plain sentences, from the page summary.",
-    docs: "TODO(table): where it installs and what to import.",
+    description: "A table with real semantics, hairline rows, mono figures and a sticky header. It scrolls inside its own region on a phone, and its rows can arrive in one staggered cascade, sort, filter and insert.",
+    docs: "Import Table, TableHeader, TableBody, TableRow, TableHead and TableCell from components/litt/table. Give the Table a label, and a max height such as max-h-96 if you want the header to stick. The entrance is off until you pass entrance.",
   },
   states: {
     title: "Empty and loading states",
-    description: "TODO(states): one or two plain sentences, from the page summary.",
-    docs: "TODO(states): where it installs and what to import.",
+    description: "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says what went wrong and how to retry.",
+    docs: "Import Empty, Skeleton, Loading and ErrorState from components/litt/states. Wrap Skeleton blocks in Loading, so a screen reader hears what is loading once.",
   },
 };
 
