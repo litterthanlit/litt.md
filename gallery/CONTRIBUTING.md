@@ -27,7 +27,7 @@ Create only your own files:
 - `src/components/<name>.tsx`, plus `src/components/<name>-*.ts(x)` helpers if needed.
 - `src/gallery/pages/<NN>-<name>.tsx`, which registers itself automatically.
 
-**Do not edit shared files**: `src/motion/*`, `src/gallery/kit.tsx`, `src/gallery/app.tsx`, `src/gallery/route.ts`, `src/gallery/motion-panel.tsx`, `src/components/button.tsx`, `src/components/icons.tsx`, `src/styles/*`, `scripts/*`. If you need an icon that is missing, define it inside your own file using the same 16px, 1.5px-stroke pattern. If you need a shared change, say so in your report.
+**Do not edit shared files**: `src/motion/*`, `src/gallery/kit.tsx`, `src/gallery/docs/*`, `src/gallery/app.tsx`, `src/gallery/route.ts`, `src/gallery/motion-panel.tsx`, `src/components/button.tsx`, `src/components/icons.tsx`, `src/styles/*`, `src/generated/*`, `scripts/*`. If you need an icon that is missing, define it inside your own file using the same 16px, 1.5px-stroke pattern. If you need a shared change, say so in your report.
 
 You may import `Button` from `@/components/button` and icons from `@/components/icons`. Do not import another agent's component; they are being built at the same time.
 
@@ -115,13 +115,44 @@ export default function MenuPage() {
 - Add a Replay button (`useReplay()` and `onReplay`) wherever an entrance matters.
 - Captions are written for Nick: short, plain sentences, no em dashes. Say "the travel token" or "the stagger token", not "the dial", and avoid quoting the tunable numbers (durations, travel, stagger), so the copy cannot drift from `tokens.css`.
 - Leave `tune` off in your page meta. Only the Playground sets it, because it is the one page allowed to override the tokens.
+- Name the file `<NN>-<meta.id>.tsx`. The Code view finds a page's source by its id.
+
+## Document it
+
+Every component page is also its docs page. `01-button.tsx` is the reference; copy its shape.
+
+```tsx
+import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+
+export const docs: PageDocs = {
+  components: ["menu"],                 // stems in src/components: Props, Source and the Copy prompt's files
+  exports: ["Menu", "MenuItem"],        // what a reader uses, in reading order
+  usage: `import { Menu, MenuItem } from "@/components/menu";\n…`,
+  use: ["…"],                           // 3 to 5 bullets
+  skip: ["… Use Command menu."],        // name the alternative
+  keyboard: [[["ArrowDown"], "Moves to the next row"]],
+  a11y: ["…"],                          // what it guarantees, and what the caller must still do
+};
+
+function ProjectActionsDemo() { … }     // a named top-level function
+
+export default function MenuPage() {
+  return <Page meta={meta} docs={docs}>
+    <Stage title="…" caption="…" code="ProjectActionsDemo"><ProjectActionsDemo /></Stage>
+  </Page>;
+}
+```
+
+- **Props are generated, not written.** `scripts/gen-docs.mjs` reads your component with the TypeScript checker: each prop's type, whether it is required, the default from the destructuring in the signature, and the JSDoc above it. So give every prop a one-line JSDoc. `children` and `ref` only appear when they have one.
+- **Code views are your demos.** `code="Name"` shows that function from the page file, with the imports and page helpers it uses. Write demos someone could paste.
+- Only claim what the code does. Check every keyboard and accessibility line against the component and its Radix part.
 
 ## Verify before you report
 
 Run these from `gallery/`. In an agent session, never run `npm run dev` or anything long-lived, and build into your own `--outDir` so parallel runs do not collide.
 
 ```bash
-npm run verify   # syncs the tokens, then typechecks and runs the litt rule lint
+npm run verify   # syncs the tokens, generates the docs data, then typechecks and runs the litt rule lint
 npx vite build --outDir .agent-dist/<you> --emptyOutDir --logLevel warn
 node scripts/shot.mjs --dist .agent-dist/<you> --page <id> --out .agent-shots/<you> \
   [--click "<selector>"] [--keys ArrowDown,ArrowDown] [--hover "<selector>"] [--wait 600]
