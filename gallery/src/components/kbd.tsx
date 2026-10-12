@@ -18,6 +18,12 @@ const chip =
   "font-mono font-normal text-fg-subtle shadow-[inset_0_0_0_1px_var(--line)] " +
   "text-[0.6875rem]"; // litt-allow: the spec's 11px has no type token (text-caption is 12)
 
-export function Kbd({ children }: { children: ReactNode }) {
+/** One key cap, or one chord written in glyphs, such as ⇧⌘C. Keys pressed one after another each get their own Kbd, 4px apart. */
+export function Kbd({
+  children,
+}: {
+  /** The key as people read it: a glyph (⌘, ↵, ⌫, ←), a chord of glyphs (⇧⌘C) or a short word (esc, tab). */
+  children: ReactNode;
+}) {
   return <kbd className={chip}>{children}</kbd>;
 }
