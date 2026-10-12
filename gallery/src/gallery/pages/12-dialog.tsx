@@ -1,8 +1,9 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
-import { SegmentedRadio, TextField } from "@/components/dialog-fields";
 import { SettingsIcon } from "@/components/icons";
+import { TextField } from "@/components/input";
+import { Segmented } from "@/components/segmented";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -15,12 +16,12 @@ export const meta: PageMeta = {
 };
 
 export const docs: PageDocs = {
-  components: ["dialog", "dialog-fields"],
-  exports: ["Dialog", "DialogTrigger", "DialogContent", "DialogClose", "TextField", "SegmentedRadio"],
+  components: ["dialog", "input", "segmented"],
+  exports: ["Dialog", "DialogTrigger", "DialogContent", "DialogClose", "TextField", "Segmented"],
   usage: `import { useState } from "react";
 import { Button } from "@/components/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
-import { TextField } from "@/components/dialog-fields";
+import { TextField } from "@/components/input";
 
 const [open, setOpen] = useState(false);
 const [name, setName] = useState("litt.design");
@@ -75,7 +76,7 @@ const [name, setName] = useState("litt.design");
     [["Shift+Tab"], "Moves to the previous control, and wraps the same way."],
     [["Esc"], "Closes the dialog and returns focus to the button that opened it."],
     [["Enter", "Space"], "Activates the focused button. Enter in a field submits its form."],
-    [["Arrow keys"], "In a SegmentedRadio, move to the previous or next option and select it."],
+    [["Arrow keys"], "In a Segmented, move to the previous or next option and select it."],
   ],
   a11y: [
     "Radix Dialog does the hard parts: role=\"dialog\", the focus trap and Esc. While the dialog is open the rest of the page is hidden from screen readers, cannot be clicked and cannot scroll. That includes a Toast, so fire it when the dialog closes, not while it is open.",
@@ -224,11 +225,13 @@ function InviteDemo() {
               error={error}
             />
             <div className="grid gap-2">
-              <SegmentedRadio
+              <Segmented
                 legend="Role"
+                showLegend
+                block
                 name="invite-role"
                 value={role}
-                onChange={setRole}
+                onValueChange={setRole}
                 options={[
                   { value: "viewer", label: "Viewer" },
                   { value: "editor", label: "Editor" },
@@ -345,21 +348,25 @@ function SheetDemo() {
           >
             <TextField label="Project name" spellCheck={false} value={name} onChange={(e) => setName(e.target.value)} />
             <TextField label="Custom domain" mono spellCheck={false} defaultValue="litt.design" help="Point a CNAME record at framer.app." />
-            <SegmentedRadio
+            <Segmented
               legend="Visibility"
+              showLegend
+              block
               name="settings-visibility"
               value={visibility}
-              onChange={setVisibility}
+              onValueChange={setVisibility}
               options={[
                 { value: "private", label: "Private" },
                 { value: "public", label: "Public" },
               ]}
             />
-            <SegmentedRadio
+            <Segmented
               legend="Default theme"
+              showLegend
+              block
               name="settings-theme"
               value={theme}
-              onChange={setTheme}
+              onValueChange={setTheme}
               options={[
                 { value: "system", label: "System" },
                 { value: "light", label: "Light" },
