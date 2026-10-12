@@ -182,6 +182,16 @@ const RECIPES = {
     state: [`const [seg, setSeg] = useState("a");`],
     jsx: `<Segmented legend="Visibility" showLegend value={seg} onValueChange={setSeg} options={[{ value: "a", label: "Public" }, { value: "b", label: "Private" }]} />`,
   },
+  popover: {
+    needs: ["Popover", "PopoverTrigger", "PopoverContent", "PopoverClose"],
+    jsx: `<Popover>
+          <PopoverTrigger asChild><@Btn type="button" data-testid="popover-trigger">Open popover</@Btn></PopoverTrigger>
+          <PopoverContent label="Litt popover">
+            <p>Popover body</p>
+            <PopoverClose asChild><@Btn type="button" data-testid="popover-close">Close popover</@Btn></PopoverClose>
+          </PopoverContent>
+        </Popover>`,
+  },
   toast: {
     needs: ["Toaster", "toast"],
     wrap: "Toaster",
@@ -674,6 +684,29 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           return `backdrop-filter: ${info.blur}`;
         });
       }
+      if (has("popover")) {
+        await attempt("popover opens, is glass, and closes", async () => {
+          await page.click("[data-testid=popover-trigger]");
+          const pop = page.getByRole("dialog", { name: "Litt popover" });
+          await pop.waitFor({ state: "visible", timeout: 5000 });
+          await page.getByText("Popover body").waitFor({ state: "visible", timeout: 3000 });
+          await page.waitForTimeout(700);
+          const info = await pop.evaluate((el) => {
+            const before = getComputedStyle(el, "::before");
+            return { glass: el.classList.contains("litt-glass"), blur: before.backdropFilter || before.webkitBackdropFilter || "", opacity: getComputedStyle(el).opacity, focusInside: el.contains(document.activeElement) };
+          });
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-popover.png`) });
+          if (!info.glass) throw new Error('the popover panel has no ".litt-glass" class');
+          if (!info.blur || info.blur === "none") throw new Error(`.litt-glass has no backdrop-filter: ${JSON.stringify(info)}`);
+          if (info.opacity !== "1") throw new Error(`the popover did not finish its entrance: ${JSON.stringify(info)}`);
+          if (!info.focusInside) throw new Error("focus did not move into the popover");
+          await page.keyboard.press("Escape");
+          await pop.waitFor({ state: "hidden", timeout: 4000 });
+          const back = await page.evaluate(() => document.activeElement?.getAttribute("data-testid"));
+          if (back !== "popover-trigger") throw new Error(`focus did not return to the trigger (it is on ${back})`);
+        });
+      }
+
       if (has("dialog")) {
         await attempt("dialog opens", async () => {
           await page.click("[data-testid=dialog-trigger]");
