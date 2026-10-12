@@ -2,7 +2,7 @@
  * The Playground: the one page that can override the locked tokens.
  *
  * Every other page runs the motion and shape from tokens.css. Here the Tune
- * panel moves them, the sampler shows all eight components following along,
+ * panel moves them, the sampler shows eight of the components following along,
  * and "Lock it" prints the tokens to paste back into litt.md. Leaving the page
  * removes every override.
  */

@@ -1,6 +1,6 @@
 # litt.md Gallery
 
-The components gallery for [litt.md](../README.md): eight components on the locked v0.5 tokens, and a Playground for trying other motion and shape values. Light and material stay still. Only objects move.
+The components gallery for [litt.md](../README.md): every component litt.md specifies, on the locked v0.5 tokens, documented and installable, and a Playground for trying other motion and shape values. Light and material stay still. Only objects move.
 
 Live at [littmd.vercel.app](https://littmd.vercel.app).
 
