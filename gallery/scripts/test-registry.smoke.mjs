@@ -72,6 +72,36 @@ const RECIPES = {
         </div>`,
   },
   kbd: { needs: ["Kbd"], jsx: `<Kbd>⌘K</Kbd>` },
+  tag: { needs: ["Tag"], jsx: `<div className="flex flex-wrap items-center gap-2" data-testid="litt-tags"><Tag>Framer</Tag><Tag status="success">Live</Tag><Tag status="warning">In review</Tag><Tag status="danger">Failed</Tag><Tag status="neutral" hollow>Idea</Tag></div>` },
+  states: { needs: ["Empty", "Skeleton", "Loading", "ErrorState"], jsx: `<div className="grid w-full max-w-md gap-4" data-testid="litt-states"><Empty title="No projects yet." action={<@Btn type="button">New project</@Btn>}>A new project starts as a draft and shows up here.</Empty><Loading label="Loading projects" className="grid gap-2"><Skeleton text="body" className="w-40" /><Skeleton className="h-10 w-full" /><Skeleton radius="pill" className="h-6 w-16" /></Loading><ErrorState title="The deploy to atelier-nord.com failed." action={<@Btn type="button">Retry deploy</@Btn>}>The build ran out of memory. Make the images smaller, then retry.</ErrorState></div>` },
+  header: {
+    needs: ["Header"],
+    jsx: `<Header className="w-full" wordmark={<a href="#home" data-testid="header-wordmark">Litt Studio</a>} navLabel="Smoke site" navFrom="sm" links={[{ label: "Work", href: "#work", current: true }, { label: "Journal", href: "#journal" }]} actions={<@Btn type="button" data-testid="header-action">Start a project</@Btn>} />`,
+  },
+  card: {
+    needs: ["Card", "CardCover", "CardBody", "CardTitle", "CardDescription", "CardLink"],
+    jsx: `<div className="w-64" data-testid="litt-card-wrap">
+          <Card cover="inset" data-testid="litt-card">
+            <CardCover />
+            <CardBody>
+              <CardTitle><CardLink href="#litt-card">Halden Gallery</CardLink></CardTitle>
+              <CardDescription>A linked card from the registry.</CardDescription>
+            </CardBody>
+          </Card>
+        </div>`,
+  },
+  table: {
+    needs: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell"],
+    jsx: `<div className="w-full max-w-md" data-testid="litt-table-wrap">
+          <Table label="Deploy history" entrance>
+            <TableHeader><TableRow><TableHead>Site</TableHead><TableHead numeric>Build time</TableHead></TableRow></TableHeader>
+            <TableBody>
+              <TableRow key="a"><TableCell primary>litt.design v3</TableCell><TableCell numeric>38 s</TableCell></TableRow>
+              <TableRow key="b"><TableCell primary>Founder landing</TableCell><TableCell numeric>52 s</TableCell></TableRow>
+            </TableBody>
+          </Table>
+        </div>`,
+  },
   icons: { needs: ["SearchIcon", "SettingsIcon"], jsx: `<div className="flex gap-3"><SearchIcon /><SettingsIcon /></div>` },
   tooltip: {
     needs: ["Tooltip", "TooltipProvider"],
@@ -120,13 +150,37 @@ const RECIPES = {
           </DialogContent>
         </Dialog>`,
   },
-  "dialog-fields": {
-    needs: ["TextField", "SegmentedRadio"],
-    state: [`const [vis, setVis] = useState("a");`],
-    jsx: `<div className="grid w-full max-w-sm gap-4">
-          <TextField label="Project name" defaultValue="litt.design" />
-          <SegmentedRadio legend="Visibility" name="vis" value={vis} onChange={setVis} options={[{ value: "a", label: "Public" }, { value: "b", label: "Private" }]} />
+  input: {
+    needs: ["TextField", "Input", "Textarea"],
+    jsx: `<div className="grid w-full max-w-sm gap-4" data-testid="litt-inputs">
+          <TextField label="Project name" defaultValue="litt.design" help="Shown in the dashboard." data-testid="litt-textfield" />
+          <TextField label="Work email" type="email" defaultValue="nina@" error="Enter a full address, like nina@halo.studio." />
+          <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+            <Input size="lg" aria-label="Email" placeholder="you@studio.com" data-testid="litt-input-lg" />
+            <@Btn type="submit">Send</@Btn>
+          </div>
+          <Textarea label="Project brief" rows={3} help="What you are building." />
         </div>`,
+  },
+  checkbox: {
+    needs: ["Checkbox", "CheckboxGroup", "Radio", "RadioGroup"],
+    state: [`const [target, setTarget] = useState("a");`],
+    jsx: `<div className="grid w-full max-w-sm gap-4" data-testid="litt-choices">
+          <CheckboxGroup legend="Deliverables" help="Pick what the client gets.">
+            <Checkbox label="Source files" defaultChecked data-testid="litt-checkbox" />
+            <Checkbox label="All pages" indeterminate />
+            <Checkbox label="Native box" appearance="native" />
+          </CheckboxGroup>
+          <RadioGroup legend="Deploy to" value={target} onValueChange={setTarget}>
+            <Radio value="a" label="Production" description="litt.design" />
+            <Radio value="b" label="Preview" />
+          </RadioGroup>
+        </div>`,
+  },
+  segmented: {
+    needs: ["Segmented"],
+    state: [`const [seg, setSeg] = useState("a");`],
+    jsx: `<Segmented legend="Visibility" showLegend value={seg} onValueChange={setSeg} options={[{ value: "a", label: "Public" }, { value: "b", label: "Private" }]} />`,
   },
   toast: {
     needs: ["Toaster", "toast"],
