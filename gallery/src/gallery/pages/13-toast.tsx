@@ -6,7 +6,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "toast",
   title: "Toast",
-  order: 7,
+  order: 13, group: "Overlays",
   summary:
     "Toasts arrive from just below the corner and settle, and they leave sideways by the same small distance. Older ones stack behind the newest and open into a list when you hover or tab into them.",
   tiers: ["instant", "responsive", "expressive"],

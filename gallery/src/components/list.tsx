@@ -20,6 +20,8 @@ import type { ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useExit, useStagger, useTransition, useTravel } from "@/motion";
 import { Button } from "@/components/button";
+import { Empty } from "@/components/states";
+import { Tag, type TagStatus } from "@/components/tag";
 import { ProjectCover, type CoverName } from "./list-cover";
 
 export type { CoverName } from "./list-cover";
@@ -76,19 +78,15 @@ export function matchesFilter(p: Project, filter: ProjectFilter) {
 /* Tags                                                                       */
 /* -------------------------------------------------------------------------- */
 
-const STATUS: Record<ProjectStatus, { label: string; text: string; dot: string }> = {
-  live: { label: "Live", text: "text-success", dot: "bg-success" },
-  review: { label: "Review", text: "text-warning", dot: "bg-warning" },
-  draft: { label: "Draft", text: "text-fg-subtle", dot: "bg-fg-subtle" },
-  // Idea is neutral like Draft; the hollow dot tells them apart without color.
-  idea: { label: "Idea", text: "text-fg-subtle", dot: "border border-fg-subtle" },
+// The project statuses on Tag's own status set. Idea is neutral like Draft; the hollow dot tells them apart without color.
+const STATUS: Record<ProjectStatus, { label: string; status: TagStatus; hollow?: boolean }> = {
+  live: { label: "Live", status: "success" },
+  review: { label: "Review", status: "warning" },
+  draft: { label: "Draft", status: "neutral" },
+  idea: { label: "Idea", status: "neutral", hollow: true },
 };
 
-const tagBase =
-  "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-pill bg-surface-2 px-2 text-caption " +
-  "shadow-[inset_0_0_0_1px_var(--line)]";
-
-/** A status tag colors the text and a 6px dot, never the fill (components.md, Tag). */
+/** A project's status as a Tag: the label in words, and a dot and text in the status color, never the fill (components.md, Tag). */
 export function StatusTag({
   status,
   className = "",
@@ -100,16 +98,15 @@ export function StatusTag({
 }) {
   const s = STATUS[status];
   return (
-    <span className={`${tagBase} gap-1.5 ${s.text} ${className}`}>
-      <span className={`size-1.5 shrink-0 rounded-pill ${s.dot}`} aria-hidden="true" />
+    <Tag status={s.status} hollow={s.hollow} className={className}>
       {s.label}
-    </span>
+    </Tag>
   );
 }
 
 /** A quiet pill for a label such as Framer or Site. */
 export function ProjectTag({ children }: { children: ReactNode }) {
-  return <span className={`${tagBase} text-fg-subtle`}>{children}</span>;
+  return <Tag>{children}</Tag>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -328,7 +325,7 @@ const EMPTY: Record<ProjectFilter, { line: string; hint: string }> = {
   draft: { line: "No drafts right now.", hint: "New projects start as drafts." },
 };
 
-/** One line in fg-muted, a hint in fg-subtle, and the way out. Left-aligned, no illustration. */
+/** The Empty state for a filter: one line in fg-muted, a hint in fg-subtle, and the way out. Left-aligned, no illustration. */
 export function ProjectsEmpty({
   filter,
   onClearFilter,
@@ -340,21 +337,20 @@ export function ProjectsEmpty({
 }) {
   const copy = EMPTY[filter];
   return (
-    <div
+    <Empty
       role="status"
-      className="grid justify-items-start gap-6 rounded-surface bg-surface-2 p-8 shadow-[inset_0_0_0_1px_var(--line)]"
+      title={copy.line}
+      action={
+        filter !== "all" && onClearFilter ? (
+          // The ghost button's label is inset by its padding; pull it back so it lines up with the text above.
+          <Button variant="ghost" size="sm" onClick={onClearFilter} className="-ml-control-pad-sm">
+            Clear filter
+          </Button>
+        ) : undefined
+      }
     >
-      <div className="grid gap-1">
-        <p className="text-body text-fg-muted">{copy.line}</p>
-        <p className="text-small text-fg-subtle">{copy.hint}</p>
-      </div>
-      {filter !== "all" && onClearFilter && (
-        // The ghost button's label is inset by its padding; pull it back so it lines up with the text above.
-        <Button variant="ghost" size="sm" onClick={onClearFilter} className="-ml-control-pad-sm">
-          Clear filter
-        </Button>
-      )}
-    </div>
+      {copy.hint}
+    </Empty>
   );
 }
 

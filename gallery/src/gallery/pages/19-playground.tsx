@@ -2,7 +2,7 @@
  * The Playground: the one page that can override the locked tokens.
  *
  * Every other page runs the motion and shape from tokens.css. Here the Tune
- * panel moves them, the sampler shows all eight components following along,
+ * panel moves them, the sampler shows eight of the components following along,
  * and "Lock it" prints the tokens to paste back into litt.md. Leaving the page
  * removes every override.
  */
@@ -25,7 +25,7 @@ import { MotionPanel } from "../motion-panel";
 export const meta: PageMeta = {
   id: "playground",
   title: "Playground",
-  order: 9,
+  order: 19,
   tune: true,
   summary:
     "Turn the dials and the components on this page follow. Every other page always runs the locked values from the tokens.",

@@ -7,12 +7,18 @@ import type { Tier } from "@/motion";
 import { Button } from "@/components/button";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 
+/** The sidebar's groups, in the order they appear. */
+export const PAGE_GROUPS = ["Controls", "Overlays", "Layout and data"] as const;
+export type PageGroup = (typeof PAGE_GROUPS)[number];
+
 export type PageMeta = {
   /** URL hash and nav id: letters, digits and dashes only. */
   id: string;
   title: string;
   /** Sidebar order. 0 is the overview. */
   order: number;
+  /** The sidebar group. Overview and Playground have none, so they sit above and below the groups. */
+  group?: PageGroup;
   /** One sentence: what the component is and what its motion does. */
   summary: string;
   tiers: Tier[];

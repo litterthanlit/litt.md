@@ -34,3 +34,6 @@ export const SunIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="8" r="2
 export const MoonIcon = (p: IconProps) => <Icon {...p}><path d="M13.25 9.4A5.5 5.5 0 0 1 6.6 2.75 5.5 5.5 0 1 0 13.25 9.4z" /></Icon>;
 export const MonitorIcon = (p: IconProps) => <Icon {...p}><rect x="1.75" y="2.75" width="12.5" height="8.5" /><path d="M8 11.25v2.5M5.5 13.75h5" /></Icon>;
 export const SlidersIcon = (p: IconProps) => <Icon {...p}><path d="M2.5 4.5h7M12.5 4.5h1M2.5 11.5h1M6.5 11.5h7" /><circle cx="11" cy="4.5" r="1.5" /><circle cx="5" cy="11.5" r="1.5" /></Icon>;
+export const AlertIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="8" r="6.25" /><path d="M8 4.75v4M8 11.25v.01" /></Icon>;
+export const MenuIcon = (p: IconProps) => <Icon {...p}><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" /></Icon>;
+export const CalendarIcon = (p: IconProps) => <Icon {...p}><rect x="2.25" y="3.25" width="11.5" height="10.5" /><path d="M2.25 6.75h11.5M5.5 1.75v3M10.5 1.75v3" /></Icon>;

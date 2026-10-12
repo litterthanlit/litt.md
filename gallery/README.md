@@ -1,6 +1,6 @@
 # litt.md Gallery
 
-The components gallery for [litt.md](../README.md): eight components on the locked v0.5 tokens, and a Playground for trying other motion and shape values. Light and material stay still. Only objects move.
+The components gallery for [litt.md](../README.md): every component litt.md specifies, on the locked v0.5 tokens, documented and installable, and a Playground for trying other motion and shape values. Light and material stay still. Only objects move.
 
 Live at [littmd.vercel.app](https://littmd.vercel.app).
 
@@ -40,7 +40,12 @@ Edit `../skills/litt-md/assets/tokens.css`, never the copy in `src/styles/`, and
 
 ## Deploy
 
-Vercel builds the gallery from the repo root with `../vercel.json`:
+Vercel builds the gallery with whichever config sits at the project's Root Directory, and both layouts work:
+
+- **Root Directory empty (the repo root):** `../vercel.json`, with `--prefix gallery` commands and output `gallery/dist`. This is how the `litt.md` project is set up.
+- **Root Directory `gallery`:** `vercel.json` in this folder, with the same commands run from here and output `dist`. Vercel picks this when you import the repo and accept the detected Vite app. Keep "Include files outside the Root Directory" on, because the build reads `../skills/litt-md/assets/`.
+
+The two files differ only in paths; keep their headers identical. Either way:
 
 - `framework` is `null`, so no framework preset applies.
 - Install is `npm ci --prefix gallery`. Build is `npm run verify --prefix gallery && npm run build --prefix gallery`, so a type error or a litt rule violation fails the deploy.

@@ -21,7 +21,7 @@ The repo root is the plugin root, and the skill lives in `skills/litt-md/`.
 - Every page runs the locked tokens. Only the Playground (`tune: true`) overrides them, on its own page, and it removes every override when you leave.
 - `gallery/src/motion/rules.ts` mirrors the motion bounds in `check.mjs` (check 9) and the radius rule (check 7). Change them together.
 - No hex values and no off-scale radii in `gallery/src`. `npm run lint:litt --prefix gallery` fails on both.
-- `vercel.json` is the deploy config: `npm ci`, then `verify` and `build`, output `gallery/dist`. A push to a branch makes a preview, and `main` is production.
+- `vercel.json` is the deploy config: `npm ci`, then `verify` and `build`, output `gallery/dist`. `gallery/vercel.json` is the same config for a Vercel project whose Root Directory is `gallery` (what an import detects); the two differ only in paths, so change them together. A push to a branch makes a preview, and `main` is production.
 
 ## Content rules
 
