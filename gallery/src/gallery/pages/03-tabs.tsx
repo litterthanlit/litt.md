@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Kbd } from "@/components/kbd";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Page, Stage, type PageMeta } from "../kit";
 
@@ -173,14 +174,6 @@ const PHASES: [string, string][] = [
   ["ship", "Domain connected. Publish when the copy is final."],
 ];
 
-function Key({ children }: { children: ReactNode }) {
-  return (
-    <kbd className="inline-grid h-5 min-w-5 place-items-center rounded-control bg-surface-2 px-1 font-mono text-caption text-fg-subtle shadow-[inset_0_0_0_1px_var(--line)]">
-      {children}
-    </kbd>
-  );
-}
-
 function KeyboardDemo() {
   return (
     <div className="grid w-full min-w-0 max-w-xl gap-8">
@@ -211,7 +204,7 @@ function KeyboardDemo() {
           <div key={label} className="flex items-center gap-3">
             <dt className="flex min-w-24 gap-1">
               {keys.map((k) => (
-                <Key key={k}>{k}</Key>
+                <Kbd key={k}>{k}</Kbd>
               ))}
             </dt>
             <dd>{label}</dd>

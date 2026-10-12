@@ -33,6 +33,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
 import { useExit, useTransition, useTravel } from "@/motion";
 import { SearchIcon } from "./icons";
+import { Kbd } from "./kbd";
 import { GLIDE_ROW, useGlide, type GlideSource } from "./glide";
 
 export type CommandItem = {
@@ -65,15 +66,6 @@ function filter(groups: CommandGroup[], query: string) {
 }
 
 const firstEnabled = (items: CommandItem[]) => items.findIndex((i) => !i.disabled);
-
-/** A key cap: mono, rounded-control, a faint fill. */
-export function Kbd({ children }: { children: ReactNode }) {
-  return (
-    <kbd className="inline-grid h-5 min-w-5 place-items-center rounded-control bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] px-1 font-mono text-caption text-fg-muted">
-      {children}
-    </kbd>
-  );
-}
 
 function Hint({ keys, children }: { keys: string; children: ReactNode }) {
   return (
