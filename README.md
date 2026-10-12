@@ -4,7 +4,7 @@ Nick's design language and taste for web and product UI, motion and interaction,
 
 > **Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, Hanken Grotesk, cool neutrals. The only bold move is light and material: glass that floats, light falling from the top, edges that catch it, a trace of grain. Motion is quick, with one spring moment per view. Light and dark are both first-class.
 
-Open [`skills/litt-md/assets/specimen.html`](skills/litt-md/assets/specimen.html) in a browser to see the whole system rendered.
+Open [`skills/litt-md/assets/specimen.html`](skills/litt-md/assets/specimen.html) in a browser to see the whole system rendered, or the [components gallery](https://littmd.vercel.app) to see it move.
 
 ## What's inside
 
@@ -120,6 +120,10 @@ npm run dev --prefix gallery                              # http://localhost:517
 npm run verify --prefix gallery && npm run build --prefix gallery   # tokens sync, typecheck, litt rules, build
 ```
 
-Vercel builds it from `vercel.json` on every push: a branch becomes a preview and `main` is production. See [`gallery/README.md`](gallery/README.md).
+Vercel builds it from `vercel.json` on every push: a branch becomes a preview and `main` is production at [littmd.vercel.app](https://littmd.vercel.app). See [`gallery/README.md`](gallery/README.md).
 
 Repo rules for Claude live in [`.claude/CLAUDE.md`](.claude/CLAUDE.md).
+
+## License
+
+[MIT](LICENSE).

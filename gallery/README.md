@@ -2,6 +2,8 @@
 
 The components gallery for [litt.md](../README.md): eight components on the locked v0.5 tokens, and a Playground for trying other motion and shape values. Light and material stay still. Only objects move.
 
+Live at [littmd.vercel.app](https://littmd.vercel.app).
+
 - **Stack:** React 19, Tailwind v4 (strict, tokens from litt.md), Motion 12, Radix primitives, Vite 6.
 - **Tokens:** `../skills/litt-md/assets/tokens.css` owns every number. `npm run sync:tokens` copies it and `tailwind.css` into the gitignored `src/styles/`, with Tailwind's strict mode switched on, so `rounded-lg`, `text-sm` and `bg-blue-500` do not exist. Never edit the copies. `predev`, `prebuild` and `verify` run the sync, so the gallery cannot ship stale tokens. The footer reads its version from the `tokens.css` header.
 - **Locked pages, one Playground:** every page runs the tokens. JS springs read the same custom properties as CSS (`src/motion/tokens.ts`), so there is one set of numbers. Only the Playground (`tune: true` in its page meta) overrides them, on its own page, and every override is removed when you leave it. Its Tune panel checks the values against the litt.md v0.5 rules and prints tokens to paste back into litt.md.
