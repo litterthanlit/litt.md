@@ -24,7 +24,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "command-menu",
   title: "Command menu",
-  order: 5,
+  order: 11, group: "Overlays",
   summary:
     "Search every page, project and action from the keyboard. The panel drops in over a dimmed canvas, and one highlight glides between rows as you arrow through them.",
   tiers: ["instant", "responsive"],

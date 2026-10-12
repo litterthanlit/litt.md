@@ -25,7 +25,7 @@ import { MotionPanel } from "../motion-panel";
 export const meta: PageMeta = {
   id: "playground",
   title: "Playground",
-  order: 9,
+  order: 19,
   tune: true,
   summary:
     "Turn the dials and the components on this page follow. Every other page always runs the locked values from the tokens.",

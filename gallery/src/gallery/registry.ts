@@ -1,6 +1,6 @@
 /** Pages register themselves: any src/gallery/pages/*.tsx exporting `meta` and a default component. */
 import { lazy, type ComponentType } from "react";
-import type { PageMeta } from "./kit";
+import type { PageGroup, PageMeta } from "./kit";
 
 /* The nav needs every page's meta at once, but not every page's code. So meta comes
    from a tiny module holding only `export const meta` (the page-meta plugin in
@@ -30,4 +30,15 @@ export function prefetchPages(): () => void {
   }
   const id = setTimeout(run, 1500); // Safari has no requestIdleCallback
   return () => clearTimeout(id);
+}
+
+/** Pages in sidebar order, split into runs that share a group. A run with no group has no heading. */
+export function pageRuns(list: PageEntry[] = pages): { group?: PageGroup; pages: PageEntry[] }[] {
+  const runs: { group?: PageGroup; pages: PageEntry[] }[] = [];
+  for (const p of list) {
+    const last = runs[runs.length - 1];
+    if (last && last.group === p.group) last.pages.push(p);
+    else runs.push({ group: p.group, pages: [p] });
+  }
+  return runs;
 }

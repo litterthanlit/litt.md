@@ -1,7 +1,7 @@
 /** The gallery shell: glass header, page list and the page. Only the Playground tunes motion. */
 import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { MotionDialProvider } from "@/motion";
-import { pages, prefetchPages, type PageEntry } from "./registry";
+import { pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { TooltipProvider } from "@/components/tooltip";
 import { MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
@@ -149,7 +149,23 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
       <div className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
         <nav aria-label="Components" className="hidden lg:block">
-          <div className="sticky top-16 grid gap-1 pt-24">{pages.map((p) => navLink(p))}</div>
+          {/* Its own scroller, so a short window still reaches the last group. */}
+          <div className="sticky top-16 grid max-h-[calc(100svh-4rem)] content-start gap-6 overflow-y-auto pt-24 pb-12 [scrollbar-width:none]">
+            {pageRuns().map((run) =>
+              run.group ? (
+                <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid gap-1">
+                  <p id={`nav-${run.group}`} className="pb-1 text-caption text-fg-subtle">
+                    {run.group}
+                  </p>
+                  {run.pages.map((p) => navLink(p))}
+                </div>
+              ) : (
+                <div key={run.pages[0]!.id} className="grid gap-1">
+                  {run.pages.map((p) => navLink(p))}
+                </div>
+              ),
+            )}
+          </div>
         </nav>
 
         <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-16 outline-none lg:pt-24">

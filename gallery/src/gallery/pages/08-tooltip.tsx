@@ -7,7 +7,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "tooltip",
   title: "Tooltip",
-  order: 2,
+  order: 8, group: "Overlays",
   summary:
     "A small solid label for icons, shortcuts and status. It opens after 200ms of hover or at once on focus, then grows from its trigger and travels in from the side it renders on.",
   tiers: ["instant", "responsive"],

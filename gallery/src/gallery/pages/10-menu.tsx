@@ -26,7 +26,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "menu",
   title: "Menu",
-  order: 4,
+  order: 10, group: "Overlays",
   summary:
     "A glass dropdown with one highlight that glides from row to row. It grows from its trigger and travels from the side it really opens on.",
   tiers: ["instant", "responsive"],

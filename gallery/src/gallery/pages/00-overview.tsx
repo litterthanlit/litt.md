@@ -1,4 +1,4 @@
-import { pages } from "../registry";
+import { pageRuns, pages } from "../registry";
 import { TierChip, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -10,13 +10,16 @@ export const meta: PageMeta = {
   tiers: ["instant", "responsive", "expressive"],
 };
 
+const WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty"];
+
 export default function Overview() {
   const list = pages.filter((p) => p.id !== meta.id && !p.tune);
+  const count = WORDS[list.length] ?? String(list.length);
   const playground = pages.find((p) => p.tune);
   return (
     <article aria-labelledby="page-overview" className="grid gap-16 pb-24">
       <header className="grid gap-4">
-        <h1 id="page-overview" className="text-display text-fg text-balance">Eight components on locked tokens.</h1>
+        <h1 id="page-overview" className="text-display text-fg text-balance">{count} components on locked tokens.</h1>
         <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
       </header>
 
@@ -36,22 +39,27 @@ export default function Overview() {
         </div>
       </section>
 
-      <section className="grid gap-6" aria-labelledby="components-title">
+      <section className="grid gap-8" aria-labelledby="components-title">
         <h2 id="components-title" className="text-h4 text-fg">Components</h2>
         {list.length === 0 ? (
           <p className="text-small text-fg-subtle">Components are being built.</p>
         ) : (
-          <ul className="grid gap-px overflow-hidden rounded-surface bg-line shadow-[inset_0_0_0_1px_var(--line)] sm:grid-cols-2">
-            {list.map((p) => (
-              <li key={p.id} className="bg-surface-1">
-                <a href={`#${p.id}`} className="grid h-full content-start gap-3 p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2">
-                  <span className="text-body text-fg">{p.title}</span>
-                  <span className="text-small text-fg-subtle">{p.summary}</span>
-                  <span className="flex flex-wrap gap-2">{p.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          pageRuns(list).map((run) => (
+            <div key={run.group ?? "other"} className="grid gap-4">
+              {run.group && <h3 className="text-body text-fg-muted">{run.group}</h3>}
+              <ul className="grid gap-px overflow-hidden rounded-surface bg-line shadow-[inset_0_0_0_1px_var(--line)] sm:grid-cols-2">
+                {run.pages.map((p) => (
+                  <li key={p.id} className="bg-surface-1">
+                    <a href={`#${p.id}`} className="grid h-full content-start gap-3 p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2">
+                      <span className="text-body text-fg">{p.title}</span>
+                      <span className="text-small text-fg-subtle">{p.summary}</span>
+                      <span className="flex flex-wrap gap-2">{p.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
         )}
       </section>
 

@@ -799,6 +799,51 @@ const COPY = {
     description: "Airy project rows and raised cards that arrive in one staggered cascade. Filtering and inserting stay responsive, and hover never moves anything.",
     docs: "Import ProjectList, ProjectGrid, ProjectFilters and ProjectsEmpty from components/litt/list.",
   },
+  input: {
+    title: "Input",
+    description: "TODO(input): one or two plain sentences, from the page summary.",
+    docs: "TODO(input): where it installs and what to import.",
+  },
+  checkbox: {
+    title: "Checkbox and radio",
+    description: "TODO(checkbox): one or two plain sentences, from the page summary.",
+    docs: "TODO(checkbox): where it installs and what to import.",
+  },
+  segmented: {
+    title: "Segmented control",
+    description: "TODO(segmented): one or two plain sentences, from the page summary.",
+    docs: "TODO(segmented): where it installs and what to import.",
+  },
+  tag: {
+    title: "Tag",
+    description: "TODO(tag): one or two plain sentences, from the page summary.",
+    docs: "TODO(tag): where it installs and what to import.",
+  },
+  popover: {
+    title: "Popover",
+    description: "TODO(popover): one or two plain sentences, from the page summary.",
+    docs: "TODO(popover): where it installs and what to import.",
+  },
+  header: {
+    title: "Glass header",
+    description: "TODO(header): one or two plain sentences, from the page summary.",
+    docs: "TODO(header): where it installs and what to import.",
+  },
+  card: {
+    title: "Card",
+    description: "TODO(card): one or two plain sentences, from the page summary.",
+    docs: "TODO(card): where it installs and what to import.",
+  },
+  table: {
+    title: "Table",
+    description: "TODO(table): one or two plain sentences, from the page summary.",
+    docs: "TODO(table): where it installs and what to import.",
+  },
+  states: {
+    title: "Empty and loading states",
+    description: "TODO(states): one or two plain sentences, from the page summary.",
+    docs: "TODO(states): where it installs and what to import.",
+  },
 };
 
 /* =============================================================== assemble the items */

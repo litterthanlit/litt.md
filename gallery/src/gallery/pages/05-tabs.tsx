@@ -6,7 +6,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "tabs",
   title: "Tabs",
-  order: 3,
+  order: 5, group: "Controls",
   summary:
     "Underline or segmented. The indicator slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked.",
   tiers: ["instant", "responsive"],
