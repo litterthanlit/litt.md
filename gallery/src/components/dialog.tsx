@@ -26,12 +26,17 @@ import { XIcon } from "@/components/icons";
 const OpenContext = createContext(false);
 
 export type DialogProps = {
+  /** Whether the dialog is open. Pair it with onOpenChange. Leave it out and the dialog keeps its own state. */
   open?: boolean;
+  /** Start open when you do not control it. */
   defaultOpen?: boolean;
+  /** Called with the next state when Esc, a click outside, Close, DialogClose or DialogTrigger asks to change it. Ignore a false to keep the dialog open, for example while a save runs. */
   onOpenChange?: (open: boolean) => void;
+  /** The trigger and the content: a DialogTrigger and a DialogContent. */
   children: ReactNode;
 };
 
+/** The root. It holds the open state and shares it with DialogTrigger and DialogContent, which go inside it. */
 export function Dialog({ open: openProp, defaultOpen = false, onOpenChange, children }: DialogProps) {
   const [inner, setInner] = useState(defaultOpen);
   const open = openProp ?? inner;
@@ -51,11 +56,15 @@ export function Dialog({ open: openProp, defaultOpen = false, onOpenChange, chil
   );
 }
 
+/** Opens the dialog. Wrap your own Button with asChild, so it keeps its look and gets the open behavior. */
 export const DialogTrigger = RadixDialog.Trigger;
+/** Closes the dialog. Wrap a Cancel button with asChild. */
 export const DialogClose = RadixDialog.Close;
 
 export type DialogContentProps = {
+  /** The heading. It also names the dialog for screen readers, so it is required. */
   title: ReactNode;
+  /** One line under the title, also read as the dialog's description. Leave it out when the title says enough. */
   description?: ReactNode;
   /** Buttons, right-aligned and 12px apart. Primary goes last. */
   footer?: ReactNode;
@@ -63,13 +72,19 @@ export type DialogContentProps = {
   side?: "center" | "right";
   /** Hide the round close button in the corner. */
   hideClose?: boolean;
+  /** Extra classes for the panel. */
   className?: string;
-  /** The body slot. */
+  /** The body. It scrolls when it is taller than the panel, and the title and footer stay put. Leave it out for a title and buttons only. */
   children?: ReactNode;
 };
 
 const FOCUSABLE = ":is(input,textarea,select,button,[href]):not(:disabled)";
 
+/**
+ * The panel: title, description, body and footer, with a dim overlay behind it. Render it inside a Dialog.
+ * Focus lands on the control marked data-autofocus, else the first control in the body, else the first one in
+ * the footer, and only then on the close button.
+ */
 export function DialogContent({
   title,
   description,

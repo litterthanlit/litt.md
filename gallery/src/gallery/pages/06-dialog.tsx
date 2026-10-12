@@ -1,9 +1,9 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
 import { SegmentedRadio, TextField } from "@/components/dialog-fields";
 import { SettingsIcon } from "@/components/icons";
-import { Page, Stage, type PageMeta } from "../kit";
+import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "dialog",
@@ -12,6 +12,80 @@ export const meta: PageMeta = {
   summary:
     "The one expressive moment. The panel is placed, not thrown: it rises by the travel token's distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce.",
   tiers: ["instant", "expressive"],
+};
+
+export const docs: PageDocs = {
+  components: ["dialog", "dialog-fields"],
+  exports: ["Dialog", "DialogTrigger", "DialogContent", "DialogClose", "TextField", "SegmentedRadio"],
+  usage: `import { useState } from "react";
+import { Button } from "@/components/button";
+import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
+import { TextField } from "@/components/dialog-fields";
+
+const [open, setOpen] = useState(false);
+const [name, setName] = useState("litt.design");
+
+<Dialog open={open} onOpenChange={setOpen}>
+  <DialogTrigger asChild>
+    <Button>Rename project</Button>
+  </DialogTrigger>
+  <DialogContent
+    title="Rename project"
+    description="The new name shows in the dashboard."
+    footer={
+      <>
+        <DialogClose asChild>
+          <Button size="lg">Cancel</Button>
+        </DialogClose>
+        <Button size="lg" variant="primary" type="submit" form="rename-form">
+          Save name
+        </Button>
+      </>
+    }
+  >
+    <form
+      id="rename-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        save(name);
+        setOpen(false);
+      }}
+    >
+      <TextField label="Project name" value={name} onChange={(e) => setName(e.target.value)} />
+    </form>
+  </DialogContent>
+</Dialog>
+
+// For a settings sheet, add side="right" to DialogContent.`,
+  use: [
+    "A decision or a short task needs the person's full attention before anything else: confirm a publish, invite someone, rename a project.",
+    "A step that cannot be undone. Make the confirm button secondary with danger text, so the red word is the only loud thing, and ask the person to type the project name.",
+    "A short form that is the whole task. Put the buttons in the footer and link the submit to the form with form=\"…\", because the footer sits outside the form.",
+    "Settings for the thing on the page. Use side=\"right\" for a sheet: the footer stays pinned while the body scrolls.",
+  ],
+  skip: [
+    "The message needs no answer, like \"Saved\". Use Toast, because a dialog blocks the whole page.",
+    "A short list of actions on one control. Use Menu.",
+    "A hint for a button or an icon. Use Tooltip.",
+    "The content is long or has several steps. Give it its own page, because the panel is at most 480px wide and its body scrolls.",
+    "You want a dialog on top of a dialog. Change the first one's content instead, because glass never sits on glass.",
+  ],
+  keyboard: [
+    [["Tab"], "Moves to the next control inside the dialog. After the last one it wraps to the first, because focus is trapped."],
+    [["Shift+Tab"], "Moves to the previous control, and wraps the same way."],
+    [["Esc"], "Closes the dialog and returns focus to the button that opened it."],
+    [["Enter", "Space"], "Activates the focused button. Enter in a field submits its form."],
+    [["Arrow keys"], "In a SegmentedRadio, move to the previous or next option and select it."],
+  ],
+  a11y: [
+    "Radix Dialog does the hard parts: role=\"dialog\", the focus trap and Esc. While the dialog is open the rest of the page is hidden from screen readers, cannot be clicked and cannot scroll. That includes a Toast, so fire it when the dialog closes, not while it is open.",
+    "The title is required, because it names the dialog. The description, when there is one, is linked as the dialog's description. Make the buttons say what happens: Publish, not OK.",
+    "Focus lands on the control marked data-autofocus, else the first control in the body, else the first one in the footer. The close button is the last resort, so it does not grab focus when there is something to do.",
+    "Closing returns focus to the DialogTrigger. If you open the dialog another way, such as from a menu item, there is no trigger, so move focus back yourself.",
+    "The corner close button is labelled Close. Hide it with hideClose only when the footer has a Cancel, so touch users keep a visible way out.",
+    "TextField uses a real label, links the hint and the error with aria-describedby, and sets aria-invalid on an error. The error is not announced by itself, so after a failed submit, move focus to the field. Inputs are 16px on touch, so iOS does not zoom.",
+    "Under reduced motion the dialog appears and leaves at once, with no travel.",
+  ],
 };
 
 /** A trigger with a quiet status line under it, so each stage shows what the dialog did. */
@@ -94,10 +168,11 @@ function InviteDemo() {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!EMAIL.test(email.trim())) {
       setError("Enter a full address, like nina@halo.studio.");
+      e.currentTarget.querySelector("input")?.focus(); // the field reads its error out (aria-describedby)
       return;
     }
     setOpen(false);
@@ -300,10 +375,11 @@ function SheetDemo() {
 
 export default function DialogPage() {
   return (
-    <Page meta={meta}>
+    <Page meta={meta} docs={docs}>
       <Stage
         title="Confirm"
         tier="expressive"
+        code="PublishDemo"
         caption="The panel fades in, rises by the travel token's distance and settles from 0.98 to full size on the expressive tier. The overlay only fades. Closing is quicker and never bounces. Esc, Cancel or a click outside closes it, and focus returns to the button."
       >
         <PublishDemo />
@@ -312,6 +388,7 @@ export default function DialogPage() {
       <Stage
         title="Form"
         tier="expressive"
+        code="InviteDemo"
         caption="Same entrance, with focus landing in the email field. Inputs are 44px tall and 16px on touch. The role is a native radio group, so arrow keys move between Viewer and Editor. Try sending an invalid address."
       >
         <InviteDemo />
@@ -320,6 +397,7 @@ export default function DialogPage() {
       <Stage
         title="Destructive"
         tier="expressive"
+        code="DeleteDemo"
         caption="There is no danger fill. Delete is a secondary button with danger text, and it stays disabled until you type the project slug. Nothing in the dialog is filled, so the only loud thing is the red word."
       >
         <DeleteDemo />
@@ -328,6 +406,7 @@ export default function DialogPage() {
       <Stage
         title="Side sheet"
         tier="expressive"
+        code="SheetDemo"
         caption="The sheet is 400px wide and full height, but it travels only the travel token's distance on x, never its own width. It fades in at the right edge and settles. The footer stays pinned while the body scrolls."
       >
         <SheetDemo />

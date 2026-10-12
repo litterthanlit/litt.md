@@ -27,18 +27,26 @@ export type { CoverName } from "./list-cover";
 export type ProjectStatus = "live" | "review" | "draft" | "idea";
 export type ProjectFilter = "all" | "live" | "review" | "draft";
 
+/**
+ * What every component here reads. They are built around this shape, so when you copy them, rename
+ * or add fields here and in RowContent and ProjectCard to fit your data.
+ */
 export type Project = {
+  /** Unique. It is the React key and what the selection tracks. */
   id: string;
   name: string;
   client: string;
   /** Last deploy, in words: "Deployed 2 days ago", "No deploy yet". */
   deploy: string;
+  /** Shown as a status tag: live, review, draft or idea. */
   status: ProjectStatus;
   /** ISO date (YYYY-MM-DD) of the last edit. */
   updated: string;
   /** One line. */
   description: string;
+  /** Short labels on the card. */
   tags: string[];
+  /** Which drawn cover the card shows. */
   cover: CoverName;
   /** When set, the row is a link; otherwise it is a button. */
   href?: string;
@@ -54,6 +62,12 @@ export function formatDate(iso: string) {
   return `${d} ${MONTHS[Number(m) - 1]}`;
 }
 
+/**
+ * Whether a project shows under a filter. "all" shows everything; any other filter matches the status.
+ *
+ * @param p The project to test.
+ * @param filter The filter chip that is on.
+ */
 export function matchesFilter(p: Project, filter: ProjectFilter) {
   return filter === "all" || p.status === filter;
 }
@@ -75,7 +89,15 @@ const tagBase =
   "shadow-[inset_0_0_0_1px_var(--line)]";
 
 /** A status tag colors the text and a 6px dot, never the fill (components.md, Tag). */
-export function StatusTag({ status, className = "" }: { status: ProjectStatus; className?: string }) {
+export function StatusTag({
+  status,
+  className = "",
+}: {
+  /** Sets the label, and the dot and text color. Idea gets a hollow dot, so it differs from Draft without color. */
+  status: ProjectStatus;
+  /** Extra classes for the tag. */
+  className?: string;
+}) {
   const s = STATUS[status];
   return (
     <span className={`${tagBase} gap-1.5 ${s.text} ${className}`}>
@@ -85,6 +107,7 @@ export function StatusTag({ status, className = "" }: { status: ProjectStatus; c
   );
 }
 
+/** A quiet pill for a label such as Framer or Site. */
 export function ProjectTag({ children }: { children: ReactNode }) {
   return <span className={`${tagBase} text-fg-subtle`}>{children}</span>;
 }
@@ -123,15 +146,19 @@ function RowContent({ project }: { project: Project }) {
 }
 
 export type ProjectListProps = {
+  /** The rows, in order. Each row is a button, or a link when the project has an href. */
   projects: Project[];
   /** Called when a row without an href is pressed. */
   onOpen?: (project: Project) => void;
   /** Play the staggered entrance on mount. Remount (change `key`) to replay. */
   entrance?: boolean;
+  /** The list's accessible name. Change it when the page has more than one list. */
   label?: string;
+  /** Extra classes for the list, such as a max width. */
   className?: string;
 };
 
+/** Airy project rows in one hairline box. The rows arrive in a staggered cascade, the page's one expressive moment. */
 export function ProjectList({ projects, onOpen, entrance = true, label = "Projects", className = "" }: ProjectListProps) {
   const enter = useTransition("expressive");
   const travel = useTravel();
@@ -172,10 +199,15 @@ export function ProjectList({ projects, onOpen, entrance = true, label = "Projec
 /* -------------------------------------------------------------------------- */
 
 export type ProjectCardProps = {
+  /** The project to show. */
   project: Project;
+  /** Whether the card is selected. You own this state. */
   selected?: boolean;
+  /** Called with the checkbox's new state. Leave it out and the checkbox cannot be changed. */
   onSelectedChange?: (selected: boolean) => void;
+  /** Called when the card is pressed anywhere except the checkbox. */
   onOpen?: (project: Project) => void;
+  /** Extra classes for the card. */
   className?: string;
 };
 
@@ -251,8 +283,11 @@ export function ProjectFilters({
   onChange,
   className = "",
 }: {
+  /** The chip that is on: all, live, review or draft. You own this state. */
   value: ProjectFilter;
+  /** Called with the chip that was pressed. */
   onChange: (filter: ProjectFilter) => void;
+  /** Extra classes for the row of chips. */
   className?: string;
 }) {
   return (
@@ -294,7 +329,15 @@ const EMPTY: Record<ProjectFilter, { line: string; hint: string }> = {
 };
 
 /** One line in fg-muted, a hint in fg-subtle, and the way out. Left-aligned, no illustration. */
-export function ProjectsEmpty({ filter, onClearFilter }: { filter: ProjectFilter; onClearFilter?: () => void }) {
+export function ProjectsEmpty({
+  filter,
+  onClearFilter,
+}: {
+  /** Picks the wording: each filter has its own line and hint. */
+  filter: ProjectFilter;
+  /** Called by the Clear filter button, which shows for every filter except all. Leave it out to hide the button. */
+  onClearFilter?: () => void;
+}) {
   const copy = EMPTY[filter];
   return (
     <div
@@ -322,13 +365,19 @@ export function ProjectsEmpty({ filter, onClearFilter }: { filter: ProjectFilter
 export type ProjectGridProps = {
   /** Every project. The grid applies the filter itself, so it can animate the difference. */
   projects: Project[];
+  /** Which projects show: all, or the ones with that status. Pair it with ProjectFilters. */
   filter: ProjectFilter;
+  /** The ids of the selected cards. You own this state. */
   selectedIds?: string[];
+  /** Called with a card's id and its checkbox's new state. */
   onSelectedChange?: (id: string, selected: boolean) => void;
+  /** Called by the Clear filter button in the empty state. */
   onClearFilter?: () => void;
+  /** Called when a card is pressed anywhere except the checkbox. */
   onOpen?: (project: Project) => void;
 };
 
+/** A grid of ProjectCards. Changing the filter re-flows it: cards that stay slide, cards that leave fade, and an empty result shows ProjectsEmpty. */
 export function ProjectGrid({ projects, filter, selectedIds = [], onSelectedChange, onClearFilter, onOpen }: ProjectGridProps) {
   const enter = useTransition("responsive");
   const exit = useExit("responsive");

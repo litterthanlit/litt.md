@@ -11,7 +11,9 @@
 import { useId, type InputHTMLAttributes, type ReactNode } from "react";
 
 export type TextFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> & {
+  /** The label above the field. Required, because a placeholder is not a label. Clicking it focuses the input. */
   label: ReactNode;
+  /** A hint under the field. An error replaces it. */
   help?: ReactNode;
   /** Shown in danger color and linked to the input. Say how to fix it. */
   error?: ReactNode;
@@ -19,6 +21,7 @@ export type TextFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, "id"> &
   mono?: boolean;
 };
 
+/** A labelled text input. The label, the hint and the error are wired to the input for you; every other input attribute goes through. */
 export function TextField({ label, help, error, mono = false, className = "", ...rest }: TextFieldProps) {
   const id = useId();
   const noteId = `${id}-note`;
@@ -56,6 +59,7 @@ export function TextField({ label, help, error, mono = false, className = "", ..
 
 export type SegmentedOption<T extends string> = { value: T; label: ReactNode };
 
+/** A group of two or more native radios in one hairline box, for a short choice such as Viewer or Editor. */
 export function SegmentedRadio<T extends string>({
   legend,
   name,
@@ -63,10 +67,15 @@ export function SegmentedRadio<T extends string>({
   onChange,
   options,
 }: {
+  /** The group's label, shown above it and read as its name. */
   legend: ReactNode;
+  /** The radios' shared name, unique in the form. It is what makes the arrow keys move between them. */
   name: string;
+  /** The value of the selected option. */
   value: T;
+  /** Called with the picked option's value. */
   onChange: (value: T) => void;
+  /** The choices, in order. Each has a value and a label. Give it two or more. */
   options: SegmentedOption<T>[];
 }) {
   const labelId = useId();

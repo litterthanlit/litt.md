@@ -186,7 +186,16 @@ const art: Record<CoverName, ReactNode> = {
   ),
 };
 
-export function ProjectCover({ name, className = "" }: { name: CoverName; className?: string }) {
+/** A drawn cover that fills its parent, which should be relative and 8:5. Decorative, so screen readers skip it. */
+export function ProjectCover({
+  name,
+  className = "",
+}: {
+  /** Which cover to draw: dashboard, identity, landing, template, type, motion, refresh, system or blank. */
+  name: CoverName;
+  /** Extra classes for the SVG. */
+  className?: string;
+}) {
   return (
     <svg
       viewBox="0 0 320 200"
