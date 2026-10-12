@@ -16,8 +16,8 @@
  *   not squeezed or wrapped: they leave the bar and live behind a menu button that opens
  *   litt's Menu (responsive tier, owned by Menu). Actions stay in the bar.
  * - No router. Links take an href and a current flag. renderLink swaps the anchor for your
- *   router's link, and onNavigate does the same for the menu (its rows are menu items, not
- *   anchors).
+ *   router's link. The menu's rows are real links too (MenuItem href), unless you pass
+ *   onNavigate: then choosing a row calls it, for client-side routing.
  * - Only one nav is ever visible, so there is always exactly one landmark.
  */
 import type { ReactNode } from "react";
@@ -58,7 +58,7 @@ export type HeaderProps = {
   navFrom?: "sm" | "lg";
   /** Draws each link. Receives the link and the props to pass on. Use it for a router link, for example `(link, props) => <Link to={link.href} {...props} />`. */
   renderLink?: (link: HeaderLink, props: HeaderLinkProps) => ReactNode;
-  /** Runs when a link is chosen in the menu. The default sets window.location.href. Pass your router's navigate to keep client-side routing. */
+  /** Pass your router's navigate to keep client-side routing in the menu. Without it, the menu's rows are plain links. */
   onNavigate?: (link: HeaderLink) => void;
   /** The menu button's accessible name. */
   menuLabel?: string;
@@ -81,11 +81,6 @@ const link =
 /** The same dot marks the current page in the bar and in the menu. */
 function Dot() {
   return <span aria-hidden="true" className="size-1.5 rounded-pill bg-accent" />;
-}
-
-/** The default for onNavigate: a plain page load, like clicking an anchor. */
-function load(l: HeaderLink) {
-  window.location.href = l.href;
 }
 
 /** The sticky glass header. It sits at the top of the page, with content that scrolls under it. */
@@ -155,7 +150,12 @@ export function Header({
                   }
                 >
                   {links.map((l) => (
-                    <MenuItem key={l.href} icon={l.current ? <Dot /> : <span />} onSelect={() => (onNavigate ?? load)(l)}>
+                    <MenuItem
+                      key={l.href}
+                      icon={l.current ? <Dot /> : <span />}
+                      /* A real link by default; with onNavigate, the router does the navigating. */
+                      {...(onNavigate ? { onSelect: () => onNavigate(l) } : { href: l.href })}
+                    >
                       {l.label}
                       {l.current && <span className="sr-only">, current page</span>}
                     </MenuItem>

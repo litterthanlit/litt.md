@@ -72,24 +72,32 @@ type ItemProps = {
   disabled?: boolean;
   /** Runs on click, Enter or Space. The menu closes afterward; call event.preventDefault() to keep it open. */
   onSelect?: (event: Event) => void;
+  /** Makes the row a real link, so a modifier key or a middle click opens it in a new tab. */
+  href?: string;
   /** The row label. It truncates with an ellipsis instead of wrapping. */
   children: ReactNode;
 };
 
-/** A row that does something when it is chosen. */
-export function MenuItem({ icon, shortcut, destructive, disabled, onSelect, children }: ItemProps) {
+/** A row that does something when it is chosen, or goes somewhere when it has an href. */
+export function MenuItem({ icon, shortcut, destructive, disabled, onSelect, href, children }: ItemProps) {
   const { glide } = usePanel();
+  const content = (
+    <>
+      {icon !== undefined && <Cell>{icon}</Cell>}
+      <span className="min-w-0 truncate">{children}</span>
+      {shortcut && <Shortcut>{shortcut}</Shortcut>}
+    </>
+  );
   return (
     <DropdownMenu.Item
       {...GLIDE_ROW}
+      asChild={href !== undefined}
       disabled={disabled}
       onSelect={onSelect}
       onFocus={(e) => glide.focusRow(e.currentTarget)}
       className={row + " " + (destructive ? toneDanger : tone)}
     >
-      {icon !== undefined && <Cell>{icon}</Cell>}
-      <span className="min-w-0 truncate">{children}</span>
-      {shortcut && <Shortcut>{shortcut}</Shortcut>}
+      {href !== undefined ? <a href={href}>{content}</a> : content}
     </DropdownMenu.Item>
   );
 }
