@@ -5,7 +5,7 @@
  *   intent, the skip window). Everything visual is ours.
  * - Look: a solid surface-3 chip with shadow-tooltip. It is too small for glass
  *   to read. rounded-control, text-small, 6px by 8px, 240px at most. A shortcut
- *   is a mono kbd chip in fg-subtle.
+ *   is the shared Kbd chip (kbd.tsx).
  * - Motion (responsive tier): it grows from the trigger. Opacity 0 to 1, scale
  *   0.98 to 1, and a nudge of travel/4 toward the trigger, from the side it
  *   really renders on (Radix data-side, read after collision flipping).
@@ -22,6 +22,7 @@ import { createContext, useContext, useLayoutEffect, useRef, useState, type Reac
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { AnimatePresence, motion } from "motion/react";
 import { useExit, useTransition, useTravel } from "@/motion";
+import { Kbd } from "./kbd";
 
 export type TooltipSide = "top" | "right" | "bottom" | "left";
 
@@ -161,14 +162,5 @@ function TooltipSurface({
         {shortcut && <Kbd>{shortcut}</Kbd>}
       </motion.div>
     </TooltipPrimitive.Content>
-  );
-}
-
-/** A shortcut chip: Geist Mono, caption size, fg-subtle, a hairline edge. */
-function Kbd({ children }: { children: ReactNode }) {
-  return (
-    <kbd className="inline-grid h-5 min-w-5 shrink-0 place-items-center rounded-control px-1 font-mono text-caption text-fg-subtle shadow-[inset_0_0_0_1px_var(--line-strong)]">
-      {children}
-    </kbd>
   );
 }

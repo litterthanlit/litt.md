@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/button";
+import { Kbd } from "@/components/kbd";
 import {
-  Kbd,
   CommandMenu,
   CommandPanel,
   useCommandShortcut,

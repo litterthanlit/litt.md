@@ -31,4 +31,6 @@ export const FolderIcon = (p: IconProps) => <Icon {...p}><path d="M1.75 3.25h4.5
 export const BellIcon = (p: IconProps) => <Icon {...p}><path d="M4 11.25V7a4 4 0 0 1 8 0v4.25l1 1H3zM6.5 13.75h3" /></Icon>;
 export const InfoIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="8" r="6.25" /><path d="M8 7.25v4M8 4.75v.01" /></Icon>;
 export const SunIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="8" r="2.75" /><path d="M8 1.75v1.5M8 12.75v1.5M1.75 8h1.5M12.75 8h1.5M3.6 3.6l1 1M11.4 11.4l1 1M3.6 12.4l1-1M11.4 4.6l1-1" /></Icon>;
+export const MoonIcon = (p: IconProps) => <Icon {...p}><path d="M13.25 9.4A5.5 5.5 0 0 1 6.6 2.75 5.5 5.5 0 1 0 13.25 9.4z" /></Icon>;
+export const MonitorIcon = (p: IconProps) => <Icon {...p}><rect x="1.75" y="2.75" width="12.5" height="8.5" /><path d="M8 11.25v2.5M5.5 13.75h5" /></Icon>;
 export const SlidersIcon = (p: IconProps) => <Icon {...p}><path d="M2.5 4.5h7M12.5 4.5h1M2.5 11.5h1M6.5 11.5h7" /><circle cx="11" cy="4.5" r="1.5" /><circle cx="5" cy="11.5" r="1.5" /></Icon>;

@@ -5,5 +5,6 @@
   "author": { "name": "Nick", "url": "https://github.com/litterthanlit" },
   "homepage": "https://github.com/litterthanlit/litt.md",
   "repository": "https://github.com/litterthanlit/litt.md",
+  "license": "MIT",
   "keywords": ["design", "taste", "design-language", "ui", "motion", "tokens"]
 }

@@ -1,11 +1,18 @@
 /** The gallery shell: glass header, page list and the page. Only the Playground tunes motion. */
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { MotionDialProvider } from "@/motion";
-import { pages, type PageEntry } from "./registry";
+import { pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { TooltipProvider } from "@/components/tooltip";
+import { MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
 
 type ThemeChoice = "system" | "light" | "dark";
+const THEMES = [
+  { id: "system", label: "System", Icon: MonitorIcon },
+  { id: "light", label: "Light", Icon: SunIcon },
+  { id: "dark", label: "Dark", Icon: MoonIcon },
+] satisfies { id: ThemeChoice; label: string; Icon: typeof SunIcon }[];
+
 function ThemeSwitch() {
   const [theme, setTheme] = useState<ThemeChoice>(() => {
     const t = document.documentElement.getAttribute("data-theme");
@@ -22,16 +29,71 @@ function ThemeSwitch() {
     }
   };
   return (
-    <div className="hidden overflow-hidden rounded-control shadow-[inset_0_0_0_1px_var(--line-strong)] sm:inline-flex" role="group" aria-label="Theme">
-      {(["system", "light", "dark"] as ThemeChoice[]).map((t) => (
+    <div className="inline-flex overflow-hidden rounded-control shadow-[inset_0_0_0_1px_var(--line-strong)]" role="group" aria-label="Theme">
+      {/* Icons on a phone, where three labels would crowd the wordmark; words from sm up. */}
+      {THEMES.map(({ id, label, Icon }) => (
         <button
-          key={t} type="button" aria-pressed={theme === t} onClick={() => choose(t)}
-          className="h-control-sm cursor-pointer px-3 text-small capitalize text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg"
+          key={id} type="button" aria-pressed={theme === id} aria-label={label} onClick={() => choose(id)}
+          className="grid h-control-sm min-w-control-sm cursor-pointer place-items-center text-small text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg pointer-coarse:h-control-md pointer-coarse:min-w-control-md sm:px-3"
         >
-          {t}
+          <Icon className="sm:hidden" />
+          <span className="hidden sm:inline">{label}</span>
         </button>
       ))}
     </div>
+  );
+}
+
+/** Room the edge fades take, and the margin kept around the active link. Keep it equal to the 32px in the classes below. */
+const FADE = 32;
+
+/**
+ * The phone nav. It scrolls sideways with no scrollbar, so each edge fades while
+ * more links sit behind it, and a route change brings the active link into view.
+ */
+function NavStrip({ activeId, children }: { activeId: string | undefined; children: ReactNode }) {
+  const ref = useRef<HTMLElement>(null);
+
+  /* The fades follow the scroll position, so they show only where there is more to see. */
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      el.toggleAttribute("data-fade-start", el.scrollLeft > 1);
+      el.toggleAttribute("data-fade-end", el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
+    };
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    const resize = new ResizeObserver(update);
+    resize.observe(el);
+    Array.from(el.children).forEach((link) => resize.observe(link)); // links change width when the font loads
+    return () => {
+      el.removeEventListener("scroll", update);
+      resize.disconnect();
+    };
+  }, []);
+
+  /* Scroll the strip itself, instantly. scrollIntoView could move the page too. */
+  useEffect(() => {
+    const el = ref.current;
+    const link = el?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!el || !link) return;
+    const strip = el.getBoundingClientRect();
+    const box = link.getBoundingClientRect();
+    const hiddenAtStart = strip.left + FADE - box.left;
+    const hiddenAtEnd = box.right - (strip.right - FADE);
+    if (hiddenAtStart > 0) el.scrollTo({ left: el.scrollLeft - hiddenAtStart, behavior: "instant" });
+    else if (hiddenAtEnd > 0) el.scrollTo({ left: el.scrollLeft + hiddenAtEnd, behavior: "instant" });
+  }, [activeId]);
+
+  return (
+    <nav
+      ref={ref}
+      aria-label="Components"
+      className="flex overflow-x-auto px-[calc(var(--gutter)-12px)] [scrollbar-width:none] data-[fade-start]:[--fade-start:32px] data-[fade-end]:[--fade-end:32px] [&:is([data-fade-start],[data-fade-end])]:[mask-image:linear-gradient(to_right,transparent,var(--fg)_var(--fade-start,0px),var(--fg)_calc(100%_-_var(--fade-end,0px)),transparent)]"
+    >
+      {children}
+    </nav>
   );
 }
 
@@ -79,9 +141,10 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           </a>
           <ThemeSwitch />
         </div>
-        <nav aria-label="Components" className="flex overflow-x-auto border-t border-line px-[calc(var(--gutter)-12px)] [scrollbar-width:none] lg:hidden">
-          {pages.map((p) => navLink(p, true))}
-        </nav>
+        {/* The hairline sits out here so the edge fades do not mask it. */}
+        <div className="border-t border-line lg:hidden">
+          <NavStrip activeId={page?.id}>{pages.map((p) => navLink(p, true))}</NavStrip>
+        </div>
       </header>
 
       <div className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
@@ -90,7 +153,10 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         </nav>
 
         <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-16 outline-none lg:pt-24">
-          {page ? <page.Component key={page.id} /> : <p>No pages yet.</p>}
+          {/* Holds the page's room while its chunk loads, so the footer does not jump. */}
+          <Suspense fallback={<div aria-hidden="true" className="min-h-[60svh]" />}>
+            {page ? <page.Component key={page.id} /> : <p>No pages yet.</p>}
+          </Suspense>
         </main>
       </div>
 
@@ -107,6 +173,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 export function App() {
   const route = useRoute();
   const page = pages.find((p) => p.id === route) ?? pages[0];
+  useEffect(prefetchPages, []);
   return (
     /* One provider for the whole gallery, so the 300ms tooltip skip window carries across pages.
        It writes no CSS variables unless the page sets `tune`. */

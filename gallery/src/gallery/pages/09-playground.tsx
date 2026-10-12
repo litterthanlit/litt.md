@@ -8,8 +8,9 @@
  */
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
-import { CommandMenu, Kbd, useCommandShortcut, type CommandGroup } from "@/components/command-menu";
+import { CommandMenu, useCommandShortcut, type CommandGroup } from "@/components/command-menu";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
+import { Kbd } from "@/components/kbd";
 import { ChevronDownIcon, CopyIcon, FileIcon, FolderIcon, PlusIcon, SearchIcon, SettingsIcon, ShareIcon, TrashIcon, ArchiveIcon } from "@/components/icons";
 import { ProjectList } from "@/components/list";
 import { Menu, MenuItem, MenuSeparator } from "@/components/menu";
