@@ -22,6 +22,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -147,8 +148,9 @@ export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<t
 /** Concentric with the track: control radius minus the 2px inset. */
 const FILL_RADIUS = "rounded-[calc(var(--radius-control)-2px)]"; // litt-allow: concentric inside the segmented track's 2px inset
 
+/* isolate: the indicator sits at -z-10 inside the tab, behind the label and the focus ring. */
 const triggerBase =
-  "relative inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-normal " +
+  "relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-normal " +
   "text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg data-[state=active]:text-fg " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
@@ -195,8 +197,8 @@ export function TabsTrigger({
           aria-hidden="true"
           className={
             variant === "underline"
-              ? "absolute inset-x-0 -bottom-px h-0.5 bg-fg"
-              : "absolute inset-0 bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] " + FILL_RADIUS
+              ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg"
+              : "absolute inset-0 -z-10 bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] " + FILL_RADIUS
           }
         />
       )}
@@ -239,6 +241,13 @@ export function TabsPanel({
   const exit = useExit("responsive");
   const travel = useTravel();
 
+  /* The first panel appears without a fade. Not through AnimatePresence initial={false}: that reaches
+     every motion component inside the panel and swallows their own entrances, such as a list cascade. */
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
+
   const variants: Variants = {
     in: (d: 1 | -1) => ({ opacity: 0, x: d * (travel / 2) }),
     show: { opacity: 1, x: 0, transition: enter },
@@ -246,13 +255,13 @@ export function TabsPanel({
   };
 
   return (
-    <AnimatePresence initial={false} mode="popLayout" custom={dir}>
+    <AnimatePresence mode="popLayout" custom={dir}>
       {current === value && (
         <TabsPrimitive.Content key={value} value={value} forceMount asChild {...(tabIndex === undefined ? {} : { tabIndex })}>
           <motion.div
             custom={dir}
             variants={variants}
-            initial="in"
+            initial={mounted.current ? "in" : false}
             animate="show"
             exit="out"
             className={"data-[state=inactive]:pointer-events-none " + className}
