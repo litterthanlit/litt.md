@@ -62,15 +62,21 @@ function Shortcut({ children }: { children: ReactNode }) {
 }
 
 type ItemProps = {
+  /** 16px icon in a fixed cell before the label. A row without one has no cell, so give every row an icon or none, to keep the labels in line. */
   icon?: ReactNode;
-  /** Mono hint on the right, for example ⌘D. */
+  /** Mono hint on the right, for example ⌘D. It is a hint only: it does not bind the key. */
   shortcut?: string;
+  /** Danger color, for actions that delete something. */
   destructive?: boolean;
+  /** Dims the row and skips it for the pointer and the arrow keys. */
   disabled?: boolean;
+  /** Runs on click, Enter or Space. The menu closes afterward; call event.preventDefault() to keep it open. */
   onSelect?: (event: Event) => void;
+  /** The row label. It truncates with an ellipsis instead of wrapping. */
   children: ReactNode;
 };
 
+/** A row that does something when it is chosen. */
 export function MenuItem({ icon, shortcut, destructive, disabled, onSelect, children }: ItemProps) {
   const { glide } = usePanel();
   return (
@@ -92,14 +98,19 @@ const indicator =
   "grid size-4 shrink-0 place-items-center opacity-0 transition-opacity duration-(--dur-instant) ease-litt data-[state=checked]:opacity-100";
 
 type CheckboxProps = {
+  /** Whether the option is on. You own the state: pass it in and update it in onCheckedChange. */
   checked: boolean;
+  /** Called with the new value when the row is toggled. */
   onCheckedChange: (checked: boolean) => void;
+  /** Mono hint on the right, for example ⌘T. It is a hint only: it does not bind the key. */
   shortcut?: string;
   /** Close the menu after toggling. Off by default, so several options can change in one visit. */
   closeOnSelect?: boolean;
+  /** The option label. It truncates with an ellipsis instead of wrapping. */
   children: ReactNode;
 };
 
+/** A row that turns one option on or off. The check sits in a fixed 16px cell, so toggling never shifts the label. */
 export function MenuCheckboxItem({ checked, onCheckedChange, shortcut, closeOnSelect = false, children }: CheckboxProps) {
   const { glide } = usePanel();
   return (
@@ -120,13 +131,17 @@ export function MenuCheckboxItem({ checked, onCheckedChange, shortcut, closeOnSe
   );
 }
 
+/** Holds the single choice for a set of MenuRadioItem rows. */
 export function MenuRadioGroup({
   value,
   onValueChange,
   children,
 }: {
+  /** The value of the selected row. You own the state: pass it in and update it in onValueChange. */
   value: string;
+  /** Called with the value of the row that was picked. */
   onValueChange: (value: string) => void;
+  /** The MenuRadioItem rows. */
   children: ReactNode;
 }) {
   return (
@@ -136,13 +151,17 @@ export function MenuRadioGroup({
   );
 }
 
+/** One choice inside a MenuRadioGroup. It shows the check when its value matches the group's value. */
 export function MenuRadioItem({
   value,
   closeOnSelect = false,
   children,
 }: {
+  /** What this row stands for. It is passed to onValueChange when the row is picked. */
   value: string;
+  /** Close the menu after picking. Off by default, so several options can change in one visit. */
   closeOnSelect?: boolean;
+  /** The choice label. It truncates with an ellipsis instead of wrapping. */
   children: ReactNode;
 }) {
   const { glide } = usePanel();
@@ -162,12 +181,23 @@ export function MenuRadioItem({
   );
 }
 
-/** A group label: caption size, fg-subtle. */
-export function MenuLabel({ children }: { children: ReactNode }) {
+/** A group label: caption size, fg-subtle. It is not a row, so the arrow keys skip it. */
+export function MenuLabel({
+  children,
+}: {
+  /** The label text. */
+  children: ReactNode;
+}) {
   return <DropdownMenu.Label className="flex h-control-sm items-center px-3 text-caption text-fg-subtle">{children}</DropdownMenu.Label>;
 }
 
-export function MenuGroup({ children }: { children: ReactNode }) {
+/** Wraps related rows in a role="group". It adds no visual of its own; use MenuLabel and MenuSeparator for that. */
+export function MenuGroup({
+  children,
+}: {
+  /** The rows in the group. */
+  children: ReactNode;
+}) {
   return <DropdownMenu.Group>{children}</DropdownMenu.Group>;
 }
 
@@ -176,8 +206,19 @@ export function MenuSeparator() {
   return <DropdownMenu.Separator className="-mx-1 my-1 h-px bg-line" />;
 }
 
-/** A submenu. Its panel is solid, because it floats over a floating surface. */
-export function MenuSub({ icon, label, children }: { icon?: ReactNode; label: string; children: ReactNode }) {
+/** A submenu. Its panel is solid, because it floats over a floating surface. It opens on hover, click, Enter, Space or ArrowRight. */
+export function MenuSub({
+  icon,
+  label,
+  children,
+}: {
+  /** 16px icon in a fixed cell before the label, like MenuItem. */
+  icon?: ReactNode;
+  /** Text of the row that opens the submenu. */
+  label: string;
+  /** The submenu rows. Use the same parts as Menu. */
+  children: ReactNode;
+}) {
   const parent = usePanel();
   const [open, setOpen] = useState(false);
   const change = (next: boolean) => {
@@ -310,6 +351,9 @@ function Panel({ sub = false, label, side, align, sideOffset, collisionBoundary,
           forceMount
           asChild
           aria-label={label}
+          /* Radix names the menu by its trigger (aria-labelledby), which beats aria-label.
+             A label you pass should win, so clear it then. */
+          {...(label ? { "aria-labelledby": undefined } : {})}
           side={side}
           align={align}
           sideOffset={sideOffset}
@@ -333,16 +377,21 @@ function Panel({ sub = false, label, side, align, sideOffset, collisionBoundary,
 export type MenuProps = {
   /** The element that opens the menu. It receives the Radix trigger props. */
   trigger: ReactElement;
-  /** Accessible name of the menu. */
+  /** The menu's accessible name. Without it, the menu is named by its trigger, so name the trigger either way. */
   label?: string;
+  /** The side of the trigger the menu opens on first. It flips to the other side when there is no room. */
   side?: "top" | "bottom";
+  /** Which edge of the trigger the menu lines up with. */
   align?: "start" | "center" | "end";
+  /** Gap between the trigger and the menu, in px. */
   sideOffset?: number;
   /** Flip against this element instead of the viewport (a stage, a card). */
   collisionBoundary?: Element | null;
+  /** The rows: MenuItem, MenuSub, MenuCheckboxItem, MenuRadioGroup, MenuLabel, MenuGroup and MenuSeparator. */
   children: ReactNode;
 };
 
+/** The root. It wraps your trigger and the rows, and owns its open state, so there is no open prop. */
 export function Menu({ trigger, label, side = "bottom", align = "start", sideOffset = 8, collisionBoundary, children }: MenuProps) {
   const [open, setOpen] = useState(false);
   return (

@@ -207,10 +207,10 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
         <div className={"litt-raised relative order-1 grid overflow-visible rounded-surface " + height}>
           <TabsPanels className="grid min-w-0">
             {/* The preview remounts when you come back to it, so a replay always starts clean. */}
-            <TabsPanel value="preview" className={"grid p-8 sm:p-12 " + place}>
+            <TabsPanel value="preview" tabIndex={-1} className={"grid p-8 sm:p-12 " + place}>
               {children}
             </TabsPanel>
-            <TabsPanel value="code" className="min-w-0">
+            <TabsPanel value="code" tabIndex={-1} className="min-w-0">
               <Suspense fallback={<div aria-hidden="true" className="min-h-40" />}>
                 {pageId ? (
                   <StageCode pageId={pageId} name={code} title={title} />
