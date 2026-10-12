@@ -214,10 +214,39 @@ export function MotionDialProvider({ tuning, children }: { tuning: boolean; chil
   );
 }
 
-export function useMotionDial() {
+/** The locked tokens as a dial, for an app that mounts no <MotionDialProvider> (any app but the gallery). */
+function useStandaloneDial(enabled: boolean): Ctx | null {
+  const system = useReducedMotion() ?? false;
+  return useMemo(() => {
+    if (!enabled) return null;
+    const locked = readLocked(system);
+    const noop = () => {};
+    return {
+      dial: locked.dial,
+      locked,
+      presets: makePresets(locked.dial),
+      preset: "locked",
+      tuning: false,
+      modified: false,
+      setPreset: noop,
+      update: noop,
+      reset: noop,
+      slow: 1,
+      setSlow: noop,
+      reducedPreview: false,
+      setReducedPreview: noop,
+      reduced: system,
+      radius: locked.radius,
+      setRadius: noop,
+    };
+  }, [enabled, system]);
+}
+
+/** The dial the hooks read. Without a provider it is the locked tokens, so the components work in any app. */
+export function useMotionDial(): Ctx {
   const ctx = useContext(DialContext);
-  if (!ctx) throw new Error("useMotionDial must be used inside <MotionDialProvider>");
-  return ctx;
+  const standalone = useStandaloneDial(ctx === null);
+  return ctx ?? standalone!;
 }
 
 /** The enter transition for a tier. Pass it to a motion component's `transition`. */

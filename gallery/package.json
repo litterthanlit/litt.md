@@ -15,10 +15,12 @@
     "lint:litt": "node scripts/lint-litt.mjs",
     "sync:tokens": "node scripts/sync-tokens.mjs",
     "gen:docs": "node scripts/gen-docs.mjs",
+    "gen:registry": "node scripts/gen-registry.mjs",
     "predev": "npm run -s sync:tokens && npm run -s gen:docs",
-    "prebuild": "npm run -s sync:tokens && npm run -s gen:docs",
+    "prebuild": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry",
     "shot": "node scripts/shot.mjs",
-    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s typecheck && npm run -s lint:litt"
+    "test:registry": "node scripts/test-registry.mjs",
+    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s typecheck && npm run -s lint:litt"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.2.0",

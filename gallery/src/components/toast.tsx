@@ -29,6 +29,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -103,6 +104,9 @@ export function useToast(): ToastApi {
   return api;
 }
 
+/* False while a server renders and while the client hydrates, true after, so the portal never causes a hydration mismatch. */
+const subscribeNever = () => () => {};
+
 /**
  * Holds the toasts and draws them in a corner of the screen, above everything else. Mount it once, around
  * the part of the app that fires toasts.
@@ -113,6 +117,7 @@ export function Toaster({
   /** The part of the app that fires toasts. It renders as it is; the toasts themselves are drawn in a portal on the page body. */
   children?: ReactNode;
 }) {
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
   const [items, setItems] = useState<ToastItem[]>([]);
   const counter = useRef(0);
 
@@ -137,7 +142,7 @@ export function Toaster({
   return (
     <ToastContext value={api}>
       {children}
-      {typeof document !== "undefined" && createPortal(<ToastRegion items={items} dismiss={dismiss} />, document.body)}
+      {mounted && createPortal(<ToastRegion items={items} dismiss={dismiss} />, document.body)}
     </ToastContext>
   );
 }

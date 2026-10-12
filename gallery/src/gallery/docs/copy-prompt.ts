@@ -11,6 +11,20 @@ const RAW = "https://raw.githubusercontent.com/litterthanlit/litt.md/main/";
 export const rawUrl = (file: string) => RAW + file;
 export const sourceUrl = (file: string) => `${REPO}/blob/main/${file}`;
 
+/** The shadcn registry the gallery builds (scripts/gen-registry.mjs): https://littmd.vercel.app/r/<item>.json */
+export const REGISTRY_URL = "https://littmd.vercel.app/r/{name}.json";
+export const registryUrl = (item: string) => REGISTRY_URL.replace("{name}", item);
+/** One component, one command. The stems are the registry's item names. */
+export const installCommand = (stem: string) => `npx shadcn@latest add ${registryUrl(stem)}`;
+/** One line per component, skipping any that another one already brings in as a dependency (Menu brings its icons). */
+export const installCommands = (components: Pick<ComponentDoc, "stem" | "file" | "files">[]) =>
+  components
+    .filter((c) => !components.some((o) => o !== c && o.files.includes(c.file)))
+    .map((c) => installCommand(c.stem))
+    .join("\n");
+/** The components.json entry that turns the URLs into @litt/<item>. */
+export const REGISTRIES_ENTRY = `"registries": { "@litt": "${REGISTRY_URL}" }`;
+
 const FONTS_URL = "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400&family=Geist+Mono:wght@400&display=swap";
 
 /** The exports a page documents: its `exports` list in order, or every export of its components. */
@@ -26,14 +40,26 @@ export function documentedExports(docs: Pick<PageDocs, "exports">, components: C
 
 const uses = (code: string, name: string) => new RegExp(`(?<![\\w$.])${name}(?![\\w$])`).test(code);
 
-/** The usage snippet, with the import line the author left out. Authors who write their own imports are left alone. */
+/**
+ * The gallery's own files import each other as "@/components/button" and "@/motion". The shadcn install puts the same
+ * files in components/litt and lib/litt, so a reader who installs with shadcn imports from there.
+ */
+export const installedImports = (code: string) =>
+  code
+    .replace(/(from\s+["'])@\/components\/(?!litt\/)/g, "$1@/components/litt/")
+    .replace(/(from\s+["'])@\/motion(["'\/])/g, "$1@/lib/litt/motion$2");
+
+/**
+ * The usage snippet as a project that installed with shadcn writes it, with the import line the author left out.
+ * Authors who write their own imports keep them, with the install paths.
+ */
 export function usageSnippet(docs: PageDocs, components: ComponentDoc[]): string {
   const usage = docs.usage.trim();
-  if (/^import\s/m.test(usage)) return usage;
+  if (/^import\s/m.test(usage)) return installedImports(usage);
   const imports = components
     .map((c) => ({ stem: c.stem, names: documentedExports(docs, [c]).filter((e) => uses(usage, e.name)).map((e) => e.name) }))
     .filter((c) => c.names.length)
-    .map((c) => `import { ${c.names.join(", ")} } from "@/components/${c.stem}";`);
+    .map((c) => `import { ${c.names.join(", ")} } from "@/components/litt/${c.stem}";`);
   return imports.length ? imports.join("\n") + "\n\n" + usage : usage;
 }
 
@@ -57,25 +83,36 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
   const packages = packagesToInstall(components);
   const names = documentedExports(docs, components).map((e) => e.name);
 
+  const first = components[0]?.stem ?? "button";
   const sections = [
     `Add the litt.md ${meta.title} to this project.`,
     `${meta.title}: ${meta.summary}\nExports: ${names.join(", ")}.\n\nRepo: ${REPO} (branch main). Every URL below is on main.`,
 
-    `1. Tokens\n` +
-      `The component reads litt.md's design tokens. If the project does not have them yet, copy these two files into its styles folder, and import tailwind.css from the global CSS. It imports tokens.css and Tailwind itself, so the project needs Tailwind CSS v4.\n` +
-      `${rawUrl("skills/litt-md/assets/tokens.css")}\n${rawUrl("skills/litt-md/assets/tailwind.css")}\n` +
-      `Load Hanken Grotesk and Geist Mono at weight 400: ${FONTS_URL}`,
+    `1. Install with shadcn\n` +
+      `The project needs shadcn set up (a components.json) and Tailwind CSS v4. Run this in the project root:\n` +
+      `${installCommands(components)}\n` +
+      `It adds the files in components/litt and lib/litt, the npm packages they need, and litt's tokens in the global CSS. ` +
+      `Every token is prefixed with litt (--litt-accent, bg-litt-surface-1, rounded-litt-control), so none of it collides with the project's own. ` +
+      `Nothing else in the project changes. If a command asks to overwrite a file, say no and tell me.\n` +
+      `For litt's fonts, weight 400 and focus ring across the whole app, also run: npx shadcn@latest add ${registryUrl("base-styles")}\n` +
+      `With ${REGISTRIES_ENTRY} in components.json, the same install is npx shadcn@latest add @litt/${first}.`,
 
-    `2. Packages\n` +
+    `2. Usage\n\`\`\`tsx\n${usageSnippet(docs, components)}\n\`\`\`\n` +
+      `"@/" is the project's own alias. If it has none, import from components/litt with a relative path.`,
+
+    `3. Fallback: copy the files by hand\n` +
+      `Use this only when shadcn is not an option. These are the gallery's own files, so they use the plain token names (bg-surface-1, --accent) and import each other with "@/". ` +
+      `In the usage above, import from "@/components/${first}" instead of "@/components/litt/${first}".\n\n` +
+      `Tokens. The files read litt.md's design tokens. If the project does not have them yet, copy these two files into its styles folder, and import tailwind.css from the global CSS. It imports tokens.css and Tailwind itself, so the project needs Tailwind CSS v4.\n` +
+      `${rawUrl("skills/litt-md/assets/tokens.css")}\n${rawUrl("skills/litt-md/assets/tailwind.css")}\n` +
+      `Load Hanken Grotesk and Geist Mono at weight 400: ${FONTS_URL}\n\n` +
+      `Packages. ` +
       (packages.length
         ? `The files need React 19 and:\nnpm i ${packages.join(" ")}`
-        : `The files need React 19 and nothing else to install.`),
-
-    `3. Files\n` +
+        : `The files need React 19 and nothing else to install.`) +
+      `\n\nFiles. ` +
       `Copy each file below into the project and keep its path under src/, so "@/" maps to src/. For example, ${files[0] ?? "gallery/src/components/button.tsx"} becomes ${(files[0] ?? "gallery/src/components/button.tsx").replace(/^gallery\//, "")}. Set the "@/*" alias to "src/*" in tsconfig and the bundler if the project has no such alias.\n` +
       list(files.map(rawUrl)),
-
-    `4. Usage\n\`\`\`tsx\n${usageSnippet(docs, components)}\n\`\`\``,
 
     `Use it when:\n${list(docs.use)}`,
     `Skip it when:\n${list(docs.skip)}`,
@@ -87,7 +124,7 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
   sections.push(`Accessibility, keep these:\n${list(docs.a11y)}`);
 
   sections.push(
-    `House rules (the gallery's lint fails the build on these):\n` +
+    `House rules (the gallery's lint fails the build on these). The names below are the plain ones. A project installed with shadcn writes them with the litt prefix: bg-litt-surface-1, rounded-litt-control, text-litt-small, duration-(--litt-dur-instant) with ease-litt, --litt-accent.\n` +
       list([
         `Weight 400 everywhere (font-normal). Hierarchy comes from size and color, never weight.`,
         `Tokens only. No hex, no raw or quoted colors. Colors: canvas, surface-1 to surface-3, fg, fg-muted, fg-subtle, fg-disabled, line, line-strong, line-control, accent, accent-fg, accent-hover, accent-tint, focus, danger, success, warning.`,
