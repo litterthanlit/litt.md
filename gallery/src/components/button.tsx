@@ -16,8 +16,11 @@ export type ButtonVariant = "primary" | "secondary" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Primary is the one accent fill in a view. Secondary is the default. Ghost is for quiet actions like Cancel. */
   variant?: ButtonVariant;
+  /** Height on the shared control scale: sm is 32, md is 44, lg is 56. Use lg for hero actions and a form's submit. */
   size?: ButtonSize;
+  /** Swaps the label for a spinner, keeps the width, sets aria-busy and disables the button. */
   loading?: boolean;
   /** 16px icon before the label. */
   icon?: ReactNode;
@@ -25,6 +28,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   iconRight?: ReactNode;
   /** Round icon-only button. Requires aria-label. */
   iconOnly?: boolean;
+  /** Fills the width of its container. */
   block?: boolean;
   ref?: React.Ref<HTMLButtonElement>;
 };
@@ -97,7 +101,12 @@ export function Button({
 }
 
 /** 16px spinner, 1.5px stroke, currentColor. The rotation is a loading signal, not decoration. */
-export function Spinner({ size = 16 }: { size?: number }) {
+export function Spinner({
+  size = 16,
+}: {
+  /** Width and height in px. */
+  size?: number;
+}) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" className="animate-spin" /* litt-allow: spinner */>
       <circle cx="8" cy="8" r="6.25" stroke="currentColor" strokeOpacity=".25" strokeWidth="1.5" />

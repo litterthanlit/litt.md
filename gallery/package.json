@@ -14,10 +14,11 @@
     "typecheck": "tsc --noEmit -p .",
     "lint:litt": "node scripts/lint-litt.mjs",
     "sync:tokens": "node scripts/sync-tokens.mjs",
-    "predev": "npm run -s sync:tokens",
-    "prebuild": "npm run -s sync:tokens",
+    "gen:docs": "node scripts/gen-docs.mjs",
+    "predev": "npm run -s sync:tokens && npm run -s gen:docs",
+    "prebuild": "npm run -s sync:tokens && npm run -s gen:docs",
     "shot": "node scripts/shot.mjs",
-    "verify": "npm run -s sync:tokens && npm run -s typecheck && npm run -s lint:litt"
+    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s typecheck && npm run -s lint:litt"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.2.0",
@@ -26,7 +27,8 @@
     "@radix-ui/react-tooltip": "1.3.0",
     "motion": "12.43.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "sugar-high": "2.4.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",

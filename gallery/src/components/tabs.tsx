@@ -51,15 +51,23 @@ function useTabs() {
 }
 
 export type TabsProps = {
+  /** The selected tab, when you control it. Pair it with onValueChange. */
   value?: string;
+  /** The tab that starts selected when you do not control it. Pass one, because the default selects none and no panel shows. */
   defaultValue?: string;
+  /** Called with the new tab's value each time the selected tab changes, by click, tap or key. */
   onValueChange?: (value: string) => void;
+  /** Underline puts a 2px line under the selected tab. Segmented puts a filled block in a track, for view switches. */
   variant?: TabsVariant;
+  /** Height on the shared control scale: sm is 32, md is 44. Use sm in dense UI and md everywhere else. */
   size?: TabsSize;
+  /** Extra classes for the root, such as a width. */
   className?: string;
+  /** A TabsList and a TabsPanels. */
   children: ReactNode;
 };
 
+/** The root. It holds the selected tab and passes the variant and size to the other parts. */
 export function Tabs({
   value: valueProp,
   defaultValue = "",
@@ -109,6 +117,7 @@ export function Tabs({
   );
 }
 
+/** The row of tabs. It is a named group, so give it an aria-label. */
 export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
   const { variant, size } = useTabs();
   if (variant === "underline") {
@@ -155,12 +164,18 @@ const triggerShape: Record<TabsVariant, Record<TabsSize, string>> = {
   },
 };
 
+type TabsTriggerProps = ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> & {
+  /** Which tab this is. Match it to the value of its TabsPanel. */
+  value: string;
+};
+
+/** One tab. Its label only changes color, so the tab never moves or resizes. */
 export function TabsTrigger({
   value,
   className = "",
   children,
   ...rest
-}: ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>) {
+}: TabsTriggerProps) {
   const { value: current, variant, size, register } = useTabs();
   const enter = useTransition("responsive");
   const active = current === value;
@@ -191,17 +206,32 @@ export function TabsTrigger({
 }
 
 /** The positioned box the panels live in. Put the shared min-height here. */
-export function TabsPanels({ className = "", children }: { className?: string; children: ReactNode }) {
-  return <div className={"relative " + className}>{children}</div>;
-}
-
-export function TabsPanel({
-  value,
+export function TabsPanels({
   className = "",
   children,
 }: {
-  value: string;
+  /** Extra classes for the box, such as a shared min-height and padding. */
   className?: string;
+  /** The TabsPanel for each tab. */
+  children: ReactNode;
+}) {
+  return <div className={"relative " + className}>{children}</div>;
+}
+
+/** The content for one tab. Only the selected panel is mounted, so state inside the others resets when you leave them. */
+export function TabsPanel({
+  value,
+  className = "",
+  tabIndex,
+  children,
+}: {
+  /** Which tab this panel belongs to. Match it to the value of its TabsTrigger. */
+  value: string;
+  /** Extra classes for this panel. */
+  className?: string;
+  /** The panel is a Tab stop by default. Pass -1 when it starts with its own focusable content, so it is not an extra stop. */
+  tabIndex?: number;
+  /** What shows when this tab is selected. */
   children: ReactNode;
 }) {
   const { value: current, dir } = useTabs();
@@ -218,7 +248,7 @@ export function TabsPanel({
   return (
     <AnimatePresence initial={false} mode="popLayout" custom={dir}>
       {current === value && (
-        <TabsPrimitive.Content key={value} value={value} forceMount asChild>
+        <TabsPrimitive.Content key={value} value={value} forceMount asChild {...(tabIndex === undefined ? {} : { tabIndex })}>
           <motion.div
             custom={dir}
             variants={variants}

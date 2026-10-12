@@ -31,8 +31,16 @@ const SKIP_WINDOW = 300; // ms after one closes during which the next opens at o
 
 const HasProvider = createContext(false);
 
-/** Mount once near the root so every tooltip shares the skip window. */
-export function TooltipProvider({ children }: { children: ReactNode }) {
+/**
+ * Mount once near the root so every tooltip shares the skip window. Without it each
+ * Tooltip adds its own provider, so tooltips still work but do not share that window.
+ */
+export function TooltipProvider({
+  children,
+}: {
+  /** Your app, or the part of it that holds tooltips. */
+  children: ReactNode;
+}) {
   return (
     <HasProvider.Provider value>
       <TooltipPrimitive.Provider delayDuration={OPEN_DELAY} skipDelayDuration={SKIP_WINDOW}>
@@ -47,11 +55,15 @@ export type TooltipProps = {
   content: ReactNode;
   /** A real keyboard shortcut, shown as a mono kbd chip. */
   shortcut?: string;
+  /** Which side of the trigger it opens on. With no room there it flips to the other side, and the entrance follows. */
   side?: TooltipSide;
+  /** How it lines up along that side: with the start, the center or the end of the trigger. */
   align?: "start" | "center" | "end";
   /** Controlled open state. Leave undefined to let hover and focus decide. */
   open?: boolean;
+  /** Whether it starts open when you do not control it. Hover and focus decide after that. */
   defaultOpen?: boolean;
+  /** Called with true or false each time it opens or closes. Pair it with open to control it. */
   onOpenChange?: (open: boolean) => void;
   /** The trigger: one focusable element. */
   children: ReactElement;
@@ -59,6 +71,7 @@ export type TooltipProps = {
 
 const isSide = (v: string | null): v is TooltipSide => v === "top" || v === "right" || v === "bottom" || v === "left";
 
+/** A short label for the one element inside it. It opens after a hover delay, or at once on focus. */
 export function Tooltip({
   content,
   shortcut,

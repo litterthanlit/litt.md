@@ -40,11 +40,15 @@ import { XIcon } from "@/components/icons";
 export type ToastTone = "neutral" | "success" | "error";
 
 export type ToastOptions = {
+  /** The message. Keep it to a few words: it is one line, or two when there is no description. */
   title: ReactNode;
+  /** A second line in a quieter color, cut to one line. */
   description?: ReactNode;
+  /** "neutral" (the default), "success" or "error". It sets the status dot. Errors are announced at once and stay until dismissed. */
   tone?: ToastTone;
+  /** A small button on the right, such as Undo or View. Pressing it runs onClick and then dismisses the toast. */
   action?: { label: string; onClick: () => void };
-  /** Milliseconds before it dismisses itself. Errors stay unless you set it. 0 or Infinity stays. */
+  /** Milliseconds before it dismisses itself. The default is 4000, and errors stay unless you set it. 0 or Infinity stays until dismissed. */
   duration?: number;
 };
 
@@ -78,18 +82,37 @@ const ToastContext = createContext<ToastApi | null>(null);
 /** Toasters that are mounted, newest last. toast() talks to the last one. */
 const sinks: Array<(options: ToastOptions) => string> = [];
 
-/** Fire a toast without a hook. It goes to the Toaster mounted last. */
+/**
+ * Fire a toast from anywhere, without a hook. It goes to the Toaster mounted last, and does nothing
+ * (it returns an empty string) when no Toaster is mounted.
+ *
+ * @param options What to show. Only the title is required.
+ * @returns An id you can pass to dismiss().
+ */
 export function toast(options: ToastOptions): string {
   return sinks[sinks.length - 1]?.(options) ?? "";
 }
 
+/**
+ * The Toaster's controls: toast(options) shows a toast and returns its id, dismiss(id) removes one, and
+ * dismissAll() clears the stack. Use it inside a Toaster, or it throws.
+ */
 export function useToast(): ToastApi {
   const api = useContext(ToastContext);
   if (!api) throw new Error("useToast must be used inside <Toaster>");
   return api;
 }
 
-export function Toaster({ children }: { children?: ReactNode }) {
+/**
+ * Holds the toasts and draws them in a corner of the screen, above everything else. Mount it once, around
+ * the part of the app that fires toasts.
+ */
+export function Toaster({
+  children,
+}: {
+  /** The part of the app that fires toasts. It renders as it is; the toasts themselves are drawn in a portal on the page body. */
+  children?: ReactNode;
+}) {
   const [items, setItems] = useState<ToastItem[]>([]);
   const counter = useRef(0);
 

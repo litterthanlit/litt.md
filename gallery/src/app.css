@@ -4,3 +4,24 @@
   body { min-height: 100vh; background: var(--canvas); }
   ::selection { background: color-mix(in oklab, var(--accent) 22%, transparent); }
 }
+
+/* Syntax colors for the docs code blocks (sugar-high sets color: var(--sh-*) on each token).
+   Near-monochrome on purpose: structure reads by tone, and the one tint goes to strings and
+   JSX text. The tint is the accent mixed 10% toward --fg, which keeps 4.5:1 or more on
+   --surface-2 in both themes (plain --accent is 4.32:1 on it in light). Everything reads
+   var(--token), so the theme switch needs nothing here. */
+@layer components {
+  .docs-code {
+    --sh-identifier: var(--fg);
+    --sh-class: var(--fg);
+    --sh-property: var(--fg);
+    --sh-entity: var(--fg);
+    --sh-keyword: var(--fg-muted);
+    --sh-sign: var(--fg-muted);
+    --sh-comment: var(--fg-subtle);
+    --sh-string: color-mix(in oklab, var(--accent) 90%, var(--fg));
+    --sh-jsxliterals: var(--sh-string);
+    --sh-space: currentColor;
+    --sh-break: currentColor;
+  }
+}

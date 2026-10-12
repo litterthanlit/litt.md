@@ -36,15 +36,27 @@ import { SearchIcon } from "./icons";
 import { Kbd } from "./kbd";
 import { GLIDE_ROW, useGlide, type GlideSource } from "./glide";
 
+/** One row. The search matches its label. */
 export type CommandItem = {
+  /** Unique across every group, because it names the row for assistive tech. */
   id: string;
+  /** The row text, and what the search matches. */
   label: string;
+  /** 16px icon in a fixed cell before the label. */
   icon?: ReactNode;
-  /** Mono hint on the right, for example ⌘N. */
+  /** Mono hint on the right, for example ⌘N. It is a hint only: it does not bind the key. */
   shortcut?: string;
+  /** Dims the row. It is never lit and Enter and clicks skip it. */
   disabled?: boolean;
 };
-export type CommandGroup = { id: string; heading: string; items: CommandItem[] };
+/** A heading and its rows. A group with no match for the query is hidden. */
+export type CommandGroup = {
+  /** Unique among the groups. */
+  id: string;
+  /** The group label above its rows. */
+  heading: string;
+  items: CommandItem[];
+};
 
 type Section = { id: string; heading: string; rows: (CommandItem & { index: number })[] };
 
@@ -79,16 +91,21 @@ function Hint({ keys, children }: { keys: string; children: ReactNode }) {
 /* ----------------------------------------------------------------- panel */
 
 export type CommandPanelProps = {
+  /** What to search, in order. A group is { id, heading, items } and an item is { id, label, icon?, shortcut?, disabled? }. */
   groups: CommandGroup[];
+  /** The text in the search field. You own it, so you can preset or clear it. */
   query: string;
+  /** Called with the new text on each keystroke, and with "" when Esc clears the field. */
   onQueryChange: (query: string) => void;
+  /** Called with the item when a row is chosen with Enter or a click. */
   onSelect: (item: CommandItem) => void;
   /** How the panel came up. A keyboard open shows the ring on the first row at once. */
   initialSource?: GlideSource;
+  /** Focuses the search field when the panel mounts. CommandMenu does not need it, because the dialog focuses the field itself. */
   autoFocus?: boolean;
 };
 
-/** Input, list and footer. The caller supplies the surface around it. */
+/** Input, list and footer. The caller supplies the surface around it; CommandMenu wraps it in a dialog. */
 export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSource = "keyboard", autoFocus }: CommandPanelProps) {
   const uid = useId();
   const listId = `${uid}-list`;
@@ -241,15 +258,19 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
 /* ---------------------------------------------------------------- dialog */
 
 export type CommandMenuProps = {
+  /** Whether the menu is showing. You own it, so a trigger button and useCommandShortcut can both set it. */
   open: boolean;
+  /** Called with false when the menu asks to close: Esc on an empty field, a click on the backdrop, or a chosen row. It never asks to open, so your trigger and useCommandShortcut set that. */
   onOpenChange: (open: boolean) => void;
+  /** What to search, in order. A group is { id, heading, items } and an item is { id, label, icon?, shortcut?, disabled? }. */
   groups: CommandGroup[];
-  /** Runs after the menu closes itself. */
+  /** Called with the chosen item, and then the menu closes itself. */
   onSelect: (item: CommandItem) => void;
   /** Keyboard (the shortcut, Enter on the trigger) or pointer. Decides whether the first row shows the ring at once. */
   openedBy?: "keyboard" | "pointer";
 };
 
+/** The dialog form. Overlay, focus trap and Esc come from Radix Dialog, and the query starts empty on every open. */
 export function CommandMenu({ open, onOpenChange, groups, onSelect, openedBy = "keyboard" }: CommandMenuProps) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -331,7 +352,11 @@ function Body({
   );
 }
 
-/** ⌘K or Ctrl+K. Call it from the page that owns the menu: the listener lives only while that page is mounted. */
+/**
+ * ⌘K or Ctrl+K. Call it from the page that owns the menu: the listener lives only while that page is mounted.
+ *
+ * @param toggle - Runs when the shortcut is pressed. Flip your open state here. It always sees the latest render, so it needs no memo.
+ */
 export function useCommandShortcut(toggle: () => void) {
   const latest = useRef(toggle);
   latest.current = toggle;
