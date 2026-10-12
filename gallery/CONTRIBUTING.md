@@ -147,6 +147,14 @@ export default function MenuPage() {
 - **Code views are your demos.** `code="Name"` shows that function from the page file, with the imports and page helpers it uses. Write demos someone could paste.
 - Only claim what the code does. Check every keyboard and accessibility line against the component and its Radix part.
 
+## It ships in the registry
+
+Every `src/components/<name>.tsx` with a page becomes an installable item (`npx shadcn@latest add https://littmd.vercel.app/r/<name>.json`). `scripts/gen-registry.mjs` builds it, so there is nothing to register by hand, but write the component so it can live in someone else's app:
+- Import other components and the engines as `@/components/<x>`, `@/motion` or `./<x>`. The generator rewrites them to relative paths and adds the dependencies.
+- Use only litt tokens, as the lint already demands. The generator renames them `litt-…` for the host, and fails the build if it meets one it can't map.
+- Never assume a provider, a browser global at import time, or the gallery's `vite.config.ts` defines. Next.js renders client components once on the server.
+- When you change a component, the motion engine or the tokens, run `npm run test:registry` (fresh Vite and Next.js apps, about ten minutes) before you report.
+
 ## Verify before you report
 
 Run these from `gallery/`. In an agent session, never run `npm run dev` or anything long-lived, and build into your own `--outDir` so parallel runs do not collide.

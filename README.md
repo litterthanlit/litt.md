@@ -120,7 +120,7 @@ npm run dev --prefix gallery                              # http://localhost:517
 npm run verify --prefix gallery && npm run build --prefix gallery   # tokens sync, typecheck, litt rules, build
 ```
 
-Vercel builds it from `vercel.json` on every push: a branch becomes a preview and `main` is production at [littmd.vercel.app](https://littmd.vercel.app). See [`gallery/README.md`](gallery/README.md).
+Vercel builds it from `vercel.json` on every push: a branch becomes a preview and `main` is production at [littmd.vercel.app](https://littmd.vercel.app). The same build publishes a shadcn registry, so any React + Tailwind v4 project can install a component with `npx shadcn@latest add https://littmd.vercel.app/r/button.json`. See [`gallery/README.md`](gallery/README.md).
 
 Repo rules for Claude live in [`.claude/CLAUDE.md`](.claude/CLAUDE.md).
 
