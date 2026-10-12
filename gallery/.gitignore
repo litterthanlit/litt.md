@@ -4,3 +4,4 @@ dist
 .agent-shots
 *.log
 src/styles/
+src/generated/
