@@ -9,8 +9,7 @@ import { ArrowUpRightIcon, CheckIcon, CopyIcon } from "@/components/icons";
 import type { PageDocs, PageMeta } from "../kit";
 import { componentDoc } from "../docs-data";
 import { CopyStatus, useCopy } from "./copy";
-import { CodeBlock } from "./code-block";
-import { buildPrompt, installCommands, REGISTRIES_ENTRY, sourceUrl } from "./copy-prompt";
+import { buildPrompt, sourceUrl } from "./copy-prompt";
 import { DocsSections as Sections } from "./sections";
 
 /** A wrong stem in `docs.components` should say so on the page, not blank the whole gallery. */
@@ -80,36 +79,10 @@ export function DocsActions(props: { meta: Pick<PageMeta, "title" | "summary">; 
   );
 }
 
-/* The same look as a section in sections.tsx: an h2 with an id, then its content. */
-function Install({ docs }: { docs: PageDocs }) {
-  const components = useMemo(() => docs.components.map(componentDoc), [docs]);
-  const code = useMemo(() => installCommands(components), [components]);
-  const mono = "font-mono text-fg-muted";
-  return (
-    <section aria-labelledby="install" className="grid content-start gap-6">
-      <h2 id="install" className="scroll-mt-24 text-h3 text-fg text-balance">
-        Install
-      </h2>
-      <CodeBlock code={code} label="Install command" />
-      <p className="max-w-[65ch] text-small text-fg-subtle [overflow-wrap:anywhere]">
-        Prefer short names? Put <span className={mono}>{REGISTRIES_ENTRY}</span> in components.json, then run{" "}
-        <span className={mono}>npx shadcn@latest add @litt/{components[0]!.stem}</span>. Installed tokens carry a litt prefix, like{" "}
-        <span className={mono}>--litt-accent</span> and <span className={mono}>bg-litt-surface-1</span>, so they never collide
-        with yours.
-      </p>
-    </section>
-  );
-}
-
-/* Install comes first, before Use when. Sections draws its own rule above itself, so the rule
-   moves to the wrapper and the one inside Sections is dropped. */
 export function DocsSections({ docs }: { docs: PageDocs }) {
   return (
     <DocsBoundary>
-      <div className="grid gap-16 border-t border-line pt-16 [&>div:last-child]:border-t-0 [&>div:last-child]:pt-0">
-        <Install docs={docs} />
-        <Sections docs={docs} />
-      </div>
+      <Sections docs={docs} />
     </DocsBoundary>
   );
 }

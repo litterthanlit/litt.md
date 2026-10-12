@@ -16,7 +16,12 @@ export const REGISTRY_URL = "https://littmd.vercel.app/r/{name}.json";
 export const registryUrl = (item: string) => REGISTRY_URL.replace("{name}", item);
 /** One component, one command. The stems are the registry's item names. */
 export const installCommand = (stem: string) => `npx shadcn@latest add ${registryUrl(stem)}`;
-export const installCommands = (components: Pick<ComponentDoc, "stem">[]) => components.map((c) => installCommand(c.stem)).join("\n");
+/** One line per component, skipping any that another one already brings in as a dependency (Menu brings its icons). */
+export const installCommands = (components: Pick<ComponentDoc, "stem" | "file" | "files">[]) =>
+  components
+    .filter((c) => !components.some((o) => o !== c && o.files.includes(c.file)))
+    .map((c) => installCommand(c.stem))
+    .join("\n");
 /** The components.json entry that turns the URLs into @litt/<item>. */
 export const REGISTRIES_ENTRY = `"registries": { "@litt": "${REGISTRY_URL}" }`;
 

@@ -1,6 +1,6 @@
 /**
- * The docs under a component's stages, in this order: Use when and Skip when,
- * Usage, Props, Keyboard, Accessibility. Each is an h2 with an id, so it can be
+ * The docs under a component's stages, in this order: Install, Use when and
+ * Skip when, Usage, Props, Keyboard, Accessibility. Each is an h2 with an id, so it can be
  * linked. (The gallery routes by hash, so a bare #props would open a page called
  * "props". The ids are there for in-page use until the router learns sections.)
  *
@@ -12,7 +12,7 @@ import { Kbd } from "@/components/kbd";
 import type { PageDocs } from "../kit";
 import { componentDoc } from "../docs-data";
 import { CodeBlock } from "./code-block";
-import { documentedExports, usageSnippet } from "./copy-prompt";
+import { documentedExports, installCommands, REGISTRIES_ENTRY, usageSnippet } from "./copy-prompt";
 import { PropsTable } from "./props-table";
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
@@ -69,12 +69,24 @@ function Keyboard({ rows }: { rows: NonNullable<PageDocs["keyboard"]> }) {
   );
 }
 
+const mono = "font-mono text-fg-muted";
+
 export function DocsSections({ docs }: { docs: PageDocs }) {
   const components = docs.components.map(componentDoc);
   const exportDocs = documentedExports(docs, components);
 
   return (
     <div className="grid gap-16 border-t border-line pt-16">
+      <Section id="install" title="Install">
+        <CodeBlock code={installCommands(components)} lang="shell" label="Install command" />
+        <p className="max-w-[65ch] text-small text-fg-subtle [overflow-wrap:anywhere]">
+          Prefer short names? Put <span className={mono}>{REGISTRIES_ENTRY}</span> in components.json, then run{" "}
+          <span className={mono}>npx shadcn@latest add @litt/{components[0]!.stem}</span>. Installed tokens carry a litt prefix, like{" "}
+          <span className={mono}>--litt-accent</span> and <span className={mono}>bg-litt-surface-1</span>, so they never collide
+          with yours.
+        </p>
+      </Section>
+
       <div className="grid gap-16 sm:grid-cols-2 sm:gap-x-12">
         <Section id="use-when" title="Use when">
           <Rows items={docs.use} />

@@ -10,6 +10,7 @@
  *   surface that already exists, like the stage, so it is not a box in a box.
  * - The copy button sits top right. On a phone the code starts below it (pt-12), because
  *   a line that is wider than the screen would otherwise run under the button.
+ * - lang "shell" is plain text: a highlighter built for TypeScript reads the // in a URL as a comment.
  * - The copy button is the one control. It swaps its icon for a check and a polite
  *   live region says "Copied". No toast.
  */
@@ -23,13 +24,15 @@ export type CodeBlockProps = {
   code: string;
   /** Names the scroll area for screen readers, for example "Usage code". */
   label: string;
+  /** "tsx" (the default) is highlighted; "shell" is a command, shown as plain text. */
+  lang?: "tsx" | "shell";
   tone?: "card" | "flush";
   className?: string;
 };
 
-export function CodeBlock({ code, label, tone = "card", className = "" }: CodeBlockProps) {
+export function CodeBlock({ code, label, lang = "tsx", tone = "card", className = "" }: CodeBlockProps) {
   /* sugar-high escapes the source itself, so its HTML is safe to inject. */
-  const html = useMemo(() => highlight(code, { lang: "typescript" }), [code]);
+  const html = useMemo(() => (lang === "tsx" ? highlight(code, { lang: "typescript" }) : null), [code, lang]);
   const [state, copy] = useCopy();
   const flush = tone === "flush";
 
@@ -46,7 +49,7 @@ export function CodeBlock({ code, label, tone = "card", className = "" }: CodeBl
             : "max-h-112 bg-surface-2 p-4 pt-12 shadow-[inset_0_0_0_1px_var(--line)] sm:p-6 sm:pr-16")
         }
       >
-        <code dangerouslySetInnerHTML={{ __html: html }} />
+        {html === null ? <code>{code}</code> : <code dangerouslySetInnerHTML={{ __html: html }} />}
       </pre>
       {/* The pill masks any code that scrolls under the button. */}
       <div className={"absolute top-2 right-2 rounded-pill " + (flush ? "bg-surface-1" : "bg-surface-2")}>
