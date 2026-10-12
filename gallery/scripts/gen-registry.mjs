@@ -54,10 +54,12 @@
  *   URLs, because shadcn resolves a bare name against its own registry.
  *
  * SMALL PATCHES TO THE SHIPPED COPY (see PATCHES; each fails the build when its anchor moves)
- *   motion/index.tsx   useMotionDial works without <MotionDialProvider>; __LITT_MD_VERSION__ inlined.
- *   motion/tokens.ts   readLocked works on the server (Next.js renders client components once there).
- *   toast.tsx          the portal is drawn after hydration, so the server HTML and the first client render match.
+ *   motion/tokens.ts   readLocked works on the server (Next.js renders client components once there), with
+ *                      the values tokens.css ships, so no value is written twice.
+ *   motion/index.tsx   __LITT_MD_VERSION__ inlined (vite.config.ts defines it in the gallery).
  *   every .tsx         "use client" on the first line.
+ *   Fixes that are right in the gallery too live in the source, not here: useMotionDial works without
+ *   a provider (motion/index.tsx), and the Toaster draws its portal after hydration (toast.tsx).
  *   asChild            a written asChild becomes {...asChildProps}: shadcn's CLI rewrites the attribute to Base UI's
  *                      render prop in every host whose style starts with "base-" (the default of `shadcn init`).
  *
@@ -612,68 +614,6 @@ const PATCHES = {
           "  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();\n}"
         );
       },
-    },
-  ],
-  "components/toast.tsx": [
-    {
-      why: "The portal is drawn only where there is a document. On the server it is absent and on the client it is there, which Next.js reports as a hydration mismatch. Draw it after hydration instead.",
-      find: '  useState,\n  type ReactNode,\n} from "react";',
-      replace: () => '  useState,\n  useSyncExternalStore,\n  type ReactNode,\n} from "react";',
-    },
-    {
-      why: "same: a hook-free module-level subscribe for useSyncExternalStore",
-      find: "/**\n * Holds the toasts and draws them in a corner of the screen",
-      replace: () => "/* false while the server renders and while the client hydrates, true after: the portal waits for it. */\nconst subscribeNever = () => () => {};\n\n/**\n * Holds the toasts and draws them in a corner of the screen",
-    },
-    {
-      why: "same: the flag itself",
-      find: "  const [items, setItems] = useState<ToastItem[]>([]);\n  const counter = useRef(0);",
-      replace: () => "  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);\n  const [items, setItems] = useState<ToastItem[]>([]);\n  const counter = useRef(0);",
-    },
-    {
-      why: "same: the portal",
-      find: '{typeof document !== "undefined" && createPortal(',
-      replace: () => "{mounted && createPortal(",
-    },
-  ],
-  "motion/index.tsx": [
-    {
-      why: "Nothing in a host mounts <MotionDialProvider>, so the hooks must work without it: the locked tokens, no Playground.",
-      find: 'export function useMotionDial() {\n  const ctx = useContext(DialContext);\n  if (!ctx) throw new Error("useMotionDial must be used inside <MotionDialProvider>");\n  return ctx;\n}',
-      replace: () =>
-        "/** The locked tokens as a context value, for an app that mounts no <MotionDialProvider>. */\n" +
-        "function useStandaloneDial(enabled: boolean): Ctx | null {\n" +
-        "  const system = useReducedMotion() ?? false;\n" +
-        "  return useMemo(() => {\n" +
-        "    if (!enabled) return null;\n" +
-        "    const locked = readLocked(system);\n" +
-        "    const noop = () => {};\n" +
-        "    const value: Ctx = {\n" +
-        "      dial: locked.dial,\n" +
-        "      locked,\n" +
-        "      presets: makePresets(locked.dial),\n" +
-        '      preset: "locked",\n' +
-        "      tuning: false,\n" +
-        "      modified: false,\n" +
-        "      setPreset: noop,\n" +
-        "      update: noop,\n" +
-        "      reset: noop,\n" +
-        "      slow: 1,\n" +
-        "      setSlow: noop,\n" +
-        "      reducedPreview: false,\n" +
-        "      setReducedPreview: noop,\n" +
-        "      reduced: system,\n" +
-        "      radius: locked.radius,\n" +
-        "      setRadius: noop,\n" +
-        "    };\n" +
-        "    return value;\n" +
-        "  }, [enabled, system]);\n" +
-        "}\n\n" +
-        "export function useMotionDial() {\n" +
-        "  const ctx = useContext(DialContext);\n" +
-        "  const standalone = useStandaloneDial(ctx === null);\n" +
-        "  return ctx ?? standalone!;\n" +
-        "}",
     },
   ],
 };
