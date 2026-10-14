@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { ArchiveIcon, CopyIcon, SettingsIcon, ShareIcon, TrashIcon } from "@/components/icons";
 import { Tooltip, TooltipProvider, type TooltipSide } from "@/components/tooltip";
+import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -9,7 +10,7 @@ export const meta: PageMeta = {
   title: "Tooltip",
   order: 8, group: "Overlays",
   summary:
-    "A small solid label for icons, shortcuts and status. It opens after 200ms of hover or at once on focus, then grows from its trigger and travels in from the side it renders on.",
+    "A small solid label for icons, shortcuts and status. It opens after 200ms of hover or at once on focus, then grows from its trigger and travels in from the side it renders on. On touch it opens on a press and hold, so a tap only does what the button does.",
   tiers: ["instant", "responsive"],
 };
 
@@ -35,12 +36,13 @@ import { Tooltip, TooltipProvider } from "@/components/tooltip";
 </Tooltip>`,
   use: [
     "An icon-only button needs a name people can see, such as Copy link or Archive project. Also give the button an aria-label, because the tooltip describes it but does not name it.",
+    "Anything a tooltip says must also be on the trigger as its aria-label or visible text. On a phone most people never press and hold, so the label that matters cannot live only here.",
     "A shortcut is worth showing next to an action. Pass a real one as shortcut.",
     "A status dot or a dotted term needs a short gloss that helps but is not needed to finish the task.",
     "The text is a few words, or one or two short lines.",
   ],
   skip: [
-    "People need the text to finish the task. Put it on the page, because a tooltip stays hidden until someone hovers, focuses or taps.",
+    "People need the text to finish the task. Put it on the page, because a tooltip stays hidden until someone hovers, focuses or, on touch, presses and holds.",
     "The content has a link, a button or a field. A tooltip never takes focus, so the keyboard cannot reach them. Use Dialog.",
     "You are telling someone what just happened, such as saved or failed. Use Toast.",
     "The control is disabled. A disabled control cannot take focus, and some browsers send it no hover either, so its tooltip is not reliable. Say why in text next to it.",
@@ -50,13 +52,16 @@ import { Tooltip, TooltipProvider } from "@/components/tooltip";
     [["Tab"], "Moves focus to the trigger and opens its tooltip at once, with no hover wait. Moving focus on closes it."],
     [["Esc"], "Closes the open tooltip. Focus stays on the trigger."],
     [["Enter", "Space"], "Uses the trigger as usual, and its tooltip closes."],
+    [["Press and hold"], "On touch, opens the tooltip after a short hold. A tap does only what the trigger does. The next touch anywhere closes it."],
   ],
   a11y: [
     "While it is open the tooltip has role=\"tooltip\" and the trigger's aria-describedby points at it, so a screen reader reads it as the trigger's description.",
     "A tooltip describes; it does not name. An icon-only trigger still needs its own aria-label.",
     "The trigger must be focusable, such as a button or a link, because the keyboard opens the tooltip on focus. A plain div or span gets no tooltip from the keyboard.",
     "You can move the pointer onto the tooltip without it closing, and Escape closes it, so the text can be read and dismissed.",
-    "Radix never opens a tooltip on touch, so a tap on the trigger shows it until the next tap elsewhere. The trigger's own click still runs.",
+    "On touch, a tooltip opens on a press and hold of 500ms, not on a tap, so a tap only does what the trigger does. Lifting early, moving the finger or scrolling cancels the hold. The click a hold may leave behind is swallowed, so reading a label never runs the action. The next touch anywhere closes it. Hover and focus work as before on desktop.",
+    "The shortcut chip is not shown on touch screens, where a finger has no shortcuts. The label itself still is.",
+    "A press and hold is hard to find and hard to do for some people. That is why the label that matters must also be the trigger's aria-label or visible text.",
     "Under reduced motion the tooltip appears and leaves at once, without the small nudge.",
   ],
 };
@@ -87,6 +92,32 @@ function Toolbar() {
         <Button iconOnly variant="ghost" aria-label="Delete project"><TrashIcon /></Button>
       </Tooltip>
     </div>
+  );
+}
+
+/* The toolbar with the phone behavior forced: a tap runs the action, a press and hold reads the label. */
+function PhoneDemo() {
+  const [last, setLast] = useState("Tap a button, or press and hold it");
+  const actions = [
+    { name: "Copy link", shortcut: "⇧⌘C", icon: <CopyIcon /> },
+    { name: "Share", shortcut: "⇧⌘S", icon: <ShareIcon /> },
+    { name: "Archive project", shortcut: "E", icon: <ArchiveIcon /> },
+  ];
+  return (
+    <DeviceProvider mode="phone">
+      <div className="grid justify-items-center gap-6">
+        <div role="group" aria-label="Project actions" className="flex items-center gap-1">
+          {actions.map((a) => (
+            <Tooltip key={a.name} content={a.name} shortcut={a.shortcut}>
+              <Button iconOnly variant="ghost" aria-label={a.name} onClick={() => setLast(`${a.name} ran`)}>
+                {a.icon}
+              </Button>
+            </Tooltip>
+          ))}
+        </div>
+        <p className="font-mono text-caption text-fg-subtle" role="status">{last}</p>
+      </div>
+    </DeviceProvider>
   );
 }
 
@@ -184,10 +215,19 @@ export default function TooltipPage() {
         <Stage
           title="Longer text"
           tier="responsive"
-          caption="Text wraps at 240px and keeps the same entrance. Use it on a status dot or a dotted term, never to hide something people need. On touch, a tap shows it until the next tap."
+          caption="Text wraps at 240px and keeps the same entrance. Use it on a status dot or a dotted term, never to hide something people need. On touch, press and hold to read it."
           code="LongText"
         >
           <LongText />
+        </Stage>
+
+        <Stage
+          title="On a phone"
+          tier="responsive"
+          caption="A tap only does what the button does, so no label is left behind. Press and hold to read it, and touch anywhere else to close it. The shortcut chips go, because a finger has no shortcuts. This stage forces the phone behavior on a desktop, where a mouse press and hold stands in for the finger."
+          code="PhoneDemo"
+        >
+          <PhoneDemo />
         </Stage>
       </Page>
     </TooltipProvider>
