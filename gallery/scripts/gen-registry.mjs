@@ -1116,8 +1116,16 @@ function verify(items, targets, transformed, shadcn) {
       const stray = [...text.matchAll(unprefixedVarRe)].map((m) => m[0]);
       if (stray.length) bad(where, `unprefixed litt custom property survives: ${[...new Set(stray)].join(", ")}`);
       const names = new Set([...text.matchAll(/(?<![\w-])(--[a-zA-Z][\w-]*)/g)].map((m) => m[1]));
+      // A component may keep a variable of its own: one it declares itself, as an arbitrary property
+      // ([--cmd-list-max:none]) or a style key ("--x": ...), and reads in the same file. Litt tokens are not local.
+      const local = new Set(
+        [...text.matchAll(/\[(--[a-zA-Z][\w-]*):/g), ...text.matchAll(/["'](--[a-zA-Z][\w-]*)["']\s*:/g)]
+          .map((m) => m[1])
+          .filter((n) => !n.startsWith("--litt-")),
+      );
       for (const n of names) {
         if (ALLOWED_FOREIGN_VARS.some((re) => re.test(n))) continue;
+        if (local.has(n)) continue;
         if (!declared.has(n) && n !== "--litt-glass-shadow") bad(where, `uses ${n}, which the shipped CSS does not define`);
       }
       const left = survivors(text, file.target);
