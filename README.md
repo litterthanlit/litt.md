@@ -21,7 +21,7 @@ skills/litt-md/
 │   ├── components.md   button, input, card, header, command menu, modal, toast…
 │   └── framer.md       the same system in Framer terms
 ├── workflows/          how Claude works with it
-│   ├── build.md        plan → check against generic defaults → build → self-critique
+│   ├── build.md        plan → check against generic defaults → install from the registry → build → self-critique
 │   ├── critique.md     scored checklist
 │   ├── interview.md    "this or that, and why?" taste sessions
 │   ├── audit.md        break down sites, moodboards and your own work

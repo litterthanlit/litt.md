@@ -21,7 +21,7 @@ Skill directory: `${CLAUDE_SKILL_DIR}`. Every path below is relative to it.
 
 | Nick wants to… | Mode | Read |
 |---|---|---|
-| Build or restyle a page, component or prototype | **build** | `workflows/build.md`, `system/material.md`, `assets/tokens.css`. Add `system/components.md` for components and `system/framer.md` for Framer. |
+| Build or restyle a page, component or prototype | **build** | `workflows/build.md`, `system/material.md`, `assets/tokens.css`. Add `system/components.md` for components and `system/framer.md` for Framer. In a React + Tailwind v4 project you can write to, install the components from the litt registry first (`workflows/build.md` §3). |
 | Review a screenshot, URL, Framer page or code | **critique** | `workflows/critique.md`, `taste/profile.md` |
 | Work on taste ("interview me", "refine my rules") | **interview** | `workflows/interview.md`, `taste/profile.md` |
 | Break down a reference, moodboard or own work | **audit** | `workflows/audit.md` |
@@ -97,7 +97,7 @@ These change only when Nick changes them.
 - **Controls:** `--control-{sm,md,lg}` (32/44/56), `--control-pad-{sm,md,lg}` (12/16/24), `--control-text-{sm,md,lg}`, `--control-gap`, `--control-group-gap`
 - **Motion:** `--dur-{instant,responsive,expressive}`, `--dur-exit-{responsive,expressive}`, `--ease-{out,responsive,expressive}`, `--spring-{responsive,expressive}`, `--stagger`, `--travel`, `--exit`, `--press-scale`
 
-For Tailwind v4, use `assets/tailwind.css`, which provides `bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `rounded-control`, `rounded-surface`, `rounded-pill`, `ease-responsive`, `shadow-float`, `py-section`, `shadow-glow` and similar. To see everything rendered, open `assets/specimen.html`.
+For Tailwind v4, use `assets/tailwind.css`, which provides `bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `rounded-control`, `rounded-surface`, `rounded-pill`, `ease-responsive`, `shadow-float`, `py-section`, `shadow-glow` and similar. Those plain names are for showing code and for projects without the registry. In a React project you can write to, do not copy the tokens: `npx shadcn@latest add @litt/<item>` (or `https://littmd.vercel.app/r/<item>.json`) installs the tested components and adds the same utilities under `litt-` names, such as `bg-litt-canvas` and `rounded-litt-control`. `workflows/build.md` §3 has the item table and the rules. To see everything rendered, open `assets/specimen.html`.
 
 ## Scripts
 
