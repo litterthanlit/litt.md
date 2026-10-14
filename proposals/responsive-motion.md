@@ -1,6 +1,6 @@
 # Responsive motion: a draft for Nick to decide
 
-Status: draft. Nothing here is built, and nothing in `skills/` has changed. Motion is a Fixed decision (`evolve.md` section 5), so every choice below is yours. Each row says what it costs.
+Status: decided on 14 October 2026. Nick accepted every recommendation, so section 4's text now lives in `system/foundations.md` section 6 and `system/components.md`, and the two dismiss tokens are in `tokens.css` (taste profile v0.6). This file keeps the audit and the reasoning behind each choice.
 
 How the audit was done: the gallery from this branch (main at 26bf788), built to `.agent-dist/spec`, driven in headless Chromium at 390 by 844 with `hasTouch` and `isMobile`, and at 1440 by 900 for comparison. Numbers come from sampling `getComputedStyle` on every animation frame, plus screenshots. Anything marked "not measured" needs a real phone: headless Chromium has no on-screen keyboard, no safe-area inset, and did not set `:active` under emulated touch.
 

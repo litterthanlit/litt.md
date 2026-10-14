@@ -66,12 +66,14 @@ Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
 - Order: wordmark → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
 - It is full-bleed, so it sets `border-radius: 0` (`.litt-glass` carries the surface radius).
 - On mobile, hide the nav behind the command menu or a menu button. Don't squeeze it.
+- **On compact screens** the nav stays behind the menu button and opens as the anchored dropdown (see Popover and dropdown). The bar stays sticky at the safe-area inset and never hides on scroll. Links and the menu button are `--control-md` on coarse screens.
 
 ## Tooltip
 Solid, not glass, with `--shadow-tooltip`, `--radius-control` and small type in `--fg`.
 - **Delay:** opens after a 200ms hover delay, and at once on focus.
 - **Motion:** responsive tier. It grows from the trigger from `--press-scale` (0.98) and travels in a quarter of `--travel` from the side it renders on.
 - **Exit:** `--dur-exit-responsive` with `--ease-out`.
+- **On touch** a tooltip opens on a press and hold of 500ms, not on a tap, so a tap only does what the button does. (500ms is an interaction delay, like the 200ms hover delay, not a motion token.) It closes on the next touch anywhere. Shortcut chips are hidden on coarse screens. The label that matters must also be the button's `aria-label`, or visible text.
 
 ## Command menu
 A native `<dialog>` in the top layer, `.litt-glass` with `--glass-shadow: var(--shadow-modal)`, `--radius-surface`, max width 560px, 15vh from the top.
@@ -81,6 +83,9 @@ A native `<dialog>` in the top layer, `.litt-glass` with `--glass-shadow: var(--
 - **Filtering:** typing changes the list instantly, in the original order, and the panel never animates its height. The empty state says nothing matches and drops the Enter hint.
 - **Motion:** responsive tier. It drops in over a dimmed canvas (`--dur-responsive`, `--ease-responsive`) with opacity, a quarter of `--travel` and `--press-scale`, and leaves on `--dur-exit-responsive`. One gliding highlight (transform, responsive) follows the lit row. The specimen shows the entrance and a per-row fill; the glide is built in the gallery.
 - Open with ⌘K or Ctrl+K and a visible trigger button.
+- **On compact screens** the panel sits at the top edge: `--space-2` below the safe-area inset and `--space-2` from each side, not 15vh down. Its list height is the visible screen less the keyboard, read from the visual viewport, so no row hides behind the keyboard.
+- **Motion on compact** stays on the responsive tier: it drops from the top by half of `--travel`, scales from `--press-scale`, and leaves on `--dur-exit-responsive`. It is not draggable, because its list scrolls.
+- **Touch:** the hints (↑↓, ↵, esc and row shortcuts) are hidden. A Cancel button, `--control-md` tall, sits beside the field. The field takes focus, because typing is the point.
 
 ## Popover and dropdown
 Glass with `--shadow-float`, `--radius-surface`, padding `--space-1`, rows at `--radius-control` as in the command menu. Positioned in the top layer (`popover` attribute) or a portal.
@@ -89,16 +94,24 @@ Glass with `--shadow-float`, `--radius-surface`, padding `--space-1`, rows at `-
 - **Submenus** are solid, because glass never sits on glass.
 - **Checkbox and radio rows** keep the check in a fixed 16px cell, so labels never shift, and the menu stays open while options change.
 - **Edges:** near the bottom edge the menu flips up, and the entrance follows the side it opens on.
+- **On compact screens** a popover becomes a bottom sheet (see Modal), because it holds fields and pickers that need the width and a place above the keyboard. A dropdown menu stays anchored: its rows are already 44px and the finger is beside it.
+- **Submenus on compact screens** do not fly out sideways. The submenu replaces the list in the same panel, with a Back row first. The two lists cross-fade and slide as Tabs panels do: half of `--travel` in, a quarter out, on the responsive tier. The panel's height snaps to the new list and is never animated.
+- **Touch rows** fill when pressed (instant tier, color only). Shortcut hints are hidden on coarse screens.
 
 ## Modal
 Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, padding `--space-8`, max width 480px (forms) or 640px. The title is `--type-h4` in `--fg`. Actions sit bottom right: primary last, secondary or ghost before it. The backdrop tint is `color-mix(in oklab, var(--canvas) 55%, transparent)`.
 - **Motion:** the view's expressive moment: placed, not thrown. It rises by `--travel` and settles from `--press-scale` (0.98), and may bounce slightly (`--dur-expressive`, `--ease-expressive`). If the view has already used its expressive moment, the dialog uses the responsive tier.
 - **Exit:** `--dur-exit-expressive` with `--ease-out`. It never bounces.
+- **On compact screens** it is a bottom sheet. `side="right"` becomes the same sheet, so no strip of page is left at the edge. It is glass, flush with the bottom, with `--radius-surface` on the top corners only, and it pads its footer by the safe-area inset. A 32px by 4px grabber in `--line-strong` sits at the top centre. The body scrolls inside, with `overscroll-behavior: contain`.
+- **Motion on compact:** it is still the view's expressive moment. It rises by its own height, by transform only, and may bounce as the token allows (`--ease-expressive` peaks at 1.0012, about half a pixel on a 450px sheet). It leaves the same way on `--dur-exit-expressive` with `--ease-out`.
+- **Drag and buttons:** it can be dragged down from anywhere that follows the rules in Foundations section 6. The close button is 44px on coarse screens. Cancel, Esc and a scrim tap also close it.
 
 ## Toast
 Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-4`, small size in `--fg`, an 8px status dot. Bottom right on desktop, bottom center on mobile. `role="status"` (or `alert` for errors). Auto-dismiss after 5s, but never for errors. An undo action sits on the right as a ghost button or kbd hint.
 - **Motion:** it arrives from just below its corner and settles. That is the expressive tier when the toast is the view's moment, otherwise the responsive tier. It leaves sideways by the same small distance, on the exit token for its tier.
 - **Stacking:** older toasts stack behind the newest and open into a list on hover or focus.
+- **On compact screens** the toast spans the page gutters, sits `--space-4` above the bottom edge or the safe-area inset, and leaves downward by `--travel` on a timeout, not sideways.
+- **Swipe:** a sideways drag moves the toast one to one. It leaves past `--dismiss-distance` of its width or faster than `--dismiss-velocity`, in the direction it was going. The close button stays, 44px on coarse screens. A tap on the stack pins it open, as before.
 
 ## Table and list rows
 Rows are separated by 1px `--line`, padding `--space-3`/`--space-4`, small size. The primary cell is `--fg`; the rest are `--fg-subtle`. Numbers and dates use `--font-mono` caption size, right-aligned. Hover is an fg-4% fill. A sticky header row is caption size in `--fg-subtle`, sentence case.

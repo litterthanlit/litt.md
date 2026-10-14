@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.5 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 54 journal entries · October 2026
+> v0.6 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 55 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -21,7 +21,7 @@ Five words: **precise, lit, airy, calm, exact.**
 | Color | Cool neutrals (OKLCH hue about 262), monochrome, one accent per project | Hierarchy comes from tone. The accent is chosen per project. |
 | Density | Airy | One idea per section, with generous negative space. |
 | Shape | Slight radius: controls 4px, surfaces 8px, pills for chips, tags, avatars, status dots and icon-only buttons | A little radius softens the precision and stays exact. A surface is a control plus the 4px inset, so corners nest. Two sizes and the pill, nothing in between. |
-| Motion | Sweet spot, three tiers. Instant: 100ms ease-out tween. Responsive: spring, 200ms, bounce 0. Expressive: spring, 350ms, bounce 0.12, one moment per view. Exits run at 0.75× and never bounce | Fast by default, with one signature moment per view. Motion confirms actions and never performs. Only transform and opacity animate, plus color fades at instant. |
+| Motion | Sweet spot, three tiers. Instant: 100ms ease-out tween. Responsive: spring, 200ms, bounce 0. Expressive: spring, 350ms, bounce 0.12, one moment per view. Exits run at 0.75× and never bounce. On phones the modal is a bottom sheet that rises by its own height and drags down to dismiss | Fast by default, with one signature moment per view. Motion confirms actions and never performs. Only transform and opacity animate, plus color fades at instant. |
 
 ## Signature rules
 
@@ -123,6 +123,7 @@ The interview workflow works through these. When one is answered, move the answe
 
 ## Changelog
 
+- **v0.6, October 2026.** Nick accepted every recommendation in `proposals/responsive-motion.md`. Two device signals: `compact` (narrower than 640) and `coarse` (a finger). On compact screens the modal and popovers are bottom sheets that rise by their own height, the one exception to `--travel`, on the modal's expressive tier, and drag down to dismiss past `--dismiss-distance` (0.25) or faster than `--dismiss-velocity` (0.4 px/ms), both new tokens. Menus stay anchored, and a submenu replaces the list in place. The command menu sits at the top edge. On touch a tooltip opens on a 500ms hold, key hints hide, pressed rows fill, focus lands on the panel, and toasts swipe away. Travel is unchanged and sheets keep their glass. The spec lives in `system/foundations.md` section 6 and `system/components.md`.
 - **v0.5, October 2026.** In the litt-ui gallery Nick said "sweet spot is where its at" and "add slight radius". Motion is now three tiers: instant (100ms tween), responsive (spring, 200ms, bounce 0) and expressive (spring, 350ms, bounce 0.12, one per view), with a 40ms stagger and 16px travel. Exits run at 0.75× the spring's time as an ease-out tween and never bounce. Springs are time plus bounce. Only transform and opacity animate, plus color, background-color, border-color, fill and the focus ring at instant. Menus, the command menu and dense lists get one gliding highlight; airy layouts keep the per-row fill. Shape is slight radius: controls 4px, surfaces 8px, pills unchanged, and the binary-radius rule is retired. `--dur-reveal` and `--dur-panel` became `--dur-responsive`, `--dur-max` is gone, and `--dur-exit-*` now derive from the springs. Q15 to Q19 closed.
 - **v0.4, October 2026.** Nick said "Im tired of geist", then picked Hanken Grotesk from a 14-face type trial ("Hanken Grotesk is lit!"). The Type decision now reads Hanken Grotesk + Geist Mono; the mono stays until Q14 is settled. Nick also cut the display headline from 56→72 to 40, so h1 and h2 step down to 32 and 28 to keep the scale descending, and the "72 against 15" line now reads 40 against 15.
 - **v0.3, October 2026.** From the Ramp audit, Nick chose a roomy button scale (new rule P10), glow + ring depth (P4 rewritten: no offset shadows, cards flat), and binary radius (Shape decision: everything square, pills only for chips, tags and avatars). Q10 and Q13 closed.
