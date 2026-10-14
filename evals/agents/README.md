@@ -139,6 +139,6 @@ Run a new task with `--fake-agent` first to check it loads. The fake agent only 
 
 ## Cost and results
 
-A real run is paid and slow. Assume $1 to $5 per task run with Sonnet, and up to the task's timeout (25 to 30 minutes) plus a couple of minutes to grade. These are rough numbers until there are a few real runs. `--judge` adds up to $1 per run. The fake agent costs nothing.
+A real run is paid. In the first nine Sonnet runs (October 2026), one task cost $0.26 to $0.38 for the agent and took one to one and a half minutes of agent time, plus about 30 seconds to grade. `--judge` with Opus added $0.11 to $0.23. All four tasks with the judge came to about $1.90 and six and a half minutes. Each task is capped by its `max_budget_usd` and `timeout_seconds`. The fake agent costs nothing.
 
 Results are not committed. Runs live under `$TMPDIR/litt-agent-test/`, and `--report` and `--json` write wherever you point them. When a run finds something worth keeping (a check that fails often, a gap in the registry), write it up in the repo notes or fix the skill or the component, and run the task again.
