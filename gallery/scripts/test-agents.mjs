@@ -607,7 +607,7 @@ async function loadGrader() {
   if (!fs.existsSync(file)) throw new Error(`the grader module is missing: ${file}`);
   const mod = await import(pathToFileURL(file).href);
   if (typeof mod.grade !== "function") throw new Error(`${file} does not export grade()`);
-  return { grade: mod.grade, CHECKS: Array.isArray(mod.CHECKS) ? mod.CHECKS : DEFAULT_CHECKS, file };
+  return { grade: mod.grade, CHECKS: Array.isArray(mod.CHECKS) ? mod.CHECKS : DEFAULT_CHECKS, planShots: mod.planShots, file };
 }
 
 async function runOne({ opts, task, app, n, runDir, tpl, registry, grader, getBrowser }) {
@@ -910,6 +910,12 @@ async function main() {
   const t0 = Date.now();
   const tasks = loadTasks(opts);
   const grader = await loadGrader();
+  // A task file with a bad shot is a harness error before anything is spent, not a failed page check later.
+  if (typeof grader.planShots === "function")
+    for (const t of tasks) {
+      const { problems } = grader.planShots(t.shots);
+      if (problems.length) throw new Error(`${path.join(t.dir, "task.json")}: ${problems.join("; ")}`);
+    }
   const runDir = path.join(opts.out, `run-${new Date().toISOString().replace(/[:.]/g, "-")}`);
   ensureDir(path.join(runDir, "logs"));
   const plan = tasks.flatMap((task) => Array.from({ length: opts.runs }, (_, i) => ({ task, app: opts.app ?? task.app, n: i + 1 })));

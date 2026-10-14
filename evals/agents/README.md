@@ -24,11 +24,11 @@ Useful flags (the runner's `--help` lists all of them):
 
 | Flag | What it does |
 |---|---|
-| `--tasks a,b` | Run only these tasks. The default is all four. |
+| `--tasks a,b` | Run only these tasks. The default is all of them. |
 | `--runs 3` | Repeat each task. One run is one sample, and Claude varies. |
 | `--model sonnet` | The model that builds. |
 | `--no-skill` | The baseline arm: the same task without the litt-md plugin. Compare its table with a normal run to see what the skill adds. |
-| `--judge [model]` | Also let a Claude judge read the screenshots against the task's `look` rubric. The judge is Opus unless you name a model, so it is not the model it grades. Adds up to $1 per run. |
+| `--judge [model]` | Also let a Claude judge read the screenshots against the task's `look` rubric. The judge is Opus unless you name a model, so it is not the model it grades. It is capped at $2 per run. |
 | `--registry <dir or url>` | Where the components come from. The default is your working tree (`gallery/public/r`, built with `npm run gen:registry --prefix gallery`). Use `https://littmd.vercel.app/r` to test what is deployed. |
 | `--fake-agent ../evals/agents/fake-agent.mjs` | Run the fake agent instead of Claude. Free. See below. |
 | `--report <file>` / `--json <file>` | Write findings (markdown, newest first) or everything (JSON). |
@@ -70,8 +70,13 @@ A failed required check fails the run. `warn` and `skip` do not.
 | `pricing-section` | Vite | The home page as a three-tier pricing section | `button` |
 | `project-list` | Next.js | The studio's projects, filtered by status | `list` |
 | `command-menu` | Vite | A ⌘K menu with a visible shortcut hint | `command-menu`, `kbd` |
+| `phone-settings` | Vite | Settings that come up from the bottom on a phone and swipe down to close | `dialog`, `input`, `checkbox`, `button` |
+| `settings-form` | Vite | An account page with a role dropdown, two switches, a speed slider and a theme choice | `input`, `button`, `segmented` or `tabs` |
+| `analytics-dashboard` | Next.js | A deploy dashboard: a sidebar behind a menu button on phones, four tiles, a 14-day chart, a table | `table`, `tag` |
 
-Each prompt reads like a message from Nick, says where the work goes (the home page), and says it is litt's own site. Without that last line the skill stops to ask whether it is client work, and nobody is there to answer.
+The last three are baselines for the next steps (motion on phones, forms, dashboards). The registry has no bottom sheet, select, switch, slider, chart or sidebar yet, so they expect only what exists, and a run records what the agent builds by hand. They should pass once those parts ship.
+
+Each prompt reads like a message from Nick, says where the work goes (the home page, replacing the starter), and says it is litt's own site. Without that last line the skill stops to ask whether it is client work, and nobody is there to answer.
 
 ## The fake agent
 

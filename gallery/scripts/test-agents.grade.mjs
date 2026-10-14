@@ -942,9 +942,9 @@ async function checkLook(s) {
     prompt: judgePrompt(s),
     model: ctx.judge.model,
     allowedTools: ["Read"],
-    maxTurns: 12,
+    maxTurns: 30, // a phone task has 16 or more screenshots, one Read each
     timeoutMs: 300000,
-    budgetUsd: 1,
+    budgetUsd: 2,
     plugin: false,
     appendSystemPrompt: "You are a strict visual reviewer. Look at every screenshot you are given, then answer with exactly one JSON object and nothing else.",
   });
