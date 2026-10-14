@@ -59,7 +59,7 @@ const travel = useTravel(); // px, already 0 under reduced motion
 - **Never animate** width, height, top, left, margins, font-weight, letter-spacing, filter or blur, box-shadow, or anything material (glow, grain, gradients, backdrop) (P5).
 - **Exits** use `useExit(tier)`: quicker than the enter, a tween, never a bounce.
 - **Origin-aware:** popovers grow from their trigger (`transform-origin` on the trigger side) and travel from the side they actually open on, after collision flipping. Radix exposes `data-side`; use it.
-- **Distance:** travel at most `useTravel()`, and usually half of it for small things.
+- **Distance:** travel at most `useTravel()`, and usually half of it for small things. The one exception is a sheet on compact screens, which rises by its own height so it comes from the edge it is dragged back to (`foundations.md` section 6).
 - **One expressive moment per view.** Everything else is instant or responsive.
 - **Reduced motion is handled by the hooks** (they return 0). Do not add your own `prefers-reduced-motion` code paths.
 
@@ -69,6 +69,7 @@ These come from the audit and are candidate rules (P11 to P13). Build them in.
 1. **A state change never moves the box.** Hover, selected and active change color or fill only. Labels and icons keep exactly the same size and position.
 2. **Touch parity.** Tailwind v4's `hover:` only applies on devices that can hover. Anything revealed on hover must also be visible on focus and on touch (`(hover: none)`). Inputs use at least 16px text on coarse pointers.
 3. **Focus by modality.** Use `:focus-visible` only: 2px `outline-focus`, 2px offset, or an inset ring inside lists. A popup opened by pointer shows no ring on its first row until a key is pressed. A keyboard-highlighted row needs a 3:1 indicator, such as an inset 1px `var(--focus)` ring on the highlight; a faint fill alone is not enough.
+4. **Phones and touch** follow `foundations.md` section 6 and the "On compact screens" lines in `components.md`. Read the device with `useDevice()` from `@/motion`: `compact` (narrower than 640) decides presentation, `coarse` (a finger) decides input. In CSS use `max-sm:` and `pointer-coarse:`. Both are false on the server, so the first render is the desktop one. A drag reads its thresholds with `readDismiss()`, never a number of its own. Every gesture has a button that does the same thing.
 
 ## Visual rules
 
