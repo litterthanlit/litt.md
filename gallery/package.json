@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p .",
     "lint:litt": "node scripts/lint-litt.mjs",
+    "test:lint": "node scripts/lint-litt.mjs --self-test",
     "sync:tokens": "node scripts/sync-tokens.mjs",
     "gen:docs": "node scripts/gen-docs.mjs",
     "gen:registry": "node scripts/gen-registry.mjs",
@@ -20,7 +21,7 @@
     "prebuild": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry",
     "shot": "node scripts/shot.mjs",
     "test:registry": "node scripts/test-registry.mjs",
-    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s typecheck && npm run -s lint:litt"
+    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s typecheck && npm run -s lint:litt && npm run -s test:lint"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "1.2.0",
