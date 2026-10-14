@@ -13,7 +13,7 @@ The repo root is the plugin root, and the skill lives in `skills/litt-md/`.
 
 ## Gallery
 
-`gallery/` is the components gallery: a Vite and React app that Vercel builds from the repo root with `vercel.json`. It is not a plugin component, it does not ship in the claude.ai zip, and there is no root `package.json`, so every gallery command takes `--prefix gallery`.
+`gallery/` is the components gallery: a Vite and React app that Vercel builds from the repo root with `vercel.json`. Before gallery work, read `gallery/HANDOFF.md`: where the roadmap stands, how we compare with Fluid Functionalism and shadcn, and the open decisions for Nick. It is not a plugin component, it does not ship in the claude.ai zip, and there is no root `package.json`, so every gallery command takes `--prefix gallery`.
 
 - Tokens flow one way. `gallery/scripts/sync-tokens.mjs` copies `skills/litt-md/assets/tokens.css` and `tailwind.css` (strict mode on) into the gitignored `gallery/src/styles/`. Never edit the copies. `predev`, `prebuild` and `verify` run the sync.
 - Docs data flows one way too. `gallery/scripts/gen-docs.mjs` reads `gallery/src/components` and writes the gitignored `gallery/src/generated/docs.json` (props, defaults, JSDoc, files, packages). `predev`, `prebuild` and `verify` run it after the sync. Document a prop with JSDoc in the component, never in the page.
