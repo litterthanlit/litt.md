@@ -19,6 +19,16 @@
  *   router's link. The menu's rows are real links too (MenuItem href), unless you pass
  *   onNavigate: then choosing a row calls it, for client-side routing.
  * - Only one nav is ever visible, so there is always exactly one landmark.
+ *
+ * On a phone (foundations.md section 6)
+ * - The nav stays behind the menu button, and the button opens the anchored dropdown (Menu's own
+ *   phone behavior, which is only a list here). The bar is container-driven, so a bar narrower than
+ *   navFrom shows the button on any screen, and a phone is always narrower than 640.
+ * - The bar stays sticky at the safe-area inset and never hides on scroll: nothing here reads the
+ *   scroll position, and nothing moves it.
+ * - On coarse screens the links, the wordmark link and the menu button are --control-md tall (44px),
+ *   and a pressed link fills like a hovered one (pointer-coarse:active:, instant tier, color only),
+ *   because a finger has no hover.
  */
 import type { ReactNode } from "react";
 import { Button } from "./button";
@@ -74,8 +84,9 @@ const FROM = {
 
 const link =
   "relative flex h-control-sm items-center rounded-control px-control-pad-sm text-small whitespace-nowrap select-none " +
-  "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
+  "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:h-control-md " +
+  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 /** The same dot marks the current page in the bar and in the menu. */
@@ -103,7 +114,7 @@ export function Header({
       {/* The bar is the container, so the layout follows the width it is given. */}
       <div className="@container">
         <div className="mx-auto flex h-(--header-h) max-w-wide items-center gap-4 px-gutter @min-[40rem]:gap-6">
-          <div className="flex shrink-0 items-center text-body text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus">
+          <div className="flex shrink-0 items-center text-body text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus pointer-coarse:[&_a]:inline-flex pointer-coarse:[&_a]:h-control-md pointer-coarse:[&_a]:items-center">
             {wordmark}
           </div>
 

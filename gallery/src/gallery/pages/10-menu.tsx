@@ -11,6 +11,7 @@ import {
   SlidersIcon,
   TrashIcon,
 } from "@/components/icons";
+import { DeviceProvider } from "@/motion";
 import {
   Menu,
   MenuCheckboxItem,
@@ -28,7 +29,7 @@ export const meta: PageMeta = {
   title: "Menu",
   order: 10, group: "Overlays",
   summary:
-    "A glass dropdown with one highlight that glides from row to row. It grows from its trigger and travels from the side it really opens on.",
+    "A glass dropdown with one highlight that glides from row to row. It grows from its trigger and travels from the side it really opens on. On a phone a submenu replaces the list in the same panel.",
   tiers: ["instant", "responsive"],
 };
 
@@ -75,6 +76,7 @@ import {
     "A more-actions button on a row or a card. It keeps the row quiet until someone needs the rest.",
     "View options that change in one visit. Checkbox and radio rows keep the menu open, so several can change at once.",
     "A destructive action. Put it last, after a separator, and mark it destructive so it takes the danger color.",
+    "Submenus that must also work on a phone. Below 640px a submenu replaces the list inside the same panel, with a Back row first, so it can never land off the screen.",
   ],
   skip: [
     "The click goes to another page. Use a link (<a>), because a menu row has no href and cannot open in a new tab.",
@@ -90,8 +92,9 @@ import {
     [["Home", "End"], "Moves to the first or last row. PageUp and PageDown do the same."],
     [["Type"], "Typeahead: jumps to the next row whose label starts with what you type."],
     [["Enter", "Space"], "Chooses the row. The menu closes and focus returns to the trigger. Checkbox and radio rows toggle and stay open."],
-    [["ArrowRight", "Enter", "Space"], "On a row that opens a submenu: opens it and moves focus into it."],
-    [["ArrowLeft"], "In a submenu: closes it and returns to the row that opened it."],
+    [["ArrowRight", "Enter", "Space"], "On a row that opens a submenu: opens it and moves focus into it. On a phone the list is replaced in place and focus lands on the Back row."],
+    [["ArrowLeft"], "In a submenu: closes it and returns to the row that opened it. On a phone it does what the Back row does."],
+    [["Enter", "Space"], "On the Back row of a phone submenu: returns to the list and puts focus on the row that opened the submenu."],
     [["Escape"], "Closes the menu and returns focus to the trigger. From a submenu it closes the whole menu."],
     [["Tab"], "Does nothing while the menu is open. Focus stays inside it until it closes."],
   ],
@@ -101,10 +104,12 @@ import {
     "The menu is modal. Focus stays inside it, the rest of the page is inert and hidden from screen readers, and Esc or a choice returns focus to the trigger.",
     "Rows keep real DOM focus, and the gliding highlight is aria-hidden, so a screen reader hears the row and never the highlight. A pointer open lights nothing until the pointer moves. A keyboard open lights the first row with an inset 1px focus ring, because a faint fill alone is too weak to see.",
     "Rows are 44px tall. The icon or check sits in a fixed 16px cell, so toggling an option never shifts a label.",
-    "The shortcut prop is text only. It does not bind the key, so wire the real shortcut yourself. A screen reader reads the hint after the label.",
+    "The shortcut prop is text only. It does not bind the key, so wire the real shortcut yourself. A screen reader reads the hint after the label. On touch screens the hint is hidden, so a shortcut must never be the only way to reach an action.",
     "A disabled row is skipped by the arrow keys. If the reason is not obvious, say it in text elsewhere.",
     "Name a destructive row with a verb, such as Delete or Stop sharing. The danger color only backs the word up.",
-    "Under reduced motion the menu appears and leaves at once, with no travel, and the highlight jumps to the row.",
+    "On a phone a submenu is a list inside the same menu, not a second menu. Its first row is Back, a real menu item that takes the same keys as any other. The list that is not showing is hidden and its rows are disabled, so the arrow keys, Home, End and typeahead only reach what is on screen. After a keyboard move focus rests on a row (Back going in, the opening row going back). After a tap focus rests on the menu itself, so no row is lit. Name the Back row for your language with backLabel.",
+    "Rows are 44px on every screen. On touch screens a row fills while it is pressed, which is the only feedback a finger gets, because there is no hover.",
+    "Under reduced motion the menu appears and leaves at once, with no travel, and the highlight jumps to the row. On a phone the two lists swap in place with no slide.",
   ],
 };
 
@@ -219,6 +224,19 @@ export default function MenuPage() {
         caption="The panel fades and scales from 0.98 out of the trigger's corner, and slides a quarter of the travel. One highlight glides between rows on the responsive tier. Open it with the pointer and nothing is lit until you move; open it with Enter or ArrowDown and the first row lights with a focus ring. Hover Move to for the submenu: it is solid, because glass never sits on glass."
       >
         <ProjectMenu />
+      </Stage>
+
+      <Stage
+        title="On a phone"
+        tier="responsive"
+        size="lg"
+        align="start"
+        code="ProjectMenu"
+        caption="On a narrow screen the menu still opens beside its button, but a submenu does not fly out sideways, where it would land off the screen. Open Move to: the list is replaced inside the same panel, with a Back row first. The two lists cross-fade and slide the way Tabs panels do, and the panel snaps to the height of the new list. On a touch screen a row also fills while it is pressed and the shortcut hints go. This stage forces the phone behavior, so a mouse can try it."
+      >
+        <DeviceProvider mode="phone">
+          <ProjectMenu />
+        </DeviceProvider>
       </Stage>
 
       <Stage
