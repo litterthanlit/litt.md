@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.5 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 54 journal entries · October 2026
+> v0.5 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 56 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -120,6 +120,8 @@ The interview workflow works through these. When one is answered, move the answe
 - **Q12.** Which theme comes first on marketing pages when the system preference is unknown? Cursor, Vercel and litt.design are all light-first.
 - **Q14.** Mono: keep Geist Mono next to Hanken Grotesk, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
   - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The type trial paired Hanken Grotesk with JetBrains Mono by default.
+- **Q20.** Does a Helvetica-style neo-grotesk (Host Grotesk, as in Continuity's litt kit) replace Hanken Grotesk in web UI, or stay a video-only exception?
+  - *Evidence:* on 2026-10-14 Nick shared a Helvetica Now Display-style reference and chose Host Grotesk for Continuity videos; the Type decision still reads Hanken Grotesk.
 
 ## Changelog
 
