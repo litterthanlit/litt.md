@@ -12,6 +12,9 @@
  * - Hover is the instant tier and only changes fills and the hairline color.
  *   Rows and cards never move, and selection only turns the card's ring to the
  *   focus color.
+ * - Touch has no hover, so on a coarse pointer a row (and an unselected filter chip) that is held
+ *   down fills (PRESS_FILL, color only, instant tier). The box never moves, and the OS tap flash is
+ *   off so the two do not double. Cards have no press state.
  * - Corners: the list container and cards are rounded-surface; the rows inset 4px
  *   inside the container and the card cover inset 4px inside the card are
  *   rounded-control (concentric). Chips, tags and dots are pills.
@@ -113,10 +116,13 @@ export function ProjectTag({ children }: { children: ReactNode }) {
 /* ProjectList: airy rows with the staggered entrance                         */
 /* -------------------------------------------------------------------------- */
 
+/** What a finger holding a row shows: fg 6%, a step above the 4% hover fill because the finger covers the row. */
+const PRESS_FILL = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
+
 const rowClass =
   "flex size-full items-center gap-4 rounded-control px-4 text-left " +
-  "cursor-pointer transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " +
+  "cursor-pointer transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " + PRESS_FILL + " " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 function RowContent({ project }: { project: Project }) {
@@ -299,11 +305,11 @@ export function ProjectFilters({
             onClick={() => onChange(f.id)}
             className={
               "inline-flex h-control-sm cursor-pointer items-center rounded-pill px-control-pad-sm text-small " +
-              "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
+              "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
               (on
                 ? "bg-surface-3 text-fg"
-                : "text-fg-subtle hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]")
+                : "text-fg-subtle hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " + PRESS_FILL + " pointer-coarse:active:text-fg")
             }
           >
             <span className="litt-trim">{f.label}</span>

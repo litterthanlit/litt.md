@@ -57,7 +57,8 @@ export const docs: PageDocs = {
     "Always give TabsList an aria-label, because a group of tabs with no name is announced without context. Each TabsTrigger value must match one TabsPanel value, because that is what links them.",
     "The selected tab is marked by the indicator and by aria-selected, not by color alone. The indicator is hidden from screen readers.",
     "Keyboard focus draws a 2px outline inside the tab, so the scrolling list does not clip it. The panel gets the usual 2px outline at a 2px offset.",
-    "Medium tabs are 44px tall and small are 32px. Use medium where people tap, and small in dense UI such as a toolbar.",
+    "Medium tabs are 44px tall and small are 32px. Use medium where people tap, and small in dense UI such as a toolbar. The small segmented list is the exception: on touch screens its track grows to 44px, like the small Segmented control.",
+    "Touch has no hover, so on a touch screen a tab held down fills and takes the stronger text color, on the instant tier. The OS tap flash is off, and the tab never moves.",
     "Under reduced motion the indicator jumps and the panel appears without sliding.",
   ],
 };
@@ -281,7 +282,7 @@ export default function TabsPage() {
       <Stage
         title="View switch"
         tier="responsive"
-        caption="The segmented style uses the same sliding block as a fill. Pick a view and the preview crossfades. Labels never change weight or size, so the group keeps its exact box."
+        caption="The segmented style uses the same sliding block as a fill. Pick a view and the preview crossfades. Labels never change weight or size, so the group keeps its exact box. On a touch screen a tab you hold fills."
         code="ViewSwitch"
       >
         <ViewSwitch />
