@@ -102,7 +102,9 @@ Make `evals/agents/<name>/task.json`:
   "expect": { "items": ["dialog", "input", "button", "checkbox"] },
   "shots": [
     { "name": "page" },
-    { "name": "open", "click": "role=button[name=/settings/i] >> nth=0", "wait": 700 }
+    { "name": "open", "click": "role=button[name=/settings/i] >> nth=0", "wait": 700 },
+    { "name": "open-phone", "width": 390, "click": "role=button[name=/settings/i] >> nth=0", "frames": [60, 140, 260], "wait": 700 },
+    { "name": "swiped", "width": 390, "click": "role=button[name=/settings/i] >> nth=0", "wait": 700, "drag": { "from": "role=dialog >> role=heading >> nth=0", "dy": 360 }, "after": 700 }
   ],
   "look": "Claims for the screenshot judge.",
   "max_turns": 60,
@@ -113,8 +115,24 @@ Make `evals/agents/<name>/task.json`:
 
 - `app` is `vite` or `next`. The prompt says where the work goes (`src/App.tsx` or `app/page.tsx` is the home page) and that it is litt's own site.
 - `expect.items` are registry item names that must end up installed. An array inside the list means any one of these. Check them against the component's gallery page (`gallery/src/gallery/pages/`): ask only for what the registry makes necessary. For example `list` already brings the status filters and the status tag, so `project-list` does not also ask for `segmented`, `tabs` or `tag`.
-- `shots` start with the page as loaded. Each later shot does one `click` (a Playwright selector) or one `press` (a key chord), waits `wait` ms, then takes a screenshot. Component entrances take a few hundred ms, so wait at least 600. Test a selector against a real build before you rely on it.
-- `look` is 4 to 7 claims a judge can check from a screenshot: what is on screen, where, in which state. Claims about the system (one accent fill, weight 400, slight radius, glass only on floating surfaces, left-aligned and airy, no emoji, no gradient text) belong here, written as things you can see. Name the shots a claim is about (`page-*`, `open-*`).
+- `shots` start with the page as loaded. Each later shot runs in light and dark and takes a viewport screenshot, `<name>-<theme>-<width>.png`. It does a `click` (a Playwright selector), a `press` (a key chord), or both in that order, waits `wait` ms, then takes the screenshot. Component entrances take a few hundred ms, so wait at least 600. Test a selector against a real build before you rely on it.
+- A later shot can also set a width, touch, frames mid-animation and a drag. Every field is optional, and a shot without them runs at 1440 with a mouse, as it always did:
+
+| Field | Default | What it does |
+|---|---|---|
+| `width` | 1440 | Viewport width, 200 to 3840. The height is 844 below 640 and 900 from there. |
+| `touch` | `true` below 640 | A phone context (`hasTouch` and `isMobile`). `click` becomes a tap, `(hover: none)` and `(pointer: coarse)` match, and a drag sends real touch events. `false` keeps the mouse. |
+| `frames` | none | One to six offsets in ms. A screenshot is taken that long after the click (after the press, when there is one) and named `<name>-<theme>-<width>-<ms>ms.png`. They catch an entrance mid-motion. |
+| `wait` | 500, or the last frame if that is later | ms from the click or press until the drag or the screenshot. It counts from the action, not from the last frame, so it must be at least the last frame. |
+| `drag` | none | `{ "from": selector, "dx": 0, "dy": 0, "ms": 240 }`. The pointer (a finger on a touch context) goes down at the centre of the visible part of `from`, moves by `dx` and `dy` in up to 12 steps over `ms`, and lifts. |
+| `after` | 600 | ms to wait after the drag before the screenshot. Ignored without a drag. |
+
+- Frames are close to their offset, not exact. A frame lands about 5 to 20 ms after its name, and a screenshot takes 30 to 50 ms, so keep frames at least 80 ms apart. A frame taken more than 40 ms late says so in the judge's label, and `page` shows `warn`.
+- A drag goes to whatever is at the centre of `from`, and the centre of a form dialog is usually a text field. A drag that starts on a field belongs to the field: under a mouse it selects text. Point `from` at something that is not a field, such as `role=dialog >> role=heading >> nth=0`, or at a grab handle.
+- A touch context lays the page out at 980 px wide when it has no `<meta name="viewport">`, as a phone does. The Vite and Next.js starters have one.
+- A missing or hidden `click` or `drag.from` target fails `page`. So does a shot the task file got wrong: an unknown field, a `wait` shorter than the last frame, two shots that would write the same file.
+- Every frame, in both themes, is one more screenshot for the judge to open. Three or four frames are enough.
+- `look` is 4 to 7 claims a judge can check from a screenshot: what is on screen, where, in which state. Claims about the system (one accent fill, weight 400, slight radius, glass only on floating surfaces, left-aligned and airy, no emoji, no gradient text) belong here, written as things you can see. Name the shots a claim is about (`page-*`, `open-*`). A claim about motion names the frames (`open-phone-*-60ms`) and the settled picture it compares them with (`open-phone-*`). The judge is told that frames are mid-animation on purpose.
 - Use real studio content. No lorem ipsum.
 
 Run a new task with `--fake-agent` first to check it loads. The fake agent only has a solution for `settings-dialog`, so a new task should fail its checks with "no scripted solution". That is the expected result.
