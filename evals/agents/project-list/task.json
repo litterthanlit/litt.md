@@ -1,0 +1,15 @@
+{
+  "name": "project-list",
+  "description": "The home page of a Next.js app lists the studio's projects and filters them by status. The registry's list already brings the rows, the status filters and the status tag, so the test is whether the agent finds it instead of building its own.",
+  "app": "next",
+  "prompt": "Make the home page of this Next app a list of our studio's projects. Each one shows its name, client, year and status (live, in review or draft), and I want to be able to filter the list by status. Use these for now:\n\nHalo site, Halo Studio, 2026, live\nNorthwind rebrand, Northwind, 2025, live\nAtlas portfolio, Ines Ortega, 2026, in review\nLumen docs, Marlow Labs, 2026, in review\nKassa pitch deck, Kassa, 2025, draft\nCase study template, Litt Templates, 2026, draft\n\nIt's for litt.design, our own site, so there's no client brief to check. Make sure it builds and works on a phone.",
+  "expect": { "items": ["list"] },
+  "shots": [
+    { "name": "page" },
+    { "name": "live", "click": "text=/^live$/i >> nth=0", "wait": 700 }
+  ],
+  "look": "Judge the page-* screenshots (the home page as loaded, light and dark, 1440 and 390 wide) and the live-* screenshots (after clicking the Live filter, 1440 wide). Claims:\n1. page at 1440: six projects are listed (Halo site, Northwind rebrand, Atlas portfolio, Lumen docs, Kassa pitch deck, Case study template). Each shows its client, a status in words and a year or a date.\n2. page at 1440: a status filter sits above the list, with one option per status (live, review, draft) and an All option. The selected option is marked by a fill or a color, not by bold text.\n3. live: only the two live projects are listed (Halo site and Northwind rebrand). No in-review or draft project is visible, and the Live option is shown as selected.\n4. Status is a small pill with a dot and the status in words. Only the pill's text and dot carry the status color. The pill's fill stays neutral.\n5. The rows are airy (tall rows with room around the text), separated by hairlines, inside one container or as raised cards with slightly rounded corners (about 8px). No row or card has a drop shadow or a colored bar.\n6. All text is regular weight (nothing bold). There are no emoji and no decorative gradients, and at most one element on the screen has an accent fill.\n7. page at 390: the list still reads, with the name and status visible on each row and no horizontal scrolling. In the dark screenshots the text and the pills are legible. The one soft light from the top (litt's light source, a faint tint that fades down a surface) is not a decorative gradient: allow it once per view.",
+  "max_turns": 70,
+  "timeout_seconds": 1800,
+  "max_budget_usd": 5
+}

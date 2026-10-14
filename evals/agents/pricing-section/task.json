@@ -1,0 +1,14 @@
+{
+  "name": "pricing-section",
+  "description": "The home page becomes a three-tier pricing section. A hand-built layout, so the test is whether the agent still uses litt's button and keeps to one accent fill.",
+  "app": "vite",
+  "prompt": "Turn the home page of this app into the pricing section of our studio site. Three tiers: Sprint, Studio and Retainer. Sprint is a one-week Framer build for $4,800. Studio is a full site with CMS and motion for $12,000. Retainer is ongoing design and builds for $3,500 a month. Each tier needs its price, what's included, and a button to get started. Studio is the one I want people to pick.\n\nThis is litt.design, our own site, not client work, so just build it. It should look right in light and dark, and on a phone.",
+  "expect": { "items": ["button"] },
+  "shots": [
+    { "name": "page" }
+  ],
+  "look": "Judge the page-* screenshots (the home page as loaded, light and dark, 1440 and 390 wide). Claims:\n1. At 1440 wide, three tiers named Sprint, Studio and Retainer sit side by side. Each has a price, a list of what is included, and a button.\n2. At 390 wide the tiers stack in one column. Nothing is cut off and there is no horizontal scrolling.\n3. Exactly one button is filled with the accent color, on the Studio tier. The other two buttons are neutral (an outline, a quiet fill or a ghost button). It is not three accent buttons.\n4. The tiers are flat: a hairline edge and a soft fill, no offset drop shadow, no colored bar or rail on a card edge. Corners are only slightly rounded (about 8px, never large soft corners). The featured tier may carry the view's one soft light from the top, and the accent button may carry a soft glow.\n5. All text is regular weight. Prices stand out by size and color, not by bold. Nothing is bold anywhere.\n6. The page is not centered everywhere: any section heading or intro text is left-aligned, and there is generous space around and between the tiers. There are no emoji or emoji-style check marks, no decorative gradient background and no gradient text.\n7. In the dark screenshots each tier is set off from the page by a hairline edge and a fill at least slightly lighter than the page, and all text is readable. The one soft light from the top (litt's light source, a faint tint that fades down a surface) is not a decorative gradient: allow it once per view.",
+  "max_turns": 60,
+  "timeout_seconds": 1500,
+  "max_budget_usd": 5
+}

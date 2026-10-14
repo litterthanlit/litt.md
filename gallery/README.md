@@ -10,7 +10,8 @@ Live at [littmd.vercel.app](https://littmd.vercel.app).
 - **Registry:** every component installs into any React + Tailwind v4 project with `npx shadcn@latest add https://littmd.vercel.app/r/<item>.json` (or `@litt/<item>` with `"registries": { "@litt": "https://littmd.vercel.app/r/{name}.json" }` in components.json). `npm run gen:registry` builds it into the gitignored `public/r/`, and `prebuild` and `verify` run it after the docs data. The shipped copy is namespaced (`--accent` becomes `--litt-accent`, `bg-surface-1` becomes `bg-litt-surface-1`), so it never collides with or restyles the host; a verifier fails the build if anything unprefixed survives. Fonts, weight 400 and the focus ring are the opt-in `base-styles` item. `npm run test:registry` proves it end to end: fresh Vite and Next.js apps, every item installed, typecheck, build, and a Chromium smoke test that also checks nothing in the host changed. It needs the network and takes about ten minutes, so it is not part of `verify`.
 - **Locked pages, one Playground:** every page runs the tokens. JS springs read the same custom properties as CSS (`src/motion/tokens.ts`), so there is one set of numbers. Only the Playground (`tune: true` in its page meta) overrides them, on its own page, and every override is removed when you leave it. Its Tune panel checks the values against the litt.md v0.5 rules and prints tokens to paste back into litt.md.
 - **Motion:** three tiers (instant, responsive, expressive). Springs are time + bounce, so the same numbers work in Motion, Framer and CSS `linear()`. `src/motion/rules.ts` holds the limits the Tune panel checks. It mirrors the motion and radius checks in `../skills/litt-md/scripts/check.mjs`, and the two change together.
-- **Checks:** `npm run verify` (sync, docs data, registry, typecheck, litt rule lint). The lint fails off-scale radii, weights above 400, offset shadows, raw or quoted colors, literal timings, and duration and ease classes that do not pair by tier.
+- **Checks:** `npm run verify` (sync, docs data, registry, typecheck, litt rule lint, and the lint's self-test). The lint fails off-scale radii, weights above 400, offset shadows, raw or quoted colors, literal timings, and duration and ease classes that do not pair by tier. `--host` applies the same rules to code in an app that installed the registry, where every name carries `litt-`, and also fails the host's own shadcn tokens and Tailwind's default palette, sizes, radii and shadows.
+- **Agent test:** `npm run test:agents` gives Claude a fresh Vite or Next.js app and a task from `../evals/agents/`, then grades what it built: did the litt-md skill load, did it install and compose the registry's components instead of hand-made copies, is its own code on the tokens and motion tiers (the host lint), does it typecheck, build and load in Chromium without errors, and (with `--judge`) do the screenshots match the task's rubric. It spends money and minutes per task, so it is not part of `verify`. See `../evals/agents/README.md`.
 
 See CONTRIBUTING.md for how components are built.
 
@@ -24,6 +25,8 @@ npm run verify     # sync, docs data, registry, typecheck, litt rule lint
 npm run build      # sync, docs data and registry, then dist/ (registry at dist/r/)
 npm run preview    # serve dist/
 npm run test:registry   # install every registry item into fresh Vite and Next.js apps (network, ~10 min)
+npm run test:agents -- --tasks settings-dialog   # Claude builds a task in a fresh app, graded by litt's checks (paid)
+npm run test:agents -- --fake-agent ../evals/agents/fake-agent.mjs --tasks settings-dialog   # the same harness, free
 ```
 
 From the repo root, the same chain Vercel runs:

@@ -1,0 +1,33 @@
+/* Lint fixture (not shipped): a pricing card styled the careless way, as a stylesheet an agent
+   might add next to its page. `node scripts/lint-litt.mjs --self-test` lints it in host mode.
+   Every line that ends in `expect: <rule>` in a comment must fail exactly that rule. The comment
+   itself may name border-radius: 12px or font-weight: 600 without tripping anything. */
+.tier {
+  border-radius: 12px; /* expect: radius */
+  box-shadow: 0 4px 12px var(--litt-line); /* expect: shadow */
+  font-weight: 600; /* expect: weight */
+  font-size: 14px; /* expect: type */
+  color: #333333; /* expect: color */
+  background: white; /* expect: color */
+  transition: all 0.3s ease-in-out; /* expect: motion */
+  animation: pulse 2s infinite; /* expect: motion */
+}
+.tier-pairing {
+  transition: opacity var(--litt-dur-responsive) var(--litt-ease-out); /* expect: motion */
+}
+.tier-ok {
+  border-radius: var(--litt-radius-surface);
+  box-shadow: var(--litt-shadow-float), 0 0 0 1px var(--litt-line);
+  font-weight: 400;
+  font-size: var(--litt-type-body-size);
+  color: var(--litt-fg);
+  background: color-mix(in oklab, var(--litt-fg) 6%, transparent);
+  transition: background-color var(--litt-dur-instant) var(--litt-ease-out), transform var(--litt-dur-responsive) var(--litt-ease-responsive);
+}
+.tier-apply {
+  @apply rounded-lg bg-litt-surface-1; /* expect: radius */
+}
+.tier-apply-ok {
+  @apply rounded-litt-surface bg-litt-surface-1 text-litt-body font-normal shadow-litt-float;
+}
+@keyframes rise { from { opacity: 0 } to { opacity: 1 } }

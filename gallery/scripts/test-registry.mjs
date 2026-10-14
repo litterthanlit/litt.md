@@ -1268,11 +1268,38 @@ async function main() {
   return allPassed ? 0 : exit || 1;
 }
 
-main().then(
-  (code) => process.exit(code),
-  (e) => {
-    killAll();
-    console.error(e.message ?? e);
-    process.exit(2);
-  },
-);
+/* ------------------------------------------------------------------ shared with test-agents.mjs */
+
+// The agent test reuses the host templates, the registry server and the build and serve steps
+// instead of keeping a second harness. Importing this file does not run the install test.
+export {
+  APPS,
+  BASE_ENV,
+  PINS,
+  buildApp,
+  copyDir,
+  diffSnapshots,
+  ensureTemplate,
+  errorExcerpt,
+  freePort,
+  killAll,
+  npx,
+  run,
+  serveBuild,
+  shadcn,
+  shadcnAdd,
+  snapshot,
+  startRegistryServer,
+  waitForUrl,
+};
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().then(
+    (code) => process.exit(code),
+    (e) => {
+      killAll();
+      console.error(e.message ?? e);
+      process.exit(2);
+    },
+  );
+}
