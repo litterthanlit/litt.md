@@ -54,8 +54,9 @@
  * A table shows ok / FAIL / warn / - per check, with cost, turns and time. A run also fails when the agent
  * itself did not finish (it timed out, ran out of turns or budget, or errored).
  *
- * Cost and time: this spends money. Budget $1 to $5 and 5 to 25 minutes of agent time per task run with
- * Sonnet, plus about two minutes for the install, type check, build and screenshots; --judge adds under $1.
+ * Cost and time: this spends money. In the first Sonnet runs one task cost $0.26 to $0.38 and one to one and a
+ * half minutes of agent time, plus about 30 seconds to grade; --judge (Opus) added $0.11 to $0.23. Each task is
+ * capped by its max_budget_usd and timeout_seconds.
  * --fake-agent costs nothing. The first run builds the host templates if the install test has not (3 minutes).
  * Runs go one after the other. Nothing here is part of `verify`.
  *
@@ -606,7 +607,7 @@ async function loadGrader() {
   if (!fs.existsSync(file)) throw new Error(`the grader module is missing: ${file}`);
   const mod = await import(pathToFileURL(file).href);
   if (typeof mod.grade !== "function") throw new Error(`${file} does not export grade()`);
-  return { grade: mod.grade, CHECKS: Array.isArray(mod.CHECKS) ? mod.CHECKS : DEFAULT_CHECKS, file };
+  return { grade: mod.grade, CHECKS: Array.isArray(mod.CHECKS) ? mod.CHECKS : DEFAULT_CHECKS, planShots: mod.planShots, file };
 }
 
 async function runOne({ opts, task, app, n, runDir, tpl, registry, grader, getBrowser }) {
@@ -909,6 +910,12 @@ async function main() {
   const t0 = Date.now();
   const tasks = loadTasks(opts);
   const grader = await loadGrader();
+  // A task file with a bad shot is a harness error before anything is spent, not a failed page check later.
+  if (typeof grader.planShots === "function")
+    for (const t of tasks) {
+      const { problems } = grader.planShots(t.shots);
+      if (problems.length) throw new Error(`${path.join(t.dir, "task.json")}: ${problems.join("; ")}`);
+    }
   const runDir = path.join(opts.out, `run-${new Date().toISOString().replace(/[:.]/g, "-")}`);
   ensureDir(path.join(runDir, "logs"));
   const plan = tasks.flatMap((task) => Array.from({ length: opts.runs }, (_, i) => ({ task, app: opts.app ?? task.app, n: i + 1 })));

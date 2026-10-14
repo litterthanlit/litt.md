@@ -19,8 +19,10 @@
  *   tsc       the host's own typecheck.
  *   build     the host's production build. When it fails, `page` and `look` are skipped.
  *   page      the built page in Chromium, light and dark at 1440 and 390 px: no console or page errors, no failed requests,
- *             no horizontal overflow at either width, full-page screenshots; then each extra task shot (a click or a key
- *             chord, then a viewport screenshot) at 1440 in both themes. A click target that is missing fails.
+ *             no horizontal overflow at either width, full-page screenshots; then each extra task shot in both themes:
+ *             a click (a tap on a touch context) or a key chord, optional frames taken mid-animation, a drag, then a
+ *             viewport screenshot. A shot can set its own width and touch (see planShots). A click or drag target that
+ *             is missing fails, and so does a shot the task file got wrong.
  *   look      optional (ctx.judge): a Claude judge reads the screenshots against the task's rubric.
  *
  * "Agent files" are the .ts/.tsx/.js/.jsx/.css files the agent added or changed, minus the litt files the install wrote
@@ -552,9 +554,17 @@ const DARK_INIT = `(() => {
   }
 })();`;
 
-/** A fresh browser context on the built page. Console errors, page errors and failed requests go to `errors`. */
-async function openContext(browser, url, { theme, width, height }) {
-  const context = await browser.newContext({ viewport: { width, height }, colorScheme: theme, deviceScaleFactor: 1 });
+/**
+ * A fresh browser context on the built page. Console errors, page errors and failed requests go to `errors`.
+ * `touch` makes it a phone: hasTouch and isMobile, so taps are taps, (hover: none) and (pointer: coarse) match.
+ */
+async function openContext(browser, url, { theme, width, height, touch = false }) {
+  const context = await browser.newContext({
+    viewport: { width, height },
+    colorScheme: theme,
+    deviceScaleFactor: 1,
+    ...(touch ? { hasTouch: true, isMobile: true } : {}),
+  });
   const errors = [];
   try {
     if (theme === "dark") await context.addInitScript(DARK_INIT);
@@ -580,10 +590,173 @@ async function openContext(browser, url, { theme, width, height }) {
   }
 }
 
+/** A viewport height for a width: phones are 844 tall, everything wider 900. */
+const heightFor = (width) => (width < 640 ? 844 : 900);
+
+const SHOT_FIELDS = ["name", "click", "press", "wait", "width", "touch", "frames", "drag", "after"];
+const DRAG_FIELDS = ["from", "dx", "dy", "ms"];
+const MAX_FRAMES = 6;
+const DRAG_STEPS = 12;
+const isNum = (v) => typeof v === "number" && Number.isFinite(v);
+
+/**
+ * Plans the extra shots of a task (every entry after the first), filling in the defaults of contract C1+:
+ *   width   viewport width, default 1440; the height is 844 below 640, else 900
+ *   touch   a phone context (hasTouch and isMobile, a click becomes a tap); default: width < 640
+ *   click, press   as before, in that order
+ *   frames  [ms, ...] screenshots taken that many ms after the click or press, named <name>-<theme>-<width>-<ms>ms.png
+ *   wait    ms from the click or press until the drag or the shot (default 500, or the last frame if that is later)
+ *   drag    { from, dx = 0, dy = 0, ms = 240 }: pointer down at the centre of `from`, move by dx/dy, pointer up
+ *   after   ms after the drag, before the shot (default 600; ignored without a drag)
+ * Returns { plans, problems }. A shot that uses none of the new fields plans exactly what it always did.
+ * `problems` lists what the task file got wrong (a bad field, an unknown field, two shots writing one file).
+ */
+export function planShots(shots) {
+  const list = Array.isArray(shots) && shots.length ? shots : [{ name: "page" }];
+  const problems = [];
+  const written = new Map(); // file name without .png -> who writes it
+  const claim = (base, who) => {
+    if (written.has(base)) problems.push(`${who} and ${written.get(base)} would both write ${base}.png`);
+    else written.set(base, who);
+  };
+  const first = safeName(list[0]?.name || "page");
+  for (const theme of THEMES) for (const width of WIDTHS) claim(`${first}-${theme}-${width}`, `shot "${list[0]?.name || "page"}"`);
+
+  const plans = [];
+  list.slice(1).forEach((shot, i) => {
+    const who = `shot "${shot?.name ?? `#${i + 2}`}"`;
+    const bad = (msg) => problems.push(`${who}: ${msg}`);
+    if (!shot || typeof shot !== "object" || Array.isArray(shot)) return bad("is not an object");
+    if (typeof shot.name !== "string" || !shot.name.trim()) return bad("needs a name");
+    const unknown = Object.keys(shot).filter((k) => !SHOT_FIELDS.includes(k));
+    if (unknown.length) bad(`unknown field(s) ${unknown.join(", ")} (known: ${SHOT_FIELDS.join(", ")})`);
+
+    let width = 1440;
+    if (shot.width != null) {
+      if (isNum(shot.width) && shot.width >= 200 && shot.width <= 3840) width = Math.round(shot.width);
+      else bad(`width must be a number from 200 to 3840, got ${JSON.stringify(shot.width)}`);
+    }
+    let touch = width < 640;
+    if (shot.touch != null) {
+      if (typeof shot.touch === "boolean") touch = shot.touch;
+      else bad(`touch must be true or false, got ${JSON.stringify(shot.touch)}`);
+    }
+    for (const k of ["click", "press"]) if (shot[k] != null && (typeof shot[k] !== "string" || !shot[k].trim())) bad(`${k} must be a non-empty string`);
+
+    let frames = [];
+    if (shot.frames != null) {
+      if (!Array.isArray(shot.frames) || !shot.frames.length || shot.frames.length > MAX_FRAMES || !shot.frames.every((f) => isNum(f) && f >= 0 && f <= 10000))
+        bad(`frames must be a list of 1 to ${MAX_FRAMES} offsets in ms (0 to 10000), got ${JSON.stringify(shot.frames)}`);
+      else frames = unique(shot.frames.map(Math.round)).sort((a, b) => a - b);
+    }
+    const lastFrame = frames.length ? frames[frames.length - 1] : 0;
+    let wait = Math.max(500, lastFrame);
+    if (Number.isFinite(shot.wait)) {
+      wait = shot.wait;
+      if (wait < lastFrame) bad(`wait (${wait}) counts from the click or press, so it must be at least the last frame (${lastFrame})`);
+    }
+
+    let drag = null;
+    if (shot.drag != null) {
+      const d = shot.drag;
+      if (!d || typeof d !== "object" || Array.isArray(d)) bad("drag must be an object { from, dx, dy, ms }");
+      else {
+        const extra = Object.keys(d).filter((k) => !DRAG_FIELDS.includes(k));
+        if (extra.length) bad(`unknown drag field(s) ${extra.join(", ")} (known: ${DRAG_FIELDS.join(", ")})`);
+        if (typeof d.from !== "string" || !d.from.trim()) bad("drag.from must be a selector");
+        for (const k of ["dx", "dy"]) if (d[k] != null && !isNum(d[k])) bad(`drag.${k} must be a number of px`);
+        if (d.ms != null && !(isNum(d.ms) && d.ms > 0 && d.ms <= 5000)) bad("drag.ms must be a number from 1 to 5000");
+        const dx = isNum(d.dx) ? d.dx : 0;
+        const dy = isNum(d.dy) ? d.dy : 0;
+        if (!dx && !dy) bad("drag moves nothing: set dx or dy");
+        drag = { from: d.from, dx, dy, ms: isNum(d.ms) ? d.ms : 240 };
+      }
+    }
+    const after = Number.isFinite(shot.after) ? shot.after : 600;
+
+    const name = safeName(shot.name);
+    for (const theme of THEMES) {
+      claim(`${name}-${theme}-${width}`, who);
+      for (const ms of frames) claim(`${name}-${theme}-${width}-${ms}ms`, who);
+    }
+    plans.push({
+      shot,
+      name,
+      width,
+      height: heightFor(width),
+      touch,
+      click: typeof shot.click === "string" ? shot.click : "",
+      press: typeof shot.press === "string" ? shot.press : "",
+      frames,
+      wait,
+      drag,
+      after,
+      extended: ["width", "touch", "frames", "drag", "after"].some((k) => shot[k] != null),
+    });
+  });
+  return { plans, problems };
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+/** Waits until performance.now() reaches `t`. */
+const sleepUntil = (t) => sleep(Math.max(0, t - performance.now()));
+
+/**
+ * Pointer down at (x, y), move by (dx, dy) over `ms`, pointer up. A touch context gets real touch events through
+ * the DevTools protocol (so pages see pointerType "touch" and touchstart/move/end); otherwise it is the mouse.
+ * At most DRAG_STEPS moves, each placed where a finger moving at a steady pace would be at that moment, so a
+ * slow event dispatch makes the drag coarser but never slower: the release speed is dy / ms either way.
+ */
+async function dragGesture(context, page, { x, y, dx, dy, ms, touch }) {
+  const at = (f) => ({ x: x + dx * f, y: y + dy * f });
+  let down;
+  let move;
+  let up;
+  let release = async () => {};
+  if (touch) {
+    const cdp = await context.newCDPSession(page);
+    const send = (type, p) => cdp.send("Input.dispatchTouchEvent", { type, touchPoints: p ? [{ x: p.x, y: p.y }] : [] });
+    down = () => send("touchStart", at(0));
+    move = (f) => send("touchMove", at(f));
+    up = () => send("touchEnd");
+    release = () => cdp.detach().catch(() => {});
+  } else {
+    down = async () => {
+      await page.mouse.move(x, y);
+      await page.mouse.down();
+    };
+    move = (f) => page.mouse.move(at(f).x, at(f).y);
+    up = () => page.mouse.up();
+  }
+  try {
+    await down();
+    const t0 = performance.now();
+    for (let i = 1; i <= DRAG_STEPS; i++) {
+      await sleepUntil(t0 + (ms * i) / DRAG_STEPS);
+      const f = i === DRAG_STEPS ? 1 : Math.min(1, (performance.now() - t0) / ms);
+      await move(f);
+      if (f >= 1) break;
+    }
+    await up();
+  } finally {
+    await release();
+  }
+}
+
+/** "360px down", "40px right and 360px down" */
+function moveText({ dx, dy }) {
+  const parts = [];
+  if (dx) parts.push(`${Math.abs(dx)}px ${dx > 0 ? "right" : "left"}`);
+  if (dy) parts.push(`${Math.abs(dy)}px ${dy > 0 ? "down" : "up"}`);
+  return parts.join(" and ");
+}
+
 async function checkPage(s) {
   if (!s.built) return skip("the build failed");
   const { ctx, task } = s;
   const shots = task?.shots?.length ? task.shots : [{ name: "page" }];
+  const { plans, problems } = planShots(shots);
+  if (problems.length) return fail(`the task file's shots are not valid:\n${cap(problems, 12).join("\n")}`);
   // The same message from several loads is reported once, with the loads it came from.
   const found = new Map();
   const add = (tag, message) => {
@@ -593,6 +766,7 @@ async function checkPage(s) {
     found.set(msg, tags);
   };
   const files = [];
+  const lateFrames = [];
   s.shotFiles = files;
   fs.mkdirSync(ctx.shotsDir, { recursive: true });
   const served = await serveBuild(s.app, s.dir, ctx.logFile);
@@ -626,39 +800,79 @@ async function checkPage(s) {
         }
       }
 
-    for (const shot of shots.slice(1)) {
-      const name = safeName(shot.name);
+    for (const plan of plans) {
+      const { shot, name, width, touch } = plan;
       for (const theme of THEMES) {
-        const tag = `${theme} 1440px, shot "${shot.name}"`;
+        const tag = `${theme} ${width}px, shot "${shot.name}"`;
         let opened;
         try {
-          opened = await openContext(browser, served.url, { theme, width: 1440, height: 900 });
+          opened = await openContext(browser, served.url, { theme, width, height: plan.height, touch });
         } catch (e) {
           add(tag, `the page did not load: ${oneLine(e.message ?? e, 200)}`);
           continue;
         }
         const { context, page, errors } = opened;
+        // What the label tells the judge. A shot with none of the new fields reads as it always has.
+        const acts = [];
+        if (plan.click) acts.push(`${touch ? "tapping" : "clicking"} ${plan.click}`);
+        if (plan.press) acts.push(`pressing ${plan.press}`);
+        const setting = `${theme} theme, ${width}px wide${plan.extended ? (touch ? ", touch screen (taps, no hover)" : ", mouse and keyboard") : ""}`;
+        const record = (file, label, extra = {}) => files.push({ file, abs: path.join(ctx.shotsDir, file), label, theme, width, touch, ...extra });
         try {
-          let did = "";
-          if (shot.click) {
-            did = `after clicking ${shot.click}`;
-            const target = page.locator(shot.click).first();
+          if (plan.frames.length) await page.screenshot().catch(() => {}); // the first capture is the slow one; keep it out of the frames
+          if (plan.click) {
+            const target = page.locator(plan.click).first();
             try {
               await target.waitFor({ state: "visible", timeout: 5000 });
             } catch (e) {
-              add(tag, `the click target ${shot.click} is missing or hidden (${oneLine(String(e.message ?? e).split("\n")[0], 120)})`);
+              add(tag, `the click target ${plan.click} is missing or hidden (${oneLine(String(e.message ?? e).split("\n")[0], 120)})`);
               continue;
             }
-            await target.click({ timeout: 5000 });
+            if (touch) await target.tap({ timeout: 5000 });
+            else await target.click({ timeout: 5000 });
           }
-          if (shot.press) {
-            did = `${did ? did + ", then " : "after "}pressing ${shot.press}`;
-            await page.keyboard.press(shot.press);
+          if (plan.press) await page.keyboard.press(plan.press);
+          const t0 = performance.now(); // frames and `wait` count from here, when the click or press has returned
+
+          for (const ms of plan.frames) {
+            await sleepUntil(t0 + ms);
+            const at = Math.round(performance.now() - t0);
+            const file = `${name}-${theme}-${width}-${ms}ms.png`;
+            await page.screenshot({ path: path.join(ctx.shotsDir, file) });
+            const late = at - ms > 40; // the capture ran behind: the picture is later than its name says
+            if (late) lateFrames.push(`${file} (${at} ms)`);
+            const mid = late ? `mid-animation; taken about ${at} ms after, not ${ms}, because the capture ran late` : "mid-animation";
+            record(file, `shot "${shot.name}", a frame ${ms} ms after ${acts.length ? acts.join(", then ") : "the page settled"} (${mid}), ${setting}`, { frame: ms });
           }
-          await page.waitForTimeout(Number.isFinite(shot.wait) ? shot.wait : 500);
-          const file = `${name}-${theme}-1440.png`;
+          await sleepUntil(t0 + plan.wait);
+
+          let did = acts.length ? `after ${acts.join(", then ")}` : "";
+          if (plan.drag) {
+            const target = page.locator(plan.drag.from).first();
+            try {
+              await target.waitFor({ state: "visible", timeout: 5000 });
+            } catch (e) {
+              add(tag, `the drag target ${plan.drag.from} is missing or hidden (${oneLine(String(e.message ?? e).split("\n")[0], 120)})`);
+              continue;
+            }
+            // The centre of the part of the element that is on screen.
+            const box = await target.boundingBox();
+            const x0 = Math.max(box?.x ?? 0, 0);
+            const x1 = Math.min((box?.x ?? 0) + (box?.width ?? 0), width);
+            const y0 = Math.max(box?.y ?? 0, 0);
+            const y1 = Math.min((box?.y ?? 0) + (box?.height ?? 0), plan.height);
+            if (!box || x1 <= x0 || y1 <= y0) {
+              add(tag, `the drag target ${plan.drag.from} is outside the viewport`);
+              continue;
+            }
+            await dragGesture(context, page, { x: (x0 + x1) / 2, y: (y0 + y1) / 2, ...plan.drag, touch });
+            did = `${did ? did + ", then " : "after "}${touch ? "swiping" : "dragging"} from ${plan.drag.from} ${moveText(plan.drag)} in ${plan.drag.ms} ms, and waiting ${plan.after} ms`;
+            await page.waitForTimeout(plan.after);
+          }
+          const file = `${name}-${theme}-${width}.png`;
           await page.screenshot({ path: path.join(ctx.shotsDir, file) });
-          files.push({ file, abs: path.join(ctx.shotsDir, file), label: `shot "${shot.name}" ${did}, ${theme} theme, 1440px wide`, theme, width: 1440 });
+          const settled = plan.frames.length && !plan.drag ? ` (the settled picture, ${plan.wait} ms later)` : "";
+          record(file, `shot "${shot.name}"${did ? " " + did : ""}${settled}, ${setting}`);
         } catch (e) {
           add(tag, `${oneLine(e.message ?? e, 200)}`);
         } finally {
@@ -678,7 +892,10 @@ async function checkPage(s) {
     );
     return fail(`${cap(lines, 14).join("\n")}\n${where}`);
   }
-  return pass(`no console errors, no horizontal overflow, light and dark at ${WIDTHS.join(" and ")}px; ${where}`);
+  const detail = `no console errors, no horizontal overflow, light and dark at ${WIDTHS.join(" and ")}px; ${where}`;
+  if (lateFrames.length)
+    return warn(`${detail}\n${lateFrames.length} frame(s) were taken more than 40 ms later than named (frames closer together than a screenshot takes, or a busy machine): ${cap(lateFrames, 6).join(", ")}`);
+  return pass(detail);
 }
 
 function judgePrompt(s) {
@@ -695,6 +912,13 @@ function judgePrompt(s) {
     "Open every screenshot with the Read tool before you answer:",
     list,
     "",
+    ...(s.shotFiles.some((f) => f.frame != null)
+      ? [
+          "Files whose name ends in <n>ms.png are frames taken n ms into an animation, on purpose, so a surface in them can be half faded or half moved.",
+          "Judge a frame only on the motion it shows (where the surface is, how far it has moved, how visible it is), never as the finished state; the file for the same shot without the suffix is the settled picture.",
+          "",
+        ]
+      : []),
     "The rubric. Each line is a claim; check each one against what you can see:",
     '"""',
     String(task.look).trim(),
@@ -718,9 +942,9 @@ async function checkLook(s) {
     prompt: judgePrompt(s),
     model: ctx.judge.model,
     allowedTools: ["Read"],
-    maxTurns: 12,
+    maxTurns: 30, // a phone task has 16 or more screenshots, one Read each
     timeoutMs: 300000,
-    budgetUsd: 1,
+    budgetUsd: 2,
     plugin: false,
     appendSystemPrompt: "You are a strict visual reviewer. Look at every screenshot you are given, then answer with exactly one JSON object and nothing else.",
   });
