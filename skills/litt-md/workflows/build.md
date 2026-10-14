@@ -78,7 +78,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 
 | Item | Install it for |
 |---|---|
-| `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. It always renders a `<button>`, so a link to another page is an `<a>`. |
+| `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), never as a child: children are the label, trimmed to the cap height, so an icon among them breaks the line. It always renders a `<button>`, so a link to another page is an `<a>`. |
 | `input` | `TextField` (label, hint, error), the bare `Input` for inline forms and toolbars, `Textarea`. |
 | `checkbox` | `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, a select-all box. |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |

@@ -47,7 +47,7 @@
  *   logs/              the agent's stderr, the command it was run with, the grader's command logs
  * The agent is `claude -p` with the plugin directory (this repo), project and local settings only, no MCP, no
  * session saved, a read/write/edit tool set and a short list of allowed commands (shadcn add, npm install,
- * tsc, the build, ls, cat, the skill's check script). Anything else is denied without asking, recorded as a
+ * tsc, the build, the lint, ls, cat, the skill's check script). Anything else is denied without asking, recorded as a
  * permission denial, and the agent works around it.
  *
  * The checks (see test-agents.grade.mjs): skill, registry, composed, tokens, motion, tsc, build, page, look.
@@ -114,6 +114,7 @@ const defaultAllowedTools = () => [
   "Bash(npx shadcn add:*)",
   "Bash(npx --yes shadcn@latest add:*)",
   "Bash(npm run build:*)",
+  "Bash(npm run lint:*)",
   "Bash(npm install:*)",
   "Bash(npx tsc:*)",
   "Bash(ls:*)",
