@@ -15,15 +15,40 @@
  *   so the right corners are reset to square.
  * - Slots: title, description, body (children), footer. Footer buttons are
  *   right-aligned, 12px apart, primary last.
+ *
+ * On compact screens (useDevice().compact, narrower than 640) the dialog is a
+ * bottom sheet, and side="right" is the same sheet (foundations.md section 6):
+ * - It rises from the bottom edge by its own height on the expressive tier and
+ *   leaves the same way on the exit token. Transform only, its height never
+ *   animates, and it has one height: its content, up to the visible screen less
+ *   --space-6. --space-6 of the sheet hides below the screen edge, so an
+ *   overshoot or a pull never shows a gap.
+ * - Glass, rounded on the top corners only, a 32 by 4 grabber at the top (hidden
+ *   from assistive tech), the body scrolls inside with overscroll-behavior:
+ *   contain, and the footer is padded by the safe-area inset.
+ * - It follows a finger through useDismissDrag (@/motion): drag down from
+ *   anywhere the guards allow. The scrim lightens with it. The close button is
+ *   44px on coarse pointers, and Cancel, Esc and a tap on the scrim still close.
+ * - On coarse pointers focus lands on the panel, unless a field carries
+ *   data-autofocus, so the keyboard does not open under a sheet that is moving.
+ *   Fine pointers keep the focus rule above.
+ *
+ * DialogSheet is that sheet shell, exported so another overlay can reuse it (the
+ * Popover on compact screens). It renders the portal, the scrim and the panel
+ * inside a Radix Dialog root, and the panel is a grid with the areas "head close
+ * / body body / foot foot". Put each child in an area with style={{ gridArea }}.
+ * Inside it, var(--sheet-foot) is the bottom padding a last row needs: --space-6
+ * or the safe-area inset, whichever is larger.
  */
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { AnimatePresence, motion } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { AnimatePresence, motion, useTransform } from "motion/react";
+import { useDevice, useDismissDrag, useExit, useMotionDial, useTransition, useTravel } from "@/motion";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
 
-const OpenContext = createContext(false);
+/* The open state, and the way to change it (a drag that leaves asks through this). */
+const DialogState = createContext<{ open: boolean; change: (open: boolean) => void }>({ open: false, change: () => {} });
 
 export type DialogProps = {
   /** Whether the dialog is open. Pair it with onOpenChange. Leave it out and the dialog keeps its own state. */
@@ -48,11 +73,11 @@ export function Dialog({ open: openProp, defaultOpen = false, onOpenChange, chil
     [onOpenChange],
   );
   return (
-    <OpenContext value={open}>
+    <DialogState value={{ open, change }}>
       <RadixDialog.Root open={open} onOpenChange={change}>
         {children}
       </RadixDialog.Root>
-    </OpenContext>
+    </DialogState>
   );
 }
 
@@ -68,7 +93,7 @@ export type DialogContentProps = {
   description?: ReactNode;
   /** Buttons, right-aligned and 12px apart. Primary goes last. */
   footer?: ReactNode;
-  /** "center" is a modal; "right" is a settings sheet. */
+  /** "center" is a modal; "right" is a settings sheet. On a phone (compact screens) both are the bottom sheet. */
   side?: "center" | "right";
   /** Hide the round close button in the corner. */
   hideClose?: boolean;
@@ -81,9 +106,128 @@ export type DialogContentProps = {
 const FOCUSABLE = ":is(input,textarea,select,button,[href]):not(:disabled)";
 
 /**
+ * Where focus goes when a dialog opens. On a coarse pointer it lands on the panel, or on the field marked
+ * data-autofocus, so the keyboard never opens under a panel that is still moving. Otherwise `fine` decides.
+ */
+function focusOnOpen(event: Event, panel: HTMLElement | null, coarse: boolean, fine?: (event: Event) => void) {
+  if (!coarse) return fine?.(event);
+  if (!panel) return;
+  event.preventDefault();
+  (panel.querySelector<HTMLElement>("[data-autofocus]") ?? panel).focus({ preventScroll: true });
+}
+
+const SCRIM = "absolute inset-0 bg-[color-mix(in_oklab,var(--canvas)_55%,transparent)]";
+
+export type DialogSheetProps = {
+  /** Whether the sheet is shown. It drives the rise and the exit, so keep rendering the sheet and flip this. */
+  open: boolean;
+  /** Called when a drag decides to leave. Close the surface here: the exit then plays from where the finger let go. */
+  onDismiss: () => void;
+  /** Where focus goes on a fine pointer when the sheet opens (Radix onOpenAutoFocus). On a coarse pointer focus lands on the panel unless a field carries data-autofocus. */
+  onOpenAutoFocus?: (event: Event) => void;
+  /** Set false when nothing inside names a description, so Radix does not look for one. Default true. */
+  described?: boolean;
+  /** The panel element. */
+  contentRef?: Ref<HTMLDivElement>;
+  /** Extra classes for the panel. */
+  className?: string;
+  /** The panel's content. Place each child in a grid area with style={{ gridArea }}: head, close, body, foot. It needs a Radix Dialog.Title. */
+  children: ReactNode;
+};
+
+/**
+ * The bottom sheet shell for compact screens: portal, scrim and a draggable glass panel. Render it inside a Radix
+ * Dialog root. See the file header for the rules it follows. The Dialog uses it, and so can any overlay that
+ * becomes a sheet on a phone.
+ */
+export function DialogSheet({ open, ...rest }: DialogSheetProps) {
+  return (
+    <RadixDialog.Portal forceMount>
+      <AnimatePresence>{open && <SheetLayer key="layer" {...rest} />}</AnimatePresence>
+    </RadixDialog.Portal>
+  );
+}
+
+function SheetLayer({ onDismiss, onOpenAutoFocus, described = true, contentRef, className = "", children }: Omit<DialogSheetProps, "open">) {
+  const { coarse } = useDevice();
+  const { reduced } = useMotionDial();
+  const enter = useTransition("expressive");
+  const drag = useDismissDrag({ direction: "down", onDismiss });
+  const panel = useRef<HTMLDivElement | null>(null);
+  const height = useRef(0);
+
+  const setPanel = useCallback(
+    (node: HTMLDivElement | null) => {
+      panel.current = node;
+      if (typeof contentRef === "function") contentRef(node);
+      else if (contentRef) contentRef.current = node;
+    },
+    [contentRef],
+  );
+
+  useLayoutEffect(() => {
+    const el = panel.current;
+    if (!el) return;
+    const read = () => {
+      height.current = el.offsetHeight;
+    };
+    read();
+    if (typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  /* The scrim is a function of how far the sheet is down, so it comes in with the rise, lightens as a finger pulls
+     the sheet away, and goes with the exit. While Motion runs its own enter and exit, the value can be a number or
+     a length such as "100%", so both are read. */
+  const scrim = useTransform(drag.offset, (y: unknown) => {
+    const h = height.current;
+    const down = typeof y === "string" ? (y.endsWith("%") ? (parseFloat(y) / 100) * h : parseFloat(y)) : y;
+    return h > 0 && typeof down === "number" && Number.isFinite(down) ? 1 - Math.min(1, Math.max(0, down / h)) : 0;
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 grid grid-rows-[minmax(0,1fr)] items-end">
+      <RadixDialog.Overlay forceMount asChild>
+        <motion.div className={SCRIM} style={{ opacity: scrim }} />
+      </RadixDialog.Overlay>
+
+      <RadixDialog.Content
+        forceMount
+        asChild
+        ref={setPanel}
+        onOpenAutoFocus={(e) => focusOnOpen(e, panel.current, coarse, onOpenAutoFocus)}
+        {...(described ? {} : { "aria-describedby": undefined })}
+      >
+        <motion.div
+          {...drag.panel}
+          onPointerDown={drag.onPointerDown}
+          className={
+            "litt-glass relative grid max-h-full w-full max-w-[40rem] -mb-6 justify-self-center pb-6 " +
+            "grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] rounded-t-surface rounded-b-none " +
+            "[--glass-shadow:var(--shadow-modal)] [--sheet-foot:max(var(--space-6),env(safe-area-inset-bottom,0px))] " +
+            "focus-visible:outline-none " +
+            className
+          }
+          style={{ ...drag.panel.style, gridTemplateAreas: '"head close" "body body" "foot foot"' }}
+          initial={{ y: reduced ? 0 : "100%" }}
+          animate={{ y: 0, transition: enter }}
+          exit={{ y: "100%", transition: drag.exit }}
+        >
+          <span aria-hidden className="pointer-events-none absolute top-2 left-1/2 h-1 w-8 -translate-x-1/2 rounded-pill bg-line-strong" />
+          {children}
+        </motion.div>
+      </RadixDialog.Content>
+    </div>
+  );
+}
+
+/**
  * The panel: title, description, body and footer, with a dim overlay behind it. Render it inside a Dialog.
  * Focus lands on the control marked data-autofocus, else the first control in the body, else the first one in
- * the footer, and only then on the close button.
+ * the footer, and only then on the close button. On a touch screen it lands on the panel, or on a control marked
+ * data-autofocus, so the keyboard does not open during the entrance.
  */
 export function DialogContent({
   title,
@@ -94,13 +238,14 @@ export function DialogContent({
   className = "",
   children,
 }: DialogContentProps) {
-  const open = useContext(OpenContext);
+  const { open, change } = useContext(DialogState);
+  const { compact, coarse } = useDevice();
   const enter = useTransition("expressive");
   const exit = useExit("expressive");
   const fadeIn = useTransition("instant");
   const fadeOut = useExit("instant");
   const travel = useTravel();
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const sheet = side === "right";
   const hasBody = children != null && children !== false;
 
@@ -119,6 +264,76 @@ export function DialogContent({
     }
   };
 
+  /* The slots are the same on every screen; compact screens only change their padding and the footer's inset. */
+  const slots = (
+    <>
+      <div className="grid content-start gap-2 pt-6 pr-4 pl-6 sm:pt-8 sm:pl-8" style={{ gridArea: "head" }}>
+        <RadixDialog.Title className="text-h4 text-fg text-balance">{title}</RadixDialog.Title>
+        {description && (
+          <RadixDialog.Description className="text-small text-fg-subtle">{description}</RadixDialog.Description>
+        )}
+      </div>
+
+      {hasBody && (
+        <div
+          data-dialog-body
+          className={"min-h-0 overflow-y-auto px-6 py-6 sm:px-8 " + (compact ? "overscroll-contain" : "")}
+          style={{ gridArea: "body" }}
+        >
+          {children}
+        </div>
+      )}
+
+      {footer && (
+        <div
+          data-dialog-footer
+          className={
+            "flex flex-wrap justify-end gap-3 px-6 sm:px-8 " +
+            (compact
+              ? "border-t border-line pt-6 pb-(--sheet-foot)"
+              : sheet
+                ? "border-t border-line pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]"
+                : "pb-6 sm:pb-8 " + (hasBody ? "pt-2" : "pt-6"))
+          }
+          style={{ gridArea: "foot" }}
+        >
+          {footer}
+        </div>
+      )}
+
+      {!hideClose && (
+        <div className="self-start pt-6 pr-4 sm:pt-8 sm:pr-6" style={{ gridArea: "close" }}>
+          <RadixDialog.Close asChild>
+            <Button
+              iconOnly
+              size="sm"
+              variant="ghost"
+              aria-label="Close"
+              className="-mt-1 pointer-coarse:-mt-2.5 pointer-coarse:h-control-md pointer-coarse:w-control-md"
+            >
+              <XIcon />
+            </Button>
+          </RadixDialog.Close>
+        </div>
+      )}
+    </>
+  );
+
+  if (compact) {
+    return (
+      <DialogSheet
+        open={open}
+        onDismiss={() => change(false)}
+        onOpenAutoFocus={pickFocus}
+        described={!!description}
+        contentRef={ref}
+        className={className}
+      >
+        {slots}
+      </DialogSheet>
+    );
+  }
+
   return (
     <RadixDialog.Portal forceMount>
       <AnimatePresence>
@@ -132,7 +347,7 @@ export function DialogContent({
           >
             <RadixDialog.Overlay forceMount asChild>
               <motion.div
-                className="absolute inset-0 bg-[color-mix(in_oklab,var(--canvas)_55%,transparent)]"
+                className={SCRIM}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1, transition: fadeIn }}
                 exit={{ opacity: 0, transition: fadeOut }}
@@ -143,7 +358,7 @@ export function DialogContent({
               forceMount
               asChild
               ref={ref}
-              onOpenAutoFocus={pickFocus}
+              onOpenAutoFocus={(e) => focusOnOpen(e, ref.current, coarse, pickFocus)}
               {...(description ? {} : { "aria-describedby": undefined })}
             >
               <motion.div
@@ -163,47 +378,7 @@ export function DialogContent({
                     : { opacity: 0, y: travel / 2, scale: 0.98, transition: exit }
                 }
               >
-                <div className="grid content-start gap-2 pt-6 pr-4 pl-6 sm:pt-8 sm:pl-8" style={{ gridArea: "head" }}>
-                  <RadixDialog.Title className="text-h4 text-fg text-balance">{title}</RadixDialog.Title>
-                  {description && (
-                    <RadixDialog.Description className="text-small text-fg-subtle">{description}</RadixDialog.Description>
-                  )}
-                </div>
-
-                {hasBody && (
-                  <div
-                    data-dialog-body
-                    className="min-h-0 overflow-y-auto px-6 py-6 sm:px-8"
-                    style={{ gridArea: "body" }}
-                  >
-                    {children}
-                  </div>
-                )}
-
-                {footer && (
-                  <div
-                    data-dialog-footer
-                    className={
-                      "flex flex-wrap justify-end gap-3 px-6 sm:px-8 " +
-                      (sheet
-                        ? "border-t border-line pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]"
-                        : "pb-6 sm:pb-8 " + (hasBody ? "pt-2" : "pt-6"))
-                    }
-                    style={{ gridArea: "foot" }}
-                  >
-                    {footer}
-                  </div>
-                )}
-
-                {!hideClose && (
-                  <div className="self-start pt-6 pr-4 sm:pt-8 sm:pr-6" style={{ gridArea: "close" }}>
-                    <RadixDialog.Close asChild>
-                      <Button iconOnly size="sm" variant="ghost" aria-label="Close" className="-mt-1">
-                        <XIcon />
-                      </Button>
-                    </RadixDialog.Close>
-                  </div>
-                )}
+                {slots}
               </motion.div>
             </RadixDialog.Content>
           </div>
