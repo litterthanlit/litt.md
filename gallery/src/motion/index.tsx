@@ -23,6 +23,7 @@ import { readLocked, surfaceRadius, type Dial, type Locked } from "./tokens";
 
 export { surfaceRadius, type Dial };
 export { DeviceProvider, readDismiss, useDevice, type Device, type DeviceMode } from "./device";
+export { useDismissDrag, type DismissDirection, type DismissDrag, type DismissDragOptions } from "./drag";
 
 export type Tier = "instant" | "responsive" | "expressive";
 export type PresetName = "locked" | "invisible" | "expressive";
