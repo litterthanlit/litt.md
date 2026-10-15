@@ -1,6 +1,6 @@
 # Gallery handoff
 
-For the next agent working on the gallery. Written 2026-10-15. `main` is at `192e5de` (PR #11), and production runs it. The `claude/handoff-2` branch adds the PR check and taste profile v0.7 on top of it (the table below). This replaces the handoff of 2026-10-14, which only ever lived on the `claude/handoff` branch.
+For the next agent working on the gallery. Written 2026-10-15. `main` has PR #12 (the PR check and taste profile v0.7), and production runs it. Start new work from `main`. This replaces the handoff of 2026-10-14, which only ever lived on the `claude/handoff` branch.
 
 - Live gallery: https://littmd.vercel.app
 - Live registry: https://littmd.vercel.app/r/registry.json (24 items)
@@ -23,6 +23,8 @@ For the next agent working on the gallery. Written 2026-10-15. `main` is at `192
 | #10 | Responsive motion, part 1 | `proposals/responsive-motion.md`: an audit of every overlay at 390px on touch, and 14 decisions. The agent test sees phones (width, touch, frames mid-animation, a drag). Three baseline tasks recorded what Sonnet builds by hand. |
 | #11 | Responsive motion, the build | Nick accepted all 14 recommendations (taste profile v0.6). On phones the Dialog and Popover are bottom sheets that drag to close, the menu drills down in place, the command menu sits at the top edge, toasts swipe away, tooltips open on a hold, and pressed rows fill. Desktop is unchanged. |
 | `claude/handoff-2` | PR check, and the open decisions (v0.7) | `.github/workflows/gallery.yml` runs `check.mjs`, `verify`, `build` and axe on every page on every PR. Nick accepted all 26 recommendations in `proposals/open-decisions.md`: checkboxes fill with `--fg`, a dialog's fields and actions are md, Button takes an icon child, sheets sit above the keyboard, a toast over a sheet docks at the top, Dialog takes `tier`, `list`'s `Project` shape is generic, the host lint fails a bare transition, and the agent test lets agents take their own screenshots. |
+
+After #12, Nick reacted to the tags ("the dots are horrible and the rounded tags dont feel right") and picked from a four-way trial: taste profile v0.8. Tags are the selected segment's look in Geist Mono (24px, the control radius, surface-1, hairline and top highlight, status as colored text). Every status dot is gone (tags, toasts, the header's current page), and filter chips take the control radius. Pills are left for avatars and icon-only buttons.
 
 The result that matters: in the #10 baseline, Sonnet wrote its own 200-line bottom sheet for `phone-settings`. After #11 it composes litt's `Dialog` in a 99-line page and gets the sheet for free.
 
