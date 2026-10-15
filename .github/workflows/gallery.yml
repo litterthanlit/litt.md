@@ -1,0 +1,51 @@
+# The PR check: the same chain Vercel runs (verify, then build), plus the litt.md checks and an
+# axe pass over every gallery page. A preview deploy can fail without marking the PR, so this does.
+name: Gallery
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gallery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: gallery/package-lock.json
+
+      - name: litt.md checks
+        run: node skills/litt-md/scripts/check.mjs
+
+      - name: Install
+        run: npm ci --prefix gallery
+
+      - name: Verify (tokens, docs data, registry, typecheck, lint, lint self-test)
+        run: npm run verify --prefix gallery
+
+      - name: Build
+        run: npm run build --prefix gallery
+
+      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them.
+      - name: Install Playwright and axe-core
+        run: |
+          npm install --prefix "$RUNNER_TEMP/a11y" --no-save --no-package-lock playwright@1.56.1 axe-core@4.10.3
+          "$RUNNER_TEMP/a11y/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Accessibility (axe on every page, light and dark, desktop and phone)
+        run: npm run test:a11y --prefix gallery
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
