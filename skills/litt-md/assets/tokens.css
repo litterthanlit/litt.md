@@ -236,11 +236,11 @@
   --fg-subtle: #8a8f98;
   --fg-disabled: #62666d;
 
-  --accent: #6a91fd;
-  --accent-hover: #87aaff;
+  --accent: #507afd;
+  --accent-hover: #6991ff;
   --accent-fg: #08090a;
   --accent-tint: #13234f;
-  --focus: #6a91fd;
+  --focus: #507afd;
 
   --success: #4bc680;
   --warning: #e19b1b;
@@ -279,11 +279,11 @@
     --fg-subtle: #8a8f98;
     --fg-disabled: #62666d;
 
-    --accent: #6a91fd;
-    --accent-hover: #87aaff;
+    --accent: #507afd;
+    --accent-hover: #6991ff;
     --accent-fg: #08090a;
     --accent-tint: #13234f;
-    --focus: #6a91fd;
+    --focus: #507afd;
 
     --success: #4bc680;
     --warning: #e19b1b;
