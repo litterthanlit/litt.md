@@ -86,11 +86,11 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `tag` | A status or a label pill. A status colors its text and dot, never the fill. |
 | `kbd` | The key cap for a real shortcut, such as ⌘K. |
 | `tooltip` | A label for an icon button or a shortcut. |
-| `popover` | A small form, a share link or a detail card on a trigger. |
+| `popover` | A small form, a share link or a detail card on a trigger. On a phone it opens as a bottom sheet by itself, titled by its `label`. |
 | `menu` | A dropdown of actions. |
 | `command-menu` | ⌘K search for pages, projects and actions. Give it a visible Search button that shows the `kbd` hint. |
-| `dialog` | A confirm or a short form that needs full attention. `side="right"` makes a sheet. |
-| `toast` | Feedback after an action. Mount `Toaster` once, then call `toast()`. |
+| `dialog` | A confirm or a short form that needs full attention. `side="right"` makes a side sheet on desktop. On a phone every dialog is a bottom sheet that drags down to close, with no code of yours: never build your own sheet or drawer. |
+| `toast` | Feedback after an action. Mount `Toaster` once, then call `toast()`. On a phone toasts swipe away by themselves. |
 | `header` | A sticky glass bar with a wordmark, a nav and actions. |
 | `card` | A raised surface for one object that links somewhere. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
@@ -108,6 +108,7 @@ Each item prints a one-line import hint. The gallery page for an item (`https://
 - **Never edit** a file under `components/litt/` or `lib/litt/`, or the `--litt-*` block in the global CSS. They are the tested copies, and a later install can overwrite your changes. Read the installed file for props: its exports and JSDoc are the source of truth.
 - **If a component lacks something,** wrap it in your own file and tell Nick. That is a registry gap worth logging.
 - **Hand-build only what the registry lacks** (a hero, a pricing tier, an accordion). Write it in your own file from `system/components.md`, with the names below.
+- **Phones come with the components.** The dialog, popover, menu, command menu, tooltip and toast already adapt to phones and touch (`system/foundations.md` section 6). If your own markup needs to know, read `useDevice()` from `@/lib/litt/motion` (`compact` for layout, `coarse` for touch) or use `max-sm:` and `pointer-coarse:`; never read the user agent.
 
 ### Names in a registry project
 
