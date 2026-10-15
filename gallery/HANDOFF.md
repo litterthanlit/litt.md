@@ -37,24 +37,24 @@ The result that matters: in the #10 baseline, Sonnet wrote its own 200-line bott
 | 3. Registry | Done | #6 |
 | 4. Breadth | Mostly done | #7 |
 | 5. Agent tests | Done; runs by hand, not in CI | #9 |
-| 6. Accessibility | CI done (axe on every page); leftovers below | `claude/handoff-2` |
+| 6. Accessibility | Done: axe on every page and 19 open overlays in CI, focus on route change, forced colors, toasts over a modal | `claude/handoff-2` |
 | 7. Nice to have | Not started | |
 | Motion on phones and touch | Done | #10, #11 |
 | Open decisions after #9 and #11 | Done (taste profile v0.7) | `claude/handoff-2` |
-| Forms | **Next**: spec first | |
+| Forms | **Next**: `proposals/forms.md` drafted (16 decisions), waiting on Nick | `claude/handoff-2` |
 | Dashboards | After forms: chart spec first | |
 
 ### Next, in order
 
 1. **A real-phone pass** on the live gallery, once this branch is deployed. Headless Chromium can't show any of these: the keyboard over a sheet (now built, with a stubbed `visualViewport` as the only test) and over the command menu, safe-area insets, `:active` timing on rows and buttons, long press against the iOS callout, glass frame rate while dragging, and landscape phones (decision 8, the one call still open: does a screen under 480 tall count as compact?).
-2. **Forms**, the same loop as motion: a draft spec in `proposals/` for Nick, Nick's decisions, propagated through `evolve.md`, build with agents, and the `settings-form` task as the pass mark. v0.7 already settled two things forms will lean on: a switch fills with `--fg` like a checkbox, and fields in a dialog are md. The baseline (in #10) shows what is missing:
+2. **Forms**, the same loop as motion. The draft is `proposals/forms.md` (16 decisions with a recommendation each: switch versus checkbox, the switch's shape, colors, motion and build, the select on fine and coarse pointers, the slider, optional fields, validation timing, the error summary, groups, settings and contact layouts, one segmented look, and the radio in the shape rule). Next: Nick's decisions, propagated through `evolve.md` (v0.9), then build with agents, with the `settings-form` task as the pass mark. The Select needs `@radix-ui/react-select`, which Nick adds (agents may not). The baseline (in #10) shows what is missing:
    - **Switch:** Sonnet built its own, and its color fade ran on the wrong tier (the host lint failed it).
    - **Select:** it used a native `<select>`, with rows 28 to 30px tall at 390 and an unstyled list on desktop. Decision 8 of the motion proposal said "native for now, revisit after this baseline".
    - **Slider:** hand-built, with no litt spec behind it.
    - **Field patterns:** groups, inline errors plus a summary, and a settings page and a contact or sign-up layout. Textarea is now in the spec under Input.
 3. **Dashboards**: an app shell with a sidebar (it becomes a sheet on phones), number tiles, charts, and table filters and pages. Charts need a litt spec first: in the `analytics-dashboard` baseline every bar was a solid accent fill, which breaks the one-accent rule, and the sidebar stopped 900px down the page. `list`'s `Project` shape is already generic (v0.7).
 
-Also still open from steps 6 and 7: move focus to the page heading on a route change; forced colors for the box-shadow edges of Button, Tabs, Menu, Toast, Dialog, Card and Table; gallery-wide ⌘K search (needs `#page/section` routes); a comparison page against stock shadcn; running the agent test weekly in CI (needs an API key secret and a budget). The axe check renders each page as loaded, so it does not cover open overlays yet: adding a few open states (a dialog, a menu, the command menu) is the natural next step for it.
+Also still open from step 7: gallery-wide ⌘K search (needs `#page/section` routes); a comparison page against stock shadcn; running the agent test weekly in CI (needs an API key secret and a budget). Forced colors has two small gaps: hover steps on cards and rows are fills, so they have no cue there, and the gallery shell's own theme switch has no track or selected cue.
 
 ## Still open
 
@@ -63,7 +63,7 @@ Also still open from steps 6 and 7: move focus to the page heading on a route ch
 - **Listing the registry in shadcn's directory**: decided "not yet". Revisit after forms ship.
 
 **Found while building v0.7, not decided**
-- **Toasts during a modal are hidden from screen readers and can't be clicked.** Radix Dialog marks everything outside the dialog `aria-hidden` and sets `pointer-events: none` on the body, and the Toaster renders into the body. The Dialog docs already say to fire a toast after the dialog closes. If a toast must fire during a modal (a background build failing), the toast region needs to be portalled into the dialog's layer or excluded from Radix's hiding. A real fix, worth its own small PR.
+- **Toasts over a modal** are fixed: announced, dismissable, and a press on one leaves the modal open. Esc and F8 on a toast still wait for the modal to close, because the modal keeps the keyboard. A toast already on screen when a phone sheet opens stays at the bottom over the sheet's footer (the v0.7 "keeps its edge" rule) and now catches taps there.
 - **A grid of cards where only some have covers** stretches the coverless ones to the row height (the grid's `h-full`). Fine for real data, which is usually all one or the other.
 
 ## How phones work now (for anyone touching a component)
@@ -75,6 +75,7 @@ Also still open from steps 6 and 7: move focus to the page heading on a route ch
 - **`DialogSheet`** (exported from `dialog.tsx`) is the one phone sheet. The Popover reuses it. Render it inside a Radix Dialog root; it needs a `Dialog.Title`. It always rises on the expressive spring, whatever `tier` the Dialog has.
 - **The visible screen** is `useVisibleScreen(enabled)` in `@/motion` (from `window.visualViewport`). The sheet's layer and the compact command menu both size to it, so the on-screen keyboard never covers a footer or a row.
 - **A sheet counts itself** with `useSheetPresence(open)`, and `useSheetOpen()` reads it. The Toaster uses it to dock at the top edge on compact screens while a sheet is open; the stack keeps its edge until it empties.
+- **Overlays and the Toaster** share only a DOM attribute: the Toaster's region is `data-litt-toaster`, and every Radix overlay passes `ignoreToaster` (in `@/motion`) to `onInteractOutside`, so a press on a toast is not an outside press. A modal Menu also makes what Radix hid `inert` while it is open (`useInertBehind` in `menu.tsx`), so the page behind it is out of reach for every input.
 
 ## Infrastructure and gotchas
 
