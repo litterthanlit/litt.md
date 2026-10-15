@@ -15,7 +15,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 ## 1. Type
 
-**Families.** `--font-sans` (Hanken Grotesk) for everything. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. No third family, ever.
+**Families.** `--font-sans` (Hanken Grotesk) for everything. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings, token names and tags. No third family, ever.
 
 **Weight (P9).** One weight: `--weight` (400) for everything, including display, headings, labels, buttons and the wordmark. Medium, semibold and bold read too wide and are not part of the system. `tokens.css` resets the bold browser defaults (`h1`–`h6`, `b`, `strong`, `th`) and turns off faux bold. Only the 400 faces need to load.
 
@@ -99,9 +99,9 @@ Run `node scripts/check.mjs` to confirm. The placeholder signal blue stays only 
 
 | Variable | Value | Use |
 |---|---|---|
-| `--radius-control` | 4px | Buttons, inputs, selects, tabs, kbd, menu rows, tooltips |
+| `--radius-control` | 4px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
 | `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
-| `--radius-pill` | 999px | Chips, tags, avatars, status dots, icon-only buttons |
+| `--radius-pill` | 999px | Avatars and icon-only buttons |
 
 **Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
 

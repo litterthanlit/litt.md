@@ -74,9 +74,10 @@ These come from the audit and are candidate rules (P11 to P13). Build them in.
 ## Visual rules
 
 - **Slight radius (litt.md v0.5), and it must stay concentric.** `tokens.css` sets it, 4px and 8px, and the Playground can try other values live:
-  - `rounded-control` on buttons, inputs, menu and list rows, tabs, segmented groups (with `overflow-hidden`), kbd and tooltips;
+  - `rounded-control` on buttons, inputs, menu and list rows, tabs, segmented groups (with `overflow-hidden`), tags, chips, kbd and tooltips;
   - `rounded-surface` on cards, stages, menus, popovers, dialogs, toasts and the command menu;
-  - `rounded-pill` only on chips, tags, avatars, status dots and icon-only buttons.
+  - `rounded-pill` only on avatars and icon-only buttons. Tags and chips are `rounded-control`.
+  - No dots for status or the current page: a status is a word (a Tag), and the current page steps the text color.
 
   An element inset 4px inside a surface uses `rounded-control`; that is what makes it concentric. No other radius exists.
 - **Weight 400 only** (`font-normal`).
@@ -92,7 +93,7 @@ These come from the audit and are candidate rules (P11 to P13). Build them in.
   - Cards in the page flow use `litt-raised` and no shadow.
   - `.litt-glass` carries the surface radius (v0.5). A glass surface that is full-bleed or hugs an edge resets the corners it should not have: `rounded-none` on the header, `rounded-r-none` on the right-edge sheet.
 - **Depth:** `shadow-float`, `shadow-modal`, `shadow-tooltip`, `shadow-glow` (the primary action only). There are no offset shadows. Hairlines are `shadow-[inset_0_0_0_1px_var(--line)]` or `border-line`.
-- **One accent fill per view,** on the primary action (P1). Accent can also mark a selected dot or a focus ring. Checkboxes, radios and switches fill with `--fg`, never the accent.
+- **One accent fill per view,** on the primary action (P1). Accent can also mark a focus ring. Checkboxes, radios and switches fill with `--fg`, never the accent.
 - **Never add `litt-lit` light inside a stage.** The page already has its one light source (P2).
 - **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). A page form's submit and its paired Cancel are `size="lg"` (P10: a page-form CTA below lg fails). A dialog is compact: its fields and actions are `md`.
 - **Utility classes from tokens.css:** `litt-glass`, `litt-raised`, `litt-trim` (cap-height labels).

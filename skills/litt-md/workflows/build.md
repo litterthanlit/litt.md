@@ -83,7 +83,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `checkbox` | `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, a select-all box. |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |
 | `tabs` | Views of one thing (underline), or a compact switch (`variant="segmented"`). |
-| `tag` | A status or a label pill. A status colors its text and dot, never the fill. |
+| `tag` | A status or a label: mono, at the control radius. A status colors its text, never the fill, and has no dot. |
 | `kbd` | The key cap for a real shortcut, such as ⌘K. |
 | `tooltip` | A label for an icon button or a shortcut. |
 | `popover` | A small form, a share link or a detail card on a trigger. On a phone it opens as a bottom sheet by itself, titled by its `label`. |

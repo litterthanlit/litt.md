@@ -138,13 +138,14 @@
   .window-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); }
   .window-bar strong { color: var(--fg); font-weight: var(--weight); font-size: var(--type-small-size); }
   .chips { display: flex; gap: var(--space-1); }
+  /* Tag: the selected segment's look, in mono. Status colors the text only; there is no dot. */
   .tag {
-    display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 var(--space-2);
-    border-radius: var(--radius-pill); background: var(--surface-2); color: var(--fg-subtle);
-    font-size: var(--type-caption-size); box-shadow: inset 0 0 0 1px var(--line);
+    display: inline-flex; align-items: center; height: 24px; padding: 0 var(--space-2);
+    border-radius: var(--radius-control); background: var(--surface-1); color: var(--fg-muted);
+    font-family: var(--font-mono); font-size: var(--type-caption-size);
+    box-shadow: inset 0 0 0 1px var(--line), var(--highlight);
   }
-  .tag .dot { width: 6px; height: 6px; border-radius: var(--radius-pill); background: currentColor; }
-  .tag.ok { color: var(--success); } .tag.warn { color: var(--warning); }
+  .tag.ok { color: var(--success); } .tag.warn { color: var(--warning); } .tag.neutral { color: var(--fg-subtle); }
   .rows li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); font-size: var(--type-small-size); }
   .rows li:last-child { border-bottom: 0; }
   .rows .name { color: var(--fg); }
@@ -265,7 +266,6 @@
   .card-body h4 { color: var(--fg); font-size: var(--type-body-size); font-weight: var(--weight); }
   .card-body p { margin-top: var(--space-1); color: var(--fg-subtle); font-size: var(--type-small-size); }
   .toast { display: inline-flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-surface); color: var(--fg); font-size: var(--type-small-size); }
-  .toast .dot { width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--success); }
   .toast-stage { position: relative; padding: var(--space-12) var(--space-6); border-radius: var(--radius-surface); overflow: hidden; background: var(--surface-2); }
   .toast-stage .busy { opacity: .7; }
 
@@ -369,12 +369,12 @@
             <div class="chips"><span class="tag">All</span><span class="tag">Active</span></div>
           </div>
           <ul class="rows">
-            <li><span class="name">litt.design v3</span><span class="meta"><span class="tag ok"><span class="dot"></span>Live</span><span class="date">2026-10-02</span></span></li>
-            <li><span class="name">Gallery identity</span><span class="meta"><span class="tag warn"><span class="dot"></span>Review</span><span class="date">2026-09-28</span></span></li>
-            <li><span class="name">Founder landing</span><span class="meta"><span class="tag"><span class="dot"></span>Draft</span><span class="date">2026-09-21</span></span></li>
-            <li><span class="name">Framer template 14</span><span class="meta"><span class="tag ok"><span class="dot"></span>Live</span><span class="date">2026-09-14</span></span></li>
-            <li><span class="name">Motion study: light</span><span class="meta"><span class="tag"><span class="dot"></span>Draft</span><span class="date">2026-09-09</span></span></li>
-            <li><span class="name">Studio site refresh</span><span class="meta"><span class="tag"><span class="dot"></span>Idea</span><span class="date">2026-09-01</span></span></li>
+            <li><span class="name">litt.design v3</span><span class="meta"><span class="tag ok">Live</span><span class="date">2026-10-02</span></span></li>
+            <li><span class="name">Gallery identity</span><span class="meta"><span class="tag warn">Review</span><span class="date">2026-09-28</span></span></li>
+            <li><span class="name">Founder landing</span><span class="meta"><span class="tag neutral">Draft</span><span class="date">2026-09-21</span></span></li>
+            <li><span class="name">Framer template 14</span><span class="meta"><span class="tag ok">Live</span><span class="date">2026-09-14</span></span></li>
+            <li><span class="name">Motion study: light</span><span class="meta"><span class="tag neutral">Draft</span><span class="date">2026-09-09</span></span></li>
+            <li><span class="name">Studio site refresh</span><span class="meta"><span class="tag neutral">Idea</span><span class="date">2026-09-01</span></span></li>
           </ul>
         </div>
         <div class="menu litt-glass" aria-hidden="true">
@@ -537,7 +537,7 @@
             </article>
             <div class="toast-stage">
               <div class="busy" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
-              <div class="toast litt-glass" role="status"><span class="dot" aria-hidden="true"></span>Changes saved <kbd aria-hidden="true">⌘Z</kbd></div>
+              <div class="toast litt-glass" role="status">Changes saved <kbd aria-hidden="true">⌘Z</kbd></div>
             </div>
           </div>
         </div>
