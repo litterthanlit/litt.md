@@ -726,7 +726,7 @@ async function serveBuild(app, dir, logFile) {
 
 /* ------------------------------------------------------------------ snapshots */
 
-const SKIP_DIRS = new Set(["node_modules", ".next", "dist", ".git", ".turbo", ".vite"]);
+const SKIP_DIRS = new Set(["node_modules", ".next", "dist", ".git", ".turbo", ".vite", ".litt-shots"]); // .litt-shots: agent-shot.mjs
 
 /** Map of relative path -> sha1 for every project file. */
 function snapshot(dir) {

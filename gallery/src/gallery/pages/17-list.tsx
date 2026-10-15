@@ -27,18 +27,19 @@ export const docs: PageDocs = {
   usage: `import { useState } from "react";
 import { ProjectFilters, ProjectGrid, ProjectList, type Project, type ProjectFilter } from "@/components/list";
 
-// These components read a Project. You copy them, so rename the fields in list.tsx to fit your data.
+// These components read a Project. Map your data to it here; leave list.tsx as it is.
+// Required: id, name, client, status and updated. The rest are optional, and what is missing is left out.
 const projects: Project[] = [
   {
     id: "litt-design-v3", // unique: the React key, and what selection tracks
     name: "litt.design v3",
     client: "Litt Studio",
-    deploy: "Deployed 2 days ago", // last deploy, in words
+    deploy: "Deployed 2 days ago", // optional: last deploy, in words
     status: "live", // "live" | "review" | "draft" | "idea"
-    updated: "2026-10-10", // ISO date, YYYY-MM-DD
-    description: "The studio site on litt.md.", // one line
-    tags: ["Framer", "Site"],
-    cover: "system", // a CoverName: see list-cover.tsx
+    updated: "2026-10-10", // an ISO date shows as "10 Oct"; any other label ("2024") shows as written
+    description: "The studio site on litt.md.", // optional: one line on the card
+    tags: ["Framer", "Site"], // optional
+    cover: "system", // optional: a CoverName (see list-cover.tsx); without one the card has no cover
     href: "/work/litt-design-v3", // optional: the row becomes a link
   },
 ];
@@ -56,7 +57,7 @@ const [filter, setFilter] = useState<ProjectFilter>("all");
   onOpen={(p) => openProject(p.id)}
 />`,
   use: [
-    "Your content is projects, or close to it: a name, a client, a status, a date and a few tags. These components read a Project, so copy list.tsx and rename its fields to fit your data.",
+    "Your content is projects, or close to it: a name, a line under it, a status and a date, plus optional tags, a cover and a deploy note. Map your data to a Project where you render it; the installed list.tsx stays as it is.",
     "People scan and open a work list: use ProjectList, because a row is compact and shows the status and date in line.",
     "A visual overview people filter and select from: use ProjectGrid and ProjectFilters.",
     "A list that is the view's one expressive moment. The rows arrive in a single staggered cascade that stops counting at six.",

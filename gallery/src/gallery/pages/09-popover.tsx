@@ -366,9 +366,9 @@ function ScheduleForm({
       </fieldset>
       <div className="flex justify-end gap-3">
         <PopoverClose asChild>
-          <Button size="lg">Cancel</Button>
+          <Button>Cancel</Button>
         </PopoverClose>
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Save
         </Button>
       </div>
@@ -513,9 +513,9 @@ function RenameForm({ name, onSave }: { name: string; onSave: (name: string) => 
       />
       <div className="flex justify-end gap-3">
         <PopoverClose asChild>
-          <Button size="lg">Cancel</Button>
+          <Button>Cancel</Button>
         </PopoverClose>
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Save name
         </Button>
       </div>
@@ -590,7 +590,7 @@ export default function PopoverPage() {
         size="lg"
         align="end"
         code="ScheduleDemo"
-        caption="This trigger sits in the bottom-right corner, so the popover flips up. The entrance follows the side it opens on: it rises out of the trigger and grows from the bottom-right corner. Save and Cancel are size lg, as in any form. Cancel throws the edits away, and focus goes back to the trigger either way."
+        caption="This trigger sits in the bottom-right corner, so the popover flips up. The entrance follows the side it opens on: it rises out of the trigger and grows from the bottom-right corner. Save and Cancel are md, as in a dialog. Cancel throws the edits away, and focus goes back to the trigger either way."
       >
         <ScheduleDemo />
       </Stage>

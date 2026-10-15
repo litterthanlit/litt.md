@@ -44,7 +44,7 @@ import {
 } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { Button } from "./button";
 import { SearchIcon } from "./icons";
 import { Kbd } from "./kbd";
@@ -308,33 +308,6 @@ export function CommandMenu({ open, onOpenChange, groups, onSelect, openedBy = "
       </AnimatePresence>
     </Dialog.Root>
   );
-}
-
-/** The part of the screen a person can see: its top edge and height, in layout pixels. Follows the on-screen keyboard and a pan or pinch. */
-type VisibleScreen = { top: number; height: number };
-
-/* window.visualViewport shrinks when the keyboard opens (and moves when the page is panned to
-   keep the field in view). The layout viewport and 100dvh do not always follow it. Null means
-   "not read yet", on the server, or no visual viewport: the caller falls back to 100dvh. */
-function useVisibleScreen(enabled: boolean): VisibleScreen | null {
-  const [screen, setScreen] = useState<VisibleScreen | null>(null);
-  useLayoutEffect(() => {
-    const vv = typeof window === "undefined" ? null : window.visualViewport;
-    if (!enabled || !vv) return;
-    const read = () => {
-      const next = { top: Math.round(vv.offsetTop), height: Math.round(vv.height) };
-      setScreen((prev) => (prev && prev.top === next.top && prev.height === next.height ? prev : next));
-    };
-    read();
-    vv.addEventListener("resize", read);
-    vv.addEventListener("scroll", read);
-    return () => {
-      vv.removeEventListener("resize", read);
-      vv.removeEventListener("scroll", read);
-      setScreen(null);
-    };
-  }, [enabled]);
-  return enabled ? screen : null;
 }
 
 /* Mounted once per open, so the query starts empty and survives the exit animation. */

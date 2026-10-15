@@ -19,13 +19,14 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
 
 <Button variant="primary" onClick={save}>Save changes</Button>
 <Button icon={<PlusIcon />}>New project</Button>
+<Button><PlusIcon /> New project</Button> {/* the same: an icon child sits beside the label */}
 <Button iconOnly variant="ghost" aria-label="Settings"><SettingsIcon /></Button>
 <Button loading={saving}>Export</Button>`,
   use: [
     "A person does something: save, create, send, start a project.",
     "The main action in a view. Make it primary, because the accent fill appears once per view.",
     "Other important actions (secondary), and quiet ones like Cancel or a toolbar action (ghost).",
-    "A form's submit and its paired Cancel. Make both size lg.",
+    "A page form's submit and its paired Cancel. Make both size lg. In a dialog, keep them md, like the fields.",
     "A compact, familiar action such as copy, settings or more. Use iconOnly and give it an aria-label.",
   ],
   skip: [
@@ -44,7 +45,7 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
     "An icon-only button has no visible text, so always pass an aria-label. The icons themselves are hidden from screen readers.",
     "Loading sets aria-busy and disables the button, so it cannot be pressed twice. A disabled button leaves the tab order, so say what happened somewhere else, such as a toast or a status line.",
     "Keyboard focus draws a 2px outline at a 2px offset. Mouse and touch presses do not show it.",
-    "Press scales the button on the instant tier, by mouse or finger, and the OS tap flash is off so a touch press does not show two things. Touch has no hover, so nothing depends on it. Under reduced motion the press scale is 1.",
+    "Press scales the button on the instant tier, by mouse or finger, and the OS tap flash is off so a touch press does not show two things. Touch has no hover, so a pressed button also takes its hover fill. Under reduced motion the press scale is 1, and the fill still shows the press.",
     "Small is 32px tall and medium is 44px. Use medium or large for primary actions on touch screens.",
     "A disabled button is muted and exempt from contrast rules. If the reason is not obvious, say it in text next to the button.",
   ],
@@ -90,6 +91,7 @@ function IconsDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <Button icon={<PlusIcon />}>New project</Button>
+      <Button><CopyIcon /> Copy link</Button>
       <Button variant="ghost" iconRight={<ArrowUpRightIcon />}>Open in Framer</Button>
       <Button iconOnly aria-label="Copy link"><CopyIcon /></Button>
       <Button iconOnly variant="ghost" aria-label="Settings"><SettingsIcon /></Button>
@@ -119,7 +121,7 @@ export default function ButtonPage() {
         <LoadingDemo />
       </Stage>
 
-      <Stage title="Icons" tier="instant" caption="16px icons at 1.5px stroke, 8px from the label. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo">
+      <Stage title="Icons" tier="instant" caption="16px icons at 1.5px stroke, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo">
         <IconsDemo />
       </Stage>
     </Page>

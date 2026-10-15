@@ -56,7 +56,7 @@ const travel = useTravel(); // px, already 0 under reduced motion
 
 - **Never write a duration, delay, spring or easing value.** Use the hooks, or the CSS variables from `tokens.css` (the Playground overrides them on its page only): `--dur-instant`, `--ease-responsive`/`--dur-responsive`, `--ease-expressive`/`--dur-expressive`, `--dur-exit-responsive`/`--dur-exit-expressive`, `--stagger`, `--travel`. A duration class and its ease must pair by tier: `duration-(--dur-instant)` with `ease-litt`, `--dur-responsive` with `ease-responsive`, `--dur-expressive` with `ease-expressive`, and every exit with `ease-litt`. The lint fails any literal and any mismatch.
 - **Only transform (x, y, scale) and opacity animate.** Color and background-color may change on the instant tier. Size changes use Motion's `layout` or `layoutId`, which animate through transform; use `layout="position"` where text would stretch.
-- **Never animate** width, height, top, left, margins, font-weight, letter-spacing, filter or blur, box-shadow, or anything material (glow, grain, gradients, backdrop) (P5).
+- **Never animate** width, height, top, left, margins, font-weight, letter-spacing, filter or blur, box-shadow, or anything material (glow, grain, gradients, backdrop) (P5). The one exception is a control's edge and the focus ring, drawn as box-shadow, which may fade on the instant tier as a color would (`foundations.md` section 5).
 - **Exits** use `useExit(tier)`: quicker than the enter, a tween, never a bounce.
 - **Origin-aware:** popovers grow from their trigger (`transform-origin` on the trigger side) and travel from the side they actually open on, after collision flipping. Radix exposes `data-side`; use it.
 - **Distance:** travel at most `useTravel()`, and usually half of it for small things. The one exception is a sheet on compact screens, which rises by its own height so it comes from the edge it is dragged back to (`foundations.md` section 6).
@@ -67,7 +67,7 @@ const travel = useTravel(); // px, already 0 under reduced motion
 
 These come from the audit and are candidate rules (P11 to P13). Build them in.
 1. **A state change never moves the box.** Hover, selected and active change color or fill only. Labels and icons keep exactly the same size and position.
-2. **Touch parity.** Tailwind v4's `hover:` only applies on devices that can hover. Anything revealed on hover must also be visible on focus and on touch (`(hover: none)`). Inputs use at least 16px text on coarse pointers.
+2. **Touch parity.** Tailwind v4's `hover:` only applies on devices that can hover. Anything revealed on hover must also be visible on focus and on touch (`(hover: none)`). Inputs use at least 16px text on coarse pointers. A pressed row, card or button fills at its own hover fill on a coarse pointer (`pointer-coarse:active:`), never below fg 6%.
 3. **Focus by modality.** Use `:focus-visible` only: 2px `outline-focus`, 2px offset, or an inset ring inside lists. A popup opened by pointer shows no ring on its first row until a key is pressed. A keyboard-highlighted row needs a 3:1 indicator, such as an inset 1px `var(--focus)` ring on the highlight; a faint fill alone is not enough.
 4. **Phones and touch** follow `foundations.md` section 6 and the "On compact screens" lines in `components.md`. Read the device with `useDevice()` from `@/motion`: `compact` (narrower than 640) decides presentation, `coarse` (a finger) decides input. In CSS use `max-sm:` and `pointer-coarse:`. Both are false on the server, so the first render is the desktop one. A drag to dismiss uses `useDismissDrag` from `@/motion/drag` (not re-exported from `@/motion`), which reads its thresholds with `readDismiss()`, never a number of its own. Every gesture has a button that does the same thing.
 
@@ -92,9 +92,9 @@ These come from the audit and are candidate rules (P11 to P13). Build them in.
   - Cards in the page flow use `litt-raised` and no shadow.
   - `.litt-glass` carries the surface radius (v0.5). A glass surface that is full-bleed or hugs an edge resets the corners it should not have: `rounded-none` on the header, `rounded-r-none` on the right-edge sheet.
 - **Depth:** `shadow-float`, `shadow-modal`, `shadow-tooltip`, `shadow-glow` (the primary action only). There are no offset shadows. Hairlines are `shadow-[inset_0_0_0_1px_var(--line)]` or `border-line`.
-- **One accent fill per view,** on the primary action (P1). Accent can also mark a selected dot or a focus ring.
+- **One accent fill per view,** on the primary action (P1). Accent can also mark a selected dot or a focus ring. Checkboxes, radios and switches fill with `--fg`, never the accent.
 - **Never add `litt-lit` light inside a stage.** The page already has its one light source (P2).
-- **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). A form's submit and its paired Cancel are `size="lg"` (P10: a form CTA below lg fails).
+- **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). A page form's submit and its paired Cancel are `size="lg"` (P10: a page-form CTA below lg fails). A dialog is compact: its fields and actions are `md`.
 - **Utility classes from tokens.css:** `litt-glass`, `litt-raised`, `litt-trim` (cap-height labels).
 
 ## Your gallery page

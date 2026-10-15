@@ -16,7 +16,7 @@ Critique what is there. When something can't be judged from the input (motion in
 Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason that points at a specific element.
 
 **A. Signature (light and material)**
-- [ ] **P1** At most one accent fill in the view, on the primary action. The accent otherwise appears as light (`--light`, glow, focus).
+- [ ] **P1** At most one accent fill in the view, on the primary action. Checkboxes, radios and switches are `--fg`, not accent. The accent otherwise appears as light (`--light`, glow, focus).
 - [ ] **P2** One light source, from the top. Highlights only on top edges.
 - [ ] **P3** Glass only on floating surfaces, with content behind it. No glass on glass.
 - [ ] **P4** No drop shadow with an offset. Cards in the flow have no shadow; floating surfaces use a zero-offset glow plus a 1px ring.
@@ -26,7 +26,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] **P6** Spacing on the 8px grid (4px inside components). 1px hairlines. Tracking tightens on large type.
 - [ ] **P7** One idea per section. Section spacing near 128 / 96 / 64. Left-aligned and asymmetric by default.
 - [ ] Radius is on the scale: 4px controls, 8px surfaces (a surface is a control plus the 4px inset), pills only on chips, tags, avatars, status dots and icon-only buttons. No `rounded-lg`-style classes.
-- [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero and form CTAs are lg.
+- [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero CTAs and a page form's submit are lg; a dialog's fields and actions are md.
 - [ ] Cards used only for independent objects, not as the default layout.
 
 **C. Themes**

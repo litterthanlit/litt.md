@@ -51,7 +51,7 @@ import { Kbd } from "@/components/kbd";
     "Glyphs such as ⌘ and ⇧ are read unevenly by screen readers. When a control already announces its shortcut, put the shortcut in aria-keyshortcuts and wrap the Kbd in a span with aria-hidden, so it is not read twice. Kbd takes only its children, so the wrapper is how you hide one.",
     "A shortcut is an extra, never the only way. The action it runs must also be reachable with a plain Tab and Enter.",
     "Hints are for people with a keyboard. On a phone they take room and teach nothing, so hide them there when space is tight.",
-    "Fg-subtle on surface-2 reaches 4.5:1 in light and dark, even at 11px.",
+    "Fg-subtle on surface-2 reaches 4.5:1 in light and dark, at the 12px caption size.",
     "Nothing moves, so there is nothing to reduce under reduced motion.",
   ],
 };

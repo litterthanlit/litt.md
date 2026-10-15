@@ -6,7 +6,7 @@
  * motion tiers, and ships a page that builds, loads and looks right.
  *
  *   node gallery/scripts/test-agents.mjs [--tasks a,b] [--app vite|next] [--model sonnet] [--runs 1]
- *     [--registry <dir>|<url>] [--no-skill] [--judge [model]] [--max-budget-usd N]
+ *     [--registry <dir>|<url>] [--no-skill] [--no-self-shots] [--judge [model]] [--max-budget-usd N]
  *     [--work <dir>] [--out <dir>] [--keep] [--report <file>] [--json <file>] [--fake-agent <script>] [--help]
  *
  *   --tasks      only these tasks, by name (default every evals/agents/<name>/task.json)
@@ -20,6 +20,9 @@
  *                components.json is left alone, which is what a stranger's project looks like.
  *   --no-skill   the baseline arm: the same task without the litt-md plugin, to see what the skill changes.
  *                The skill check is skipped; the rest still run.
+ *   --no-self-shots  do not let the agent take its own screenshots. By default it may run agent-shot.mjs after a
+ *                build (the build workflow's self-critique step); runs before 15 October 2026 could not, so use
+ *                this to compare with them.
  *   --judge      also have a second Claude read the screenshots against the task's rubric (the `look` check).
  *                An optional model follows (default opus, so the judge is not the model it grades). Without it
  *                `look` is skipped.
@@ -47,8 +50,8 @@
  *   logs/              the agent's stderr, the command it was run with, the grader's command logs
  * The agent is `claude -p` with the plugin directory (this repo), project and local settings only, no MCP, no
  * session saved, a read/write/edit tool set and a short list of allowed commands (shadcn add, npm install,
- * tsc, the build, the lint, ls, cat, the skill's check script). Anything else is denied without asking, recorded as a
- * permission denial, and the agent works around it.
+ * tsc, the build, the lint, ls, cat, the skill's check script, and agent-shot.mjs for its own screenshots). Anything
+ * else is denied without asking, recorded as a permission denial, and the agent works around it.
  *
  * The checks (see test-agents.grade.mjs): skill, registry, composed, tokens, motion, tsc, build, page, look.
  * A table shows ok / FAIL / warn / - per check, with cost, turns and time. A run also fails when the agent
@@ -87,6 +90,11 @@ const PROD_ORIGIN = "https://littmd.vercel.app";
 const DEFAULT_CHECKS = ["skill", "registry", "composed", "tokens", "motion", "tsc", "build", "page", "look"];
 
 const NONINTERACTIVE = "You are running non-interactively. Nobody can answer questions, so make reasonable assumptions and finish the task in this project.";
+/** Where the agent's own screenshots come from: agent-shot.mjs serves its build and opens it in Chromium. */
+const agentShot = () => path.join(galleryDir, "scripts", "agent-shot.mjs");
+const SELF_SHOTS = () =>
+  `To look at your work in a browser, run \`npm run build\`, then \`node ${agentShot()}\` in this project (add \`--path /route\` for another page). ` +
+  "It prints PNG screenshots in light and dark at 1440 and 390 wide; open them with Read.";
 const DISALLOWED_TOOLS = ["Agent", "WebFetch", "WebSearch"];
 /**
  * Variables that tie a nested claude to the session that started it: the first five make it reuse the parent's
@@ -102,7 +110,7 @@ const PARENT_SESSION_VARS = [
   "CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD",
 ];
 
-const defaultAllowedTools = () => [
+const defaultAllowedTools = (selfShots = true) => [
   "Read",
   "Write",
   "Edit",
@@ -121,6 +129,7 @@ const defaultAllowedTools = () => [
   "Bash(ls:*)",
   "Bash(cat:*)",
   `Bash(node ${repoDir}/skills/litt-md/scripts/check.mjs:*)`,
+  ...(selfShots ? [`Bash(node ${agentShot()}:*)`] : []),
 ];
 
 function parseArgs(argv) {
@@ -139,6 +148,7 @@ function parseArgs(argv) {
     report: null,
     json: null,
     fakeAgent: null,
+    selfShots: true,
     help: false,
   };
   for (let i = 0; i < argv.length; i++) {
@@ -159,6 +169,7 @@ function parseArgs(argv) {
       const v = val();
       o.registry = /^https?:\/\//.test(v) ? v.replace(/\/+$/, "").replace(/(?<!\/r)$/, "/r") : path.resolve(v);
     } else if (a === "--no-skill") o.noSkill = true;
+    else if (a === "--no-self-shots") o.selfShots = false;
     else if (a === "--judge") o.judge = argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[++i] : "opus";
     else if (a === "--max-budget-usd") o.maxBudget = Number(val());
     else if (a === "--work") o.work = path.resolve(val());
@@ -653,7 +664,7 @@ async function runOne({ opts, task, app, n, runDir, tpl, registry, grader, getBr
     L(
       opts.fakeAgent
         ? `fake agent ${shortPath(opts.fakeAgent)}`
-        : `agent: claude -p, model ${opts.model}, ${opts.noSkill ? "no skill" : "with the litt-md plugin"}, up to ${task.max_turns} turns, ${fmtDur(timeoutMs)}, $${budget}`,
+        : `agent: claude -p, model ${opts.model}, ${opts.noSkill ? "no skill" : "with the litt-md plugin"}, ${opts.selfShots ? "own screenshots allowed" : "no own screenshots"}, up to ${task.max_turns} turns, ${fmtDur(timeoutMs)}, $${budget}`,
     );
     const agentStart = Date.now();
     const transcript = await runAgentProcess(opts, {
@@ -666,6 +677,8 @@ async function runOne({ opts, task, app, n, runDir, tpl, registry, grader, getBr
       timeoutMs,
       budgetUsd: budget,
       plugin: !opts.noSkill,
+      allowedTools: defaultAllowedTools(opts.selfShots),
+      appendSystemPrompt: opts.selfShots ? `${NONINTERACTIVE} ${SELF_SHOTS()}` : NONINTERACTIVE,
       log: (m) => L(m),
       fake: opts.fakeAgent ? { script: opts.fakeAgent, task: task.name, registryBase: registry.base, litt: registry.mode === "local" ? "@litt" : registry.base } : null,
     });

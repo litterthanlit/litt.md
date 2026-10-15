@@ -53,9 +53,9 @@ Go through the plan line by line. If any item matches, revise that line before b
 - [ ] One accent-colored word in the headline
 - [ ] A radius off the scale (`rounded-lg`, `rounded-md`, anything but control, surface or pill)
 - [ ] A drop shadow with an offset, or any shadow on a card in the flow
-- [ ] Buttons off the 32/44/56 scale, or a hero/form CTA smaller than lg
+- [ ] Buttons off the 32/44/56 scale, a hero or page-form CTA smaller than lg, or lg fields and buttons in a dialog
 - [ ] Any font weight above 400 (`font-medium`, `font-semibold`, `font-bold`, or 500/600 in CSS)
-- [ ] More than one accent fill or glow per view
+- [ ] More than one accent fill or glow per view, counting an accent-filled checkbox, radio or switch
 - [ ] Glass on something that doesn't float
 - [ ] Motion that isn't a response to the user (reveals, parallax, marquee)
 - [ ] Bounce on the responsive tier or on an exit, `transition-all`, or a second expressive moment

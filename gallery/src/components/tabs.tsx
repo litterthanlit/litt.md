@@ -19,8 +19,9 @@
  *   2px inset.
  * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
  *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
- *   is off so the two do not double. The small segmented track grows to the control-md
- *   height on a coarse pointer, the same track Segmented uses there.
+ *   is off so the two do not double. Small tabs grow to the control-md height on a coarse
+ *   pointer, so no touch target is under 44px: the underline tab itself, and the segmented
+ *   track (the same track Segmented uses there).
  */
 import {
   createContext,
@@ -64,7 +65,7 @@ export type TabsProps = {
   onValueChange?: (value: string) => void;
   /** Underline puts a 2px line under the selected tab. Segmented puts a filled block in a track, for view switches. */
   variant?: TabsVariant;
-  /** Height on the shared control scale: sm is 32, md is 44. Use sm in dense UI and md everywhere else. */
+  /** Height on the shared control scale: sm is 32, md is 44. Use sm in dense UI and md everywhere else. On a coarse pointer sm grows to 44. */
   size?: TabsSize;
   /** Extra classes for the root, such as a width. */
   className?: string;
@@ -169,7 +170,7 @@ const triggerBase =
 const triggerShape: Record<TabsVariant, Record<TabsSize, string>> = {
   underline: {
     md: "h-control-md rounded-control px-control-pad-md text-body",
-    sm: "h-control-sm rounded-control px-control-pad-sm text-small",
+    sm: "h-control-sm pointer-coarse:h-control-md rounded-control px-control-pad-sm text-small",
   },
   segmented: {
     md: "h-full px-control-pad-md text-small " + FILL_RADIUS,

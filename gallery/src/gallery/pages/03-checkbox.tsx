@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   order: 3,
   group: "Controls",
   summary:
-    "Real checkboxes and radios, drawn in the litt look: a 20px chip at the control radius, or a circle for a radio, filled with the accent when on. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
+    "Real checkboxes and radios, drawn in the litt look: a 20px chip at the control radius, or a circle for a radio, filled with the foreground color when on. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
   tiers: ["instant"],
 };
 
@@ -218,7 +218,7 @@ export default function CheckboxPage() {
       <Stage
         title="Drawn and native"
         tier="instant"
-        caption="Drawn is the default: the 20px chip takes the control line, the control radius and the accent fill the same way in every browser. Native is the spec's other option, the browser's own 16px box with the accent color. Both are real inputs with the same label."
+        caption="Drawn is the default: the 20px chip takes the control line, the control radius and the foreground fill the same way in every browser. Native is the spec's other option, the browser's own 16px box in the foreground color. Both are real inputs with the same label."
         code="AppearanceDemo"
       >
         <AppearanceDemo />

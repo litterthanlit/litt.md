@@ -42,7 +42,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 
 ## The ten signature rules
 
-1. **P1 Light, not paint.** The accent appears as light (`--light`, `--glow`, `--focus`). At most one accent fill per view, on the primary action.
+1. **P1 Light, not paint.** The accent appears as light (`--light`, `--glow`, `--focus`). At most one accent fill per view, on the primary action. Checkboxes, radios and switches fill with `--fg`.
 2. **P2 One light source.** Light comes from the top. Highlights sit on top edges only.
 3. **P3 Glass is earned.** Glass only for floating surfaces: header, command menu, popovers, modals, toasts.
 4. **P4 Depth without drop shadows.** Cards stay flat (hairline plus highlight). Floating surfaces get a zero-offset glow plus a 1px ring.
@@ -51,7 +51,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 7. **P7 Airy rhythm.** One idea per section, 128 / 96 / 64px between sections, asymmetric and left-aligned by default.
 8. **P8 Designed, not inverted.** Each theme has its own material strengths. Both are first-class.
 9. **P9 One weight.** Everything at 400, headings and buttons included. Hierarchy comes from size, color and tracking.
-10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them. Hero and form CTAs are lg (56).
+10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them. Hero CTAs and a page form's submit are lg (56); a dialog's fields and actions are md (44).
 
 Each rule's Check line, the dos and don'ts, and the open questions are in `taste/profile.md`.
 

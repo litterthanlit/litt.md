@@ -37,9 +37,9 @@ const [name, setName] = useState("litt.design");
     footer={
       <>
         <DialogClose asChild>
-          <Button size="lg">Cancel</Button>
+          <Button>Cancel</Button>
         </DialogClose>
-        <Button size="lg" variant="primary" type="submit" form="rename-form">
+        <Button variant="primary" type="submit" form="rename-form">
           Save name
         </Button>
       </>
@@ -59,6 +59,7 @@ const [name, setName] = useState("litt.design");
 </Dialog>
 
 // For a settings sheet, add side="right" to DialogContent.
+// When the view has already spent its expressive moment (a list entrance, say), add tier="responsive".
 // On a phone (a screen narrower than 640px) every dialog is a bottom sheet, and side="right" is the same sheet.`,
   use: [
     "A decision or a short task needs the person's full attention before anything else: confirm a publish, invite someone, rename a project.",
@@ -83,11 +84,12 @@ const [name, setName] = useState("litt.design");
     [["Arrow keys"], "In a Segmented, move to the previous or next option and select it."],
   ],
   a11y: [
-    "Radix Dialog does the hard parts: role=\"dialog\", the focus trap and Esc. While the dialog is open the rest of the page is hidden from screen readers, cannot be clicked and cannot scroll. That includes a Toast, so fire it when the dialog closes, not while it is open.",
+    "Radix Dialog does the hard parts: role=\"dialog\", the focus trap and Esc. While the dialog is open the rest of the page is hidden from screen readers, cannot be clicked and cannot scroll. That includes a Toast, so fire it when the dialog closes, not while it is open. If one fires anyway on a phone, it docks at the top edge, so it never covers the sheet's buttons.",
     "The title is required, because it names the dialog. The description, when there is one, is linked as the dialog's description. Make the buttons say what happens: Publish, not OK.",
     "With a mouse or keyboard, focus lands on the control marked data-autofocus, else the first control in the body, else the first one in the footer. The close button is the last resort, so it does not grab focus when there is something to do. On a touch screen it lands on the panel instead, so the keyboard does not open while the sheet is still moving. Mark a field with data-autofocus when typing is the point.",
     "Closing returns focus to the DialogTrigger. If you open the dialog another way, such as from a menu item, there is no trigger, so move focus back yourself.",
     "The corner close button is labelled Close, and it is 44px on touch screens. Hide it with hideClose only when the footer has a Cancel, so touch users keep a visible way out.",
+    "On a phone the sheet sits above the on-screen keyboard: it follows the visible screen, so the keyboard never covers the footer or the field being typed in.",
     "On a phone the sheet can be dragged down to close it. Every drag has a button that does the same thing: Close, Cancel, Esc and a tap on the dimmed page all close it too. The grabber at the top is decoration and is hidden from screen readers.",
     "A drag never starts in a text field, a slider, a region marked data-no-drag, or a body that is scrolled away from its top. Mark your own scrubber or canvas with data-no-drag.",
     "TextField uses a real label, links the hint and the error with aria-describedby, and sets aria-invalid on an error. The error is not announced by itself, so after a failed submit, move focus to the field. Inputs are 16px on touch, so iOS does not zoom.",
@@ -208,9 +210,9 @@ function InviteDemo() {
           footer={
             <>
               <DialogClose asChild>
-                <Button size="lg">Cancel</Button>
+                <Button>Cancel</Button>
               </DialogClose>
-              <Button size="lg" variant="primary" type="submit" form="invite-form">
+              <Button variant="primary" type="submit" form="invite-form">
                 Send invite
               </Button>
             </>
@@ -334,9 +336,9 @@ function SheetDemo() {
           footer={
             <>
               <DialogClose asChild>
-                <Button size="lg">Cancel</Button>
+                <Button>Cancel</Button>
               </DialogClose>
-              <Button size="lg" variant="primary" type="submit" form="settings-form">
+              <Button variant="primary" type="submit" form="settings-form">
                 Save changes
               </Button>
             </>
