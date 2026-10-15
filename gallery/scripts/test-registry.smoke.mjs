@@ -736,6 +736,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (!info.blur || info.blur === "none") throw new Error(`.litt-glass has no backdrop-filter: ${JSON.stringify(info)}`);
           if (info.rows.some((h) => h < 44)) throw new Error(`rows under 44px: ${info.rows}`);
           await page.keyboard.press("ArrowDown");
+          // Radix Select moves focus on an arrow key in a setTimeout, so an Enter sent in the same instant lands on the old row.
+          await page.waitForFunction(() => document.activeElement?.textContent?.trim() === "Developer", null, { timeout: 3000 });
           await page.keyboard.press("Enter");
           await list.waitFor({ state: "hidden", timeout: 4000 });
           const text = (await trigger.textContent())?.trim();
