@@ -217,8 +217,10 @@ export type ProjectCardProps = {
 /**
  * A raised card: no shadow, nothing moves. Hover (instant tier) strengthens the
  * hairline (line to line-strong) and steps the cover fill (surface-2 to
- * surface-3). Selected turns the ring to 1px --focus and changes nothing else.
- * The whole card opens through one stretched button; the checkbox sits above it.
+ * surface-3). Touch has no hover, so on a coarse pointer a press shows the same
+ * two steps (instant tier, color only). Selected turns the ring to 1px --focus and
+ * changes nothing else. The whole card opens through one stretched button; the
+ * checkbox sits above it.
  */
 export function ProjectCard({ project, selected = false, onSelectedChange, onOpen, className = "" }: ProjectCardProps) {
   return (
@@ -231,11 +233,11 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
         aria-hidden="true"
         className={
           "pointer-events-none absolute inset-0 rounded-surface border transition-[border-color] duration-(--dur-instant) ease-litt " +
-          (selected ? "border-focus" : "border-line group-hover:border-line-strong")
+          (selected ? "border-focus" : "border-line group-hover:border-line-strong pointer-coarse:group-active:border-line-strong")
         }
       />
 
-      <div className="relative aspect-[8/5] shrink-0 overflow-hidden rounded-control bg-surface-2 transition-[background-color] duration-(--dur-instant) ease-litt group-hover:bg-surface-3">
+      <div className="relative aspect-[8/5] shrink-0 overflow-hidden rounded-control bg-surface-2 transition-[background-color] duration-(--dur-instant) ease-litt group-hover:bg-surface-3 pointer-coarse:group-active:bg-surface-3">
         <ProjectCover name={project.cover} />
         <label className="absolute top-1 right-1 z-10 grid size-8 cursor-pointer place-items-center pointer-coarse:size-11">
           <input
@@ -263,7 +265,7 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
         type="button"
         aria-label={`Open ${project.name}`}
         onClick={() => onOpen?.(project)}
-        className="absolute inset-0 z-0 cursor-pointer rounded-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        className="absolute inset-0 z-0 cursor-pointer rounded-surface [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
       />
     </article>
   );

@@ -5,8 +5,7 @@
  *   rounded-control, a surface-2 fill, an inset line hairline, Geist Mono at
  *   weight 400 in fg-subtle. The tooltip, the command menu footer, the button
  *   hint and the tabs legend all render this component and nothing else.
- * - The size is the spec's 11px, written in rem like every other size. The type
- *   scale has no 11 (text-caption is 12), so it is a literal on purpose.
+ * - The size is the caption step (12px), on the type scale like every other label.
  * - shrink-0 so it never squashes in a flex row; min-w-5 keeps a lone glyph square.
  * - Static: no motion and no states. It is a real <kbd>, so whether a hint is
  *   hidden from screen readers is the caller's call.
@@ -15,8 +14,7 @@ import type { ReactNode } from "react";
 
 const chip =
   "inline-grid h-5 min-w-5 shrink-0 place-items-center rounded-control bg-surface-2 px-1 " +
-  "font-mono font-normal text-fg-subtle shadow-[inset_0_0_0_1px_var(--line)] " +
-  "text-[0.6875rem]"; // litt-allow: the spec's 11px has no type token (text-caption is 12)
+  "font-mono font-normal text-caption text-fg-subtle shadow-[inset_0_0_0_1px_var(--line)]";
 
 /** One key cap, or one chord written in glyphs, such as ⇧⌘C. Keys pressed one after another each get their own Kbd, 4px apart. */
 export function Kbd({

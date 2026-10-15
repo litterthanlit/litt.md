@@ -14,7 +14,7 @@
  * - Motion: entering is expressive (from below by useTravel(), scale 0.98 to 1).
  *   Restacking is responsive. Exiting is useExit("expressive"): x by travel
  *   toward the right edge, fading, never bouncing.
- * - Behavior: auto-dismiss after about 4s, errors stay. Paused while hovered,
+ * - Behavior: auto-dismiss after 5s (the spec), errors stay. Paused while hovered,
  *   focused, held by a finger or when the tab is hidden. Escape dismisses the
  *   focused toast. F8 moves focus to the newest toast. Each toast is its own live
  *   region: polite, or assertive for errors.
@@ -61,7 +61,7 @@ export type ToastOptions = {
   tone?: ToastTone;
   /** A small button on the right, such as Undo or View. Pressing it runs onClick and then dismisses the toast. */
   action?: { label: string; onClick: () => void };
-  /** Milliseconds before it dismisses itself. The default is 4000, and errors stay unless you set it. 0 or Infinity stays until dismissed. */
+  /** Milliseconds before it dismisses itself. The default is 5000, and errors stay unless you set it. 0 or Infinity stays until dismissed. */
   duration?: number;
 };
 
@@ -80,7 +80,7 @@ const GAP = 8;
 const PEEK = 8;
 const SCALES = [1, 0.96, 0.92];
 const FADES = [1, 0.8, 0.55];
-const AUTO_DISMISS_MS = 4000;
+const AUTO_DISMISS_MS = 5000;
 
 function slotFor(depth: number, expanded: boolean) {
   const d = Math.min(depth, MAX_VISIBLE - 1);

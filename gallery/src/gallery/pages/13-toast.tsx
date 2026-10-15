@@ -50,7 +50,7 @@ dismiss(id);`,
   skip: [
     "The person must choose before going on. Use Dialog.",
     "The message is about one field. Show it under the field, as TextField does with error, because a toast leaves and the field stays wrong.",
-    "The message must stay on the page, like an empty state or a running status. Put it in the page, because a toast leaves after about four seconds.",
+    "The message must stay on the page, like an empty state or a running status. Put it in the page, because a toast leaves after about five seconds.",
     "A hint for a button or an icon. Use Tooltip.",
     "A long message. The toast is a fixed 72px and cuts the description to one line, so say it in the page and link to it.",
   ],
@@ -127,7 +127,7 @@ const BURST = [
 ];
 
 function BurstDemo({
-  note = "Hover the stack, or press F8 and Tab through it.",
+  note = "Hover or tap the stack, or press F8 and Tab through it.",
 }: {
   /** The hint under the buttons. */
   note?: ReactNode;
@@ -189,7 +189,7 @@ export default function ToastPage() {
           title="Saved"
           tier="expressive"
           code="SavedDemo"
-          caption="The toast rises from the travel token's distance below its place while it fades in and settles from 0.98, on the expressive tier. It dismisses itself after about four seconds."
+          caption="The toast rises from the travel token's distance below its place while it fades in and settles from 0.98, on the expressive tier. It dismisses itself after about five seconds."
         >
           <SavedDemo />
         </Stage>
