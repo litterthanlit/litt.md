@@ -248,7 +248,7 @@
   --glass-bg-solid: rgba(15, 16, 17, 0.94);
   --glass-border: rgba(255, 255, 255, 0.08);
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.5);
+  --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--line-strong); /* a dark ring vanishes on a dark page */
   --shadow-float: 0 0 8px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
   --shadow-modal: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 72px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
   --light-strength: 22%;
@@ -291,7 +291,7 @@
     --glass-bg-solid: rgba(15, 16, 17, 0.94);
     --glass-border: rgba(255, 255, 255, 0.08);
     --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 0, 0, 0.5);
+    --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--line-strong);
     --shadow-float: 0 0 8px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
     --shadow-modal: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 72px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
     --light-strength: 22%;

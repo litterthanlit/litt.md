@@ -64,7 +64,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 Run `node scripts/check.mjs` to confirm. The placeholder signal blue stays only until profile question Q2 is answered.
 
-**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`.
+**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent: a form can hold many of them, and the accent stays on its submit.
 
 **Translucent tones.** For hover fills on neutral ground, mix from the foreground: `color-mix(in oklab, var(--fg) 6%, transparent)` for hover and 7–8% for selected. Never use rgba of a hard-coded color.
 
@@ -72,7 +72,7 @@ Run `node scripts/check.mjs` to confirm. The placeholder signal blue stays only 
 
 **Scale.** `--space-1` to `--space-40`: 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160. The names match Tailwind's multiplier, so `--space-6` is `p-6`. Off-scale values (20, 28, 36, 40 as spacing) fail P6. 4px and 12px are for inside components only.
 
-**Control heights (P10).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero and form CTAs). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 15 / 16). Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
+**Control heights (P10).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero CTAs and a page form's submit). A dialog is compact, so its fields and actions are md. A field is lg only when it shares a row with an lg button (the inline form). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 15 / 16). Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
 
 **Section rhythm (P7).** `--section-y` is the distance between sections: 64 mobile, 96 from 640px, 128 from 1024px. Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
 
@@ -125,9 +125,9 @@ Fast by default, with one signature moment per view. Motion confirms an action a
 - **Dismissal.** `--dismiss-distance` (0.25, a fraction of the surface's height or width) and `--dismiss-velocity` (0.4, pixels per millisecond) decide whether a released drag leaves or springs back. They are thresholds, not durations, so reduced motion does not change them.
 - **Properties.** Transform and opacity animate. Color, background-color, border-color, fill and the focus ring may fade, at `--dur-instant` only. Never layout (width, height, top, left, margin, padding), never `transition: all`, never material (P5).
 - **Press.** `transform: scale(var(--press-scale))` (0.98) on `:active`, instant tier. A state change never moves the box otherwise.
-- **One expressive moment per view.** A second one uses the responsive tier.
+- **One expressive moment per view.** A second one uses the responsive tier. A sheet on a compact screen does not count (section 6).
 - **Ceilings.** The instant tween stays at or under 240ms. Spring visual time stays at or under 350ms, and bounce at or under 0.12. `scripts/check.mjs` enforces both.
-- **Never.** Scroll-triggered reveals, parallax, looping autoplay, marquee, bounce on exits or on the responsive tier, skeleton shimmer longer than 240ms per pass, cursor-following effects.
+- **Never.** Scroll-triggered reveals, parallax, looping autoplay, marquee, bounce on exits or on the responsive tier, a pulsing or shimmering skeleton, cursor-following effects.
 - **Reduced motion.** `tokens.css` sets every `--dur-*`, `--stagger` and `--travel` to 0 and the press scale to 1. In JS, let the library honor it (`MotionConfig reducedMotion="user"`, Framer `useReducedMotion()`).
 - **Retired in v0.5.** `--dur-reveal` and `--dur-panel` became `--dur-responsive` (or `--dur-expressive` for a dialog). `--dur-max` has no replacement. The old `--dur-exit-reveal` and `--dur-exit-panel` became `--dur-exit-responsive` and `--dur-exit-expressive`.
 
@@ -135,10 +135,11 @@ Fast by default, with one signature moment per view. Motion confirms an action a
 
 A phone changes how things are reached, not how litt moves. The tiers, tokens and rules in section 5 hold on every screen. This section adds two device signals and a short list of what changes with them.
 
-**Two signals.** `compact` is a viewport narrower than 640 (`40rem`, the break the layout already uses). `coarse` is a primary pointer that is coarse: a finger. They are separate. A landscape phone is coarse and not compact. A narrow desktop window is compact and not coarse. In CSS use `max-sm:` and `pointer-coarse:`. In React use `useDevice()`, which returns both and is false on the server. Never read the user agent.
+**Two signals.** `compact` is a viewport narrower than 640 (`40rem`, the break the layout already uses). `coarse` is a primary pointer that is coarse: a finger. They are separate. A landscape phone is coarse and not compact. A narrow desktop window is compact and not coarse. A tablet in portrait (768 wide or more) is coarse and not compact: it keeps the centered dialog and the anchored popovers, as iPadOS does, with 44px targets and tooltips on a hold. Whether a short screen (a landscape phone) should count as compact waits for a real-phone check. In CSS use `max-sm:` and `pointer-coarse:`. In React use `useDevice()`, which returns both and is false on the server. Never read the user agent.
 
 **Compact screens.**
-- A modal becomes a bottom sheet. It rises from the bottom edge by its own height on the expressive tier, so it stays the view's one expressive moment. It moves by transform only. Its height never animates. It has one height: its content, up to the visible screen less `--space-6`.
+- A modal becomes a bottom sheet. It rises from the bottom edge by its own height, always on the expressive spring, and it does not use up the view's expressive moment: at a sheet's height the bounce is under a pixel, so it reads as placement, and a sheet that rose at two speeds depending on the rest of the page would look broken. It moves by transform only. Its height never animates. It has one height: its content, up to the visible screen less `--space-6`.
+- A sheet sits above the keyboard. Its bottom follows the visual viewport, so the keyboard never covers its footer or the field being typed in.
 - Nothing else travels further than `--travel`. The sheet is the one exception, because it must come from the edge it is dragged back to.
 - A menu stays beside its button. A popover becomes a sheet. The command menu moves to the top edge and follows the visible screen, so the keyboard never covers a row.
 
@@ -151,8 +152,10 @@ A phone changes how things are reached, not how litt moves. The tiers, tokens an
 **A gesture is never the only way.** Every swipe has a visible button (a close button, 44px on coarse screens). Esc and a tap on the scrim also close. The grabber is decoration and is hidden from assistive tech.
 
 **Touch has no hover.** Nothing depends on it.
-- A pressed row fills like a hovered row (`:active` on coarse screens, instant tier, color only). Buttons keep the press scale.
+- A pressed row or card fills at its own hover fill, never below fg 6% (`:active` on coarse screens, instant tier, color only): a finger covers the row, and a fainter fill disappears under it. Buttons keep the press scale and also take their hover fill, so a press still shows under reduced motion, where the scale is 1.
 - A tooltip opens on a 500ms press and hold, not on a tap, so a tap only does its action. Shortcut chips and key hints are hidden on coarse screens.
+
+**Toasts over a sheet.** A toast that fires while a sheet is open on a compact screen docks at the top edge, where the command menu sits, and leaves upward, so it never covers the sheet's buttons.
 
 **Focus.** On coarse screens focus lands on the panel, so the keyboard does not open under a sheet that is still moving. Mark a field `data-autofocus` when typing is the point.
 
