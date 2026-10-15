@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Tag",
   order: 6, group: "Controls",
   summary:
-    "A small pill that names a thing or reports its state. A status tag colors the text and a 6px dot, never the fill, and always says the status in words. Nothing about it moves.",
+    "A small mono label at the control radius, with the look of a selected segment, that names a thing or reports its state. A status tag colors its text, never the fill, and always says the status in words. Nothing about it moves.",
   tiers: [],
 };
 
@@ -18,14 +18,14 @@ export const docs: PageDocs = {
 // A plain label: the kind of thing, the client, the platform.
 <Tag>Framer</Tag>
 
-// A status: the text and a 6px dot take the status color, never the fill.
+// A status: the text takes the status color, never the fill.
 <Tag status="success">Live</Tag>
 <Tag status="warning">In review</Tag>
 <Tag status="danger">Failed</Tag>
 
-// Neutral for states with no color, and hollow so two of them differ without color.
+// Neutral for states with no color. Two of them differ by their words.
 <Tag status="neutral">Draft</Tag>
-<Tag status="neutral" hollow>Idea</Tag>`,
+<Tag status="neutral">Idea</Tag>`,
   use: [
     "A short word names what something is: a kind (Framer, Landing), a client or a platform.",
     "A state is worth scanning for in a list: Live, In review, Failed. Put the tag next to the thing it describes.",
@@ -37,14 +37,13 @@ export const docs: PageDocs = {
     "It would hold a sentence, or something that needs to be read. Put it in body text.",
     "It tells someone what just happened, such as saved or failed. Use Toast.",
     "It names a keyboard shortcut. Use Kbd.",
-    "You want a color that is not a status. There is no accent tag, because the accent changes per project, and its text is not promised 4.5:1 on a tag's surface-2 fill.",
+    "You want a color that is not a status. There is no accent tag, because the accent changes per project, and its text is not promised 4.5:1 for caption text.",
   ],
   keyboard: [[["Tab"], "Skips it. A tag is a label, so it never takes focus and has no key of its own."]],
   a11y: [
-    "A tag is a plain span of text, so a screen reader reads its label like any other text. The dot is hidden from screen readers.",
-    "The status is the word, never the dot or the color alone. Write \"Failed\", not \"Red\", and check that the label would still make sense in grayscale.",
-    "Neutral Draft and Idea share a color, so the hollow dot tells them apart by shape. Their labels already differ.",
-    "Every status color reaches 4.5:1 on the surface-2 fill in light and dark, so the caption text is readable.",
+    "A tag is a plain span of text, so a screen reader reads its label like any other text.",
+    "The status is the word, never the color alone. Write \"Failed\", not \"Red\", and check that the label would still make sense in grayscale.",
+    "Every status color reaches 4.5:1 on the tag's surface-1 fill in light and dark, so the caption text is readable.",
     "At 24px a tag is too small to be a touch target. If it must be pressed, build a chip or a Button at 32 or 44px.",
     "Nothing moves, so there is nothing to reduce under reduced motion.",
   ],
@@ -81,7 +80,7 @@ const STATES = [
   { tag: <Tag status="warning">In review</Tag>, means: "Waiting on someone. Also Building and Stale." },
   { tag: <Tag status="danger">Failed</Tag>, means: "Needs action. Also Blocked and Overdue." },
   { tag: <Tag status="neutral">Draft</Tag>, means: "Nothing to report. Also Archived." },
-  { tag: <Tag status="neutral" hollow>Idea</Tag>, means: "Not started. The ring tells it from Draft without color." },
+  { tag: <Tag status="neutral">Idea</Tag>, means: "Not started. The word tells it from Draft." },
 ];
 
 function StatusDemo() {
@@ -130,7 +129,7 @@ export default function TagPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Labels"
-        caption="A plain tag is 24px tall and a pill, with a surface-2 fill, an inset hairline and caption text in fg-subtle. It names a kind or a platform and never asks to be pressed. Nothing moves."
+        caption="A plain tag is 24px tall at the control radius: a surface-1 fill with an inset hairline and the top highlight, like a selected segment, and Geist Mono at the caption size in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
         align="start"
         code="LabelsDemo"
       >
@@ -139,7 +138,7 @@ export default function TagPage() {
 
       <Stage
         title="Status"
-        caption="Only the text and a 6px dot take the status color. The fill stays surface-2, so a row of tags stays calm. Neutral Draft and Idea share a color, so Idea gets a hollow dot. Every tag also says its state in words."
+        caption="Only the text takes the status color. The fill stays surface-1, so a row of tags stays calm. There is no dot: every tag says its state in words, and neutral Draft and Idea differ by theirs."
         code="StatusDemo"
       >
         <StatusDemo />

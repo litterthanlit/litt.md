@@ -17,7 +17,7 @@
  *   The box never moves, and the OS tap flash is off so the two do not double.
  * - Corners: the list container and cards are rounded-surface; the rows inset 4px
  *   inside the container and the card cover inset 4px inside the card are
- *   rounded-control (concentric). Chips, tags and dots are pills.
+ *   rounded-control (concentric), and so are the chips and tags.
  */
 import type { ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -99,27 +99,27 @@ export function matchesFilter(p: Project, filter: ProjectFilter) {
 /* Tags                                                                       */
 /* -------------------------------------------------------------------------- */
 
-// The project statuses on Tag's own status set. Idea is neutral like Draft; the hollow dot tells them apart without color.
-const STATUS: Record<ProjectStatus, { label: string; status: TagStatus; hollow?: boolean }> = {
+// The project statuses on Tag's own status set. Idea is neutral like Draft; their words tell them apart.
+const STATUS: Record<ProjectStatus, { label: string; status: TagStatus }> = {
   live: { label: "Live", status: "success" },
   review: { label: "Review", status: "warning" },
   draft: { label: "Draft", status: "neutral" },
-  idea: { label: "Idea", status: "neutral", hollow: true },
+  idea: { label: "Idea", status: "neutral" },
 };
 
-/** A project's status as a Tag: the label in words, and a dot and text in the status color, never the fill (components.md, Tag). */
+/** A project's status as a Tag: the label in words, and the text in the status color, never the fill (components.md, Tag). */
 export function StatusTag({
   status,
   className = "",
 }: {
-  /** Sets the label, and the dot and text color. Idea gets a hollow dot, so it differs from Draft without color. */
+  /** Sets the label and the text color. Draft and Idea share a color; their words differ. */
   status: ProjectStatus;
   /** Extra classes for the tag. */
   className?: string;
 }) {
   const s = STATUS[status];
   return (
-    <Tag status={s.status} hollow={s.hollow} className={className}>
+    <Tag status={s.status} className={className}>
       {s.label}
     </Tag>
   );
@@ -306,7 +306,7 @@ const FILTERS: { id: ProjectFilter; label: string }[] = [
   { id: "draft", label: "Draft" },
 ];
 
-/** Pill chips. Selected is fg on surface-3; the rest are fg-subtle. Color and fill only. */
+/** Filter chips at the control radius, like the tags beside them. Selected is fg on surface-3; the rest are fg-subtle. Color and fill only. */
 export function ProjectFilters({
   value,
   onChange,
@@ -330,7 +330,7 @@ export function ProjectFilters({
             aria-pressed={on}
             onClick={() => onChange(f.id)}
             className={
-              "inline-flex h-control-sm cursor-pointer items-center rounded-pill px-control-pad-sm text-small " +
+              "inline-flex h-control-sm cursor-pointer items-center rounded-control px-control-pad-sm text-small " +
               "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
               (on

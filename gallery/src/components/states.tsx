@@ -12,7 +12,7 @@
  *   hover tween, the others run longer than 240ms) and a literal would break the rules, so the
  *   skeleton stays still. A state that swaps for the next one appears at once.
  * - Corners: the panel is rounded-surface; skeleton blocks are rounded-control (text, covers),
- *   rounded-surface (a card) or rounded-pill (a tag, an avatar), concentric as everywhere.
+ *   rounded-surface (a card) or rounded-pill (an avatar), concentric as everywhere.
  */
 import type { HTMLAttributes, ReactNode } from "react";
 import { AlertIcon } from "./icons";
@@ -80,7 +80,7 @@ const RADIUS: Record<SkeletonRadius, string> = {
 export type SkeletonProps = HTMLAttributes<HTMLDivElement> & {
   /** Sizes the block as one line of that text style: a bar about as tall as the letters, centred in the line's real height, so a row never changes height when the text arrives. Leave it out for a plain block sized by className. */
   text?: SkeletonText;
-  /** The corners: control for text and covers, surface for a card, pill for a tag or an avatar. */
+  /** The corners: control for text, covers and tags, surface for a card, pill for an avatar. */
   radius?: SkeletonRadius;
   /** Size it here, to the real content's: w-40, h-10, size-8 or aspect-[8/5]. With text set, it sets the width only. */
   className?: string;

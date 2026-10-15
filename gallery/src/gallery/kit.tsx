@@ -6,6 +6,7 @@ import { createContext, lazy, Suspense, useContext, useState, type ReactNode } f
 import type { Tier } from "@/motion";
 import { Button } from "@/components/button";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
+import { Tag } from "@/components/tag";
 
 /** The sidebar's groups, in the order they appear. */
 export const PAGE_GROUPS = ["Controls", "Overlays", "Layout and data"] as const;
@@ -58,16 +59,7 @@ const TIER_LABEL: Record<Tier, string> = { instant: "Instant", responsive: "Resp
 
 export function TierChip({ tier }: { tier: Tier }) {
   return (
-    <span className="inline-flex h-6 items-center gap-1.5 rounded-pill bg-surface-2 px-2 text-caption text-fg-subtle shadow-[inset_0_0_0_1px_var(--line)]">
-      <span
-        className={
-          "size-1.5 rounded-pill " +
-          (tier === "expressive" ? "bg-accent" : tier === "responsive" ? "bg-fg-muted" : "bg-fg-subtle")
-        }
-        aria-hidden="true"
-      />
-      {TIER_LABEL[tier]}
-    </span>
+    <Tag>{TIER_LABEL[tier]}</Tag>
   );
 }
 

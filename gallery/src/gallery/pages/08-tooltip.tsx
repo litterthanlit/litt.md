@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/button";
-import { ArchiveIcon, CopyIcon, SettingsIcon, ShareIcon, TrashIcon } from "@/components/icons";
+import { ArchiveIcon, CopyIcon, InfoIcon, SettingsIcon, ShareIcon, TrashIcon } from "@/components/icons";
 import { Tooltip, TooltipProvider, type TooltipSide } from "@/components/tooltip";
 import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
@@ -38,7 +38,7 @@ import { Tooltip, TooltipProvider } from "@/components/tooltip";
     "An icon-only button needs a name people can see, such as Copy link or Archive project. Also give the button an aria-label, because the tooltip describes it but does not name it.",
     "Anything a tooltip says must also be on the trigger as its aria-label or visible text. On a phone most people never press and hold, so the label that matters cannot live only here.",
     "A shortcut is worth showing next to an action. Pass a real one as shortcut.",
-    "A status dot or a dotted term needs a short gloss that helps but is not needed to finish the task.",
+    "An info icon or a dotted term needs a short gloss that helps but is not needed to finish the task.",
     "The text is a few words, or one or two short lines.",
   ],
   skip: [
@@ -160,9 +160,9 @@ function LongText() {
           <button
             type="button"
             aria-label="Production status"
-            className="grid size-6 shrink-0 cursor-help place-items-center rounded-pill"
+            className="grid size-6 shrink-0 cursor-help place-items-center rounded-pill text-fg-subtle hover:text-fg"
           >
-            <span className="size-2 rounded-pill bg-success" aria-hidden="true" />
+            <InfoIcon />
           </button>
         </Tooltip>
         <span>Production is live</span>
@@ -215,7 +215,7 @@ export default function TooltipPage() {
         <Stage
           title="Longer text"
           tier="responsive"
-          caption="Text wraps at 240px and keeps the same entrance. Use it on a status dot or a dotted term, never to hide something people need. On touch, press and hold to read it."
+          caption="Text wraps at 240px and keeps the same entrance. Use it on an info icon or a dotted term, never to hide something people need. On touch, press and hold to read it."
           code="LongText"
         >
           <LongText />

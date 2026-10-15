@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Kbd } from "@/components/kbd";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
+import { Tag } from "@/components/tag";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -63,9 +64,13 @@ export const docs: PageDocs = {
   ],
 };
 
-function Dot({ tone }: { tone: "success" | "danger" | "muted" }) {
-  const color = tone === "success" ? "bg-success" : tone === "danger" ? "bg-danger" : "bg-fg-disabled";
-  return <span aria-hidden="true" className={"size-1.5 shrink-0 rounded-pill " + color} />;
+/** A deploy's result as a status Tag in a fixed column, so the hashes line up: the live one, an earlier one that is ready, or a failure. */
+function Result({ tone }: { tone: "success" | "danger" | "muted" }) {
+  return (
+    <span className="flex w-16 shrink-0">
+      {tone === "success" ? <Tag status="success">Live</Tag> : tone === "danger" ? <Tag status="danger">Failed</Tag> : <Tag status="neutral">Ready</Tag>}
+    </span>
+  );
 }
 
 /* ---------- (a) Project tabs, underline ---------- */
@@ -137,7 +142,7 @@ function ProjectTabs() {
           <Rows>
             {DEPLOYS.map((d) => (
               <li key={d.hash} className="flex min-h-control-md items-center gap-3 py-2 text-small">
-                <Dot tone={d.tone} />
+                <Result tone={d.tone} />
                 <span className="font-mono text-caption text-fg-subtle">{d.hash}</span>
                 <span className="min-w-0 flex-1 truncate text-fg">{d.message}</span>
                 <span className="shrink-0 font-mono text-caption text-fg-subtle">{d.time}</span>
@@ -202,7 +207,7 @@ function ViewSwitch() {
           <ol className="relative grid gap-5 before:absolute before:top-2 before:bottom-2 before:left-[3px] before:w-px before:bg-line">
             {PROJECTS.map((p) => (
               <li key={p.name} className="relative flex items-center gap-4 text-small">
-                <span aria-hidden="true" className="relative size-2 shrink-0 rounded-pill bg-fg-subtle" />
+                <span aria-hidden="true" className="relative h-px w-2 shrink-0 bg-fg-subtle" />
                 <span className="font-mono text-caption text-fg-subtle">{p.time}</span>
                 <span className="text-fg">{p.name}</span>
                 <span className="text-fg-subtle">{p.when}</span>

@@ -66,7 +66,7 @@ import { Header } from "@/components/header";
   ],
   a11y: [
     "The nav is a real <nav> with a name (navLabel, Main by default). Only one is ever visible: the link list in the bar, or the menu button when the bar folds. The other is display: none, so a screen reader never meets two. If a page has several headers, give each its own navLabel.",
-    "Links are real anchors, so they open in a new tab and work with the middle click. The current page gets aria-current=\"page\" and an accent dot, so it is never marked by color alone. In the menu, the current row says \"current page\" in hidden text.",
+    "Links are real anchors, so they open in a new tab and work with the middle click. The current page gets aria-current=\"page\" and the full text color, a lightness step from its neighbours rather than a hue. In the menu, the current row carries a check and says \"current page\" in hidden text.",
     "Menu rows are real links (role menuitem on an anchor), so a modifier key or a middle click opens them in a new tab. With onNavigate they call your router instead, and lose that, so keep important pages reachable from the page too.",
     "The menu button is a real button named by menuLabel, and Radix sets aria-haspopup and aria-expanded. The menu is named by navLabel. Menu documents the rest of its keyboard and focus behavior.",
     "Keyboard focus draws a 2px outline at a 2px offset on every link, the wordmark link and the buttons. Links are 32px tall with a mouse. On touch screens the links, the wordmark link and the menu button are all 44px tall, and a pressed link fills the way a hovered one does, because a finger has no hover. The menu button and its rows are 44px on every screen.",
@@ -367,7 +367,7 @@ export default function HeaderPage() {
         tier="responsive"
         size="lg"
         code="PhoneDemo"
-        caption="On a phone the nav stays behind the menu button. It does not shrink or wrap, and the button opens litt's Menu beside it, which stays anchored because its rows are already big enough for a finger. The bar stays at the top of the screen, below the safe-area inset on a notched phone, and never hides as the page scrolls. On a touch screen the links and the button are 44px tall and a pressed link fills. The dot marks the page you are on, and the action stays in the bar. The header measures the frame, not the window, so this is what a phone sees."
+        caption="On a phone the nav stays behind the menu button. It does not shrink or wrap, and the button opens litt's Menu beside it, which stays anchored because its rows are already big enough for a finger. The bar stays at the top of the screen, below the safe-area inset on a notched phone, and never hides as the page scrolls. On a touch screen the links and the button are 44px tall and a pressed link fills. A check marks the page you are on, and the action stays in the bar. The header measures the frame, not the window, so this is what a phone sees."
       >
         <DeviceProvider mode="phone">
           <PhoneDemo />
@@ -379,7 +379,7 @@ export default function HeaderPage() {
         tier="instant"
         size="lg"
         code="CurrentDemo"
-        caption="Click a link and the page scrolls to its section, stopping below the bar because the frame sets scroll-padding-top. Scroll by hand and the current link follows. The header stays mounted and only current changes, which is all a router has to pass in. The current link is brighter and carries an accent dot, and the browser hears aria-current. At the very top no link is current. The dot sits out of the flow, so no link moves or resizes."
+        caption="Click a link and the page scrolls to its section, stopping below the bar because the frame sets scroll-padding-top. Scroll by hand and the current link follows. The header stays mounted and only current changes, which is all a router has to pass in. The current link is brighter, and the browser hears aria-current. At the very top no link is current. Only the color changes, so no link moves or resizes."
       >
         <CurrentDemo />
       </Stage>
