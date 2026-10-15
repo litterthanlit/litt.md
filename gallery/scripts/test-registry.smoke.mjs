@@ -205,6 +205,7 @@ const RECIPES = {
       `const projects: Project[] = [`,
       `  { id: "p1", name: "Northwind site", client: "Northwind", deploy: "Deployed 2 days ago", status: "live", updated: "2026-10-10", description: "The studio site.", tags: ["Site"], cover: "@cover0" },`,
       `  { id: "p2", name: "Atlas portfolio", client: "Atlas", deploy: "No deploy yet", status: "review", updated: "2026-10-09", description: "Wordmark and grid.", tags: ["Identity"], cover: "@cover1" },`,
+      `  { id: "p3", name: "Archive", client: "Litt Studio", status: "draft", updated: "2024" }, // only the required fields`,
       `];`,
     ],
     jsx: `<div className="w-full max-w-xl"><ProjectList projects={projects} /></div>`,
@@ -656,7 +657,9 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
         await attempt("project list rows", async () => {
           await page.getByText("Northwind site").first().waitFor({ state: "visible", timeout: 4000 });
           const n = await page.locator("ul[aria-label=Projects] li").count();
-          if (n < 2) throw new Error(`expected 2 rows, found ${n}`);
+          if (n < 3) throw new Error(`expected 3 rows, found ${n}`);
+          // The third project has only the required fields, and a year where a date would be.
+          await page.getByText("Archive").first().waitFor({ state: "visible", timeout: 4000 });
           return `${n} rows`;
         });
       }

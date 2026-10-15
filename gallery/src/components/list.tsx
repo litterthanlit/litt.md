@@ -13,8 +13,8 @@
  *   Rows and cards never move, and selection only turns the card's ring to the
  *   focus color.
  * - Touch has no hover, so on a coarse pointer a row (and an unselected filter chip) that is held
- *   down fills (PRESS_FILL, color only, instant tier). The box never moves, and the OS tap flash is
- *   off so the two do not double. Cards have no press state.
+ *   down fills (PRESS_FILL, color only, instant tier), and a pressed card shows its hover steps.
+ *   The box never moves, and the OS tap flash is off so the two do not double.
  * - Corners: the list container and cards are rounded-surface; the rows inset 4px
  *   inside the container and the card cover inset 4px inside the card are
  *   rounded-control (concentric). Chips, tags and dots are pills.
@@ -33,26 +33,28 @@ export type ProjectStatus = "live" | "review" | "draft" | "idea";
 export type ProjectFilter = "all" | "live" | "review" | "draft";
 
 /**
- * What every component here reads. They are built around this shape, so when you copy them, rename
- * or add fields here and in RowContent and ProjectCard to fit your data.
+ * What every component here reads. Only id, name, client, status and updated are required; leave out
+ * the rest and their part of the row or card is left out too. Map your own data to this shape where you
+ * render the list, and leave the installed file as it is.
  */
 export type Project = {
   /** Unique. It is the React key and what the selection tracks. */
   id: string;
   name: string;
+  /** The line under the name: a client, an owner, a team. */
   client: string;
-  /** Last deploy, in words: "Deployed 2 days ago", "No deploy yet". */
-  deploy: string;
+  /** Last deploy, in words: "Deployed 2 days ago", "No deploy yet". Shown after the client on wider screens. */
+  deploy?: string;
   /** Shown as a status tag: live, review, draft or idea. */
   status: ProjectStatus;
-  /** ISO date (YYYY-MM-DD) of the last edit. */
+  /** When it was last touched. An ISO date (YYYY-MM-DD) shows as "09 Oct"; anything else ("2024", "Q3") shows as written. */
   updated: string;
-  /** One line. */
-  description: string;
+  /** One line, on the card. */
+  description?: string;
   /** Short labels on the card. */
-  tags: string[];
-  /** Which drawn cover the card shows. */
-  cover: CoverName;
+  tags?: string[];
+  /** Which drawn cover the card shows. Without one, the card has no cover. */
+  cover?: CoverName;
   /** When set, the row is a link; otherwise it is a button. */
   href?: string;
 };
@@ -61,10 +63,26 @@ export type Project = {
 export const CASCADE_CAP = 6;
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-/** "2026-10-09" becomes "09 Oct": always six characters, so mono dates align. */
-export function formatDate(iso: string) {
-  const [, m, d] = iso.split("-");
-  return `${d} ${MONTHS[Number(m) - 1]}`;
+const ISO_DATE = /^\d{4}-(\d{2})-(\d{2})$/;
+/** A machine-readable year, month or day ("2024", "2024-10", "2024-10-09"), which a <time> can carry. */
+const DATETIME = /^\d{4}(-\d{2}(-\d{2})?)?$/;
+
+/** "2026-10-09" becomes "09 Oct": always six characters, so mono dates align. Anything that is not an ISO date ("2024", "Q3") stays as written. */
+export function formatDate(value: string) {
+  const m = ISO_DATE.exec(value);
+  const month = m ? MONTHS[Number(m[1]) - 1] : undefined;
+  return m && month ? `${m[2]} ${month}` : value;
+}
+
+/** The date column: a <time> when the value is a real date or year, plain text otherwise. */
+function When({ value, className }: { value: string; className: string }) {
+  return DATETIME.test(value) ? (
+    <time dateTime={value} className={className}>
+      {formatDate(value)}
+    </time>
+  ) : (
+    <span className={className}>{value}</span>
+  );
 }
 
 /**
@@ -132,18 +150,16 @@ function RowContent({ project }: { project: Project }) {
         <span className="truncate text-body text-fg">{project.name}</span>
         <span className="truncate text-caption text-fg-subtle">
           {project.client}
-          <span className="hidden sm:inline"> · {project.deploy}</span>
+          {project.deploy && <span className="hidden sm:inline"> · {project.deploy}</span>}
         </span>
       </span>
       <span className="flex shrink-0 sm:w-24">
         <StatusTag status={project.status} />
       </span>
-      <time
-        dateTime={project.updated}
-        className="hidden w-14 shrink-0 text-right font-mono text-caption tabular-nums text-fg-subtle sm:block"
-      >
-        {formatDate(project.updated)}
-      </time>
+      <When
+        value={project.updated}
+        className="hidden min-w-14 shrink-0 text-right font-mono text-caption whitespace-nowrap tabular-nums text-fg-subtle sm:block"
+      />
     </>
   );
 }
@@ -223,6 +239,17 @@ export type ProjectCardProps = {
  * checkbox sits above it.
  */
 export function ProjectCard({ project, selected = false, onSelectedChange, onOpen, className = "" }: ProjectCardProps) {
+  const select = (
+    <label className="absolute top-1 right-1 z-10 grid size-8 cursor-pointer place-items-center pointer-coarse:size-11">
+      <input
+        type="checkbox"
+        checked={selected}
+        onChange={(e) => onSelectedChange?.(e.target.checked)}
+        aria-label={`Select ${project.name}`}
+        className="size-4 cursor-pointer rounded-control accent-fg"
+      />
+    </label>
+  );
   return (
     <article
       data-selected={selected || undefined}
@@ -237,26 +264,23 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
         }
       />
 
-      <div className="relative aspect-[8/5] shrink-0 overflow-hidden rounded-control bg-surface-2 transition-[background-color] duration-(--dur-instant) ease-litt group-hover:bg-surface-3 pointer-coarse:group-active:bg-surface-3">
-        <ProjectCover name={project.cover} />
-        <label className="absolute top-1 right-1 z-10 grid size-8 cursor-pointer place-items-center pointer-coarse:size-11">
-          <input
-            type="checkbox"
-            checked={selected}
-            onChange={(e) => onSelectedChange?.(e.target.checked)}
-            aria-label={`Select ${project.name}`}
-            className="size-4 cursor-pointer rounded-control accent-fg"
-          />
-        </label>
-      </div>
+      {project.cover ? (
+        <div className="relative aspect-[8/5] shrink-0 overflow-hidden rounded-control bg-surface-2 transition-[background-color] duration-(--dur-instant) ease-litt group-hover:bg-surface-3 pointer-coarse:group-active:bg-surface-3">
+          <ProjectCover name={project.cover} />
+          {select}
+        </div>
+      ) : (
+        select
+      )}
 
-      <div className="grid gap-1 px-3 pt-4">
+      {/* Without a cover the select box sits in the card's corner, so the title keeps clear of it. */}
+      <div className={"grid gap-1 px-3 pt-4 " + (project.cover ? "" : "pr-12")}>
         <h3 className="truncate text-body text-fg">{project.name}</h3>
-        <p className="truncate text-small text-fg-subtle">{project.description}</p>
+        {project.description && <p className="truncate text-small text-fg-subtle">{project.description}</p>}
       </div>
       <div className="mt-auto flex flex-wrap gap-2 px-3 pt-4 pb-3">
         <StatusTag status={project.status} />
-        {project.tags.map((t) => (
+        {project.tags?.map((t) => (
           <ProjectTag key={t}>{t}</ProjectTag>
         ))}
       </div>
