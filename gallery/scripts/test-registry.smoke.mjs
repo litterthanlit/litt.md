@@ -197,6 +197,25 @@ const RECIPES = {
     wrap: "Toaster",
     jsx: `<@Btn type="button" data-testid="toast-trigger" onClick={() => toast({ title: "Litt toast", description: "Saved from the smoke page" })}>Show toast</@Btn>`,
   },
+  select: {
+    needs: ["Select", "SelectField"],
+    top: [`const ROLES = [{ value: "designer", label: "Designer" }, { value: "developer", label: "Developer" }, { value: "producer", label: "Producer" }];`],
+    jsx: `<form className="grid w-full max-w-sm gap-4" data-testid="litt-select" aria-label="Select smoke">
+          <SelectField label="Role" name="role" defaultValue="designer" options={ROLES} help="Sets what you see in the studio." />
+          <Select size="sm" aria-label="Sort by" defaultValue="producer" options={ROLES} />
+        </form>`,
+  },
+  form: {
+    needs: ["FormSection", "Fieldset", "ErrorSummary", "FormActions"],
+    jsx: `<form noValidate className="w-full max-w-xl" aria-label="Form smoke">
+          <ErrorSummary errors={[{ id: "smoke-email", message: "Enter an email." }]} focusKey={1} />
+          <FormSection title="Profile" description="Shown to clients.">
+            <input id="smoke-email" aria-label="Email" />
+            <Fieldset legend="Invoice address" description="On every invoice."><input aria-label="Street" /></Fieldset>
+          </FormSection>
+          <FormActions className="mt-12"><@Btn type="submit">Save</@Btn><@Btn type="button">Cancel</@Btn></FormActions>
+        </form>`,
+  },
   switch: {
     needs: ["Switch"],
     state: [`const [on, setOn] = useState(true);`],
@@ -698,6 +717,49 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (!info.blur || info.blur === "none")
             throw new Error(`.litt-glass has no backdrop-filter (the material CSS is missing): ${JSON.stringify(info)}`);
           return `backdrop-filter: ${info.blur}`;
+        });
+      }
+      if (has("select")) {
+        await attempt("select opens as glass and picks with the keyboard", async () => {
+          const trigger = page.getByRole("combobox", { name: "Role" });
+          await trigger.click();
+          const list = page.getByRole("listbox");
+          await list.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(600);
+          const info = await list.evaluate((el) => {
+            const host = el.closest(".litt-glass") ?? el.querySelector(".litt-glass") ?? (el.classList.contains("litt-glass") ? el : null);
+            const before = host ? getComputedStyle(host, "::before") : null;
+            return { glass: !!host, blur: before ? before.backdropFilter || before.webkitBackdropFilter || "" : "", rows: [...el.querySelectorAll("[role=option]")].map((o) => Math.round(o.getBoundingClientRect().height)) };
+          });
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-select.png`) });
+          if (!info.glass) throw new Error('the select list has no ".litt-glass" class');
+          if (!info.blur || info.blur === "none") throw new Error(`.litt-glass has no backdrop-filter: ${JSON.stringify(info)}`);
+          if (info.rows.some((h) => h < 44)) throw new Error(`rows under 44px: ${info.rows}`);
+          await page.keyboard.press("ArrowDown");
+          await page.keyboard.press("Enter");
+          await list.waitFor({ state: "hidden", timeout: 4000 });
+          const text = (await trigger.textContent())?.trim();
+          if (text !== "Developer") throw new Error(`the trigger reads "${text}" after picking Developer`);
+          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-select]")).get("role"));
+          if (sent !== "developer") throw new Error(`the form sends role=${sent}`);
+          return `rows ${info.rows.join("/")}, picked ${text}`;
+        });
+      }
+      if (has("form")) {
+        await attempt("error summary takes focus and names its fields", async () => {
+          // The summary takes focus once, when it mounts, and earlier steps have moved focus since: start from a fresh page.
+          await page.reload({ waitUntil: "networkidle" });
+          await page.waitForTimeout(600);
+          const summary = page.getByRole("region", { name: "Fix 1 field to save" });
+          await summary.waitFor({ state: "visible", timeout: 5000 });
+          const focused = await summary.evaluate((el) => el === document.activeElement);
+          if (!focused) throw new Error("the error summary did not take focus");
+          const hash = await page.evaluate(() => location.hash);
+          await page.getByRole("link", { name: "Enter an email." }).click();
+          const onField = await page.evaluate(() => document.activeElement?.id);
+          if (onField !== "smoke-email") throw new Error(`the summary link focused ${onField}, not the field`);
+          if ((await page.evaluate(() => location.hash)) !== hash) throw new Error("the summary link changed the URL hash");
+          return "focus on the summary, then on the field";
         });
       }
       if (has("switch")) {
