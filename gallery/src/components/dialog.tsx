@@ -16,6 +16,11 @@
  *   so the right corners are reset to square.
  * - Slots: title, description, body (children), footer. Footer buttons are
  *   right-aligned, 12px apart, primary last.
+ * - Toasts: the Toaster's region (data-litt-toaster) is not "outside". The content
+ *   passes ignoreToaster (@/motion) to onInteractOutside, so a press on a toast does not close
+ *   the dialog. This file does not import the Toaster; toast.tsx keeps its region
+ *   readable and clickable under the modal.
+ * - Forced colors drops box-shadow, so the panel gets a real border there.
  *
  * On compact screens (useDevice().compact, narrower than 640) the dialog is a
  * bottom sheet, and side="right" is the same sheet (foundations.md section 6):
@@ -50,7 +55,7 @@
 import { createContext, useCallback, useContext, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useTransform } from "motion/react";
-import { useDevice, useExit, useMotionDial, useSheetPresence, useTransition, useTravel, useVisibleScreen } from "@/motion";
+import { ignoreToaster, useDevice, useExit, useMotionDial, useSheetPresence, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { useDismissDrag } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
@@ -214,13 +219,14 @@ function SheetLayer({ onDismiss, onOpenAutoFocus, described = true, contentRef, 
         asChild
         ref={setPanel}
         onOpenAutoFocus={(e) => focusOnOpen(e, panel.current, coarse, onOpenAutoFocus)}
+        onInteractOutside={ignoreToaster}
         {...(described ? {} : { "aria-describedby": undefined })}
       >
         <motion.div
           {...drag.panel}
           onPointerDown={drag.onPointerDown}
           className={
-            "litt-glass relative grid max-h-full w-full max-w-[40rem] -mb-6 justify-self-center pb-6 " +
+            "litt-glass relative grid max-h-full w-full max-w-[40rem] -mb-6 justify-self-center pb-6 forced-colors:border " +
             "grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] rounded-t-surface rounded-b-none " +
             "[--glass-shadow:var(--shadow-modal)] [--sheet-foot:max(var(--space-6),env(safe-area-inset-bottom,0px))] " +
             "focus-visible:outline-none " +
@@ -376,11 +382,13 @@ export function DialogContent({
               asChild
               ref={ref}
               onOpenAutoFocus={(e) => focusOnOpen(e, ref.current, coarse, pickFocus)}
+              onInteractOutside={ignoreToaster}
               {...(description ? {} : { "aria-describedby": undefined })}
             >
               <motion.div
                 className={
-                  "litt-glass grid grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] [--glass-shadow:var(--shadow-modal)] " +
+                  /* Forced colors drops box-shadow, so the glass edge becomes a real border. */
+                  "litt-glass grid grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] forced-colors:border [--glass-shadow:var(--shadow-modal)] " +
                   (sheet
                     ? "h-full w-[400px] max-w-[calc(100%-2rem)] rounded-l-surface rounded-r-none "
                     : "max-h-full w-full max-w-[480px] rounded-surface ") +

@@ -115,6 +115,7 @@ Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-
 - **Motion:** it arrives from just below its corner and settles. That is the expressive tier when the toast is the view's moment, otherwise the responsive tier. It leaves sideways by the same small distance, on the exit token for its tier.
 - **Stacking:** older toasts stack behind the newest and open into a list on hover or focus.
 - **On compact screens** the toast spans the page gutters, sits `--space-4` above the bottom edge or the safe-area inset, and leaves downward by `--travel` on a timeout, not sideways.
+- **Over a modal:** a toast fired while a dialog, a sheet or a popover is open is announced, and its buttons and a swipe work. A press on it neither closes the modal nor takes focus, and the modal keeps the keyboard, so F8 waits until it closes.
 - **Over a sheet:** while a sheet is open on a compact screen, the toast docks at the top edge, `--space-2` below the safe-area inset (where the command menu sits), and arrives and leaves upward, so it never covers the sheet's buttons.
 - **Swipe:** a sideways drag moves the toast one to one. It leaves past `--dismiss-distance` of its width or faster than `--dismiss-velocity`, in the direction it was going. The close button stays, 44px on coarse screens. A tap on the stack pins it open, as before.
 

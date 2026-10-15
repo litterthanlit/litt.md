@@ -19,6 +19,7 @@
  *   The command menu and the bottom sheet size themselves to it, so the keyboard never covers a row or a footer.
  * - useSheetOpen and useSheetPresence: whether a bottom sheet is open, so a toast can move to the top edge
  *   instead of covering the sheet's buttons.
+ * - ignoreToaster: a press on a toast is not a press outside an overlay.
  */
 import { createContext, createElement, useContext, useEffect, useLayoutEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 
@@ -132,6 +133,17 @@ export function useSheetOpen(): boolean {
     () => sheets > 0,
     () => false,
   );
+}
+
+/**
+ * Pass it as onInteractOutside on a Radix overlay (a Dialog, a sheet, a Popover, a Menu). A press on the Toaster's region
+ * is not an outside press, so it must not close the overlay. The Toaster marks its region with data-litt-toaster, so the
+ * overlays and the Toaster share a DOM attribute and none of them imports another.
+ *
+ * @param event - Radix's interact-outside event.
+ */
+export function ignoreToaster(event: Event): void {
+  if (event.target instanceof Element && event.target.closest("[data-litt-toaster]")) event.preventDefault();
 }
 
 /**

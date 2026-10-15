@@ -26,6 +26,8 @@
  *   ring (:focus-visible), a text field always does.
  * - Sizes sit on the 8px grid: 256, 320, 384. The panel never grows past the room
  *   on screen, and scrolls inside when it is taller than the room.
+ * - A press on a toast is not an outside press (ignoreToaster, from @/motion), so it does
+ *   not dismiss the popover. Forced colors drops box-shadow, so the panel gets a real border.
  *
  * On a phone (foundations.md section 6; useDevice().compact, so a desktop can preview it with
  * <DeviceProvider mode="phone">) the popover is a bottom sheet, because it holds fields and
@@ -58,7 +60,7 @@ import {
 import * as RadixDialog from "@radix-ui/react-dialog";
 import * as RadixPopover from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useMotionValue } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { ignoreToaster, useDevice, useExit, useTransition, useTravel } from "@/motion";
 import { Button } from "@/components/button";
 import { DialogSheet } from "@/components/dialog";
 import { XIcon } from "@/components/icons";
@@ -341,7 +343,7 @@ function Surface({
   const flat = solid ?? overFloating;
   const surface =
     "relative z-50 max-w-(--radix-popover-content-available-width) rounded-surface p-1 outline-none " +
-    "origin-(--radix-popover-content-transform-origin) data-[state=closed]:pointer-events-none " +
+    "origin-(--radix-popover-content-transform-origin) data-[state=closed]:pointer-events-none forced-colors:border " +
     WIDTH[size] +
     (flat ? " bg-surface-2 shadow-float" : " litt-glass");
 
@@ -355,6 +357,7 @@ function Surface({
       sideOffset={sideOffset}
       collisionPadding={8}
       collisionBoundary={collisionBoundary ?? undefined}
+      onInteractOutside={ignoreToaster}
       onOpenAutoFocus={(e) => {
         const target = el.current?.querySelector<HTMLElement>("[data-autofocus]");
         if (!target) return;

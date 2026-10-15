@@ -21,6 +21,16 @@
  *   region: polite, or assertive for errors.
  * - Touch: there is no hover, so tapping the stack pins it open; tap outside to
  *   close it again.
+ * - Over a modal (a Dialog, a phone sheet, a modal Popover): Radix hides the page with
+ *   aria-hidden and sets pointer-events: none on the body. The region is marked
+ *   aria-live="off" (the default, so nothing reads differently), which Radix skips
+ *   when it hides the page, and it takes presses back with pointer-events: auto while
+ *   toasts show. It carries data-litt-toaster, so dialog.tsx can tell a press on it
+ *   from an outside press and keep the modal open. The two share only that
+ *   attribute, so either installs without the other. A press on a toast never takes
+ *   focus. The modal keeps its focus trap, so F8 and Esc on a toast work once the
+ *   modal closes; the close button, the action and a swipe work while it is open.
+ * - Forced colors drops box-shadow, so the glass edge becomes a real border.
  *
  * On phones and touch (foundations.md section 6; both signals come from useDevice,
  * so <DeviceProvider mode="phone"> previews them on a desktop):
@@ -238,6 +248,11 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
     <section
       ref={regionRef}
       aria-label="Notifications"
+      /* Two marks for modals. aria-live="off" is the default, so a screen reader hears nothing different, but Radix
+         hides the page behind a modal with aria-hidden and skips every [aria-live] element, so this region stays
+         readable. data-litt-toaster tells a dialog that a press here is not an outside press. */
+      aria-live="off"
+      data-litt-toaster=""
       className={
         "fixed z-60 " +
         (top
@@ -245,9 +260,12 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
           : compact
             ? "inset-x-gutter bottom-[calc(var(--space-4)+env(safe-area-inset-bottom,0px))] mx-auto max-w-[40rem] "
             : "right-6 bottom-[max(1.5rem,env(safe-area-inset-bottom,0px))] w-90 ") +
-        (count === 0 ? "pointer-events-none" : "")
+        /* A modal sets pointer-events: none on the body. With toasts on screen the region takes presses back. */
+        (count === 0 ? "pointer-events-none" : "pointer-events-auto")
       }
       style={{ height }}
+      /* A press on a toast never takes focus, so it cannot pull it out of a modal or a field. */
+      onMouseDown={(e) => e.preventDefault()}
       onPointerEnter={(e) => {
         if (e.pointerType !== "touch") setHover(true);
       }}
@@ -379,7 +397,10 @@ function ToastView({
       aria-live={tone === "error" ? "assertive" : "polite"}
       aria-atomic="true"
       inert={away}
-      className={"litt-glass absolute inset-x-0 h-18 rounded-surface " + (top ? "top-0 origin-bottom" : "bottom-0 origin-top")}
+      className={
+        /* Forced colors drops box-shadow, so the glass edge becomes a real border. */
+        "litt-glass absolute inset-x-0 h-18 rounded-surface forced-colors:border " + (top ? "top-0 origin-bottom" : "bottom-0 origin-top")
+      }
       onPointerDown={(e) => {
         /* Only a toast that shows its content can be swiped; the ones peeking from behind wait their turn. */
         if (!showContent) return;

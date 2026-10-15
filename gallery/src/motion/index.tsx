@@ -24,6 +24,7 @@ import { readLocked, surfaceRadius, type Dial, type Locked } from "./tokens";
 export { surfaceRadius, type Dial };
 export {
   DeviceProvider,
+  ignoreToaster,
   readDismiss,
   useDevice,
   useSheetOpen,
