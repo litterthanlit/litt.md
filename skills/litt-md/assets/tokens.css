@@ -435,3 +435,16 @@
     backdrop-filter: none;
   }
 }
+
+/* Forced colors (Windows high contrast) drops box-shadow and turns fills to the system Canvas, so glass and raised
+   surfaces would lose their edge, and glass would let the page show through. Both get a real border, in system
+   colors, and glass turns solid. Components that add their own forced-colors border draw the same 1px line. */
+@media (forced-colors: active) {
+  .litt-glass { border: 1px solid CanvasText; }
+  .litt-glass::before {
+    background: Canvas;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .litt-raised { border: 1px solid CanvasText; }
+}
