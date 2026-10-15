@@ -77,7 +77,9 @@ export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs
     <PageIdContext.Provider value={meta.id}>
       <article aria-labelledby={`page-${meta.id}`} className="grid gap-16 pb-24">
         <header className="grid gap-4">
-          <h1 id={`page-${meta.id}`} className="text-h1 text-fg text-balance">
+          {/* The shell focuses this after a route change, so it takes tabIndex -1 and is not a Tab stop.
+              w-fit keeps the keyboard focus ring on the text, not the whole column. */}
+          <h1 id={`page-${meta.id}`} tabIndex={-1} className="w-fit text-h1 text-fg text-balance">
             {meta.title}
           </h1>
           <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>

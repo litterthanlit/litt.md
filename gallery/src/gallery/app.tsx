@@ -105,6 +105,18 @@ function Shell({ page }: { page: PageEntry | undefined }) {
     document.title = !page || page.id === pages[0]?.id ? "litt.md Gallery" : `${page.title} · litt.md Gallery`;
   }, [page]);
 
+  /* After a route change, focus the new page's heading so a screen reader announces it. This
+     runs when the new page commits, so a lazy chunk is waited for, not the old page. The first
+     load keeps the browser's focus, so the skip link stays the first Tab stop. A hash that
+     leaves the shown page as it is (an unknown anchor while the overview shows) moves nothing.
+     :focus-visible decides the ring: none after a click, the usual ring after a key. */
+  const focused = useRef(page?.id);
+  useEffect(() => {
+    if (focused.current === page?.id) return;
+    focused.current = page?.id;
+    mainRef.current?.querySelector<HTMLElement>("h1")?.focus({ preventScroll: true });
+  }, [page?.id]);
+
   const navLink = (p: PageEntry, compact = false) => (
     <a
       key={p.id}
