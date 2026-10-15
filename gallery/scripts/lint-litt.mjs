@@ -501,7 +501,7 @@ function checkTokens(frags, codeLines, add) {
         }
       }
       if (!sc.timed && !sc.dynamic) { // any duration or ease in the class list counts (a wrong one fails on its own); Radix lists give each data-state its own
-        add("warn", tr.t.line, "motion", `${tr.t.base}: no duration-(--litt-dur-instant) ease-litt next to it, so it runs on Tailwind's 150ms default`);
+        add("fail", tr.t.line, "motion", `${tr.t.base}: no duration-(--litt-dur-instant) ease-litt next to it, so it runs on Tailwind's 150ms default, off the motion tiers`);
       }
     }
   }

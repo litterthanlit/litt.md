@@ -450,7 +450,7 @@ export function Warnings() {
         className="tracking-wide text-litt-caption" // warn: type
       />
       <button
-        className="transition-colors" // warn: motion
+        className="transition-colors" // expect: motion
       />
       <div
         className="backdrop-blur-md" // warn: other
