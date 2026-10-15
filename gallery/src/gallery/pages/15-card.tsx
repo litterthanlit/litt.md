@@ -2,6 +2,7 @@ import { Button } from "@/components/button";
 import { Card, CardBody, CardCover, CardDescription, CardLink, CardTitle } from "@/components/card";
 import { ArrowUpRightIcon } from "@/components/icons";
 import { ProjectCover, type CoverName } from "@/components/list-cover";
+import { Tag } from "@/components/tag";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -72,15 +73,9 @@ export const docs: PageDocs = {
   ],
 };
 
-/** A small status dot and word. Color never carries the status alone. */
+/** A status as a Tag: the word in the status color. Color never carries the status alone. */
 function Status({ tone, children }: { tone: "success" | "warning" | "neutral"; children: string }) {
-  const dot = tone === "success" ? "bg-success" : tone === "warning" ? "bg-warning" : "bg-fg-subtle";
-  return (
-    <span className="inline-flex items-center gap-2 text-caption text-fg-subtle">
-      <span aria-hidden="true" className={"size-1.5 shrink-0 rounded-pill " + dot} />
-      {children}
-    </span>
-  );
+  return <Tag status={tone}>{children}</Tag>;
 }
 
 type Site = {

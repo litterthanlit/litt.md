@@ -77,7 +77,7 @@ const [filter, setFilter] = useState<ProjectFilter>("all");
   ],
   a11y: [
     "ProjectList is a list named by its label (default Projects), and every row is one button or one link, so the whole row is the target and is 64px tall. Change the label when a page has more than one list.",
-    "Status is text and a dot, never color alone. Idea and Draft share a color, so Idea gets a hollow dot. The date is a <time> element.",
+    "Status is a word in a Tag, never color alone. Idea and Draft share a color, and their words tell them apart. The date is a <time> element when it is a real date or year.",
     "A card is an article with one stretched button, named Open plus the project's name. Its checkbox is named Select plus the name, and its target grows from 32px to 44px on touch.",
     "Selection is the checkbox's checked state. The ring that turns to the focus color only echoes it, so it never carries the meaning alone.",
     "The filter chips are a group named Filter projects, and each is a button with aria-pressed.",

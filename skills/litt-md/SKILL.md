@@ -63,7 +63,7 @@ These change only when Nick changes them.
 - **Type:** Hanken Grotesk + Geist Mono only, at weight 400 only. Display stops at 40.
 - **Color:** cool neutrals at one OKLCH hue (about 262), monochrome, one accent per project.
 - **Density:** airy.
-- **Shape:** slight radius. Controls 4px, surfaces 8px, pills for chips, tags, avatars, status dots and icon-only buttons.
+- **Shape:** slight radius. Controls 4px (tags and chips too), surfaces 8px, pills only for avatars and icon-only buttons.
 - **Motion:** three tiers. Instant 100ms ease-out; responsive spring 200ms, bounce 0; expressive spring 350ms, bounce 0.12, one per view. Exits run at 0.75× and never bounce. Transform and opacity only, plus color fades at instant. On phones the modal is a bottom sheet that drags down to dismiss (`system/foundations.md` section 6).
 
 ## Never, unless Nick asks

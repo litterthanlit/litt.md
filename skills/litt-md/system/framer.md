@@ -39,7 +39,7 @@ Weight: Regular 400 only, for every text style (P9). Never Medium, Semibold or B
 - **Gaps:** only values from the space scale (4, 8, 12, 16, 24, 32, 48, 64, 96, 128).
 
 ### Corners and controls
-- **Corners:** controls (buttons, inputs, tabs) radius 4. Surfaces (cards, panels, menus, dialogs, toasts) radius 8. Chips, tags, avatars, status dots and icon-only buttons are fully round. A control 4px inside a surface keeps the corners concentric.
+- **Corners:** controls (buttons, inputs, tabs) radius 4. Surfaces (cards, panels, menus, dialogs, toasts) radius 8. Tags and chips are controls at radius 4 too. Only avatars and icon-only buttons are fully round. A control 4px inside a surface keeps the corners concentric.
 - **Button component:** one component with a Size variant.
   - sm: 32 tall, 12 side padding, 13px label.
   - md: 44 tall, 16 side padding, 15px label.
@@ -81,7 +81,7 @@ To use the exact tokens in code components or embeds, paste `assets/tokens.css` 
 - [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Nothing above Regular 400.
 - [ ] Gaps and paddings are on the scale.
 - [ ] Glass only on floating frames (header, menus, modals, toasts).
-- [ ] Corners: 4 on controls, 8 on surfaces, pills only on chips, tags, avatars, status dots and icon-only buttons. Buttons and inputs use the 32/44/56 sizes.
+- [ ] Corners: 4 on controls, 8 on surfaces, pills only on avatars and icon-only buttons. Buttons and inputs use the 32/44/56 sizes.
 - [ ] No drop shadow with an x or y offset.
 - [ ] One accent fill and one glow per page.
 - [ ] Every transition uses one of the three saved presets. Bounce only on expressive, never on exits. No scroll Appear effects.

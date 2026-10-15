@@ -118,7 +118,7 @@ function lintGallery(files, root) {
       for (const m of line.matchAll(/\brounded(-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
-        if (!/^rounded(-(t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(pill|none|control|surface)$/.test(v)) fail("radius", `${v}: use rounded-control (controls, rows, inputs), rounded-surface (cards, menus, dialogs, toasts) or rounded-pill (chips, tags, avatars, dots, icon-only buttons)`);
+        if (!/^rounded(-(t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(pill|none|control|surface)$/.test(v)) fail("radius", `${v}: use rounded-control (controls, rows, inputs), rounded-surface (cards, menus, dialogs, toasts) or rounded-pill (avatars, icon-only buttons)`);
       }
       if (/borderRadius\s*:\s*['"]?(?!0\b|999|9999|var\(--radius-(pill|control|surface)\))[\d.]/.test(line)) fail("radius", "borderRadius: use the radius tokens");
       for (const m of line.matchAll(/\binset-shadow-\[([^\]]+)\]/g)) {
@@ -196,7 +196,7 @@ function lintGallery(files, root) {
 
 /* Names the `litt` registry item adds to a host's Tailwind theme. */
 const HOST_ADVICE = {
-  radius: "use rounded-litt-control (controls, rows, inputs), rounded-litt-surface (cards, dialogs) or rounded-litt-pill (chips, avatars, dots)",
+  radius: "use rounded-litt-control (controls, rows, inputs, tags, chips), rounded-litt-surface (cards, dialogs) or rounded-litt-pill (avatars, icon-only buttons)",
   shadow: "use shadow-litt-float, shadow-litt-modal, shadow-litt-tooltip or shadow-litt-glow",
   type: "use text-litt-display, -h1..h4, -reading, -body, -small or -caption",
   color: "use a litt token (bg-litt-surface-1, text-litt-fg-muted, border-litt-line, bg-litt-accent)",

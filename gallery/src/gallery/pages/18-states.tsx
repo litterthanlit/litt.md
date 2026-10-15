@@ -32,7 +32,7 @@ import { Empty, ErrorState, Loading, Skeleton } from "@/components/states";
   <Skeleton text="body" className="w-48" />
   <Skeleton text="small" className="w-32" />
   <Skeleton className="aspect-[8/5]" />
-  <Skeleton radius="pill" className="h-6 w-16" />
+  <Skeleton className="h-6 w-16" />
 </Loading>
 
 // Error: what went wrong, how to fix it, and the retry.
@@ -138,7 +138,7 @@ function RowSkeleton() {
           <Skeleton text="caption" className="w-2/5 max-w-40" />
         </div>
         <div className="flex shrink-0 sm:w-24">
-          <Skeleton radius="pill" className="h-6 w-16" />
+          <Skeleton className="h-6 w-16" />
         </div>
         <div className="hidden w-14 shrink-0 sm:block">
           <Skeleton text="caption" />
@@ -180,8 +180,8 @@ function CardSkeleton() {
         <Skeleton text="small" className="w-4/5" />
       </div>
       <div className="mt-auto flex flex-wrap gap-2 px-3 pt-4 pb-3">
-        <Skeleton radius="pill" className="h-6 w-16" />
-        <Skeleton radius="pill" className="h-6 w-14" />
+        <Skeleton className="h-6 w-16" />
+        <Skeleton className="h-6 w-14" />
       </div>
     </div>
   );
@@ -337,7 +337,7 @@ export default function StatesPage() {
         code="LoadingCardsDemo"
         onReplay={resetCards}
         replayLabel="Reset"
-        caption="Cards load the same way: a cover block at the real 8 to 5 ratio, two lines of text and two tag pills, in the same grid. The grid has no entrance of its own, so the cards appear in place. Load them and watch the height: it stays the same."
+        caption="Cards load the same way: a cover block at the real 8 to 5 ratio, two lines of text and two tags, in the same grid. The grid has no entrance of its own, so the cards appear in place. Load them and watch the height: it stays the same."
       >
         <LoadingCardsDemo key={cardsKey} />
       </Stage>

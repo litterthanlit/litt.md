@@ -7,9 +7,9 @@
  *   uses it must scroll beneath.
  * - Content sits in a max-w-wide wrap with the page gutter. Order: wordmark, nav, actions.
  * - Nav links are small type in fg-subtle. Hover is fg on an fg-6% fill (instant tier,
- *   color and background-color only). The current page is fg with an accent dot and
- *   aria-current="page", so it never rests on color alone. The dot is absolute, so the
- *   link never moves or resizes.
+ *   color and background-color only). The current page is fg, a lightness step from its
+ *   neighbours rather than a hue, with aria-current="page". There is no dot. In the menu
+ *   the current page carries a check in the icon cell, like a picked option.
  * - Responsive by container, not viewport. The bar asks how wide it is (a CSS container
  *   query), so it behaves the same as a full-bleed header on a page and inside a frame,
  *   and it needs no JavaScript or hydration to pick a layout. Below navFrom the links are
@@ -32,7 +32,7 @@
  */
 import type { ReactNode } from "react";
 import { Button } from "./button";
-import { MenuIcon } from "./icons";
+import { CheckIcon, MenuIcon } from "./icons";
 import { Menu, MenuItem } from "./menu";
 
 /** One nav link. */
@@ -51,7 +51,7 @@ export type HeaderLinkProps = {
   className: string;
   /** "page" on the current link and undefined on the rest. Pass it to your link. */
   "aria-current"?: "page";
-  /** The label and, on the current link, the accent dot. Pass it as the link's children. */
+  /** The label. Pass it as the link's children. */
   children: ReactNode;
 };
 
@@ -89,11 +89,6 @@ const link =
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-/** The same dot marks the current page in the bar and in the menu. */
-function Dot() {
-  return <span aria-hidden="true" className="size-1.5 rounded-pill bg-accent" />;
-}
-
 /** The sticky glass header. It sits at the top of the page, with content that scrolls under it. */
 export function Header({
   wordmark,
@@ -126,17 +121,7 @@ export function Header({
                     {draw(l, {
                       className: link + (l.current ? " text-fg" : " text-fg-subtle"),
                       "aria-current": l.current ? "page" : undefined,
-                      children: (
-                        <>
-                          <span className="litt-trim">{l.label}</span>
-                          {l.current && (
-                            <span
-                              aria-hidden="true"
-                              className="absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-pill bg-accent"
-                            />
-                          )}
-                        </>
-                      ),
+                      children: <span className="litt-trim">{l.label}</span>,
                     })}
                   </li>
                 ))}
@@ -163,7 +148,7 @@ export function Header({
                   {links.map((l) => (
                     <MenuItem
                       key={l.href}
-                      icon={l.current ? <Dot /> : <span />}
+                      icon={l.current ? <CheckIcon /> : <span />}
                       /* A real link by default; with onNavigate, the router does the navigating. */
                       {...(onNavigate ? { onSelect: () => onNavigate(l) } : { href: l.href })}
                     >

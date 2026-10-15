@@ -116,7 +116,6 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         (p.id === page?.id ? "text-fg" : "text-fg-subtle hover:text-fg")
       }
     >
-      <span className={"size-1.5 rounded-pill " + (p.id === page?.id ? "bg-accent" : "bg-transparent")} aria-hidden="true" />
       {p.title}
     </a>
   );

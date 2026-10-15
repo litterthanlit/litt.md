@@ -11,6 +11,7 @@ import {
   TableRow,
   TableSkeleton,
 } from "@/components/table";
+import { Tag } from "@/components/tag";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -82,7 +83,7 @@ export const docs: PageDocs = {
     "The page never scrolls sideways. A cell does not wrap, so a narrow screen scrolls the table inside its region; add whitespace-normal to a cell that must wrap.",
     "Pass busy while loading. It sets aria-busy and announces \"Loading\" with the label. The skeleton rows are hidden from screen readers, and TableEmpty is a status.",
     "Hover is a fill and never reveals anything, so touch loses nothing. On a touch screen a row held down gets the same kind of fill, and so does a sortable header, as feedback only: a row is not a button. Rows are 44px tall, and a sortable header is 44px.",
-    "Color never carries a status alone. The demos pair a dot with a word.",
+    "Color never carries a status alone. The demos use status Tags, which always say the status in words.",
     "Under reduced motion the rows appear at once, with no travel or stagger, and the hover fill changes without a fade.",
   ],
 };
@@ -96,18 +97,9 @@ function shortDate(iso: string) {
 
 type Tone = "success" | "warning" | "danger" | "neutral";
 
-/** A status dot and word. The dot carries the color, danger also colors the word, and a hollow dot tells two neutral statuses apart. */
-function Status({ tone, hollow = false, children }: { tone: Tone; hollow?: boolean; children: string }) {
-  const dot = { success: "bg-success", warning: "bg-warning", danger: "bg-danger", neutral: "bg-fg-subtle" }[tone];
-  return (
-    <span className={"inline-flex items-center gap-2 " + (tone === "danger" ? "text-danger" : "")}>
-      <span
-        aria-hidden="true"
-        className={"size-1.5 shrink-0 rounded-pill " + (hollow ? "border border-fg-subtle" : dot)}
-      />
-      {children}
-    </span>
-  );
+/** A status as a Tag: the word in the status color. Two neutral statuses differ by their words. */
+function Status({ tone, children }: { tone: Tone; children: string }) {
+  return <Tag status={tone}>{children}</Tag>;
 }
 
 /* ---------- (a) Deploy history: the entrance ---------- */
@@ -257,7 +249,7 @@ function InvoicesDemo() {
               <TableCell primary>{inv.id}</TableCell>
               <TableCell>{inv.client}</TableCell>
               <TableCell>
-                <Status tone={TONE[inv.status]} hollow={inv.status === "Draft"}>
+                <Status tone={TONE[inv.status]}>
                   {inv.status}
                 </Status>
               </TableCell>

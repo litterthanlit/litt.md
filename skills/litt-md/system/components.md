@@ -52,7 +52,7 @@ Underline or segmented. Use the ARIA tabs pattern (`tablist`, `tab`, `tabpanel`)
 - **Touch:** sm tabs grow to `--control-md` on coarse screens, so no tab is under 44px.
 
 ## Tag
-24px tall, `--radius-pill`, `--surface-2` fill, inset `--line`, caption size in `--fg-subtle`. A status tag colors the text and a 6px dot with the status color, never the fill. When several tags sit on one item, keep one status tag and let the rest be plain.
+The selected segment's look, in mono: 24px tall, `--radius-control`, a `--surface-1` fill with an inset `--line` and `--highlight`, and `--font-mono` at the caption size. A plain tag is `--fg-muted`. A status tag colors only its text with the status color (neutral is `--fg-subtle`), never the fill, and there is no dot: the word says the status. When several tags sit on one item, keep one status tag and let the rest be plain. Filter chips sit beside tags, so they take `--radius-control` too; they stay in the sans, because they are controls.
 
 ## Kbd
 `--font-mono` at the caption size (12px) and weight 400, a 20px chip at `--radius-control`, `--surface-2`, inset `--line`. Use it for real shortcuts only.
@@ -66,6 +66,7 @@ Underline or segmented. Use the ARIA tabs pattern (`tablist`, `tab`, `tabpanel`)
 ## Glass header
 Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
 - Order: wordmark → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
+- The current page is `--fg` with `aria-current="page"`, a lightness step from its neighbours. No dot. In the menu on mobile, the current page carries a check.
 - It is full-bleed, so it sets `border-radius: 0` (`.litt-glass` carries the surface radius).
 - On mobile, hide the nav behind the command menu or a menu button. Don't squeeze it.
 - **On compact screens** the nav stays behind the menu button and opens as the anchored dropdown (see Popover and dropdown). The bar stays sticky at the safe-area inset and never hides on scroll. Links and the menu button are `--control-md` on coarse screens.
@@ -110,7 +111,7 @@ Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, pa
 - **Drag and buttons:** it can be dragged down from anywhere that follows the rules in Foundations section 6. The close button is 44px on coarse screens. Cancel, Esc and a scrim tap also close it.
 
 ## Toast
-Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-4`, small size in `--fg`, an 8px status dot. Bottom right on desktop, bottom center on mobile. `role="status"` (or `alert` for errors). Auto-dismiss after 5s, but never for errors. An undo action sits on the right as a ghost button or kbd hint.
+Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-4`, small size in `--fg`. No status dot: an error's title is `--danger`, and the words say the rest. Bottom right on desktop, bottom center on mobile. `role="status"` (or `alert` for errors). Auto-dismiss after 5s, but never for errors. An undo action sits on the right as a ghost button or kbd hint.
 - **Motion:** it arrives from just below its corner and settles. That is the expressive tier when the toast is the view's moment, otherwise the responsive tier. It leaves sideways by the same small distance, on the exit token for its tier.
 - **Stacking:** older toasts stack behind the newest and open into a list on hover or focus.
 - **On compact screens** the toast spans the page gutters, sits `--space-4` above the bottom edge or the safe-area inset, and leaves downward by `--travel` on a timeout, not sideways.

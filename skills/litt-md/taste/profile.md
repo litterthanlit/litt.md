@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.7 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 56 journal entries · October 2026
+> v0.8 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 60 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -16,11 +16,11 @@ Five words: **precise, lit, airy, calm, exact.**
 |---|---|---|
 | Character | Technical precision (Linear/Vercel lineage) | Interfaces should feel engineered and inevitable, not decorated. |
 | Themes | Light and dark are both first-class | Neither theme is an afterthought or a mechanical inversion. |
-| Type | Hanken Grotesk + Geist Mono, nothing else, weight 400 only; display stops at 40 | One grotesk carries everything; mono is for code, keys and data. Heavier weights read too wide (P9), and poster-sized headlines are out. |
+| Type | Hanken Grotesk + Geist Mono, nothing else, weight 400 only; display stops at 40 | One grotesk carries everything; mono is for code, keys, data and tags. Heavier weights read too wide (P9), and poster-sized headlines are out. |
 | Signature | Light and material | This is where the boldness goes, and it is what separates litt.md from generic dark mode. |
 | Color | Cool neutrals (OKLCH hue about 262), monochrome, one accent per project | Hierarchy comes from tone. The accent is chosen per project. |
 | Density | Airy | One idea per section, with generous negative space. |
-| Shape | Slight radius: controls 4px, surfaces 8px, pills for chips, tags, avatars, status dots and icon-only buttons | A little radius softens the precision and stays exact. A surface is a control plus the 4px inset, so corners nest. Two sizes and the pill, nothing in between. |
+| Shape | Slight radius: controls 4px (tags and chips too), surfaces 8px, pills only for avatars and icon-only buttons | A little radius softens the precision and stays exact. A surface is a control plus the 4px inset, so corners nest. Two sizes and the pill, nothing in between. |
 | Motion | Sweet spot, three tiers. Instant: 100ms ease-out tween. Responsive: spring, 200ms, bounce 0. Expressive: spring, 350ms, bounce 0.12, one moment per view. Exits run at 0.75× and never bounce. On phones the modal is a bottom sheet that rises by its own height on the expressive spring, never uses up the view's one moment, and drags down to dismiss | Fast by default, with one signature moment per view. Motion confirms actions and never performs. Only transform and opacity animate, plus color fades at instant. |
 
 ## Signature rules
@@ -76,7 +76,8 @@ Five words: **precise, lit, airy, calm, exact.**
 - Bounce a spring past 0.12, bounce on the responsive tier or on any exit, or give a view more than one expressive moment. The instant tween stays at or under 240ms.
 - Animate layout properties (width, height, top, left), use `transition: all`, or animate anything but transform and opacity. Color, background-color, border-color, fill and the focus ring may fade at `--dur-instant`.
 - Add motion that is not a response to the user: no scroll-triggered reveals, no looping autoplay, no parallax, no marquee, no pulsing or shimmering skeleton. The one expressive entrance per view plays once, on arrival.
-- Use a radius off the scale. Controls are 4px, surfaces 8px, and pills are only for chips, tags, avatars, status dots and icon-only buttons.
+- Use a radius off the scale. Controls are 4px, tags and chips included, surfaces 8px, and pills are only for avatars and icon-only buttons.
+- Mark a status or the current page with a dot. Say it in words (a tag), or step the text color.
 - Put a drop shadow with an offset on anything, or any shadow on a card in the page flow.
 - Fill backgrounds with accent color. Tint the light instead.
 - Put glass on static cards, or stack glass on glass.
@@ -101,6 +102,7 @@ Claude's default output drifts toward these. Each one is banned unless the sessi
 The interview workflow works through these. When one is answered, move the answer into a rule (`P#`) or decision and delete it here.
 
 - **Q1.** How often may uppercase mono labels appear? Never, once per view, or as a system for metadata only?
+  - *Evidence:* v0.8 set tags in Geist Mono, in sentence case: mono as a system for metadata, without uppercase.
   - *Evidence:* Fluid Functionalism bans uppercase, eyebrow labels and letter-spacing outright, enforced by lint.
 - **Q2.** What is the default accent for Litt's own properties (litt.design, templates)? `tokens.css` holds a placeholder signal blue until this is decided.
   - *Evidence:* litt.design already uses a lime accent, only on status dots.
@@ -123,6 +125,7 @@ The interview workflow works through these. When one is answered, move the answe
 
 ## Changelog
 
+- **v0.8, October 2026.** Nick on the tags: "the dots are horrible and the rounded tags dont feel right", closer to the gallery's Preview/Code toggle, and "shouldnt tags also be in mono?". From a four-way tag trial he chose the selected segment's look in Geist Mono: 24px, the control radius, a surface-1 fill with the hairline and top highlight, caption size, status as colored text. Every dot goes: tags, toasts (an error's title is `--danger`) and the header's current page (the text color steps, and the menu shows a check). Filter chips take the control radius too, so pills are left for avatars and icon-only buttons. The Type and Shape decisions change accordingly.
 - **v0.7, October 2026.** Nick accepted every recommendation in `proposals/open-decisions.md`, the open questions left by the agent tests and the phone build. Checkboxes, radios and switches fill with `--fg`, never the accent (P1). A dialog's fields and actions are md, lg is for hero CTAs and a page form's submit, and a field is lg only beside an lg button (P10). A phone sheet always rises on the expressive spring and does not use up the view's one moment; on the desktop a dialog takes the responsive tier when the moment is taken. A pressed row fills at its own hover fill, never below fg 6%, and a pressed button also fills, so a press shows under reduced motion. Sheets sit above the keyboard, and a toast that fires over a sheet docks at the top edge. Skeletons are static. Kbd moves to the caption size, toasts stay 5s, the dark tooltip ring is `--line-strong`, and a disabled button keeps its hairline. Landscape phones wait for a real-phone check.
 - **v0.6, October 2026.** Nick accepted every recommendation in `proposals/responsive-motion.md`. Two device signals: `compact` (narrower than 640) and `coarse` (a finger). On compact screens the modal and popovers are bottom sheets that rise by their own height, the one exception to `--travel`, on the modal's expressive tier, and drag down to dismiss past `--dismiss-distance` (0.25) or faster than `--dismiss-velocity` (0.4 px/ms), both new tokens. Menus stay anchored, and a submenu replaces the list in place. The command menu sits at the top edge. On touch a tooltip opens on a 500ms hold, key hints hide, pressed rows fill, focus lands on the panel, and toasts swipe away. Travel is unchanged and sheets keep their glass. The spec lives in `system/foundations.md` section 6 and `system/components.md`.
 - **v0.5, October 2026.** In the litt-ui gallery Nick said "sweet spot is where its at" and "add slight radius". Motion is now three tiers: instant (100ms tween), responsive (spring, 200ms, bounce 0) and expressive (spring, 350ms, bounce 0.12, one per view), with a 40ms stagger and 16px travel. Exits run at 0.75× the spring's time as an ease-out tween and never bounce. Springs are time plus bounce. Only transform and opacity animate, plus color, background-color, border-color, fill and the focus ring at instant. Menus, the command menu and dense lists get one gliding highlight; airy layouts keep the per-row fill. Shape is slight radius: controls 4px, surfaces 8px, pills unchanged, and the binary-radius rule is retired. `--dur-reveal` and `--dur-panel` became `--dur-responsive`, `--dur-max` is gone, and `--dur-exit-*` now derive from the springs. Q15 to Q19 closed.

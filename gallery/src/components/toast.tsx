@@ -5,7 +5,8 @@
  *   app that fires toasts; children call useToast(). A bare toast() also works
  *   and routes to the Toaster mounted last.
  * - Look: litt-glass (float shadow), rounded-surface, 360px, fixed height (72px)
- *   so the stack math is plain arithmetic. A tone dot, a small ghost action and
+ *   so the stack math is plain arithmetic. No status dot: an error's title is
+ *   --danger, the rest are --fg, and the words say the rest. A small ghost action and
  *   a round close button.
  * - Stack: the newest is in front. Older toasts sit behind, 8px and 16px up,
  *   scaled 0.96 and 0.92, fading. Beyond three they wait out of sight and move
@@ -63,7 +64,7 @@ export type ToastOptions = {
   title: ReactNode;
   /** A second line in a quieter color, cut to one line. */
   description?: ReactNode;
-  /** "neutral" (the default), "success" or "error". It sets the status dot. Errors are announced at once and stay until dismissed. */
+  /** "neutral" (the default), "success" or "error". An error's title is the danger color; errors are announced at once and stay until dismissed. */
   tone?: ToastTone;
   /** A small button on the right, such as Undo or View. Pressing it runs onClick and then dismisses the toast. */
   action?: { label: string; onClick: () => void };
@@ -296,12 +297,6 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
   );
 }
 
-const DOT: Record<ToastTone, string> = {
-  neutral: "bg-fg-subtle",
-  success: "bg-success",
-  error: "bg-danger",
-};
-
 function ToastView({
   item,
   depth,
@@ -419,9 +414,8 @@ function ToastView({
         initial={false}
         animate={{ opacity: showContent ? 1 : 0, transition: move }}
       >
-        <span aria-hidden="true" className={"size-2 shrink-0 rounded-pill " + DOT[tone]} />
         <div className="min-w-0 flex-1">
-          <p className={"text-small text-fg " + (item.description ? "truncate" : "line-clamp-2")}>{item.title}</p>
+          <p className={"text-small " + (tone === "error" ? "text-danger " : "text-fg ") + (item.description ? "truncate" : "line-clamp-2")}>{item.title}</p>
           {item.description && <p className="truncate text-caption text-fg-subtle">{item.description}</p>}
         </div>
         {item.action && (

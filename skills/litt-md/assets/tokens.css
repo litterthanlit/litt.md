@@ -92,7 +92,7 @@
      the 4px inset (--space-1) around it, so nested corners stay concentric. */
   --radius-control: 4px;       /* buttons, inputs, tabs, kbd, menu rows, tooltips */
   --radius-surface: 8px;       /* cards, panels, menus, dialogs, toasts (control + 4) */
-  --radius-pill: 999px;        /* chips, tags, avatars, status dots, icon-only buttons */
+  --radius-pill: 999px;        /* avatars and icon-only buttons */
   --hairline: 1px;
 
   /* Controls (P10): buttons and inputs share one height scale. Labels are

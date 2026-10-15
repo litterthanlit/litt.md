@@ -12,6 +12,7 @@ import { curve, overshoot, toCss, type Spring } from "@/motion/spring";
 import { checkRules, diffFromLocked, tokensSnippet } from "@/motion/rules";
 import { Button } from "@/components/button";
 import { CheckIcon, CopyIcon } from "@/components/icons";
+import { Tag } from "@/components/tag";
 
 /** A slider's range always includes its current value, so a token outside the usual range still shows. */
 const span = (value: number, min: number, max: number): { min: number; max: number } => ({ min: Math.min(min, value), max: Math.max(max, value) });
@@ -238,11 +239,8 @@ export function MotionPanel({ device, onDeviceChange }: {
         <ul className="grid gap-2">
           {checks.map((c) => (
             <li key={c.text} className="flex items-start gap-2 text-small">
-              <span className={"mt-1.5 size-1.5 shrink-0 rounded-pill " + (c.ok ? "bg-success" : "bg-warning")} aria-hidden="true" />
-              <span className={c.ok ? "text-fg-subtle" : "text-fg-muted"}>
-                {c.text}
-                <span className="sr-only">{c.ok ? " (fits)" : " (needs a rule change)"}</span>
-              </span>
+              <Tag status={c.ok ? "success" : "warning"}>{c.ok ? "Fits" : "Change"}</Tag>
+              <span className={"pt-0.5 " + (c.ok ? "text-fg-subtle" : "text-fg-muted")}>{c.text}</span>
             </li>
           ))}
         </ul>
