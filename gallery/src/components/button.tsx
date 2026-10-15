@@ -9,12 +9,18 @@
  *   --dur-instant, which tokens.css owns. Press is scale(--press-scale). Tailwind's
  *   active:scale-* sets the CSS `scale` property, not `transform`, so the transition
  *   names `scale`; naming `transform` instead would let the press snap.
- * - Touch: the button keeps the press scale as its feedback, and the OS tap flash is
- *   turned off so the two do not double. Rows and segments fill instead (see Tabs, List).
+ * - Touch: the button keeps the press scale, and a pressed button also takes its hover
+ *   fill, so a press still shows under reduced motion (which sets the scale to 1). The OS
+ *   tap flash is turned off so the two do not double. Rows and segments fill (see Tabs, List).
+ * - Children: one child is the label, trimmed to its cap height. An icon and a word
+ *   (`<Button><PlusIcon /> New</Button>`, as shadcn writes it) sit side by side: each
+ *   run of text is a trimmed label, and each element sits in the row. A child SVG is
+ *   16px, like every button icon. The icon prop is still the documented way.
+ * - Disabled keeps a hairline, so the button keeps its shape on a surface-2 area.
  * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
  *   round (pill) and need an aria-label.
  */
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { Children, type ButtonHTMLAttributes, type ReactNode } from "react";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -22,7 +28,7 @@ export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Primary is the one accent fill in a view. Secondary is the default. Ghost is for quiet actions like Cancel. */
   variant?: ButtonVariant;
-  /** Height on the shared control scale: sm is 32, md is 44, lg is 56. Use lg for hero actions and a form's submit. */
+  /** Height on the shared control scale: sm is 32, md is 44, lg is 56. Use lg for hero actions and a page form's submit, md in a dialog. */
   size?: ButtonSize;
   /** Swaps the label for a spinner, keeps the width, sets aria-busy and disables the button. */
   loading?: boolean;
@@ -53,14 +59,36 @@ const iconSizes: Record<ButtonSize, string> = { sm: "w-control-sm", md: "w-contr
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent text-accent-fg hover:bg-accent-hover shadow-glow " +
+    "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
     "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)]",
   secondary:
-    "bg-surface-1 text-fg hover:bg-surface-2 shadow-[inset_0_0_0_1px_var(--line-strong),var(--highlight)]",
-  ghost: "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
+    "bg-surface-1 text-fg hover:bg-surface-2 enabled:pointer-coarse:active:bg-surface-2 " +
+    "shadow-[inset_0_0_0_1px_var(--line-strong),var(--highlight)]",
+  ghost:
+    "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+    "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
 };
 const disabledLook =
-  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-none disabled:inset-shadow-none";
+  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none";
+
+/* One child is the label. Several (an icon and a word) sit in the row: text runs are trimmed labels, elements sit as they are. */
+function label(children: ReactNode): ReactNode {
+  const parts = Children.toArray(children);
+  if (parts.length < 2) return parts.length ? <span className="litt-trim">{children}</span> : null;
+  const out: ReactNode[] = [];
+  let text = "";
+  const flush = () => {
+    const t = text.trim();
+    if (t) out.push(<span key={`label-${out.length}`} className="litt-trim">{t}</span>);
+    text = "";
+  };
+  for (const part of parts) {
+    if (typeof part === "string" || typeof part === "number") text += part;
+    else { flush(); out.push(part); }
+  }
+  flush();
+  return out;
+}
 
 export function Button({
   variant = "secondary",
@@ -88,11 +116,12 @@ export function Button({
       <span
         className={
           "inline-flex items-center gap-control transition-opacity duration-(--dur-instant) ease-litt " +
+          "[&>svg]:size-4 [&>svg]:shrink-0 " +
           (loading ? "opacity-0" : "opacity-100")
         }
       >
         {icon}
-        {!iconOnly && children != null && <span className="litt-trim">{children}</span>}
+        {!iconOnly && label(children)}
         {iconOnly && children}
         {iconRight}
       </span>
