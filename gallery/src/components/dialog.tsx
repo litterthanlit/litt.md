@@ -43,7 +43,8 @@
 import { createContext, useCallback, useContext, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useTransform } from "motion/react";
-import { useDevice, useDismissDrag, useExit, useMotionDial, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useMotionDial, useTransition, useTravel } from "@/motion";
+import { useDismissDrag } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
 

@@ -415,6 +415,10 @@ function importsOf(file) {
   return result;
 }
 
+/* The motion engine installs as one registry item (gen-registry.mjs, motionFiles), so a component that uses any of
+   it needs all of it, even a file its imports never reach (drag.ts imports index.tsx, not the other way round). */
+const MOTION_ENGINE = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts"].map((f) => path.join(srcDir, "motion", f));
+
 function closure(entry) {
   const files = new Set(), pkgs = new Set();
   const stack = [[entry, null]];
@@ -425,6 +429,7 @@ function closure(entry) {
       if (under(file, path.join(srcDir, bad))) fail(`${rel(from ?? file)} imports ${rel(file)}, which can't be copied with the component (src/${bad}/ is not part of the library)`);
     }
     files.add(file);
+    if (under(file, path.join(srcDir, "motion")) && MOTION_ENGINE.includes(path.normalize(file))) MOTION_ENGINE.forEach((f) => stack.push([f, file]));
     if (!/\.[cm]?[jt]sx?$/.test(file)) continue;
     if (/\.[jt]sx$/.test(file)) pkgs.add("react");
     const { locals, pkgs: p } = importsOf(file);

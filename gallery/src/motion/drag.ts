@@ -27,6 +27,9 @@
  * - Reduced motion: the drag still follows the finger and the release is instant (the hooks return duration 0).
  * - Transform only. Every gesture needs a button that does the same thing; this hook never replaces one.
  *
+ * Import it from "@/motion/drag", not "@/motion": this file uses the tier hooks from ./index, so index does not
+ * re-export it (a re-export would make the two modules depend on each other, which Rollup splits badly).
+ *
  * Final API (the stub's names are kept; everything marked "added" is new):
  * - `useDismissDrag(options)` -> `{ panel, onPointerDown, offset, exit }`
  * - options: `direction` "down" | "left" | "right" | "sideways" (a sheet is "down", a toast "sideways"),
