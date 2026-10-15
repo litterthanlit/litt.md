@@ -7,7 +7,7 @@
  * the values locked in tokens.css.
  */
 import { useId, useState } from "react";
-import { PRESET_LABEL, RADII, TRAVELS, surfaceRadius, useMotionDial, type PresetName } from "@/motion";
+import { PRESET_LABEL, RADII, TRAVELS, surfaceRadius, useMotionDial, type DeviceMode, type PresetName } from "@/motion";
 import { curve, overshoot, toCss, type Spring } from "@/motion/spring";
 import { checkRules, diffFromLocked, tokensSnippet } from "@/motion/rules";
 import { Button } from "@/components/button";
@@ -79,11 +79,22 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
+/** The Device switch: what the demos on the Playground think the screen is. */
+const DEVICES: { mode: DeviceMode; label: string }[] = [
+  { mode: "auto", label: "Auto" },
+  { mode: "phone", label: "Phone" },
+  { mode: "desktop", label: "Desktop" },
+];
+
 const ms = (v: number) => `${Math.round(v)}ms`;
 const sec = (v: number) => `${Math.round(v * 1000)}ms`;
 const pct = (v: number) => v.toFixed(2);
 
-export function MotionPanel() {
+export function MotionPanel({ device, onDeviceChange }: {
+  /** Which device the demos are forced to, or "auto" for the real screen. The Playground owns it, so leaving the page resets it. */
+  device: DeviceMode;
+  onDeviceChange: (mode: DeviceMode) => void;
+}) {
   const { dial, locked, presets, preset, setPreset, update, reset, slow, setSlow, reducedPreview, setReducedPreview, reduced, radius, setRadius } = useMotionDial();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -133,11 +144,26 @@ export function MotionPanel() {
           ))}
         </div>
         <div className="flex justify-start">
-          <Button size="sm" variant="ghost" onClick={reset} className="-ml-3">Reset to locked</Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              reset();
+              onDeviceChange("auto");
+            }}
+            className="-ml-3"
+          >
+            Reset to locked
+          </Button>
         </div>
         {reduced && (
           <p className="text-caption text-warning">
             {reducedPreview ? "Previewing reduced motion: everything is instant." : "Your system asks for reduced motion, so every component is instant."}
+          </p>
+        )}
+        {device !== "auto" && (
+          <p className="text-caption text-warning">
+            {device === "phone" ? "Previewing a phone: the narrow-screen paths are on." : "Previewing a desktop: the narrow-screen paths are off."}
           </p>
         )}
       </header>
@@ -192,6 +218,19 @@ export function MotionPanel() {
       <Group title="Playback" use="For looking, not for shipping">
         <Toggle label="Slow motion ×4" checked={slow === 4} onChange={(b) => setSlow(b ? 4 : 1)} />
         <Toggle label="Preview reduced motion" checked={reducedPreview} onChange={setReducedPreview} />
+        <div className="grid gap-2">
+          <span className="text-small text-fg-muted" id="device-label">Device</span>
+          <div className={segmented + " grid-cols-3"} role="group" aria-labelledby="device-label" aria-describedby="device-note">
+            {DEVICES.map(({ mode, label }) => (
+              <button key={mode} type="button" aria-pressed={device === mode} onClick={() => onDeviceChange(mode)} className={segment + " px-2 text-small"}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <p id="device-note" className="text-caption text-fg-subtle">
+            Auto follows your screen. Phone lets a desktop try the sheet, the menu drill-down and the command menu at the top edge. Input details on touch, such as 44px targets and pressed fills, follow your real pointer, not this switch.
+          </p>
+        </div>
       </Group>
 
       <section className="grid gap-3 border-t border-line pt-6" aria-labelledby="rules-title">
