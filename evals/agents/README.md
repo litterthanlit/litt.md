@@ -28,6 +28,7 @@ Useful flags (the runner's `--help` lists all of them):
 | `--runs 3` | Repeat each task. One run is one sample, and Claude varies. |
 | `--model sonnet` | The model that builds. |
 | `--no-skill` | The baseline arm: the same task without the litt-md plugin. Compare its table with a normal run to see what the skill adds. |
+| `--no-self-shots` | Do not let the agent take its own screenshots. Runs before 15 October 2026 could not, so use this to compare with them. |
 | `--judge [model]` | Also let a Claude judge read the screenshots against the task's `look` rubric. The judge is Opus unless you name a model, so it is not the model it grades. It is capped at $2 per run. |
 | `--registry <dir or url>` | Where the components come from. The default is your working tree (`gallery/public/r`, built with `npm run gen:registry --prefix gallery`). Use `https://littmd.vercel.app/r` to test what is deployed. |
 | `--fake-agent ../evals/agents/fake-agent.mjs` | Run the fake agent instead of Claude. Free. See below. |
@@ -44,7 +45,9 @@ Exit code: 0 when every required check passes, 1 when one fails, 2 on a harness 
 2. Runs `claude -p` in it with your prompt, the litt-md plugin, and a short list of allowed tools.
 3. Grades the app that comes out. Each run keeps its `transcript.jsonl`, `shots/` and `grade.json` under `$TMPDIR/litt-agent-test/`.
 
-The prompt is the only instruction, plus one line the runner appends to the system prompt: Claude is running non-interactively and nobody can answer questions. Neither mentions the registry, the skill or litt's tokens. Finding them is what is being tested.
+The prompt is the only instruction, plus two lines the runner appends to the system prompt: Claude is running non-interactively and nobody can answer questions, and it can look at its work by running `npm run build`, then `gallery/scripts/agent-shot.mjs`. None of this mentions the registry, the skill or litt's tokens. Finding them is what is being tested.
+
+`agent-shot.mjs` is the build workflow's self-critique step (screenshots in light and dark at 1440 and 390) made possible in the test: the agent cannot start a preview server or Playwright itself, so this one command serves its production build with the grader's own server and writes full-page PNGs to `.litt-shots/`, which the agent opens with Read. The grader leaves `.litt-shots/` out of the file diff. It adds turns and cost, so `--no-self-shots` turns it off.
 
 ## The checks
 
