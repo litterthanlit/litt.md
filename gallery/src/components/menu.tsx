@@ -17,6 +17,9 @@
  *   pointer moves or a key is pressed. Opened with Enter, Space or ArrowDown,
  *   Radix focuses the first row and it shows the keyboard ring.
  * - Checkbox and radio rows keep a fixed 16px cell, so toggling never shifts text.
+ * - The menu is modal: Radix hides the page from screen readers (aria-hidden) while it is
+ *   open, but leaves it focusable, so the page is also made inert until the menu closes.
+ *   A press on a toast is not an outside press (ignoreToaster), so it leaves the menu open.
  * - Forced colors (Windows high contrast) drops box-shadow and the glass fill. The panel and a submenu take a
  *   real border, the panel a Canvas fill so nothing behind it shows through, the separator is CanvasText, and
  *   a disabled row is GrayText. The highlight becomes an outline (see glide.tsx).
@@ -57,7 +60,7 @@ import {
 import { createPortal } from "react-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, animate, motion, useMotionValue, usePresence } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { ignoreToaster, useDevice, useExit, useTransition, useTravel } from "@/motion";
 import { CheckIcon, ChevronRightIcon } from "./icons";
 import { GLIDE_ROW, useGlide, type Glide } from "./glide";
 
@@ -761,6 +764,7 @@ function Panel({ sub = false, label, backLabel = "Back", side, align, sideOffset
           collisionPadding={8}
           collisionBoundary={collisionBoundary ?? undefined}
           loop
+          onInteractOutside={ignoreToaster}
           {...placedProp}
         >
           <motion.div {...motionProps} className={surface + "litt-glass"}>
@@ -773,6 +777,29 @@ function Panel({ sub = false, label, backLabel = "Back", side, align, sideOffset
 }
 
 /* ------------------------------------------------------------------ root */
+
+/* While the menu is open, Radix marks the rest of the page aria-hidden (data-aria-hidden) but leaves it focusable.
+   Make what it marked inert too, so nothing behind the menu can be reached, and undo exactly that when it closes,
+   before Radix returns focus to the trigger. Radix marks the page just after the menu mounts, so a watcher catches it. */
+function useInertBehind(open: boolean) {
+  useEffect(() => {
+    if (!open) return;
+    const ours = new Set<Element>();
+    const mark = () =>
+      document.querySelectorAll('[data-aria-hidden="true"]').forEach((el) => {
+        if (el.hasAttribute("inert")) return;
+        el.setAttribute("inert", "");
+        ours.add(el);
+      });
+    mark();
+    const watcher = new MutationObserver(mark);
+    watcher.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["data-aria-hidden"] });
+    return () => {
+      watcher.disconnect();
+      ours.forEach((el) => el.removeAttribute("inert"));
+    };
+  }, [open]);
+}
 
 export type MenuProps = {
   /** The element that opens the menu. It receives the Radix trigger props. */
@@ -805,6 +832,7 @@ export function Menu({
   children,
 }: MenuProps) {
   const [open, setOpen] = useState(false);
+  useInertBehind(open);
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>
