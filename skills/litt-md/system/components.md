@@ -58,7 +58,7 @@ An on or off setting that takes effect as a setting, such as an email when a bui
 - **On:** the track fills with `--fg` and the thumb turns `--canvas`, at the end. Never the accent (P1). On and off differ in position, fill and thumb color, so color is never the only signal.
 - **Motion:** the thumb slides by transform and the fill fades, both on the instant tier: a switch is a toggle. The box never moves.
 - **Hover and press:** a wash at fg 6% over the track, like the checkbox; on a coarse pointer a press shows the wash too.
-- **Disabled:** the track is `--surface-2` with a `--line` edge, and the thumb `--fg-disabled`; on and disabled, the track is `--surface-3`.
+- **Disabled:** the track is `--surface-2` with a `--line` edge, and the thumb `--fg-disabled`; on and disabled, the track is `--surface-3`. The label dims to `--fg-disabled`, but the description stays `--fg-subtle`: it is often what says why the switch is off-limits, so it must stay readable. A checkbox's description does the same.
 - **Label:** the label sits right of the switch, `--space-2` away, at the small size, and the whole row toggles it. A description can sit under the label in `--fg-subtle`. In a settings list the label and description come first and the switch sits at the row's end (`align="end"`), so the switches line up in one column.
 - **Touch:** the row is at least 44px tall on coarse pointers.
 - Build it on a `role="switch"` button with `aria-checked`. Space toggles it. A form sends it like a checkbox.
@@ -71,7 +71,7 @@ A value on a continuous range, such as the default animation speed. Use it when 
 - **Motion:** the thumb and the range follow the pointer one to one, with no easing, and an arrow key moves them at once. Their position is a layout value, and an eased jump would lag the key. Colors fade on the instant tier.
 - **Keyboard:** ←→ and ↑↓ step, Page Up and Page Down step by a tenth of the range, Home and End go to the ends.
 - **Touch:** the hit area is 44px tall on coarse pointers. A drag that starts on a slider never moves a sheet.
-- **Disabled:** the rail at fg 6%, the range `--fg-disabled`, the thumb `--surface-2` with a `--line` edge.
+- **Disabled:** the rail at fg 6%, the range `--fg-disabled`, the thumb `--surface-2` with a `--line` edge. The label dims to `--fg-disabled`; the value and the end words stay `--fg-subtle`, because they are still read.
 
 ## Segmented control
 A `--radius-surface` track with fill at fg 5%, an inset `--line` edge and 4px (`--space-1`) padding, so the segments inside it, at `--radius-control`, stay concentric. Each segment is caption size in `--fg-subtle`. The selected segment gets `--surface-1`, `--fg`, an inset `--line` and `--highlight`. Build it from `fieldset` and radio inputs, with a visually hidden legend.

@@ -148,7 +148,8 @@ export function Switch({
       {description && (
         <p
           id={descriptionId}
-          className={"row-start-2 mt-1 text-small text-fg-subtle peer-disabled:text-fg-disabled " + (end ? "col-start-1" : "col-start-2")}
+          /* A disabled switch keeps its description at --fg-subtle: it is often what says why the switch is off-limits. */
+          className={"row-start-2 mt-1 text-small text-fg-subtle " + (end ? "col-start-1" : "col-start-2")}
         >
           {description}
         </p>

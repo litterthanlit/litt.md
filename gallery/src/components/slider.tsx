@@ -19,7 +19,8 @@
  * - Touch: the hit area is 44px tall on coarse pointers. The row grows, the rail does not. The
  *   slider owns horizontal drags: it is marked data-no-drag, so a sheet never moves under it,
  *   and its touch-action leaves vertical scrolling to the page.
- * - Disabled: the rail at fg 6%, the range --fg-disabled, the thumb --surface-2 with a --line edge.
+ * - Disabled: the rail at fg 6%, the range --fg-disabled, the thumb --surface-2 with a --line edge. The
+ *   label dims to --fg-disabled; the value and the end words stay at --fg-subtle, because they are still read.
  * - Forced colors drops box-shadow, so the rail and the thumb get real borders.
  */
 import { useId, useState, type KeyboardEvent, type ReactNode, type Ref } from "react";
@@ -153,7 +154,8 @@ export function Slider({
           {label}
         </span>
         {showValue && (
-          <span aria-hidden="true" className={"font-mono text-small tabular-nums " + (disabled ? "text-fg-disabled" : "text-fg-muted")}>
+          /* Disabled, the value steps down to --fg-subtle, not --fg-disabled: it is still information, and it must stay readable. */
+          <span aria-hidden="true" className={"font-mono text-small tabular-nums " + (disabled ? "text-fg-subtle" : "text-fg-muted")}>
             {text}
           </span>
         )}
@@ -185,7 +187,7 @@ export function Slider({
           />
         </RadixSlider.Root>
         {(minLabel || maxLabel) && (
-          <div className={"flex justify-between gap-4 text-caption " + (disabled ? "text-fg-disabled" : "text-fg-subtle")}>
+          <div className="flex justify-between gap-4 text-caption text-fg-subtle">
             <span>{minLabel}</span>
             <span className="text-right">{maxLabel}</span>
           </div>

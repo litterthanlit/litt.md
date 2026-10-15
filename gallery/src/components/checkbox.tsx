@@ -179,7 +179,8 @@ function Choice({
       {description && (
         <p
           id={descriptionId}
-          className={"col-start-2 row-start-2 mt-1 text-small peer-disabled:text-fg-disabled " + (invalidProp ? "text-danger" : "text-fg-subtle")}
+          /* A disabled box keeps its description readable: it is often what says why the box is off-limits. */
+          className={"col-start-2 row-start-2 mt-1 text-small " + (invalidProp ? "text-danger" : "text-fg-subtle")}
         >
           {description}
         </p>
