@@ -34,7 +34,7 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
     "A second main action in the same view. Keep one primary and make the rest secondary.",
     "Switching between views or filters. Use Tabs.",
     "Several related actions behind one control. Use Menu.",
-    "A setting that is on or off. Use a checkbox.",
+    "A setting that is on or off. Use Switch, or Checkbox when the choice can be wrong, such as accepting terms.",
   ],
   keyboard: [
     [["Tab"], "Moves focus to the button. A disabled or loading button is skipped."],
