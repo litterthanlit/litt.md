@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { Toaster, useToast } from "@/components/toast";
+import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -8,7 +9,7 @@ export const meta: PageMeta = {
   title: "Toast",
   order: 13, group: "Overlays",
   summary:
-    "Toasts arrive from just below the corner and settle, and they leave sideways by the same small distance. Older ones stack behind the newest and open into a list when you hover or tab into them.",
+    "Toasts arrive from just below the corner and settle, and they leave sideways by the same small distance. Older ones stack behind the newest and open into a list when you hover or tab into them. On a phone they drop away on a timeout, and a swipe sends them off sideways.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -43,7 +44,7 @@ dismiss(id);`,
     "Something just happened and needs no answer: saved, copied, exported, deployed.",
     "A result that arrives later, such as a finished deploy. Add an action like View or Undo when the next step is obvious.",
     "A problem that does not block the work, like a failed build. Errors stay until dismissed and are announced at once.",
-    "Several results in a row. They stack with the newest in front, and open into a list on hover or focus.",
+    "Several results in a row. They stack with the newest in front, and open into a list on hover or focus. On touch, tap the stack to open it.",
     "A message from outside a component, such as an API client. Call toast() without the hook.",
   ],
   skip: [
@@ -67,8 +68,9 @@ dismiss(id);`,
     "The close button is labelled Dismiss notification. Your action's label is its name, so make it a verb: View, Undo.",
     "A Dialog hides and disables everything outside it, toasts included. A toast fired while a dialog is open cannot be clicked or heard until the dialog closes, so fire it from the close step.",
     "On touch there is no hover, so tapping the stack pins it open, and tapping elsewhere closes it again.",
-    "On phones the stack spans the width at the bottom, clear of the safe area. From the small breakpoint up it sits at the bottom right.",
-    "Under reduced motion toasts appear and leave at once, with no travel.",
+    "On touch the front toast can be swiped sideways. It follows the finger, leaves if it went far enough or fast enough, and springs back if not. A swipe is never the only way: the Dismiss button does the same, and it grows to a full touch target on touch. A finger resting on a toast holds its timer.",
+    "On phones the stack spans the page gutters, a step above the bottom edge or the safe area, and a toast that times out drops down instead of going sideways. From the small breakpoint up it sits at the bottom right.",
+    "Under reduced motion toasts appear and leave at once, with no travel. A swipe still follows the finger, and letting go is instant.",
   ],
 };
 
@@ -124,7 +126,12 @@ const BURST = [
   { title: "Build queued", description: "You are second in line." },
 ];
 
-function BurstDemo() {
+function BurstDemo({
+  note = "Hover the stack, or press F8 and Tab through it.",
+}: {
+  /** The hint under the buttons. */
+  note?: ReactNode;
+}) {
   const { toast, dismissAll } = useToast(); // needs a <Toaster> above it
   const timers = useRef<number[]>([]);
   useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
@@ -135,7 +142,7 @@ function BurstDemo() {
   };
 
   return (
-    <Launcher note="Hover the stack, or press F8 and Tab through it.">
+    <Launcher note={note}>
       <Button onClick={fire}>Fire three</Button>
       <Button variant="ghost" onClick={dismissAll}>
         Clear all
@@ -160,6 +167,17 @@ function ErrorDemo() {
         Break the build
       </Button>
     </Launcher>
+  );
+}
+
+/** The same burst, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
+function PhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <Toaster>
+        <BurstDemo note="Drag a toast sideways to send it away, or tap the stack to pin it open." />
+      </Toaster>
+    </DeviceProvider>
   );
 }
 
@@ -198,11 +216,20 @@ export default function ToastPage() {
           title="Error"
           tier="expressive"
           code="ErrorDemo"
-          caption="Errors stay until you dismiss them, and they are announced assertively. Escape dismisses the toast that has focus. The exit slides right by the travel distance and fades, with no bounce."
+          caption="Errors stay until you dismiss them, and they are announced assertively. Escape dismisses the toast that has focus. The exit slides right by the travel distance and fades, with no bounce. On a phone it drops down instead."
         >
           <ErrorDemo />
         </Stage>
       </Toaster>
+
+      <Stage
+        title="On a phone"
+        tier="expressive"
+        code="PhoneDemo"
+        caption="On a phone the toasts span the page and sit above the bottom edge. A toast that times out drops by the travel token instead of sliding sideways. A swipe moves it with your finger, and it leaves the way you pulled if you went far enough or fast enough. A short swipe springs back. This preview forces the phone layout, so a mouse drag works too."
+      >
+        <PhoneDemo />
+      </Stage>
     </Page>
   );
 }

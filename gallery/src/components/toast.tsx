@@ -15,11 +15,22 @@
  *   Restacking is responsive. Exiting is useExit("expressive"): x by travel
  *   toward the right edge, fading, never bouncing.
  * - Behavior: auto-dismiss after about 4s, errors stay. Paused while hovered,
- *   focused or when the tab is hidden. Escape dismisses the focused toast.
- *   F8 moves focus to the newest toast. Each toast is its own live region:
- *   polite, or assertive for errors.
+ *   focused, held by a finger or when the tab is hidden. Escape dismisses the
+ *   focused toast. F8 moves focus to the newest toast. Each toast is its own live
+ *   region: polite, or assertive for errors.
  * - Touch: there is no hover, so tapping the stack pins it open; tap outside to
  *   close it again.
+ *
+ * On phones and touch (foundations.md section 6; both signals come from useDevice,
+ * so <DeviceProvider mode="phone"> previews them on a desktop):
+ * - compact (narrower than 640): the stack spans the page gutters and sits
+ *   --space-4 above the bottom edge or the safe-area inset. A toast that leaves
+ *   by itself (timeout, close, Esc) drops by --travel instead of going sideways.
+ * - coarse (a finger): the front toast follows a sideways drag one to one, through
+ *   useDismissDrag. Past --dismiss-distance of its width, or faster than
+ *   --dismiss-velocity, it carries on the way it was going on the exit token;
+ *   otherwise it springs back. The dismiss button stays and is 44px, so a swipe is
+ *   never the only way. Fine pointers get no drag.
  */
 import {
   createContext,
@@ -34,7 +45,8 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useTransition, useTravel } from "@/motion";
+import { useDismissDrag, type DismissInfo } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
 
@@ -148,6 +160,7 @@ export function Toaster({
 }
 
 function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: string) => void }) {
+  const { compact, coarse } = useDevice();
   const regionRef = useRef<HTMLElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const [hover, setHover] = useState(false);
@@ -211,7 +224,10 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
       ref={regionRef}
       aria-label="Notifications"
       className={
-        "fixed inset-x-gutter bottom-[max(1rem,env(safe-area-inset-bottom,0px))] z-60 sm:inset-x-auto sm:right-6 sm:bottom-[max(1.5rem,env(safe-area-inset-bottom,0px))] sm:w-90 " +
+        "fixed z-60 " +
+        (compact
+          ? "inset-x-gutter bottom-[calc(var(--space-4)+env(safe-area-inset-bottom,0px))] mx-auto max-w-[40rem] "
+          : "right-6 bottom-[max(1.5rem,env(safe-area-inset-bottom,0px))] w-90 ") +
         (count === 0 ? "pointer-events-none" : "")
       }
       style={{ height }}
@@ -232,7 +248,6 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
         }
       }}
       onClick={(e) => {
-        const coarse = window.matchMedia("(hover: none)").matches;
         if (coarse && items.length > 1 && !(e.target as HTMLElement).closest("button")) setPinned((p) => !p);
       }}
       onKeyDown={(e) => {
@@ -283,21 +298,49 @@ function ToastView({
   paused: boolean;
   onDismiss: (id: string) => void;
 }) {
+  const { compact, coarse } = useDevice();
   const enter = useTransition("expressive");
   const move = useTransition("responsive");
-  const exit = useExit("expressive");
   const travel = useTravel();
   const settled = useRef(false);
+  const node = useRef<HTMLDivElement>(null);
+  /* The way a swipe sent this toast. A timeout, the close button and Esc leave it null: they drop on compact
+     screens and go right elsewhere. */
+  const swiped = useRef<"left" | "right" | null>(null);
+  const [held, setHeld] = useState(false);
 
   const tone = item.tone ?? "neutral";
   const away = depth >= MAX_VISIBLE;
   const slot = slotFor(depth, expanded);
   const showContent = depth === 0 || expanded;
 
+  /* A finger swipes a toast sideways, one to one. It is off for a mouse, which has the close button. */
+  const drag = useDismissDrag({
+    direction: "sideways",
+    tier: "expressive",
+    enabled: coarse,
+    onDismiss: (info: DismissInfo) => {
+      swiped.current = info.direction === "down" ? null : info.direction;
+      onDismiss(item.id);
+    },
+  });
+
+  /* A finger resting on a toast holds its clock, so it never leaves under the thumb. */
+  useEffect(() => {
+    if (!held) return;
+    const release = () => setHeld(false);
+    window.addEventListener("pointerup", release);
+    window.addEventListener("pointercancel", release);
+    return () => {
+      window.removeEventListener("pointerup", release);
+      window.removeEventListener("pointercancel", release);
+    };
+  }, [held]);
+
   const wanted = item.duration ?? (tone === "error" ? Infinity : AUTO_DISMISS_MS);
   const persistent = !Number.isFinite(wanted) || wanted <= 0;
   const remaining = useRef(persistent ? 0 : wanted);
-  const idle = persistent || paused || away;
+  const idle = persistent || paused || away || held;
 
   /* The clock only runs while the toast is visible and nobody is reading it. */
   useEffect(() => {
@@ -312,6 +355,8 @@ function ToastView({
 
   return (
     <motion.div
+      ref={node}
+      {...drag.panel}
       data-toast-id={item.id}
       data-tone={tone}
       role={tone === "error" ? "alert" : "status"}
@@ -319,9 +364,30 @@ function ToastView({
       aria-atomic="true"
       inert={away}
       className="litt-glass absolute inset-x-0 bottom-0 h-18 origin-top rounded-surface"
+      onPointerDown={(e) => {
+        /* Only a toast that shows its content can be swiped; the ones peeking from behind wait their turn. */
+        if (!showContent) return;
+        drag.onPointerDown(e);
+        if (coarse) setHeld(true);
+      }}
       initial={{ opacity: 0, y: slot.y + travel, scale: 0.98 }}
       animate={{ opacity: slot.opacity, y: slot.y, scale: slot.scale, transition: settled.current ? move : enter }}
-      exit={{ opacity: 0, x: travel, transition: exit }}
+      variants={{
+        /* Read when the exit starts: a swipe carries on one more toast width from where the finger let go, a
+           timeout drops by the travel token on compact screens, and everywhere else the toast goes right. */
+        leave: () => {
+          if (swiped.current) {
+            const now = drag.offset.get() as unknown;
+            const from = typeof now === "number" ? now : 0;
+            const by = node.current?.offsetWidth ?? 0;
+            return { opacity: 0, x: from + (swiped.current === "left" ? -by : by), transition: drag.exit };
+          }
+          return compact
+            ? { opacity: 0, y: slot.y + travel, transition: drag.exit }
+            : { opacity: 0, x: travel, transition: drag.exit };
+        },
+      }}
+      exit="leave"
       onAnimationComplete={() => {
         settled.current = true;
       }}
@@ -340,6 +406,7 @@ function ToastView({
           <Button
             size="sm"
             variant="ghost"
+            className="pointer-coarse:h-control-md"
             onClick={() => {
               item.action?.onClick();
               onDismiss(item.id);
@@ -348,7 +415,14 @@ function ToastView({
             {item.action.label}
           </Button>
         )}
-        <Button size="sm" variant="ghost" iconOnly aria-label="Dismiss notification" onClick={() => onDismiss(item.id)}>
+        <Button
+          size="sm"
+          variant="ghost"
+          iconOnly
+          aria-label="Dismiss notification"
+          className="pointer-coarse:-mr-1.5 pointer-coarse:h-control-md pointer-coarse:w-control-md"
+          onClick={() => onDismiss(item.id)}
+        >
           <XIcon />
         </Button>
       </motion.div>
