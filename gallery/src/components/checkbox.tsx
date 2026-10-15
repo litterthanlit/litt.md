@@ -4,11 +4,12 @@
  * - Both are real <input> elements, so the role, Space, the arrow keys, form values and
  *   the indeterminate state come from the browser. Nothing is faked with ARIA.
  * - Two looks, one structure. "drawn" (the default) restyles the input into the spec's 20px
- *   chip at the control radius, with the --line-control edge and an accent fill when on.
- *   A radio is a circle, because a rounded square would read as a checkbox. "native" is the
- *   spec's other option: the browser's own 16px box with accent-color. Drawn is the default
- *   because only a drawn box can take the --line-control edge and the control radius, and it
- *   looks the same in every browser. See the Checkbox page.
+ *   chip at the control radius, with the --line-control edge and an --fg fill when on (not
+ *   the accent: P1 keeps the one accent fill for the primary action, and a form can hold many
+ *   checked boxes). A radio is a circle, because a rounded square would read as a checkbox.
+ *   "native" is the spec's other option: the browser's own 16px box, with accent-color set
+ *   to --fg. Drawn is the default because only a drawn box can take the --line-control edge
+ *   and the control radius, and it looks the same in every browser. See the Checkbox page.
  * - The label sits on the right, --space-2 away, at the small size, and the whole row is
  *   clickable. The label is a real <label for>, stretched over the row, so its accessible
  *   name is only its text and the description is linked with aria-describedby.
@@ -49,7 +50,7 @@ const drawnInput =
   "peer relative z-1 col-start-1 row-start-1 m-0 size-5 shrink-0 cursor-pointer appearance-none self-start " +
   "bg-surface-1 shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[background-color,box-shadow] duration-(--dur-instant) ease-litt " +
-  "checked:bg-accent checked:shadow-none " +
+  "checked:bg-fg checked:shadow-none " +
   "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "disabled:checked:bg-surface-3 " +
@@ -57,10 +58,10 @@ const drawnInput =
   focusRing;
 
 /* Only a checkbox has a mixed state. A radio matches :indeterminate whenever nothing in its group is picked, so it must not use it. */
-const mixed = " indeterminate:bg-accent indeterminate:shadow-none disabled:indeterminate:bg-surface-3";
+const mixed = " indeterminate:bg-fg indeterminate:shadow-none disabled:indeterminate:bg-surface-3";
 
 const nativeInput =
-  "peer relative z-1 col-start-1 row-start-1 m-0 mt-0.5 size-4 shrink-0 cursor-pointer self-start justify-self-center accent-accent " +
+  "peer relative z-1 col-start-1 row-start-1 m-0 mt-0.5 size-4 shrink-0 cursor-pointer self-start justify-self-center accent-fg " +
   "disabled:cursor-not-allowed " +
   focusRing;
 
@@ -73,7 +74,7 @@ const wash =
 
 /* A mark is centered in the chip, and fades with the fill. */
 const mark =
-  "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start text-accent-fg opacity-0 " +
+  "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start text-canvas opacity-0 " +
   "transition-opacity duration-(--dur-instant) ease-litt peer-disabled:text-fg-disabled";
 
 /** The dash for the mixed state: 16px, 1.5px stroke, like the other icons. */
@@ -192,7 +193,7 @@ export type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" |
   indeterminate?: boolean;
   /** Draws the error edge and sets aria-invalid. In a CheckboxGroup this follows the group's error. */
   invalid?: boolean;
-  /** "drawn" restyles the input into the 20px chip and is the default. "native" is the browser's own 16px box with the accent color. */
+  /** "drawn" restyles the input into the 20px chip and is the default. "native" is the browser's own 16px box in the foreground color. */
   appearance?: ChoiceAppearance;
   /** The underlying <input>, for focus or a form library. */
   ref?: Ref<HTMLInputElement>;
@@ -214,7 +215,7 @@ export type RadioProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "s
   description?: ReactNode;
   /** Draws the error edge and sets aria-invalid. In a RadioGroup this follows the group's error. */
   invalid?: boolean;
-  /** "drawn" restyles the input into the 20px circle and is the default. "native" is the browser's own 16px radio with the accent color. */
+  /** "drawn" restyles the input into the 20px circle and is the default. "native" is the browser's own 16px radio in the foreground color. */
   appearance?: ChoiceAppearance;
   /** The underlying <input>, for focus or a form library. */
   ref?: Ref<HTMLInputElement>;

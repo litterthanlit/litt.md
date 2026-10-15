@@ -243,7 +243,7 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
             checked={selected}
             onChange={(e) => onSelectedChange?.(e.target.checked)}
             aria-label={`Select ${project.name}`}
-            className="size-4 cursor-pointer rounded-control accent-accent"
+            className="size-4 cursor-pointer rounded-control accent-fg"
           />
         </label>
       </div>
