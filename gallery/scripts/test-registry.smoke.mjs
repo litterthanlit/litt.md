@@ -197,6 +197,19 @@ const RECIPES = {
     wrap: "Toaster",
     jsx: `<@Btn type="button" data-testid="toast-trigger" onClick={() => toast({ title: "Litt toast", description: "Saved from the smoke page" })}>Show toast</@Btn>`,
   },
+  switch: {
+    needs: ["Switch"],
+    state: [`const [on, setOn] = useState(true);`],
+    jsx: `<div className="grid w-full max-w-sm gap-2" data-testid="litt-switches">
+          <Switch label="Email me when a build finishes" checked={on} onCheckedChange={setOn} />
+          <Switch align="end" label="Weekly digest" description="A Monday email." name="digest" />
+          <Switch disabled label="Password protection" />
+        </div>`,
+  },
+  slider: {
+    needs: ["Slider"],
+    jsx: `<div className="w-full max-w-sm" data-testid="litt-slider"><Slider name="speed" label="Animation speed" min={0.5} max={2} step={0.1} defaultValue={1} minLabel="Slower" maxLabel="Faster" showValue formatValue={(v) => \`\${v.toFixed(1)}x\`} /></div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -685,6 +698,43 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (!info.blur || info.blur === "none")
             throw new Error(`.litt-glass has no backdrop-filter (the material CSS is missing): ${JSON.stringify(info)}`);
           return `backdrop-filter: ${info.blur}`;
+        });
+      }
+      if (has("switch")) {
+        await attempt("switch toggles and fills with the foreground color", async () => {
+          const sw = page.getByRole("switch", { name: "Email me when a build finishes" });
+          if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("the switch did not start on");
+          const fill = () => sw.evaluate((el) => getComputedStyle(el).backgroundColor);
+          const fg = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-fg)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          const on = await fill();
+          if (on !== fg) throw new Error(`an on switch is ${on}, not --litt-fg (${fg})`);
+          await sw.click();
+          await page.waitForTimeout(300);
+          if ((await sw.getAttribute("aria-checked")) !== "false") throw new Error("a click did not turn it off");
+          await sw.focus();
+          await page.keyboard.press("Space");
+          await page.waitForTimeout(300);
+          if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("Space did not turn it back on");
+          return `on is ${on}`;
+        });
+      }
+      if (has("slider")) {
+        await attempt("slider steps with the arrow keys", async () => {
+          const thumb = page.getByRole("slider", { name: "Animation speed" });
+          const before = await thumb.getAttribute("aria-valuetext");
+          await thumb.focus();
+          await page.keyboard.press("ArrowRight");
+          await page.waitForTimeout(100);
+          const after = await thumb.getAttribute("aria-valuetext");
+          if (before !== "1.0x" || after !== "1.1x") throw new Error(`aria-valuetext went from ${before} to ${after}, expected 1.0x to 1.1x`);
+          return `${before} to ${after}`;
         });
       }
       if (has("popover")) {
