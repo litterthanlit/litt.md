@@ -8,7 +8,7 @@ Use this when building or restyling anything visual: a page, section, component,
 2. **An existing project system comes next.** If the project already has tokens or a design system, map litt.md onto it (its colors, its components) rather than replacing it. Apply litt.md's *rules* (the P# rules in `taste/profile.md`) within that system.
 3. **Know the target.** Ask if it isn't obvious:
    - **A React + Tailwind v4 project on disk, where you can run commands and write files:** install litt's tested components from the registry and use the `litt-` names (section 3). Do not copy the tokens, and do not hand-write components the registry has.
-   - **Code you only show** (claude.ai, "just show me the code", "no need to write files"), **in Tailwind v4:** copy `assets/tokens.css` and `assets/tailwind.css` into the project and import `tailwind.css`. Use token utilities (`bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `px-control-pad-md`, `shadow-float`, `py-section`). Radius: `rounded-control` on buttons and inputs, `rounded-surface` on cards, menus, dialogs and toasts, `rounded-pill` only on chips, tags, avatars and status dots. No other `rounded-*`. Show these plain names even for React when nothing gets installed.
+   - **Code you only show** (claude.ai, "just show me the code", "no need to write files"), **in Tailwind v4:** copy `assets/tokens.css` and `assets/tailwind.css` into the project and import `tailwind.css`. Use token utilities (`bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `px-control-pad-md`, `shadow-float`, `py-section`). Radius: `rounded-control` on buttons and inputs, `rounded-surface` on cards, menus, dialogs and toasts, `rounded-pill` only on avatars and icon-only buttons (tags and chips are `rounded-control`). No other `rounded-*`. Show these plain names even for React when nothing gets installed.
    - **Code (plain CSS, Tailwind 3 or another framework):** copy `assets/tokens.css` and use the variables and `.litt-*` primitives.
    - **Framer:** read `system/framer.md` and work in Framer terms (color styles, text styles, stacks, tween presets).
 4. **Client work or Litt's own?** Open question Q6 asks whether the full light-and-material signature applies to client work. Until it's answered, ask Nick the first time on any client project, then log the answer.
@@ -78,7 +78,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 
 | Item | Install it for |
 |---|---|
-| `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), never as a child: children are the label, trimmed to the cap height, so an icon among them breaks the line. It always renders a `<button>`, so a link to another page is an `<a>`. |
+| `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), or as a child before the label: a text child is the label, trimmed to the cap height, and an element child sits beside it at 16px. It always renders a `<button>`, so a link to another page is an `<a>`. |
 | `input` | `TextField` (label, hint, error), the bare `Input` for inline forms and toolbars, `Textarea`. |
 | `checkbox` | `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, a select-all box. |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |

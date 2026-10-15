@@ -257,7 +257,7 @@
   .help { margin-top: var(--space-2); color: var(--fg-subtle); font-size: var(--type-small-size); }
   .help.error { color: var(--danger); }
   .check { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg-muted); font-size: var(--type-small-size); cursor: pointer; }
-  .check input { width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+  .check input { width: 16px; height: 16px; margin: 0; accent-color: var(--fg); } /* P1: selection controls are fg, never the accent */
   .cards { display: grid; gap: var(--grid-gap); }
   @media (min-width: 40rem) { .cards { grid-template-columns: 1.4fr 1fr; } }
   .card { padding: var(--space-1); }
