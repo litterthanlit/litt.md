@@ -799,6 +799,26 @@ const COPY = {
     description: "A roomy, slightly rounded text field on the 32, 44 and 56 scale, with a label above and a hint or an error below. Focus and error turn the edge on the instant tier, and the box never moves.",
     docs: "Import TextField, Input and Textarea from components/litt/input. TextField wires the label, hint and error for you, and a bare Input needs an aria-label. Text is 16px on touch screens.",
   },
+  select: {
+    title: "Select",
+    description: "One value from a short list. The trigger looks like the input, and the list is the menu's glass panel with 44px rows, a gliding highlight and a check on the current option. It stays anchored on phones.",
+    docs: "Import Select or SelectField from components/litt/select. Pass options as { value, label } and a label, because a placeholder is not a label.",
+  },
+  switch: {
+    title: "Switch",
+    description: "An on or off setting. A pill track that fills with the foreground color when on, never the accent, and a thumb that slides on the instant tier.",
+    docs: "Import Switch from components/litt/switch. Give it a label. Use align=\"end\" in a settings list so the switches line up at the row's end.",
+  },
+  slider: {
+    title: "Slider",
+    description: "A value on a range, such as an animation speed. A thin rail, a foreground range and a round thumb that follows the pointer one to one, with words for the two ends.",
+    docs: "Import Slider from components/litt/slider. Give it a label, and minLabel and maxLabel to say which way is which.",
+  },
+  form: {
+    title: "Form",
+    description: "The pieces that turn fields into a page: settings sections, fieldsets, an error summary that takes focus and links to each field, and the action row.",
+    docs: "Import FormSection, Fieldset, ErrorSummary and FormActions from components/litt/form. The fields themselves come from input, select, checkbox, switch and slider.",
+  },
   checkbox: {
     title: "Checkbox and radio",
     description: "Real checkboxes and radios drawn in the litt look, with the label on the right and the whole row clickable. A group is a fieldset with a legend, and a select-all box can show the mixed state.",

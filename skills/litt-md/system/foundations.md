@@ -64,7 +64,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. Dark mode takes a lighter cobalt with dark text on it, because a deep cobalt cannot pass as link text on the dark canvas.
 
-**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent: a form can hold many of them, and the accent stays on its submit.
+**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
 
 **Translucent tones.** For hover fills on neutral ground, mix from the foreground: `color-mix(in oklab, var(--fg) 6%, transparent)` for hover and 7–8% for selected. Never use rgba of a hard-coded color.
 
