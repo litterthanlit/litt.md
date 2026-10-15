@@ -26,6 +26,23 @@
  *   ring (:focus-visible), a text field always does.
  * - Sizes sit on the 8px grid: 256, 320, 384. The panel never grows past the room
  *   on screen, and scrolls inside when it is taller than the room.
+ *
+ * On a phone (foundations.md section 6; useDevice().compact, so a desktop can preview it with
+ * <DeviceProvider mode="phone">) the popover is a bottom sheet, because it holds fields and
+ * pickers that need the width and a place above the keyboard:
+ * - It is DialogSheet from dialog.tsx, the same sheet the Dialog uses, so a phone has one: it
+ *   rises by its own height, follows a finger down to close, and leaves on the exit token. It is
+ *   a modal there (focus trapped and returned to the trigger, Esc, a tap on the scrim, a 44px
+ *   close button on touch), whatever `modal` says.
+ * - The same children render in both. Only the shell changes, so a caller keeps one copy of the
+ *   content. `label` is the sheet's heading (the Radix Dialog title), so it is what names the sheet.
+ *   `side`, `align`, `sideOffset`, `size` and `collisionBoundary` describe an anchored panel and
+ *   are ignored. `padded` and `solid` still apply.
+ * - Radix Popover cannot be a sheet, so the root holds a Radix Dialog root beside the Popover one,
+ *   both driven by the same open state, and PopoverTrigger is the Dialog's trigger on a phone: that
+ *   is what returns focus to it and points its aria-controls at the sheet. PopoverClose works in both.
+ * - Glass never sits on glass: a sheet opened from a trigger inside a dialog, another sheet or the
+ *   header is solid, found from the trigger when it opens.
  */
 import {
   createContext,
@@ -35,15 +52,21 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type ComponentProps,
   type ReactNode,
 } from "react";
+import * as RadixDialog from "@radix-ui/react-dialog";
 import * as RadixPopover from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useMotionValue } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { Button } from "@/components/button";
+import { DialogSheet } from "@/components/dialog";
+import { XIcon } from "@/components/icons";
 
 type Side = "top" | "right" | "bottom" | "left";
 
-const OpenContext = createContext(false);
+/* The open state, and the way to change it (a drag, the close button and Esc on a phone ask through this). */
+const PopoverState = createContext<{ open: boolean; change: (open: boolean) => void }>({ open: false, change: () => {} });
 
 export type PopoverProps = {
   /** Whether the popover is open. Pair it with onOpenChange. Leave it out and the popover keeps its own state. */
@@ -69,38 +92,48 @@ export function Popover({ open: openProp, defaultOpen = false, onOpenChange, mod
     },
     [onOpenChange],
   );
+  /* Both Radix roots are only context, so they cost nothing. The Popover one serves the anchored panel and
+     PopoverClose; the Dialog one serves the sheet a phone gets. Both follow the same open state. */
   return (
-    <OpenContext.Provider value={open}>
+    <PopoverState value={{ open, change }}>
       <RadixPopover.Root open={open} onOpenChange={change} modal={modal}>
-        {children}
+        <RadixDialog.Root open={open} onOpenChange={change}>
+          {children}
+        </RadixDialog.Root>
       </RadixPopover.Root>
-    </OpenContext.Provider>
+    </PopoverState>
   );
 }
 
 /** Opens and closes the popover. Wrap your own Button with asChild, so it keeps its look and gets aria-expanded and the toggle. */
-export const PopoverTrigger = RadixPopover.Trigger;
+export function PopoverTrigger(props: ComponentProps<typeof RadixPopover.Trigger>) {
+  /* On a phone the panel is a Radix Dialog, so its trigger is the Dialog's: that is what gives the sheet its
+     aria-controls and brings focus back to this button when the sheet closes. */
+  const { compact } = useDevice();
+  const Trigger = (compact ? RadixDialog.Trigger : RadixPopover.Trigger) as typeof RadixPopover.Trigger;
+  return <Trigger {...props} />;
+}
 /** Closes the popover. Wrap a Cancel or Done button with asChild. */
 export const PopoverClose = RadixPopover.Close;
 
 export type PopoverContentProps = {
-  /** The popover's accessible name. It is a dialog, and a dialog needs a name, so this is required. */
+  /** The popover's accessible name. It is a dialog, and a dialog needs a name, so this is required. On a phone it is also the sheet's heading, so write it as a short title and do not repeat it at the top of your content. */
   label: string;
-  /** The side of the trigger it opens on first. With no room there it flips to the opposite side, and the entrance follows. */
+  /** The side of the trigger it opens on first. With no room there it flips to the opposite side, and the entrance follows. On a phone it is a sheet and this is ignored. */
   side?: Side;
-  /** Which edge of the trigger it lines up with. */
+  /** Which edge of the trigger it lines up with. On a phone this is ignored. */
   align?: "start" | "center" | "end";
-  /** Gap between the trigger and the popover, in px. */
+  /** Gap between the trigger and the popover, in px. On a phone this is ignored. */
   sideOffset?: number;
-  /** Width on the 8px grid: sm is 256px, md is 320px, lg is 384px. It never grows past the room on screen. */
+  /** Width on the 8px grid: sm is 256px, md is 320px, lg is 384px. It never grows past the room on screen. On a phone the sheet spans the screen and this is ignored. */
   size?: "sm" | "md" | "lg";
-  /** Pad the content 12px inside the 4px inset, so it sits 16px from the edge. Turn it off for rows that bring their own 44px height and 12px side padding. */
+  /** Pad the content 12px inside the 4px inset, so it sits 16px from the edge. Turn it off for rows that bring their own 44px height and 12px side padding. On a phone the same two choices line up with the sheet's heading. */
   padded?: boolean;
   /** Draw a solid surface instead of glass. Left out, it is solid only when the trigger sits inside a glass surface or another popover. */
   solid?: boolean;
-  /** Flip against this element instead of the viewport (a stage, a card). */
+  /** Flip against this element instead of the viewport (a stage, a card). On a phone this is ignored. */
   collisionBoundary?: Element | null;
-  /** The content: a form, a link and a button, a detail card, a set of options. */
+  /** The content: a form, a link and a button, a detail card, a set of options. The same content shows in the anchored panel and in the phone sheet. */
   children: ReactNode;
 };
 
@@ -111,6 +144,7 @@ const FLOATING = ".litt-glass, [data-popover-surface]";
 /**
  * The panel. Render it inside a Popover, next to the PopoverTrigger.
  * Focus lands on the control marked data-autofocus, else the first focusable control, else the panel itself.
+ * On a phone (narrower than 640px) it is a bottom sheet with `label` as its heading, and the same children.
  */
 export function PopoverContent({
   label,
@@ -123,7 +157,15 @@ export function PopoverContent({
   collisionBoundary,
   children,
 }: PopoverContentProps) {
-  const open = useContext(OpenContext);
+  const { open } = useContext(PopoverState);
+  const { compact } = useDevice();
+  if (compact) {
+    return (
+      <Sheet open={open} label={label} padded={padded} solid={solid}>
+        {children}
+      </Sheet>
+    );
+  }
   return (
     <RadixPopover.Portal forceMount>
       <AnimatePresence>
@@ -144,6 +186,96 @@ export function PopoverContent({
         )}
       </AnimatePresence>
     </RadixPopover.Portal>
+  );
+}
+
+/* ------------------------------------------------------------ the phone sheet */
+
+/**
+ * The popover on a phone: DialogSheet with a heading, the body and a close button. Same grid areas as the Dialog,
+ * so the heading and the close button sit exactly where a Dialog's do.
+ */
+function Sheet({
+  open,
+  label,
+  padded,
+  solid,
+  children,
+}: Pick<PopoverContentProps, "label" | "padded" | "solid" | "children"> & { open: boolean }) {
+  const { change } = useContext(PopoverState);
+  const panel = useRef<HTMLDivElement | null>(null);
+  const [overFloating, setOverFloating] = useState(false);
+  const flat = solid ?? overFloating;
+  return (
+    <DialogSheet
+      open={open}
+      onDismiss={() => change(false)}
+      onOpenAutoFocus={(e) => {
+        /* Fine pointers: the marked control, else Radix's first focusable. A coarse pointer is handled by the sheet. */
+        const target = panel.current?.querySelector<HTMLElement>("[data-autofocus]");
+        if (!target) return;
+        e.preventDefault();
+        target.focus({ preventScroll: true });
+      }}
+      described={false}
+      contentRef={panel}
+      className={flat ? "[--glass-bg:var(--surface-2)] [--glass-shadow:var(--shadow-float)]" : ""}
+    >
+      <SheetParts label={label} padded={padded ?? true} onFloating={setOverFloating}>
+        {children}
+      </SheetParts>
+    </DialogSheet>
+  );
+}
+
+function SheetParts({
+  label,
+  padded,
+  onFloating,
+  children,
+}: {
+  label: string;
+  padded: boolean;
+  onFloating: (floating: boolean) => void;
+  children: ReactNode;
+}) {
+  const marker = useRef<HTMLSpanElement | null>(null);
+  /* Is the trigger inside another floating surface? The Dialog's trigger has aria-controls = this sheet's id, so find
+     it from the panel this renders in, before the first paint. */
+  useLayoutEffect(() => {
+    const id = marker.current?.closest<HTMLElement>('[role="dialog"]')?.id;
+    const trigger = id ? document.querySelector(`[aria-controls="${CSS.escape(id)}"]`) : null;
+    onFloating(Boolean(trigger?.closest(FLOATING)));
+  }, [onFloating]);
+
+  return (
+    <>
+      <span ref={marker} hidden />
+      <div className="grid content-start pt-6 pr-4 pl-6" style={{ gridArea: "head" }}>
+        <RadixDialog.Title className="text-h4 text-fg text-balance">{label}</RadixDialog.Title>
+      </div>
+
+      <div
+        className={"min-h-0 overflow-y-auto overscroll-contain pt-6 pb-(--sheet-foot) " + (padded ? "px-6" : "px-3")}
+        style={{ gridArea: "body" }}
+      >
+        {children}
+      </div>
+
+      <div className="self-start pt-6 pr-4" style={{ gridArea: "close" }}>
+        <RadixDialog.Close asChild>
+          <Button
+            iconOnly
+            size="sm"
+            variant="ghost"
+            aria-label="Close"
+            className="-mt-1 pointer-coarse:-mt-2.5 pointer-coarse:h-control-md pointer-coarse:w-control-md"
+          >
+            <XIcon />
+          </Button>
+        </RadixDialog.Close>
+      </div>
+    </>
   );
 }
 
