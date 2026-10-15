@@ -17,6 +17,8 @@
  *   (PRESS: fg 6%, color only, instant tier) and takes the --fg text. The selected one needs no fill,
  *   its surface is the answer. The box never moves. The OS tap flash is off, so the two do not double.
  * - The legend is visually hidden by default, as the spec says. Pass showLegend in a form.
+ * - Forced colors (Windows high contrast) drops box-shadow and turns every fill to Canvas. The track takes
+ *   a real border, the selected surface takes a 2px Highlight border, and a disabled option is GrayText.
  */
 import { useId, useState, type ReactNode } from "react";
 import { LayoutGroup, motion } from "motion/react";
@@ -109,7 +111,7 @@ export function Segmented<T extends string>({
                   "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
                   look.segment +
                   (off
-                    ? " cursor-not-allowed text-fg-disabled"
+                    ? " cursor-not-allowed text-fg-disabled forced-colors:text-[GrayText]"
                     : " cursor-pointer " + (selected ? "text-fg" : "text-fg-subtle hover:text-fg " + PRESS))
                 }
               >
@@ -130,7 +132,7 @@ export function Segmented<T extends string>({
                     layoutId="segmented-surface"
                     transition={enter}
                     aria-hidden="true"
-                    className="absolute inset-0 rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] forced-colors:border-2"
+                    className="absolute inset-0 rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] forced-colors:border-2 forced-colors:border-[Highlight]"
                   />
                 )}
                 <span className="litt-trim relative z-1">{o.label}</span>

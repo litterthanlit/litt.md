@@ -22,6 +22,9 @@
  *   is off so the two do not double. Small tabs grow to the control-md height on a coarse
  *   pointer, so no touch target is under 44px: the underline tab itself, and the segmented
  *   track (the same track Segmented uses there).
+ * - Forced colors (Windows high contrast) drops box-shadow and turns every fill to Canvas. The segmented
+ *   track takes a real border, the selected fill takes a 2px Highlight border, and the underline is
+ *   repainted in Highlight. The label keeps its color, so it stays readable while the indicator glides.
  */
 import {
   createContext,
@@ -142,6 +145,8 @@ export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<t
     <TabsPrimitive.List
       className={
         "inline-flex w-fit max-w-full overflow-x-auto overflow-y-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-0.5 shadow-[inset_0_0_0_1px_var(--line)] [scrollbar-width:none] " +
+        /* Forced colors (Windows high contrast) drops box-shadow, so the track's edge becomes a real border. */
+        "forced-colors:border " +
         (size === "sm" ? "h-control-sm pointer-coarse:h-control-md " : "h-control-md ") +
         className
       }
@@ -164,7 +169,7 @@ const triggerBase =
   "relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-normal " +
   "text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg data-[state=active]:text-fg " +
   PRESS + " " +
-  "disabled:cursor-not-allowed disabled:text-fg-disabled " +
+  "disabled:cursor-not-allowed disabled:text-fg-disabled forced-colors:disabled:text-[GrayText] " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 const triggerShape: Record<TabsVariant, Record<TabsSize, string>> = {
@@ -208,9 +213,12 @@ export function TabsTrigger({
           transition={enter}
           aria-hidden="true"
           className={
+            /* Forced colors turns every fill to Canvas and drops box-shadow. The underline is repainted in Highlight, and
+               the segmented fill takes a Highlight border, so the selected tab stays marked and its label stays readable. */
             variant === "underline"
-              ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg"
-              : "absolute inset-0 -z-10 bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] " + FILL_RADIUS
+              ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg forced-colors:bg-[Highlight]"
+              : "absolute inset-0 -z-10 bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] forced-colors:border-2 forced-colors:border-[Highlight] " +
+                FILL_RADIUS
           }
         />
       )}

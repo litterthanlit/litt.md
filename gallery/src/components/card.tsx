@@ -20,6 +20,8 @@
  * - Light: `lit` adds `.litt-lit .litt-grain` as the card's own top light. It is optional and static (P5).
  *   The page already has one light source (P2), so use it on one card, not on a set.
  * - Motion: none of its own. The entrance cascade for a set of cards belongs to the page (see List and cards).
+ * - Forced colors (Windows high contrast) drops box-shadow and turns fills to Canvas. The card and its cover
+ *   take a real border (a bleed cover only its bottom edge). The hover step is a fill, so it has no cue there.
  */
 import { createContext, useContext, type ComponentProps, type HTMLAttributes, type ReactNode } from "react";
 
@@ -40,7 +42,9 @@ const cardPadding: Record<CoverStyle, string> = {
 const card =
   "litt-raised group/card relative flex min-w-0 flex-col rounded-surface " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "has-[[data-card-link]]:hover:bg-surface-2";
+  "has-[[data-card-link]]:hover:bg-surface-2 " +
+  /* Forced colors (Windows high contrast) drops box-shadow, which draws the hairline, so the edge becomes a real border. */
+  "forced-colors:border";
 
 export type CardProps = HTMLAttributes<HTMLElement> & {
   /** The element. Use li when the card sits in a list or grid of ul, and keep article when it stands alone. */
@@ -80,15 +84,17 @@ const ratios: Record<Ratio, string> = {
   auto: "",
 };
 
+/* Forced colors turns the cover's fill to Canvas, the same as the card, so a border keeps its edge. */
 const coverShape: Record<CoverStyle, string> = {
   // Padded by 4px, so the control radius sits concentric inside the card's surface radius.
-  none: "rounded-control",
-  inset: "rounded-control",
+  none: "rounded-control forced-colors:border",
+  inset: "rounded-control forced-colors:border",
   // Full-bleed: it takes the card's surface radius at the top. A hairline drawn over it
   // (::before) stands in for the card's own, which the cover would otherwise hide.
+  // In forced colors the card's border frames it, so only its bottom edge is added.
   bleed:
     "rounded-t-surface before:pointer-events-none before:absolute before:inset-0 before:z-10 " +
-    "before:rounded-t-surface before:shadow-[inset_0_0_0_1px_var(--line)]",
+    "before:rounded-t-surface before:shadow-[inset_0_0_0_1px_var(--line)] forced-colors:border-b",
 };
 
 export type CardCoverProps = {

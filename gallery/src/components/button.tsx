@@ -17,6 +17,9 @@
  *   run of text is a trimmed label, and each element sits in the row. A child SVG is
  *   16px, like every button icon. The icon prop is still the documented way.
  * - Disabled keeps a hairline, so the button keeps its shape on a surface-2 area.
+ * - Forced colors (Windows high contrast) drops box-shadow and fills. Primary and secondary take a
+ *   real border (heavier on primary, so it keeps its rank), and a disabled button keeps its hairline
+ *   as a border. Ghost stays edgeless. Focus is an outline, which survives.
  * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
  *   round (pill) and need an aria-label.
  */
@@ -60,16 +63,22 @@ const iconSizes: Record<ButtonSize, string> = { sm: "w-control-sm", md: "w-contr
 const variants: Record<ButtonVariant, string> = {
   primary:
     "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
-    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)]",
+    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] " +
+    /* Forced colors drops the fill and the glow, so the one accent action keeps its rank as a heavier edge. */
+    "forced-colors:border-2",
   secondary:
     "bg-surface-1 text-fg hover:bg-surface-2 enabled:pointer-coarse:active:bg-surface-2 " +
-    "shadow-[inset_0_0_0_1px_var(--line-strong),var(--highlight)]",
+    "shadow-[inset_0_0_0_1px_var(--line-strong),var(--highlight)] " +
+    /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border. */
+    "forced-colors:border",
   ghost:
     "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
 };
 const disabledLook =
-  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none";
+  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none " +
+  /* The disabled hairline is a shadow too, so it becomes a border. The text turns GrayText by itself. */
+  "disabled:forced-colors:border";
 
 /* One child is the label. Several (an icon and a word) sit in the row: text runs are trimmed labels, elements sit as they are. */
 function label(children: ReactNode): ReactNode {

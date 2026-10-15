@@ -30,6 +30,8 @@
  * - Corners: the region is rounded-surface, and clips the hover fill of the first and last row to it.
  * - Sorting is a small, accessible step, not a data layer: the header says which way it is sorted and reports
  *   the press; you sort your rows and keep them keyed, and `animateChanges` moves them.
+ * - Forced colors (Windows high contrast) keeps the region, header and row lines, because they are real
+ *   borders. The skeleton bars are fills, so they take a GrayText edge. The row hover is a fill and has no cue there.
  */
 import {
   Children,
@@ -398,7 +400,8 @@ export function TableSkeleton({ columns, rows = 4 }: TableSkeletonProps) {
         <tr key={row} aria-hidden="true">
           {columns.map((kind, col) => (
             <td key={col} className="h-control-md border-b border-line px-4 py-3 align-middle">
-              <span className={"block h-4 rounded-control bg-surface-2 " + skeletonBar[kind]} />
+              {/* Forced colors turns the bar's fill to Canvas, so a GrayText edge keeps the placeholder visible. */}
+              <span className={"block h-4 rounded-control bg-surface-2 forced-colors:border forced-colors:border-[GrayText] " + skeletonBar[kind]} />
             </td>
           ))}
         </tr>

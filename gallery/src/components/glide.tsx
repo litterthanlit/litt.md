@@ -13,6 +13,9 @@
  *   Keyboard: it follows the highlighted item.
  * - Keyboard-driven highlights also show an inset 1px focus ring for 3:1
  *   visibility. A pointer-driven highlight shows no ring.
+ * - Forced colors (Windows high contrast) drops the fill and the ring, so the highlight becomes a Highlight
+ *   outline: 1px for the pointer and 2px for the keyboard. It sits inside the row's box, so nothing moves.
+ *   The row text keeps its color, so it stays readable while the highlight glides.
  *
  * Usage
  *   const glide = useGlide();
@@ -228,7 +231,13 @@ export function useGlide(options: GlideOptions = {}) {
       ref={hl}
       aria-hidden="true"
       data-ring="false"
-      className="pointer-events-none absolute top-0 left-0 rounded-control bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] data-[ring=true]:shadow-[inset_0_0_0_1px_var(--focus)]"
+      className={
+        "pointer-events-none absolute top-0 left-0 rounded-control bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] data-[ring=true]:shadow-[inset_0_0_0_1px_var(--focus)] " +
+        /* Forced colors (Windows high contrast) drops the fill and the ring. The highlight becomes a Highlight outline,
+           inside its own box so nothing moves, and heavier for a keyboard. The row text keeps its color, so it stays readable while this glides. */
+        "forced-colors:outline-1 forced-colors:-outline-offset-1 forced-colors:outline-[Highlight] " +
+        "forced-colors:data-[ring=true]:outline-2 forced-colors:data-[ring=true]:-outline-offset-2"
+      }
       style={{ y, opacity }}
     />
   );

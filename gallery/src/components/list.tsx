@@ -18,6 +18,9 @@
  * - Corners: the list container and cards are rounded-surface; the rows inset 4px
  *   inside the container and the card cover inset 4px inside the card are
  *   rounded-control (concentric), and so are the chips and tags.
+ * - Forced colors (Windows high contrast) drops box-shadow and turns fills to Canvas. The list box takes a
+ *   real border, a selected card's ring and a selected chip's edge turn Highlight (the card's heavier), and
+ *   hover steps, which are fills, have no cue there.
  */
 import type { ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -185,7 +188,12 @@ export function ProjectList({ projects, onOpen, entrance = true, label = "Projec
   return (
     <ul
       aria-label={label}
-      className={"w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)] " + className}
+      className={
+        "w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)] " +
+        /* Forced colors (Windows high contrast) drops box-shadow, so the box's edge becomes a real border. */
+        "forced-colors:border " +
+        className
+      }
     >
       {projects.map((p, i) => {
         // Rows after the sixth reuse the sixth's delay.
@@ -255,12 +263,15 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
       data-selected={selected || undefined}
       className={"litt-raised group relative flex h-full flex-col rounded-surface p-1 " + className}
     >
-      {/* The ring. It changes color only, on the instant tier. */}
+      {/* The ring. It changes color only, on the instant tier. It is a real border, so it survives forced colors,
+          but every border color becomes the same there. Selected takes a heavier Highlight ring, and it sits over the card, so nothing moves. */}
       <span
         aria-hidden="true"
         className={
           "pointer-events-none absolute inset-0 rounded-surface border transition-[border-color] duration-(--dur-instant) ease-litt " +
-          (selected ? "border-focus" : "border-line group-hover:border-line-strong pointer-coarse:group-active:border-line-strong")
+          (selected
+            ? "border-focus forced-colors:border-2 forced-colors:border-[Highlight]"
+            : "border-line group-hover:border-line-strong pointer-coarse:group-active:border-line-strong")
         }
       />
 
@@ -333,9 +344,12 @@ export function ProjectFilters({
               "inline-flex h-control-sm cursor-pointer items-center rounded-control px-control-pad-sm text-small " +
               "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+              /* Forced colors turns the selected fill to Canvas. The selected chip takes a Highlight border instead. Every chip
+                 holds a 2px border and the others paint it Canvas, so choosing a chip never resizes it or moves its neighbors. */
+              "forced-colors:border-2 " +
               (on
-                ? "bg-surface-3 text-fg"
-                : "text-fg-subtle hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " + PRESS_FILL + " pointer-coarse:active:text-fg")
+                ? "bg-surface-3 text-fg forced-colors:border-[Highlight]"
+                : "forced-colors:border-[Canvas] text-fg-subtle hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " + PRESS_FILL + " pointer-coarse:active:text-fg")
             }
           >
             <span className="litt-trim">{f.label}</span>

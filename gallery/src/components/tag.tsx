@@ -12,6 +12,8 @@
  *   4.5:1 for caption text.
  * - Static: no motion and no states. A tag is a label, not a control, so it never takes
  *   focus. If you need something to press, use Button or a chip.
+ * - Forced colors (Windows high contrast) drops box-shadow and the status color, so the hairline becomes
+ *   a real border. The label already says the status.
  */
 import type { HTMLAttributes, ReactNode } from "react";
 
@@ -40,6 +42,8 @@ export function Tag({ status, children, className = "", ...rest }: TagProps) {
       className={
         "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-control bg-surface-1 px-2 font-mono text-caption " +
         "shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] " +
+        /* Forced colors (Windows high contrast) drops box-shadow and the status color, so the edge becomes a real border. The label says the status. */
+        "forced-colors:border " +
         (status ? STATUS[status] : "text-fg-muted") +
         " " +
         className

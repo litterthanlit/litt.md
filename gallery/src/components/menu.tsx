@@ -17,6 +17,9 @@
  *   pointer moves or a key is pressed. Opened with Enter, Space or ArrowDown,
  *   Radix focuses the first row and it shows the keyboard ring.
  * - Checkbox and radio rows keep a fixed 16px cell, so toggling never shifts text.
+ * - Forced colors (Windows high contrast) drops box-shadow and the glass fill. The panel and a submenu take a
+ *   real border, the panel a Canvas fill so nothing behind it shows through, the separator is CanvasText, and
+ *   a disabled row is GrayText. The highlight becomes an outline (see glide.tsx).
  *
  * On a phone (foundations.md section 6; useDevice().compact, so a desktop can preview it with
  * <DeviceProvider mode="phone">)
@@ -121,7 +124,7 @@ function useRowView() {
 const row =
   "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] " +
-  "transition-colors duration-(--dur-instant) ease-litt data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
+  "transition-colors duration-(--dur-instant) ease-litt data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled forced-colors:data-[disabled]:text-[GrayText] " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)]";
 const tone = "text-fg-muted data-[highlighted]:text-fg pointer-coarse:active:text-fg";
 const toneDanger = "text-danger";
@@ -296,7 +299,7 @@ export function MenuGroup({
 
 /** Full-bleed 1px hairline: it ignores the 4px inset of the panel. */
 export function MenuSeparator() {
-  return <DropdownMenu.Separator className="-mx-1 my-1 h-px bg-line" />;
+  return <DropdownMenu.Separator className="-mx-1 my-1 h-px bg-line forced-colors:bg-[CanvasText]" />;
 }
 
 /** What the two submenu implementations share. */
@@ -703,6 +706,9 @@ function Panel({ sub = false, label, backLabel = "Back", side, align, sideOffset
   };
   const surface =
     "relative z-50 min-w-60 rounded-surface outline-none origin-(--radix-dropdown-menu-content-transform-origin) data-[state=closed]:pointer-events-none " +
+    /* Forced colors (Windows high contrast) drops box-shadow, which draws the glass edge and the float shadow, so the panel gets a real
+       border. The glass stays see-through there, so the panel's own fill is Canvas, and nothing behind it shows through the rows. */
+    "forced-colors:border forced-colors:bg-[Canvas] " +
     (drilling ? "" : "p-1 ");
 
   /* A glass surface cannot clip: its shadow lives on ::before. So on a phone an inner box clips the list that is
