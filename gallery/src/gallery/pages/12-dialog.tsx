@@ -37,9 +37,9 @@ const [name, setName] = useState("litt.design");
     footer={
       <>
         <DialogClose asChild>
-          <Button size="lg">Cancel</Button>
+          <Button>Cancel</Button>
         </DialogClose>
-        <Button size="lg" variant="primary" type="submit" form="rename-form">
+        <Button variant="primary" type="submit" form="rename-form">
           Save name
         </Button>
       </>
@@ -208,9 +208,9 @@ function InviteDemo() {
           footer={
             <>
               <DialogClose asChild>
-                <Button size="lg">Cancel</Button>
+                <Button>Cancel</Button>
               </DialogClose>
-              <Button size="lg" variant="primary" type="submit" form="invite-form">
+              <Button variant="primary" type="submit" form="invite-form">
                 Send invite
               </Button>
             </>
@@ -334,9 +334,9 @@ function SheetDemo() {
           footer={
             <>
               <DialogClose asChild>
-                <Button size="lg">Cancel</Button>
+                <Button>Cancel</Button>
               </DialogClose>
-              <Button size="lg" variant="primary" type="submit" form="settings-form">
+              <Button variant="primary" type="submit" form="settings-form">
                 Save changes
               </Button>
             </>
