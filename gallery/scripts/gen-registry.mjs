@@ -1108,7 +1108,26 @@ function verify(items, targets, transformed, shadcn) {
     return found;
   };
 
+  // A component may keep variables of its own: ones a shipped file declares as an arbitrary property
+  // ([--cmd-list-max:none]) or a style key ("--x": ...). Another file may read them when its item depends on the
+  // declaring item, so the host always has both (the popover reads the dialog's --sheet-foot). Litt tokens are not
+  // local: they must come from the shipped CSS.
+  const localVars = (text) =>
+    [...text.matchAll(/\[(--[a-zA-Z][\w-]*):/g), ...text.matchAll(/["'](--[a-zA-Z][\w-]*)["']\s*:/g)].map((m) => m[1]).filter((n) => !n.startsWith("--litt-"));
+  const itemByName = new Map(items.map((i) => [i.name, i]));
+  const depsOf = (item, seen = new Set()) => {
+    if (seen.has(item.name)) return seen;
+    seen.add(item.name);
+    for (const url of item.registryDependencies ?? []) {
+      const dep = itemByName.get(url.split("/").pop().replace(/\.json$/, ""));
+      if (dep) depsOf(dep, seen);
+    }
+    return seen;
+  };
+  const localsOf = (item) => new Set([...depsOf(item)].flatMap((n) => (itemByName.get(n).files ?? []).flatMap((f) => localVars(f.content))));
+
   for (const item of items) {
+    const local = localsOf(item);
     for (const file of item.files ?? []) {
       const where = `${item.name} ${file.target}`;
       const text = file.content;
@@ -1116,13 +1135,6 @@ function verify(items, targets, transformed, shadcn) {
       const stray = [...text.matchAll(unprefixedVarRe)].map((m) => m[0]);
       if (stray.length) bad(where, `unprefixed litt custom property survives: ${[...new Set(stray)].join(", ")}`);
       const names = new Set([...text.matchAll(/(?<![\w-])(--[a-zA-Z][\w-]*)/g)].map((m) => m[1]));
-      // A component may keep a variable of its own: one it declares itself, as an arbitrary property
-      // ([--cmd-list-max:none]) or a style key ("--x": ...), and reads in the same file. Litt tokens are not local.
-      const local = new Set(
-        [...text.matchAll(/\[(--[a-zA-Z][\w-]*):/g), ...text.matchAll(/["'](--[a-zA-Z][\w-]*)["']\s*:/g)]
-          .map((m) => m[1])
-          .filter((n) => !n.startsWith("--litt-")),
-      );
       for (const n of names) {
         if (ALLOWED_FOREIGN_VARS.some((re) => re.test(n))) continue;
         if (local.has(n)) continue;
