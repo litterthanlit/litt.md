@@ -77,3 +77,7 @@ This file is append-only: never edit or delete old entries. Each entry records o
 - 2026-10-15 · type · tags in mono · chose C (segment look in Geist Mono) over B (segment look in sans), D (flat mono) and A (the pill) in a tag trial · "shouldnt tags also be in mono?" · tags are set in --font-mono at the caption size, sentence case · → decision · chat
 - 2026-10-15 · component · status dots · hate · "the dots are horrible" · no dot marks a status or the current page: say it in words or step the text color · → decision · chat
 - 2026-10-15 · component · filter chips · chose the control radius over the pill, to match the tags · ? · chips are rounded-control · → decision · chat
+- 2026-10-15 · color · accent for Litt's own properties · love · "use this kind of blue" (a deep cobalt frame around a dashboard screenshot) · Litt's own accent is cobalt, near the neutrals' hue · → decision · chat
+- 2026-10-15 · component · large buttons · dislike · "the large buttons are too square" · an lg button's side padding is wider than the air above and below its label · → decision · chat
+- 2026-10-15 · component · lg button shape · chose wider (side padding 24 to 32, corners stay 4px) over rounder corners (8px) and the pill · ? · lg buttons take --button-pad-lg; lg fields keep --control-pad-lg · → decision · interview
+- 2026-10-15 · component · switch track · chose the pill track over the control radius · ? · a switch's track and thumb are pills, filled with --fg when on · → decision · interview

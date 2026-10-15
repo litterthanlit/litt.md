@@ -107,6 +107,7 @@
   --spacing-control-pad-sm: var(--control-pad-sm);
   --spacing-control-pad-md: var(--control-pad-md);
   --spacing-control-pad-lg: var(--control-pad-lg);
+  --spacing-button-pad-lg: var(--button-pad-lg);
   --spacing-control: var(--control-gap);
   --container-reading: var(--container-reading);
   --container-content: var(--container-content);

@@ -8,13 +8,13 @@ Button · Input · Checkbox and radio · Segmented control · Tabs · Tag · Kbd
 ---
 
 ## Button
-`--radius-control`. Three sizes on the shared control scale (P10); the label is wrapped in `.litt-trim` so the padding equals the visible air:
+`--radius-control`. Three sizes on the shared control scale (P10); the label is wrapped in `.litt-trim` so the padding equals the visible air at sm and md. lg runs wider than its air, so a short label never makes a square block:
 
 | Size | Height | Side padding | Label | Use |
 |---|---|---|---|---|
 | sm | `--control-sm` 32 | `--control-pad-sm` 12 | 13 | Table rows, toolbars, dense UI |
 | md | `--control-md` 44 | `--control-pad-md` 16 | 15 | Default |
-| lg | `--control-lg` 56 | `--control-pad-lg` 24 | 16 | Hero CTAs and the submit in a page form; full width in narrow forms. A dialog's actions are md. |
+| lg | `--control-lg` 56 | `--button-pad-lg` 32 | 16 | Hero CTAs and the submit in a page form; full width in narrow forms. A dialog's actions are md. |
 
 Weight 400 at every size, no tracking. Hover changes the fill and color, and press scales to `--press-scale`, both on the instant tier (`--dur-instant`, `--ease-out`). On coarse screens a pressed button also takes its hover fill, so the press shows under reduced motion. The box never moves. Grouped buttons sit `--control-group-gap` (12) apart.
 

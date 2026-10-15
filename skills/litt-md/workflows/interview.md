@@ -39,7 +39,7 @@ Use these as starting points. Adapt the previews to Nick's current work.
 4. Numbers in UI: Hanken Grotesk with tabular-nums / Geist Mono everywhere / Mono only in tables
 
 **Color**
-5. Litt's own default accent: signal blue / electric violet / acid lime / warm white light with no hue (settles Q2)
+5. Litt's own default accent: answered in v0.9 (cobalt). Skip unless Nick wants to revisit it
 6. Accent in dark mode: the same hue, lighter / a different hue tuned per theme / desaturated
 7. Status colors: full color / desaturated to fit the cool neutrals / dot only, text stays neutral
 

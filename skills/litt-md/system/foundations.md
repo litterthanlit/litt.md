@@ -52,7 +52,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 | Ground | `--canvas` | Page background |
 | Surfaces | `--surface-1`, `--surface-2`, `--surface-3` | Raised cards, then nested or hover fills, then pressed fills or wells |
 | Lines | `--line`, `--line-strong` | Decorative hairlines; dividers that need to be seen |
-| Control line | `--line-control` | Outline of inputs, checkboxes and selects (at least 3:1) |
+| Control line | `--line-control` | Outline of inputs, checkboxes, selects and switches (at least 3:1) |
 | Text | `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled` | Headlines and key values, body, supporting text, disabled only |
 | Accent | `--accent`, `--accent-hover`, `--accent-fg`, `--accent-tint` | The one primary action, links, focus, the light source |
 | Focus | `--focus`, `--focus-ring` | Keyboard focus indicator |
@@ -62,7 +62,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 - `--accent` reaches at least 4.5:1 on `--canvas` if it is used for links, and at least 3:1 if used only for focus or glows;
 - `--accent-fg` reaches at least 4.5:1 on `--accent`.
 
-Run `node scripts/check.mjs` to confirm. The placeholder signal blue stays only until profile question Q2 is answered.
+Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. Dark mode takes a lighter cobalt with dark text on it, because a deep cobalt cannot pass as link text on the dark canvas.
 
 **Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent: a form can hold many of them, and the accent stays on its submit.
 
@@ -101,7 +101,7 @@ Run `node scripts/check.mjs` to confirm. The placeholder signal blue stays only 
 |---|---|---|
 | `--radius-control` | 4px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
 | `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
-| `--radius-pill` | 999px | Avatars and icon-only buttons |
+| `--radius-pill` | 999px | Avatars, icon-only buttons and switches. Radio marks and slider thumbs are circles |
 
 **Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
 
