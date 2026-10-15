@@ -22,7 +22,17 @@ import { toCss, type Spring } from "./spring";
 import { readLocked, surfaceRadius, type Dial, type Locked } from "./tokens";
 
 export { surfaceRadius, type Dial };
-export { DeviceProvider, readDismiss, useDevice, type Device, type DeviceMode } from "./device";
+export {
+  DeviceProvider,
+  readDismiss,
+  useDevice,
+  useSheetOpen,
+  useSheetPresence,
+  useVisibleScreen,
+  type Device,
+  type DeviceMode,
+  type VisibleScreen,
+} from "./device";
 
 export type Tier = "instant" | "responsive" | "expressive";
 export type PresetName = "locked" | "invisible" | "expressive";

@@ -226,7 +226,7 @@ export default function ToastPage() {
         title="On a phone"
         tier="expressive"
         code="PhoneDemo"
-        caption="On a phone the toasts span the page and sit above the bottom edge. A toast that times out drops by the travel token instead of sliding sideways. A swipe moves it with your finger, and it leaves the way you pulled if you went far enough or fast enough. A short swipe springs back. This preview forces the phone layout, so a mouse drag works too."
+        caption="On a phone the toasts span the page and sit above the bottom edge. While a bottom sheet is open they dock at the top edge instead, so they never cover its buttons. A toast that times out drops by the travel token instead of sliding sideways. A swipe moves it with your finger, and it leaves the way you pulled if you went far enough or fast enough. A short swipe springs back. This preview forces the phone layout, so a mouse drag works too."
       >
         <PhoneDemo />
       </Stage>

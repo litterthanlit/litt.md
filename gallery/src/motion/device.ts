@@ -13,8 +13,14 @@
  * user agent.
  *
  * The Playground can force a device with <DeviceProvider mode="phone">, so a desktop can preview the phone paths.
+ *
+ * Two helpers for the phone overlays live here too, because more than one component needs them:
+ * - useVisibleScreen: the part of the screen a person can see, which shrinks when the on-screen keyboard opens.
+ *   The command menu and the bottom sheet size themselves to it, so the keyboard never covers a row or a footer.
+ * - useSheetOpen and useSheetPresence: whether a bottom sheet is open, so a toast can move to the top edge
+ *   instead of covering the sheet's buttons.
  */
-import { createContext, createElement, useContext, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, createElement, useContext, useEffect, useLayoutEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 
 export type Device = { compact: boolean; coarse: boolean };
 export type DeviceMode = "auto" | "phone" | "desktop";
@@ -61,6 +67,71 @@ export function useDevice(): Device {
   if (mode === "phone") return { compact: true, coarse: true };
   if (mode === "desktop") return { compact: false, coarse: false };
   return { compact, coarse };
+}
+
+/** The part of the screen a person can see: its top edge and height, in layout pixels. */
+export type VisibleScreen = { top: number; height: number };
+
+/**
+ * The visible screen, from window.visualViewport. It shrinks when the on-screen keyboard opens and moves when the
+ * page is panned to keep a field in view; the layout viewport, `fixed inset-0` and 100dvh do not always follow it.
+ * Null while disabled, on the server, before the first read, or with no visual viewport: fall back to 100dvh then.
+ *
+ * @param enabled - Read and follow it only while this is true, such as while a sheet is on a compact screen.
+ */
+export function useVisibleScreen(enabled: boolean): VisibleScreen | null {
+  const [screen, setScreen] = useState<VisibleScreen | null>(null);
+  useLayoutEffect(() => {
+    const vv = typeof window === "undefined" ? null : window.visualViewport;
+    if (!enabled || !vv) return;
+    const read = () => {
+      const next = { top: Math.round(vv.offsetTop), height: Math.round(vv.height) };
+      setScreen((prev) => (prev && prev.top === next.top && prev.height === next.height ? prev : next));
+    };
+    read();
+    vv.addEventListener("resize", read);
+    vv.addEventListener("scroll", read);
+    return () => {
+      vv.removeEventListener("resize", read);
+      vv.removeEventListener("scroll", read);
+      setScreen(null);
+    };
+  }, [enabled]);
+  return enabled ? screen : null;
+}
+
+/* How many bottom sheets are open on the page. One page shares it, like the media queries. */
+let sheets = 0;
+const sheetListeners = new Set<() => void>();
+const sheetChanged = (by: number) => {
+  sheets += by;
+  sheetListeners.forEach((listener) => listener());
+};
+
+/**
+ * Counts a bottom sheet as open while `open` is true. The sheet calls it with its open state (not its exit), so a
+ * toast fired as the sheet closes goes to the usual edge.
+ *
+ * @param open - Whether the sheet is open.
+ */
+export function useSheetPresence(open: boolean): void {
+  useEffect(() => {
+    if (!open) return;
+    sheetChanged(1);
+    return () => sheetChanged(-1);
+  }, [open]);
+}
+
+/** Whether a bottom sheet is open anywhere on the page. False on the server and while hydrating. */
+export function useSheetOpen(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      sheetListeners.add(onChange);
+      return () => sheetListeners.delete(onChange);
+    },
+    () => sheets > 0,
+    () => false,
+  );
 }
 
 /**

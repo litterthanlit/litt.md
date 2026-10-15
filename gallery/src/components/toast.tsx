@@ -26,6 +26,12 @@
  * - compact (narrower than 640): the stack spans the page gutters and sits
  *   --space-4 above the bottom edge or the safe-area inset. A toast that leaves
  *   by itself (timeout, close, Esc) drops by --travel instead of going sideways.
+ * - compact, while a bottom sheet is open (useSheetOpen): the stack docks at the top
+ *   edge instead, --space-2 below the safe-area inset where the command menu sits,
+ *   so it never covers the sheet's buttons. It arrives from above, older toasts peek
+ *   below the newest, and a timeout lifts it by --travel. The stack picks its edge
+ *   when its first toast arrives and keeps it until it empties, so a toast never
+ *   jumps between edges when the sheet closes.
  * - coarse (a finger): the front toast follows a sideways drag one to one, through
  *   useDismissDrag. Past --dismiss-distance of its width, or faster than
  *   --dismiss-velocity, it carries on the way it was going on the exit token;
@@ -45,7 +51,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
-import { useDevice, useTransition, useTravel } from "@/motion";
+import { useDevice, useSheetOpen, useTransition, useTravel } from "@/motion";
 import { useDismissDrag, type DismissInfo } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
@@ -82,12 +88,14 @@ const SCALES = [1, 0.96, 0.92];
 const FADES = [1, 0.8, 0.55];
 const AUTO_DISMISS_MS = 5000;
 
-function slotFor(depth: number, expanded: boolean) {
+/* Where a toast sits in the stack. Docked at the bottom, older toasts go up; docked at the top, they go down. */
+function slotFor(depth: number, expanded: boolean, top: boolean) {
   const d = Math.min(depth, MAX_VISIBLE - 1);
   const away = depth >= MAX_VISIBLE;
+  const way = top ? 1 : -1;
   return expanded
-    ? { y: -d * (HEIGHT + GAP), scale: 1, opacity: away ? 0 : 1 }
-    : { y: -d * PEEK, scale: SCALES[d], opacity: away ? 0 : FADES[d] };
+    ? { y: way * d * (HEIGHT + GAP), scale: 1, opacity: away ? 0 : 1 }
+    : { y: way * d * PEEK, scale: SCALES[d], opacity: away ? 0 : FADES[d] };
 }
 
 const ToastContext = createContext<ToastApi | null>(null);
@@ -161,6 +169,12 @@ export function Toaster({
 
 function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: string) => void }) {
   const { compact, coarse } = useDevice();
+  /* The edge is chosen while the stack is empty and kept until it empties again, so a toast never jumps. */
+  const sheetOpen = useSheetOpen();
+  const overSheet = compact && sheetOpen;
+  const [docked, setDocked] = useState(overSheet);
+  if (items.length === 0 && docked !== overSheet) setDocked(overSheet);
+  const top = compact && docked;
   const regionRef = useRef<HTMLElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const [hover, setHover] = useState(false);
@@ -225,9 +239,11 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
       aria-label="Notifications"
       className={
         "fixed z-60 " +
-        (compact
-          ? "inset-x-gutter bottom-[calc(var(--space-4)+env(safe-area-inset-bottom,0px))] mx-auto max-w-[40rem] "
-          : "right-6 bottom-[max(1.5rem,env(safe-area-inset-bottom,0px))] w-90 ") +
+        (top
+          ? "inset-x-gutter top-[calc(var(--space-2)+env(safe-area-inset-top,0px))] mx-auto max-w-[40rem] "
+          : compact
+            ? "inset-x-gutter bottom-[calc(var(--space-4)+env(safe-area-inset-bottom,0px))] mx-auto max-w-[40rem] "
+            : "right-6 bottom-[max(1.5rem,env(safe-area-inset-bottom,0px))] w-90 ") +
         (count === 0 ? "pointer-events-none" : "")
       }
       style={{ height }}
@@ -271,6 +287,7 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
             depth={items.length - 1 - i}
             expanded={expanded}
             paused={paused}
+            top={top}
             onDismiss={dismiss}
           />
         ))}
@@ -290,12 +307,14 @@ function ToastView({
   depth,
   expanded,
   paused,
+  top,
   onDismiss,
 }: {
   item: ToastItem;
   depth: number;
   expanded: boolean;
   paused: boolean;
+  top: boolean;
   onDismiss: (id: string) => void;
 }) {
   const { compact, coarse } = useDevice();
@@ -311,7 +330,9 @@ function ToastView({
 
   const tone = item.tone ?? "neutral";
   const away = depth >= MAX_VISIBLE;
-  const slot = slotFor(depth, expanded);
+  const slot = slotFor(depth, expanded, top);
+  /* Arrivals and timeouts come from, and go back to, the edge the stack is docked at. */
+  const edge = top ? -travel : travel;
   const showContent = depth === 0 || expanded;
 
   /* A finger swipes a toast sideways, one to one. It is off for a mouse, which has the close button. */
@@ -363,18 +384,19 @@ function ToastView({
       aria-live={tone === "error" ? "assertive" : "polite"}
       aria-atomic="true"
       inert={away}
-      className="litt-glass absolute inset-x-0 bottom-0 h-18 origin-top rounded-surface"
+      className={"litt-glass absolute inset-x-0 h-18 rounded-surface " + (top ? "top-0 origin-bottom" : "bottom-0 origin-top")}
       onPointerDown={(e) => {
         /* Only a toast that shows its content can be swiped; the ones peeking from behind wait their turn. */
         if (!showContent) return;
         drag.onPointerDown(e);
         if (coarse) setHeld(true);
       }}
-      initial={{ opacity: 0, y: slot.y + travel, scale: 0.98 }}
+      initial={{ opacity: 0, y: slot.y + edge, scale: 0.98 }}
       animate={{ opacity: slot.opacity, y: slot.y, scale: slot.scale, transition: settled.current ? move : enter }}
       variants={{
         /* Read when the exit starts: a swipe carries on one more toast width from where the finger let go, a
-           timeout drops by the travel token on compact screens, and everywhere else the toast goes right. */
+           timeout drops (or, docked at the top, lifts) by the travel token on compact screens, and everywhere else
+           the toast goes right. */
         leave: () => {
           if (swiped.current) {
             const now = drag.offset.get() as unknown;
@@ -383,7 +405,7 @@ function ToastView({
             return { opacity: 0, x: from + (swiped.current === "left" ? -by : by), transition: drag.exit };
           }
           return compact
-            ? { opacity: 0, y: slot.y + travel, transition: drag.exit }
+            ? { opacity: 0, y: slot.y + edge, transition: drag.exit }
             : { opacity: 0, x: travel, transition: drag.exit };
         },
       }}

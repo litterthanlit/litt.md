@@ -7,8 +7,9 @@
  *   animate before Radix unmounts anything.
  * - Panel enter (expressive tier): opacity 0 to 1, y from useTravel() to 0,
  *   scale 0.98 to 1. It may bounce slightly, as the tokens allow. The side sheet
- *   travels the same small distance on x, never its own width.
- * - Exit: useExit("expressive"), quicker and never bouncing.
+ *   travels the same small distance on x, never its own width. When the view has
+ *   already spent its expressive moment, tier="responsive" moves it on that tier.
+ * - Exit: useExit(tier), quicker and never bouncing.
  * - Overlay: a canvas tint that only fades (instant tier). No blur.
  * - Corners: the panel is rounded-surface; the sheet hugs the right edge, so
  *   only its left corners are rounded. .litt-glass carries the surface radius,
@@ -18,11 +19,17 @@
  *
  * On compact screens (useDevice().compact, narrower than 640) the dialog is a
  * bottom sheet, and side="right" is the same sheet (foundations.md section 6):
- * - It rises from the bottom edge by its own height on the expressive tier and
+ * - It rises from the bottom edge by its own height, always on the expressive
+ *   spring whatever tier says (a sheet does not use up the view's moment), and
  *   leaves the same way on the exit token. Transform only, its height never
  *   animates, and it has one height: its content, up to the visible screen less
  *   --space-6. --space-6 of the sheet hides below the screen edge, so an
  *   overshoot or a pull never shows a gap.
+ * - It sits above the keyboard: the layer is the visible screen
+ *   (useVisibleScreen), so when the keyboard opens the sheet's bottom rises with
+ *   it and the body scrolls inside, never under the keys.
+ * - While it is open it counts itself (useSheetPresence), so a toast fired over
+ *   it docks at the top edge instead of covering its buttons.
  * - Glass, rounded on the top corners only, a 32 by 4 grabber at the top (hidden
  *   from assistive tech), the body scrolls inside with overscroll-behavior:
  *   contain, and the footer is padded by the safe-area inset.
@@ -43,7 +50,7 @@
 import { createContext, useCallback, useContext, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useTransform } from "motion/react";
-import { useDevice, useExit, useMotionDial, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useMotionDial, useSheetPresence, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { useDismissDrag } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
@@ -96,6 +103,8 @@ export type DialogContentProps = {
   footer?: ReactNode;
   /** "center" is a modal; "right" is a settings sheet. On a phone (compact screens) both are the bottom sheet. */
   side?: "center" | "right";
+  /** The view's one expressive moment by default. Pass "responsive" when the view has already spent it (a list entrance, say). A phone sheet always rises on the expressive spring. */
+  tier?: "expressive" | "responsive";
   /** Hide the round close button in the corner. */
   hideClose?: boolean;
   /** Extra classes for the panel. */
@@ -142,6 +151,7 @@ export type DialogSheetProps = {
  * becomes a sheet on a phone.
  */
 export function DialogSheet({ open, ...rest }: DialogSheetProps) {
+  useSheetPresence(open);
   return (
     <RadixDialog.Portal forceMount>
       <AnimatePresence>{open && <SheetLayer key="layer" {...rest} />}</AnimatePresence>
@@ -156,6 +166,7 @@ function SheetLayer({ onDismiss, onOpenAutoFocus, described = true, contentRef, 
   const drag = useDismissDrag({ direction: "down", onDismiss });
   const panel = useRef<HTMLDivElement | null>(null);
   const height = useRef(0);
+  const visible = useVisibleScreen(true);
 
   const setPanel = useCallback(
     (node: HTMLDivElement | null) => {
@@ -189,7 +200,11 @@ function SheetLayer({ onDismiss, onOpenAutoFocus, described = true, contentRef, 
   });
 
   return (
-    <div className="fixed inset-0 z-50 grid grid-rows-[minmax(0,1fr)] items-end">
+    /* The layer is the visible screen, so the keyboard lifts the sheet's bottom instead of covering it. */
+    <div
+      className="fixed inset-0 z-50 grid grid-rows-[minmax(0,1fr)] items-end"
+      style={visible ? { top: visible.top, height: visible.height, bottom: "auto" } : undefined}
+    >
       <RadixDialog.Overlay forceMount asChild>
         <motion.div className={SCRIM} style={{ opacity: scrim }} />
       </RadixDialog.Overlay>
@@ -235,14 +250,15 @@ export function DialogContent({
   description,
   footer,
   side = "center",
+  tier = "expressive",
   hideClose = false,
   className = "",
   children,
 }: DialogContentProps) {
   const { open, change } = useContext(DialogState);
   const { compact, coarse } = useDevice();
-  const enter = useTransition("expressive");
-  const exit = useExit("expressive");
+  const enter = useTransition(tier);
+  const exit = useExit(tier);
   const fadeIn = useTransition("instant");
   const fadeOut = useExit("instant");
   const travel = useTravel();
