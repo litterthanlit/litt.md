@@ -6,13 +6,15 @@
  *   third from 1024 up, the fields on the rest, and one column below that. Sections are
  *   separated by a --line hairline and --space-12 of air.
  * - Fieldset groups related controls under one legend. Its legend and note look like the ones
- *   in CheckboxGroup and RadioGroup, so a group made of fields matches a group made of boxes.
+ *   in CheckboxGroup and RadioGroup, so a group made of fields matches a group made of boxes. With
+ *   rows it holds a settings list of switches, flush, with hairlines between the rows.
  * - ErrorSummary names every problem above the form and links to each field. It follows the
  *   GOV.UK error summary: a focusable panel named by its heading, and one link per error. It
  *   takes focus when a submit fails, which is what reads it out. It is not a live region: it
  *   updates as fields are fixed, and an alert would re-announce it on every keystroke.
  * - FormActions is the action row of a page form: submit first, then Cancel, both lg (P10).
- *   They stack full width below 640, submit on top.
+ *   They stack full width below 640, submit on top. align="fields" lines the row up with the
+ *   fields column of a FormSection from 1024 up.
  * - Spacing: fields sit --space-6 (24) apart and groups --space-12 (48) apart. A Fieldset adds
  *   24 above and below itself, so in a column of fields it sits 48 from its neighbours.
  * - Optional fields are marked, not required ones: "(optional)" in --fg-subtle after the label.
@@ -70,6 +72,9 @@ export function Optional() {
 
 /* ------------------------------------------------------------------ section */
 
+/* The two columns of a settings page from 1024 up: the left third, then the rest. FormSection and FormActions share them, so a row can line up with the fields. */
+const COLUMNS = "lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]";
+
 export type FormSectionProps = {
   /** The section's name, at the body size in the foreground color. */
   title: ReactNode;
@@ -92,7 +97,9 @@ export function FormSection({ title, description, children, className = "" }: Fo
     <section
       aria-labelledby={titleId}
       className={
-        "grid gap-x-12 gap-y-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] " +
+        "grid gap-x-12 gap-y-6 " +
+        COLUMNS +
+        " " +
         "not-first:mt-12 not-first:border-t not-first:border-line not-first:pt-12 " +
         className
       }
@@ -121,7 +128,9 @@ export type FieldsetProps = {
   error?: ReactNode;
   /** Disables every control in the group, through the fieldset. */
   disabled?: boolean;
-  /** The controls. They sit 24px apart in one column. */
+  /** Set it when the children are rows that carry their own padding, such as Switches with align="end". They sit flush as one list, with a hairline between them and at both ends, instead of 24px apart. */
+  rows?: boolean;
+  /** The controls. They sit 24px apart in one column, or flush as a list of rows when rows is set. */
   children: ReactNode;
   /** Extra classes for the fieldset. */
   className?: string;
@@ -130,9 +139,10 @@ export type FieldsetProps = {
 /**
  * Related controls under one legend, such as an invoice address. The legend is small text in the foreground color, like a
  * field's label. In a column of fields the group adds 24px above and below itself, so groups sit 48px apart while fields
- * sit 24px apart. For a group of checkboxes or radios use CheckboxGroup or RadioGroup, which are fieldsets already.
+ * sit 24px apart. For a group of checkboxes or radios use CheckboxGroup or RadioGroup, which are fieldsets already. For a settings
+ * list of switches, set rows: the switches sit flush, with a hairline between them.
  */
-export function Fieldset({ legend, description, help, error, disabled, children, className = "" }: FieldsetProps) {
+export function Fieldset({ legend, description, help, error, disabled, rows = false, children, className = "" }: FieldsetProps) {
   const id = useId();
   const note = error ?? help;
   const describedBy = [description ? `${id}-description` : undefined, note ? `${id}-note` : undefined].filter(Boolean).join(" ");
@@ -148,7 +158,7 @@ export function Fieldset({ legend, description, help, error, disabled, children,
           {description}
         </p>
       )}
-      <div className="grid gap-6">{children}</div>
+      <div className={rows ? "grid divide-y divide-line border-y border-line" : "grid gap-6"}>{children}</div>
       {note && (
         <p id={`${id}-note`} className={"mt-2 text-small " + (error ? "text-danger" : "text-fg-subtle")}>
           {note}
@@ -255,14 +265,24 @@ export function ErrorSummary({ errors, title, focusKey, className = "" }: ErrorS
 export type FormActionsProps = {
   /** The buttons, submit first. Make the submit a primary lg Button and Cancel a ghost lg Button. */
   children: ReactNode;
+  /** "start" begins the row at the start of its container. "fields" lines it up with the fields column of a FormSection from 1024 up, and below 1024 it is the same plain row. */
+  align?: "start" | "fields";
   /** Extra classes for the row. */
   className?: string;
 };
 
 /**
- * The action row of a page form. The submit comes first at the start of the column, then Cancel, 12px apart. Below 640 they
- * stack full width with the submit on top. Use it for a page form; a dialog keeps its own order, bottom right with the primary last.
+ * The action row of a page form. The submit comes first, then Cancel, 12px apart. Below 640 they stack full width with the submit
+ * on top. On a settings page with FormSections, set align="fields" so Save lines up with the fields, not the section titles. Use it for a
+ * page form; a dialog keeps its own order, bottom right with the primary last.
  */
-export function FormActions({ children, className = "" }: FormActionsProps) {
-  return <div className={"flex gap-(--control-group-gap) max-sm:flex-col " + className}>{children}</div>;
+export function FormActions({ children, align = "start", className = "" }: FormActionsProps) {
+  const row = "flex gap-(--control-group-gap) max-sm:flex-col";
+  if (align === "start") return <div className={row + " " + className}>{children}</div>;
+  /* The same two columns and gap as FormSection, with the buttons in the second one. Below 1024 the wrapper is a plain block. */
+  return (
+    <div className={"lg:grid lg:gap-x-12 " + COLUMNS + " " + className}>
+      <div className={row + " lg:col-start-2"}>{children}</div>
+    </div>
+  );
 }
