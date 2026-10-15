@@ -149,6 +149,11 @@
   --stagger: 40ms;                   /* between siblings in a cascade */
   --travel: 16px;                    /* entrance offset; menus and tooltips use a quarter */
 
+  /* Dismissal: whether a released drag leaves or springs back (foundations section 6).
+     Thresholds, not durations, so the reduced-motion block leaves them alone. */
+  --dismiss-distance: 0.25;          /* a fraction of the surface's height, or width for a sideways swipe */
+  --dismiss-velocity: 0.4;           /* px per ms */
+
   /* Material constants */
   --glass-blur: 20px;
   --glass-saturate: 140%;

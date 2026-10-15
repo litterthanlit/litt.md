@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type MouseEvent, type ReactNode, type Ref,
 import { Button } from "@/components/button";
 import { Header, type HeaderLink, type HeaderLinkProps } from "@/components/header";
 import { ProjectCover, type CoverName } from "@/components/list-cover";
+import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -47,6 +48,7 @@ import { Header } from "@/components/header";
     "Pages that scroll. Glass only earns its blur when content passes under it.",
     "Four to six short links. They show in the bar from 1024px wide, or from 640px with navFrom=\"sm\", and fold behind a menu button below that.",
     "A studio site, a docs site or the shell of a small app, where one bar can stay put while the page moves.",
+    "A phone. The nav stays behind the menu button, which opens a dropdown beside it, and the bar stays at the top of the screen while the page scrolls under it.",
   ],
   skip: [
     "A page that does not scroll, or has nothing behind the bar. Glass over a flat page is a gray box. Use a plain bar with a hairline.",
@@ -67,7 +69,8 @@ import { Header } from "@/components/header";
     "Links are real anchors, so they open in a new tab and work with the middle click. The current page gets aria-current=\"page\" and an accent dot, so it is never marked by color alone. In the menu, the current row says \"current page\" in hidden text.",
     "Menu rows are real links (role menuitem on an anchor), so a modifier key or a middle click opens them in a new tab. With onNavigate they call your router instead, and lose that, so keep important pages reachable from the page too.",
     "The menu button is a real button named by menuLabel, and Radix sets aria-haspopup and aria-expanded. The menu is named by navLabel. Menu documents the rest of its keyboard and focus behavior.",
-    "Keyboard focus draws a 2px outline at a 2px offset on every link, the wordmark link and the buttons. Links are 32px tall, and 44px on touch screens. The menu button and its rows are 44px.",
+    "Keyboard focus draws a 2px outline at a 2px offset on every link, the wordmark link and the buttons. Links are 32px tall with a mouse. On touch screens the links, the wordmark link and the menu button are all 44px tall, and a pressed link fills the way a hovered one does, because a finger has no hover. The menu button and its rows are 44px on every screen.",
+    "The bar never hides on scroll and never moves out of reach: it sticks at the top, below the safe-area inset on a notched phone, so the menu button is always where the thumb expects it. Add viewport-fit=cover to your viewport meta tag for the inset to apply.",
     "A sticky bar can cover the control you tab to. Set scroll-padding-top on the scrolling element to the header height plus some air, as the usage note shows. The header cannot do it for you.",
     "Add a \"Skip to content\" link before the header. The header does not include one, because only you know where the content starts.",
     "Under reduced transparency the glass becomes solid surface-1, and where backdrop-filter is missing it goes almost opaque, so the links keep their contrast. Under reduced motion the menu appears and leaves at once.",
@@ -364,9 +367,11 @@ export default function HeaderPage() {
         tier="responsive"
         size="lg"
         code="PhoneDemo"
-        caption="On a narrow bar the nav does not shrink or wrap. It leaves the bar and opens from the menu button, in litt's Menu, which grows from the button and glides its highlight between rows. The dot marks the page you are on, and the action stays in the bar. The header measures the frame, not the window, so this is what a phone sees."
+        caption="On a phone the nav stays behind the menu button. It does not shrink or wrap, and the button opens litt's Menu beside it, which stays anchored because its rows are already big enough for a finger. The bar stays at the top of the screen, below the safe-area inset on a notched phone, and never hides as the page scrolls. On a touch screen the links and the button are 44px tall and a pressed link fills. The dot marks the page you are on, and the action stays in the bar. The header measures the frame, not the window, so this is what a phone sees."
       >
-        <PhoneDemo />
+        <DeviceProvider mode="phone">
+          <PhoneDemo />
+        </DeviceProvider>
       </Stage>
 
       <Stage

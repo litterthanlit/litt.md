@@ -13,6 +13,9 @@
  *   it moves.
  * - Motion: the selected surface glides to the picked segment on the responsive tier (it
  *   moves through transform), as in Tabs. Color changes are instant.
+ * - Touch: there is no hover, so on a coarse pointer an unselected segment that is held down fills
+ *   (PRESS: fg 6%, color only, instant tier) and takes the --fg text. The selected one needs no fill,
+ *   its surface is the answer. The box never moves. The OS tap flash is off, so the two do not double.
  * - The legend is visually hidden by default, as the spec says. Pass showLegend in a form.
  */
 import { useId, useState, type ReactNode } from "react";
@@ -53,6 +56,9 @@ export type SegmentedProps<T extends string> = {
   /** Extra classes for the fieldset, such as a width. */
   className?: string;
 };
+
+/** What a finger holding an unselected segment shows: the fg 6% fill that rows and tabs share, and the hover text color. */
+const PRESS = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
 
 const sizes: Record<SegmentedSize, { track: string; segment: string }> = {
   sm: { track: "h-control-sm pointer-coarse:h-control-md", segment: "px-control-pad-sm text-caption pointer-coarse:text-small" },
@@ -100,11 +106,11 @@ export function Segmented<T extends string>({
                 key={o.value}
                 className={
                   "relative grid h-full select-none place-items-center rounded-control font-normal " +
-                  "transition-colors duration-(--dur-instant) ease-litt " +
+                  "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
                   look.segment +
                   (off
                     ? " cursor-not-allowed text-fg-disabled"
-                    : " cursor-pointer " + (selected ? "text-fg" : "text-fg-subtle hover:text-fg"))
+                    : " cursor-pointer " + (selected ? "text-fg" : "text-fg-subtle hover:text-fg " + PRESS))
                 }
               >
                 <input

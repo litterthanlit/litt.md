@@ -5,7 +5,9 @@
  *
  * - Look: rows are separated by a 1px line; cells pad space-3 and space-4 and use the small size. The primary
  *   cell is fg and the rest are fg-subtle. Numbers and dates are mono caption size, right-aligned, with tabular
- *   figures. Hover is an fg-4% fill on the instant tier and never moves anything. The header row is sticky,
+ *   figures. Hover is an fg-4% fill on the instant tier and never moves anything. On a coarse pointer
+ *   there is no hover, so a row held down fills instead (fg 6%, same tier, color only), and so does a
+ *   sortable header; the OS tap flash is off so the two do not double. The header row is sticky,
  *   caption size, fg-subtle, sentence case. The box is a hairline at the surface radius, filled surface-1 so the
  *   sticky header can cover the rows that scroll under it.
  * - Semantics: a <table> with a hidden <caption>, <th scope="col"> headers and a <th scope="row"> for each primary
@@ -174,8 +176,9 @@ export function TableBody({ children }: TableBodyProps) {
 /* -------------------------------------------------------------------------- */
 
 const rowHover =
-  "transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)]";
+  "transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " +
+  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
 
 export type TableRowProps = Omit<ComponentProps<"tr">, "ref"> & {
   /** The row's cells. */
@@ -298,9 +301,10 @@ export function TableHead({ numeric = false, sort = "none", onSort, className = 
           "flex h-control-md w-full cursor-pointer items-center gap-1 px-4 text-caption",
           // Numbers sit flush right, so the icon goes to the left of the label to keep the label above the figures.
           numeric ? "flex-row-reverse" : "",
-          "transition-[color] duration-(--dur-instant) ease-litt",
+          "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent]",
+          "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
           "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus",
-          sort === "none" ? "text-fg-subtle hover:text-fg" : "text-fg",
+          sort === "none" ? "text-fg-subtle hover:text-fg pointer-coarse:active:text-fg" : "text-fg",
         ].join(" ")}
       >
         <span>{children}</span>

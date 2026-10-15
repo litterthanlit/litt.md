@@ -55,6 +55,7 @@ const [theme, setTheme] = useState<"system" | "light" | "dark">("system");
     "The selected option is a raised surface and a stronger text color, not color alone.",
     "Keyboard focus draws a 2px outline inside the segment, so the track never clips it. Mouse and touch presses do not show it.",
     "The small track is 32px tall and the medium track is 44px. On touch screens the small one grows to 44px.",
+    "Touch has no hover, so on a touch screen a segment held down fills and takes the stronger text color, on the instant tier. The OS tap flash is off, and the segment never moves.",
     "A disabled option is muted and skipped by the arrow keys. Say why in text nearby when it is not obvious.",
     "Under reduced motion the selected surface jumps to the new option without gliding.",
   ],
@@ -190,7 +191,7 @@ export default function SegmentedPage() {
       <Stage
         title="Theme switch"
         tier="responsive"
-        caption="The small size, as in a header. The legend is hidden, because the options name the control. The selected surface glides to your pick through transform on the responsive tier, and the text color fades on the instant tier."
+        caption="The small size, as in a header. The legend is hidden, because the options name the control. The selected surface glides to your pick through transform on the responsive tier, and the text color fades on the instant tier. On a touch screen the segment you hold fills."
         code="ThemeDemo"
       >
         <ThemeDemo />

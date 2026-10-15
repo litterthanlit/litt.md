@@ -19,6 +19,7 @@ import {
   SunIcon,
   UserIcon,
 } from "@/components/icons";
+import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -26,7 +27,7 @@ export const meta: PageMeta = {
   title: "Command menu",
   order: 11, group: "Overlays",
   summary:
-    "Search every page, project and action from the keyboard. The panel drops in over a dimmed canvas, and one highlight glides between rows as you arrow through them.",
+    "Search every page, project and action from the keyboard. The panel drops in over a dimmed canvas, and one highlight glides between rows as you arrow through them. On a phone it sits at the top edge and follows the keyboard.",
   tiers: ["instant", "responsive"],
 };
 
@@ -77,7 +78,7 @@ function Search() {
     "A phone layout that hides the nav. The command menu can hold those pages.",
     "Long lists where typing is faster than scrolling: projects, templates, settings.",
     "Actions that have no place on the page, such as Switch theme or Invite a teammate.",
-    "Always with a visible Search button that shows the ⌘K hint, so people can find it without knowing the shortcut.",
+    "Always with a visible Search button that shows the ⌘K hint, so people can find it without knowing the shortcut. On a phone the hint is hidden, and the button still opens it.",
   ],
   skip: [
     "A few actions on one thing. Use a Menu.",
@@ -85,6 +86,7 @@ function Search() {
     "Switching between views of the same content. Use Tabs.",
     "Ranked or fuzzy results. It matches a piece of the label, ignoring case, and keeps the original order, so use a real search for content.",
     "A form or a confirmation. Use a Dialog.",
+    "A list you want to drag away on a phone. The command menu is not draggable, because its list scrolls. It closes with Cancel, Esc or a tap outside.",
   ],
   keyboard: [
     [["⌘K", "Ctrl+K"], "Opens the menu, or closes it when it is open. useCommandShortcut listens for it while the page that calls it is mounted."],
@@ -93,7 +95,7 @@ function Search() {
     [["ArrowUp"], "Lights the previous enabled row, the same way."],
     [["Enter"], "Chooses the lit row and closes the menu. With no match, nothing happens."],
     [["Escape"], "Clears the query first. With an empty field it closes the menu and returns focus to where it was."],
-    [["Tab"], "Stays in the search field, because it is the only thing in the dialog that takes focus."],
+    [["Tab"], "Stays in the search field, because it is the only thing in the dialog that takes focus. On a touch screen it also reaches the Cancel button."],
   ],
   a11y: [
     "The field is a combobox and the rows are options in a listbox. Focus never leaves the field, and aria-activedescendant names the lit row, so a screen reader reads the row while you keep typing. Clicking a row does not steal focus either.",
@@ -106,6 +108,8 @@ function Search() {
     "While an input method is composing a word, Enter, Esc, the arrows and the shortcut do nothing to the menu.",
     "Give every item an id that is unique across all groups, because the ids name the rows for screen readers. The shortcut text on a row is a hint and does not bind the key.",
     "Under reduced motion the dialog appears and leaves at once, with no travel, and the highlight jumps to the row.",
+    "On a narrow screen the panel sits at the top edge and its list is as tall as the visible screen less the on-screen keyboard (read from the visual viewport), so no row hides behind the keyboard. The list scrolls inside the panel.",
+    "On a touch screen the field keeps focus when the menu opens, because typing is the point. The key hints and row shortcuts are not rendered, since a finger has no keys, and a Cancel button (44px tall) sits beside the field. Cancel is also the visible way to close, as a phone has no Esc.",
   ],
 };
 
@@ -191,6 +195,40 @@ function EmptyDemo() {
   return <PanelDemo initialQuery="figma" />;
 }
 
+/* A phone in a frame: the touch layout of the panel, and the real dialog at the top edge of the screen. */
+function PhoneDemo() {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [last, setLast] = useState("Nothing picked yet");
+  return (
+    <DeviceProvider mode="phone">
+      <div className="grid w-full justify-items-center gap-6">
+        <Button icon={<SearchIcon />} onClick={() => setOpen(true)}>
+          Search
+        </Button>
+        <p className="font-mono text-caption text-fg-subtle" role="status">{last}</p>
+        <div className="w-full min-w-0 max-w-sm rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]">
+          <CommandPanel
+            groups={GROUPS}
+            query={query}
+            onQueryChange={setQuery}
+            onSelect={(item) => setLast(`Picked ${item.label}`)}
+            onCancel={() => setQuery("")}
+            initialSource="pointer"
+          />
+        </div>
+        <CommandMenu
+          open={open}
+          onOpenChange={setOpen}
+          groups={GROUPS}
+          openedBy="pointer"
+          onSelect={(item: CommandItem) => setLast(`Picked ${item.label}`)}
+        />
+      </div>
+    </DeviceProvider>
+  );
+}
+
 export default function CommandMenuPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -220,6 +258,16 @@ export default function CommandMenuPage() {
         code="EmptyDemo"
       >
         <EmptyDemo />
+      </Stage>
+
+      <Stage
+        title="On a phone"
+        tier="responsive"
+        size="lg"
+        caption="The panel moves to the top edge and follows the visible screen, so the keyboard never covers a row. The key hints and row shortcuts go, a Cancel button sits beside the field, and the field keeps focus because typing is the point. It drops in the same way and is not draggable, because its list scrolls. This stage forces the phone layout on a desktop."
+        code="PhoneDemo"
+      >
+        <PhoneDemo />
       </Stage>
     </Page>
   );

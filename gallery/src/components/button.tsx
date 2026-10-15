@@ -6,7 +6,11 @@
  * - Weight 400 always (P9). State changes color and fill only; the box never
  *   moves or resizes (loading keeps the label mounted at opacity 0).
  * - Motion: the instant tier. Hover and press are CSS transitions on
- *   --dur-instant, which tokens.css owns. Press is scale(--press-scale).
+ *   --dur-instant, which tokens.css owns. Press is scale(--press-scale). Tailwind's
+ *   active:scale-* sets the CSS `scale` property, not `transform`, so the transition
+ *   names `scale`; naming `transform` instead would let the press snap.
+ * - Touch: the button keeps the press scale as its feedback, and the OS tap flash is
+ *   turned off so the two do not double. Rows and segments fill instead (see Tabs, List).
  * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
  *   round (pill) and need an aria-label.
  */
@@ -35,7 +39,8 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const base =
   "relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-normal " +
-  "cursor-pointer transition-[background-color,color,transform] duration-(--dur-instant) ease-litt " +
+  "cursor-pointer transition-[background-color,color,scale] duration-(--dur-instant) ease-litt " +
+  "[-webkit-tap-highlight-color:transparent] " +
   "active:scale-(--press-scale) disabled:cursor-not-allowed disabled:active:scale-100 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 

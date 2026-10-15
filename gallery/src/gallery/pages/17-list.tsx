@@ -81,7 +81,7 @@ const [filter, setFilter] = useState<ProjectFilter>("all");
     "Selection is the checkbox's checked state. The ring that turns to the focus color only echoes it, so it never carries the meaning alone.",
     "The filter chips are a group named Filter projects, and each is a button with aria-pressed.",
     "ProjectsEmpty is a role=\"status\", so an empty result is announced. Nothing announces how many projects match a filter. If that matters, add a polite live region, like the selected count in the demo.",
-    "Hover only changes a fill or a hairline, and never reveals anything, so nothing is lost on touch.",
+    "Hover only changes a fill or a hairline, and never reveals anything, so nothing is lost on touch. On a touch screen a row or an unselected filter chip held down gets a fill, on the instant tier, and the OS tap flash is off.",
     "Under reduced motion rows and cards appear and move at once, with no travel or stagger.",
   ],
 };
@@ -182,7 +182,7 @@ export default function ListPage() {
         align="start"
         code="EntranceDemo"
         onReplay={replayList}
-        caption="Each row fades in and rises from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token. The cascade stops counting at six: rows seven and eight arrive with row six, so a long list never drags. Hover only changes the fill and a row never moves. Press Replay to watch it again."
+        caption="Each row fades in and rises from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token. The cascade stops counting at six: rows seven and eight arrive with row six, so a long list never drags. Hover only changes the fill and a row never moves; on a touch screen the row you hold fills instead. Press Replay to watch it again."
       >
         <EntranceDemo key={listKey} />
       </Stage>

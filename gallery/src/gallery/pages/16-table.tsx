@@ -81,7 +81,7 @@ export const docs: PageDocs = {
     "When the table is wider or taller than its space, the region becomes focusable and is labelled with the table's name, so a keyboard user can scroll it. When it fits, there is no extra tab stop.",
     "The page never scrolls sideways. A cell does not wrap, so a narrow screen scrolls the table inside its region; add whitespace-normal to a cell that must wrap.",
     "Pass busy while loading. It sets aria-busy and announces \"Loading\" with the label. The skeleton rows are hidden from screen readers, and TableEmpty is a status.",
-    "Hover is a fill and never reveals anything, so touch loses nothing. Rows are 44px tall, and a sortable header is 44px.",
+    "Hover is a fill and never reveals anything, so touch loses nothing. On a touch screen a row held down gets the same kind of fill, and so does a sortable header, as feedback only: a row is not a button. Rows are 44px tall, and a sortable header is 44px.",
     "Color never carries a status alone. The demos pair a dot with a word.",
     "Under reduced motion the rows appear at once, with no travel or stagger, and the hover fill changes without a fade.",
   ],
@@ -397,7 +397,7 @@ export default function TablePage() {
         align="start"
         code="DeployHistoryDemo"
         onReplay={replayDeploys}
-        caption="Rows fade in and rise from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token, and the cascade stops counting at six. It is this page's one expressive moment. The header is sticky inside the table's region, so scroll the rows and it stays. Hover fills a row and nothing moves. Press Replay to watch it again."
+        caption="Rows fade in and rise from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token, and the cascade stops counting at six. It is this page's one expressive moment. The header is sticky inside the table's region, so scroll the rows and it stays. Hover fills a row and nothing moves; on a touch screen the row you hold fills instead. Press Replay to watch it again."
       >
         <DeployHistoryDemo key={deployKey} />
       </Stage>

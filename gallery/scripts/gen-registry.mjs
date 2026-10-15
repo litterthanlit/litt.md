@@ -48,7 +48,7 @@
  *
  * WHERE FILES LAND IN A HOST (shadcn puts a target without "~/" under src/ when the host has one)
  *   components/litt/<stem>.tsx       the components
- *   lib/litt/motion/{index,spring,tokens}.ts(x), lib/litt/glide.tsx     the engines
+ *   lib/litt/motion/{index,spring,tokens,device,drag}.ts(x), lib/litt/glide.tsx     the engines
  *   Every import between shipped files is relative, so no alias in the host matters, and none of
  *   it collides with the host's own components/ui/button.tsx. registryDependencies are absolute
  *   URLs, because shadcn resolves a bare name against its own registry.
@@ -731,7 +731,7 @@ const COPY = {
   },
   motion: {
     title: "Motion",
-    description: "The motion engine the components share. Hooks for the instant, responsive and expressive tiers, exits, travel and stagger, all reading litt's tokens.",
+    description: "The motion engine the components share. Hooks for the instant, responsive and expressive tiers, exits, travel and stagger, and the compact and coarse device signals, all reading litt's tokens.",
     docs: "Installed in lib/litt/motion. The components use it for you, and it needs no provider.",
   },
   glide: {
@@ -853,7 +853,7 @@ function build() {
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
   const onDisk = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
-  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts"].map((f) => path.join(motionDir, f));
+  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
 
   const targets = new Map();
@@ -1108,7 +1108,26 @@ function verify(items, targets, transformed, shadcn) {
     return found;
   };
 
+  // A component may keep variables of its own: ones a shipped file declares as an arbitrary property
+  // ([--cmd-list-max:none]) or a style key ("--x": ...). Another file may read them when its item depends on the
+  // declaring item, so the host always has both (the popover reads the dialog's --sheet-foot). Litt tokens are not
+  // local: they must come from the shipped CSS.
+  const localVars = (text) =>
+    [...text.matchAll(/\[(--[a-zA-Z][\w-]*):/g), ...text.matchAll(/["'](--[a-zA-Z][\w-]*)["']\s*:/g)].map((m) => m[1]).filter((n) => !n.startsWith("--litt-"));
+  const itemByName = new Map(items.map((i) => [i.name, i]));
+  const depsOf = (item, seen = new Set()) => {
+    if (seen.has(item.name)) return seen;
+    seen.add(item.name);
+    for (const url of item.registryDependencies ?? []) {
+      const dep = itemByName.get(url.split("/").pop().replace(/\.json$/, ""));
+      if (dep) depsOf(dep, seen);
+    }
+    return seen;
+  };
+  const localsOf = (item) => new Set([...depsOf(item)].flatMap((n) => (itemByName.get(n).files ?? []).flatMap((f) => localVars(f.content))));
+
   for (const item of items) {
+    const local = localsOf(item);
     for (const file of item.files ?? []) {
       const where = `${item.name} ${file.target}`;
       const text = file.content;
@@ -1118,6 +1137,7 @@ function verify(items, targets, transformed, shadcn) {
       const names = new Set([...text.matchAll(/(?<![\w-])(--[a-zA-Z][\w-]*)/g)].map((m) => m[1]));
       for (const n of names) {
         if (ALLOWED_FOREIGN_VARS.some((re) => re.test(n))) continue;
+        if (local.has(n)) continue;
         if (!declared.has(n) && n !== "--litt-glass-shadow") bad(where, `uses ${n}, which the shipped CSS does not define`);
       }
       const left = survivors(text, file.target);

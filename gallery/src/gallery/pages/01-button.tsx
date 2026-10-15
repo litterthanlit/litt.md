@@ -44,6 +44,7 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
     "An icon-only button has no visible text, so always pass an aria-label. The icons themselves are hidden from screen readers.",
     "Loading sets aria-busy and disables the button, so it cannot be pressed twice. A disabled button leaves the tab order, so say what happened somewhere else, such as a toast or a status line.",
     "Keyboard focus draws a 2px outline at a 2px offset. Mouse and touch presses do not show it.",
+    "Press scales the button on the instant tier, by mouse or finger, and the OS tap flash is off so a touch press does not show two things. Touch has no hover, so nothing depends on it. Under reduced motion the press scale is 1.",
     "Small is 32px tall and medium is 44px. Use medium or large for primary actions on touch screens.",
     "A disabled button is muted and exempt from contrast rules. If the reason is not obvious, say it in text next to the button.",
   ],

@@ -17,6 +17,10 @@
  * - Corners: rounded-control on tabs. The segmented track is rounded-control
  *   too, clipped with overflow-hidden, and its fill sits concentric inside the
  *   2px inset.
+ * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
+ *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
+ *   is off so the two do not double. The small segmented track grows to the control-md
+ *   height on a coarse pointer, the same track Segmented uses there.
  */
 import {
   createContext,
@@ -137,7 +141,7 @@ export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<t
     <TabsPrimitive.List
       className={
         "inline-flex w-fit max-w-full overflow-x-auto overflow-y-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-0.5 shadow-[inset_0_0_0_1px_var(--line)] [scrollbar-width:none] " +
-        (size === "sm" ? "h-control-sm " : "h-control-md ") +
+        (size === "sm" ? "h-control-sm pointer-coarse:h-control-md " : "h-control-md ") +
         className
       }
       {...rest}
@@ -148,10 +152,17 @@ export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<t
 /** Concentric with the track: control radius minus the 2px inset. */
 const FILL_RADIUS = "rounded-[calc(var(--radius-control)-2px)]"; // litt-allow: concentric inside the segmented track's 2px inset
 
+/* What a finger holding a tab shows: the fg 6% fill that rows and segments share, and the hover text color.
+   `enabled:` keeps a disabled tab dead. The indicator sits above this fill, so a selected tab's surface covers it. */
+const PRESS =
+  "[-webkit-tap-highlight-color:transparent] " +
+  "enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] enabled:pointer-coarse:active:text-fg";
+
 /* isolate: the indicator sits at -z-10 inside the tab, behind the label and the focus ring. */
 const triggerBase =
   "relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-normal " +
   "text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg data-[state=active]:text-fg " +
+  PRESS + " " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
@@ -162,7 +173,7 @@ const triggerShape: Record<TabsVariant, Record<TabsSize, string>> = {
   },
   segmented: {
     md: "h-full px-control-pad-md text-small " + FILL_RADIUS,
-    sm: "h-full px-control-pad-sm text-caption " + FILL_RADIUS,
+    sm: "h-full px-control-pad-sm text-caption pointer-coarse:text-small " + FILL_RADIUS,
   },
 };
 

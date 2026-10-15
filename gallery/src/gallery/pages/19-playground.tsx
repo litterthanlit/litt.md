@@ -5,6 +5,11 @@
  * panel moves them, the sampler shows eight of the components following along,
  * and "Lock it" prints the tokens to paste back into litt.md. Leaving the page
  * removes every override.
+ *
+ * The Device switch in the Tune panel wraps the sampler in a DeviceProvider, so
+ * a desktop can feel every phone path: the dialog sheet and its drag, the menu
+ * drill-down, the command menu at the top edge. Its state lives in the page, so
+ * leaving the page puts it back to Auto like every other override.
  */
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
@@ -13,13 +18,13 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/
 import { Kbd } from "@/components/kbd";
 import { ChevronDownIcon, CopyIcon, FileIcon, FolderIcon, PlusIcon, SearchIcon, SettingsIcon, ShareIcon, TrashIcon, ArchiveIcon } from "@/components/icons";
 import { ProjectList } from "@/components/list";
-import { Menu, MenuItem, MenuSeparator } from "@/components/menu";
+import { Menu, MenuItem, MenuSeparator, MenuSub } from "@/components/menu";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Toaster, useToast } from "@/components/toast";
 import { Tooltip } from "@/components/tooltip";
 import { PROJECTS } from "../fixtures";
 import { TierChip, Page, useReplay, type PageMeta } from "../kit";
-import type { Tier } from "@/motion";
+import { DeviceProvider, useDevice, type DeviceMode, type Tier } from "@/motion";
 import { MotionPanel } from "../motion-panel";
 
 export const meta: PageMeta = {
@@ -34,7 +39,7 @@ export const meta: PageMeta = {
 
 /* ---------- the sampler ---------- */
 
-function Row({ id, title, tiers, aside, children }: { id: string; title: string; tiers: Tier[]; aside?: ReactNode; children: ReactNode }) {
+function Row({ id, title, tiers, phone, aside, children }: { id: string; title: string; tiers: Tier[]; phone?: string; aside?: ReactNode; children: ReactNode }) {
   return (
     <section aria-labelledby={`sample-${id}`} className="grid gap-4 border-t border-line py-8 first:border-t-0 first:pt-0 last:pb-0 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-8">
       <div className="grid content-start gap-3">
@@ -44,6 +49,7 @@ function Row({ id, title, tiers, aside, children }: { id: string; title: string;
             <TierChip key={t} tier={t} />
           ))}
         </div>
+        {phone && <p className="text-caption text-fg-subtle">{phone}</p>}
         {aside}
       </div>
       <div className="min-w-0">{children}</div>
@@ -70,6 +76,17 @@ const COMMANDS: CommandGroup[] = [
     ],
   },
 ];
+
+const FOLDERS = ["Client work", "Templates", "Experiments", "Archive 2025"];
+
+function Fact({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 border-b border-line pb-3 last:border-b-0 last:pb-0">
+      <dt className="text-small text-fg-subtle">{label}</dt>
+      <dd className="text-small text-fg">{children}</dd>
+    </div>
+  );
+}
 
 function PublishDialog() {
   const { toast } = useToast();
@@ -99,13 +116,24 @@ function PublishDialog() {
             </Button>
           </>
         }
-      />
+      >
+        <dl className="grid gap-3">
+          <Fact label="Pages changed">3</Fact>
+          <Fact label="Build size">
+            <span className="font-mono text-caption">418 kB</span>
+          </Fact>
+          <Fact label="Domain">
+            <span className="font-mono text-caption">litt.design</span>
+          </Fact>
+        </dl>
+      </DialogContent>
     </Dialog>
   );
 }
 
 function Sampler() {
   const { toast } = useToast();
+  const { coarse } = useDevice();
   const [listKey, replayList] = useReplay();
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [openedBy, setOpenedBy] = useState<"keyboard" | "pointer">("keyboard");
@@ -125,7 +153,7 @@ function Sampler() {
         </div>
       </Row>
 
-      <Row id="tooltip" title="Tooltip" tiers={["responsive"]}>
+      <Row id="tooltip" title="Tooltip" tiers={["responsive"]} phone="On a phone, press and hold a button to read its label.">
         <div role="group" aria-label="Project actions" className="flex items-center gap-1">
           <Tooltip content="Copy link" shortcut="⇧⌘C">
             <Button iconOnly variant="ghost" aria-label="Copy link"><CopyIcon /></Button>
@@ -160,21 +188,26 @@ function Sampler() {
         </Tabs>
       </Row>
 
-      <Row id="menu" title="Menu" tiers={["instant", "responsive"]}>
+      <Row id="menu" title="Menu" tiers={["instant", "responsive"]} phone="On a phone, Move to replaces the list instead of flying out.">
         <Menu label="Project actions" trigger={<Button iconRight={<ChevronDownIcon />}>Actions</Button>}>
           <MenuItem icon={<FileIcon />} shortcut="↵">Open</MenuItem>
           <MenuItem icon={<CopyIcon />} shortcut="⌘D">Duplicate</MenuItem>
           <MenuItem icon={<ShareIcon />} shortcut="⌘L">Share link</MenuItem>
+          <MenuSub icon={<FolderIcon />} label="Move to">
+            {FOLDERS.map((f) => (
+              <MenuItem key={f} icon={<FolderIcon />} onSelect={() => toast({ title: `Moved to ${f}` })}>{f}</MenuItem>
+            ))}
+          </MenuSub>
           <MenuSeparator />
           <MenuItem icon={<ArchiveIcon />}>Archive</MenuItem>
           <MenuItem icon={<TrashIcon />} destructive>Delete</MenuItem>
         </Menu>
       </Row>
 
-      <Row id="command-menu" title="Command menu" tiers={["responsive"]}>
+      <Row id="command-menu" title="Command menu" tiers={["responsive"]} phone="On a phone, it sits at the top edge with a Cancel button.">
         <Button
           icon={<SearchIcon />}
-          iconRight={<Kbd>⌘K</Kbd>}
+          iconRight={coarse ? undefined : <Kbd>⌘K</Kbd>}
           onClick={(e) => {
             setOpenedBy(e.detail === 0 ? "keyboard" : "pointer");
             setPaletteOpen(true);
@@ -191,11 +224,11 @@ function Sampler() {
         />
       </Row>
 
-      <Row id="dialog" title="Dialog" tiers={["expressive"]}>
+      <Row id="dialog" title="Dialog" tiers={["expressive"]} phone="On a phone, a bottom sheet. Drag it down to close.">
         <PublishDialog />
       </Row>
 
-      <Row id="toast" title="Toast" tiers={["expressive"]}>
+      <Row id="toast" title="Toast" tiers={["expressive"]} phone="On a phone, swipe a toast sideways to dismiss it.">
         <Button onClick={() => toast({ title: "Saved", description: "Home hero is up to date.", tone: "success" })}>
           Save changes
         </Button>
@@ -216,6 +249,8 @@ function Sampler() {
 /* ---------- the page ---------- */
 
 export default function PlaygroundPage() {
+  /* Page state, so leaving the page puts the switch back to Auto. */
+  const [device, setDevice] = useState<DeviceMode>("auto");
   return (
     <Page meta={meta}>
       <div className="grid items-start gap-12 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -229,12 +264,14 @@ export default function PlaygroundPage() {
               Jump to Tune
             </Button>
           </div>
-          <Toaster>
-            <Sampler />
-          </Toaster>
+          <DeviceProvider mode={device}>
+            <Toaster>
+              <Sampler />
+            </Toaster>
+          </DeviceProvider>
         </div>
         <aside id="tune" aria-label="Tune" className="scroll-mt-24 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto xl:pr-1">
-          <MotionPanel />
+          <MotionPanel device={device} onDeviceChange={setDevice} />
         </aside>
       </div>
     </Page>

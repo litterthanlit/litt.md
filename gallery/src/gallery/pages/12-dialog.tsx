@@ -4,6 +4,7 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/
 import { SettingsIcon } from "@/components/icons";
 import { TextField } from "@/components/input";
 import { Segmented } from "@/components/segmented";
+import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -11,13 +12,13 @@ export const meta: PageMeta = {
   title: "Dialog",
   order: 12, group: "Overlays",
   summary:
-    "The one expressive moment. The panel is placed, not thrown: it rises by the travel token's distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce.",
+    "The one expressive moment. The panel is placed, not thrown: it rises by the travel token's distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce. On a phone it is a bottom sheet you can drag away.",
   tiers: ["instant", "expressive"],
 };
 
 export const docs: PageDocs = {
   components: ["dialog", "input", "segmented"],
-  exports: ["Dialog", "DialogTrigger", "DialogContent", "DialogClose", "TextField", "Segmented"],
+  exports: ["Dialog", "DialogTrigger", "DialogContent", "DialogClose", "DialogSheet", "TextField", "Segmented"],
   usage: `import { useState } from "react";
 import { Button } from "@/components/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
@@ -57,12 +58,14 @@ const [name, setName] = useState("litt.design");
   </DialogContent>
 </Dialog>
 
-// For a settings sheet, add side="right" to DialogContent.`,
+// For a settings sheet, add side="right" to DialogContent.
+// On a phone (a screen narrower than 640px) every dialog is a bottom sheet, and side="right" is the same sheet.`,
   use: [
     "A decision or a short task needs the person's full attention before anything else: confirm a publish, invite someone, rename a project.",
     "A step that cannot be undone. Make the confirm button secondary with danger text, so the red word is the only loud thing, and ask the person to type the project name.",
     "A short form that is the whole task. Put the buttons in the footer and link the submit to the form with form=\"…\", because the footer sits outside the form.",
     "Settings for the thing on the page. Use side=\"right\" for a sheet: the footer stays pinned while the body scrolls.",
+    "A phone, with no change from you. Below 640px the dialog becomes a bottom sheet that can be dragged away, and side=\"right\" becomes the same sheet.",
   ],
   skip: [
     "The message needs no answer, like \"Saved\". Use Toast, because a dialog blocks the whole page.",
@@ -70,6 +73,7 @@ const [name, setName] = useState("litt.design");
     "A hint for a button or an icon. Use Tooltip.",
     "The content is long or has several steps. Give it its own page, because the panel is at most 480px wide and its body scrolls.",
     "You want a dialog on top of a dialog. Change the first one's content instead, because glass never sits on glass.",
+    "The sheet would need two heights, such as half and full. A phone sheet has one height: its content, up to the screen less a margin.",
   ],
   keyboard: [
     [["Tab"], "Moves to the next control inside the dialog. After the last one it wraps to the first, because focus is trapped."],
@@ -81,11 +85,13 @@ const [name, setName] = useState("litt.design");
   a11y: [
     "Radix Dialog does the hard parts: role=\"dialog\", the focus trap and Esc. While the dialog is open the rest of the page is hidden from screen readers, cannot be clicked and cannot scroll. That includes a Toast, so fire it when the dialog closes, not while it is open.",
     "The title is required, because it names the dialog. The description, when there is one, is linked as the dialog's description. Make the buttons say what happens: Publish, not OK.",
-    "Focus lands on the control marked data-autofocus, else the first control in the body, else the first one in the footer. The close button is the last resort, so it does not grab focus when there is something to do.",
+    "With a mouse or keyboard, focus lands on the control marked data-autofocus, else the first control in the body, else the first one in the footer. The close button is the last resort, so it does not grab focus when there is something to do. On a touch screen it lands on the panel instead, so the keyboard does not open while the sheet is still moving. Mark a field with data-autofocus when typing is the point.",
     "Closing returns focus to the DialogTrigger. If you open the dialog another way, such as from a menu item, there is no trigger, so move focus back yourself.",
-    "The corner close button is labelled Close. Hide it with hideClose only when the footer has a Cancel, so touch users keep a visible way out.",
+    "The corner close button is labelled Close, and it is 44px on touch screens. Hide it with hideClose only when the footer has a Cancel, so touch users keep a visible way out.",
+    "On a phone the sheet can be dragged down to close it. Every drag has a button that does the same thing: Close, Cancel, Esc and a tap on the dimmed page all close it too. The grabber at the top is decoration and is hidden from screen readers.",
+    "A drag never starts in a text field, a slider, a region marked data-no-drag, or a body that is scrolled away from its top. Mark your own scrubber or canvas with data-no-drag.",
     "TextField uses a real label, links the hint and the error with aria-describedby, and sets aria-invalid on an error. The error is not announced by itself, so after a failed submit, move focus to the field. Inputs are 16px on touch, so iOS does not zoom.",
-    "Under reduced motion the dialog appears and leaves at once, with no travel.",
+    "Under reduced motion the dialog appears and leaves at once, with no travel. A dragged sheet still follows the finger, and letting go is instant.",
   ],
 };
 
@@ -380,6 +386,15 @@ function SheetDemo() {
   );
 }
 
+/** The same settings dialog, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
+function PhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <SheetDemo />
+    </DeviceProvider>
+  );
+}
+
 export default function DialogPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -396,7 +411,7 @@ export default function DialogPage() {
         title="Form"
         tier="expressive"
         code="InviteDemo"
-        caption="Same entrance, with focus landing in the email field. Inputs are 44px tall and 16px on touch. The role is a native radio group, so arrow keys move between Viewer and Editor. Try sending an invalid address."
+        caption="Same entrance, with focus landing in the email field. On a touch screen focus lands on the panel instead, so the keyboard does not open during the rise. Inputs are 44px tall and 16px on touch. The role is a native radio group, so arrow keys move between Viewer and Editor. Try sending an invalid address."
       >
         <InviteDemo />
       </Stage>
@@ -414,9 +429,18 @@ export default function DialogPage() {
         title="Side sheet"
         tier="expressive"
         code="SheetDemo"
-        caption="The sheet is 400px wide and full height, but it travels only the travel token's distance on x, never its own width. It fades in at the right edge and settles. The footer stays pinned while the body scrolls."
+        caption="The sheet is 400px wide and full height, but it travels only the travel token's distance on x, never its own width. It fades in at the right edge and settles. The footer stays pinned while the body scrolls. On a phone it becomes the bottom sheet below."
       >
         <SheetDemo />
+      </Stage>
+
+      <Stage
+        title="On a phone"
+        tier="expressive"
+        code="PhoneDemo"
+        caption="On a phone the dialog is a bottom sheet, and a right sheet becomes the same one. It rises from the bottom edge by its own height on the expressive tier and leaves the same way. Drag it down from the title, the grabber or the body and it follows your finger. Let go far enough, or flick it, and it leaves. Otherwise it springs back without a bounce. Close, Cancel, Esc and a tap on the dimmed page do the same thing as the drag."
+      >
+        <PhoneDemo />
       </Stage>
     </Page>
   );

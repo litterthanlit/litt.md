@@ -2,7 +2,7 @@
  * Command menu: ⌘K search over pages, projects and actions.
  *
  * - Overlay, focus trap and Esc come from @radix-ui/react-dialog. The panel is
- *   floating glass with the modal shadow, rounded-surface, max width 560, 15vh
+ *   floating glass with the modal shadow, rounded-surface, max width 560, 15dvh
  *   from the top. Rows and their highlight are rounded-control inside a 4px
  *   list inset, so the corners stay concentric.
  * - The list is the combobox + listbox pattern: DOM focus stays in the input
@@ -18,6 +18,19 @@
  *   changes the list instantly and the panel's height is never animated: the
  *   list has a max height and scrolls inside. The gliding highlight is glide.tsx.
  * - The panel body (CommandPanel) renders without the dialog too, for a static preview.
+ * - Compact screens (useDevice().compact, foundations.md section 6): the panel moves
+ *   to the top edge, --space-2 below the safe-area inset and --space-2 from each side,
+ *   not 15dvh down. The wrapper takes the position and height of window.visualViewport
+ *   (resize and scroll events), so the list is the visible screen less the keyboard and
+ *   no row hides behind it. Before the first read, and without a visual viewport, 100dvh
+ *   stands in. The motion is the same responsive drop. It is not draggable, because the
+ *   list scrolls. Nothing else moves; the panel's height is still never animated.
+ * - Coarse pointers (useDevice().coarse): the placeholder is shorter beside Cancel (a focused field
+ *   clips instead of ellipsizing), the footer hints (arrows, enter, esc) and the
+ *   row shortcuts are gone, and a Cancel button (--control-md tall) sits beside the field
+ *   when onCancel is given; CommandMenu always gives it. The field keeps the focus, as it
+ *   is the first thing in the dialog that takes it, because typing is the point. Both
+ *   signals come from useDevice, so <DeviceProvider mode="phone"> previews them.
  */
 import {
   useEffect,
@@ -31,7 +44,8 @@ import {
 } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { Button } from "./button";
 import { SearchIcon } from "./icons";
 import { Kbd } from "./kbd";
 import { GLIDE_ROW, useGlide, type GlideSource } from "./glide";
@@ -103,10 +117,13 @@ export type CommandPanelProps = {
   initialSource?: GlideSource;
   /** Focuses the search field when the panel mounts. CommandMenu does not need it, because the dialog focuses the field itself. */
   autoFocus?: boolean;
+  /** Called by the Cancel button beside the field, which shows on touch screens only. CommandMenu closes with it. Leave it out and no button shows. */
+  onCancel?: () => void;
 };
 
 /** Input, list and footer. The caller supplies the surface around it; CommandMenu wraps it in a dialog. */
-export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSource = "keyboard", autoFocus }: CommandPanelProps) {
+export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSource = "keyboard", autoFocus, onCancel }: CommandPanelProps) {
+  const { coarse } = useDevice();
   const uid = useId();
   const listId = `${uid}-list`;
   const { sections, flat } = useMemo(() => filter(groups, query), [groups, query]);
@@ -170,7 +187,11 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
 
   return (
     <>
-      <div className="flex h-13 items-center gap-3 border-b border-[var(--glass-border)] px-4">
+      <div
+        className={
+          "flex h-13 shrink-0 items-center gap-3 border-b border-[var(--glass-border)] " + (coarse && onCancel ? "pl-4 pr-1" : "px-4")
+        }
+      >
         <SearchIcon className="shrink-0 text-fg-subtle" />
         <input
           role="combobox"
@@ -184,14 +205,19 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           spellCheck={false}
           autoFocus={autoFocus}
           value={query}
-          placeholder="Search pages, projects and actions"
+          placeholder={coarse && onCancel ? "Search pages and actions" : "Search pages, projects and actions"}
           onChange={(e) => {
             onQueryChange(e.target.value);
             setSource("keyboard");
           }}
           onKeyDown={onKeyDown}
-          className="h-full min-w-0 flex-1 bg-transparent text-body text-fg outline-none placeholder:text-fg-subtle pointer-coarse:text-(length:--control-text-lg)"
+          className="h-full min-w-0 flex-1 truncate bg-transparent text-body text-fg outline-none placeholder:text-fg-subtle pointer-coarse:text-(length:--control-text-lg)"
         />
+        {coarse && onCancel && (
+          <Button variant="ghost" size="md" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
       </div>
 
       {flat.length > 0 ? (
@@ -202,7 +228,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           ref={glide.ref}
           {...glide.props}
           onMouseDown={(e) => e.preventDefault()}
-          className="relative max-h-[min(55vh,22rem)] overflow-y-auto overscroll-contain p-1"
+          className="relative max-h-[var(--cmd-list-max,min(55dvh,22rem))] min-h-0 overflow-y-auto overscroll-contain p-1"
         >
           {glide.highlight}
           {sections.map((s) => (
@@ -224,7 +250,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
                 >
                   {r.icon !== undefined && <span className="grid size-4 shrink-0 place-items-center">{r.icon}</span>}
                   <span className="min-w-0 truncate">{r.label}</span>
-                  {r.shortcut && <span className="ml-auto shrink-0 pl-4 font-mono text-caption text-fg-subtle">{r.shortcut}</span>}
+                  {r.shortcut && !coarse && <span className="ml-auto shrink-0 pl-4 font-mono text-caption text-fg-subtle">{r.shortcut}</span>}
                 </div>
               ))}
             </div>
@@ -239,18 +265,21 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
       )}
 
       {/* A container query, not a viewport one: the same panel is 358 wide in the dialog and 295 in a card.
-          Under 24rem the arrow hint goes first, since the Enter hint says what will happen. */}
-      <div className="@container border-t border-[var(--glass-border)]">
-        <div className="flex h-10 items-center gap-4 px-4 text-caption text-fg-subtle">
-          <span className="flex @max-sm:hidden">
-            <Hint keys="↑↓">to move</Hint>
-          </span>
-          {active && <Hint keys="↵">to open {active.label}</Hint>}
-          <span className="ml-auto flex shrink-0">
-            <Hint keys="esc">to close</Hint>
-          </span>
+          Under 24rem the arrow hint goes first, since the Enter hint says what will happen.
+          On a touch screen every hint here is a keyboard one, so the whole footer goes. */}
+      {!coarse && (
+        <div className="@container shrink-0 border-t border-[var(--glass-border)]">
+          <div className="flex h-10 items-center gap-4 px-4 text-caption text-fg-subtle">
+            <span className="flex @max-sm:hidden">
+              <Hint keys="↑↓">to move</Hint>
+            </span>
+            {active && <Hint keys="↵">to open {active.label}</Hint>}
+            <span className="ml-auto flex shrink-0">
+              <Hint keys="esc">to close</Hint>
+            </span>
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
@@ -281,6 +310,33 @@ export function CommandMenu({ open, onOpenChange, groups, onSelect, openedBy = "
   );
 }
 
+/** The part of the screen a person can see: its top edge and height, in layout pixels. Follows the on-screen keyboard and a pan or pinch. */
+type VisibleScreen = { top: number; height: number };
+
+/* window.visualViewport shrinks when the keyboard opens (and moves when the page is panned to
+   keep the field in view). The layout viewport and 100dvh do not always follow it. Null means
+   "not read yet", on the server, or no visual viewport: the caller falls back to 100dvh. */
+function useVisibleScreen(enabled: boolean): VisibleScreen | null {
+  const [screen, setScreen] = useState<VisibleScreen | null>(null);
+  useLayoutEffect(() => {
+    const vv = typeof window === "undefined" ? null : window.visualViewport;
+    if (!enabled || !vv) return;
+    const read = () => {
+      const next = { top: Math.round(vv.offsetTop), height: Math.round(vv.height) };
+      setScreen((prev) => (prev && prev.top === next.top && prev.height === next.height ? prev : next));
+    };
+    read();
+    vv.addEventListener("resize", read);
+    vv.addEventListener("scroll", read);
+    return () => {
+      vv.removeEventListener("resize", read);
+      vv.removeEventListener("scroll", read);
+      setScreen(null);
+    };
+  }, [enabled]);
+  return enabled ? screen : null;
+}
+
 /* Mounted once per open, so the query starts empty and survives the exit animation. */
 function Body({
   groups,
@@ -296,6 +352,8 @@ function Body({
   const enter = useTransition("responsive");
   const exit = useExit("responsive");
   const travel = useTravel();
+  const { compact } = useDevice();
+  const visible = useVisibleScreen(compact);
   const [query, setQuery] = useState("");
   /* There is no Dialog.Trigger (the page owns the button and the shortcut), so give focus back ourselves. */
   const [opener] = useState(() => document.activeElement as HTMLElement | null);
@@ -310,7 +368,17 @@ function Body({
           exit={{ opacity: 0, transition: exit }}
         />
       </Dialog.Overlay>
-      <div className="pointer-events-none fixed inset-x-0 top-[15vh] z-50 flex justify-center px-4">
+      {/* Desktop: 15dvh down, --space-4 from each side. Compact: the top edge of the visible screen, --space-2 below
+          the safe-area inset and from each side. The wrapper IS the visible screen (visualViewport), so the panel's
+          max-h-full is the visible screen less the keyboard and the gaps. */}
+      <div
+        className={
+          compact
+            ? "pointer-events-none fixed inset-x-0 top-0 z-50 flex h-dvh items-start justify-center px-(--space-2) pt-[calc(env(safe-area-inset-top)+var(--space-2))] pb-(--space-2)"
+            : "pointer-events-none fixed inset-x-0 top-[15dvh] z-50 flex justify-center px-4"
+        }
+        style={compact && visible ? { top: visible.top, height: visible.height } : undefined}
+      >
         <Dialog.Content
           asChild
           aria-describedby={undefined}
@@ -329,7 +397,10 @@ function Body({
           }}
         >
           <motion.div
-            className="litt-glass pointer-events-auto w-full max-w-140 origin-top rounded-surface outline-none [--glass-shadow:var(--shadow-modal)]"
+            className={
+              "litt-glass pointer-events-auto w-full max-w-140 origin-top rounded-surface outline-none [--glass-shadow:var(--shadow-modal)]" +
+              (compact ? " flex max-h-full flex-col [--cmd-list-max:none]" : "")
+            }
             initial={{ opacity: 0, y: -travel / 2, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1, transition: enter }}
             exit={{ opacity: 0, scale: 0.98, transition: exit }}
@@ -340,6 +411,7 @@ function Body({
               query={query}
               onQueryChange={setQuery}
               initialSource={openedBy}
+              onCancel={onClose}
               onSelect={(item) => {
                 onSelect(item);
                 onClose();

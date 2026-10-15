@@ -8,7 +8,8 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 3. Space and layout
 4. Shape
 5. Motion
-6. Accessibility floor
+6. Motion on touch and small screens
+7. Accessibility floor
 
 ---
 
@@ -121,6 +122,7 @@ Fast by default, with one signature moment per view. Motion confirms an action a
 - **Springs are time plus bounce.** Motion takes `visualDuration` and `bounce`; Framer takes Time and Bounce. CSS can't run a spring, so `--ease-responsive` and `--ease-expressive` are `linear()` approximations, and `--dur-responsive` and `--dur-expressive` are their settle times. Use the `--spring-*` pair in JS and the `--ease-*` + `--dur-*` pair in CSS.
 - **Exits.** An element leaving runs at `--exit` (0.75×) of the spring's visual time, as an `--ease-out` tween, and never bounces: `--dur-exit-responsive` (150ms), `--dur-exit-expressive` (263ms). Un-hover and un-press are not exits; they stay instant.
 - **Stagger and travel.** `--stagger` (40ms) separates siblings in one cascade. `--travel` (16px) is the entrance offset. Menus and tooltips use a quarter of it.
+- **Dismissal.** `--dismiss-distance` (0.25, a fraction of the surface's height or width) and `--dismiss-velocity` (0.4, pixels per millisecond) decide whether a released drag leaves or springs back. They are thresholds, not durations, so reduced motion does not change them.
 - **Properties.** Transform and opacity animate. Color, background-color, border-color, fill and the focus ring may fade, at `--dur-instant` only. Never layout (width, height, top, left, margin, padding), never `transition: all`, never material (P5).
 - **Press.** `transform: scale(var(--press-scale))` (0.98) on `:active`, instant tier. A state change never moves the box otherwise.
 - **One expressive moment per view.** A second one uses the responsive tier.
@@ -129,7 +131,34 @@ Fast by default, with one signature moment per view. Motion confirms an action a
 - **Reduced motion.** `tokens.css` sets every `--dur-*`, `--stagger` and `--travel` to 0 and the press scale to 1. In JS, let the library honor it (`MotionConfig reducedMotion="user"`, Framer `useReducedMotion()`).
 - **Retired in v0.5.** `--dur-reveal` and `--dur-panel` became `--dur-responsive` (or `--dur-expressive` for a dialog). `--dur-max` has no replacement. The old `--dur-exit-reveal` and `--dur-exit-panel` became `--dur-exit-responsive` and `--dur-exit-expressive`.
 
-## 6. Accessibility floor
+## 6. Motion on touch and small screens
+
+A phone changes how things are reached, not how litt moves. The tiers, tokens and rules in section 5 hold on every screen. This section adds two device signals and a short list of what changes with them.
+
+**Two signals.** `compact` is a viewport narrower than 640 (`40rem`, the break the layout already uses). `coarse` is a primary pointer that is coarse: a finger. They are separate. A landscape phone is coarse and not compact. A narrow desktop window is compact and not coarse. In CSS use `max-sm:` and `pointer-coarse:`. In React use `useDevice()`, which returns both and is false on the server. Never read the user agent.
+
+**Compact screens.**
+- A modal becomes a bottom sheet. It rises from the bottom edge by its own height on the expressive tier, so it stays the view's one expressive moment. It moves by transform only. Its height never animates. It has one height: its content, up to the visible screen less `--space-6`.
+- Nothing else travels further than `--travel`. The sheet is the one exception, because it must come from the edge it is dragged back to.
+- A menu stays beside its button. A popover becomes a sheet. The command menu moves to the top edge and follows the visible screen, so the keyboard never covers a row.
+
+**Dragging.** While a finger is down, the surface follows it one to one, with no easing. On release:
+- It leaves if it has travelled `--dismiss-distance` of its size, or moves faster than `--dismiss-velocity`. It carries on from where it is, on the exit token for its tier.
+- Otherwise it springs back on the responsive tier with the speed it was released at. It never bounces.
+- Pulled past rest it resists and stops at `--space-6`. A sheet hides that much below the screen edge, so no gap shows.
+- A drag cannot start in a slider, in a region marked `data-no-drag`, or in a scrolling region that is not at its top. Drags are ignored for 500ms after the sheet opens.
+
+**A gesture is never the only way.** Every swipe has a visible button (a close button, 44px on coarse screens). Esc and a tap on the scrim also close. The grabber is decoration and is hidden from assistive tech.
+
+**Touch has no hover.** Nothing depends on it.
+- A pressed row fills like a hovered row (`:active` on coarse screens, instant tier, color only). Buttons keep the press scale.
+- A tooltip opens on a 500ms press and hold, not on a tap, so a tap only does its action. Shortcut chips and key hints are hidden on coarse screens.
+
+**Focus.** On coarse screens focus lands on the panel, so the keyboard does not open under a sheet that is still moving. Mark a field `data-autofocus` when typing is the point.
+
+**Reduced motion and transparency.** A sheet appears in place with no slide. A drag still follows the finger, and the release is instant. Glass turns solid, as everywhere.
+
+## 7. Accessibility floor
 
 These are not negotiable, whatever the taste:
 - Body text reaches 4.5:1 or more, large text 3:1 or more, control outlines and the focus ring 3:1 or more, in both themes. Run `node scripts/check.mjs`.

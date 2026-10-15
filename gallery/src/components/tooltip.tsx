@@ -14,20 +14,34 @@
  * - Delays are interaction, not animation: 200ms of hover intent, then a 300ms
  *   window in which the next tooltip opens at once. Keyboard focus opens
  *   instantly (Radix does this on its own; a click never opens one).
- * - Touch: Radix never opens on touch. Anything revealed on hover must also be
- *   reachable on touch, so a tap on the trigger shows the tooltip until the
- *   next tap elsewhere.
+ * - Touch (foundations.md section 6): Radix never opens on touch, and a tap is
+ *   the button's own action, so a tap no longer shows a label. A press and hold
+ *   of 500ms does (an interaction delay like the 200ms above, not a motion
+ *   token). The hold is cancelled by lifting early, by drifting past a small
+ *   slop, or by the browser taking the touch to scroll. The click a hold may
+ *   leave behind is swallowed once, so reading a label never also runs the
+ *   action. The next touch anywhere closes it, and a touch on the trigger
+ *   still does what the trigger does. The native long-press menu and text
+ *   selection are off on the trigger on coarse pointers. Shortcut chips are
+ *   not rendered on coarse pointers.
+ * - Both signals come from useDevice (coarse), so <DeviceProvider mode="phone">
+ *   previews it with a mouse: there the hold works for any pointer and hover
+ *   opens nothing, as on a finger device. A touch on a pointer-fine device
+ *   (a touch laptop) holds too.
  */
-import { createContext, useContext, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { AnimatePresence, motion } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useTransition, useTravel } from "@/motion";
 import { Kbd } from "./kbd";
 
 export type TooltipSide = "top" | "right" | "bottom" | "left";
 
 const OPEN_DELAY = 200; // ms of hover intent before the first tooltip opens (interaction delay, not animation)
 const SKIP_WINDOW = 300; // ms after one closes during which the next opens at once (interaction delay)
+const HOLD_DELAY = 500; // ms of press and hold before a tooltip opens on touch (interaction delay, not animation)
+const HOLD_SLOP = 10; // px a finger may drift during the hold before it counts as a scroll or a drag
+const CLICK_WINDOW = 500; // ms after a hold ends in which the click it may leave behind is swallowed
 
 const HasProvider = createContext(false);
 
@@ -51,9 +65,9 @@ export function TooltipProvider({
 }
 
 export type TooltipProps = {
-  /** The label. Keep it short; long text wraps at 240px. */
+  /** The label. Keep it short; long text wraps at 240px. On touch it only shows on a press and hold, so the label that matters must also be the trigger's aria-label or visible text. */
   content: ReactNode;
-  /** A real keyboard shortcut, shown as a mono kbd chip. */
+  /** A real keyboard shortcut, shown as a mono kbd chip. It is not shown on touch screens. */
   shortcut?: string;
   /** Which side of the trigger it opens on. With no room there it flips to the other side, and the entrance follows. */
   side?: TooltipSide;
@@ -71,7 +85,7 @@ export type TooltipProps = {
 
 const isSide = (v: string | null): v is TooltipSide => v === "top" || v === "right" || v === "bottom" || v === "left";
 
-/** A short label for the one element inside it. It opens after a hover delay, or at once on focus. */
+/** A short label for the one element inside it. It opens after a hover delay, at once on focus, or on a press and hold on touch. */
 export function Tooltip({
   content,
   shortcut,
@@ -83,29 +97,84 @@ export function Tooltip({
   children,
 }: TooltipProps) {
   const hasProvider = useContext(HasProvider);
+  const { coarse } = useDevice();
   const [inner, setInner] = useState(defaultOpen);
   const open = openProp ?? inner;
-  const ignoreClose = useRef(false);
 
   const change = (next: boolean) => {
-    // A touch tap opens on pointer up; the click that follows would close it again.
-    if (!next && ignoreClose.current) {
-      ignoreClose.current = false;
-      return;
-    }
     setInner(next);
     onOpenChange?.(next);
   };
+  const latest = useRef(change);
+  latest.current = change;
+
+  /* Press and hold. `pending` is the timer and where the finger went down. `held` is true from the moment the hold
+     opens the tooltip until that press ends; `swallowUntil` then covers the click the release may cause. */
+  const pending = useRef<{ timer: number; x: number; y: number } | null>(null);
+  const held = useRef(false);
+  const swallowUntil = useRef(0);
+  const cancelHold = () => {
+    if (pending.current) window.clearTimeout(pending.current.timer);
+    pending.current = null;
+  };
+  useEffect(() => cancelHold, []);
+
+  /* The next touch anywhere closes it, at once: Radix waits for the click of an outside touch, which a scroll never makes. */
+  useEffect(() => {
+    if (!open) return;
+    const onTouch = (e: PointerEvent) => {
+      if (e.pointerType === "touch") latest.current(false);
+    };
+    document.addEventListener("pointerdown", onTouch, true);
+    return () => document.removeEventListener("pointerdown", onTouch, true);
+  }, [open]);
 
   const tree = (
     <TooltipPrimitive.Root open={open} onOpenChange={change}>
       <TooltipPrimitive.Trigger
         asChild
-        onPointerUp={(e) => {
-          if (e.pointerType !== "touch") return;
-          ignoreClose.current = true;
-          setTimeout(() => (ignoreClose.current = false), 600);
-          change(true);
+        className="pointer-coarse:select-none pointer-coarse:[-webkit-touch-callout:none]"
+        onPointerDown={(e) => {
+          held.current = false;
+          swallowUntil.current = 0;
+          cancelHold();
+          if ((e.pointerType !== "touch" && !coarse) || !e.isPrimary) return;
+          pending.current = {
+            x: e.clientX,
+            y: e.clientY,
+            timer: window.setTimeout(() => {
+              pending.current = null;
+              held.current = true;
+              latest.current(true);
+            }, HOLD_DELAY),
+          };
+        }}
+        onPointerMove={(e) => {
+          const at = pending.current;
+          if (at && Math.hypot(e.clientX - at.x, e.clientY - at.y) > HOLD_SLOP) cancelHold();
+          /* A finger has no hover. This also keeps a mouse from opening it while a phone is previewed. */
+          if (coarse && e.pointerType !== "touch") e.preventDefault();
+        }}
+        onPointerUp={() => {
+          cancelHold();
+          if (held.current) swallowUntil.current = performance.now() + CLICK_WINDOW;
+          held.current = false;
+        }}
+        onPointerCancel={() => {
+          cancelHold();
+          held.current = false;
+        }}
+        onContextMenu={(e) => {
+          /* The long press must not also raise the browser's own menu. */
+          if (pending.current || held.current) e.preventDefault();
+        }}
+        onClickCapture={(e) => {
+          /* Reading a label is not pressing the button. Stopping it here also keeps Radix's click from closing the label. */
+          if (performance.now() < swallowUntil.current) {
+            swallowUntil.current = 0;
+            e.preventDefault();
+            e.stopPropagation();
+          }
         }}
       >
         {children}
@@ -113,7 +182,7 @@ export function Tooltip({
       <AnimatePresence>
         {open && (
           <TooltipPrimitive.Portal key="tooltip" forceMount>
-            <TooltipSurface side={side} align={align} content={content} shortcut={shortcut} />
+            <TooltipSurface side={side} align={align} content={content} shortcut={coarse ? undefined : shortcut} />
           </TooltipPrimitive.Portal>
         )}
       </AnimatePresence>
