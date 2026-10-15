@@ -72,7 +72,7 @@ const RECIPES = {
         </div>`,
   },
   kbd: { needs: ["Kbd"], jsx: `<Kbd>⌘K</Kbd>` },
-  tag: { needs: ["Tag"], jsx: `<div className="flex flex-wrap items-center gap-2" data-testid="litt-tags"><Tag>Framer</Tag><Tag status="success">Live</Tag><Tag status="warning">In review</Tag><Tag status="danger">Failed</Tag><Tag status="neutral" hollow>Idea</Tag></div>` },
+  tag: { needs: ["Tag"], jsx: `<div className="flex flex-wrap items-center gap-2" data-testid="litt-tags"><Tag>Framer</Tag><Tag status="success">Live</Tag><Tag status="warning">In review</Tag><Tag status="danger">Failed</Tag><Tag status="neutral">Idea</Tag></div>` },
   states: { needs: ["Empty", "Skeleton", "Loading", "ErrorState"], jsx: `<div className="grid w-full max-w-md gap-4" data-testid="litt-states"><Empty title="No projects yet." action={<@Btn type="button">New project</@Btn>}>A new project starts as a draft and shows up here.</Empty><Loading label="Loading projects" className="grid gap-2"><Skeleton text="body" className="w-40" /><Skeleton className="h-10 w-full" /><Skeleton className="h-6 w-16" /></Loading><ErrorState title="The deploy to atelier-nord.com failed." action={<@Btn type="button">Retry deploy</@Btn>}>The build ran out of memory. Make the images smaller, then retry.</ErrorState></div>` },
   header: {
     needs: ["Header"],
