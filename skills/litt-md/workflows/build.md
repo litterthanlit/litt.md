@@ -78,9 +78,13 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 
 | Item | Install it for |
 |---|---|
-| `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), never as a child: children are the label, trimmed to the cap height, so an icon among them breaks the line. It always renders a `<button>`, so a link to another page is an `<a>`. |
+| `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), or as a child next to the label, as shadcn writes it. It always renders a `<button>`, so a link to another page is an `<a>`. |
 | `input` | `TextField` (label, hint, error), the bare `Input` for inline forms and toolbars, `Textarea`. |
 | `checkbox` | `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, a select-all box. |
+| `select` | One value from a short list (`SelectField` with a label, the bare `Select` in a toolbar). Never a native `<select>`. Pass `options` as `{ value, label }`. It stays anchored on a phone. |
+| `switch` | An on or off setting (`Switch`). `align="end"` lines switches up at the end of settings rows. A choice that can be wrong, such as accepting terms, is a checkbox. |
+| `slider` | A value on a range, such as an animation speed (`Slider`). Give it `minLabel` and `maxLabel` so the direction is clear. |
+| `form` | The page patterns: `FormSection` for settings sections, `Fieldset` (`rows` for a list of switches), `ErrorSummary` above a long form, `FormActions` (`align="fields"` on a settings page). |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |
 | `tabs` | Views of one thing (underline), or a compact switch (`variant="segmented"`). |
 | `tag` | A status or a label: mono, at the control radius. A status colors its text, never the fill, and has no dot. |
