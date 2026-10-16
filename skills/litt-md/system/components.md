@@ -163,7 +163,7 @@ Previous and next for a table or list that shows one page of many. The range is 
 - **Page buttons:** numbered ghost buttons (`sm`, mono) between the two, with the current page as a secondary button and `aria-current="page"`. Long runs fold into an ellipsis: first, last, and one either side of the current page. They only show when the row is at least 36rem wide (the row measures itself, not the window). Below that the range and the two buttons are enough.
 - **Semantics:** a `nav` with its own `aria-label` ("Deploys pages"), and a list inside it. It sits `--space-4` under the table it pages.
 - **Motion:** none of its own. The rows it pages are the table's job (Table, `animateChanges`).
-- **On compact screens** the buttons are 44px tall on coarse pointers, like every `sm` button there.
+- **On coarse pointers** the buttons are 44px tall, page numbers included.
 
 ## Stat
 A number tile for one figure that tells you how things stand: active projects, deploys this week, median build time.

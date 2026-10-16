@@ -5,7 +5,7 @@
  * - Range (components.md, Pagination): "21 to 40 of 143" in mono at the caption size, fg-subtle, with tabular
  *   figures, at the start of the row. No dashes. With no rows it says "No results". It is a polite live region, so
  *   a screen reader hears the new range after a page change.
- * - Buttons: Previous and Next are sm secondary Buttons, text only, 12px apart at the end of the row. The first page
+ * - Buttons: Previous and Next are sm secondary Buttons (44px on a coarse pointer), text only, 12px apart at the end of the row. The first page
  *   disables Previous and the last disables Next. If the button you just pressed becomes disabled, focus moves to
  *   the other one, so it never drops to the page.
  * - Page buttons: numbered ghost buttons in mono between the two, the current one secondary with
@@ -35,6 +35,8 @@ export type PaginationProps = {
 };
 
 const GROUP = (n: number) => n.toLocaleString("en-GB");
+/** An sm button is 32px; on a finger it is 44px. */
+const TOUCH = "pointer-coarse:h-control-md";
 
 /** The page numbers to show: all of them when there are few, otherwise the ends and the current page's neighbours. `null` is a gap. */
 function pageItems(page: number, count: number): (number | null)[] {
@@ -75,7 +77,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
         </p>
         <ul className="flex items-center gap-3">
           <li>
-            <Button ref={previous} size="sm" disabled={current <= 1} onClick={() => go(current - 1, "previous")}>
+            <Button ref={previous} size="sm" className={TOUCH} disabled={current <= 1} onClick={() => go(current - 1, "previous")}>
               Previous
             </Button>
           </li>
@@ -94,7 +96,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
                         variant={n === current ? "secondary" : "ghost"}
                         aria-current={n === current ? "page" : undefined}
                         aria-label={`Page ${n}`}
-                        className="min-w-control-sm font-mono tabular-nums"
+                        className={TOUCH + " min-w-control-sm pointer-coarse:min-w-control-md font-mono tabular-nums"}
                         onClick={() => go(n)}
                       >
                         {n}
@@ -106,7 +108,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
             </li>
           )}
           <li>
-            <Button ref={next} size="sm" disabled={current >= count} onClick={() => go(current + 1, "next")}>
+            <Button ref={next} size="sm" className={TOUCH} disabled={current >= count} onClick={() => go(current + 1, "next")}>
               Next
             </Button>
           </li>

@@ -145,7 +145,7 @@ function Frame({ label, className = "", children }: { label: string; className?:
       aria-label={label}
       tabIndex={0}
       className={
-        "relative h-176 w-full overflow-y-auto overscroll-contain rounded-surface border border-line bg-canvas " +
+        "relative h-176 w-full overflow-y-auto overscroll-contain rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line " +
         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
         className
       }

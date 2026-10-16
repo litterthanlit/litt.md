@@ -175,15 +175,15 @@ function Chart({
   label,
   labels,
   series,
-  height = 240,
+  height,
   formatValue,
   unit,
-  xTitle = "Label",
+  xTitle,
   summary,
-  highlight = "last",
-  entrance = true,
+  highlight,
+  entrance,
   className = "",
-}: ChartBaseProps & { kind: Kind }) {
+}: Required<Pick<ChartBaseProps, "height" | "xTitle" | "highlight" | "entrance">> & ChartBaseProps & { kind: Kind }) {
   const fmt = formatValue ?? groupDigits;
   const n = labels.length;
   const many = series.length > 1;
@@ -602,13 +602,13 @@ function TipContent({
 /* ----------------------------------------------------------------- public charts */
 
 /** Bars along a baseline, one column per category. One series is fg at 55% with the current bar full; up to three step down. */
-export function BarChart(props: BarChartProps) {
-  return <Chart kind="bar" {...props} />;
+export function BarChart({ height = 240, xTitle = "Label", highlight = "last", entrance = true, ...rest }: BarChartProps) {
+  return <Chart kind="bar" height={height} xTitle={xTitle} highlight={highlight} entrance={entrance} {...rest} />;
 }
 
 /** A 2px line over the same grid. One series is fg with a marker on the current point; up to three step down, the third dashed. */
-export function LineChart(props: LineChartProps) {
-  return <Chart kind="line" {...props} />;
+export function LineChart({ height = 240, xTitle = "Label", highlight = "last", entrance = true, ...rest }: LineChartProps) {
+  return <Chart kind="line" height={height} xTitle={xTitle} highlight={highlight} entrance={entrance} {...rest} />;
 }
 
 /* ----------------------------------------------------------------- Meter */
