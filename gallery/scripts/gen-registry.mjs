@@ -859,6 +859,11 @@ const COPY = {
     description: "A number tile for one figure: a small label, the value large in the sans with tabular numbers, and an optional change in words. Green and red are for good and bad news only. A group of tiles measures its own width.",
     docs: "Import Stat and StatGroup from components/litt/stat. Say the direction in the delta's words, and set tone to good, bad or neutral for whether it is news. Put the tiles in a StatGroup: two across, four across from 36rem.",
   },
+  chart: {
+    title: "Chart",
+    description: "Bar and line charts in plain SVG, and a meter. The marks are the foreground, never the accent: one series at 55% with the current mark full, or up to three stepping down. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+    docs: "Import BarChart, LineChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
+  },
   states: {
     title: "Empty and loading states",
     description: "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says what went wrong and how to retry.",
