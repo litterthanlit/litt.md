@@ -96,14 +96,16 @@
   --hairline: 1px;
 
   /* Controls (P10): buttons and inputs share one height scale. Labels are
-     trimmed to the cap height (.litt-trim), so the side padding roughly equals
-     the vertical air and every button reads as evenly roomy. */
+     trimmed to the cap height (.litt-trim), so at sm and md the side padding
+     roughly equals the vertical air. An lg button runs wider than its air
+     (--button-pad-lg), because a near-square lg reads as a block. */
   --control-sm: 32px;          /* dense UI: table rows, toolbars */
   --control-md: 44px;          /* default */
   --control-lg: 56px;          /* hero and form CTAs */
   --control-pad-sm: 12px;
   --control-pad-md: 16px;
-  --control-pad-lg: 24px;
+  --control-pad-lg: 24px;      /* lg fields */
+  --button-pad-lg: 32px;       /* lg buttons: wider than the air above and below the label */
   --control-text-sm: 0.8125rem; /* 13 */
   --control-text-md: 0.9375rem; /* 15 */
   --control-text-lg: 1rem;      /* 16 */
@@ -189,12 +191,12 @@
   --fg-subtle: #64686f;        /* supporting */
   --fg-disabled: #9a9ea6;      /* disabled only, exempt from contrast */
 
-  /* Accent: PLACEHOLDER signal blue. Swap per project (see profile Q2). */
-  --accent: #1a73d5;
-  --accent-hover: #0961bb;
+  /* Accent: cobalt, Litt's own (v0.9), on nearly the neutrals' hue. Swap per project. */
+  --accent: #264bd1;
+  --accent-hover: #1c3cb2;
   --accent-fg: #ffffff;        /* text on accent, at least 4.5:1 */
-  --accent-tint: #e1f0ff;
-  --focus: #1a73d5;            /* focus ring, at least 3:1 on canvas and surfaces */
+  --accent-tint: #e8eeff;
+  --focus: #264bd1;            /* focus ring, at least 3:1 on canvas and surfaces */
 
   --success: #007c3b;
   --warning: #9c5a00;
@@ -234,11 +236,11 @@
   --fg-subtle: #8a8f98;
   --fg-disabled: #62666d;
 
-  --accent: #4c9fff;
-  --accent-hover: #6bb3ff;
+  --accent: #507afd;
+  --accent-hover: #6991ff;
   --accent-fg: #08090a;
-  --accent-tint: #0e2440;
-  --focus: #4c9fff;
+  --accent-tint: #13234f;
+  --focus: #507afd;
 
   --success: #4bc680;
   --warning: #e19b1b;
@@ -277,11 +279,11 @@
     --fg-subtle: #8a8f98;
     --fg-disabled: #62666d;
 
-    --accent: #4c9fff;
-    --accent-hover: #6bb3ff;
+    --accent: #507afd;
+    --accent-hover: #6991ff;
     --accent-fg: #08090a;
-    --accent-tint: #0e2440;
-    --focus: #4c9fff;
+    --accent-tint: #13234f;
+    --focus: #507afd;
 
     --success: #4bc680;
     --warning: #e19b1b;

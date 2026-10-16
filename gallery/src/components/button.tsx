@@ -2,7 +2,8 @@
  * Button: the reference component. Read this before writing another one.
  *
  * - Slightly rounded, three sizes on the shared control scale (P10). Labels sit in
- *   .litt-trim, so side padding equals the visible air.
+ *   .litt-trim, so side padding equals the visible air at sm and md. lg runs wider
+ *   (--button-pad-lg), so a short label never makes a square block.
  * - Weight 400 always (P9). State changes color and fill only; the box never
  *   moves or resizes (loading keeps the label mounted at opacity 0).
  * - Motion: the instant tier. Hover and press are CSS transitions on
@@ -53,7 +54,7 @@ const base =
 const sizes: Record<ButtonSize, string> = {
   sm: "h-control-sm px-control-pad-sm text-small",
   md: "h-control-md px-control-pad-md text-body",
-  lg: "h-control-lg px-control-pad-lg text-(length:--control-text-lg)",
+  lg: "h-control-lg px-button-pad-lg text-(length:--control-text-lg)",
 };
 const iconSizes: Record<ButtonSize, string> = { sm: "w-control-sm", md: "w-control-md", lg: "w-control-lg" };
 

@@ -1,20 +1,20 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables and empty and loading states are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, empty and loading states, select, switch, slider and forms are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Checkbox and radio · Segmented control · Tabs · Tag · Kbd · Card · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Empty and loading states
+Button · Input · Select · Checkbox and radio · Switch · Slider · Segmented control · Tabs · Tag · Kbd · Card · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Empty and loading states · Forms
 
 ---
 
 ## Button
-`--radius-control`. Three sizes on the shared control scale (P10); the label is wrapped in `.litt-trim` so the padding equals the visible air:
+`--radius-control`. Three sizes on the shared control scale (P10); the label is wrapped in `.litt-trim` so the padding equals the visible air at sm and md. lg runs wider than its air, so a short label never makes a square block:
 
 | Size | Height | Side padding | Label | Use |
 |---|---|---|---|---|
 | sm | `--control-sm` 32 | `--control-pad-sm` 12 | 13 | Table rows, toolbars, dense UI |
 | md | `--control-md` 44 | `--control-pad-md` 16 | 15 | Default |
-| lg | `--control-lg` 56 | `--control-pad-lg` 24 | 16 | Hero CTAs and the submit in a page form; full width in narrow forms. A dialog's actions are md. |
+| lg | `--control-lg` 56 | `--button-pad-lg` 32 | 16 | Hero CTAs and the submit in a page form; full width in narrow forms. A dialog's actions are md. |
 
 Weight 400 at every size, no tracking. Hover changes the fill and color, and press scales to `--press-scale`, both on the instant tier (`--dur-instant`, `--ease-out`). On coarse screens a pressed button also takes its hover fill, so the press shows under reduced motion. The box never moves. Grouped buttons sit `--control-group-gap` (12) apart.
 
@@ -38,8 +38,40 @@ Weight 400 at every size, no tracking. Hover changes the fill and color, and pre
 - **Help text:** `--type-small-size` in `--fg-subtle`, `--space-2` below.
 - **Textarea:** the same field for longer text, with the same edge, focus, error, label and help text. It has no fixed height, so its size sets the air above and below the text, and it resizes vertically only.
 
+## Select
+One value from a short list (a role, a region, a plan). It replaces the native `<select>`, whose list cannot be styled on the desktop and whose rows are 28 to 30px on a phone.
+- **Trigger:** the Input's look and sizes: sm 32, md 44 (the default, in dialogs and stacked forms), lg 56; `--radius-control`, `--surface-1`, the inset `--line-control` edge, the same focus, error and disabled states, 16px text on coarse pointers. The value is `--fg`, the placeholder `--fg-subtle`, and a 16px chevron in `--fg-subtle` sits at the end, `--control-gap` from the text. The chevron never turns. No hover fill, like the Input.
+- **List:** anchored below the trigger and flipped above it when there is no room, at least as wide as the trigger. It is the Menu's panel: glass at `--radius-surface` with the 4px inset, 44px rows at `--radius-control` with 12px side padding, and one gliding highlight. The current option carries a 16px check at the row's end in `--fg`: never bold, never a dot, never the accent. A long list scrolls inside the panel, which never grows past the room on screen.
+- **Motion:** the responsive tier, as the Menu: the list grows from the trigger and travels a quarter of `--travel` from the side it opens on, and leaves on the exit token.
+- **Keyboard:** Space, Enter or ↓ opens it on the current option; ↑↓ move, typing jumps to a match, Enter picks, Esc closes and keeps the value. Focus returns to the trigger.
+- **Label:** above the trigger, as the Input's, with help text or an error under it. A form sends the value, through a hidden native field.
+- **On compact screens** the list stays anchored, like a dropdown menu: a phone form's trigger is full width, so the list is too, and its rows are already 44px. It is not a sheet.
+- Inside a dialog, a sheet or the header the list is solid (`--surface-2` and `--shadow-float`), never glass on glass.
+
 ## Checkbox and radio
 Native inputs at 16px with `accent-color: var(--fg)`. A drawn checkbox is a 20px chip at `--radius-control`, filled with `--fg` and a `--canvas` mark when on. Not the accent (P1): a form can hold many checked boxes, and the accent stays on the one primary action. A switch follows the same rule. The label is on the right, `--space-2` gap, `--type-small-size`. The whole label is clickable.
+
+## Switch
+An on or off setting that takes effect as a setting, such as an email when a build finishes. A choice that can be wrong, such as accepting terms, is a checkbox, so a switch has no error state.
+- **Shape:** a pill track, 36 by 20, with a 16px round thumb inset 2px. Its 20px height matches the checkbox chip.
+- **Off:** the track is `--surface-1` with an inset 1px `--line-control` edge, and the thumb is `--line-control`, at the start.
+- **On:** the track fills with `--fg` and the thumb turns `--canvas`, at the end. Never the accent (P1). On and off differ in position, fill and thumb color, so color is never the only signal.
+- **Motion:** the thumb slides by transform and the fill fades, both on the instant tier: a switch is a toggle. The box never moves.
+- **Hover and press:** a wash at fg 6% over the track, like the checkbox; on a coarse pointer a press shows the wash too.
+- **Disabled:** the track is `--surface-2` with a `--line` edge, and the thumb `--fg-disabled`; on and disabled, the track is `--surface-3`. The label dims to `--fg-disabled`, but the description stays `--fg-subtle`: it is often what says why the switch is off-limits, so it must stay readable. A checkbox's description does the same.
+- **Label:** the label sits right of the switch, `--space-2` away, at the small size, and the whole row toggles it. A description can sit under the label in `--fg-subtle`. In a settings list the label and description come first and the switch sits at the row's end (`align="end"`), so the switches line up in one column.
+- **Touch:** the row is at least 44px tall on coarse pointers.
+- Build it on a `role="switch"` button with `aria-checked`. Space toggles it. A form sends it like a checkbox.
+
+## Slider
+A value on a continuous range, such as the default animation speed. Use it when the position matters more than the exact number; when the number matters, use an Input.
+- **Rail:** 4px tall at `--radius-control`, filled at fg 12%. The range from the start to the thumb fills with `--fg`, never the accent (P1).
+- **Thumb:** a 20px circle in `--surface-1` with an inset 1px `--line-control` edge, so it reads on the range and on the rail in both themes. Hover fills it `--surface-2`. The focus ring sits on the thumb.
+- **Labels:** the label above, as the Input's. The value can sit at the end of the label row in `--font-mono` at the small size, `--fg-muted`, with tabular numbers. Words for the two ends ("Slower", "Faster") sit under the rail's ends at the caption size in `--fg-subtle`, and say which way is which.
+- **Motion:** the thumb and the range follow the pointer one to one, with no easing, and an arrow key moves them at once. Their position is a layout value, and an eased jump would lag the key. Colors fade on the instant tier.
+- **Keyboard:** ←→ and ↑↓ step, Page Up and Page Down step by a tenth of the range, Home and End go to the ends.
+- **Touch:** the hit area is 44px tall on coarse pointers. A drag that starts on a slider never moves a sheet.
+- **Disabled:** the rail at fg 6%, the range `--fg-disabled`, the thumb `--surface-2` with a `--line` edge. The label dims to `--fg-disabled`; the value and the end words stay `--fg-subtle`, because they are still read.
 
 ## Segmented control
 A `--radius-surface` track with fill at fg 5%, an inset `--line` edge and 4px (`--space-1`) padding, so the segments inside it, at `--radius-control`, stay concentric. Each segment is caption size in `--fg-subtle`. The selected segment gets `--surface-1`, `--fg`, an inset `--line` and `--highlight`. Build it from `fieldset` and radio inputs, with a visually hidden legend.
@@ -128,3 +160,13 @@ Rows are separated by 1px `--line`, padding `--space-3`/`--space-4`, small size.
 - **Empty:** one sentence saying what will appear here and one action to make it appear. Left-aligned in the container. No illustration unless art direction (Q5) says so.
 - **Loading:** the skeleton fills with `--surface-2` at the real content's dimensions, and it is static. No pulse and no shimmer: a loop is motion that is not a response to the user, and a sweeping gradient animates material (P5).
 - **Error:** what went wrong, in plain words, plus how to fix it or retry. Status color on the text or icon only.
+
+## Forms
+How the controls above make a page. One left-aligned column, never centered (P7).
+- **Spacing:** fields sit `--space-6` (24) apart. Related controls share a fieldset with a legend at the small size in `--fg`, like a field's label. Groups sit `--space-12` (48) apart.
+- **Settings page:** sections, each a title (`--type-body-size` in `--fg`) with one line of description in `--fg-subtle`, then its fields. From 1024 up the title and description take the left third and the fields the rest; below that they stack. A `--line` hairline and `--space-12` of air separate sections. Save comes last, alone, lg and primary.
+- **Sign-up or contact:** one narrow column (about 400 wide), md fields, a consent checkbox above the submit, and the submit lg, primary and full width (P10).
+- **Optional fields:** mark the optional ones, not the required ones: "(optional)" in `--fg-subtle` after the label. No asterisks.
+- **Errors:** validate on submit, then again as each field changes, so a fixed field clears itself. Each invalid field shows its error under it, in `--danger`, saying how to fix it. Above the form an error summary names every problem: a `.litt-raised` panel with an inset 1px `--danger` edge, a title in `--fg` ("Fix 2 fields to save") beside a 16px alert icon in `--danger`, then one link per error that moves focus to its field. The summary takes focus when a submit fails. A form of three fields or fewer skips the summary and focuses its first invalid field.
+- **Actions:** in a page form, the submit comes first at the column's start, with Cancel (ghost) after it, both lg. Below 640 they stack full width, submit on top. A dialog keeps its own order: bottom right, primary last, md. Never disable the submit to say a field is wrong; let the submit show the errors.
+- **Saving:** the submit shows its loading state, then a toast confirms. A failed save keeps every value.

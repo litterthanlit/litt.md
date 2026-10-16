@@ -76,7 +76,7 @@ These come from the audit and are candidate rules (P11 to P13). Build them in.
 - **Slight radius (litt.md v0.5), and it must stay concentric.** `tokens.css` sets it, 4px and 8px, and the Playground can try other values live:
   - `rounded-control` on buttons, inputs, menu and list rows, tabs, segmented groups (with `overflow-hidden`), tags, chips, kbd and tooltips;
   - `rounded-surface` on cards, stages, menus, popovers, dialogs, toasts and the command menu;
-  - `rounded-pill` only on avatars and icon-only buttons. Tags and chips are `rounded-control`.
+  - `rounded-pill` only on avatars, icon-only buttons and switches. Tags and chips are `rounded-control`.
   - No dots for status or the current page: a status is a word (a Tag), and the current page steps the text color.
 
   An element inset 4px inside a surface uses `rounded-control`; that is what makes it concentric. No other radius exists.

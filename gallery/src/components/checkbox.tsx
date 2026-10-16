@@ -70,7 +70,13 @@ const wash =
   "pointer-events-none relative z-1 col-start-1 row-start-1 size-5 self-start bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] opacity-0 " +
   "transition-[opacity,background-color] duration-(--dur-instant) ease-litt " +
   "group-hover/choice:opacity-100 group-active/choice:bg-[color-mix(in_oklab,var(--fg)_10%,transparent)] group-active/choice:opacity-100 " +
+  /* A checked or mixed chip is --fg, where an --fg wash would not show, so the wash there is --canvas, as on the Switch. */
+  "peer-checked:bg-[color-mix(in_oklab,var(--canvas)_12%,transparent)] group-active/choice:peer-checked:bg-[color-mix(in_oklab,var(--canvas)_20%,transparent)] " +
   "peer-disabled:hidden";
+
+/* The same --canvas wash over a mixed chip. A checkbox only: a radio matches :indeterminate when nothing in its group is picked. */
+const mixedWash =
+  " peer-indeterminate:bg-[color-mix(in_oklab,var(--canvas)_12%,transparent)] group-active/choice:peer-indeterminate:bg-[color-mix(in_oklab,var(--canvas)_20%,transparent)]";
 
 /* A mark is centered in the chip, and fades with the fill. */
 const mark =
@@ -144,7 +150,7 @@ function Choice({
       />
       {appearance === "drawn" && (
         <>
-          <span aria-hidden="true" className={wash + (radio ? " rounded-pill" : " rounded-control")} />
+          <span aria-hidden="true" className={wash + (radio ? " rounded-pill" : " rounded-control" + mixedWash)} />
           {radio ? (
             <span aria-hidden="true" className={mark + " peer-checked:opacity-100"}>
               <svg width={8} height={8} viewBox="0 0 8 8" fill="currentColor" aria-hidden="true" focusable="false">
@@ -173,7 +179,8 @@ function Choice({
       {description && (
         <p
           id={descriptionId}
-          className={"col-start-2 row-start-2 mt-1 text-small peer-disabled:text-fg-disabled " + (invalidProp ? "text-danger" : "text-fg-subtle")}
+          /* A disabled box keeps its description readable: it is often what says why the box is off-limits. */
+          className={"col-start-2 row-start-2 mt-1 text-small " + (invalidProp ? "text-danger" : "text-fg-subtle")}
         >
           {description}
         </p>
