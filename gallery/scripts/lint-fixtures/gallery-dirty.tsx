@@ -71,6 +71,9 @@ export function ProjectCard({ open }: { open: boolean }) {
       <div
         className="bg-[#fafbfc]" // expect: color
       />
+      <a
+        className="text-accent underline" // expect: color
+      />
       <div
         style={{ color: "#fff" }} // expect: color
       />
