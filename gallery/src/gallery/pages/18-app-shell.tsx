@@ -63,6 +63,7 @@ export const docs: PageDocs = {
     "On a phone the menu button is named \"Open navigation\", and Radix sets aria-expanded and aria-controls on it. The sheet is a modal dialog with the heading \"Navigation\": focus is trapped in it, Esc and a tap on the scrim close it, and focus returns to the button.",
     "The close button and the menu button are 44px on a touch screen, and so are the rows in the sheet. Rows in the sidebar are 36px, or 44px on a coarse pointer.",
     "Dragging the sheet down closes it, and the close button does the same, so the gesture is never the only way.",
+    "Inside the main area, lay a page out with a one-column grid (grid grid-cols-1), not a bare grid. A wide table or chart would otherwise stretch the grid's track past the screen. The table and the chart both measure their container, so they then fit.",
     "The wordmark shows in the sidebar and in the top bar, but only one is ever visible, so a screen reader reads it once. Do not give it an id.",
     "The sidebar's links and the top bar's button have a visible focus ring. Nothing moves except the sheet, which rises on the expressive spring and, under reduced motion, appears in place.",
   ],

@@ -171,7 +171,7 @@ A number tile for one figure that tells you how things stand: active projects, d
 - **Label:** above the value, small size, `--fg-subtle`, sentence case, no colon.
 - **Value:** `--type-h3-size` in `--fg`, in the sans (not mono), with tabular numbers so a figure does not wobble when it updates. An optional unit ("s", "%") follows it directly, same size, in `--fg-subtle`.
 - **Delta:** an optional line under the value at the caption size: a word and the number, "Up 12% on last week". The word says the direction. The color says whether it is news: `--success` for good, `--danger` for bad, `--fg-subtle` for neither. So a build time that fell is "Down 3 s on last week" in `--success`. Never an arrow glyph alone, never a dot. The good or bad judgment is also in hidden text ("good news"), so color is never the only signal.
-- **Group:** a grid that measures itself. Two tiles across, four across from 36rem wide, one below 20rem. Tiles in a row share the row's height, and the gap is `--space-4`.
+- **Group:** a grid that measures itself. Two tiles across, four across from 40rem wide, one below 20rem. Tiles in a row share the row's height, and the gap is `--space-4`.
 - **Semantics:** a description list. The label is the term and the value is its description, so a screen reader reads "Active projects, 12".
 - **Motion:** none. A value that changes just changes. The entrance cascade belongs to the page.
 

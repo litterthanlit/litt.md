@@ -15,7 +15,7 @@ export const docs: PageDocs = {
   exports: ["Stat", "StatGroup"],
   usage: `import { Stat, StatGroup } from "@/components/stat";
 
-// A row of tiles. The group measures its own width: two across, four across from 36rem.
+// A row of tiles. The group measures its own width: two across, four across from 40rem.
 <StatGroup>
   <Stat label="Active projects" value={12} />
   <Stat label="Deploys this week" value={38} delta="Up 12% on last week" tone="good" />
@@ -118,7 +118,7 @@ export default function StatPage() {
         title="A narrow group"
         align="start"
         code="NarrowDemo"
-        caption="The group measures its own width, not the window's. At 22rem it stays two across, and under 20rem it drops to one. The same group works in a phone-wide frame, beside a sidebar and on a full page. Four across needs 36rem."
+        caption="The group measures its own width, not the window's. At 22rem it stays two across, and under 20rem it drops to one. The same group works in a phone-wide frame, beside a sidebar and on a full page. Four across needs 40rem."
       >
         <NarrowDemo />
       </Stage>

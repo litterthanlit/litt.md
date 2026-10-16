@@ -857,7 +857,7 @@ const COPY = {
   stat: {
     title: "Stat",
     description: "A number tile for one figure: a small label, the value large in the sans with tabular numbers, and an optional change in words. Green and red are for good and bad news only. A group of tiles measures its own width.",
-    docs: "Import Stat and StatGroup from components/litt/stat. Say the direction in the delta's words, and set tone to good, bad or neutral for whether it is news. Put the tiles in a StatGroup: two across, four across from 36rem.",
+    docs: "Import Stat and StatGroup from components/litt/stat. Say the direction in the delta's words, and set tone to good, bad or neutral for whether it is news. Put the tiles in a StatGroup: two across, four across from 40rem.",
   },
   chart: {
     title: "Chart",

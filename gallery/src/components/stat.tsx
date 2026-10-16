@@ -12,7 +12,7 @@
  *   color says whether it is news: success for good, danger for bad, fg-subtle for neither. Hidden text repeats
  *   the judgment ("good news"), so color is never the only signal. No arrow glyph, no dot.
  * - Group: a description list laid out as a grid that measures itself (a container query), not the window: the
- *   shell takes 240px of a laptop screen, so the window is the wrong measure. Two across, four across from 36rem,
+ *   shell takes 240px of a laptop screen, so the window is the wrong measure. Two across, four across from 40rem,
  *   one below 20rem. Tiles in a row share the row's height.
  * - Semantics: each tile is a term (the label) and its description (the value), so a screen reader reads
  *   "Active projects, 12". A Stat outside a group wraps itself in its own list.
@@ -81,12 +81,12 @@ export type StatGroupProps = {
   className?: string;
 };
 
-/** A grid of Stats that measures its own width: two across, four across from 36rem, one below 20rem. */
+/** A grid of Stats that measures its own width: two across, four across from 40rem, one below 20rem. */
 export function StatGroup({ children, className = "" }: StatGroupProps) {
   return (
     <InGroup.Provider value>
       <div className="@container">
-        <dl className={"grid grid-cols-2 gap-4 @max-[20rem]:grid-cols-1 @min-[36rem]:grid-cols-4 " + className}>
+        <dl className={"grid grid-cols-2 gap-4 @max-[20rem]:grid-cols-1 @min-[40rem]:grid-cols-4 " + className}>
           {children}
         </dl>
       </div>
