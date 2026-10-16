@@ -864,6 +864,11 @@ const COPY = {
     description: "Bar and line charts in plain SVG, and a meter. The marks are the foreground, never the accent: one series at 55% with the current mark full, or up to three stepping down. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
     docs: "Import BarChart, LineChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
   },
+  "app-shell": {
+    title: "App shell",
+    description: "The frame around an app's pages: a 240px sidebar that runs the full height of the page with its links kept in view, and a main area. On a phone the sidebar goes, a glass top bar holds a menu button, and the nav opens in the bottom sheet.",
+    docs: "Import AppShell, SidebarNav and SidebarLink from components/litt/app-shell. Pass a wordmark, a nav and the page. Mark the current link with current. It needs no router: pass as={Link} to a SidebarLink to use yours.",
+  },
   states: {
     title: "Empty and loading states",
     description: "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says what went wrong and how to retry.",
