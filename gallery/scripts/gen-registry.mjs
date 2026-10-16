@@ -854,6 +854,11 @@ const COPY = {
     description: "A table with real semantics, hairline rows, mono figures and a sticky header. It scrolls inside its own region on a phone, and its rows can arrive in one staggered cascade, sort, filter and insert.",
     docs: "Import Table, TableHeader, TableBody, TableRow, TableHead and TableCell from components/litt/table. Give the Table a label, and a max height such as max-h-96 if you want the header to stick. The entrance is off until you pass entrance.",
   },
+  stat: {
+    title: "Stat",
+    description: "A number tile for one figure: a small label, the value large in the sans with tabular numbers, and an optional change in words. Green and red are for good and bad news only. A group of tiles measures its own width.",
+    docs: "Import Stat and StatGroup from components/litt/stat. Say the direction in the delta's words, and set tone to good, bad or neutral for whether it is news. Put the tiles in a StatGroup: two across, four across from 36rem.",
+  },
   states: {
     title: "Empty and loading states",
     description: "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says what went wrong and how to retry.",
