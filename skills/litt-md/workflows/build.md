@@ -94,6 +94,10 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `header` | A sticky glass bar with a wordmark, a nav and actions. |
 | `card` | A raised surface for one object that links somewhere. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
+| `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. |
+| `chart` | `BarChart`, `LineChart` and `Meter`, drawn in the foreground and never the accent. Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
+| `app-shell` | `AppShell`, `SidebarNav` and `SidebarLink`: a sidebar that runs the full height of the page, and the page beside it. On a phone it becomes a top bar and a bottom sheet by itself. Lay the page out with `grid grid-cols-1`, so a wide table cannot stretch it. |
+| `pagination` | The range ("21 to 40 of 143") with Previous and Next under a table. You hold the page in state. |
 | `list` | Project rows and cards with status filters (`ProjectList`, `ProjectGrid`, `ProjectFilters`). It reads a `Project` (`id`, `name`, `client`, `deploy`, `status`, `updated`, `description`, `tags`, `cover`), so map your data into that shape. |
 | `states` | Empty, skeleton, loading and error views. |
 | `litt` | The tokens, the Tailwind names and the material classes. Every component brings it. Install it alone when you write all the markup yourself. |
