@@ -697,7 +697,8 @@ function transformFile(file, targets) {
 
   // identifiers vite.config.ts defines
   const defineWalk = (node) => {
-    if (ts.isIdentifier(node) && node.text in DEFINES) edits.push([node.getStart(sf), node.getEnd(), DEFINES[node.text]]);
+    // Own keys only: `in` also matches Object.prototype names, and n.toLocaleString() shipped as the native function's source.
+    if (ts.isIdentifier(node) && Object.hasOwn(DEFINES, node.text)) edits.push([node.getStart(sf), node.getEnd(), DEFINES[node.text]]);
     ts.forEachChild(node, defineWalk);
   };
   defineWalk(sf);
@@ -707,6 +708,9 @@ function transformFile(file, targets) {
   for (let i = 1; i < sorted.length; i++) if (sorted[i][0] < sorted[i - 1][1]) fail(`${rel(file)}: two edits overlap at offset ${sorted[i][0]}`);
   text = applyEdits(text, edits);
   if (file.endsWith(".tsx")) text = `"use client";\n\n${text}`;
+  // The shipped copy must still parse: a bad edit here once shipped a chart that no host could compile.
+  const reparsed = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, false, file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+  for (const d of reparsed.parseDiagnostics ?? []) fail(`${rel(file)}: the shipped copy does not parse at ${d.start}: ${ts.flattenDiagnosticMessageText(d.messageText, " ")}`);
 
   const usesLitt = stats.vars + stats.classes > 0 || materialRe.test(text);
   return { text, imports, stats, usesLitt };
