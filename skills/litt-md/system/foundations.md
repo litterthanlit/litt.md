@@ -57,6 +57,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 | Accent | `--accent`, `--accent-hover`, `--accent-fg`, `--accent-text`, `--accent-tint` | The one primary action (a fill with `--accent-fg` on it), links (`--accent-text`), focus, the light source |
 | Focus | `--focus`, `--focus-ring` | Keyboard focus indicator |
 | Status | `--success`, `--warning`, `--danger` | State only: never decoration, never brand |
+| Data hues | `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` and `-tint` | Color that carries data (P11): series, categories, heat steps, identity. Never chrome |
 
 **Accent per project.** Pick the accent at project start from the subject: the client's mark, the product's domain, or the material it sells. Set it in both themes so that:
 - `--accent`, the fill, reaches at least 3:1 on `--canvas`, so the primary action stands out;
@@ -66,6 +67,13 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. In both themes the primary action is a deep cobalt with white text, as in the reference it came from. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
 
 **Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
+
+**Data hues (P11).** Five hues carry data, in a fixed order: blue, amber, teal, violet, rose. The first series or category takes blue, the second amber, and so on; a hue is never cycled, and a sixth series folds into "Other" or a second chart. Each hue has three tones:
+- the mark tone (`--data-blue`) for bars, dots, lines, heat cells and gauge ticks: at least 3:1 on canvas and every surface;
+- the text tone (`--data-blue-text`) for a word in the hue, such as a category tag or a label that names a mark: at least 4.5:1 on canvas, surfaces and the hue's own tint;
+- the tint (`--data-blue-tint`), the mark tone mixed into surface-1 by `--tint-strength` (12% light, 18% dark), as the fill behind the text tone.
+
+They were fitted to litt's surfaces in each theme and checked for color-blind separation between neighbors in that order, and blue sits apart from the cobalt accent, so a chart never reads as a button. Teal keeps clear of the success green. A heat scale steps one hue's mark tone over transparent (30, 55, 80 and 100%) above an empty fg-8% cell. Chrome stays neutral: buttons, controls, surfaces, borders, nav, rails, gridlines and running text never take a hue, and a status keeps its own color and a word. A single quantity may stay in the foreground, which is the quiet default.
 
 **Translucent tones.** For hover fills on neutral ground, mix from the foreground: `color-mix(in oklab, var(--fg) 6%, transparent)` for hover and 7–8% for selected. Never use rgba of a hard-coded color.
 

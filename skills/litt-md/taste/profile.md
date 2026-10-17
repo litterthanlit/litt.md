@@ -1,12 +1,12 @@
 # litt.md taste profile
 
-> v0.10 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 65 journal entries · October 2026
+> v0.11 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 66 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
 ## Point of view
 
-**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, tight type, one font family at one weight. The one place it gets bold is light and material. Surfaces have physicality: glass that floats, a soft light source falling from the top, edges that catch the light, a trace of grain. Color barely appears, and where it does, it behaves like light.
+**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, tight type, one font family at one weight. The one place it gets bold is light and material. Surfaces have physicality: glass that floats, a soft light source falling from the top, edges that catch the light, a trace of grain. Color barely appears, and where it does, it behaves like light or carries data.
 
 Five words: **precise, lit, airy, calm, exact.**
 
@@ -18,7 +18,7 @@ Five words: **precise, lit, airy, calm, exact.**
 | Themes | Light and dark are both first-class | Neither theme is an afterthought or a mechanical inversion. |
 | Type | Hanken Grotesk + Geist Mono, nothing else, weight 400 only; display stops at 40 | One grotesk carries everything; mono is for code, keys, data and tags. Heavier weights read too wide (P9), and poster-sized headlines are out. |
 | Signature | Light and material | This is where the boldness goes, and it is what separates litt.md from generic dark mode. |
-| Color | Cool neutrals (OKLCH hue about 262), monochrome, one accent per project. Litt's own accent is cobalt | Hierarchy comes from tone. The accent is chosen per project; Litt's own sits on nearly the neutrals' hue, so the light it casts stays cool. |
+| Color | Cool neutrals (OKLCH hue about 262), monochrome chrome, one accent per project. Litt's own accent is cobalt. Five data hues carry data and never chrome (P11) | Hierarchy comes from tone. The accent is chosen per project; Litt's own sits on nearly the neutrals' hue, so the light it casts stays cool. Color that says something (which series, which category, how much) earns its place; color on chrome is decoration. |
 | Density | Airy | One idea per section, with generous negative space. |
 | Shape | Slight radius: controls 4px (tags and chips too), surfaces 8px, pills only for avatars, icon-only buttons and switches. Radio marks and slider thumbs are circles | A little radius softens the precision and stays exact. A surface is a control plus the 4px inset, so corners nest. Two sizes and the pill, nothing in between. A switch keeps its familiar shape, because it must read as a switch at a glance. |
 | Motion | Sweet spot, three tiers. Instant: 100ms ease-out tween. Responsive: spring, 200ms, bounce 0. Expressive: spring, 350ms, bounce 0.12, one moment per view. Exits run at 0.75× and never bounce. On phones the modal is a bottom sheet that rises by its own height on the expressive spring, never uses up the view's one moment, and drags down to dismiss | Fast by default, with one signature moment per view. Motion confirms actions and never performs. Only transform and opacity animate, plus color fades at instant. |
@@ -26,7 +26,7 @@ Five words: **precise, lit, airy, calm, exact.**
 ## Signature rules
 
 **P1. Light, not paint.** The accent appears mostly as light: a tinted radial falloff, a focus halo, a glow on the one primary action. Large flat fills of accent are rare: at most one per view, and only on the primary action. Checkboxes, radios and switches fill with `--fg` when on, never the accent, because a form can hold many of them.
-- *Check:* count the accent fills in the view. More than one fails, and a checked checkbox, radio or switch in the accent counts as one. Accent used only as text color or flat icon color, with no light anywhere, is a missed opportunity.
+- *Check:* count the accent fills in the view. More than one fails, and a checked checkbox, radio or switch in the accent counts as one. Accent used only as text color or flat icon color, with no light anywhere, is a missed opportunity. A data hue (P11) is not the accent and does not count.
 
 **P2. One light source per view.** Light comes from the top. Highlights sit on top edges (`--highlight`), the radial light is anchored at the top, and no two glows contradict each other.
 - *Check:* glows come from more than one direction, or a highlight sits on a bottom edge → fail.
@@ -55,6 +55,9 @@ Five words: **precise, lit, airy, calm, exact.**
 **P10. Roomy controls.** Buttons and inputs share one height scale: sm 32, md 44, lg 56 (`--control-*`). The label is trimmed to its cap height (`.litt-trim`), so at sm and md the side padding roughly equals the air above and below it: sm pad 12, md pad 16. An lg button runs wider, pad 32 (`--button-pad-lg`), because at 56 tall a near-square box reads as a block; an lg field keeps pad 24. Hero CTAs and the submit of a page form use lg, and go full width in narrow forms. A dialog is compact: its fields and actions use md. A field is lg only when it shares a row with an lg button (the inline form). Labels stay 400 and small, so the box carries the presence.
 - *Check:* control heights come only from the scale. For every sm and md button, side padding ÷ vertical air (from the trimmed label to the edge) sits between 0.85 and 1.25; for an lg button it sits between 1.3 and 1.6. A hero or page-form CTA below lg fails, and so does an lg field or button in a dialog.
 
+**P11. Color carries data.** Beyond the one accent, color appears only where it says something: which series or category a mark belongs to, how much (a step of a heat scale), which side of a goal a value falls on, or who or what a thing is (a category tag, an avatar). It comes from the five data hues, `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet` and `--data-rose`, assigned in that order and never cycled. Each has a mark tone (3:1 on every surface), a `-text` tone (4.5:1, also on its own tint) and a `-tint` fill. Chrome never takes a data hue: buttons, controls, surfaces, borders, nav, rails, gridlines and running text stay neutral, and the accent keeps the primary action. Within one chart or one list a hue means one thing. Status stays with success, warning and danger, and a word. A single quantity may stay in the foreground, which is the quiet default.
+- *Check:* a data hue on a button, a control's fill, a surface, a border, a nav row, a rail or a gradient fails. One hue for two meanings in a chart or a list fails, and so does a hue picked only to brighten. A color outside the five fails, and a sixth series folds into "Other" or a second chart. A hue's mark tone or tint used as text fails (the lint checks it): text in a hue takes its `-text` tone.
+
 ## Do
 
 - Let type do the hierarchy. Use scale jumps (40 against 15) first, then color (`--fg` against `--fg-muted`), then tracking. Never weight.
@@ -80,6 +83,7 @@ Five words: **precise, lit, airy, calm, exact.**
 - Mark a status or the current page with a dot. Say it in words (a tag), or step the text color.
 - Put a drop shadow with an offset on anything, or any shadow on a card in the page flow.
 - Fill backgrounds with accent color. Tint the light instead.
+- Put a data hue on chrome (a button, a surface, a border, the nav), or give each row its own hue just to brighten the list.
 - Put glass on static cards, or stack glass on glass.
 
 ## Generic-AI tells this language must avoid
@@ -111,6 +115,7 @@ The interview workflow works through these. When one is answered, move the answe
   - *Evidence:* product UI floating over atmospheric, blurred photography or painting shows up on the Cosmos board (about 8 pins) and on Cursor's hero.
 - **Q6.** Does the glass, glow and grain signature apply to client work, or only to Litt's own properties?
 - **Q7.** Texture: noise grain (P5 today) or a dot grid / dot matrix?
+  - *Evidence:* the v0.11 reference set (five shots of dark data panels) uses dot matrices as data (a usage grid, a reply-time distribution) and a dot grid behind a 2D control. Litt now draws dots as marks and as a coordinate grid inside a control, not as page texture.
   - *Evidence:* litt.design has a dot-grid background, the Pinterest "OS" board is about half dot-matrix and pixel patterns, and dither appears on Cosmos.
 - **Q8.** Light: one accent-tinted source from the top (P2 today), or soft multi-hue ambient fields?
   - *Evidence:* litt.design uses peach and blue blobs at the sides, and Cosmos has warm gradient fields.
@@ -123,6 +128,7 @@ The interview workflow works through these. When one is answered, move the answe
 
 ## Changelog
 
+- **v0.11, October 2026.** Nick sent five reference shots of data panels (a rule builder with colored category tags, a voice pad on a dot grid, a reply-speed dot plot, a shortcut heatmap, a usage dot matrix and gauge, a deploy timeline) with "lets expand the components ... we stick to our design language, we can add some color too". New rule P11: color carries data. Five data hues (blue, amber, teal, violet, rose), fitted to litt's surfaces in both themes and checked for color-blind separation, each with a mark tone, a text tone and a tint. They mark series, categories, heat steps and identity, and never chrome; the accent still owns the primary action, and the dashboards step's foreground-only chart stays the default. The Color decision now reads "monochrome chrome". Tags take a hue for a category. The lint fails a hue's mark tone or tint used as text.
 - **v0.10, October 2026.** Nick on the dark primary button: "I think the text gets lost a bit in the dark version of the button". Its dark text on a light cobalt passed 4.5:1 but read muddy. The accent is now a fill only: in both themes the primary action is a deep cobalt with white text, as in the reference, and it stays at least 3:1 against the page. A new `--accent-text` carries the accent as text (links): the accent itself in light, a lighter cobalt in dark. The lint fails the fill used as text.
 - **v0.9, October 2026.** Nick, with a reference shot of a dashboard on a deep blue frame: "use this kind of blue", and "the large buttons are too square". Litt's own accent is now cobalt, on nearly the neutrals' hue, which closes Q2 (the placeholder signal blue is gone). Asked whether "too square" meant the corners or the shape, Nick chose wider over rounder corners and the pill: an lg button's side padding goes from 24 to 32 (`--button-pad-lg`), so P10's check gives lg its own range, and an lg field keeps 24. For the forms step Nick chose a pill track for the switch over the control radius, so switches join the pill list, and radio marks and slider thumbs are named as circles.
 - **v0.8, October 2026.** Nick on the tags: "the dots are horrible and the rounded tags dont feel right", closer to the gallery's Preview/Code toggle, and "shouldnt tags also be in mono?". From a four-way tag trial he chose the selected segment's look in Geist Mono: 24px, the control radius, a surface-1 fill with the hairline and top highlight, caption size, status as colored text. Every dot goes: tags, toasts (an error's title is `--danger`) and the header's current page (the text color steps, and the menu shows a check). Filter chips take the control radius too, so pills are left for avatars and icon-only buttons. The Type and Shape decisions change accordingly.
