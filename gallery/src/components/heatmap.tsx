@@ -12,8 +12,8 @@
  *   at the start (mono caption, fg-subtle, in a column as wide as the longest label) and an optional total at
  *   the end (mono small, fg, tabular, end-aligned). Optional ticks over chosen columns name them (month names
  *   over a year of weeks). A label needs 16px of height, so when rows are closer than that (the default pitch)
- *   every second row shows its label, counted from the first, like the chart's every nth axis label; every
- *   row keeps its name for a screen reader.
+ *   every second row shows its label and its total, counted from the first, like the chart's every nth axis
+ *   label; every row keeps its name and its total for a screen reader.
  * - Fit: dots keep their size. The label and total columns stay put and the dots between them scroll sideways
  *   inside their own box, starting at the end so the latest column shows, and staying at the end when the box
  *   is resized. The page itself never scrolls sideways. Padding inside the scroll box keeps the focus ring
@@ -72,7 +72,7 @@ export type HeatmapProps = {
   formatValue?: (value: number) => string;
   /** What the values count, said after the number in the tooltip and the dots' names: "deploys". Pass ["deploy", "deploys"] to say the first for exactly 1. Leave it out when the label says it. */
   unit?: string | [one: string, other: string];
-  /** The dot's diameter in px. The pitch is this plus 4px of air, and below a 12px dot only every second row label shows. */
+  /** The dot's diameter in px. The pitch is this plus 4px of air, and below a 12px dot only every second row shows its label and its total. Use 12 when every row must be named. */
   cell?: number;
   /** Replaces the generated summary that describes the grid, such as "Deploys per day, 214 in all, most on 12 Oct with 31". */
   summary?: string;
@@ -483,7 +483,8 @@ export function Heatmap({
           <div className="flex flex-col" style={{ gap: GAP }}>
             {rows.map((row, r) => (
               <div key={r} className="flex items-center justify-end" style={{ height: cell }}>
-                <span className="litt-trim">{row.total}</span>
+                {/* The same rule as the labels: a total is a line of text, so rows closer than one show every nth. */}
+                <span className={"litt-trim" + (r % labelEvery === 0 ? "" : " invisible")}>{row.total}</span>
               </div>
             ))}
           </div>
