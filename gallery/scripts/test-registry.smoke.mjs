@@ -323,6 +323,11 @@ const RECIPES = {
           <Heatmap label="Deploys per day" hue="teal" unit={["deploy", "deploys"]} columns={["1 Oct", "2 Oct", "3 Oct", "4 Oct", "5 Oct"]} rows={[{ label: "Week 1", values: [0, 2, 5, 9, null], total: "16" }, { label: "Week 2", values: [4, 1, 7, 3, 6], total: "21" }]} />
         </div>`,
   },
+  "dot-plot": {
+    needs: ["DotPlot"],
+    top: [`const DOT_VALUES = Array.from({ length: 60 }, (_, i) => 10 + ((i * 37) % 60)); // 10 to 69 s, once each`],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-dotplot"><DotPlot label="Build times" values={DOT_VALUES} domain={[0, 80]} formatValue={(v) => Math.round(v) + " s"} unit={["build", "builds"]} goal={50} goalLabel="50 s goal" height={160} /></div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1324,6 +1329,62 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (ring !== "1px") throw new Error(`a hovered dot has a ${ring} ring, not 1px`);
           await page.mouse.move(5, 5);
           return `fullest dot ${top}, summary read, ${dots} dots`;
+        });
+      }
+      if (has("dot-plot")) {
+        await attempt("dot plot splits the dots at the goal, reads right and moves with the keys", async () => {
+          const box = page.locator("[data-testid=litt-dotplot]");
+          const svg = box.locator("svg[role=img]").first();
+          await svg.waitFor({ state: "visible", timeout: 8000 });
+          await page.waitForTimeout(700);
+          const label = await svg.getAttribute("aria-label");
+          if (label !== "Build times, 60 builds: median 40 s, 68% within the 50 s goal") throw new Error(`the summary reads "${label}"`);
+          const legend = (await box.locator("ul").first().innerText()).replace(/\s+/g, " ");
+          if (!/Within goal 68%/.test(legend) || !/Over 32%/.test(legend)) throw new Error(`the legend reads "${legend}"`);
+          const rows = await box.locator("table.sr-only tbody tr").count();
+          if (rows < 20) throw new Error(`the hidden table has ${rows} rows`);
+          const edges = await box.evaluate((root) => {
+            const dots = [...root.querySelectorAll("svg[role=img] circle")].filter((c) => c.getAttribute("r") === "3");
+            const xs = dots.map((c) => c.getBoundingClientRect().x);
+            const first = dots[xs.indexOf(Math.min(...xs))];
+            const last = dots[xs.indexOf(Math.max(...xs))];
+            const line = root.querySelector("svg[role=img] line[stroke-dasharray]");
+            return {
+              count: dots.length,
+              first: getComputedStyle(first).fill,
+              last: getComputedStyle(last).fill,
+              dashed: !!line,
+              root: ["--litt-data-blue", "--litt-fg-subtle"].map((v) => {
+                const probe = document.createElement("i");
+                probe.style.color = `var(${v})`;
+                document.body.append(probe);
+                const c = getComputedStyle(probe).color;
+                probe.remove();
+                return c;
+              }),
+            };
+          });
+          if (edges.count < 30) throw new Error(`only ${edges.count} dots drew`);
+          if (!edges.dashed) throw new Error("the goal line is missing");
+          const rgb = (c) => page.evaluate(`(${COLOR_TO_RGB})(${JSON.stringify(c)})`);
+          const [first, last, blue, subtle] = [await rgb(edges.first), await rgb(edges.last), await rgb(edges.root[0]), await rgb(edges.root[1])];
+          if (!near(first, blue, 2)) throw new Error(`a dot inside the goal is rgb(${first.slice(0, 3)}), the data blue is rgb(${blue.slice(0, 3)})`);
+          if (!near(last, subtle, 2)) throw new Error(`a dot past the goal is rgb(${last.slice(0, 3)}), the subtle foreground is rgb(${subtle.slice(0, 3)})`);
+          if (near(first, accent[theme]) || near(last, accent[theme])) throw new Error("a dot is the accent");
+          const stops = await box.locator("[role=group] button[tabindex='0']").count();
+          if (stops !== 1) throw new Error(`the plot should have one tab stop, found ${stops}`);
+          await box.locator("[role=group] button").first().focus();
+          const start = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          await page.keyboard.press("ArrowRight");
+          const name = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (!/: \d+ builds?$/.test(name ?? "") || name === start) throw new Error(`ArrowRight landed on "${name}" from "${start}"`);
+          const count = name.split(": ")[1];
+          await box.locator("div[aria-hidden=true]").filter({ hasText: count }).first().waitFor({ state: "visible", timeout: 3000 });
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          if (await box.locator("div[aria-hidden=true]").filter({ hasText: count }).count()) throw new Error("Esc did not hide the tooltip");
+          await page.evaluate(() => document.activeElement?.blur());
+          return `${edges.count} dots, hue inside the goal and gray past it`;
         });
       }
       if (has("app-shell")) {

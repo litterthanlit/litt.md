@@ -902,8 +902,8 @@ const COPY = {
   },
   "dot-plot": {
     title: "Dot plot",
-    description: "A distribution drawn as stacks of dots, one dot per few items, so you see where most values fall. Values inside a goal take a data hue and the rest stay gray, with the median marked and a legend in numbers.",
-    docs: "Import DotPlot from components/litt/dot-plot. Pass a label, the values and a scale. Add a goal to split the dots. It measures its container, so give it a width.",
+    description: "A distribution drawn as stacks of dots, mirrored about a center line, so you see where most values fall. With a goal, dots inside it take a data hue and the rest stay gray; the median is a line, an outlier can be named, and the legend gives the shares in numbers.",
+    docs: "Import DotPlot from components/litt/dot-plot. Pass a label, the values, a scale (log for durations) and a formatValue. Add a goal to split the dots, markers to name outliers. It measures its container, so give it a width. Each non-empty column is reachable with the arrow keys.",
   },
   heatmap: {
     title: "Heatmap",
