@@ -45,6 +45,7 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-fg: var(--accent-fg);
+  --color-accent-text: var(--accent-text);
   --color-accent-tint: var(--accent-tint);
   --color-focus: var(--focus);
   --color-success: var(--success);

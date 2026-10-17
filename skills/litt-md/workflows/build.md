@@ -19,7 +19,7 @@ Write it in the reply, or as the first comment in the main CSS file. Keep it to 
 
 ```
 Accent:        <hex light> / <hex dark>, why it fits this subject
-               (contrast: on canvas ≥ 4.5 if used for links; accent-fg on accent ≥ 4.5)
+               (contrast: accent on canvas ≥ 3; accent-fg on accent ≥ 4.5; accent-text on canvas ≥ 4.5)
 Light source:  where the one light falls (hero? cover?)
 Glass:         which elements float (header, menus, modals, toasts), nothing else
 Primary action: the one accent fill + glow in each view
@@ -122,7 +122,7 @@ Each item prints a one-line import hint. The gallery page for an item (`https://
 
 Every name carries `litt-`, so none of it touches the app's own. To turn a plain name from this skill into one, insert `litt-` after the utility prefix: `bg-surface-1` becomes `bg-litt-surface-1`, `rounded-control` becomes `rounded-litt-control`, `--accent` becomes `--litt-accent`. The tokens switch theme on their own (`.dark`, `[data-theme="dark"]` or the system setting), so do not add `dark:` classes for them.
 
-- **Color:** `bg-litt-canvas`, `bg-litt-surface-1|2|3`, `border-litt-line`, `border-litt-line-strong`, `border-litt-line-control`, `text-litt-fg`, `text-litt-fg-muted|subtle|disabled`, `bg-litt-accent`, `bg-litt-accent-hover`, `text-litt-accent-fg`, `bg-litt-accent-tint`, `outline-litt-focus`, `text-litt-success|warning|danger`.
+- **Color:** `bg-litt-canvas`, `bg-litt-surface-1|2|3`, `border-litt-line`, `border-litt-line-strong`, `border-litt-line-control`, `text-litt-fg`, `text-litt-fg-muted|subtle|disabled`, `bg-litt-accent`, `bg-litt-accent-hover`, `text-litt-accent-fg`, `text-litt-accent-text` (links and accent text; never `text-litt-accent`), `bg-litt-accent-tint`, `outline-litt-focus`, `text-litt-success|warning|danger`.
 - **Type:** `text-litt-display|h1|h2|h3|h4|reading|body|small|caption`, each with its own leading, tracking and weight 400. Fonts: `font-litt-sans`, `font-litt-mono`.
 - **Space and layout:** `py-litt-section`, `px-litt-gutter`, `max-w-litt-reading|content|wide`, `h-litt-control-sm|md|lg`, `px-litt-control-pad-sm|md|lg`, `gap-litt-control`.
 - **Shape and depth:** `rounded-litt-control|surface|pill` (sides such as `rounded-t-litt-surface` are fine), `shadow-litt-tooltip|float|modal|glow`, `inset-shadow-litt-highlight`.

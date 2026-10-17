@@ -81,3 +81,4 @@ This file is append-only: never edit or delete old entries. Each entry records o
 - 2026-10-15 · component · large buttons · dislike · "the large buttons are too square" · an lg button's side padding is wider than the air above and below its label · → decision · chat
 - 2026-10-15 · component · lg button shape · chose wider (side padding 24 to 32, corners stay 4px) over rounder corners (8px) and the pill · ? · lg buttons take --button-pad-lg; lg fields keep --control-pad-lg · → decision · interview
 - 2026-10-15 · component · switch track · chose the pill track over the control radius · ? · a switch's track and thumb are pills, filled with --fg when on · → decision · interview
+- 2026-10-16 · color · dark primary button · dislike · "I think the text gets lost a bit in the dark version of the button" · the primary action is a deep cobalt with white text in both themes; accent text (links) takes its own --accent-text · → decision · chat

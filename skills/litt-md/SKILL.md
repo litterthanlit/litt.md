@@ -87,7 +87,7 @@ These change only when Nick changes them.
 - **Surfaces:** `--canvas`, `--surface-1`, `--surface-2`, `--surface-3`
 - **Lines:** `--line`, `--line-strong`, `--line-control`
 - **Text:** `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled`
-- **Accent:** `--accent`, `--accent-hover`, `--accent-fg`, `--accent-tint`, `--focus`
+- **Accent:** `--accent` (a fill only), `--accent-hover`, `--accent-fg`, `--accent-text` (links and accent text), `--accent-tint`, `--focus`
 - **Status:** `--success`, `--warning`, `--danger`
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)

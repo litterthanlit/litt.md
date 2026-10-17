@@ -72,6 +72,7 @@ function Price({ tier }: { tier: Tier }) {
     <div className="flex items-baseline gap-litt-control">
       <span className="text-litt-h2 text-litt-fg">{tier.price}</span>
       <span className="text-litt-small text-litt-fg-subtle">{label}</span>
+      <a href="#plans" className="text-litt-small text-litt-accent-text underline underline-offset-4">Compare plans</a>
     </div>
   );
 }

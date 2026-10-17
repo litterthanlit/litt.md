@@ -167,6 +167,8 @@ function lintGallery(files, root) {
           const fades = /(?<![\w-])transition-colors(?![\w-])/.test(classes) ||
             [...classes.matchAll(/(?<![\w-])transition-\[([^\]]*)\]/g)].some((m) => m[1].split(",").some((x) => FADES.has(x.trim())));
           if (fades) for (const d of classes.matchAll(/(?<![\w-])duration-\((--dur-[\w-]+)\)/g)) if (d[1] !== "--dur-instant") fail("motion", `color fades run at --dur-instant only, not ${d[1]}`);
+          // The accent is a fill. As text it can fall under 4.5:1 in dark, so text takes --accent-text.
+          if (/(?<![\w-])(?:text|decoration)-accent(?![\w-])/.test(classes)) fail("color", "text-accent: the accent is a fill; accent text and links use text-accent-text");
         }
       }
       // Raw colors: any quoted hex, and color functions Tailwind's token utilities replace.
@@ -553,7 +555,7 @@ function checkToken(t, scope, add, isClassContext) {
     const [, pre, tok] = m;
     const suffix = (/\/[\w.[\]%-]+$/.exec(b) ?? [""])[0];
     let use;
-    if (tok === "accent") use = pre === "bg" ? "bg-litt-surface-2 (a hover fill) or bg-litt-accent (the one accent fill)" : `${pre}-litt-accent`;
+    if (tok === "accent") use = pre === "bg" ? "bg-litt-surface-2 (a hover fill) or bg-litt-accent (the one accent fill)" : pre === "text" ? "text-litt-accent-text" : `${pre}-litt-accent`;
     else if (tok === "ring") use = "outline-litt-focus";
     else if (tok.startsWith("chart-")) use = `${pre}-litt-accent`;
     else if (tok.startsWith("sidebar")) use = `${pre}-litt-surface-1`;
@@ -562,6 +564,8 @@ function checkToken(t, scope, add, isClassContext) {
   } else if ((m = PLAIN_COLOR_RE.exec(b))) add("color", `${b}: not a utility in this host, the litt name is ${m[1]}-litt-${m[2]}${m[3] ?? ""}`);
 
   if (new RegExp(`^(?:${COLOR_PREFIX})-\\[(?:${NAMED_COLORS})\\]$`).test(b)) add("color", `${b}: named color, ${HOST_ADVICE.color}`);
+  // The accent is a fill. As text it can fall under 4.5:1 in dark, so text takes --litt-accent-text.
+  if (/^(?:text|decoration)-litt-accent(?:\/[\w.[\]%-]+)?$/.test(b)) add("color", `${b}: the accent is a fill; accent text and links use text-litt-accent-text`);
 
   // type
   if (/^text-(?:xs|sm|base|lg|xl|[2-9]xl)(?:\/[\w.[\]-]+)?$/.test(b)) add("type", `${b}: Tailwind's text sizes are off-system, ${HOST_ADVICE.type}`);

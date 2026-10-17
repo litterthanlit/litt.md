@@ -621,7 +621,7 @@
     ["Surfaces", ["canvas", "surface-1", "surface-2", "surface-3"]],
     ["Lines", ["line", "line-strong", "line-control", "focus"]],
     ["Text", ["fg", "fg-muted", "fg-subtle", "fg-disabled"]],
-    ["Accent and status", ["accent", "accent-tint", "success", "danger"]]
+    ["Accent and status", ["accent", "accent-text", "accent-tint", "success", "danger"]]
   ];
   function rgb(hex) {
     hex = hex.replace("#", "");
@@ -644,7 +644,7 @@
       g[1].forEach(function (name) {
         var val = cs.getPropertyValue("--" + name).trim();
         var note = val.toUpperCase();
-        if (/^fg|^line-control$|^focus$|^accent$|^success$|^danger$/.test(name) && name !== "fg-disabled" && /^#/.test(val)) {
+        if (/^fg|^line-control$|^focus$|^accent$|^accent-text$|^success$|^danger$/.test(name) && name !== "fg-disabled" && /^#/.test(val)) {
           note += "  " + ratio(val, canvas).toFixed(1) + ":1";
         }
         var el = document.createElement("div");
