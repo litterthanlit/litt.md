@@ -949,8 +949,8 @@ const COPY = {
   /* The agents step: chat, thinking and tool calls. Each entry is owned by the agent that builds the item. */
   message: {
     title: "Message",
-    description: "A conversation between a person and an agent: the agent's words on the page with no bubble, the person's in a raised bubble on the right, actions under a finished turn, and a scroller that keeps the latest line in view while an answer streams.",
-    docs: "Import Conversation, Message, MessageText and MessageActions from components/litt/message.",
+    description: "A chat between a person and an agent. The agent's words sit on the page with no bubble, and the person's turn is a raised bubble on the right. MessageText styles what a markdown renderer produces, with no library: paragraphs, lists, accent links, inline code, a quiet pre and quotes with no rail. MessageActions puts Copy and Retry under a finished answer, and a turn that stopped says so with a Retry button. The conversation scrolls on its own in a column up to 48rem, follows the newest line while an answer streams, and offers Jump to latest once you scroll up.",
+    docs: "Import Conversation, Message, MessageText and MessageActions from components/litt/message. Give the Conversation a label and a height, and mark it busy while the agent answers. Inside it put a Message with from=\"user\" for the person's turn, and a Message for the agent's, holding a MessageText (your markdown renderer's output goes inside it) and actions={<MessageActions copyText onRetry />}. Pass streaming while the text arrives, and error with onRetry for a turn that stopped.",
   },
   composer: {
     title: "Composer",

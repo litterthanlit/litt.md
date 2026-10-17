@@ -447,6 +447,17 @@ const RECIPES = {
           <CodeBlock lang="diff" label="Smoke diff" code={SMOKE_DIFF} />
         </div>`,
   },
+  message: {
+    needs: ["Conversation", "Message", "MessageText", "MessageActions"],
+    jsx: `<div className="h-72 w-full max-w-xl" data-testid="litt-message">
+          <Conversation label="Smoke conversation" className="h-full">
+            <Message from="user">Why did the Halo build fail?</Message>
+            <Message actions={<MessageActions copyText="The Halo build ran out of memory." onRetry={() => {}} />}>
+              <MessageText><p data-testid="message-answer">The build ran out of memory. Run <code data-testid="message-code">npm run build</code> again.</p></MessageText>
+            </Message>
+          </Conversation>
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -2097,6 +2108,78 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const want = ["// halo", "const label = 'live';", "export default label;", "// a long comment that runs past the edge of a block twenty rem wide"].join("\n");
           if (clip !== want) throw new Error(`the clipboard holds ${JSON.stringify(clip)}`);
           return "tones from tokens, + in success, bands, scrolls inside the block, Copy copied the text as given";
+        });
+      }
+      if (has("message")) {
+        await attempt("message: two articles named by hidden headings, the person's bubble on the right, the agent's words bare, Copy says Copied politely", async () => {
+          const box = page.locator("[data-testid=litt-message]");
+          const region = box.getByRole("region", { name: "Smoke conversation" });
+          await region.waitFor({ state: "visible", timeout: 5000 });
+          if ((await region.getAttribute("tabindex")) !== "0") throw new Error("the scrolling region is not focusable");
+          const articles = box.getByRole("article");
+          if ((await articles.count()) !== 2) throw new Error(`${await articles.count()} articles, not 2`);
+          for (const name of ["You", "Litt"]) {
+            const heading = box.getByRole("heading", { name, exact: true });
+            if ((await heading.count()) !== 1) throw new Error(`no heading named "${name}"`);
+            const hidden = await heading.boundingBox();
+            if (!hidden || hidden.width > 1.5 || hidden.height > 1.5) throw new Error(`the "${name}" heading is visible`);
+          }
+          const probe = (css, prop) =>
+            page.evaluate(
+              ([value, p]) => {
+                const el = document.createElement("span");
+                el.style[p] = value;
+                document.body.append(el);
+                const c = getComputedStyle(el)[p];
+                el.remove();
+                return c;
+              },
+              [css, prop],
+            );
+          const [surface, fg, muted, code6] = [
+            await probe("var(--litt-surface-1)", "backgroundColor"),
+            await probe("var(--litt-fg)", "color"),
+            await probe("var(--litt-fg-muted)", "color"),
+            await probe("color-mix(in oklab, var(--litt-fg) 6%, transparent)", "backgroundColor"),
+          ];
+          const geo = await box.evaluate((root) => {
+            const [user, agent] = [...root.querySelectorAll("article")];
+            const col = user.getBoundingClientRect();
+            const bubble = user.firstElementChild.lastElementChild;
+            const b = bubble.getBoundingClientRect();
+            const turn = agent.firstElementChild;
+            const cs = (el) => getComputedStyle(el);
+            const code = root.querySelector("[data-testid=message-code]");
+            return {
+              right: col.right - b.right,
+              left: b.left - col.left,
+              width: col.width,
+              bubbleBg: cs(bubble).backgroundColor,
+              bubbleColor: cs(bubble).color,
+              bubbleRadius: cs(bubble).borderTopLeftRadius,
+              turnBg: cs(turn).backgroundColor,
+              turnShadow: cs(turn).boxShadow,
+              answer: cs(root.querySelector("[data-testid=message-answer]")).color,
+              codeBg: cs(code).backgroundColor,
+              codeRadius: cs(code).borderTopLeftRadius,
+              codeWeight: cs(code).fontWeight,
+            };
+          });
+          if (Math.abs(geo.right) > 1 || geo.left < geo.width * 0.3) throw new Error(`the bubble sits ${geo.left.toFixed(0)}px from the left and ${geo.right.toFixed(0)}px from the right of a ${geo.width.toFixed(0)}px turn, not at the right`);
+          if (geo.bubbleBg !== surface) throw new Error(`the bubble fill is ${geo.bubbleBg}, not --litt-surface-1 (${surface})`);
+          if (geo.bubbleColor !== fg) throw new Error(`the bubble text is ${geo.bubbleColor}, not --litt-fg (${fg})`);
+          if (geo.bubbleRadius !== "8px") throw new Error(`the bubble radius is ${geo.bubbleRadius}, not the 8px surface radius`);
+          if (geo.turnBg !== "rgba(0, 0, 0, 0)" || geo.turnShadow !== "none") throw new Error(`the agent's turn has a fill (${geo.turnBg}) or a shadow (${geo.turnShadow})`);
+          if (geo.answer !== muted) throw new Error(`the agent's words are ${geo.answer}, not --litt-fg-muted (${muted})`);
+          if (geo.codeBg !== code6 || geo.codeRadius !== "4px" || geo.codeWeight !== "400") throw new Error(`inline code is ${geo.codeBg} at ${geo.codeRadius}, weight ${geo.codeWeight}, not fg 6% at 4px, 400`);
+          const latest = await box.getByRole("group", { name: "Message actions" }).evaluate((g) => getComputedStyle(g.parentElement).opacity);
+          if (latest !== "1") throw new Error(`the latest turn's actions have opacity ${latest}, not 1`);
+          if ((await box.getByRole("button", { name: "Retry", exact: true }).count()) !== 1) throw new Error("no Retry button in the actions");
+          await box.getByRole("button", { name: "Copy", exact: true }).click();
+          const said = box.getByRole("status").filter({ hasText: "Copied" });
+          await said.waitFor({ state: "attached", timeout: 3000 });
+          if ((await said.getAttribute("aria-live")) !== "polite") throw new Error(`the Copied status is aria-live ${await said.getAttribute("aria-live")}, not polite`);
+          return "2 articles, bubble at the right on --litt-surface-1, a bare agent turn in --litt-fg-muted, Copied is polite";
         });
       }
       if (has("app-shell")) {
