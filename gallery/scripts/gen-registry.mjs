@@ -697,7 +697,8 @@ function transformFile(file, targets) {
 
   // identifiers vite.config.ts defines
   const defineWalk = (node) => {
-    if (ts.isIdentifier(node) && node.text in DEFINES) edits.push([node.getStart(sf), node.getEnd(), DEFINES[node.text]]);
+    // Own keys only: `in` also matches Object.prototype names, and n.toLocaleString() shipped as the native function's source.
+    if (ts.isIdentifier(node) && Object.hasOwn(DEFINES, node.text)) edits.push([node.getStart(sf), node.getEnd(), DEFINES[node.text]]);
     ts.forEachChild(node, defineWalk);
   };
   defineWalk(sf);
@@ -707,6 +708,9 @@ function transformFile(file, targets) {
   for (let i = 1; i < sorted.length; i++) if (sorted[i][0] < sorted[i - 1][1]) fail(`${rel(file)}: two edits overlap at offset ${sorted[i][0]}`);
   text = applyEdits(text, edits);
   if (file.endsWith(".tsx")) text = `"use client";\n\n${text}`;
+  // The shipped copy must still parse: a bad edit here once shipped a chart that no host could compile.
+  const reparsed = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, false, file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+  for (const d of reparsed.parseDiagnostics ?? []) fail(`${rel(file)}: the shipped copy does not parse at ${d.start}: ${ts.flattenDiagnosticMessageText(d.messageText, " ")}`);
 
   const usesLitt = stats.vars + stats.classes > 0 || materialRe.test(text);
   return { text, imports, stats, usesLitt };
@@ -853,6 +857,26 @@ const COPY = {
     title: "Table",
     description: "A table with real semantics, hairline rows, mono figures and a sticky header. It scrolls inside its own region on a phone, and its rows can arrive in one staggered cascade, sort, filter and insert.",
     docs: "Import Table, TableHeader, TableBody, TableRow, TableHead and TableCell from components/litt/table. Give the Table a label, and a max height such as max-h-96 if you want the header to stick. The entrance is off until you pass entrance.",
+  },
+  stat: {
+    title: "Stat",
+    description: "A number tile for one figure: a small label, the value large in the sans with tabular numbers, and an optional change in words. Green and red are for good and bad news only. A group of tiles measures its own width.",
+    docs: "Import Stat and StatGroup from components/litt/stat. Say the direction in the delta's words, and set tone to good, bad or neutral for whether it is news. Put the tiles in a StatGroup: two across, four across from 40rem.",
+  },
+  chart: {
+    title: "Chart",
+    description: "Bar and line charts in plain SVG, and a meter. The marks are the foreground, never the accent: one series at 55% with the current mark full, or up to three stepping down. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+    docs: "Import BarChart, LineChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
+  },
+  "app-shell": {
+    title: "App shell",
+    description: "The frame around an app's pages: a 240px sidebar that runs the full height of the page with its links kept in view, and a main area. On a phone the sidebar goes, a glass top bar holds a menu button, and the nav opens in the bottom sheet.",
+    docs: "Import AppShell, SidebarNav and SidebarLink from components/litt/app-shell. Pass a wordmark, a nav and the page. Mark the current link with current. It needs no router: pass as={Link} to a SidebarLink to use yours.",
+  },
+  pagination: {
+    title: "Pagination",
+    description: "Previous and next for a table that shows one page of many. The range comes first, in words and mono, like 21 to 40 of 143. Page numbers show only when the row is wide enough, and the buttons at either end disable.",
+    docs: "Import Pagination from components/litt/pagination. Hold the page in state and pass page, pageSize, total and onPageChange. Give it a label that says what is paged.",
   },
   states: {
     title: "Empty and loading states",

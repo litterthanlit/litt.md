@@ -229,6 +229,31 @@ const RECIPES = {
     needs: ["Slider"],
     jsx: `<div className="w-full max-w-sm" data-testid="litt-slider"><Slider name="speed" label="Animation speed" min={0.5} max={2} step={0.1} defaultValue={1} minLabel="Slower" maxLabel="Faster" showValue formatValue={(v) => \`\${v.toFixed(1)}x\`} /></div>`,
   },
+  stat: {
+    needs: ["Stat", "StatGroup"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" /></StatGroup></div>`,
+  },
+  chart: {
+    needs: ["BarChart", "LineChart", "Meter"],
+    jsx: `<div className="grid w-full max-w-xl gap-6" data-testid="litt-charts">
+          <BarChart label="Deploys per day" labels={["1 Oct", "2 Oct", "3 Oct", "4 Oct"]} series={[{ name: "Deploys", values: [5, 7, 4, 9] }]} height={160} />
+          <LineChart label="Build time" labels={["1 Oct", "2 Oct", "3 Oct", "4 Oct"]} series={[{ name: "Build time", values: [44, 41, 46, 39] }]} formatValue={(v) => \`\${v} s\`} height={160} />
+          <Meter label="Storage" value={42} valueText="42 of 100 GB" />
+        </div>`,
+  },
+  "app-shell": {
+    needs: ["AppShell", "SidebarNav", "SidebarLink"],
+    jsx: `<div className="w-full" data-testid="litt-shell">
+          <AppShell viewportHeight="24rem" wordmark={<a href="#home">Shell smoke</a>} nav={<SidebarNav label="Smoke"><SidebarLink href="#a" current>Overview</SidebarLink><SidebarLink href="#b">Projects</SidebarLink></SidebarNav>}>
+            <p>Shell page</p>
+          </AppShell>
+        </div>`,
+  },
+  pagination: {
+    needs: ["Pagination"],
+    state: [`const [pg, setPg] = useState(2);`],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-pagination"><Pagination label="Smoke pages" page={pg} pageSize={20} total={143} onPageChange={setPg} /></div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -531,8 +556,8 @@ const COLOR_TO_RGB = `(value) => {
 const near = (a, b, tol = 1) => a.length >= 3 && b.length >= 3 && [0, 1, 2].every((i) => Math.abs(a[i] - b[i]) <= tol);
 
 /** Open the page, wait for it to settle, and record console errors for the whole visit. */
-async function openPage(browser, url, theme) {
-  const context = await browser.newContext({ viewport: { width: 1280, height: 1100 }, colorScheme: "light", deviceScaleFactor: 1 });
+async function openPage(browser, url, theme, device = {}) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 1100 }, colorScheme: "light", deviceScaleFactor: 1, ...device });
   const page = await context.newPage();
   page.setDefaultTimeout(12000);
   const errors = [];
@@ -801,6 +826,104 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           return `${before} to ${after}`;
         });
       }
+      if (has("stat")) {
+        await attempt("stat reads label, figure and a delta in the good color", async () => {
+          const terms = await page.locator("[data-testid=litt-stats] dt").allTextContents();
+          if (terms.join("|") !== "Active projects|Median build") throw new Error(`the labels read ${terms.join("|")}`);
+          const dd = page.locator("[data-testid=litt-stats] dd").nth(1);
+          const text = (await dd.innerText()).replace(/\s+/g, " ").trim();
+          if (!text.startsWith("41s") || !text.includes("Down 6 s on last week")) throw new Error(`the tile reads "${text}"`);
+          const delta = await dd.locator(":scope > span").nth(1).evaluate((el) => getComputedStyle(el).color);
+          const success = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-success)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          if (delta !== success) throw new Error(`a good delta is ${delta}, not --litt-success (${success})`);
+          return `delta is ${delta}`;
+        });
+      }
+      if (has("chart")) {
+        await attempt("charts draw in the foreground, never the accent, and the keys move the tooltip", async () => {
+          const box = page.locator("[data-testid=litt-charts]");
+          const svg = box.locator("svg[role=img]").first();
+          await svg.waitFor({ state: "visible", timeout: 8000 });
+          await page.waitForTimeout(600);
+          const label = await svg.getAttribute("aria-label");
+          if (label !== "Deploys per day: from 5 to 9, peak 9") throw new Error(`the summary reads "${label}"`);
+          const colors = await box.evaluate((root) => {
+            const out = new Set();
+            for (const el of root.querySelectorAll("svg[role=img] rect, svg[role=img] path, svg[role=img] circle")) {
+              const cs = getComputedStyle(el);
+              out.add(cs.fill);
+              out.add(cs.stroke);
+            }
+            return [...out];
+          });
+          for (const c of colors) {
+            const rgb = await page.evaluate(`(${COLOR_TO_RGB})(${JSON.stringify(c)})`);
+            if (near(rgb, accent[theme])) throw new Error(`a mark is the accent (${c})`);
+          }
+          const rows = await box.locator("table.sr-only").first().locator("tbody tr").count();
+          if (rows !== 4) throw new Error(`the hidden table has ${rows} rows, not 4`);
+          const stops = await box.locator("[role=group] button[tabindex='0']").count();
+          if (stops < 2) throw new Error(`each chart should have one tab stop, found ${stops} in two charts`);
+          await box.locator("[role=group] button").first().focus();
+          await page.keyboard.press("ArrowRight");
+          const name = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (name !== "2 Oct: 7") throw new Error(`ArrowRight landed on "${name}", not "2 Oct: 7"`);
+          await box.locator("div[aria-hidden=true]").filter({ hasText: "2 Oct" }).first().waitFor({ state: "visible", timeout: 3000 });
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          const left = await box.locator("div[aria-hidden=true]").filter({ hasText: "2 Oct" }).count();
+          if (left) throw new Error("Esc did not hide the tooltip");
+          await page.evaluate(() => document.activeElement?.blur());
+          const meter = box.getByRole("meter", { name: "Storage" });
+          const now = await meter.getAttribute("aria-valuenow");
+          const share = await meter.evaluate((el) => el.firstElementChild.getBoundingClientRect().width / el.getBoundingClientRect().width);
+          if (now !== "42" || Math.abs(share - 0.42) > 0.01) throw new Error(`the meter reads ${now} and fills ${share.toFixed(2)}`);
+          return `${colors.length} mark colors, none the accent`;
+        });
+      }
+      if (has("app-shell")) {
+        await attempt("app shell: a 240px sidebar as tall as the page, 36px rows, the current page marked", async () => {
+          const shell = page.locator("[data-testid=litt-shell]");
+          const nav = shell.getByRole("navigation", { name: "Smoke" });
+          await nav.waitFor({ state: "visible", timeout: 5000 });
+          const current = await nav.getByRole("link", { name: "Overview" }).getAttribute("aria-current");
+          if (current !== "page") throw new Error(`aria-current is ${current}`);
+          const heights = await nav.locator("a").evaluateAll((as) => as.map((a) => Math.round(a.getBoundingClientRect().height)));
+          if (heights.some((h) => h !== 36)) throw new Error(`rows are ${heights.join("/")}px, not 36`);
+          const column = await nav.evaluate((n) => {
+            let el = n;
+            while (el && getComputedStyle(el).position !== "sticky") el = el.parentElement;
+            const col = el.parentElement.getBoundingClientRect();
+            return { width: Math.round(col.width), height: col.height, edge: getComputedStyle(el.parentElement).borderRightWidth };
+          });
+          const main = await shell.locator("main").boundingBox();
+          if (column.width !== 240) throw new Error(`the sidebar column is ${column.width}px wide, not 240`);
+          if (column.height < main.height - 1) throw new Error(`the sidebar column is ${column.height}px tall and the page ${main.height}px`);
+          if (column.edge !== "1px") throw new Error(`the sidebar edge is ${column.edge}, not a hairline`);
+          return `${column.width}px wide, rows ${heights.join("/")}px`;
+        });
+      }
+      if (has("pagination")) {
+        await attempt("pagination reports the range and disables its ends", async () => {
+          const nav = page.getByRole("navigation", { name: "Smoke pages" });
+          const range = async () => (await nav.locator("p").innerText()).trim();
+          if ((await range()) !== "21 to 40 of 143") throw new Error(`the range reads "${await range()}"`);
+          await nav.getByRole("button", { name: "Next" }).click();
+          if ((await range()) !== "41 to 60 of 143") throw new Error(`after Next the range reads "${await range()}"`);
+          await nav.getByRole("button", { name: "Previous" }).click();
+          await nav.getByRole("button", { name: "Previous" }).click();
+          if ((await range()) !== "1 to 20 of 143") throw new Error(`on the first page the range reads "${await range()}"`);
+          if (!(await nav.getByRole("button", { name: "Previous" }).isDisabled())) throw new Error("Previous is not disabled on the first page");
+          return "21 to 40, 41 to 60, 1 to 20";
+        });
+      }
       if (has("popover")) {
         await attempt("popover opens, is glass, and closes", async () => {
           await page.click("[data-testid=popover-trigger]");
@@ -868,6 +991,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
   }
 
   if (litt && has("button")) await darkModeContract(browser, url, accent, record);
+  if (has("app-shell")) await shellOnAPhone(browser, url, record);
   return { checks, errors: allErrors };
 }
 
@@ -913,6 +1037,39 @@ async function darkModeContract(browser, url, accent, record) {
         record(`dark mode: ${c.name}`, false, String(e.message || e).split("\n")[0]);
       }
     }
+  } finally {
+    await context.close();
+  }
+}
+
+/**
+ * The app shell on a 390px touch screen: no sidebar, a 44px menu button, and the nav in the bottom sheet that
+ * closes when a link is picked.
+ */
+async function shellOnAPhone(browser, url, record) {
+  const { context, page } = await openPage(browser, url, "light", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const name = "app shell on a phone: no sidebar, a menu button, a sheet that closes on a link";
+  try {
+    const shell = page.locator("[data-testid=litt-shell]");
+    await shell.scrollIntoViewIfNeeded();
+    if (await shell.getByRole("navigation", { name: "Smoke" }).count()) throw new Error("the sidebar is still on the page");
+    // Radix hides the page from the accessibility tree while the sheet is open, so find the button by its label.
+    const button = shell.locator("button[aria-label='Open navigation']");
+    const box = await button.boundingBox();
+    if (!box || box.height < 44) throw new Error(`the menu button is ${box?.height}px tall`);
+    if ((await button.getAttribute("aria-expanded")) !== "false") throw new Error("aria-expanded is not false while closed");
+    await button.tap();
+    const dialog = page.getByRole("dialog", { name: "Navigation" });
+    await dialog.waitFor({ state: "visible", timeout: 5000 });
+    await page.waitForTimeout(700);
+    if ((await button.getAttribute("aria-expanded")) !== "true") throw new Error("aria-expanded is not true while open");
+    const rows = await dialog.locator("nav a").evaluateAll((as) => as.map((a) => Math.round(a.getBoundingClientRect().height)));
+    if (!rows.length || rows.some((h) => h < 44)) throw new Error(`the sheet's rows are ${rows.join("/")}px`);
+    await dialog.getByRole("link", { name: "Projects" }).tap();
+    await dialog.waitFor({ state: "hidden", timeout: 4000 });
+    record(name, true, `button ${box.height}px, rows ${rows.join("/")}px`);
+  } catch (e) {
+    record(name, false, String(e.message || e).split("\n")[0]);
   } finally {
     await context.close();
   }

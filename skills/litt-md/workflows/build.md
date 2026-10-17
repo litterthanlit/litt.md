@@ -19,7 +19,7 @@ Write it in the reply, or as the first comment in the main CSS file. Keep it to 
 
 ```
 Accent:        <hex light> / <hex dark>, why it fits this subject
-               (contrast: on canvas ≥ 4.5 if used for links; accent-fg on accent ≥ 4.5)
+               (contrast: accent on canvas ≥ 3; accent-fg on accent ≥ 4.5; accent-text on canvas ≥ 4.5)
 Light source:  where the one light falls (hero? cover?)
 Glass:         which elements float (header, menus, modals, toasts), nothing else
 Primary action: the one accent fill + glow in each view
@@ -78,9 +78,13 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 
 | Item | Install it for |
 |---|---|
-| `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), never as a child: children are the label, trimmed to the cap height, so an icon among them breaks the line. It always renders a `<button>`, so a link to another page is an `<a>`. |
+| `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), or as a child next to the label, as shadcn writes it. It always renders a `<button>`, so a link to another page is an `<a>`. |
 | `input` | `TextField` (label, hint, error), the bare `Input` for inline forms and toolbars, `Textarea`. |
 | `checkbox` | `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, a select-all box. |
+| `select` | One value from a short list (`SelectField` with a label, the bare `Select` in a toolbar). Never a native `<select>`. Pass `options` as `{ value, label }`. It stays anchored on a phone. |
+| `switch` | An on or off setting (`Switch`). `align="end"` lines switches up at the end of settings rows. A choice that can be wrong, such as accepting terms, is a checkbox. |
+| `slider` | A value on a range, such as an animation speed (`Slider`). Give it `minLabel` and `maxLabel` so the direction is clear. |
+| `form` | The page patterns: `FormSection` for settings sections, `Fieldset` (`rows` for a list of switches), `ErrorSummary` above a long form, `FormActions` (`align="fields"` on a settings page). |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |
 | `tabs` | Views of one thing (underline), or a compact switch (`variant="segmented"`). |
 | `tag` | A status or a label: mono, at the control radius. A status colors its text, never the fill, and has no dot. |
@@ -94,6 +98,10 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `header` | A sticky glass bar with a wordmark, a nav and actions. |
 | `card` | A raised surface for one object that links somewhere. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
+| `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. |
+| `chart` | `BarChart`, `LineChart` and `Meter`, drawn in the foreground and never the accent. Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
+| `app-shell` | `AppShell`, `SidebarNav` and `SidebarLink`: a sidebar that runs the full height of the page, and the page beside it. On a phone it becomes a top bar and a bottom sheet by itself. Lay the page out with `grid grid-cols-1`, so a wide table cannot stretch it. |
+| `pagination` | The range ("21 to 40 of 143") with Previous and Next under a table. You hold the page in state. |
 | `list` | Project rows and cards with status filters (`ProjectList`, `ProjectGrid`, `ProjectFilters`). It reads a `Project` (`id`, `name`, `client`, `deploy`, `status`, `updated`, `description`, `tags`, `cover`), so map your data into that shape. |
 | `states` | Empty, skeleton, loading and error views. |
 | `litt` | The tokens, the Tailwind names and the material classes. Every component brings it. Install it alone when you write all the markup yourself. |
@@ -114,7 +122,7 @@ Each item prints a one-line import hint. The gallery page for an item (`https://
 
 Every name carries `litt-`, so none of it touches the app's own. To turn a plain name from this skill into one, insert `litt-` after the utility prefix: `bg-surface-1` becomes `bg-litt-surface-1`, `rounded-control` becomes `rounded-litt-control`, `--accent` becomes `--litt-accent`. The tokens switch theme on their own (`.dark`, `[data-theme="dark"]` or the system setting), so do not add `dark:` classes for them.
 
-- **Color:** `bg-litt-canvas`, `bg-litt-surface-1|2|3`, `border-litt-line`, `border-litt-line-strong`, `border-litt-line-control`, `text-litt-fg`, `text-litt-fg-muted|subtle|disabled`, `bg-litt-accent`, `bg-litt-accent-hover`, `text-litt-accent-fg`, `bg-litt-accent-tint`, `outline-litt-focus`, `text-litt-success|warning|danger`.
+- **Color:** `bg-litt-canvas`, `bg-litt-surface-1|2|3`, `border-litt-line`, `border-litt-line-strong`, `border-litt-line-control`, `text-litt-fg`, `text-litt-fg-muted|subtle|disabled`, `bg-litt-accent`, `bg-litt-accent-hover`, `text-litt-accent-fg`, `text-litt-accent-text` (links and accent text; never `text-litt-accent`), `bg-litt-accent-tint`, `outline-litt-focus`, `text-litt-success|warning|danger`.
 - **Type:** `text-litt-display|h1|h2|h3|h4|reading|body|small|caption`, each with its own leading, tracking and weight 400. Fonts: `font-litt-sans`, `font-litt-mono`.
 - **Space and layout:** `py-litt-section`, `px-litt-gutter`, `max-w-litt-reading|content|wide`, `h-litt-control-sm|md|lg`, `px-litt-control-pad-sm|md|lg`, `gap-litt-control`.
 - **Shape and depth:** `rounded-litt-control|surface|pill` (sides such as `rounded-t-litt-surface` are fine), `shadow-litt-tooltip|float|modal|glow`, `inset-shadow-litt-highlight`.

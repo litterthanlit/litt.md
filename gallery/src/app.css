@@ -19,7 +19,7 @@
     --sh-keyword: var(--fg-muted);
     --sh-sign: var(--fg-muted);
     --sh-comment: var(--fg-subtle);
-    --sh-string: color-mix(in oklab, var(--accent) 90%, var(--fg));
+    --sh-string: color-mix(in oklab, var(--accent-text) 90%, var(--fg));
     --sh-jsxliterals: var(--sh-string);
     --sh-space: currentColor;
     --sh-break: currentColor;

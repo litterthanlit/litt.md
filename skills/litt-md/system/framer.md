@@ -11,7 +11,7 @@ Canvas            → --canvas
 Surface/1, /2, /3 → --surface-1 … --surface-3
 Line/Default, /Strong, /Control → --line, --line-strong, --line-control
 Text/Primary, /Muted, /Subtle, /Disabled → --fg, --fg-muted, --fg-subtle, --fg-disabled
-Accent/Default, /Hover, /On, /Tint → --accent, --accent-hover, --accent-fg, --accent-tint
+Accent/Default, /Hover, /On, /Text, /Tint → --accent, --accent-hover, --accent-fg, --accent-text, --accent-tint
 Status/Success, /Warning, /Danger
 ```
 

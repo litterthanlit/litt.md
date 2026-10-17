@@ -114,6 +114,9 @@ export function Colors() {
       <div
         className="text-gray-500" // expect: color
       />
+      <a
+        className="text-litt-accent underline" // expect: color
+      />
       <div
         className="border border-slate-200" // expect: color
       />

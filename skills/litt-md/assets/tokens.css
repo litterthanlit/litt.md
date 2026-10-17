@@ -195,6 +195,7 @@
   --accent: #264bd1;
   --accent-hover: #1c3cb2;
   --accent-fg: #ffffff;        /* text on accent, at least 4.5:1 */
+  --accent-text: #264bd1;      /* the accent as text (links), at least 4.5:1 on canvas */
   --accent-tint: #e8eeff;
   --focus: #264bd1;            /* focus ring, at least 3:1 on canvas and surfaces */
 
@@ -236,9 +237,10 @@
   --fg-subtle: #8a8f98;
   --fg-disabled: #62666d;
 
-  --accent: #507afd;
-  --accent-hover: #6991ff;
-  --accent-fg: #08090a;
+  --accent: #2d57e5;
+  --accent-hover: #3864eb;
+  --accent-fg: #ffffff;
+  --accent-text: #507afd;      /* lighter than the fill: a deep cobalt reads too dark as text on this canvas */
   --accent-tint: #13234f;
   --focus: #507afd;
 
@@ -279,9 +281,10 @@
     --fg-subtle: #8a8f98;
     --fg-disabled: #62666d;
 
-    --accent: #507afd;
-    --accent-hover: #6991ff;
-    --accent-fg: #08090a;
+    --accent: #2d57e5;
+    --accent-hover: #3864eb;
+    --accent-fg: #ffffff;
+    --accent-text: #507afd;
     --accent-tint: #13234f;
     --focus: #507afd;
 

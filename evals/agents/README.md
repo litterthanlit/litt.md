@@ -75,9 +75,9 @@ A failed required check fails the run. `warn` and `skip` do not.
 | `command-menu` | Vite | A ⌘K menu with a visible shortcut hint | `command-menu`, `kbd` |
 | `phone-settings` | Vite | Settings that come up from the bottom on a phone and swipe down to close | `dialog`, `input`, `checkbox`, `button` |
 | `settings-form` | Vite | An account page with a role dropdown, two switches, a speed slider and a theme choice | `input`, `button`, `select`, `switch`, `slider`, `segmented` or `tabs` |
-| `analytics-dashboard` | Next.js | A deploy dashboard: a sidebar behind a menu button on phones, four tiles, a 14-day chart, a table | `table`, `tag` |
+| `analytics-dashboard` | Next.js | A deploy dashboard: a sidebar behind a menu button on phones, four tiles, a 14-day chart, a table | `table`, `tag`, `stat`, `chart`, `app-shell` |
 
-The last three started as baselines for the next steps (motion on phones, forms, dashboards). The Dialog has been a bottom sheet on phones since the responsive motion build, so `phone-settings` now checks that the agent uses it. The forms step shipped the select, switch and slider, so `settings-form` is now its pass mark and expects them. The registry has no chart or sidebar yet, so `analytics-dashboard` expects only what exists, and a run records what the agent builds by hand.
+The last three started as baselines for the next steps (motion on phones, forms, dashboards). The Dialog has been a bottom sheet on phones since the responsive motion build, so `phone-settings` now checks that the agent uses it. The forms step shipped the select, switch and slider, so `settings-form` is now its pass mark and expects them. The dashboards step shipped the stat, chart, app shell and pagination, so `analytics-dashboard` is now its pass mark: it expects `stat`, `chart` and `app-shell` beside `table` and `tag`, and its rubric fails an accent-colored bar and a sidebar that stops partway down the page. Pagination is not expected, because the prompt does not ask for it.
 
 Each prompt reads like a message from Nick, says where the work goes (the home page, replacing the starter), and says it is litt's own site. Without that last line the skill stops to ask whether it is client work, and nobody is there to answer.
 

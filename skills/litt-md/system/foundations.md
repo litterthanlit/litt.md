@@ -54,15 +54,16 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 | Lines | `--line`, `--line-strong` | Decorative hairlines; dividers that need to be seen |
 | Control line | `--line-control` | Outline of inputs, checkboxes, selects and switches (at least 3:1) |
 | Text | `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled` | Headlines and key values, body, supporting text, disabled only |
-| Accent | `--accent`, `--accent-hover`, `--accent-fg`, `--accent-tint` | The one primary action, links, focus, the light source |
+| Accent | `--accent`, `--accent-hover`, `--accent-fg`, `--accent-text`, `--accent-tint` | The one primary action (a fill with `--accent-fg` on it), links (`--accent-text`), focus, the light source |
 | Focus | `--focus`, `--focus-ring` | Keyboard focus indicator |
 | Status | `--success`, `--warning`, `--danger` | State only: never decoration, never brand |
 
 **Accent per project.** Pick the accent at project start from the subject: the client's mark, the product's domain, or the material it sells. Set it in both themes so that:
-- `--accent` reaches at least 4.5:1 on `--canvas` if it is used for links, and at least 3:1 if used only for focus or glows;
-- `--accent-fg` reaches at least 4.5:1 on `--accent`.
+- `--accent`, the fill, reaches at least 3:1 on `--canvas`, so the primary action stands out;
+- `--accent-fg` reaches at least 4.5:1 on `--accent`;
+- `--accent-text`, the accent as text (links), reaches at least 4.5:1 on `--canvas`. In light it is usually the accent itself. In dark it is usually lighter than the fill, because a fill dark enough for white text is too dark to read as text on a dark canvas. Never use `--accent` as a text color.
 
-Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. Dark mode takes a lighter cobalt with dark text on it, because a deep cobalt cannot pass as link text on the dark canvas.
+Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. In both themes the primary action is a deep cobalt with white text, as in the reference it came from. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
 
 **Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
 
