@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
 import { SettingsIcon } from "@/components/icons";
-import { Slider } from "@/components/slider";
+import { RangeSlider, Slider } from "@/components/slider";
+import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from "@/components/table";
 import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
@@ -12,14 +13,14 @@ export const meta: PageMeta = {
   order: 3.6,
   group: "Controls",
   summary:
-    "One value on a range, such as the default animation speed. A thin rail, a range filled with the foreground color (never the accent) and a round thumb. The thumb and the range follow the pointer and the keys at once, with no easing. Only colors fade, on the instant tier.",
+    "One value on a range, such as the default animation speed, or a span with two thumbs, such as the builds that took between 20s and 80s. A thin rail, a range filled with the foreground color (never the accent) and round thumbs. The thumbs and the range follow the pointer and the keys at once, with no easing. Only colors fade, on the instant tier.",
   tiers: ["instant"],
 };
 
 export const docs: PageDocs = {
   components: ["slider"],
-  exports: ["Slider"],
-  usage: `import { Slider } from "@/components/slider";
+  exports: ["Slider", "RangeSlider"],
+  usage: `import { Slider, RangeSlider } from "@/components/slider";
 
 <Slider
   label="Animation speed"
@@ -36,27 +37,46 @@ export const docs: PageDocs = {
 />
 
 // In a form, pass a name. The number is sent as text, like a native field.
-<Slider name="quality" label="Image quality" min={60} max={100} step={5} defaultValue={85} showValue formatValue={(v) => \`\${v}%\`} />`,
+<Slider name="quality" label="Image quality" min={60} max={100} step={5} defaultValue={85} showValue formatValue={(v) => \`\${v}%\`} />
+
+// Two thumbs for a span. The value is [from, to], and the thumbs never cross.
+// Filter on every move in onValueChange. Announce and save in onValueCommit.
+<RangeSlider
+  label="Build time"
+  min={0}
+  max={120}
+  defaultValue={[20, 80]}
+  minLabel="Faster"
+  maxLabel="Slower"
+  showValue
+  formatValue={(v) => \`\${v}s\`}
+  onValueChange={([from, to]) => setWindow({ from, to })}
+  onValueCommit={([from, to]) => announce(countBuilds(from, to))}
+/>
+
+// In a form, both values are sent under the one name: formData.getAll("price") is ["40", "160"].
+<RangeSlider name="price" label="Price" min={0} max={300} step={10} defaultValue={[40, 160]} showValue formatValue={(v) => \`€\${v}\`} />`,
   use: [
-    "A value on a range, where the position matters more than the exact number: animation speed, image quality, a volume.",
+    "A value on a range, where the position matters more than the exact number: animation speed, image quality, a volume. A span with two ends, such as the builds that took between 20s and 80s or a price window, is a RangeSlider.",
     "Say which way is which. Pass minLabel and maxLabel (\"Slower\", \"Faster\") so nobody has to guess.",
-    "Show the value with showValue when people want to compare settings, and give it units with formatValue.",
-    "A setting that saves when the thumb is let go. Save in onValueCommit, not in onValueChange, which fires on every move.",
-    "A form field. Pass name and the value is sent with the form. A disabled slider sends nothing.",
+    "Show the value with showValue when people want to compare settings, and give it units with formatValue. A range reads \"20s to 80s\".",
+    "A setting that saves when the thumb is let go. Save in onValueCommit, not in onValueChange, which fires on every move. A table filter can follow every move, and say how many rows match on commit.",
+    "A form field. Pass name and the value is sent with the form, and a range sends both values under the one name. A disabled slider sends nothing.",
   ],
   skip: [
     "The exact number matters, such as a width of 1280. Use Input.",
     "A few named steps, such as Small, Medium and Large. Use Segmented.",
     "A yes or no. Use Checkbox.",
-    "A range with two ends, such as a price filter. Slider has one thumb.",
+    "A span with two ends, such as a price or a build time filter. Slider has one thumb. Use RangeSlider.",
+    "The two ends are exact numbers people know and type, such as an invoice from 1,200 to 1,800 euros. Use two Inputs.",
     "The value is a date, a color or a position on a canvas. Build the control for that thing.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus to the thumb. A disabled slider is skipped."],
-    [["←", "↓"], "Moves the thumb back one step."],
-    [["→", "↑"], "Moves the thumb forward one step."],
+    [["Tab"], "Moves focus to the thumb. A range has two, the from thumb first and then the to thumb. A disabled slider is skipped."],
+    [["←", "↓"], "Moves the thumb back one step. On a range it moves the focused thumb only, and the to thumb stops one gap away from the from thumb."],
+    [["→", "↑"], "Moves the thumb forward one step. On a range the from thumb stops one gap away from the to thumb."],
     [["Page Down", "Page Up"], "Moves the thumb about a tenth of the range, in whole steps and at least one."],
-    [["Home", "End"], "Moves the thumb to the start or the end of the rail."],
+    [["Home", "End"], "Moves the thumb to the start or the end of the rail. On a range the focused thumb goes as far as it can, and the other thumb stops it."],
   ],
   a11y: [
     "Radix Slider puts role=\"slider\" on the thumb, with aria-valuemin, aria-valuemax and aria-valuenow. The label names the thumb with aria-labelledby, and the help text is linked with aria-describedby. The label is required.",
@@ -67,11 +87,16 @@ export const docs: PageDocs = {
     "A drag on a slider never moves a sheet: the slider is marked data-no-drag. A vertical swipe that starts on it still scrolls the page or the sheet's body. If it starts on the rail and not on the thumb, the thumb first jumps to the finger, as a tap there would.",
     "Under forced colors the rail and the thumb get real borders, and the range takes the system highlight color.",
     "A disabled slider is muted, skipped by Tab, marked aria-disabled and left out of a form. Say why it is locked in the help text.",
+    "RangeSlider puts role=\"slider\" on both thumbs, inside a group named by the label. Each thumb is named by the label and its end (\"Build time, from\" and \"Build time, to\") through a hidden name, and gets its own aria-valuetext from formatValue (\"20s\", then \"80s\"). Both are described by the help text. Pass thumbLabels to change the two end words.",
+    "The shown span (\"20s to 80s\") is hidden from screen readers like the Slider's value, because each thumb already says its own. If the range filters something, say what it did in a polite live region and update it in onValueCommit, not on every move, so a screen reader hears one answer per key press or per released drag.",
+    "The keys act on the focused thumb. The thumbs never cross and stay minStepsBetweenThumbs steps apart (one by default), so one can never sit on the other. A key that cannot move a thumb does nothing and saves nothing. Both thumbs report the whole rail as aria-valuemin and aria-valuemax.",
   ],
 };
 
 const formatSpeed = (v: number) => `${v.toFixed(1)}x`;
 const formatQuality = (v: number) => `${v}%`;
+const formatSeconds = (v: number) => `${v}s`;
+const formatPrice = (v: number) => `€${v}`;
 
 function SpeedDemo() {
   const [speed, setSpeed] = useState(1);
@@ -147,6 +172,149 @@ function QualityDemo() {
   );
 }
 
+type Build = { id: string; site: string; at: string; seconds: number };
+
+/** The studio's recent Framer builds, newest first. With a span of 20s to 80s, 14 of the 24 match. */
+const BUILDS: Build[] = [
+  { id: "b24", site: "Halo", at: "2026-10-16", seconds: 79 },
+  { id: "b23", site: "Northwind", at: "2026-10-16", seconds: 34 },
+  { id: "b22", site: "Atlas portfolio", at: "2026-10-15", seconds: 112 },
+  { id: "b21", site: "Marlow Labs", at: "2026-10-15", seconds: 66 },
+  { id: "b20", site: "Halden Gallery", at: "2026-10-14", seconds: 15 },
+  { id: "b19", site: "Kassa", at: "2026-10-14", seconds: 44 },
+  { id: "b18", site: "Halo", at: "2026-10-13", seconds: 88 },
+  { id: "b17", site: "Grotta Type", at: "2026-10-13", seconds: 31 },
+  { id: "b16", site: "Northwind", at: "2026-10-10", seconds: 19 },
+  { id: "b15", site: "Atlas portfolio", at: "2026-10-10", seconds: 105 },
+  { id: "b14", site: "Marlow Labs", at: "2026-10-09", seconds: 58 },
+  { id: "b13", site: "Halden Gallery", at: "2026-10-09", seconds: 22 },
+  { id: "b12", site: "Kassa", at: "2026-10-08", seconds: 84 },
+  { id: "b11", site: "Halo", at: "2026-10-07", seconds: 46 },
+  { id: "b10", site: "Grotta Type", at: "2026-10-07", seconds: 9 },
+  { id: "b9", site: "Northwind", at: "2026-10-06", seconds: 38 },
+  { id: "b8", site: "Marlow Labs", at: "2026-10-06", seconds: 71 },
+  { id: "b7", site: "Atlas portfolio", at: "2026-10-03", seconds: 27 },
+  { id: "b6", site: "Halden Gallery", at: "2026-10-03", seconds: 96 },
+  { id: "b5", site: "Kassa", at: "2026-10-02", seconds: 63 },
+  { id: "b4", site: "Halo", at: "2026-10-02", seconds: 12 },
+  { id: "b3", site: "Grotta Type", at: "2026-10-01", seconds: 52 },
+  { id: "b2", site: "Marlow Labs", at: "2026-10-01", seconds: 41 },
+  { id: "b1", site: "Northwind", at: "2026-09-30", seconds: 18 },
+];
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+/** "2026-10-16" becomes "16 Oct": always six characters, so mono dates align. */
+function shortDate(iso: string) {
+  const [, month, day] = iso.split("-");
+  return `${day} ${MONTHS[Number(month) - 1]}`;
+}
+
+/** The table lists this many of the matches, so it keeps its height while the span moves. */
+const LISTED = 6;
+
+function matchText(count: number) {
+  if (count === 0) return "No builds match";
+  return count === 1 ? "1 build matches" : `${count} builds match`;
+}
+
+function BuildsDemo() {
+  const [span, setSpan] = useState<[number, number]>([20, 80]);
+  /* A polite note for screen readers. It changes when a key moves a thumb or a drag ends, never on every pixel of a drag. */
+  const [said, setSaid] = useState("");
+  const [from, to] = span;
+  const matches = BUILDS.filter((b) => b.seconds >= from && b.seconds <= to);
+
+  return (
+    <div className="grid w-full min-w-0 max-w-xl grid-cols-1 gap-8">
+      <RangeSlider
+        label="Build time"
+        min={0}
+        max={120}
+        value={span}
+        onValueChange={setSpan}
+        onValueCommit={([a, b]) => setSaid(matchText(BUILDS.filter((x) => x.seconds >= a && x.seconds <= b).length))}
+        minLabel="Faster"
+        maxLabel="Slower"
+        showValue
+        formatValue={formatSeconds}
+      />
+      <div className="grid min-w-0 grid-cols-1 content-start gap-4">
+        <p aria-hidden="true" className="flex flex-wrap items-baseline justify-between gap-x-4 text-small">
+          <span className="tabular-nums text-fg">{matchText(matches.length)}</span>
+          {matches.length > LISTED && <span className="text-caption text-fg-subtle">The {LISTED} newest are listed</span>}
+        </p>
+        <p role="status" className="sr-only">
+          {said}
+        </p>
+        <div className="min-h-80 min-w-0">
+          <Table label="Builds in the span">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Site</TableHead>
+                <TableHead numeric>Deployed</TableHead>
+                <TableHead numeric>Build time</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {matches.slice(0, LISTED).map((b) => (
+                <TableRow key={b.id}>
+                  <TableCell primary>{b.site}</TableCell>
+                  <TableCell numeric>
+                    <time dateTime={b.at}>{shortDate(b.at)}</time>
+                  </TableCell>
+                  <TableCell numeric>{formatSeconds(b.seconds)}</TableCell>
+                </TableRow>
+              ))}
+              {matches.length === 0 && (
+                <TableEmpty columns={3}>
+                  No builds between {formatSeconds(from)} and {formatSeconds(to)}.
+                </TableEmpty>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PriceDemo() {
+  const [status, setStatus] = useState<string | null>(null);
+  return (
+    <form
+      className="grid w-full max-w-sm gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const [from, to] = new FormData(e.currentTarget).getAll("price");
+        setStatus(`Showing Framer templates from ${formatPrice(Number(from))} to ${formatPrice(Number(to))}. The form sent price=${from} and price=${to}.`);
+      }}
+    >
+      <RangeSlider
+        name="price"
+        label="Price"
+        help="The two ends stay at least €20 apart."
+        min={0}
+        max={300}
+        step={10}
+        minStepsBetweenThumbs={2}
+        defaultValue={[40, 160]}
+        minLabel="Cheaper"
+        maxLabel="Pricier"
+        showValue
+        formatValue={formatPrice}
+      />
+      <div className="grid gap-3">
+        <Button type="submit" className="justify-self-start">
+          Show templates
+        </Button>
+        <p role="status" className="min-h-15 text-small text-fg-subtle">
+          {status}
+        </p>
+      </div>
+    </form>
+  );
+}
+
 function DisabledDemo() {
   return (
     <div className="grid w-full max-w-xl gap-x-12 gap-y-8 sm:grid-cols-2">
@@ -161,6 +329,17 @@ function DisabledDemo() {
         formatValue={formatQuality}
         disabled
         help="Locked while the export runs."
+      />
+      <RangeSlider label="Build time" min={0} max={120} defaultValue={[20, 80]} showValue formatValue={formatSeconds} help="Filters the build list." />
+      <RangeSlider
+        label="Build time"
+        min={0}
+        max={120}
+        defaultValue={[20, 80]}
+        showValue
+        formatValue={formatSeconds}
+        disabled
+        help="Locked while the list loads."
       />
     </div>
   );
@@ -264,10 +443,29 @@ export default function SliderPage() {
       </Stage>
 
       <Stage
+        title="Builds by time"
+        tier="instant"
+        size="lg"
+        code="BuildsDemo"
+        caption="Two thumbs on one rail, and the span between them is the foreground color. Drag either thumb, or focus one and use the arrow keys. The count and the table follow at once, with no easing. The thumbs never cross and stay one step apart. The value reads 20s to 80s, in words, and each thumb tells a screen reader its own value. A screen reader hears how many builds match once per key press or released drag, not on every move."
+      >
+        <BuildsDemo />
+      </Stage>
+
+      <Stage
+        title="A price in a form"
+        tier="instant"
+        code="PriceDemo"
+        caption="In a form, both thumbs send their value under one name, so the form holds price twice, from first. This one stays two steps apart, and the help text says so. Press Show templates to see what was sent."
+      >
+        <PriceDemo />
+      </Stage>
+
+      <Stage
         title="Disabled"
         tier="instant"
         code="DisabledDemo"
-        caption="The disabled slider is muted all the way through: a fainter rail, a muted range and a flat thumb. Tab skips it, and the help text says why it is locked."
+        caption="The disabled slider is muted all the way through: a fainter rail, a muted range and a flat thumb. A range does the same with both thumbs. Tab skips it, and the help text says why it is locked."
       >
         <DisabledDemo />
       </Stage>

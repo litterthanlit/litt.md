@@ -226,8 +226,11 @@ const RECIPES = {
         </div>`,
   },
   slider: {
-    needs: ["Slider"],
-    jsx: `<div className="w-full max-w-sm" data-testid="litt-slider"><Slider name="speed" label="Animation speed" min={0.5} max={2} step={0.1} defaultValue={1} minLabel="Slower" maxLabel="Faster" showValue formatValue={(v) => \`\${v.toFixed(1)}x\`} /></div>`,
+    needs: ["Slider", "RangeSlider"],
+    jsx: `<div className="grid w-full max-w-sm gap-8" data-testid="litt-slider">
+          <Slider name="speed" label="Animation speed" min={0.5} max={2} step={0.1} defaultValue={1} minLabel="Slower" maxLabel="Faster" showValue formatValue={(v) => \`\${v.toFixed(1)}x\`} />
+          <form data-testid="litt-range" onSubmit={(e) => e.preventDefault()}><RangeSlider name="window" label="Smoke window" min={0} max={100} defaultValue={[20, 80]} minLabel="Faster" maxLabel="Slower" showValue formatValue={(v) => \`\${v}s\`} /></form>
+        </div>`,
   },
   stat: {
     needs: ["Stat", "StatGroup"],
@@ -1003,6 +1006,48 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const after = await thumb.getAttribute("aria-valuetext");
           if (before !== "1.0x" || after !== "1.1x") throw new Error(`aria-valuetext went from ${before} to ${after}, expected 1.0x to 1.1x`);
           return `${before} to ${after}`;
+        });
+        await attempt("range slider: two named thumbs, the keys act on the focused one, the thumbs never cross, a form sends both values under one name", async () => {
+          const from = page.getByRole("slider", { name: "Smoke window, from" });
+          const to = page.getByRole("slider", { name: "Smoke window, to" });
+          const read = async () => `${await from.getAttribute("aria-valuetext")}|${await to.getAttribute("aria-valuetext")}`;
+          const start = await read();
+          if (start !== "20s|80s") throw new Error(`the thumbs read ${start}, expected 20s|80s`);
+          await from.focus();
+          await page.keyboard.press("ArrowRight");
+          await page.waitForTimeout(100);
+          const stepped = await read();
+          if (stepped !== "21s|80s") throw new Error(`ArrowRight on the from thumb gave ${stepped}, expected 21s|80s`);
+          await page.keyboard.press("End");
+          await page.waitForTimeout(100);
+          const held = await read();
+          if (held !== "79s|80s") throw new Error(`End on the from thumb gave ${held}, expected 79s|80s: it stops one step short of the to thumb`);
+          await to.focus();
+          await page.keyboard.press("ArrowLeft");
+          await page.keyboard.press("Home");
+          await page.waitForTimeout(100);
+          const blocked = await read();
+          if (blocked !== "79s|80s") throw new Error(`ArrowLeft and Home on the to thumb gave ${blocked}, expected 79s|80s: it cannot pass the from thumb`);
+          await page.keyboard.press("End");
+          await page.waitForTimeout(100);
+          const apart = await read();
+          if (apart !== "79s|100s") throw new Error(`End on the to thumb gave ${apart}, expected 79s|100s`);
+          const shown = (await page.locator("[data-testid=litt-range]").innerText()).replace(/\s+/g, " ");
+          if (!shown.includes("79s to 100s")) throw new Error(`the shown value is not "79s to 100s": "${shown}"`);
+          const root = page.locator("[data-testid=litt-range] span[data-no-drag]");
+          await root.scrollIntoViewIfNeeded();
+          const rail = await root.boundingBox();
+          const grip = await from.boundingBox();
+          await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+          await page.mouse.down();
+          await page.mouse.move(rail.x + rail.width + 40, grip.y + grip.height / 2, { steps: 6 });
+          await page.mouse.up();
+          await page.waitForTimeout(100);
+          const dragged = await read();
+          if (dragged !== "99s|100s") throw new Error(`dragging the from thumb past the end gave ${dragged}, expected 99s|100s: it never crosses`);
+          const sent = await page.locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
+          if (sent.join("|") !== "99|100") throw new Error(`the form sent window=${sent.join(",")}, expected 99 and 100 under one name`);
+          return `${dragged}, sent ${sent.join(" and ")}`;
         });
       }
       if (has("stat")) {

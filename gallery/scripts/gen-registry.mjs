@@ -815,8 +815,8 @@ const COPY = {
   },
   slider: {
     title: "Slider",
-    description: "A value on a range, such as an animation speed. A thin rail, a foreground range and a round thumb that follows the pointer one to one, with words for the two ends.",
-    docs: "Import Slider from components/litt/slider. Give it a label, and minLabel and maxLabel to say which way is which.",
+    description: "A value on a range, such as an animation speed, or a span with two thumbs, such as builds that took 20s to 80s. A thin rail, a foreground range and round thumbs that follow the pointer one to one, with words for the two ends. The thumbs of a range never cross, and a form sends both values under one name.",
+    docs: "Import Slider, or RangeSlider for a span, from components/litt/slider. Give it a label, and minLabel and maxLabel to say which way is which. A range value is [from, to], and each thumb is named by the label and its end.",
   },
   form: {
     title: "Form",
