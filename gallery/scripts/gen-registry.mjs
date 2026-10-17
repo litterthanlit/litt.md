@@ -865,8 +865,8 @@ const COPY = {
   },
   chart: {
     title: "Chart",
-    description: "Bar and line charts in plain SVG, and a meter. The marks are the foreground, never the accent: one series at 55% with the current mark full, or up to three stepping down. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
-    docs: "Import BarChart, LineChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
+    description: "Bar and line charts in plain SVG, and a meter. The marks are never the accent: the quiet foreground by default, one series at 55% with the current mark full or up to three stepping down, or up to five data hues when color tells the series apart. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+    docs: "Import BarChart, LineChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }, with an optional hue per series or hues on the chart. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
   },
   "app-shell": {
     title: "App shell",

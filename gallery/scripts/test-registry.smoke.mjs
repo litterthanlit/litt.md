@@ -239,6 +239,7 @@ const RECIPES = {
           <BarChart label="Deploys per day" labels={["1 Oct", "2 Oct", "3 Oct", "4 Oct"]} series={[{ name: "Deploys", values: [5, 7, 4, 9] }]} height={160} />
           <LineChart label="Build time" labels={["1 Oct", "2 Oct", "3 Oct", "4 Oct"]} series={[{ name: "Build time", values: [44, 41, 46, 39] }]} formatValue={(v) => \`\${v} s\`} height={160} />
           <Meter label="Storage" value={42} valueText="42 of 100 GB" />
+          <Meter label="Video" value={58} valueText="58 GB" hue="violet" />
         </div>`,
   },
   "app-shell": {
@@ -867,7 +868,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             const rgb = await page.evaluate(`(${COLOR_TO_RGB})(${JSON.stringify(c)})`);
             if (near(rgb, accent[theme])) throw new Error(`a mark is the accent (${c})`);
           }
-          const rows = await box.locator("table.sr-only").first().locator("tbody tr").count();
+          const rows = await box.locator(".sr-only table").first().locator("tbody tr").count();
           if (rows !== 4) throw new Error(`the hidden table has ${rows} rows, not 4`);
           const stops = await box.locator("[role=group] button[tabindex='0']").count();
           if (stops < 2) throw new Error(`each chart should have one tab stop, found ${stops} in two charts`);
@@ -885,7 +886,17 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const now = await meter.getAttribute("aria-valuenow");
           const share = await meter.evaluate((el) => el.firstElementChild.getBoundingClientRect().width / el.getBoundingClientRect().width);
           if (now !== "42" || Math.abs(share - 0.42) > 0.01) throw new Error(`the meter reads ${now} and fills ${share.toFixed(2)}`);
-          return `${colors.length} mark colors, none the accent`;
+          const hued = await box.getByRole("meter", { name: "Video" }).evaluate((el) => getComputedStyle(el.firstElementChild).backgroundColor);
+          const violet = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-data-violet)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          if (hued !== violet) throw new Error(`a violet meter fills with ${hued}, not --litt-data-violet (${violet})`);
+          return `${colors.length} mark colors, none the accent; a hued meter is --litt-data-violet`;
         });
       }
       if (has("app-shell")) {

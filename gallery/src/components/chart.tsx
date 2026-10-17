@@ -2,11 +2,17 @@
  * Chart: BarChart and LineChart in plain SVG, and Meter. No chart library. A chart is quiet on purpose (P1: the
  * accent belongs to the one primary action, and a chart is made of many marks).
  *
- * - Color (components.md, Chart): a mark is never the accent. One series is fg at 55% for bars and fg for a line.
- *   The current mark (the last one by default) and the hovered or focused one are full fg, and the hovered or
- *   focused one replaces the current one, so only one is full. Up to three series step down the foreground, 100%,
- *   55% and 30%, with a legend. At 30% a mark is under 3:1 against a card, so the third series' bars carry a 1px
- *   edge at 55% and its line is dashed. Colors come from CSS variables, so both themes work.
+ * - Color (components.md, Chart): a mark is never the accent. By default (the quiet foreground) one series is fg
+ *   at 55% for bars and fg for a line. The current mark (the last one by default) and the hovered or focused one
+ *   are full fg, and the hovered or focused one replaces the current one, so only one is full. Up to three series
+ *   step down the foreground, 100%, 55% and 30%, with a legend. At 30% a mark is under 3:1 against a card, so the
+ *   third series' bars carry a 1px edge at 55% and its line is dashed. Colors come from CSS variables, so both
+ *   themes work.
+ * - Data hues (P11, v0.11): a series may carry one of the five data hues (`hue` on the series), and `hues` gives
+ *   every series without one the next hue in the fixed order. Color follows the series, never its place, so a
+ *   filter that drops a series never repaints the others. A hue series rests in the hue's mark tone (3:1 on every
+ *   surface) and its emphasised mark takes the hue's text tone, a step stronger, so no mark falls under 3:1 and
+ *   none needs an edge or a dash. Up to five hue series.
  * - Anatomy: horizontal gridlines only (line), the zero baseline in line-strong, three to five lines in all. Axis
  *   labels are caption-size mono in fg-subtle with tabular numbers. When categories are too close for their
  *   labels, every nth label shows, counted back from the last mark so the current one keeps its label. Bars are at
@@ -28,7 +34,7 @@
  *   motion is the hooks' job. Hover and focus add no motion beyond a color change.
  * - Accessibility: the SVG is role="img" with a summary label, and a visually hidden table lists every value.
  *   The category buttons are in a labelled group outside the image (children of an image are presentational).
- * - Meter: a horizontal progress bar, a 4px rail at the control radius in fg 12% filled with fg. Static.
+ * - Meter: a horizontal progress bar, a 4px rail at the control radius in fg 12% filled with fg, or a data hue. Static.
  */
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -36,12 +42,17 @@ import { useExit, useTransition, useTravel } from "@/motion";
 
 /* ----------------------------------------------------------------- types */
 
+/** The five data hues, in their fixed order (P11). */
+export type ChartHue = "blue" | "amber" | "teal" | "violet" | "rose";
+
 /** One named run of values, one per category. Values are zero or more. */
 export type ChartSeries = {
   /** What the series is: "Deploys", "Failed". It names the legend, the tooltip and the table column. */
   name: string;
   /** One value per label, in the same order as `labels`. */
   values: number[];
+  /** Draws this series in one of the five data hues instead of the foreground. Keep a series' hue the same wherever it appears. */
+  hue?: ChartHue;
 };
 
 type ChartBaseProps = {
@@ -63,6 +74,8 @@ type ChartBaseProps = {
   summary?: string;
   /** The category with the emphasis: an index, "last" (the default) or "none". Only a single series takes it; a hovered or focused mark replaces it. */
   highlight?: number | "last" | "none";
+  /** Gives every series without its own hue the next data hue in the fixed order: blue, amber, teal, violet, rose. Leave it off for the quiet foreground. */
+  hues?: boolean;
   /** Plays the entrance on the responsive tier when the chart mounts. Remount with a new key to replay. */
   entrance?: boolean;
   /** Extra classes for the chart's box, such as a top margin. */
@@ -86,6 +99,36 @@ const FILL = ["fill-fg", "fill-[color-mix(in_oklab,var(--fg)_55%,transparent)]",
 const STROKE = ["var(--fg)", mix(55), mix(30)];
 const EDGE = "stroke-[color-mix(in_oklab,var(--fg)_55%,transparent)]";
 const DASH = "6 4";
+
+const HUE_ORDER: ChartHue[] = ["blue", "amber", "teal", "violet", "rose"];
+/* Literal names, so Tailwind sees the classes and the registry can rename the variables: the mark tone at rest, the
+   text tone for the emphasised mark, then the same two as colors for a line and its marker. */
+const HUE_PAINT: Record<ChartHue, [rest: string, strong: string, stroke: string, marker: string]> = {
+  blue: ["fill-data-blue", "fill-data-blue-text", "var(--data-blue)", "var(--data-blue-text)"],
+  amber: ["fill-data-amber", "fill-data-amber-text", "var(--data-amber)", "var(--data-amber-text)"],
+  teal: ["fill-data-teal", "fill-data-teal-text", "var(--data-teal)", "var(--data-teal-text)"],
+  violet: ["fill-data-violet", "fill-data-violet-text", "var(--data-violet)", "var(--data-violet-text)"],
+  rose: ["fill-data-rose", "fill-data-rose-text", "var(--data-rose)", "var(--data-rose-text)"],
+};
+
+/** How one series is painted: its bar fills at rest and emphasised, its line and marker colors, and its third-series cues. */
+type Paint = { rest: string; strong: string; stroke: string; marker: string; edge: boolean; dash: boolean };
+
+function paints(series: ChartSeries[], hues: boolean): Paint[] {
+  let next = 0;
+  return series.map((s, j) => {
+    const hue = s.hue ?? (hues ? HUE_ORDER[next++ % HUE_ORDER.length] : undefined);
+    if (hue) {
+      const [rest, strong, stroke, marker] = HUE_PAINT[hue];
+      return { rest, strong, stroke, marker, edge: false, dash: false };
+    }
+    /* The foreground: one series rests at 55% with the emphasised mark full; several step down by their place. */
+    const level = Math.min(j, 2);
+    return series.length === 1
+      ? { rest: FILL[1]!, strong: FILL[0]!, stroke: STROKE[0]!, marker: STROKE[0]!, edge: false, dash: false }
+      : { rest: FILL[level]!, strong: FILL[level]!, stroke: STROKE[level]!, marker: STROKE[level]!, edge: level === 2, dash: level === 2 };
+  });
+}
 
 const groupDigits = (n: number) => n.toLocaleString("en-GB", { maximumFractionDigits: 2 });
 
@@ -181,12 +224,14 @@ function Chart({
   xTitle,
   summary,
   highlight,
+  hues = false,
   entrance,
   className = "",
 }: Required<Pick<ChartBaseProps, "height" | "xTitle" | "highlight" | "entrance">> & ChartBaseProps & { kind: Kind }) {
   const fmt = formatValue ?? groupDigits;
   const n = labels.length;
   const many = series.length > 1;
+  const paint = useMemo(() => paints(series, hues), [series, hues]);
   const [boxRef, width] = useWidth();
   const g = useMemo(() => layout(width, height, labels, series, fmt), [width, height, labels, series, fmt]);
   const value = (s: ChartSeries, i: number) => s.values[i] ?? 0;
@@ -265,7 +310,7 @@ function Chart({
 
   return (
     <div className={"w-full " + className}>
-      {many && <Legend series={series} kind={kind} />}
+      {many && <Legend series={series} kind={kind} paint={paint} />}
       <div ref={boxRef} className="relative w-full" style={{ height }}>
         {width > 0 && !empty && (
           <>
@@ -281,9 +326,9 @@ function Chart({
                 />
               )}
               {kind === "bar" ? (
-                <Bars g={g} series={series} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
+                <Bars g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
               ) : (
-                <Lines g={g} series={series} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
+                <Lines g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
               )}
             </svg>
 
@@ -345,30 +390,33 @@ function Chart({
         )}
       </div>
 
-      <table className="sr-only">
-        <caption>{label}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{xTitle}</th>
-            {series.map((s) => (
-              <th key={s.name} scope="col">
-                {s.name}
-                {unit ? ` (${unitFor(2)})` : ""}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {labels.map((l, i) => (
-            <tr key={i}>
-              <th scope="row">{l}</th>
+      {/* A table will not shrink to sr-only's 1px, so a wrapper clips it; otherwise a long one widens a phone's page. */}
+      <div className="sr-only">
+        <table>
+          <caption>{label}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{xTitle}</th>
               {series.map((s) => (
-                <td key={s.name}>{fmt(value(s, i))}</td>
+                <th key={s.name} scope="col">
+                  {s.name}
+                  {unit ? ` (${unitFor(2)})` : ""}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {labels.map((l, i) => (
+              <tr key={i}>
+                <th scope="row">{l}</th>
+                {series.map((s) => (
+                  <td key={s.name}>{fmt(value(s, i))}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -418,6 +466,7 @@ function Grid({ g, labels, fmt }: { g: Geometry; labels: string[]; fmt: (v: numb
 type MarksProps = {
   g: Geometry;
   series: ChartSeries[];
+  paint: Paint[];
   n: number;
   emphasis: number | null;
   ring: number | null;
@@ -425,7 +474,7 @@ type MarksProps = {
   enter: ReturnType<typeof useTransition>;
 };
 
-function Bars({ g, series, n, emphasis, ring, entrance, enter }: MarksProps) {
+function Bars({ g, series, paint, n, emphasis, ring, entrance, enter }: MarksProps) {
   const k = series.length;
   const gap = 2;
   const group = k === 1 ? Math.min(MAX_BAR, Math.floor(g.slotW * 0.6)) : Math.min(k * MAX_BAR + gap * (k - 1), Math.floor(g.slotW * 0.7));
@@ -441,8 +490,9 @@ function Bars({ g, series, n, emphasis, ring, entrance, enter }: MarksProps) {
           const top = g.y(v);
           const h = v > 0 ? Math.max(2, baseline - top) : 0;
           if (h === 0) return null;
-          /* One series rests at 55% and the emphasised bar is full. Several series step down by their place. */
-          const level = k === 1 ? (emphasis === i ? 0 : 1) : Math.min(j, 2);
+          /* One series rests (fg 55% or the hue's mark tone) and the emphasised bar is strong. Several series keep their own paint. */
+          const p = paint[j]!;
+          const fill = k === 1 && emphasis === i ? p.strong : p.rest;
           return (
             <motion.rect
               key={`${s.name}-${i}`}
@@ -456,8 +506,8 @@ function Bars({ g, series, n, emphasis, ring, entrance, enter }: MarksProps) {
               strokeWidth={1}
               className={
                 "transition-[fill] duration-(--dur-instant) ease-litt " +
-                FILL[level] +
-                (j === 2 ? " " + EDGE : " stroke-transparent")
+                fill +
+                (p.edge ? " " + EDGE : " stroke-transparent")
               }
             />
           );
@@ -480,7 +530,7 @@ function Bars({ g, series, n, emphasis, ring, entrance, enter }: MarksProps) {
 
 /* ----------------------------------------------------------------- lines */
 
-function Lines({ g, series, n, emphasis, ring, entrance, enter }: MarksProps) {
+function Lines({ g, series, paint, n, emphasis, ring, entrance, enter }: MarksProps) {
   return (
     <g aria-hidden="true">
       <motion.g initial={entrance ? { opacity: 0 } : false} animate={{ opacity: 1, transition: enter }}>
@@ -489,17 +539,17 @@ function Lines({ g, series, n, emphasis, ring, entrance, enter }: MarksProps) {
             key={s.name}
             d={Array.from({ length: n }, (_, i) => `${i === 0 ? "M" : "L"}${g.cx(i)} ${g.y(s.values[i] ?? 0)}`).join(" ")}
             fill="none"
-            stroke={STROKE[Math.min(j, 2)]}
+            stroke={paint[j]!.stroke}
             strokeWidth={2}
             strokeLinejoin="round"
             strokeLinecap="round"
-            strokeDasharray={j === 2 ? DASH : undefined}
+            strokeDasharray={paint[j]!.dash ? DASH : undefined}
           />
         ))}
       </motion.g>
       {emphasis !== null &&
         series.map((s, j) => (
-          <circle key={s.name} cx={g.cx(emphasis)} cy={g.y(s.values[emphasis] ?? 0)} r={4} fill={STROKE[Math.min(j, 2)]} stroke="none" />
+          <circle key={s.name} cx={g.cx(emphasis)} cy={g.y(s.values[emphasis] ?? 0)} r={4} fill={paint[j]!.marker} stroke="none" />
         ))}
       {ring !== null &&
         series.map((s) => (
@@ -511,24 +561,24 @@ function Lines({ g, series, n, emphasis, ring, entrance, enter }: MarksProps) {
 
 /* ----------------------------------------------------------------- legend */
 
-function Swatch({ kind, index }: { kind: Kind; index: number }) {
+function Swatch({ kind, paint }: { kind: Kind; paint: Paint }) {
   return (
     <svg width={16} height={8} aria-hidden="true" className="shrink-0" focusable="false">
       {kind === "bar" ? (
-        <rect x={4} y={0} width={8} height={8} strokeWidth={1} className={FILL[Math.min(index, 2)] + (index === 2 ? " " + EDGE : " stroke-transparent")} />
+        <rect x={4} y={0} width={8} height={8} strokeWidth={1} className={paint.rest + (paint.edge ? " " + EDGE : " stroke-transparent")} />
       ) : (
-        <line x1={0} x2={16} y1={4} y2={4} stroke={STROKE[Math.min(index, 2)]} strokeWidth={2} strokeDasharray={index === 2 ? "4 3" : undefined} />
+        <line x1={0} x2={16} y1={4} y2={4} stroke={paint.stroke} strokeWidth={2} strokeDasharray={paint.dash ? "4 3" : undefined} />
       )}
     </svg>
   );
 }
 
-function Legend({ series, kind }: { series: ChartSeries[]; kind: Kind }) {
+function Legend({ series, kind, paint }: { series: ChartSeries[]; kind: Kind; paint: Paint[] }) {
   return (
     <ul className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-small text-fg-muted">
       {series.map((s, j) => (
         <li key={s.name} className="flex items-center gap-2">
-          <Swatch kind={kind} index={j} />
+          <Swatch kind={kind} paint={paint[j]!} />
           {s.name}
         </li>
       ))}
@@ -601,12 +651,12 @@ function TipContent({
 
 /* ----------------------------------------------------------------- public charts */
 
-/** Bars along a baseline, one column per category. One series is fg at 55% with the current bar full; up to three step down. */
+/** Bars along a baseline, one column per category. One series is fg at 55% with the current bar full; up to three step down, or up to five in data hues. */
 export function BarChart({ height = 240, xTitle = "Label", highlight = "last", entrance = true, ...rest }: BarChartProps) {
   return <Chart kind="bar" height={height} xTitle={xTitle} highlight={highlight} entrance={entrance} {...rest} />;
 }
 
-/** A 2px line over the same grid. One series is fg with a marker on the current point; up to three step down, the third dashed. */
+/** A 2px line over the same grid. One series is fg with a marker on the current point; up to three step down, the third dashed, or up to five in data hues. */
 export function LineChart({ height = 240, xTitle = "Label", highlight = "last", entrance = true, ...rest }: LineChartProps) {
   return <Chart kind="line" height={height} xTitle={xTitle} highlight={highlight} entrance={entrance} {...rest} />;
 }
@@ -622,12 +672,22 @@ export type MeterProps = {
   max?: number;
   /** The reading at the end of the row, in mono: "42 of 100 GB". Defaults to the percentage. */
   valueText?: string;
+  /** Fills the rail with one of the five data hues instead of the foreground, when the color says which thing this is (P11). */
+  hue?: ChartHue;
   /** Extra classes for the row, such as a width. */
   className?: string;
 };
 
+const METER_FILL: Record<ChartHue, string> = {
+  blue: "bg-data-blue",
+  amber: "bg-data-amber",
+  teal: "bg-data-teal",
+  violet: "bg-data-violet",
+  rose: "bg-data-rose",
+};
+
 /** A thin rail for one value against a limit. Static, never the accent. */
-export function Meter({ label, value, max = 100, valueText, className = "" }: MeterProps) {
+export function Meter({ label, value, max = 100, valueText, hue, className = "" }: MeterProps) {
   const id = useId();
   const percent = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
   const reading = valueText ?? `${Math.round(percent)}%`;
@@ -648,7 +708,7 @@ export function Meter({ label, value, max = 100, valueText, className = "" }: Me
         aria-valuetext={reading}
         className="h-1 overflow-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]"
       >
-        <div className="h-full rounded-control bg-fg" style={{ width: `${percent}%` }} />
+        <div className={"h-full rounded-control " + (hue ? METER_FILL[hue] : "bg-fg")} style={{ width: `${percent}%` }} />
       </div>
     </div>
   );
