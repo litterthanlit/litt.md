@@ -233,14 +233,16 @@ function ThreadDemo() {
   );
 }
 
-function StreamDemo() {
+/** `replayed`: the page loads with the turn already there, so nothing is mid-fade when it is read; a Replay brings it in after a beat. */
+function StreamDemo({ replayed = false }: { replayed?: boolean }) {
   const count = total(ANSWER);
-  const [started, setStarted] = useState(false);
-  const [shown, setShown] = useState(0);
+  const [started, setStarted] = useState(!replayed);
+  const [shown, setShown] = useState(replayed ? 0 : 1);
   const streaming = started && shown < count;
 
-  /* The turn arrives after a beat, once. Then the words follow, one at a time. */
+  /* On a Replay the turn arrives after a beat, once. Then the words follow, one at a time. */
   useEffect(() => {
+    if (started) return;
     const t = window.setTimeout(() => {
       setShown(1);
       setStarted(true);
@@ -279,10 +281,11 @@ const ATLAS: Block[] = [
 ];
 const ATLAS_CUT: Block[] = [{ p: ["I checked the deploy history for the Atlas portfolio. The last production deploy went"] }];
 
-function ErrorDemo() {
+/** `replayed`: the page loads with the turn already streaming; a Replay or a Retry brings it in after a beat. */
+function ErrorDemo({ replayed = false }: { replayed?: boolean }) {
   const [attempt, setAttempt] = useState(0);
-  const [phase, setPhase] = useState<"waiting" | "streaming" | "stopped" | "done">("waiting");
-  const [shown, setShown] = useState(0);
+  const [phase, setPhase] = useState<"waiting" | "streaming" | "stopped" | "done">(replayed ? "waiting" : "streaming");
+  const [shown, setShown] = useState(replayed ? 0 : 1);
   const blocks = attempt === 0 ? ATLAS_CUT : ATLAS;
   const count = total(blocks);
   const streaming = phase === "streaming";
@@ -550,7 +553,7 @@ export default function MessagePage() {
         caption="Replay it. Litt's turn arrives once, fading in and rising by half of the travel token on the responsive tier. Then the words appear as they come, with no caret, no fade per word and no shimmer, and nothing moves. The region is busy while it streams, and a polite status says the turn started and ended, never the words. The actions appear when the answer ends."
       >
         <div key={streamKey} className="w-full">
-          <StreamDemo />
+          <StreamDemo replayed={streamKey > 0} />
         </div>
       </Stage>
 
@@ -572,7 +575,7 @@ export default function MessagePage() {
         caption="Replay it. The answer streams a few words and then the connection drops. The line under the text says so: the alert icon in danger, the words in fg-muted and a Retry button. Only the icon takes the status color, and a polite status says Litt stopped answering. A stopped turn has no actions. Retry streams the answer again, and the actions come back when it ends."
       >
         <div key={errorKey} className="w-full">
-          <ErrorDemo />
+          <ErrorDemo replayed={errorKey > 0} />
         </div>
       </Stage>
 
