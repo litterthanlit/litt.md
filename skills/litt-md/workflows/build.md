@@ -87,7 +87,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `form` | The page patterns: `FormSection` for settings sections, `Fieldset` (`rows` for a list of switches), `ErrorSummary` above a long form, `FormActions` (`align="fields"` on a settings page). |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |
 | `tabs` | Views of one thing (underline), or a compact switch (`variant="segmented"`). |
-| `tag` | A status or a label: mono, at the control radius. A status colors its text, never the fill, and has no dot. |
+| `tag` | A status or a label: mono, at the control radius. A status colors its text, never the fill, and has no dot. A category can take a data hue (`hue="amber"`): one hue per category in a view. |
 | `kbd` | The key cap for a real shortcut, such as ⌘K. |
 | `tooltip` | A label for an icon button or a shortcut. |
 | `popover` | A small form, a share link or a detail card on a trigger. On a phone it opens as a bottom sheet by itself, titled by its `label`. |
@@ -99,7 +99,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `card` | A raised surface for one object that links somewhere. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
 | `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. |
-| `chart` | `BarChart`, `LineChart` and `Meter`, drawn in the foreground and never the accent. Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
+| `chart` | `BarChart`, `LineChart` and `Meter`, never the accent: the foreground by default, or data hues when color tells series apart (`hue` on a series, or `hues` on the chart). Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
 | `app-shell` | `AppShell`, `SidebarNav` and `SidebarLink`: a sidebar that runs the full height of the page, and the page beside it. On a phone it becomes a top bar and a bottom sheet by itself. Lay the page out with `grid grid-cols-1`, so a wide table cannot stretch it. |
 | `pagination` | The range ("21 to 40 of 143") with Previous and Next under a table. You hold the page in state. |
 | `list` | Project rows and cards with status filters (`ProjectList`, `ProjectGrid`, `ProjectFilters`). It reads a `Project` (`id`, `name`, `client`, `deploy`, `status`, `updated`, `description`, `tags`, `cover`), so map your data into that shape. |
