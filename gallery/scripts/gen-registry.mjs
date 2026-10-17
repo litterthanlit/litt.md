@@ -930,6 +930,22 @@ const COPY = {
     description: "Two values set at once on one surface, like a reply's tone against its length. A well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. It is the Slider in two dimensions, in the foreground and never the accent.",
     docs: "Import Pad from components/litt/pad. Give it a label, an x and a y axis ({ label, min, max, step, minLabel, maxLabel }), and hold the value in state with value and onValueChange. Pass defaultMark to show the default and formatValue to say the value in words. Each axis is a range input for the keyboard and screen readers, and the arrow keys move it.",
   },
+  /* The rails step: a data hue drawn as a thin line. Each entry is owned by the agent that builds the item. */
+  breakdown: {
+    title: "Breakdown",
+    description: "One whole split into its parts: a thin split rail with a segment per part in the data hues, then a row per part with its own 4px rail, a label and a mono reading, or a small legend for a tile. Storage by file type, credits by feature.",
+    docs: "Import Breakdown from components/litt/breakdown. Pass a label, the parts as { label, value } largest first, and the total when there is free space. Past five parts the rest fold into Other. Pin a hue on a part to keep a kind's color across a page.",
+  },
+  sparkline: {
+    title: "Sparkline",
+    description: "A trend in one thin line, with no axes, gridlines or labels: a 2px line in the foreground or a data hue, a dot on the latest value and an optional dashed baseline. For a stat tile, a table cell or a list row. It shows shape, not values.",
+    docs: "Import Sparkline from components/litt/sparkline. Pass a label and the values, oldest first. It fills its container's width, so give a table cell a wrapper with a width, and fix min and max so rows compare. Put the exact figure beside it. Stat takes one in its trend prop.",
+  },
+  spread: {
+    title: "Spread",
+    description: "How values spread, one thin rail per row on a shared scale: the full range faint, the middle half in a data hue, the median as a tick and in mono at the end. Build times by site, reply times by client. A row gives its values or its quartiles, a goal is a dashed line through every rail, and under 28rem the label moves above its rail. Static, with a legend in words.",
+    docs: "Import Spread from components/litt/spread. Pass a label and items of { label, values } or { label, min, p25, median, p75, max }, and a formatValue that includes the unit. Rows share one scale (linear or log, with an optional domain and ticks) and an optional goal. It fills its container's width, so give the container a width.",
+  },
 };
 
 /* =============================================================== assemble the items */
