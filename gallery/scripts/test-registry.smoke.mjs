@@ -384,6 +384,29 @@ const RECIPES = {
           <div className="w-48"><Breakdown layout="legend" label="Smoke tile" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24 }]} /></div>
         </div>`,
   },
+  plan: {
+    needs: ["Plan"],
+    types: ["PlanStep"],
+    top: [
+      `const PLAN_LABELS = ["Read the layout", "Map the sections", "Run the build", "Publish a preview", "Send the link"];`,
+      `// The steps before "at" are done, step "at" runs and the rest wait.`,
+      `const planSteps = (at: number): PlanStep[] => PLAN_LABELS.map((label, i): PlanStep => ({ id: "s" + i, label, status: i < at ? "done" : i === at ? "running" : "pending" }));`,
+      `const FAILED_STEPS: PlanStep[] = [`,
+      `  { id: "read", label: "Read the layout", status: "done" },`,
+      `  { id: "build", label: "Run the build", status: "failed", detail: "Build failed: font file missing" },`,
+      `  { id: "video", label: "Compress the videos", status: "skipped" },`,
+      `  { id: "preview", label: "Publish a preview", status: "pending" },`,
+      `];`,
+    ],
+    state: [`const [planAt, setPlanAt] = useState(2);`],
+    jsx: `<div className="grid w-full max-w-md gap-8" data-testid="litt-plan">
+          <div className="grid gap-4" data-testid="plan-running">
+            <Plan label="Smoke plan" steps={planSteps(planAt)} />
+            <div><@Btn type="button" data-testid="plan-next" onClick={() => setPlanAt((n) => n + 1)}>Next step</@Btn></div>
+          </div>
+          <div data-testid="plan-failed"><Plan label="Smoke failed plan" steps={FAILED_STEPS} /></div>
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1742,6 +1765,75 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await note.getByRole("button", { name: "Dismiss" }).click();
           await note.waitFor({ state: "detached", timeout: 3000 });
           return "warning icon, hairline surface, action below, close unmounts";
+        });
+      }
+      if (has("plan")) {
+        await attempt("plan: an ordered list named by its label, the count over the rail, the running step current, failed and skipped said in words, done labels not struck through, a live region that follows the run", async () => {
+          const box = page.locator("[data-testid=litt-plan]");
+          const running = box.locator("[data-testid=plan-running]");
+          const list = running.getByRole("list", { name: "Smoke plan" });
+          await list.waitFor({ state: "visible", timeout: 5000 });
+          if ((await list.evaluate((el) => el.tagName)) !== "OL") throw new Error("the steps are not an ol");
+          const items = list.getByRole("listitem");
+          if ((await items.count()) !== 5) throw new Error(`${await items.count()} steps, not 5`);
+          const tone = (value) =>
+            page.evaluate((v) => {
+              const el = document.createElement("span");
+              document.body.append(el);
+              el.style.color = v;
+              const out = getComputedStyle(el).color;
+              el.remove();
+              return out;
+            }, value);
+          const [fg, muted, subtle, danger] = [await tone("var(--litt-fg)"), await tone("var(--litt-fg-muted)"), await tone("var(--litt-fg-subtle)"), await tone("var(--litt-danger)")];
+          const readStep = (scope, n) =>
+            scope.getByRole("listitem").nth(n).evaluate((li) => {
+              const label = li.querySelector("p");
+              return { text: li.textContent.replace(/\s+/g, " ").trim(), icon: getComputedStyle(li.querySelector("svg")).color, label: getComputedStyle(label).color, deco: getComputedStyle(label).textDecorationLine, current: li.getAttribute("aria-current"), height: li.getBoundingClientRect().height };
+            });
+          const [done, current, pending] = [await readStep(list, 0), await readStep(list, 2), await readStep(list, 3)];
+          if (current.current !== "step" || (await list.locator("[aria-current=step]").count()) !== 1) throw new Error("the running step is not the one aria-current=step");
+          if (!current.text.startsWith("Run the build, running")) throw new Error(`the running step reads "${current.text}"`);
+          if (done.current) throw new Error("a done step is aria-current");
+          if (!done.text.startsWith("Read the layout, done")) throw new Error(`a done step reads "${done.text}"`);
+          if (done.icon !== muted || done.label !== muted) throw new Error(`a done step is ${done.label} / ${done.icon}, not --litt-fg-muted (${muted})`);
+          if (done.deco !== "none") throw new Error(`a done label has text-decoration ${done.deco}`);
+          if (current.icon !== fg || current.label !== fg) throw new Error(`the running step is ${current.label} / ${current.icon}, not --litt-fg (${fg})`);
+          if (pending.icon !== subtle || pending.label !== subtle) throw new Error(`a pending step is ${pending.label}, not --litt-fg-subtle (${subtle})`);
+          if (done.height < 32) throw new Error(`a row is ${done.height}px tall`);
+          const shown = async () => ((await running.textContent()) ?? "").replace(/\s+/g, " ");
+          if (!/Smoke plan ?2 of 5 steps done/.test(await shown())) throw new Error(`the header reads "${await shown()}"`);
+          const fill = running.locator("div[aria-hidden=true] > div").first();
+          const rail = await fill.evaluate((el) => ({ width: el.style.width, bg: getComputedStyle(el).backgroundColor, track: getComputedStyle(el.parentElement).height, motion: getComputedStyle(el).transitionDuration }));
+          if (rail.width !== "40%") throw new Error(`the rail fill is ${rail.width}, not 40%`);
+          if (rail.bg !== fg) throw new Error(`the rail fill is ${rail.bg}, not --litt-fg (${fg})`);
+          if (rail.track !== "4px") throw new Error(`the rail is ${rail.track} tall`);
+          if (rail.motion !== "0s") throw new Error(`the rail fill transitions over ${rail.motion}`);
+          if ((await running.getByRole("status").textContent())?.trim()) throw new Error("the live region spoke on the first render");
+          const said = async (text) => {
+            const deadline = Date.now() + 3000;
+            while (Date.now() < deadline) {
+              if ((await running.getByRole("status").textContent())?.trim() === text) return;
+              await page.waitForTimeout(100);
+            }
+            throw new Error(`the live region says "${(await running.getByRole("status").textContent())?.trim()}", not "${text}"`);
+          };
+          await box.getByTestId("plan-next").click();
+          await said("Step 4 of 5: Publish a preview");
+          if (!/3 of 5 steps done/.test(await shown())) throw new Error(`the header reads "${await shown()}" after one step`);
+          await box.getByTestId("plan-next").click();
+          await box.getByTestId("plan-next").click();
+          await said("Plan done");
+          if (!/5 of 5 steps done/.test(await shown())) throw new Error(`the header reads "${await shown()}" at the end`);
+          if (await list.locator("[aria-current=step]").count()) throw new Error("a step is still current when the plan is done");
+          const failed = box.locator("[data-testid=plan-failed]");
+          const [bad, skip] = [await readStep(failed, 1), await readStep(failed, 2)];
+          if (bad.text !== "Run the build, failedFailedBuild failed: font file missing") throw new Error(`the failed step reads "${bad.text}"`);
+          if (bad.icon !== danger) throw new Error(`the failed icon is ${bad.icon}, not --litt-danger (${danger})`);
+          if (bad.label !== fg) throw new Error(`the failed label is ${bad.label}, not --litt-fg (${fg})`);
+          if (skip.text !== "Compress the videos, skippedSkipped" || skip.icon !== subtle) throw new Error(`the skipped step reads "${skip.text}" in ${skip.icon}`);
+          if (!/1 of 4 steps done/.test(((await failed.textContent()) ?? "").replace(/\s+/g, " "))) throw new Error("a failed and a skipped step counted as done");
+          return "ol, aria-current, fg tones, danger x, 40% rail, Step 4 of 5 then Plan done";
         });
       }
       if (has("app-shell")) {

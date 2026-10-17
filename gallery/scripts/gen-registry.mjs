@@ -969,8 +969,8 @@ const COPY = {
   },
   plan: {
     title: "Plan",
-    description: "An agent's steps for a task, ticked off as it works: a count and a thin rail, then each step with its status mark, the current one in the foreground. Static: statuses swap at once.",
-    docs: "Import Plan from components/litt/plan. Pass a label and steps of { label, status }.",
+    description: "An agent's steps for a task, ticked off as it works: the label and a mono count (\"3 of 7\") over a 4px rail in the foreground, then an ordered list of steps, each with a 16px status mark. The running step is a half-filled circle that never spins, a done step steps its color back and is never struck through, a failed step has a danger x and says Failed, a skipped one is a dashed circle that says Skipped, and any step can carry a detail line. A polite live region says which step started and when the plan is done. Statuses swap at once, and a step added later fades in.",
+    docs: "Import Plan from components/litt/plan. Pass a label and steps of { id, label, status, detail? }, with status one of pending, running, done, failed or skipped. Hold the steps in state and change a status in place as the agent works, and give every step a stable id so only a step you add later fades in. The count is the done steps over all steps, and failed and skipped steps do not count. It fills its container and has no card, so put it in a turn or in a panel you draw.",
   },
   "code-block": {
     title: "Code block",
