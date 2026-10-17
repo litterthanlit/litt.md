@@ -897,8 +897,8 @@ const COPY = {
   },
   timeline: {
     title: "Timeline",
-    description: "The steps of a run in order: when each started, how long it took and how it ended, grouped into phases. Long steps draw their time on the rail, with the last run beside it. A strip shows the whole run at a glance.",
-    docs: "Import Timeline, TimelinePhase, TimelineStep, TimelineResult and TimelineBar from components/litt/timeline. Give each step a label, a start, a duration and a status.",
+    description: "The steps of a run in order, such as a deploy: when each started, a status icon on a hairline rail, the label and how long it took, grouped into phases. In a proportional timeline long steps draw their time as a bar in the phase's data hue, with the last run beside it. A strip shows the whole run at a glance.",
+    docs: "Import Timeline, TimelinePhase, TimelineStep, TimelineResult and TimelineBar from components/litt/timeline. Put steps in phases, give each step an at, a label, a status and its seconds, and close with a TimelineResult. Feed TimelineBar the same data as the list, and keep it beside the list.",
   },
   "dot-plot": {
     title: "Dot plot",

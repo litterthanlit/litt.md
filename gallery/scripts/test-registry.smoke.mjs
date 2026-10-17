@@ -285,6 +285,31 @@ const RECIPES = {
           <p data-testid="bar-list-picked">{picked}</p>
         </div>`,
   },
+  timeline: {
+    needs: ["Timeline", "TimelinePhase", "TimelineStep", "TimelineResult", "TimelineBar"],
+    types: ["TimelineBarPhase"],
+    top: [
+      `const RUN: TimelineBarPhase[] = [`,
+      `  { label: "Build", hue: "blue", steps: [{ label: "Clone repository", seconds: 2, status: "done" }, { label: "Restore build cache", seconds: 0, status: "skipped" }, { label: "Run build commands", seconds: 19, status: "done" }] },`,
+      `  { label: "Deploy", hue: "teal", steps: [{ label: "Upload build output", seconds: 12, status: "done" }, { label: "Assign smoke.studio", seconds: 0, status: "running" }] },`,
+      `];`,
+    ],
+    jsx: `<div className="grid w-full max-w-xl gap-8" data-testid="litt-timeline">
+          <TimelineBar label="Smoke run" phases={RUN} />
+          <Timeline label="Smoke run steps" proportional>
+            <TimelinePhase label="Build" duration={21} hue="blue">
+              <TimelineStep at="00:00" label="Clone repository" status="done" seconds={2} />
+              <TimelineStep at="00:02" label="Restore build cache" status="skipped" />
+              <TimelineStep at="00:02" label="Run build commands" status="done" seconds={19} previousSeconds={31} />
+            </TimelinePhase>
+            <TimelinePhase label="Deploy" duration={12} hue="teal">
+              <TimelineStep at="00:21" label="Upload build output" status="done" seconds={12} />
+              <TimelineStep at="00:33" label="Assign smoke.studio" status="running" />
+            </TimelinePhase>
+            <TimelineResult tone="success" label="Live on smoke.studio" total={33} />
+          </Timeline>
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1076,6 +1101,86 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (first !== "Archive" || second !== "Reply") throw new Error(`Enter picked "${first}" and Space "${second}", not Archive and Reply`);
           await page.evaluate(() => document.activeElement?.blur());
           return `${geo.length} aligned rows, bars ${geo[0].fill}`;
+        });
+      }
+      if (has("timeline")) {
+        await attempt("timeline reads in order, draws long steps as bars in the phase hue, and its strip shows a tooltip", async () => {
+          const box = page.locator("[data-testid=litt-timeline]");
+          const list = box.getByRole("list", { name: "Smoke run steps" });
+          await list.waitFor({ state: "visible", timeout: 8000 });
+          await page.waitForTimeout(600);
+          /* What a screen reader reads: the text that is not aria-hidden, one cell after another. */
+          const reads = (li) => {
+            const parts = [];
+            const walk = (n) => {
+              if (n.nodeType === 3) return void parts.push(n.textContent);
+              if (n.nodeType !== 1 || n.getAttribute("aria-hidden") === "true") return;
+              for (const c of n.childNodes) walk(c);
+              if (getComputedStyle(n).display !== "inline") parts.push(" ");
+            };
+            walk(li);
+            return parts.join("").replace(/\s+/g, " ").replace(/ ,/g, ",").trim();
+          };
+          const steps = list.locator("li[data-step]");
+          const n = await steps.count();
+          if (n !== 5) throw new Error(`expected 5 steps, found ${n}`);
+          const want = [
+            [2, "00:02, Run build commands, done, 19 seconds, was 31 seconds last run"],
+            [1, "00:02, Restore build cache, skipped"],
+            [4, "00:33, Assign smoke.studio, running"],
+          ];
+          for (const [i, text] of want) {
+            const got = await steps.nth(i).evaluate(reads);
+            if (got !== text) throw new Error(`step ${i} reads "${got}", not "${text}"`);
+          }
+          const result = await list.locator(":scope > li").last().evaluate(reads);
+          if (result !== "Live on smoke.studio, success, 33 seconds") throw new Error(`the result reads "${result}"`);
+          const phases = await list.locator("ol[aria-labelledby]").count();
+          if (phases !== 2) throw new Error(`expected 2 labelled phase lists, found ${phases}`);
+
+          /* A 19 second step is a 76px bar in the phase's mark tone, with the last run's 124px ghost beside it. */
+          const paint = (name) =>
+            page.evaluate((hue) => {
+              const probe = document.createElement("span");
+              probe.style.backgroundColor = `var(--litt-data-${hue})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).backgroundColor;
+              probe.remove();
+              return c;
+            }, name);
+          const bar = list.locator("[style*='height: 76px']");
+          const ghost = list.locator("[style*='height: 124px']");
+          if ((await bar.count()) !== 1 || (await ghost.count()) !== 1) throw new Error("the 19s bar or the 31s ghost is missing");
+          const tall = await bar.evaluate((el) => Math.round(el.getBoundingClientRect().height));
+          const row = await steps.nth(2).evaluate((li) => Math.round(li.getBoundingClientRect().height));
+          if (tall !== 76 || row < 124) throw new Error(`the bar is ${tall}px and its row ${row}px`);
+          const barColor = await bar.evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (barColor !== (await paint("blue"))) throw new Error(`the bar is ${barColor}, not the blue mark tone`);
+          await list.getByText("was 31s").waitFor({ state: "visible", timeout: 3000 });
+          const stroke = await steps.nth(0).locator("svg").evaluate((el) => getComputedStyle(el).strokeWidth);
+          if (stroke !== "1.5px") throw new Error(`status icons are ${stroke} strokes, not 1.5px`);
+          const moving = await list.evaluate((el) => document.getAnimations().filter((a) => el.contains(a.effect?.target)).length);
+          if (moving) throw new Error(`${moving} animation(s) run in the timeline, and nothing should move`);
+
+          /* The strip: a summary, segments sized by seconds in the phase hues, a tooltip on hover. */
+          const strip = box.getByRole("img", { name: "Smoke run: Build 21 seconds, Deploy 12 seconds, 33 seconds in all" });
+          await strip.waitFor({ state: "visible", timeout: 3000 });
+          const segs = strip.locator("div.overflow-hidden > span");
+          if ((await segs.count()) !== 3) throw new Error(`expected 3 segments, found ${await segs.count()}`);
+          const colors = await segs.evaluateAll((els) => els.map((el) => getComputedStyle(el).backgroundColor));
+          const [blue, teal] = [await paint("blue"), await paint("teal")];
+          if (colors[0] !== blue || colors[1] !== blue || colors[2] !== teal) throw new Error(`segments are ${colors.join(" / ")}`);
+          const at = await strip.boundingBox();
+          await page.mouse.move(at.x + at.width * 0.3, at.y + 44);
+          const tip = strip.locator("div[aria-hidden=true]").filter({ hasText: "Run build commands" });
+          await tip.waitFor({ state: "visible", timeout: 3000 });
+          const said = (await tip.innerText()).replace(/\s+/g, " ").trim();
+          if (!said.includes("19s")) throw new Error(`the tooltip says "${said}"`);
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          if (await tip.count()) throw new Error("Esc did not hide the tooltip");
+          await page.mouse.move(5, 5);
+          return `5 steps read in order, ${tall}px bar in ${blue}, 3 segments`;
         });
       }
       if (has("app-shell")) {
