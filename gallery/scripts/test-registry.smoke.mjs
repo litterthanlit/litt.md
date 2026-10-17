@@ -1588,6 +1588,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const colors = await segs.evaluateAll((els) => els.map((el) => getComputedStyle(el).backgroundColor));
           const [blue, teal] = [await paint("blue"), await paint("teal")];
           if (colors[0] !== blue || colors[1] !== blue || colors[2] !== teal) throw new Error(`segments are ${colors.join(" / ")}`);
+          /* The smoke page is tall: bring the strip into the window, or the mouse lands outside it. */
+          await strip.scrollIntoViewIfNeeded();
           const at = await strip.boundingBox();
           await page.mouse.move(at.x + at.width * 0.3, at.y + 44);
           const tip = strip.locator("div[aria-hidden=true]").filter({ hasText: "Run build commands" });
