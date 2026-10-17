@@ -102,11 +102,14 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `card` | A raised surface for one object that links somewhere. |
 | `callout` | An inline note in the flow: a tip, a heads-up, a result to act on (`Callout`). Color lives in the icon only, never a rail or a tinted box. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
-| `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. |
+| `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. `trend` takes a Sparkline at the foot of the tile. |
 | `chart` | `BarChart`, `LineChart` and `Meter`, never the accent: the foreground by default, or data hues when color tells series apart (`hue` on a series, or `hues` on the chart). Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
+| `sparkline` | A trend in one thin line beside its figure: in a Stat's `trend` slot, a table cell or a list row (`Sparkline`). Fix `min` and `max` so a column compares. |
+| `breakdown` | One whole split into its parts: storage by kind, credits by feature (`Breakdown`). A split rail and a meter row per part, or a legend for a tile. |
 | `bar-list` | A ranked list with a thin bar per row: top pages, most-used shortcuts, busiest repos (`BarList`). A lead slot takes a Kbd, an icon or an avatar. |
 | `gauge` | One value against a range on an arc of ticks with the figure in the middle (`Gauge`): credits left, storage. For a thin bar use `Meter`. |
 | `dot-plot` | A distribution of many values, such as reply or build times, with a goal, the median and named outliers (`DotPlot`). |
+| `spread` | How values spread per row on one scale, as thin rails: build times by site, reply times by client (`Spread`). |
 | `heatmap` | A grid of dots whose depth says how much: activity per day, usage per month, mail per hour (`Heatmap`). |
 | `timeline` | The steps of a run with their times and statuses, grouped in phases, and `TimelineBar` for the whole run as a strip. Never build a deploy log by hand. |
 | `app-shell` | `AppShell`, `SidebarNav` and `SidebarLink`: a sidebar that runs the full height of the page, and the page beside it. On a phone it becomes a top bar and a bottom sheet by itself. Lay the page out with `grid grid-cols-1`, so a wide table cannot stretch it. |

@@ -50,6 +50,28 @@ The Insights page composes them into the references' panels, with the deploy and
 7. **Amber against warning** (decision 6 above).
 8. **The data blue** next to the cobalt primary in the Insights view: distinct enough?
 
+## Rails: more of the Meters by kind
+
+After the nine items, Nick saw the Chart page's "Meters by kind" (a storage breakdown: one data hue per kind as a 4px rail on a neutral track, the label at the start, a mono reading at the end, wide air) and said "This is so good!" and "we should do more of whatever this is". It is logged in the journal as an open entry, a rule candidate rather than a rule: **a data hue is drawn thin (a 4px rail, a 2px line, a small dot) on a neutral track, with the words and the numbers neutral beside it.**
+
+Built in that idiom, by three Sonnet agents and the lead:
+
+| Item | What it adds |
+|---|---|
+| Breakdown | The Meters by kind as a component: a split rail with a segment per part, then a Meter row per part with its share, or a legend for a tile. Pinned hues are reserved; past five, Other. |
+| Sparkline | A trend in one 2px line with a dot on today, no axes. Stat takes it in `trend`, at the foot of the tile, so trends in a row line up. |
+| Spread | One rail per row on a shared scale: the full range faint, the middle half in a hue, the median a tick. Build times by site. |
+| Meter | `target` (a 2px budget tick taller than the rail) and `steps` (equal segments, 7 of 10). |
+| Bar list | A hue per row when the rows are kinds. |
+
+The Usage pattern page uses nothing else: every mark on it is a rail or a thin line, the hues name kinds of file across the whole page, and the sections are separated by air, not boxes.
+
+### Questions for Nick (rails)
+
+9. **Promote the rail idea to a rule?** If two more reactions point the same way, P11 could gain a line: a hue is drawn thin, never as a filled area. That would make the Chart's hued bars (32px wide) the exception to revisit.
+10. **Spread's faint range** is fg 24% laid over the fg-12% track, so it reads as about 33%. Flatter, or keep?
+11. **Breakdown's legend** has no entry for the free space; the header reading and the grey segment say it. Enough?
+
 ## Not in this step
 
 - A data hue for status (good and bad stay with success and danger, and words).

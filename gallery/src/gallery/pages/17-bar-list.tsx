@@ -163,6 +163,21 @@ function NarrowDemo() {
   );
 }
 
+const KINDS: BarListItem[] = [
+  { label: "Video", value: 58, hue: "violet" },
+  { label: "Images", value: 24, hue: "teal" },
+  { label: "Documents", value: 9, hue: "blue" },
+  { label: "Fonts", value: 3, hue: "amber" },
+];
+
+function KindsDemo() {
+  return (
+    <div className="w-full max-w-md">
+      <BarList label="Storage by kind" items={KINDS} formatValue={(v) => `${v} GB`} max={100} />
+    </div>
+  );
+}
+
 export default function BarListPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -191,6 +206,14 @@ export default function BarListPage() {
         caption="A row with an href is a link. It fills with the foreground at 4% on hover, at the control radius, on the instant tier, and with 6% while a finger holds it. The fill is the only thing that changes, so the row never moves. The focus ring runs inside the row, because the rows are flush."
       >
         <PagesDemo />
+      </Stage>
+
+      <Stage
+        title="Kinds in their hues"
+        code="KindsDemo"
+        caption="When the rows are kinds rather than one measure, each row can keep its own hue, the one that kind has everywhere on the page: video in violet, images in teal. The rails are drawn against the whole plan, so the empty track is the free space. One hue per kind, and the words and the numbers stay neutral."
+      >
+        <KindsDemo />
       </Stage>
 
       <Stage

@@ -231,7 +231,7 @@ const RECIPES = {
   },
   stat: {
     needs: ["Stat", "StatGroup"],
-    jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" /></StatGroup></div>`,
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" trend={<span data-testid="stat-trend">Last 14 days</span>} /></StatGroup></div>`,
   },
   chart: {
     needs: ["BarChart", "LineChart", "Meter"],
@@ -349,6 +349,39 @@ const RECIPES = {
     state: [`const [noteOpen, setNoteOpen] = useState(true);`],
     jsx: `<div className="grid w-80 gap-4" data-testid="litt-callout">
           {noteOpen && <Callout tone="warning" title="Plan renews in 3 days" description="Change it before 4 November." action={<@Btn type="button" data-testid="callout-action">Manage plan</@Btn>} onDismiss={() => setNoteOpen(false)} />}
+        </div>`,
+  },
+  sparkline: {
+    needs: ["Sparkline"],
+    jsx: `<div className="grid w-64 gap-4" data-testid="litt-sparklines">
+          <div data-testid="spark-quiet"><Sparkline label="Median build time" values={[44, 46, 41, 37, 45, 43, 41]} formatValue={(v) => v + " s"} baseline={45} /></div>
+          <div data-testid="spark-blue"><Sparkline label="Deploys per day" values={[5, 7, 4, 9]} hue="blue" height={48} /></div>
+          <div data-testid="spark-empty"><Sparkline label="Visits per day" values={[]} /></div>
+        </div>`,
+  },
+  spread: {
+    needs: ["Spread"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-spread">
+          <Spread
+            label="Smoke build times"
+            hue="blue"
+            goal={50}
+            goalLabel="50 s goal"
+            formatValue={(v) => Math.round(v) + " s"}
+            items={[
+              { label: "Halo site", values: [71, 22, 41, 48, 32] },
+              { label: "Northwind", min: 15, p25: 24, median: 29, p75: 38, max: 56 },
+              { label: "Atlas portfolio", values: [40, 55, 62, 70, 90] },
+            ]}
+          />
+        </div>`,
+  },
+  breakdown: {
+    needs: ["Breakdown"],
+    jsx: `<div className="grid w-full max-w-md gap-8" data-testid="litt-breakdown">
+          <Breakdown label="Smoke storage" total={100} totalText="85 of 100 GB" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24, hue: "teal" }, { label: "Fonts", value: 3 }]} />
+          <Breakdown label="Smoke credits" unit={["credit", "credits"]} items={[{ label: "Builds", value: 40 }, { label: "Previews", value: 30 }, { label: "Resizing", value: 20 }, { label: "Analytics", value: 10 }, { label: "Forms", value: 8 }, { label: "Webhooks", value: 6 }, { label: "Redirects", value: 4 }]} />
+          <div className="w-48"><Breakdown layout="legend" label="Smoke tile" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24 }]} /></div>
         </div>`,
   },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
@@ -993,6 +1026,226 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           });
           if (hued !== violet) throw new Error(`a violet meter fills with ${hued}, not --litt-data-violet (${violet})`);
           return `${colors.length} mark colors, none the accent; a hued meter is --litt-data-violet`;
+        });
+      }
+      if (has("sparkline")) {
+        await attempt("sparkline reads its summary, draws a 2px line and a dot in the data hue, a dashed baseline, and a Stat's trend slot", async () => {
+          const box = page.locator("[data-testid=litt-sparklines]");
+          const quiet = box.locator("[data-testid=spark-quiet] svg[role=img]");
+          await quiet.waitFor({ state: "visible", timeout: 8000 });
+          const want = "Median build time: from 44 s to 41 s, low 37 s, high 46 s, baseline 45 s";
+          const said = await quiet.getAttribute("aria-label");
+          if (said !== want) throw new Error(`the summary reads "${said}", not "${want}"`);
+          const stops = await box.locator("button, a, input, [tabindex]").count();
+          if (stops) throw new Error(`a sparkline is not interactive, yet ${stops} focusable element(s) are inside`);
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [blue, blueText, accent, lineStrong, fg55] = [
+            await colorOf("var(--litt-data-blue)"),
+            await colorOf("var(--litt-data-blue-text)"),
+            await colorOf("var(--litt-accent)"),
+            await colorOf("var(--litt-line-strong)"),
+            await colorOf("color-mix(in oklab, var(--litt-fg) 55%, transparent)"),
+          ];
+          const hued = box.locator("[data-testid=spark-blue] svg[role=img]");
+          if ((await hued.getAttribute("aria-label")) !== "Deploys per day: from 5 to 9, low 4, high 9") throw new Error(`the hued summary reads "${await hued.getAttribute("aria-label")}"`);
+          const marks = (loc) =>
+            loc.evaluate((svg) => {
+              const path = svg.querySelector("path");
+              const circles = [...svg.querySelectorAll("circle")];
+              const s = path && getComputedStyle(path);
+              return {
+                line: s?.stroke,
+                width: s?.strokeWidth,
+                cap: s?.strokeLinecap,
+                join: s?.strokeLinejoin,
+                fill: s?.fill,
+                radii: circles.map((c) => c.getAttribute("r")),
+                dot: circles.length ? getComputedStyle(circles[circles.length - 1]).fill : null,
+                svg: svg.getBoundingClientRect().width,
+                box: svg.parentElement.getBoundingClientRect().width,
+              };
+            });
+          const h = await marks(hued);
+          if (h.line !== blue || h.dot !== blueText) throw new Error(`the hued line is ${h.line} and its dot ${h.dot}, not --litt-data-blue (${blue}) and --litt-data-blue-text (${blueText})`);
+          if ([h.line, h.dot].includes(accent)) throw new Error("a mark is the accent");
+          if (h.width !== "2px" || h.cap !== "round" || h.join !== "round" || h.fill !== "none") throw new Error(`the line is ${h.width} with ${h.cap} caps and ${h.join} joins, fill ${h.fill}`);
+          if (h.radii.join() !== "6,4") throw new Error(`the ring and the dot have radii ${h.radii.join()}, not 6,4`);
+          if (Math.abs(h.svg - h.box) > 1) throw new Error(`the drawing is ${h.svg}px wide in a ${h.box}px box`);
+          const q = await marks(quiet);
+          if (q.line !== fg55) throw new Error(`the quiet line is ${q.line}, not the foreground at 55% (${fg55})`);
+          const baseline = await quiet.evaluate((svg) => {
+            const line = svg.querySelector("line");
+            const s = line && getComputedStyle(line);
+            return line && { stroke: s.stroke, width: s.strokeWidth, dash: s.strokeDasharray, span: Number(line.getAttribute("x2")) - Number(line.getAttribute("x1")), drawn: svg.getBoundingClientRect().width };
+          });
+          if (!baseline || baseline.stroke !== lineStrong || baseline.width !== "1px" || baseline.dash === "none") throw new Error(`the baseline is ${JSON.stringify(baseline)}, not a dashed 1px --litt-line-strong line`);
+          if (Math.abs(baseline.span - baseline.drawn) > 1) throw new Error(`the baseline spans ${baseline.span}px of ${baseline.drawn}px`);
+          const empty = box.locator("[data-testid=spark-empty] svg[role=img]");
+          const emptyShape = await empty.evaluate((svg) => ({ label: svg.getAttribute("aria-label"), marks: svg.querySelectorAll("path, circle, line").length }));
+          if (emptyShape.label !== "Visits per day: no data" || emptyShape.marks) throw new Error(`an empty sparkline reads ${JSON.stringify(emptyShape)}`);
+          let detail = `line ${h.line}, dot ${h.dot}`;
+          if (has("stat")) {
+            const dd = page.locator("[data-testid=litt-stats] dd").nth(1);
+            const term = await page.locator("[data-testid=litt-stats] dt").nth(1).innerText();
+            const text = (await dd.innerText()).replace(/\s+/g, " ").trim();
+            if (term !== "Median build" || !text.startsWith("41s") || !text.includes("Down 6 s on last week") || !text.endsWith("Last 14 days")) throw new Error(`a Stat with a trend reads "${term}: ${text}"`);
+            const place = await dd.evaluate((el) => {
+              const tile = el.parentElement;
+              const trend = el.querySelector("[data-testid=stat-trend]").parentElement.getBoundingClientRect();
+              const delta = el.querySelectorAll(":scope > span")[1].getBoundingClientRect();
+              const inner = tile.getBoundingClientRect().bottom - parseFloat(getComputedStyle(tile).paddingBottom);
+              return { gapBelow: inner - trend.bottom, after: trend.top - delta.bottom };
+            });
+            if (Math.abs(place.gapBelow) > 1.5 || place.after < 0) throw new Error(`the trend is ${place.gapBelow.toFixed(1)}px from the foot of the tile and ${place.after.toFixed(1)}px under the delta`);
+            detail += "; a Stat's trend sits at the foot";
+          }
+          return detail;
+        });
+      }
+      if (has("spread")) {
+        await attempt("spread reads each row in words, lines the rails up on one scale, draws the middle half in the data hue and runs the goal through every rail", async () => {
+          const box = page.locator("[data-testid=litt-spread]");
+          const list = box.getByRole("list", { name: "Smoke build times" });
+          await list.waitFor({ state: "visible", timeout: 8000 });
+          const rows = list.getByRole("listitem");
+          if ((await rows.count()) !== 3) throw new Error(`the list has ${await rows.count()} rows, not 3`);
+          const spoken = await rows.evaluateAll((els) =>
+            els.map((e) => {
+              const copy = e.cloneNode(true);
+              copy.querySelectorAll("[aria-hidden=true]").forEach((n) => n.remove());
+              return copy.textContent.replace(/\s+/g, " ").trim();
+            }),
+          );
+          const want = [
+            "Halo site: median 41 s, middle half 32 s to 48 s, range 22 s to 71 s",
+            "Northwind: median 29 s, middle half 24 s to 38 s, range 15 s to 56 s",
+            "Atlas portfolio: median 62 s, middle half 55 s to 70 s, range 40 s to 90 s, past the 50 s goal",
+          ];
+          if (spoken.join("|") !== want.join("|")) throw new Error(`the rows read ${JSON.stringify(spoken)}`);
+          const colorOf = (v) =>
+            page.evaluate((name) => {
+              const probe = document.createElement("span");
+              probe.style.color = `var(${name})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [blue, blueText, strong, accentColor] = [await colorOf("--litt-data-blue"), await colorOf("--litt-data-blue-text"), await colorOf("--litt-line-strong"), await colorOf("--litt-accent")];
+          const geo = await list.evaluate((ul) => {
+            const foot = ul.parentElement.querySelector(":scope > div[aria-hidden=true] > div").getBoundingClientRect();
+            return {
+              foot: { x: foot.left, w: foot.width },
+              rows: [...ul.querySelectorAll("li")].map((li) => {
+                const rail = li.querySelector("[aria-hidden=true]");
+                const r = rail.getBoundingClientRect();
+                const parts = [...rail.querySelectorAll(":scope > span")];
+                const track = parts[0];
+                const mid = parts[2];
+                const tick = parts[parts.length - 1];
+                const t = tick.getBoundingClientRect();
+                const line = rail.querySelector("line");
+                return {
+                  x: r.left,
+                  w: r.width,
+                  trackH: track.getBoundingClientRect().height,
+                  midH: mid.getBoundingClientRect().height,
+                  mid: getComputedStyle(mid).backgroundColor,
+                  tick: getComputedStyle(tick).backgroundColor,
+                  tickW: t.width,
+                  tickH: t.height,
+                  tickX: t.left + t.width / 2 - r.left,
+                  dash: line?.getAttribute("stroke-dasharray") ?? null,
+                  stroke: line ? getComputedStyle(line).stroke : null,
+                  lineX: line ? line.getBoundingClientRect().left - r.left : null,
+                  /* By "mono" in the class, not the class itself: a host has font-litt-mono. */
+                  medRight: [...li.querySelectorAll("span")].find((el) => /\bfont-(?:litt-)?mono\b/.test(el.className)).getBoundingClientRect().right,
+                };
+              }),
+            };
+          });
+          const g = geo.rows;
+          if (g.some((r) => Math.abs(r.x - g[0].x) > 0.5 || Math.abs(r.w - g[0].w) > 0.5 || Math.abs(r.medRight - g[0].medRight) > 0.5)) throw new Error(`the rails or the medians do not line up: ${JSON.stringify(g.map((r) => [r.x, r.w, r.medRight]))}`);
+          if (Math.abs(geo.foot.x - g[0].x) > 0.5 || Math.abs(geo.foot.w - g[0].w) > 0.5) throw new Error("the scale under the rows is not the rails' width");
+          if (g.some((r) => r.trackH !== 4 || r.midH !== 4 || r.tickW !== 2 || r.tickH !== 12)) throw new Error(`the rail is not 4px with a 2 by 12 tick: ${JSON.stringify(g[0])}`);
+          if (g.some((r) => r.mid !== blue || r.mid === accentColor)) throw new Error(`the middle half is ${g[0].mid}, not --litt-data-blue (${blue})`);
+          if (g.some((r) => r.tick !== blueText)) throw new Error(`the median tick is ${g[0].tick}, not --litt-data-blue-text (${blueText})`);
+          /* The domain is 0 to 100 (15 to 90 and a goal at 50, rounded out), so a value sits at its own percent of the rail. */
+          if (Math.abs(g[0].tickX - 0.41 * g[0].w) > 1.5 || Math.abs(g[1].tickX - 0.29 * g[1].w) > 1.5) throw new Error(`the medians are at ${g[0].tickX} and ${g[1].tickX} of ${g[0].w}, not 41% and 29%`);
+          if (g.some((r) => r.dash !== "4 4" || r.stroke !== strong || Math.abs(r.lineX - 0.5 * r.w) > 1.5)) throw new Error(`the goal line is not a dashed --litt-line-strong at 50%: ${JSON.stringify(g.map((r) => [r.dash, r.stroke, r.lineX]))}`);
+          await box.getByText("50 s goal", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          await box.getByText("100 s", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          const legend = (await box.locator("p").last().innerText()).replace(/\s+/g, " ");
+          if (legend !== "Faint: the full range. Blue: the middle half. Tick: the median.") throw new Error(`the legend reads "${legend}"`);
+          const stops = await box.locator("a, button, [tabindex]").count();
+          if (stops) throw new Error(`a static spread has ${stops} focus stops`);
+          return `3 rows read in words, rails at x ${g[0].x.toFixed(0)} wide ${g[0].w.toFixed(0)}, middle half is --litt-data-blue`;
+        });
+      }
+      if (has("breakdown")) {
+        await attempt("breakdown: the split rail reads its parts, segments take the hues in order, rows meter their share, a sixth part folds into Other", async () => {
+          const box = page.locator("[data-testid=litt-breakdown]");
+          const rail = box.getByRole("img", { name: /^Smoke storage/ });
+          await rail.waitFor({ state: "visible", timeout: 8000 });
+          const said = await rail.getAttribute("aria-label");
+          if (said !== "Smoke storage, 85 of 100 GB: Video 58 GB, Images 24 GB, Fonts 3 GB, 15 GB free") throw new Error(`the split rail reads "${said}"`);
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [blue, teal, amber, accent, free, other] = [
+            await colorOf("var(--litt-data-blue)"),
+            await colorOf("var(--litt-data-teal)"),
+            await colorOf("var(--litt-data-amber)"),
+            await colorOf("var(--litt-accent)"),
+            await colorOf("color-mix(in oklab, var(--litt-fg) 12%, transparent)"),
+            await colorOf("color-mix(in oklab, var(--litt-fg) 55%, transparent)"),
+          ];
+          const segs = await rail.evaluate((el) => {
+            const r = el.getBoundingClientRect();
+            return { width: r.width, kids: [...el.children].map((c) => ({ bg: getComputedStyle(c).backgroundColor, w: c.getBoundingClientRect().width, h: c.getBoundingClientRect().height, end: c.getBoundingClientRect().right - r.left })) };
+          });
+          /* Video takes blue (teal is Images' own pin), Images teal, Fonts the next free hue (amber), then the free space. */
+          const want = [blue, teal, amber, free];
+          if (segs.kids.length !== 4 || segs.kids.some((k, i) => k.bg !== want[i] || k.h !== 4)) throw new Error(`the segments are ${segs.kids.map((k) => k.bg).join(" | ")}, not blue, teal, amber, free`);
+          if (segs.kids.some((k) => k.bg === accent)) throw new Error("a segment is the accent");
+          const air = (segs.width - 6) / 100;
+          if (Math.abs(segs.kids[0].w - 58 * air) > 1 || Math.abs(segs.kids[1].w - 24 * air) > 1 || Math.abs(segs.kids[2].w - 3 * air) > 1 || Math.abs(segs.kids[3].end - segs.width) > 1) throw new Error(`the segments are ${segs.kids.map((k) => k.w.toFixed(1)).join("/")}px in a ${segs.width}px rail, not 58/24/3/15 of it`);
+          const images = box.getByRole("meter", { name: "Images" });
+          const got = await images.evaluate((el) => ({ min: el.getAttribute("aria-valuemin"), max: el.getAttribute("aria-valuemax"), now: el.getAttribute("aria-valuenow"), text: el.getAttribute("aria-valuetext"), share: el.firstElementChild.getBoundingClientRect().width / el.getBoundingClientRect().width, fill: getComputedStyle(el.firstElementChild).backgroundColor, h: el.getBoundingClientRect().height }));
+          if (got.min !== "0" || got.max !== "100" || got.now !== "24" || got.text !== "24 GB, 24%") throw new Error(`the Images meter reads ${JSON.stringify(got)}`);
+          if (Math.abs(got.share - 0.24) > 0.01 || got.fill !== teal || got.h !== 4) throw new Error(`the Images meter fills ${got.share.toFixed(2)} in ${got.fill} on a ${got.h}px rail, not 0.24 in teal on 4px`);
+          const rows = box.getByRole("list", { name: "Smoke storage" }).getByRole("listitem");
+          if ((await rows.count()) !== 3) throw new Error(`the storage list has ${await rows.count()} rows, not 3`);
+          /* Seven parts: the first five keep a hue, the sixth and seventh fold into one Other in the foreground at 55%. */
+          const credits = box.getByRole("list", { name: "Smoke credits" });
+          if ((await credits.getByRole("meter").count()) !== 6) throw new Error(`seven parts should draw five rows and Other, found ${await credits.getByRole("meter").count()}`);
+          const tail = await box.getByRole("meter", { name: "Other" }).evaluate((el) => ({ now: el.getAttribute("aria-valuenow"), text: el.getAttribute("aria-valuetext"), fill: getComputedStyle(el.firstElementChild).backgroundColor }));
+          if (tail.now !== "10" || tail.text !== "10 credits, 8%" || tail.fill !== other) throw new Error(`Other reads ${JSON.stringify(tail)}, not 10 (Webhooks and Redirects) in the foreground at 55%`);
+          const folds = await box.getByRole("img", { name: /^Smoke credits/ }).getAttribute("aria-label");
+          if (!folds.endsWith("Forms 8 credits, Other 10 credits")) throw new Error(`the credits summary reads "${folds}"`);
+          const legend = box.getByRole("list", { name: "Smoke tile" });
+          const entries = await legend.getByRole("listitem").evaluateAll((els) =>
+            els.map((e) => {
+              const swatch = e.querySelector("[aria-hidden=true]").getBoundingClientRect();
+              return { text: e.textContent.replace(/\s+/g, " ").trim(), swatch: `${swatch.width}x${swatch.height}` };
+            }),
+          );
+          if (entries.map((e) => e.text).join("|") !== "Video, 58 GB|Images, 24 GB" || entries.some((e) => e.swatch !== "12x4")) throw new Error(`the legend reads ${JSON.stringify(entries)}`);
+          return `4 segments in blue, teal, amber and free; Other is ${tail.text}`;
         });
       }
       if (has("pad")) {

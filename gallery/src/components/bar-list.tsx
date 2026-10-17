@@ -7,7 +7,7 @@
  *   (caption). A row is at least 44px tall (airy) and rows are split by `--line` hairlines.
  * - Bar: the Meter's rail, a 4px rail at the control radius. The track is fg at 12% (the Meter's), the fill is `--fg` (the quiet
  *   default) or the hue's mark tone, and its width is value / max, where max defaults to the largest value. One
- *   hue means one thing in a list (P11): here, the quantity the bars measure. A bar never takes the accent.
+ *   hue means one thing in a list (P11): the quantity the bars measure, or, with a hue per row, each row's kind. A bar never takes the accent.
  * - Alignment: one grid for the whole list. Every row is a subgrid of it, so the bars start at the same x and end
  *   at the same x, and the values and deltas line up as columns. The list measures itself with a container query,
  *   not the window: under 28rem the bar moves under the label at the full width of the row, and the lead, the
@@ -63,6 +63,8 @@ export type BarListItem = {
   delta?: string;
   /** Whether the change is good news, bad news or neither. A fall in errors is good, so this is not the direction. */
   tone?: Tone;
+  /** This row's own data hue, when the rows are kinds and each kind keeps its color on the page (video in violet). It overrides the list's hue. One hue per kind. */
+  hue?: BarListHue;
 };
 
 export type BarListProps = {
@@ -178,7 +180,7 @@ export function BarList({ label, items, max, formatValue, unit, hue, onSelect, c
           const word = unit ? unitFor(item.value) : "";
           /* Hidden words after the number: the unit, then a comma when the delta follows. */
           const said = (word ? ` ${word}` : "") + (item.delta ? ", " : "");
-          return <Row key={`${i}-${item.label}`} item={item} index={i} share={share} fill={fill} shown={fmt(item.value)} said={said} onSelect={onSelect} />;
+          return <Row key={`${i}-${item.label}`} item={item} index={i} share={share} fill={item.hue ? HUE[item.hue] : fill} shown={fmt(item.value)} said={said} onSelect={onSelect} />;
         })}
       </ol>
     </div>

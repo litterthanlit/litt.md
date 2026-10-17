@@ -1,9 +1,9 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, bar list, gauge, dot plot, heatmap, timeline) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Token input · Select · Checkbox and radio · Switch · Slider · Pad · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Callout · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Pagination · Stat · Chart · Bar list · Gauge · Dot plot · Heatmap · Timeline · App shell · Empty and loading states · Forms
+Button · Input · Token input · Select · Checkbox and radio · Switch · Slider · Pad · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Callout · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Pagination · Stat · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · App shell · Empty and loading states · Forms
 
 ---
 
@@ -211,6 +211,7 @@ A number tile for one figure that tells you how things stand: active projects, d
 - **Delta:** an optional line under the value at the caption size: a word and the number, "Up 12% on last week". The word says the direction. The color says whether it is news: `--success` for good, `--danger` for bad, `--fg-subtle` for neither. So a build time that fell is "Down 3 s on last week" in `--success`. Never an arrow glyph alone, never a dot. The good or bad judgment is also in hidden text ("good news"), so color is never the only signal.
 - **Group:** a grid that measures itself. Two tiles across, four across from 40rem wide, one below 20rem. Tiles in a row share the row's height, and the gap is `--space-4`.
 - **Semantics:** a description list. The label is the term and the value is its description, so a screen reader reads "Active projects, 12".
+- **Trend:** an optional Sparkline at the foot of the tile (`trend`), under the delta and full width, so the trends in a row of tiles line up whether or not a tile has a delta. It reads after the value and the delta.
 - **Motion:** none. A value that changes just changes. The entrance cascade belongs to the page.
 
 ## Chart
@@ -227,12 +228,30 @@ Bars compare amounts and a line follows change over time. Both are drawn in plai
 - **Keyboard:** one tab stop, on the current mark. Left and right arrows move along the marks, Home and End go to the ends.
 - **Accessibility:** the SVG is `role="img"` with a label that summarises the data ("Deploys per day, last 14 days: from 5 to 1, peak 9"), and a visually hidden table lists every value. A visually hidden button per category, named by its values ("3 Oct: 5 deploys"), sits in a labelled group outside the image: they are the keyboard's stops.
 - **Touch:** a finger scrubs. The mark under it is active and shows its tooltip, which stays until the next touch elsewhere, and a vertical drag still scrolls the page. A column on a phone is narrower than a finger, which is why the target is the plot and not the column. The chart fills its container's width, the height is the caller's, and the plot never needs a horizontal scroll.
-- **Meter:** a horizontal progress bar for one value against a limit, such as storage used. The label sits at the start in the small size, the value at the end in mono at the caption size, and the 4px rail under them is `--radius-control`, filled at fg 12% and then with `--fg` to the value, or with a data hue's mark tone when the color names the thing (images, video and fonts in a storage breakdown). `role="meter"` with a name and a value text. The fill is never the accent. It does not animate.
+- **Meter:** a horizontal progress bar for one value against a limit, such as storage used. The label sits at the start in the small size, the value at the end in mono at the caption size, and the 4px rail under them is `--radius-control`, filled at fg 12% and then with `--fg` to the value, or with a data hue's mark tone when the color names the thing (images, video and fonts in a storage breakdown). `role="meter"` with a name and a value text. A `target` (a budget) is a 2px tick in `--fg-subtle`, 12px tall so it reads over the fill and the track alike, and is said after the reading. `steps` splits the rail into equal segments 2px apart for a count of a few (7 of 10 checks). The fill is never the accent. It does not animate.
+
+## Sparkline
+A trend in one thin line, with no axes and no labels: median build time beside its figure, visits per day in a table row.
+- **Anatomy:** a 2px line with round joins and caps, drawn at the container's width (the height is the caller's, 32 by default), and a dot on the latest point, 8px across over a 2px ring in the surface it sits on (`surface`). No area, no gradient, no glow.
+- **Color:** the quiet default is the line at fg 55% and the dot in `--fg`. With a data hue the line takes the mark tone and the dot the `-text` tone, so today is the strongest mark. One hue means one quantity (P11).
+- **Scale:** each line fits its own values with 2px of air. Fix `min` and `max` so a column of sparklines compares. `baseline` (a goal or an average) is a 1px dashed `--line-strong` line across the full width, and the scale includes it.
+- **Accessibility:** `role="img"` with a summary ("Median build time, last 14 days: from 44 s to 41 s, low 37 s, high 46 s, baseline 45 s"). It shows shape, not values, so the exact figure always sits beside it: in a Stat, or a mono table cell. Not interactive: no tab stop, no tooltip.
+- **In a Stat:** `trend` puts it at the foot of the tile, under the delta and full width, so the trends in a row of tiles line up.
+- **Motion:** none. New data redraws at once.
+
+## Breakdown
+One whole split into its parts: storage by kind, credits by feature. The Meter, grown into a set.
+- **Header:** the Meter's: the label at the start (small, `--fg`) and the reading at the end (mono caption, `--fg-subtle`: "91 of 100 GB").
+- **Split rail:** 4px, a segment per part as wide as its share of the total, each at `--radius-control` with 2px of air between them, in the part's hue; when the total is more than the parts, the free space is one last segment at fg 12%. A part too small to draw keeps 4px, taken from the widest segment, so the rail never overflows.
+- **Rows** (the default): one per part, `--space-6` apart, each exactly a Meter: the label, the reading with the share of the total in mono ("24 GB  24%"), and a 4px rail on the fg-12% track filled in the part's hue. **Legend** (`layout="legend"`, for a tile): under the split rail, a wrapping row of entries, each a 12 by 4px swatch rail, the label and the reading.
+- **Hues (P11):** parts take the fixed order unless the caller pins one, and a pinned hue is reserved so pinning never repaints the others. A hue is never used twice. Past five parts, the rest fold into Other at fg 55%.
+- **Accessibility:** the split rail is an image with a summary naming the whole and every part ("Storage, 91 of 100 GB: Video 58 GB, Images 24 GB, Documents 6 GB, Fonts 3 GB, 9 GB free"); each row's rail is a meter named by its label, with its reading as the value text; the legend is a list.
+- **Motion:** none. No hover, no focus stop.
 
 ## Bar list
 A ranked list where each row carries a thin bar for its share: most-used shortcuts, busiest repos, top pages.
 - **Anatomy:** an optional lead (a Kbd, a 16px icon or a small avatar, up to 48px so two key caps fit), the label (small, `--fg`, truncates), the bar, the value (mono, small, `--fg`, tabular, at the end) and an optional delta. Rows are at least 44px, split by `--line` hairlines. One grid with subgrid rows keeps every bar starting and ending at the same place and the values in a column. The list measures itself: under 28rem the bar drops under the label at the row's full width.
-- **Bar:** the Meter's rail: 4px at `--radius-control`, the track fg 12%, the fill `--fg` or one data hue's mark tone, as wide as the row's share of the largest value (or `max`). One hue means one thing: the quantity the bars measure.
+- **Bar:** the Meter's rail: 4px at `--radius-control`, the track fg 12%, the fill `--fg` or one data hue's mark tone, as wide as the row's share of the largest value (or `max`). One hue means one thing: the quantity the bars measure, or, when the rows are kinds, each row's own hue (`hue` on the item), the one that kind keeps across the page.
 - **Delta:** a word and a number at the caption size, colored and judged exactly as the Stat's: `--success` for good news, `--danger` for bad, `--fg-subtle` for neither, with the judgment in hidden text. Never an arrow alone.
 - **Rows:** a row with `href` is a link, and with `onSelect` a button: an fg-4% hover fill at `--radius-control` on the instant tier, fg 6% pressed on coarse pointers, and an inset focus ring. A static row has no hover and no focus stop.
 - **Accessibility:** an ordered list named by its label; a row reads "Archive, 412 times" with the delta's words. The lead and the bar are hidden: put anything that matters in the label.
@@ -254,6 +273,15 @@ A distribution as stacks of dots, so you see where most values fall without read
 - **Interaction:** one pointer layer; the bin under the pointer turns to the hue's text tone (`--fg` past the goal) on the instant tier, with the chart's tooltip ("1 h to 2 h, 34 replies"). One tab stop, on the median's bin; arrows, Home and End move between non-empty bins, Esc hides the tooltip, and a focused bin gets a 2px `--focus` ring. A finger scrubs, with `touch-action: pan-y`.
 - **Accessibility:** `role="img"` with a summary ("Reply times, 412 replies: median 1 h 5 m, 84% within the 4 h goal") and a hidden table of every bin, then the median, the goal and the markers.
 - **Motion:** one fade on the responsive tier. Dots never squash or grow.
+
+## Spread
+How values spread, one thin rail per row on a shared scale: build times by site, reply times by client. The Dot plot's quiet sibling.
+- **A row:** the label at the start (small, `--fg`, truncates), the rail, and the median at the end (mono caption, `--fg-subtle`, tabular). The rail: a 4px track at fg 12% across the scale, the full range over it at fg 24%, the middle half (the 25th to the 75th percentile) in the hue's mark tone, and the median as a 2 by 12px tick in the hue's `-text` tone. All at `--radius-control`. Rows are `--space-6` apart, with no dividers.
+- **Alignment:** one grid, so every rail starts and ends at the same place and the medians line up. Under 28rem the label moves above its rail.
+- **Scale:** linear or log, the ends rounded outward. The tick labels sit once under the last row, and a label that would touch its neighbor is left out. A goal is a 1px dashed `--line-strong` line through every rail, labelled once under the rows. The hue means the measure, so a row past the goal keeps it and says so in words.
+- **Legend:** one line in words, with swatches in the same tones: "Faint: the full range. Blue: the middle half. Tick: the median."
+- **Accessibility:** a list named by its label; each row reads "Halo site: median 41 s, middle half 32 s to 48 s, range 22 s to 71 s", with ", past the 4 h goal" when it is. The rails are hidden.
+- **Motion and keyboard:** none; nothing is pressable.
 
 ## Heatmap
 A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour.
