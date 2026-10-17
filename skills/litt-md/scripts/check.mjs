@@ -10,7 +10,8 @@
  *               (journal.md and inspirations.md record outside values and are exempt.)
  * 3. Parity:    the two dark blocks in tokens.css are identical.
  * 4. Coverage:  every themed token is defined in both light and dark (P8).
- * 5. Contrast:  text, control lines, focus, accent and status pairs meet WCAG.
+ * 5. Contrast:  text, control lines, focus, accent, status and data-hue pairs meet WCAG
+ *               (each data hue's -text tone is also checked on its own tint).
  * 6. Weight:    nothing goes above font-weight 400 (P9).
  * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill.
  * 8. Shadows:   no outer shadow has an x or y offset (P4).
@@ -128,6 +129,10 @@ const pairs = [
   ["--success", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--warning", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--danger", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
+  ...["blue", "amber", "teal", "violet", "rose"].flatMap((h) => [
+    [`--data-${h}`, ["--canvas", "--surface-1", "--surface-2"], 3, "a data mark (P11)"],
+    [`--data-${h}-text`, ["--canvas", "--surface-1", "--surface-2"], 4.5, "a data hue as text (P11)"],
+  ]),
 ];
 let contrastChecks = 0;
 for (const [theme, map] of [["light", light], ["dark", dark]]) {
@@ -139,6 +144,32 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
       const r = ratio(f, b);
       if (r < min) fail(`${theme}: ${fgName} on ${bgName} is ${r.toFixed(2)}:1, needs ${min}:1 (${note})`);
     }
+  }
+}
+// A hue's -text tone on its own tint. The tint is color-mix(in oklab, hue N%, surface-1), so mix it here the same way.
+const toLab = (h) => {
+  const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s];
+};
+const fromLab = ([L, a, bb]) => {
+  const l = (L + 0.3963377774 * a + 0.2158037573 * bb) ** 3, m = (L - 0.1055613458 * a - 0.0638541728 * bb) ** 3, s = (L - 0.0894841775 * a - 1.291485548 * bb) ** 3;
+  const lin = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s];
+  return "#" + lin.map((c) => Math.min(1, Math.max(0, c))).map((c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)).map((c) => Math.round(c * 255).toString(16).padStart(2, "0")).join("");
+};
+for (const [theme, map] of [["light", light], ["dark", dark]]) {
+  const t = parseFloat(map.get("--tint-strength")) / 100;
+  if (!(t > 0)) { fail(`${theme}: --tint-strength is missing or not a percentage`); continue; }
+  for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
+    const hue = map.get(`--data-${h}`), text = map.get(`--data-${h}-text`), s1 = map.get("--surface-1");
+    if (![hue, text, s1].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { fail(`${theme}: --data-${h}, its -text or --surface-1 is not a six-digit hex`); continue; }
+    const [A, B] = [toLab(hue), toLab(s1)];
+    const tint = fromLab(A.map((v, i) => v * t + B[i] * (1 - t)));
+    contrastChecks++;
+    const r = ratio(text, tint);
+    if (r < 4.5) fail(`${theme}: --data-${h}-text on its tint is ${r.toFixed(2)}:1, needs 4.5:1 (a tag or an avatar, P11)`);
   }
 }
 if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes`);

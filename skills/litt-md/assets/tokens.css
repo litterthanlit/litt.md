@@ -203,6 +203,23 @@
   --warning: #9c5a00;
   --danger: #be2e31;
 
+  /* Data hues (P11, v0.11): color that carries data, never chrome. Five hues in a fixed
+     order (blue, amber, teal, violet, rose), assigned in that order and never cycled.
+     Each mark tone reaches 3:1 on canvas and surfaces; each -text tone reaches 4.5:1 on
+     canvas, surfaces and its own tint. Fitted to these surfaces and checked for
+     color-blind separation between neighbors. */
+  --data-blue: #2d90e9;
+  --data-blue-text: #006ebe;
+  --data-amber: #c47d04;
+  --data-amber-text: #986002;
+  --data-teal: #099d95;
+  --data-teal-text: #027972;
+  --data-violet: #9579ef;
+  --data-violet-text: #7658ca;
+  --data-rose: #e25f93;
+  --data-rose-text: #bb3c72;
+  --tint-strength: 12%;        /* how much of a hue its tint carries (tags, avatars) */
+
   /* Material, tuned for light (P8) */
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-bg-solid: rgba(255, 255, 255, 0.94);
@@ -248,6 +265,18 @@
   --warning: #e19b1b;
   --danger: #ff756f;
 
+  --data-blue: #2c90e8;
+  --data-blue-text: #5aa8f4;
+  --data-amber: #c07b03;
+  --data-amber-text: #d79540;
+  --data-teal: #09a198;
+  --data-teal-text: #42b4ab;
+  --data-violet: #8f78df;
+  --data-violet-text: #a896ef;
+  --data-rose: #d55c8c;
+  --data-rose-text: #eb81a7;
+  --tint-strength: 18%;        /* a dark tint needs more of the hue to read as a color */
+
   --glass-bg: rgba(15, 16, 17, 0.72);
   --glass-bg-solid: rgba(15, 16, 17, 0.94);
   --glass-border: rgba(255, 255, 255, 0.08);
@@ -292,6 +321,18 @@
     --warning: #e19b1b;
     --danger: #ff756f;
 
+    --data-blue: #2c90e8;
+    --data-blue-text: #5aa8f4;
+    --data-amber: #c07b03;
+    --data-amber-text: #d79540;
+    --data-teal: #09a198;
+    --data-teal-text: #42b4ab;
+    --data-violet: #8f78df;
+    --data-violet-text: #a896ef;
+    --data-rose: #d55c8c;
+    --data-rose-text: #eb81a7;
+    --tint-strength: 18%;
+
     --glass-bg: rgba(15, 16, 17, 0.72);
     --glass-bg-solid: rgba(15, 16, 17, 0.94);
     --glass-border: rgba(255, 255, 255, 0.08);
@@ -320,6 +361,13 @@
   --glow: 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent),
           0 0 24px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+  /* A hue's tint: the fill behind its -text tone in a tag or an avatar. Mixed into
+     surface-1, so it is solid and its contrast is checkable. */
+  --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
+  --data-amber-tint: color-mix(in oklab, var(--data-amber) var(--tint-strength), var(--surface-1));
+  --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
+  --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
+  --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
 }
 
 @supports not (color: color-mix(in oklab, red, blue)) {
@@ -327,6 +375,11 @@
   [data-theme] {
     --light: none;
     --glow: 0 0 0 1px var(--accent);
+    --data-blue-tint: var(--surface-2);
+    --data-amber-tint: var(--surface-2);
+    --data-teal-tint: var(--surface-2);
+    --data-violet-tint: var(--surface-2);
+    --data-rose-tint: var(--surface-2);
   }
 }
 

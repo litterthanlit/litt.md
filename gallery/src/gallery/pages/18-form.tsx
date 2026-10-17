@@ -13,8 +13,8 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "form",
   title: "Forms",
-  order: 18.5,
-  group: "Layout and data",
+  order: 15.5,
+  group: "Layout",
   summary:
     "How the fields make a page: one left-aligned column, sections on a settings page, and an error summary that takes focus when a submit fails. Fields and link colors answer on the instant tier, and the saved toast is the view's one expressive moment.",
   tiers: ["instant", "expressive"],

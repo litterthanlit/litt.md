@@ -4,7 +4,7 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "chart",
   title: "Chart",
-  order: 15.6, group: "Layout and data",
+  order: 17.3, group: "Data",
   summary:
     "Bar and line charts in plain SVG, and a meter. Marks are the foreground, never the accent: one series at 55% with the current mark full, or up to three stepping down. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
   tiers: ["instant", "responsive"],

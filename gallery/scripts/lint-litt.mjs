@@ -169,6 +169,8 @@ function lintGallery(files, root) {
           if (fades) for (const d of classes.matchAll(/(?<![\w-])duration-\((--dur-[\w-]+)\)/g)) if (d[1] !== "--dur-instant") fail("motion", `color fades run at --dur-instant only, not ${d[1]}`);
           // The accent is a fill. As text it can fall under 4.5:1 in dark, so text takes --accent-text.
           if (/(?<![\w-])(?:text|decoration)-accent(?![\w-])/.test(classes)) fail("color", "text-accent: the accent is a fill; accent text and links use text-accent-text");
+          // A data hue's mark tone reaches 3:1, not 4.5:1, and its tint is a fill. Text in a hue takes its -text tone (P11).
+          for (const m of classes.matchAll(/(?<![\w-])(?:text|decoration)-data-(blue|amber|teal|violet|rose)(-tint)?(?![\w-])/g)) fail("color", `${m[0]}: a data hue's ${m[2] ? "tint is a fill" : "mark tone is for marks"}; text in a hue uses text-data-${m[1]}-text (P11)`);
         }
       }
       // Raw colors: any quoted hex, and color functions Tailwind's token utilities replace.
@@ -236,8 +238,8 @@ const SHADCN_TO_LITT = {
 };
 const SHADCN_VAR_RE = new RegExp(`var\\(--(?:${SHADCN})\\)`, "g");
 /* litt's own names without the namespace: they do not exist in a host, so the class does nothing. */
-const LITT_COLOR = /^litt-(?:canvas|surface-[123]|line(?:-strong|-control)?|fg(?:-muted|-subtle|-disabled)?|accent(?:-hover|-fg|-tint)?|focus|success|warning|danger)(?:\/[\w.[\]%-]+)?$/;
-const PLAIN_COLOR_RE = /^(bg|text|border(?:-[xytrblse])?|ring|outline|fill|stroke|divide|decoration|caret|from|via|to|placeholder)-(canvas|surface-[123]|line(?:-strong|-control)?|fg(?:-muted|-subtle|-disabled)?|accent-(?:hover|fg|tint)|focus|success|warning|danger)(\/[\w.[\]%-]+)?$/;
+const LITT_COLOR = /^litt-(?:canvas|surface-[123]|line(?:-strong|-control)?|fg(?:-muted|-subtle|-disabled)?|accent(?:-hover|-fg|-tint)?|focus|success|warning|danger|data-(?:blue|amber|teal|violet|rose)(?:-text|-tint)?)(?:\/[\w.[\]%-]+)?$/;
+const PLAIN_COLOR_RE = /^(bg|text|border(?:-[xytrblse])?|ring|outline|fill|stroke|divide|decoration|caret|from|via|to|placeholder)-(canvas|surface-[123]|line(?:-strong|-control)?|fg(?:-muted|-subtle|-disabled)?|accent-(?:hover|fg|tint)|focus|success|warning|danger|data-(?:blue|amber|teal|violet|rose)(?:-text|-tint)?)(\/[\w.[\]%-]+)?$/;
 const PLAIN_TYPE_RE = /^text-(display|h[1-4]|reading|body|small|caption)(\/[\w.[\]-]+)?$/;
 const PLAIN_SPACE_RE = /^(p[xytrblse]?|m[xytrblse]?|gap(?:-[xy])?|space-[xy]|[hw]|min-[hw]|size|inset(?:-[xy])?|top|bottom|left|right)-(section|gutter|control(?:-(?:sm|md|lg))?|control-pad-(?:sm|md|lg))$/;
 const PLAIN_CONTAINER_RE = /^max-w-(reading|content|wide)$/;
@@ -566,6 +568,8 @@ function checkToken(t, scope, add, isClassContext) {
   if (new RegExp(`^(?:${COLOR_PREFIX})-\\[(?:${NAMED_COLORS})\\]$`).test(b)) add("color", `${b}: named color, ${HOST_ADVICE.color}`);
   // The accent is a fill. As text it can fall under 4.5:1 in dark, so text takes --litt-accent-text.
   if (/^(?:text|decoration)-litt-accent(?:\/[\w.[\]%-]+)?$/.test(b)) add("color", `${b}: the accent is a fill; accent text and links use text-litt-accent-text`);
+  // A data hue's mark tone reaches 3:1, not 4.5:1, and its tint is a fill. Text in a hue takes its -text tone (P11).
+  if ((m = /^(?:text|decoration)-litt-data-(blue|amber|teal|violet|rose)(-tint)?(?:\/[\w.[\]%-]+)?$/.exec(b))) add("color", `${b}: a data hue's ${m[2] ? "tint is a fill" : "mark tone is for marks"}; text in a hue uses text-litt-data-${m[1]}-text (P11)`);
 
   // type
   if (/^text-(?:xs|sm|base|lg|xl|[2-9]xl)(?:\/[\w.[\]-]+)?$/.test(b)) add("type", `${b}: Tailwind's text sizes are off-system, ${HOST_ADVICE.type}`);

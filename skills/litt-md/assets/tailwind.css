@@ -51,6 +51,23 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
+  /* Data hues (P11): marks (fill-data-blue), text (text-data-blue-text) and tints
+     (bg-data-blue-tint). Never on chrome. */
+  --color-data-blue: var(--data-blue);
+  --color-data-blue-text: var(--data-blue-text);
+  --color-data-blue-tint: var(--data-blue-tint);
+  --color-data-amber: var(--data-amber);
+  --color-data-amber-text: var(--data-amber-text);
+  --color-data-amber-tint: var(--data-amber-tint);
+  --color-data-teal: var(--data-teal);
+  --color-data-teal-text: var(--data-teal-text);
+  --color-data-teal-tint: var(--data-teal-tint);
+  --color-data-violet: var(--data-violet);
+  --color-data-violet-text: var(--data-violet-text);
+  --color-data-violet-tint: var(--data-violet-tint);
+  --color-data-rose: var(--data-rose);
+  --color-data-rose-text: var(--data-rose-text);
+  --color-data-rose-tint: var(--data-rose-tint);
 
   /* Type: each size carries its own leading and tracking (P6).
      font-sans / font-mono need no mapping here. tokens.css declares

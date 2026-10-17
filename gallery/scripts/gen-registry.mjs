@@ -883,6 +883,53 @@ const COPY = {
     description: "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says what went wrong and how to retry.",
     docs: "Import Empty, Skeleton, Loading and ErrorState from components/litt/states. Wrap Skeleton blocks in Loading, so a screen reader hears what is loading once.",
   },
+
+  /* The data-color step (v0.11). Each entry is owned by the agent that builds the item; keep the order. */
+  avatar: {
+    title: "Avatar",
+    description: "A round mark for a person, a client or a company: a photo, or initials on the tint of one of the five data hues, picked from the name so it stays the same everywhere. A group overlaps them and counts the rest.",
+    docs: "Import Avatar and AvatarGroup from components/litt/avatar. Pass a name; the hue follows from it unless you set one. Mark it decorative when the name is written beside it.",
+  },
+  callout: {
+    title: "Callout",
+    description: "An inline note in the page flow: a tip, a heads-up or a result to act on. A raised surface with an icon, a title, a line of detail and an optional action. Status shows in the icon and the words, never as a rail.",
+    docs: "Import Callout from components/litt/callout. Pass a title, a description and a tone. Give it an action or onDismiss when there is something to do.",
+  },
+  timeline: {
+    title: "Timeline",
+    description: "The steps of a run in order: when each started, how long it took and how it ended, grouped into phases. Long steps draw their time on the rail, with the last run beside it. A strip shows the whole run at a glance.",
+    docs: "Import Timeline, TimelinePhase, TimelineStep, TimelineResult and TimelineBar from components/litt/timeline. Give each step a label, a start, a duration and a status.",
+  },
+  "dot-plot": {
+    title: "Dot plot",
+    description: "A distribution drawn as stacks of dots, one dot per few items, so you see where most values fall. Values inside a goal take a data hue and the rest stay gray, with the median marked and a legend in numbers.",
+    docs: "Import DotPlot from components/litt/dot-plot. Pass a label, the values and a scale. Add a goal to split the dots. It measures its container, so give it a width.",
+  },
+  heatmap: {
+    title: "Heatmap",
+    description: "A grid of dots whose depth says how much: activity per day, usage per month. One data hue in four steps over an empty dot, mono labels, a tooltip on hover and focus, and a legend from less to more.",
+    docs: "Import Heatmap from components/litt/heatmap. Pass a label and rows of { label, values }. Every cell is reachable with the arrow keys.",
+  },
+  gauge: {
+    title: "Gauge",
+    description: "One value against a range on an arc of fine ticks, with the figure in the middle. The ticks up to the value take the foreground or a data hue. Static, like the meter.",
+    docs: "Import Gauge from components/litt/gauge. Pass a label, a value, a max and a value text. It is a meter for screen readers.",
+  },
+  "bar-list": {
+    title: "Bar list",
+    description: "A ranked list where each row carries a thin bar for its share: top pages, most-used shortcuts, busiest repos. A label, a bar, a mono value and an optional change in words.",
+    docs: "Import BarList from components/litt/bar-list. Pass a label and items of { label, value }. Rows can link somewhere.",
+  },
+  "token-input": {
+    title: "Token input",
+    description: "A field that collects short values as tokens: recipients, sender domains, tags. Type and press Enter or a comma, paste a list, remove one with its button or Backspace. The field's own size, edge and focus ring.",
+    docs: "Import TokenInput from components/litt/token-input. Hold the values in state and pass value and onValueChange, or a defaultValue. Give it a label.",
+  },
+  pad: {
+    title: "Pad",
+    description: "Two values set at once on one surface, like tone against length. Drag the thumb over a dot grid or use the arrow keys; the default stays marked and the value shows as words.",
+    docs: "Import Pad from components/litt/pad. Describe the x and y axes and hold the value in state. Each axis is a slider for screen readers.",
+  },
 };
 
 /* =============================================================== assemble the items */

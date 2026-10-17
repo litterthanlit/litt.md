@@ -8,7 +8,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "card",
   title: "Card",
-  order: 15, group: "Layout and data",
+  order: 15, group: "Layout",
   summary:
     "A raised surface for one independent object that links somewhere. A linked card is one real link stretched over the card; hover moves its fill one step, and nothing lifts, grows or scales.",
   tiers: ["instant"],
