@@ -260,6 +260,31 @@ const RECIPES = {
     state: [`const [voice, setVoice] = useState({ x: 30, y: 40 });`],
     jsx: `<div className="w-full max-w-sm" data-testid="litt-pad"><Pad label="Your voice" help="How replies sound." x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }} y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }} value={voice} onValueChange={setVoice} defaultMark={{ x: 30, y: 40 }} formatValue={(v) => \`Tone \${v.y}, length \${v.x}\`} /></div>`,
   },
+  gauge: {
+    needs: ["Gauge"],
+    jsx: `<div className="grid w-full max-w-xs gap-6" data-testid="litt-gauges">
+          <Gauge label="Credits left" value={20830} max={30000} valueText="20,830 credits" figure="20,830" caption="2k a day on average" hue="teal" />
+          <div className="w-40" data-testid="litt-gauge-small"><Gauge label="Storage" value={42} valueText="42 of 100 GB" size={320} /></div>
+        </div>`,
+  },
+  "bar-list": {
+    needs: ["BarList"],
+    state: [`const [picked, setPicked] = useState("nothing");`],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-bar-list">
+          <BarList
+            label="Smoke shortcuts"
+            unit={["time", "times"]}
+            hue="blue"
+            onSelect={(item) => setPicked(item.label)}
+            items={[
+              { label: "Archive", value: 412, lead: <span>E</span>, delta: "Up 15%", tone: "good" },
+              { label: "Reply", value: 164, delta: "Down 27%", tone: "bad" },
+              { label: "Snooze", value: 31 },
+            ]}
+          />
+          <p data-testid="bar-list-picked">{picked}</p>
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -948,6 +973,109 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (fill === accentFill) throw new Error("the thumb is filled with the accent");
           await page.evaluate(() => document.activeElement?.blur());
           return `pressed in the middle gives "${pressed}"`;
+        });
+      }
+      if (has("gauge")) {
+        await attempt("gauge is a meter, draws teal ticks with a longer marker in the text tone, and fits a small box", async () => {
+          const box = page.locator("[data-testid=litt-gauges]");
+          const meter = box.getByRole("meter", { name: "Credits left" });
+          await meter.waitFor({ state: "visible", timeout: 8000 });
+          const got = await meter.evaluate((el) => ({
+            min: el.getAttribute("aria-valuemin"),
+            max: el.getAttribute("aria-valuemax"),
+            now: el.getAttribute("aria-valuenow"),
+            text: el.getAttribute("aria-valuetext"),
+            desc: document.getElementById(el.getAttribute("aria-describedby") || "")?.textContent,
+            hidden: el.querySelector("svg")?.getAttribute("aria-hidden"),
+            shown: el.innerText.replace(/\s+/g, " ").trim(),
+          }));
+          if (got.min !== "0" || got.max !== "30000" || got.now !== "20830" || got.text !== "20,830 credits") throw new Error(`the meter reads ${JSON.stringify(got)}`);
+          if (got.desc !== "2k a day on average" || got.hidden !== "true") throw new Error(`the caption or the hidden ticks are wrong: ${JSON.stringify(got)}`);
+          if (got.shown !== "Credits left 20,830 2k a day on average") throw new Error(`the opening reads "${got.shown}"`);
+          const colorOf = (v) =>
+            page.evaluate((name) => {
+              const probe = document.createElement("span");
+              probe.style.color = `var(${name})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [teal, tealText, accent] = [await colorOf("--litt-data-teal"), await colorOf("--litt-data-teal-text"), await colorOf("--litt-accent")];
+          const paths = await meter.evaluate((el) =>
+            [...el.querySelectorAll("svg path")].map((p) => {
+              const d = p.getAttribute("d") || "";
+              const first = d.match(/M([-\d.]+) ([-\d.]+)L([-\d.]+) ([-\d.]+)/).slice(1).map(Number);
+              return { stroke: getComputedStyle(p).stroke, ticks: (d.match(/M/g) || []).length, length: Math.hypot(first[2] - first[0], first[3] - first[1]), width: getComputedStyle(p).strokeWidth };
+            }),
+          );
+          const [rest, body, marker] = paths;
+          if (paths.length !== 3 || rest.ticks !== 15 || body.ticks !== 32 || marker.ticks !== 1) throw new Error(`the ticks split ${paths.map((p) => p.ticks).join("/")}, not 15/32/1`);
+          if (body.stroke !== teal || marker.stroke !== tealText) throw new Error(`the ticks are ${body.stroke} and ${marker.stroke}, not the teal mark (${teal}) and text (${tealText}) tones`);
+          if ([body.stroke, marker.stroke].includes(accent)) throw new Error("a tick is the accent");
+          if (Math.abs(marker.length - body.length - 4) > 0.2 || paths.some((p) => p.width !== "2px")) throw new Error(`the marker is ${(marker.length - body.length).toFixed(2)}px longer and the ticks ${body.width} wide`);
+          const small = box.locator("[data-testid=litt-gauge-small]");
+          const fit = await small.evaluate((el) => ({ box: el.getBoundingClientRect().width, svg: el.querySelector("svg").getBoundingClientRect().width }));
+          if (fit.svg > fit.box + 0.5 || fit.box > 161) throw new Error(`a 320 gauge in a ${fit.box}px box draws ${fit.svg}px wide`);
+          return `${rest.ticks}/${body.ticks}/${marker.ticks} ticks, a ${fit.svg.toFixed(0)}px drawing in a ${fit.box.toFixed(0)}px box`;
+        });
+      }
+      if (has("bar-list")) {
+        await attempt("bar list reads each row, lines the bars up, fills in the data hue, and its rows press", async () => {
+          const box = page.locator("[data-testid=litt-bar-list]");
+          const list = box.getByRole("list", { name: "Smoke shortcuts" });
+          await list.waitFor({ state: "visible", timeout: 8000 });
+          const rows = list.getByRole("listitem");
+          if ((await rows.count()) !== 3) throw new Error(`the list has ${await rows.count()} rows, not 3`);
+          const spoken = await rows.evaluateAll((els) =>
+            els.map((e) => {
+              const copy = e.cloneNode(true);
+              copy.querySelectorAll("[aria-hidden=true]").forEach((n) => n.remove());
+              return copy.textContent.replace(/\s+/g, " ").trim();
+            }),
+          );
+          const want = ["Archive, 412 times, Up 15%, good news", "Reply, 164 times, Down 27%, bad news", "Snooze, 31 times"];
+          if (spoken.join("|") !== want.join("|")) throw new Error(`the rows read ${JSON.stringify(spoken)}`);
+          const colorOf = (v) =>
+            page.evaluate((name) => {
+              const probe = document.createElement("span");
+              probe.style.color = `var(${name})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [blue, accent, success, danger] = [await colorOf("--litt-data-blue"), await colorOf("--litt-accent"), await colorOf("--litt-success"), await colorOf("--litt-danger")];
+          const geo = await list.evaluate((ol) =>
+            [...ol.querySelectorAll("li")].map((li) => {
+              const fill = li.querySelector("[style*='width']");
+              const rail = fill.parentElement;
+              const r = rail.getBoundingClientRect();
+              const f = fill.getBoundingClientRect();
+              return { x: r.left, w: r.width, h: r.height, share: f.width / r.width, fill: getComputedStyle(fill).backgroundColor, radius: getComputedStyle(rail).borderRadius, value: li.querySelector(".font-mono").getBoundingClientRect().right };
+            }),
+          );
+          const shares = [1, 164 / 412, 31 / 412];
+          if (geo.some((g, i) => Math.abs(g.x - geo[0].x) > 0.5 || Math.abs(g.w - geo[0].w) > 0.5 || Math.abs(g.value - geo[0].value) > 0.5 || g.h !== 4 || Math.abs(g.share - shares[i]) > 0.01)) throw new Error(`the bars do not line up or fill to value / max: ${JSON.stringify(geo)}`);
+          if (geo.some((g) => g.fill !== blue || g.fill === accent)) throw new Error(`a bar is ${geo[0].fill}, not the blue mark tone (${blue})`);
+          const good = await rows.nth(0).getByText("Up 15%").evaluate((el) => getComputedStyle(el).color);
+          const bad = await rows.nth(1).getByText("Down 27%").evaluate((el) => getComputedStyle(el).color);
+          if (good !== success || bad !== danger) throw new Error(`the deltas are ${good} and ${bad}, not success (${success}) and danger (${danger})`);
+          const buttons = list.getByRole("button");
+          if ((await buttons.count()) !== 3) throw new Error(`onSelect should make 3 button rows, found ${await buttons.count()}`);
+          await buttons.nth(1).hover();
+          await page.waitForTimeout(250);
+          const hover = await buttons.nth(1).evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (hover === "rgba(0, 0, 0, 0)") throw new Error("a pressable row has no hover fill");
+          await buttons.nth(0).focus();
+          await page.keyboard.press("Enter");
+          const first = await box.locator("[data-testid=bar-list-picked]").innerText();
+          await page.keyboard.press("Tab");
+          await page.keyboard.press("Space");
+          const second = await box.locator("[data-testid=bar-list-picked]").innerText();
+          if (first !== "Archive" || second !== "Reply") throw new Error(`Enter picked "${first}" and Space "${second}", not Archive and Reply`);
+          await page.evaluate(() => document.activeElement?.blur());
+          return `${geo.length} aligned rows, bars ${geo[0].fill}`;
         });
       }
       if (has("app-shell")) {

@@ -912,13 +912,13 @@ const COPY = {
   },
   gauge: {
     title: "Gauge",
-    description: "One value against a range on an arc of fine ticks, with the figure in the middle. The ticks up to the value take the foreground or a data hue. Static, like the meter.",
-    docs: "Import Gauge from components/litt/gauge. Pass a label, a value, a max and a value text. It is a meter for screen readers.",
+    description: "One value against a range on a semicircle of fine ticks, with the label, the figure and a caption in the opening. The ticks up to the value take the foreground or one data hue, and the last, longer tick marks the value. Static, like the meter.",
+    docs: "Import Gauge from components/litt/gauge. Pass a label, a value, a max and a value text (what a screen reader hears); add a figure, a caption or a hue. It scales down to its container.",
   },
   "bar-list": {
     title: "Bar list",
-    description: "A ranked list where each row carries a thin bar for its share: top pages, most-used shortcuts, busiest repos. A label, a bar, a mono value and an optional change in words.",
-    docs: "Import BarList from components/litt/bar-list. Pass a label and items of { label, value }. Rows can link somewhere.",
+    description: "A ranked list where each row carries a thin bar for its share: top pages, most-used shortcuts, busiest repos. An optional lead, a label, a 4px rail, a mono value and a change in words. The bars line up across rows, and under 28rem the bar moves under the label.",
+    docs: "Import BarList from components/litt/bar-list. Pass a label and items of { label, value }, plus a unit for screen readers. A row with an href is a link, and with onSelect the others are buttons.",
   },
   "token-input": {
     title: "Token input",
