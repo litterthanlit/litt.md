@@ -907,8 +907,8 @@ const COPY = {
   },
   heatmap: {
     title: "Heatmap",
-    description: "A grid of dots whose depth says how much: activity per day, usage per month. One data hue in four steps over an empty dot, mono labels, a tooltip on hover and focus, and a legend from less to more.",
-    docs: "Import Heatmap from components/litt/heatmap. Pass a label and rows of { label, values }. Every cell is reachable with the arrow keys.",
+    description: "A dot matrix whose depth says how much: usage per day in a month, deploys per day over a year, mail per hour of the week. One data hue in four steps over an empty dot, row labels and totals in mono, a tooltip on hover, touch and focus, and a legend from less to more. A wide grid scrolls sideways inside its own box.",
+    docs: "Import Heatmap from components/litt/heatmap. Pass a label, rows of { label, values, total? } and columns that name each column, and pick a hue. Use null for a day with no data. The dots are a grid you can arrow through.",
   },
   gauge: {
     title: "Gauge",

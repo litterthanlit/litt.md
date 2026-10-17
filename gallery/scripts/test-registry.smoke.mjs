@@ -317,6 +317,12 @@ const RECIPES = {
           <TokenInput label="Mail from" name="from" collapseAfter={1} placeholder="Add a sender" hint="Press Enter or a comma to add one." value={senders} onValueChange={setSenders} validate={(v) => /^[a-z0-9.@-]+$/.test(v) || \`\${v} has characters a domain cannot.\`} />
         </form>`,
   },
+  heatmap: {
+    needs: ["Heatmap"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-heatmap">
+          <Heatmap label="Deploys per day" hue="teal" unit={["deploy", "deploys"]} columns={["1 Oct", "2 Oct", "3 Oct", "4 Oct", "5 Oct"]} rows={[{ label: "Week 1", values: [0, 2, 5, 9, null], total: "16" }, { label: "Week 2", values: [4, 1, 7, 3, 6], total: "21" }]} />
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1248,6 +1254,76 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-token-input.png`) });
           await page.evaluate(() => document.activeElement?.blur());
           return "+2, 44/24/24px, comma, validate, keys, posted values";
+        });
+      }
+      if (has("heatmap")) {
+        await attempt("heatmap: a labelled grid of named dots in one hue, one tab stop, arrows and Esc", async () => {
+          const box = page.locator("[data-testid=litt-heatmap]");
+          const grid = box.getByRole("grid", { name: "Deploys per day" });
+          await grid.waitFor({ state: "visible", timeout: 8000 });
+          const rows = await grid.getByRole("row").count();
+          if (rows !== 2) throw new Error(`the grid has ${rows} rows, not 2`);
+          const dots = await grid.locator("[data-r]").count();
+          if (dots !== 10) throw new Error(`the grid has ${dots} dots, not 10`);
+          const described = await grid.getAttribute("aria-describedby");
+          const summary = await page.evaluate((id) => document.getElementById(id)?.textContent, described);
+          if (summary !== "Deploys per day, 37 in all, most on Week 1, 4 Oct with 9") throw new Error(`the summary reads "${summary}"`);
+          const stops = await grid.locator("[data-r][tabindex='0']").count();
+          if (stops !== 1) throw new Error(`expected one tab stop, found ${stops}`);
+          const nullName = await grid.locator("[data-r='0'][data-c='4']").getAttribute("aria-label");
+          if (nullName !== "Week 1, 5 Oct, no data") throw new Error(`the empty dot is named "${nullName}"`);
+          const probe = (value) =>
+            page.evaluate((v) => {
+              const el = document.createElement("span");
+              el.style.color = v;
+              document.body.append(el);
+              const c = getComputedStyle(el).color;
+              el.remove();
+              return c;
+            }, value);
+          const teal = await probe("var(--litt-data-teal)");
+          const accentColor = await probe("var(--litt-accent)");
+          const top = await grid.locator("[data-r='0'][data-c='3']").evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (top !== teal) throw new Error(`the fullest dot is ${top}, not --litt-data-teal (${teal})`);
+          if (top === accentColor) throw new Error("a dot is the accent");
+          const empty = await grid.locator("[data-r='0'][data-c='0']").evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (!/\/ 0\.08\)$/.test(empty)) throw new Error(`a zero dot is ${empty}, not the foreground at 8%`);
+          const size = await grid.locator("[data-r='0'][data-c='3']").evaluate((el) => [el.getBoundingClientRect().width, getComputedStyle(el).borderTopLeftRadius]);
+          if (size[0] !== 8 || parseFloat(size[1]) < 4) throw new Error(`a dot is ${size[0]}px with radius ${size[1]}, not an 8px circle`);
+          const legend = await box.locator("[aria-hidden=true]").filter({ hasText: "Less" }).filter({ hasText: "More" }).count();
+          if (!legend) throw new Error("no legend from Less to More");
+          const total = await box.getByRole("gridcell", { name: "Total 21" }).count();
+          if (!total) throw new Error("the row total is not a cell");
+          await grid.locator("[data-r][tabindex='0']").focus();
+          const first = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (first !== "Week 1, 4 Oct, 9 deploys") throw new Error(`the tab stop is "${first}", not "Week 1, 4 Oct, 9 deploys"`);
+          await box.locator("div[aria-hidden=true]").filter({ hasText: "4 Oct" }).filter({ hasText: "9 deploys" }).first().waitFor({ state: "visible", timeout: 3000 });
+          const read = async () => page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          await page.keyboard.press("ArrowDown");
+          const down = await read();
+          if (down !== "Week 2, 4 Oct, 3 deploys") throw new Error(`ArrowDown landed on "${down}"`);
+          await page.keyboard.press("ArrowLeft");
+          const left = await read();
+          if (left !== "Week 2, 3 Oct, 7 deploys") throw new Error(`ArrowLeft landed on "${left}"`);
+          await page.keyboard.press("Home");
+          const home = await read();
+          if (home !== "Week 2, 1 Oct, 4 deploys") throw new Error(`Home landed on "${home}"`);
+          await page.keyboard.press("Control+End");
+          const end = await read();
+          if (end !== "Week 2, 5 Oct, 6 deploys") throw new Error(`Ctrl+End landed on "${end}"`);
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          const stillTip = await box.locator("div[aria-hidden=true]").filter({ hasText: "5 Oct" }).filter({ hasText: "6 deploys" }).count();
+          if (stillTip) throw new Error("Esc did not hide the tooltip");
+          if ((await read()) !== "Week 2, 5 Oct, 6 deploys") throw new Error("Esc moved focus");
+          await page.evaluate(() => document.activeElement?.blur());
+          const dotBox = await grid.locator("[data-r='1'][data-c='2']").boundingBox();
+          await page.mouse.move(dotBox.x + 4, dotBox.y + 4);
+          await box.locator("div[aria-hidden=true]").filter({ hasText: "3 Oct" }).filter({ hasText: "7 deploys" }).first().waitFor({ state: "visible", timeout: 3000 });
+          const ring = await grid.locator("[data-r='1'][data-c='2']").evaluate((el) => getComputedStyle(el).outlineWidth);
+          if (ring !== "1px") throw new Error(`a hovered dot has a ${ring} ring, not 1px`);
+          await page.mouse.move(5, 5);
+          return `fullest dot ${top}, summary read, ${dots} dots`;
         });
       }
       if (has("app-shell")) {
