@@ -930,6 +930,22 @@ const COPY = {
     description: "Two values set at once on one surface, like a reply's tone against its length. A well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. It is the Slider in two dimensions, in the foreground and never the accent.",
     docs: "Import Pad from components/litt/pad. Give it a label, an x and a y axis ({ label, min, max, step, minLabel, maxLabel }), and hold the value in state with value and onValueChange. Pass defaultMark to show the default and formatValue to say the value in words. Each axis is a range input for the keyboard and screen readers, and the arrow keys move it.",
   },
+  /* The rails step: a data hue drawn as a thin line. Each entry is owned by the agent that builds the item. */
+  breakdown: {
+    title: "Breakdown",
+    description: "One whole split into its parts: a single 4px rail divided by kind in the data hues, and a row per kind with its own thin rail, a label and a mono reading. Storage by file type, credits by feature.",
+    docs: "Import Breakdown from components/litt/breakdown. Pass a label, the parts as { label, value } and the total. Past five parts the rest fold into Other.",
+  },
+  sparkline: {
+    title: "Sparkline",
+    description: "A trend in one thin line, with no axes: a 2px line in the foreground or a data hue and a small dot on the latest value. For a stat tile, a table cell or a list row.",
+    docs: "Import Sparkline from components/litt/sparkline. Pass a label and the values, oldest first. It fills its container's width.",
+  },
+  spread: {
+    title: "Spread",
+    description: "How values spread, one thin rail per row on a shared scale: the full range faint, the middle half in a data hue, the median as a tick and in mono at the end. Build times by site, reply times by client.",
+    docs: "Import Spread from components/litt/spread. Pass a label and rows of { label, values } or their quantiles. Rows share one scale, with an optional goal line.",
+  },
 };
 
 /* =============================================================== assemble the items */
