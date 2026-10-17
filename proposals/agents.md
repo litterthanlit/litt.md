@@ -47,3 +47,11 @@ The Agent page composes them into one chat, in a desktop frame and a phone frame
 3. **Thinking's clock:** does "Thinking 4s" read as alive enough without any motion?
 4. **The person's bubble** is `.litt-raised` (surface-1, the hairline, the top highlight). Too much like a card?
 5. **Approval:** Allow and Deny only, or also "Always allow" as a checkbox (built, optional)?
+6. **Enter on a phone:** with a mouse, Enter sends; on touch, Return adds a line and Send sends (the lead's call, since a soft keyboard has no Shift). Right?
+7. **A message with only files** cannot be sent, because Send needs text. Should files alone enable it?
+8. **Thinking with no known time** reads plain "Thought". Fine?
+9. **Thinking's chevron** sits first, in the column where a tool call shows its status mark, so the labels of a turn's parts line up. The spec first had it last. Keep it first?
+10. **Older answers** keep the height of their hidden actions row, so nothing shifts on hover. That leaves about 90px between an older answer and the next question. Too much?
+11. **Emphasis** (`em`) is `--fg` and upright, because the page loads no italic. Load the italic instead?
+12. **The range's thumbs:** when they meet, the "to" thumb is always on top. Should the one moved last sit on top?
+13. **A tool row on a narrow phone:** "Waiting for approval" leaves about 90px for the command at 294px. Wrap the word to a second line instead?
