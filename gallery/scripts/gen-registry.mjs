@@ -943,8 +943,8 @@ const COPY = {
   },
   spread: {
     title: "Spread",
-    description: "How values spread, one thin rail per row on a shared scale: the full range faint, the middle half in a data hue, the median as a tick and in mono at the end. Build times by site, reply times by client.",
-    docs: "Import Spread from components/litt/spread. Pass a label and rows of { label, values } or their quantiles. Rows share one scale, with an optional goal line.",
+    description: "How values spread, one thin rail per row on a shared scale: the full range faint, the middle half in a data hue, the median as a tick and in mono at the end. Build times by site, reply times by client. A row gives its values or its quartiles, a goal is a dashed line through every rail, and under 28rem the label moves above its rail. Static, with a legend in words.",
+    docs: "Import Spread from components/litt/spread. Pass a label and items of { label, values } or { label, min, p25, median, p75, max }, and a formatValue that includes the unit. Rows share one scale (linear or log, with an optional domain and ticks) and an optional goal. It fills its container's width, so give the container a width.",
   },
 };
 

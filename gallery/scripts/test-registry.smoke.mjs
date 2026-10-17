@@ -359,6 +359,23 @@ const RECIPES = {
           <div data-testid="spark-empty"><Sparkline label="Visits per day" values={[]} /></div>
         </div>`,
   },
+  spread: {
+    needs: ["Spread"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-spread">
+          <Spread
+            label="Smoke build times"
+            hue="blue"
+            goal={50}
+            goalLabel="50 s goal"
+            formatValue={(v) => Math.round(v) + " s"}
+            items={[
+              { label: "Halo site", values: [71, 22, 41, 48, 32] },
+              { label: "Northwind", min: 15, p25: 24, median: 29, p75: 38, max: 56 },
+              { label: "Atlas portfolio", values: [40, 55, 62, 70, 90] },
+            ]}
+          />
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1083,6 +1100,85 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             detail += "; a Stat's trend sits at the foot";
           }
           return detail;
+        });
+      }
+      if (has("spread")) {
+        await attempt("spread reads each row in words, lines the rails up on one scale, draws the middle half in the data hue and runs the goal through every rail", async () => {
+          const box = page.locator("[data-testid=litt-spread]");
+          const list = box.getByRole("list", { name: "Smoke build times" });
+          await list.waitFor({ state: "visible", timeout: 8000 });
+          const rows = list.getByRole("listitem");
+          if ((await rows.count()) !== 3) throw new Error(`the list has ${await rows.count()} rows, not 3`);
+          const spoken = await rows.evaluateAll((els) =>
+            els.map((e) => {
+              const copy = e.cloneNode(true);
+              copy.querySelectorAll("[aria-hidden=true]").forEach((n) => n.remove());
+              return copy.textContent.replace(/\s+/g, " ").trim();
+            }),
+          );
+          const want = [
+            "Halo site: median 41 s, middle half 32 s to 48 s, range 22 s to 71 s",
+            "Northwind: median 29 s, middle half 24 s to 38 s, range 15 s to 56 s",
+            "Atlas portfolio: median 62 s, middle half 55 s to 70 s, range 40 s to 90 s, past the 50 s goal",
+          ];
+          if (spoken.join("|") !== want.join("|")) throw new Error(`the rows read ${JSON.stringify(spoken)}`);
+          const colorOf = (v) =>
+            page.evaluate((name) => {
+              const probe = document.createElement("span");
+              probe.style.color = `var(${name})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [blue, blueText, strong, accentColor] = [await colorOf("--litt-data-blue"), await colorOf("--litt-data-blue-text"), await colorOf("--litt-line-strong"), await colorOf("--litt-accent")];
+          const geo = await list.evaluate((ul) => {
+            const foot = ul.parentElement.querySelector(":scope > div[aria-hidden=true] > div").getBoundingClientRect();
+            return {
+              foot: { x: foot.left, w: foot.width },
+              rows: [...ul.querySelectorAll("li")].map((li) => {
+                const rail = li.querySelector("[aria-hidden=true]");
+                const r = rail.getBoundingClientRect();
+                const parts = [...rail.querySelectorAll(":scope > span")];
+                const track = parts[0];
+                const mid = parts[2];
+                const tick = parts[parts.length - 1];
+                const t = tick.getBoundingClientRect();
+                const line = rail.querySelector("line");
+                return {
+                  x: r.left,
+                  w: r.width,
+                  trackH: track.getBoundingClientRect().height,
+                  midH: mid.getBoundingClientRect().height,
+                  mid: getComputedStyle(mid).backgroundColor,
+                  tick: getComputedStyle(tick).backgroundColor,
+                  tickW: t.width,
+                  tickH: t.height,
+                  tickX: t.left + t.width / 2 - r.left,
+                  dash: line?.getAttribute("stroke-dasharray") ?? null,
+                  stroke: line ? getComputedStyle(line).stroke : null,
+                  lineX: line ? line.getBoundingClientRect().left - r.left : null,
+                  medRight: li.querySelector(".font-mono").getBoundingClientRect().right,
+                };
+              }),
+            };
+          });
+          const g = geo.rows;
+          if (g.some((r) => Math.abs(r.x - g[0].x) > 0.5 || Math.abs(r.w - g[0].w) > 0.5 || Math.abs(r.medRight - g[0].medRight) > 0.5)) throw new Error(`the rails or the medians do not line up: ${JSON.stringify(g.map((r) => [r.x, r.w, r.medRight]))}`);
+          if (Math.abs(geo.foot.x - g[0].x) > 0.5 || Math.abs(geo.foot.w - g[0].w) > 0.5) throw new Error("the scale under the rows is not the rails' width");
+          if (g.some((r) => r.trackH !== 4 || r.midH !== 4 || r.tickW !== 2 || r.tickH !== 12)) throw new Error(`the rail is not 4px with a 2 by 12 tick: ${JSON.stringify(g[0])}`);
+          if (g.some((r) => r.mid !== blue || r.mid === accentColor)) throw new Error(`the middle half is ${g[0].mid}, not --litt-data-blue (${blue})`);
+          if (g.some((r) => r.tick !== blueText)) throw new Error(`the median tick is ${g[0].tick}, not --litt-data-blue-text (${blueText})`);
+          /* The domain is 0 to 100 (15 to 90 and a goal at 50, rounded out), so a value sits at its own percent of the rail. */
+          if (Math.abs(g[0].tickX - 0.41 * g[0].w) > 1.5 || Math.abs(g[1].tickX - 0.29 * g[1].w) > 1.5) throw new Error(`the medians are at ${g[0].tickX} and ${g[1].tickX} of ${g[0].w}, not 41% and 29%`);
+          if (g.some((r) => r.dash !== "4 4" || r.stroke !== strong || Math.abs(r.lineX - 0.5 * r.w) > 1.5)) throw new Error(`the goal line is not a dashed --litt-line-strong at 50%: ${JSON.stringify(g.map((r) => [r.dash, r.stroke, r.lineX]))}`);
+          await box.getByText("50 s goal", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          await box.getByText("100 s", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          const legend = (await box.locator("p").last().innerText()).replace(/\s+/g, " ");
+          if (legend !== "Faint: the full range. Blue: the middle half. Tick: the median.") throw new Error(`the legend reads "${legend}"`);
+          const stops = await box.locator("a, button, [tabindex]").count();
+          if (stops) throw new Error(`a static spread has ${stops} focus stops`);
+          return `3 rows read in words, rails at x ${g[0].x.toFixed(0)} wide ${g[0].w.toFixed(0)}, middle half is --litt-data-blue`;
         });
       }
       if (has("pad")) {
