@@ -55,7 +55,11 @@ const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
 
 // A rail for one value against a limit. A hue when the color names the thing.
 <Meter label="Storage" value={42} valueText="42 of 100 GB" />
-<Meter label="Video" value={18} valueText="18 GB" hue="violet" />`,
+<Meter label="Video" value={18} valueText="18 GB" hue="violet" />
+
+// A budget to stay under, and a count of a few in steps.
+<Meter label="Bandwidth" value={91} valueText="91 of 100 GB" target={80} targetText="budget 80 GB" />
+<Meter label="Launch checklist" value={7} max={10} valueText="7 of 10" steps={10} />`,
   use: [
     "A person needs the shape of a few dozen numbers: deploys per day, build time over two weeks, traffic by month. A bar chart compares amounts, and a line follows change.",
     "The chart sits on a card or a stage and must stay quiet. Marks are the foreground, so the one accent on the view stays on the primary action.",
@@ -224,6 +228,17 @@ function StorageDemo() {
   );
 }
 
+function TargetsDemo2() {
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <Meter label="Build minutes" value={1380} max={3000} valueText="1,380 of 3,000" target={2400} targetText="budget 2,400" hue="blue" />
+      <Meter label="Bandwidth" value={91} valueText="91 of 100 GB" target={80} targetText="budget 80 GB" />
+      <Meter label="Launch checklist" value={7} max={10} valueText="7 of 10" steps={10} hue="teal" />
+      <Meter label="Pages reviewed" value={3} max={5} valueText="3 of 5" steps={5} />
+    </div>
+  );
+}
+
 function NarrowDemo() {
   return (
     <div className="w-full max-w-[22.375rem]">
@@ -321,6 +336,15 @@ export default function ChartPage() {
         caption="A meter takes a hue when its color names the thing it measures, as in a storage breakdown where images, video and fonts keep their hue across the page. The rail and the reading stay neutral. Nothing animates."
       >
         <StorageDemo />
+      </Stage>
+
+      <Stage
+        title="Targets and steps"
+        tier="instant"
+        code="TargetsDemo2"
+        caption="A target is a 2px tick that crosses the rail, taller than it, in the subtle gray: a budget the fill can pass, as bandwidth has. Steps split the rail into equal segments 2px apart for a count of a few, such as seven of ten checks. The hue stays a thread on the neutral track, and nothing animates."
+      >
+        <TargetsDemo2 />
       </Stage>
 
       <Stage

@@ -34,7 +34,8 @@
  *   motion is the hooks' job. Hover and focus add no motion beyond a color change.
  * - Accessibility: the SVG is role="img" with a summary label, and a visually hidden table lists every value.
  *   The category buttons are in a labelled group outside the image (children of an image are presentational).
- * - Meter: a horizontal progress bar, a 4px rail at the control radius in fg 12% filled with fg, or a data hue. Static.
+ * - Meter: a horizontal progress bar, a 4px rail at the control radius in fg 12% filled with fg, or a data hue. A target is
+ *   a 2px tick in fg-subtle taller than the rail; steps split the rail into equal segments 2px apart. Static.
  */
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -674,6 +675,12 @@ export type MeterProps = {
   valueText?: string;
   /** Fills the rail with one of the five data hues instead of the foreground, when the color says which thing this is (P11). */
   hue?: ChartHue;
+  /** A value to aim for or stay under, such as a budget. A 2px tick crosses the rail there, in fg-subtle, and screen readers hear it after the reading. */
+  target?: number;
+  /** How the target is said: "Budget 80 GB". Defaults to "target" and the percentage. */
+  targetText?: string;
+  /** Splits the rail into this many equal steps with 2px of air between them, for a count of a few, such as 7 of 10 checks. Filled steps take the fill, the rest the track. */
+  steps?: number;
   /** Extra classes for the row, such as a width. */
   className?: string;
 };
@@ -686,11 +693,19 @@ const METER_FILL: Record<ChartHue, string> = {
   rose: "bg-data-rose",
 };
 
-/** A thin rail for one value against a limit. Static, never the accent. */
-export function Meter({ label, value, max = 100, valueText, hue, className = "" }: MeterProps) {
+const TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
+
+/** A thin rail for one value against a limit, with an optional target tick or steps. Static, never the accent. */
+export function Meter({ label, value, max = 100, valueText, hue, target, targetText, steps, className = "" }: MeterProps) {
   const id = useId();
-  const percent = max > 0 ? Math.max(0, Math.min(100, (value / max) * 100)) : 0;
+  const share = (v: number) => (max > 0 ? Math.max(0, Math.min(100, (v / max) * 100)) : 0);
+  const percent = share(value);
   const reading = valueText ?? `${Math.round(percent)}%`;
+  const fill = hue ? METER_FILL[hue] : "bg-fg";
+  const count = steps && steps > 1 ? Math.round(steps) : 0;
+  const filled = Math.round((percent / 100) * count);
+  const aim = target === undefined ? null : share(target);
+  const spoken = aim === null ? reading : `${reading}, ${targetText ?? `target ${Math.round(aim)}%`}`;
   return (
     <div className={"grid gap-2 " + className}>
       <div className="flex items-baseline justify-between gap-4">
@@ -699,16 +714,26 @@ export function Meter({ label, value, max = 100, valueText, hue, className = "" 
         </span>
         <span className="font-mono text-caption tabular-nums text-fg-subtle">{reading}</span>
       </div>
-      <div
-        role="meter"
-        aria-labelledby={id}
-        aria-valuemin={0}
-        aria-valuemax={max}
-        aria-valuenow={value}
-        aria-valuetext={reading}
-        className="h-1 overflow-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]"
-      >
-        <div className={"h-full rounded-control " + (hue ? METER_FILL[hue] : "bg-fg")} style={{ width: `${percent}%` }} />
+      <div className="relative">
+        <div
+          role="meter"
+          aria-labelledby={id}
+          aria-valuemin={0}
+          aria-valuemax={max}
+          aria-valuenow={value}
+          aria-valuetext={spoken}
+          className={count ? "flex h-1 gap-0.5" : "h-1 overflow-hidden rounded-control " + TRACK}
+        >
+          {count ? (
+            Array.from({ length: count }, (_, i) => <div key={i} className={"h-full flex-1 rounded-control " + (i < filled ? fill : TRACK)} />)
+          ) : (
+            <div className={"h-full rounded-control " + fill} style={{ width: `${percent}%` }} />
+          )}
+        </div>
+        {/* The target: a neutral tick taller than the rail, so it reads over the fill and the track alike. */}
+        {aim !== null && (
+          <span aria-hidden="true" className="absolute top-1/2 h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-fg-subtle" style={{ left: `${aim}%` }} />
+        )}
       </div>
     </div>
   );
