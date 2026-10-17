@@ -376,6 +376,14 @@ const RECIPES = {
           />
         </div>`,
   },
+  breakdown: {
+    needs: ["Breakdown"],
+    jsx: `<div className="grid w-full max-w-md gap-8" data-testid="litt-breakdown">
+          <Breakdown label="Smoke storage" total={100} totalText="85 of 100 GB" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24, hue: "teal" }, { label: "Fonts", value: 3 }]} />
+          <Breakdown label="Smoke credits" unit={["credit", "credits"]} items={[{ label: "Builds", value: 40 }, { label: "Previews", value: 30 }, { label: "Resizing", value: 20 }, { label: "Analytics", value: 10 }, { label: "Forms", value: 8 }, { label: "Webhooks", value: 6 }, { label: "Redirects", value: 4 }]} />
+          <div className="w-48"><Breakdown layout="legend" label="Smoke tile" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24 }]} /></div>
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1179,6 +1187,64 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const stops = await box.locator("a, button, [tabindex]").count();
           if (stops) throw new Error(`a static spread has ${stops} focus stops`);
           return `3 rows read in words, rails at x ${g[0].x.toFixed(0)} wide ${g[0].w.toFixed(0)}, middle half is --litt-data-blue`;
+        });
+      }
+      if (has("breakdown")) {
+        await attempt("breakdown: the split rail reads its parts, segments take the hues in order, rows meter their share, a sixth part folds into Other", async () => {
+          const box = page.locator("[data-testid=litt-breakdown]");
+          const rail = box.getByRole("img", { name: /^Smoke storage/ });
+          await rail.waitFor({ state: "visible", timeout: 8000 });
+          const said = await rail.getAttribute("aria-label");
+          if (said !== "Smoke storage, 85 of 100 GB: Video 58 GB, Images 24 GB, Fonts 3 GB, 15 GB free") throw new Error(`the split rail reads "${said}"`);
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [blue, teal, amber, accent, free, other] = [
+            await colorOf("var(--litt-data-blue)"),
+            await colorOf("var(--litt-data-teal)"),
+            await colorOf("var(--litt-data-amber)"),
+            await colorOf("var(--litt-accent)"),
+            await colorOf("color-mix(in oklab, var(--litt-fg) 12%, transparent)"),
+            await colorOf("color-mix(in oklab, var(--litt-fg) 55%, transparent)"),
+          ];
+          const segs = await rail.evaluate((el) => {
+            const r = el.getBoundingClientRect();
+            return { width: r.width, kids: [...el.children].map((c) => ({ bg: getComputedStyle(c).backgroundColor, w: c.getBoundingClientRect().width, h: c.getBoundingClientRect().height, end: c.getBoundingClientRect().right - r.left })) };
+          });
+          /* Video takes blue (teal is Images' own pin), Images teal, Fonts the next free hue (amber), then the free space. */
+          const want = [blue, teal, amber, free];
+          if (segs.kids.length !== 4 || segs.kids.some((k, i) => k.bg !== want[i] || k.h !== 4)) throw new Error(`the segments are ${segs.kids.map((k) => k.bg).join(" | ")}, not blue, teal, amber, free`);
+          if (segs.kids.some((k) => k.bg === accent)) throw new Error("a segment is the accent");
+          const air = (segs.width - 6) / 100;
+          if (Math.abs(segs.kids[0].w - 58 * air) > 1 || Math.abs(segs.kids[1].w - 24 * air) > 1 || Math.abs(segs.kids[2].w - 3 * air) > 1 || Math.abs(segs.kids[3].end - segs.width) > 1) throw new Error(`the segments are ${segs.kids.map((k) => k.w.toFixed(1)).join("/")}px in a ${segs.width}px rail, not 58/24/3/15 of it`);
+          const images = box.getByRole("meter", { name: "Images" });
+          const got = await images.evaluate((el) => ({ min: el.getAttribute("aria-valuemin"), max: el.getAttribute("aria-valuemax"), now: el.getAttribute("aria-valuenow"), text: el.getAttribute("aria-valuetext"), share: el.firstElementChild.getBoundingClientRect().width / el.getBoundingClientRect().width, fill: getComputedStyle(el.firstElementChild).backgroundColor, h: el.getBoundingClientRect().height }));
+          if (got.min !== "0" || got.max !== "100" || got.now !== "24" || got.text !== "24 GB, 24%") throw new Error(`the Images meter reads ${JSON.stringify(got)}`);
+          if (Math.abs(got.share - 0.24) > 0.01 || got.fill !== teal || got.h !== 4) throw new Error(`the Images meter fills ${got.share.toFixed(2)} in ${got.fill} on a ${got.h}px rail, not 0.24 in teal on 4px`);
+          const rows = box.getByRole("list", { name: "Smoke storage" }).getByRole("listitem");
+          if ((await rows.count()) !== 3) throw new Error(`the storage list has ${await rows.count()} rows, not 3`);
+          /* Seven parts: the first five keep a hue, the sixth and seventh fold into one Other in the foreground at 55%. */
+          const credits = box.getByRole("list", { name: "Smoke credits" });
+          if ((await credits.getByRole("meter").count()) !== 6) throw new Error(`seven parts should draw five rows and Other, found ${await credits.getByRole("meter").count()}`);
+          const tail = await box.getByRole("meter", { name: "Other" }).evaluate((el) => ({ now: el.getAttribute("aria-valuenow"), text: el.getAttribute("aria-valuetext"), fill: getComputedStyle(el.firstElementChild).backgroundColor }));
+          if (tail.now !== "10" || tail.text !== "10 credits, 8%" || tail.fill !== other) throw new Error(`Other reads ${JSON.stringify(tail)}, not 10 (Webhooks and Redirects) in the foreground at 55%`);
+          const folds = await box.getByRole("img", { name: /^Smoke credits/ }).getAttribute("aria-label");
+          if (!folds.endsWith("Forms 8 credits, Other 10 credits")) throw new Error(`the credits summary reads "${folds}"`);
+          const legend = box.getByRole("list", { name: "Smoke tile" });
+          const entries = await legend.getByRole("listitem").evaluateAll((els) =>
+            els.map((e) => {
+              const swatch = e.querySelector("[aria-hidden=true]").getBoundingClientRect();
+              return { text: e.textContent.replace(/\s+/g, " ").trim(), swatch: `${swatch.width}x${swatch.height}` };
+            }),
+          );
+          if (entries.map((e) => e.text).join("|") !== "Video, 58 GB|Images, 24 GB" || entries.some((e) => e.swatch !== "12x4")) throw new Error(`the legend reads ${JSON.stringify(entries)}`);
+          return `4 segments in blue, teal, amber and free; Other is ${tail.text}`;
         });
       }
       if (has("pad")) {

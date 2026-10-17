@@ -933,8 +933,8 @@ const COPY = {
   /* The rails step: a data hue drawn as a thin line. Each entry is owned by the agent that builds the item. */
   breakdown: {
     title: "Breakdown",
-    description: "One whole split into its parts: a single 4px rail divided by kind in the data hues, and a row per kind with its own thin rail, a label and a mono reading. Storage by file type, credits by feature.",
-    docs: "Import Breakdown from components/litt/breakdown. Pass a label, the parts as { label, value } and the total. Past five parts the rest fold into Other.",
+    description: "One whole split into its parts: a thin split rail with a segment per part in the data hues, then a row per part with its own 4px rail, a label and a mono reading, or a small legend for a tile. Storage by file type, credits by feature.",
+    docs: "Import Breakdown from components/litt/breakdown. Pass a label, the parts as { label, value } largest first, and the total when there is free space. Past five parts the rest fold into Other. Pin a hue on a part to keep a kind's color across a page.",
   },
   sparkline: {
     title: "Sparkline",
