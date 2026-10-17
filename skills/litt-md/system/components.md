@@ -1,9 +1,9 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider and forms are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, bar list, gauge, dot plot, heatmap, timeline) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Select · Checkbox and radio · Switch · Slider · Segmented control · Tabs · Tag · Kbd · Card · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Pagination · Stat · Chart · App shell · Empty and loading states · Forms
+Button · Input · Token input · Select · Checkbox and radio · Switch · Slider · Pad · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Callout · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Pagination · Stat · Chart · Bar list · Gauge · Dot plot · Heatmap · Timeline · App shell · Empty and loading states · Forms
 
 ---
 
@@ -37,6 +37,14 @@ Weight 400 at every size, no tracking. Hover changes the fill and color, and pre
 - **Label:** above the field, `--type-small-size` at `--weight` in `--fg` (color, not weight, sets it apart), `--space-2` gap. Placeholders are never labels.
 - **Help text:** `--type-small-size` in `--fg-subtle`, `--space-2` below.
 - **Textarea:** the same field for longer text, with the same edge, focus, error, label and help text. It has no fixed height, so its size sets the air above and below the text, and it resizes vertically only.
+
+## Token input
+A field that collects short values as removable tokens: sender domains, recipients, tags. The Input's sibling, with the Tag inside.
+- **Field:** the Input's: minimum heights `--control-sm`, `--control-md` (default) and `--control-lg`, `--radius-control`, `--surface-1`, the inset `--line-control` edge, the danger edge when invalid and the focus ring around the whole field while its text input is focus-visible. It grows by rows of 24px tokens, 4px apart; the text input takes the rest of the line, at least 8ch.
+- **Tokens:** the Tag's look in mono (they are data), with a 16px remove button named "Remove @stripe.com" whose target grows to 44px on coarse pointers. `collapseAfter` folds the rest into a "+N" token on `--surface-2` (named "N more") until the field is focused.
+- **Adding and removing:** Enter, a comma or leaving the field adds what was typed; a paste splits on commas, semicolons and line breaks; duplicates and empties are ignored. A rejected value stays in the input with its message under the field. Backspace in an empty input removes the last token. The remove buttons are one roving stop: left and right walk them, right past the last returns to the input, and Backspace or Delete removes the focused one. `max` stops adding and says so.
+- **Accessibility:** a real label; tokens are a list named by it; a polite live region says "Added stripe.com" and "Removed stripe.com"; the hint, the rejection and the limit are linked descriptions. `name` posts one hidden input per value.
+- **Motion:** a new token fades in with a 0.98 scale on the responsive tier, its neighbors slide by transform, and a removed one fades out on the exit.
 
 ## Select
 One value from a short list (a role, a region, a plan). It replaces the native `<select>`, whose list cannot be styled on the desktop and whose rows are 28 to 30px on a phone.
@@ -73,6 +81,17 @@ A value on a continuous range, such as the default animation speed. Use it when 
 - **Touch:** the hit area is 44px tall on coarse pointers. A drag that starts on a slider never moves a sheet.
 - **Disabled:** the rail at fg 6%, the range `--fg-disabled`, the thumb `--surface-2` with a `--line` edge. The label dims to `--fg-disabled`; the value and the end words stay `--fg-subtle`, because they are still read.
 
+## Pad
+Two values set at once on one surface, such as a reply's tone against its length. It is the Slider in two dimensions; use two Sliders when the values are independent.
+- **Surface:** a well in `--surface-2` at `--radius-surface` with an inset `--line` hairline and a static dot grid (`--fg` at about 14%, 1.5px dots on a 16px pitch). The grid is a coordinate system inside a control, never page texture, and it never moves. The four axis words sit inside the edges, y's maximum at the top, in `--font-mono` at the caption size, `--fg-subtle`, sentence case, on plates in the well's color so the grid breaks around them. y grows upward.
+- **Thumb:** the Slider's 20px circle (`--surface-1`, a `--line-control` edge, the top highlight), never the accent, and it never resizes. Its center stays 14px from every edge so the focus ring fits inside. A 1px dashed `--line-strong` line crosses the pad through it each way. `defaultMark` draws a 20px dashed circle in `--fg-subtle` with "Default" beside it.
+- **Tooltip:** the chart tooltip's look (solid `--surface-3`, `--shadow-tooltip`) says the value in words beside the thumb, kept inside the pad; above a finger on touch. It shows while dragging, hovering or keyboard-focused, and Esc hides it.
+- **Keyboard:** one tab stop. Left and right move x, up and down move y, Shift makes it 10 steps, Page Up and Page Down move y 10 steps, Home and End take x to its ends.
+- **Accessibility:** two visually hidden range inputs, one per axis, named by the axis label and described by the pad's label, its help text and the words at the axis' ends, both with the formatted value as their value text. The y input is out of the tab order but reachable by a screen reader.
+- **Touch:** the whole pad is the target (`touch-action: none`, `data-no-drag`).
+- **Motion:** none on position. Only the tooltip fades, on the responsive tier.
+- **Disabled:** the thumb in `--surface-2` with a `--line` edge, words in `--fg-disabled`, no tab stop.
+
 ## Segmented control
 A `--radius-surface` track with fill at fg 5%, an inset `--line` edge and 4px (`--space-1`) padding, so the segments inside it, at `--radius-control`, stay concentric. Each segment is caption size in `--fg-subtle`. The selected segment gets `--surface-1`, `--fg`, an inset `--line` and `--highlight`. Build it from `fieldset` and radio inputs, with a visually hidden legend.
 
@@ -90,11 +109,29 @@ The selected segment's look, in mono: 24px tall, `--radius-control`, a `--surfac
 ## Kbd
 `--font-mono` at the caption size (12px) and weight 400, a 20px chip at `--radius-control`, `--surface-2`, inset `--line`. Use it for real shortcuts only.
 
+## Avatar
+A round mark for a person, a client or a company, and a group that stacks them.
+- **Surface:** `--radius-pill` at sm 24 (beside a tag, dense rows), md 32 (list rows, the default) or lg 44 (a profile header). A photo is object-cover under an inset `--line` hairline, so a white photo keeps its edge.
+- **Color (P11, identity is data):** initials sit on the hue's `-tint` in its `-text` tone, with an inset hairline of the hue at 24% under `--highlight`, the hue tag's look. With no `hue`, a stable hash of the name picks one of the five, so a client keeps its hue everywhere; two names can share one, so the name stays the identifier. `neutral` is `--surface-2`, `--fg-muted` and a `--line` hairline.
+- **Type:** initials in the sans at 400: caption at sm, small at md, body at lg, from the first letter of the first two words, skipping leading symbols ("@stripe.com" gives "S").
+- **Group:** avatars overlap by a quarter of their size, the first on top, each ringed 2px in the surface it sits on by a zero-offset spread shadow (`ring`: canvas, surface-1, surface-2). `max` (4) shows the first few, then a "+N" pill in mono caption on `--surface-2`, named "N more". The group is labelled ("Project team, 26 people").
+- **Accessibility:** initials are an image named by the name; a photo's alt is the name; `decorative` hides it when the name is written beside it. A failed photo falls back to the initials.
+- **States and motion:** none. No hover, no focus stop; a link around it is the caller's.
+
 ## Card
 `.litt-raised`: `--radius-surface`, `--surface-1`, inset `--line`, `--highlight`, and no outer shadow (P4). Padding `--space-6` (or `--space-1` around a cover, then `--space-4` above and at the sides and `--space-3` below for the body).
 - A cover is `--radius-control` when the card pads it by 4px, and takes the card's `--radius-surface` when full-bleed. Optionally `.litt-lit .litt-grain` as the card's own top light.
 - Hover (when the card links somewhere): the fill moves one step (`--surface-2`). No lift, no shadow growth, no scale. On coarse screens a press shows the same step.
 - Cards are never glass (P3), never have an accent rail, and are not the default layout for features.
+
+## Callout
+An inline note in the page flow: a tip, a heads-up, a result to act on.
+- **Surface:** `.litt-raised`, padding `--space-4`, gap `--space-3`. In the flow, so never glass and no shadow, and never a left rail, a tinted fill or a colored border.
+- **Anatomy:** a 16px icon on the title's first line, the title (body, `--fg`), a line of detail (small, `--fg-subtle`), an optional action at the end (an sm secondary Button or a Kbd) and, with `onDismiss`, a pill ghost close button named "Dismiss". It measures itself: under 28rem the action drops below the text.
+- **Color:** only the icon takes `--success`, `--warning` or `--danger`; neutral is `--fg-subtle`. A non-neutral tone puts a hidden word before the title ("Warning: "), so the color never says it alone. A tip takes the neutral tone with its own icon.
+- **Accessibility:** `role="note"`; `live` makes it a status, or an alert for danger, for a callout that appears after an action. Dismissing unmounts it, and the caller places focus.
+- **Touch:** the close button and a Button action grow to 44px; a Kbd action hides, as key hints do on touch.
+- **Motion:** none.
 
 ## Glass header
 Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
@@ -191,6 +228,51 @@ Bars compare amounts and a line follows change over time. Both are drawn in plai
 - **Accessibility:** the SVG is `role="img"` with a label that summarises the data ("Deploys per day, last 14 days: from 5 to 1, peak 9"), and a visually hidden table lists every value. A visually hidden button per category, named by its values ("3 Oct: 5 deploys"), sits in a labelled group outside the image: they are the keyboard's stops.
 - **Touch:** a finger scrubs. The mark under it is active and shows its tooltip, which stays until the next touch elsewhere, and a vertical drag still scrolls the page. A column on a phone is narrower than a finger, which is why the target is the plot and not the column. The chart fills its container's width, the height is the caller's, and the plot never needs a horizontal scroll.
 - **Meter:** a horizontal progress bar for one value against a limit, such as storage used. The label sits at the start in the small size, the value at the end in mono at the caption size, and the 4px rail under them is `--radius-control`, filled at fg 12% and then with `--fg` to the value, or with a data hue's mark tone when the color names the thing (images, video and fonts in a storage breakdown). `role="meter"` with a name and a value text. The fill is never the accent. It does not animate.
+
+## Bar list
+A ranked list where each row carries a thin bar for its share: most-used shortcuts, busiest repos, top pages.
+- **Anatomy:** an optional lead (a Kbd, a 16px icon or a small avatar, up to 48px so two key caps fit), the label (small, `--fg`, truncates), the bar, the value (mono, small, `--fg`, tabular, at the end) and an optional delta. Rows are at least 44px, split by `--line` hairlines. One grid with subgrid rows keeps every bar starting and ending at the same place and the values in a column. The list measures itself: under 28rem the bar drops under the label at the row's full width.
+- **Bar:** the Meter's rail: 4px at `--radius-control`, the track fg 12%, the fill `--fg` or one data hue's mark tone, as wide as the row's share of the largest value (or `max`). One hue means one thing: the quantity the bars measure.
+- **Delta:** a word and a number at the caption size, colored and judged exactly as the Stat's: `--success` for good news, `--danger` for bad, `--fg-subtle` for neither, with the judgment in hidden text. Never an arrow alone.
+- **Rows:** a row with `href` is a link, and with `onSelect` a button: an fg-4% hover fill at `--radius-control` on the instant tier, fg 6% pressed on coarse pointers, and an inset focus ring. A static row has no hover and no focus stop.
+- **Accessibility:** an ordered list named by its label; a row reads "Archive, 412 times" with the delta's words. The lead and the bar are hidden: put anything that matters in the label.
+- **Motion:** none. The bars never animate.
+
+## Gauge
+One value against a range, on a half circle of fine ticks with the figure in its opening: credits left, storage used. A sibling of the Meter for when the number is the point.
+- **Marks:** 48 radial ticks over 180 degrees, 2px wide with square ends. The ticks up to the value take a data hue's mark tone, or `--fg` without one (the quiet default); the rest are fg at 12%. The last filled tick marks the value: it reaches 4px further out, in the hue's `-text` tone or `--fg`. No needle, no glow, no gradient.
+- **Opening:** the label above (caption, `--fg-subtle`), the figure in the sans at the h2 size in `--fg` with tabular numbers, and an optional caption below (caption, `--fg-subtle`). The text is HTML over the SVG, so it stays crisp while the drawing scales down to its container. Under about 200px leave the caption out.
+- **Accessibility:** `role="meter"` named by its label, with a minimum, a maximum, a value and a value text; the caption describes it. The ticks and the text over them are hidden, so nothing is read twice.
+- **Motion:** none, like the Meter: no entrance, no hover, no focus stop.
+
+## Dot plot
+A distribution as stacks of dots, so you see where most values fall without reading numbers: reply times, build times. Plain SVG, a sibling of the Chart.
+- **Anatomy:** one stack per bin on an 8px pitch (a 6px dot and 2px of air), so the bin count follows the width, on a linear or log axis. Stacks grow out from a center line, mirrored. A dot stands for the fewest items that fit the tallest stack in the height, and the legend says so when it is more than one. No gridlines, no area, no glow.
+- **Color (P11):** with a goal, dots at or under it take the hue's mark tone and dots past it `--fg-subtle`, split on an exact bin boundary. Without a goal every dot takes the hue. The goal is a 1px dashed `--line-strong` line labelled at its foot; the median a 2px line in the hue's `-text` tone, labelled "Median" in that tone. A marker is a 10px dot ringed 2px in `--fg` on the center line, named in the tooltip's look.
+- **Type:** tick, goal and median labels in mono caption; ticks in `--fg-subtle`, tabular, and a label that would touch its neighbor is left out.
+- **Legend:** a 6px dot, the name and the share in mono `--fg`. A key, never a status.
+- **Interaction:** one pointer layer; the bin under the pointer turns to the hue's text tone (`--fg` past the goal) on the instant tier, with the chart's tooltip ("1 h to 2 h, 34 replies"). One tab stop, on the median's bin; arrows, Home and End move between non-empty bins, Esc hides the tooltip, and a focused bin gets a 2px `--focus` ring. A finger scrubs, with `touch-action: pan-y`.
+- **Accessibility:** `role="img"` with a summary ("Reply times, 412 replies: median 1 h 5 m, 84% within the 4 h goal") and a hidden table of every bin, then the median, the goal and the markers.
+- **Motion:** one fade on the responsive tier. Dots never squash or grow.
+
+## Heatmap
+A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour.
+- **Anatomy:** circles on a pitch of the dot plus 4px (an 8px dot on 12px by default). A row has a mono caption label in `--fg-subtle` at the start and an optional total at the end (mono small, `--fg`, tabular); optional ticks name chosen columns. Under the grid, at its end: "Less", the five levels, "More". Under a 16px pitch only every second row is labelled, and a screen reader still hears all of them.
+- **Color (P11, magnitude):** zero is fg at 8%; the four steps are one hue's mark tone over transparent at 30, 55, 80 and 100%, starting at the quartiles of the non-zero values unless `steps` says otherwise. No data draws nothing.
+- **Interaction:** hover rings a dot 1px in `--fg` and shows the chart's tooltip above it ("3 Oct, 14 deploys"). A `role="grid"` with one tab stop: arrows move in two dimensions, Home and End along a row, Ctrl with them to the corners, Esc hides the tooltip; the focused dot gets a 2px `--focus` ring, 2px away.
+- **Fit:** dots keep their size. A grid wider than its box scrolls sideways inside it, starting at the latest column, with an 8px static fade on an edge that has more beyond it; labels and totals stay put. A finger scrubs while the grid fits and taps to pick while it scrolls.
+- **Accessibility:** the grid is named by its label and described by a summary ("Deploys per day, 214 in all, most on 12 Oct with 31"); every dot is named by its row, its column and its value.
+- **Motion:** none beyond the tooltip's responsive entrance.
+
+## Timeline
+The steps of a run in order: when each started, how long it took and how it ended, grouped into phases. TimelineBar draws the whole run as a strip beside it.
+- **Anatomy:** an ordered list in four columns: the start (mono caption, `--fg-subtle`, tabular), the rail (a 1px `--line-strong` line through 16px status icons), the label (small, `--fg`; skipped and pending in `--fg-subtle`) and the duration (mono caption, `--fg-subtle`; "skipped" in words). Rows are at least 32px. A phase is a heading row (small `--fg-subtle` label, mono total) over a nested, labelled list; the rail breaks at phase headings. The list measures itself, so the start column narrows on a phone and labels wrap.
+- **Status:** a check in a circle (`--fg-muted`), a half-filled circle for running (`--fg`, never spinning or pulsing), an empty circle for pending and a dashed one for skipped (`--fg-subtle`), an x in a circle for failed (`--danger`). Every status is also said in hidden text. No dots.
+- **Drawn to scale (`proportional`):** a step's row is at least its seconds times `secondHeight` (4px) tall, and a long step's rail becomes a 4px bar at `--radius-control` in its phase's hue (P11: the hue says which phase), or fg 55% without one; a failed step's bar is `--danger`. With the last run's time, a ghost bar at fg 12% stands beside it with "was 31s" at its foot. Short steps keep the thin line.
+- **Result:** `TimelineResult` closes the run: its label at the body size in `--success`, `--danger` or `--fg` with the tone in hidden text, and the total in mono at the end.
+- **Strip:** `TimelineBar`, 32px at `--radius-control`, segments sized by seconds, square and 2px apart, in their phase's hue; phase labels above ("Build · 24s") and the times at phase boundaries below, in mono caption. A hovered or touched segment lifts by an fg-16% wash on the instant tier and shows the chart's tooltip. It is an image with a summary ("Build 24 seconds, deploy 18 seconds, 42 seconds in all"), and its segments are not focusable, because it always sits beside a list or a table of the same steps. On coarse pointers its hit layer is 44px tall; a tap pins the tooltip and a drag scrubs.
+- **Accessibility:** a step reads "00:02, Run build commands, done, 19 seconds".
+- **Motion:** none in the list; a running step never moves. Only the strip's tooltip enters, on the responsive tier.
 
 ## App shell
 The frame around an app's pages: a sidebar for moving between them and a main area for the page.
