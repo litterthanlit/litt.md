@@ -407,6 +407,20 @@ const RECIPES = {
           <div data-testid="plan-failed"><Plan label="Smoke failed plan" steps={FAILED_STEPS} /></div>
         </div>`,
   },
+  "tool-call": {
+    needs: ["ToolCall", "ToolCallGroup", "ToolApproval"],
+    state: [`const [toolDecision, setToolDecision] = useState<"pending" | "allowed" | "denied">("pending");`, `const [toolAllowed, setToolAllowed] = useState(0);`],
+    jsx: `<div className="grid w-full max-w-md gap-4" data-testid="litt-tool-call">
+          <ToolCall status="failed" action="Ran" target="npm run build" duration={14} output={"Build failed: no such file"} />
+          <ToolCall status="done" action="Read" target="src/app.tsx" duration={0.2} />
+          <ToolCallGroup summary="Read 2 files and ran the tests">
+            <ToolCall status="done" action="Read" target="a.ts" />
+            <ToolCall status="done" action="Ran" target="npm test" />
+          </ToolCallGroup>
+          <ToolApproval command="npm run deploy" description="Publishes the smoke site." alwaysAllowLabel="Always allow npm run deploy" decision={toolDecision} onAllow={() => { setToolAllowed((n) => n + 1); setToolDecision("allowed"); }} onDeny={() => setToolDecision("denied")} />
+          <p data-testid="tool-call-allowed">{toolAllowed}</p>
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1834,6 +1848,57 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (skip.text !== "Compress the videos, skippedSkipped" || skip.icon !== subtle) throw new Error(`the skipped step reads "${skip.text}" in ${skip.icon}`);
           if (!/1 of 4 steps done/.test(((await failed.textContent()) ?? "").replace(/\s+/g, " "))) throw new Error("a failed and a skipped step counted as done");
           return "ol, aria-current, fg tones, danger x, 40% rail, Step 4 of 5 then Plan done";
+        });
+      }
+      if (has("tool-call")) {
+        await attempt("tool call: a failed row says Failed and opens its output, a group folds its calls, Allow is the accent, calls back and becomes a row", async () => {
+          const box = page.locator("[data-testid=litt-tool-call]");
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [danger, accent] = [await colorOf("var(--litt-danger)"), await colorOf("var(--litt-accent)")];
+          const row = box.getByRole("button", { name: "Ran npm run build Failed 14 seconds" });
+          await row.waitFor({ state: "visible", timeout: 8000 });
+          if ((await row.getAttribute("aria-expanded")) !== "false") throw new Error("the failed row starts open");
+          await box.getByText("Failed", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          const mark = await row.locator("svg").first().evaluate((el) => getComputedStyle(el).color);
+          if (mark !== danger) throw new Error(`the failed mark is ${mark}, not --litt-danger (${danger})`);
+          if ((await box.getByRole("region").count()) !== 0) throw new Error("an output shows before the row is opened");
+          await row.click();
+          if ((await row.getAttribute("aria-expanded")) !== "true") throw new Error("a click did not set aria-expanded to true");
+          const output = box.getByRole("region", { name: "Output of npm run build" });
+          await output.waitFor({ state: "visible", timeout: 3000 });
+          if ((await output.getAttribute("tabindex")) !== "0") throw new Error("the output is not focusable");
+          if ((await output.innerText()).trim() !== "Build failed: no such file") throw new Error(`the output reads "${await output.innerText()}"`);
+          const group = box.getByRole("button", { name: "Read 2 files and ran the tests" });
+          if ((await group.getAttribute("aria-expanded")) !== "false") throw new Error("a group that is not running starts open");
+          await group.click();
+          const calls = box.getByRole("list", { name: "Read 2 files and ran the tests" }).getByRole("listitem");
+          await calls.first().waitFor({ state: "visible", timeout: 3000 });
+          if ((await calls.count()) !== 2) throw new Error(`the group holds ${await calls.count()} calls, not 2`);
+          const panel = box.getByRole("group", { name: "Run a command?" });
+          await panel.waitFor({ state: "visible", timeout: 3000 });
+          const said = box.getByRole("status");
+          await page.waitForFunction(() => document.querySelector("[data-testid=litt-tool-call] [role=status]")?.textContent?.trim() === "Waiting for your approval: npm run deploy", null, { timeout: 3000 });
+          if ((await said.count()) !== 1) throw new Error("the approval has no live region");
+          if (await panel.evaluate((el) => el.parentElement.contains(document.activeElement))) throw new Error("the approval took focus");
+          const allow = box.getByRole("button", { name: "Allow", exact: true });
+          const fill = await allow.evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (fill !== accent) throw new Error(`Allow is ${fill}, not --litt-accent (${accent})`);
+          const glass = await panel.evaluate((el) => getComputedStyle(el).backdropFilter);
+          if (glass && glass !== "none") throw new Error(`the approval panel has a backdrop filter: ${glass}`);
+          await box.getByRole("checkbox", { name: "Always allow npm run deploy" }).waitFor({ state: "visible", timeout: 3000 });
+          await allow.click();
+          await panel.waitFor({ state: "detached", timeout: 3000 });
+          if ((await box.getByTestId("tool-call-allowed").innerText()).trim() !== "1") throw new Error("Allow did not call onAllow once");
+          await box.getByText("Allowed", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          return "Failed in words and --litt-danger, output opens, group folds two calls, Allow is --litt-accent and becomes an Allowed row";
         });
       }
       if (has("app-shell")) {

@@ -964,8 +964,8 @@ const COPY = {
   },
   "tool-call": {
     title: "Tool call",
-    description: "What an agent did, one row per call: a status mark, the action in words, the target in mono and the time, with the input and output folded under it. A group folds a run of calls, and an approval asks before a call runs.",
-    docs: "Import ToolCall, ToolCallGroup and ToolApproval from components/litt/tool-call.",
+    description: "What an agent did, one row per call: a status mark (a still half circle while it runs, never a spinner), the action in words, the target in mono cut at the end, and the time. A call with an input or an output opens them under it. A group folds a run of calls and closes itself when they finish, and an approval asks first on a raised panel with Allow as the accent fill and Deny beside it, then becomes a row that says what was chosen.",
+    docs: "Import ToolCall, ToolCallGroup and ToolApproval from components/litt/tool-call. Give a call a status, an action and a target, plus an input or an output to make it open. Pass running to a group, and hold decision in state for an approval, setting it in onAllow and onDeny. Keep an approval outside a group, and disable your Send while it waits so the view holds one accent fill.",
   },
   plan: {
     title: "Plan",
