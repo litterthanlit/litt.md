@@ -946,6 +946,37 @@ const COPY = {
     description: "How values spread, one thin rail per row on a shared scale: the full range faint, the middle half in a data hue, the median as a tick and in mono at the end. Build times by site, reply times by client. A row gives its values or its quartiles, a goal is a dashed line through every rail, and under 28rem the label moves above its rail. Static, with a legend in words.",
     docs: "Import Spread from components/litt/spread. Pass a label and items of { label, values } or { label, min, p25, median, p75, max }, and a formatValue that includes the unit. Rows share one scale (linear or log, with an optional domain and ticks) and an optional goal. It fills its container's width, so give the container a width.",
   },
+  /* The agents step: chat, thinking and tool calls. Each entry is owned by the agent that builds the item. */
+  message: {
+    title: "Message",
+    description: "A conversation between a person and an agent: the agent's words on the page with no bubble, the person's in a raised bubble on the right, actions under a finished turn, and a scroller that keeps the latest line in view while an answer streams.",
+    docs: "Import Conversation, Message, MessageText and MessageActions from components/litt/message.",
+  },
+  composer: {
+    title: "Composer",
+    description: "Where the person writes to an agent: a text field that grows line by line, file chips, a toolbar for the caller's controls, and a round Send that becomes Stop while the agent answers. Enter sends and Shift+Enter starts a new line.",
+    docs: "Import Composer from components/litt/composer. Hold the text in state, and pass streaming while the agent answers.",
+  },
+  thinking: {
+    title: "Thinking",
+    description: "The agent's reasoning as a quiet disclosure above its answer. It reads \"Thinking\" with a clock that counts the seconds, never a shimmer or a pulse, then \"Thought for 12s\", and closes by itself when the answer starts.",
+    docs: "Import Thinking from components/litt/thinking. Pass active while the agent thinks and the reasoning as children.",
+  },
+  "tool-call": {
+    title: "Tool call",
+    description: "What an agent did, one row per call: a status mark, the action in words, the target in mono and the time, with the input and output folded under it. A group folds a run of calls, and an approval asks before a call runs.",
+    docs: "Import ToolCall, ToolCallGroup and ToolApproval from components/litt/tool-call.",
+  },
+  plan: {
+    title: "Plan",
+    description: "An agent's steps for a task, ticked off as it works: a count and a thin rail, then each step with its status mark, the current one in the foreground. Static: statuses swap at once.",
+    docs: "Import Plan from components/litt/plan. Pass a label and steps of { label, status }.",
+  },
+  "code-block": {
+    title: "Code block",
+    description: "Code in an answer, a tool's output or a diff: mono on a quiet surface, highlighting in the foreground's tones only, the file name and a Copy button in a header, and lines that scroll sideways inside the block.",
+    docs: "Import CodeBlock from components/litt/code-block. Pass the code, a label for the scroll area and a lang.",
+  },
 };
 
 /* =============================================================== assemble the items */

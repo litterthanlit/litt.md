@@ -37,3 +37,29 @@ export const SlidersIcon = (p: IconProps) => <Icon {...p}><path d="M2.5 4.5h7M12
 export const AlertIcon = (p: IconProps) => <Icon {...p}><circle cx="8" cy="8" r="6.25" /><path d="M8 4.75v4M8 11.25v.01" /></Icon>;
 export const MenuIcon = (p: IconProps) => <Icon {...p}><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" /></Icon>;
 export const CalendarIcon = (p: IconProps) => <Icon {...p}><rect x="2.25" y="3.25" width="11.5" height="10.5" /><path d="M2.25 6.75h11.5M5.5 1.75v3M10.5 1.75v3" /></Icon>;
+export const ArrowUpIcon = (p: IconProps) => <Icon {...p}><path d="M8 13V3M3.75 7.25 8 3l4.25 4.25" /></Icon>;
+export const ArrowDownIcon = (p: IconProps) => <Icon {...p}><path d="M8 3v10M3.75 8.75 8 13l4.25-4.25" /></Icon>;
+export const StopIcon = (p: IconProps) => <Icon {...p}><rect x="4.25" y="4.25" width="7.5" height="7.5" rx="1" fill="currentColor" /></Icon>;
+export const PaperclipIcon = (p: IconProps) => <Icon {...p}><path d="m13 7.25-5.3 5.3a3.25 3.25 0 0 1-4.6-4.6l5.65-5.65a2.1 2.1 0 0 1 3 3L6.1 10.95a1 1 0 0 1-1.4-1.4l5.05-5.05" /></Icon>;
+export const RetryIcon = (p: IconProps) => <Icon {...p}><path d="M13.25 8a5.25 5.25 0 1 1-1.55-3.7M13.25 2.75v3h-3" /></Icon>;
+
+/** Where a step, a tool call or a task stands. The Timeline draws the same five marks. */
+export type StepStatus = "pending" | "running" | "done" | "failed" | "skipped";
+
+/**
+ * The status mark for steps and tool calls: an empty circle (pending), a half-filled circle (running,
+ * never spinning or pulsing), a check in a circle (done), an x in a circle (failed) and a dashed circle
+ * (skipped). It takes the text color, so the caller sets the tone (--fg for running, --fg-muted for done,
+ * --danger for failed, --fg-subtle for pending and skipped). Decorative: say the status in words beside it.
+ */
+export function StatusIcon({ status, ...p }: IconProps & { status: StepStatus }) {
+  const skipped = status === "skipped";
+  return (
+    <Icon {...p}>
+      <circle cx="8" cy="8" r="6.25" strokeDasharray={skipped ? "2.45" : undefined} strokeLinecap={skipped ? "butt" : undefined} />
+      {status === "done" && <path d="m5.25 8.25 2 2 3.5-4.25" />}
+      {status === "running" && <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor" />}
+      {status === "failed" && <path d="m6 6 4 4m0-4-4 4" />}
+    </Icon>
+  );
+}
