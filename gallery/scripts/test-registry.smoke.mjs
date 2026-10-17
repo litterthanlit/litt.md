@@ -425,7 +425,7 @@ const RECIPES = {
         </div>`,
   },
   composer: {
-    needs: ["Composer", "FileChip"],
+    needs: ["Composer"],
     state: [
       `const [composerSent, setComposerSent] = useState("");`,
       `const [composerStreaming, setComposerStreaming] = useState(false);`,
@@ -1495,7 +1495,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               const rail = fill.parentElement;
               const r = rail.getBoundingClientRect();
               const f = fill.getBoundingClientRect();
-              return { x: r.left, w: r.width, h: r.height, share: f.width / r.width, fill: getComputedStyle(fill).backgroundColor, radius: getComputedStyle(rail).borderRadius, value: li.querySelector(".font-mono").getBoundingClientRect().right };
+              return { x: r.left, w: r.width, h: r.height, share: f.width / r.width, fill: getComputedStyle(fill).backgroundColor, radius: getComputedStyle(rail).borderRadius, value: li.querySelector("[class*='mono']").getBoundingClientRect().right };
             }),
           );
           const shares = [1, 164 / 412, 31 / 412];
