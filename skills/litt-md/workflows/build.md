@@ -84,7 +84,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `checkbox` | `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, a select-all box. |
 | `select` | One value from a short list (`SelectField` with a label, the bare `Select` in a toolbar). Never a native `<select>`. Pass `options` as `{ value, label }`. It stays anchored on a phone. |
 | `switch` | An on or off setting (`Switch`). `align="end"` lines switches up at the end of settings rows. A choice that can be wrong, such as accepting terms, is a checkbox. |
-| `slider` | A value on a range, such as an animation speed (`Slider`). Give it `minLabel` and `maxLabel` so the direction is clear. |
+| `slider` | A value on a range, such as an animation speed (`Slider`), or a span with two thumbs, such as build times between 20s and 80s in a filter (`RangeSlider`). Give it `minLabel` and `maxLabel` so the direction is clear. |
 | `pad` | Two related values set at once on one surface, such as tone against length (`Pad`). Two independent values are two Sliders. |
 | `form` | The page patterns: `FormSection` for settings sections, `Fieldset` (`rows` for a list of switches), `ErrorSummary` above a long form, `FormActions` (`align="fields"` on a settings page). |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |
@@ -116,9 +116,15 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `pagination` | The range ("21 to 40 of 143") with Previous and Next under a table. You hold the page in state. |
 | `list` | Project rows and cards with status filters (`ProjectList`, `ProjectGrid`, `ProjectFilters`). It reads a `Project` (`id`, `name`, `client`, `deploy`, `status`, `updated`, `description`, `tags`, `cover`), so map your data into that shape. |
 | `states` | Empty, skeleton, loading and error views. |
+| `message` | A chat with an agent (`Conversation`, `Message`, `MessageText`, `MessageActions`). The agent's turn has no bubble and the person's is a raised bubble on the right. Put the agent's thinking, plan and tool calls inside its `Message`, and render markdown inside `MessageText`. Pass `busy` while it answers. Never hand-build bubbles or a stick-to-bottom scroller. |
+| `composer` | Where the person writes to an agent (`Composer`): a growing field, file chips, a toolbar slot and Send, which becomes Stop while `streaming`. Send is the view's one accent fill; pass `sendDisabled` while an approval waits. `FileChip` shows a sent file. |
+| `thinking` | The agent's reasoning above its answer (`Thinking`): "Thinking 4s" with a clock while `active`, then "Thought for 12s". Never a shimmer, a pulse or animated dots. |
+| `tool-call` | What an agent did (`ToolCall` rows with a status, the action, the target and the time; `ToolCallGroup` to fold a run; `ToolApproval` to ask before a call runs, with Allow as the accent). |
+| `plan` | An agent's steps for a task, ticked off as it works (`Plan` with `steps` of `{ id, label, status }`). |
+| `code-block` | Code in an answer, a tool's output or a diff (`CodeBlock` with `code`, `lang` and `filename`). Quiet colors, a Copy button, and `lang="diff"` for a change. |
 | `litt` | The tokens, the Tailwind names and the material classes. Every component brings it. Install it alone when you write all the markup yourself. |
 | `base-styles` | Opt-in. Loads Hanken Grotesk and Geist Mono at weight 400 and sets page defaults for the whole app: weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
-| `motion`, `glide`, `icons`, `list-cover` | Libraries that components bring along. `motion` holds the hooks below, `icons` has 25 16px icons (`SearchIcon`, `PlusIcon`, `SettingsIcon`), and both are fine to install on their own. |
+| `motion`, `glide`, `icons`, `list-cover` | Libraries that components bring along. `motion` holds the hooks below, `icons` has 30 16px icons (`SearchIcon`, `PlusIcon`, `SettingsIcon`) and `StatusIcon` with the five step marks, and both are fine to install on their own. |
 
 Each item prints a one-line import hint. The gallery page for an item (`https://littmd.vercel.app/#dialog`) has a working example.
 
