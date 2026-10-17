@@ -1566,8 +1566,9 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               probe.remove();
               return c;
             }, name);
-          const bar = list.locator("[style*='height: 76px']");
-          const ghost = list.locator("[style*='height: 124px']");
+          /* Next.js serves inline styles without the space ("height:76px") and React keeps that until it re-renders the node. */
+          const bar = list.locator("[style*='height: 76px'], [style*='height:76px']");
+          const ghost = list.locator("[style*='height: 124px'], [style*='height:124px']");
           if ((await bar.count()) !== 1 || (await ghost.count()) !== 1) throw new Error("the 19s bar or the 31s ghost is missing");
           const tall = await bar.evaluate((el) => Math.round(el.getBoundingClientRect().height));
           const row = await steps.nth(2).evaluate((li) => Math.round(li.getBoundingClientRect().height));
