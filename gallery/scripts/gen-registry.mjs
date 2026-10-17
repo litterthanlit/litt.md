@@ -922,8 +922,8 @@ const COPY = {
   },
   "token-input": {
     title: "Token input",
-    description: "A field that collects short values as tokens: recipients, sender domains, tags. Type and press Enter or a comma, paste a list, remove one with its button or Backspace. The field's own size, edge and focus ring.",
-    docs: "Import TokenInput from components/litt/token-input. Hold the values in state and pass value and onValueChange, or a defaultValue. Give it a label.",
+    description: "A field that collects short values as removable tokens: recipients, sender domains, tags. Enter, a comma or blur adds what you typed, a pasted list is split, and Backspace or the x removes one. The Input's own size, edge, label and focus ring, with the Tag's look inside. A long list folds into a +N token until the field is focused.",
+    docs: "Import TokenInput from components/litt/token-input. Give it a label and hold the values in state with value and onValueChange, or pass a defaultValue. Add validate to reject a value with a message, max to cap the list, collapseAfter to fold it, and name to post every value with a form.",
   },
   pad: {
     title: "Pad",

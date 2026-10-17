@@ -310,6 +310,13 @@ const RECIPES = {
           </Timeline>
         </div>`,
   },
+  "token-input": {
+    needs: ["TokenInput"],
+    state: [`const [senders, setSenders] = useState<string[]>(["@stripe.com", "ramp.com", "brex.com"]);`],
+    jsx: `<form className="grid w-full max-w-md gap-4" data-testid="litt-token-input" aria-label="Token input smoke" onSubmit={(e) => e.preventDefault()}>
+          <TokenInput label="Mail from" name="from" collapseAfter={1} placeholder="Add a sender" hint="Press Enter or a comma to add one." value={senders} onValueChange={setSenders} validate={(v) => /^[a-z0-9.@-]+$/.test(v) || \`\${v} has characters a domain cannot.\`} />
+        </form>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1181,6 +1188,66 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (await tip.count()) throw new Error("Esc did not hide the tooltip");
           await page.mouse.move(5, 5);
           return `5 steps read in order, ${tall}px bar in ${blue}, 3 segments`;
+        });
+      }
+      if (has("token-input")) {
+        await attempt("token input folds to +2, validates, adds on a comma, removes by key and posts its values", async () => {
+          const form = page.locator("[data-testid=litt-token-input]");
+          const input = form.getByRole("textbox", { name: "Mail from" });
+          await input.waitFor({ state: "visible", timeout: 5000 });
+          const field = input.locator("xpath=ancestor::div[contains(@class,'cursor-text')][1]");
+          const color = (name) =>
+            page.evaluate((n) => {
+              const probe = document.createElement("span");
+              probe.style.color = `var(${n})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, name);
+          const posted = () => page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-token-input]")).getAll("from").join("|"));
+          const note = () => input.evaluate((el) => document.getElementById(el.getAttribute("aria-describedby") ?? "")?.textContent ?? "");
+          await page.waitForTimeout(500);
+          const more = field.locator("li[aria-label='2 more']");
+          if ((await field.locator("li").count()) !== 2 || (await more.textContent()) !== "+2") throw new Error("an unfocused field with three values and collapseAfter 1 should show one token and +2");
+          const box = await field.boundingBox();
+          const tokenH = await field.locator("li").first().evaluate((el) => Math.round(el.getBoundingClientRect().height));
+          const x = await form.getByRole("button", { name: "Remove @stripe.com" }).boundingBox();
+          if (Math.round(box.height) !== 44 || tokenH !== 24 || Math.round(x.width) !== 24) throw new Error(`field ${box.height}px, token ${tokenH}px, remove button ${x.width}px: expected 44, 24 and 24`);
+          const edge = await field.evaluate((el) => getComputedStyle(el).boxShadow);
+          const line = await color("--litt-line-control");
+          if (!edge.includes(line)) throw new Error(`the field edge is "${edge}", not --litt-line-control (${line})`);
+          await field.click({ position: { x: box.width - 20, y: box.height / 2 } });
+          await page.waitForTimeout(500);
+          if ((await field.locator("li").count()) !== 3) throw new Error("focusing the field should open it to all three tokens");
+          const ring = await field.evaluate((el) => getComputedStyle(el).boxShadow);
+          const focus = await color("--litt-focus");
+          if (!ring.includes(focus)) throw new Error(`the focused field has no --litt-focus ring: "${ring}"`);
+          await page.keyboard.type("invoice.com,");
+          await page.waitForTimeout(400);
+          if ((await posted()) !== "@stripe.com|ramp.com|brex.com|invoice.com") throw new Error(`a comma should add invoice.com; the form posts "${await posted()}"`);
+          const said = await form.locator("[role=status]").textContent();
+          if (said !== "Added invoice.com") throw new Error(`the live region says "${said}"`);
+          await page.keyboard.type("bad value");
+          await page.keyboard.press("Enter");
+          if ((await input.inputValue()) !== "bad value" || (await input.getAttribute("aria-invalid")) !== "true") throw new Error("a rejected value should stay in the input and mark it invalid");
+          if (!(await note()).includes("has characters a domain cannot")) throw new Error(`the message under the field reads "${await note()}"`);
+          await input.fill("");
+          if ((await input.getAttribute("aria-invalid")) !== null) throw new Error("changing the text should clear the rejection");
+          await page.keyboard.press("Backspace");
+          await page.waitForTimeout(300);
+          if ((await posted()) !== "@stripe.com|ramp.com|brex.com") throw new Error(`Backspace in an empty input should remove the last token; the form posts "${await posted()}"`);
+          await page.keyboard.press("ArrowLeft");
+          const onButton = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (onButton !== "Remove brex.com") throw new Error(`ArrowLeft focused "${onButton}", not "Remove brex.com"`);
+          await page.keyboard.press("ArrowRight");
+          if (!(await input.evaluate((el) => el === document.activeElement))) throw new Error("ArrowRight past the last remove button should return to the input");
+          await form.getByRole("button", { name: "Remove @stripe.com" }).click();
+          await page.waitForTimeout(300);
+          if ((await posted()) !== "ramp.com|brex.com") throw new Error(`the x should remove @stripe.com; the form posts "${await posted()}"`);
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-token-input.png`) });
+          await page.evaluate(() => document.activeElement?.blur());
+          return "+2, 44/24/24px, comma, validate, keys, posted values";
         });
       }
       if (has("app-shell")) {
