@@ -1010,9 +1010,10 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.keyboard.press("Shift+ArrowUp");
           await page.waitForTimeout(100);
           const keyed = await lengthIn.getAttribute("aria-valuetext");
-          if (keyed !== "Tone 100, length 35") throw new Error(`ArrowRight, ArrowUp and Shift+ArrowUp gave "${keyed}", not "Tone 100, length 35"`);
+          /* From tone 40: ArrowUp is one step of 5, and Shift+ArrowUp ten more, so 95. */
+          if (keyed !== "Tone 95, length 35") throw new Error(`ArrowRight, ArrowUp and Shift+ArrowUp gave "${keyed}", not "Tone 95, length 35"`);
           await page.keyboard.press("Home");
-          if ((await lengthIn.getAttribute("aria-valuetext")) !== "Tone 100, length 0") throw new Error("Home did not take x to 0");
+          if ((await lengthIn.getAttribute("aria-valuetext")) !== "Tone 95, length 0") throw new Error("Home did not take x to 0");
           const box = group.locator("div[data-no-drag]");
           const b = await box.boundingBox();
           await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
