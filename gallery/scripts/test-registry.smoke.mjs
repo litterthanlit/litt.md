@@ -1166,7 +1166,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
                   dash: line?.getAttribute("stroke-dasharray") ?? null,
                   stroke: line ? getComputedStyle(line).stroke : null,
                   lineX: line ? line.getBoundingClientRect().left - r.left : null,
-                  medRight: li.querySelector(".font-mono").getBoundingClientRect().right,
+                  /* By "mono" in the class, not the class itself: a host has font-litt-mono. */
+                  medRight: [...li.querySelectorAll("span")].find((el) => /\bfont-(?:litt-)?mono\b/.test(el.className)).getBoundingClientRect().right,
                 };
               }),
             };
