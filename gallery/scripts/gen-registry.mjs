@@ -815,8 +815,8 @@ const COPY = {
   },
   slider: {
     title: "Slider",
-    description: "A value on a range, such as an animation speed. A thin rail, a foreground range and a round thumb that follows the pointer one to one, with words for the two ends.",
-    docs: "Import Slider from components/litt/slider. Give it a label, and minLabel and maxLabel to say which way is which.",
+    description: "A value on a range, such as an animation speed, or a span with two thumbs, such as builds that took 20s to 80s. A thin rail, a foreground range and round thumbs that follow the pointer one to one, with words for the two ends. The thumbs of a range never cross, and a form sends both values under one name.",
+    docs: "Import Slider, or RangeSlider for a span, from components/litt/slider. Give it a label, and minLabel and maxLabel to say which way is which. A range value is [from, to], and each thumb is named by the label and its end.",
   },
   form: {
     title: "Form",
@@ -945,6 +945,37 @@ const COPY = {
     title: "Spread",
     description: "How values spread, one thin rail per row on a shared scale: the full range faint, the middle half in a data hue, the median as a tick and in mono at the end. Build times by site, reply times by client. A row gives its values or its quartiles, a goal is a dashed line through every rail, and under 28rem the label moves above its rail. Static, with a legend in words.",
     docs: "Import Spread from components/litt/spread. Pass a label and items of { label, values } or { label, min, p25, median, p75, max }, and a formatValue that includes the unit. Rows share one scale (linear or log, with an optional domain and ticks) and an optional goal. It fills its container's width, so give the container a width.",
+  },
+  /* The agents step: chat, thinking and tool calls. Each entry is owned by the agent that builds the item. */
+  message: {
+    title: "Message",
+    description: "A chat between a person and an agent. The agent's words sit on the page with no bubble, and the person's turn is a raised bubble on the right. MessageText styles what a markdown renderer produces, with no library: paragraphs, lists, accent links, inline code, a quiet pre and quotes with no rail. MessageActions puts Copy and Retry under a finished answer, and a turn that stopped says so with a Retry button. The conversation scrolls on its own in a column up to 48rem, follows the newest line while an answer streams, and offers Jump to latest once you scroll up.",
+    docs: "Import Conversation, Message, MessageText and MessageActions from components/litt/message. Give the Conversation a label and a height, and mark it busy while the agent answers. Inside it put a Message with from=\"user\" for the person's turn, and a Message for the agent's, holding a MessageText (your markdown renderer's output goes inside it) and actions={<MessageActions copyText onRetry />}. Pass streaming while the text arrives, and error with onRetry for a turn that stopped.",
+  },
+  composer: {
+    title: "Composer",
+    description: "Where the person writes to an agent: a box on surface-1 with the Input's edge, a text field that grows a line at a time to eight rows, file chips, a toolbar for your controls and a round Send that turns into Stop while the agent answers. Send is the view's one accent fill. Enter sends, Shift+Enter starts a line, Esc stops, and Enter never sends mid-composition. Attach, paste and drop add files, suggestions fill the field, and a count shows near maxLength. FileChip is exported for a message that was already sent.",
+    docs: "Import Composer (and FileChip) from components/litt/composer. Hold the files yourself and pass onSend, streaming and onStop: the field clears after a send, and Send becomes Stop while streaming is true. Pass onFiles to show Attach and take pastes and drops, files and onRemoveFile to draw the chips, tools for a model Select at sm, suggestions for an empty chat, hint for a line under the box, and maxLength for the count. On a touch screen Return adds a line and Send sends by itself (enterSends overrides it); keep the composer above the keyboard with useVisibleScreen.",
+  },
+  thinking: {
+    title: "Thinking",
+    description: "The agent's reasoning as a quiet disclosure above its answer: a row with a chevron, \"Thinking\" and a clock that counts whole seconds, never a shimmer, a pulse or a spinner, then \"Thought for 12s\". The reasoning sits under it in the quiet text tone with no box. It is open while the agent thinks and closes itself when it stops, unless the reader toggled it.",
+    docs: "Import Thinking from components/litt/thinking. Pass active while the agent thinks and the reasoning as children: the clock counts from when active turned true. For a thought loaded from history leave active off and pass duration in seconds. open, defaultOpen and onOpenChange control it, and label replaces the words.",
+  },
+  "tool-call": {
+    title: "Tool call",
+    description: "What an agent did, one row per call: a status mark (a still half circle while it runs, never a spinner), the action in words, the target in mono cut at the end, and the time. A call with an input or an output opens them under it. A group folds a run of calls and closes itself when they finish, and an approval asks first on a raised panel with Allow as the accent fill and Deny beside it, then becomes a row that says what was chosen.",
+    docs: "Import ToolCall, ToolCallGroup and ToolApproval from components/litt/tool-call. Give a call a status, an action and a target, plus an input or an output to make it open. Pass running to a group, and hold decision in state for an approval, setting it in onAllow and onDeny. Keep an approval outside a group, and disable your Send while it waits so the view holds one accent fill.",
+  },
+  plan: {
+    title: "Plan",
+    description: "An agent's steps for a task, ticked off as it works: the label and a mono count (\"3 of 7\") over a 4px rail in the foreground, then an ordered list of steps, each with a 16px status mark. The running step is a half-filled circle that never spins, a done step steps its color back and is never struck through, a failed step has a danger x and says Failed, a skipped one is a dashed circle that says Skipped, and any step can carry a detail line. A polite live region says which step started and when the plan is done. Statuses swap at once, and a step added later fades in.",
+    docs: "Import Plan from components/litt/plan. Pass a label and steps of { id, label, status, detail? }, with status one of pending, running, done, failed or skipped. Hold the steps in state and change a status in place as the agent works, and give every step a stable id so only a step you add later fades in. The count is the done steps over all steps, and failed and skipped steps do not count. It fills its container and has no card, so put it in a turn or in a panel you draw.",
+  },
+  "code-block": {
+    title: "Code block",
+    description: "Code in an answer, a tool's output or a diff: mono on a quiet surface with a 32px header that holds the file name and a Copy button. tsx, ts, jsx and js are highlighted in the foreground's tones only (strings take a hint of the accent text), a diff shows a + in success and a - in danger on a faint band with hidden \"Added\" and \"Removed\" words, line numbers sit in a gutter that is not selected or copied, and long lines scroll sideways inside a focusable, labelled block. Static.",
+    docs: "Import CodeBlock from components/litt/code-block. Pass the code, a lang (tsx, ts, jsx, js, diff, shell or text) and a filename for the header. The label names the scroll area and defaults to the file name. lineNumbers adds a gutter, wrap wraps long lines, and maxHeight (a number or a CSS length) makes a tall block scroll. A diff reads each line's first character as its sign. The syntax colors are declared on the block itself, so it needs no stylesheet. It imports sugar-high.",
   },
 };
 

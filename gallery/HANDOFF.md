@@ -1,9 +1,9 @@
 # Gallery handoff
 
-For the next agent working on the gallery. Written 2026-10-15, updated 2026-10-16 for the dashboards step and 2026-10-17 on `claude/cool-lamport-cqbu87` for the data-color step (taste profile v0.11). `main` has the dashboards step (#15). Start new work from `main` once the data-color branch is merged.
+For the next agent working on the gallery. Written 2026-10-15, updated 2026-10-16 for the dashboards step and 2026-10-17 on `claude/cool-lamport-cqbu87` for the data-color step (taste profile v0.11), then on `claude/youthful-sagan-rcaaze` for the agents step (no taste change). `main` has the data-color step (#17). Start new work from `main` once the agents branch is merged.
 
 - Live gallery: https://littmd.vercel.app
-- Live registry: https://littmd.vercel.app/r/registry.json (32 items on `main`, 44 with the data-color step and its rails round)
+- Live registry: https://littmd.vercel.app/r/registry.json (44 items on `main`, 50 with the agents step)
 - Install a component anywhere: `npx shadcn@latest add https://littmd.vercel.app/r/button.json`
 
 ## Read first
@@ -13,7 +13,7 @@ For the next agent working on the gallery. Written 2026-10-15, updated 2026-10-1
 3. `gallery/CONTRIBUTING.md`: how a component is built, documented and shipped. It is binding, including interaction rule 4 (phones and touch).
 4. `skills/litt-md/system/components.md` and `foundations.md`: the spec. Build what they say, never invent a look. Section 6 of foundations is how motion behaves on phones and touch.
 5. `evals/agents/README.md`: the agent test, which is how this repo now measures whether Claude builds with litt.
-6. `proposals/open-decisions.md`: the 26 decisions behind v0.7, and why. `proposals/forms.md`: the 17 behind the forms step. `proposals/data-color.md`: the 12 color decisions behind v0.11, the nine items, and the questions for Nick's tests.
+6. `proposals/open-decisions.md`: the 26 decisions behind v0.7, and why. `proposals/forms.md`: the 17 behind the forms step. `proposals/data-color.md`: the 12 color decisions behind v0.11, the nine items, and the questions for Nick's tests. `proposals/agents.md`: the 15 decisions behind the agents step and 13 questions for Nick's tests.
 
 ## What happened since the last handoff
 
@@ -45,6 +45,13 @@ Then the data-color step, on `claude/cool-lamport-cqbu87` (taste profile v0.11).
 
 Then the rails round, on the same branch. Nick saw "Meters by kind" and asked for "more of whatever this is": a hue drawn thin on a neutral track (logged as an open journal entry). Three Sonnet agents built Breakdown, Sparkline (with Stat's `trend` slot) and Spread; the lead gave Meter a `target` and `steps` and Bar list a hue per row, and built the Usage pattern page from rails alone. The registry has 44 items.
 
+Then the agents step, on `claude/youthful-sagan-rcaaze` (no taste change; built first, tested after). Nick asked: "we need a slider, chat interface, thinking (agents modules) what else are we missing? use sonnet builders".
+- **Contract first:** the spec's new Agents part in `components.md`, 15 decisions in `proposals/agents.md`, shared icons in `icons.tsx` (`ArrowUpIcon`, `ArrowDownIcon`, `StopIcon`, `PaperclipIcon`, `RetryIcon`, and `StatusIcon` with the Timeline's five still marks), the Agents group in the sidebar (`PAGE_GROUPS` in `kit.tsx`), and COPY stubs.
+- **Seven units, seven Sonnet agents in worktrees:** `RangeSlider` in `slider.tsx` (the dashboards step's missing range), Message (`Conversation`, `Message`, `MessageText`, `MessageActions`), Composer (`Composer`, `FileChip`), Thinking, Tool call (`ToolCall`, `ToolCallGroup`, `ToolApproval`), Plan and Code block. Each has a page, a spec section, a registry entry and an install-test recipe. A Sonnet agent then built the Agent pattern page, which composes them into one scripted run.
+- **The rules that shaped it:** the agent's turn has no bubble; the one accent fill is Send, and Send is disabled while an approval waits so Allow can take it; "working" is a clock and a still half circle, never a shimmer, a pulse, a spinner or a caret; parts of a turn are bare; code takes the foreground's tones, never the data hues; a diff's color stays on its sign.
+- **Lead fixes in review:** Tool call's disclosure used `AnimatePresence initial={false}` (swapped for the mounted-ref pattern), its approval actions sat 8px apart (now the 12px group gap), and Composer's Enter now follows the pointer when `enterSends` is left out, so a soft keyboard can type a line break.
+- **`agent-chat`** in `evals/agents/` is the step's pass mark. It has not been run with a real agent yet.
+
 The result that matters: in the #10 baseline, Sonnet wrote its own 200-line bottom sheet for `phone-settings`. After #11 it composes litt's `Dialog` in a 99-line page and gets the sheet for free.
 
 ## The roadmap
@@ -62,14 +69,18 @@ The result that matters: in the #10 baseline, Sonnet wrote its own 200-line bott
 | Open decisions after #9 and #11 | Done (taste profile v0.7) | `claude/handoff-2` |
 | Forms | Merged; waits on Nick's tests | #14 |
 | Dashboards | Merged; waits on Nick's tests | #15 |
-| Data color (v0.11) | Built; waits on Nick's tests | `claude/cool-lamport-cqbu87` |
+| Data color (v0.11) | Merged; waits on Nick's tests | #17 |
+| Agents (chat, thinking, tool calls, range slider) | Built; waits on Nick's tests | `claude/youthful-sagan-rcaaze` |
 
 ### Next, in order
 
+0. **Nick's tests of the agents step**: the Agent page and the seven pages in both themes and on a phone, and the 13 questions at the end of `proposals/agents.md`. Then `npm run test:agents -- --tasks agent-chat --judge` (about $1). Whatever changes goes through `evolve.md`.
 1. **Nick's tests of the data-color step**: the Insights page and the nine new pages in both themes and on a phone, the color itself (does P11 hold, is the data blue far enough from the cobalt button, is amber too close to warning), and the eight questions at the end of `proposals/data-color.md`. Whatever changes goes through `evolve.md`. There is no agent-test task for this step yet: an `inbox-insights` task (expects `dot-plot`, `bar-list`, `token-input` and `timeline`, and fails a hue on chrome or more than one accent fill) would be its pass mark.
 2. **Nick's tests of the forms and dashboards steps**: the agent tests (`npm run test:agents -- --tasks settings-form --judge` and `--tasks analytics-dashboard --judge`, the two pass marks), the new pages on a phone, and the decisions in `proposals/forms.md` (14) and `proposals/dashboards.md` (17). Whatever changes goes through `evolve.md`. `test:registry` now passes for every item, the dashboards items included (run on 2026-10-17 with the data-color step).
 3. **A real-phone pass** on the live gallery, once these branches are deployed. Headless Chromium can't show any of these: the keyboard over a sheet (now built, with a stubbed `visualViewport` as the only test) and over the command menu, safe-area insets, `:active` timing on rows and buttons, long press against the iOS callout, glass frame rate while dragging, scrubbing the chart with a finger (`touch-action: pan-y` on the plot, so a vertical drag still scrolls), and landscape phones (decision 8, the one call still open: does a screen under 480 tall count as compact?).
-4. **What dashboards left out**: the Slider's range (two thumbs) for table filters, sparklines in the Stat, stacked bars and areas, a collapsible or nested sidebar, and a filter bar that holds the date range.
+4. **What dashboards left out**: stacked bars and areas, a collapsible or nested sidebar, and a filter bar that holds the date range. (The range slider shipped with the agents step, and sparklines in the Stat with the rails round.)
+5. **What the agents step left out**, for a second agents round: sources and citations (an inline mark with a hover card, and a list of sources), mentions and slash commands in the composer (a combobox inside the field), a split view for an artifact beside the chat (resizable panes and a file tree), a list of agent runs with their status (running, needs approval, done), editing a sent message and its versions, and a live log that follows a running command.
+6. **What the system as a whole still lacks**: a combobox (search inside a long list), a date picker and a date range, an accordion (Thinking and Tool call each have a private disclosure that one shared part could replace), breadcrumbs, a stepper for multi-step forms, a number field with steppers, a file drop zone outside the composer, a context menu, and a toolbar with roving focus.
 
 Also still open from steps 6 and 7: move focus to the page heading on a route change; forced colors for the box-shadow edges of Button, Tabs, Menu, Toast, Dialog, Card and Table; gallery-wide ⌘K search (needs `#page/section` routes); a comparison page against stock shadcn; running the agent test weekly in CI (needs an API key secret and a budget). The axe check renders each page as loaded, so it does not cover open overlays yet: adding a few open states (a dialog, a menu, the command menu) is the natural next step for it.
 

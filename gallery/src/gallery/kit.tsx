@@ -9,7 +9,7 @@ import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components
 import { Tag } from "@/components/tag";
 
 /** The sidebar's groups, in the order they appear. */
-export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data"] as const;
+export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents"] as const;
 export type PageGroup = (typeof PAGE_GROUPS)[number];
 
 export type PageMeta = {

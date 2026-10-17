@@ -226,8 +226,11 @@ const RECIPES = {
         </div>`,
   },
   slider: {
-    needs: ["Slider"],
-    jsx: `<div className="w-full max-w-sm" data-testid="litt-slider"><Slider name="speed" label="Animation speed" min={0.5} max={2} step={0.1} defaultValue={1} minLabel="Slower" maxLabel="Faster" showValue formatValue={(v) => \`\${v.toFixed(1)}x\`} /></div>`,
+    needs: ["Slider", "RangeSlider"],
+    jsx: `<div className="grid w-full max-w-sm gap-8" data-testid="litt-slider">
+          <Slider name="speed" label="Animation speed" min={0.5} max={2} step={0.1} defaultValue={1} minLabel="Slower" maxLabel="Faster" showValue formatValue={(v) => \`\${v.toFixed(1)}x\`} />
+          <form data-testid="litt-range" onSubmit={(e) => e.preventDefault()}><RangeSlider name="window" label="Smoke window" min={0} max={100} defaultValue={[20, 80]} minLabel="Faster" maxLabel="Slower" showValue formatValue={(v) => \`\${v}s\`} /></form>
+        </div>`,
   },
   stat: {
     needs: ["Stat", "StatGroup"],
@@ -382,6 +385,84 @@ const RECIPES = {
           <Breakdown label="Smoke storage" total={100} totalText="85 of 100 GB" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24, hue: "teal" }, { label: "Fonts", value: 3 }]} />
           <Breakdown label="Smoke credits" unit={["credit", "credits"]} items={[{ label: "Builds", value: 40 }, { label: "Previews", value: 30 }, { label: "Resizing", value: 20 }, { label: "Analytics", value: 10 }, { label: "Forms", value: 8 }, { label: "Webhooks", value: 6 }, { label: "Redirects", value: 4 }]} />
           <div className="w-48"><Breakdown layout="legend" label="Smoke tile" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24 }]} /></div>
+        </div>`,
+  },
+  plan: {
+    needs: ["Plan"],
+    types: ["PlanStep"],
+    top: [
+      `const PLAN_LABELS = ["Read the layout", "Map the sections", "Run the build", "Publish a preview", "Send the link"];`,
+      `// The steps before "at" are done, step "at" runs and the rest wait.`,
+      `const planSteps = (at: number): PlanStep[] => PLAN_LABELS.map((label, i): PlanStep => ({ id: "s" + i, label, status: i < at ? "done" : i === at ? "running" : "pending" }));`,
+      `const FAILED_STEPS: PlanStep[] = [`,
+      `  { id: "read", label: "Read the layout", status: "done" },`,
+      `  { id: "build", label: "Run the build", status: "failed", detail: "Build failed: font file missing" },`,
+      `  { id: "video", label: "Compress the videos", status: "skipped" },`,
+      `  { id: "preview", label: "Publish a preview", status: "pending" },`,
+      `];`,
+    ],
+    state: [`const [planAt, setPlanAt] = useState(2);`],
+    jsx: `<div className="grid w-full max-w-md gap-8" data-testid="litt-plan">
+          <div className="grid gap-4" data-testid="plan-running">
+            <Plan label="Smoke plan" steps={planSteps(planAt)} />
+            <div><@Btn type="button" data-testid="plan-next" onClick={() => setPlanAt((n) => n + 1)}>Next step</@Btn></div>
+          </div>
+          <div data-testid="plan-failed"><Plan label="Smoke failed plan" steps={FAILED_STEPS} /></div>
+        </div>`,
+  },
+  "tool-call": {
+    needs: ["ToolCall", "ToolCallGroup", "ToolApproval"],
+    state: [`const [toolDecision, setToolDecision] = useState<"pending" | "allowed" | "denied">("pending");`, `const [toolAllowed, setToolAllowed] = useState(0);`],
+    jsx: `<div className="grid w-full max-w-md gap-4" data-testid="litt-tool-call">
+          <ToolCall status="failed" action="Ran" target="npm run build" duration={14} output={"Build failed: no such file"} />
+          <ToolCall status="done" action="Read" target="src/app.tsx" duration={0.2} />
+          <ToolCallGroup summary="Read 2 files and ran the tests">
+            <ToolCall status="done" action="Read" target="a.ts" />
+            <ToolCall status="done" action="Ran" target="npm test" />
+          </ToolCallGroup>
+          <ToolApproval command="npm run deploy" description="Publishes the smoke site." alwaysAllowLabel="Always allow npm run deploy" decision={toolDecision} onAllow={() => { setToolAllowed((n) => n + 1); setToolDecision("allowed"); }} onDeny={() => setToolDecision("denied")} />
+          <p data-testid="tool-call-allowed">{toolAllowed}</p>
+        </div>`,
+  },
+  composer: {
+    needs: ["Composer"],
+    state: [
+      `const [composerSent, setComposerSent] = useState("");`,
+      `const [composerStreaming, setComposerStreaming] = useState(false);`,
+      `const [composerFiles, setComposerFiles] = useState<{ id: string; name: string; size?: number; progress?: number }[]>([{ id: "brief", name: "brief.pdf", size: 2516582 }, { id: "moodboard", name: "moodboard.png", progress: 64 }]);`,
+    ],
+    jsx: `<div className="grid w-full max-w-lg gap-3" data-testid="litt-composer">
+          <p data-testid="composer-sent" className="whitespace-pre-wrap">{composerSent}</p>
+          <Composer placeholder="Message Litt" hint="Litt can be wrong. Check what matters." streaming={composerStreaming} onSend={(text) => { setComposerSent(text); setComposerStreaming(true); }} onStop={() => setComposerStreaming(false)} files={composerFiles} onRemoveFile={(file) => setComposerFiles((all) => all.filter((f) => f.id !== file.id))} />
+        </div>`,
+  },
+  "code-block": {
+    needs: ["CodeBlock"],
+    top: [
+      `const SMOKE_TS = ["// halo", "const label = 'live';", "export default label;", "// a long comment that runs past the edge of a block twenty rem wide"].join("\\n");`,
+      `const SMOKE_DIFF = ["@@ -1,3 +1,3 @@", " import a from 'a';", "-import b from 'b';", "+import c from 'c';"].join("\\n");`,
+    ],
+    jsx: `<div className="grid w-80 gap-4" data-testid="litt-code-block">
+          <CodeBlock lang="ts" filename="badge.ts" label="Smoke badge" code={SMOKE_TS} />
+          <CodeBlock lang="diff" label="Smoke diff" code={SMOKE_DIFF} />
+        </div>`,
+  },
+  message: {
+    needs: ["Conversation", "Message", "MessageText", "MessageActions"],
+    jsx: `<div className="h-72 w-full max-w-xl" data-testid="litt-message">
+          <Conversation label="Smoke conversation" className="h-full">
+            <Message from="user">Why did the Halo build fail?</Message>
+            <Message actions={<MessageActions copyText="The Halo build ran out of memory." onRetry={() => {}} />}>
+              <MessageText><p data-testid="message-answer">The build ran out of memory. Run <code data-testid="message-code">npm run build</code> again.</p></MessageText>
+            </Message>
+          </Conversation>
+        </div>`,
+  },
+  thinking: {
+    needs: ["Thinking"],
+    jsx: `<div className="grid w-full max-w-md gap-6" data-testid="litt-thinking">
+          <Thinking duration={12}><p>Smoke reasoning one.</p><p>Smoke reasoning two.</p></Thinking>
+          <Thinking active><p>Smoke live reasoning.</p></Thinking>
         </div>`,
   },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
@@ -955,6 +1036,48 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (before !== "1.0x" || after !== "1.1x") throw new Error(`aria-valuetext went from ${before} to ${after}, expected 1.0x to 1.1x`);
           return `${before} to ${after}`;
         });
+        await attempt("range slider: two named thumbs, the keys act on the focused one, the thumbs never cross, a form sends both values under one name", async () => {
+          const from = page.getByRole("slider", { name: "Smoke window, from" });
+          const to = page.getByRole("slider", { name: "Smoke window, to" });
+          const read = async () => `${await from.getAttribute("aria-valuetext")}|${await to.getAttribute("aria-valuetext")}`;
+          const start = await read();
+          if (start !== "20s|80s") throw new Error(`the thumbs read ${start}, expected 20s|80s`);
+          await from.focus();
+          await page.keyboard.press("ArrowRight");
+          await page.waitForTimeout(100);
+          const stepped = await read();
+          if (stepped !== "21s|80s") throw new Error(`ArrowRight on the from thumb gave ${stepped}, expected 21s|80s`);
+          await page.keyboard.press("End");
+          await page.waitForTimeout(100);
+          const held = await read();
+          if (held !== "79s|80s") throw new Error(`End on the from thumb gave ${held}, expected 79s|80s: it stops one step short of the to thumb`);
+          await to.focus();
+          await page.keyboard.press("ArrowLeft");
+          await page.keyboard.press("Home");
+          await page.waitForTimeout(100);
+          const blocked = await read();
+          if (blocked !== "79s|80s") throw new Error(`ArrowLeft and Home on the to thumb gave ${blocked}, expected 79s|80s: it cannot pass the from thumb`);
+          await page.keyboard.press("End");
+          await page.waitForTimeout(100);
+          const apart = await read();
+          if (apart !== "79s|100s") throw new Error(`End on the to thumb gave ${apart}, expected 79s|100s`);
+          const shown = (await page.locator("[data-testid=litt-range]").innerText()).replace(/\s+/g, " ");
+          if (!shown.includes("79s to 100s")) throw new Error(`the shown value is not "79s to 100s": "${shown}"`);
+          const root = page.locator("[data-testid=litt-range] span[data-no-drag]");
+          await root.scrollIntoViewIfNeeded();
+          const rail = await root.boundingBox();
+          const grip = await from.boundingBox();
+          await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+          await page.mouse.down();
+          await page.mouse.move(rail.x + rail.width + 40, grip.y + grip.height / 2, { steps: 6 });
+          await page.mouse.up();
+          await page.waitForTimeout(100);
+          const dragged = await read();
+          if (dragged !== "99s|100s") throw new Error(`dragging the from thumb past the end gave ${dragged}, expected 99s|100s: it never crosses`);
+          const sent = await page.locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
+          if (sent.join("|") !== "99|100") throw new Error(`the form sent window=${sent.join(",")}, expected 99 and 100 under one name`);
+          return `${dragged}, sent ${sent.join(" and ")}`;
+        });
       }
       if (has("stat")) {
         await attempt("stat reads label, figure and a delta in the good color", async () => {
@@ -1372,7 +1495,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               const rail = fill.parentElement;
               const r = rail.getBoundingClientRect();
               const f = fill.getBoundingClientRect();
-              return { x: r.left, w: r.width, h: r.height, share: f.width / r.width, fill: getComputedStyle(fill).backgroundColor, radius: getComputedStyle(rail).borderRadius, value: li.querySelector(".font-mono").getBoundingClientRect().right };
+              return { x: r.left, w: r.width, h: r.height, share: f.width / r.width, fill: getComputedStyle(fill).backgroundColor, radius: getComputedStyle(rail).borderRadius, value: li.querySelector("[class*='mono']").getBoundingClientRect().right };
             }),
           );
           const shares = [1, 164 / 412, 31 / 412];
@@ -1443,8 +1566,9 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               probe.remove();
               return c;
             }, name);
-          const bar = list.locator("[style*='height: 76px']");
-          const ghost = list.locator("[style*='height: 124px']");
+          /* Next.js serves inline styles without the space ("height:76px") and React keeps that until it re-renders the node. */
+          const bar = list.locator("[style*='height: 76px'], [style*='height:76px']");
+          const ghost = list.locator("[style*='height: 124px'], [style*='height:124px']");
           if ((await bar.count()) !== 1 || (await ghost.count()) !== 1) throw new Error("the 19s bar or the 31s ghost is missing");
           const tall = await bar.evaluate((el) => Math.round(el.getBoundingClientRect().height));
           const row = await steps.nth(2).evaluate((li) => Math.round(li.getBoundingClientRect().height));
@@ -1465,6 +1589,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const colors = await segs.evaluateAll((els) => els.map((el) => getComputedStyle(el).backgroundColor));
           const [blue, teal] = [await paint("blue"), await paint("teal")];
           if (colors[0] !== blue || colors[1] !== blue || colors[2] !== teal) throw new Error(`segments are ${colors.join(" / ")}`);
+          /* The smoke page is tall: bring the strip into the window, or the mouse lands outside it. */
+          await strip.scrollIntoViewIfNeeded();
           const at = await strip.boundingBox();
           await page.mouse.move(at.x + at.width * 0.3, at.y + 44);
           const tip = strip.locator("div[aria-hidden=true]").filter({ hasText: "Run build commands" });
@@ -1742,6 +1868,388 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await note.getByRole("button", { name: "Dismiss" }).click();
           await note.waitFor({ state: "detached", timeout: 3000 });
           return "warning icon, hairline surface, action below, close unmounts";
+        });
+      }
+      if (has("plan")) {
+        await attempt("plan: an ordered list named by its label, the count over the rail, the running step current, failed and skipped said in words, done labels not struck through, a live region that follows the run", async () => {
+          const box = page.locator("[data-testid=litt-plan]");
+          const running = box.locator("[data-testid=plan-running]");
+          const list = running.getByRole("list", { name: "Smoke plan" });
+          await list.waitFor({ state: "visible", timeout: 5000 });
+          if ((await list.evaluate((el) => el.tagName)) !== "OL") throw new Error("the steps are not an ol");
+          const items = list.getByRole("listitem");
+          if ((await items.count()) !== 5) throw new Error(`${await items.count()} steps, not 5`);
+          const tone = (value) =>
+            page.evaluate((v) => {
+              const el = document.createElement("span");
+              document.body.append(el);
+              el.style.color = v;
+              const out = getComputedStyle(el).color;
+              el.remove();
+              return out;
+            }, value);
+          const [fg, muted, subtle, danger] = [await tone("var(--litt-fg)"), await tone("var(--litt-fg-muted)"), await tone("var(--litt-fg-subtle)"), await tone("var(--litt-danger)")];
+          const readStep = (scope, n) =>
+            scope.getByRole("listitem").nth(n).evaluate((li) => {
+              const label = li.querySelector("p");
+              return { text: li.textContent.replace(/\s+/g, " ").trim(), icon: getComputedStyle(li.querySelector("svg")).color, label: getComputedStyle(label).color, deco: getComputedStyle(label).textDecorationLine, current: li.getAttribute("aria-current"), height: li.getBoundingClientRect().height };
+            });
+          const [done, current, pending] = [await readStep(list, 0), await readStep(list, 2), await readStep(list, 3)];
+          if (current.current !== "step" || (await list.locator("[aria-current=step]").count()) !== 1) throw new Error("the running step is not the one aria-current=step");
+          if (!current.text.startsWith("Run the build, running")) throw new Error(`the running step reads "${current.text}"`);
+          if (done.current) throw new Error("a done step is aria-current");
+          if (!done.text.startsWith("Read the layout, done")) throw new Error(`a done step reads "${done.text}"`);
+          if (done.icon !== muted || done.label !== muted) throw new Error(`a done step is ${done.label} / ${done.icon}, not --litt-fg-muted (${muted})`);
+          if (done.deco !== "none") throw new Error(`a done label has text-decoration ${done.deco}`);
+          if (current.icon !== fg || current.label !== fg) throw new Error(`the running step is ${current.label} / ${current.icon}, not --litt-fg (${fg})`);
+          if (pending.icon !== subtle || pending.label !== subtle) throw new Error(`a pending step is ${pending.label}, not --litt-fg-subtle (${subtle})`);
+          if (done.height < 32) throw new Error(`a row is ${done.height}px tall`);
+          const shown = async () => ((await running.textContent()) ?? "").replace(/\s+/g, " ");
+          if (!/Smoke plan ?2 of 5 steps done/.test(await shown())) throw new Error(`the header reads "${await shown()}"`);
+          const fill = running.locator("div[aria-hidden=true] > div").first();
+          const rail = await fill.evaluate((el) => ({ width: el.style.width, bg: getComputedStyle(el).backgroundColor, track: getComputedStyle(el.parentElement).height, motion: getComputedStyle(el).transitionDuration }));
+          if (rail.width !== "40%") throw new Error(`the rail fill is ${rail.width}, not 40%`);
+          if (rail.bg !== fg) throw new Error(`the rail fill is ${rail.bg}, not --litt-fg (${fg})`);
+          if (rail.track !== "4px") throw new Error(`the rail is ${rail.track} tall`);
+          if (rail.motion !== "0s") throw new Error(`the rail fill transitions over ${rail.motion}`);
+          if ((await running.getByRole("status").textContent())?.trim()) throw new Error("the live region spoke on the first render");
+          const said = async (text) => {
+            const deadline = Date.now() + 3000;
+            while (Date.now() < deadline) {
+              if ((await running.getByRole("status").textContent())?.trim() === text) return;
+              await page.waitForTimeout(100);
+            }
+            throw new Error(`the live region says "${(await running.getByRole("status").textContent())?.trim()}", not "${text}"`);
+          };
+          await box.getByTestId("plan-next").click();
+          await said("Step 4 of 5: Publish a preview");
+          if (!/3 of 5 steps done/.test(await shown())) throw new Error(`the header reads "${await shown()}" after one step`);
+          await box.getByTestId("plan-next").click();
+          await box.getByTestId("plan-next").click();
+          await said("Plan done");
+          if (!/5 of 5 steps done/.test(await shown())) throw new Error(`the header reads "${await shown()}" at the end`);
+          if (await list.locator("[aria-current=step]").count()) throw new Error("a step is still current when the plan is done");
+          const failed = box.locator("[data-testid=plan-failed]");
+          const [bad, skip] = [await readStep(failed, 1), await readStep(failed, 2)];
+          if (bad.text !== "Run the build, failedFailedBuild failed: font file missing") throw new Error(`the failed step reads "${bad.text}"`);
+          if (bad.icon !== danger) throw new Error(`the failed icon is ${bad.icon}, not --litt-danger (${danger})`);
+          if (bad.label !== fg) throw new Error(`the failed label is ${bad.label}, not --litt-fg (${fg})`);
+          if (skip.text !== "Compress the videos, skippedSkipped" || skip.icon !== subtle) throw new Error(`the skipped step reads "${skip.text}" in ${skip.icon}`);
+          if (!/1 of 4 steps done/.test(((await failed.textContent()) ?? "").replace(/\s+/g, " "))) throw new Error("a failed and a skipped step counted as done");
+          return "ol, aria-current, fg tones, danger x, 40% rail, Step 4 of 5 then Plan done";
+        });
+      }
+      if (has("tool-call")) {
+        await attempt("tool call: a failed row says Failed and opens its output, a group folds its calls, Allow is the accent, calls back and becomes a row", async () => {
+          const box = page.locator("[data-testid=litt-tool-call]");
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [danger, accent] = [await colorOf("var(--litt-danger)"), await colorOf("var(--litt-accent)")];
+          const row = box.getByRole("button", { name: "Ran npm run build Failed 14 seconds" });
+          await row.waitFor({ state: "visible", timeout: 8000 });
+          if ((await row.getAttribute("aria-expanded")) !== "false") throw new Error("the failed row starts open");
+          await box.getByText("Failed", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          const mark = await row.locator("svg").first().evaluate((el) => getComputedStyle(el).color);
+          if (mark !== danger) throw new Error(`the failed mark is ${mark}, not --litt-danger (${danger})`);
+          if ((await box.getByRole("region").count()) !== 0) throw new Error("an output shows before the row is opened");
+          await row.click();
+          if ((await row.getAttribute("aria-expanded")) !== "true") throw new Error("a click did not set aria-expanded to true");
+          const output = box.getByRole("region", { name: "Output of npm run build" });
+          await output.waitFor({ state: "visible", timeout: 3000 });
+          if ((await output.getAttribute("tabindex")) !== "0") throw new Error("the output is not focusable");
+          if ((await output.innerText()).trim() !== "Build failed: no such file") throw new Error(`the output reads "${await output.innerText()}"`);
+          const group = box.getByRole("button", { name: "Read 2 files and ran the tests" });
+          if ((await group.getAttribute("aria-expanded")) !== "false") throw new Error("a group that is not running starts open");
+          await group.click();
+          const calls = box.getByRole("list", { name: "Read 2 files and ran the tests" }).getByRole("listitem");
+          await calls.first().waitFor({ state: "visible", timeout: 3000 });
+          if ((await calls.count()) !== 2) throw new Error(`the group holds ${await calls.count()} calls, not 2`);
+          const panel = box.getByRole("group", { name: "Run a command?" });
+          await panel.waitFor({ state: "visible", timeout: 3000 });
+          const said = box.getByRole("status");
+          await page.waitForFunction(() => document.querySelector("[data-testid=litt-tool-call] [role=status]")?.textContent?.trim() === "Waiting for your approval: npm run deploy", null, { timeout: 3000 });
+          if ((await said.count()) !== 1) throw new Error("the approval has no live region");
+          if (await panel.evaluate((el) => el.parentElement.contains(document.activeElement))) throw new Error("the approval took focus");
+          const allow = box.getByRole("button", { name: "Allow", exact: true });
+          const fill = await allow.evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (fill !== accent) throw new Error(`Allow is ${fill}, not --litt-accent (${accent})`);
+          const glass = await panel.evaluate((el) => getComputedStyle(el).backdropFilter);
+          if (glass && glass !== "none") throw new Error(`the approval panel has a backdrop filter: ${glass}`);
+          await box.getByRole("checkbox", { name: "Always allow npm run deploy" }).waitFor({ state: "visible", timeout: 3000 });
+          await allow.click();
+          await panel.waitFor({ state: "detached", timeout: 3000 });
+          if ((await box.getByTestId("tool-call-allowed").innerText()).trim() !== "1") throw new Error("Allow did not call onAllow once");
+          await box.getByText("Allowed", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          return "Failed in words and --litt-danger, output opens, group folds two calls, Allow is --litt-accent and becomes an Allowed row";
+        });
+      }
+      if (has("composer")) {
+        await attempt("composer: Send is off when empty and the accent when not, Enter sends, Shift+Enter adds a line, Stop and Esc, chips remove", async () => {
+          const box = page.locator("[data-testid=litt-composer]");
+          const field = box.getByRole("textbox", { name: "Message" });
+          await field.waitFor({ state: "visible", timeout: 5000 });
+          const probe = (prop, name) =>
+            page.evaluate(
+              ([p, n]) => {
+                const el = document.createElement("span");
+                document.body.append(el);
+                el.style[p] = `var(${n})`;
+                const out = getComputedStyle(el)[p];
+                el.remove();
+                return out;
+              },
+              [prop, name],
+            );
+          const frame = field.locator("xpath=ancestor::div[contains(@class,'group/box')][1]");
+          const fill = (b) => b.evaluate((el) => getComputedStyle(el).backgroundColor);
+          const send = box.getByRole("button", { name: "Send" });
+          if (!(await send.isDisabled())) throw new Error("Send should be disabled while the field is empty");
+          if ((await fill(send)) === (await probe("backgroundColor", "--litt-accent"))) throw new Error("a disabled Send must not be an accent fill");
+          const rest = await frame.evaluate((el) => getComputedStyle(el).boxShadow);
+          const line = await probe("color", "--litt-line-control");
+          if (!rest.includes(line)) throw new Error(`the resting edge is "${rest}", not --litt-line-control (${line})`);
+          await field.click();
+          await page.waitForTimeout(400); // the edge fades on the instant tier
+          const ring = await frame.evaluate((el) => getComputedStyle(el).boxShadow);
+          const focus = await probe("color", "--litt-focus");
+          if (!ring.includes(focus)) throw new Error(`the focused edge has no --litt-focus: "${ring}"`);
+          await page.keyboard.type("Why did the Halo build fail?");
+          if (await send.isDisabled()) throw new Error("typing should enable Send");
+          await page.waitForTimeout(400); // the fill fades on the instant tier
+          const accent = await probe("backgroundColor", "--litt-accent");
+          if ((await fill(send)) !== accent) throw new Error(`Send fill is ${await fill(send)}, not --litt-accent (${accent})`);
+          const one = (await field.boundingBox()).height;
+          await page.keyboard.press("Shift+Enter");
+          await page.keyboard.type("Second line");
+          if ((await field.inputValue()) !== "Why did the Halo build fail?\nSecond line") throw new Error(`Shift+Enter gave ${JSON.stringify(await field.inputValue())}`);
+          if (((await box.getByTestId("composer-sent").textContent()) ?? "") !== "") throw new Error("Shift+Enter sent the message");
+          const two = (await field.boundingBox()).height;
+          if (!(two > one + 10)) throw new Error(`the field did not grow a line: ${one}px to ${two}px`);
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(200);
+          if ((await box.getByTestId("composer-sent").textContent()) !== "Why did the Halo build fail?\nSecond line") throw new Error("Enter should call onSend with the text");
+          if ((await field.inputValue()) !== "") throw new Error("the field should clear after a send");
+          const stop = box.getByRole("button", { name: "Stop" });
+          await stop.waitFor({ state: "visible", timeout: 3000 });
+          await page.waitForTimeout(400);
+          if ((await fill(stop)) === accent) throw new Error("Stop must not be an accent fill");
+          await field.click();
+          await page.keyboard.press("Escape");
+          await box.getByRole("button", { name: "Send" }).waitFor({ state: "visible", timeout: 3000 });
+          const chips = box.getByRole("list", { name: "Attached files" }).getByRole("listitem");
+          if ((await chips.count()) !== 2) throw new Error(`${await chips.count()} chips, expected 2`);
+          const text = ((await chips.allTextContents()).join(" | ")).replace(/\s+/g, " ");
+          if (!/brief\.pdf.*2\.4 MB/.test(text) || !/moodboard\.png.*64%/.test(text)) throw new Error(`the chips read "${text}"`);
+          const tall = await chips.first().evaluate((el) => Math.round(el.getBoundingClientRect().height));
+          if (tall !== 32) throw new Error(`a chip is ${tall}px tall, expected 32`);
+          await box.getByRole("button", { name: "Remove brief.pdf" }).click();
+          await page.waitForTimeout(500);
+          if ((await chips.count()) !== 1) throw new Error("the x should remove the chip");
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-composer.png`) });
+          return `edge, accent Send, Shift+Enter ${one}px to ${two}px, Stop, chips`;
+        });
+      }
+      if (has("code-block")) {
+        await attempt("code block: a focusable labelled scroller, a keyword is not an identifier's color, a diff's + is success on a band, Copy says Copied", async () => {
+          const box = page.locator("[data-testid=litt-code-block]");
+          const ts = box.getByRole("group", { name: "Smoke badge", exact: true });
+          await ts.waitFor({ state: "visible", timeout: 8000 });
+          if ((await ts.getAttribute("tabindex")) !== "0") throw new Error("the scroller is not focusable");
+          await box.getByText("badge.ts", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [fg, muted, subtle, success, danger, string] = [
+            await colorOf("var(--litt-fg)"),
+            await colorOf("var(--litt-fg-muted)"),
+            await colorOf("var(--litt-fg-subtle)"),
+            await colorOf("var(--litt-success)"),
+            await colorOf("var(--litt-danger)"),
+            await colorOf("color-mix(in oklab, var(--litt-accent-text) 90%, var(--litt-fg))"),
+          ];
+          const tones = await ts.evaluate((pre) => {
+            const of = (cls, text) => {
+              const el = [...pre.querySelectorAll(cls)].find((e) => e.textContent === text);
+              return el ? getComputedStyle(el).color : null;
+            };
+            return { keyword: of(".sh__token--keyword", "const"), identifier: of(".sh__token--identifier", "label"), comment: of(".sh__token--comment", "// halo"), string: of(".sh__token--string", "live") };
+          });
+          if (tones.keyword === null || tones.identifier === null || tones.comment === null || tones.string === null) throw new Error(`a token is missing: ${JSON.stringify(tones)}`);
+          if (tones.keyword === tones.identifier) throw new Error("a keyword and an identifier have the same color");
+          if (tones.keyword !== muted) throw new Error(`the keyword is ${tones.keyword}, not --litt-fg-muted (${muted})`);
+          if (tones.identifier !== fg) throw new Error(`the identifier is ${tones.identifier}, not --litt-fg (${fg})`);
+          if (tones.comment !== subtle) throw new Error(`the comment is ${tones.comment}, not --litt-fg-subtle (${subtle})`);
+          if (tones.string !== string) throw new Error(`the string is ${tones.string}, not accent text mixed 90% into fg (${string})`);
+          const scroll = await ts.evaluate((pre) => ({ sw: pre.scrollWidth, cw: pre.clientWidth, row: pre.querySelector("code > span").getBoundingClientRect().width }));
+          if (!(scroll.sw > scroll.cw + 40)) throw new Error(`the long line did not make the block scroll (${scroll.sw} against ${scroll.cw})`);
+          if (Math.abs(scroll.row - scroll.sw) > 1) throw new Error(`a row is ${scroll.row}px wide, not the scroll width ${scroll.sw}px`);
+
+          const diff = box.getByRole("group", { name: "Smoke diff", exact: true });
+          const rows = await diff.evaluate((pre) =>
+            [...pre.querySelectorAll("code > span")].map((r) => ({ text: r.children[1].textContent, bg: getComputedStyle(r).backgroundColor, sign: r.children[0].textContent, signColor: getComputedStyle(r.children[0]).color, color: getComputedStyle(r).color })),
+          );
+          const added = rows.find((r) => r.text.startsWith("Added: "));
+          const removed = rows.find((r) => r.text.startsWith("Removed: "));
+          if (!added || !removed) throw new Error(`the diff rows read ${JSON.stringify(rows.map((r) => r.text))}`);
+          if (added.sign !== "+" || added.signColor !== success) throw new Error(`the + sign is "${added.sign}" in ${added.signColor}, not --litt-success (${success})`);
+          if (removed.sign !== "-" || removed.signColor !== danger) throw new Error(`the - sign is "${removed.sign}" in ${removed.signColor}, not --litt-danger (${danger})`);
+          if (removed.color !== subtle) throw new Error(`the removed line is ${removed.color}, not --litt-fg-subtle`);
+          if (added.bg === "rgba(0, 0, 0, 0)" || added.bg !== removed.bg) throw new Error(`the bands are ${added.bg} and ${removed.bg}`);
+          if (rows[1].bg !== "rgba(0, 0, 0, 0)") throw new Error("a context line has a band");
+
+          await page.context().grantPermissions(["clipboard-read", "clipboard-write"], { origin: new URL(page.url()).origin });
+          const block = ts.locator("xpath=..");
+          await block.getByRole("button", { name: "Copy code" }).click();
+          await block.getByRole("status").getByText("Copied").waitFor({ state: "attached", timeout: 3000 });
+          const clip = await page.evaluate(() => navigator.clipboard.readText());
+          const want = ["// halo", "const label = 'live';", "export default label;", "// a long comment that runs past the edge of a block twenty rem wide"].join("\n");
+          if (clip !== want) throw new Error(`the clipboard holds ${JSON.stringify(clip)}`);
+          return "tones from tokens, + in success, bands, scrolls inside the block, Copy copied the text as given";
+        });
+      }
+      if (has("message")) {
+        await attempt("message: two articles named by hidden headings, the person's bubble on the right, the agent's words bare, Copy says Copied politely", async () => {
+          const box = page.locator("[data-testid=litt-message]");
+          const region = box.getByRole("region", { name: "Smoke conversation" });
+          await region.waitFor({ state: "visible", timeout: 5000 });
+          if ((await region.getAttribute("tabindex")) !== "0") throw new Error("the scrolling region is not focusable");
+          const articles = box.getByRole("article");
+          if ((await articles.count()) !== 2) throw new Error(`${await articles.count()} articles, not 2`);
+          for (const name of ["You", "Litt"]) {
+            const heading = box.getByRole("heading", { name, exact: true });
+            if ((await heading.count()) !== 1) throw new Error(`no heading named "${name}"`);
+            const hidden = await heading.boundingBox();
+            if (!hidden || hidden.width > 1.5 || hidden.height > 1.5) throw new Error(`the "${name}" heading is visible`);
+          }
+          const probe = (css, prop) =>
+            page.evaluate(
+              ([value, p]) => {
+                const el = document.createElement("span");
+                el.style[p] = value;
+                document.body.append(el);
+                const c = getComputedStyle(el)[p];
+                el.remove();
+                return c;
+              },
+              [css, prop],
+            );
+          const [surface, fg, muted, code6] = [
+            await probe("var(--litt-surface-1)", "backgroundColor"),
+            await probe("var(--litt-fg)", "color"),
+            await probe("var(--litt-fg-muted)", "color"),
+            await probe("color-mix(in oklab, var(--litt-fg) 6%, transparent)", "backgroundColor"),
+          ];
+          const geo = await box.evaluate((root) => {
+            const [user, agent] = [...root.querySelectorAll("article")];
+            const col = user.getBoundingClientRect();
+            const bubble = user.firstElementChild.lastElementChild;
+            const b = bubble.getBoundingClientRect();
+            const turn = agent.firstElementChild;
+            const cs = (el) => getComputedStyle(el);
+            const code = root.querySelector("[data-testid=message-code]");
+            return {
+              right: col.right - b.right,
+              left: b.left - col.left,
+              width: col.width,
+              bubbleBg: cs(bubble).backgroundColor,
+              bubbleColor: cs(bubble).color,
+              bubbleRadius: cs(bubble).borderTopLeftRadius,
+              turnBg: cs(turn).backgroundColor,
+              turnShadow: cs(turn).boxShadow,
+              answer: cs(root.querySelector("[data-testid=message-answer]")).color,
+              codeBg: cs(code).backgroundColor,
+              codeRadius: cs(code).borderTopLeftRadius,
+              codeWeight: cs(code).fontWeight,
+            };
+          });
+          if (Math.abs(geo.right) > 1 || geo.left < geo.width * 0.3) throw new Error(`the bubble sits ${geo.left.toFixed(0)}px from the left and ${geo.right.toFixed(0)}px from the right of a ${geo.width.toFixed(0)}px turn, not at the right`);
+          if (geo.bubbleBg !== surface) throw new Error(`the bubble fill is ${geo.bubbleBg}, not --litt-surface-1 (${surface})`);
+          if (geo.bubbleColor !== fg) throw new Error(`the bubble text is ${geo.bubbleColor}, not --litt-fg (${fg})`);
+          if (geo.bubbleRadius !== "8px") throw new Error(`the bubble radius is ${geo.bubbleRadius}, not the 8px surface radius`);
+          if (geo.turnBg !== "rgba(0, 0, 0, 0)" || geo.turnShadow !== "none") throw new Error(`the agent's turn has a fill (${geo.turnBg}) or a shadow (${geo.turnShadow})`);
+          if (geo.answer !== muted) throw new Error(`the agent's words are ${geo.answer}, not --litt-fg-muted (${muted})`);
+          if (geo.codeBg !== code6 || geo.codeRadius !== "4px" || geo.codeWeight !== "400") throw new Error(`inline code is ${geo.codeBg} at ${geo.codeRadius}, weight ${geo.codeWeight}, not fg 6% at 4px, 400`);
+          const latest = await box.getByRole("group", { name: "Message actions" }).evaluate((g) => getComputedStyle(g.parentElement).opacity);
+          if (latest !== "1") throw new Error(`the latest turn's actions have opacity ${latest}, not 1`);
+          if ((await box.getByRole("button", { name: "Retry", exact: true }).count()) !== 1) throw new Error("no Retry button in the actions");
+          await box.getByRole("button", { name: "Copy", exact: true }).click();
+          const said = box.getByRole("status").filter({ hasText: "Copied" });
+          await said.waitFor({ state: "attached", timeout: 3000 });
+          if ((await said.getAttribute("aria-live")) !== "polite") throw new Error(`the Copied status is aria-live ${await said.getAttribute("aria-live")}, not polite`);
+          return "2 articles, bubble at the right on --litt-surface-1, a bare agent turn in --litt-fg-muted, Copied is polite";
+        });
+      }
+      if (has("thinking")) {
+        await attempt("thinking: a finished thought reads Thought for 12s, is closed and opens on click with its body; a live one counts seconds and never loops", async () => {
+          const box = page.locator("[data-testid=litt-thinking]");
+          const done = box.getByRole("button", { name: "Thought for 12 seconds" });
+          await done.waitFor({ state: "visible", timeout: 5000 });
+          if ((await done.getAttribute("aria-expanded")) !== "false") throw new Error("a finished thought starts open");
+          const words = (btn) =>
+            btn.evaluate((b) => [...b.querySelectorAll("span")].filter((s) => s.children.length === 0 && !s.classList.contains("sr-only")).map((s) => s.textContent).join(" "));
+          const shown = await words(done);
+          if (shown !== "Thought for 12s") throw new Error(`the row reads "${shown}"`);
+          if (await box.getByText("Smoke reasoning one.").count()) throw new Error("the reasoning is in the page while closed");
+          const rowBox = await done.boundingBox();
+          if (Math.round(rowBox.height) !== 32) throw new Error(`the row is ${rowBox.height}px tall, not 32`);
+          const probe = await page.evaluate(() => {
+            const read = (v) => {
+              const el = document.createElement("span");
+              document.body.append(el);
+              el.style.color = `var(${v})`;
+              const c = getComputedStyle(el).color;
+              el.remove();
+              return c;
+            };
+            return { muted: read("--litt-fg-muted"), subtle: read("--litt-fg-subtle") };
+          });
+          await done.click();
+          const body = box.getByText("Smoke reasoning one.");
+          await body.waitFor({ state: "visible", timeout: 3000 });
+          if ((await done.getAttribute("aria-expanded")) !== "true") throw new Error("aria-expanded is not true after a click");
+          const controls = await done.getAttribute("aria-controls");
+          if (!(await page.evaluate((id) => !!document.getElementById(id)?.textContent?.includes("Smoke reasoning two."), controls))) throw new Error(`aria-controls="${controls}" does not hold the reasoning`);
+          const color = await body.evaluate((el) => getComputedStyle(el).color);
+          if (color !== probe.subtle) throw new Error(`the reasoning is ${color}, not --litt-fg-subtle (${probe.subtle})`);
+          await page.mouse.move(0, 0); // hover brightens the label to --litt-fg, so read it with the pointer away
+          await page.waitForTimeout(400);
+          const label = await done.evaluate((b) => getComputedStyle([...b.querySelectorAll("span")].find((s) => s.textContent === "Thought for")).color);
+          if (label !== probe.muted) throw new Error(`the label is ${label}, not --litt-fg-muted (${probe.muted})`);
+          const labelBox = await done.evaluate((b) => [...b.querySelectorAll("span")].find((s) => s.textContent === "Thought for").getBoundingClientRect().x);
+          const bodyBox = await body.boundingBox();
+          if (Math.abs(bodyBox.x - labelBox) > 1.5) throw new Error(`the reasoning starts at x=${bodyBox.x}, the label at x=${labelBox}`);
+          await done.click();
+          if ((await done.getAttribute("aria-expanded")) !== "false") throw new Error("a second click did not close it");
+          await body.waitFor({ state: "detached", timeout: 3000 }); // the fade ends, then the height snaps
+
+          const live = box.getByRole("button", { name: "Thinking", exact: true });
+          await live.waitFor({ state: "visible", timeout: 3000 });
+          if ((await live.getAttribute("aria-expanded")) !== "true") throw new Error("a live thought is not open");
+          const clock = () => live.locator("span[aria-hidden=true]").first().textContent();
+          const first = await clock();
+          if (!/^\d+s$/.test(first ?? "")) throw new Error(`the live clock reads "${first}"`);
+          const before = await live.boundingBox();
+          await page.waitForTimeout(2300);
+          const later = await clock();
+          if (Number.parseInt(later) < Number.parseInt(first) + 2) throw new Error(`the clock went from ${first} to ${later} in 2.3 seconds`);
+          const after = await live.boundingBox();
+          if (before.x !== after.x || before.y !== after.y || before.height !== after.height) throw new Error("the row moved while the clock counted");
+          const loops = await page.evaluate(() => document.getAnimations().filter((a) => a.effect?.getComputedTiming().iterations === Infinity).length);
+          if (loops) throw new Error(`${loops} animation(s) loop while the agent thinks`);
+          return `Thought for 12s, 32px, opens on click; live clock ${first} to ${later}`;
         });
       }
       if (has("app-shell")) {
