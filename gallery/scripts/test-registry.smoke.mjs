@@ -255,6 +255,11 @@ const RECIPES = {
     state: [`const [pg, setPg] = useState(2);`],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-pagination"><Pagination label="Smoke pages" page={pg} pageSize={20} total={143} onPageChange={setPg} /></div>`,
   },
+  pad: {
+    needs: ["Pad"],
+    state: [`const [voice, setVoice] = useState({ x: 30, y: 40 });`],
+    jsx: `<div className="w-full max-w-sm" data-testid="litt-pad"><Pad label="Your voice" help="How replies sound." x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }} y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }} value={voice} onValueChange={setVoice} defaultMark={{ x: 30, y: 40 }} formatValue={(v) => \`Tone \${v.y}, length \${v.x}\`} /></div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -897,6 +902,52 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           });
           if (hued !== violet) throw new Error(`a violet meter fills with ${hued}, not --litt-data-violet (${violet})`);
           return `${colors.length} mark colors, none the accent; a hued meter is --litt-data-violet`;
+        });
+      }
+      if (has("pad")) {
+        await attempt("pad: two sliders, one tab stop, the keys and a press move the thumb, the tooltip follows", async () => {
+          const group = page.getByRole("group", { name: "Your voice" });
+          await group.waitFor({ state: "visible", timeout: 8000 });
+          const lengthIn = group.getByRole("slider", { name: "Length", exact: true });
+          const toneIn = group.getByRole("slider", { name: "Tone", exact: true });
+          const start = await lengthIn.getAttribute("aria-valuetext");
+          if (start !== "Tone 40, length 30" || (await toneIn.getAttribute("aria-valuetext")) !== start) throw new Error(`the inputs read "${start}", not "Tone 40, length 30"`);
+          if ((await lengthIn.getAttribute("tabindex")) !== null || (await toneIn.getAttribute("tabindex")) !== "-1") throw new Error("the x input should be the one tab stop and the y input tabindex -1");
+          await lengthIn.focus();
+          await page.keyboard.press("ArrowRight");
+          await page.keyboard.press("ArrowUp");
+          await page.keyboard.press("Shift+ArrowUp");
+          await page.waitForTimeout(100);
+          const keyed = await lengthIn.getAttribute("aria-valuetext");
+          if (keyed !== "Tone 100, length 35") throw new Error(`ArrowRight, ArrowUp and Shift+ArrowUp gave "${keyed}", not "Tone 100, length 35"`);
+          await page.keyboard.press("Home");
+          if ((await lengthIn.getAttribute("aria-valuetext")) !== "Tone 100, length 0") throw new Error("Home did not take x to 0");
+          const box = group.locator("div[data-no-drag]");
+          const b = await box.boundingBox();
+          await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+          await page.mouse.down();
+          await page.waitForTimeout(150);
+          const tip = await box.locator("div[aria-hidden=true]").filter({ hasText: "Tone 50, length 50" }).count();
+          await page.mouse.up();
+          const pressed = await toneIn.getAttribute("aria-valuetext");
+          if (pressed !== "Tone 50, length 50") throw new Error(`a press in the middle gave "${pressed}", not "Tone 50, length 50"`);
+          if (!tip) throw new Error("the tooltip did not show the value while dragging");
+          const thumb = box.locator("span[aria-hidden=true][style*=left][style*=top]").last();
+          const t = await thumb.boundingBox();
+          if (Math.abs(t.x + t.width / 2 - (b.x + b.width / 2)) > 1.5 || Math.abs(t.y + t.height / 2 - (b.y + b.height / 2)) > 1.5) throw new Error("the thumb is not under the pointer");
+          if (Math.round(t.width) !== 20) throw new Error(`the thumb is ${t.width}px wide, not 20`);
+          const fill = await thumb.evaluate((el) => getComputedStyle(el).backgroundColor);
+          const accentFill = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-accent)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          if (fill === accentFill) throw new Error("the thumb is filled with the accent");
+          await page.evaluate(() => document.activeElement?.blur());
+          return `pressed in the middle gives "${pressed}"`;
         });
       }
       if (has("app-shell")) {

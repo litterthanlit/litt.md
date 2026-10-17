@@ -927,8 +927,8 @@ const COPY = {
   },
   pad: {
     title: "Pad",
-    description: "Two values set at once on one surface, like tone against length. Drag the thumb over a dot grid or use the arrow keys; the default stays marked and the value shows as words.",
-    docs: "Import Pad from components/litt/pad. Describe the x and y axes and hold the value in state. Each axis is a slider for screen readers.",
+    description: "Two values set at once on one surface, like a reply's tone against its length. A well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. It is the Slider in two dimensions, in the foreground and never the accent.",
+    docs: "Import Pad from components/litt/pad. Give it a label, an x and a y axis ({ label, min, max, step, minLabel, maxLabel }), and hold the value in state with value and onValueChange. Pass defaultMark to show the default and formatValue to say the value in words. Each axis is a range input for the keyboard and screen readers, and the arrow keys move it.",
   },
 };
 
