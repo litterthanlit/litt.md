@@ -959,8 +959,8 @@ const COPY = {
   },
   thinking: {
     title: "Thinking",
-    description: "The agent's reasoning as a quiet disclosure above its answer. It reads \"Thinking\" with a clock that counts the seconds, never a shimmer or a pulse, then \"Thought for 12s\", and closes by itself when the answer starts.",
-    docs: "Import Thinking from components/litt/thinking. Pass active while the agent thinks and the reasoning as children.",
+    description: "The agent's reasoning as a quiet disclosure above its answer: a row with a chevron, \"Thinking\" and a clock that counts whole seconds, never a shimmer, a pulse or a spinner, then \"Thought for 12s\". The reasoning sits under it in the quiet text tone with no box. It is open while the agent thinks and closes itself when it stops, unless the reader toggled it.",
+    docs: "Import Thinking from components/litt/thinking. Pass active while the agent thinks and the reasoning as children: the clock counts from when active turned true. For a thought loaded from history leave active off and pass duration in seconds. open, defaultOpen and onOpenChange control it, and label replaces the words.",
   },
   "tool-call": {
     title: "Tool call",

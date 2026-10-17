@@ -458,6 +458,13 @@ const RECIPES = {
           </Conversation>
         </div>`,
   },
+  thinking: {
+    needs: ["Thinking"],
+    jsx: `<div className="grid w-full max-w-md gap-6" data-testid="litt-thinking">
+          <Thinking duration={12}><p>Smoke reasoning one.</p><p>Smoke reasoning two.</p></Thinking>
+          <Thinking active><p>Smoke live reasoning.</p></Thinking>
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -2180,6 +2187,66 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await said.waitFor({ state: "attached", timeout: 3000 });
           if ((await said.getAttribute("aria-live")) !== "polite") throw new Error(`the Copied status is aria-live ${await said.getAttribute("aria-live")}, not polite`);
           return "2 articles, bubble at the right on --litt-surface-1, a bare agent turn in --litt-fg-muted, Copied is polite";
+        });
+      }
+      if (has("thinking")) {
+        await attempt("thinking: a finished thought reads Thought for 12s, is closed and opens on click with its body; a live one counts seconds and never loops", async () => {
+          const box = page.locator("[data-testid=litt-thinking]");
+          const done = box.getByRole("button", { name: "Thought for 12 seconds" });
+          await done.waitFor({ state: "visible", timeout: 5000 });
+          if ((await done.getAttribute("aria-expanded")) !== "false") throw new Error("a finished thought starts open");
+          const words = (btn) =>
+            btn.evaluate((b) => [...b.querySelectorAll("span")].filter((s) => s.children.length === 0 && !s.classList.contains("sr-only")).map((s) => s.textContent).join(" "));
+          const shown = await words(done);
+          if (shown !== "Thought for 12s") throw new Error(`the row reads "${shown}"`);
+          if (await box.getByText("Smoke reasoning one.").count()) throw new Error("the reasoning is in the page while closed");
+          const rowBox = await done.boundingBox();
+          if (Math.round(rowBox.height) !== 32) throw new Error(`the row is ${rowBox.height}px tall, not 32`);
+          const probe = await page.evaluate(() => {
+            const read = (v) => {
+              const el = document.createElement("span");
+              document.body.append(el);
+              el.style.color = `var(${v})`;
+              const c = getComputedStyle(el).color;
+              el.remove();
+              return c;
+            };
+            return { muted: read("--litt-fg-muted"), subtle: read("--litt-fg-subtle") };
+          });
+          await done.click();
+          const body = box.getByText("Smoke reasoning one.");
+          await body.waitFor({ state: "visible", timeout: 3000 });
+          if ((await done.getAttribute("aria-expanded")) !== "true") throw new Error("aria-expanded is not true after a click");
+          const controls = await done.getAttribute("aria-controls");
+          if (!(await page.evaluate((id) => !!document.getElementById(id)?.textContent?.includes("Smoke reasoning two."), controls))) throw new Error(`aria-controls="${controls}" does not hold the reasoning`);
+          const color = await body.evaluate((el) => getComputedStyle(el).color);
+          if (color !== probe.subtle) throw new Error(`the reasoning is ${color}, not --litt-fg-subtle (${probe.subtle})`);
+          await page.mouse.move(0, 0); // hover brightens the label to --litt-fg, so read it with the pointer away
+          await page.waitForTimeout(400);
+          const label = await done.evaluate((b) => getComputedStyle([...b.querySelectorAll("span")].find((s) => s.textContent === "Thought for")).color);
+          if (label !== probe.muted) throw new Error(`the label is ${label}, not --litt-fg-muted (${probe.muted})`);
+          const labelBox = await done.evaluate((b) => [...b.querySelectorAll("span")].find((s) => s.textContent === "Thought for").getBoundingClientRect().x);
+          const bodyBox = await body.boundingBox();
+          if (Math.abs(bodyBox.x - labelBox) > 1.5) throw new Error(`the reasoning starts at x=${bodyBox.x}, the label at x=${labelBox}`);
+          await done.click();
+          if ((await done.getAttribute("aria-expanded")) !== "false") throw new Error("a second click did not close it");
+          await body.waitFor({ state: "detached", timeout: 3000 }); // the fade ends, then the height snaps
+
+          const live = box.getByRole("button", { name: "Thinking", exact: true });
+          await live.waitFor({ state: "visible", timeout: 3000 });
+          if ((await live.getAttribute("aria-expanded")) !== "true") throw new Error("a live thought is not open");
+          const clock = () => live.locator("span[aria-hidden=true]").first().textContent();
+          const first = await clock();
+          if (!/^\d+s$/.test(first ?? "")) throw new Error(`the live clock reads "${first}"`);
+          const before = await live.boundingBox();
+          await page.waitForTimeout(2300);
+          const later = await clock();
+          if (Number.parseInt(later) < Number.parseInt(first) + 2) throw new Error(`the clock went from ${first} to ${later} in 2.3 seconds`);
+          const after = await live.boundingBox();
+          if (before.x !== after.x || before.y !== after.y || before.height !== after.height) throw new Error("the row moved while the clock counted");
+          const loops = await page.evaluate(() => document.getAnimations().filter((a) => a.effect?.getComputedTiming().iterations === Infinity).length);
+          if (loops) throw new Error(`${loops} animation(s) loop while the agent thinks`);
+          return `Thought for 12s, 32px, opens on click; live clock ${first} to ${later}`;
         });
       }
       if (has("app-shell")) {

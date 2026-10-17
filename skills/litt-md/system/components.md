@@ -363,7 +363,7 @@ Where the person writes to the agent: a text field that grows, files, a toolbar 
 
 ## Thinking
 The agent's reasoning, as a quiet disclosure above its answer.
-- **Row:** a button 32px tall (44px on coarse pointers) with no fill: the label at the small size in `--fg-muted`, the clock in `--font-mono` at the caption size in `--fg-subtle` with tabular numbers, and a 16px chevron. While the agent thinks it reads "Thinking 4s"; when it stops, "Thought for 12s". Hover brightens the label to `--fg` on the instant tier.
+- **Row:** a button 32px tall (44px on coarse pointers) with no fill: a 16px chevron first, in the column where a tool call shows its status mark, then the label at the small size in `--fg-muted` and the clock in `--font-mono` at the caption size in `--fg-subtle` with tabular numbers. While the agent thinks it reads "Thinking 4s"; when it stops, "Thought for 12s" ("1m 5s" past a minute, "Thought for a moment" under a second). Hover brightens the label to `--fg` on the instant tier.
 - **No shimmer, no pulse, no spinner.** The live signal is the clock, which counts whole seconds. A sweeping gradient animates material (P5), and a loop is motion that is not a response to the person.
 - **Body:** the reasoning at the small size in `--fg-subtle`, indented to the label, with no box, no rail and no tint. Paragraphs sit `--space-2` apart.
 - **Open and closed:** it is open while the agent thinks, so the reader can watch it work, and closes itself when thinking ends, unless the reader toggled it. `open` and `onOpenChange` control it. The chevron turns a quarter on the instant tier.
