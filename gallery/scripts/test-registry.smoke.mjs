@@ -436,6 +436,17 @@ const RECIPES = {
           <Composer placeholder="Message Litt" hint="Litt can be wrong. Check what matters." streaming={composerStreaming} onSend={(text) => { setComposerSent(text); setComposerStreaming(true); }} onStop={() => setComposerStreaming(false)} files={composerFiles} onRemoveFile={(file) => setComposerFiles((all) => all.filter((f) => f.id !== file.id))} />
         </div>`,
   },
+  "code-block": {
+    needs: ["CodeBlock"],
+    top: [
+      `const SMOKE_TS = ["// halo", "const label = 'live';", "export default label;", "// a long comment that runs past the edge of a block twenty rem wide"].join("\\n");`,
+      `const SMOKE_DIFF = ["@@ -1,3 +1,3 @@", " import a from 'a';", "-import b from 'b';", "+import c from 'c';"].join("\\n");`,
+    ],
+    jsx: `<div className="grid w-80 gap-4" data-testid="litt-code-block">
+          <CodeBlock lang="ts" filename="badge.ts" label="Smoke badge" code={SMOKE_TS} />
+          <CodeBlock lang="diff" label="Smoke diff" code={SMOKE_DIFF} />
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -2022,6 +2033,70 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if ((await chips.count()) !== 1) throw new Error("the x should remove the chip");
           await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-composer.png`) });
           return `edge, accent Send, Shift+Enter ${one}px to ${two}px, Stop, chips`;
+        });
+      }
+      if (has("code-block")) {
+        await attempt("code block: a focusable labelled scroller, a keyword is not an identifier's color, a diff's + is success on a band, Copy says Copied", async () => {
+          const box = page.locator("[data-testid=litt-code-block]");
+          const ts = box.getByRole("group", { name: "Smoke badge", exact: true });
+          await ts.waitFor({ state: "visible", timeout: 8000 });
+          if ((await ts.getAttribute("tabindex")) !== "0") throw new Error("the scroller is not focusable");
+          await box.getByText("badge.ts", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [fg, muted, subtle, success, danger, string] = [
+            await colorOf("var(--litt-fg)"),
+            await colorOf("var(--litt-fg-muted)"),
+            await colorOf("var(--litt-fg-subtle)"),
+            await colorOf("var(--litt-success)"),
+            await colorOf("var(--litt-danger)"),
+            await colorOf("color-mix(in oklab, var(--litt-accent-text) 90%, var(--litt-fg))"),
+          ];
+          const tones = await ts.evaluate((pre) => {
+            const of = (cls, text) => {
+              const el = [...pre.querySelectorAll(cls)].find((e) => e.textContent === text);
+              return el ? getComputedStyle(el).color : null;
+            };
+            return { keyword: of(".sh__token--keyword", "const"), identifier: of(".sh__token--identifier", "label"), comment: of(".sh__token--comment", "// halo"), string: of(".sh__token--string", "live") };
+          });
+          if (tones.keyword === null || tones.identifier === null || tones.comment === null || tones.string === null) throw new Error(`a token is missing: ${JSON.stringify(tones)}`);
+          if (tones.keyword === tones.identifier) throw new Error("a keyword and an identifier have the same color");
+          if (tones.keyword !== muted) throw new Error(`the keyword is ${tones.keyword}, not --litt-fg-muted (${muted})`);
+          if (tones.identifier !== fg) throw new Error(`the identifier is ${tones.identifier}, not --litt-fg (${fg})`);
+          if (tones.comment !== subtle) throw new Error(`the comment is ${tones.comment}, not --litt-fg-subtle (${subtle})`);
+          if (tones.string !== string) throw new Error(`the string is ${tones.string}, not accent text mixed 90% into fg (${string})`);
+          const scroll = await ts.evaluate((pre) => ({ sw: pre.scrollWidth, cw: pre.clientWidth, row: pre.querySelector("code > span").getBoundingClientRect().width }));
+          if (!(scroll.sw > scroll.cw + 40)) throw new Error(`the long line did not make the block scroll (${scroll.sw} against ${scroll.cw})`);
+          if (Math.abs(scroll.row - scroll.sw) > 1) throw new Error(`a row is ${scroll.row}px wide, not the scroll width ${scroll.sw}px`);
+
+          const diff = box.getByRole("group", { name: "Smoke diff", exact: true });
+          const rows = await diff.evaluate((pre) =>
+            [...pre.querySelectorAll("code > span")].map((r) => ({ text: r.children[1].textContent, bg: getComputedStyle(r).backgroundColor, sign: r.children[0].textContent, signColor: getComputedStyle(r.children[0]).color, color: getComputedStyle(r).color })),
+          );
+          const added = rows.find((r) => r.text.startsWith("Added: "));
+          const removed = rows.find((r) => r.text.startsWith("Removed: "));
+          if (!added || !removed) throw new Error(`the diff rows read ${JSON.stringify(rows.map((r) => r.text))}`);
+          if (added.sign !== "+" || added.signColor !== success) throw new Error(`the + sign is "${added.sign}" in ${added.signColor}, not --litt-success (${success})`);
+          if (removed.sign !== "-" || removed.signColor !== danger) throw new Error(`the - sign is "${removed.sign}" in ${removed.signColor}, not --litt-danger (${danger})`);
+          if (removed.color !== subtle) throw new Error(`the removed line is ${removed.color}, not --litt-fg-subtle`);
+          if (added.bg === "rgba(0, 0, 0, 0)" || added.bg !== removed.bg) throw new Error(`the bands are ${added.bg} and ${removed.bg}`);
+          if (rows[1].bg !== "rgba(0, 0, 0, 0)") throw new Error("a context line has a band");
+
+          await page.context().grantPermissions(["clipboard-read", "clipboard-write"], { origin: new URL(page.url()).origin });
+          const block = ts.locator("xpath=..");
+          await block.getByRole("button", { name: "Copy code" }).click();
+          await block.getByRole("status").getByText("Copied").waitFor({ state: "attached", timeout: 3000 });
+          const clip = await page.evaluate(() => navigator.clipboard.readText());
+          const want = ["// halo", "const label = 'live';", "export default label;", "// a long comment that runs past the edge of a block twenty rem wide"].join("\n");
+          if (clip !== want) throw new Error(`the clipboard holds ${JSON.stringify(clip)}`);
+          return "tones from tokens, + in success, bands, scrolls inside the block, Copy copied the text as given";
         });
       }
       if (has("app-shell")) {

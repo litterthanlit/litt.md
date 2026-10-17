@@ -974,8 +974,8 @@ const COPY = {
   },
   "code-block": {
     title: "Code block",
-    description: "Code in an answer, a tool's output or a diff: mono on a quiet surface, highlighting in the foreground's tones only, the file name and a Copy button in a header, and lines that scroll sideways inside the block.",
-    docs: "Import CodeBlock from components/litt/code-block. Pass the code, a label for the scroll area and a lang.",
+    description: "Code in an answer, a tool's output or a diff: mono on a quiet surface with a 32px header that holds the file name and a Copy button. tsx, ts, jsx and js are highlighted in the foreground's tones only (strings take a hint of the accent text), a diff shows a + in success and a - in danger on a faint band with hidden \"Added\" and \"Removed\" words, line numbers sit in a gutter that is not selected or copied, and long lines scroll sideways inside a focusable, labelled block. Static.",
+    docs: "Import CodeBlock from components/litt/code-block. Pass the code, a lang (tsx, ts, jsx, js, diff, shell or text) and a filename for the header. The label names the scroll area and defaults to the file name. lineNumbers adds a gutter, wrap wraps long lines, and maxHeight (a number or a CSS length) makes a tall block scroll. A diff reads each line's first character as its sign. The syntax colors are declared on the block itself, so it needs no stylesheet. It imports sugar-high.",
   },
 };
 
