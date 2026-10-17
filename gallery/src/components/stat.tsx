@@ -11,6 +11,9 @@
  * - Delta: a word and the number ("Up 12% on last week") at the caption size. The word says the direction. The
  *   color says whether it is news: success for good, danger for bad, fg-subtle for neither. Hidden text repeats
  *   the judgment ("good news"), so color is never the only signal. No arrow glyph, no dot.
+ * - Trend: an optional slot at the foot of the tile, under the delta and the full width of the tile, for a Sparkline.
+ *   It sits at the bottom whatever else the tile holds, so the trends in a row of tiles line up even when only some
+ *   tiles have a delta. It is part of the description, so a screen reader reads the value, the delta, then the trend.
  * - Group: a description list laid out as a grid that measures itself (a container query), not the window: the
  *   shell takes 240px of a laptop screen, so the window is the wrong measure. Two across, four across from 40rem,
  *   one below 20rem. Tiles in a row share the row's height.
@@ -43,12 +46,14 @@ export type StatProps = {
   delta?: string;
   /** Whether the change is good news, bad news or neither. A fall in build time is good, so this is not the direction. */
   tone?: StatTone;
+  /** A Sparkline for the foot of the tile, under the delta and the full width of the tile. It sits at the bottom, so trends in a row line up whether or not a tile has a delta. */
+  trend?: ReactNode;
   /** Extra classes for the tile, such as a column span. */
   className?: string;
 };
 
 /** One number tile. Put it in a StatGroup, or on its own. */
-export function Stat({ label, value, unit, delta, tone = "neutral", className = "" }: StatProps) {
+export function Stat({ label, value, unit, delta, tone = "neutral", trend, className = "" }: StatProps) {
   const grouped = useContext(InGroup);
   const tile = (
     <div
@@ -57,7 +62,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", className = 
       }
     >
       <dt className="text-small text-fg-subtle">{label}</dt>
-      <dd className="m-0 flex flex-col gap-1">
+      <dd className="m-0 flex flex-1 flex-col gap-1">
         <span className="text-h3 tabular-nums text-fg">
           {value}
           {unit && <span className="text-fg-subtle">{unit}</span>}
@@ -68,6 +73,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", className = 
             <span className="sr-only">{TONE_WORD[tone]}</span>
           </span>
         )}
+        {trend ? <div className="mt-auto pt-3">{trend}</div> : null}
       </dd>
     </div>
   );

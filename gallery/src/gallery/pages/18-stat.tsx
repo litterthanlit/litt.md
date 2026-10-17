@@ -1,3 +1,4 @@
+import { Sparkline } from "@/components/sparkline";
 import { Stat, StatGroup } from "@/components/stat";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
@@ -6,14 +7,15 @@ export const meta: PageMeta = {
   title: "Stat",
   order: 17.2, group: "Data",
   summary:
-    "A number tile for one figure: a small label, the value large in the sans with tabular numbers, and an optional delta in words. Green and red are for news only. A group of tiles measures itself, and nothing about a tile moves.",
+    "A number tile for one figure: a small label, the value large in the sans with tabular numbers, an optional delta in words and an optional trend at the foot. Green and red are for news only. A group of tiles measures itself, and nothing about a tile moves.",
   tiers: [],
 };
 
 export const docs: PageDocs = {
   components: ["stat"],
   exports: ["Stat", "StatGroup"],
-  usage: `import { Stat, StatGroup } from "@/components/stat";
+  usage: `import { Sparkline } from "@/components/sparkline";
+import { Stat, StatGroup } from "@/components/stat";
 
 // A row of tiles. The group measures its own width: two across, four across from 40rem.
 <StatGroup>
@@ -24,10 +26,20 @@ export const docs: PageDocs = {
 </StatGroup>
 
 // Say the direction in words. The tone says whether it is good or bad news, which is not the same thing.
-<Stat label="Failed deploys" value={3} delta="Up 2 on last week" tone="bad" />`,
+<Stat label="Failed deploys" value={3} delta="Up 2 on last week" tone="bad" />
+
+// A trend sits at the foot of the tile, under the delta. Pass a Sparkline, and keep the figure above it.
+<Stat
+  label="Deploys this week"
+  value={38}
+  delta="Up 12% on last week"
+  tone="good"
+  trend={<Sparkline label="Deploys per day, last 14 days" values={deploys} hue="blue" />}
+/>`,
   use: [
     "One number is the point of the tile: how many, how long, how much. Four to eight of them sit at the top of a dashboard.",
     "A change since last time is worth a line. Say it in words, such as \"Up 12% on last week\".",
+    "The shape of the last days or weeks is worth a glance beside the figure. Pass a Sparkline as `trend`: it sits at the foot of the tile, so the trends in a row line up whether or not a tile has a delta.",
     "The tiles share a row, and you want them to stay level when one has a delta and another does not.",
     "The set sits in a main area of any width. The group measures itself, so it works in a frame, on a phone and beside a sidebar.",
   ],
@@ -41,6 +53,7 @@ export const docs: PageDocs = {
     "The group is a description list: each label is a term and its value is the description, so a screen reader reads \"Active projects, 12\".",
     "Color is never the only signal. The words in the delta say the direction, and a hidden \"good news\" or \"bad news\" says the judgment that the green or the red shows.",
     "Success and danger text reach 4.5:1 on the tile in light and dark. A neutral delta is fg-subtle, which does too.",
+    "A trend is part of the same description, read after the value and the delta. A Sparkline in it is an image named by its summary, so the exact figure stays in the value above it.",
     "The tile has no hover, no focus stop and no motion, so there is nothing to reduce under reduced motion.",
     "Write the unit in the unit prop or in the label. A bare \"41\" says nothing.",
   ],
@@ -66,6 +79,43 @@ function NewsDemo() {
         <Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" />
         <Stat label="Failed deploys" value={3} delta="Up 2 on last week" tone="bad" />
         <Stat label="Deploys this week" value={38} delta="Same as last week" />
+        <Stat label="Clients" value={9} />
+      </StatGroup>
+    </div>
+  );
+}
+
+/** Deploys per day for 14 days; the last seven add up to the 38 on the tile. */
+const DEPLOYS = [5, 6, 4, 7, 6, 2, 4, 3, 1, 8, 5, 7, 9, 5];
+/** Median build time per day in seconds, against a goal of 45. */
+const BUILD = [47, 46, 48, 45, 46, 44, 45, 43, 44, 42, 43, 40, 42, 41];
+/** Failed deploys per day; the last seven add up to the 3 on the tile. */
+const FAILED = [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0];
+
+function TrendDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat
+          label="Deploys this week"
+          value={38}
+          delta="Up 12% on last week"
+          tone="good"
+          trend={<Sparkline label="Deploys per day, last 14 days" values={DEPLOYS} hue="blue" />}
+        />
+        <Stat
+          label="Median build"
+          value={41}
+          unit="s"
+          trend={<Sparkline label="Median build time, last 14 days" values={BUILD} formatValue={(v) => v + " s"} baseline={45} />}
+        />
+        <Stat
+          label="Failed deploys"
+          value={3}
+          delta="Up 2 on last week"
+          tone="bad"
+          trend={<Sparkline label="Failed deploys per day, last 14 days" values={FAILED} />}
+        />
         <Stat label="Clients" value={9} />
       </StatGroup>
     </div>
@@ -112,6 +162,14 @@ export default function StatPage() {
         caption="Green is for a change that is good news and red for one that is bad, whichever way the number went. A build time that fell is green, and failed deploys that rose are red. A change that is neither stays in the subtle gray. The words carry the direction, and a screen reader also hears whether it was good or bad."
       >
         <NewsDemo />
+      </Stage>
+
+      <Stage
+        title="A trend at the foot"
+        code="TrendDemo"
+        caption="A tile can hold a trend: pass a Sparkline as the trend prop. It sits at the very bottom of the tile, under the delta, and fills the tile's width. The median build tile has no delta and the clients tile has no trend, and the lines that exist still sit level, because every tile in a row shares its height and the trend takes the foot. The figure stays above it, since the line shows shape and not values."
+      >
+        <TrendDemo />
       </Stage>
 
       <Stage

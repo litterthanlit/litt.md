@@ -938,8 +938,8 @@ const COPY = {
   },
   sparkline: {
     title: "Sparkline",
-    description: "A trend in one thin line, with no axes: a 2px line in the foreground or a data hue and a small dot on the latest value. For a stat tile, a table cell or a list row.",
-    docs: "Import Sparkline from components/litt/sparkline. Pass a label and the values, oldest first. It fills its container's width.",
+    description: "A trend in one thin line, with no axes, gridlines or labels: a 2px line in the foreground or a data hue, a dot on the latest value and an optional dashed baseline. For a stat tile, a table cell or a list row. It shows shape, not values.",
+    docs: "Import Sparkline from components/litt/sparkline. Pass a label and the values, oldest first. It fills its container's width, so give a table cell a wrapper with a width, and fix min and max so rows compare. Put the exact figure beside it. Stat takes one in its trend prop.",
   },
   spread: {
     title: "Spread",

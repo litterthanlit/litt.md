@@ -231,7 +231,7 @@ const RECIPES = {
   },
   stat: {
     needs: ["Stat", "StatGroup"],
-    jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" /></StatGroup></div>`,
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" trend={<span data-testid="stat-trend">Last 14 days</span>} /></StatGroup></div>`,
   },
   chart: {
     needs: ["BarChart", "LineChart", "Meter"],
@@ -349,6 +349,14 @@ const RECIPES = {
     state: [`const [noteOpen, setNoteOpen] = useState(true);`],
     jsx: `<div className="grid w-80 gap-4" data-testid="litt-callout">
           {noteOpen && <Callout tone="warning" title="Plan renews in 3 days" description="Change it before 4 November." action={<@Btn type="button" data-testid="callout-action">Manage plan</@Btn>} onDismiss={() => setNoteOpen(false)} />}
+        </div>`,
+  },
+  sparkline: {
+    needs: ["Sparkline"],
+    jsx: `<div className="grid w-64 gap-4" data-testid="litt-sparklines">
+          <div data-testid="spark-quiet"><Sparkline label="Median build time" values={[44, 46, 41, 37, 45, 43, 41]} formatValue={(v) => v + " s"} baseline={45} /></div>
+          <div data-testid="spark-blue"><Sparkline label="Deploys per day" values={[5, 7, 4, 9]} hue="blue" height={48} /></div>
+          <div data-testid="spark-empty"><Sparkline label="Visits per day" values={[]} /></div>
         </div>`,
   },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
@@ -993,6 +1001,88 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           });
           if (hued !== violet) throw new Error(`a violet meter fills with ${hued}, not --litt-data-violet (${violet})`);
           return `${colors.length} mark colors, none the accent; a hued meter is --litt-data-violet`;
+        });
+      }
+      if (has("sparkline")) {
+        await attempt("sparkline reads its summary, draws a 2px line and a dot in the data hue, a dashed baseline, and a Stat's trend slot", async () => {
+          const box = page.locator("[data-testid=litt-sparklines]");
+          const quiet = box.locator("[data-testid=spark-quiet] svg[role=img]");
+          await quiet.waitFor({ state: "visible", timeout: 8000 });
+          const want = "Median build time: from 44 s to 41 s, low 37 s, high 46 s, baseline 45 s";
+          const said = await quiet.getAttribute("aria-label");
+          if (said !== want) throw new Error(`the summary reads "${said}", not "${want}"`);
+          const stops = await box.locator("button, a, input, [tabindex]").count();
+          if (stops) throw new Error(`a sparkline is not interactive, yet ${stops} focusable element(s) are inside`);
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [blue, blueText, accent, lineStrong, fg55] = [
+            await colorOf("var(--litt-data-blue)"),
+            await colorOf("var(--litt-data-blue-text)"),
+            await colorOf("var(--litt-accent)"),
+            await colorOf("var(--litt-line-strong)"),
+            await colorOf("color-mix(in oklab, var(--litt-fg) 55%, transparent)"),
+          ];
+          const hued = box.locator("[data-testid=spark-blue] svg[role=img]");
+          if ((await hued.getAttribute("aria-label")) !== "Deploys per day: from 5 to 9, low 4, high 9") throw new Error(`the hued summary reads "${await hued.getAttribute("aria-label")}"`);
+          const marks = (loc) =>
+            loc.evaluate((svg) => {
+              const path = svg.querySelector("path");
+              const circles = [...svg.querySelectorAll("circle")];
+              const s = path && getComputedStyle(path);
+              return {
+                line: s?.stroke,
+                width: s?.strokeWidth,
+                cap: s?.strokeLinecap,
+                join: s?.strokeLinejoin,
+                fill: s?.fill,
+                radii: circles.map((c) => c.getAttribute("r")),
+                dot: circles.length ? getComputedStyle(circles[circles.length - 1]).fill : null,
+                svg: svg.getBoundingClientRect().width,
+                box: svg.parentElement.getBoundingClientRect().width,
+              };
+            });
+          const h = await marks(hued);
+          if (h.line !== blue || h.dot !== blueText) throw new Error(`the hued line is ${h.line} and its dot ${h.dot}, not --litt-data-blue (${blue}) and --litt-data-blue-text (${blueText})`);
+          if ([h.line, h.dot].includes(accent)) throw new Error("a mark is the accent");
+          if (h.width !== "2px" || h.cap !== "round" || h.join !== "round" || h.fill !== "none") throw new Error(`the line is ${h.width} with ${h.cap} caps and ${h.join} joins, fill ${h.fill}`);
+          if (h.radii.join() !== "6,4") throw new Error(`the ring and the dot have radii ${h.radii.join()}, not 6,4`);
+          if (Math.abs(h.svg - h.box) > 1) throw new Error(`the drawing is ${h.svg}px wide in a ${h.box}px box`);
+          const q = await marks(quiet);
+          if (q.line !== fg55) throw new Error(`the quiet line is ${q.line}, not the foreground at 55% (${fg55})`);
+          const baseline = await quiet.evaluate((svg) => {
+            const line = svg.querySelector("line");
+            const s = line && getComputedStyle(line);
+            return line && { stroke: s.stroke, width: s.strokeWidth, dash: s.strokeDasharray, span: Number(line.getAttribute("x2")) - Number(line.getAttribute("x1")), drawn: svg.getBoundingClientRect().width };
+          });
+          if (!baseline || baseline.stroke !== lineStrong || baseline.width !== "1px" || baseline.dash === "none") throw new Error(`the baseline is ${JSON.stringify(baseline)}, not a dashed 1px --litt-line-strong line`);
+          if (Math.abs(baseline.span - baseline.drawn) > 1) throw new Error(`the baseline spans ${baseline.span}px of ${baseline.drawn}px`);
+          const empty = box.locator("[data-testid=spark-empty] svg[role=img]");
+          const emptyShape = await empty.evaluate((svg) => ({ label: svg.getAttribute("aria-label"), marks: svg.querySelectorAll("path, circle, line").length }));
+          if (emptyShape.label !== "Visits per day: no data" || emptyShape.marks) throw new Error(`an empty sparkline reads ${JSON.stringify(emptyShape)}`);
+          let detail = `line ${h.line}, dot ${h.dot}`;
+          if (has("stat")) {
+            const dd = page.locator("[data-testid=litt-stats] dd").nth(1);
+            const term = await page.locator("[data-testid=litt-stats] dt").nth(1).innerText();
+            const text = (await dd.innerText()).replace(/\s+/g, " ").trim();
+            if (term !== "Median build" || !text.startsWith("41s") || !text.includes("Down 6 s on last week") || !text.endsWith("Last 14 days")) throw new Error(`a Stat with a trend reads "${term}: ${text}"`);
+            const place = await dd.evaluate((el) => {
+              const tile = el.parentElement;
+              const trend = el.querySelector("[data-testid=stat-trend]").parentElement.getBoundingClientRect();
+              const delta = el.querySelectorAll(":scope > span")[1].getBoundingClientRect();
+              const inner = tile.getBoundingClientRect().bottom - parseFloat(getComputedStyle(tile).paddingBottom);
+              return { gapBelow: inner - trend.bottom, after: trend.top - delta.bottom };
+            });
+            if (Math.abs(place.gapBelow) > 1.5 || place.after < 0) throw new Error(`the trend is ${place.gapBelow.toFixed(1)}px from the foot of the tile and ${place.after.toFixed(1)}px under the delta`);
+            detail += "; a Stat's trend sits at the foot";
+          }
+          return detail;
         });
       }
       if (has("pad")) {
