@@ -8,7 +8,7 @@ We studied Fluid Functionalism for ideas. **We are not copying it.** Take princi
 
 The rules live in the litt.md skill, one level up from this folder (`../skills/litt-md/`):
 
-- `taste/profile.md`: the rules P1 to P10, the fixed decisions, Do and Don't.
+- `taste/profile.md`: the rules P1 to P11, the fixed decisions, Do and Don't.
 - `system/components.md`: the component specs. Read your component's section.
 - `system/foundations.md` and `system/material.md`: type, color, glass, light.
 - `src/components/button.tsx` in this repo: the reference component. Match its style.
