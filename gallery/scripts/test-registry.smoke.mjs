@@ -328,6 +328,29 @@ const RECIPES = {
     top: [`const DOT_VALUES = Array.from({ length: 60 }, (_, i) => 10 + ((i * 37) % 60)); // 10 to 69 s, once each`],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-dotplot"><DotPlot label="Build times" values={DOT_VALUES} domain={[0, 80]} formatValue={(v) => Math.round(v) + " s"} unit={["build", "builds"]} goal={50} goalLabel="50 s goal" height={160} /></div>`,
   },
+  avatar: {
+    needs: ["Avatar", "AvatarGroup"],
+    jsx: `<div className="flex flex-wrap items-center gap-3" data-testid="litt-avatars">
+          <Avatar name="Stripe" data-testid="avatar-stripe" />
+          <Avatar name="Stripe" size="sm" data-testid="avatar-stripe-2" />
+          <Avatar name="@stripe.com" hue="rose" size="lg" data-testid="avatar-rose" />
+          <Avatar name="Ramp" decorative data-testid="avatar-decorative" />
+          <span>Ramp</span>
+          <AvatarGroup label="Smoke team, 6 people" total={6} max={3}>
+            <Avatar name="Ines Duarte" />
+            <Avatar name="Marlow Labs" />
+            <Avatar name="Sidebar Weekly" />
+            <Avatar name="Grotta Type" />
+          </AvatarGroup>
+        </div>`,
+  },
+  callout: {
+    needs: ["Callout"],
+    state: [`const [noteOpen, setNoteOpen] = useState(true);`],
+    jsx: `<div className="grid w-80 gap-4" data-testid="litt-callout">
+          {noteOpen && <Callout tone="warning" title="Plan renews in 3 days" description="Change it before 4 November." action={<@Btn type="button" data-testid="callout-action">Manage plan</@Btn>} onDismiss={() => setNoteOpen(false)} />}
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1385,6 +1408,86 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (await box.locator("div[aria-hidden=true]").filter({ hasText: count }).count()) throw new Error("Esc did not hide the tooltip");
           await page.evaluate(() => document.activeElement?.blur());
           return `${edges.count} dots, hue inside the goal and gray past it`;
+        });
+      }
+      if (has("avatar")) {
+        await attempt("avatars: initials named for a screen reader, a hue from the name, a group that overlaps and counts", async () => {
+          const box = page.locator("[data-testid=litt-avatars]");
+          const one = box.getByTestId("avatar-stripe");
+          await one.waitFor({ state: "visible", timeout: 5000 });
+          if ((await one.getAttribute("role")) !== "img" || (await one.getAttribute("aria-label")) !== "Stripe") throw new Error("initials are not a role=img named Stripe");
+          if ((await one.innerText()).trim() !== "S") throw new Error(`Stripe shows "${(await one.innerText()).trim()}", not S`);
+          const dims = await one.evaluate((el) => {
+            const r = el.getBoundingClientRect();
+            return { w: Math.round(r.width), h: Math.round(r.height), radius: parseFloat(getComputedStyle(el).borderTopLeftRadius) };
+          });
+          if (dims.w !== 32 || dims.h !== 32 || dims.radius < 16) throw new Error(`the default avatar is ${dims.w} by ${dims.h} with a ${dims.radius}px radius`);
+          const colors = (id) => box.getByTestId(id).evaluate((el) => ({ color: getComputedStyle(el).color, fill: getComputedStyle(el).backgroundColor }));
+          const [first, again, rose] = [await colors("avatar-stripe"), await colors("avatar-stripe-2"), await colors("avatar-rose")];
+          if (first.color !== again.color || first.fill !== again.fill) throw new Error("the same name got two different hues");
+          const want = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            document.body.append(probe);
+            probe.style.color = "var(--litt-data-rose-text)";
+            probe.style.backgroundColor = "var(--litt-data-rose-tint)";
+            const out = { color: getComputedStyle(probe).color, fill: getComputedStyle(probe).backgroundColor };
+            probe.remove();
+            return out;
+          });
+          if (rose.color !== want.color || rose.fill !== want.fill) throw new Error(`hue="rose" is ${rose.color} on ${rose.fill}, not the rose text tone on its tint`);
+          if ((await box.getByTestId("avatar-rose").innerText()).trim() !== "S") throw new Error("@stripe.com did not skip the @ for its initial");
+          const quiet = box.getByTestId("avatar-decorative");
+          if ((await quiet.getAttribute("aria-hidden")) !== "true" || (await quiet.getAttribute("aria-label"))) throw new Error("a decorative avatar is still labelled or not hidden");
+          if (await box.getByRole("img", { name: "Ramp" }).count()) throw new Error("a decorative avatar is still in the accessibility tree");
+          const group = box.getByRole("group", { name: "Smoke team, 6 people" });
+          const faces = group.getByRole("img");
+          const names = await faces.evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")));
+          if (names.join("|") !== "Ines Duarte|Marlow Labs|Sidebar Weekly|3 more") throw new Error(`the group reads ${names.join("|")}`);
+          if ((await group.innerText()).replace(/\s+/g, " ").trim() !== "ID ML SW +3") throw new Error(`the group shows "${(await group.innerText()).replace(/\s+/g, " ").trim()}"`);
+          const [a, b] = [await faces.nth(0).boundingBox(), await faces.nth(1).boundingBox()];
+          const lap = Math.round(a.x + a.width - b.x);
+          if (Math.abs(lap - 8) > 1) throw new Error(`avatars overlap by ${lap}px, not a quarter of 32`);
+          const wrap = (n) => faces.nth(n).evaluate((el) => ({ z: getComputedStyle(el.parentElement).zIndex, ring: getComputedStyle(el.parentElement).boxShadow }));
+          const [w0, w1] = [await wrap(0), await wrap(1)];
+          if (!(Number(w0.z) > Number(w1.z))) throw new Error(`the first avatar is not on top (z ${w0.z} against ${w1.z})`);
+          if (!/\b2px\b/.test(w0.ring)) throw new Error(`the ring is "${w0.ring}"`);
+          return `32px, ${lap}px overlap, ${names.length} marks`;
+        });
+      }
+      if (has("callout")) {
+        await attempt("callout: a note with its tone in the icon only, the action below the text when narrow, and a close that unmounts", async () => {
+          const box = page.locator("[data-testid=litt-callout]");
+          const note = box.getByRole("note");
+          await note.waitFor({ state: "visible", timeout: 5000 });
+          const said = ((await note.textContent()) ?? "").replace(/\s+/g, " ").trim();
+          if (!said.startsWith("Warning: Plan renews in 3 days")) throw new Error(`the note reads "${said}"`);
+          const hidden = await note.locator("p > span").first().boundingBox();
+          if (!hidden || hidden.width > 1.5) throw new Error("the Warning: prefix is visible");
+          const probe = await page.evaluate(() => {
+            const el = document.createElement("span");
+            document.body.append(el);
+            el.style.color = "var(--litt-warning)";
+            el.style.backgroundColor = "var(--litt-surface-1)";
+            const out = { warning: getComputedStyle(el).color, surface: getComputedStyle(el).backgroundColor };
+            el.remove();
+            return out;
+          });
+          const icon = await note.locator("svg").first().evaluate((el) => getComputedStyle(el).color);
+          if (icon !== probe.warning) throw new Error(`the icon is ${icon}, not --litt-warning (${probe.warning})`);
+          const title = await note.locator("p").first().evaluate((el) => getComputedStyle(el).color);
+          if (title === probe.warning) throw new Error("the title took the status color");
+          const surface = await note.locator("xpath=./*").first().evaluate((el) => {
+            const cs = getComputedStyle(el);
+            return { fill: cs.backgroundColor, left: cs.borderLeftWidth, shadow: cs.boxShadow };
+          });
+          if (surface.fill !== probe.surface) throw new Error(`the callout fill is ${surface.fill}, not --litt-surface-1`);
+          if (surface.left !== "0px") throw new Error(`the callout has a ${surface.left} left border`);
+          const [text, action, close] = [await note.locator("p").nth(1).boundingBox(), await box.getByTestId("callout-action").boundingBox(), await note.getByRole("button", { name: "Dismiss" }).boundingBox()];
+          if (action.y < text.y + text.height - 1) throw new Error("at 20rem wide the action did not drop below the text");
+          if (close.y > text.y) throw new Error("the close button is not at the top end");
+          await note.getByRole("button", { name: "Dismiss" }).click();
+          await note.waitFor({ state: "detached", timeout: 3000 });
+          return "warning icon, hairline surface, action below, close unmounts";
         });
       }
       if (has("app-shell")) {

@@ -887,13 +887,13 @@ const COPY = {
   /* The data-color step (v0.11). Each entry is owned by the agent that builds the item; keep the order. */
   avatar: {
     title: "Avatar",
-    description: "A round mark for a person, a client or a company: a photo, or initials on the tint of one of the five data hues, picked from the name so it stays the same everywhere. A group overlaps them and counts the rest.",
-    docs: "Import Avatar and AvatarGroup from components/litt/avatar. Pass a name; the hue follows from it unless you set one. Mark it decorative when the name is written beside it.",
+    description: "A round mark for a person, a client or a company, in three sizes: a photo, or initials on the tint of one of the five data hues, picked from the name so the same name always gets the same color. A group overlaps them with a ring in the surface they sit on, and counts the rest in a +N pill.",
+    docs: "Import Avatar and AvatarGroup from components/litt/avatar. Pass a name: the initials and the hue come from it unless you set a hue. Set decorative when the name is written beside the avatar. Give AvatarGroup a label, the first few avatars and a total, and match its ring to the surface it sits on.",
   },
   callout: {
     title: "Callout",
-    description: "An inline note in the page flow: a tip, a heads-up or a result to act on. A raised surface with an icon, a title, a line of detail and an optional action. Status shows in the icon and the words, never as a rail.",
-    docs: "Import Callout from components/litt/callout. Pass a title, a description and a tone. Give it an action or onDismiss when there is something to do.",
+    description: "An inline note in the page flow: a tip, a heads-up or a result to act on. A raised surface with a 16px icon, a title, a line of detail, and an optional action and close button. Only the icon takes the status color, and a hidden word before the title says the same thing, so there is never a rail, a tinted fill or a colored border. It measures its own width and drops the action below the text under 28rem.",
+    docs: "Import Callout from components/litt/callout. Pass a title, a description and a tone, and an action (an sm Button or a Kbd) or onDismiss when there is something to do. Set live for a callout that appears after an action. It fills the width of its container, so give the container a width.",
   },
   timeline: {
     title: "Timeline",
