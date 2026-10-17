@@ -954,8 +954,8 @@ const COPY = {
   },
   composer: {
     title: "Composer",
-    description: "Where the person writes to an agent: a text field that grows line by line, file chips, a toolbar for the caller's controls, and a round Send that becomes Stop while the agent answers. Enter sends and Shift+Enter starts a new line.",
-    docs: "Import Composer from components/litt/composer. Hold the text in state, and pass streaming while the agent answers.",
+    description: "Where the person writes to an agent: a box on surface-1 with the Input's edge, a text field that grows a line at a time to eight rows, file chips, a toolbar for your controls and a round Send that turns into Stop while the agent answers. Send is the view's one accent fill. Enter sends, Shift+Enter starts a line, Esc stops, and Enter never sends mid-composition. Attach, paste and drop add files, suggestions fill the field, and a count shows near maxLength. FileChip is exported for a message that was already sent.",
+    docs: "Import Composer (and FileChip) from components/litt/composer. Hold the files yourself and pass onSend, streaming and onStop: the field clears after a send, and Send becomes Stop while streaming is true. Pass onFiles to show Attach and take pastes and drops, files and onRemoveFile to draw the chips, tools for a model Select at sm, suggestions for an empty chat, hint for a line under the box, and maxLength for the count. On a phone pass enterSends={false} and keep the composer above the keyboard with useVisibleScreen.",
   },
   thinking: {
     title: "Thinking",

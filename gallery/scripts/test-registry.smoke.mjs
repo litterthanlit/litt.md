@@ -421,6 +421,18 @@ const RECIPES = {
           <p data-testid="tool-call-allowed">{toolAllowed}</p>
         </div>`,
   },
+  composer: {
+    needs: ["Composer", "FileChip"],
+    state: [
+      `const [composerSent, setComposerSent] = useState("");`,
+      `const [composerStreaming, setComposerStreaming] = useState(false);`,
+      `const [composerFiles, setComposerFiles] = useState<{ id: string; name: string; size?: number; progress?: number }[]>([{ id: "brief", name: "brief.pdf", size: 2516582 }, { id: "moodboard", name: "moodboard.png", progress: 64 }]);`,
+    ],
+    jsx: `<div className="grid w-full max-w-lg gap-3" data-testid="litt-composer">
+          <p data-testid="composer-sent" className="whitespace-pre-wrap">{composerSent}</p>
+          <Composer placeholder="Message Litt" hint="Litt can be wrong. Check what matters." streaming={composerStreaming} onSend={(text) => { setComposerSent(text); setComposerStreaming(true); }} onStop={() => setComposerStreaming(false)} files={composerFiles} onRemoveFile={(file) => setComposerFiles((all) => all.filter((f) => f.id !== file.id))} />
+        </div>`,
+  },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
     needs: ["ProjectList"],
@@ -1899,6 +1911,72 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if ((await box.getByTestId("tool-call-allowed").innerText()).trim() !== "1") throw new Error("Allow did not call onAllow once");
           await box.getByText("Allowed", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
           return "Failed in words and --litt-danger, output opens, group folds two calls, Allow is --litt-accent and becomes an Allowed row";
+        });
+      }
+      if (has("composer")) {
+        await attempt("composer: Send is off when empty and the accent when not, Enter sends, Shift+Enter adds a line, Stop and Esc, chips remove", async () => {
+          const box = page.locator("[data-testid=litt-composer]");
+          const field = box.getByRole("textbox", { name: "Message" });
+          await field.waitFor({ state: "visible", timeout: 5000 });
+          const probe = (prop, name) =>
+            page.evaluate(
+              ([p, n]) => {
+                const el = document.createElement("span");
+                document.body.append(el);
+                el.style[p] = `var(${n})`;
+                const out = getComputedStyle(el)[p];
+                el.remove();
+                return out;
+              },
+              [prop, name],
+            );
+          const frame = field.locator("xpath=ancestor::div[contains(@class,'group/box')][1]");
+          const fill = (b) => b.evaluate((el) => getComputedStyle(el).backgroundColor);
+          const send = box.getByRole("button", { name: "Send" });
+          if (!(await send.isDisabled())) throw new Error("Send should be disabled while the field is empty");
+          if ((await fill(send)) === (await probe("backgroundColor", "--litt-accent"))) throw new Error("a disabled Send must not be an accent fill");
+          const rest = await frame.evaluate((el) => getComputedStyle(el).boxShadow);
+          const line = await probe("color", "--litt-line-control");
+          if (!rest.includes(line)) throw new Error(`the resting edge is "${rest}", not --litt-line-control (${line})`);
+          await field.click();
+          await page.waitForTimeout(400); // the edge fades on the instant tier
+          const ring = await frame.evaluate((el) => getComputedStyle(el).boxShadow);
+          const focus = await probe("color", "--litt-focus");
+          if (!ring.includes(focus)) throw new Error(`the focused edge has no --litt-focus: "${ring}"`);
+          await page.keyboard.type("Why did the Halo build fail?");
+          if (await send.isDisabled()) throw new Error("typing should enable Send");
+          await page.waitForTimeout(400); // the fill fades on the instant tier
+          const accent = await probe("backgroundColor", "--litt-accent");
+          if ((await fill(send)) !== accent) throw new Error(`Send fill is ${await fill(send)}, not --litt-accent (${accent})`);
+          const one = (await field.boundingBox()).height;
+          await page.keyboard.press("Shift+Enter");
+          await page.keyboard.type("Second line");
+          if ((await field.inputValue()) !== "Why did the Halo build fail?\nSecond line") throw new Error(`Shift+Enter gave ${JSON.stringify(await field.inputValue())}`);
+          if (((await box.getByTestId("composer-sent").textContent()) ?? "") !== "") throw new Error("Shift+Enter sent the message");
+          const two = (await field.boundingBox()).height;
+          if (!(two > one + 10)) throw new Error(`the field did not grow a line: ${one}px to ${two}px`);
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(200);
+          if ((await box.getByTestId("composer-sent").textContent()) !== "Why did the Halo build fail?\nSecond line") throw new Error("Enter should call onSend with the text");
+          if ((await field.inputValue()) !== "") throw new Error("the field should clear after a send");
+          const stop = box.getByRole("button", { name: "Stop" });
+          await stop.waitFor({ state: "visible", timeout: 3000 });
+          await page.waitForTimeout(400);
+          if ((await fill(stop)) === accent) throw new Error("Stop must not be an accent fill");
+          await field.click();
+          await page.keyboard.press("Escape");
+          await box.getByRole("button", { name: "Send" }).waitFor({ state: "visible", timeout: 3000 });
+          const chips = box.getByRole("list", { name: "Attached files" }).getByRole("listitem");
+          if ((await chips.count()) !== 2) throw new Error(`${await chips.count()} chips, expected 2`);
+          const text = ((await chips.allTextContents()).join(" | ")).replace(/\s+/g, " ");
+          if (!/brief\.pdf.*2\.4 MB/.test(text) || !/moodboard\.png.*64%/.test(text)) throw new Error(`the chips read "${text}"`);
+          const tall = await chips.first().evaluate((el) => Math.round(el.getBoundingClientRect().height));
+          if (tall !== 32) throw new Error(`a chip is ${tall}px tall, expected 32`);
+          await box.getByRole("button", { name: "Remove brief.pdf" }).click();
+          await page.waitForTimeout(500);
+          if ((await chips.count()) !== 1) throw new Error("the x should remove the chip");
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-composer.png`) });
+          return `edge, accent Send, Shift+Enter ${one}px to ${two}px, Stop, chips`;
         });
       }
       if (has("app-shell")) {
