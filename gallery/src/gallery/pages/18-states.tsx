@@ -10,7 +10,7 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "states",
   title: "Empty and loading states",
-  order: 18, group: "Layout and data",
+  order: 15.4, group: "Layout",
   summary:
     "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says how to retry. The states are static, so only the list's own entrance and the retry button move.",
   tiers: ["instant", "expressive"],

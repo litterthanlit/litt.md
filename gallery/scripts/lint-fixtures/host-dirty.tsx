@@ -117,6 +117,12 @@ export function Colors() {
       <a
         className="text-litt-accent underline" // expect: color
       />
+      <span
+        className="text-litt-data-teal-tint" // expect: color
+      />
+      <span
+        className="bg-data-violet-tint text-data-violet-text" // expect: color
+      />
       <div
         className="border border-slate-200" // expect: color
       />

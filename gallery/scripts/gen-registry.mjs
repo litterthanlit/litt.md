@@ -865,8 +865,8 @@ const COPY = {
   },
   chart: {
     title: "Chart",
-    description: "Bar and line charts in plain SVG, and a meter. The marks are the foreground, never the accent: one series at 55% with the current mark full, or up to three stepping down. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
-    docs: "Import BarChart, LineChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
+    description: "Bar and line charts in plain SVG, and a meter. The marks are never the accent: the quiet foreground by default, one series at 55% with the current mark full or up to three stepping down, or up to five data hues when color tells the series apart. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+    docs: "Import BarChart, LineChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }, with an optional hue per series or hues on the chart. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
   },
   "app-shell": {
     title: "App shell",
@@ -882,6 +882,53 @@ const COPY = {
     title: "Empty and loading states",
     description: "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says what went wrong and how to retry.",
     docs: "Import Empty, Skeleton, Loading and ErrorState from components/litt/states. Wrap Skeleton blocks in Loading, so a screen reader hears what is loading once.",
+  },
+
+  /* The data-color step (v0.11). Each entry is owned by the agent that builds the item; keep the order. */
+  avatar: {
+    title: "Avatar",
+    description: "A round mark for a person, a client or a company, in three sizes: a photo, or initials on the tint of one of the five data hues, picked from the name so the same name always gets the same color. A group overlaps them with a ring in the surface they sit on, and counts the rest in a +N pill.",
+    docs: "Import Avatar and AvatarGroup from components/litt/avatar. Pass a name: the initials and the hue come from it unless you set a hue. Set decorative when the name is written beside the avatar. Give AvatarGroup a label, the first few avatars and a total, and match its ring to the surface it sits on.",
+  },
+  callout: {
+    title: "Callout",
+    description: "An inline note in the page flow: a tip, a heads-up or a result to act on. A raised surface with a 16px icon, a title, a line of detail, and an optional action and close button. Only the icon takes the status color, and a hidden word before the title says the same thing, so there is never a rail, a tinted fill or a colored border. It measures its own width and drops the action below the text under 28rem.",
+    docs: "Import Callout from components/litt/callout. Pass a title, a description and a tone, and an action (an sm Button or a Kbd) or onDismiss when there is something to do. Set live for a callout that appears after an action. It fills the width of its container, so give the container a width.",
+  },
+  timeline: {
+    title: "Timeline",
+    description: "The steps of a run in order, such as a deploy: when each started, a status icon on a hairline rail, the label and how long it took, grouped into phases. In a proportional timeline long steps draw their time as a bar in the phase's data hue, with the last run beside it. A strip shows the whole run at a glance.",
+    docs: "Import Timeline, TimelinePhase, TimelineStep, TimelineResult and TimelineBar from components/litt/timeline. Put steps in phases, give each step an at, a label, a status and its seconds, and close with a TimelineResult. Feed TimelineBar the same data as the list, and keep it beside the list.",
+  },
+  "dot-plot": {
+    title: "Dot plot",
+    description: "A distribution drawn as stacks of dots, mirrored about a center line, so you see where most values fall. With a goal, dots inside it take a data hue and the rest stay gray; the median is a line, an outlier can be named, and the legend gives the shares in numbers.",
+    docs: "Import DotPlot from components/litt/dot-plot. Pass a label, the values, a scale (log for durations) and a formatValue. Add a goal to split the dots, markers to name outliers. It measures its container, so give it a width. Each non-empty column is reachable with the arrow keys.",
+  },
+  heatmap: {
+    title: "Heatmap",
+    description: "A dot matrix whose depth says how much: usage per day in a month, deploys per day over a year, mail per hour of the week. One data hue in four steps over an empty dot, row labels and totals in mono, a tooltip on hover, touch and focus, and a legend from less to more. A wide grid scrolls sideways inside its own box.",
+    docs: "Import Heatmap from components/litt/heatmap. Pass a label, rows of { label, values, total? } and columns that name each column, and pick a hue. Use null for a day with no data. The dots are a grid you can arrow through.",
+  },
+  gauge: {
+    title: "Gauge",
+    description: "One value against a range on a semicircle of fine ticks, with the label, the figure and a caption in the opening. The ticks up to the value take the foreground or one data hue, and the last, longer tick marks the value. Static, like the meter.",
+    docs: "Import Gauge from components/litt/gauge. Pass a label, a value, a max and a value text (what a screen reader hears); add a figure, a caption or a hue. It scales down to its container.",
+  },
+  "bar-list": {
+    title: "Bar list",
+    description: "A ranked list where each row carries a thin bar for its share: top pages, most-used shortcuts, busiest repos. An optional lead, a label, a 4px rail, a mono value and a change in words. The bars line up across rows, and under 28rem the bar moves under the label.",
+    docs: "Import BarList from components/litt/bar-list. Pass a label and items of { label, value }, plus a unit for screen readers. A row with an href is a link, and with onSelect the others are buttons.",
+  },
+  "token-input": {
+    title: "Token input",
+    description: "A field that collects short values as removable tokens: recipients, sender domains, tags. Enter, a comma or blur adds what you typed, a pasted list is split, and Backspace or the x removes one. The Input's own size, edge, label and focus ring, with the Tag's look inside. A long list folds into a +N token until the field is focused.",
+    docs: "Import TokenInput from components/litt/token-input. Give it a label and hold the values in state with value and onValueChange, or pass a defaultValue. Add validate to reject a value with a message, max to cap the list, collapseAfter to fold it, and name to post every value with a form.",
+  },
+  pad: {
+    title: "Pad",
+    description: "Two values set at once on one surface, like a reply's tone against its length. A well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. It is the Slider in two dimensions, in the foreground and never the accent.",
+    docs: "Import Pad from components/litt/pad. Give it a label, an x and a y axis ({ label, min, max, step, minLabel, maxLabel }), and hold the value in state with value and onValueChange. Pass defaultMark to show the default and formatValue to say the value in words. Each axis is a range input for the keyboard and screen readers, and the arrow keys move it.",
   },
 };
 

@@ -565,7 +565,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2 id="rules-title">Rules</h2>
-        <p>The ten signature rules. Each one is checkable; the critique workflow scores against them.</p>
+        <p>The eleven signature rules. Each one is checkable; the critique workflow scores against them.</p>
       </div>
       <div class="section-body">
         <ol class="rules">
@@ -579,6 +579,7 @@
           <li><span class="id">P8</span><div><b>Designed, not inverted</b><p>Each theme has its own material values.</p></div></li>
           <li><span class="id">P9</span><div><b>One weight</b><p>Everything at 400. Hierarchy comes from size, color and tracking.</p></div></li>
           <li><span class="id">P10</span><div><b>Roomy controls</b><p>Buttons and inputs share 32 / 44 / 56. Padding equals the air around the label.</p></div></li>
+          <li><span class="id">P11</span><div><b>Color carries data</b><p>Five data hues mark series, categories and heat steps. Never chrome.</p></div></li>
         </ol>
       </div>
     </div>
@@ -621,7 +622,8 @@
     ["Surfaces", ["canvas", "surface-1", "surface-2", "surface-3"]],
     ["Lines", ["line", "line-strong", "line-control", "focus"]],
     ["Text", ["fg", "fg-muted", "fg-subtle", "fg-disabled"]],
-    ["Accent and status", ["accent", "accent-text", "accent-tint", "success", "danger"]]
+    ["Accent and status", ["accent", "accent-text", "accent-tint", "success", "danger"]],
+    ["Data hues (P11)", ["data-blue", "data-amber", "data-teal", "data-violet", "data-rose"]]
   ];
   function rgb(hex) {
     hex = hex.replace("#", "");
@@ -644,7 +646,7 @@
       g[1].forEach(function (name) {
         var val = cs.getPropertyValue("--" + name).trim();
         var note = val.toUpperCase();
-        if (/^fg|^line-control$|^focus$|^accent$|^accent-text$|^success$|^danger$/.test(name) && name !== "fg-disabled" && /^#/.test(val)) {
+        if (/^fg|^line-control$|^focus$|^accent$|^accent-text$|^success$|^danger$|^data-/.test(name) && name !== "fg-disabled" && /^#/.test(val)) {
           note += "  " + ratio(val, canvas).toFixed(1) + ":1";
         }
         var el = document.createElement("div");

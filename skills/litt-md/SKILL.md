@@ -40,7 +40,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 
 `area` is one of: type, color, material, motion, layout, component, interaction, process.
 
-## The ten signature rules
+## The eleven signature rules
 
 1. **P1 Light, not paint.** The accent appears as light (`--light`, `--glow`, `--focus`). At most one accent fill per view, on the primary action. Checkboxes, radios and switches fill with `--fg`.
 2. **P2 One light source.** Light comes from the top. Highlights sit on top edges only.
@@ -52,6 +52,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 8. **P8 Designed, not inverted.** Each theme has its own material strengths. Both are first-class.
 9. **P9 One weight.** Everything at 400, headings and buttons included. Hierarchy comes from size, color and tracking.
 10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them at sm and md; an lg button runs wider (pad 32), so it never reads as a block. Hero CTAs and a page form's submit are lg (56); a dialog's fields and actions are md (44).
+11. **P11 Color carries data.** Beyond the one accent, color only says something: a series, a category, a heat step, a side of a goal, an identity. Five data hues in a fixed order (blue, amber, teal, violet, rose), each with a mark tone, a `-text` tone and a `-tint`. Never on chrome: buttons, surfaces, borders, nav and running text stay neutral. A single quantity stays in the foreground.
 
 Each rule's Check line, the dos and don'ts, and the open questions are in `taste/profile.md`.
 
@@ -61,7 +62,7 @@ These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
 - **Type:** Hanken Grotesk + Geist Mono only, at weight 400 only. Display stops at 40.
-- **Color:** cool neutrals at one OKLCH hue (about 262), monochrome, one accent per project.
+- **Color:** cool neutrals at one OKLCH hue (about 262), monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
 - **Density:** airy.
 - **Shape:** slight radius. Controls 4px (tags and chips too), surfaces 8px, pills only for avatars, icon-only buttons and switches.
 - **Motion:** three tiers. Instant 100ms ease-out; responsive spring 200ms, bounce 0; expressive spring 350ms, bounce 0.12, one per view. Exits run at 0.75× and never bounce. Transform and opacity only, plus color fades at instant. On phones the modal is a bottom sheet that drags down to dismiss (`system/foundations.md` section 6).
@@ -89,6 +90,7 @@ These change only when Nick changes them.
 - **Text:** `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled`
 - **Accent:** `--accent` (a fill only), `--accent-hover`, `--accent-fg`, `--accent-text` (links and accent text), `--accent-tint`, `--focus`
 - **Status:** `--success`, `--warning`, `--danger`
+- **Data hues (P11):** `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` (words in the hue) and `-tint` (the fill behind them); marks take the plain name
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
 - **Type:** `--font-sans`, `--font-mono`, `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`

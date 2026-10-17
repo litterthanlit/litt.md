@@ -73,6 +73,7 @@ function Price({ tier }: { tier: Tier }) {
       <span className="text-litt-h2 text-litt-fg">{tier.price}</span>
       <span className="text-litt-small text-litt-fg-subtle">{label}</span>
       <a href="#plans" className="text-litt-small text-litt-accent-text underline underline-offset-4">Compare plans</a>
+      <span className="rounded-litt-control bg-litt-data-amber-tint px-2 font-mono text-litt-caption text-litt-data-amber-text">Finance</span>
     </div>
   );
 }

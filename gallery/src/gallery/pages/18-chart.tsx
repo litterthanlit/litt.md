@@ -4,9 +4,9 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "chart",
   title: "Chart",
-  order: 15.6, group: "Layout and data",
+  order: 17.3, group: "Data",
   summary:
-    "Bar and line charts in plain SVG, and a meter. Marks are the foreground, never the accent: one series at 55% with the current mark full, or up to three stepping down. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+    "Bar and line charts in plain SVG, and a meter. Marks are never the accent: by default the foreground, one series at 55% with the current mark full, or up to three stepping down; or the data hues, when color says which series is which. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
   tiers: ["instant", "responsive"],
 };
 
@@ -42,19 +42,33 @@ const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
   { name: "Preview", values: [/* … */] },
 ]} />
 
-// A rail for one value against a limit.
-<Meter label="Storage" value={42} valueText="42 of 100 GB" />`,
+// Data hues (P11): give each series the next hue in the fixed order, or name one per series.
+// Color follows the series, so "Sites" stays blue wherever it appears.
+<BarChart label="Deploys by kind" labels={days} hues series={[
+  { name: "Sites", values: [/* … */] },
+  { name: "Templates", values: [/* … */] },
+]} />
+<LineChart label="Visits" labels={days} series={[
+  { name: "This week", values: [/* … */], hue: "blue" },
+  { name: "Last week", values: [/* … */] }, // stays in the foreground
+]} />
+
+// A rail for one value against a limit. A hue when the color names the thing.
+<Meter label="Storage" value={42} valueText="42 of 100 GB" />
+<Meter label="Video" value={18} valueText="18 GB" hue="violet" />`,
   use: [
     "A person needs the shape of a few dozen numbers: deploys per day, build time over two weeks, traffic by month. A bar chart compares amounts, and a line follows change.",
     "The chart sits on a card or a stage and must stay quiet. Marks are the foreground, so the one accent on the view stays on the primary action.",
     "You have up to three series to compare. They step down the foreground and get a legend.",
+    "Telling the series apart is the point, or a series has a color elsewhere in the view. Give them data hues (up to five), and keep each series' hue the same everywhere.",
     "The chart must work at any width. It measures its container, so it fits a tile, a column and a phone.",
     "A single value against a limit, such as storage used or a quota. Use a Meter.",
   ],
   skip: [
     "The exact numbers are the point. Use a Table, which lines the values up so the eye can run down a column.",
     "One number and its change. Use a Stat.",
-    "You need more than three series, stacked bars, areas, pies or two scales on one chart. Litt has none of these: the foreground has three steps, and a second scale misleads.",
+    "You need more than five series, stacked bars, areas, pies or two scales on one chart. Litt has none of these: the foreground has three steps, the data hues five, and a second scale misleads. Fold the rest into \"Other\" or draw a second chart.",
+    "The color would only brighten the chart. One quantity reads best in the foreground; a hue is for telling things apart (P11).",
     "Thousands of points or a chart that zooms and pans. This one draws a mark per category and has no zoom.",
     "The values go below zero. The baseline is zero and negative values are not drawn.",
   ],
@@ -71,6 +85,7 @@ const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
     "There is a hidden button per category in a labelled group, outside the image. Each is named \"3 Oct: 5 deploys\", and the tooltip repeats that, so it is hidden from screen readers.",
     "Moving by keyboard shows the tooltip and draws a 2px focus ring around the mark. The ring uses the focus color, so it passes 3:1 in both themes.",
     "A 55% foreground mark is at least 4:1 against a card in light and dark. A 30% mark is not, so the third series has an edge on its bars and a dash on its line. Never rely on tone alone: the legend and the tooltip name every series.",
+    "Every data hue's mark tone reaches 3:1 on canvas and every surface in both themes, and neighbors in the fixed order stay apart for color-blind readers. A single hue series emphasises its current mark with the hue's text tone, which is a step stronger, not a lighter one.",
     "On touch a finger scrubs: the mark under it shows its tooltip, and the tooltip stays until the next touch elsewhere. The pointer target is the whole plot and not each column, so a column narrower than a finger is no problem. A vertical drag still scrolls the page.",
     "Under reduced motion the bars and the line appear at once. Hover and focus change color only.",
     "A Meter is role=\"meter\" with its label as the name and its reading as the value text.",
@@ -159,6 +174,56 @@ function QuotasDemo() {
   );
 }
 
+const KINDS = [
+  { name: "Sites", values: [3, 2, 4, 3, 5, 1, 1] },
+  { name: "Templates", values: [1, 3, 2, 2, 1, 0, 0] },
+  { name: "Plugins", values: [0, 1, 1, 2, 2, 1, 0] },
+  { name: "Docs", values: [2, 0, 1, 0, 1, 0, 1] },
+];
+
+function HuesDemo() {
+  return (
+    <div className="grid w-full max-w-3xl gap-12">
+      <BarChart label="Deploys by kind, last 7 days" labels={WEEK} series={KINDS} hues xTitle="Day" height={256} />
+      <LineChart
+        label="Site visits, this week against last"
+        labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+        series={[
+          { name: "This week", values: [1840, 2210, 2050, 2480, 2620, 1390, 1180], hue: "blue" },
+          { name: "Last week", values: [1620, 1900, 2010, 2140, 2300, 1250, 1100] },
+        ]}
+        xTitle="Day"
+        height={224}
+      />
+    </div>
+  );
+}
+
+function OneHueDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <BarChart
+        label="Inbound mail per day, last 14 days"
+        labels={DAYS}
+        series={[{ name: "Mail", values: [42, 51, 38, 47, 55, 19, 12, 44, 58, 49, 61, 53, 21, 15], hue: "teal" }]}
+        unit={["message", "messages"]}
+        xTitle="Day"
+        height={200}
+      />
+    </div>
+  );
+}
+
+function StorageDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <Meter label="Images" value={24} max={100} valueText="24 GB" hue="teal" />
+      <Meter label="Video" value={58} max={100} valueText="58 GB" hue="violet" />
+      <Meter label="Fonts" value={3} max={100} valueText="3 GB" hue="amber" />
+    </div>
+  );
+}
+
 function NarrowDemo() {
   return (
     <div className="w-full max-w-[22.375rem]">
@@ -228,6 +293,34 @@ export default function ChartPage() {
         caption="One value against a limit: a 4px rail at the control radius, the foreground filling it at 12%, and the reading in mono at the end. The fill is the foreground, never the accent, and it does not animate. A quota that is nearly spent says so in its words."
       >
         <QuotasDemo />
+      </Stage>
+
+      <Stage
+        title="In data hues"
+        tier="instant"
+        size="lg"
+        code="HuesDemo"
+        caption="When telling series apart is the point, they take the data hues in their fixed order: blue, amber, teal, violet, rose. Up to five, each at 3:1 or more on the card, so no bar needs an edge and no line a dash. A hue belongs to the series, not its place: below, this week is blue and last week stays in the foreground, so the eye goes to now."
+      >
+        <HuesDemo />
+      </Stage>
+
+      <Stage
+        title="One series in a hue"
+        tier="responsive"
+        code="OneHueDemo"
+        caption="A single series can take a hue when that color means the same thing elsewhere in the view, here inbound mail in teal. The bars rest in the hue's mark tone and today takes its text tone, a step stronger, so the emphasis never fades below 3:1. Hover moves the emphasis, on the instant tier."
+      >
+        <OneHueDemo />
+      </Stage>
+
+      <Stage
+        title="Meters by kind"
+        tier="instant"
+        code="StorageDemo"
+        caption="A meter takes a hue when its color names the thing it measures, as in a storage breakdown where images, video and fonts keep their hue across the page. The rail and the reading stay neutral. Nothing animates."
+      >
+        <StorageDemo />
       </Stage>
 
       <Stage

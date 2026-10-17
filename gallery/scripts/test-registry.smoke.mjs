@@ -239,6 +239,7 @@ const RECIPES = {
           <BarChart label="Deploys per day" labels={["1 Oct", "2 Oct", "3 Oct", "4 Oct"]} series={[{ name: "Deploys", values: [5, 7, 4, 9] }]} height={160} />
           <LineChart label="Build time" labels={["1 Oct", "2 Oct", "3 Oct", "4 Oct"]} series={[{ name: "Build time", values: [44, 41, 46, 39] }]} formatValue={(v) => \`\${v} s\`} height={160} />
           <Meter label="Storage" value={42} valueText="42 of 100 GB" />
+          <Meter label="Video" value={58} valueText="58 GB" hue="violet" />
         </div>`,
   },
   "app-shell": {
@@ -253,6 +254,102 @@ const RECIPES = {
     needs: ["Pagination"],
     state: [`const [pg, setPg] = useState(2);`],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-pagination"><Pagination label="Smoke pages" page={pg} pageSize={20} total={143} onPageChange={setPg} /></div>`,
+  },
+  pad: {
+    needs: ["Pad"],
+    state: [`const [voice, setVoice] = useState({ x: 30, y: 40 });`],
+    jsx: `<div className="w-full max-w-sm" data-testid="litt-pad"><Pad label="Your voice" help="How replies sound." x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }} y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }} value={voice} onValueChange={setVoice} defaultMark={{ x: 30, y: 40 }} formatValue={(v) => \`Tone \${v.y}, length \${v.x}\`} /></div>`,
+  },
+  gauge: {
+    needs: ["Gauge"],
+    jsx: `<div className="grid w-full max-w-xs gap-6" data-testid="litt-gauges">
+          <Gauge label="Credits left" value={20830} max={30000} valueText="20,830 credits" figure="20,830" caption="2k a day on average" hue="teal" />
+          <div className="w-40" data-testid="litt-gauge-small"><Gauge label="Storage" value={42} valueText="42 of 100 GB" size={320} /></div>
+        </div>`,
+  },
+  "bar-list": {
+    needs: ["BarList"],
+    state: [`const [picked, setPicked] = useState("nothing");`],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-bar-list">
+          <BarList
+            label="Smoke shortcuts"
+            unit={["time", "times"]}
+            hue="blue"
+            onSelect={(item) => setPicked(item.label)}
+            items={[
+              { label: "Archive", value: 412, lead: <span>E</span>, delta: "Up 15%", tone: "good" },
+              { label: "Reply", value: 164, delta: "Down 27%", tone: "bad" },
+              { label: "Snooze", value: 31 },
+            ]}
+          />
+          <p data-testid="bar-list-picked">{picked}</p>
+        </div>`,
+  },
+  timeline: {
+    needs: ["Timeline", "TimelinePhase", "TimelineStep", "TimelineResult", "TimelineBar"],
+    types: ["TimelineBarPhase"],
+    top: [
+      `const RUN: TimelineBarPhase[] = [`,
+      `  { label: "Build", hue: "blue", steps: [{ label: "Clone repository", seconds: 2, status: "done" }, { label: "Restore build cache", seconds: 0, status: "skipped" }, { label: "Run build commands", seconds: 19, status: "done" }] },`,
+      `  { label: "Deploy", hue: "teal", steps: [{ label: "Upload build output", seconds: 12, status: "done" }, { label: "Assign smoke.studio", seconds: 0, status: "running" }] },`,
+      `];`,
+    ],
+    jsx: `<div className="grid w-full max-w-xl gap-8" data-testid="litt-timeline">
+          <TimelineBar label="Smoke run" phases={RUN} />
+          <Timeline label="Smoke run steps" proportional>
+            <TimelinePhase label="Build" duration={21} hue="blue">
+              <TimelineStep at="00:00" label="Clone repository" status="done" seconds={2} />
+              <TimelineStep at="00:02" label="Restore build cache" status="skipped" />
+              <TimelineStep at="00:02" label="Run build commands" status="done" seconds={19} previousSeconds={31} />
+            </TimelinePhase>
+            <TimelinePhase label="Deploy" duration={12} hue="teal">
+              <TimelineStep at="00:21" label="Upload build output" status="done" seconds={12} />
+              <TimelineStep at="00:33" label="Assign smoke.studio" status="running" />
+            </TimelinePhase>
+            <TimelineResult tone="success" label="Live on smoke.studio" total={33} />
+          </Timeline>
+        </div>`,
+  },
+  "token-input": {
+    needs: ["TokenInput"],
+    state: [`const [senders, setSenders] = useState<string[]>(["@stripe.com", "ramp.com", "brex.com"]);`],
+    jsx: `<form className="grid w-full max-w-md gap-4" data-testid="litt-token-input" aria-label="Token input smoke" onSubmit={(e) => e.preventDefault()}>
+          <TokenInput label="Mail from" name="from" collapseAfter={1} placeholder="Add a sender" hint="Press Enter or a comma to add one." value={senders} onValueChange={setSenders} validate={(v) => /^[a-z0-9.@-]+$/.test(v) || \`\${v} has characters a domain cannot.\`} />
+        </form>`,
+  },
+  heatmap: {
+    needs: ["Heatmap"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-heatmap">
+          <Heatmap label="Deploys per day" hue="teal" unit={["deploy", "deploys"]} columns={["1 Oct", "2 Oct", "3 Oct", "4 Oct", "5 Oct"]} rows={[{ label: "Week 1", values: [0, 2, 5, 9, null], total: "16" }, { label: "Week 2", values: [4, 1, 7, 3, 6], total: "21" }]} />
+        </div>`,
+  },
+  "dot-plot": {
+    needs: ["DotPlot"],
+    top: [`const DOT_VALUES = Array.from({ length: 60 }, (_, i) => 10 + ((i * 37) % 60)); // 10 to 69 s, once each`],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-dotplot"><DotPlot label="Build times" values={DOT_VALUES} domain={[0, 80]} formatValue={(v) => Math.round(v) + " s"} unit={["build", "builds"]} goal={50} goalLabel="50 s goal" height={160} /></div>`,
+  },
+  avatar: {
+    needs: ["Avatar", "AvatarGroup"],
+    jsx: `<div className="flex flex-wrap items-center gap-3" data-testid="litt-avatars">
+          <Avatar name="Stripe" data-testid="avatar-stripe" />
+          <Avatar name="Stripe" size="sm" data-testid="avatar-stripe-2" />
+          <Avatar name="@stripe.com" hue="rose" size="lg" data-testid="avatar-rose" />
+          <Avatar name="Ramp" decorative data-testid="avatar-decorative" />
+          <span>Ramp</span>
+          <AvatarGroup label="Smoke team, 6 people" total={6} max={3}>
+            <Avatar name="Ines Duarte" />
+            <Avatar name="Marlow Labs" />
+            <Avatar name="Sidebar Weekly" />
+            <Avatar name="Grotta Type" />
+          </AvatarGroup>
+        </div>`,
+  },
+  callout: {
+    needs: ["Callout"],
+    state: [`const [noteOpen, setNoteOpen] = useState(true);`],
+    jsx: `<div className="grid w-80 gap-4" data-testid="litt-callout">
+          {noteOpen && <Callout tone="warning" title="Plan renews in 3 days" description="Change it before 4 November." action={<@Btn type="button" data-testid="callout-action">Manage plan</@Btn>} onDismiss={() => setNoteOpen(false)} />}
+        </div>`,
   },
   "list-cover": { needs: ["ProjectCover"], jsx: `<div className="relative h-28 w-48 overflow-hidden"><ProjectCover name={"@cover0"} /></div>` },
   list: {
@@ -867,7 +964,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             const rgb = await page.evaluate(`(${COLOR_TO_RGB})(${JSON.stringify(c)})`);
             if (near(rgb, accent[theme])) throw new Error(`a mark is the accent (${c})`);
           }
-          const rows = await box.locator("table.sr-only").first().locator("tbody tr").count();
+          const rows = await box.locator(".sr-only table").first().locator("tbody tr").count();
           if (rows !== 4) throw new Error(`the hidden table has ${rows} rows, not 4`);
           const stops = await box.locator("[role=group] button[tabindex='0']").count();
           if (stops < 2) throw new Error(`each chart should have one tab stop, found ${stops} in two charts`);
@@ -885,7 +982,513 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const now = await meter.getAttribute("aria-valuenow");
           const share = await meter.evaluate((el) => el.firstElementChild.getBoundingClientRect().width / el.getBoundingClientRect().width);
           if (now !== "42" || Math.abs(share - 0.42) > 0.01) throw new Error(`the meter reads ${now} and fills ${share.toFixed(2)}`);
-          return `${colors.length} mark colors, none the accent`;
+          const hued = await box.getByRole("meter", { name: "Video" }).evaluate((el) => getComputedStyle(el.firstElementChild).backgroundColor);
+          const violet = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-data-violet)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          if (hued !== violet) throw new Error(`a violet meter fills with ${hued}, not --litt-data-violet (${violet})`);
+          return `${colors.length} mark colors, none the accent; a hued meter is --litt-data-violet`;
+        });
+      }
+      if (has("pad")) {
+        await attempt("pad: two sliders, one tab stop, the keys and a press move the thumb, the tooltip follows", async () => {
+          const group = page.getByRole("group", { name: "Your voice" });
+          await group.waitFor({ state: "visible", timeout: 8000 });
+          const lengthIn = group.getByRole("slider", { name: "Length", exact: true });
+          const toneIn = group.getByRole("slider", { name: "Tone", exact: true });
+          const start = await lengthIn.getAttribute("aria-valuetext");
+          if (start !== "Tone 40, length 30" || (await toneIn.getAttribute("aria-valuetext")) !== start) throw new Error(`the inputs read "${start}", not "Tone 40, length 30"`);
+          if ((await lengthIn.getAttribute("tabindex")) !== null || (await toneIn.getAttribute("tabindex")) !== "-1") throw new Error("the x input should be the one tab stop and the y input tabindex -1");
+          await lengthIn.focus();
+          await page.keyboard.press("ArrowRight");
+          await page.keyboard.press("ArrowUp");
+          await page.keyboard.press("Shift+ArrowUp");
+          await page.waitForTimeout(100);
+          const keyed = await lengthIn.getAttribute("aria-valuetext");
+          /* From tone 40: ArrowUp is one step of 5, and Shift+ArrowUp ten more, so 95. */
+          if (keyed !== "Tone 95, length 35") throw new Error(`ArrowRight, ArrowUp and Shift+ArrowUp gave "${keyed}", not "Tone 95, length 35"`);
+          await page.keyboard.press("Home");
+          if ((await lengthIn.getAttribute("aria-valuetext")) !== "Tone 95, length 0") throw new Error("Home did not take x to 0");
+          const box = group.locator("div[data-no-drag]");
+          const b = await box.boundingBox();
+          await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+          await page.mouse.down();
+          await page.waitForTimeout(150);
+          const tip = await box.locator("div[aria-hidden=true]").filter({ hasText: "Tone 50, length 50" }).count();
+          await page.mouse.up();
+          const pressed = await toneIn.getAttribute("aria-valuetext");
+          if (pressed !== "Tone 50, length 50") throw new Error(`a press in the middle gave "${pressed}", not "Tone 50, length 50"`);
+          if (!tip) throw new Error("the tooltip did not show the value while dragging");
+          const thumb = box.locator("span[aria-hidden=true][style*=left][style*=top]").last();
+          const t = await thumb.boundingBox();
+          if (Math.abs(t.x + t.width / 2 - (b.x + b.width / 2)) > 1.5 || Math.abs(t.y + t.height / 2 - (b.y + b.height / 2)) > 1.5) throw new Error("the thumb is not under the pointer");
+          if (Math.round(t.width) !== 20) throw new Error(`the thumb is ${t.width}px wide, not 20`);
+          const fill = await thumb.evaluate((el) => getComputedStyle(el).backgroundColor);
+          const accentFill = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-accent)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          if (fill === accentFill) throw new Error("the thumb is filled with the accent");
+          await page.evaluate(() => document.activeElement?.blur());
+          return `pressed in the middle gives "${pressed}"`;
+        });
+      }
+      if (has("gauge")) {
+        await attempt("gauge is a meter, draws teal ticks with a longer marker in the text tone, and fits a small box", async () => {
+          const box = page.locator("[data-testid=litt-gauges]");
+          const meter = box.getByRole("meter", { name: "Credits left" });
+          await meter.waitFor({ state: "visible", timeout: 8000 });
+          const got = await meter.evaluate((el) => ({
+            min: el.getAttribute("aria-valuemin"),
+            max: el.getAttribute("aria-valuemax"),
+            now: el.getAttribute("aria-valuenow"),
+            text: el.getAttribute("aria-valuetext"),
+            desc: document.getElementById(el.getAttribute("aria-describedby") || "")?.textContent,
+            hidden: el.querySelector("svg")?.getAttribute("aria-hidden"),
+            shown: el.innerText.replace(/\s+/g, " ").trim(),
+          }));
+          if (got.min !== "0" || got.max !== "30000" || got.now !== "20830" || got.text !== "20,830 credits") throw new Error(`the meter reads ${JSON.stringify(got)}`);
+          if (got.desc !== "2k a day on average" || got.hidden !== "true") throw new Error(`the caption or the hidden ticks are wrong: ${JSON.stringify(got)}`);
+          if (got.shown !== "Credits left 20,830 2k a day on average") throw new Error(`the opening reads "${got.shown}"`);
+          const colorOf = (v) =>
+            page.evaluate((name) => {
+              const probe = document.createElement("span");
+              probe.style.color = `var(${name})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [teal, tealText, accent] = [await colorOf("--litt-data-teal"), await colorOf("--litt-data-teal-text"), await colorOf("--litt-accent")];
+          const paths = await meter.evaluate((el) =>
+            [...el.querySelectorAll("svg path")].map((p) => {
+              const d = p.getAttribute("d") || "";
+              const first = d.match(/M([-\d.]+) ([-\d.]+)L([-\d.]+) ([-\d.]+)/).slice(1).map(Number);
+              return { stroke: getComputedStyle(p).stroke, ticks: (d.match(/M/g) || []).length, length: Math.hypot(first[2] - first[0], first[3] - first[1]), width: getComputedStyle(p).strokeWidth };
+            }),
+          );
+          const [rest, body, marker] = paths;
+          if (paths.length !== 3 || rest.ticks !== 15 || body.ticks !== 32 || marker.ticks !== 1) throw new Error(`the ticks split ${paths.map((p) => p.ticks).join("/")}, not 15/32/1`);
+          if (body.stroke !== teal || marker.stroke !== tealText) throw new Error(`the ticks are ${body.stroke} and ${marker.stroke}, not the teal mark (${teal}) and text (${tealText}) tones`);
+          if ([body.stroke, marker.stroke].includes(accent)) throw new Error("a tick is the accent");
+          if (Math.abs(marker.length - body.length - 4) > 0.2 || paths.some((p) => p.width !== "2px")) throw new Error(`the marker is ${(marker.length - body.length).toFixed(2)}px longer and the ticks ${body.width} wide`);
+          const small = box.locator("[data-testid=litt-gauge-small]");
+          const fit = await small.evaluate((el) => ({ box: el.getBoundingClientRect().width, svg: el.querySelector("svg").getBoundingClientRect().width }));
+          if (fit.svg > fit.box + 0.5 || fit.box > 161) throw new Error(`a 320 gauge in a ${fit.box}px box draws ${fit.svg}px wide`);
+          return `${rest.ticks}/${body.ticks}/${marker.ticks} ticks, a ${fit.svg.toFixed(0)}px drawing in a ${fit.box.toFixed(0)}px box`;
+        });
+      }
+      if (has("bar-list")) {
+        await attempt("bar list reads each row, lines the bars up, fills in the data hue, and its rows press", async () => {
+          const box = page.locator("[data-testid=litt-bar-list]");
+          const list = box.getByRole("list", { name: "Smoke shortcuts" });
+          await list.waitFor({ state: "visible", timeout: 8000 });
+          const rows = list.getByRole("listitem");
+          if ((await rows.count()) !== 3) throw new Error(`the list has ${await rows.count()} rows, not 3`);
+          const spoken = await rows.evaluateAll((els) =>
+            els.map((e) => {
+              const copy = e.cloneNode(true);
+              copy.querySelectorAll("[aria-hidden=true]").forEach((n) => n.remove());
+              return copy.textContent.replace(/\s+/g, " ").trim();
+            }),
+          );
+          const want = ["Archive, 412 times, Up 15%, good news", "Reply, 164 times, Down 27%, bad news", "Snooze, 31 times"];
+          if (spoken.join("|") !== want.join("|")) throw new Error(`the rows read ${JSON.stringify(spoken)}`);
+          const colorOf = (v) =>
+            page.evaluate((name) => {
+              const probe = document.createElement("span");
+              probe.style.color = `var(${name})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [blue, accent, success, danger] = [await colorOf("--litt-data-blue"), await colorOf("--litt-accent"), await colorOf("--litt-success"), await colorOf("--litt-danger")];
+          const geo = await list.evaluate((ol) =>
+            [...ol.querySelectorAll("li")].map((li) => {
+              const fill = li.querySelector("[style*='width']");
+              const rail = fill.parentElement;
+              const r = rail.getBoundingClientRect();
+              const f = fill.getBoundingClientRect();
+              return { x: r.left, w: r.width, h: r.height, share: f.width / r.width, fill: getComputedStyle(fill).backgroundColor, radius: getComputedStyle(rail).borderRadius, value: li.querySelector(".font-mono").getBoundingClientRect().right };
+            }),
+          );
+          const shares = [1, 164 / 412, 31 / 412];
+          if (geo.some((g, i) => Math.abs(g.x - geo[0].x) > 0.5 || Math.abs(g.w - geo[0].w) > 0.5 || Math.abs(g.value - geo[0].value) > 0.5 || g.h !== 4 || Math.abs(g.share - shares[i]) > 0.01)) throw new Error(`the bars do not line up or fill to value / max: ${JSON.stringify(geo)}`);
+          if (geo.some((g) => g.fill !== blue || g.fill === accent)) throw new Error(`a bar is ${geo[0].fill}, not the blue mark tone (${blue})`);
+          const good = await rows.nth(0).getByText("Up 15%").evaluate((el) => getComputedStyle(el).color);
+          const bad = await rows.nth(1).getByText("Down 27%").evaluate((el) => getComputedStyle(el).color);
+          if (good !== success || bad !== danger) throw new Error(`the deltas are ${good} and ${bad}, not success (${success}) and danger (${danger})`);
+          const buttons = list.getByRole("button");
+          if ((await buttons.count()) !== 3) throw new Error(`onSelect should make 3 button rows, found ${await buttons.count()}`);
+          await buttons.nth(1).hover();
+          await page.waitForTimeout(250);
+          const hover = await buttons.nth(1).evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (hover === "rgba(0, 0, 0, 0)") throw new Error("a pressable row has no hover fill");
+          await buttons.nth(0).focus();
+          await page.keyboard.press("Enter");
+          const first = await box.locator("[data-testid=bar-list-picked]").innerText();
+          await page.keyboard.press("Tab");
+          await page.keyboard.press("Space");
+          const second = await box.locator("[data-testid=bar-list-picked]").innerText();
+          if (first !== "Archive" || second !== "Reply") throw new Error(`Enter picked "${first}" and Space "${second}", not Archive and Reply`);
+          await page.evaluate(() => document.activeElement?.blur());
+          return `${geo.length} aligned rows, bars ${geo[0].fill}`;
+        });
+      }
+      if (has("timeline")) {
+        await attempt("timeline reads in order, draws long steps as bars in the phase hue, and its strip shows a tooltip", async () => {
+          const box = page.locator("[data-testid=litt-timeline]");
+          const list = box.getByRole("list", { name: "Smoke run steps" });
+          await list.waitFor({ state: "visible", timeout: 8000 });
+          await page.waitForTimeout(600);
+          /* What a screen reader reads: the text that is not aria-hidden, one cell after another. */
+          const reads = (li) => {
+            const parts = [];
+            const walk = (n) => {
+              if (n.nodeType === 3) return void parts.push(n.textContent);
+              if (n.nodeType !== 1 || n.getAttribute("aria-hidden") === "true") return;
+              for (const c of n.childNodes) walk(c);
+              if (getComputedStyle(n).display !== "inline") parts.push(" ");
+            };
+            walk(li);
+            return parts.join("").replace(/\s+/g, " ").replace(/ ,/g, ",").trim();
+          };
+          const steps = list.locator("li[data-step]");
+          const n = await steps.count();
+          if (n !== 5) throw new Error(`expected 5 steps, found ${n}`);
+          const want = [
+            [2, "00:02, Run build commands, done, 19 seconds, was 31 seconds last run"],
+            [1, "00:02, Restore build cache, skipped"],
+            [4, "00:33, Assign smoke.studio, running"],
+          ];
+          for (const [i, text] of want) {
+            const got = await steps.nth(i).evaluate(reads);
+            if (got !== text) throw new Error(`step ${i} reads "${got}", not "${text}"`);
+          }
+          const result = await list.locator(":scope > li").last().evaluate(reads);
+          if (result !== "Live on smoke.studio, success, 33 seconds") throw new Error(`the result reads "${result}"`);
+          const phases = await list.locator("ol[aria-labelledby]").count();
+          if (phases !== 2) throw new Error(`expected 2 labelled phase lists, found ${phases}`);
+
+          /* A 19 second step is a 76px bar in the phase's mark tone, with the last run's 124px ghost beside it. */
+          const paint = (name) =>
+            page.evaluate((hue) => {
+              const probe = document.createElement("span");
+              probe.style.backgroundColor = `var(--litt-data-${hue})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).backgroundColor;
+              probe.remove();
+              return c;
+            }, name);
+          const bar = list.locator("[style*='height: 76px']");
+          const ghost = list.locator("[style*='height: 124px']");
+          if ((await bar.count()) !== 1 || (await ghost.count()) !== 1) throw new Error("the 19s bar or the 31s ghost is missing");
+          const tall = await bar.evaluate((el) => Math.round(el.getBoundingClientRect().height));
+          const row = await steps.nth(2).evaluate((li) => Math.round(li.getBoundingClientRect().height));
+          if (tall !== 76 || row < 124) throw new Error(`the bar is ${tall}px and its row ${row}px`);
+          const barColor = await bar.evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (barColor !== (await paint("blue"))) throw new Error(`the bar is ${barColor}, not the blue mark tone`);
+          await list.getByText("was 31s").waitFor({ state: "visible", timeout: 3000 });
+          const stroke = await steps.nth(0).locator("svg").evaluate((el) => getComputedStyle(el).strokeWidth);
+          if (stroke !== "1.5px") throw new Error(`status icons are ${stroke} strokes, not 1.5px`);
+          const moving = await list.evaluate((el) => document.getAnimations().filter((a) => el.contains(a.effect?.target)).length);
+          if (moving) throw new Error(`${moving} animation(s) run in the timeline, and nothing should move`);
+
+          /* The strip: a summary, segments sized by seconds in the phase hues, a tooltip on hover. */
+          const strip = box.getByRole("img", { name: "Smoke run: Build 21 seconds, Deploy 12 seconds, 33 seconds in all" });
+          await strip.waitFor({ state: "visible", timeout: 3000 });
+          const segs = strip.locator("div.overflow-hidden > span");
+          if ((await segs.count()) !== 3) throw new Error(`expected 3 segments, found ${await segs.count()}`);
+          const colors = await segs.evaluateAll((els) => els.map((el) => getComputedStyle(el).backgroundColor));
+          const [blue, teal] = [await paint("blue"), await paint("teal")];
+          if (colors[0] !== blue || colors[1] !== blue || colors[2] !== teal) throw new Error(`segments are ${colors.join(" / ")}`);
+          const at = await strip.boundingBox();
+          await page.mouse.move(at.x + at.width * 0.3, at.y + 44);
+          const tip = strip.locator("div[aria-hidden=true]").filter({ hasText: "Run build commands" });
+          await tip.waitFor({ state: "visible", timeout: 3000 });
+          const said = (await tip.innerText()).replace(/\s+/g, " ").trim();
+          if (!said.includes("19s")) throw new Error(`the tooltip says "${said}"`);
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          if (await tip.count()) throw new Error("Esc did not hide the tooltip");
+          await page.mouse.move(5, 5);
+          return `5 steps read in order, ${tall}px bar in ${blue}, 3 segments`;
+        });
+      }
+      if (has("token-input")) {
+        await attempt("token input folds to +2, validates, adds on a comma, removes by key and posts its values", async () => {
+          const form = page.locator("[data-testid=litt-token-input]");
+          const input = form.getByRole("textbox", { name: "Mail from" });
+          await input.waitFor({ state: "visible", timeout: 5000 });
+          const field = input.locator("xpath=ancestor::div[contains(@class,'cursor-text')][1]");
+          const color = (name) =>
+            page.evaluate((n) => {
+              const probe = document.createElement("span");
+              probe.style.color = `var(${n})`;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, name);
+          const posted = () => page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-token-input]")).getAll("from").join("|"));
+          const note = () => input.evaluate((el) => document.getElementById(el.getAttribute("aria-describedby") ?? "")?.textContent ?? "");
+          await page.waitForTimeout(500);
+          const more = field.locator("li[aria-label='2 more']");
+          if ((await field.locator("li").count()) !== 2 || (await more.textContent()) !== "+2") throw new Error("an unfocused field with three values and collapseAfter 1 should show one token and +2");
+          const box = await field.boundingBox();
+          const tokenH = await field.locator("li").first().evaluate((el) => Math.round(el.getBoundingClientRect().height));
+          const x = await form.getByRole("button", { name: "Remove @stripe.com" }).boundingBox();
+          if (Math.round(box.height) !== 44 || tokenH !== 24 || Math.round(x.width) !== 24) throw new Error(`field ${box.height}px, token ${tokenH}px, remove button ${x.width}px: expected 44, 24 and 24`);
+          const edge = await field.evaluate((el) => getComputedStyle(el).boxShadow);
+          const line = await color("--litt-line-control");
+          if (!edge.includes(line)) throw new Error(`the field edge is "${edge}", not --litt-line-control (${line})`);
+          await field.click({ position: { x: box.width - 20, y: box.height / 2 } });
+          await page.waitForTimeout(500);
+          if ((await field.locator("li").count()) !== 3) throw new Error("focusing the field should open it to all three tokens");
+          const ring = await field.evaluate((el) => getComputedStyle(el).boxShadow);
+          const focus = await color("--litt-focus");
+          if (!ring.includes(focus)) throw new Error(`the focused field has no --litt-focus ring: "${ring}"`);
+          await page.keyboard.type("invoice.com,");
+          await page.waitForTimeout(400);
+          if ((await posted()) !== "@stripe.com|ramp.com|brex.com|invoice.com") throw new Error(`a comma should add invoice.com; the form posts "${await posted()}"`);
+          const said = await form.locator("[role=status]").textContent();
+          if (said !== "Added invoice.com") throw new Error(`the live region says "${said}"`);
+          await page.keyboard.type("bad value");
+          await page.keyboard.press("Enter");
+          if ((await input.inputValue()) !== "bad value" || (await input.getAttribute("aria-invalid")) !== "true") throw new Error("a rejected value should stay in the input and mark it invalid");
+          if (!(await note()).includes("has characters a domain cannot")) throw new Error(`the message under the field reads "${await note()}"`);
+          await input.fill("");
+          if ((await input.getAttribute("aria-invalid")) !== null) throw new Error("changing the text should clear the rejection");
+          await page.keyboard.press("Backspace");
+          await page.waitForTimeout(300);
+          if ((await posted()) !== "@stripe.com|ramp.com|brex.com") throw new Error(`Backspace in an empty input should remove the last token; the form posts "${await posted()}"`);
+          await page.keyboard.press("ArrowLeft");
+          const onButton = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (onButton !== "Remove brex.com") throw new Error(`ArrowLeft focused "${onButton}", not "Remove brex.com"`);
+          await page.keyboard.press("ArrowRight");
+          if (!(await input.evaluate((el) => el === document.activeElement))) throw new Error("ArrowRight past the last remove button should return to the input");
+          await form.getByRole("button", { name: "Remove @stripe.com" }).click();
+          await page.waitForTimeout(300);
+          if ((await posted()) !== "ramp.com|brex.com") throw new Error(`the x should remove @stripe.com; the form posts "${await posted()}"`);
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-token-input.png`) });
+          await page.evaluate(() => document.activeElement?.blur());
+          return "+2, 44/24/24px, comma, validate, keys, posted values";
+        });
+      }
+      if (has("heatmap")) {
+        await attempt("heatmap: a labelled grid of named dots in one hue, one tab stop, arrows and Esc", async () => {
+          const box = page.locator("[data-testid=litt-heatmap]");
+          const grid = box.getByRole("grid", { name: "Deploys per day" });
+          await grid.waitFor({ state: "visible", timeout: 8000 });
+          const rows = await grid.getByRole("row").count();
+          if (rows !== 2) throw new Error(`the grid has ${rows} rows, not 2`);
+          const dots = await grid.locator("[data-r]").count();
+          if (dots !== 10) throw new Error(`the grid has ${dots} dots, not 10`);
+          const described = await grid.getAttribute("aria-describedby");
+          const summary = await page.evaluate((id) => document.getElementById(id)?.textContent, described);
+          if (summary !== "Deploys per day, 37 in all, most on Week 1, 4 Oct with 9") throw new Error(`the summary reads "${summary}"`);
+          const stops = await grid.locator("[data-r][tabindex='0']").count();
+          if (stops !== 1) throw new Error(`expected one tab stop, found ${stops}`);
+          const nullName = await grid.locator("[data-r='0'][data-c='4']").getAttribute("aria-label");
+          if (nullName !== "Week 1, 5 Oct, no data") throw new Error(`the empty dot is named "${nullName}"`);
+          const probe = (value) =>
+            page.evaluate((v) => {
+              const el = document.createElement("span");
+              el.style.color = v;
+              document.body.append(el);
+              const c = getComputedStyle(el).color;
+              el.remove();
+              return c;
+            }, value);
+          const teal = await probe("var(--litt-data-teal)");
+          const accentColor = await probe("var(--litt-accent)");
+          const top = await grid.locator("[data-r='0'][data-c='3']").evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (top !== teal) throw new Error(`the fullest dot is ${top}, not --litt-data-teal (${teal})`);
+          if (top === accentColor) throw new Error("a dot is the accent");
+          const empty = await grid.locator("[data-r='0'][data-c='0']").evaluate((el) => getComputedStyle(el).backgroundColor);
+          if (!/\/ 0\.08\)$/.test(empty)) throw new Error(`a zero dot is ${empty}, not the foreground at 8%`);
+          const size = await grid.locator("[data-r='0'][data-c='3']").evaluate((el) => [el.getBoundingClientRect().width, getComputedStyle(el).borderTopLeftRadius]);
+          if (size[0] !== 8 || parseFloat(size[1]) < 4) throw new Error(`a dot is ${size[0]}px with radius ${size[1]}, not an 8px circle`);
+          const legend = await box.locator("[aria-hidden=true]").filter({ hasText: "Less" }).filter({ hasText: "More" }).count();
+          if (!legend) throw new Error("no legend from Less to More");
+          const total = await box.getByRole("gridcell", { name: "Total 21" }).count();
+          if (!total) throw new Error("the row total is not a cell");
+          await grid.locator("[data-r][tabindex='0']").focus();
+          const first = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (first !== "Week 1, 4 Oct, 9 deploys") throw new Error(`the tab stop is "${first}", not "Week 1, 4 Oct, 9 deploys"`);
+          await box.locator("div[aria-hidden=true]").filter({ hasText: "4 Oct" }).filter({ hasText: "9 deploys" }).first().waitFor({ state: "visible", timeout: 3000 });
+          const read = async () => page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          await page.keyboard.press("ArrowDown");
+          const down = await read();
+          if (down !== "Week 2, 4 Oct, 3 deploys") throw new Error(`ArrowDown landed on "${down}"`);
+          await page.keyboard.press("ArrowLeft");
+          const left = await read();
+          if (left !== "Week 2, 3 Oct, 7 deploys") throw new Error(`ArrowLeft landed on "${left}"`);
+          await page.keyboard.press("Home");
+          const home = await read();
+          if (home !== "Week 2, 1 Oct, 4 deploys") throw new Error(`Home landed on "${home}"`);
+          await page.keyboard.press("Control+End");
+          const end = await read();
+          if (end !== "Week 2, 5 Oct, 6 deploys") throw new Error(`Ctrl+End landed on "${end}"`);
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          const stillTip = await box.locator("div[aria-hidden=true]").filter({ hasText: "5 Oct" }).filter({ hasText: "6 deploys" }).count();
+          if (stillTip) throw new Error("Esc did not hide the tooltip");
+          if ((await read()) !== "Week 2, 5 Oct, 6 deploys") throw new Error("Esc moved focus");
+          await page.evaluate(() => document.activeElement?.blur());
+          const dotBox = await grid.locator("[data-r='1'][data-c='2']").boundingBox();
+          await page.mouse.move(dotBox.x + 4, dotBox.y + 4);
+          await box.locator("div[aria-hidden=true]").filter({ hasText: "3 Oct" }).filter({ hasText: "7 deploys" }).first().waitFor({ state: "visible", timeout: 3000 });
+          const ring = await grid.locator("[data-r='1'][data-c='2']").evaluate((el) => getComputedStyle(el).outlineWidth);
+          if (ring !== "1px") throw new Error(`a hovered dot has a ${ring} ring, not 1px`);
+          await page.mouse.move(5, 5);
+          return `fullest dot ${top}, summary read, ${dots} dots`;
+        });
+      }
+      if (has("dot-plot")) {
+        await attempt("dot plot splits the dots at the goal, reads right and moves with the keys", async () => {
+          const box = page.locator("[data-testid=litt-dotplot]");
+          const svg = box.locator("svg[role=img]").first();
+          await svg.waitFor({ state: "visible", timeout: 8000 });
+          await page.waitForTimeout(700);
+          const label = await svg.getAttribute("aria-label");
+          if (label !== "Build times, 60 builds: median 40 s, 68% within the 50 s goal") throw new Error(`the summary reads "${label}"`);
+          const legend = (await box.locator("ul").first().innerText()).replace(/\s+/g, " ");
+          if (!/Within goal 68%/.test(legend) || !/Over 32%/.test(legend)) throw new Error(`the legend reads "${legend}"`);
+          const rows = await box.locator("table.sr-only tbody tr").count();
+          if (rows < 20) throw new Error(`the hidden table has ${rows} rows`);
+          const edges = await box.evaluate((root) => {
+            const dots = [...root.querySelectorAll("svg[role=img] circle")].filter((c) => c.getAttribute("r") === "3");
+            const xs = dots.map((c) => c.getBoundingClientRect().x);
+            const first = dots[xs.indexOf(Math.min(...xs))];
+            const last = dots[xs.indexOf(Math.max(...xs))];
+            const line = root.querySelector("svg[role=img] line[stroke-dasharray]");
+            return {
+              count: dots.length,
+              first: getComputedStyle(first).fill,
+              last: getComputedStyle(last).fill,
+              dashed: !!line,
+              root: ["--litt-data-blue", "--litt-fg-subtle"].map((v) => {
+                const probe = document.createElement("i");
+                probe.style.color = `var(${v})`;
+                document.body.append(probe);
+                const c = getComputedStyle(probe).color;
+                probe.remove();
+                return c;
+              }),
+            };
+          });
+          if (edges.count < 30) throw new Error(`only ${edges.count} dots drew`);
+          if (!edges.dashed) throw new Error("the goal line is missing");
+          const rgb = (c) => page.evaluate(`(${COLOR_TO_RGB})(${JSON.stringify(c)})`);
+          const [first, last, blue, subtle] = [await rgb(edges.first), await rgb(edges.last), await rgb(edges.root[0]), await rgb(edges.root[1])];
+          if (!near(first, blue, 2)) throw new Error(`a dot inside the goal is rgb(${first.slice(0, 3)}), the data blue is rgb(${blue.slice(0, 3)})`);
+          if (!near(last, subtle, 2)) throw new Error(`a dot past the goal is rgb(${last.slice(0, 3)}), the subtle foreground is rgb(${subtle.slice(0, 3)})`);
+          if (near(first, accent[theme]) || near(last, accent[theme])) throw new Error("a dot is the accent");
+          const stops = await box.locator("[role=group] button[tabindex='0']").count();
+          if (stops !== 1) throw new Error(`the plot should have one tab stop, found ${stops}`);
+          await box.locator("[role=group] button").first().focus();
+          const start = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          await page.keyboard.press("ArrowRight");
+          const name = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (!/: \d+ builds?$/.test(name ?? "") || name === start) throw new Error(`ArrowRight landed on "${name}" from "${start}"`);
+          const count = name.split(": ")[1];
+          await box.locator("div[aria-hidden=true]").filter({ hasText: count }).first().waitFor({ state: "visible", timeout: 3000 });
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          if (await box.locator("div[aria-hidden=true]").filter({ hasText: count }).count()) throw new Error("Esc did not hide the tooltip");
+          await page.evaluate(() => document.activeElement?.blur());
+          return `${edges.count} dots, hue inside the goal and gray past it`;
+        });
+      }
+      if (has("avatar")) {
+        await attempt("avatars: initials named for a screen reader, a hue from the name, a group that overlaps and counts", async () => {
+          const box = page.locator("[data-testid=litt-avatars]");
+          const one = box.getByTestId("avatar-stripe");
+          await one.waitFor({ state: "visible", timeout: 5000 });
+          if ((await one.getAttribute("role")) !== "img" || (await one.getAttribute("aria-label")) !== "Stripe") throw new Error("initials are not a role=img named Stripe");
+          if ((await one.innerText()).trim() !== "S") throw new Error(`Stripe shows "${(await one.innerText()).trim()}", not S`);
+          const dims = await one.evaluate((el) => {
+            const r = el.getBoundingClientRect();
+            return { w: Math.round(r.width), h: Math.round(r.height), radius: parseFloat(getComputedStyle(el).borderTopLeftRadius) };
+          });
+          if (dims.w !== 32 || dims.h !== 32 || dims.radius < 16) throw new Error(`the default avatar is ${dims.w} by ${dims.h} with a ${dims.radius}px radius`);
+          const colors = (id) => box.getByTestId(id).evaluate((el) => ({ color: getComputedStyle(el).color, fill: getComputedStyle(el).backgroundColor }));
+          const [first, again, rose] = [await colors("avatar-stripe"), await colors("avatar-stripe-2"), await colors("avatar-rose")];
+          if (first.color !== again.color || first.fill !== again.fill) throw new Error("the same name got two different hues");
+          const want = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            document.body.append(probe);
+            probe.style.color = "var(--litt-data-rose-text)";
+            probe.style.backgroundColor = "var(--litt-data-rose-tint)";
+            const out = { color: getComputedStyle(probe).color, fill: getComputedStyle(probe).backgroundColor };
+            probe.remove();
+            return out;
+          });
+          if (rose.color !== want.color || rose.fill !== want.fill) throw new Error(`hue="rose" is ${rose.color} on ${rose.fill}, not the rose text tone on its tint`);
+          if ((await box.getByTestId("avatar-rose").innerText()).trim() !== "S") throw new Error("@stripe.com did not skip the @ for its initial");
+          const quiet = box.getByTestId("avatar-decorative");
+          if ((await quiet.getAttribute("aria-hidden")) !== "true" || (await quiet.getAttribute("aria-label"))) throw new Error("a decorative avatar is still labelled or not hidden");
+          if (await box.getByRole("img", { name: "Ramp" }).count()) throw new Error("a decorative avatar is still in the accessibility tree");
+          const group = box.getByRole("group", { name: "Smoke team, 6 people" });
+          const faces = group.getByRole("img");
+          const names = await faces.evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")));
+          if (names.join("|") !== "Ines Duarte|Marlow Labs|Sidebar Weekly|3 more") throw new Error(`the group reads ${names.join("|")}`);
+          if ((await group.innerText()).replace(/\s+/g, " ").trim() !== "ID ML SW +3") throw new Error(`the group shows "${(await group.innerText()).replace(/\s+/g, " ").trim()}"`);
+          const [a, b] = [await faces.nth(0).boundingBox(), await faces.nth(1).boundingBox()];
+          const lap = Math.round(a.x + a.width - b.x);
+          if (Math.abs(lap - 8) > 1) throw new Error(`avatars overlap by ${lap}px, not a quarter of 32`);
+          const wrap = (n) => faces.nth(n).evaluate((el) => ({ z: getComputedStyle(el.parentElement).zIndex, ring: getComputedStyle(el.parentElement).boxShadow }));
+          const [w0, w1] = [await wrap(0), await wrap(1)];
+          if (!(Number(w0.z) > Number(w1.z))) throw new Error(`the first avatar is not on top (z ${w0.z} against ${w1.z})`);
+          if (!/\b2px\b/.test(w0.ring)) throw new Error(`the ring is "${w0.ring}"`);
+          return `32px, ${lap}px overlap, ${names.length} marks`;
+        });
+      }
+      if (has("callout")) {
+        await attempt("callout: a note with its tone in the icon only, the action below the text when narrow, and a close that unmounts", async () => {
+          const box = page.locator("[data-testid=litt-callout]");
+          const note = box.getByRole("note");
+          await note.waitFor({ state: "visible", timeout: 5000 });
+          const said = ((await note.textContent()) ?? "").replace(/\s+/g, " ").trim();
+          if (!said.startsWith("Warning: Plan renews in 3 days")) throw new Error(`the note reads "${said}"`);
+          const hidden = await note.locator("p > span").first().boundingBox();
+          if (!hidden || hidden.width > 1.5) throw new Error("the Warning: prefix is visible");
+          const probe = await page.evaluate(() => {
+            const el = document.createElement("span");
+            document.body.append(el);
+            el.style.color = "var(--litt-warning)";
+            el.style.backgroundColor = "var(--litt-surface-1)";
+            const out = { warning: getComputedStyle(el).color, surface: getComputedStyle(el).backgroundColor };
+            el.remove();
+            return out;
+          });
+          const icon = await note.locator("svg").first().evaluate((el) => getComputedStyle(el).color);
+          if (icon !== probe.warning) throw new Error(`the icon is ${icon}, not --litt-warning (${probe.warning})`);
+          const title = await note.locator("p").first().evaluate((el) => getComputedStyle(el).color);
+          if (title === probe.warning) throw new Error("the title took the status color");
+          const surface = await note.locator("xpath=./*").first().evaluate((el) => {
+            const cs = getComputedStyle(el);
+            return { fill: cs.backgroundColor, left: cs.borderLeftWidth, shadow: cs.boxShadow };
+          });
+          if (surface.fill !== probe.surface) throw new Error(`the callout fill is ${surface.fill}, not --litt-surface-1`);
+          if (surface.left !== "0px") throw new Error(`the callout has a ${surface.left} left border`);
+          const [text, action, close] = [await note.locator("p").nth(1).boundingBox(), await box.getByTestId("callout-action").boundingBox(), await note.getByRole("button", { name: "Dismiss" }).boundingBox()];
+          if (action.y < text.y + text.height - 1) throw new Error("at 20rem wide the action did not drop below the text");
+          if (close.y > text.y) throw new Error("the close button is not at the top end");
+          await note.getByRole("button", { name: "Dismiss" }).click();
+          await note.waitFor({ state: "detached", timeout: 3000 });
+          return "warning icon, hairline surface, action below, close unmounts";
         });
       }
       if (has("app-shell")) {

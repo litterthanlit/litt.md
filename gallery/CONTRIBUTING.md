@@ -8,7 +8,7 @@ We studied Fluid Functionalism for ideas. **We are not copying it.** Take princi
 
 The rules live in the litt.md skill, one level up from this folder (`../skills/litt-md/`):
 
-- `taste/profile.md`: the rules P1 to P10, the fixed decisions, Do and Don't.
+- `taste/profile.md`: the rules P1 to P11, the fixed decisions, Do and Don't.
 - `system/components.md`: the component specs. Read your component's section.
 - `system/foundations.md` and `system/material.md`: type, color, glass, light.
 - `src/components/button.tsx` in this repo: the reference component. Match its style.
@@ -65,7 +65,7 @@ const travel = useTravel(); // px, already 0 under reduced motion
 
 ## Interaction rules
 
-These come from the audit and are candidate rules (P11 to P13). Build them in.
+These come from the audit and are candidate rules. Build them in.
 1. **A state change never moves the box.** Hover, selected and active change color or fill only. Labels and icons keep exactly the same size and position.
 2. **Touch parity.** Tailwind v4's `hover:` only applies on devices that can hover. Anything revealed on hover must also be visible on focus and on touch (`(hover: none)`). Inputs use at least 16px text on coarse pointers. A pressed row, card or button fills at its own hover fill on a coarse pointer (`pointer-coarse:active:`), never below fg 6%.
 3. **Focus by modality.** Use `:focus-visible` only: 2px `outline-focus`, 2px offset, or an inset ring inside lists. A popup opened by pointer shows no ring on its first row until a key is pressed. A keyboard-highlighted row needs a 3:1 indicator, such as an inset 1px `var(--focus)` ring on the highlight; a faint fill alone is not enough.
@@ -87,6 +87,7 @@ These come from the audit and are candidate rules (P11 to P13). Build them in.
   - text: `text-fg`, `text-fg-muted`, `text-fg-subtle`, `text-fg-disabled`;
   - lines and focus: `border-line`, `border-line-strong`, `outline-focus`;
   - accent and status: `bg-accent`, `text-accent-fg`, `text-success`, `text-warning`, `text-danger`;
+  - data hues (P11), only where color carries data: marks `bg-data-blue` / `fill-data-blue`, text `text-data-blue-text`, tints `bg-data-blue-tint`, for blue, amber, teal, violet and rose in that order. Never on chrome, and the lint fails a mark tone or tint used as text;
   - arbitrary values read variables, for example `bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]`.
 - **Glass (`litt-glass`) only on floating surfaces:** menus, popovers, tooltips, dialogs, toasts, the command menu. Set its shadow with `[--glass-shadow:var(--shadow-modal)]` for dialogs (the default is `--shadow-float`).
   - A floating surface opened **inside** another floating surface is solid (`bg-surface-2` or `bg-surface-3`) with `shadow-float`, never glass on glass.

@@ -1,4 +1,4 @@
-import { Tag, type TagStatus } from "@/components/tag";
+import { Tag, type TagHue, type TagStatus } from "@/components/tag";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Tag",
   order: 6, group: "Controls",
   summary:
-    "A small mono label at the control radius, with the look of a selected segment, that names a thing or reports its state. A status tag colors its text, never the fill, and always says the status in words. Nothing about it moves.",
+    "A small mono label at the control radius, with the look of a selected segment, that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
   tiers: [],
 };
 
@@ -25,25 +25,32 @@ export const docs: PageDocs = {
 
 // Neutral for states with no color. Two of them differ by their words.
 <Tag status="neutral">Draft</Tag>
-<Tag status="neutral">Idea</Tag>`,
+<Tag status="neutral">Idea</Tag>
+
+// A category, filed under one of the five data hues: a tint and the hue's text tone.
+<Tag hue="amber">Finance</Tag>
+<Tag hue="blue">Clients</Tag>`,
   use: [
     "A short word names what something is: a kind (Framer, Landing), a client or a platform.",
     "A state is worth scanning for in a list: Live, In review, Failed. Put the tag next to the thing it describes.",
     "The label is one or two words. A tag never wraps, so a longer one runs out of room.",
     "Several tags sit on one item, such as a project card. Keep one status tag and let the rest be plain.",
+    "Items fall into a few categories that people sort by eye, such as mail labels. Give each category one hue and keep it everywhere in the view.",
   ],
   skip: [
     "People press it to filter or select. Use the filter chips in List and cards, or a Button, because a tag is not a control and takes no focus.",
     "It would hold a sentence, or something that needs to be read. Put it in body text.",
     "It tells someone what just happened, such as saved or failed. Use Toast.",
     "It names a keyboard shortcut. Use Kbd.",
-    "You want a color that is not a status. There is no accent tag, because the accent changes per project, and its text is not promised 4.5:1 for caption text.",
+    "You want the accent. There is no accent tag, because the accent changes per project and its text is not promised 4.5:1 for caption text. A category takes a data hue instead.",
+    "Every item gets its own hue, or the hue is only there to brighten the row. A hue carries a category (P11): with more than five categories, leave them plain.",
   ],
   keyboard: [[["Tab"], "Skips it. A tag is a label, so it never takes focus and has no key of its own."]],
   a11y: [
     "A tag is a plain span of text, so a screen reader reads its label like any other text.",
     "The status is the word, never the color alone. Write \"Failed\", not \"Red\", and check that the label would still make sense in grayscale.",
     "Every status color reaches 4.5:1 on the tag's surface-1 fill in light and dark, so the caption text is readable.",
+    "A hue tag's text is the hue's text tone, which reaches 4.5:1 on its own tint in light and dark (check.mjs checks every pair). The category is in the word, so the hue is never the only signal.",
     "At 24px a tag is too small to be a touch target. If it must be pressed, build a chip or a Button at 32 or 44px.",
     "Nothing moves, so there is nothing to reduce under reduced motion.",
   ],
@@ -124,6 +131,28 @@ function DeploysDemo() {
   );
 }
 
+const LABELS: { name: string; hue: TagHue; mail: string; from: string }[] = [
+  { name: "Finance", hue: "amber", mail: "Invoice #4821 is ready", from: "Stripe" },
+  { name: "Clients", hue: "blue", mail: "Round two of the landing page", from: "Marlow Labs" },
+  { name: "Hiring", hue: "teal", mail: "Portfolio for the motion role", from: "Ines Duarte" },
+  { name: "Press", hue: "violet", mail: "Feature on studio tools", from: "Sidebar Weekly" },
+  { name: "Finance", hue: "amber", mail: "March statement", from: "Ramp" },
+];
+
+function CategoriesDemo() {
+  return (
+    <ul aria-label="Inbox" className="w-full max-w-2xl">
+      {LABELS.map((m) => (
+        <li key={m.mail} className="flex items-center gap-4 border-b border-line py-3 last:border-b-0">
+          <span className="w-28 shrink-0 truncate text-small text-fg">{m.from}</span>
+          <span className="w-0 min-w-0 flex-1 truncate text-small text-fg-subtle">{m.mail}</span>
+          <Tag hue={m.hue}>{m.name}</Tag>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function TagPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -142,6 +171,15 @@ export default function TagPage() {
         code="StatusDemo"
       >
         <StatusDemo />
+      </Stage>
+
+      <Stage
+        title="Categories"
+        caption="A hue tag files mail under a label. Each label keeps one of the five data hues everywhere in the view, so Finance reads as amber at a glance, and the word still says it. The fill is the hue's tint and the text its text tone, so it stays readable in both themes."
+        align="start"
+        code="CategoriesDemo"
+      >
+        <CategoriesDemo />
       </Stage>
 
       <Stage
