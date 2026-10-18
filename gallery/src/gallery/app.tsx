@@ -1,10 +1,12 @@
 /** The gallery shell: glass header, page list and the page. Only the Playground tunes motion. */
 import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
-import { MotionDialProvider } from "@/motion";
+import { motion } from "motion/react";
+import { MotionDialProvider, useTransition } from "@/motion";
 import { pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { TooltipProvider } from "@/components/tooltip";
-import { MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
+import { ArrowUpRightIcon, MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
+import { AUTHOR_URL, CreditLink, REPO_URL } from "./credits";
 
 type ThemeChoice = "system" | "light" | "dark";
 const THEMES = [
@@ -97,6 +99,57 @@ function NavStrip({ activeId, children }: { activeId: string | undefined; childr
   );
 }
 
+/**
+ * One link in the page list. The current page takes the selected segment's look (surface-1, the hairline and the
+ * top highlight, the control radius), and its label sits 12px in from the chip's edge, so it reads as a tag set in
+ * from the column. Nick asked for it (journal, 2026-10-18): the current page is a place, not a passing state, so
+ * it is the one state that moves a label. Hover still changes only the color.
+ * - Motion: the chip glides to the new page with layoutId on the responsive tier, as the Tabs indicator does, and
+ *   the label slides in by transform on the same tier. Reduced motion makes both instant.
+ * - In the phone strip every link already has its side padding, so the chip adds no indent there.
+ */
+function NavLink({ page, current, compact = false }: { page: PageEntry; current: boolean; compact?: boolean }) {
+  const enter = useTransition("responsive");
+  const chip = current && (
+    <motion.span
+      layoutId={compact ? "nav-current-strip" : "nav-current"}
+      transition={enter}
+      aria-hidden="true"
+      className="absolute inset-0 rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]"
+    />
+  );
+  return (
+    <a
+      href={`#${page.id}`}
+      aria-current={current ? "page" : undefined}
+      className={
+        "flex items-center text-small transition-colors duration-(--dur-instant) ease-litt " +
+        (compact ? "relative h-control-sm shrink-0 px-3 " : "h-8 ") +
+        (current ? "text-fg" : "text-fg-subtle hover:text-fg")
+      }
+    >
+      {compact ? (
+        <>
+          {chip}
+          <span className="relative">{page.title}</span>
+        </>
+      ) : (
+        /* The chip hugs the label: 12px of air at each side once the label has moved in. */
+        <span className="relative inline-flex h-full items-center pr-6">
+          {chip}
+          <span
+            className={
+              "relative transition-[translate] duration-(--dur-responsive) ease-responsive " + (current ? "translate-x-3" : "translate-x-0")
+            }
+          >
+            {page.title}
+          </span>
+        </span>
+      )}
+    </a>
+  );
+}
+
 function Shell({ page }: { page: PageEntry | undefined }) {
   const mainRef = useRef<HTMLElement>(null);
 
@@ -105,20 +158,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
     document.title = !page || page.id === pages[0]?.id ? "litt.md Gallery" : `${page.title} · litt.md Gallery`;
   }, [page]);
 
-  const navLink = (p: PageEntry, compact = false) => (
-    <a
-      key={p.id}
-      href={`#${p.id}`}
-      aria-current={p.id === page?.id ? "page" : undefined}
-      className={
-        "flex items-center gap-2 text-small transition-colors duration-(--dur-instant) ease-litt " +
-        (compact ? "h-control-sm shrink-0 px-3 " : "h-8 ") +
-        (p.id === page?.id ? "text-fg" : "text-fg-subtle hover:text-fg")
-      }
-    >
-      {p.title}
-    </a>
-  );
+  const navLink = (p: PageEntry, compact = false) => <NavLink key={p.id} page={p} current={p.id === page?.id} compact={compact} />;
 
   return (
     <div className="relative min-h-screen">
@@ -138,7 +178,20 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           <a href={`#${pages[0]?.id ?? ""}`} className="flex items-baseline gap-2 text-body text-fg">
             litt.md <span className="text-fg-subtle">Gallery</span>
           </a>
-          <ThemeSwitch />
+          <div className="flex items-center gap-3">
+            {/* From sm up. On a phone the footer carries the link, so the wordmark keeps its room. */}
+            <a
+              href={REPO_URL}
+              className={
+                "hidden h-control-sm items-center gap-2 rounded-control px-3 text-small text-fg-subtle sm:inline-flex " +
+                "transition-colors duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg"
+              }
+            >
+              GitHub
+              <ArrowUpRightIcon />
+            </a>
+            <ThemeSwitch />
+          </div>
         </div>
         {/* The hairline sits out here so the edge fades do not mask it. */}
         <div className="border-t border-line lg:hidden">
@@ -177,6 +230,9 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
       <footer className="border-t border-line">
         <div className="mx-auto flex max-w-wide flex-wrap justify-between gap-4 px-gutter py-8 text-caption text-fg-subtle">
+          <span>
+            Made by <CreditLink href={AUTHOR_URL}>Nick</CreditLink> · <CreditLink href={REPO_URL}>GitHub</CreditLink>
+          </span>
           <span>litt.md Gallery v{__GALLERY_VERSION__} · tokens from litt.md v{__LITT_MD_VERSION__}</span>
           <span>Light and material stay still. Only objects move.</span>
         </div>

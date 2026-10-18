@@ -126,4 +126,4 @@ Repo rules for Claude live in [`.claude/CLAUDE.md`](.claude/CLAUDE.md).
 
 ## License
 
-[MIT](LICENSE).
+[MIT](LICENSE). Made by Nick ([@litterthanli7](https://x.com/litterthanli7)).

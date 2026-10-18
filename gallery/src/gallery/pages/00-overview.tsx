@@ -1,5 +1,6 @@
 import { pageRuns, pages } from "../registry";
 import { TierChip, type PageMeta } from "../kit";
+import { Credits } from "../credits";
 
 export const meta: PageMeta = {
   id: "overview",
@@ -22,6 +23,7 @@ export default function Overview() {
       <header className="grid gap-4">
         <h1 id="page-overview" className="text-display text-fg text-balance">{count} components on locked tokens.</h1>
         <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
+        <Credits className="text-small text-fg-subtle" />
       </header>
 
       <section className="grid gap-6" aria-labelledby="tiers-title">
