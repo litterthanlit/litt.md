@@ -17,7 +17,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -33,8 +33,13 @@ jobs:
       - name: Install
         run: npm ci --prefix gallery
 
-      - name: Verify (tokens, docs data, registry, typecheck, lint, lint self-test)
+      - name: Verify (tokens, docs data, registry and its versions, agent docs, typecheck, lint, lint self-test)
         run: npm run verify --prefix gallery
+
+      # verify rewrites registry.lock.json when an item changed and CHANGELOG.md names it. The lock must be committed
+      # with the change, or the next change to that item would be compared against the wrong hash.
+      - name: Registry lock is committed
+        run: git diff --exit-code -- gallery/registry.lock.json || (echo "::error::registry.lock.json changed in verify. Run npm run gen:registry --prefix gallery and commit it." && exit 1)
 
       - name: Build
         run: npm run build --prefix gallery
@@ -47,5 +52,11 @@ jobs:
 
       - name: Accessibility (axe on every page, light and dark, desktop and phone)
         run: npm run test:a11y --prefix gallery
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      # The self-test runs with motion allowed and must see motion, so a check that has gone blind fails too.
+      - name: Reduced motion (nothing moves on any page or overlay, desktop and phone)
+        run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
