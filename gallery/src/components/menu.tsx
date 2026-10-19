@@ -840,9 +840,12 @@ export function MenuPanel({
             /* Radix names the menu by its trigger (aria-labelledby), which beats aria-label.
                A label you pass should win, so clear it then. */
             {...(label ? { "aria-labelledby": undefined } : {})}
-            side={side}
-            align={align}
-            sideOffset={sideOffset}
+            /* Only what is set: ContextMenu passes none, so Radix's own "right of the pointer" stands. Radix 2.4
+               spreads our props after its defaults, so an explicit undefined would erase them and centre the panel
+               on the pointer, where releasing the right button picks a row. */
+            {...(side ? { side } : {})}
+            {...(align ? { align } : {})}
+            {...(sideOffset !== undefined ? { sideOffset } : {})}
             collisionPadding={8}
             collisionBoundary={collisionBoundary ?? undefined}
             loop

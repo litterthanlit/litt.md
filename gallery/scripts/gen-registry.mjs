@@ -69,7 +69,8 @@
  *   ..."), so an installed copy can say where it came from. registry.lock.json, committed, keeps a hash of what each
  *   item installs (files, CSS and dependencies, not its words) and its version. When the hash changes, the changelog
  *   must name the item in a newer release, or the build fails: nobody changes a component without telling the people
- *   who installed it. A normal run rewrites the lock (commit it with the change); --check fails when it is stale.
+ *   who installed it. The newest release stays open, so an item it already names may change again until the next
+ *   release starts. A normal run rewrites the lock (commit it with the change); --check fails when it is stale.
  *
  * THE VERIFIER (always runs; any finding fails the build)
  *   Every shipped file: no unprefixed litt custom property or utility survives, every --name it
@@ -1167,6 +1168,7 @@ function versionItems(items) {
     return { errs: [e.message], lock: null };
   }
   const released = new Map(changelog.releases.map((r) => [r.version, r.date]));
+  const latest = changelog.releases[0].version;
   const old = fs.existsSync(lockFile) ? JSON.parse(read(lockFile)) : { items: {} };
   const lock = {};
   for (const item of items) {
@@ -1175,7 +1177,8 @@ function versionItems(items) {
     const before = old.items?.[item.name];
     if (before && compareVersions(version, before.version) < 0) {
       errs.push(`${item.name}: registry.lock.json has it at ${before.version}, but the newest CHANGELOG.md entry that names it is ${version}. Put its entry back.`);
-    } else if (before && before.hash !== hash && compareVersions(version, before.version) === 0) {
+    } else if (before && before.hash !== hash && compareVersions(version, before.version) === 0 && version !== latest) {
+      // The newest release stays open: an item it already names can change again until the next release starts.
       errs.push(`${item.name}: what it installs changed since ${before.version}, but CHANGELOG.md has no newer entry for it. Add one under today's release ("- **changed** \`${item.name}\`: ..."), then run npm run gen:registry and commit registry.lock.json.`);
     }
     lock[item.name] = { version, hash };
