@@ -190,10 +190,12 @@ function llmsTxt(pages) {
       "Install one component with the shadcn CLI. It brings its dependencies and litt's tokens, every one prefixed with litt, so nothing in the project changes:",
       "```bash\nnpx shadcn@latest add https://littmd.vercel.app/r/button.json\n```",
       'Or add `"registries": { "@litt": "https://littmd.vercel.app/r/{name}.json" }` to components.json once, then `npx shadcn@latest add @litt/button`.',
-      "- Needs a shadcn project (a components.json) with Tailwind CSS v4.",
-      "- Optional: `npx shadcn@latest add https://littmd.vercel.app/r/base-styles.json` for litt's fonts, weight 400 and focus ring across the whole app.",
-      "- Every installed file names its release in its first lines (`// @litt/button 2026.10.19`). To update, read the changelog since then and install again with `--overwrite`.",
-      `- For the whole design language (taste, tokens, build and critique workflows), install the Claude Code plugin: \`claude plugin marketplace add litterthanlit/litt.md\`, then \`claude plugin install litt-md@litt\`. Source: ${REPO}.`,
+      bullets([
+        "Needs a shadcn project (a components.json) with Tailwind CSS v4.",
+        "Optional: `npx shadcn@latest add https://littmd.vercel.app/r/base-styles.json` for litt's fonts, weight 400 and focus ring across the whole app.",
+        `Every installed file names its release in its first lines (\`// @litt/button ${lock.latest}\`). To update, read the changelog since then and install again with \`--overwrite\`.`,
+        `For the whole design language (taste, tokens, build and critique workflows), install the Claude Code plugin: \`claude plugin marketplace add litterthanlit/litt.md\`, then \`claude plugin install litt-md@litt\`. Source: ${REPO}.`,
+      ]),
     ].join("\n\n"),
     "## House rules",
     bullets([
