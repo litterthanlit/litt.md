@@ -73,14 +73,14 @@ These come from the audit and are candidate rules. Build them in.
 
 ## Visual rules
 
-- **Slight radius (litt.md v0.5), and it must stay concentric.** `tokens.css` sets it, 4px and 8px, and the Playground can try other values live:
+- **Slight radius (litt.md v0.12), and it must stay concentric.** `tokens.css` sets it, 6px and 10px, and the Playground can try other values live:
   - `rounded-control` on buttons, inputs, menu and list rows, tabs, segmented groups (with `overflow-hidden`), tags, chips, kbd and tooltips;
   - `rounded-surface` on cards, stages, menus, popovers, dialogs, toasts and the command menu;
   - `rounded-pill` only on avatars, icon-only buttons and switches. Tags and chips are `rounded-control`.
   - No dots for status or the current page: a status is a word (a Tag), and the current page steps the text color.
 
   An element inset 4px inside a surface uses `rounded-control`; that is what makes it concentric. No other radius exists.
-- **Weight 400 only** (`font-normal`).
+- **One weight, 550** (litt.md v0.12). Every `text-*` size carries it, so most text needs no class. Where no size is set, write `[font-weight:var(--weight)]`, never `font-normal` (400 in a host app); the lint fails any `font-*` weight class.
 - **Type:** `text-display` 40, `text-h1` 32, `text-h2` 28, `text-h3` 24, `text-h4` 20, `text-reading` 17, `text-body` 15, `text-small` 13, `text-caption` 12. Tracking comes with the token. Use sentence case; no uppercase eyebrows.
 - **Color only through tokens:**
   - surfaces: `bg-canvas`, `bg-surface-1`, `bg-surface-2`, `bg-surface-3`;
@@ -93,9 +93,9 @@ These come from the audit and are candidate rules. Build them in.
   - A floating surface opened **inside** another floating surface is solid (`bg-surface-2` or `bg-surface-3`) with `shadow-float`, never glass on glass.
   - Cards in the page flow use `litt-raised` and no shadow.
   - `.litt-glass` carries the surface radius (v0.5). A glass surface that is full-bleed or hugs an edge resets the corners it should not have: `rounded-none` on the header, `rounded-r-none` on the right-edge sheet.
-- **Depth:** `shadow-float`, `shadow-modal`, `shadow-tooltip`, `shadow-glow` (the primary action only). There are no offset shadows. Hairlines are `shadow-[inset_0_0_0_1px_var(--line)]` or `border-line`.
+- **Depth:** `shadow-float`, `shadow-modal`, `shadow-tooltip`. The primary action has no glow: its fill is `bg-(image:--accent-fill)` with an inset `--accent-edge` (Nick's Frame 103). There are no offset shadows. Hairlines are `shadow-[inset_0_0_0_1px_var(--line)]` or `border-line`.
 - **One accent fill per view,** on the primary action (P1). Accent can also mark a focus ring. Checkboxes, radios and switches fill with `--fg`, never the accent.
-- **Never add `litt-lit` light inside a stage.** The page already has its one light source (P2).
+- **Never add `litt-lit` light inside a stage** (P2). The gallery carries no page light while Q8 is open.
 - **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). A page form's submit and its paired Cancel are `size="lg"` (P10: a page-form CTA below lg fails). A dialog is compact: its fields and actions are `md`.
 - **Utility classes from tokens.css:** `litt-glass`, `litt-raised`, `litt-trim` (cap-height labels).
 

@@ -137,7 +137,7 @@ export default function KbdPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Keys"
-        caption="A key cap is 20px tall at the control radius, with a surface-2 fill and a hairline. Geist Mono at weight 400 in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
+        caption="A key cap is 20px tall at the control radius, with a surface-2 fill and a hairline. Geist Mono at the one weight (550) in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
         code="KeysDemo"
       >
         <KeysDemo />

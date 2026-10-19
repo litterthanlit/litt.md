@@ -191,7 +191,7 @@ export function Thinking({
         aria-controls={bodyId}
         onClick={toggle}
         className={
-          "group inline-flex max-w-full cursor-pointer items-center gap-2 rounded-control text-small font-normal text-fg-muted select-none " +
+          "group inline-flex max-w-full cursor-pointer items-center gap-2 rounded-control text-small [font-weight:var(--weight)] text-fg-muted select-none " +
           "transition-[color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
           "hover:text-fg pointer-coarse:active:text-fg pointer-coarse:h-control-md " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +

@@ -238,7 +238,7 @@ function MotionRow({ className = "", children, ...rest }: TableRowProps) {
 /* -------------------------------------------------------------------------- */
 
 const head =
-  "sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption font-normal whitespace-nowrap";
+  "sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption [font-weight:var(--weight)] whitespace-nowrap";
 
 export type SortDirection = "ascending" | "descending" | "none";
 
@@ -332,8 +332,8 @@ export type TableCellProps = Omit<ComponentProps<"td">, "ref" | "scope"> & {
 /** A body cell. fg-subtle by default; `primary` makes it the row's name, and `numeric` sets figures in mono. */
 export function TableCell({ numeric = false, primary = false, className = "", children, ...rest }: TableCellProps) {
   const cls = [
-    // font-normal because a <th> is bold by default, and a host app may not reset it.
-    "h-control-md border-b border-line px-4 py-3 align-middle font-normal whitespace-nowrap",
+    // The one weight, set here because a <th> is bold by default and a host app may not reset it.
+    "h-control-md border-b border-line px-4 py-3 align-middle [font-weight:var(--weight)] whitespace-nowrap",
     numeric ? "text-right font-mono text-caption tabular-nums" : "text-left text-small",
     primary ? "text-fg" : "text-fg-subtle",
     className,

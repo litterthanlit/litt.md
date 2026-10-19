@@ -117,7 +117,7 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
   return (
     <span
       className={[
-        "inline-flex h-8 max-w-full min-w-0 items-center gap-2 rounded-control bg-surface-1 pl-2 font-normal text-fg",
+        "inline-flex h-8 max-w-full min-w-0 items-center gap-2 rounded-control bg-surface-1 pl-2 [font-weight:var(--weight)] text-fg",
         "shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]",
         onRemove ? "pr-1" : "pr-2",
         className,
@@ -205,7 +205,7 @@ export type ComposerProps = {
 
 /* The box: the Input's fill, edge, focus and disabled looks on the surface radius. The ring follows the text area. */
 const BOX =
-  "group/box relative flex flex-col overflow-hidden rounded-surface bg-surface-1 font-normal text-fg " +
+  "group/box relative flex flex-col overflow-hidden rounded-surface bg-surface-1 [font-weight:var(--weight)] text-fg " +
   "shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[textarea:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
@@ -215,7 +215,7 @@ const BOX =
   "forced-colors:border forced-colors:has-[textarea:focus-visible]:outline-2 forced-colors:has-[textarea:focus-visible]:outline-solid forced-colors:has-[textarea:focus-visible]:outline-offset-2";
 
 const AREA =
-  "block w-full min-w-0 resize-none overflow-y-hidden bg-transparent px-control-pad-md py-3 font-normal text-body text-fg " +
+  "block w-full min-w-0 resize-none overflow-y-hidden bg-transparent px-control-pad-md py-3 [font-weight:var(--weight)] text-body text-fg " +
   "outline-none placeholder:text-fg-subtle pointer-coarse:text-(length:--control-text-lg) " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:placeholder:text-fg-disabled";
 

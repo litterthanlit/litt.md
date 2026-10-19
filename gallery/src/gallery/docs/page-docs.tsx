@@ -35,7 +35,7 @@ class DocsBoundary extends Component<{ children: ReactNode }, { error: Error | n
    <button>, and a link needs an <a> to be a link (middle click, "open in new tab"). */
 const ghostSm =
   "relative inline-flex h-control-sm shrink-0 items-center justify-center gap-control rounded-control px-control-pad-sm " +
-  "whitespace-nowrap select-none text-small font-normal text-fg-muted " +
+  "whitespace-nowrap select-none text-small [font-weight:var(--weight)] text-fg-muted " +
   "cursor-pointer transition-[background-color,color,transform] duration-(--dur-instant) ease-litt " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg active:scale-(--press-scale) " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";

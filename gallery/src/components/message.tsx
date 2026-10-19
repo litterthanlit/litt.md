@@ -14,7 +14,7 @@
  * - MessageText styles what a markdown renderer puts inside a turn, with no markdown library: paragraphs --space-3
  *   apart, headings at the body size in --fg, lists with the marker in --fg-subtle, links in --accent-text, inline
  *   code in the mono on fg 6% at the control radius, a `pre` as a quiet mono block on --surface-2, a blockquote
- *   with no rail, and strong text in --fg at weight 400 (P9). It never bolds, and it never italicises, because the
+ *   with no rail, and strong text in --fg at the one weight (P9). It never bolds, and it never italicises, because the
  *   type is one face at one weight.
  * - MessageActions: sm ghost icon-only buttons with tooltips (Copy swaps to a check and a polite live region says
  *   "Copied", Retry, and the caller's own). They always show under the latest turn, on hover and focus-within under
@@ -401,7 +401,7 @@ const PROSE = [
   /* Links: accent text, always underlined, so color is never the only mark. */
   "[&_a]:text-accent-text [&_a]:underline [&_a]:decoration-[color-mix(in_oklab,var(--accent-text)_40%,transparent)] [&_a]:underline-offset-2 [&_a:hover]:decoration-accent-text",
   /* Strong and emphasis step to --fg. No bold and no italic: one face at one weight (P9). */
-  "[&_:is(strong,b)]:font-normal [&_:is(strong,b)]:text-fg [&_:is(em,i)]:not-italic [&_:is(em,i)]:text-fg",
+  "[&_:is(strong,b)]:[font-weight:var(--weight)] [&_:is(strong,b)]:text-fg [&_:is(em,i)]:not-italic [&_:is(em,i)]:text-fg",
   /* Inline code: the mono on fg 6% at the control radius. A pre resets it below. */
   "[&_code]:rounded-control [&_code]:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-small [&_code]:text-fg [&_code]:box-decoration-clone [&_code]:[overflow-wrap:anywhere]",
   /* A pre: a quiet mono block on --surface-2. It wraps, so it never needs a scrollbar. CodeBlock is for code to read or copy. */

@@ -161,7 +161,7 @@ const PRESS =
 
 /* isolate: the indicator sits at -z-10 inside the tab, behind the label and the focus ring. */
 const triggerBase =
-  "relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-normal " +
+  "relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none [font-weight:var(--weight)] " +
   "text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg data-[state=active]:text-fg " +
   PRESS + " " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +

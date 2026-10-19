@@ -30,7 +30,7 @@ let tw = fs.readFileSync(path.join(assets, "tailwind.css"), "utf8");
 const strictOff = /\/\* Opt-in strict mode[\s\S]*?\n@theme \{([\s\S]*?)\}\n\*\//;
 const m = tw.match(strictOff);
 if (!m) throw new Error("tailwind.css: strict-mode block not found; update sync-tokens.mjs");
-tw = tw.replace(strictOff, `/* Strict mode (on in the gallery): off-system utilities do not exist. */\n@theme {${m[1].replace("--font-weight-normal: 400;", "--text-*: initial;\n  --font-weight-normal: 400;")}}`);
+tw = tw.replace(strictOff, `/* Strict mode (on in the gallery): off-system utilities do not exist. */\n@theme {${m[1].replace("--font-weight-*: initial;", "--text-*: initial;\n  --font-weight-*: initial;")}}`);
 const litt = banner("skills/litt-md/assets/tailwind.css, strict mode on") + tw;
 
 const out = [["src/styles/tokens.css", tokens], ["src/styles/litt.css", litt]];

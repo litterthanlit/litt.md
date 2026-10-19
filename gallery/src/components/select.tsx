@@ -110,7 +110,7 @@ const FLOATING = ".litt-glass, [data-popover-surface]";
 
 /* The look every field shares (the same as Input): fill, edge, focus, error, disabled. */
 const field =
-  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left font-normal text-fg " +
+  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left [font-weight:var(--weight)] text-fg " +
   "data-placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +

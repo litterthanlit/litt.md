@@ -220,7 +220,7 @@ export function AccordionItem({ value, disabled = false, className = "", childre
 /* -------------------------------------------------------------------------- */
 
 const trigger =
-  "group/trigger flex min-h-control-lg w-full cursor-pointer items-center gap-4 rounded-control py-4 text-left text-body text-fg font-normal " +
+  "group/trigger flex min-h-control-lg w-full cursor-pointer items-center gap-4 rounded-control py-4 text-left text-body text-fg [font-weight:var(--weight)] " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color] duration-(--dur-instant) ease-litt " +
   "enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +

@@ -4,23 +4,23 @@
   "items": {
     "accordion": {
       "version": "2026.10.19",
-      "hash": "0ccdaf7bec8ecce8"
+      "hash": "775ccc0ca1516dcf"
     },
     "app-shell": {
       "version": "2026.10.17",
       "hash": "ffad3566c89ddb27"
     },
     "avatar": {
-      "version": "2026.10.17",
-      "hash": "3d055b21974b4d9e"
+      "version": "2026.10.19",
+      "hash": "acc9db83e18388d5"
     },
     "bar-list": {
       "version": "2026.10.17",
       "hash": "ee2b309f6dfebd29"
     },
     "base-styles": {
-      "version": "2026.10.12",
-      "hash": "ad08acc0ad4cbb51"
+      "version": "2026.10.19",
+      "hash": "7cd47222d67c34e5"
     },
     "breadcrumb": {
       "version": "2026.10.19",
@@ -31,8 +31,8 @@
       "hash": "8cfd0852112cce56"
     },
     "button": {
-      "version": "2026.10.16",
-      "hash": "70d5d937f8dd856f"
+      "version": "2026.10.19",
+      "hash": "722802cc465dc2df"
     },
     "callout": {
       "version": "2026.10.17",
@@ -51,20 +51,20 @@
       "hash": "3a0efcd65fd2f8b6"
     },
     "code-block": {
-      "version": "2026.10.18",
-      "hash": "ef2b1e6825a69bd3"
+      "version": "2026.10.19",
+      "hash": "69897e1985eaca90"
     },
     "combobox": {
       "version": "2026.10.19",
-      "hash": "b60dedd815e16fe4"
+      "hash": "0e80c19d57e328cf"
     },
     "command-menu": {
       "version": "2026.10.15",
       "hash": "9d1269c47bcc55d2"
     },
     "composer": {
-      "version": "2026.10.18",
-      "hash": "673af81858995bdb"
+      "version": "2026.10.19",
+      "hash": "2cc367dd0df45adb"
     },
     "context-menu": {
       "version": "2026.10.19",
@@ -72,7 +72,7 @@
     },
     "date-picker": {
       "version": "2026.10.19",
-      "hash": "9053e0e2c24faedf"
+      "hash": "87e8a9f7f22b91f5"
     },
     "dialog": {
       "version": "2026.10.15",
@@ -107,12 +107,12 @@
       "hash": "be17e65e4215bf62"
     },
     "input": {
-      "version": "2026.10.13",
-      "hash": "c92392a506c99406"
+      "version": "2026.10.19",
+      "hash": "d0e07a02167987df"
     },
     "kbd": {
-      "version": "2026.10.15",
-      "hash": "a847c9a52490c6e1"
+      "version": "2026.10.19",
+      "hash": "4e5de222665e4f14"
     },
     "list": {
       "version": "2026.10.15",
@@ -123,20 +123,20 @@
       "hash": "339c4497d7123128"
     },
     "litt": {
-      "version": "2026.10.17",
-      "hash": "774aec33025ad0e6"
+      "version": "2026.10.19",
+      "hash": "dacd089c5ab13e80"
     },
     "menu": {
       "version": "2026.10.19",
       "hash": "e1e4c2fa7fbbdd21"
     },
     "message": {
-      "version": "2026.10.18",
-      "hash": "d5032ff5aee9ad61"
+      "version": "2026.10.19",
+      "hash": "701f8fd605eef916"
     },
     "motion": {
-      "version": "2026.10.15",
-      "hash": "2713a737b3c85877"
+      "version": "2026.10.19",
+      "hash": "2238cd6596ab0860"
     },
     "pad": {
       "version": "2026.10.17",
@@ -159,12 +159,12 @@
       "hash": "e570369c7072e813"
     },
     "segmented": {
-      "version": "2026.10.13",
-      "hash": "aebe93b6d7b5d507"
+      "version": "2026.10.19",
+      "hash": "0c42acd4620ee5db"
     },
     "select": {
-      "version": "2026.10.16",
-      "hash": "89769faabeb3ad34"
+      "version": "2026.10.19",
+      "hash": "72ab7c9e70a3cbf9"
     },
     "slider": {
       "version": "2026.10.18",
@@ -191,20 +191,20 @@
       "hash": "a019a53018da9720"
     },
     "table": {
-      "version": "2026.10.13",
-      "hash": "cab204f7f10aadb3"
+      "version": "2026.10.19",
+      "hash": "35c6b2dc9d828faa"
     },
     "tabs": {
-      "version": "2026.10.12",
-      "hash": "89140abe3af33a5d"
+      "version": "2026.10.19",
+      "hash": "ebf9dc3bf3265274"
     },
     "tag": {
       "version": "2026.10.17",
       "hash": "ec9c7a328b809bd1"
     },
     "thinking": {
-      "version": "2026.10.18",
-      "hash": "c24c83353d2d0fb1"
+      "version": "2026.10.19",
+      "hash": "4ed1e191bca3cce7"
     },
     "timeline": {
       "version": "2026.10.17",
@@ -215,8 +215,8 @@
       "hash": "5c72ad013024ed7e"
     },
     "token-input": {
-      "version": "2026.10.17",
-      "hash": "47fcd0ac0cf9ca14"
+      "version": "2026.10.19",
+      "hash": "769f81a100c6a57a"
     },
     "tool-call": {
       "version": "2026.10.18",

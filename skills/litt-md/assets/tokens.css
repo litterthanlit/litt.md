@@ -20,11 +20,12 @@
    -------------------------------------------------------------------------- */
 :root {
   /* Type: Hanken Grotesk carries everything; Geist Mono for code, keys and data. */
-  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-sans: "Hanken Grotesk Variable", "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* One weight (P9). Hierarchy comes from size, color and tracking, never weight. */
-  --weight: 400;
+  /* One weight (P9), 550 since v0.12 (Nick's Frame 103). Hierarchy comes from size, color and tracking, never
+     weight. Mono carries it too. Fonts load as variable files, so 550 is drawn, not faked. */
+  --weight: 550;
 
   /* Type scale: tracking tightens as size grows (P6). Headlines stay
      restrained: display tops out at 40, at every breakpoint. */
@@ -88,10 +89,10 @@
   --container-wide: 80rem;     /* 1280 */
   --header-h: 64px;
 
-  /* Shape: slight radius. Two sizes and the pill. A surface is a control plus
+  /* Shape: slight radius (6 and 10 since v0.12, from Frame 103). Two sizes and the pill. A surface is a control plus
      the 4px inset (--space-1) around it, so nested corners stay concentric. */
-  --radius-control: 4px;       /* buttons, inputs, tabs, kbd, menu rows, tooltips */
-  --radius-surface: 8px;       /* cards, panels, menus, dialogs, toasts (control + 4) */
+  --radius-control: 6px;       /* buttons, inputs, tabs, kbd, menu rows, tooltips */
+  --radius-surface: 10px;      /* cards, panels, menus, dialogs, toasts (control + 4) */
   --radius-pill: 999px;        /* avatars and icon-only buttons */
   --hairline: 1px;
 
@@ -191,10 +192,15 @@
   --fg-subtle: #64686f;        /* supporting */
   --fg-disabled: #9a9ea6;      /* disabled only, exempt from contrast */
 
-  /* Accent: cobalt, Litt's own (v0.9), on nearly the neutrals' hue. Swap per project. */
-  --accent: #264bd1;
-  --accent-hover: #1c3cb2;
-  --accent-fg: #ffffff;        /* text on accent, at least 4.5:1 */
+  /* Accent: cobalt, Litt's own, drawn as Nick's Frame 103 (v0.12): the primary action is a fill from deep navy at
+     the top into cobalt at the bottom, with a 1px deep blue edge and an off-white label. --accent is the bottom stop
+     (and any solid accent fill), --accent-top the top one. Swap per project. */
+  --accent: #004aa1;
+  --accent-hover: #1256ae;
+  --accent-top: #082b69;
+  --accent-top-hover: #103472;
+  --accent-edge: #001887;
+  --accent-fg: #eaeaea;        /* text on accent, at least 4.5:1 on both stops */
   --accent-text: #264bd1;      /* the accent as text (links), at least 4.5:1 on canvas */
   --accent-tint: #e8eeff;
   --focus: #264bd1;            /* focus ring, at least 3:1 on canvas and surfaces */
@@ -230,7 +236,6 @@
   --shadow-float: 0 0 8px rgba(14, 15, 17, 0.08), 0 0 24px rgba(14, 15, 17, 0.06), 0 0 0 1px rgba(14, 15, 17, 0.06);
   --shadow-modal: 0 0 40px rgba(14, 15, 17, 0.10), 0 0 72px rgba(14, 15, 17, 0.06), 0 0 0 1px rgba(14, 15, 17, 0.06);
   --light-strength: 12%;
-  --glow-strength: 28%;
   --grain-opacity: 0.02;
 }
 
@@ -254,9 +259,12 @@
   --fg-subtle: #8a8f98;
   --fg-disabled: #62666d;
 
-  --accent: #2d57e5;
-  --accent-hover: #3864eb;
-  --accent-fg: #ffffff;
+  --accent: #2162bb;           /* both stops a step brighter than in light, so the fill keeps 3:1 against the page */
+  --accent-hover: #2565bf;
+  --accent-top: #1e4281;
+  --accent-top-hover: #234788;
+  --accent-edge: #133ba8;
+  --accent-fg: #eaeaea;
   --accent-text: #507afd;      /* lighter than the fill: a deep cobalt reads too dark as text on this canvas */
   --accent-tint: #13234f;
   --focus: #507afd;
@@ -285,7 +293,6 @@
   --shadow-float: 0 0 8px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
   --shadow-modal: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 72px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
   --light-strength: 22%;
-  --glow-strength: 40%;
   --grain-opacity: 0.04;
 }
 
@@ -310,9 +317,12 @@
     --fg-subtle: #8a8f98;
     --fg-disabled: #62666d;
 
-    --accent: #2d57e5;
-    --accent-hover: #3864eb;
-    --accent-fg: #ffffff;
+    --accent: #2162bb;
+    --accent-hover: #2565bf;
+    --accent-top: #1e4281;
+    --accent-top-hover: #234788;
+    --accent-edge: #133ba8;
+    --accent-fg: #eaeaea;
     --accent-text: #507afd;
     --accent-tint: #13234f;
     --focus: #507afd;
@@ -341,7 +351,6 @@
     --shadow-float: 0 0 8px rgba(0, 0, 0, 0.4), 0 0 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
     --shadow-modal: 0 0 40px rgba(0, 0, 0, 0.5), 0 0 72px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.5);
     --light-strength: 22%;
-    --glow-strength: 40%;
     --grain-opacity: 0.04;
   }
 }
@@ -357,9 +366,9 @@
   --light: radial-gradient(120% 70% at 50% -10%,
              color-mix(in oklab, var(--accent) var(--light-strength), transparent) 0%,
              transparent 65%);
-  /* The glow reserved for the one primary action (P1). */
-  --glow: 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent),
-          0 0 24px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
+  /* The primary action's fill (P1): Frame 103, deep navy into cobalt. No glow since v0.12. */
+  --accent-fill: linear-gradient(to bottom, var(--accent-top), var(--accent));
+  --accent-fill-hover: linear-gradient(to bottom, var(--accent-top-hover), var(--accent-hover));
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
   /* A hue's tint: the fill behind its -text tone in a tag or an avatar. Mixed into
      surface-1, so it is solid and its contrast is checkable. */
@@ -374,7 +383,6 @@
   :root,
   [data-theme] {
     --light: none;
-    --glow: 0 0 0 1px var(--accent);
     --data-blue-tint: var(--surface-2);
     --data-amber-tint: var(--surface-2);
     --data-teal-tint: var(--surface-2);

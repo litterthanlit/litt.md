@@ -39,10 +39,10 @@ export function PropsTable({ doc }: { doc: ExportDoc }) {
             <caption className="sr-only">{label}</caption>
             <thead>
               <tr className="border-b border-line text-caption text-fg-subtle">
-                <th scope="col" className="w-1/5 py-3 pr-6 font-normal">{noun}</th>
-                <th scope="col" className="w-[28%] py-3 pr-6 font-normal">Type</th>
-                <th scope="col" className="w-[14%] py-3 pr-6 font-normal">Default</th>
-                <th scope="col" className="py-3 font-normal">Description</th>
+                <th scope="col" className="w-1/5 py-3 pr-6 [font-weight:var(--weight)]">{noun}</th>
+                <th scope="col" className="w-[28%] py-3 pr-6 [font-weight:var(--weight)]">Type</th>
+                <th scope="col" className="w-[14%] py-3 pr-6 [font-weight:var(--weight)]">Default</th>
+                <th scope="col" className="py-3 [font-weight:var(--weight)]">Description</th>
               </tr>
             </thead>
             <tbody>

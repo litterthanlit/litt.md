@@ -296,7 +296,8 @@ export function Weights() {
           fontWeight: "bold", // expect: weight
         }}
       />
-      <h2 className="font-normal font-litt-sans font-litt-mono" style={{ fontWeight: 400 }} />
+      <h2 className="font-normal font-litt-sans font-litt-mono" style={{ fontWeight: 400 }} /> {/* expect: weight */}
+      <div className="shadow-litt-glow rounded-litt-control" /> {/* expect: shadow */}
     </div>
   );
 }

@@ -105,7 +105,7 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
         Book {tier.name}
       </Button>
       {/* Nick's note: bold type, big shadows and bg-white cards are what this studio stays away from. */}
-      <p className="text-litt-caption text-litt-fg-subtle">Nick's studio keeps weight at 400. Shadows are glows, not drops.</p>
+      <p className="text-litt-caption text-litt-fg-subtle">Nick's studio keeps one weight, 550. Shadows are glows, not drops.</p>
     </motion.article>
   );
 }
@@ -159,7 +159,7 @@ export function SettingsDialog() {
 
 export default function Home() {
   return (
-    <main className="mx-auto flex max-w-litt-content flex-col gap-litt-section px-litt-gutter py-litt-section font-litt-sans font-normal">
+    <main className="mx-auto flex max-w-litt-content flex-col gap-litt-section px-litt-gutter py-litt-section font-litt-sans [font-weight:var(--litt-weight)]">
       <section className="flex max-w-litt-reading flex-col gap-litt-gutter">
         <h1 className="text-litt-display text-litt-fg">Pricing that fits how we work</h1>
         <p className="text-litt-reading text-litt-fg-muted">

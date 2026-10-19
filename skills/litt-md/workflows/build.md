@@ -22,7 +22,7 @@ Accent:        <hex light> / <hex dark>, why it fits this subject
                (contrast: accent on canvas ≥ 3; accent-fg on accent ≥ 4.5; accent-text on canvas ≥ 4.5)
 Light source:  where the one light falls (hero? cover?)
 Glass:         which elements float (header, menus, modals, toasts), nothing else
-Primary action: the one accent fill + glow in each view
+Primary action: the one accent fill in each view (Frame 103's gradient, no glow)
 Type steps:    which steps the page uses (display once, h2/h4 labels, body/reading)
 Layout:        ASCII wireframe on the 12-col grid (asymmetric by default)
 Specific detail: one element only THIS subject would have (from its content, not ornament)
@@ -54,8 +54,8 @@ Go through the plan line by line. If any item matches, revise that line before b
 - [ ] A radius off the scale (`rounded-lg`, `rounded-md`, anything but control, surface or pill)
 - [ ] A drop shadow with an offset, or any shadow on a card in the flow
 - [ ] Buttons off the 32/44/56 scale, a hero or page-form CTA smaller than lg, or lg fields and buttons in a dialog
-- [ ] Any font weight above 400 (`font-medium`, `font-semibold`, `font-bold`, or 500/600 in CSS)
-- [ ] More than one accent fill or glow per view, counting an accent-filled checkbox, radio or switch
+- [ ] Any font weight but 550 (`font-normal`, `font-medium`, `font-semibold`, `font-bold`, or 400/600 in CSS)
+- [ ] More than one accent fill per view, counting an accent-filled checkbox, radio or switch; a flat or glowing primary
 - [ ] Glass on something that doesn't float
 - [ ] Motion that isn't a response to the user (reveals, parallax, marquee)
 - [ ] Bounce on the responsive tier or on an exit, `transition-all`, or a second expressive moment
@@ -129,7 +129,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `plan` | An agent's steps for a task, ticked off as it works (`Plan` with `steps` of `{ id, label, status }`). |
 | `code-block` | Code in an answer, a tool's output or a diff (`CodeBlock` with `code`, `lang` and `filename`). Quiet colors, a Copy button, and `lang="diff"` for a change. |
 | `litt` | The tokens, the Tailwind names and the material classes. Every component brings it. Install it alone when you write all the markup yourself. |
-| `base-styles` | Opt-in. Loads Hanken Grotesk and Geist Mono at weight 400 and sets page defaults for the whole app: weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
+| `base-styles` | Opt-in. Loads Hanken Grotesk and Geist Mono as variable fonts (for the one weight, 550) and sets page defaults for the whole app: weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
 | `motion`, `glide`, `icons`, `list-cover` | Libraries that components bring along. `motion` holds the hooks below, `icons` has 30 16px icons (`SearchIcon`, `PlusIcon`, `SettingsIcon`) and `StatusIcon` with the five step marks, and both are fine to install on their own. |
 
 Each item prints a one-line import hint. The gallery page for an item (`https://littmd.vercel.app/#dialog`) has a working example.
@@ -153,9 +153,9 @@ Every installed file names its release in its first lines (`// @litt/button 2026
 Every name carries `litt-`, so none of it touches the app's own. To turn a plain name from this skill into one, insert `litt-` after the utility prefix: `bg-surface-1` becomes `bg-litt-surface-1`, `rounded-control` becomes `rounded-litt-control`, `--accent` becomes `--litt-accent`. The tokens switch theme on their own (`.dark`, `[data-theme="dark"]` or the system setting), so do not add `dark:` classes for them.
 
 - **Color:** `bg-litt-canvas`, `bg-litt-surface-1|2|3`, `border-litt-line`, `border-litt-line-strong`, `border-litt-line-control`, `text-litt-fg`, `text-litt-fg-muted|subtle|disabled`, `bg-litt-accent`, `bg-litt-accent-hover`, `text-litt-accent-fg`, `text-litt-accent-text` (links and accent text; never `text-litt-accent`), `bg-litt-accent-tint`, `outline-litt-focus`, `text-litt-success|warning|danger`.
-- **Type:** `text-litt-display|h1|h2|h3|h4|reading|body|small|caption`, each with its own leading, tracking and weight 400. Fonts: `font-litt-sans`, `font-litt-mono`.
+- **Type:** `text-litt-display|h1|h2|h3|h4|reading|body|small|caption`, each with its own leading, tracking and the one weight (550). Fonts: `font-litt-sans`, `font-litt-mono`.
 - **Space and layout:** `py-litt-section`, `px-litt-gutter`, `max-w-litt-reading|content|wide`, `h-litt-control-sm|md|lg`, `px-litt-control-pad-sm|md|lg`, `gap-litt-control`.
-- **Shape and depth:** `rounded-litt-control|surface|pill` (sides such as `rounded-t-litt-surface` are fine), `shadow-litt-tooltip|float|modal|glow`, `inset-shadow-litt-highlight`.
+- **Shape and depth:** `rounded-litt-control|surface|pill` (sides such as `rounded-t-litt-surface` are fine), `shadow-litt-tooltip|float|modal`, `inset-shadow-litt-highlight`. The primary's fill is `bg-(image:--litt-accent-fill)` on `bg-litt-accent`, inside `shadow-[inset_0_0_0_1px_var(--litt-accent-edge)]`; `Button variant="primary"` already draws it.
 - **Material:** `litt-glass`, `litt-raised`, `litt-lit`, `litt-grain`, `litt-grain-fade`, `litt-trim`. Variables for arbitrary values: `var(--litt-line)`, `var(--litt-fg)`.
 
 Inside litt UI, never use the app's own shadcn tokens or Tailwind's defaults:
@@ -165,12 +165,12 @@ Inside litt UI, never use the app's own shadcn tokens or Tailwind's defaults:
 | `bg-background`, `bg-card`, `bg-muted` | `bg-litt-canvas`, `bg-litt-surface-1`, `bg-litt-surface-2` |
 | `text-foreground`, `text-muted-foreground` | `text-litt-fg`, `text-litt-fg-muted` |
 | `border-border`, `border-input` | `border-litt-line`, `border-litt-line-control` |
-| `bg-primary text-primary-foreground` | `bg-litt-accent text-litt-accent-fg`, once per view. `Button variant="primary"` already does it. |
+| `bg-primary text-primary-foreground` | `Button variant="primary"`, once per view: it draws Frame 103's fill, edge and label. |
 | `ring-ring`, `bg-destructive` | `outline-litt-focus`, `text-litt-danger` on a secondary button |
 | `bg-zinc-900`, `text-gray-500`, `bg-white`, `text-black` | a litt color above |
 | `rounded`, `rounded-md`, `rounded-lg`, `rounded-full` | `rounded-litt-control`, `rounded-litt-surface` or `rounded-litt-pill` |
 | `text-xs`, `text-sm`, `text-base`, `text-xl`, `text-[15px]` | the `text-litt-` step that fits the role |
-| `font-medium`, `font-semibold`, `font-bold` | nothing. Everything is 400. |
+| `font-normal`, `font-medium`, `font-semibold`, `font-bold` | nothing: each `text-litt-` step carries the one weight (550). Where no step is set, `[font-weight:var(--litt-weight)]`. |
 | `shadow-sm`, `shadow-md`, `shadow-xl` | nothing on a card. `shadow-litt-float` on a floating surface. |
 
 **Motion in a registry project.** The installed components already carry their tiers.

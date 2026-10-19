@@ -7,7 +7,7 @@ export const meta: PageMeta = {
   id: "button",
   title: "Button",
   order: 1, group: "Controls",
-  summary: "Roomy, slightly rounded and weight 400. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
+  summary: "Roomy, slightly rounded and weight 550. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
   tiers: ["instant"],
 };
 
@@ -107,7 +107,7 @@ export default function ButtonPage() {
       <Stage
         title="Variants"
         tier="instant"
-        caption="Primary is the one accent fill in a view and carries the glow. Hover swaps the fill over the instant duration; press scales to 0.98. To feel other durations, open the Playground."
+        caption="Primary is the one accent fill in a view: Nick's Frame 103, navy into cobalt inside a deep blue edge, with no glow. Hover brightens the fill; press scales to 0.98. To feel other durations, open the Playground."
         code="VariantsDemo"
       >
         <VariantsDemo />

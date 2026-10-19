@@ -203,7 +203,7 @@ export function CodeBlock({
         aria-label={name}
         style={maxHeight === undefined ? undefined : { maxHeight }}
         className={
-          "m-0 overflow-auto rounded-b-surface py-4 font-mono text-small font-normal text-fg [tab-size:2] " +
+          "m-0 overflow-auto rounded-b-surface py-4 font-mono text-small [font-weight:var(--weight)] text-fg [tab-size:2] " +
           "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
         }
       >

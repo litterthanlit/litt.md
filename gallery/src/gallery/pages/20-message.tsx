@@ -562,7 +562,7 @@ export default function MessagePage() {
         tier="instant"
         size="lg"
         code="ProseDemo"
-        caption="MessageText styles what a markdown renderer produces, with no library. Headings stay at the body size and step to fg. Strong text is fg at weight 400, and links are accent text with an underline. Inline code takes an fg 6% fill at the control radius, a pre is a quiet mono block on surface-2, and a quote has no rail. Nothing is bold."
+        caption="MessageText styles what a markdown renderer produces, with no library. Headings stay at the body size and step to fg. Strong text is fg at the one weight (550), and links are accent text with an underline. Inline code takes an fg 6% fill at the control radius, a pre is a quiet mono block on surface-2, and a quote has no rail. Nothing is bold."
       >
         <ProseDemo />
       </Stage>

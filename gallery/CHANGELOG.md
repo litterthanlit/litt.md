@@ -4,9 +4,11 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-19 · Staples and versions
+## 2026-10-19 · Staples, versions and Frame 103
 
 Six staples, and from this release every item carries its version, in the registry and at the top of each file it installs.
+
+Then taste profile v0.12, from Nick's own drawing of a primary button (Frame 103): one weight, 550, for every text in both faces; controls at 6px and surfaces at 10px; and the primary action as drawn, deep navy into cobalt inside a 1px deep blue edge, with no glow. Items installed earlier today carry the same version, so install them again with `--overwrite`.
 
 - **added** `combobox`: type to find one value, or several, in a long list.
 - **added** `date-picker`: Calendar and DatePicker, a day or a range as YYYY-MM-DD strings.
@@ -16,6 +18,12 @@ Six staples, and from this release every item carries its version, in the regist
 - **added** `context-menu`: the Menu at the pointer, by right-click, Shift+F10 or a hold on touch.
 - **changed** `menu`: its rows also work inside a ContextMenu. Nothing changes for an existing Menu.
 - **changed** `icons`: ChevronLeftIcon.
+- **breaking** `litt`: the one weight is 550 (`--litt-weight`), controls are 6px and surfaces 10px, and the primary action's fill is Frame 103 (`--litt-accent-fill` from `--litt-accent-top` into `--litt-accent`, edged in `--litt-accent-edge`). `--litt-glow`, `--litt-glow-strength` and `shadow-litt-glow` are gone, and every `text-litt-` step now sets the weight.
+  Migrate: delete `shadow-litt-glow`; a primary action is `Button variant="primary"`, or by hand `bg-litt-accent bg-(image:--litt-accent-fill) shadow-[inset_0_0_0_1px_var(--litt-accent-edge)] text-litt-accent-fg`. In litt UI drop `font-normal` (it is 400 in your app): the `text-litt-` step carries the weight, and where there is none write `[font-weight:var(--litt-weight)]`.
+- **changed** `button`: the primary is Frame 103, navy into cobalt inside a 1px deep blue edge with an off-white label, and no glow or top highlight. Hover brightens both ends of the fill; a disabled primary drops it.
+- **changed** `base-styles`: loads the variable builds, `@fontsource-variable/hanken-grotesk` and `@fontsource-variable/geist-mono`, so weight 550 is drawn rather than synthesized. The static `@fontsource/hanken-grotesk` and `@fontsource/geist-mono` can be uninstalled if nothing else imports them.
+- **changed** `avatar`, `code-block`, `composer`, `input`, `kbd`, `message`, `segmented`, `select`, `table`, `tabs`, `thinking`, `token-input`: text renders at the one weight, 550; what set `font-normal` takes `--litt-weight` instead, so it holds in any app.
+- **changed** `motion`: the Playground's locked preset is v0.12, and its radius choices are 0, 4, 6 and 8.
 
 ## 2026-10-18 · Agents
 

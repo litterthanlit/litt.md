@@ -19,7 +19,7 @@
  *
  * WHAT IT SHIPS
  *   litt          registry:style  tokens, Tailwind names and material classes, CSS only
- *   base-styles   registry:style  OPT-IN: fonts, weight 400, control radius, focus ring
+ *   base-styles   registry:style  OPT-IN: variable fonts, the one weight (550), control radius, focus ring
  *   motion        registry:lib    src/motion/* (spring tiers, the hooks)
  *   glide         registry:lib    components/glide.tsx (the gliding highlight)
  *   <stem>        registry:ui     one per src/components/*.tsx that has a page
@@ -494,8 +494,9 @@ const materialRe = new RegExp(`(?<![\\w-])(${materialClasses.map(esc).join("|")}
 
 function buildBaseStylesCss() {
   const css = {};
-  css['@import "@fontsource/hanken-grotesk/400.css"'] = {};
-  css['@import "@fontsource/geist-mono/400.css"'] = {};
+  // The variable builds: weight 550 is between the static files' 500 and 600.
+  css['@import "@fontsource-variable/hanken-grotesk"'] = {};
+  css['@import "@fontsource-variable/geist-mono"'] = {};
   // tailwind.css's html rule, minus the page colors: a shadcn host paints its own background and text.
   const twBase = tailwindCss.find((n) => n.k === "at" && n.name === "layer" && n.params === "base") ?? fail("tailwind.css: @layer base not found");
   const html = twBase.nodes.find((n) => n.k === "rule" && n.selector === "html") ?? fail("tailwind.css: @layer base html rule not found");
@@ -741,7 +742,7 @@ const COPY = {
   },
   "base-styles": {
     title: "litt base styles",
-    description: "Optional. Loads Hanken Grotesk and Geist Mono at weight 400 and applies litt's page defaults: weight 400, the control radius on native controls and the litt focus ring.",
+    description: "Optional. Loads Hanken Grotesk and Geist Mono as variable fonts and applies litt's page defaults: the one weight (550), the control radius on native controls and the litt focus ring.",
     docs: "This one restyles your whole app: the html font, heading weight, button and input radius and the focus outline. No component needs it. Skip it if you only want the components.",
   },
   motion: {
@@ -756,7 +757,7 @@ const COPY = {
   },
   button: {
     title: "Button",
-    description: "Roomy, slightly rounded and weight 400, in primary, secondary and ghost, on the shared control scale. Hover and press are instant and never move the box.",
+    description: "Roomy, slightly rounded and weight 550, in primary, secondary and ghost, on the shared control scale. Hover and press are instant and never move the box.",
     docs: "Import Button from components/litt/button. Primary is the one accent fill in a view. An icon-only button needs an aria-label.",
   },
   kbd: {
@@ -1086,7 +1087,7 @@ function build() {
     type: "registry:style",
     title: COPY["base-styles"].title,
     description: COPY["base-styles"].description,
-    dependencies: ["@fontsource/hanken-grotesk", "@fontsource/geist-mono"],
+    dependencies: ["@fontsource-variable/hanken-grotesk", "@fontsource-variable/geist-mono"],
     registryDependencies: [urlOf("litt")],
     css: baseStylesCss,
     docs: COPY["base-styles"].docs,
@@ -1497,7 +1498,7 @@ async function tailwindCrossCheck(items) {
   // A: the gallery's stylesheet, strict mode on (what sync-tokens.mjs makes). B: a host with Tailwind's
   // default theme (not strict) plus exactly what the litt item ships.
   const litt = items.find((i) => i.name === "litt");
-  const strict = "@theme {\n  --color-*: initial;\n  --radius-*: initial;\n  --shadow-*: initial;\n  --font-weight-*: initial;\n  --text-*: initial;\n  --font-weight-normal: 400;\n}\n";
+  const strict = "@theme {\n  --color-*: initial;\n  --radius-*: initial;\n  --shadow-*: initial;\n  --font-weight-*: initial;\n  --text-*: initial;\n  --font-weight-normal: var(--weight);\n}\n";
   const galleryCss = `@import "tailwindcss";\n${strict}${tokensText}\n${tailwindText.replace(/@import "tailwindcss";\s*@import "\.\/tokens\.css";/, "").replace(/@custom-variant[^\n]*\n/, "")}`;
   const hostCss = `@import "tailwindcss";\n@theme inline {\n${Object.entries(litt.cssVars.theme).map(([k, v]) => `  --${k}: ${v};`).join("\n")}\n}\n${cssObjectToText(litt.css)}`;
   const a = await compile(galleryCss, { base: root, loadStylesheet });

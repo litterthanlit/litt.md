@@ -4,8 +4,11 @@
  * - Slightly rounded, three sizes on the shared control scale (P10). Labels sit in
  *   .litt-trim, so side padding equals the visible air at sm and md. lg runs wider
  *   (--button-pad-lg), so a short label never makes a square block.
- * - Weight 400 always (P9). State changes color and fill only; the box never
- *   moves or resizes (loading keeps the label mounted at opacity 0).
+ * - The one weight (P9, 550 since v0.12) comes with the text size class. State changes color and fill only; the
+ *   box never moves or resizes (loading keeps the label mounted at opacity 0).
+ * - Primary is Nick's Frame 103 (v0.12): a fill from deep navy at the top into cobalt at the bottom
+ *   (--accent-fill), a 1px deep blue edge (--accent-edge) and an off-white label (--accent-fg). No glow. Hover
+ *   swaps in a step brighter fill; the gradient itself never animates (P5), only the instant color tween runs.
  * - Motion: the instant tier. Hover and press are CSS transitions on
  *   --dur-instant, which tokens.css owns. Press is scale(--press-scale). Tailwind's
  *   active:scale-* sets the CSS `scale` property, not `transform`, so the transition
@@ -18,7 +21,7 @@
  *   run of text is a trimmed label, and each element sits in the row. A child SVG is
  *   16px, like every button icon. The icon prop is still the documented way.
  * - Disabled keeps a hairline, so the button keeps its shape on a surface-2 area.
- * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
+ * - Corners: rounded-control (6px since litt.md v0.12). Icon-only buttons are
  *   round (pill) and need an aria-label.
  */
 import { Children, type ButtonHTMLAttributes, type ReactNode } from "react";
@@ -45,7 +48,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-normal " +
+  "relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none [font-weight:var(--weight)] " +
   "cursor-pointer transition-[background-color,color,scale] duration-(--dur-instant) ease-litt " +
   "[-webkit-tap-highlight-color:transparent] " +
   "active:scale-(--press-scale) disabled:cursor-not-allowed disabled:active:scale-100 " +
@@ -60,8 +63,8 @@ const iconSizes: Record<ButtonSize, string> = { sm: "w-control-sm", md: "w-contr
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
-    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)]",
+    "bg-accent bg-(image:--accent-fill) text-accent-fg shadow-[inset_0_0_0_1px_var(--accent-edge)] " +
+    "hover:bg-(image:--accent-fill-hover) enabled:pointer-coarse:active:bg-(image:--accent-fill-hover)",
   secondary:
     "bg-surface-1 text-fg hover:bg-surface-2 enabled:pointer-coarse:active:bg-surface-2 " +
     "shadow-[inset_0_0_0_1px_var(--line-strong),var(--highlight)]",
@@ -70,7 +73,7 @@ const variants: Record<ButtonVariant, string> = {
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
 };
 const disabledLook =
-  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none";
+  "disabled:bg-surface-2 disabled:bg-none disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none";
 
 /* One child is the label. Several (an icon and a word) sit in the row: text runs are trimmed labels, elements sit as they are. */
 function label(children: ReactNode): ReactNode {

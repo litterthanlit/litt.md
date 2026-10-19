@@ -21,7 +21,7 @@ export type InputSize = "sm" | "md" | "lg";
 
 /* The look every field shares: fill, edge, focus, error, disabled. */
 const field =
-  "w-full min-w-0 rounded-control bg-surface-1 font-normal text-fg placeholder:text-fg-subtle " +
+  "w-full min-w-0 rounded-control bg-surface-1 [font-weight:var(--weight)] text-fg placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +

@@ -163,7 +163,7 @@ const toList = (value: string | string[] | undefined): string[] | undefined =>
 /* The Input's fill, edge, focus, error and disabled looks, on a wrapper that holds the text field (and the tokens).
    The ring follows the text field only: the remove buttons draw their own. */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 font-normal text-fg " +
+  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 [font-weight:var(--weight)] text-fg " +
   "shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +

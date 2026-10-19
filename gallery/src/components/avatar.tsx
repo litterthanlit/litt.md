@@ -3,7 +3,7 @@
  *
  * - Shape (components.md, Avatar): a circle at rounded-pill, one of the three things the pill is for.
  *   Three sizes: sm 24 (beside a tag, dense rows), md 32 (list rows, the default) and lg 44
- *   (a profile header). Initials are the sans at weight 400: caption at sm, small at md, body at
+ *   (a profile header). Initials are the sans at the one weight: caption at sm, small at md, body at
  *   lg, trimmed to the cap height so they sit in the middle of the circle.
  * - Content: a photo (`src`, object-cover) with an inset line hairline over it, so a white photo
  *   keeps its edge. With no photo, or when it fails to load, the initials of `name`: the first

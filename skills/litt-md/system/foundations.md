@@ -17,7 +17,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 **Families.** `--font-sans` (Hanken Grotesk) for everything. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings, token names and tags. No third family, ever.
 
-**Weight (P9).** One weight: `--weight` (400) for everything, including display, headings, labels, buttons and the wordmark. Medium, semibold and bold read too wide and are not part of the system. `tokens.css` resets the bold browser defaults (`h1`–`h6`, `b`, `strong`, `th`) and turns off faux bold. Only the 400 faces need to load.
+**Weight (P9).** One weight: `--weight` (550) for everything, including display, headings, labels, buttons, code and the wordmark. 400 read too thin, in body text and in buttons; semibold and bold read too wide. `tokens.css` resets the bold browser defaults (`h1`–`h6`, `b`, `strong`, `th`) and turns off faux bold. Load both faces as variable fonts (Google Fonts `wght@550`, or `@fontsource-variable/hanken-grotesk` and `@fontsource-variable/geist-mono`), because 550 falls between the static files' 500 and 600. In Tailwind every `text-*` size carries the weight, and `font-normal` is not the litt weight: write nothing, or `[font-weight:var(--weight)]` where a size isn't set.
 
 **Scale.** Each step bundles size, leading and tracking (`--type-<step>-size`, `-leading`, `-tracking`). Tracking tightens as size grows (P6).
 
@@ -61,12 +61,12 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 **Accent per project.** Pick the accent at project start from the subject: the client's mark, the product's domain, or the material it sells. Set it in both themes so that:
 - `--accent`, the fill, reaches at least 3:1 on `--canvas`, so the primary action stands out;
-- `--accent-fg` reaches at least 4.5:1 on `--accent`;
+- `--accent-fg` reaches at least 4.5:1 on `--accent` and on `--accent-top`, so the label holds at both ends of the primary's fill;
 - `--accent-text`, the accent as text (links), reaches at least 4.5:1 on `--canvas`. In light it is usually the accent itself. In dark it is usually lighter than the fill, because a fill dark enough for white text is too dark to read as text on a dark canvas. Never use `--accent` as a text color.
 
-Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. In both themes the primary action is a deep cobalt with white text, as in the reference it came from. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
+Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. In both themes the primary action is Nick's Frame 103: deep navy at the top into cobalt (`--accent-fill`), a 1px deep blue edge (`--accent-edge`) and an off-white label, with no glow. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
 
-**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
+**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light` and `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
 
 **Data hues (P11).** Five hues carry data, in a fixed order: blue, amber, teal, violet, rose. The first series or category takes blue, the second amber, and so on; a hue is never cycled, and a sixth series folds into "Other" or a second chart. Each hue has three tones:
 - the mark tone (`--data-blue`) for bars, dots, lines, heat cells and gauge ticks: at least 3:1 on canvas and every surface;
@@ -108,11 +108,11 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 
 | Variable | Value | Use |
 |---|---|---|
-| `--radius-control` | 4px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
-| `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
+| `--radius-control` | 6px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
+| `--radius-surface` | 10px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
 | `--radius-pill` | 999px | Avatars, icon-only buttons and switches. Radio marks and slider thumbs are circles |
 
-**Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
+**Concentric.** A surface is the control radius plus the inset around it: 6 + 4 = 10. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 6px. There are no other radii: no 4, 8, 12 or 16. Nick set 6px from Frame 103 (v0.12).
 
 - `tokens.css` gives `button`, `input`, `select` and `textarea` the control radius, and `.litt-raised` and `.litt-glass` the surface radius. A full-bleed bar like the header sets `border-radius: 0`.
 - Borders are 1px (`--hairline`), drawn as `inset 0 0 0 1px var(--line)` so they don't change layout.

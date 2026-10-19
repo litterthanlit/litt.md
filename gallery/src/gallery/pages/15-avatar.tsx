@@ -212,7 +212,7 @@ export default function AvatarPage() {
         title="Sizes and hues"
         align="start"
         code="SizesAndHuesDemo"
-        caption="Small is 24 for dense rows and md is 32 for list rows. Large is 44 for a profile header. Initials step from caption to small to body, always at weight 400. The fill is the hue's tint, the letters are its text tone, and a hairline of the hue edges the circle, like a hue tag. Neutral is for a mark with no identity color."
+        caption="Small is 24 for dense rows and md is 32 for list rows. Large is 44 for a profile header. Initials step from caption to small to body, always at the one weight (550). The fill is the hue's tint, the letters are its text tone, and a hairline of the hue edges the circle, like a hue tag. Neutral is for a mark with no identity color."
       >
         <SizesAndHuesDemo />
       </Stage>
