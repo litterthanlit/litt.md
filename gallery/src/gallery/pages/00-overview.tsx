@@ -14,7 +14,7 @@ const WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eig
   ...["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"].map((n) => `Twenty-${n.toLowerCase()}`), "Thirty"];
 
 export default function Overview() {
-  const list = pages.filter((p) => p.id !== meta.id && !p.tune);
+  const list = pages.filter((p) => p.group); // the components and patterns; Overview, Changelog and the Playground have no group
   const count = WORDS[list.length] ?? String(list.length);
   const playground = pages.find((p) => p.tune);
   return (

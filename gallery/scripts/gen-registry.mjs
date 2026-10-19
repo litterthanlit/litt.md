@@ -63,6 +63,14 @@
  *   asChild            a written asChild becomes {...asChildProps}: shadcn's CLI rewrites the attribute to Base UI's
  *                      render prop in every host whose style starts with "base-" (the default of `shadcn init`).
  *
+ * VERSIONS (CHANGELOG.md, registry.lock.json; see scripts/changelog.mjs)
+ *   Every item's version is the newest release in CHANGELOG.md that names it, by date (2026.10.19). It goes into
+ *   the item's meta.version and into a comment at the top of every file it installs ("// @litt/button 2026.10.19
+ *   ..."), so an installed copy can say where it came from. registry.lock.json, committed, keeps a hash of what each
+ *   item installs (files, CSS and dependencies, not its words) and its version. When the hash changes, the changelog
+ *   must name the item in a newer release, or the build fails: nobody changes a component without telling the people
+ *   who installed it. A normal run rewrites the lock (commit it with the change); --check fails when it is stale.
+ *
  * THE VERIFIER (always runs; any finding fails the build)
  *   Every shipped file: no unprefixed litt custom property or utility survives, every --name it
  *   uses is defined by the shipped CSS (or is Radix's or Tailwind's own), every relative import
@@ -81,6 +89,8 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
+import { createHash } from "node:crypto";
+import { compareVersions, itemVersions, readChangelog } from "./changelog.mjs";
 
 // Anything this script cannot resolve is a message and exit 1, not a stack trace.
 process.on("uncaughtException", (e) => {
@@ -1116,6 +1126,69 @@ function build() {
   return { items, targets, transformed };
 }
 
+/* ========================================================================= versions */
+
+const lockFile = path.join(root, "registry.lock.json");
+const CHANGELOG_URL = `${PRODUCTION_ORIGIN}/changelog.md`;
+
+/** What an item installs, as a stable hash: files, CSS and dependencies. Its title, description and docs are not part of it. */
+function installHash(item) {
+  const nameOf = (url) => url.slice(url.lastIndexOf("/") + 1).replace(/\.json$/, "");
+  const shape = {
+    type: item.type,
+    dependencies: item.dependencies ?? [],
+    registryDependencies: (item.registryDependencies ?? []).map(nameOf),
+    cssVars: item.cssVars ?? null,
+    css: item.css ?? null,
+    files: (item.files ?? []).map((f) => ({ target: f.target, type: f.type, content: f.content })),
+  };
+  return createHash("sha256").update(JSON.stringify(shape)).digest("hex").slice(0, 16);
+}
+
+/** The comment that opens every installed file. */
+const stampOf = (name, version) => `// @litt/${name} ${version}. What changed: ${CHANGELOG_URL}`;
+
+/**
+ * Give every item its version, check it against the lock, and stamp it. Returns the lock to write and any errors.
+ * Runs before the verifier, so the verifier sees the stamped files.
+ */
+function versionItems(items) {
+  const errs = [];
+  let changelog;
+  try {
+    changelog = readChangelog();
+  } catch (e) {
+    return { errs: [e.message], lock: null };
+  }
+  let versions;
+  try {
+    versions = itemVersions(changelog, items.map((i) => i.name));
+  } catch (e) {
+    return { errs: [e.message], lock: null };
+  }
+  const released = new Map(changelog.releases.map((r) => [r.version, r.date]));
+  const old = fs.existsSync(lockFile) ? JSON.parse(read(lockFile)) : { items: {} };
+  const lock = {};
+  for (const item of items) {
+    const version = versions.get(item.name);
+    const hash = installHash(item);
+    const before = old.items?.[item.name];
+    if (before && compareVersions(version, before.version) < 0) {
+      errs.push(`${item.name}: registry.lock.json has it at ${before.version}, but the newest CHANGELOG.md entry that names it is ${version}. Put its entry back.`);
+    } else if (before && before.hash !== hash && compareVersions(version, before.version) === 0) {
+      errs.push(`${item.name}: what it installs changed since ${before.version}, but CHANGELOG.md has no newer entry for it. Add one under today's release ("- **changed** \`${item.name}\`: ..."), then run npm run gen:registry and commit registry.lock.json.`);
+    }
+    lock[item.name] = { version, hash };
+    item.meta = { version, released: released.get(version), changelog: CHANGELOG_URL };
+    for (const f of item.files ?? []) {
+      const stamp = stampOf(item.name, version);
+      f.content = f.content.startsWith('"use client";\n') ? `"use client";\n${stamp}\n${f.content.slice('"use client";\n'.length)}` : `${stamp}\n${f.content}`;
+    }
+  }
+  const sorted = Object.fromEntries(Object.keys(lock).sort().map((k) => [k, lock[k]]));
+  return { errs, lock: { $comment: "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.", latest: changelog.releases[0].version, items: sorted } };
+}
+
 /* ================================================================ schema validation */
 
 const ITEM_TYPES = ["registry:lib", "registry:block", "registry:component", "registry:ui", "registry:hook", "registry:page", "registry:file", "registry:theme", "registry:style", "registry:item", "registry:base", "registry:font", "registry:example", "registry:internal"];
@@ -1471,6 +1544,12 @@ function serialize(items) {
 async function main() {
   const shadcn = await loadShadcnSchema();
   const { items, targets, transformed } = build();
+  const versioned = versionItems(items);
+  if (versioned.errs.length) {
+    console.error(`gen-registry: ${versioned.errs.length} version problem${versioned.errs.length === 1 ? "" : "s"}:`);
+    for (const e of versioned.errs) console.error(`  - ${e}`);
+    process.exit(1);
+  }
   const errs = verify(items, targets, transformed, shadcn);
   const cross = await tailwindCrossCheck(items);
   errs.push(...cross.errs);
@@ -1481,6 +1560,14 @@ async function main() {
   }
 
   const files = serialize(items);
+  const lockText = JSON.stringify(versioned.lock, null, 2) + "\n";
+  const lockStale = !fs.existsSync(lockFile) || read(lockFile) !== lockText;
+  if (check && lockStale) {
+    console.error("gen-registry: registry.lock.json is stale. Run npm run gen:registry and commit it.");
+    process.exit(1);
+  }
+  // Only the real registry keeps the lock; the install test builds elsewhere with --out.
+  if (!check && lockStale && !option("--out")) fs.writeFileSync(lockFile, lockText);
   if (check) {
     const stale = [];
     for (const [name, text] of files) {
@@ -1504,7 +1591,7 @@ async function main() {
   const fileCount = items.reduce((n, i) => n + (i.files?.length ?? 0), 0);
   console.log(
     `gen-registry: ${items.length} items, ${fileCount} files -> ${path.relative(root, outDir) || "."} ` +
-      `(origin ${origin}, ${cross.count} classes cross-checked${shadcn ? ", shadcn schema ok" : ""})`,
+      `(origin ${origin}, ${cross.count} classes cross-checked${shadcn ? ", shadcn schema ok" : ""}, release ${versioned.lock.latest}${lockStale && !check && !option("--out") ? ", registry.lock.json updated" : ""})`,
   );
 }
 
