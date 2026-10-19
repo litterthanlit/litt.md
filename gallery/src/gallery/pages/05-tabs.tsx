@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   title: "Tabs",
   order: 5, group: "Controls",
   summary:
-    "Underline or segmented. The indicator slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked.",
+    "Underline or segmented tabs. The indicator slides between them, and the panel fades in from the side you picked.",
   tiers: ["instant", "responsive"],
 };
 
@@ -122,7 +122,7 @@ function ProjectTabs() {
           <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
             {STATS.map(([label, value]) => (
               <div key={label} className="grid gap-1">
-                <dt className="text-small text-fg-subtle">{label}</dt>
+                <dt className="text-small [font-weight:var(--weight)] text-fg-subtle">{label}</dt>
                 <dd className="text-h3 text-fg">{value}</dd>
               </div>
             ))}
@@ -154,7 +154,7 @@ function ProjectTabs() {
           <Rows>
             {SETTINGS.map(([label, value]) => (
               <li key={label} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
-                <span className="text-fg-subtle">{label}</span>
+                <span className="[font-weight:var(--weight)] text-fg-subtle">{label}</span>
                 <span className="text-fg">{value}</span>
               </li>
             ))}
@@ -187,7 +187,7 @@ function ViewSwitch() {
           <Rows>
             {PROJECTS.map((p) => (
               <li key={p.name} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
-                <span className="text-fg">{p.name}</span>
+                <span className="[font-weight:var(--weight)] text-fg">{p.name}</span>
                 <span className="text-fg-subtle">{p.kind}</span>
               </li>
             ))}
@@ -197,7 +197,7 @@ function ViewSwitch() {
           <ul className="grid grid-cols-2 gap-3">
             {PROJECTS.map((p) => (
               <li key={p.name} className="grid h-28 content-between rounded-surface bg-surface-2 p-4">
-                <span className="text-small text-fg">{p.name}</span>
+                <span className="text-small [font-weight:var(--weight)] text-fg">{p.name}</span>
                 <span className="text-caption text-fg-subtle">{p.kind}</span>
               </li>
             ))}
@@ -209,7 +209,7 @@ function ViewSwitch() {
               <li key={p.name} className="relative flex items-center gap-4 text-small">
                 <span aria-hidden="true" className="relative h-px w-2 shrink-0 bg-fg-subtle" />
                 <span className="font-mono text-caption text-fg-subtle">{p.time}</span>
-                <span className="text-fg">{p.name}</span>
+                <span className="[font-weight:var(--weight)] text-fg">{p.name}</span>
                 <span className="text-fg-subtle">{p.when}</span>
               </li>
             ))}

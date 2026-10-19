@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   order: 3,
   group: "Controls",
   summary:
-    "Real checkboxes and radios, drawn in the litt look: a 20px chip at the control radius, or a circle for a radio, filled with the foreground color when on. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
+    "Real checkboxes and radios with a 20px chip, filled with the foreground when on. The whole row is clickable.",
   tiers: ["instant"],
 };
 
@@ -162,7 +162,7 @@ function AppearanceDemo() {
   return (
     <div className="grid w-full max-w-xl gap-x-12 gap-y-6 sm:grid-cols-2">
       <div className="grid content-start gap-2">
-        <p className="text-small text-fg-subtle">Drawn, the default</p>
+        <p className="text-small [font-weight:var(--weight)] text-fg-subtle">Drawn, the default</p>
         <div className="grid justify-items-start">
           <Checkbox label="Checked" defaultChecked />
           <Checkbox label="Unchecked" />
@@ -172,7 +172,7 @@ function AppearanceDemo() {
         </div>
       </div>
       <div className="grid content-start gap-2">
-        <p className="text-small text-fg-subtle">Native, the browser's own</p>
+        <p className="text-small [font-weight:var(--weight)] text-fg-subtle">Native, the browser's own</p>
         <div className="grid justify-items-start">
           <Checkbox appearance="native" label="Checked" defaultChecked />
           <Checkbox appearance="native" label="Unchecked" />

@@ -6,7 +6,8 @@
  * - Track: --radius-surface (8), fill at fg 5%, inset --line edge, 4px padding. The
  *   segments inside sit at --radius-control (4), so the corners stay concentric.
  * - Segment: --fg-subtle, and --fg on hover. The selected one gets --surface-1, --fg, an
- *   inset --line and --highlight. Weight 400, and no segment changes size when selected.
+ *   inset --line and --highlight. Labels at the interface weight (550), and no segment changes weight or size
+ *   when selected.
  * - Sizes are on the control scale: sm is a 32px track with caption text (the spec), md is a
  *   44px track with small text, for forms beside 44px inputs. On touch screens sm grows to 44px.
  * - Segments share one width (the widest label), so the selected surface keeps its shape as
@@ -61,7 +62,7 @@ export type SegmentedProps<T extends string> = {
 const PRESS = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
 
 const sizes: Record<SegmentedSize, { track: string; segment: string }> = {
-  sm: { track: "h-control-sm pointer-coarse:h-control-md", segment: "px-control-pad-sm text-caption pointer-coarse:text-small" },
+  sm: { track: "h-control-sm pointer-coarse:h-control-md", segment: "px-control-pad-sm text-caption pointer-coarse:text-small pointer-coarse:[font-weight:var(--weight)]" },
   md: { track: "h-control-md", segment: "px-control-pad-md text-small" },
 };
 
@@ -88,7 +89,7 @@ export function Segmented<T extends string>({
 
   return (
     <fieldset disabled={disabled} className={"m-0 min-w-0 border-0 p-0 " + className}>
-      <legend className={showLegend ? "mb-2 p-0 text-small text-fg" : "sr-only"}>{legend}</legend>
+      <legend className={showLegend ? "mb-2 p-0 text-small [font-weight:var(--weight)] text-fg" : "sr-only"}>{legend}</legend>
       <LayoutGroup id={auto}>
         <div
           className={

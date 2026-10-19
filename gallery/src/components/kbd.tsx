@@ -3,7 +3,7 @@
  *
  * - One chip everywhere, from components.md and the specimen: a 20px box at
  *   rounded-control, a surface-2 fill, an inset line hairline, Geist Mono at
- *   the one weight in fg-subtle. The tooltip, the command menu footer, the button
+ *   the interface weight (550) in fg-subtle. The tooltip, the command menu footer, the button
  *   hint and the tabs legend all render this component and nothing else.
  * - The size is the caption step (12px), on the type scale like every other label.
  * - shrink-0 so it never squashes in a flex row; min-w-5 keeps a lone glyph square.

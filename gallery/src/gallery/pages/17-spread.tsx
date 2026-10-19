@@ -6,8 +6,7 @@ export const meta: PageMeta = {
   title: "Spread",
   order: 17.65,
   group: "Data",
-  summary:
-    "How values spread, one thin rail per row on a shared scale. The full range is faint, the middle half takes a data hue and the median is a tick, with the median in mono at the end. The rails line up, a goal is a dashed line through every row, and nothing moves.",
+  summary: "How values spread, one thin rail per row on one scale. The middle half takes a data hue and the median is a tick.",
   tiers: [],
 };
 

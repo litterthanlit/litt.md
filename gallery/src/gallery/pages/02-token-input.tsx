@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   order: 2.3,
   group: "Controls",
   summary:
-    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's field with the Tag's look inside: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
+    "A field that turns typed or pasted values into tokens. A long list folds into a +N token until you focus it.",
   tiers: ["instant", "responsive"],
 };
 

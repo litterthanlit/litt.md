@@ -23,9 +23,12 @@
   --font-sans: "Hanken Grotesk Variable", "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* One weight (P9), 550 since v0.12 (Nick's Frame 103). Hierarchy comes from size, color and tracking, never
-     weight. Mono carries it too. Fonts load as variable files, so 550 is drawn, not faked. */
+  /* Two weights (P9, v0.17). --weight (550, Nick's Frame 103) is the interface: headings, buttons, labels, nav,
+     tabs, tags and anything you act on. --weight-text (450) is text you read: paragraphs, descriptions, captions,
+     help text, table cells. 550 read too heavy in body text, 400 too thin. Mono follows the same split. Fonts
+     load as variable files, so both are drawn, not faked. */
   --weight: 550;
+  --weight-text: 450;
 
   /* Type scale: tracking tightens as size grows (P6). Headlines stay
      restrained: display tops out at 40, at every breakpoint. */
@@ -414,7 +417,8 @@
    still override them.
    ========================================================================== */
 @layer base {
-  /* Nothing renders above 400 (P9): override bold browser defaults and block faux bold. */
+  /* Two weights (P9): headings, emphasis and table headers take the interface weight, never the browser's bold;
+     faux bold is blocked. */
   html { font-synthesis-weight: none; }
   h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: var(--weight); }
   /* Controls take the control radius, not the browser's default rounding. */

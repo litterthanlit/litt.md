@@ -80,7 +80,7 @@ These come from the audit and are candidate rules. Build them in.
   - No dots for status or the current page: a status is a word (a Tag), and the current page steps the text color.
 
   An element inset 4px inside a surface uses `rounded-control`; that is what makes it concentric. No other radius exists.
-- **One weight, 550** (litt.md v0.12). Every `text-*` size carries it, so most text needs no class. Where no size is set, write `[font-weight:var(--weight)]`, never `font-normal` (400 in a host app); the lint fails any `font-*` weight class.
+- **Two weights** (litt.md v0.17): 450 for text you read, 550 for headings and anything you act on or that names something. The heading sizes carry 550 and `text-reading`, `text-body`, `text-small` and `text-caption` carry 450, so a paragraph needs no class. Interface text at a small size (a label, a nav link, a tab, a tag, a list row's name, a key value) adds `[font-weight:var(--weight)]`; text inside a 550 parent that must read at 450 adds `[font-weight:var(--weight-text)]`. Never `font-normal` (400 in a host app); the lint fails any `font-*` weight class.
 - **Type:** `text-display` 40, `text-h1` 32, `text-h2` 28, `text-h3` 24, `text-h4` 20, `text-reading` 17, `text-body` 15, `text-small` 13, `text-caption` 12. Tracking comes with the token. Use sentence case; no uppercase eyebrows.
 - **Color only through tokens:**
   - surfaces: `bg-canvas`, `bg-surface-1`, `bg-surface-2`, `bg-surface-3`;

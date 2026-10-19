@@ -8,8 +8,7 @@ export const meta: PageMeta = {
   title: "Sparkline",
   order: 17.32,
   group: "Data",
-  summary:
-    "A trend in one thin line, with no axes, gridlines or labels: a 2px line in the foreground or a data hue, a dot on the latest value and an optional dashed baseline. It sits beside a figure or in a table row. It is static, and it shows shape, not values.",
+  summary: "A thin trend line with no axes or labels, and a dot on the latest value. It sits beside a figure or in a table.",
   tiers: [],
 };
 
@@ -165,7 +164,7 @@ function GoalLineDemo() {
   return (
     <div className="grid w-full max-w-xl gap-2">
       <div className="flex items-baseline justify-between gap-4">
-        <span className="text-small text-fg">Median reply time</span>
+        <span className="text-small [font-weight:var(--weight)] text-fg">Median reply time</span>
         <span className="font-mono text-caption tabular-nums text-fg-subtle">2.9 h today, goal 4 h</span>
       </div>
       <Sparkline label="Median reply time, last 30 days" values={REPLY} formatValue={hours} baseline={4} height={64} />

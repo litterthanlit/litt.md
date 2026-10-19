@@ -16,7 +16,7 @@
  *
  * Put `litt-allow` on a line (in a comment) to exempt it, with a reason.
  *
- * Checks: the one weight (550), the three radii, zero-offset shadows, no `transition-all`,
+ * Checks: the two weights (450 text, 550 interface), the three radii, zero-offset shadows, no `transition-all`,
  * only transform, opacity and color-family fades, duration and ease classes
  * that pair by tier, no literal timings or easings, no raw or quoted colors.
  *
@@ -113,9 +113,9 @@ function lintGallery(files, root) {
       const fail = (rule, message) => fails.push({ file: rel(f), line: i + 1, rule, message });
       const warn = (rule, message) => warns.push({ file: rel(f), line: i + 1, rule, message });
 
-      if (/\bfont-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "one weight (P9, 550): the text-* size classes carry it; set [font-weight:var(--weight)] where an element has none. font-normal is 400 in a host app");
+      if (/\bfont-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "two weights (P9): the text-* size classes carry 450 for text, headings carry 550; set [font-weight:var(--weight)] on interface text (labels, buttons, nav, names) and [font-weight:var(--weight-text)] where text must stay 450. font-normal is 400 in a host app");
       const fw = /fontWeight\s*:\s*['"]?(\d{3})/.exec(line);
-      if (fw && fw[1] !== "550") fail("weight", "fontWeight other than the one weight, 550 (P9)");
+      if (fw && fw[1] !== "550" && fw[1] !== "450") fail("weight", "fontWeight other than litt's two weights, 450 for text and 550 for the interface (P9)");
       for (const m of line.matchAll(/\brounded(-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
@@ -256,9 +256,9 @@ function checkDecl(prop, value) {
   if (!v) return out;
   const bare = stripVars(v);
   if (prop === "font-weight") {
-    if (!/^(?:550|inherit|initial|unset|revert)$/i.test(v) && !/^var\(/.test(v)) out.push(["weight", `font-weight: ${v}: litt's one weight is 550 (P9), use var(--litt-weight)`]);
+    if (!/^(?:450|550|inherit|initial|unset|revert)$/i.test(v) && !/^var\(/.test(v)) out.push(["weight", `font-weight: ${v}: litt has two weights (P9), 450 for text and 550 for the interface: use var(--litt-weight-text) or var(--litt-weight)`]);
   } else if (prop === "font") {
-    if (/(?:^|\s)(?:bold|bolder|lighter|[1-9]00)(?:\s|$)/i.test(v)) out.push(["weight", `font: ${v}: litt's one weight is 550 (P9)`]);
+    if (/(?:^|\s)(?:bold|bolder|lighter|[1-9]00)(?:\s|$)/i.test(v)) out.push(["weight", `font: ${v}: litt has two weights (P9), 450 and 550`]);
   } else if (prop === "font-size") {
     const use = "use var(--litt-type-body-size) (or display, h1..h4, reading, small, caption)";
     if (/^[-+]?[\d.]/.test(v) && !/^0(?:px|rem|em)?$/.test(v) && !/^100%$/.test(v) && v !== "1em") out.push(["type", `font-size: ${v}: ${use}`]);
@@ -517,8 +517,8 @@ function checkToken(t, scope, add, isClassContext) {
   let m;
 
   // weight
-  if (/^font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)$/.test(b)) add("weight", `${b}: litt's one weight is 550 (P9). The text-litt-* sizes carry it; set [font-weight:var(--litt-weight)] where an element has none`);
-  else if ((m = /^font-\[(\d+)\]$/.exec(b)) && m[1] !== "550") add("weight", `${b}: litt's one weight is 550 (P9), use [font-weight:var(--litt-weight)]`);
+  if (/^font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)$/.test(b)) add("weight", `${b}: litt has two weights (P9). The text-litt-* sizes carry them (450 text, 550 headings); set [font-weight:var(--litt-weight)] on interface text`);
+  else if ((m = /^font-\[(\d+)\]$/.exec(b)) && m[1] !== "550" && m[1] !== "450") add("weight", `${b}: litt has two weights (P9), 450 and 550: use [font-weight:var(--litt-weight)] or [font-weight:var(--litt-weight-text)]`);
 
   // radius
   if ((m = RADIUS_RE.exec(b))) {
@@ -700,7 +700,7 @@ function lintHostFile(file, text, rel) {
 
     // warnings
     if (/(?:textTransform\s*:\s*['"]uppercase['"]|text-transform\s*:\s*uppercase)/.test(line)) warn("type", "uppercase: sentence case everywhere (Q1 is open)");
-    if (/<(?:b|strong)(?=[\s>])(?![^>]*font-weight:var\(--litt-weight\))/.test(line)) warn("weight", "<b>/<strong> render bold unless base-styles is installed: litt's one weight is 550 (P9), add [font-weight:var(--litt-weight)]");
+    if (/<(?:b|strong)(?=[\s>])(?![^>]*font-weight:var\(--litt-weight\))/.test(line)) warn("weight", "<b>/<strong> render bold unless base-styles is installed: litt's interface weight is 550 (P9), add [font-weight:var(--litt-weight)]");
     if (/\bonMouse(Enter|Over)\b/.test(line)) warn("other", "onMouseEnter: make sure touch and keyboard users get the same thing");
   });
 

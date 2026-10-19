@@ -3,7 +3,7 @@
  *
  * - Shape (components.md, Avatar): a circle at rounded-pill, one of the three things the pill is for.
  *   Three sizes: sm 24 (beside a tag, dense rows), md 32 (list rows, the default) and lg 44
- *   (a profile header). Initials are the sans at the one weight: caption at sm, small at md, body at
+ *   (a profile header). Initials are the sans at the interface weight (550): caption at sm, small at md, body at
  *   lg, trimmed to the cap height so they sit in the middle of the circle.
  * - Content: a photo (`src`, object-cover) with an inset line hairline over it, so a white photo
  *   keeps its edge. With no photo, or when it fails to load, the initials of `name`: the first
@@ -60,7 +60,11 @@ const ORDER: AvatarHue[] = ["blue", "amber", "teal", "violet", "rose"];
 
 const BOX: Record<Size, string> = { sm: "size-6", md: "size-8", lg: "size-11" };
 const BOX_MIN: Record<Size, string> = { sm: "h-6 min-w-6", md: "h-8 min-w-8", lg: "h-11 min-w-11" };
-const TEXT: Record<Size, string> = { sm: "text-caption", md: "text-small", lg: "text-body" };
+const TEXT: Record<Size, string> = {
+  sm: "text-caption [font-weight:var(--weight)]",
+  md: "text-small [font-weight:var(--weight)]",
+  lg: "text-body [font-weight:var(--weight)]",
+};
 /* A quarter of the size: 6, 8 and 11px. The next avatar and its 2px ring cover that much of the left of this
    one, so --cover says how much (8, 10 and 13px) and the initials are centered in what is left. */
 const LAP: Record<Size, string> = {
@@ -188,7 +192,7 @@ export function AvatarGroup({ label, children, size = "md", max = 4, total, ring
             <span
               role="img"
               aria-label={`${more} more`}
-              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 font-mono text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
+              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 font-mono text-caption [font-weight:var(--weight)] text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
             >
               <span className={`litt-trim ${UNCOVER}`}>+{more}</span>
             </span>

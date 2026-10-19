@@ -6,8 +6,7 @@ export const meta: PageMeta = {
   title: "Avatar",
   order: 15.1,
   group: "Layout",
-  summary:
-    "A round mark for a person, a client or a company: a photo, or initials on the tint of one of the five data hues. The hue follows from the name, so the same name looks the same everywhere. A group overlaps them and counts the rest. Nothing about it moves.",
+  summary: "A round photo or initials for a person or a company. The hue follows the name, so a name looks the same everywhere.",
   tiers: [],
 };
 
@@ -73,7 +72,7 @@ function InboxDemo() {
         <li key={m.name} className="flex items-center gap-4 border-b border-line py-3 last:border-b-0">
           <Avatar name={m.name} decorative />
           <div className="grid min-w-0 flex-1 gap-1 sm:flex sm:items-center sm:gap-4">
-            <span className="truncate text-small text-fg sm:w-28 sm:shrink-0">{m.name}</span>
+            <span className="truncate text-small [font-weight:var(--weight)] text-fg sm:w-28 sm:shrink-0">{m.name}</span>
             <span className="truncate text-small text-fg-subtle sm:min-w-0 sm:flex-1">{m.subject}</span>
           </div>
           <span className="shrink-0 font-mono text-caption text-fg-subtle">{m.when}</span>
@@ -122,7 +121,7 @@ function TeamDemo() {
     <div className="grid w-full max-w-2xl gap-8">
       <div className="litt-raised flex items-center justify-between gap-4 rounded-surface p-4">
         <div className="grid min-w-0 gap-1">
-          <span className="truncate text-body text-fg">Founder landing</span>
+          <span className="truncate text-body [font-weight:var(--weight)] text-fg">Founder landing</span>
           <span className="truncate text-small text-fg-subtle">Marlow Labs, in review</span>
         </div>
         <AvatarGroup label="Project team, 26 people" total={26} ring="surface-1" className="shrink-0">
@@ -212,7 +211,7 @@ export default function AvatarPage() {
         title="Sizes and hues"
         align="start"
         code="SizesAndHuesDemo"
-        caption="Small is 24 for dense rows and md is 32 for list rows. Large is 44 for a profile header. Initials step from caption to small to body, always at the one weight (550). The fill is the hue's tint, the letters are its text tone, and a hairline of the hue edges the circle, like a hue tag. Neutral is for a mark with no identity color."
+        caption="Small is 24 for dense rows and md is 32 for list rows. Large is 44 for a profile header. Initials step from caption to small to body, always at the interface weight (550). The fill is the hue's tint, the letters are its text tone, and a hairline of the hue edges the circle, like a hue tag. Neutral is for a mark with no identity color."
       >
         <SizesAndHuesDemo />
       </Stage>

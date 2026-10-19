@@ -28,7 +28,7 @@ Reading, Body, Small, Caption → P tag
 Mono     → for kbd, data, versions
 ```
 
-Weight: 550 for every text style (P9). Use each face's variable version and set its weight to 550; never a named style (Regular, Medium, Semibold, Bold). Hierarchy comes from size and color styles.
+Weight: two (P9). Reading, Body, Small and Caption styles at 450; Display, H1 to H4 and every label, button and nav style at 550. Use each face's variable version and set the weight axis; never a named style (Regular, Medium, Semibold, Bold). Hierarchy comes from size and color styles.
 
 ## 3. Layout
 
@@ -44,7 +44,7 @@ Weight: 550 for every text style (P9). Use each face's variable version and set 
   - sm: 32 tall, 12 side padding, 13px label.
   - md: 44 tall, 16 side padding, 15px label.
   - lg: 56 tall, 32 side padding, 16px label.
-  - Labels are at 550 with the line height set to 1, so the padding reads as even air. Use lg for hero CTAs and form submits, full width in narrow forms.
+  - Labels are at 550, the interface weight, with the line height set to 1, so the padding reads as even air. Use lg for hero CTAs and form submits, full width in narrow forms.
 - **Inputs:** the same heights as the buttons, so an lg input lines up with an lg button.
 
 ## 4. Effects and material
@@ -78,7 +78,7 @@ To use the exact tokens in code components or embeds, paste `assets/tokens.css` 
 
 ## 7. Framer review checklist
 - [ ] Every color comes from a color style with both modes set.
-- [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Everything at 550.
+- [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Text styles for reading at 450, headings and labels at 550.
 - [ ] Gaps and paddings are on the scale.
 - [ ] Glass only on floating frames (header, menus, modals, toasts).
 - [ ] Corners: 6 on controls, 10 on surfaces, pills only on avatars, icon-only buttons and switches. Buttons and inputs use the 32/44/56 sizes.

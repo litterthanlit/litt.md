@@ -16,7 +16,7 @@ Button · Input · Token input · Select · Combobox · Date picker · Checkbox 
 | md | `--control-md` 44 | `--control-pad-md` 16 | 15 | Default |
 | lg | `--control-lg` 56 | `--button-pad-lg` 32 | 16 | Hero CTAs and the submit in a page form; full width in narrow forms. A dialog's actions are md. |
 
-The one weight (550) at every size, no tracking. Hover changes the fill and color, and press scales to `--press-scale`, both on the instant tier (`--dur-instant`, `--ease-out`). On coarse screens a pressed button also takes its hover fill, so the press shows under reduced motion. The box never moves. Grouped buttons sit `--control-group-gap` (12) apart.
+The interface weight (550) at every size, no tracking. Hover changes the fill and color, and press scales to `--press-scale`, both on the instant tier (`--dur-instant`, `--ease-out`). On coarse screens a pressed button also takes its hover fill, so the press shows under reduced motion. The box never moves. Grouped buttons sit `--control-group-gap` (12) apart.
 
 | Variant | Fill | Text | Edge | Use |
 |---|---|---|---|---|
@@ -129,13 +129,13 @@ A label, not a control: 24px tall, `--radius-control`, a flat `--surface-2` fill
 - **Category (a hue tag, P11):** a tag that files a thing under a category (Finance, Clients, Hiring) may take one of the five data hues: the hue's `-tint` as the fill, and its `-text` tone for the label (4.5:1 on the tint, checked), flat like a plain tag. One hue means one category in a view, and the word still says it. A hue is never a status: how something stands takes `status`. With more than five categories, leave them plain.
 
 ## Kbd
-`--font-mono` at the caption size (12px) and the one weight, a 20px chip at `--radius-control`, `--surface-2`, inset `--line`. Use it for real shortcuts only.
+`--font-mono` at the caption size (12px) and the interface weight (550), a 20px chip at `--radius-control`, `--surface-2`, inset `--line`. Use it for real shortcuts only.
 
 ## Avatar
 A round mark for a person, a client or a company, and a group that stacks them.
 - **Surface:** `--radius-pill` at sm 24 (beside a tag, dense rows), md 32 (list rows, the default) or lg 44 (a profile header). A photo is object-cover under an inset `--line` hairline, so a white photo keeps its edge.
 - **Color (P11, identity is data):** initials sit on the hue's `-tint` in its `-text` tone, with an inset hairline of the hue at 24% under `--highlight`. With no `hue`, a stable hash of the name picks one of the five, so a client keeps its hue everywhere; two names can share one, so the name stays the identifier. `neutral` is `--surface-2`, `--fg-muted` and a `--line` hairline.
-- **Type:** initials in the sans at the one weight: caption at sm, small at md, body at lg, from the first letter of the first two words, skipping leading symbols ("@stripe.com" gives "S").
+- **Type:** initials in the sans at the interface weight (550): caption at sm, small at md, body at lg, from the first letter of the first two words, skipping leading symbols ("@stripe.com" gives "S").
 - **Group:** avatars overlap by a quarter of their size, the first on top, each ringed 2px in the surface it sits on by a zero-offset spread shadow (`ring`: canvas, surface-1, surface-2). `max` (4) shows the first few, then a "+N" pill in mono caption on `--surface-2`, named "N more". The group is labelled ("Project team, 26 people").
 - **Accessibility:** initials are an image named by the name; a photo's alt is the name; `decorative` hides it when the name is written beside it. A failed photo falls back to the initials.
 - **States and motion:** none. No hover, no focus stop; a link around it is the caller's.
@@ -389,7 +389,7 @@ A chat between a person and an agent, and what the agent shows while it works: i
 
 ## Conversation and message
 A chat, read top to bottom, newest at the foot.
-- **The agent's turn has no bubble.** Its words sit on the page at the body size in `--fg-muted` (body copy, as everywhere), with a measure of about 68ch. `MessageText` styles what a markdown renderer puts inside it: paragraphs `--space-3` apart, headings at the body size in `--fg`, lists with the marker in `--fg-subtle`, links in `--accent-text`, inline code in `--font-mono` on fg 6% at `--radius-control`, and strong text in `--fg` at the one weight (never bold, P9), and emphasis in `--fg`, upright. The answer is the content, and a box around long prose cramps it.
+- **The agent's turn has no bubble.** Its words sit on the page at the body size in `--fg-muted` (body copy, as everywhere), with a measure of about 68ch. `MessageText` styles what a markdown renderer puts inside it: paragraphs `--space-3` apart, headings at the body size in `--fg`, lists with the marker in `--fg-subtle`, links in `--accent-text`, inline code in `--font-mono` on fg 6% at `--radius-control`, and the answer at the text weight (450), strong text in `--fg` at the interface weight (550, never bold, P9), and emphasis in `--fg`, upright. The answer is the content, and a box around long prose cramps it.
 - **The person's turn is a bubble:** right-aligned, `.litt-raised` at `--radius-surface`, padding `--space-3` and `--space-4`, text at the body size in `--fg`, at most 80% of the column (85% on compact screens) and 32rem. No tail and no accent fill: the accent stays on Send. Files the person sent sit above the bubble as the Composer's chips.
 - **Who is speaking:** the side says it. Each turn is an `article` with a visually hidden heading ("You", or the agent's name). An optional `name` shows above an agent's turn at the small size in `--fg`, for a thread with more than one agent or person, with an optional sm Avatar beside it. A name is never colored.
 - **Spacing:** turns sit `--space-8` apart. The parts of one turn (thinking, a plan, tool calls, the answer, its actions) sit `--space-3` apart.

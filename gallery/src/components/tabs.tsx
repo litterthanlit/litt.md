@@ -174,7 +174,7 @@ const triggerShape: Record<TabsVariant, Record<TabsSize, string>> = {
   },
   segmented: {
     md: "h-full px-control-pad-md text-small " + FILL_RADIUS,
-    sm: "h-full px-control-pad-sm text-caption pointer-coarse:text-small " + FILL_RADIUS,
+    sm: "h-full px-control-pad-sm text-caption pointer-coarse:text-small pointer-coarse:[font-weight:var(--weight)] " + FILL_RADIUS,
   },
 };
 

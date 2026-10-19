@@ -24,8 +24,8 @@ function Slider({ label, value, min, max, step, format, onChange }: {
   const id = useId();
   return (
     <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1">
-      <label htmlFor={id} className="text-small text-fg-muted">{label}</label>
-      <output htmlFor={id} className="font-mono text-caption text-fg tabular-nums">{format(value)}</output>
+      <label htmlFor={id} className="text-small [font-weight:var(--weight)] text-fg-muted">{label}</label>
+      <output htmlFor={id} className="font-mono text-caption [font-weight:var(--weight)] text-fg tabular-nums">{format(value)}</output>
       <input
         id={id} type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
@@ -62,7 +62,7 @@ function Group({ title, use, children }: { title: string; use: string; children:
   return (
     <section className="grid gap-4 border-t border-line pt-6">
       <header>
-        <h3 className="text-body text-fg">{title}</h3>
+        <h3 className="text-body [font-weight:var(--weight)] text-fg">{title}</h3>
         <p className="text-caption text-fg-subtle">{use}</p>
       </header>
       {children}
@@ -73,7 +73,7 @@ function Group({ title, use, children }: { title: string; use: string; children:
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (b: boolean) => void }) {
   const id = useId();
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-center justify-between gap-4 text-small text-fg-muted">
+    <label htmlFor={id} className="flex cursor-pointer items-center justify-between gap-4 text-small [font-weight:var(--weight)] text-fg-muted">
       {label}
       <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-4 accent-(--fg)" />
     </label>
@@ -123,7 +123,7 @@ export function MotionPanel({ device, onDeviceChange }: {
 
   const segmented = "grid overflow-hidden rounded-control shadow-[inset_0_0_0_1px_var(--line-strong)]";
   const segment =
-    "h-control-sm cursor-pointer text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg";
+    "h-control-sm cursor-pointer [font-weight:var(--weight)] text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg";
   const instantRange = span(dial.instant, 60, 160);
   const respRange = span(dial.responsive.time, 0.12, 0.4);
   const expRange = span(dial.expressive.time, 0.2, 0.7);
@@ -171,7 +171,7 @@ export function MotionPanel({ device, onDeviceChange }: {
 
       <Group title="Shape" use="Corner radius. Surfaces are controls plus the 4px inset">
         <div className="grid gap-2">
-          <span className="text-small text-fg-muted" id="radius-label">Radius</span>
+          <span className="text-small [font-weight:var(--weight)] text-fg-muted" id="radius-label">Radius</span>
           <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="radius-label">
             {RADII.map((r) => (
               <button key={r} type="button" aria-pressed={radius === r} onClick={() => setRadius(r)} className={segment + " font-mono text-caption"}>
@@ -205,7 +205,7 @@ export function MotionPanel({ device, onDeviceChange }: {
         <Curve spring={dial.expressive} />
         <Slider label="Stagger" value={dial.stagger} {...staggerRange} step={10} format={ms} onChange={(v) => update({ stagger: v })} />
         <div className="grid gap-2">
-          <span className="text-small text-fg-muted" id="travel-label">Travel</span>
+          <span className="text-small [font-weight:var(--weight)] text-fg-muted" id="travel-label">Travel</span>
           <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="travel-label">
             {TRAVELS.map((t) => (
               <button key={t} type="button" aria-pressed={dial.travel === t} onClick={() => update({ travel: t })} className={segment + " font-mono text-caption"}>
@@ -220,7 +220,7 @@ export function MotionPanel({ device, onDeviceChange }: {
         <Toggle label="Slow motion ×4" checked={slow === 4} onChange={(b) => setSlow(b ? 4 : 1)} />
         <Toggle label="Preview reduced motion" checked={reducedPreview} onChange={setReducedPreview} />
         <div className="grid gap-2">
-          <span className="text-small text-fg-muted" id="device-label">Device</span>
+          <span className="text-small [font-weight:var(--weight)] text-fg-muted" id="device-label">Device</span>
           <div className={segmented + " grid-cols-3"} role="group" aria-labelledby="device-label" aria-describedby="device-note">
             {DEVICES.map(({ mode, label }) => (
               <button key={mode} type="button" aria-pressed={device === mode} onClick={() => onDeviceChange(mode)} className={segment + " px-2 text-small"}>
@@ -235,7 +235,7 @@ export function MotionPanel({ device, onDeviceChange }: {
       </Group>
 
       <section className="grid gap-3 border-t border-line pt-6" aria-labelledby="rules-title">
-        <h3 id="rules-title" className="text-body text-fg">Against litt.md v{__LITT_MD_VERSION__} rules</h3>
+        <h3 id="rules-title" className="text-body [font-weight:var(--weight)] text-fg">Against litt.md v{__LITT_MD_VERSION__} rules</h3>
         <ul className="grid gap-2">
           {checks.map((c) => (
             <li key={c.text} className="flex items-start gap-2 text-small">
@@ -245,7 +245,7 @@ export function MotionPanel({ device, onDeviceChange }: {
           ))}
         </ul>
         <div className="grid gap-2 pt-2">
-          <h4 className="text-small text-fg-muted">Differs from locked</h4>
+          <h4 className="text-small [font-weight:var(--weight)] text-fg-muted">Differs from locked</h4>
           {differs.length ? (
             <ul className="grid gap-1 font-mono text-caption text-fg-subtle">
               {differs.map((d) => (

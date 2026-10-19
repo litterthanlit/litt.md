@@ -6,7 +6,7 @@ allowed-tools: Bash(node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs *), Bash
 
 # litt.md
 
-**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface at one weight, true gray neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
+**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface at two weights, true gray neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
 
 Skill directory: `${CLAUDE_SKILL_DIR}`. Every path below is relative to it.
 
@@ -50,7 +50,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 6. **P6 Precision.** 8px grid (4px inside components), 1px hairlines, tracking tightens as size grows.
 7. **P7 Airy rhythm.** One idea per section, 160 / 128 / 96px between sections, gutters of 48 / 32 / 16, and the split by default: the title in a left column beside the content.
 8. **P8 Designed, not inverted.** Each theme has its own material strengths. Both are first-class.
-9. **P9 One weight.** Everything at 550 (`--weight`), headings, buttons and mono included. Hierarchy comes from size, color and tracking.
+9. **P9 Two weights.** 450 for text you read (`--weight-text`), 550 for headings and anything you act on or that names something (`--weight`). Nothing bolder. Hierarchy comes from size, color and tracking.
 10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them at sm and md; an lg button runs wider (pad 32), so it never reads as a block. Hero CTAs and a page form's submit are lg (56); a dialog's fields and actions are md (44).
 11. **P11 Color carries data.** Beyond the one accent, color only says something: a series, a category, a heat step, a side of a goal, an identity. Five data hues in a fixed order (blue, amber, teal, violet, rose), each with a mark tone, a `-text` tone and a `-tint`. Never on chrome: buttons, surfaces, borders, nav and running text stay neutral. A single quantity stays in the foreground.
 
@@ -61,7 +61,7 @@ Each rule's Check line, the dos and don'ts, and the open questions are in `taste
 These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
-- **Type:** Hanken Grotesk + Geist Mono only, at one weight, 550. Display stops at 40.
+- **Type:** Hanken Grotesk + Geist Mono only, at two weights: 450 for text, 550 for the interface. Display stops at 40.
 - **Color:** true neutral grays, monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
 - **Density:** airy.
 - **Shape:** slight radius. Controls 6px (tags and chips too), surfaces 10px, pills only for avatars, icon-only buttons and switches.
@@ -93,7 +93,7 @@ These change only when Nick changes them.
 - **Data hues (P11):** `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` (words in the hue) and `-tint` (the fill behind them); marks take the plain name
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
-- **Type:** `--font-sans`, `--font-mono`, `--weight` (550), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
+- **Type:** `--font-sans`, `--font-mono`, `--weight` (550, interface), `--weight-text` (450, text), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
 - **Shape:** `--radius-control` (6), `--radius-surface` (10), `--radius-pill`
 - **Controls:** `--control-{sm,md,lg}` (32/44/56), `--control-pad-{sm,md,lg}` (12/16/24), `--button-pad-lg` (32), `--control-text-{sm,md,lg}`, `--control-gap`, `--control-group-gap`

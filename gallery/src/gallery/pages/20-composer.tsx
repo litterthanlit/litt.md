@@ -9,8 +9,7 @@ export const meta: PageMeta = {
   title: "Composer",
   order: 18.92,
   group: "Agents",
-  summary:
-    "Where the person writes to an agent: a text field that grows a line at a time, file chips, a toolbar and a round Send that turns into Stop while the agent answers. Send is the view's one accent fill. Only colors and the edge fade, on the instant tier, and a file chip enters on the responsive tier.",
+  summary: "Where a person writes to an agent. The field grows a line at a time, and Send becomes Stop while the agent answers.",
   tiers: ["instant", "responsive"],
 };
 
@@ -211,7 +210,7 @@ function StatesDemo() {
   return (
     <div className="grid w-full max-w-2xl gap-10">
       <section aria-labelledby={`${uid}-limit`} className="grid gap-3">
-        <h3 id={`${uid}-limit`} className="text-small text-fg">
+        <h3 id={`${uid}-limit`} className="text-small [font-weight:var(--weight)] text-fg">
           Near the limit
         </h3>
         <Composer
@@ -223,7 +222,7 @@ function StatesDemo() {
         />
       </section>
       <section aria-labelledby={`${uid}-approval`} className="grid gap-3">
-        <h3 id={`${uid}-approval`} className="text-small text-fg">
+        <h3 id={`${uid}-approval`} className="text-small [font-weight:var(--weight)] text-fg">
           Waiting for an approval
         </h3>
         <Composer
@@ -234,7 +233,7 @@ function StatesDemo() {
         />
       </section>
       <section aria-labelledby={`${uid}-disabled`} className="grid gap-3">
-        <h3 id={`${uid}-disabled`} className="text-small text-fg">
+        <h3 id={`${uid}-disabled`} className="text-small [font-weight:var(--weight)] text-fg">
           Disabled
         </h3>
         <Composer placeholder="Message Litt" hint="This chat is archived. Start a new one to keep writing." disabled />

@@ -172,7 +172,7 @@ function Choice({
       {/* The label is stretched over the whole row, so a click anywhere in it toggles the input. */}
       <label
         htmlFor={id}
-        className="col-start-2 row-start-1 min-h-5 cursor-pointer text-small text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled"
+        className="col-start-2 row-start-1 min-h-5 cursor-pointer text-small [font-weight:var(--weight)] text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled"
       >
         {label}
       </label>
@@ -276,7 +276,7 @@ function GroupShell({
   const note = error ?? help;
   return (
     <fieldset disabled={disabled} aria-describedby={note ? noteId : undefined} className={"m-0 min-w-0 border-0 p-0 " + className}>
-      <legend className={"p-0 text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>{legend}</legend>
+      <legend className={"p-0 text-small [font-weight:var(--weight)] " + (disabled ? "text-fg-disabled" : "text-fg")}>{legend}</legend>
       <div className="grid justify-items-start">{children}</div>
       {note && (
         <p id={noteId} className={"text-small " + (error ? "text-danger" : "text-fg-subtle")}>

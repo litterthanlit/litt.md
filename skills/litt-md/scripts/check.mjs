@@ -12,7 +12,7 @@
  * 4. Coverage:  every themed token is defined in both light and dark (P8).
  * 5. Contrast:  text, control lines, focus, accent, status and data-hue pairs meet WCAG
  *               (each data hue's -text tone is also checked on its own tint).
- * 6. Weight:    one weight, 550 (P9): no other font-weight, weight token or Google Fonts wght.
+ * 6. Weight:    two weights (P9), 450 for text and 550 for the interface: no other font-weight, weight token or Google Fonts wght.
  * 7. Radius:    corners are 0, --radius-control (6), --radius-surface (control + 4) or pill.
  * 8. Shadows:   no outer shadow has an x or y offset (P4).
  * 9. Motion:    three tiers (instant tween at most 240ms; springs with visual time at most
@@ -174,20 +174,20 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
 }
 if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes`);
 
-// 6. One weight (P9) ----------------------------------------------------
-console.log("One weight, 550 (P9)");
-const WEIGHT = 550;
+// 6. Two weights (P9) ---------------------------------------------------
+console.log("Two weights, 450 and 550 (P9)");
+const WEIGHTS = new Set([450, 550]);
 const weightFails = [];
 const assetFiles = fs.readdirSync(path.join(skillDir, "assets")).filter((f) => /\.(css|html)$/.test(f)).map((f) => `assets/${f}`);
 for (const f of assetFiles) {
   const text = strip(read(f));
-  for (const m of text.matchAll(/font-weight\s*:\s*(\d{3})/g)) if (Number(m[1]) !== WEIGHT) weightFails.push(`${f}: font-weight ${m[1]}`);
-  for (const m of text.matchAll(/--[\w-]*weight[\w-]*\s*:\s*(\d{3})/g)) if (Number(m[1]) !== WEIGHT) weightFails.push(`${f}: weight token ${m[0]}`);
-  for (const m of text.matchAll(/wght@([\d;.]+)/g)) if (m[1].split(/[;.]/).some((w) => Number(w) !== WEIGHT)) weightFails.push(`${f}: Google Fonts loads wght@${m[1]}`);
+  for (const m of text.matchAll(/font-weight\s*:\s*(\d{3})/g)) if (!WEIGHTS.has(Number(m[1]))) weightFails.push(`${f}: font-weight ${m[1]}`);
+  for (const m of text.matchAll(/--[\w-]*weight[\w-]*\s*:\s*(\d{3})/g)) if (!WEIGHTS.has(Number(m[1]))) weightFails.push(`${f}: weight token ${m[0]}`);
+  for (const m of text.matchAll(/wght@([\d;.]+)/g)) if (m[1].split(/[;.]/).some((w) => !WEIGHTS.has(Number(w)))) weightFails.push(`${f}: Google Fonts loads wght@${m[1]}`);
   for (const m of text.matchAll(/--weight-(medium|semibold|bold)\b/g)) weightFails.push(`${f}: references ${m[0]}`);
   for (const m of text.matchAll(/\bfont-(medium|semibold|bold|extrabold|black)\b/g)) weightFails.push(`${f}: uses ${m[0]}`);
 }
-weightFails.length ? weightFails.forEach(fail) : ok(`one weight (${WEIGHT}) in ${assetFiles.length} asset files`);
+weightFails.length ? weightFails.forEach(fail) : ok(`two weights (${[...WEIGHTS].join(" and ")}) in ${assetFiles.length} asset files`);
 
 // 7. Radius ---------------------------------------------------------------
 console.log("Radius (control 6, surface 10, pill)");

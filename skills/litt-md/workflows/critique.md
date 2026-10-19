@@ -36,7 +36,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 **D. Type**
 - [ ] Hanken Grotesk and Geist Mono only. Mono used only for code, keys and data.
 - [ ] Hierarchy comes from scale and color. One display size per page, and nothing larger than 40.
-- [ ] **P9** Everything at weight 550: nothing lighter, no semibold or bold, including headings, buttons and mono.
+- [ ] **P9** Two weights: running text at 450; headings, buttons, labels, nav, tags and names at 550. Nothing else, no semibold or bold.
 - [ ] Body text 13px or larger. Long text at a 65ch measure or narrower.
 
 **E. Motion** (`n/a` for static input)

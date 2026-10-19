@@ -12,8 +12,7 @@ export const meta: PageMeta = {
   id: "usage",
   title: "Usage",
   order: 18.8, group: "Data",
-  summary:
-    "A studio plan's usage, drawn only in rails: trends in thin lines at the foot of the figures, storage and bandwidth split by kind, the plan's limits with their budgets, and build times by site. Each hue names one kind of file across the whole page, everything else stays in the foreground, and nothing moves.",
+  summary: "A studio plan's usage, drawn only in thin rails and lines. Each hue names one kind of file across the whole page.",
   tiers: [],
 };
 
@@ -76,7 +75,7 @@ function Section({ title, note, children }: { title: string; note: string; child
   return (
     <section aria-labelledby={id} className="grid min-w-0 content-start gap-6">
       <div className="grid gap-1">
-        <h4 id={id} className="text-body text-fg">
+        <h4 id={id} className="text-body [font-weight:var(--weight)] text-fg">
           {title}
         </h4>
         <p className="text-small text-fg-subtle">{note}</p>

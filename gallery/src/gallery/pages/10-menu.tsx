@@ -29,7 +29,7 @@ export const meta: PageMeta = {
   title: "Menu",
   order: 10, group: "Overlays",
   summary:
-    "A glass dropdown with one highlight that glides from row to row. It grows from its trigger and travels from the side it really opens on. On a phone a submenu replaces the list in the same panel.",
+    "A glass dropdown with one highlight that glides from row to row. On a phone a submenu replaces the list in place.",
   tiers: ["instant", "responsive"],
 };
 
@@ -122,7 +122,7 @@ function ProjectMenu() {
     <div className="grid w-full max-w-md gap-4">
       <div className="flex items-center justify-between gap-4 bg-surface-2 p-4 pl-6 shadow-[inset_0_0_0_1px_var(--line)] rounded-surface">
         <div className="grid min-w-0 gap-1">
-          <span className="truncate text-body text-fg">Northwind site</span>
+          <span className="truncate text-body [font-weight:var(--weight)] text-fg">Northwind site</span>
           <span className="truncate text-small text-fg-subtle">Framer · published 2 days ago</span>
         </div>
         <Menu

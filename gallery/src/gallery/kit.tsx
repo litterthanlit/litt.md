@@ -147,7 +147,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
   const heading = (
     <div className="grid max-w-[60ch] gap-1">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="text-body text-fg">{title}</h2>
+        <h2 className="text-h4 text-fg">{title}</h2>
         {tier && <TierChip tier={tier} />}
       </div>
       <p className="text-small text-fg-subtle">{caption}</p>
@@ -156,9 +156,9 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
 
   if (code === undefined) {
     return (
-      <section className="grid gap-8" aria-label={title}>
-        <div className={"litt-raised relative grid overflow-visible rounded-surface p-8 sm:p-12 " + place + " " + height}>{children}</div>
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <section className="grid gap-6" aria-label={title}>
+        {/* The title and caption lead, then the demo: a page reads top to bottom as heading, then what it names. */}
+        <div className="flex flex-wrap items-end justify-between gap-4">
           {heading}
           {onReplay && (
             <Button size="sm" variant="secondary" onClick={onReplay}>
@@ -166,19 +166,20 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
             </Button>
           )}
         </div>
+        <div className={"litt-raised relative grid overflow-visible rounded-surface p-8 sm:p-12 " + place + " " + height}>{children}</div>
       </section>
     );
   }
 
   return (
-    <section className="grid gap-8" aria-label={title}>
+    <section className="grid gap-6" aria-label={title}>
       {/* The tabs root wraps both the box and the caption row, so the switch can sit in the
           caption row while its panels sit in the box. `contents` keeps it out of the layout.
-          The caption row comes first in the DOM and last on screen (order), so the tab list
-          is followed by its panel: after you pick Code with the arrow keys, Tab lands in the
-          code, and a screen reader hears the title, the switch, then the demo. */}
+          The caption row comes first, in the DOM and on screen, so the tab list is followed by
+          its panel: after you pick Code with the arrow keys, Tab lands in the code, and a
+          screen reader hears the title, the switch, then the demo. */}
       <Tabs value={view} onValueChange={(v) => setView(v as View)} variant="segmented" size="sm" className="contents">
-        <div className="order-2 flex flex-wrap items-start justify-between gap-4">
+        <div className="flex flex-wrap items-end justify-between gap-4">
           {heading}
           <div className="flex items-center gap-3">
             <TabsList aria-label={`${title} view`}>
@@ -202,7 +203,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
             )}
           </div>
         </div>
-        <div className={"litt-raised relative order-1 grid overflow-visible rounded-surface " + height}>
+        <div className={"litt-raised relative grid overflow-visible rounded-surface " + height}>
           <TabsPanels className="grid min-w-0">
             {/* The preview remounts when you come back to it, so a replay always starts clean. */}
             <TabsPanel value="preview" tabIndex={-1} className={"grid p-8 sm:p-12 " + place}>

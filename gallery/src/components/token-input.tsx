@@ -69,7 +69,7 @@ export type TokenInputProps = {
 /* The field: the Input's fill, edge, focus, error and disabled looks, on a wrapper that holds
    the tokens. The ring follows the text input only (the remove buttons draw their own). */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 [font-weight:var(--weight)] text-fg " +
+  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 [font-weight:var(--weight-text)] text-fg " +
   "shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
@@ -286,7 +286,7 @@ export function TokenInput({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label id={labelId} htmlFor={inputId} className={"text-small [font-weight:var(--weight)] " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
 
@@ -348,7 +348,7 @@ export function TokenInput({
                   key="more"
                   layout="position"
                   aria-label={`${more} more`}
-                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 text-caption text-fg-muted"
+                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 text-caption [font-weight:var(--weight)] text-fg-muted"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, transition: exit }}

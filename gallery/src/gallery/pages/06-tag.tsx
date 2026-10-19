@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Tag",
   order: 6, group: "Controls",
   summary:
-    "A small, flat label at the control radius that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
+    "A flat label that names a thing, files it or reports its state. A status tag colors its text, never the fill.",
   tiers: [],
 };
 
@@ -68,7 +68,7 @@ function LabelsDemo() {
       {WORK.map((p) => (
         <li key={p.name} className="grid content-start gap-4">
           <div className="grid gap-1">
-            <span className="text-body text-fg">{p.name}</span>
+            <span className="text-body [font-weight:var(--weight)] text-fg">{p.name}</span>
             <span className="text-caption text-fg-subtle">{p.client}</span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -117,7 +117,7 @@ function DeploysDemo() {
           key={d.site}
           className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-4 py-4 last:border-b-0"
         >
-          <span className="min-w-0 basis-full truncate text-body text-fg sm:flex-1 sm:basis-0">{d.site}</span>
+          <span className="min-w-0 basis-full truncate text-body [font-weight:var(--weight)] text-fg sm:flex-1 sm:basis-0">{d.site}</span>
           <span className="flex sm:w-24">
             <Tag>{d.env}</Tag>
           </span>
@@ -144,7 +144,7 @@ function CategoriesDemo() {
     <ul aria-label="Inbox" className="w-full max-w-2xl">
       {LABELS.map((m) => (
         <li key={m.mail} className="flex items-center gap-4 border-b border-line py-3 last:border-b-0">
-          <span className="w-28 shrink-0 truncate text-small text-fg">{m.from}</span>
+          <span className="w-28 shrink-0 truncate text-small [font-weight:var(--weight)] text-fg">{m.from}</span>
           <span className="w-0 min-w-0 flex-1 truncate text-small text-fg-subtle">{m.mail}</span>
           <Tag hue={m.hue}>{m.name}</Tag>
         </li>

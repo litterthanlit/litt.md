@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   title: "Popover",
   order: 9, group: "Overlays",
   summary:
-    "A floating glass panel for a small form, a share link or a detail card. It grows from its trigger's corner and slides in from the side it really opens on. On a phone it becomes a bottom sheet.",
+    "A floating glass panel for a small form, a share link or a detail card. On a phone it becomes a bottom sheet.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -108,7 +108,7 @@ function Choice({
   return (
     <label
       className={
-        "flex h-control-md cursor-pointer items-center gap-2 rounded-control px-3 text-small text-fg-muted " +
+        "flex h-control-md cursor-pointer items-center gap-2 rounded-control px-3 text-small [font-weight:var(--weight)] text-fg-muted " +
         "transition-colors duration-(--dur-instant) ease-litt " +
         "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " +
         "has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-focus"
@@ -160,7 +160,7 @@ function ShareDemo() {
       <PopoverContent label="Share a preview link" size="lg">
         <div className="grid gap-4">
           <div className="grid gap-1">
-            {!compact && <p className="text-body text-fg">Share a preview</p>}
+            {!compact && <p className="text-body [font-weight:var(--weight)] text-fg">Share a preview</p>}
             <p className="text-small text-fg-subtle">
               Anyone with the link can see the latest Northwind draft. It stops working when you unpublish.
             </p>
@@ -209,26 +209,26 @@ function ClientCardDemo() {
             <div className="flex items-center gap-3">
               <span
                 aria-hidden="true"
-                className="grid size-10 shrink-0 place-items-center rounded-pill bg-surface-3 text-small text-fg"
+                className="grid size-10 shrink-0 place-items-center rounded-pill bg-surface-3 text-small [font-weight:var(--weight)] text-fg"
               >
                 NM
               </span>
               <div className="grid min-w-0">
-                <p className="truncate text-body text-fg">Nina Morgan</p>
+                <p className="truncate text-body [font-weight:var(--weight)] text-fg">Nina Morgan</p>
                 <p className="truncate text-small text-fg-subtle">Head of brand, Northwind</p>
               </div>
             </div>
             <dl className="grid gap-3 border-t border-line pt-4">
               <div className="flex items-baseline justify-between gap-4">
-                <dt className="text-small text-fg-subtle">Projects</dt>
+                <dt className="text-small [font-weight:var(--weight)] text-fg-subtle">Projects</dt>
                 <dd className="text-small text-fg">2 live</dd>
               </div>
               <div className="flex items-baseline justify-between gap-4">
-                <dt className="text-small text-fg-subtle">Last build</dt>
+                <dt className="text-small [font-weight:var(--weight)] text-fg-subtle">Last build</dt>
                 <dd className="text-small text-fg">2 days ago</dd>
               </div>
               <div className="flex items-baseline justify-between gap-4">
-                <dt className="text-small text-fg-subtle">Email</dt>
+                <dt className="text-small [font-weight:var(--weight)] text-fg-subtle">Email</dt>
                 <dd className="min-w-0 truncate font-mono text-caption text-fg">nina@northwind.co</dd>
               </div>
             </dl>
@@ -260,7 +260,7 @@ const CLIENTS = ["Northwind", "Atlas", "Halo"];
 function FilterGroup({ legend, options, picked, onToggle }: { legend: string; options: string[]; picked: string[]; onToggle: (value: string) => void }) {
   return (
     <fieldset>
-      <legend className="flex h-control-sm items-center px-3 text-caption text-fg-subtle">{legend}</legend>
+      <legend className="flex h-control-sm items-center px-3 text-caption [font-weight:var(--weight)] text-fg-subtle">{legend}</legend>
       {options.map((o) => (
         <Choice key={o} type="checkbox" checked={picked.includes(o)} onChange={() => onToggle(o)}>
           {o}
@@ -355,7 +355,7 @@ function ScheduleForm({
     >
       <TextField label="Due date" type="date" value={nextDue} onChange={(e) => setNextDue(e.target.value)} />
       <fieldset className="grid gap-2">
-        <legend className="mb-2 text-small text-fg">Status</legend>
+        <legend className="mb-2 text-small [font-weight:var(--weight)] text-fg">Status</legend>
         <div className="-mx-3 flex">
           {STATE_OPTIONS.map((o) => (
             <Choice key={o.value} type="radio" name={name} checked={nextState === o.value} onChange={() => setNextState(o.value)}>
@@ -387,7 +387,7 @@ function ScheduleDemo() {
   return (
     <div ref={ref} className="flex items-center gap-6">
       <div className="grid justify-items-end">
-        <span className="text-small text-fg">Northwind site</span>
+        <span className="text-small [font-weight:var(--weight)] text-fg">Northwind site</span>
         <span role="status" className="text-caption text-fg-subtle">
           {label}
         </span>
@@ -436,9 +436,9 @@ function AccessDemo() {
       <PopoverContent label="Preview access">
         <div className="grid gap-6">
           <div className="grid gap-4">
-            {!compact && <p className="text-body text-fg">Preview access</p>}
+            {!compact && <p className="text-body [font-weight:var(--weight)] text-fg">Preview access</p>}
             <div className="grid gap-2">
-              <span className="text-small text-fg">Who can view</span>
+              <span className="text-small [font-weight:var(--weight)] text-fg">Who can view</span>
               {/* Opened from inside a glass popover, so this panel is solid. */}
               <Popover>
                 <PopoverTrigger asChild>
@@ -467,7 +467,7 @@ function AccessDemo() {
                           onChange={() => setAccess(a.value)}
                         />
                         <span className="grid min-w-0">
-                          <span className="text-small text-fg">{a.title}</span>
+                          <span className="text-small [font-weight:var(--weight)] text-fg">{a.title}</span>
                           <span className="text-caption text-fg-subtle">{a.note}</span>
                         </span>
                       </label>

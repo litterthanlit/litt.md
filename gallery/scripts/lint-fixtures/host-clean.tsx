@@ -105,7 +105,7 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
         Book {tier.name}
       </Button>
       {/* Nick's note: bold type, big shadows and bg-white cards are what this studio stays away from. */}
-      <p className="text-litt-caption text-litt-fg-subtle">Nick's studio keeps one weight, 550. Shadows are glows, not drops.</p>
+      <p className="text-litt-caption [font-weight:var(--litt-weight-text)] text-litt-fg-subtle">Nick's studio keeps two weights, 450 for text and 550 for the interface. Shadows are glows, not drops.</p>
     </motion.article>
   );
 }

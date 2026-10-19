@@ -9,8 +9,7 @@ export const meta: PageMeta = {
   title: "Thinking",
   order: 18.93,
   group: "Agents",
-  summary:
-    "The agent's reasoning as a quiet disclosure above its answer. It reads \"Thinking\" with a clock that counts whole seconds, then \"Thought for 12s\", and it folds itself away when the answer starts unless you opened it. No shimmer, no pulse, no spinner: the clock is the only live signal.",
+  summary: "The agent's reasoning as a quiet disclosure above its answer. A clock that counts seconds is the only live signal.",
   tiers: ["instant", "responsive"],
 };
 

@@ -8,7 +8,7 @@ To update an item, read the entries since your version, then reinstall it with `
 
 Six staples, and from this release every item carries its version, in the registry and at the top of each file it installs.
 
-Then taste profile v0.12, from Nick's own drawing of a primary button (Frame 103): one weight, 550, for every text in both faces; controls at 6px and surfaces at 10px; and the primary action as drawn, deep navy into cobalt inside a 1px deep blue edge, with no glow. Then v0.13: a tag is a label, not a control, so it sits flat. Then v0.14, from Nick's pick in the litt lab: true gray neutrals, more space between sections, and tags in the sans. Then v0.15: a lighter primary in the light theme. Then v0.16: body text a step lighter, so headings lead, and sidebar categories set off by a hairline. Items installed earlier today carry the same version, so install them again with `--overwrite`.
+Then taste profile v0.12, from Nick's own drawing of a primary button (Frame 103): one weight, 550, for every text in both faces; controls at 6px and surfaces at 10px; and the primary action as drawn, deep navy into cobalt inside a 1px deep blue edge, with no glow. Then v0.13: a tag is a label, not a control, so it sits flat. Then v0.14, from Nick's pick in the litt lab: true gray neutrals, more space between sections, and tags in the sans. Then v0.15: a lighter primary in the light theme. Then v0.16: body text a step lighter, so headings lead, and sidebar categories set off by a hairline. Then v0.17: two weights, 450 for text you read and 550 for headings and the interface. Items installed earlier today carry the same version, so install them again with `--overwrite`.
 
 - **added** `combobox`: type to find one value, or several, in a long list.
 - **added** `date-picker`: Calendar and DatePicker, a day or a range as YYYY-MM-DD strings.
@@ -29,6 +29,10 @@ Then taste profile v0.12, from Nick's own drawing of a primary button (Frame 103
 - **changed** `litt`: the light theme's primary fill is lighter, a mid cobalt rather than navy (`--litt-accent-top`, `--litt-accent`, their hovers and `--litt-accent-edge`), with a white label (`--litt-accent-fg`). The dark theme is unchanged.
 - **changed** `litt`: body text (`--litt-fg-muted`) is a clear step lighter in both themes, so headings in `--litt-fg` lead; it still reaches 6.7:1 or more on every surface.
 - **changed** `app-shell`: a SidebarNav heading sits over its links with a hairline under it, smaller and quieter than the links, and groups sit 32px apart, so each category reads as its own group.
+- **changed** `litt`: two weights. `--litt-weight` (550) is the interface and `--litt-weight-text` (450) is text you read; `text-litt-reading`, `-body`, `-small` and `-caption` now carry 450 and the heading steps 550.
+  Migrate: text you wrote with a small `text-litt-` step reads at 450 now. Where it names something or is pressed (a label, a nav link, a name in a row), add `[font-weight:var(--litt-weight)]`.
+- **changed** `base-styles`: the page's text is 450, with headings, `th`, `b` and `strong` at 550.
+- **changed** `app-shell`, `avatar`, `bar-list`, `breadcrumb`, `breakdown`, `button`, `callout`, `card`, `chart`, `checkbox`, `code-block`, `combobox`, `command-menu`, `composer`, `date-picker`, `dot-plot`, `form`, `gauge`, `header`, `heatmap`, `input`, `kbd`, `list`, `menu`, `message`, `pad`, `pagination`, `plan`, `segmented`, `select`, `slider`, `spread`, `stat`, `states`, `switch`, `table`, `tabs`, `tag`, `timeline`, `toast`, `token-input`, `tool-call`: interface text (titles, labels, nav, tabs, rows you pick, tags, names and key values) sets the 550 interface weight itself; descriptions, captions, cells, typed values and message bodies read at 450.
 
 ## 2026-10-18 · Agents
 

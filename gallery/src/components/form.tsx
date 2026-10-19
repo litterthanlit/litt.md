@@ -105,7 +105,7 @@ export function FormSection({ title, description, children, className = "" }: Fo
       }
     >
       <div className="grid content-start gap-1">
-        <h2 id={titleId} className="text-body text-fg">
+        <h2 id={titleId} className="text-body [font-weight:var(--weight)] text-fg">
           {title}
         </h2>
         {description && <p className="text-pretty text-small text-fg-subtle">{description}</p>}
@@ -152,7 +152,7 @@ export function Fieldset({ legend, description, help, error, disabled, rows = fa
       aria-describedby={describedBy || undefined}
       className={"my-6 min-w-0 border-0 p-0 first:mt-0 last:mb-0 " + className}
     >
-      <legend className={"p-0 text-small " + (description ? "mb-1 " : "mb-4 ") + (disabled ? "text-fg-disabled" : "text-fg")}>{legend}</legend>
+      <legend className={"p-0 text-small [font-weight:var(--weight)] " + (description ? "mb-1 " : "mb-4 ") + (disabled ? "text-fg-disabled" : "text-fg")}>{legend}</legend>
       {description && (
         <p id={`${id}-description`} className={"mb-4 text-small " + (disabled ? "text-fg-disabled" : "text-fg-subtle")}>
           {description}
@@ -234,13 +234,13 @@ export function ErrorSummary({ errors, title, focusKey, className = "" }: ErrorS
           <span className="grid h-lh shrink-0 place-items-center text-body text-danger">
             <AlertIcon />
           </span>
-          <h2 id={titleId} className="text-body text-fg">
+          <h2 id={titleId} className="text-body [font-weight:var(--weight)] text-fg">
             {heading}
           </h2>
         </div>
         <ul role="list" aria-labelledby={titleId} className="m-0 grid list-none gap-2 p-0 pl-6">
           {errors.map((e) => (
-            <li key={e.id} className="text-small">
+            <li key={e.id} className="text-small [font-weight:var(--weight)]">
               {/* The href names the field for a screen reader's link list. The click moves focus by hand, because the hash belongs to the router. */}
               <a
                 href={`#${e.id}`}

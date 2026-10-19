@@ -54,7 +54,7 @@ function ThemeSwitch() {
       {THEMES.map(({ id, label, Icon }) => (
         <button
           key={id} type="button" aria-pressed={theme === id} aria-label={label} onClick={() => choose(id)}
-          className="grid h-control-sm min-w-control-sm cursor-pointer place-items-center text-small text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg pointer-coarse:h-control-md pointer-coarse:min-w-control-md sm:px-3"
+          className="grid h-control-sm min-w-control-sm cursor-pointer place-items-center text-small [font-weight:var(--weight)] text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg pointer-coarse:h-control-md pointer-coarse:min-w-control-md sm:px-3"
         >
           <Icon className="sm:hidden" />
           <span className="hidden sm:inline">{label}</span>
@@ -134,7 +134,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         href={`#${p.id}`}
         aria-current={current ? "page" : undefined}
         className={
-          "relative isolate flex h-control-sm items-center rounded-control px-3 text-small transition-[background-color,color] duration-(--dur-instant) ease-litt " +
+          "relative isolate flex h-control-sm items-center rounded-control px-3 text-small [font-weight:var(--weight)] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
           (compact ? "shrink-0 " : "") +
           (current
             ? "text-fg"
@@ -169,8 +169,8 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       {/* Full-bleed, so no corners: .litt-glass carries the surface radius. */}
       <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none">
         <div className={FRAME + " flex h-16 items-center justify-between gap-4"}>
-          <a href={`#${pages[0]?.id ?? ""}`} className="flex items-baseline gap-2 text-body text-fg">
-            litt.md <span className="text-fg-subtle">Gallery</span>
+          <a href={`#${pages[0]?.id ?? ""}`} className="text-body [font-weight:var(--weight)] text-fg">
+            litt.md
           </a>
           <ThemeSwitch />
         </div>
@@ -189,7 +189,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
               run.group ? (
                 <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid gap-px">
                   {/* A category is a heading over its links, set off by a hairline, smaller and quieter than the links. */}
-                  <p id={`nav-${run.group}`} className="mx-3 mb-2 border-b border-line pb-2 text-caption text-fg-subtle">
+                  <p id={`nav-${run.group}`} className="mx-3 mb-2 border-b border-line pb-2 text-caption [font-weight:var(--weight)] text-fg-subtle">
                     {run.group}
                   </p>
                   {run.pages.map((p) => navLink(p))}
@@ -215,9 +215,9 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           <div className="sticky top-16 grid h-[calc(100svh-4rem)] content-between gap-12 pt-32 pb-12">
             <div className="grid content-start gap-8">
               <div className="grid gap-2">
-                <p className="text-caption text-fg-subtle">Latest release</p>
+                <p className="text-caption [font-weight:var(--weight)] text-fg-subtle">Latest release</p>
                 <a href="#changelog" className="group grid gap-1 rounded-control">
-                  <span className="text-small text-fg text-balance transition-colors duration-(--dur-instant) ease-litt group-hover:text-accent-text">{latest.title}</span>
+                  <span className="text-small [font-weight:var(--weight)] text-fg text-balance transition-colors duration-(--dur-instant) ease-litt group-hover:text-accent-text">{latest.title}</span>
                   <span className="font-mono text-caption text-fg-subtle">{latest.version}</span>
                 </a>
               </div>
@@ -231,7 +231,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                     <a
                       href={href}
                       {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                      className="-mx-3 flex h-control-sm items-center justify-between gap-2 rounded-control px-3 text-small text-fg-subtle transition-[background-color,color] duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg"
+                      className="-mx-3 flex h-control-sm items-center justify-between gap-2 rounded-control px-3 text-small [font-weight:var(--weight)] text-fg-subtle transition-[background-color,color] duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg"
                     >
                       {label}
                       <ArrowUpRightIcon aria-hidden="true" className="shrink-0" />
@@ -241,7 +241,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
               </ul>
             </div>
             {/* The whole credit is the link, so it never relies on color alone inside a line of text. */}
-            <a href={MADE_BY.href} target="_blank" rel="noopener noreferrer" className="group flex w-fit items-center gap-2 rounded-control text-small text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg-muted">
+            <a href={MADE_BY.href} target="_blank" rel="noopener noreferrer" className="group flex w-fit items-center gap-2 rounded-control text-small [font-weight:var(--weight)] text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg-muted">
               <Avatar name={MADE_BY.name} size="sm" decorative />
               <span>
                 Made by <span className="text-fg-muted transition-colors duration-(--dur-instant) ease-litt group-hover:text-fg">{MADE_BY.name}</span>

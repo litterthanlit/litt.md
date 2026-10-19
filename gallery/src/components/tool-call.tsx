@@ -178,7 +178,7 @@ function useDisclosure(openProp: boolean | undefined, defaultOpen: boolean, onOp
 function Block({ caption, name, children }: { caption: string; name: string | undefined; children: ReactNode }) {
   return (
     <div className="grid min-w-0 gap-1">
-      <p aria-hidden="true" className="text-caption text-fg-subtle">
+      <p aria-hidden="true" className="text-caption [font-weight:var(--weight)] text-fg-subtle">
         {caption}
       </p>
       <div
@@ -257,9 +257,9 @@ export function ToolCall({
   const content = (
     <>
       <StatusIcon status={MARK[status]} className={"shrink-0 " + TONE[status]} />
-      <span className={"shrink-0 whitespace-nowrap text-small text-fg-muted " + (details ? BRIGHTEN : "")}>{action}</span>
+      <span className={"shrink-0 whitespace-nowrap text-small [font-weight:var(--weight)] text-fg-muted " + (details ? BRIGHTEN : "")}>{action}</span>
       {given(target) && (
-        <span title={typeof target === "string" ? target : undefined} className="min-w-0 truncate font-mono text-small text-fg">
+        <span title={typeof target === "string" ? target : undefined} className="min-w-0 truncate font-mono text-small [font-weight:var(--weight)] text-fg">
           {target}
         </span>
       )}
@@ -359,7 +359,7 @@ export function ToolCallGroup({
   return (
     <div className={"min-w-0 " + className}>
       <button type="button" aria-expanded={open} aria-controls={open ? id : undefined} onClick={toggle} className={ROW + " " + ROW_BUTTON}>
-        <span id={summaryId} className={"min-w-0 py-1 text-small text-fg-muted " + BRIGHTEN}>
+        <span id={summaryId} className={"min-w-0 py-1 text-small [font-weight:var(--weight)] text-fg-muted " + BRIGHTEN}>
           {said}
           {running && <span className="sr-only"> running</span>}
         </span>
@@ -452,7 +452,7 @@ export function ToolApproval({
       </div>
       {decision === "pending" ? (
         <div role="group" aria-labelledby={titleId} className="litt-raised grid gap-3 p-4">
-          <p id={titleId} className="text-body text-fg">
+          <p id={titleId} className="text-body [font-weight:var(--weight)] text-fg">
             {title}
           </p>
           <code className="block rounded-control bg-surface-2 px-3 py-2 font-mono text-small text-fg whitespace-pre-wrap [overflow-wrap:anywhere]">

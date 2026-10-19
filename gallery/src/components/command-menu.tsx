@@ -233,7 +233,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           {glide.highlight}
           {sections.map((s) => (
             <div key={s.id} role="group" aria-labelledby={`${uid}-g-${s.id}`}>
-              <div id={`${uid}-g-${s.id}`} className="flex h-control-sm items-center px-3 text-caption text-fg-subtle">
+              <div id={`${uid}-g-${s.id}`} className="flex h-control-sm items-center px-3 text-caption [font-weight:var(--weight)] text-fg-subtle">
                 {s.heading}
               </div>
               {s.rows.map((r) => (
@@ -246,11 +246,11 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
                   data-active={r.index === current || undefined}
                   {...GLIDE_ROW}
                   onClick={() => !r.disabled && onSelect(r)}
-                  className="relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled"
+                  className="relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control px-3 text-small [font-weight:var(--weight)] text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled"
                 >
                   {r.icon !== undefined && <span className="grid size-4 shrink-0 place-items-center">{r.icon}</span>}
                   <span className="min-w-0 truncate">{r.label}</span>
-                  {r.shortcut && !coarse && <span className="ml-auto shrink-0 pl-4 font-mono text-caption text-fg-subtle">{r.shortcut}</span>}
+                  {r.shortcut && !coarse && <span className="ml-auto shrink-0 pl-4 font-mono text-caption [font-weight:var(--weight)] text-fg-subtle">{r.shortcut}</span>}
                 </div>
               ))}
             </div>

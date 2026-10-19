@@ -163,7 +163,7 @@ const toList = (value: string | string[] | undefined): string[] | undefined =>
 /* The Input's fill, edge, focus, error and disabled looks, on a wrapper that holds the text field (and the tokens).
    The ring follows the text field only: the remove buttons draw their own. */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 [font-weight:var(--weight)] text-fg " +
+  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 [font-weight:var(--weight-text)] text-fg " +
   "shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
@@ -500,7 +500,7 @@ export function Combobox<Multiple extends boolean = false>({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label id={labelId} htmlFor={inputId} className={"text-small [font-weight:var(--weight)] " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
 
@@ -666,11 +666,11 @@ type PanelProps = {
 };
 
 const ROW =
-  "relative flex h-control-md w-full cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
+  "relative flex h-control-md w-full cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small [font-weight:var(--weight)] outline-none " +
   "[-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt " +
   "text-fg-muted aria-selected:text-fg data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled";
 /** The group label row: the Menu's. */
-const LABEL_ROW = "flex h-control-sm items-center px-3 text-caption text-fg-subtle";
+const LABEL_ROW = "flex h-control-sm items-center px-3 text-caption [font-weight:var(--weight)] text-fg-subtle";
 
 /**
  * The anchored list. It mounts on open and stays through its exit, so the glide starts fresh each time. While it

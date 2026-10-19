@@ -6,11 +6,12 @@
  *   1970-01-01 in UTC, and Intl formats with timeZone "UTC", so no time zone can move a day. Today is the
  *   viewer's own date. It is read after hydration (null on the server), so Next.js never renders a stale
  *   ring. The locale defaults to en-GB and the week to Monday, both props.
- * - Calendar: a header with the month and year at the body size in --fg and previous and next as icon-only
- *   ghost sm Buttons (44px on a coarse pointer). Weekday names in caption --fg-subtle, from Intl. Always six
- *   weeks, so the height never changes. Days are 40px cells (44 on a coarse pointer) at the control radius,
- *   numbers in mono at the small size with tabular figures. Days of the last and next month are
- *   --fg-disabled and inert: they carry no state and take no pointer, and the keys page to them. Disabled
+ * - Calendar: a header with the month and year at the body size and the interface weight (550) in --fg, and
+ *   previous and next as icon-only ghost sm Buttons (44px on a coarse pointer). Weekday names in caption
+ *   --fg-subtle at the text weight (450), from Intl. Always six weeks, so the height never changes. Days are 40px
+ *   cells (44 on a coarse pointer) at the control radius, numbers in mono at the small size and the interface
+ *   weight with tabular figures. Days of the last and next month are --fg-disabled and inert: they carry no
+ *   state and take no pointer, and the keys page to them. Disabled
  *   days (min, max, isDisabled) are --fg-disabled too, take no hover and stay reachable by the keys, as
  *   aria-disabled buttons.
  * - Day states: hover fills with fg 6% on the instant tier (a finger's press too). Today has an inset 1px
@@ -262,7 +263,7 @@ const CELL = "h-10 w-10 max-w-full pointer-coarse:h-11 pointer-coarse:w-11";
 const ROW = "grid grid-cols-7";
 
 const dayBase =
-  "relative grid size-full place-items-center rounded-control font-mono text-small tabular-nums select-none " +
+  "relative grid size-full place-items-center rounded-control font-mono text-small [font-weight:var(--weight)] tabular-nums select-none " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
@@ -467,7 +468,7 @@ export function Calendar<M extends CalendarMode = "single">({
           <AnimatePresence initial={false} mode="popLayout">
             <motion.span
               key={month}
-              className="block truncate text-body text-fg"
+              className="block truncate text-body [font-weight:var(--weight)] text-fg"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: enter }}
               exit={{ opacity: 0, transition: exit }}
@@ -604,7 +605,7 @@ function DayCell({
   if (!day.inMonth) {
     /* Another month's day: inactive here (aria-disabled), so its dimmed number is exempt from contrast, as a disabled control's is. */
     return (
-      <div role="gridcell" aria-disabled="true" className={"grid place-items-center font-mono text-small tabular-nums text-fg-disabled select-none " + CELL}>
+      <div role="gridcell" aria-disabled="true" className={"grid place-items-center font-mono text-small [font-weight:var(--weight)] tabular-nums text-fg-disabled select-none " + CELL}>
         <span aria-hidden="true">{number}</span>
       </div>
     );
@@ -645,7 +646,7 @@ function DayCell({
 
 /* The Select trigger's look and sizes (select.tsx), which do not ship as exports. */
 const field =
-  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left [font-weight:var(--weight)] text-fg " +
+  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left [font-weight:var(--weight-text)] text-fg " +
   "data-placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +
@@ -665,7 +666,7 @@ const sizes: Record<DatePickerSize, string> = {
 };
 
 const presetRow =
-  "flex h-9 w-full cursor-pointer items-center whitespace-nowrap rounded-control px-3 text-left text-small " +
+  "flex h-9 w-full cursor-pointer items-center whitespace-nowrap rounded-control px-3 text-left text-small [font-weight:var(--weight)] " +
   "[-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt " +
   "hover:text-fg pointer-coarse:active:text-fg " +
   HOVER +
@@ -753,7 +754,7 @@ export function DatePicker<M extends CalendarMode = "single">({
           e.preventDefault();
           trigger.current?.focus();
         }}
-        className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}
+        className={"text-small [font-weight:var(--weight)] " + (disabled ? "text-fg-disabled" : "text-fg")}
       >
         {label}
       </label>

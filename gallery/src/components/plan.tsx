@@ -154,7 +154,7 @@ export function Plan({ label, steps, className = "" }: PlanProps) {
     <div className={className}>
       <div className="grid gap-2">
         <div className="flex items-baseline justify-between gap-4">
-          <span id={id} className="text-small text-fg">
+          <span id={id} className="text-small [font-weight:var(--weight)] text-fg">
             {label}
           </span>
           <span className="font-mono text-caption tabular-nums text-fg-subtle">
@@ -183,7 +183,7 @@ export function Plan({ label, steps, className = "" }: PlanProps) {
                 <StatusIcon status={step.status} />
               </span>
               <div className="min-w-0">
-                <p className={`text-small ${FADE} ${LABEL_TONE[step.status]}`}>
+                <p className={`text-small [font-weight:var(--weight)] ${FADE} ${LABEL_TONE[step.status]}`}>
                   {step.label}
                   <span className="sr-only">, {SAID[step.status]}</span>
                   {word && (

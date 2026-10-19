@@ -17,7 +17,7 @@
 
 /* Opt-in strict mode for new projects: uncomment to delete Tailwind's default
    palette, radii and weights, so off-system values (bg-blue-500, rounded-lg,
-   font-semibold) don't exist. Every text-* size already sets the one weight.
+   font-semibold) don't exist. Every text-* size already sets its weight: headings 550, text 450.
 @theme {
   --color-*: initial;
   --radius-*: initial;
@@ -102,22 +102,22 @@
   --text-reading: var(--type-reading-size);
   --text-reading--line-height: var(--type-reading-leading);
   --text-reading--letter-spacing: var(--type-reading-tracking);
-  --text-reading--font-weight: var(--weight);
+  --text-reading--font-weight: var(--weight-text);
 
   --text-body: var(--type-body-size);
   --text-body--line-height: var(--type-body-leading);
   --text-body--letter-spacing: var(--type-body-tracking);
-  --text-body--font-weight: var(--weight);
+  --text-body--font-weight: var(--weight-text);
 
   --text-small: var(--type-small-size);
   --text-small--line-height: var(--type-small-leading);
   --text-small--letter-spacing: var(--type-small-tracking);
-  --text-small--font-weight: var(--weight);
+  --text-small--font-weight: var(--weight-text);
 
   --text-caption: var(--type-caption-size);
   --text-caption--line-height: var(--type-caption-leading);
   --text-caption--letter-spacing: var(--type-caption-tracking);
-  --text-caption--font-weight: var(--weight);
+  --text-caption--font-weight: var(--weight-text);
 
   /* Layout: py-section, max-w-content, etc. */
   --spacing-section: var(--section-y);
@@ -166,6 +166,7 @@
     background: var(--canvas);
     color: var(--fg-muted);
     font-family: var(--font-sans);
+    font-weight: var(--weight-text);
     font-size: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

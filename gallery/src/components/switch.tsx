@@ -139,7 +139,7 @@ export function Switch({
       <label
         htmlFor={id}
         className={
-          "row-start-1 min-h-5 cursor-pointer text-small text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled " +
+          "row-start-1 min-h-5 cursor-pointer text-small [font-weight:var(--weight)] text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled " +
           (end ? "col-start-1" : "col-start-2")
         }
       >

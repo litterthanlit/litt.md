@@ -2765,7 +2765,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (geo.bubbleRadius !== "10px") throw new Error(`the bubble radius is ${geo.bubbleRadius}, not the 10px surface radius`);
           if (geo.turnBg !== "rgba(0, 0, 0, 0)" || geo.turnShadow !== "none") throw new Error(`the agent's turn has a fill (${geo.turnBg}) or a shadow (${geo.turnShadow})`);
           if (geo.answer !== muted) throw new Error(`the agent's words are ${geo.answer}, not --litt-fg-muted (${muted})`);
-          if (geo.codeBg !== code6 || geo.codeRadius !== "6px" || geo.codeWeight !== "550") throw new Error(`inline code is ${geo.codeBg} at ${geo.codeRadius}, weight ${geo.codeWeight}, not fg 6% at 6px, 550`);
+          if (geo.codeBg !== code6 || geo.codeRadius !== "6px" || geo.codeWeight !== "450") throw new Error(`inline code is ${geo.codeBg} at ${geo.codeRadius}, weight ${geo.codeWeight}, not fg 6% at 6px, 450`);
           const latest = await box.getByRole("group", { name: "Message actions" }).evaluate((g) => getComputedStyle(g.parentElement).opacity);
           if (latest !== "1") throw new Error(`the latest turn's actions have opacity ${latest}, not 1`);
           if ((await box.getByRole("button", { name: "Retry", exact: true }).count()) !== 1) throw new Error("no Retry button in the actions");

@@ -18,8 +18,7 @@ export const meta: PageMeta = {
   id: "table",
   title: "Table",
   order: 16, group: "Data",
-  summary:
-    "Real table semantics with hairline rows, mono figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything.",
+  summary: "A real table with hairline rows, mono figures and a sticky header. Hover fills a row and never moves anything.",
   tiers: ["instant", "responsive", "expressive"],
 };
 

@@ -169,7 +169,7 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
     <div className={"grid grid-cols-1 content-start " + (layout === "legend" ? "gap-4 " : "gap-6 ") + className}>
       <div className="grid grid-cols-1 gap-2">
         <div aria-hidden="true" className="flex items-baseline justify-between gap-4">
-          <span className="min-w-0 truncate text-small text-fg">{label}</span>
+          <span className="min-w-0 truncate text-small [font-weight:var(--weight)] text-fg">{label}</span>
           <span className="shrink-0 whitespace-nowrap font-mono text-caption tabular-nums text-fg-subtle">{reading}</span>
         </div>
         <div role="img" aria-label={summary} className="flex h-1 gap-0.5 overflow-hidden">
@@ -211,7 +211,7 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
             return (
               <li key={`${i}-${p.label}`} className="grid grid-cols-1 gap-2">
                 <div aria-hidden="true" className="flex items-baseline justify-between gap-4">
-                  <span id={nameId} className="min-w-0 truncate text-small text-fg">
+                  <span id={nameId} className="min-w-0 truncate text-small [font-weight:var(--weight)] text-fg">
                     {p.label}
                   </span>
                   <span className="shrink-0 whitespace-nowrap font-mono text-caption tabular-nums text-fg-subtle">

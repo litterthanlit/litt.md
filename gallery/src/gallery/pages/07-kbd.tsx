@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   title: "Kbd",
   order: 7, group: "Controls",
   summary:
-    "The key cap for a real shortcut: a 20px chip in Geist Mono. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",
+    "The key cap for a real shortcut, a 20px chip in Geist Mono. Every shortcut hint in the gallery is this component.",
   tiers: [],
 };
 
@@ -99,7 +99,7 @@ function ShortcutsDemo() {
     <dl className="w-full max-w-md rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
       {SHORTCUTS.map((s) => (
         <div key={s.label} className="flex h-12 items-center justify-between gap-4 border-b border-line px-3 last:border-b-0">
-          <dt className="text-small text-fg">{s.label}</dt>
+          <dt className="text-small [font-weight:var(--weight)] text-fg">{s.label}</dt>
           <dd className="flex gap-1">
             {s.keys.map((k) => (
               <Kbd key={k}>{k}</Kbd>
@@ -137,7 +137,7 @@ export default function KbdPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Keys"
-        caption="A key cap is 20px tall at the control radius, with a surface-2 fill and a hairline. Geist Mono at the one weight (550) in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
+        caption="A key cap is 20px tall at the control radius, with a surface-2 fill and a hairline. Geist Mono at the interface weight (550) in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
         code="KeysDemo"
       >
         <KeysDemo />

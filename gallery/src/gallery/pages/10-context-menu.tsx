@@ -22,7 +22,7 @@ export const meta: PageMeta = {
   order: 10.5,
   group: "Overlays",
   summary:
-    "The Menu at the pointer: a right-click, Shift+F10 or a press and hold on touch. The same glass, rows and gliding highlight, grown from the pointer's corner. Every action in it is also somewhere else.",
+    "The Menu at the pointer, opened by a right-click, Shift+F10 or a press and hold. Its actions also live elsewhere.",
   tiers: ["instant", "responsive"],
 };
 
@@ -178,7 +178,7 @@ function ProjectRowsDemo() {
                 <div className={rowFill}>
                   <button type="button" className={rowButton} onClick={() => setLast(`Opened ${p.name}`)}>
                     <span className="grid min-w-0 flex-1 gap-1">
-                      <span className="truncate text-body text-fg">{p.name}</span>
+                      <span className="truncate text-body [font-weight:var(--weight)] text-fg">{p.name}</span>
                       <span className="truncate text-caption text-fg-subtle">{p.client}</span>
                     </span>
                     <StatusTag status={p.status} className="shrink-0" />
@@ -293,7 +293,7 @@ function FileGridDemo() {
           <section aria-label="Assets folder" className="grid gap-4 rounded-surface p-4 shadow-[inset_0_0_0_1px_var(--line)]">
             <div className="flex items-center justify-between gap-4">
               <div className="grid min-w-0 gap-1">
-                <h3 className="truncate text-body text-fg">Assets</h3>
+                <h3 className="truncate text-body [font-weight:var(--weight)] text-fg">Assets</h3>
                 <p className="truncate text-caption text-fg-subtle">Marlow Labs · {files.length} files</p>
               </div>
               <Menu
@@ -325,7 +325,7 @@ function FileGridDemo() {
                       <FileIcon />
                     </span>
                     <span className="grid min-w-0 gap-1">
-                      <span className="truncate text-small text-fg">{fileName(f)}</span>
+                      <span className="truncate text-small [font-weight:var(--weight)] text-fg">{fileName(f)}</span>
                       <span className="font-mono text-caption text-fg-subtle">{size(f.kb)}</span>
                     </span>
                   </button>

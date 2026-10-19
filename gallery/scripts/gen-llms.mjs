@@ -183,7 +183,7 @@ function llmsTxt(pages) {
   const patterns = pages.filter((p) => !p.docs && p.meta.group);
   const sections = [
     "# litt.md",
-    "> Nick's design language for web and product UI as a shadcn registry: React and Tailwind CSS v4 components on locked tokens. Technical precision, lit from above: an 8px grid, hairlines, Hanken Grotesk at weight 550, true gray neutrals, glass only on floating surfaces, and quick motion with one expressive moment per view.",
+    "> Nick's design language for web and product UI as a shadcn registry: React and Tailwind CSS v4 components on locked tokens. Technical precision, lit from above: an 8px grid, hairlines, Hanken Grotesk at 450 for text and 550 for the interface, true gray neutrals, glass only on floating surfaces, and quick motion with one expressive moment per view.",
     `Every page below is Markdown with the install command, a usage example, the props, the keyboard and what it guarantees for accessibility. The gallery itself is ${ORIGIN} (each page at /#<page>), the registry index is ${ORIGIN}/r/registry.json, and the changes, release by release with migration steps, are at ${ORIGIN}/changelog.md.`,
     "## Install",
     [
@@ -192,14 +192,14 @@ function llmsTxt(pages) {
       'Or add `"registries": { "@litt": "https://littmd.vercel.app/r/{name}.json" }` to components.json once, then `npx shadcn@latest add @litt/button`.',
       bullets([
         "Needs a shadcn project (a components.json) with Tailwind CSS v4.",
-        "Optional: `npx shadcn@latest add https://littmd.vercel.app/r/base-styles.json` for litt's fonts, its one weight (550) and focus ring across the whole app.",
+        "Optional: `npx shadcn@latest add https://littmd.vercel.app/r/base-styles.json` for litt's fonts, its two weights and focus ring across the whole app.",
         `Every installed file names its release in its first lines (\`// @litt/button ${lock.latest}\`). To update, read the changelog since then and install again with \`--overwrite\`.`,
         `For the whole design language (taste, tokens, build and critique workflows), install the Claude Code plugin: \`claude plugin marketplace add litterthanlit/litt.md\`, then \`claude plugin install litt-md@litt\`. Source: ${REPO}.`,
       ]),
     ].join("\n\n"),
     "## House rules",
     bullets([
-      "One weight, 550, everywhere: each `text-litt-` step sets it, and `font-normal` is not it. Hierarchy comes from size and color, never weight.",
+      "Two weights: text is 450 (each small `text-litt-` step carries it), headings and interface text are 550 (`[font-weight:var(--litt-weight)]` on labels, nav, tabs and names). `font-normal` is not a litt weight. Hierarchy comes from size and color.",
       "Tokens only: no hex and no raw colors. Radii are rounded-litt-control (6px), rounded-litt-surface (10px) or rounded-litt-pill (avatars, icon-only buttons, switches).",
       "One accent fill per view, on the primary action, which is a deeper-blue-to-cobalt gradient with no glow (`Button variant=\"primary\"`). Checkboxes, radios and switches fill with the foreground color.",
       "Glass only on floating surfaces (menus, popovers, dialogs, toasts). Cards in the page flow are raised, with no shadow.",

@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   order: 2,
   group: "Controls",
   summary:
-    "A roomy, slightly rounded field on the same 32, 44 and 56 scale as Button. Focus turns the edge to the focus color and adds a ring, and an error turns it to danger, both on the instant tier, so the field answers without ever moving its box.",
+    "A field on the same 32, 44 and 56 scale as Button. Focus and errors change its edge, never its size.",
   tiers: ["instant"],
 };
 

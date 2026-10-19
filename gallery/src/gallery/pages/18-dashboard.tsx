@@ -12,8 +12,7 @@ export const meta: PageMeta = {
   id: "dashboard",
   title: "Dashboard",
   order: 18.6, group: "Data",
-  summary:
-    "The studio's deploy dashboard, built from the parts: an app shell with a full-height sidebar, four number tiles, a chart of deploys per day, and a table of recent deploys with its pagination. On a phone the sidebar becomes the bottom sheet. One accent fill in the view would be a primary button, and this view has none.",
+  summary: "The studio's deploy dashboard, built from the shell, four number tiles, a chart and a paged table of deploys.",
   tiers: ["instant", "responsive"],
 };
 
@@ -48,7 +47,7 @@ function Section({ title, note, children }: { title: string; note: string; child
   return (
     <section aria-labelledby={id} className="grid grid-cols-1 gap-4">
       <div className="grid gap-1">
-        <h2 id={id} className="text-body text-fg">
+        <h2 id={id} className="text-body [font-weight:var(--weight)] text-fg">
           {title}
         </h2>
         <p className="text-small text-fg-subtle">{note}</p>

@@ -4,9 +4,9 @@
  *
  * - A label, not a control (v0.13, components.md, Tag): 24px tall at the control radius, a flat
  *   surface-2 fill with no edge and no highlight, and the sans at the caption size (v0.14, from
- *   Nick's lab pick; mono stays for code, keys and numbers). A button, a field and the selected
- *   segment are raised (a hairline and the top highlight); a tag is not, so it never reads as
- *   something to press. A plain tag is fg-muted.
+ *   Nick's lab pick; mono stays for code, keys and numbers) and the interface weight (550). A
+ *   button, a field and the selected segment are raised (a hairline and the top highlight); a tag
+ *   is not, so it never reads as something to press. A plain tag is fg-muted.
  * - A status tag colors its text with the status color, never the fill, and there is no dot.
  *   The label says the status in words, so color never carries it alone.
  * - The status set is the tokens' own: success, warning and danger, plus neutral (fg-subtle).
@@ -58,7 +58,7 @@ export function Tag({ status, hue, children, className = "", ...rest }: TagProps
   return (
     <span
       className={
-        "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-control px-2 text-caption " +
+        "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-control px-2 text-caption [font-weight:var(--weight)] " +
         (hue ? HUE[hue] : PLAIN + (status ? STATUS[status] : "text-fg-muted")) +
         " " +
         className

@@ -8,8 +8,7 @@ export const meta: PageMeta = {
   title: "Bar list",
   order: 17.4,
   group: "Data",
-  summary:
-    "A ranked list where each row carries a thin bar for its share: a label, a bar, a mono value and a change in words. The bars and values line up across rows, the list measures itself, and nothing about it moves.",
+  summary: "A ranked list with a thin bar for each row's share, a mono value and a change in words. Bars and values line up.",
   tiers: ["instant"],
 };
 

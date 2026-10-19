@@ -15,8 +15,7 @@ export const meta: PageMeta = {
   title: "Agent",
   order: 18.99,
   group: "Agents",
-  summary:
-    "A chat with Litt, the studio's agent, fixing the failing Halo build, built from the agent parts: the conversation, the thinking, a plan, a run of tool calls, an approval, the answer with its code, and the composer. The run waits for you at the deploy. The one accent fill is Allow while the approval waits, and Send when there is something to send.",
+  summary: "Every agent part in one chat, where Litt fixes the failing Halo build. The run waits for you at the deploy.",
   tiers: ["instant", "responsive"],
 };
 

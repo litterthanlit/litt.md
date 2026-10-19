@@ -125,7 +125,7 @@ function Row({
           <span className="flex max-w-12 items-center gap-1">{item.lead}</span>
         </span>
       )}
-      <span className="col-start-[label] row-start-1 block min-w-0 truncate text-small text-fg">
+      <span className="col-start-[label] row-start-1 block min-w-0 truncate text-small [font-weight:var(--weight)] text-fg">
         {item.label}
         <span className="sr-only">, </span>
       </span>

@@ -633,7 +633,7 @@ function TipContent({
     return (
       <div className="flex items-center gap-3">
         <span className="text-fg-muted">{label}</span>
-        <span className="font-mono text-caption tabular-nums">{value(series[0]!)}</span>
+        <span className="font-mono text-caption [font-weight:var(--weight)] tabular-nums">{value(series[0]!)}</span>
       </div>
     );
   }
@@ -643,7 +643,7 @@ function TipContent({
       {series.map((s) => (
         <div key={s.name} className="flex items-center justify-between gap-4">
           <span className="text-fg-muted">{s.name}</span>
-          <span className="font-mono text-caption tabular-nums">{value(s)}</span>
+          <span className="font-mono text-caption [font-weight:var(--weight)] tabular-nums">{value(s)}</span>
         </div>
       ))}
     </div>
@@ -709,7 +709,7 @@ export function Meter({ label, value, max = 100, valueText, hue, target, targetT
   return (
     <div className={"grid gap-2 " + className}>
       <div className="flex items-baseline justify-between gap-4">
-        <span id={id} className="text-small text-fg">
+        <span id={id} className="text-small [font-weight:var(--weight)] text-fg">
           {label}
         </span>
         <span className="font-mono text-caption tabular-nums text-fg-subtle">{reading}</span>

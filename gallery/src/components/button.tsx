@@ -4,8 +4,8 @@
  * - Slightly rounded, three sizes on the shared control scale (P10). Labels sit in
  *   .litt-trim, so side padding equals the visible air at sm and md. lg runs wider
  *   (--button-pad-lg), so a short label never makes a square block.
- * - The one weight (P9, 550 since v0.12) comes with the text size class. State changes color and fill only; the
- *   box never moves or resizes (loading keeps the label mounted at opacity 0).
+ * - Labels at the interface weight (P9, 550), set on the base class over the size class's text weight (450).
+ *   State changes color and fill only; the box never moves or resizes (loading keeps the label mounted at opacity 0).
  * - Primary is Nick's Frame 103 (v0.12): a fill from a deeper blue at the top into cobalt at the bottom
  *   (--accent-fill), a 1px deep blue edge (--accent-edge) and an off-white label (--accent-fg). No glow. Hover
  *   swaps in a step brighter fill; the gradient itself never animates (P5), only the instant color tween runs.

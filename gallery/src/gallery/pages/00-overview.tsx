@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Overview",
   order: 0,
   summary:
-    "Every page here runs the motion and shape locked in litt.md's tokens. Use each component and feel the sweet spot. Light and material stay still; only objects move. The Playground is the one place to try other values.",
+    "Every page runs on litt.md's locked motion and shape tokens. The Playground is the one place to try other values.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -47,12 +47,12 @@ export default function Overview() {
         ) : (
           pageRuns(list).map((run) => (
             <div key={run.group ?? "other"} className="grid gap-4">
-              {run.group && <h3 className="border-b border-line pb-3 text-small text-fg-subtle">{run.group}</h3>}
+              {run.group && <h3 className="border-b border-line pb-3 text-small [font-weight:var(--weight)] text-fg-subtle">{run.group}</h3>}
               <ul className="grid gap-px overflow-hidden rounded-surface bg-line shadow-[inset_0_0_0_1px_var(--line)] sm:grid-cols-2">
                 {run.pages.map((p) => (
                   <li key={p.id} className="bg-surface-1">
                     <a href={`#${p.id}`} className="grid h-full content-start gap-3 p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2">
-                      <span className="text-body text-fg">{p.title}</span>
+                      <span className="text-body [font-weight:var(--weight)] text-fg">{p.title}</span>
                       <span className="text-small text-fg-subtle">{p.summary}</span>
                       <span className="flex flex-wrap gap-2">{p.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
                     </a>
@@ -71,7 +71,7 @@ export default function Overview() {
             href={`#${playground.id}`}
             className="litt-raised grid content-start justify-items-start gap-3 rounded-surface p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2"
           >
-            <span className="text-body text-fg">{playground.title}</span>
+            <span className="text-body [font-weight:var(--weight)] text-fg">{playground.title}</span>
             <span className="max-w-[56ch] text-small text-fg-subtle">{playground.summary}</span>
             <span className="flex flex-wrap gap-2">{playground.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
           </a>

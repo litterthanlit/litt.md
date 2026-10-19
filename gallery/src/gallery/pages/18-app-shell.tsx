@@ -9,8 +9,7 @@ export const meta: PageMeta = {
   id: "app-shell",
   title: "App shell",
   order: 15.3, group: "Layout",
-  summary:
-    "The frame around an app's pages: a 240px sidebar that runs the full height of the page, with its links kept in view as the page scrolls. On a phone the sidebar goes, a glass top bar holds a menu button, and the nav opens in the same bottom sheet as Dialog and Popover.",
+  summary: "The frame around an app's pages. A 240px sidebar keeps its links in view, and on a phone the nav is a bottom sheet.",
   tiers: ["instant", "expressive"],
 };
 
@@ -155,7 +154,7 @@ function ShellDemo() {
         viewportHeight="34rem"
         wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>litt.design</a>}
         nav={<StudioNav page={page} onPage={setPage} />}
-        footer={<p className="px-3 py-2 text-caption text-fg-subtle">Nick, Litt Studio</p>}
+        footer={<p className="px-3 py-2 text-caption [font-weight:var(--weight)] text-fg-subtle">Nick, Litt Studio</p>}
       >
         <DemoPage page={page} />
       </AppShell>

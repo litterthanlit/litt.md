@@ -378,7 +378,7 @@ export function Pad({
 
   return (
     <div className={["grid gap-2", className].join(" ")}>
-      <span id={labelId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <span id={labelId} className={"text-small [font-weight:var(--weight)] " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </span>
       <div role="group" aria-labelledby={labelId} aria-disabled={disabled || undefined}>

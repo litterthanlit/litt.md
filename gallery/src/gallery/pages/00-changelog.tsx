@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   title: "Changelog",
   order: 0.5,
   summary:
-    "Every change to the registry, newest first. Each release is named by its date, and every file you install says which release it came from, so you can tell what changed since.",
+    "Every registry change, newest first. Each installed file names its release, so you can see what changed since.",
   tiers: [],
 };
 
@@ -42,7 +42,7 @@ function Words({ text }: { text: string }) {
 
 /** An item name, linked to its page when it has one. */
 function Item({ name }: { name: string }) {
-  const body = <span className="font-mono text-small">{name}</span>;
+  const body = <span className="font-mono text-small [font-weight:var(--weight)]">{name}</span>;
   if (!pageIds.has(name)) return <span className="text-fg">{body}</span>;
   return (
     <a href={`#${name}`} className="rounded-control text-fg underline decoration-line-strong underline-offset-4 transition-colors duration-(--dur-instant) ease-litt hover:decoration-fg">
@@ -90,7 +90,7 @@ function ReleaseSection({ release }: { release: Release }) {
               </p>
               {e.migrate && (
                 <p className="text-small text-fg-muted">
-                  <span className="text-fg">Migrate:</span> <Words text={e.migrate} />
+                  <span className="[font-weight:var(--weight)] text-fg">Migrate:</span> <Words text={e.migrate} />
                 </p>
               )}
             </div>

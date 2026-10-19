@@ -25,7 +25,7 @@ export function PropsTable({ doc }: { doc: ExportDoc }) {
   return (
     <div className="grid gap-4">
       <div className="grid gap-1">
-        <h3 className="font-mono text-body text-fg">{doc.name}</h3>
+        <h3 className="font-mono text-body [font-weight:var(--weight)] text-fg">{doc.name}</h3>
         {doc.description && <p className="max-w-[65ch] text-small text-fg-subtle">{doc.description}</p>}
       </div>
 
@@ -48,7 +48,7 @@ export function PropsTable({ doc }: { doc: ExportDoc }) {
             <tbody>
               {doc.props.map((p) => (
                 <tr key={p.name} className="border-b border-line align-baseline">
-                  <th scope="row" className={"py-4 pr-6 text-left font-mono text-small text-fg " + WRAP}>{p.name}</th>
+                  <th scope="row" className={"py-4 pr-6 text-left font-mono text-small [font-weight:var(--weight)] text-fg " + WRAP}>{p.name}</th>
                   <td className={"py-4 pr-6 font-mono text-caption text-fg-subtle " + WRAP}>{p.type}</td>
                   <td className={"py-4 pr-6 " + WRAP}><Default prop={p} /></td>
                   <td className="py-4 text-small text-fg-muted">{p.description}</td>
@@ -60,7 +60,7 @@ export function PropsTable({ doc }: { doc: ExportDoc }) {
           <ul aria-label={label} className="divide-y divide-line border-y border-line sm:hidden">
             {doc.props.map((p) => (
               <li key={p.name} className="grid gap-2 py-4">
-                <p className={"font-mono text-small text-fg " + WRAP}>{p.name}</p>
+                <p className={"font-mono text-small [font-weight:var(--weight)] text-fg " + WRAP}>{p.name}</p>
                 <p className={"font-mono text-caption text-fg-subtle " + WRAP}>{p.type}</p>
                 <p className="flex flex-wrap items-baseline gap-x-2 text-caption text-fg-subtle">
                   Default <span className={WRAP}><Default prop={p} /></span>

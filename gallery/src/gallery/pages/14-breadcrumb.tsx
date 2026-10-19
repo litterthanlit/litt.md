@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   order: 14.5,
   group: "Layout",
   summary:
-    "Where a page sits, with a slash between the levels and the current page in the foreground. A long trail folds its middle into a menu, and a phone shows the last two levels.",
+    "Where a page sits, slash by slash. A long trail folds its middle into a menu, and a phone shows the last two.",
   tiers: ["instant", "responsive"],
 };
 
@@ -180,11 +180,11 @@ function SettingsPage() {
       </div>
       {SECTIONS.map((s, i) => (
         <section key={s.title} data-under-glass={i === 1 ? "" : undefined} className="grid gap-4">
-          <h4 className="text-body text-fg">{s.title}</h4>
+          <h4 className="text-body [font-weight:var(--weight)] text-fg">{s.title}</h4>
           <dl className="grid">
             {s.rows.map(([k, v]) => (
               <div key={k} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
-                <dt className="text-small text-fg-subtle">{k}</dt>
+                <dt className="text-small [font-weight:var(--weight)] text-fg-subtle">{k}</dt>
                 <dd className="min-w-0 truncate text-small text-fg">{v}</dd>
               </div>
             ))}

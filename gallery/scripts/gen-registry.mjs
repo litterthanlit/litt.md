@@ -19,7 +19,7 @@
  *
  * WHAT IT SHIPS
  *   litt          registry:style  tokens, Tailwind names and material classes, CSS only
- *   base-styles   registry:style  OPT-IN: variable fonts, the one weight (550), control radius, focus ring
+ *   base-styles   registry:style  OPT-IN: variable fonts, the two weights (450 text, 550 interface), control radius, focus ring
  *   motion        registry:lib    src/motion/* (spring tiers, the hooks)
  *   glide         registry:lib    components/glide.tsx (the gliding highlight)
  *   <stem>        registry:ui     one per src/components/*.tsx that has a page
@@ -494,7 +494,7 @@ const materialRe = new RegExp(`(?<![\\w-])(${materialClasses.map(esc).join("|")}
 
 function buildBaseStylesCss() {
   const css = {};
-  // The variable builds: weight 550 is between the static files' 500 and 600.
+  // The variable builds: weights 450 and 550 fall between the static files.
   css['@import "@fontsource-variable/hanken-grotesk"'] = {};
   css['@import "@fontsource-variable/geist-mono"'] = {};
   // tailwind.css's html rule, minus the page colors: a shadcn host paints its own background and text.
@@ -742,7 +742,7 @@ const COPY = {
   },
   "base-styles": {
     title: "litt base styles",
-    description: "Optional. Loads Hanken Grotesk and Geist Mono as variable fonts and applies litt's page defaults: the one weight (550), the control radius on native controls and the litt focus ring.",
+    description: "Optional. Loads Hanken Grotesk and Geist Mono as variable fonts and applies litt's page defaults: the text weight (450) with headings at 550, the control radius on native controls and the litt focus ring.",
     docs: "This one restyles your whole app: the html font, heading weight, button and input radius and the focus outline. No component needs it. Skip it if you only want the components.",
   },
   motion: {
@@ -757,7 +757,7 @@ const COPY = {
   },
   button: {
     title: "Button",
-    description: "Roomy, slightly rounded and weight 550, in primary, secondary and ghost, on the shared control scale. Hover and press are instant and never move the box.",
+    description: "Roomy, slightly rounded buttons in primary, secondary and ghost, on the shared control scale. Hover and press are instant and never move the box.",
     docs: "Import Button from components/litt/button. Primary is the one accent fill in a view. An icon-only button needs an aria-label.",
   },
   kbd: {

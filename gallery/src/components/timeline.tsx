@@ -209,7 +209,7 @@ export function TimelinePhase({ label, duration, hue, children, className = "" }
   return (
     <li className={"not-first:mt-4 " + className}>
       <div className="flex min-h-8 items-center justify-between gap-4">
-        <span id={id} className="text-small text-fg-subtle">
+        <span id={id} className="text-small [font-weight:var(--weight)] text-fg-subtle">
           {label}
         </span>
         {total && (
@@ -287,7 +287,7 @@ export function TimelineStep({ at, label, status, seconds: took, previousSeconds
         {showBar && <span className={"absolute top-6 left-1.5 z-10 w-1 rounded-control " + barTone} style={{ height: bar }} />}
       </span>
 
-      <span className={"relative min-w-0 self-stretch py-1.5 text-small " + (dim ? "text-fg-subtle" : "text-fg")}>
+      <span className={"relative min-w-0 self-stretch py-1.5 text-small [font-weight:var(--weight)] " + (dim ? "text-fg-subtle" : "text-fg")}>
         {label}
         <span className="sr-only">{`, ${status}`}</span>
         {ghost > 0 && (
@@ -323,7 +323,7 @@ export function TimelineResult({ label, total, tone = "neutral", className = "" 
   const t = readTime(total);
   return (
     <li className={"mt-4 flex items-baseline justify-between gap-4 border-t border-line pt-4 " + className}>
-      <span className={"min-w-0 text-body " + RESULT_TONE[tone]}>
+      <span className={"min-w-0 text-body [font-weight:var(--weight)] " + RESULT_TONE[tone]}>
         {label}
         <span className="sr-only">{RESULT_WORD[tone]}</span>
       </span>
@@ -549,7 +549,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
           {seg && (
             <Tip key="tip" cx={tipCx} width={width}>
               <span className="text-fg-muted">{seg.label}</span>
-              <span className="font-mono text-caption tabular-nums">{formatSeconds(seg.seconds)}</span>
+              <span className="font-mono text-caption [font-weight:var(--weight)] tabular-nums">{formatSeconds(seg.seconds)}</span>
             </Tip>
           )}
         </AnimatePresence>

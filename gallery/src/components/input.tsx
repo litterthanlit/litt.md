@@ -11,7 +11,9 @@
  *   On a touch screen the sm input grows to 44px, like the small targets in Header and List.
  * - Edge: inset 1px --line-control. Focus turns the edge --focus and adds --focus-ring
  *   (:focus-visible only). Error turns the edge --danger and keeps the ring on focus.
- * - Weight 400 always (P9). The edge fades on the instant tier, the box never moves.
+ * - Weights (P9): the label at the interface weight (550). What you type is content, so an Input's and a
+ *   Textarea's text, the hint and the error are at the text weight (450). The edge fades on the instant tier,
+ *   the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
  *   its fill under the cursor reads as pressed.
  */
@@ -21,7 +23,7 @@ export type InputSize = "sm" | "md" | "lg";
 
 /* The look every field shares: fill, edge, focus, error, disabled. */
 const field =
-  "w-full min-w-0 rounded-control bg-surface-1 [font-weight:var(--weight)] text-fg placeholder:text-fg-subtle " +
+  "w-full min-w-0 rounded-control bg-surface-1 text-fg placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
@@ -36,14 +38,15 @@ const field =
 const inputSizes: Record<InputSize, string> = {
   sm: "h-control-sm px-control-pad-sm text-small pointer-coarse:h-control-md",
   md: "h-control-md px-control-pad-md text-body",
-  lg: "h-control-lg px-control-pad-lg text-(length:--control-text-lg)",
+  lg: "h-control-lg px-control-pad-lg text-(length:--control-text-lg) [font-weight:var(--weight-text)]",
 };
 
-/* A textarea has no fixed height, so its size sets the air above and below the text instead. */
+/* A textarea has no fixed height, so its size sets the air above and below the text instead. Its text is read, so it
+   keeps the text weight. */
 const textareaSizes: Record<InputSize, string> = {
   sm: "px-control-pad-sm py-2 text-small",
   md: "px-control-pad-md py-3 text-body",
-  lg: "px-control-pad-lg py-4 text-(length:--control-text-lg)",
+  lg: "px-control-pad-lg py-4 text-(length:--control-text-lg) [font-weight:var(--weight-text)]",
 };
 
 export type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
@@ -100,7 +103,7 @@ function Field({
 }) {
   return (
     <div className="grid gap-2">
-      <label htmlFor={id} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label htmlFor={id} className={"text-small [font-weight:var(--weight)] " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
       {children}

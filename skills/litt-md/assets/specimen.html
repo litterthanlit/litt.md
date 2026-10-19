@@ -16,7 +16,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@550&family=Geist+Mono:wght@550&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@450;550&family=Geist+Mono:wght@450;550&display=swap">
 <link rel="stylesheet" href="./tokens.css">
 <style>
   /* Specimen layout. Every value comes from tokens.css. */
@@ -28,6 +28,7 @@
     background: var(--canvas);
     color: var(--fg-muted);
     font-family: var(--font-sans);
+    font-weight: var(--weight-text);
     font-size: var(--type-body-size);
     line-height: var(--type-body-leading);
     letter-spacing: var(--type-body-tracking);
@@ -137,6 +138,8 @@
   .window-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); }
   .window-bar strong { color: var(--fg); font-weight: var(--weight); font-size: var(--type-small-size); }
   .chips { display: flex; gap: var(--space-1); }
+  /* Interface text takes the interface weight (P9): nav, segments, chips, tags, menu rows, names, labels, keys. */
+  .nav a, .segmented span, .filter, .tag, .menu-list li, .rows .name, kbd, label, th { font-weight: var(--weight); }
   /* Filter chips are controls: raised like a secondary button, in the sans. */
   .filter {
     display: inline-flex; align-items: center; height: 24px; padding: 0 var(--space-2);
@@ -408,10 +411,10 @@
         <div class="type-row"><p class="t-h2">Structure carries the weight</p><p class="spec"><b>H2</b>28 · 1.2 · −0.02em · 550</p></div>
         <div class="type-row"><p class="t-h3">Light is the only ornament</p><p class="spec"><b>H3</b>24 · 1.25 · −0.018em · 550</p></div>
         <div class="type-row"><p class="t-h4">One idea per section</p><p class="spec"><b>H4</b>20 · 1.3 · −0.012em · 550</p></div>
-        <div class="type-row"><p class="t-reading">Reading text sits at seventeen pixels with generous leading and a sixty-five character measure, so long-form pages breathe without feeling empty. Hierarchy comes from scale and color, never weight.</p><p class="spec"><b>Reading</b>17 · 1.65 · 65ch</p></div>
-        <div class="type-row"><p class="t-body">UI body runs at fifteen pixels. It is the workhorse for interfaces: settings, lists, descriptions and dialogs.</p><p class="spec"><b>Body</b>15 · 1.55</p></div>
-        <div class="type-row"><p class="t-small">Small text for supporting detail, table cells and helper copy.</p><p class="spec"><b>Small</b>13 · 1.5</p></div>
-        <div class="type-row"><p class="t-caption">Caption for timestamps and fine print.</p><p class="spec"><b>Caption</b>12 · 1.4 · +0.01em</p></div>
+        <div class="type-row"><p class="t-reading">Reading text sits at seventeen pixels with generous leading and a sixty-five character measure, so long-form pages breathe without feeling empty. Hierarchy comes from scale and color; weight only tells text from interface.</p><p class="spec"><b>Reading</b>17 · 1.65 · 65ch · 450</p></div>
+        <div class="type-row"><p class="t-body">UI body runs at fifteen pixels. It is the workhorse for interfaces: settings, lists, descriptions and dialogs.</p><p class="spec"><b>Body</b>15 · 1.55 · 450</p></div>
+        <div class="type-row"><p class="t-small">Small text for supporting detail, table cells and helper copy.</p><p class="spec"><b>Small</b>13 · 1.5 · 450</p></div>
+        <div class="type-row"><p class="t-caption">Caption for timestamps and fine print.</p><p class="spec"><b>Caption</b>12 · 1.4 · +0.01em · 450</p></div>
         <div class="type-row"><p class="t-mono">⌘K &nbsp; v0.1.0 &nbsp; 128px &nbsp; --surface-2</p><p class="spec"><b>Mono</b>Geist Mono 13</p></div>
       </div>
     </div>
@@ -581,7 +584,7 @@
           <li><span class="id">P6</span><div><b>Precision</b><p>8px grid, 1px hairlines, tracking tightens with size.</p></div></li>
           <li><span class="id">P7</span><div><b>Airy rhythm</b><p>One idea per section, 128/96/64 spacing, asymmetric by default.</p></div></li>
           <li><span class="id">P8</span><div><b>Designed, not inverted</b><p>Each theme has its own material values.</p></div></li>
-          <li><span class="id">P9</span><div><b>One weight</b><p>Everything at 550. Hierarchy comes from size, color and tracking.</p></div></li>
+          <li><span class="id">P9</span><div><b>Two weights</b><p>450 for text you read, 550 for headings and anything you act on. Hierarchy comes from size, color and tracking.</p></div></li>
           <li><span class="id">P10</span><div><b>Roomy controls</b><p>Buttons and inputs share 32 / 44 / 56. Padding equals the air around the label.</p></div></li>
           <li><span class="id">P11</span><div><b>Color carries data</b><p>Five data hues mark series, categories and heat steps. Never chrome.</p></div></li>
         </ol>
