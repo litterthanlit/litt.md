@@ -986,8 +986,8 @@ const COPY = {
   },
   "date-picker": {
     title: "Date picker",
-    description: "A day or a range from a month calendar, as YYYY-MM-DD strings. Day numbers in mono, the picked day filled with the foreground, today ringed, six weeks always, and months that slide in from the side they come from.",
-    docs: "Import Calendar and DatePicker from components/litt/date-picker. Values are YYYY-MM-DD strings. Give DatePicker a label and hold the value in state with value and onValueChange.",
+    description: "A day or a range from a month calendar, as YYYY-MM-DD strings. A field in the Select trigger's look opens the calendar in a popover, a bottom sheet on a phone, with optional presets. Day numbers in mono, the picked day filled with the foreground, today ringed, six weeks always, the full date-grid keyboard, and months that slide in from the side they come from.",
+    docs: "Import DatePicker and Calendar from components/litt/date-picker, plus getToday, addDays and getWeekday for date math on YYYY-MM-DD strings. Values are YYYY-MM-DD strings, or { start, end } with mode=\"range\". DatePicker needs a label; hold the value in state with value and onValueChange, and pass name for a form (a range sends name-start and name-end). min, max and isDisabled rule days out; presets take { label, value }.",
   },
   accordion: {
     title: "Accordion",

@@ -244,6 +244,14 @@ const RECIPES = {
           <form data-testid="litt-range" onSubmit={(e) => e.preventDefault()}><RangeSlider name="window" label="Smoke window" min={0} max={100} defaultValue={[20, 80]} minLabel="Faster" maxLabel="Slower" showValue formatValue={(v) => \`\${v}s\`} /></form>
         </div>`,
   },
+  "date-picker": {
+    needs: ["DatePicker", "Calendar"],
+    jsx: `<form className="grid w-full max-w-sm gap-6" data-testid="litt-date-picker" aria-label="Date picker smoke">
+          <DatePicker label="Launch date" name="launch" defaultValue="2026-10-17" hint="The site goes live at 09:00." />
+          <DatePicker mode="range" label="Report period" name="period" defaultValue={{ start: "2026-10-03", end: "2026-10-17" }} presets={[{ label: "First week", value: { start: "2026-10-01", end: "2026-10-07" } }]} />
+          <Calendar label="Studio schedule" defaultValue="2026-10-17" isDisabled={(d) => d === "2026-10-20"} />
+        </form>`,
+  },
   stat: {
     needs: ["Stat", "StatGroup"],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" trend={<span data-testid="stat-trend">Last 14 days</span>} /></StatGroup></div>`,
@@ -1164,6 +1172,110 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const sent = await page.locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
           if (sent.join("|") !== "99|100") throw new Error(`the form sent window=${sent.join(",")}, expected 99 and 100 under one name`);
           return `${dragged}, sent ${sent.join(" and ")}`;
+        });
+      }
+      if (has("date-picker")) {
+        const active = () => page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? "");
+        await attempt("date picker opens on the picked day, the keys move, Enter picks and returns focus", async () => {
+          const field = page.getByRole("button", { name: /^Launch date/ });
+          const before = (await field.textContent())?.trim();
+          if (before !== "17 Oct 2026") throw new Error(`the field reads "${before}", not "17 Oct 2026"`);
+          if ((await field.getAttribute("aria-haspopup")) !== "dialog") throw new Error("the field has no aria-haspopup=dialog");
+          await field.click();
+          const dialog = page.getByRole("dialog", { name: "Launch date" });
+          await dialog.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(500);
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-date-picker.png`) });
+          const first = await active();
+          if (!/^Saturday,? 17 October 2026.*selected$/.test(first)) throw new Error(`focus opened on "${first}", not the picked day`);
+          await page.keyboard.press("ArrowRight");
+          const moved = await active();
+          if (!/^Sunday,? 18 October 2026/.test(moved)) throw new Error(`ArrowRight moved focus to "${moved}"`);
+          await page.keyboard.press("Enter");
+          await dialog.waitFor({ state: "hidden", timeout: 4000 });
+          const after = (await field.textContent())?.trim();
+          if (after !== "18 Oct 2026") throw new Error(`the field reads "${after}" after picking 18 October`);
+          if (!(await field.evaluate((el) => el === document.activeElement))) throw new Error("focus did not return to the field");
+          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-date-picker]")).get("launch"));
+          if (sent !== "2026-10-18") throw new Error(`the form sends launch=${sent}`);
+          return `${before} to ${after}, sends ${sent}`;
+        });
+        await attempt("date range: a preset picks and closes, two days pick a range, the form sends start and end", async () => {
+          const field = page.getByRole("button", { name: /^Report period/ });
+          const before = (await field.textContent())?.trim();
+          if (before !== "3 Oct to 17 Oct 2026") throw new Error(`the field reads "${before}"`);
+          const dialog = page.getByRole("dialog", { name: "Report period" });
+          await field.click();
+          await dialog.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(400);
+          await dialog.getByRole("button", { name: "First week" }).click();
+          await dialog.waitFor({ state: "hidden", timeout: 4000 });
+          const preset = (await field.textContent())?.trim();
+          if (preset !== "1 Oct to 7 Oct 2026") throw new Error(`the preset left the field at "${preset}"`);
+          await page.waitForTimeout(300);
+          await field.click();
+          await dialog.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(400);
+          await dialog.getByRole("button", { name: /^Monday,? 12 October 2026/ }).click();
+          await page.waitForTimeout(200);
+          if (!(await dialog.isVisible())) throw new Error("the popover closed after the first end of a range");
+          await dialog.getByRole("button", { name: /^Wednesday,? 14 October 2026/ }).click();
+          await dialog.waitFor({ state: "hidden", timeout: 4000 });
+          const picked = (await field.textContent())?.trim();
+          if (picked !== "12 Oct to 14 Oct 2026") throw new Error(`two picks left the field at "${picked}"`);
+          const sent = await page.evaluate(() => {
+            const data = new FormData(document.querySelector("[data-testid=litt-date-picker]"));
+            return `${data.get("period-start")} ${data.get("period-end")}`;
+          });
+          if (sent !== "2026-10-12 2026-10-14") throw new Error(`the form sends ${sent}`);
+          return `${preset}, then ${picked}`;
+        });
+        await attempt("calendar: six weeks always, the picked day is the foreground, PageDown slides a month, disabled days stay reachable", async () => {
+          const cal = page.getByRole("group", { name: "Studio schedule" });
+          const grid = cal.getByRole("grid", { name: "October 2026" });
+          await grid.waitFor({ state: "visible", timeout: 4000 });
+          const measure = () =>
+            cal.evaluate((el) => ({
+              rows: el.querySelectorAll("[role=rowgroup] [role=row]").length,
+              cells: el.querySelectorAll("[role=rowgroup] [role=gridcell]").length,
+              height: Math.round(el.querySelector("[role=grid]").getBoundingClientRect().height),
+              day: Math.round(el.querySelector("[role=rowgroup] button").getBoundingClientRect().height),
+            }));
+          const oct = await measure();
+          if (oct.rows !== 6 || oct.cells !== 42) throw new Error(`October shows ${oct.rows} weeks and ${oct.cells} days, not 6 and 42`);
+          if (oct.day < 40) throw new Error(`a day is ${oct.day}px tall, under 40`);
+          const picked = cal.getByRole("button", { name: /^Saturday,? 17 October 2026.*selected$/ });
+          const fill = await picked.evaluate((el) => getComputedStyle(el).backgroundColor);
+          const fg = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-fg)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          if (fill !== fg) throw new Error(`the picked day is ${fill}, not --litt-fg (${fg})`);
+          const stops = await cal.locator("[role=rowgroup] button[tabindex='0']").count();
+          if (stops !== 1) throw new Error(`the grid has ${stops} tab stops, not 1`);
+          await picked.focus();
+          await page.keyboard.press("PageDown");
+          await cal.getByRole("grid", { name: "November 2026" }).waitFor({ timeout: 3000 });
+          const nov = await active();
+          if (!/^Tuesday,? 17 November 2026/.test(nov)) throw new Error(`PageDown moved focus to "${nov}"`);
+          await page.waitForTimeout(700);
+          const after = await measure();
+          if (after.rows !== 6 || after.height !== oct.height) throw new Error(`November is ${after.rows} weeks and ${after.height}px tall; October was 6 and ${oct.height}px`);
+          await page.keyboard.press("PageUp");
+          for (const _ of [1, 2, 3]) await page.keyboard.press("ArrowRight");
+          const off = await active();
+          if (!/^Tuesday,? 20 October 2026/.test(off)) throw new Error(`three ArrowRights from 17 October reached "${off}"`);
+          const disabled = await page.evaluate(() => document.activeElement?.getAttribute("aria-disabled"));
+          if (disabled !== "true") throw new Error("the ruled-out day is not aria-disabled");
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(200);
+          const still = await cal.getByRole("button", { name: /^Saturday,? 17 October 2026.*selected$/ }).count();
+          if (still !== 1) throw new Error("Enter on a disabled day changed the pick");
+          return `6 weeks, ${oct.height}px both months, day ${oct.day}px, fill ${fill}`;
         });
       }
       if (has("stat")) {
