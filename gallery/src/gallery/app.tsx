@@ -180,11 +180,11 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         </div>
       </header>
 
-      <div className={FRAME + " relative grid gap-x-12 lg:grid-cols-[176px_minmax(0,1fr)] xl:grid-cols-[176px_minmax(0,1fr)_176px]"}>
+      <div className={FRAME + " relative grid gap-x-16 lg:grid-cols-[176px_minmax(0,1fr)] xl:grid-cols-[176px_minmax(0,1fr)_176px]"}>
         <nav aria-label="Components" className="hidden lg:block">
           {/* Its own scroller, so a short window still reaches the last group. The rows reach 12px into the gutter,
               so their labels line up with the wordmark above. */}
-          <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start gap-6 overflow-y-auto pt-24 pb-12 [scrollbar-width:none]">
+          <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start gap-6 overflow-y-auto pt-32 pb-12 [scrollbar-width:none]">
             {pageRuns().map((run) =>
               run.group ? (
                 <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid gap-px">
@@ -202,7 +202,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           </div>
         </nav>
 
-        <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-16 outline-none lg:pt-24">
+        <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-24 outline-none lg:pt-32">
           {/* Holds the page's room while its chunk loads, so the footer does not jump. */}
           <Suspense fallback={<div aria-hidden="true" className="min-h-[60svh]" />}>
             {page ? <page.Component key={page.id} /> : <p>No pages yet.</p>}
@@ -211,7 +211,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
         {/* The rail: what shipped last, where the code and the agent docs live, and who made it. */}
         <aside aria-label="About litt.md" className="hidden xl:block">
-          <div className="sticky top-16 grid h-[calc(100svh-4rem)] content-between gap-12 pt-24 pb-12">
+          <div className="sticky top-16 grid h-[calc(100svh-4rem)] content-between gap-12 pt-32 pb-12">
             <div className="grid content-start gap-8">
               <div className="grid gap-2">
                 <p className="text-caption text-fg-subtle">Latest release</p>

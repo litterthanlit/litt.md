@@ -42,7 +42,7 @@ A static SVG fractal-noise tile at `--grain-opacity` (2% light, 4% dark). It als
   - `--shadow-tooltip`: a 2px glow and the ring.
   - `--shadow-float` (menus, popovers, toasts, the glass header): 8px and 24px glows and the ring.
   - `--shadow-modal` (dialogs, command menu): 40px and 72px glows and the ring.
-- **Light:** cool ink at 6–10% for the glows and 6% for the ring.
+- **Light:** gray ink at 6–10% for the glows and 6% for the ring.
 - **Dark:** black at 30–50%. The glows darken the content around the panel, and the ring separates it.
 - **Never:** a shadow with an x or y offset, or any outer shadow on a card in the flow (see the P4 check).
 

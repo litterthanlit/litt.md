@@ -847,7 +847,7 @@ const COPY = {
   },
   tag: {
     title: "Tag",
-    description: "A small mono label at the control radius that names a thing or reports its state. A status tag colors its text, never the fill, and always says the status in words.",
+    description: "A small, flat label at the control radius that names a thing or reports its state. A status tag colors its text, never the fill, and always says the status in words.",
     docs: "Import Tag from components/litt/tag. Leave status out for a plain label, or set it to success, warning, danger or neutral: the text takes that color and there is no dot, so the word carries the status.",
   },
   popover: {

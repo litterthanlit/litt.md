@@ -75,8 +75,8 @@ const PageIdContext = createContext<string | null>(null);
 export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs; children: ReactNode }) {
   return (
     <PageIdContext.Provider value={meta.id}>
-      <article aria-labelledby={`page-${meta.id}`} className="grid gap-16 pb-24">
-        <header className="grid gap-4">
+      <article aria-labelledby={`page-${meta.id}`} className="grid gap-24 pb-32">
+        <header className="grid gap-6">
           <h1 id={`page-${meta.id}`} className="text-h1 text-fg text-balance">
             {meta.title}
           </h1>
@@ -156,7 +156,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
 
   if (code === undefined) {
     return (
-      <section className="grid gap-6" aria-label={title}>
+      <section className="grid gap-8" aria-label={title}>
         <div className={"litt-raised relative grid overflow-visible rounded-surface p-8 sm:p-12 " + place + " " + height}>{children}</div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           {heading}
@@ -171,7 +171,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
   }
 
   return (
-    <section className="grid gap-6" aria-label={title}>
+    <section className="grid gap-8" aria-label={title}>
       {/* The tabs root wraps both the box and the caption row, so the switch can sit in the
           caption row while its panels sit in the box. `contents` keeps it out of the layout.
           The caption row comes first in the DOM and last on screen (order), so the tab list

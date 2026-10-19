@@ -105,7 +105,7 @@ export default function ChangelogPage() {
   const releases = changelog.releases as Release[];
   const latest = releases[0];
   return (
-    <article aria-labelledby="page-changelog" className="grid gap-16 pb-24">
+    <article aria-labelledby="page-changelog" className="grid gap-24 pb-32">
       <header className="grid gap-4">
         <h1 id="page-changelog" className="text-h1 text-fg text-balance">
           Changelog

@@ -24,14 +24,14 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 
 **B. Structure**
 - [ ] **P6** Spacing on the 8px grid (4px inside components). 1px hairlines. Tracking tightens on large type.
-- [ ] **P7** One idea per section. Section spacing near 128 / 96 / 64. Left-aligned and asymmetric by default.
+- [ ] **P7** One idea per section. Section spacing near 160 / 128 / 96, gutters 48 / 32 / 16. The split by default: the title in a left column beside the content.
 - [ ] Radius is on the scale: 6px controls, 10px surfaces (a surface is a control plus the 4px inset), pills only on avatars, icon-only buttons and switches (tags and chips are 6px). No `rounded-lg`-style classes.
 - [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero CTAs and a page form's submit are lg; a dialog's fields and actions are md.
 - [ ] Cards used only for independent objects, not as the default layout.
 
 **C. Themes**
 - [ ] **P8** Both themes exist and each is tuned (material strengths differ). Neither is a mechanical inversion of the other.
-- [ ] Neutrals are cool (blue-gray), not warm and not pure gray.
+- [ ] Neutrals are true gray: not blue-gray, not warm.
 
 **D. Type**
 - [ ] Hanken Grotesk and Geist Mono only. Mono used only for code, keys and data.

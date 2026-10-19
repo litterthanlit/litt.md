@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Tag",
   order: 6, group: "Controls",
   summary:
-    "A small, flat mono label at the control radius that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
+    "A small, flat label at the control radius that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
   tiers: [],
 };
 
@@ -158,7 +158,7 @@ export default function TagPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Labels"
-        caption="A plain tag is 24px tall at the control radius: a flat surface-2 fill with no edge and no highlight, and Geist Mono at the caption size in fg-muted. Buttons and segments are raised; a tag sits flat, so it names a kind or a platform and never looks like something to press. Nothing moves."
+        caption="A plain tag is 24px tall at the control radius: a flat surface-2 fill with no edge and no highlight, and the sans at the caption size in fg-muted. Buttons and segments are raised; a tag sits flat, so it names a kind or a platform and never looks like something to press. Nothing moves."
         align="start"
         code="LabelsDemo"
       >

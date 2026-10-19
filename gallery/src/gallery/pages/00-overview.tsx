@@ -18,7 +18,7 @@ export default function Overview() {
   const count = WORDS[list.length] ?? String(list.length);
   const playground = pages.find((p) => p.tune);
   return (
-    <article aria-labelledby="page-overview" className="grid gap-16 pb-24">
+    <article aria-labelledby="page-overview" className="grid gap-24 pb-32">
       <header className="grid gap-4">
         <h1 id="page-overview" className="text-display text-fg text-balance">{count} components on locked tokens.</h1>
         <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>

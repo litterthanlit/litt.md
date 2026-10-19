@@ -81,11 +81,11 @@
   --space-40: 160px;
 
   /* Layout: 12 columns; breakpoints 640 / 1024 / 1280. */
-  --section-y: 64px;           /* airy rhythm (P7): 64 mobile, 96 tablet, 128 desktop */
-  --gutter: 16px;              /* page side padding */
+  --section-y: 96px;           /* airy rhythm (P7, v0.14 from Nick's lab pick): 96 mobile, 128 tablet, 160 desktop */
+  --gutter: 16px;              /* page side padding: 16 mobile, 32 tablet, 48 desktop */
   --grid-gap: 16px;
   --container-reading: 40rem;  /* 640 */
-  --container-content: 67.5rem;/* 1080 */
+  --container-content: 62.5rem;/* 1000: narrower since v0.14, so a page keeps air at its sides */
   --container-wide: 80rem;     /* 1280 */
   --header-h: 64px;
 
@@ -164,33 +164,33 @@
 }
 
 @media (min-width: 40rem) {
-  :root { --section-y: 96px; --gutter: 24px; --grid-gap: 24px; }
+  :root { --section-y: 128px; --gutter: 32px; --grid-gap: 32px; }
 }
 @media (min-width: 64rem) {
-  :root { --section-y: 128px; --gutter: 32px; }
+  :root { --section-y: 160px; --gutter: 48px; }
 }
 
 /* --------------------------------------------------------------------------
    Light theme (default)
-   Neutrals sit on one OKLCH hue (about 262), so "cool" is checkable.
+   Neutrals are true gray (v0.14): no hue, so the accent and the data hues are the only color.
    -------------------------------------------------------------------------- */
 :root,
 [data-theme="light"] {
   color-scheme: light;
 
-  --canvas: #fafbfc;
+  --canvas: #fafafa;
   --surface-1: #ffffff;
-  --surface-2: #f4f5f7;
-  --surface-3: #ebedf0;
+  --surface-2: #f4f4f5;
+  --surface-3: #ebebec;
 
-  --line: #e3e5e9;             /* decorative hairline */
-  --line-strong: #cfd2d8;
-  --line-control: #82868e;     /* input/checkbox outlines, at least 3:1 */
+  --line: #e4e4e5;             /* decorative hairline */
+  --line-strong: #d0d0d2;
+  --line-control: #848487;     /* input/checkbox outlines, at least 3:1 */
 
-  --fg: #0e0f11;               /* headlines, key values */
-  --fg-muted: #3c3f45;         /* body */
-  --fg-subtle: #64686f;        /* supporting */
-  --fg-disabled: #9a9ea6;      /* disabled only, exempt from contrast */
+  --fg: #0f0f10;               /* headlines, key values */
+  --fg-muted: #3e3e41;         /* body */
+  --fg-subtle: #67676b;        /* supporting */
+  --fg-disabled: #9c9ca1;      /* disabled only, exempt from contrast */
 
   /* Accent: cobalt, Litt's own, drawn as Nick's Frame 103 (v0.12): the primary action is a fill from deep navy at
      the top into cobalt at the bottom, with a 1px deep blue edge and an off-white label. --accent is the bottom stop
@@ -229,12 +229,12 @@
   /* Material, tuned for light (P8) */
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-bg-solid: rgba(255, 255, 255, 0.94);
-  --glass-border: rgba(14, 15, 17, 0.07);
+  --glass-border: rgba(15, 15, 16, 0.07);
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   /* Depth (P4): zero-offset glow plus a 1px ring, on floating surfaces only. */
-  --shadow-tooltip: 0 0 2px rgba(14, 15, 17, 0.08), 0 0 0 1px rgba(14, 15, 17, 0.06);
-  --shadow-float: 0 0 8px rgba(14, 15, 17, 0.08), 0 0 24px rgba(14, 15, 17, 0.06), 0 0 0 1px rgba(14, 15, 17, 0.06);
-  --shadow-modal: 0 0 40px rgba(14, 15, 17, 0.10), 0 0 72px rgba(14, 15, 17, 0.06), 0 0 0 1px rgba(14, 15, 17, 0.06);
+  --shadow-tooltip: 0 0 2px rgba(15, 15, 16, 0.08), 0 0 0 1px rgba(15, 15, 16, 0.06);
+  --shadow-float: 0 0 8px rgba(15, 15, 16, 0.08), 0 0 24px rgba(15, 15, 16, 0.06), 0 0 0 1px rgba(15, 15, 16, 0.06);
+  --shadow-modal: 0 0 40px rgba(15, 15, 16, 0.10), 0 0 72px rgba(15, 15, 16, 0.06), 0 0 0 1px rgba(15, 15, 16, 0.06);
   --light-strength: 12%;
   --grain-opacity: 0.02;
 }
@@ -245,19 +245,19 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --canvas: #08090a;
-  --surface-1: #0f1011;
-  --surface-2: #161719;
-  --surface-3: #1c1e20;
+  --canvas: #09090a;
+  --surface-1: #101011;
+  --surface-2: #171718;
+  --surface-3: #1d1d1f;
 
-  --line: #232529;
-  --line-strong: #313439;
-  --line-control: #656970;
+  --line: #252527;
+  --line-strong: #333336;
+  --line-control: #68686d;
 
-  --fg: #f7f8f9;
-  --fg-muted: #d0d6e0;
-  --fg-subtle: #8a8f98;
-  --fg-disabled: #62666d;
+  --fg: #f7f7f8;
+  --fg-muted: #d4d4d8;
+  --fg-subtle: #8d8d93;
+  --fg-disabled: #646468;
 
   --accent: #2162bb;           /* both stops a step brighter than in light, so the fill keeps 3:1 against the page */
   --accent-hover: #2565bf;
@@ -285,8 +285,8 @@
   --data-rose-text: #eb81a7;
   --tint-strength: 18%;        /* a dark tint needs more of the hue to read as a color */
 
-  --glass-bg: rgba(15, 16, 17, 0.72);
-  --glass-bg-solid: rgba(15, 16, 17, 0.94);
+  --glass-bg: rgba(16, 16, 17, 0.72);
+  --glass-bg-solid: rgba(16, 16, 17, 0.94);
   --glass-border: rgba(255, 255, 255, 0.08);
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--line-strong); /* a dark ring vanishes on a dark page */
@@ -303,19 +303,19 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --canvas: #08090a;
-    --surface-1: #0f1011;
-    --surface-2: #161719;
-    --surface-3: #1c1e20;
+    --canvas: #09090a;
+    --surface-1: #101011;
+    --surface-2: #171718;
+    --surface-3: #1d1d1f;
 
-    --line: #232529;
-    --line-strong: #313439;
-    --line-control: #656970;
+    --line: #252527;
+    --line-strong: #333336;
+    --line-control: #68686d;
 
-    --fg: #f7f8f9;
-    --fg-muted: #d0d6e0;
-    --fg-subtle: #8a8f98;
-    --fg-disabled: #62666d;
+    --fg: #f7f7f8;
+    --fg-muted: #d4d4d8;
+    --fg-subtle: #8d8d93;
+    --fg-disabled: #646468;
 
     --accent: #2162bb;
     --accent-hover: #2565bf;
@@ -343,8 +343,8 @@
     --data-rose-text: #eb81a7;
     --tint-strength: 18%;
 
-    --glass-bg: rgba(15, 16, 17, 0.72);
-    --glass-bg-solid: rgba(15, 16, 17, 0.94);
+    --glass-bg: rgba(16, 16, 17, 0.72);
+    --glass-bg-solid: rgba(16, 16, 17, 0.94);
     --glass-border: rgba(255, 255, 255, 0.08);
     --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--line-strong);

@@ -124,7 +124,7 @@
     },
     "litt": {
       "version": "2026.10.19",
-      "hash": "dacd089c5ab13e80"
+      "hash": "c3d93e0c3b1b87d8"
     },
     "menu": {
       "version": "2026.10.19",
@@ -200,7 +200,7 @@
     },
     "tag": {
       "version": "2026.10.19",
-      "hash": "9cb7d180eaf4f07f"
+      "hash": "ccf40d2cfb99c294"
     },
     "thinking": {
       "version": "2026.10.19",
@@ -216,7 +216,7 @@
     },
     "token-input": {
       "version": "2026.10.19",
-      "hash": "2afc412044bdaed7"
+      "hash": "8b4d77672ceb686b"
     },
     "tool-call": {
       "version": "2026.10.18",

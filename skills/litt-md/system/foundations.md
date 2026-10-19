@@ -45,7 +45,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 ## 2. Color
 
-**Neutrals** sit on one OKLCH hue (about 262, a cool blue-gray). Every role exists in both themes.
+**Neutrals** are true gray, with no hue (v0.14; until then a cool blue-gray). The accent and the data hues are the only color. Every role exists in both themes.
 
 | Role | Variables | Use |
 |---|---|---|
@@ -64,7 +64,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 - `--accent-fg` reaches at least 4.5:1 on `--accent` and on `--accent-top`, so the label holds at both ends of the primary's fill;
 - `--accent-text`, the accent as text (links), reaches at least 4.5:1 on `--canvas`. In light it is usually the accent itself. In dark it is usually lighter than the fill, because a fill dark enough for white text is too dark to read as text on a dark canvas. Never use `--accent` as a text color.
 
-Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. In both themes the primary action is Nick's Frame 103: deep navy at the top into cobalt (`--accent-fill`), a 1px deep blue edge (`--accent-edge`) and an off-white label, with no glow. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
+Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt, the one cool note on gray. In both themes the primary action is Nick's Frame 103: deep navy at the top into cobalt (`--accent-fill`), a 1px deep blue edge (`--accent-edge`) and an off-white label, with no glow. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
 
 **Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light` and `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
 
@@ -83,19 +83,19 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 
 **Control heights (P10).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero CTAs and a page form's submit). A dialog is compact, so its fields and actions are md. A field is lg only when it shares a row with an lg button (the inline form). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 15 / 16). Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
 
-**Section rhythm (P7).** `--section-y` is the distance between sections: 64 mobile, 96 from 640px, 128 from 1024px. Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
+**Section rhythm (P7).** `--section-y` is the distance between sections: 96 mobile, 128 from 640px, 160 from 1024px (v0.14, Nick's "Airy"). Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
 
-**Grid.** 12 columns, `--grid-gap` between them (16 mobile, 24 from 640px), and `--gutter` page padding (16 / 24 / 32).
+**Grid.** 12 columns, `--grid-gap` between them (16 mobile, 32 from 640px), and `--gutter` page padding (16 / 32 / 48).
 
 **Breakpoints.** 640 (`40rem`), 1024 (`64rem`), 1280 (`80rem`). Design mobile-first.
 
 **Containers.**
 - `--container-reading` (640) for articles and forms.
-- `--container-content` (1080) for most pages.
+- `--container-content` (1000) for most pages. It narrowed from 1080 in v0.14, so a page keeps air at its sides.
 - `--container-wide` (1280) for marketing and app shells.
 
 **Composition defaults.**
-- **Asymmetric split.** A 3/9 split: section label in columns 1–3 (sticky on desktop), content in columns 4–12. This is the default section layout.
+- **Asymmetric split.** A 3/9 split: the section's title (and a line under it) in columns 1–3, sticky on desktop, content in columns 4–12. This is the default section layout (P7); it stacks on phones, title first.
 - **Hero.** Copy in columns 1–5, the visual in columns 7–12, with column 6 left empty as air. On mobile, the copy stacks above the visual.
 - **One idea per section.** One headline-level statement per section. If a section needs two, it is two sections.
 - **Alignment.** Left-aligned by default. A centered layout is allowed only for a single short statement (a closing call to action or a quote), at most once per page.

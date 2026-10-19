@@ -6,7 +6,7 @@ allowed-tools: Bash(node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs *), Bash
 
 # litt.md
 
-**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface at one weight, cool neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
+**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface at one weight, true gray neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
 
 Skill directory: `${CLAUDE_SKILL_DIR}`. Every path below is relative to it.
 
@@ -48,7 +48,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 4. **P4 Depth without drop shadows.** Cards stay flat (hairline plus highlight). Floating surfaces get a zero-offset glow plus a 1px ring.
 5. **P5 Material is static.** Glow, grain, gradients and light never animate.
 6. **P6 Precision.** 8px grid (4px inside components), 1px hairlines, tracking tightens as size grows.
-7. **P7 Airy rhythm.** One idea per section, 128 / 96 / 64px between sections, asymmetric and left-aligned by default.
+7. **P7 Airy rhythm.** One idea per section, 160 / 128 / 96px between sections, gutters of 48 / 32 / 16, and the split by default: the title in a left column beside the content.
 8. **P8 Designed, not inverted.** Each theme has its own material strengths. Both are first-class.
 9. **P9 One weight.** Everything at 550 (`--weight`), headings, buttons and mono included. Hierarchy comes from size, color and tracking.
 10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them at sm and md; an lg button runs wider (pad 32), so it never reads as a block. Hero CTAs and a page form's submit are lg (56); a dialog's fields and actions are md (44).
@@ -62,7 +62,7 @@ These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
 - **Type:** Hanken Grotesk + Geist Mono only, at one weight, 550. Display stops at 40.
-- **Color:** cool neutrals at one OKLCH hue (about 262), monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
+- **Color:** true neutral grays, monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
 - **Density:** airy.
 - **Shape:** slight radius. Controls 6px (tags and chips too), surfaces 10px, pills only for avatars, icon-only buttons and switches.
 - **Motion:** three tiers. Instant 100ms ease-out; responsive spring 200ms, bounce 0; expressive spring 350ms, bounce 0.12, one per view. Exits run at 0.75× and never bounce. Transform and opacity only, plus color fades at instant. On phones the modal is a bottom sheet that drags down to dismiss (`system/foundations.md` section 6).

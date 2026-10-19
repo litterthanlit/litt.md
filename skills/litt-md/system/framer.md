@@ -33,8 +33,8 @@ Weight: 550 for every text style (P9). Use each face's variable version and set 
 ## 3. Layout
 
 - **Breakpoints:** Desktop (1280 design width, from 1024 up), Tablet (from 640), Phone (390 design width). These match the section-y changes at 640 and 1024.
-- **Page wrapper:** a Stack with max width 1280 (`--container-wide`), horizontal padding 32 / 24 / 16 by breakpoint, centered.
-- **Sections:** a vertical Stack with top padding 128 / 96 / 64 (`--section-y`), and bottom padding only on the last section.
+- **Page wrapper:** a Stack with max width 1280 (`--container-wide`), or 1000 (`--container-content`) for most pages, horizontal padding 48 / 32 / 16 by breakpoint, centered.
+- **Sections:** a vertical Stack with top padding 160 / 128 / 96 (`--section-y`), and bottom padding only on the last section.
 - **Asymmetric split:** a horizontal Stack where the label column is fixed at 25% width (sticky inside the section) and the content fills the rest. It stacks vertically on Phone.
 - **Gaps:** only values from the space scale (4, 8, 12, 16, 24, 32, 48, 64, 96, 128).
 
