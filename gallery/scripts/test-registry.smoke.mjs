@@ -1175,8 +1175,11 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("a tap did not run the target's own action");
               const b2 = await button.boundingBox();
               await p2.evaluate(() => {
-                window.__ctxAt = { touch: 0, menu: 0 };
+                // The hold's own timer sends a contextmenu event at the finger; Radix's 700ms hold sends none. Timing that
+                // event checks the hold itself, apart from how long the page takes to draw the menu.
+                window.__ctxAt = { touch: 0, fired: 0, menu: 0 };
                 document.addEventListener("pointerdown", () => (window.__ctxAt.touch = performance.now()), { capture: true, once: true });
+                document.addEventListener("contextmenu", () => (window.__ctxAt.fired = performance.now()), { capture: true, once: true });
                 new MutationObserver((_, obs) => {
                   if (!document.querySelector("[role=menu]")) return;
                   window.__ctxAt.menu = performance.now();
@@ -1191,12 +1194,15 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               await p2.waitForTimeout(500);
               const t = await p2.evaluate(() => window.__ctxAt);
               if (!t.menu) throw new Error("a press and hold did not open the menu");
+              if (!t.fired) throw new Error("the menu opened without the 500ms hold's contextmenu event (Radix's own 700ms hold?)");
+              const fired = Math.round(t.fired - t.touch);
               const after = Math.round(t.menu - t.touch);
-              if (after > 650) throw new Error(`the menu opened ${after}ms into the hold, not at 500ms`);
+              if (fired < 450 || fired > 600) throw new Error(`the hold fired ${fired}ms in, not at 500ms`);
+              if (after > 1000) throw new Error(`the hold fired at ${fired}ms, but the menu took until ${after}ms to appear`);
               if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("the hold also ran the target's own action");
               const still = await p2.getByRole("menu", { name: "Founder landing actions" }).isVisible();
               if (!still) throw new Error("the menu closed when the finger lifted");
-              held = `; a hold opened it after ${after}ms`;
+              held = `; a hold fired at ${fired}ms and the menu was up at ${after}ms`;
             } finally {
               await phone.close();
             }
