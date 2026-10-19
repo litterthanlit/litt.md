@@ -64,7 +64,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 - `--accent-fg` reaches at least 4.5:1 on `--accent` and on `--accent-top`, so the label holds at both ends of the primary's fill;
 - `--accent-text`, the accent as text (links), reaches at least 4.5:1 on `--canvas`. In light it is usually the accent itself. In dark it is usually lighter than the fill, because a fill dark enough for white text is too dark to read as text on a dark canvas. Never use `--accent` as a text color.
 
-Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt, the one cool note on gray. In both themes the primary action is Nick's Frame 103: deep navy at the top into cobalt (`--accent-fill`), a 1px deep blue edge (`--accent-edge`) and an off-white label, with no glow. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
+Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt, the one cool note on gray. In both themes the primary action is Nick's Frame 103: a deeper blue at the top into cobalt (`--accent-fill`), a 1px deep blue edge (`--accent-edge`) and a near-white label, with no glow. Since v0.15 the light theme's fill is a clear mid cobalt rather than navy, with a white label. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
 
 **Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light` and `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
 

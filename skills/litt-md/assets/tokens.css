@@ -192,15 +192,16 @@
   --fg-subtle: #67676b;        /* supporting */
   --fg-disabled: #9c9ca1;      /* disabled only, exempt from contrast */
 
-  /* Accent: cobalt, Litt's own, drawn as Nick's Frame 103 (v0.12): the primary action is a fill from deep navy at
-     the top into cobalt at the bottom, with a 1px deep blue edge and an off-white label. --accent is the bottom stop
-     (and any solid accent fill), --accent-top the top one. Swap per project. */
-  --accent: #004aa1;
-  --accent-hover: #1256ae;
-  --accent-top: #082b69;
-  --accent-top-hover: #103472;
-  --accent-edge: #001887;
-  --accent-fg: #eaeaea;        /* text on accent, at least 4.5:1 on both stops */
+  /* Accent: cobalt, Litt's own, drawn as Nick's Frame 103 (v0.12): the primary action is a fill from a deeper blue at
+     the top into cobalt at the bottom, with a 1px deep blue edge. --accent is the bottom stop (and any solid accent
+     fill), --accent-top the top one. Lighter in this theme since v0.15 ("feels so wrong on light theme"), so the
+     label is white to keep 4.5:1. Swap per project. */
+  --accent: #2b6dd3;
+  --accent-hover: #3071d5;
+  --accent-top: #1f4fa6;
+  --accent-top-hover: #2556af;
+  --accent-edge: #183f99;
+  --accent-fg: #ffffff;        /* text on accent, at least 4.5:1 on both stops */
   --accent-text: #264bd1;      /* the accent as text (links), at least 4.5:1 on canvas */
   --accent-tint: #e8eeff;
   --focus: #264bd1;            /* focus ring, at least 3:1 on canvas and surfaces */
@@ -366,7 +367,7 @@
   --light: radial-gradient(120% 70% at 50% -10%,
              color-mix(in oklab, var(--accent) var(--light-strength), transparent) 0%,
              transparent 65%);
-  /* The primary action's fill (P1): Frame 103, deep navy into cobalt. No glow since v0.12. */
+  /* The primary action's fill (P1): Frame 103, a deeper blue into cobalt. No glow since v0.12. */
   --accent-fill: linear-gradient(to bottom, var(--accent-top), var(--accent));
   --accent-fill-hover: linear-gradient(to bottom, var(--accent-top-hover), var(--accent-hover));
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);

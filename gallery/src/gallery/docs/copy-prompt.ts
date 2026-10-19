@@ -138,7 +138,7 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
         `Radii: only rounded-control, rounded-surface or rounded-pill, nothing else.`,
         `Type: text-display, text-h1 to text-h4, text-reading, text-body, text-small, text-caption. Fonts: Hanken Grotesk and Geist Mono.`,
         `Motion goes through the tier tokens. Only transform, opacity and color fades animate. Pair each duration with its ease: duration-(--dur-instant) with ease-litt, duration-(--dur-responsive) with ease-responsive, duration-(--dur-expressive) with ease-expressive. No transition-all and no literal durations or easings.`, // litt-allow: names the banned class in prose
-        `One accent fill per view, on the primary action: Button variant="primary" draws it (a navy-to-cobalt gradient in a deep blue edge, no glow).`,
+        `One accent fill per view, on the primary action: Button variant="primary" draws it (a deeper-blue-to-cobalt gradient in a deep blue edge, no glow).`,
       ]),
   );
 

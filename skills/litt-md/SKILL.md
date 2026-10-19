@@ -42,7 +42,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 
 ## The eleven signature rules
 
-1. **P1 Light, not paint.** The accent appears as light (`--light`, `--focus`). At most one accent fill per view, on the primary action, and it is Nick's Frame 103: navy into cobalt (`--accent-fill`) inside a 1px deep blue edge, never flat and never glowing. Checkboxes, radios and switches fill with `--fg`.
+1. **P1 Light, not paint.** The accent appears as light (`--light`, `--focus`). At most one accent fill per view, on the primary action, and it is Nick's Frame 103: a deeper blue into cobalt (`--accent-fill`) inside a 1px deep blue edge, never flat and never glowing. Checkboxes, radios and switches fill with `--fg`.
 2. **P2 One light source.** Light comes from the top. Highlights sit on top edges only. The primary fill, bright at its bottom, is the one exception.
 3. **P3 Glass is earned.** Glass only for floating surfaces: header, command menu, popovers, modals, toasts.
 4. **P4 Depth without drop shadows.** Cards stay flat (hairline plus highlight). Floating surfaces get a zero-offset glow plus a 1px ring.

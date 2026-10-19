@@ -6,7 +6,7 @@
  *   (--button-pad-lg), so a short label never makes a square block.
  * - The one weight (P9, 550 since v0.12) comes with the text size class. State changes color and fill only; the
  *   box never moves or resizes (loading keeps the label mounted at opacity 0).
- * - Primary is Nick's Frame 103 (v0.12): a fill from deep navy at the top into cobalt at the bottom
+ * - Primary is Nick's Frame 103 (v0.12): a fill from a deeper blue at the top into cobalt at the bottom
  *   (--accent-fill), a 1px deep blue edge (--accent-edge) and an off-white label (--accent-fg). No glow. Hover
  *   swaps in a step brighter fill; the gradient itself never animates (P5), only the instant color tween runs.
  * - Motion: the instant tier. Hover and press are CSS transitions on

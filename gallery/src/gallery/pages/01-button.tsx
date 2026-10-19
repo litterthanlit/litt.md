@@ -107,7 +107,7 @@ export default function ButtonPage() {
       <Stage
         title="Variants"
         tier="instant"
-        caption="Primary is the one accent fill in a view: Nick's Frame 103, navy into cobalt inside a deep blue edge, with no glow. Hover brightens the fill; press scales to 0.98. To feel other durations, open the Playground."
+        caption="Primary is the one accent fill in a view: Nick's Frame 103, a deeper blue into cobalt inside a deep blue edge, with no glow. Hover brightens the fill; press scales to 0.98. To feel other durations, open the Playground."
         code="VariantsDemo"
       >
         <VariantsDemo />

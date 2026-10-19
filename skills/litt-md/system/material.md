@@ -47,7 +47,7 @@ A static SVG fractal-noise tile at `--grain-opacity` (2% light, 4% dark). It als
 - **Never:** a shadow with an x or y offset, or any outer shadow on a card in the flow (see the P4 check).
 
 ## The primary fill: `--accent-fill` (P1, P2)
-Nick's Frame 103, kept as drawn: a vertical gradient from deep navy at the top (`--accent-top`) into the cobalt accent at the bottom (`--accent`), inside a 1px deep blue edge (`--accent-edge`), with an off-white label (`--accent-fg`). It is reserved for the one primary action in the view. It is the one surface brighter at its bottom than its top, so it reads as lit from within, and it carries no top highlight and no glow. Hover swaps to `--accent-fill-hover`, a step brighter at both ends; nothing animates (P5). Since v0.12 there is no `--glow`.
+Nick's Frame 103, kept as drawn: a vertical gradient from a deeper blue at the top (`--accent-top`) into the cobalt accent at the bottom (`--accent`), inside a 1px deep blue edge (`--accent-edge`), with a near-white label (`--accent-fg`). It is reserved for the one primary action in the view. It is the one surface brighter at its bottom than its top, so it reads as lit from within, and it carries no top highlight and no glow. Hover swaps to `--accent-fill-hover`, a step brighter at both ends; nothing animates (P5). Since v0.12 there is no `--glow`.
 
 ## Per-theme tuning (P8)
 
@@ -55,7 +55,7 @@ Nick's Frame 103, kept as drawn: a vertical gradient from deep navy at the top (
 |---|---|---|---|
 | `--light-strength` | 12% | 22% | Light reads weaker on a bright canvas, so it needs less to show on dark |
 | `--grain-opacity` | 0.02 | 0.04 | Noise is more visible on light grounds |
-| `--accent-top`, `--accent` | deep navy into cobalt | lifted navy into a lighter cobalt | On a dark page the fill rises so the button still reads as the brightest object, and the label keeps 4.5:1 at both ends |
+| `--accent-top`, `--accent` | mid blue into a clear cobalt, white label | lifted navy into a lighter cobalt, off-white label | On a light page a navy fill read heavy (v0.15); on a dark page the fill rises so the button still reads as the brightest object. The label keeps 4.5:1 at both ends in both |
 | `--glass-border` | dark ink at 7% | white at 8% | The edge is defined by ink in light and by light in dark |
 | `--shadow-float`, `--shadow-modal` | ink glows at 6–10%, ink ring | black glows at 30–50%, black ring | Glows vanish on dark at low strength, so dark needs more energy and leans on the ring |
 

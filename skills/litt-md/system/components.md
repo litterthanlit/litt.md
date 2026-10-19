@@ -20,7 +20,7 @@ The one weight (550) at every size, no tracking. Hover changes the fill and colo
 
 | Variant | Fill | Text | Edge | Use |
 |---|---|---|---|---|
-| Primary | `--accent-fill`: navy at the top (`--accent-top`) into cobalt (`--accent`); hover `--accent-fill-hover` | `--accent-fg` (off-white) | Inset 1px `--accent-edge`. No glow and no top highlight: the fill is Nick's Frame 103, bright at its bottom | The one main action per view (P1) |
+| Primary | `--accent-fill`: a deeper blue at the top (`--accent-top`) into cobalt (`--accent`); hover `--accent-fill-hover` | `--accent-fg` (white in light, off-white in dark) | Inset 1px `--accent-edge`. No glow and no top highlight: the fill is Nick's Frame 103, bright at its bottom | The one main action per view (P1) |
 | Secondary | `--surface-1` (hover `--surface-2`) | `--fg` | Inset 1px `--line-strong` and `--highlight`; no outer shadow | Everything else important |
 | Ghost | Transparent (hover: fg at 6%) | `--fg-muted` → `--fg` | None | Tertiary actions, toolbars, cancel |
 | Disabled | `--surface-2`, and the primary drops its gradient | `--fg-disabled` | Inset 1px `--line`, so it keeps its shape on a surface-2 area | `cursor: not-allowed`; keep it in the tab order only if it explains itself |

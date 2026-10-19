@@ -201,7 +201,7 @@ function llmsTxt(pages) {
     bullets([
       "One weight, 550, everywhere: each `text-litt-` step sets it, and `font-normal` is not it. Hierarchy comes from size and color, never weight.",
       "Tokens only: no hex and no raw colors. Radii are rounded-litt-control (6px), rounded-litt-surface (10px) or rounded-litt-pill (avatars, icon-only buttons, switches).",
-      "One accent fill per view, on the primary action, which is a navy-to-cobalt gradient with no glow (`Button variant=\"primary\"`). Checkboxes, radios and switches fill with the foreground color.",
+      "One accent fill per view, on the primary action, which is a deeper-blue-to-cobalt gradient with no glow (`Button variant=\"primary\"`). Checkboxes, radios and switches fill with the foreground color.",
       "Glass only on floating surfaces (menus, popovers, dialogs, toasts). Cards in the page flow are raised, with no shadow.",
       "Five data hues carry data (series, categories, heat) and never chrome.",
       "Only transform and opacity animate, through the tier tokens. " + REDUCED_MOTION,
