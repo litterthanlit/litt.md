@@ -157,6 +157,7 @@ Every `src/components/<name>.tsx` with a page becomes an installable item (`npx 
 - Use only litt tokens, as the lint already demands. The generator renames them `litt-…` for the host, and fails the build if it meets one it can't map.
 - Never assume a provider, a browser global at import time, or the gallery's `vite.config.ts` defines. Next.js renders client components once on the server.
 - When you change a component, the motion engine or the tokens, run `npm run test:registry` (fresh Vite and Next.js apps, about ten minutes) before you report.
+- **Every change to what an item installs gets a changelog line.** Add it under today's release in `CHANGELOG.md` (`- **changed** \`menu\`: what changed for someone who installed it`), or start the release (`## 2026-10-19 · Title`) if today has none. A new item is an `added` line. `npm run verify` fails and names any item whose files changed without one, then rewrites `registry.lock.json`: commit it with the change. Its words (title, description, docs line) are not part of the hash.
 
 ## Verify before you report
 

@@ -5,3 +5,4 @@ captures/
 .DS_Store
 node_modules/
 evals/results/
+.claude/worktrees/

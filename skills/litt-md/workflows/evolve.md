@@ -67,6 +67,7 @@ Whenever a value changes (a color, a duration, a radius, a material strength), u
 5. **`system/*.md`**: the rationale and any mention of the changed variable. Never paste hex values into Markdown.
 6. **`taste/profile.md`**: any percentages or numbers quoted in rules (for example P8's per-theme strengths).
 7. **The gallery** (`gallery/` in this repo). Tokens reach it automatically, because its sync step copies `assets/tokens.css` and `assets/tailwind.css` on every dev, build and verify. If a bound in `scripts/check.mjs` changes (a motion limit or the radius rule), update `gallery/src/motion/rules.ts` in the same commit. Then run the gallery check.
+8. **The registry changelog.** A changed token changes what the `litt` item installs, and every component that ships a changed value. Add a `changed` line for each under today's release in `gallery/CHANGELOG.md` (a `breaking` one, with a `Migrate:` line, when a name went away), run `npm run verify --prefix gallery`, and commit the rewritten `gallery/registry.lock.json` with the taste change. Verify names any item that changed without a line.
 
 Then run:
 ```
