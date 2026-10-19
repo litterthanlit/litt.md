@@ -205,6 +205,18 @@ const RECIPES = {
           <Select size="sm" aria-label="Sort by" defaultValue="producer" options={ROLES} />
         </form>`,
   },
+  combobox: {
+    needs: ["Combobox"],
+    top: [
+      `const CB_CLIENTS = [{ value: "marlow-labs", label: "Marlow Labs", group: "Retainers" }, { value: "grotta-type", label: "Grotta Type", group: "Retainers" }, { value: "sidebar-weekly", label: "Sidebar Weekly", group: "Projects" }, { value: "zurich-opera", label: "Zürich Opera House", group: "Past clients" }, { value: "oddway-press", label: "Oddway Press", group: "Past clients", disabled: true }];`,
+      `const CB_STACK = [{ label: "Frameworks", options: [{ value: "nextjs", label: "Next.js" }, { value: "astro", label: "Astro" }] }, { label: "Content", options: [{ value: "sanity", label: "Sanity" }] }];`,
+    ],
+    state: [`const [cbStack, setCbStack] = useState<string[]>(["astro"]);`],
+    jsx: `<form className="grid w-full max-w-sm gap-4" data-testid="litt-combobox" aria-label="Combobox smoke" onSubmit={(e) => e.preventDefault()}>
+          <Combobox label="Client" name="client" options={CB_CLIENTS} placeholder="Search clients" hint="Type to search." />
+          <Combobox multiple label="Stack" name="stack" options={CB_STACK} value={cbStack} onValueChange={setCbStack} />
+        </form>`,
+  },
   form: {
     needs: ["FormSection", "Fieldset", "ErrorSummary", "FormActions"],
     jsx: `<form noValidate className="w-full max-w-xl" aria-label="Form smoke">
@@ -981,6 +993,81 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-select]")).get("role"));
           if (sent !== "developer") throw new Error(`the form sends role=${sent}`);
           return `rows ${info.rows.join("/")}, picked ${text}`;
+        });
+      }
+      if (has("combobox")) {
+        await attempt("combobox filters past accents, wraps past a disabled option, picks by key and keeps tokens with multiple", async () => {
+          const form = page.locator("[data-testid=litt-combobox]");
+          const input = form.getByRole("combobox", { name: "Client" });
+          await input.waitFor({ state: "visible", timeout: 5000 });
+          const field = input.locator("xpath=ancestor::div[contains(@class,'cursor-text')][1]");
+          const lit = (el) => el.evaluate((n) => document.getElementById(n.getAttribute("aria-activedescendant") ?? "")?.textContent?.trim() ?? null);
+          const posted = (key) => page.evaluate((k) => new FormData(document.querySelector("[data-testid=litt-combobox]")).getAll(k).join("|"), key);
+          // Mid-screen, so the list has room to open under the field.
+          await input.evaluate((el) => el.scrollIntoView({ block: "center" }));
+          const before = await field.boundingBox();
+          if (Math.round(before.height) !== 44) throw new Error(`the field is ${before.height}px tall, not 44`);
+          await input.click();
+          await page.keyboard.type("zur");
+          const listId = await input.getAttribute("aria-controls");
+          if (!listId || (await input.getAttribute("aria-expanded")) !== "true") throw new Error("typing did not open the list");
+          const list = page.locator(`[id="${listId}"]`);
+          await list.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(600);
+          const info = await list.evaluate((el) => {
+            const panel = el.closest(".litt-glass");
+            const glow = panel ? getComputedStyle(panel, "::before") : null;
+            const options = [...el.querySelectorAll("[role=option]")];
+            return {
+              glass: !!panel,
+              blur: glow ? glow.backdropFilter || glow.webkitBackdropFilter || "" : "",
+              options: options.map((o) => o.textContent.trim()),
+              rows: options.map((o) => Math.round(o.getBoundingClientRect().height)),
+              box: (panel ?? el).getBoundingClientRect().toJSON(),
+            };
+          });
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-combobox.png`) });
+          if (!info.glass) throw new Error('the combobox list has no ".litt-glass" class');
+          if (!info.blur || info.blur === "none") throw new Error(`.litt-glass has no backdrop-filter: ${JSON.stringify(info)}`);
+          if (info.options.join("|") !== "Zürich Opera House") throw new Error(`"zur" should find only Zürich Opera House, ignoring the accent; the list shows ${JSON.stringify(info.options)}`);
+          if (info.rows.some((h) => h !== 44)) throw new Error(`rows are ${info.rows}px, not 44`);
+          if ((await lit(input)) !== "Zürich Opera House") throw new Error(`the first match is not lit: ${await lit(input)}`);
+          if (info.box.top < before.y + before.height || Math.abs(info.box.width - before.width) > 1) throw new Error(`the list should sit under the field at its width: list ${JSON.stringify(info.box)}, field ${JSON.stringify(before)}`);
+          await page.keyboard.press("Escape");
+          await list.waitFor({ state: "hidden", timeout: 4000 });
+          if ((await input.inputValue()) !== "zur") throw new Error(`the first Esc should close the list and keep the text; the field reads "${await input.inputValue()}"`);
+          await page.keyboard.press("Escape");
+          if ((await input.inputValue()) !== "") throw new Error(`the second Esc should put the (empty) pick back; the field reads "${await input.inputValue()}"`);
+          await page.keyboard.press("ArrowDown");
+          await page.locator(`[id="${listId}"]`).waitFor({ state: "visible", timeout: 4000 });
+          if ((await lit(input)) !== "Marlow Labs") throw new Error(`ArrowDown should open the list on the first option; lit: ${await lit(input)}`);
+          await page.keyboard.press("ArrowUp");
+          if ((await lit(input)) !== "Zürich Opera House") throw new Error(`ArrowUp from the first option should wrap past the disabled one to Zürich Opera House; lit: ${await lit(input)}`);
+          await page.keyboard.press("ArrowDown");
+          await page.keyboard.press("Enter");
+          await page.locator(`[id="${listId}"]`).waitFor({ state: "hidden", timeout: 4000 });
+          if ((await input.inputValue()) !== "Marlow Labs" || (await posted("client")) !== "marlow-labs") throw new Error(`Enter should pick Marlow Labs; the field reads "${await input.inputValue()}" and the form posts "${await posted("client")}"`);
+          const after = await field.boundingBox();
+          if (["x", "y", "width", "height"].some((k) => Math.abs(after[k] - before[k]) > 0.5)) throw new Error(`the field moved: ${JSON.stringify(before)} -> ${JSON.stringify(after)}`);
+
+          const stack = form.getByRole("combobox", { name: "Stack" });
+          await stack.click();
+          await page.keyboard.type("nex");
+          await page.waitForTimeout(300);
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(400);
+          if ((await posted("stack")) !== "astro|nextjs") throw new Error(`picking Next.js should add it; the form posts "${await posted("stack")}"`);
+          if ((await stack.getAttribute("aria-expanded")) !== "true" || (await stack.inputValue()) !== "") throw new Error("with multiple a pick should clear the text and keep the list open");
+          if (!(await form.getByRole("button", { name: "Remove Next.js" }).count())) throw new Error('no "Remove Next.js" button on the new token');
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          await page.keyboard.press("Backspace");
+          await page.waitForTimeout(400);
+          if ((await posted("stack")) !== "astro") throw new Error(`Backspace in an empty field should remove the last token; the form posts "${await posted("stack")}"`);
+          const said = await form.locator("[role=status]").nth(1).textContent();
+          if (said !== "Removed Next.js") throw new Error(`the live region says "${said}"`);
+          await page.evaluate(() => document.activeElement?.blur());
+          return `glass list, rows ${info.rows.join("/")}, accents, wrap, Enter, tokens`;
         });
       }
       if (has("form")) {

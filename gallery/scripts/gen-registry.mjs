@@ -981,8 +981,8 @@ const COPY = {
      item; the lead checks every docs line against the finished component. */
   combobox: {
     title: "Combobox",
-    description: "Type to find one value, or several, in a long list. The Input's field with the Menu's glass list under it: filtered as you type, one gliding highlight, a check on the pick, and the picks as tokens when there are several.",
-    docs: "Import Combobox from components/litt/combobox. Give it a label and options as { value, label }, and hold the value in state with value and onValueChange (an array with multiple).",
+    description: "Type to find one value, or several, in a long list: a client, a framework, a teammate. The Input's field with the Menu's glass list under it: filtered as you type, ignoring case and accents, with the first match lit, one gliding highlight, a check on each pick and optional group labels. With multiple the picks sit in the field as removable tokens. Solid inside a dialog, and anchored under the field on a phone.",
+    docs: "Import Combobox from components/litt/combobox. Give it a label and options as { value, label, disabled?, group? } or groups of { label, options }, and hold the value in state with value and onValueChange: a string (\"\" for none), or an array with multiple. Add hint, error and placeholder as on a field, and name to post the value with a form.",
   },
   "date-picker": {
     title: "Date picker",
