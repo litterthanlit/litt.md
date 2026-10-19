@@ -8,7 +8,7 @@ To update an item, read the entries since your version, then reinstall it with `
 
 Six staples, and from this release every item carries its version, in the registry and at the top of each file it installs.
 
-Then taste profile v0.12, from Nick's own drawing of a primary button (Frame 103): one weight, 550, for every text in both faces; controls at 6px and surfaces at 10px; and the primary action as drawn, deep navy into cobalt inside a 1px deep blue edge, with no glow. Items installed earlier today carry the same version, so install them again with `--overwrite`.
+Then taste profile v0.12, from Nick's own drawing of a primary button (Frame 103): one weight, 550, for every text in both faces; controls at 6px and surfaces at 10px; and the primary action as drawn, deep navy into cobalt inside a 1px deep blue edge, with no glow. Then v0.13: a tag is a label, not a control, so it sits flat. Items installed earlier today carry the same version, so install them again with `--overwrite`.
 
 - **added** `combobox`: type to find one value, or several, in a long list.
 - **added** `date-picker`: Calendar and DatePicker, a day or a range as YYYY-MM-DD strings.
@@ -23,7 +23,8 @@ Then taste profile v0.12, from Nick's own drawing of a primary button (Frame 103
 - **changed** `button`: the primary is Frame 103, navy into cobalt inside a 1px deep blue edge with an off-white label, and no glow or top highlight. Hover brightens both ends of the fill; a disabled primary drops it.
 - **changed** `base-styles`: loads the variable builds, `@fontsource-variable/hanken-grotesk` and `@fontsource-variable/geist-mono`, so weight 550 is drawn rather than synthesized. The static `@fontsource/hanken-grotesk` and `@fontsource/geist-mono` can be uninstalled if nothing else imports them.
 - **changed** `avatar`, `code-block`, `composer`, `input`, `kbd`, `message`, `segmented`, `select`, `table`, `tabs`, `thinking`, `token-input`: text renders at the one weight, 550; what set `font-normal` takes `--litt-weight` instead, so it holds in any app.
-- **changed** `motion`: the Playground's locked preset is v0.12, and its radius choices are 0, 4, 6 and 8.
+- **changed** `motion`: the Playground's locked preset follows the taste profile (v0.13), and its radius choices are 0, 4, 6 and 8.
+- **changed** `tag`, `token-input`: a tag is a flat `--litt-surface-2` fill with no hairline and no top highlight, so it no longer looks like a button; a hue tag keeps only its tint. Token input's tokens and its "+N" chip follow.
 
 ## 2026-10-18 · Agents
 

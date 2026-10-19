@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.12 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 1 drawn frame (Frame 103), 80 journal entries · October 2026
+> v0.13 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 1 drawn frame (Frame 103), 82 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -85,6 +85,7 @@ Five words: **precise, lit, airy, calm, exact.**
 - Fill backgrounds with accent color. Tint the light instead.
 - Put a data hue on chrome (a button, a surface, a border, the nav), or give each row its own hue just to brighten the list.
 - Put glass on static cards, or stack glass on glass.
+- Give a tag a control's raised edge (a hairline and the top highlight). A tag is a label: it sits flat, so it never reads as something to press.
 
 ## Generic-AI tells this language must avoid
 
@@ -129,9 +130,9 @@ The interview workflow works through these. When one is answered, move the answe
 - **Q14.** Mono: keep Geist Mono next to Hanken Grotesk, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
   - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The type trial paired Hanken Grotesk with JetBrains Mono by default.
 
-- **Q21.** Tags: since v0.8 they are the selected segment's look in mono (surface-1, hairline, top highlight). On 2026-10-19 Nick said they "feel off". They share that raised, edged look with the secondary button and the selected segment, so a label reads like a control. Quiet fill, outline only, or sans?
 ## Changelog
 
+- **v0.13, October 2026.** Nick on the tags, finishing the Frame 103 message: "make the tags feel less like buttons". Since v0.8 a tag wore the selected segment's raised look (surface-1, a hairline, the top highlight), the same as a secondary button. A tag is now a label: a flat `--surface-2` fill in Geist Mono, no edge and no highlight, and a hue tag keeps only its tint. Controls stay raised, so raised now means pressable among the small things. Q21 closes. Nick also wants to try versions of the page with more negative space; that waits on the lab.
 - **v0.12, October 2026.** Nick, after finding 400 "too thin, as well as in button", drew Frame 103, a primary button, and said "keep mine as drawn, no glow, 6px and 550, make it slightly slighter up top". The primary action is now that frame: a gradient from deep navy at the top into cobalt (`--accent-top` into `--accent`, `--accent-fill`), a 1px deep blue edge (`--accent-edge`) and an off-white label, with the top a step lighter than drawn. `--glow` and `--glow-strength` are gone, so P1 counts a flat or glowing primary as a fail, and P2 names the bottom-bright fill as its one exception. P9's one weight moves from 400 to 550, for mono too, and both faces load as variable fonts; Tailwind's `font-normal` no longer names it. Controls go from 4px to 6px and surfaces from 8px to 10px, so corners stay concentric. The Type and Shape decisions change accordingly, and Q20 closes.
 - **v0.11, October 2026.** Nick sent five reference shots of data panels (a rule builder with colored category tags, a voice pad on a dot grid, a reply-speed dot plot, a shortcut heatmap, a usage dot matrix and gauge, a deploy timeline) with "lets expand the components ... we stick to our design language, we can add some color too". New rule P11: color carries data. Five data hues (blue, amber, teal, violet, rose), fitted to litt's surfaces in both themes and checked for color-blind separation, each with a mark tone, a text tone and a tint. They mark series, categories, heat steps and identity, and never chrome; the accent still owns the primary action, and the dashboards step's foreground-only chart stays the default. The Color decision now reads "monochrome chrome". Tags take a hue for a category. The lint fails a hue's mark tone or tint used as text.
 - **v0.10, October 2026.** Nick on the dark primary button: "I think the text gets lost a bit in the dark version of the button". Its dark text on a light cobalt passed 4.5:1 but read muddy. The accent is now a fill only: in both themes the primary action is a deep cobalt with white text, as in the reference, and it stays at least 3:1 against the page. A new `--accent-text` carries the accent as text (links): the accent itself in light, a lighter cobalt in dark. The lint fails the fill used as text.

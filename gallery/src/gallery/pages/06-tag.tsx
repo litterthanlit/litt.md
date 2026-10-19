@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Tag",
   order: 6, group: "Controls",
   summary:
-    "A small mono label at the control radius, with the look of a selected segment, that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
+    "A small, flat mono label at the control radius that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
   tiers: [],
 };
 
@@ -158,7 +158,7 @@ export default function TagPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Labels"
-        caption="A plain tag is 24px tall at the control radius: a surface-1 fill with an inset hairline and the top highlight, like a selected segment, and Geist Mono at the caption size in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
+        caption="A plain tag is 24px tall at the control radius: a flat surface-2 fill with no edge and no highlight, and Geist Mono at the caption size in fg-muted. Buttons and segments are raised; a tag sits flat, so it names a kind or a platform and never looks like something to press. Nothing moves."
         align="start"
         code="LabelsDemo"
       >
@@ -167,7 +167,7 @@ export default function TagPage() {
 
       <Stage
         title="Status"
-        caption="Only the text takes the status color. The fill stays surface-1, so a row of tags stays calm. There is no dot: every tag says its state in words, and neutral Draft and Idea differ by theirs."
+        caption="Only the text takes the status color. The fill stays a flat surface-2, so a row of tags stays calm. There is no dot: every tag says its state in words, and neutral Draft and Idea differ by theirs."
         code="StatusDemo"
       >
         <StatusDemo />

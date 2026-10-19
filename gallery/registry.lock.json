@@ -199,8 +199,8 @@
       "hash": "ebf9dc3bf3265274"
     },
     "tag": {
-      "version": "2026.10.17",
-      "hash": "ec9c7a328b809bd1"
+      "version": "2026.10.19",
+      "hash": "9cb7d180eaf4f07f"
     },
     "thinking": {
       "version": "2026.10.19",
@@ -216,7 +216,7 @@
     },
     "token-input": {
       "version": "2026.10.19",
-      "hash": "769f81a100c6a57a"
+      "hash": "2afc412044bdaed7"
     },
     "tool-call": {
       "version": "2026.10.18",

@@ -2,19 +2,19 @@
  * Tag: a small label that names something (Framer, Site), files it under a category (Finance),
  * or reports its status (Live, Review).
  *
- * - The look is the selected segment's (components.md, Tag): 24px tall at the control radius,
- *   a surface-1 fill with an inset line hairline and the top highlight, and Geist Mono at the
- *   caption size. A plain tag is fg-muted. Mono marks a tag as data about the thing, not the
- *   thing itself.
+ * - A label, not a control (v0.13, components.md, Tag): 24px tall at the control radius, a flat
+ *   surface-2 fill with no edge and no highlight, and Geist Mono at the caption size. A button,
+ *   a field and the selected segment are raised (a hairline and the top highlight); a tag is
+ *   not, so it never reads as something to press. A plain tag is fg-muted. Mono marks a tag as
+ *   data about the thing, not the thing itself.
  * - A status tag colors its text with the status color, never the fill, and there is no dot.
  *   The label says the status in words, so color never carries it alone.
  * - The status set is the tokens' own: success, warning and danger, plus neutral (fg-subtle).
  *   There is no accent status: the accent is chosen per project, and it does not promise
  *   4.5:1 for caption text.
  * - A hue tag (P11, v0.11) files the thing under a category, so its color carries data: the
- *   hue's tint as the fill, its -text tone for the label (4.5:1 on the tint, checked by
- *   check.mjs), and a hairline of the hue under the top highlight. One hue means one category
- *   in a view. A hue is never a status: a tag that says how something stands takes `status`.
+ *   hue's tint as the fill and its -text tone for the label (4.5:1 on the tint, checked by
+ *   check.mjs), flat like a plain tag. One hue means one category in a view. A hue is never a status: a tag that says how something stands takes `status`.
  * - Static: no motion and no states. A tag is a label, not a control, so it never takes
  *   focus. If you need something to press, use Button or a chip.
  */
@@ -33,14 +33,14 @@ const STATUS: Record<TagStatus, string> = {
 };
 
 const HUE: Record<TagHue, string> = {
-  blue: "bg-data-blue-tint text-data-blue-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-blue)_24%,transparent),var(--highlight)]",
-  amber: "bg-data-amber-tint text-data-amber-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-amber)_24%,transparent),var(--highlight)]",
-  teal: "bg-data-teal-tint text-data-teal-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-teal)_24%,transparent),var(--highlight)]",
-  violet: "bg-data-violet-tint text-data-violet-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-violet)_24%,transparent),var(--highlight)]",
-  rose: "bg-data-rose-tint text-data-rose-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-rose)_24%,transparent),var(--highlight)]",
+  blue: "bg-data-blue-tint text-data-blue-text",
+  amber: "bg-data-amber-tint text-data-amber-text",
+  teal: "bg-data-teal-tint text-data-teal-text",
+  violet: "bg-data-violet-tint text-data-violet-text",
+  rose: "bg-data-rose-tint text-data-rose-text",
 };
 
-const PLAIN = "bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] ";
+const PLAIN = "bg-surface-2 ";
 
 export type TagProps = HTMLAttributes<HTMLSpanElement> & {
   /** Leave it out for a plain label. Set it for a status: the text takes that color, and the fill never does. */

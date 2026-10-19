@@ -137,12 +137,17 @@
   .window-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); }
   .window-bar strong { color: var(--fg); font-weight: var(--weight); font-size: var(--type-small-size); }
   .chips { display: flex; gap: var(--space-1); }
-  /* Tag: the selected segment's look, in mono. Status colors the text only; there is no dot. */
-  .tag {
+  /* Filter chips are controls: raised like a secondary button, in the sans. */
+  .filter {
     display: inline-flex; align-items: center; height: 24px; padding: 0 var(--space-2);
     border-radius: var(--radius-control); background: var(--surface-1); color: var(--fg-muted);
+    font-size: var(--type-caption-size); box-shadow: inset 0 0 0 1px var(--line-strong), var(--highlight);
+  }
+  /* Tag: a label, not a control. Flat, in mono, no edge and no highlight. Status colors the text only; there is no dot. */
+  .tag {
+    display: inline-flex; align-items: center; height: 24px; padding: 0 var(--space-2);
+    border-radius: var(--radius-control); background: var(--surface-2); color: var(--fg-muted);
     font-family: var(--font-mono); font-size: var(--type-caption-size);
-    box-shadow: inset 0 0 0 1px var(--line), var(--highlight);
   }
   .tag.ok { color: var(--success); } .tag.warn { color: var(--warning); } .tag.neutral { color: var(--fg-subtle); }
   .rows li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); font-size: var(--type-small-size); }
@@ -365,7 +370,7 @@
         <div class="window litt-raised">
           <div class="window-bar">
             <strong>Projects</strong>
-            <div class="chips"><span class="tag">All</span><span class="tag">Active</span></div>
+            <div class="chips"><span class="filter">All</span><span class="filter">Active</span></div>
           </div>
           <ul class="rows">
             <li><span class="name">litt.design v3</span><span class="meta"><span class="tag ok">Live</span><span class="date">2026-10-02</span></span></li>
