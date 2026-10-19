@@ -6,3 +6,7 @@ dist
 src/styles/
 src/generated/
 public/r/
+public/docs/
+public/llms.txt
+public/llms-full.txt
+public/changelog.md
