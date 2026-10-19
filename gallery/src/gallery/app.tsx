@@ -239,15 +239,13 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                 ))}
               </ul>
             </div>
-            <p className="flex items-center gap-2 text-small text-fg-subtle">
+            {/* The whole credit is the link, so it never relies on color alone inside a line of text. */}
+            <a href={MADE_BY.href} target="_blank" rel="noopener noreferrer" className="group flex w-fit items-center gap-2 rounded-control text-small text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg-muted">
               <Avatar name={MADE_BY.name} size="sm" decorative />
               <span>
-                Made by{" "}
-                <a href={MADE_BY.href} target="_blank" rel="noopener noreferrer" className="rounded-control text-fg-muted transition-colors duration-(--dur-instant) ease-litt hover:text-fg">
-                  {MADE_BY.name}
-                </a>
+                Made by <span className="text-fg-muted transition-colors duration-(--dur-instant) ease-litt group-hover:text-fg">{MADE_BY.name}</span>
               </span>
-            </p>
+            </a>
           </div>
         </aside>
       </div>
@@ -255,12 +253,9 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       <footer className="border-t border-line">
         <div className={FRAME + " flex flex-wrap justify-between gap-4 py-8 text-caption text-fg-subtle"}>
           <span>litt.md Gallery v{__GALLERY_VERSION__} · tokens from litt.md v{__LITT_MD_VERSION__}</span>
-          <span className="xl:hidden">
-            Made by{" "}
-            <a href={MADE_BY.href} target="_blank" rel="noopener noreferrer" className="rounded-control text-fg-muted transition-colors duration-(--dur-instant) ease-litt hover:text-fg">
-              {MADE_BY.name}
-            </a>
-          </span>
+          <a href={MADE_BY.href} target="_blank" rel="noopener noreferrer" className="group rounded-control transition-colors duration-(--dur-instant) ease-litt hover:text-fg-muted xl:hidden">
+            Made by <span className="text-fg-muted transition-colors duration-(--dur-instant) ease-litt group-hover:text-fg">{MADE_BY.name}</span>
+          </a>
           <span className="hidden xl:inline">Light and material stay still. Only objects move.</span>
         </div>
       </footer>
