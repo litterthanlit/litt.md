@@ -40,14 +40,14 @@ export default function Overview() {
         </div>
       </section>
 
-      <section className="grid gap-8" aria-labelledby="components-title">
+      <section className="grid gap-12" aria-labelledby="components-title">
         <h2 id="components-title" className="text-h4 text-fg">Components</h2>
         {list.length === 0 ? (
           <p className="text-small text-fg-subtle">Components are being built.</p>
         ) : (
           pageRuns(list).map((run) => (
             <div key={run.group ?? "other"} className="grid gap-4">
-              {run.group && <h3 className="text-body text-fg-muted">{run.group}</h3>}
+              {run.group && <h3 className="border-b border-line pb-3 text-small text-fg-subtle">{run.group}</h3>}
               <ul className="grid gap-px overflow-hidden rounded-surface bg-line shadow-[inset_0_0_0_1px_var(--line)] sm:grid-cols-2">
                 {run.pages.map((p) => (
                   <li key={p.id} className="bg-surface-1">

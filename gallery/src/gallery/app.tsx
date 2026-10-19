@@ -138,7 +138,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           (compact ? "shrink-0 " : "") +
           (current
             ? "text-fg"
-            : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]")
+            : "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]")
         }
       >
         {current && (
@@ -184,11 +184,12 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         <nav aria-label="Components" className="hidden lg:block">
           {/* Its own scroller, so a short window still reaches the last group. The rows reach 12px into the gutter,
               so their labels line up with the wordmark above. */}
-          <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start gap-6 overflow-y-auto pt-32 pb-12 [scrollbar-width:none]">
+          <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start gap-10 overflow-y-auto pt-32 pb-12 [scrollbar-width:none]">
             {pageRuns().map((run) =>
               run.group ? (
                 <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid gap-px">
-                  <p id={`nav-${run.group}`} className="px-3 pb-2 text-caption text-fg-subtle">
+                  {/* A category is a heading over its links, set off by a hairline, smaller and quieter than the links. */}
+                  <p id={`nav-${run.group}`} className="mx-3 mb-2 border-b border-line pb-2 text-caption text-fg-subtle">
                     {run.group}
                   </p>
                   {run.pages.map((p) => navLink(p))}
@@ -216,7 +217,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
               <div className="grid gap-2">
                 <p className="text-caption text-fg-subtle">Latest release</p>
                 <a href="#changelog" className="group grid gap-1 rounded-control">
-                  <span className="text-small text-fg transition-colors duration-(--dur-instant) ease-litt group-hover:text-accent-text">{latest.title}</span>
+                  <span className="text-small text-fg text-balance transition-colors duration-(--dur-instant) ease-litt group-hover:text-accent-text">{latest.title}</span>
                   <span className="font-mono text-caption text-fg-subtle">{latest.version}</span>
                 </a>
               </div>

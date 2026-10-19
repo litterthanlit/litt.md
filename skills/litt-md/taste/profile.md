@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.15 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 1 drawn frame (Frame 103), 1 lab version, 84 journal entries · October 2026
+> v0.16 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 1 drawn frame (Frame 103), 1 lab version, 88 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -61,7 +61,8 @@ Five words: **precise, lit, airy, calm, exact.**
 ## Do
 
 - Let type do the hierarchy. Use scale jumps (40 against 15) first, then color (`--fg` against `--fg-muted`), then tracking. Never weight.
-- Use `--fg-subtle` for supporting text and `--fg-muted` for body. Keep pure `--fg` for headlines and key values.
+- Use `--fg-subtle` for supporting text and `--fg-muted` for body. Keep pure `--fg` for headlines and key values. Body sits a clear step below headlines (v0.16), so a paragraph never outweighs the heading of what follows it.
+- Put a group of links or cards under a category heading that is smaller and quieter than its items, with a hairline under it and more room above it than between the items.
 - Give the primary action the only accent fill on the page: Frame 103's gradient (`--accent-fill`) inside its deep blue edge, with no glow.
 - Put busy content behind glass, because that is where glass earns its blur.
 - Use the mono (`--font-mono`) for real code, keyboard shortcuts (`⌘K`), numbers in tables, and version strings.
@@ -129,6 +130,7 @@ The interview workflow works through these. When one is answered, move the answe
 
 ## Changelog
 
+- **v0.16, October 2026.** Nick on the gallery: "body typography looks off", "feel like body should have less opacity", the side tabs' categories need underlines and room so people can tell them apart, "hierarchy too especially in text feels off", and "this is really not ship ready". Body text (`--fg-muted`) moves a clear step lighter in both themes, still 6.7:1 or more on every surface, so headings lead. A category heading over links or cards is now smaller and quieter than its items, with a hairline under it and more room above it: in the gallery's sidebar, Overview and the App shell's SidebarNav. Two Do lines record both.
 - **v0.15, October 2026.** Nick on the light theme's primary: "the button color feels so wrong on light theme, I think we should make it lighter". On the new gray page, Frame 103's navy read heavy, darker than the dark theme's own fill. The light fill is now a clear mid cobalt: a deeper blue at the top into cobalt at the bottom, the same Frame 103 shape and edge, with a white label (4.96:1 at the brighter stop). The dark theme is unchanged.
 - **v0.14, October 2026.** Nick tried versions of the page in the litt lab and kept one: Airy space, the Split layout, Neutral grays and Sans tags, with Frame 103, cobalt, 550 and 6/10 unchanged. Sections move one step up the scale (96 / 128 / 160), gutters widen (16 / 32 / 48), the grid gap goes to 32 from tablet, and the content container narrows from 1080 to 1000. The split, already the documented default, is now in P7 and its check. Neutrals become true gray at the same lightness steps, so every contrast pair still passes; the Color decision changes and Q9 closes. Tags are set in the sans (flat, as in v0.13), so mono is left to code, keys and numbers; the Type decision changes.
 - **v0.13, October 2026.** Nick on the tags, finishing the Frame 103 message: "make the tags feel less like buttons". Since v0.8 a tag wore the selected segment's raised look (surface-1, a hairline, the top highlight), the same as a secondary button. A tag is now a label: a flat `--surface-2` fill in Geist Mono, no edge and no highlight, and a hue tag keeps only its tint. Controls stay raised, so raised now means pressable among the small things. Q21 closes. Nick also wants to try versions of the page with more negative space; that waits on the lab.

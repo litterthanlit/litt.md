@@ -188,7 +188,7 @@
   --line-control: #848487;     /* input/checkbox outlines, at least 3:1 */
 
   --fg: #0f0f10;               /* headlines, key values */
-  --fg-muted: #3e3e41;         /* body */
+  --fg-muted: #505054;         /* body: a clear step lighter than --fg since v0.16, so headings lead */
   --fg-subtle: #67676b;        /* supporting */
   --fg-disabled: #9c9ca1;      /* disabled only, exempt from contrast */
 
@@ -256,7 +256,7 @@
   --line-control: #68686d;
 
   --fg: #f7f7f8;
-  --fg-muted: #d4d4d8;
+  --fg-muted: #bcbcc1;
   --fg-subtle: #8d8d93;
   --fg-disabled: #646468;
 
@@ -314,7 +314,7 @@
     --line-control: #68686d;
 
     --fg: #f7f7f8;
-    --fg-muted: #d4d4d8;
+    --fg-muted: #bcbcc1;
     --fg-subtle: #8d8d93;
     --fg-disabled: #646468;
 

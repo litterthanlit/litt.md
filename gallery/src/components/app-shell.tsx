@@ -81,7 +81,7 @@ export function AppShell({
           <div className="w-60 shrink-0 border-r border-line bg-surface-1 max-sm:hidden">
             <div className="sticky top-0 flex h-(--shell-height) flex-col">
               <div className={wordmarkRow + " px-6"}>{wordmark}</div>
-              <div className="grid min-h-0 flex-1 content-start gap-6 overflow-y-auto px-3 pb-6">{nav}</div>
+              <div className="grid min-h-0 flex-1 content-start gap-8 overflow-y-auto px-3 pb-6">{nav}</div>
               {footer && <div className="shrink-0 border-t border-line p-3">{footer}</div>}
             </div>
           </div>
@@ -124,7 +124,7 @@ export function AppShell({
           </div>
           <div className="min-h-0 overflow-y-auto overscroll-contain px-3 pt-6 pb-(--sheet-foot)" style={{ gridArea: "body" }}>
             <ShellContext value={inSheet}>
-              <div className="grid content-start gap-6">{nav}</div>
+              <div className="grid content-start gap-8">{nav}</div>
               {footer && <div className="mt-6 border-t border-line pt-3">{footer}</div>}
             </ShellContext>
           </div>
@@ -156,7 +156,7 @@ export type SidebarNavProps = {
 export function SidebarNav({ label, heading, children }: SidebarNavProps) {
   return (
     <nav aria-label={label}>
-      {heading && <p className="px-3 pb-2 text-caption text-fg-subtle">{heading}</p>}
+      {heading && <p className="mx-3 mb-2 border-b border-line pb-2 text-caption text-fg-subtle">{heading}</p>}
       <ul className="grid gap-1">{children}</ul>
     </nav>
   );

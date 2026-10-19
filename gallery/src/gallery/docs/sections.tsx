@@ -69,7 +69,7 @@ function Keyboard({ rows }: { rows: NonNullable<PageDocs["keyboard"]> }) {
   );
 }
 
-const mono = "font-mono text-fg-muted";
+const mono = "font-mono text-caption text-fg-muted";
 
 export function DocsSections({ docs }: { docs: PageDocs }) {
   const components = docs.components.map(componentDoc);
