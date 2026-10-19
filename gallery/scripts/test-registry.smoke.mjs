@@ -237,6 +237,35 @@ const RECIPES = {
           <Switch disabled label="Password protection" />
         </div>`,
   },
+  accordion: {
+    needs: ["Accordion", "AccordionItem", "AccordionTrigger", "AccordionContent"],
+    state: [`const [accOpen, setAccOpen] = useState<string[]>(["domain"]);`],
+    jsx: `<div className="grid w-full max-w-xl gap-8" data-testid="litt-accordion">
+          <Accordion defaultValue="start">
+            <AccordionItem value="start"><AccordionTrigger>How does a project start?</AccordionTrigger><AccordionContent>With a call about what the site has to do, then a one-page brief.</AccordionContent></AccordionItem>
+            <AccordionItem value="timing"><AccordionTrigger>How long does a site take?</AccordionTrigger><AccordionContent>Most sites launch four to six weeks after the brief.</AccordionContent></AccordionItem>
+            <AccordionItem value="copy"><AccordionTrigger>Do you write the copy?</AccordionTrigger><AccordionContent>You bring the words and I shape them to the layout.</AccordionContent></AccordionItem>
+          </Accordion>
+          <Accordion type="multiple" value={accOpen} onValueChange={setAccOpen} headingLevel={4}>
+            <AccordionItem value="domain"><AccordionTrigger>Domain</AccordionTrigger><AccordionContent>smoke.studio points at the host.</AccordionContent></AccordionItem>
+            <AccordionItem value="analytics"><AccordionTrigger>Analytics</AccordionTrigger><AccordionContent>Visits are counted without cookies.</AccordionContent></AccordionItem>
+          </Accordion>
+          <p data-testid="accordion-open">{accOpen.join(",") || "none"}</p>
+        </div>`,
+  },
+  "scroll-area": {
+    needs: ["ScrollArea"],
+    top: [`const SA_LINES = Array.from({ length: 40 }, (_, i) => "Smoke build step " + (i + 1));`],
+    jsx: `<div className="grid w-full max-w-md gap-6" data-testid="litt-scroll-area">
+          <ScrollArea label="Smoke log" className="h-48">
+            <ol className="grid gap-1 pr-3">{SA_LINES.map((line) => <li key={line}>{line}</li>)}</ol>
+          </ScrollArea>
+          <ScrollArea label="Smoke strip" orientation="horizontal">
+            <ul className="flex gap-4 pb-4">{SA_LINES.slice(0, 12).map((line) => <li key={line} className="w-40 shrink-0">{line}</li>)}</ul>
+          </ScrollArea>
+          <ScrollArea label="Short list" className="h-48"><p>Fits without scrolling.</p></ScrollArea>
+        </div>`,
+  },
   slider: {
     needs: ["Slider", "RangeSlider"],
     jsx: `<div className="grid w-full max-w-sm gap-8" data-testid="litt-slider">
@@ -1118,6 +1147,156 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.waitForTimeout(300);
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("Space did not turn it back on");
           return `on is ${on}`;
+        });
+      }
+      if (has("accordion")) {
+        await attempt("accordion: triggers in headings, one section open at a time, the keys move between them, and rows move by transform while heights snap", async () => {
+          const box = page.locator("[data-testid=litt-accordion]");
+          const first = box.getByRole("button", { name: "How does a project start?" });
+          const second = box.getByRole("button", { name: "How long does a site take?" });
+          const third = box.getByRole("button", { name: "Do you write the copy?" });
+          await first.waitFor({ state: "visible", timeout: 8000 });
+          await first.scrollIntoViewIfNeeded();
+          if ((await first.getAttribute("aria-expanded")) !== "true") throw new Error("the default section did not start open");
+          const heading = await first.evaluate((el) => el.parentElement?.tagName);
+          if (heading !== "H3") throw new Error(`a trigger sits in ${heading}, not an h3`);
+          const tall = await first.evaluate((el) => el.getBoundingClientRect().height);
+          if (tall < 56) throw new Error(`a trigger is ${tall}px tall, under 56`);
+          const region = box.getByRole("region", { name: "How does a project start?" });
+          await region.waitFor({ state: "visible", timeout: 3000 });
+          if ((await first.getAttribute("aria-controls")) !== (await region.getAttribute("id"))) throw new Error("aria-controls does not name the open region");
+
+          /* Hairlines: one above the first row and one under every row, 1px in --litt-line. */
+          const line = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-line)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          const edges = await first.evaluate((el) => {
+            const item = el.closest("h3").parentElement;
+            const root = item.parentElement;
+            return [getComputedStyle(root).borderTopWidth, getComputedStyle(root).borderTopColor, getComputedStyle(item).borderBottomWidth, getComputedStyle(item).borderBottomColor];
+          });
+          if (edges.join("|") !== `1px|${line}|1px|${line}`) throw new Error(`the hairlines are ${edges.join(" / ")}, not 1px of --litt-line (${line})`);
+
+          /* Open the second: the first closes, the second row rises by a translate (never a scale), and the new
+             content has its full height from the first frame, because heights snap. */
+          const frames = await second.evaluate(async (btn) => {
+            const item = btn.closest("h3").parentElement;
+            const out = [];
+            btn.click();
+            for (let i = 0; i < 8; i++) {
+              await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+              const m = new DOMMatrixReadOnly(getComputedStyle(item).transform);
+              const content = item.querySelector("[role=region]");
+              out.push({ y: m.m42, sx: m.a, sy: m.d, h: content ? Math.round(content.getBoundingClientRect().height) : 0 });
+            }
+            return out;
+          });
+          if (!frames.some((f) => Math.abs(f.y) > 1)) throw new Error(`the second row did not move by transform: ${JSON.stringify(frames)}`);
+          if (frames.some((f) => Math.abs(f.sx - 1) > 0.001 || Math.abs(f.sy - 1) > 0.001)) throw new Error("a row scaled, so its text would stretch");
+          if (!frames[0].h || new Set(frames.map((f) => f.h)).size !== 1) throw new Error(`the content's height changed while it opened: ${frames.map((f) => f.h).join(",")}`);
+          await page.waitForTimeout(900);
+          if ((await first.getAttribute("aria-expanded")) !== "false" || (await second.getAttribute("aria-expanded")) !== "true") throw new Error("opening the second did not close the first");
+          if (await box.getByRole("region", { name: "How does a project start?" }).count()) throw new Error("the closed section's content is still in the page");
+          const settled = await second.evaluate((el) => {
+            const item = el.closest("h3").parentElement;
+            return { tf: getComputedStyle(item).transform, minH: item.parentElement.style.minHeight };
+          });
+          if ((settled.tf !== "none" && !/^matrix\(1, 0, 0, 1, 0, 0\)$/.test(settled.tf)) || settled.minH) throw new Error(`after the motion the row is ${settled.tf} and the root holds ${settled.minH || "no"} min-height`);
+
+          /* Keys: arrows move between triggers, Home and End go to the ends, Space toggles. */
+          await page.keyboard.press("Shift");
+          await first.focus();
+          const focused = () => page.evaluate(() => document.activeElement?.textContent?.trim());
+          await page.keyboard.press("ArrowDown");
+          if ((await focused()) !== "How long does a site take?") throw new Error(`ArrowDown landed on "${await focused()}"`);
+          await page.keyboard.press("End");
+          if ((await focused()) !== "Do you write the copy?") throw new Error(`End landed on "${await focused()}"`);
+          await page.keyboard.press("Home");
+          if ((await focused()) !== "How does a project start?") throw new Error(`Home landed on "${await focused()}"`);
+          await page.keyboard.press("Space");
+          await page.waitForTimeout(600);
+          if ((await first.getAttribute("aria-expanded")) !== "true") throw new Error("Space did not open the focused section");
+          const ring = await first.evaluate((el) => getComputedStyle(el).outlineWidth);
+          if (ring !== "2px") throw new Error(`keyboard focus draws a ${ring} ring, not 2px`);
+          if ((await third.getAttribute("aria-expanded")) !== "false") throw new Error("the third section opened on its own");
+
+          /* Several open, controlled, under h4 headings. */
+          const analytics = box.getByRole("button", { name: "Analytics" });
+          if ((await analytics.evaluate((el) => el.parentElement?.tagName)) !== "H4") throw new Error("headingLevel={4} did not put the trigger in an h4");
+          await analytics.click();
+          await page.waitForTimeout(500);
+          const open = (await box.locator("[data-testid=accordion-open]").textContent())?.trim();
+          if (open !== "domain,analytics") throw new Error(`with type multiple the value reads "${open}", not "domain,analytics"`);
+          await page.evaluate(() => document.activeElement?.blur());
+          return `rose by ${Math.round(Math.max(...frames.map((f) => Math.abs(f.y))))}px, content ${frames[0].h}px from the first frame`;
+        });
+      }
+      if (has("scroll-area")) {
+        await attempt("scroll area: a labelled Tab stop that scrolls natively, a hairline on each edge with more beyond it, and a thumb only once it scrolls", async () => {
+          const box = page.locator("[data-testid=litt-scroll-area]");
+          const log = box.getByRole("region", { name: "Smoke log" });
+          await page.mouse.move(1, 1); // a mouse over the area would show the thumb before any scroll
+          await log.waitFor({ state: "visible", timeout: 8000 });
+          await log.scrollIntoViewIfNeeded();
+          await page.waitForTimeout(300);
+          if ((await log.getAttribute("tabindex")) !== "0") throw new Error("the scrolling region is not a Tab stop");
+          if ((await log.evaluate((el) => getComputedStyle(el).overflowY)) !== "scroll") throw new Error("the region does not scroll natively");
+          const short = box.locator("[data-radix-scroll-area-viewport]").nth(2);
+          if ((await short.getAttribute("tabindex")) !== null || (await short.getAttribute("role")) !== null) throw new Error("a box that does not scroll is a Tab stop or a landmark");
+
+          const paint = (value) =>
+            page.evaluate((v) => {
+              const probe = document.createElement("span");
+              probe.style.backgroundColor = v;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).backgroundColor;
+              probe.remove();
+              return c;
+            }, value);
+          const line = await paint("var(--litt-line)");
+          const none = "rgba(0, 0, 0, 0)";
+          const hairlines = (region) => region.evaluate((el) => [...el.parentElement.querySelectorAll(":scope > span[aria-hidden=true]")].map((s) => getComputedStyle(s).backgroundColor));
+          const thumbBar = (region, axis) => region.locator(`xpath=../div[@data-orientation="${axis}"]`);
+          const bar = thumbBar(log, "vertical");
+          const opacity = () => bar.evaluate((el) => getComputedStyle(el).opacity);
+
+          let [top, bottom] = await hairlines(log);
+          if (top !== none || bottom !== line) throw new Error(`at the top the hairlines are ${top} / ${bottom}, not none / --litt-line`);
+          if ((await opacity()) !== "0") throw new Error("the thumb shows before anyone scrolled");
+
+          /* The keyboard scrolls it, with an inset 2px ring. */
+          await page.keyboard.press("Shift");
+          await log.focus();
+          const ring = await log.evaluate((el) => [getComputedStyle(el).outlineWidth, getComputedStyle(el).outlineOffset]);
+          if (ring.join(" ") !== "2px -2px") throw new Error(`keyboard focus draws ${ring.join(" at ")}, not an inset 2px ring`);
+          await page.keyboard.press("End");
+          await page.waitForTimeout(250);
+          if ((await opacity()) !== "1") throw new Error("the thumb did not show while the area scrolled");
+          const thumb = await bar.evaluate((el) => {
+            const t = el.firstElementChild;
+            return t ? [Math.round(t.getBoundingClientRect().width), getComputedStyle(t).backgroundColor] : null;
+          });
+          const fg24 = await paint("color-mix(in oklab, var(--litt-fg) 24%, transparent)");
+          if (!thumb || thumb[0] !== 6 || thumb[1] !== fg24) throw new Error(`the thumb is ${JSON.stringify(thumb)}, not 6px of fg 24% (${fg24})`);
+          await page.waitForFunction((el) => Math.abs(el.scrollTop + el.clientHeight - el.scrollHeight) <= 1, await log.elementHandle(), { timeout: 3000 });
+          await page.waitForTimeout(150);
+          [top, bottom] = await hairlines(log);
+          if (top !== line || bottom !== none) throw new Error(`at the end the hairlines are ${top} / ${bottom}, not --litt-line / none`);
+          await page.waitForTimeout(1200);
+          if ((await opacity()) !== "0") throw new Error("the thumb did not fade after the scrolling stopped");
+          await page.evaluate(() => document.activeElement?.blur());
+
+          /* Sideways: the right edge has more, the left does not. */
+          const strip = box.getByRole("region", { name: "Smoke strip" });
+          const [left, right] = await hairlines(strip);
+          if (left !== none || right !== line) throw new Error(`the strip's edges are ${left} / ${right}, not none / --litt-line`);
+          if ((await thumbBar(strip, "horizontal").count()) !== 1) throw new Error("the strip has no horizontal scrollbar");
+          return `thumb ${thumb[0]}px in ${thumb[1]}, hairlines follow the scroll`;
         });
       }
       if (has("slider")) {

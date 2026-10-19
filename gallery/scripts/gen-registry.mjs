@@ -991,13 +991,13 @@ const COPY = {
   },
   accordion: {
     title: "Accordion",
-    description: "Sections that open in place, split by hairlines. The height snaps, the content fades in and drops a little, and the rows below move by transform, so the page never jumps.",
-    docs: "Import Accordion, AccordionItem, AccordionTrigger and AccordionContent from components/litt/accordion.",
+    description: "Sections that open in place, split by hairlines: 56px triggers in headings with a chevron that turns half a turn, one section open at a time or several. The height snaps, the content fades in and drops a little, and the rows below move by transform, so the page never jumps.",
+    docs: "Import Accordion, AccordionItem, AccordionTrigger and AccordionContent from components/litt/accordion. Give each AccordionItem a unique value and put an AccordionTrigger and an AccordionContent in it. Use type=\"multiple\" to let several stay open (the value is then a list), defaultValue or value with onValueChange for the open state, and headingLevel to fit the page's outline.",
   },
   "scroll-area": {
     title: "Scroll area",
-    description: "Native scrolling with litt's thin thumb, shown while scrolling or hovering, and a hairline on any edge with more beyond it. No gradient fades.",
-    docs: "Import ScrollArea from components/litt/scroll-area. Give it a height and a label.",
+    description: "A region that scrolls inside the page: native scrolling with litt's 6px thumb, shown while it scrolls or a mouse is over it, and a hairline on any edge with more beyond it. While it scrolls it is a labelled Tab stop with an inset focus ring. No gradient fades.",
+    docs: "Import ScrollArea from components/litt/scroll-area. Pass a label and give it a height (or a max height) in className; set orientation to \"horizontal\" or \"both\" to scroll sideways. Pass viewportRef to read or set the scroll position.",
   },
   breadcrumb: {
     title: "Breadcrumb",
