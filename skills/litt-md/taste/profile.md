@@ -118,14 +118,18 @@ The interview workflow works through these. When one is answered, move the answe
   - *Evidence:* the v0.11 reference set (five shots of dark data panels) uses dot matrices as data (a usage grid, a reply-time distribution) and a dot grid behind a 2D control. Litt now draws dots as marks and as a coordinate grid inside a control, not as page texture.
   - *Evidence:* litt.design has a dot-grid background, the Pinterest "OS" board is about half dot-matrix and pixel patterns, and dither appears on Cosmos.
 - **Q8.** Light: one accent-tinted source from the top (P2 today), or soft multi-hue ambient fields?
+  - *Evidence:* 2026-10-19, Nick on the gallery's lit, grained band at the top of every page: "remove the gradient from the page". The gallery now has no page light; the glass header is its only material. Open: should any page keep the radial light, or does light live only on objects (the primary glow, edges, glass)?
   - *Evidence:* litt.design uses peach and blue blobs at the sides, and Cosmos has warm gradient fields.
 - **Q9.** Neutral temperature: the interview chose cool, but litt.design and Vercel are true neutral gray, and Cursor and Ramp are warm. Keep cool?
+  - *Evidence:* 2026-10-19, Nick: "I think the design needs to feel more welcoming". Temperature is one lever; weight (Q20) is another.
   - *Evidence:* Fluid Functionalism is true neutral gray too (chroma 0).
 - **Q11.** Exposed editorial structure (visible column rules, index numbers) shows up a lot on the Pinterest "web" board. Allow it as a secondary device on content pages, or keep the language purely light-and-material?
 - **Q12.** Which theme comes first on marketing pages when the system preference is unknown? Cursor, Vercel and litt.design are all light-first.
 - **Q14.** Mono: keep Geist Mono next to Hanken Grotesk, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
   - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The type trial paired Hanken Grotesk with JetBrains Mono by default.
 
+- **Q20.** One weight, but which? P9 holds everything at 400, from Nick's 2026-10-10 "fonts are too wide" about heavier weights. On 2026-10-19 Nick found 400 "too thin, as well as in button". Raise the one weight (450 or 500), or keep 400 and find the heft elsewhere (size, contrast)?
+- **Q21.** Tags: since v0.8 they are the selected segment's look in mono (surface-1, hairline, top highlight). On 2026-10-19 Nick said they "feel off". They share that raised, edged look with the secondary button and the selected segment, so a label reads like a control. Quiet fill, outline only, or sans?
 ## Changelog
 
 - **v0.11, October 2026.** Nick sent five reference shots of data panels (a rule builder with colored category tags, a voice pad on a dot grid, a reply-speed dot plot, a shortcut heatmap, a usage dot matrix and gauge, a deploy timeline) with "lets expand the components ... we stick to our design language, we can add some color too". New rule P11: color carries data. Five data hues (blue, amber, teal, violet, rose), fitted to litt's surfaces in both themes and checked for color-blind separation, each with a mark tone, a text tone and a tint. They mark series, categories, heat steps and identity, and never chrome; the accent still owns the primary action, and the dashboards step's foreground-only chart stays the default. The Color decision now reads "monochrome chrome". Tags take a hue for a category. The lint fails a hue's mark tone or tint used as text.
