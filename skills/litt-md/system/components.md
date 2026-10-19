@@ -1,9 +1,9 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) and the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) and the staples (combobox, date picker, accordion, scroll area, breadcrumb, context menu) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Token input · Select · Checkbox and radio · Switch · Slider · Pad · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Callout · Glass header · Tooltip · Command menu · Popover and dropdown · Modal · Toast · Table and list rows · Pagination · Stat · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · App shell · Empty and loading states · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
+Button · Input · Token input · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Callout · Accordion · Scroll area · Glass header · Breadcrumb · Tooltip · Command menu · Popover and dropdown · Context menu · Modal · Toast · Table and list rows · Pagination · Stat · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · App shell · Empty and loading states · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
 
 ---
 
@@ -55,6 +55,27 @@ One value from a short list (a role, a region, a plan). It replaces the native `
 - **Label:** above the trigger, as the Input's, with help text or an error under it. A form sends the value, through a hidden native field.
 - **On compact screens** the list stays anchored, like a dropdown menu: a phone form's trigger is full width, so the list is too, and its rows are already 44px. It is not a sheet.
 - Inside a dialog, a sheet or the header the list is solid (`--surface-2` and `--shadow-float`), never glass on glass.
+
+## Combobox
+Type to find one value, or several, in a long list: a client, a framework, a teammate. Select is for a short fixed list; Command menu is for actions.
+- **Field:** the Input's look and sizes (sm 32, md 44 by default, lg 56), `--radius-control`, `--surface-1`, the inset `--line-control` edge, the same focus, error and disabled states, 16px text on coarse pointers. The text is the query. A 16px chevron button in `--fg-subtle` at the end opens and closes the list; it never turns. A label above it, help text or an error under it, as the Input's.
+- **List:** anchored under the field and flipped above it when there is no room, as wide as the field. The Menu's panel: glass at `--radius-surface` with the 4px inset, 44px rows at `--radius-control`, one gliding highlight, the picked option's 16px check in a fixed cell at the row's start so labels never shift. Optional group labels, as the Menu's. At most eight rows show, then it scrolls inside. With no match a quiet row says "No matches for “marl”" and nothing is lit.
+- **Behavior:** the combobox and listbox pattern: focus stays in the field and `aria-activedescendant` names the lit option. Typing opens the list and filters it in the original order, ignoring case and accents, and lights the first match. With an empty query the picked option is lit. ↓ opens or moves, ↑ moves, both wrap and skip disabled options; Enter picks the lit option; Esc closes the list first, then puts back the picked option's label. Leaving the field closes the list and puts the label back, so the field never holds text that is not a value.
+- **Several values (`multiple`):** the picks sit inside the field as Token input's tokens, before the query, each with its remove button. A pick clears the query and keeps the list open. Backspace in an empty query removes the last token.
+- **Motion:** the responsive tier, as the Menu: the list grows from the field and travels a quarter of `--travel` from the side it opens on, and leaves on the exit token. Typing changes the list at once; its height is never animated.
+- **On compact screens** the list stays anchored, never a sheet, because a sheet would cover the field. Its height is the visible screen below the field less `--space-2`, read from the visual viewport, so no option hides behind the keyboard.
+- **Accessibility:** a real label; `aria-expanded`, `aria-controls` and `aria-autocomplete="list"` on the field; a polite live region says how many options match a moment after typing stops ("4 options"). A form gets one hidden field per value with `name`.
+- Inside a dialog, a sheet or the header the list is solid (`--surface-2` and `--shadow-float`), never glass on glass.
+
+## Date picker
+A day, or a range of days, from a month calendar: a launch date, a report's period. `Calendar` is the grid on its own; `DatePicker` is a field that opens it.
+- **Values:** `YYYY-MM-DD` strings, never `Date` objects, so no time zone moves a day. `min`, `max` and `isDisabled` rule days out. The locale defaults to `en-GB` and the week to Monday, both props.
+- **Calendar:** a header with the month and year at the body size in `--fg` ("October 2026") and previous and next as icon-only ghost sm buttons (pills). Weekday names in caption `--fg-subtle`, from `Intl`. Always six weeks, so the height never changes. Days are 40px cells (44px on coarse pointers) at `--radius-control`, numbers in `--font-mono` at the small size, tabular, `--fg`; days of the next and last month are `--fg-disabled`, and so are disabled days, which take no hover.
+- **Day states:** hover fills with fg 6% on the instant tier. Today has an inset 1px `--line-strong` ring. The picked day is an `--fg` fill with `--canvas` text, never the accent (P1). In a range the two ends are filled and the days between them sit on an fg 8% band that runs square across the row and rounds only at its ends. While the second end is being chosen, hover previews the band.
+- **Keyboard:** the date grid pattern: one day is a tab stop (the picked day, else today); ←→ move a day, ↑↓ a week, Home and End go to the week's ends, PageUp and PageDown a month, with Shift a year; Enter or Space picks. Focus is an inset 2px `--focus` ring.
+- **Motion:** a new month slides half of `--travel` in from the side it comes from and cross-fades, on the responsive tier, as Tabs panels do; the month name cross-fades with it. Nothing else moves.
+- **Date picker field:** the Select trigger's look and sizes, showing the date in words from `Intl` ("17 Oct 2026"; a range is "3 Oct to 17 Oct 2026") or a placeholder in `--fg-subtle`, with a 16px calendar icon at the end. It opens the Calendar in a Popover, which is a bottom sheet on compact screens. Picking a day closes it and focus returns to the field; in a range it closes after the second day. Optional presets ("Last 7 days") sit in a column of 36px rows beside the calendar, and above it as a row of sm secondary buttons on compact screens.
+- **Accessibility:** the grid is labelled by the month; each day reads in full ("Friday 17 October 2026, today, selected"). The field is a button with `aria-haspopup="dialog"` and a real label. A form gets the value (or `start` and `end`) through hidden fields with `name`.
 
 ## Checkbox and radio
 Native inputs at 16px with `accent-color: var(--fg)`. A drawn checkbox is a 20px chip at `--radius-control`, filled with `--fg` and a `--canvas` mark when on. Not the accent (P1): a form can hold many checked boxes, and the accent stays on the one primary action. A switch follows the same rule. The label is on the right, `--space-2` gap, `--type-small-size`. The whole label is clickable.
@@ -134,6 +155,21 @@ An inline note in the page flow: a tip, a heads-up, a result to act on.
 - **Touch:** the close button and a Button action grow to 44px; a Kbd action hides, as key hints do on touch.
 - **Motion:** none.
 
+## Accordion
+Sections that open in place: questions and answers, groups of settings, a long spec.
+- **Anatomy:** rows split by 1px `--line` hairlines, with one above the first and one below the last. Each trigger is a full-width button at least 56px tall, its label at the body size in `--fg`, left-aligned, and a 16px chevron in `--fg-subtle` at the end that brightens to `--fg` on hover (instant tier, color only). The content sits under its trigger in `--fg-muted` at the small or body size, at most 64ch wide, with `--space-6` below it. No card around it unless the page puts one there; no fills, no accent.
+- **Behavior:** one open at a time by default (`type="single"`, and the open one can close), or several (`type="multiple"`). Triggers sit in headings (h3 unless told otherwise) and carry `aria-expanded` and `aria-controls`.
+- **Keyboard:** Enter or Space toggles; ↑↓ move between triggers; Home and End go to the first and last.
+- **Motion:** the panel's height is never animated: it snaps open. Its content fades in and drops a quarter of `--travel`, the chevron turns half a turn, and the rows below move to their new place by transform (Motion `layout`, position only), all on the responsive tier, so the page never jumps. Closing fades the content on the exit token while the rows below rise.
+
+## Scroll area
+A region that scrolls inside the page: a long list in a fixed-height card, a log, a side panel. Never the page itself.
+- **Scrolling** stays native (wheel, touch, keyboard, momentum). Only the scrollbar is litt's: a 6px thumb at `--radius-control` in fg 24%, fg 40% while hovered or dragged, on a transparent track with 2px of inset, so the hit area is 10px. It overlays the content and shows while the area scrolls or the pointer is over it, then fades out on the instant tier after a short pause.
+- **Edges:** a 1px `--line` hairline appears on any edge that has more content beyond it, and goes when that edge is reached (instant tier, color only). No gradient fades: material is static (P5).
+- **Focus:** a scrolling region is a tab stop with an accessible name, so the arrow keys scroll it, with an inset 2px `--focus` ring.
+- **Axes:** vertical by default, horizontal or both on request.
+- **On coarse pointers** the thumb shows only while scrolling, because there is no hover.
+
 ## Glass header
 Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
 - Order: wordmark → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
@@ -141,6 +177,15 @@ Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
 - It is full-bleed, so it sets `border-radius: 0` (`.litt-glass` carries the surface radius).
 - On mobile, hide the nav behind the command menu or a menu button. Don't squeeze it.
 - **On compact screens** the nav stays behind the menu button and opens as the anchored dropdown (see Popover and dropdown). The bar stays sticky at the safe-area inset and never hides on scroll. Links and the menu button are `--control-md` on coarse screens.
+
+## Breadcrumb
+Where a page sits: Studio / Projects / Marlow Labs / Settings.
+- **Anatomy:** a `nav` landmark named "Breadcrumb" holding an ordered list on one line. Each level is a link at the small size in `--fg-muted` that turns `--fg` on hover (instant tier, color only, no underline); the last is the current page, `--fg`, not a link, with `aria-current="page"`. Between levels a `/` in `--fg-subtle`, `--space-2` each side, hidden from screen readers. No dots, no chevrons, no accent.
+- **Targets:** a link's hit area is 32px tall, and 44px on coarse pointers, without moving the text.
+- **Long trails:** past four levels the middle ones fold into an icon-only ghost sm "…" button (a pill) named "Show 3 more levels", which opens a Menu of them. The current page truncates with an ellipsis rather than wrapping.
+- **On compact screens** only the last two levels show; the rest fold into the "…" button.
+- **Router:** links are plain `<a>` unless the caller passes its own link component.
+- **Motion:** none.
 
 ## Tooltip
 Solid, not glass, with `--shadow-tooltip`, `--radius-control` and small type in `--fg`.
@@ -171,6 +216,14 @@ Glass with `--shadow-float`, `--radius-surface`, padding `--space-1`, rows at `-
 - **On compact screens** a popover becomes a bottom sheet (see Modal), because it holds fields and pickers that need the width and a place above the keyboard. A dropdown menu stays anchored: its rows are already 44px and the finger is beside it.
 - **Submenus on compact screens** do not fly out sideways. The submenu replaces the list in the same panel, with a Back row first. The two lists cross-fade and slide as Tabs panels do: half of `--travel` in, a quarter out, on the responsive tier. The panel's height snaps to the new list and is never animated.
 - **Touch rows** fill when pressed (instant tier, color only). Shortcut hints are hidden on coarse screens.
+
+## Context menu
+Actions on the thing under the pointer: right-click a row, a file, a card.
+- **Look and rows:** the Menu's exactly: glass at `--radius-surface` with `--shadow-float`, 44px rows, the gliding highlight, checkbox and radio rows in a fixed 16px cell, solid submenus, labels and separators. The same row components work in both.
+- **Open:** a right-click opens it at the pointer; Shift+F10 or the menu key opens it on the focused target; on touch, a press and hold of 500ms (the tooltip's hold) opens it at the finger and stops the browser's own callout and text selection on that target.
+- **Motion:** the responsive tier. It grows from the pointer's corner and travels a quarter of `--travel` from the side it opens on after collision flipping, and leaves on the exit token.
+- **Every action in it is also reachable another way** (a "⋯" Menu on the row, a toolbar, a shortcut). A context menu is a shortcut, never the only path, because a touch or keyboard user may never find it.
+- **On compact screens** it stays anchored at the finger, like the Menu, and a submenu replaces the list in place with a Back row first.
 
 ## Modal
 Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, padding `--space-8`, max width 480px (forms) or 640px. The title is `--type-h4` in `--fg`. Actions sit bottom right at md, primary last, secondary or ghost before it. Fields in a dialog are md too. The backdrop tint is `color-mix(in oklab, var(--canvas) 55%, transparent)`.
