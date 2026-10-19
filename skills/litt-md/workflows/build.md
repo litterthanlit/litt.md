@@ -81,6 +81,8 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), or as a child next to the label, as shadcn writes it. It always renders a `<button>`, so a link to another page is an `<a>`. |
 | `input` | `TextField` (label, hint, error), the bare `Input` for inline forms and toolbars, `Textarea`. |
 | `token-input` | A field that collects several short values as tokens: recipients, sender domains, tags (`TokenInput`). Hold the values in state. |
+| `combobox` | A searchable field for one value, or several, from a long list: a client, a framework, a teammate (`Combobox` with `options` as `{ value, label, group? }` and `multiple` for tokens). A short fixed list is a `select`. |
+| `date-picker` | A day or a range: a launch date, a report period (`DatePicker`, or `Calendar` on its own). Values are `YYYY-MM-DD` strings, or `{ start, end }` with `mode="range"`; `presets` for "Last 7 days". On a phone it opens as a bottom sheet by itself. |
 | `checkbox` | `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, a select-all box. |
 | `select` | One value from a short list (`SelectField` with a label, the bare `Select` in a toolbar). Never a native `<select>`. Pass `options` as `{ value, label }`. It stays anchored on a phone. |
 | `switch` | An on or off setting (`Switch`). `align="end"` lines switches up at the end of settings rows. A choice that can be wrong, such as accepting terms, is a checkbox. |
@@ -95,12 +97,16 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `tooltip` | A label for an icon button or a shortcut. |
 | `popover` | A small form, a share link or a detail card on a trigger. On a phone it opens as a bottom sheet by itself, titled by its `label`. |
 | `menu` | A dropdown of actions. |
+| `context-menu` | Actions on the thing under the pointer, on right-click, Shift+F10 or a hold on touch (`ContextMenu` with the Menu's rows). Every action in it must also be on a visible control, such as a ⋯ `menu` on the row. |
 | `command-menu` | ⌘K search for pages, projects and actions. Give it a visible Search button that shows the `kbd` hint. |
 | `dialog` | A confirm or a short form that needs full attention. `side="right"` makes a side sheet on desktop. On a phone every dialog is a bottom sheet that drags down to close, with no code of yours: never build your own sheet or drawer. |
 | `toast` | Feedback after an action. Mount `Toaster` once, then call `toast()`. On a phone toasts swipe away by themselves. |
 | `header` | A sticky glass bar with a wordmark, a nav and actions. |
 | `card` | A raised surface for one object that links somewhere. |
 | `callout` | An inline note in the flow: a tip, a heads-up, a result to act on (`Callout`). Color lives in the icon only, never a rail or a tinted box. |
+| `accordion` | Sections that open in place: questions and answers, groups of settings (`Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent`). The page never jumps, and nothing animates its height. |
+| `scroll-area` | A region that scrolls inside the page, such as a log or a long list in a fixed-height card (`ScrollArea` with a `label` and a height). Never the page itself. |
+| `breadcrumb` | Where a page sits: Studio / Projects / Marlow Labs (`Breadcrumb` with `items` as `{ label, href }`, the last being the current page). Long trails fold into a menu. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
 | `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. `trend` takes a Sparkline at the foot of the tile. |
 | `chart` | `BarChart`, `LineChart` and `Meter`, never the accent: the foreground by default, or data hues when color tells series apart (`hue` on a series, or `hues` on the chart). Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
@@ -128,12 +134,18 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 
 Each item prints a one-line import hint. The gallery page for an item (`https://littmd.vercel.app/#dialog`) has a working example.
 
+Every item also has its docs as Markdown at `https://littmd.vercel.app/docs/<item>.md` (props, keyboard, accessibility), and `https://littmd.vercel.app/llms.txt` lists them all. Read one when the installed file's JSDoc is not enough.
+
+### Keeping installed items current
+
+Every installed file names its release in its first lines (`// @litt/button 2026.10.17`), and `https://littmd.vercel.app/changelog.md` lists what changed in each release, newest first. When Nick asks to update litt, or an item lacks something the changelog says it has: read the entries newer than the installed version, install those items again with `--overwrite`, then follow any **Migrate** line in your own code. Never hand-merge a newer version into an installed file.
+
 ### After installing
 
 - **Compose, never copy.** Import from `@/components/litt/<item>` (the `components` alias plus `litt/`). Do not write your own `Button`, `Dialog`, `Input` or any other component the registry has, not even a small one. A fresh shadcn app has its own `components/ui/button.tsx`: leave it alone and use litt's `Button` in litt UI.
 - **Never edit** a file under `components/litt/` or `lib/litt/`, or the `--litt-*` block in the global CSS. They are the tested copies, and a later install can overwrite your changes. Read the installed file for props: its exports and JSDoc are the source of truth.
 - **If a component lacks something,** wrap it in your own file and tell Nick. That is a registry gap worth logging.
-- **Hand-build only what the registry lacks** (a hero, a pricing tier, an accordion). Write it in your own file from `system/components.md`, with the names below.
+- **Hand-build only what the registry lacks** (a hero, a pricing tier, a testimonial). Write it in your own file from `system/components.md`, with the names below.
 - **Phones come with the components.** The dialog, popover, menu, command menu, tooltip and toast already adapt to phones and touch (`system/foundations.md` section 6). If your own markup needs to know, read `useDevice()` from `@/lib/litt/motion` (`compact` for layout, `coarse` for touch) or use `max-sm:` and `pointer-coarse:`; never read the user agent.
 
 ### Names in a registry project

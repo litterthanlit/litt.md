@@ -63,6 +63,15 @@
  *   asChild            a written asChild becomes {...asChildProps}: shadcn's CLI rewrites the attribute to Base UI's
  *                      render prop in every host whose style starts with "base-" (the default of `shadcn init`).
  *
+ * VERSIONS (CHANGELOG.md, registry.lock.json; see scripts/changelog.mjs)
+ *   Every item's version is the newest release in CHANGELOG.md that names it, by date (2026.10.19). It goes into
+ *   the item's meta.version and into a comment at the top of every file it installs ("// @litt/button 2026.10.19
+ *   ..."), so an installed copy can say where it came from. registry.lock.json, committed, keeps a hash of what each
+ *   item installs (files, CSS and dependencies, not its words) and its version. When the hash changes, the changelog
+ *   must name the item in a newer release, or the build fails: nobody changes a component without telling the people
+ *   who installed it. The newest release stays open, so an item it already names may change again until the next
+ *   release starts. A normal run rewrites the lock (commit it with the change); --check fails when it is stale.
+ *
  * THE VERIFIER (always runs; any finding fails the build)
  *   Every shipped file: no unprefixed litt custom property or utility survives, every --name it
  *   uses is defined by the shipped CSS (or is Radix's or Tailwind's own), every relative import
@@ -81,6 +90,8 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
+import { createHash } from "node:crypto";
+import { compareVersions, itemVersions, readChangelog } from "./changelog.mjs";
 
 // Anything this script cannot resolve is a message and exit 1, not a stack trace.
 process.on("uncaughtException", (e) => {
@@ -977,6 +988,38 @@ const COPY = {
     description: "Code in an answer, a tool's output or a diff: mono on a quiet surface with a 32px header that holds the file name and a Copy button. tsx, ts, jsx and js are highlighted in the foreground's tones only (strings take a hint of the accent text), a diff shows a + in success and a - in danger on a faint band with hidden \"Added\" and \"Removed\" words, line numbers sit in a gutter that is not selected or copied, and long lines scroll sideways inside a focusable, labelled block. Static.",
     docs: "Import CodeBlock from components/litt/code-block. Pass the code, a lang (tsx, ts, jsx, js, diff, shell or text) and a filename for the header. The label names the scroll area and defaults to the file name. lineNumbers adds a gutter, wrap wraps long lines, and maxHeight (a number or a CSS length) makes a tall block scroll. A diff reads each line's first character as its sign. The syntax colors are declared on the block itself, so it needs no stylesheet. It imports sugar-high.",
   },
+  /* The staples step (proposals/staples.md). Each entry is owned by the agent that builds the
+     item; the lead checks every docs line against the finished component. */
+  combobox: {
+    title: "Combobox",
+    description: "Type to find one value, or several, in a long list: a client, a framework, a teammate. The Input's field with the Menu's glass list under it: filtered as you type, ignoring case and accents, with the first match lit, one gliding highlight, a check on each pick and optional group labels. With multiple the picks sit in the field as removable tokens. Solid inside a dialog, and anchored under the field on a phone.",
+    docs: "Import Combobox from components/litt/combobox. Give it a label and options as { value, label, disabled?, group? } or groups of { label, options }, and hold the value in state with value and onValueChange: a string (\"\" for none), or an array with multiple. Add hint, error and placeholder as on a field, and name to post the value with a form.",
+  },
+  "date-picker": {
+    title: "Date picker",
+    description: "A day or a range from a month calendar, as YYYY-MM-DD strings. A field in the Select trigger's look opens the calendar in a popover, a bottom sheet on a phone, with optional presets. Day numbers in mono, the picked day filled with the foreground, today ringed, six weeks always, the full date-grid keyboard, and months that slide in from the side they come from.",
+    docs: "Import DatePicker and Calendar from components/litt/date-picker, plus getToday, addDays and getWeekday for date math on YYYY-MM-DD strings. Values are YYYY-MM-DD strings, or { start, end } with mode=\"range\". DatePicker needs a label; hold the value in state with value and onValueChange, and pass name for a form (a range sends name-start and name-end). min, max and isDisabled rule days out; presets take { label, value }.",
+  },
+  accordion: {
+    title: "Accordion",
+    description: "Sections that open in place, split by hairlines: 56px triggers in headings with a chevron that turns half a turn, one section open at a time or several. The height snaps, the content fades in and drops a little, and the rows below move by transform, so the page never jumps.",
+    docs: "Import Accordion, AccordionItem, AccordionTrigger and AccordionContent from components/litt/accordion. Give each AccordionItem a unique value and put an AccordionTrigger and an AccordionContent in it. Use type=\"multiple\" to let several stay open (the value is then a list), defaultValue or value with onValueChange for the open state, and headingLevel to fit the page's outline.",
+  },
+  "scroll-area": {
+    title: "Scroll area",
+    description: "A region that scrolls inside the page: native scrolling with litt's 6px thumb, shown while it scrolls or a mouse is over it, and a hairline on any edge with more beyond it. While it scrolls it is a labelled Tab stop with an inset focus ring. No gradient fades.",
+    docs: "Import ScrollArea from components/litt/scroll-area. Pass a label and give it a height (or a max height) in className; set orientation to \"horizontal\" or \"both\" to scroll sideways. Pass viewportRef to read or set the scroll position.",
+  },
+  breadcrumb: {
+    title: "Breadcrumb",
+    description: "Where a page sits, with a slash between the levels and the current page in the foreground. Past four levels the middle folds into a round ghost button that opens the Menu, and phones show the last two levels. No motion of its own.",
+    docs: "Import Breadcrumb from components/litt/breadcrumb. Pass items as { label, href }, the last one being the current page. Pass renderLink and onNavigate to route with your router, and maxVisible to change where the trail folds.",
+  },
+  "context-menu": {
+    title: "Context menu",
+    description: "The Menu at the pointer: a right-click, Shift+F10 or a 500ms hold on touch. The same glass, rows, gliding highlight and solid submenus as the Menu, grown from the pointer's corner, and on a phone a submenu that replaces the list in place.",
+    docs: "Import ContextMenu from components/litt/context-menu and fill it with the Menu's rows from components/litt/menu. Pass the target element as trigger and a label. Every action in it must also be reachable another way, such as a Menu on the row.",
+  },
 };
 
 /* =============================================================== assemble the items */
@@ -1082,6 +1125,71 @@ function build() {
     }));
   }
   return { items, targets, transformed };
+}
+
+/* ========================================================================= versions */
+
+const lockFile = path.join(root, "registry.lock.json");
+const CHANGELOG_URL = `${PRODUCTION_ORIGIN}/changelog.md`;
+
+/** What an item installs, as a stable hash: files, CSS and dependencies. Its title, description and docs are not part of it. */
+function installHash(item) {
+  const nameOf = (url) => url.slice(url.lastIndexOf("/") + 1).replace(/\.json$/, "");
+  const shape = {
+    type: item.type,
+    dependencies: item.dependencies ?? [],
+    registryDependencies: (item.registryDependencies ?? []).map(nameOf),
+    cssVars: item.cssVars ?? null,
+    css: item.css ?? null,
+    files: (item.files ?? []).map((f) => ({ target: f.target, type: f.type, content: f.content })),
+  };
+  return createHash("sha256").update(JSON.stringify(shape)).digest("hex").slice(0, 16);
+}
+
+/** The comment that opens every installed file. */
+const stampOf = (name, version) => `// @litt/${name} ${version}. What changed: ${CHANGELOG_URL}`;
+
+/**
+ * Give every item its version, check it against the lock, and stamp it. Returns the lock to write and any errors.
+ * Runs before the verifier, so the verifier sees the stamped files.
+ */
+function versionItems(items) {
+  const errs = [];
+  let changelog;
+  try {
+    changelog = readChangelog();
+  } catch (e) {
+    return { errs: [e.message], lock: null };
+  }
+  let versions;
+  try {
+    versions = itemVersions(changelog, items.map((i) => i.name));
+  } catch (e) {
+    return { errs: [e.message], lock: null };
+  }
+  const released = new Map(changelog.releases.map((r) => [r.version, r.date]));
+  const latest = changelog.releases[0].version;
+  const old = fs.existsSync(lockFile) ? JSON.parse(read(lockFile)) : { items: {} };
+  const lock = {};
+  for (const item of items) {
+    const version = versions.get(item.name);
+    const hash = installHash(item);
+    const before = old.items?.[item.name];
+    if (before && compareVersions(version, before.version) < 0) {
+      errs.push(`${item.name}: registry.lock.json has it at ${before.version}, but the newest CHANGELOG.md entry that names it is ${version}. Put its entry back.`);
+    } else if (before && before.hash !== hash && compareVersions(version, before.version) === 0 && version !== latest) {
+      // The newest release stays open: an item it already names can change again until the next release starts.
+      errs.push(`${item.name}: what it installs changed since ${before.version}, but CHANGELOG.md has no newer entry for it. Add one under today's release ("- **changed** \`${item.name}\`: ..."), then run npm run gen:registry and commit registry.lock.json.`);
+    }
+    lock[item.name] = { version, hash };
+    item.meta = { version, released: released.get(version), changelog: CHANGELOG_URL };
+    for (const f of item.files ?? []) {
+      const stamp = stampOf(item.name, version);
+      f.content = f.content.startsWith('"use client";\n') ? `"use client";\n${stamp}\n${f.content.slice('"use client";\n'.length)}` : `${stamp}\n${f.content}`;
+    }
+  }
+  const sorted = Object.fromEntries(Object.keys(lock).sort().map((k) => [k, lock[k]]));
+  return { errs, lock: { $comment: "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.", latest: changelog.releases[0].version, items: sorted } };
 }
 
 /* ================================================================ schema validation */
@@ -1439,6 +1547,12 @@ function serialize(items) {
 async function main() {
   const shadcn = await loadShadcnSchema();
   const { items, targets, transformed } = build();
+  const versioned = versionItems(items);
+  if (versioned.errs.length) {
+    console.error(`gen-registry: ${versioned.errs.length} version problem${versioned.errs.length === 1 ? "" : "s"}:`);
+    for (const e of versioned.errs) console.error(`  - ${e}`);
+    process.exit(1);
+  }
   const errs = verify(items, targets, transformed, shadcn);
   const cross = await tailwindCrossCheck(items);
   errs.push(...cross.errs);
@@ -1449,6 +1563,14 @@ async function main() {
   }
 
   const files = serialize(items);
+  const lockText = JSON.stringify(versioned.lock, null, 2) + "\n";
+  const lockStale = !fs.existsSync(lockFile) || read(lockFile) !== lockText;
+  if (check && lockStale) {
+    console.error("gen-registry: registry.lock.json is stale. Run npm run gen:registry and commit it.");
+    process.exit(1);
+  }
+  // Only the real registry keeps the lock; the install test builds elsewhere with --out.
+  if (!check && lockStale && !option("--out")) fs.writeFileSync(lockFile, lockText);
   if (check) {
     const stale = [];
     for (const [name, text] of files) {
@@ -1472,7 +1594,7 @@ async function main() {
   const fileCount = items.reduce((n, i) => n + (i.files?.length ?? 0), 0);
   console.log(
     `gen-registry: ${items.length} items, ${fileCount} files -> ${path.relative(root, outDir) || "."} ` +
-      `(origin ${origin}, ${cross.count} classes cross-checked${shadcn ? ", shadcn schema ok" : ""})`,
+      `(origin ${origin}, ${cross.count} classes cross-checked${shadcn ? ", shadcn schema ok" : ""}, release ${versioned.lock.latest}${lockStale && !check && !option("--out") ? ", registry.lock.json updated" : ""})`,
   );
 }
 

@@ -130,6 +130,22 @@ const RECIPES = {
           <MenuItem destructive>Delete</MenuItem>
         </Menu>`,
   },
+  breadcrumb: {
+    needs: ["Breadcrumb"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-breadcrumb"><Breadcrumb label="Smoke docs" items={[{ label: "Docs", href: "#docs" }, { label: "Guides", href: "#guides" }, { label: "Publishing", href: "#publishing" }, { label: "Domains", href: "#domains" }, { label: "Custom domains", href: "#custom" }, { label: "DNS records", href: "#dns" }, { label: "Verify ownership", href: "#verify" }]} /></div>`,
+  },
+  "context-menu": {
+    needs: ["ContextMenu", "MenuItem", "MenuSub", "MenuCheckboxItem", "MenuSeparator"],
+    state: [`const [ctxHidden, setCtxHidden] = useState(false);`, `const [ctxOpened, setCtxOpened] = useState(0);`],
+    jsx: `<ContextMenu label="Founder landing actions" trigger={<div data-testid="ctx-target" data-opened={ctxOpened} className="grid h-24 w-72 place-items-center"><button type="button" data-testid="ctx-focus" onClick={() => setCtxOpened((n) => n + 1)}>Founder landing</button></div>}>
+          <MenuItem>Open</MenuItem>
+          <MenuItem>Rename</MenuItem>
+          <MenuSub label="Move to"><MenuItem>Templates</MenuItem><MenuItem>Archive 2025</MenuItem></MenuSub>
+          <MenuCheckboxItem checked={ctxHidden} onCheckedChange={setCtxHidden}>Show hidden files</MenuCheckboxItem>
+          <MenuSeparator />
+          <MenuItem destructive>Delete</MenuItem>
+        </ContextMenu>`,
+  },
   "command-menu": {
     needs: ["CommandMenu"],
     state: [`const [cmdOpen, setCmdOpen] = useState(false);`],
@@ -205,6 +221,18 @@ const RECIPES = {
           <Select size="sm" aria-label="Sort by" defaultValue="producer" options={ROLES} />
         </form>`,
   },
+  combobox: {
+    needs: ["Combobox"],
+    top: [
+      `const CB_CLIENTS = [{ value: "marlow-labs", label: "Marlow Labs", group: "Retainers" }, { value: "grotta-type", label: "Grotta Type", group: "Retainers" }, { value: "sidebar-weekly", label: "Sidebar Weekly", group: "Projects" }, { value: "zurich-opera", label: "Zürich Opera House", group: "Past clients" }, { value: "oddway-press", label: "Oddway Press", group: "Past clients", disabled: true }];`,
+      `const CB_STACK = [{ label: "Frameworks", options: [{ value: "nextjs", label: "Next.js" }, { value: "astro", label: "Astro" }] }, { label: "Content", options: [{ value: "sanity", label: "Sanity" }] }];`,
+    ],
+    state: [`const [cbStack, setCbStack] = useState<string[]>(["astro"]);`],
+    jsx: `<form className="grid w-full max-w-sm gap-4" data-testid="litt-combobox" aria-label="Combobox smoke" onSubmit={(e) => e.preventDefault()}>
+          <Combobox label="Client" name="client" options={CB_CLIENTS} placeholder="Search clients" hint="Type to search." />
+          <Combobox multiple label="Stack" name="stack" options={CB_STACK} value={cbStack} onValueChange={setCbStack} />
+        </form>`,
+  },
   form: {
     needs: ["FormSection", "Fieldset", "ErrorSummary", "FormActions"],
     jsx: `<form noValidate className="w-full max-w-xl" aria-label="Form smoke">
@@ -225,12 +253,49 @@ const RECIPES = {
           <Switch disabled label="Password protection" />
         </div>`,
   },
+  accordion: {
+    needs: ["Accordion", "AccordionItem", "AccordionTrigger", "AccordionContent"],
+    state: [`const [accOpen, setAccOpen] = useState<string[]>(["domain"]);`],
+    jsx: `<div className="grid w-full max-w-xl gap-8" data-testid="litt-accordion">
+          <Accordion defaultValue="start">
+            <AccordionItem value="start"><AccordionTrigger>How does a project start?</AccordionTrigger><AccordionContent>With a call about what the site has to do, then a one-page brief.</AccordionContent></AccordionItem>
+            <AccordionItem value="timing"><AccordionTrigger>How long does a site take?</AccordionTrigger><AccordionContent>Most sites launch four to six weeks after the brief.</AccordionContent></AccordionItem>
+            <AccordionItem value="copy"><AccordionTrigger>Do you write the copy?</AccordionTrigger><AccordionContent>You bring the words and I shape them to the layout.</AccordionContent></AccordionItem>
+          </Accordion>
+          <Accordion type="multiple" value={accOpen} onValueChange={setAccOpen} headingLevel={4}>
+            <AccordionItem value="domain"><AccordionTrigger>Domain</AccordionTrigger><AccordionContent>smoke.studio points at the host.</AccordionContent></AccordionItem>
+            <AccordionItem value="analytics"><AccordionTrigger>Analytics</AccordionTrigger><AccordionContent>Visits are counted without cookies.</AccordionContent></AccordionItem>
+          </Accordion>
+          <p data-testid="accordion-open">{accOpen.join(",") || "none"}</p>
+        </div>`,
+  },
+  "scroll-area": {
+    needs: ["ScrollArea"],
+    top: [`const SA_LINES = Array.from({ length: 40 }, (_, i) => "Smoke build step " + (i + 1));`],
+    jsx: `<div className="grid w-full max-w-md gap-6" data-testid="litt-scroll-area">
+          <ScrollArea label="Smoke log" className="h-48">
+            <ol className="grid gap-1 pr-3">{SA_LINES.map((line) => <li key={line}>{line}</li>)}</ol>
+          </ScrollArea>
+          <ScrollArea label="Smoke strip" orientation="horizontal">
+            <ul className="flex gap-4 pb-4">{SA_LINES.slice(0, 12).map((line) => <li key={line} className="w-40 shrink-0">{line}</li>)}</ul>
+          </ScrollArea>
+          <ScrollArea label="Short list" className="h-48"><p>Fits without scrolling.</p></ScrollArea>
+        </div>`,
+  },
   slider: {
     needs: ["Slider", "RangeSlider"],
     jsx: `<div className="grid w-full max-w-sm gap-8" data-testid="litt-slider">
           <Slider name="speed" label="Animation speed" min={0.5} max={2} step={0.1} defaultValue={1} minLabel="Slower" maxLabel="Faster" showValue formatValue={(v) => \`\${v.toFixed(1)}x\`} />
           <form data-testid="litt-range" onSubmit={(e) => e.preventDefault()}><RangeSlider name="window" label="Smoke window" min={0} max={100} defaultValue={[20, 80]} minLabel="Faster" maxLabel="Slower" showValue formatValue={(v) => \`\${v}s\`} /></form>
         </div>`,
+  },
+  "date-picker": {
+    needs: ["DatePicker", "Calendar"],
+    jsx: `<form className="grid w-full max-w-sm gap-6" data-testid="litt-date-picker" aria-label="Date picker smoke">
+          <DatePicker label="Launch date" name="launch" defaultValue="2026-10-17" hint="The site goes live at 09:00." />
+          <DatePicker mode="range" label="Report period" name="period" defaultValue={{ start: "2026-10-03", end: "2026-10-17" }} presets={[{ label: "First week", value: { start: "2026-10-01", end: "2026-10-07" } }]} />
+          <Calendar label="Studio schedule" defaultValue="2026-10-17" isDisabled={(d) => d === "2026-10-20"} />
+        </form>`,
   },
   stat: {
     needs: ["Stat", "StatGroup"],
@@ -955,6 +1020,189 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           return `backdrop-filter: ${info.blur}`;
         });
       }
+      if (has("breadcrumb")) {
+        await attempt("breadcrumb marks the current page and folds its middle into a menu of links", async () => {
+          const nav = page.getByRole("navigation", { name: "Smoke docs" });
+          await nav.waitFor({ state: "visible", timeout: 5000 });
+          // A level's words, without the aria-hidden slash before it.
+          const read = (el) => ({
+            levels: [...el.querySelectorAll("ol > li")].map((li) =>
+              [...li.childNodes]
+                .filter((n) => !(n.nodeType === 1 && n.getAttribute("aria-hidden") === "true"))
+                .map((n) => n.textContent)
+                .join("")
+                .trim(),
+            ),
+            slashes: [...el.querySelectorAll("ol > li > [aria-hidden=true]")].map((s) => s.textContent.trim()),
+            links: [...el.querySelectorAll("a")].map((a) => Math.round(a.getBoundingClientRect().height)),
+            current: [...el.querySelectorAll("[aria-current=page]")].map((c) => `${c.tagName}:${c.textContent}`),
+          });
+          const got = await nav.evaluate(read);
+          const want = "Docs||Custom domains|DNS records|Verify ownership";
+          if (got.levels.join("|") !== want) throw new Error(`the levels read ${got.levels.join("|")}, not ${want}`);
+          if (got.slashes.join("") !== "////") throw new Error(`the separators are ${JSON.stringify(got.slashes)}, not four aria-hidden slashes`);
+          if (got.current.join() !== "SPAN:Verify ownership") throw new Error(`aria-current="page" is on ${got.current.join() || "nothing"}, not the last level as text`);
+          if (got.links.some((h) => h !== 32)) throw new Error(`the links are ${got.links.join("/")}px tall, not 32`);
+          const more = nav.getByRole("button", { name: "Show 3 more levels" });
+          await more.click();
+          const menu = page.getByRole("menu");
+          await menu.waitFor({ state: "visible", timeout: 5000 });
+          const rows = await menu.evaluate((el) => [...el.querySelectorAll("[role=menuitem]")].map((r) => `${r.tagName}:${r.textContent.trim()}:${r.getAttribute("href")}`));
+          await page.keyboard.press("Escape");
+          await menu.waitFor({ state: "hidden", timeout: 4000 });
+          const folded = "A:Guides:#guides|A:Publishing:#publishing|A:Domains:#domains";
+          if (rows.join("|") !== folded) throw new Error(`the folded menu holds ${rows.join("|")}, not ${folded}`);
+          const back = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (back !== "Show 3 more levels") throw new Error(`Esc left focus on ${back}, not the "…" button`);
+          let phoneDetail = "";
+          if (theme === "light") {
+            // A phone shows the last two levels, and a finger gets a 44px hit area without the text moving.
+            const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+            try {
+              const p2 = await phone.newPage();
+              await p2.goto(url, { waitUntil: "load", timeout: 30000 });
+              const n2 = p2.getByRole("navigation", { name: "Smoke docs" });
+              await n2.waitFor({ state: "visible", timeout: 10000 });
+              await p2.waitForTimeout(400);
+              const small = await n2.evaluate((el) => ({
+                levels: [...el.querySelectorAll("ol > li")].length,
+                text: el.innerText.replace(/\s+/g, " ").trim(),
+                link: (() => {
+                  const a = el.querySelector("a");
+                  return a ? { box: Math.round(a.getBoundingClientRect().height), hit: getComputedStyle(a, "::before").height } : null;
+                })(),
+                overflow: el.scrollWidth - el.clientWidth,
+              }));
+              if (small.levels !== 3 || !small.text.endsWith("DNS records / Verify ownership")) throw new Error(`a phone shows ${small.levels} items, "${small.text}"`);
+              if (!(await n2.getByRole("button", { name: "Show 5 more levels" }).count())) throw new Error('a phone has no "Show 5 more levels" button');
+              if (!small.link || small.link.box !== 32 || small.link.hit !== "44px") throw new Error(`a link on a phone is ${JSON.stringify(small.link)}, not 32px with a 44px hit area`);
+              if (small.overflow > 0) throw new Error(`the trail overflows its nav by ${small.overflow}px on a phone`);
+              phoneDetail = `; phone: ${small.text}`;
+            } finally {
+              await phone.close();
+            }
+          }
+          return `${got.levels.length} items, folded ${rows.length}${phoneDetail}`;
+        });
+      }
+      if (has("context-menu")) {
+        await attempt("context menu opens at the pointer, from Shift+F10 and on a 500ms hold, with the Menu's glass and rows", async () => {
+          const target = page.locator("[data-testid=ctx-target]");
+          await target.scrollIntoViewIfNeeded();
+          const box = await target.boundingBox();
+          const at = { x: Math.round(box.x + 24), y: Math.round(box.y + 12) };
+          await page.mouse.click(at.x, at.y, { button: "right" });
+          const menu = page.getByRole("menu", { name: "Founder landing actions" });
+          await menu.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(700);
+          // The panel sits at the pointer and grows from the pointer's corner (Radix's transform origin).
+          const panel = () =>
+            menu.evaluate((el) => {
+              const host = el.closest(".litt-glass") ?? el.querySelector(".litt-glass");
+              const before = host ? getComputedStyle(host, "::before") : null;
+              const r = el.getBoundingClientRect();
+              const [ox, oy] = getComputedStyle(el).transformOrigin.split(" ").map(parseFloat);
+              return {
+                glass: !!host,
+                blur: before ? before.backdropFilter || before.webkitBackdropFilter || "" : "",
+                left: r.left,
+                top: r.top,
+                right: r.right,
+                bottom: r.bottom,
+                origin: { x: r.left + ox, y: r.top + oy },
+                rows: [...el.querySelectorAll("[role=menuitem],[role=menuitemcheckbox]")].map((row) => Math.round(row.getBoundingClientRect().height)),
+                focused: document.activeElement?.getAttribute("role") === "menuitem" ? document.activeElement.textContent.trim() : null,
+              };
+            });
+          const p = await panel();
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-context-menu.png`) });
+          await page.keyboard.press("Escape");
+          await menu.waitFor({ state: "hidden", timeout: 4000 });
+          if (!p.glass || !p.blur || p.blur === "none") throw new Error(`the panel is not litt glass: ${JSON.stringify({ glass: p.glass, blur: p.blur })}`);
+          if (p.rows.length !== 5 || p.rows.some((h) => h < 44)) throw new Error(`rows are ${p.rows.join("/")}px`);
+          const near4 = (a, b) => Math.abs(a - b) <= 4;
+          if (!(near4(p.origin.x, at.x) && near4(p.origin.y, at.y)))
+            throw new Error(`it grows from (${Math.round(p.origin.x)}, ${Math.round(p.origin.y)}), not the pointer at (${at.x}, ${at.y})`);
+          if (!(near4(p.left, at.x + 2) || near4(p.right, at.x - 2)) || !(near4(p.top, at.y) || near4(p.bottom, at.y)))
+            throw new Error(`the panel's corners are (${Math.round(p.left)}, ${Math.round(p.top)}) and (${Math.round(p.right)}, ${Math.round(p.bottom)}), not at the pointer (${at.x}, ${at.y})`);
+          if (p.focused) throw new Error(`a right-click lit ${p.focused}; a pointer open lights nothing`);
+
+          // Shift+F10 on something focused inside the target: at its bottom-left corner, first row focused, focus back on Esc.
+          const focusable = page.locator("[data-testid=ctx-focus]");
+          await focusable.focus();
+          const fb = await focusable.boundingBox();
+          await page.keyboard.press("Shift+F10");
+          await menu.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(700);
+          const k = await panel();
+          await page.keyboard.press("Escape");
+          await menu.waitFor({ state: "hidden", timeout: 4000 });
+          if (k.focused !== "Open") throw new Error(`Shift+F10 focused ${k.focused}, not the first row`);
+          if (!(near4(k.origin.x, fb.x) && near4(k.origin.y, fb.y + fb.height)))
+            throw new Error(`Shift+F10 grew it from (${Math.round(k.origin.x)}, ${Math.round(k.origin.y)}), not the focused element's bottom-left (${Math.round(fb.x)}, ${Math.round(fb.y + fb.height)})`);
+          const back = await page.evaluate(() => document.activeElement?.getAttribute("data-testid"));
+          if (back !== "ctx-focus") throw new Error(`Esc left focus on ${back}, not the focused element`);
+
+          // A checkbox row toggles and the menu stays open.
+          await page.mouse.click(at.x, at.y, { button: "right" });
+          await menu.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(500);
+          const check = page.getByRole("menuitemcheckbox", { name: "Show hidden files" });
+          await check.click();
+          await page.waitForTimeout(300);
+          const stayed = await menu.isVisible();
+          const checked = await check.getAttribute("aria-checked");
+          await page.keyboard.press("Escape");
+          await menu.waitFor({ state: "hidden", timeout: 4000 });
+          if (!stayed || checked !== "true") throw new Error(`after a checkbox row: open ${stayed}, aria-checked ${checked}`);
+
+          let held = "";
+          if (theme === "light") {
+            // On touch: a press and hold opens it within the 500ms hold (Radix's own is 700ms), and the hold does not
+            // also run the target's action. A tap only runs the action.
+            const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+            try {
+              const p2 = await phone.newPage();
+              await p2.goto(url, { waitUntil: "load", timeout: 30000 });
+              const button = p2.locator("[data-testid=ctx-focus]");
+              await button.waitFor({ state: "visible", timeout: 10000 });
+              await button.scrollIntoViewIfNeeded();
+              await p2.waitForTimeout(400);
+              await button.tap();
+              await p2.waitForTimeout(800);
+              if (await p2.getByRole("menu").count()) throw new Error("a tap opened the menu");
+              if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("a tap did not run the target's own action");
+              const b2 = await button.boundingBox();
+              await p2.evaluate(() => {
+                window.__ctxAt = { touch: 0, menu: 0 };
+                document.addEventListener("pointerdown", () => (window.__ctxAt.touch = performance.now()), { capture: true, once: true });
+                new MutationObserver((_, obs) => {
+                  if (!document.querySelector("[role=menu]")) return;
+                  window.__ctxAt.menu = performance.now();
+                  obs.disconnect();
+                }).observe(document.body, { childList: true, subtree: true });
+              });
+              const cdp = await phone.newCDPSession(p2);
+              const point = { x: Math.round(b2.x + b2.width / 2), y: Math.round(b2.y + b2.height / 2) };
+              await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [point] });
+              await p2.waitForTimeout(900);
+              await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+              await p2.waitForTimeout(500);
+              const t = await p2.evaluate(() => window.__ctxAt);
+              if (!t.menu) throw new Error("a press and hold did not open the menu");
+              const after = Math.round(t.menu - t.touch);
+              if (after > 650) throw new Error(`the menu opened ${after}ms into the hold, not at 500ms`);
+              if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("the hold also ran the target's own action");
+              const still = await p2.getByRole("menu", { name: "Founder landing actions" }).isVisible();
+              if (!still) throw new Error("the menu closed when the finger lifted");
+              held = `; a hold opened it after ${after}ms`;
+            } finally {
+              await phone.close();
+            }
+          }
+          return `grows from the pointer, rows ${p.rows.join("/")}px${held}`;
+        });
+      }
       if (has("select")) {
         await attempt("select opens as glass and picks with the keyboard", async () => {
           const trigger = page.getByRole("combobox", { name: "Role" });
@@ -981,6 +1229,81 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-select]")).get("role"));
           if (sent !== "developer") throw new Error(`the form sends role=${sent}`);
           return `rows ${info.rows.join("/")}, picked ${text}`;
+        });
+      }
+      if (has("combobox")) {
+        await attempt("combobox filters past accents, wraps past a disabled option, picks by key and keeps tokens with multiple", async () => {
+          const form = page.locator("[data-testid=litt-combobox]");
+          const input = form.getByRole("combobox", { name: "Client" });
+          await input.waitFor({ state: "visible", timeout: 5000 });
+          const field = input.locator("xpath=ancestor::div[contains(@class,'cursor-text')][1]");
+          const lit = (el) => el.evaluate((n) => document.getElementById(n.getAttribute("aria-activedescendant") ?? "")?.textContent?.trim() ?? null);
+          const posted = (key) => page.evaluate((k) => new FormData(document.querySelector("[data-testid=litt-combobox]")).getAll(k).join("|"), key);
+          // Mid-screen, so the list has room to open under the field.
+          await input.evaluate((el) => el.scrollIntoView({ block: "center" }));
+          const before = await field.boundingBox();
+          if (Math.round(before.height) !== 44) throw new Error(`the field is ${before.height}px tall, not 44`);
+          await input.click();
+          await page.keyboard.type("zur");
+          const listId = await input.getAttribute("aria-controls");
+          if (!listId || (await input.getAttribute("aria-expanded")) !== "true") throw new Error("typing did not open the list");
+          const list = page.locator(`[id="${listId}"]`);
+          await list.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(600);
+          const info = await list.evaluate((el) => {
+            const panel = el.closest(".litt-glass");
+            const glow = panel ? getComputedStyle(panel, "::before") : null;
+            const options = [...el.querySelectorAll("[role=option]")];
+            return {
+              glass: !!panel,
+              blur: glow ? glow.backdropFilter || glow.webkitBackdropFilter || "" : "",
+              options: options.map((o) => o.textContent.trim()),
+              rows: options.map((o) => Math.round(o.getBoundingClientRect().height)),
+              box: (panel ?? el).getBoundingClientRect().toJSON(),
+            };
+          });
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-combobox.png`) });
+          if (!info.glass) throw new Error('the combobox list has no ".litt-glass" class');
+          if (!info.blur || info.blur === "none") throw new Error(`.litt-glass has no backdrop-filter: ${JSON.stringify(info)}`);
+          if (info.options.join("|") !== "Zürich Opera House") throw new Error(`"zur" should find only Zürich Opera House, ignoring the accent; the list shows ${JSON.stringify(info.options)}`);
+          if (info.rows.some((h) => h !== 44)) throw new Error(`rows are ${info.rows}px, not 44`);
+          if ((await lit(input)) !== "Zürich Opera House") throw new Error(`the first match is not lit: ${await lit(input)}`);
+          if (info.box.top < before.y + before.height || Math.abs(info.box.width - before.width) > 1) throw new Error(`the list should sit under the field at its width: list ${JSON.stringify(info.box)}, field ${JSON.stringify(before)}`);
+          await page.keyboard.press("Escape");
+          await list.waitFor({ state: "hidden", timeout: 4000 });
+          if ((await input.inputValue()) !== "zur") throw new Error(`the first Esc should close the list and keep the text; the field reads "${await input.inputValue()}"`);
+          await page.keyboard.press("Escape");
+          if ((await input.inputValue()) !== "") throw new Error(`the second Esc should put the (empty) pick back; the field reads "${await input.inputValue()}"`);
+          await page.keyboard.press("ArrowDown");
+          await page.locator(`[id="${listId}"]`).waitFor({ state: "visible", timeout: 4000 });
+          if ((await lit(input)) !== "Marlow Labs") throw new Error(`ArrowDown should open the list on the first option; lit: ${await lit(input)}`);
+          await page.keyboard.press("ArrowUp");
+          if ((await lit(input)) !== "Zürich Opera House") throw new Error(`ArrowUp from the first option should wrap past the disabled one to Zürich Opera House; lit: ${await lit(input)}`);
+          await page.keyboard.press("ArrowDown");
+          await page.keyboard.press("Enter");
+          await page.locator(`[id="${listId}"]`).waitFor({ state: "hidden", timeout: 4000 });
+          if ((await input.inputValue()) !== "Marlow Labs" || (await posted("client")) !== "marlow-labs") throw new Error(`Enter should pick Marlow Labs; the field reads "${await input.inputValue()}" and the form posts "${await posted("client")}"`);
+          const after = await field.boundingBox();
+          if (["x", "y", "width", "height"].some((k) => Math.abs(after[k] - before[k]) > 0.5)) throw new Error(`the field moved: ${JSON.stringify(before)} -> ${JSON.stringify(after)}`);
+
+          const stack = form.getByRole("combobox", { name: "Stack" });
+          await stack.click();
+          await page.keyboard.type("nex");
+          await page.waitForTimeout(300);
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(400);
+          if ((await posted("stack")) !== "astro|nextjs") throw new Error(`picking Next.js should add it; the form posts "${await posted("stack")}"`);
+          if ((await stack.getAttribute("aria-expanded")) !== "true" || (await stack.inputValue()) !== "") throw new Error("with multiple a pick should clear the text and keep the list open");
+          if (!(await form.getByRole("button", { name: "Remove Next.js" }).count())) throw new Error('no "Remove Next.js" button on the new token');
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(400);
+          await page.keyboard.press("Backspace");
+          await page.waitForTimeout(400);
+          if ((await posted("stack")) !== "astro") throw new Error(`Backspace in an empty field should remove the last token; the form posts "${await posted("stack")}"`);
+          const said = await form.locator("[role=status]").nth(1).textContent();
+          if (said !== "Removed Next.js") throw new Error(`the live region says "${said}"`);
+          await page.evaluate(() => document.activeElement?.blur());
+          return `glass list, rows ${info.rows.join("/")}, accents, wrap, Enter, tokens`;
         });
       }
       if (has("form")) {
@@ -1023,6 +1346,156 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.waitForTimeout(300);
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("Space did not turn it back on");
           return `on is ${on}`;
+        });
+      }
+      if (has("accordion")) {
+        await attempt("accordion: triggers in headings, one section open at a time, the keys move between them, and rows move by transform while heights snap", async () => {
+          const box = page.locator("[data-testid=litt-accordion]");
+          const first = box.getByRole("button", { name: "How does a project start?" });
+          const second = box.getByRole("button", { name: "How long does a site take?" });
+          const third = box.getByRole("button", { name: "Do you write the copy?" });
+          await first.waitFor({ state: "visible", timeout: 8000 });
+          await first.scrollIntoViewIfNeeded();
+          if ((await first.getAttribute("aria-expanded")) !== "true") throw new Error("the default section did not start open");
+          const heading = await first.evaluate((el) => el.parentElement?.tagName);
+          if (heading !== "H3") throw new Error(`a trigger sits in ${heading}, not an h3`);
+          const tall = await first.evaluate((el) => el.getBoundingClientRect().height);
+          if (tall < 56) throw new Error(`a trigger is ${tall}px tall, under 56`);
+          const region = box.getByRole("region", { name: "How does a project start?" });
+          await region.waitFor({ state: "visible", timeout: 3000 });
+          if ((await first.getAttribute("aria-controls")) !== (await region.getAttribute("id"))) throw new Error("aria-controls does not name the open region");
+
+          /* Hairlines: one above the first row and one under every row, 1px in --litt-line. */
+          const line = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-line)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          const edges = await first.evaluate((el) => {
+            const item = el.closest("h3").parentElement;
+            const root = item.parentElement;
+            return [getComputedStyle(root).borderTopWidth, getComputedStyle(root).borderTopColor, getComputedStyle(item).borderBottomWidth, getComputedStyle(item).borderBottomColor];
+          });
+          if (edges.join("|") !== `1px|${line}|1px|${line}`) throw new Error(`the hairlines are ${edges.join(" / ")}, not 1px of --litt-line (${line})`);
+
+          /* Open the second: the first closes, the second row rises by a translate (never a scale), and the new
+             content has its full height from the first frame, because heights snap. */
+          const frames = await second.evaluate(async (btn) => {
+            const item = btn.closest("h3").parentElement;
+            const out = [];
+            btn.click();
+            for (let i = 0; i < 8; i++) {
+              await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+              const m = new DOMMatrixReadOnly(getComputedStyle(item).transform);
+              const content = item.querySelector("[role=region]");
+              out.push({ y: m.m42, sx: m.a, sy: m.d, h: content ? Math.round(content.getBoundingClientRect().height) : 0 });
+            }
+            return out;
+          });
+          if (!frames.some((f) => Math.abs(f.y) > 1)) throw new Error(`the second row did not move by transform: ${JSON.stringify(frames)}`);
+          if (frames.some((f) => Math.abs(f.sx - 1) > 0.001 || Math.abs(f.sy - 1) > 0.001)) throw new Error("a row scaled, so its text would stretch");
+          if (!frames[0].h || new Set(frames.map((f) => f.h)).size !== 1) throw new Error(`the content's height changed while it opened: ${frames.map((f) => f.h).join(",")}`);
+          await page.waitForTimeout(900);
+          if ((await first.getAttribute("aria-expanded")) !== "false" || (await second.getAttribute("aria-expanded")) !== "true") throw new Error("opening the second did not close the first");
+          if (await box.getByRole("region", { name: "How does a project start?" }).count()) throw new Error("the closed section's content is still in the page");
+          const settled = await second.evaluate((el) => {
+            const item = el.closest("h3").parentElement;
+            return { tf: getComputedStyle(item).transform, minH: item.parentElement.style.minHeight };
+          });
+          if ((settled.tf !== "none" && !/^matrix\(1, 0, 0, 1, 0, 0\)$/.test(settled.tf)) || settled.minH) throw new Error(`after the motion the row is ${settled.tf} and the root holds ${settled.minH || "no"} min-height`);
+
+          /* Keys: arrows move between triggers, Home and End go to the ends, Space toggles. */
+          await page.keyboard.press("Shift");
+          await first.focus();
+          const focused = () => page.evaluate(() => document.activeElement?.textContent?.trim());
+          await page.keyboard.press("ArrowDown");
+          if ((await focused()) !== "How long does a site take?") throw new Error(`ArrowDown landed on "${await focused()}"`);
+          await page.keyboard.press("End");
+          if ((await focused()) !== "Do you write the copy?") throw new Error(`End landed on "${await focused()}"`);
+          await page.keyboard.press("Home");
+          if ((await focused()) !== "How does a project start?") throw new Error(`Home landed on "${await focused()}"`);
+          await page.keyboard.press("Space");
+          await page.waitForTimeout(600);
+          if ((await first.getAttribute("aria-expanded")) !== "true") throw new Error("Space did not open the focused section");
+          const ring = await first.evaluate((el) => getComputedStyle(el).outlineWidth);
+          if (ring !== "2px") throw new Error(`keyboard focus draws a ${ring} ring, not 2px`);
+          if ((await third.getAttribute("aria-expanded")) !== "false") throw new Error("the third section opened on its own");
+
+          /* Several open, controlled, under h4 headings. */
+          const analytics = box.getByRole("button", { name: "Analytics" });
+          if ((await analytics.evaluate((el) => el.parentElement?.tagName)) !== "H4") throw new Error("headingLevel={4} did not put the trigger in an h4");
+          await analytics.click();
+          await page.waitForTimeout(500);
+          const open = (await box.locator("[data-testid=accordion-open]").textContent())?.trim();
+          if (open !== "domain,analytics") throw new Error(`with type multiple the value reads "${open}", not "domain,analytics"`);
+          await page.evaluate(() => document.activeElement?.blur());
+          return `rose by ${Math.round(Math.max(...frames.map((f) => Math.abs(f.y))))}px, content ${frames[0].h}px from the first frame`;
+        });
+      }
+      if (has("scroll-area")) {
+        await attempt("scroll area: a labelled Tab stop that scrolls natively, a hairline on each edge with more beyond it, and a thumb only once it scrolls", async () => {
+          const box = page.locator("[data-testid=litt-scroll-area]");
+          const log = box.getByRole("region", { name: "Smoke log" });
+          await page.mouse.move(1, 1); // a mouse over the area would show the thumb before any scroll
+          await log.waitFor({ state: "visible", timeout: 8000 });
+          await log.scrollIntoViewIfNeeded();
+          await page.waitForTimeout(300);
+          if ((await log.getAttribute("tabindex")) !== "0") throw new Error("the scrolling region is not a Tab stop");
+          if ((await log.evaluate((el) => getComputedStyle(el).overflowY)) !== "scroll") throw new Error("the region does not scroll natively");
+          const short = box.locator("[data-radix-scroll-area-viewport]").nth(2);
+          if ((await short.getAttribute("tabindex")) !== null || (await short.getAttribute("role")) !== null) throw new Error("a box that does not scroll is a Tab stop or a landmark");
+
+          const paint = (value) =>
+            page.evaluate((v) => {
+              const probe = document.createElement("span");
+              probe.style.backgroundColor = v;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).backgroundColor;
+              probe.remove();
+              return c;
+            }, value);
+          const line = await paint("var(--litt-line)");
+          const none = "rgba(0, 0, 0, 0)";
+          const hairlines = (region) => region.evaluate((el) => [...el.parentElement.querySelectorAll(":scope > span[aria-hidden=true]")].map((s) => getComputedStyle(s).backgroundColor));
+          const thumbBar = (region, axis) => region.locator(`xpath=../div[@data-orientation="${axis}"]`);
+          const bar = thumbBar(log, "vertical");
+          const opacity = () => bar.evaluate((el) => getComputedStyle(el).opacity);
+
+          let [top, bottom] = await hairlines(log);
+          if (top !== none || bottom !== line) throw new Error(`at the top the hairlines are ${top} / ${bottom}, not none / --litt-line`);
+          if ((await opacity()) !== "0") throw new Error("the thumb shows before anyone scrolled");
+
+          /* The keyboard scrolls it, with an inset 2px ring. */
+          await page.keyboard.press("Shift");
+          await log.focus();
+          const ring = await log.evaluate((el) => [getComputedStyle(el).outlineWidth, getComputedStyle(el).outlineOffset]);
+          if (ring.join(" ") !== "2px -2px") throw new Error(`keyboard focus draws ${ring.join(" at ")}, not an inset 2px ring`);
+          await page.keyboard.press("End");
+          await page.waitForTimeout(250);
+          if ((await opacity()) !== "1") throw new Error("the thumb did not show while the area scrolled");
+          const thumb = await bar.evaluate((el) => {
+            const t = el.firstElementChild;
+            return t ? [Math.round(t.getBoundingClientRect().width), getComputedStyle(t).backgroundColor] : null;
+          });
+          const fg24 = await paint("color-mix(in oklab, var(--litt-fg) 24%, transparent)");
+          if (!thumb || thumb[0] !== 6 || thumb[1] !== fg24) throw new Error(`the thumb is ${JSON.stringify(thumb)}, not 6px of fg 24% (${fg24})`);
+          await page.waitForFunction((el) => Math.abs(el.scrollTop + el.clientHeight - el.scrollHeight) <= 1, await log.elementHandle(), { timeout: 3000 });
+          await page.waitForTimeout(150);
+          [top, bottom] = await hairlines(log);
+          if (top !== line || bottom !== none) throw new Error(`at the end the hairlines are ${top} / ${bottom}, not --litt-line / none`);
+          await page.waitForTimeout(1200);
+          if ((await opacity()) !== "0") throw new Error("the thumb did not fade after the scrolling stopped");
+          await page.evaluate(() => document.activeElement?.blur());
+
+          /* Sideways: the right edge has more, the left does not. */
+          const strip = box.getByRole("region", { name: "Smoke strip" });
+          const [left, right] = await hairlines(strip);
+          if (left !== none || right !== line) throw new Error(`the strip's edges are ${left} / ${right}, not none / --litt-line`);
+          if ((await thumbBar(strip, "horizontal").count()) !== 1) throw new Error("the strip has no horizontal scrollbar");
+          return `thumb ${thumb[0]}px in ${thumb[1]}, hairlines follow the scroll`;
         });
       }
       if (has("slider")) {
@@ -1077,6 +1550,110 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const sent = await page.locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
           if (sent.join("|") !== "99|100") throw new Error(`the form sent window=${sent.join(",")}, expected 99 and 100 under one name`);
           return `${dragged}, sent ${sent.join(" and ")}`;
+        });
+      }
+      if (has("date-picker")) {
+        const active = () => page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? "");
+        await attempt("date picker opens on the picked day, the keys move, Enter picks and returns focus", async () => {
+          const field = page.getByRole("button", { name: /^Launch date/ });
+          const before = (await field.textContent())?.trim();
+          if (before !== "17 Oct 2026") throw new Error(`the field reads "${before}", not "17 Oct 2026"`);
+          if ((await field.getAttribute("aria-haspopup")) !== "dialog") throw new Error("the field has no aria-haspopup=dialog");
+          await field.click();
+          const dialog = page.getByRole("dialog", { name: "Launch date" });
+          await dialog.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(500);
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-date-picker.png`) });
+          const first = await active();
+          if (!/^Saturday,? 17 October 2026.*selected$/.test(first)) throw new Error(`focus opened on "${first}", not the picked day`);
+          await page.keyboard.press("ArrowRight");
+          const moved = await active();
+          if (!/^Sunday,? 18 October 2026/.test(moved)) throw new Error(`ArrowRight moved focus to "${moved}"`);
+          await page.keyboard.press("Enter");
+          await dialog.waitFor({ state: "hidden", timeout: 4000 });
+          const after = (await field.textContent())?.trim();
+          if (after !== "18 Oct 2026") throw new Error(`the field reads "${after}" after picking 18 October`);
+          if (!(await field.evaluate((el) => el === document.activeElement))) throw new Error("focus did not return to the field");
+          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-date-picker]")).get("launch"));
+          if (sent !== "2026-10-18") throw new Error(`the form sends launch=${sent}`);
+          return `${before} to ${after}, sends ${sent}`;
+        });
+        await attempt("date range: a preset picks and closes, two days pick a range, the form sends start and end", async () => {
+          const field = page.getByRole("button", { name: /^Report period/ });
+          const before = (await field.textContent())?.trim();
+          if (before !== "3 Oct to 17 Oct 2026") throw new Error(`the field reads "${before}"`);
+          const dialog = page.getByRole("dialog", { name: "Report period" });
+          await field.click();
+          await dialog.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(400);
+          await dialog.getByRole("button", { name: "First week" }).click();
+          await dialog.waitFor({ state: "hidden", timeout: 4000 });
+          const preset = (await field.textContent())?.trim();
+          if (preset !== "1 Oct to 7 Oct 2026") throw new Error(`the preset left the field at "${preset}"`);
+          await page.waitForTimeout(300);
+          await field.click();
+          await dialog.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(400);
+          await dialog.getByRole("button", { name: /^Monday,? 12 October 2026/ }).click();
+          await page.waitForTimeout(200);
+          if (!(await dialog.isVisible())) throw new Error("the popover closed after the first end of a range");
+          await dialog.getByRole("button", { name: /^Wednesday,? 14 October 2026/ }).click();
+          await dialog.waitFor({ state: "hidden", timeout: 4000 });
+          const picked = (await field.textContent())?.trim();
+          if (picked !== "12 Oct to 14 Oct 2026") throw new Error(`two picks left the field at "${picked}"`);
+          const sent = await page.evaluate(() => {
+            const data = new FormData(document.querySelector("[data-testid=litt-date-picker]"));
+            return `${data.get("period-start")} ${data.get("period-end")}`;
+          });
+          if (sent !== "2026-10-12 2026-10-14") throw new Error(`the form sends ${sent}`);
+          return `${preset}, then ${picked}`;
+        });
+        await attempt("calendar: six weeks always, the picked day is the foreground, PageDown slides a month, disabled days stay reachable", async () => {
+          const cal = page.getByRole("group", { name: "Studio schedule" });
+          const grid = cal.getByRole("grid", { name: "October 2026" });
+          await grid.waitFor({ state: "visible", timeout: 4000 });
+          const measure = () =>
+            cal.evaluate((el) => ({
+              rows: el.querySelectorAll("[role=rowgroup] [role=row]").length,
+              cells: el.querySelectorAll("[role=rowgroup] [role=gridcell]").length,
+              height: Math.round(el.querySelector("[role=grid]").getBoundingClientRect().height),
+              day: Math.round(el.querySelector("[role=rowgroup] button").getBoundingClientRect().height),
+            }));
+          const oct = await measure();
+          if (oct.rows !== 6 || oct.cells !== 42) throw new Error(`October shows ${oct.rows} weeks and ${oct.cells} days, not 6 and 42`);
+          if (oct.day < 40) throw new Error(`a day is ${oct.day}px tall, under 40`);
+          const picked = cal.getByRole("button", { name: /^Saturday,? 17 October 2026.*selected$/ });
+          const fill = await picked.evaluate((el) => getComputedStyle(el).backgroundColor);
+          const fg = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.color = "var(--litt-fg)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).color;
+            probe.remove();
+            return c;
+          });
+          if (fill !== fg) throw new Error(`the picked day is ${fill}, not --litt-fg (${fg})`);
+          const stops = await cal.locator("[role=rowgroup] button[tabindex='0']").count();
+          if (stops !== 1) throw new Error(`the grid has ${stops} tab stops, not 1`);
+          await picked.focus();
+          await page.keyboard.press("PageDown");
+          await cal.getByRole("grid", { name: "November 2026" }).waitFor({ timeout: 3000 });
+          const nov = await active();
+          if (!/^Tuesday,? 17 November 2026/.test(nov)) throw new Error(`PageDown moved focus to "${nov}"`);
+          await page.waitForTimeout(700);
+          const after = await measure();
+          if (after.rows !== 6 || after.height !== oct.height) throw new Error(`November is ${after.rows} weeks and ${after.height}px tall; October was 6 and ${oct.height}px`);
+          await page.keyboard.press("PageUp");
+          for (const _ of [1, 2, 3]) await page.keyboard.press("ArrowRight");
+          const off = await active();
+          if (!/^Tuesday,? 20 October 2026/.test(off)) throw new Error(`three ArrowRights from 17 October reached "${off}"`);
+          const disabled = await page.evaluate(() => document.activeElement?.getAttribute("aria-disabled"));
+          if (disabled !== "true") throw new Error("the ruled-out day is not aria-disabled");
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(200);
+          const still = await cal.getByRole("button", { name: /^Saturday,? 17 October 2026.*selected$/ }).count();
+          if (still !== 1) throw new Error("Enter on a disabled day changed the pick");
+          return `6 weeks, ${oct.height}px both months, day ${oct.day}px, fill ${fill}`;
         });
       }
       if (has("stat")) {

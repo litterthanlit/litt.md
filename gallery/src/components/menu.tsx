@@ -35,6 +35,14 @@
  * - Touch rows fill when pressed (pointer-coarse:active:, instant tier, color only) and the
  *   shortcut hints are hidden. On coarse the glide does not light a row on touch, so the press
  *   fill is the one feedback.
+ *
+ * Shared with the context menu (context-menu.tsx)
+ * - Radix scopes each menu family to its own root, so a DropdownMenu.Item cannot live inside a
+ *   ContextMenu. The rows and the panel take their Radix parts from a context instead (MenuParts):
+ *   DropdownMenu's by default and in Menu, ContextMenu's in ContextMenu. So the same rows work in
+ *   both, with the same panel, glide, focus by modality, solid submenus and phone drill-down.
+ * - MenuPanel is the panel itself, exported for ContextMenu. Menu and ContextMenu each pass their
+ *   parts to it, so a Menu inside a context menu's target (a row's "⋯" button) keeps its own.
  */
 import {
   createContext,
@@ -59,6 +67,51 @@ import { CheckIcon, ChevronRightIcon } from "./icons";
 import { GLIDE_ROW, useGlide, type Glide } from "./glide";
 
 type Side = "top" | "right" | "bottom" | "left";
+
+/**
+ * The Radix parts the rows and the panel are built from, and the classes that read the Radix variables of
+ * that family. Menu uses DropdownMenu's; ContextMenu passes ContextMenu's to MenuPanel.
+ */
+export type MenuParts = {
+  Item: typeof DropdownMenu.Item;
+  CheckboxItem: typeof DropdownMenu.CheckboxItem;
+  ItemIndicator: typeof DropdownMenu.ItemIndicator;
+  RadioGroup: typeof DropdownMenu.RadioGroup;
+  RadioItem: typeof DropdownMenu.RadioItem;
+  Label: typeof DropdownMenu.Label;
+  Group: typeof DropdownMenu.Group;
+  Separator: typeof DropdownMenu.Separator;
+  Sub: typeof DropdownMenu.Sub;
+  SubTrigger: typeof DropdownMenu.SubTrigger;
+  SubContent: typeof DropdownMenu.SubContent;
+  Portal: typeof DropdownMenu.Portal;
+  /** The root panel. A context menu's ignores side, align and sideOffset: it opens at the pointer. */
+  Content: typeof DropdownMenu.Content;
+  /** The transform origin Radix measures, so the panel grows from its trigger or the pointer. */
+  origin: string;
+  /** The height left on screen, which caps a phone panel's scrolling list. */
+  fit: string;
+};
+
+const DROPDOWN_PARTS: MenuParts = {
+  Item: DropdownMenu.Item,
+  CheckboxItem: DropdownMenu.CheckboxItem,
+  ItemIndicator: DropdownMenu.ItemIndicator,
+  RadioGroup: DropdownMenu.RadioGroup,
+  RadioItem: DropdownMenu.RadioItem,
+  Label: DropdownMenu.Label,
+  Group: DropdownMenu.Group,
+  Separator: DropdownMenu.Separator,
+  Sub: DropdownMenu.Sub,
+  SubTrigger: DropdownMenu.SubTrigger,
+  SubContent: DropdownMenu.SubContent,
+  Portal: DropdownMenu.Portal,
+  Content: DropdownMenu.Content,
+  origin: "origin-(--radix-dropdown-menu-content-transform-origin)",
+  fit: "max-h-(--radix-dropdown-menu-content-available-height)",
+};
+const PartsCtx = createContext<MenuParts>(DROPDOWN_PARTS);
+const useParts = () => useContext(PartsCtx);
 
 /**
  * On a phone the submenus are lists inside the one panel, not panels of their own. `stack` holds
@@ -157,6 +210,7 @@ type ItemProps = {
 
 /** A row that does something when it is chosen, or goes somewhere when it has an href. */
 export function MenuItem({ icon, shortcut, destructive, disabled, onSelect, href, children }: ItemProps) {
+  const P = useParts();
   const { glide } = usePanel();
   const { off, glideRow, onMouseDown } = useRowView();
   const content = (
@@ -167,7 +221,7 @@ export function MenuItem({ icon, shortcut, destructive, disabled, onSelect, href
     </>
   );
   return (
-    <DropdownMenu.Item
+    <P.Item
       {...glideRow}
       onMouseDown={onMouseDown}
       asChild={href !== undefined}
@@ -177,7 +231,7 @@ export function MenuItem({ icon, shortcut, destructive, disabled, onSelect, href
       className={row + " " + (destructive ? toneDanger : tone)}
     >
       {href !== undefined ? <a href={href}>{content}</a> : content}
-    </DropdownMenu.Item>
+    </P.Item>
   );
 }
 
@@ -199,10 +253,11 @@ type CheckboxProps = {
 
 /** A row that turns one option on or off. The check sits in a fixed 16px cell, so toggling never shifts the label. */
 export function MenuCheckboxItem({ checked, onCheckedChange, shortcut, closeOnSelect = false, children }: CheckboxProps) {
+  const P = useParts();
   const { glide } = usePanel();
   const { off, glideRow, onMouseDown } = useRowView();
   return (
-    <DropdownMenu.CheckboxItem
+    <P.CheckboxItem
       {...glideRow}
       onMouseDown={onMouseDown}
       disabled={off}
@@ -212,12 +267,12 @@ export function MenuCheckboxItem({ checked, onCheckedChange, shortcut, closeOnSe
       onFocus={(e) => glide.focusRow(e.currentTarget)}
       className={row + " " + tone}
     >
-      <DropdownMenu.ItemIndicator forceMount className={indicator}>
+      <P.ItemIndicator forceMount className={indicator}>
         <CheckIcon />
-      </DropdownMenu.ItemIndicator>
+      </P.ItemIndicator>
       <span className="min-w-0 truncate">{children}</span>
       {shortcut && <Shortcut>{shortcut}</Shortcut>}
-    </DropdownMenu.CheckboxItem>
+    </P.CheckboxItem>
   );
 }
 
@@ -234,10 +289,11 @@ export function MenuRadioGroup({
   /** The MenuRadioItem rows. */
   children: ReactNode;
 }) {
+  const P = useParts();
   return (
-    <DropdownMenu.RadioGroup value={value} onValueChange={onValueChange}>
+    <P.RadioGroup value={value} onValueChange={onValueChange}>
       {children}
-    </DropdownMenu.RadioGroup>
+    </P.RadioGroup>
   );
 }
 
@@ -254,10 +310,11 @@ export function MenuRadioItem({
   /** The choice label. It truncates with an ellipsis instead of wrapping. */
   children: ReactNode;
 }) {
+  const P = useParts();
   const { glide } = usePanel();
   const { off, glideRow, onMouseDown } = useRowView();
   return (
-    <DropdownMenu.RadioItem
+    <P.RadioItem
       {...glideRow}
       onMouseDown={onMouseDown}
       disabled={off}
@@ -266,11 +323,11 @@ export function MenuRadioItem({
       onFocus={(e) => glide.focusRow(e.currentTarget)}
       className={row + " " + tone}
     >
-      <DropdownMenu.ItemIndicator forceMount className={indicator}>
+      <P.ItemIndicator forceMount className={indicator}>
         <CheckIcon />
-      </DropdownMenu.ItemIndicator>
+      </P.ItemIndicator>
       <span className="min-w-0 truncate">{children}</span>
-    </DropdownMenu.RadioItem>
+    </P.RadioItem>
   );
 }
 
@@ -281,7 +338,8 @@ export function MenuLabel({
   /** The label text. */
   children: ReactNode;
 }) {
-  return <DropdownMenu.Label className={labelRow}>{children}</DropdownMenu.Label>;
+  const P = useParts();
+  return <P.Label className={labelRow}>{children}</P.Label>;
 }
 
 /** Wraps related rows in a role="group". It adds no visual of its own; use MenuLabel and MenuSeparator for that. */
@@ -291,12 +349,14 @@ export function MenuGroup({
   /** The rows in the group. */
   children: ReactNode;
 }) {
-  return <DropdownMenu.Group>{children}</DropdownMenu.Group>;
+  const P = useParts();
+  return <P.Group>{children}</P.Group>;
 }
 
 /** Full-bleed 1px hairline: it ignores the 4px inset of the panel. */
 export function MenuSeparator() {
-  return <DropdownMenu.Separator className="-mx-1 my-1 h-px bg-line" />;
+  const P = useParts();
+  return <P.Separator className="-mx-1 my-1 h-px bg-line" />;
 }
 
 /** What the two submenu implementations share. */
@@ -333,6 +393,7 @@ export function MenuSub({
 
 /** The wide-screen submenu: a solid panel that flies out beside its row. */
 function FlySub({ icon, label, children }: SubProps) {
+  const P = useParts();
   const parent = usePanel();
   const { off, glideRow, onMouseDown } = useRowView();
   const [open, setOpen] = useState(false);
@@ -343,8 +404,8 @@ function FlySub({ icon, label, children }: SubProps) {
     else parent.releaseSub();
   };
   return (
-    <DropdownMenu.Sub open={open} onOpenChange={change}>
-      <DropdownMenu.SubTrigger
+    <P.Sub open={open} onOpenChange={change}>
+      <P.SubTrigger
         {...glideRow}
         onMouseDown={onMouseDown}
         disabled={off}
@@ -356,15 +417,15 @@ function FlySub({ icon, label, children }: SubProps) {
         <span className="ml-auto shrink-0 text-fg-subtle">
           <ChevronRightIcon />
         </span>
-      </DropdownMenu.SubTrigger>
+      </P.SubTrigger>
       <AnimatePresence>
         {open && (
-          <DropdownMenu.Portal forceMount key="sub">
-            <Panel sub>{children}</Panel>
-          </DropdownMenu.Portal>
+          <P.Portal forceMount key="sub">
+            <MenuPanel sub>{children}</MenuPanel>
+          </P.Portal>
         )}
       </AnimatePresence>
-    </DropdownMenu.Sub>
+    </P.Sub>
   );
 }
 
@@ -374,6 +435,7 @@ function FlySub({ icon, label, children }: SubProps) {
  * children of this component, so state in them stays live while another list shows.
  */
 function DrillSub({ drill, icon, label, children }: SubProps & { drill: Drill }) {
+  const P = useParts();
   const { glide } = usePanel();
   const { off, glideRow, onMouseDown } = useRowView();
   const id = useId();
@@ -383,7 +445,7 @@ function DrillSub({ drill, icon, label, children }: SubProps & { drill: Drill })
   const top = drill.stack[drill.stack.length - 1] === id;
   return (
     <>
-      <DropdownMenu.Item
+      <P.Item
         ref={trigger}
         {...glideRow}
         onMouseDown={onMouseDown}
@@ -407,19 +469,19 @@ function DrillSub({ drill, icon, label, children }: SubProps & { drill: Drill })
         <span className="ml-auto shrink-0 text-fg-subtle">
           <ChevronRightIcon />
         </span>
-      </DropdownMenu.Item>
+      </P.Item>
       {drill.slot &&
         createPortal(
           <AnimatePresence>
             {open && (
               <SubView key={id} current={top}>
                 <BackItem />
-                <DropdownMenu.Group aria-labelledby={heading}>
-                  <DropdownMenu.Label id={heading} className={labelRow}>
+                <P.Group aria-labelledby={heading}>
+                  <P.Label id={heading} className={labelRow}>
                     {label}
-                  </DropdownMenu.Label>
+                  </P.Label>
                   {children}
-                </DropdownMenu.Group>
+                </P.Group>
               </SubView>
             )}
           </AnimatePresence>,
@@ -431,11 +493,12 @@ function DrillSub({ drill, icon, label, children }: SubProps & { drill: Drill })
 
 /** The first row of a submenu's list: a real menu item, so the arrow keys reach it like any other. */
 function BackItem() {
+  const P = useParts();
   const { glide, drill } = usePanel();
   const { off, glideRow, onMouseDown } = useRowView();
   if (!drill) return null;
   return (
-    <DropdownMenu.Item
+    <P.Item
       {...glideRow}
       onMouseDown={onMouseDown}
       disabled={off}
@@ -452,7 +515,7 @@ function BackItem() {
         </span>
       </Cell>
       <span className="min-w-0 truncate">{drill.backLabel}</span>
-    </DropdownMenu.Item>
+    </P.Item>
   );
 }
 
@@ -551,19 +614,44 @@ function DrillView({
 
 /* ----------------------------------------------------------------- panel */
 
-type PanelProps = {
+export type MenuPanelProps = {
+  /** The Radix parts to build from: a root panel passes its family's, a submenu's panel inherits them. */
+  parts?: MenuParts;
+  /** A submenu's panel: solid, never glass on glass, and never a drill of its own. */
   sub?: boolean;
+  /** The menu's accessible name. */
   label?: string;
+  /** The text of the Back row that leaves a submenu on a phone. */
   backLabel?: string;
+  /** The side of the trigger it opens on first. A context menu ignores it. */
   side?: "top" | "bottom";
+  /** Which edge of the trigger it lines up with. A context menu ignores it. */
   align?: "start" | "center" | "end";
+  /** Gap between the trigger and the panel, in px. A context menu ignores it. */
   sideOffset?: number;
+  /** Flip against this element instead of the viewport. */
   collisionBoundary?: Element | null;
+  /** The rows. */
   children: ReactNode;
 };
 
-/** The animated surface for both the menu and a submenu. */
-function Panel({ sub = false, label, backLabel = "Back", side, align, sideOffset, collisionBoundary, children }: PanelProps) {
+/**
+ * The animated surface for a menu, a context menu and a submenu. Render it inside its family's Portal with
+ * forceMount, under AnimatePresence, as Menu and ContextMenu do.
+ */
+export function MenuPanel({
+  parts: own,
+  sub = false,
+  label,
+  backLabel = "Back",
+  side,
+  align,
+  sideOffset,
+  collisionBoundary,
+  children,
+}: MenuPanelProps) {
+  const inherited = useParts();
+  const P = own ?? inherited;
   const enter = useTransition("responsive");
   const exit = useExit("responsive");
   const travel = useTravel();
@@ -702,7 +790,9 @@ function Panel({ sub = false, label, backLabel = "Back", side, align, sideOffset
     style: { x, y },
   };
   const surface =
-    "relative z-50 min-w-60 rounded-surface outline-none origin-(--radix-dropdown-menu-content-transform-origin) data-[state=closed]:pointer-events-none " +
+    "relative z-50 min-w-60 rounded-surface outline-none " +
+    P.origin +
+    " data-[state=closed]:pointer-events-none " +
     (drilling ? "" : "p-1 ");
 
   /* A glass surface cannot clip: its shadow lives on ::before. So on a phone an inner box clips the list that is
@@ -710,7 +800,7 @@ function Panel({ sub = false, label, backLabel = "Back", side, align, sideOffset
   const body = drill ? (
     <div
       ref={setScroller}
-      className="relative max-h-(--radix-dropdown-menu-content-available-height) overflow-x-hidden overflow-y-auto overscroll-contain rounded-surface"
+      className={"relative " + P.fit + " overflow-x-hidden overflow-y-auto overscroll-contain rounded-surface"}
     >
       {glide.highlight}
       <DrillView current={stack.length === 0}>
@@ -726,43 +816,48 @@ function Panel({ sub = false, label, backLabel = "Back", side, align, sideOffset
   );
 
   return (
-    <PanelCtx.Provider value={ctx}>
-      {sub ? (
-        <DropdownMenu.SubContent
-          forceMount
-          asChild
-          sideOffset={4}
-          alignOffset={-4}
-          collisionPadding={8}
-          loop
-          {...placedProp}
-        >
-          <motion.div {...motionProps} className={surface + "bg-surface-2 shadow-float"}>
-            {body}
-          </motion.div>
-        </DropdownMenu.SubContent>
-      ) : (
-        <DropdownMenu.Content
-          forceMount
-          asChild
-          aria-label={label}
-          /* Radix names the menu by its trigger (aria-labelledby), which beats aria-label.
-             A label you pass should win, so clear it then. */
-          {...(label ? { "aria-labelledby": undefined } : {})}
-          side={side}
-          align={align}
-          sideOffset={sideOffset}
-          collisionPadding={8}
-          collisionBoundary={collisionBoundary ?? undefined}
-          loop
-          {...placedProp}
-        >
-          <motion.div {...motionProps} className={surface + "litt-glass"}>
-            {body}
-          </motion.div>
-        </DropdownMenu.Content>
-      )}
-    </PanelCtx.Provider>
+    <PartsCtx.Provider value={P}>
+      <PanelCtx.Provider value={ctx}>
+        {sub ? (
+          <P.SubContent
+            forceMount
+            asChild
+            sideOffset={4}
+            alignOffset={-4}
+            collisionPadding={8}
+            loop
+            {...placedProp}
+          >
+            <motion.div {...motionProps} className={surface + "bg-surface-2 shadow-float"}>
+              {body}
+            </motion.div>
+          </P.SubContent>
+        ) : (
+          <P.Content
+            forceMount
+            asChild
+            aria-label={label}
+            /* Radix names the menu by its trigger (aria-labelledby), which beats aria-label.
+               A label you pass should win, so clear it then. */
+            {...(label ? { "aria-labelledby": undefined } : {})}
+            /* Only what is set: ContextMenu passes none, so Radix's own "right of the pointer" stands. Radix 2.4
+               spreads our props after its defaults, so an explicit undefined would erase them and centre the panel
+               on the pointer, where releasing the right button picks a row. */
+            {...(side ? { side } : {})}
+            {...(align ? { align } : {})}
+            {...(sideOffset !== undefined ? { sideOffset } : {})}
+            collisionPadding={8}
+            collisionBoundary={collisionBoundary ?? undefined}
+            loop
+            {...placedProp}
+          >
+            <motion.div {...motionProps} className={surface + "litt-glass"}>
+              {body}
+            </motion.div>
+          </P.Content>
+        )}
+      </PanelCtx.Provider>
+    </PartsCtx.Provider>
   );
 }
 
@@ -805,7 +900,8 @@ export function Menu({
       <AnimatePresence>
         {open && (
           <DropdownMenu.Portal forceMount key="menu">
-            <Panel
+            <MenuPanel
+              parts={DROPDOWN_PARTS}
               label={label}
               backLabel={backLabel}
               side={side}
@@ -814,7 +910,7 @@ export function Menu({
               collisionBoundary={collisionBoundary}
             >
               {children}
-            </Panel>
+            </MenuPanel>
           </DropdownMenu.Portal>
         )}
       </AnimatePresence>

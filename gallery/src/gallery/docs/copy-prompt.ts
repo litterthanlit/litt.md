@@ -11,6 +11,11 @@ const RAW = "https://raw.githubusercontent.com/litterthanlit/litt.md/main/";
 export const rawUrl = (file: string) => RAW + file;
 export const sourceUrl = (file: string) => `${REPO}/blob/main/${file}`;
 
+/** Where the gallery is served. */
+export const SITE = "https://littmd.vercel.app";
+/** A docs page as Markdown (scripts/gen-llms.mjs), for agents: https://littmd.vercel.app/docs/<page>.md */
+export const markdownUrl = (pageId: string) => `${SITE}/docs/${pageId}.md`;
+
 /** The shadcn registry the gallery builds (scripts/gen-registry.mjs): https://littmd.vercel.app/r/<item>.json */
 export const REGISTRY_URL = "https://littmd.vercel.app/r/{name}.json";
 export const registryUrl = (item: string) => REGISTRY_URL.replace("{name}", item);
@@ -73,7 +78,8 @@ export const packagesToInstall = (components: ComponentDoc[]) =>
 const list = (items: string[]) => items.map((i) => `- ${i}`).join("\n");
 
 export type PromptInput = {
-  meta: { title: string; summary: string };
+  /** With an id, the prompt points at the page's Markdown docs too. */
+  meta: { title: string; summary: string; id?: string };
   docs: PageDocs;
   components: ComponentDoc[];
 };
@@ -86,7 +92,8 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
   const first = components[0]?.stem ?? "button";
   const sections = [
     `Add the litt.md ${meta.title} to this project.`,
-    `${meta.title}: ${meta.summary}\nExports: ${names.join(", ")}.\n\nRepo: ${REPO} (branch main). Every URL below is on main.`,
+    `${meta.title}: ${meta.summary}\nExports: ${names.join(", ")}.\n\nRepo: ${REPO} (branch main). Every URL below is on main.` +
+      (meta.id ? `\nThe full docs as Markdown (props, keyboard, accessibility): ${markdownUrl(meta.id)}` : ""),
 
     `1. Install with shadcn\n` +
       `The project needs shadcn set up (a components.json) and Tailwind CSS v4. Run this in the project root:\n` +

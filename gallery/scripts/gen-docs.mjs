@@ -28,6 +28,8 @@
  *             can't be copied, so importing them is an error.
  *   packages  npm packages imported by those files, by package name.
  *
+ * It also writes src/generated/changelog.json, the parsed gallery/CHANGELOG.md, for the Changelog page.
+ *
  * It fails (exit 1, naming the file and export) on anything it can't resolve,
  * instead of writing partial data. The usual fix is a new case in libNotes().
  */
@@ -35,6 +37,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
+import { readChangelog } from "./changelog.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repo = path.resolve(root, "..");
@@ -459,6 +462,7 @@ function main() {
     nProps += exports.reduce((n, e) => n + e.props.length, 0);
     docs[stem] = { stem, file: rel(file), exports, ...closure(file) };
   }
+  writeChangelog();
   const text = JSON.stringify(docs, null, 2) + "\n";
   const dest = rel(outFile).replace(/^gallery\//, "");
   const summary = `${stems.length} files, ${nExports} exports, ${nProps} props`;
@@ -472,6 +476,19 @@ function main() {
   // Rewrite only when the data changed, so a running dev server isn't poked for nothing.
   if (!fs.existsSync(outFile) || fs.readFileSync(outFile, "utf8") !== text) fs.writeFileSync(outFile, text);
   console.log(`generated ${dest} (${summary})`);
+}
+
+/** The changelog the gallery's Changelog page reads. Item names are checked by gen-registry, which knows the items. */
+function writeChangelog() {
+  const file = path.join(srcDir, "generated", "changelog.json");
+  const text = JSON.stringify(readChangelog(), null, 2) + "\n";
+  const cur = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+  if (check) {
+    if (cur !== text) { console.log("✗ src/generated/changelog.json differs from CHANGELOG.md (run npm run gen:docs)"); process.exit(1); }
+    return;
+  }
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  if (cur !== text) fs.writeFileSync(file, text);
 }
 
 try {

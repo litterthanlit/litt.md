@@ -9,7 +9,7 @@ import { ArrowUpRightIcon, CheckIcon, CopyIcon } from "@/components/icons";
 import type { PageDocs, PageMeta } from "../kit";
 import { componentDoc } from "../docs-data";
 import { CopyStatus, useCopy } from "./copy";
-import { buildPrompt, sourceUrl } from "./copy-prompt";
+import { buildPrompt, markdownUrl, sourceUrl } from "./copy-prompt";
 import { DocsSections as Sections } from "./sections";
 
 /** A wrong stem in `docs.components` should say so on the page, not blank the whole gallery. */
@@ -40,7 +40,7 @@ const ghostSm =
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg active:scale-(--press-scale) " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-function Actions({ meta, docs }: { meta: Pick<PageMeta, "title" | "summary">; docs: PageDocs }) {
+function Actions({ meta, docs }: { meta: Pick<PageMeta, "id" | "title" | "summary">; docs: PageDocs }) {
   const components = useMemo(() => docs.components.map(componentDoc), [docs]);
   /* Built during render, so the click handler already holds the text. It must not await. */
   const prompt = useMemo(() => buildPrompt({ meta, docs, components }), [meta, docs, components]);
@@ -66,12 +66,16 @@ function Actions({ meta, docs }: { meta: Pick<PageMeta, "title" | "summary">; do
         <span className="litt-trim">Source</span>
         <ArrowUpRightIcon />
       </a>
+      {/* The same page for agents (scripts/gen-llms.mjs). A path of its own, because the gallery routes by hash. */}
+      <a href={markdownUrl(meta.id).replace(/^https:\/\/[^/]+/, "")} aria-label="This page as Markdown, for coding agents" className={ghostSm}>
+        <span className="litt-trim">Markdown</span>
+      </a>
       <CopyStatus state={state} />
     </div>
   );
 }
 
-export function DocsActions(props: { meta: Pick<PageMeta, "title" | "summary">; docs: PageDocs }) {
+export function DocsActions(props: { meta: Pick<PageMeta, "id" | "title" | "summary">; docs: PageDocs }) {
   return (
     <DocsBoundary>
       <Actions {...props} />

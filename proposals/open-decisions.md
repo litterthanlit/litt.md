@@ -55,7 +55,7 @@ Where a call turned on a number, the number was measured: OKLCH lightness from `
 | # | Question | Decision |
 |---|---|---|
 | 25 | Duplicate Vercel projects `litt-md` and `litt-md-93z4` | Both still existed and built on every push. Nick deleted them on 15 October 2026. |
-| 26 | List the registry in shadcn's directory? | **Not yet.** After forms ship, the `Project` shape is generic, and the PR check exists. A listing brings real installs, and breaking changes hurt more after that. |
+| 26 | List the registry in shadcn's directory? | **Not yet.** After forms ship, the `Project` shape is generic, and the PR check exists. A listing brings real installs, and breaking changes hurt more after that. **Revisited 2026-10-19: yes** (`proposals/staples.md`, decision 1), now that forms have shipped and every item carries a version and a changelog. |
 
 ## Not decided here
 
