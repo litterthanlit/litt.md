@@ -130,6 +130,22 @@ const RECIPES = {
           <MenuItem destructive>Delete</MenuItem>
         </Menu>`,
   },
+  breadcrumb: {
+    needs: ["Breadcrumb"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-breadcrumb"><Breadcrumb label="Smoke docs" items={[{ label: "Docs", href: "#docs" }, { label: "Guides", href: "#guides" }, { label: "Publishing", href: "#publishing" }, { label: "Domains", href: "#domains" }, { label: "Custom domains", href: "#custom" }, { label: "DNS records", href: "#dns" }, { label: "Verify ownership", href: "#verify" }]} /></div>`,
+  },
+  "context-menu": {
+    needs: ["ContextMenu", "MenuItem", "MenuSub", "MenuCheckboxItem", "MenuSeparator"],
+    state: [`const [ctxHidden, setCtxHidden] = useState(false);`, `const [ctxOpened, setCtxOpened] = useState(0);`],
+    jsx: `<ContextMenu label="Founder landing actions" trigger={<div data-testid="ctx-target" data-opened={ctxOpened} className="grid h-24 w-72 place-items-center"><button type="button" data-testid="ctx-focus" onClick={() => setCtxOpened((n) => n + 1)}>Founder landing</button></div>}>
+          <MenuItem>Open</MenuItem>
+          <MenuItem>Rename</MenuItem>
+          <MenuSub label="Move to"><MenuItem>Templates</MenuItem><MenuItem>Archive 2025</MenuItem></MenuSub>
+          <MenuCheckboxItem checked={ctxHidden} onCheckedChange={setCtxHidden}>Show hidden files</MenuCheckboxItem>
+          <MenuSeparator />
+          <MenuItem destructive>Delete</MenuItem>
+        </ContextMenu>`,
+  },
   "command-menu": {
     needs: ["CommandMenu"],
     state: [`const [cmdOpen, setCmdOpen] = useState(false);`],
@@ -1002,6 +1018,189 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (!info.blur || info.blur === "none")
             throw new Error(`.litt-glass has no backdrop-filter (the material CSS is missing): ${JSON.stringify(info)}`);
           return `backdrop-filter: ${info.blur}`;
+        });
+      }
+      if (has("breadcrumb")) {
+        await attempt("breadcrumb marks the current page and folds its middle into a menu of links", async () => {
+          const nav = page.getByRole("navigation", { name: "Smoke docs" });
+          await nav.waitFor({ state: "visible", timeout: 5000 });
+          // A level's words, without the aria-hidden slash before it.
+          const read = (el) => ({
+            levels: [...el.querySelectorAll("ol > li")].map((li) =>
+              [...li.childNodes]
+                .filter((n) => !(n.nodeType === 1 && n.getAttribute("aria-hidden") === "true"))
+                .map((n) => n.textContent)
+                .join("")
+                .trim(),
+            ),
+            slashes: [...el.querySelectorAll("ol > li > [aria-hidden=true]")].map((s) => s.textContent.trim()),
+            links: [...el.querySelectorAll("a")].map((a) => Math.round(a.getBoundingClientRect().height)),
+            current: [...el.querySelectorAll("[aria-current=page]")].map((c) => `${c.tagName}:${c.textContent}`),
+          });
+          const got = await nav.evaluate(read);
+          const want = "Docs||Custom domains|DNS records|Verify ownership";
+          if (got.levels.join("|") !== want) throw new Error(`the levels read ${got.levels.join("|")}, not ${want}`);
+          if (got.slashes.join("") !== "////") throw new Error(`the separators are ${JSON.stringify(got.slashes)}, not four aria-hidden slashes`);
+          if (got.current.join() !== "SPAN:Verify ownership") throw new Error(`aria-current="page" is on ${got.current.join() || "nothing"}, not the last level as text`);
+          if (got.links.some((h) => h !== 32)) throw new Error(`the links are ${got.links.join("/")}px tall, not 32`);
+          const more = nav.getByRole("button", { name: "Show 3 more levels" });
+          await more.click();
+          const menu = page.getByRole("menu");
+          await menu.waitFor({ state: "visible", timeout: 5000 });
+          const rows = await menu.evaluate((el) => [...el.querySelectorAll("[role=menuitem]")].map((r) => `${r.tagName}:${r.textContent.trim()}:${r.getAttribute("href")}`));
+          await page.keyboard.press("Escape");
+          await menu.waitFor({ state: "hidden", timeout: 4000 });
+          const folded = "A:Guides:#guides|A:Publishing:#publishing|A:Domains:#domains";
+          if (rows.join("|") !== folded) throw new Error(`the folded menu holds ${rows.join("|")}, not ${folded}`);
+          const back = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (back !== "Show 3 more levels") throw new Error(`Esc left focus on ${back}, not the "…" button`);
+          let phoneDetail = "";
+          if (theme === "light") {
+            // A phone shows the last two levels, and a finger gets a 44px hit area without the text moving.
+            const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+            try {
+              const p2 = await phone.newPage();
+              await p2.goto(url, { waitUntil: "load", timeout: 30000 });
+              const n2 = p2.getByRole("navigation", { name: "Smoke docs" });
+              await n2.waitFor({ state: "visible", timeout: 10000 });
+              await p2.waitForTimeout(400);
+              const small = await n2.evaluate((el) => ({
+                levels: [...el.querySelectorAll("ol > li")].length,
+                text: el.innerText.replace(/\s+/g, " ").trim(),
+                link: (() => {
+                  const a = el.querySelector("a");
+                  return a ? { box: Math.round(a.getBoundingClientRect().height), hit: getComputedStyle(a, "::before").height } : null;
+                })(),
+                overflow: el.scrollWidth - el.clientWidth,
+              }));
+              if (small.levels !== 3 || !small.text.endsWith("DNS records / Verify ownership")) throw new Error(`a phone shows ${small.levels} items, "${small.text}"`);
+              if (!(await n2.getByRole("button", { name: "Show 5 more levels" }).count())) throw new Error('a phone has no "Show 5 more levels" button');
+              if (!small.link || small.link.box !== 32 || small.link.hit !== "44px") throw new Error(`a link on a phone is ${JSON.stringify(small.link)}, not 32px with a 44px hit area`);
+              if (small.overflow > 0) throw new Error(`the trail overflows its nav by ${small.overflow}px on a phone`);
+              phoneDetail = `; phone: ${small.text}`;
+            } finally {
+              await phone.close();
+            }
+          }
+          return `${got.levels.length} items, folded ${rows.length}${phoneDetail}`;
+        });
+      }
+      if (has("context-menu")) {
+        await attempt("context menu opens at the pointer, from Shift+F10 and on a 500ms hold, with the Menu's glass and rows", async () => {
+          const target = page.locator("[data-testid=ctx-target]");
+          await target.scrollIntoViewIfNeeded();
+          const box = await target.boundingBox();
+          const at = { x: Math.round(box.x + 24), y: Math.round(box.y + 12) };
+          await page.mouse.click(at.x, at.y, { button: "right" });
+          const menu = page.getByRole("menu", { name: "Founder landing actions" });
+          await menu.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(700);
+          // The panel sits at the pointer and grows from the pointer's corner (Radix's transform origin).
+          const panel = () =>
+            menu.evaluate((el) => {
+              const host = el.closest(".litt-glass") ?? el.querySelector(".litt-glass");
+              const before = host ? getComputedStyle(host, "::before") : null;
+              const r = el.getBoundingClientRect();
+              const [ox, oy] = getComputedStyle(el).transformOrigin.split(" ").map(parseFloat);
+              return {
+                glass: !!host,
+                blur: before ? before.backdropFilter || before.webkitBackdropFilter || "" : "",
+                left: r.left,
+                top: r.top,
+                right: r.right,
+                bottom: r.bottom,
+                origin: { x: r.left + ox, y: r.top + oy },
+                rows: [...el.querySelectorAll("[role=menuitem],[role=menuitemcheckbox]")].map((row) => Math.round(row.getBoundingClientRect().height)),
+                focused: document.activeElement?.getAttribute("role") === "menuitem" ? document.activeElement.textContent.trim() : null,
+              };
+            });
+          const p = await panel();
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-context-menu.png`) });
+          await page.keyboard.press("Escape");
+          await menu.waitFor({ state: "hidden", timeout: 4000 });
+          if (!p.glass || !p.blur || p.blur === "none") throw new Error(`the panel is not litt glass: ${JSON.stringify({ glass: p.glass, blur: p.blur })}`);
+          if (p.rows.length !== 5 || p.rows.some((h) => h < 44)) throw new Error(`rows are ${p.rows.join("/")}px`);
+          const near4 = (a, b) => Math.abs(a - b) <= 4;
+          if (!(near4(p.origin.x, at.x) && near4(p.origin.y, at.y)))
+            throw new Error(`it grows from (${Math.round(p.origin.x)}, ${Math.round(p.origin.y)}), not the pointer at (${at.x}, ${at.y})`);
+          if (!(near4(p.left, at.x + 2) || near4(p.right, at.x - 2)) || !(near4(p.top, at.y) || near4(p.bottom, at.y)))
+            throw new Error(`the panel's corners are (${Math.round(p.left)}, ${Math.round(p.top)}) and (${Math.round(p.right)}, ${Math.round(p.bottom)}), not at the pointer (${at.x}, ${at.y})`);
+          if (p.focused) throw new Error(`a right-click lit ${p.focused}; a pointer open lights nothing`);
+
+          // Shift+F10 on something focused inside the target: at its bottom-left corner, first row focused, focus back on Esc.
+          const focusable = page.locator("[data-testid=ctx-focus]");
+          await focusable.focus();
+          const fb = await focusable.boundingBox();
+          await page.keyboard.press("Shift+F10");
+          await menu.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(700);
+          const k = await panel();
+          await page.keyboard.press("Escape");
+          await menu.waitFor({ state: "hidden", timeout: 4000 });
+          if (k.focused !== "Open") throw new Error(`Shift+F10 focused ${k.focused}, not the first row`);
+          if (!(near4(k.origin.x, fb.x) && near4(k.origin.y, fb.y + fb.height)))
+            throw new Error(`Shift+F10 grew it from (${Math.round(k.origin.x)}, ${Math.round(k.origin.y)}), not the focused element's bottom-left (${Math.round(fb.x)}, ${Math.round(fb.y + fb.height)})`);
+          const back = await page.evaluate(() => document.activeElement?.getAttribute("data-testid"));
+          if (back !== "ctx-focus") throw new Error(`Esc left focus on ${back}, not the focused element`);
+
+          // A checkbox row toggles and the menu stays open.
+          await page.mouse.click(at.x, at.y, { button: "right" });
+          await menu.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(500);
+          const check = page.getByRole("menuitemcheckbox", { name: "Show hidden files" });
+          await check.click();
+          await page.waitForTimeout(300);
+          const stayed = await menu.isVisible();
+          const checked = await check.getAttribute("aria-checked");
+          await page.keyboard.press("Escape");
+          await menu.waitFor({ state: "hidden", timeout: 4000 });
+          if (!stayed || checked !== "true") throw new Error(`after a checkbox row: open ${stayed}, aria-checked ${checked}`);
+
+          let held = "";
+          if (theme === "light") {
+            // On touch: a press and hold opens it within the 500ms hold (Radix's own is 700ms), and the hold does not
+            // also run the target's action. A tap only runs the action.
+            const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1 });
+            try {
+              const p2 = await phone.newPage();
+              await p2.goto(url, { waitUntil: "load", timeout: 30000 });
+              const button = p2.locator("[data-testid=ctx-focus]");
+              await button.waitFor({ state: "visible", timeout: 10000 });
+              await button.scrollIntoViewIfNeeded();
+              await p2.waitForTimeout(400);
+              await button.tap();
+              await p2.waitForTimeout(800);
+              if (await p2.getByRole("menu").count()) throw new Error("a tap opened the menu");
+              if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("a tap did not run the target's own action");
+              const b2 = await button.boundingBox();
+              await p2.evaluate(() => {
+                window.__ctxAt = { touch: 0, menu: 0 };
+                document.addEventListener("pointerdown", () => (window.__ctxAt.touch = performance.now()), { capture: true, once: true });
+                new MutationObserver((_, obs) => {
+                  if (!document.querySelector("[role=menu]")) return;
+                  window.__ctxAt.menu = performance.now();
+                  obs.disconnect();
+                }).observe(document.body, { childList: true, subtree: true });
+              });
+              const cdp = await phone.newCDPSession(p2);
+              const point = { x: Math.round(b2.x + b2.width / 2), y: Math.round(b2.y + b2.height / 2) };
+              await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [point] });
+              await p2.waitForTimeout(900);
+              await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+              await p2.waitForTimeout(500);
+              const t = await p2.evaluate(() => window.__ctxAt);
+              if (!t.menu) throw new Error("a press and hold did not open the menu");
+              const after = Math.round(t.menu - t.touch);
+              if (after > 650) throw new Error(`the menu opened ${after}ms into the hold, not at 500ms`);
+              if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("the hold also ran the target's own action");
+              const still = await p2.getByRole("menu", { name: "Founder landing actions" }).isVisible();
+              if (!still) throw new Error("the menu closed when the finger lifted");
+              held = `; a hold opened it after ${after}ms`;
+            } finally {
+              await phone.close();
+            }
+          }
+          return `grows from the pointer, rows ${p.rows.join("/")}px${held}`;
         });
       }
       if (has("select")) {

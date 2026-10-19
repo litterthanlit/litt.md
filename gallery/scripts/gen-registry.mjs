@@ -1001,13 +1001,13 @@ const COPY = {
   },
   breadcrumb: {
     title: "Breadcrumb",
-    description: "Where a page sits, with slashes between the levels and the current page in the foreground. Long trails fold their middle into a menu, and phones show the last two levels.",
-    docs: "Import Breadcrumb from components/litt/breadcrumb. Pass items as { label, href }, the last one being the current page.",
+    description: "Where a page sits, with a slash between the levels and the current page in the foreground. Past four levels the middle folds into a round ghost button that opens the Menu, and phones show the last two levels. No motion of its own.",
+    docs: "Import Breadcrumb from components/litt/breadcrumb. Pass items as { label, href }, the last one being the current page. Pass renderLink and onNavigate to route with your router, and maxVisible to change where the trail folds.",
   },
   "context-menu": {
     title: "Context menu",
-    description: "The Menu at the pointer: right-click, Shift+F10 or a 500ms hold on touch. The same glass, rows, gliding highlight and solid submenus as the Menu.",
-    docs: "Import ContextMenu from components/litt/context-menu and fill it with the Menu's rows from components/litt/menu. Every action in it must also be reachable another way.",
+    description: "The Menu at the pointer: a right-click, Shift+F10 or a 500ms hold on touch. The same glass, rows, gliding highlight and solid submenus as the Menu, grown from the pointer's corner, and on a phone a submenu that replaces the list in place.",
+    docs: "Import ContextMenu from components/litt/context-menu and fill it with the Menu's rows from components/litt/menu. Pass the target element as trigger and a label. Every action in it must also be reachable another way, such as a Menu on the row.",
   },
 };
 
