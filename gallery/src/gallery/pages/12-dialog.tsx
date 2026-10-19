@@ -12,7 +12,7 @@ export const meta: PageMeta = {
   title: "Dialog",
   order: 12, group: "Overlays",
   summary:
-    "The one expressive moment. The panel is placed, not thrown: it rises by the travel token's distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce. On a phone it is a bottom sheet you can drag away.",
+    "A panel for a decision or a short task that needs full attention. On a phone it is a sheet you can drag away.",
   tiers: ["instant", "expressive"],
 };
 
@@ -112,7 +112,7 @@ function Launcher({ children, status }: { children: ReactNode; status: string | 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-line pb-3 last:border-b-0 last:pb-0">
-      <dt className="text-small text-fg-subtle">{label}</dt>
+      <dt className="text-small [font-weight:var(--weight)] text-fg-subtle">{label}</dt>
       <dd className="text-small text-fg">{children}</dd>
     </div>
   );

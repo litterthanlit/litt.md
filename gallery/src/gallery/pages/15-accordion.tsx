@@ -10,8 +10,7 @@ export const meta: PageMeta = {
   title: "Accordion",
   order: 15.25,
   group: "Layout",
-  summary:
-    "Sections that open in place, split by hairlines. The height snaps and is never animated: the content fades in and drops a little, the chevron turns half a turn, and the rows below move to their new place by transform, so the page never jumps.",
+  summary: "Sections that open in place, split by hairlines. The height snaps and rows below slide, so the page never jumps.",
   tiers: ["instant", "responsive"],
 };
 
@@ -139,7 +138,7 @@ function SiteSettingsDemo() {
 
   return (
     <div className="grid w-full max-w-xl gap-4">
-      <p className="text-small text-fg">Settings for grottatype.com</p>
+      <p className="text-small [font-weight:var(--weight)] text-fg">Settings for grottatype.com</p>
       <Accordion type="multiple" value={open} onValueChange={setOpen}>
         <AccordionItem value="domain">
           <AccordionTrigger>Domain</AccordionTrigger>

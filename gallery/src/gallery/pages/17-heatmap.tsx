@@ -6,8 +6,7 @@ export const meta: PageMeta = {
   title: "Heatmap",
   order: 17.7,
   group: "Data",
-  summary:
-    "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, mono labels, a tooltip on hover, touch and focus, and a legend from less to more.",
+  summary: "A grid of dots whose depth says how much, such as deploys per day. One data hue in four steps over an empty dot.",
   tiers: ["instant", "responsive"],
 };
 

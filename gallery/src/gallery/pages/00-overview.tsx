@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Overview",
   order: 0,
   summary:
-    "Every page here runs the motion and shape locked in litt.md's tokens. Use each component and feel the sweet spot. Light and material stay still; only objects move. The Playground is the one place to try other values.",
+    "Every page runs on litt.md's locked motion and shape tokens. The Playground is the one place to try other values.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -18,7 +18,7 @@ export default function Overview() {
   const count = WORDS[list.length] ?? String(list.length);
   const playground = pages.find((p) => p.tune);
   return (
-    <article aria-labelledby="page-overview" className="grid gap-16 pb-24">
+    <article aria-labelledby="page-overview" className="grid gap-24 pb-32">
       <header className="grid gap-4">
         <h1 id="page-overview" className="text-display text-fg text-balance">{count} components on locked tokens.</h1>
         <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
@@ -40,19 +40,19 @@ export default function Overview() {
         </div>
       </section>
 
-      <section className="grid gap-8" aria-labelledby="components-title">
+      <section className="grid gap-12" aria-labelledby="components-title">
         <h2 id="components-title" className="text-h4 text-fg">Components</h2>
         {list.length === 0 ? (
           <p className="text-small text-fg-subtle">Components are being built.</p>
         ) : (
           pageRuns(list).map((run) => (
             <div key={run.group ?? "other"} className="grid gap-4">
-              {run.group && <h3 className="text-body text-fg-muted">{run.group}</h3>}
+              {run.group && <h3 className="border-b border-line pb-3 text-small [font-weight:var(--weight)] text-fg-subtle">{run.group}</h3>}
               <ul className="grid gap-px overflow-hidden rounded-surface bg-line shadow-[inset_0_0_0_1px_var(--line)] sm:grid-cols-2">
                 {run.pages.map((p) => (
                   <li key={p.id} className="bg-surface-1">
                     <a href={`#${p.id}`} className="grid h-full content-start gap-3 p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2">
-                      <span className="text-body text-fg">{p.title}</span>
+                      <span className="text-body [font-weight:var(--weight)] text-fg">{p.title}</span>
                       <span className="text-small text-fg-subtle">{p.summary}</span>
                       <span className="flex flex-wrap gap-2">{p.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
                     </a>
@@ -71,7 +71,7 @@ export default function Overview() {
             href={`#${playground.id}`}
             className="litt-raised grid content-start justify-items-start gap-3 rounded-surface p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2"
           >
-            <span className="text-body text-fg">{playground.title}</span>
+            <span className="text-body [font-weight:var(--weight)] text-fg">{playground.title}</span>
             <span className="max-w-[56ch] text-small text-fg-subtle">{playground.summary}</span>
             <span className="flex flex-wrap gap-2">{playground.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
           </a>

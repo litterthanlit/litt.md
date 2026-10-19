@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   order: 3.8,
   group: "Controls",
   summary:
-    "Two values set at once on one surface, like tone against length. A dark well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. The thumb follows the pointer and the keys at once, with no easing. Only the tooltip fades, on the responsive tier.",
+    "Two values set at once on one surface, like tone against length. A tooltip says the value in words.",
   tiers: ["responsive"],
 };
 
@@ -108,7 +108,7 @@ function VoiceDemo() {
         </Button>
       </div>
       <div className="grid gap-1 border-t border-line pt-4">
-        <p className="text-small text-fg-subtle">Reply to Mira Halden</p>
+        <p className="text-small [font-weight:var(--weight)] text-fg-subtle">Reply to Mira Halden</p>
         <p className="text-small text-fg-muted">{REPLIES[toneOf(voice.y)]}</p>
         <p className="font-mono text-caption tabular-nums text-fg-subtle">About {wordsOf(voice.x)} words</p>
       </div>

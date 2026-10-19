@@ -7,7 +7,8 @@
  *   group and space-6 once the group is 48rem wide. A tile links nowhere, so it has no hover and no motion.
  * - Type: the label is the small size in fg-subtle, the value is the h3 size in fg in the sans with tabular
  *   numbers (a figure that updates does not wobble), and a unit follows the value at the same size in fg-subtle.
- *   Hierarchy is size and tone, never weight (P9).
+ *   The label and the value are at the interface weight (550) and the delta at the text weight (450); past
+ *   that, hierarchy is size and tone (P9).
  * - Delta: a word and the number ("Up 12% on last week") at the caption size. The word says the direction. The
  *   color says whether it is news: success for good, danger for bad, fg-subtle for neither. Hidden text repeats
  *   the judgment ("good news"), so color is never the only signal. No arrow glyph, no dot.
@@ -61,7 +62,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", trend, class
         "litt-raised flex h-full min-w-0 flex-col gap-2 rounded-surface p-4 @min-[48rem]:p-6 " + className
       }
     >
-      <dt className="text-small text-fg-subtle">{label}</dt>
+      <dt className="text-small [font-weight:var(--weight)] text-fg-subtle">{label}</dt>
       <dd className="m-0 flex flex-1 flex-col gap-1">
         <span className="text-h3 tabular-nums text-fg">
           {value}

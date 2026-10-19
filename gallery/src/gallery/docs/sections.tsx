@@ -44,8 +44,8 @@ function Keyboard({ rows }: { rows: NonNullable<PageDocs["keyboard"]> }) {
     <table className="w-full max-w-[65ch] border-collapse text-left">
       <thead>
         <tr className="border-b border-line text-caption text-fg-subtle">
-          <th scope="col" className="w-2/5 py-3 pr-6 font-normal">Keys</th>
-          <th scope="col" className="py-3 font-normal">What it does</th>
+          <th scope="col" className="w-2/5 py-3 pr-6 [font-weight:var(--weight)]">Keys</th>
+          <th scope="col" className="py-3 [font-weight:var(--weight)]">What it does</th>
         </tr>
       </thead>
       <tbody>
@@ -69,7 +69,7 @@ function Keyboard({ rows }: { rows: NonNullable<PageDocs["keyboard"]> }) {
   );
 }
 
-const mono = "font-mono text-fg-muted";
+const mono = "font-mono text-caption text-fg-muted";
 
 export function DocsSections({ docs }: { docs: PageDocs }) {
   const components = docs.components.map(componentDoc);

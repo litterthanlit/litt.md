@@ -4,12 +4,13 @@
  * are the empty and loading rows.
  *
  * - Look: rows are separated by a 1px line; cells pad space-3 and space-4 and use the small size. The primary
- *   cell is fg and the rest are fg-subtle. Numbers and dates are mono caption size, right-aligned, with tabular
- *   figures. Hover is an fg-4% fill on the instant tier and never moves anything. On a coarse pointer
- *   there is no hover, so a row held down fills instead (fg 6%, same tier, color only), and so does a
- *   sortable header; the OS tap flash is off so the two do not double. The header row is sticky,
- *   caption size, fg-subtle, sentence case. The box is a hairline at the surface radius, filled surface-1 so the
- *   sticky header can cover the rows that scroll under it.
+ *   cell names the row, so it is fg at the interface weight (550); the rest are fg-subtle at the text weight
+ *   (450). Numbers and dates are mono caption size, right-aligned, with tabular figures. Hover is an fg-4% fill
+ *   on the instant tier and never moves anything. On a coarse pointer there is no hover, so a row held down
+ *   fills instead (fg 6%, same tier, color only), and so does a sortable header; the OS tap flash is off so the
+ *   two do not double. The header row is sticky, caption size at the interface weight, fg-subtle, sentence case.
+ *   The box is a hairline at the surface radius, filled surface-1 so the sticky header can cover the rows that
+ *   scroll under it.
  * - Semantics: a <table> with a hidden <caption>, <th scope="col"> headers and a <th scope="row"> for each primary
  *   cell, so a screen reader announces the row's name with every value. A sortable header holds a real button and
  *   sets aria-sort on its th.
@@ -238,7 +239,7 @@ function MotionRow({ className = "", children, ...rest }: TableRowProps) {
 /* -------------------------------------------------------------------------- */
 
 const head =
-  "sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption font-normal whitespace-nowrap";
+  "sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption [font-weight:var(--weight)] whitespace-nowrap";
 
 export type SortDirection = "ascending" | "descending" | "none";
 
@@ -298,7 +299,7 @@ export function TableHead({ numeric = false, sort = "none", onSort, className = 
         type="button"
         onClick={onSort}
         className={[
-          "flex h-control-md w-full cursor-pointer items-center gap-1 px-4 text-caption",
+          "flex h-control-md w-full cursor-pointer items-center gap-1 px-4 text-caption [font-weight:var(--weight)]",
           // Numbers sit flush right, so the icon goes to the left of the label to keep the label above the figures.
           numeric ? "flex-row-reverse" : "",
           "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent]",
@@ -332,10 +333,11 @@ export type TableCellProps = Omit<ComponentProps<"td">, "ref" | "scope"> & {
 /** A body cell. fg-subtle by default; `primary` makes it the row's name, and `numeric` sets figures in mono. */
 export function TableCell({ numeric = false, primary = false, className = "", children, ...rest }: TableCellProps) {
   const cls = [
-    // font-normal because a <th> is bold by default, and a host app may not reset it.
-    "h-control-md border-b border-line px-4 py-3 align-middle font-normal whitespace-nowrap",
+    // The size class sets the text weight (450), which also undoes a <th>'s default bold in a host app. The primary
+    // cell names the row, so it takes the interface weight (550).
+    "h-control-md border-b border-line px-4 py-3 align-middle whitespace-nowrap",
     numeric ? "text-right font-mono text-caption tabular-nums" : "text-left text-small",
-    primary ? "text-fg" : "text-fg-subtle",
+    primary ? "[font-weight:var(--weight)] text-fg" : "text-fg-subtle",
     className,
   ].join(" ");
   return primary ? (

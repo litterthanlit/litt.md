@@ -8,8 +8,7 @@ export const meta: PageMeta = {
   title: "Dot plot",
   order: 17.6,
   group: "Data",
-  summary:
-    "A distribution drawn as stacks of dots, mirrored about a center line, so you see where most values fall. With a goal, dots inside it take a data hue and the rest stay gray. The median is a line, an outlier can be named, and the legend gives the shares in numbers.",
+  summary: "A distribution as stacks of dots about a center line. Dots within a goal take a data hue, and the rest stay gray.",
   tiers: ["instant", "responsive"],
 };
 
@@ -141,7 +140,7 @@ function ReplySpeedDemo() {
     <div className="grid w-full max-w-3xl gap-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <p className="grid gap-1">
-          <span className="text-small text-fg-subtle">Reply speed, 14 days</span>
+          <span className="text-small [font-weight:var(--weight)] text-fg-subtle">Reply speed, 14 days</span>
           <span className="flex items-baseline gap-2">
             <span className="text-h3 tabular-nums text-fg">{duration(middle(values))}</span>
             <span className="text-small text-fg-subtle">median</span>
@@ -181,7 +180,7 @@ function BuildTimesDemo() {
   return (
     <div className="grid w-full max-w-3xl gap-8">
       <p className="grid gap-1">
-        <span className="text-small text-fg-subtle">Framer site builds, 14 days</span>
+        <span className="text-small [font-weight:var(--weight)] text-fg-subtle">Framer site builds, 14 days</span>
         <span className="flex items-baseline gap-2">
           <span className="text-h3 tabular-nums text-fg">{Math.round(middle(BUILDS))} s</span>
           <span className="text-small text-fg-subtle">median</span>

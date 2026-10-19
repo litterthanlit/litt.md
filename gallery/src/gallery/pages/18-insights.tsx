@@ -21,8 +21,7 @@ export const meta: PageMeta = {
   id: "insights",
   title: "Insights",
   order: 18.7, group: "Data",
-  summary:
-    "The studio's inbox and build insights, built from the data-color parts: a dot plot of reply times, a bar list of shortcuts, a mail rule, a voice pad, a deploy timeline, a credits gauge and a heatmap of the credits by day. Each hue means one thing in its panel, the deploy stays in the quiet foreground, and Create rule is the one accent fill in the view.",
+  summary: "The studio's inbox and build insights, built from the data-color parts. Each hue means one thing in its panel.",
   tiers: ["instant", "responsive"],
 };
 
@@ -107,7 +106,7 @@ function Panel({ title, tag, wide = false, children }: { title: string; tag: Rea
       className={"litt-raised grid min-w-0 content-start gap-6 rounded-surface p-6 max-sm:p-4" + (wide ? " @min-[56rem]:col-span-2" : "")}
     >
       <header className="flex items-center gap-3">
-        <h3 id={id} className="text-body text-fg">
+        <h3 id={id} className="text-body [font-weight:var(--weight)] text-fg">
           {title}
         </h3>
         {tag}
@@ -206,7 +205,7 @@ function NewRule() {
       <div className="grid gap-4">
         <TokenInput label="Mail from" defaultValue={["@stripe.com", "ramp.com", "brex.com"]} collapseAfter={1} placeholder="Add a sender" />
         <TextField label="That says" defaultValue="invoice" />
-        <p className="flex items-center gap-3 text-small text-fg">
+        <p className="flex items-center gap-3 text-small [font-weight:var(--weight)] text-fg">
           Goes to <Tag hue="amber">Finance</Tag>
         </p>
       </div>
@@ -218,7 +217,7 @@ function NewRule() {
           {CAUGHT.map((m) => (
             <li key={m.from} className="flex items-center gap-3 border-t border-line py-3 first:border-t-0">
               <Avatar name={m.from} size="sm" hue="neutral" decorative />
-              <span className="w-16 shrink-0 text-small text-fg">{m.from}</span>
+              <span className="w-16 shrink-0 text-small [font-weight:var(--weight)] text-fg">{m.from}</span>
               <span className="w-0 min-w-0 flex-1 truncate text-small text-fg-subtle">{m.subject}</span>
             </li>
           ))}
@@ -253,7 +252,7 @@ function YourVoice() {
         height={176}
       />
       <div className="grid gap-2 border-t border-line pt-4">
-        <p className="text-small text-fg-subtle">Reply to Maya</p>
+        <p className="text-small [font-weight:var(--weight)] text-fg-subtle">Reply to Maya</p>
         <p className="text-body text-fg">
           {greeting} Friday works. I will send the forecast by the end of the day. {signoff}
         </p>

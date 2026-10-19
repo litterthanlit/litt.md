@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   order: 3.3,
   group: "Controls",
   summary:
-    "An on or off setting. A pill track with a round thumb, filled with the foreground color when on and never the accent. The thumb slides and the fills fade on the instant tier, and the box never moves. The label sits beside it, or the switch sits at the end of a settings row.",
+    "An on or off setting. A pill track with a round thumb, filled with the foreground when on and never the accent.",
   tiers: ["instant"],
 };
 
@@ -70,7 +70,7 @@ function SettingsListDemo() {
 
   return (
     <div className="grid w-full max-w-lg gap-3">
-      <p className="text-small text-fg">Notifications for litt.design</p>
+      <p className="text-small [font-weight:var(--weight)] text-fg">Notifications for litt.design</p>
       <ul className="divide-y divide-line border-y border-line">
         <li>
           <Switch align="end" label="Email me when a build finishes" defaultChecked onCheckedChange={note("Build email")} />
@@ -127,11 +127,11 @@ function DisabledDemo() {
   return (
     <div className="grid w-full max-w-xl gap-x-12 gap-y-6 sm:grid-cols-2">
       <div className="grid content-start gap-2">
-        <p className="text-small text-fg-subtle">Off and disabled</p>
+        <p className="text-small [font-weight:var(--weight)] text-fg-subtle">Off and disabled</p>
         <Switch disabled label="Password protection" description="Part of the Studio plan." />
       </div>
       <div className="grid content-start gap-2">
-        <p className="text-small text-fg-subtle">On and disabled</p>
+        <p className="text-small [font-weight:var(--weight)] text-fg-subtle">On and disabled</p>
         <Switch disabled defaultChecked label="Remove the Framer badge" description="Set by the Studio plan." />
       </div>
     </div>

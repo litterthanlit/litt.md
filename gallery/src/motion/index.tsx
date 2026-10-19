@@ -39,7 +39,7 @@ export type PresetName = "locked" | "invisible" | "expressive";
 
 /** The choices the Playground offers for the discrete controls. */
 export const TRAVELS = [4, 8, 16, 24] as const;
-export const RADII = [0, 2, 4, 6] as const;
+export const RADII = [0, 4, 6, 8] as const;
 
 export const PRESET_LABEL: Record<PresetName, string> = {
   locked: `Locked (v${__LITT_MD_VERSION__})`,

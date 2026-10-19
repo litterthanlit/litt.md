@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   order: 4,
   group: "Controls",
   summary:
-    "A short choice in one track. The selected surface glides to your pick on the responsive tier, and color changes are instant, so the control answers without ever resizing.",
+    "A short choice in one track. The selected surface glides to your pick, and the control never resizes.",
   tiers: ["instant", "responsive"],
 };
 

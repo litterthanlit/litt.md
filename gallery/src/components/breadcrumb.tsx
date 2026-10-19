@@ -140,7 +140,7 @@ export function Breadcrumb({
 
   return (
     <nav aria-label={label} className={"min-w-0 " + className}>
-      <ol className="flex h-control-sm min-w-0 items-center text-small">
+      <ol className="flex h-control-sm min-w-0 items-center text-small [font-weight:var(--weight)]">
         {rows.map((row, i) => (
           /* The current page's item may shrink, so it is the one that truncates. */
           <li key={row.key} className={"flex items-center " + (i === rows.length - 1 ? "min-w-0" : "shrink-0")}>

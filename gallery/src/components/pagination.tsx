@@ -86,7 +86,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
               <ul className="flex items-center gap-1">
                 {pageItems(current, count).map((n, i) =>
                   n === null ? (
-                    <li key={`gap-${i}`} aria-hidden="true" className="grid min-w-control-sm place-items-center font-mono text-caption text-fg-subtle">
+                    <li key={`gap-${i}`} aria-hidden="true" className="grid min-w-control-sm place-items-center font-mono text-caption [font-weight:var(--weight)] text-fg-subtle">
                       …
                     </li>
                   ) : (

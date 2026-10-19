@@ -12,8 +12,7 @@ export const meta: PageMeta = {
   title: "Message",
   order: 18.91,
   group: "Agents",
-  summary:
-    "A chat between a person and an agent, read top to bottom. The agent's words sit on the page with no bubble, and the person's turn is a raised bubble on the right. The conversation scrolls on its own, keeps the latest line in view while an answer streams, and offers Jump to latest when you scroll up. A new turn enters once on the responsive tier, and nothing moves while text streams.",
+  summary: "A chat between a person and an agent. The agent writes on the page; the person's turn is a raised bubble.",
   tiers: ["responsive", "instant"],
 };
 
@@ -81,7 +80,7 @@ export const docs: PageDocs = {
     "Copy is named \"Copy\" and swaps to a check, and a polite status says \"Copied\", or \"Could not copy\" when the browser refuses. Retry is named \"Retry\". Each has a tooltip, and the row is a group named by its label.",
     "The actions are hidden only until hover, and they show on focus-within, so a keyboard never lands on a control it cannot see. On a coarse pointer they always show and are 44px, as are Retry and Jump to latest.",
     "An error line is words with a 16px icon: the words say it stopped, and the icon's color is only a second signal. The icon is hidden from assistive tech.",
-    "Links in MessageText are underlined as well as colored. Strong text and emphasis step the color only, because litt has one weight and no italic, so write words that carry the meaning without them.",
+    "Links in MessageText are underlined as well as colored. Strong text steps the color and the weight (550 over the answer's 450), and emphasis steps the color only, because litt has no italic, so write words that carry the meaning without them.",
     "A pre in MessageText wraps its lines, so it never becomes a scroll area a keyboard cannot reach. Use CodeBlock for code that is long, or that the reader will copy.",
     "A turn that arrives fades in once and rises half of the travel token. Reduced motion removes the movement and the fade through the motion hooks.",
     "You still need to label each conversation, keep the label unique on the page, and write the answer so that it reads in order.",
@@ -562,7 +561,7 @@ export default function MessagePage() {
         tier="instant"
         size="lg"
         code="ProseDemo"
-        caption="MessageText styles what a markdown renderer produces, with no library. Headings stay at the body size and step to fg. Strong text is fg at weight 400, and links are accent text with an underline. Inline code takes an fg 6% fill at the control radius, a pre is a quiet mono block on surface-2, and a quote has no rail. Nothing is bold."
+        caption="MessageText styles what a markdown renderer produces, with no library. Headings stay at the body size and step to fg. Strong text is fg at the interface weight (550), one step above the answer's 450, and links are accent text with an underline. Inline code takes an fg 6% fill at the control radius, a pre is a quiet mono block on surface-2, and a quote has no rail. Nothing is bold."
       >
         <ProseDemo />
       </Stage>

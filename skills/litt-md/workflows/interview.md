@@ -41,7 +41,7 @@ Use these as starting points. Adapt the previews to Nick's current work.
 **Color**
 5. Litt's own default accent: answered in v0.9 (cobalt). Skip unless Nick wants to revisit it
 6. Accent in dark mode: the same hue, lighter / a different hue tuned per theme / desaturated
-7. Status colors: full color / desaturated to fit the cool neutrals / dot only, text stays neutral
+7. Status colors: full color / desaturated to fit the gray neutrals / dot only, text stays neutral
 
 **Material**
 8. Light source strength: barely there / clearly visible / dramatic spotlight (show three hero previews)

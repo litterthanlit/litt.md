@@ -14,8 +14,7 @@ export const meta: PageMeta = {
   title: "Timeline",
   order: 17.8,
   group: "Data",
-  summary:
-    "The steps of a run in order: when each started, a status icon on a hairline rail, a label and how long it took, grouped into phases. In a proportional timeline a long step draws its time as a bar on the rail in its phase's color, with the last run beside it. A strip shows the whole run at a glance. Nothing moves.",
+  summary: "The steps of a run in order, each with a status icon on a hairline rail and its time. A strip shows the whole run.",
   tiers: ["instant", "responsive"],
 };
 
@@ -198,7 +197,7 @@ function DeployDemo() {
   return (
     <div className="grid w-full max-w-xl gap-6">
       <div className="grid gap-1">
-        <p className="text-body text-fg">Update pricing page</p>
+        <p className="text-body [font-weight:var(--weight)] text-fg">Update pricing page</p>
         <p className="font-mono text-caption text-fg-subtle">Ines · main / a3f91c2</p>
       </div>
       <Timeline label="Update pricing page, deploy steps" proportional>
@@ -227,7 +226,7 @@ function GlanceDemo() {
     <div className="grid w-full max-w-xl gap-8">
       <div className="flex items-end justify-between gap-6">
         <div className="grid gap-1">
-          <p className="text-body text-fg">Publish Halo case study</p>
+          <p className="text-body [font-weight:var(--weight)] text-fg">Publish Halo case study</p>
           <p className="font-mono text-caption text-fg-subtle">Maya · main / 7be04d1</p>
         </div>
         <p className="text-h1 tabular-nums text-fg">
@@ -253,7 +252,7 @@ function FailedDemo() {
   return (
     <div className="grid w-full max-w-xl gap-8">
       <div className="grid gap-1">
-        <p className="text-body text-fg">Update hero copy</p>
+        <p className="text-body [font-weight:var(--weight)] text-fg">Update hero copy</p>
         <p className="font-mono text-caption text-fg-subtle">Priya · main / e41c7d0</p>
       </div>
       <TimelineBar label="Update hero copy" phases={FAILED} />

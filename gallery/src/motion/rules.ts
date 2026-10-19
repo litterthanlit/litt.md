@@ -12,7 +12,7 @@
  * - a spring settles within 600ms                            -> settleMs
  * - bounce is at most 0.12, and exactly 0 on responsive      -> bounce
  * - an exit lasts round(visual time x --exit)                -> exit, and tokensSnippet
- * - corners are 0, --radius-control (4), --radius-surface
+ * - corners are 0, --radius-control (6), --radius-surface
  *   (control + 4) or the pill                                -> control
  * - the last linear() stop is 1 and responsive never passes
  *   1                                                        -> spring.ts toCss
@@ -40,7 +40,7 @@ export const LIMITS = {
   /** Exits run at this fraction of the visual time. */
   exit: 0.75,
   /** --radius-control in px. The surface is this plus the 4px inset. */
-  control: 4,
+  control: 6,
 } as const;
 
 export type RuleRow = { ok: boolean; text: string };

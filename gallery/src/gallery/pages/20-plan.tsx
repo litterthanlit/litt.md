@@ -9,8 +9,7 @@ export const meta: PageMeta = {
   title: "Plan",
   order: 18.95,
   group: "Agents",
-  summary:
-    "An agent's steps for a task, ticked off as it works: the label and a count over a thin rail in the foreground, then each step with its status mark. The running step is a half-filled circle that stays still, and a done step steps its color back and is never struck through. A status swaps at once and only colors fade. A step added later fades in.",
+  summary: "An agent's steps, ticked off as it works. Running is a still half circle, and a done step is never struck through.",
   tiers: ["instant", "responsive"],
 };
 

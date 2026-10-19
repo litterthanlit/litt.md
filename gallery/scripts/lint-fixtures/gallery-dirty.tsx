@@ -86,8 +86,8 @@ export function ProjectCard({ open }: { open: boolean }) {
       <div
         style={{ background: "oklch(0.7 0.1 200)" }} // expect: color
       />
-      <div className="rounded-surface rounded-t-surface rounded-none rounded-control rounded-pill shadow-float shadow-glow shadow-[0_0_0_1px_var(--line)]" />
-      <div className="transition-[background-color] duration-(--dur-instant) ease-litt font-normal bg-surface-2 text-fg-muted" />
+      <div className="rounded-surface rounded-t-surface rounded-none rounded-control rounded-pill shadow-float shadow-[0_0_0_1px_var(--line)]" />
+      <div className="transition-[background-color] duration-(--dur-instant) ease-litt [font-weight:var(--weight)] bg-surface-2 text-fg-muted" />
       <div className="transition-transform duration-(--dur-responsive) ease-responsive" />
       <div className="transition-transform duration-(--dur-exit-expressive) ease-litt" />
       <p

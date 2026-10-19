@@ -6,10 +6,10 @@
  *   gallery shell. Glass is only honest with content passing under it, so the page that
  *   uses it must scroll beneath.
  * - Content sits in a max-w-wide wrap with the page gutter. Order: wordmark, nav, actions.
- * - Nav links are small type in fg-subtle. Hover is fg on an fg-6% fill (instant tier,
- *   color and background-color only). The current page is fg, a lightness step from its
- *   neighbours rather than a hue, with aria-current="page". There is no dot. In the menu
- *   the current page carries a check in the icon cell, like a picked option.
+ * - Nav links are small type at the interface weight (550) in fg-subtle. Hover is fg on an
+ *   fg-6% fill (instant tier, color and background-color only). The current page is fg, a
+ *   lightness step from its neighbours rather than a hue, with aria-current="page". There is
+ *   no dot. In the menu the current page carries a check in the icon cell, like a picked option.
  * - Responsive by container, not viewport. The bar asks how wide it is (a CSS container
  *   query), so it behaves the same as a full-bleed header on a page and inside a frame,
  *   and it needs no JavaScript or hydration to pick a layout. Below navFrom the links are
@@ -83,7 +83,7 @@ const FROM = {
 } as const;
 
 const link =
-  "relative flex h-control-sm items-center rounded-control px-control-pad-sm text-small whitespace-nowrap select-none " +
+  "relative flex h-control-sm items-center rounded-control px-control-pad-sm text-small [font-weight:var(--weight)] whitespace-nowrap select-none " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:h-control-md " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg " +
@@ -109,7 +109,7 @@ export function Header({
       {/* The bar is the container, so the layout follows the width it is given. */}
       <div className="@container">
         <div className="mx-auto flex h-(--header-h) max-w-wide items-center gap-4 px-gutter @min-[40rem]:gap-6">
-          <div className="flex shrink-0 items-center text-body text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus pointer-coarse:[&_a]:inline-flex pointer-coarse:[&_a]:h-control-md pointer-coarse:[&_a]:items-center">
+          <div className="flex shrink-0 items-center text-body [font-weight:var(--weight)] text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus pointer-coarse:[&_a]:inline-flex pointer-coarse:[&_a]:h-control-md pointer-coarse:[&_a]:items-center">
             {wordmark}
           </div>
 

@@ -12,7 +12,7 @@ export const meta: PageMeta = {
   order: 2.5,
   group: "Controls",
   summary:
-    "One value from a short list. The trigger is the Input's field, and the list is the Menu's glass panel: 44px rows, one gliding highlight and a check on the current option. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
+    "One value from a short list. The glass list has one gliding highlight and a check on the current option.",
   tiers: ["instant", "responsive"],
 };
 

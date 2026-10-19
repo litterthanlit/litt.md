@@ -17,7 +17,7 @@ export const meta: PageMeta = {
   order: 2.7,
   group: "Controls",
   summary:
-    "A day, or a range of days, from a month calendar, kept as YYYY-MM-DD strings. The field opens the calendar in a popover, a bottom sheet on a phone. A new month slides in from the side it comes from, and nothing else moves.",
+    "A day or a range of days from a month calendar, kept as YYYY-MM-DD strings. On a phone it opens as a bottom sheet.",
   tiers: ["instant", "responsive"],
 };
 
@@ -197,13 +197,13 @@ function ScheduleDemo() {
     <div className="flex w-full max-w-2xl flex-wrap items-start gap-x-12 gap-y-8">
       <Calendar label="Studio schedule" value={day} onValueChange={setDay} />
       <div className="grid min-w-56 flex-1 content-start gap-4">
-        <h3 className="text-body text-fg">{spoken(day)}</h3>
+        <h3 className="text-body [font-weight:var(--weight)] text-fg">{spoken(day)}</h3>
         {list.length ? (
           <ul className="grid gap-3">
             {list.map((b) => (
               <li key={b.time} className="grid grid-cols-[3.5rem_1fr] gap-3 text-small">
                 <span className="font-mono tabular-nums text-fg-subtle">{b.time}</span>
-                <span className="text-fg-muted">{b.title}</span>
+                <span className="[font-weight:var(--weight)] text-fg-muted">{b.title}</span>
               </li>
             ))}
           </ul>

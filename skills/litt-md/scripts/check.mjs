@@ -12,8 +12,8 @@
  * 4. Coverage:  every themed token is defined in both light and dark (P8).
  * 5. Contrast:  text, control lines, focus, accent, status and data-hue pairs meet WCAG
  *               (each data hue's -text tone is also checked on its own tint).
- * 6. Weight:    nothing goes above font-weight 400 (P9).
- * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill.
+ * 6. Weight:    two weights (P9), 450 for text and 550 for the interface: no other font-weight, weight token or Google Fonts wght.
+ * 7. Radius:    corners are 0, --radius-control (6), --radius-surface (control + 4) or pill.
  * 8. Shadows:   no outer shadow has an x or y offset (P4).
  * 9. Motion:    three tiers (instant tween at most 240ms; springs with visual time at most
  *               350ms, bounce at most 0.12 and 0 on responsive; settle at most 600ms; exits
@@ -123,7 +123,7 @@ const pairs = [
   ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "supporting text"],
   ["--line-control", ["--canvas", "--surface-1"], 3, "control outline"],
   ["--focus", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring"],
-  ["--accent-fg", ["--accent", "--accent-hover"], 4.5, "text on accent"],
+  ["--accent-fg", ["--accent", "--accent-hover", "--accent-top", "--accent-top-hover"], 4.5, "text on the accent fill, top to bottom"],
   ["--accent-text", ["--canvas", "--surface-1"], 4.5, "accent as link text"],
   ["--accent", ["--canvas", "--surface-1"], 3, "the accent fill against the page"],
   ["--success", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
@@ -174,30 +174,31 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
 }
 if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes`);
 
-// 6. Weight ceiling (P9) ------------------------------------------------
-console.log("Weight ceiling (P9)");
+// 6. Two weights (P9) ---------------------------------------------------
+console.log("Two weights, 450 and 550 (P9)");
+const WEIGHTS = new Set([450, 550]);
 const weightFails = [];
 const assetFiles = fs.readdirSync(path.join(skillDir, "assets")).filter((f) => /\.(css|html)$/.test(f)).map((f) => `assets/${f}`);
 for (const f of assetFiles) {
   const text = strip(read(f));
-  for (const m of text.matchAll(/font-weight\s*:\s*(\d{3})/g)) if (Number(m[1]) > 400) weightFails.push(`${f}: font-weight ${m[1]}`);
-  for (const m of text.matchAll(/--[\w-]*weight[\w-]*\s*:\s*(\d{3})/g)) if (Number(m[1]) > 400) weightFails.push(`${f}: weight token ${m[0]}`);
-  for (const m of text.matchAll(/wght@([\d;.]+)/g)) if (m[1].split(/[;.]/).some((w) => Number(w) > 400)) weightFails.push(`${f}: Google Fonts loads wght@${m[1]}`);
+  for (const m of text.matchAll(/font-weight\s*:\s*(\d{3})/g)) if (!WEIGHTS.has(Number(m[1]))) weightFails.push(`${f}: font-weight ${m[1]}`);
+  for (const m of text.matchAll(/--[\w-]*weight[\w-]*\s*:\s*(\d{3})/g)) if (!WEIGHTS.has(Number(m[1]))) weightFails.push(`${f}: weight token ${m[0]}`);
+  for (const m of text.matchAll(/wght@([\d;.]+)/g)) if (m[1].split(/[;.]/).some((w) => !WEIGHTS.has(Number(w)))) weightFails.push(`${f}: Google Fonts loads wght@${m[1]}`);
   for (const m of text.matchAll(/--weight-(medium|semibold|bold)\b/g)) weightFails.push(`${f}: references ${m[0]}`);
   for (const m of text.matchAll(/\bfont-(medium|semibold|bold|extrabold|black)\b/g)) weightFails.push(`${f}: uses ${m[0]}`);
 }
-weightFails.length ? weightFails.forEach(fail) : ok(`no weight above 400 in ${assetFiles.length} asset files`);
+weightFails.length ? weightFails.forEach(fail) : ok(`two weights (${[...WEIGHTS].join(" and ")}) in ${assetFiles.length} asset files`);
 
 // 7. Radius ---------------------------------------------------------------
-console.log("Radius (control 4, surface 8, pill)");
+console.log("Radius (control 6, surface 10, pill)");
 const radiusFails = [];
 const allowedRadius = new Set(["0", "0px", "inherit", "999px", "50%",
   "var(--radius-control)", "var(--radius-surface)", "var(--radius-pill)"]);
 const radiusTokens = new Set(["--radius-control", "--radius-surface", "--radius-pill"]);
 const tokenPx = (n) => Number((strip(css).match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*(\\d+)px\\s*;`)) || [])[1]);
 const [rc, rs, rp] = [tokenPx("--radius-control"), tokenPx("--radius-surface"), tokenPx("--radius-pill")];
-if (rc !== 4) radiusFails.push(`tokens.css: --radius-control is ${rc || "missing"}, must be 4px`);
-if (rs !== rc + 4) radiusFails.push(`tokens.css: --radius-surface is ${rs || "missing"}, must be control + the 4px inset (8px)`);
+if (rc !== 6) radiusFails.push(`tokens.css: --radius-control is ${rc || "missing"}, must be 6px`);
+if (rs !== rc + 4) radiusFails.push(`tokens.css: --radius-surface is ${rs || "missing"}, must be control + the 4px inset (10px)`);
 if (rp !== 999) radiusFails.push(`tokens.css: --radius-pill is ${rp || "missing"}, must be 999px`);
 // rounded-*, with an optional side (rounded-t-surface) and any variant prefix (md:, hover:).
 const okRounded = /^!?rounded(?:-(?:t|r|b|l|s|e|tl|tr|bl|br|ss|se|es|ee))?-(?:control|surface|pill|none)$/;
@@ -222,7 +223,7 @@ console.log("Shadows (zero offset)");
 const shadowFails = [];
 for (const f of assetFiles) {
   const text = strip(read(f));
-  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--highlight)\s*:\s*([^;}]+)/g)) {
+  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--highlight)\s*:\s*([^;}]+)/g)) {
     for (const layer of splitLayers(m[2])) {
       if (/^var\(/.test(layer) || layer === "none") continue;
       // Strip colors so only lengths remain, then read the first two lengths as x/y offsets.
@@ -300,7 +301,7 @@ if (!/(?<![\w-])--press-scale\s*:\s*1\s*;/.test(reducedBlock)) motionFails.push(
 // 9c. transitions and animations in the assets
 const layoutProps = /\b(width|height|min-width|max-width|min-height|max-height|top|right|bottom|left|inset|margin(-[a-z]+)?|padding(-[a-z]+)?)\b/;
 const movement = new Set(["transform", "opacity", "translate", "scale", "rotate"]);
-const fades = new Set(["color", "background-color", "border-color", "fill", "box-shadow"]); // Q17; box-shadow is the focus ring, never --glow (P5)
+const fades = new Set(["color", "background-color", "border-color", "fill", "box-shadow"]); // Q17; box-shadow is the focus ring (P5)
 const passthru = new Set(["none", "inherit", "initial", "unset"]);
 const easeWords = new Set(["ease", "ease-in", "ease-out", "ease-in-out", "linear", "step-start", "step-end", "allow-discrete", "normal"]);
 const tierEase = { "--dur-instant": "--ease-out", "--dur-responsive": "--ease-responsive", "--dur-expressive": "--ease-expressive",

@@ -277,7 +277,7 @@ export function Spread({ label, items, scale = "linear", domain, ticks, formatVa
                 key={`${i}-${item.label}`}
                 className="col-span-full grid min-h-6 grid-cols-subgrid items-center @max-[28rem]:min-h-0 @max-[28rem]:gap-y-2"
               >
-                <span className="col-start-[label] row-start-1 block min-w-0 truncate text-small text-fg">
+                <span className="col-start-[label] row-start-1 block min-w-0 truncate text-small [font-weight:var(--weight)] text-fg">
                   {item.label}
                   <span className="sr-only">: </span>
                 </span>

@@ -528,7 +528,7 @@ export function DotPlot({
               {active !== null && (
                 <Tip key="tip" cx={g.x0 + active * PITCH + PITCH / 2} markTop={g.cy - stackHalf(active) - NEAR} height={height} width={width}>
                   <span className="text-fg-muted">{rangeOf(active)}</span>
-                  <span className="font-mono text-caption tabular-nums">{countOf(active)}</span>
+                  <span className="font-mono text-caption [font-weight:var(--weight)] tabular-nums">{countOf(active)}</span>
                 </Tip>
               )}
             </AnimatePresence>

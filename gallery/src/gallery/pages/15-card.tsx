@@ -9,8 +9,7 @@ export const meta: PageMeta = {
   id: "card",
   title: "Card",
   order: 15, group: "Layout",
-  summary:
-    "A raised surface for one independent object that links somewhere. A linked card is one real link stretched over the card; hover moves its fill one step, and nothing lifts, grows or scales.",
+  summary: "A raised surface for one object that links somewhere. Hover moves its fill one step, and nothing lifts or grows.",
   tiers: ["instant"],
 };
 
@@ -138,7 +137,7 @@ function ClientCardsDemo() {
               {/* A second control inside a linked card sits above the stretched link with relative. */}
               <a
                 href={site.url}
-                className="relative inline-flex h-control-sm items-center gap-1 text-caption text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
+                className="relative inline-flex h-control-sm items-center gap-1 text-caption [font-weight:var(--weight)] text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
               >
                 Visit site
                 <ArrowUpRightIcon />

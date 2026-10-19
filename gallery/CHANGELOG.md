@@ -4,9 +4,11 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-19 · Staples and versions
+## 2026-10-19 · Staples, versions and Frame 103
 
 Six staples, and from this release every item carries its version, in the registry and at the top of each file it installs.
+
+Then taste profile v0.12, from Nick's own drawing of a primary button (Frame 103): one weight, 550, for every text in both faces; controls at 6px and surfaces at 10px; and the primary action as drawn, deep navy into cobalt inside a 1px deep blue edge, with no glow. Then v0.13: a tag is a label, not a control, so it sits flat. Then v0.14, from Nick's pick in the litt lab: true gray neutrals, more space between sections, and tags in the sans. Then v0.15: a lighter primary in the light theme. Then v0.16: body text a step lighter, so headings lead, and sidebar categories set off by a hairline. Then v0.17: two weights, 450 for text you read and 550 for headings and the interface. Items installed earlier today carry the same version, so install them again with `--overwrite`.
 
 - **added** `combobox`: type to find one value, or several, in a long list.
 - **added** `date-picker`: Calendar and DatePicker, a day or a range as YYYY-MM-DD strings.
@@ -16,6 +18,21 @@ Six staples, and from this release every item carries its version, in the regist
 - **added** `context-menu`: the Menu at the pointer, by right-click, Shift+F10 or a hold on touch.
 - **changed** `menu`: its rows also work inside a ContextMenu. Nothing changes for an existing Menu.
 - **changed** `icons`: ChevronLeftIcon.
+- **breaking** `litt`: the one weight is 550 (`--litt-weight`), controls are 6px and surfaces 10px, and the primary action's fill is Frame 103 (`--litt-accent-fill` from `--litt-accent-top` into `--litt-accent`, edged in `--litt-accent-edge`). `--litt-glow`, `--litt-glow-strength` and `shadow-litt-glow` are gone, and every `text-litt-` step now sets the weight.
+  Migrate: delete `shadow-litt-glow`; a primary action is `Button variant="primary"`, or by hand `bg-litt-accent bg-(image:--litt-accent-fill) shadow-[inset_0_0_0_1px_var(--litt-accent-edge)] text-litt-accent-fg`. In litt UI drop `font-normal` (it is 400 in your app): the `text-litt-` step carries the weight, and where there is none write `[font-weight:var(--litt-weight)]`.
+- **changed** `button`: the primary is Frame 103, navy into cobalt inside a 1px deep blue edge with an off-white label, and no glow or top highlight. Hover brightens both ends of the fill; a disabled primary drops it.
+- **changed** `base-styles`: loads the variable builds, `@fontsource-variable/hanken-grotesk` and `@fontsource-variable/geist-mono`, so weight 550 is drawn rather than synthesized. The static `@fontsource/hanken-grotesk` and `@fontsource/geist-mono` can be uninstalled if nothing else imports them.
+- **changed** `avatar`, `code-block`, `composer`, `input`, `kbd`, `message`, `segmented`, `select`, `table`, `tabs`, `thinking`, `token-input`: text renders at the one weight, 550; what set `font-normal` takes `--litt-weight` instead, so it holds in any app.
+- **changed** `motion`: the Playground's locked preset follows the taste profile (v0.13), and its radius choices are 0, 4, 6 and 8.
+- **changed** `tag`, `token-input`: a tag is a flat `--litt-surface-2` fill with no hairline and no top highlight, so it no longer looks like a button, and it is set in the sans; a hue tag keeps only its tint. Token input's tokens and its "+N" chip follow.
+- **changed** `litt`: the neutrals are true gray at the same lightness steps (canvas, surfaces, lines, text, glass and shadow ink), so contrast is unchanged. `--litt-section-y` is 96 / 128 / 160, `--litt-gutter` 16 / 32 / 48, `--litt-grid-gap` 32 from 640px, and `--litt-container-content` 1000px.
+- **changed** `litt`: the light theme's primary fill is lighter, a mid cobalt rather than navy (`--litt-accent-top`, `--litt-accent`, their hovers and `--litt-accent-edge`), with a white label (`--litt-accent-fg`). The dark theme is unchanged.
+- **changed** `litt`: body text (`--litt-fg-muted`) is a clear step lighter in both themes, so headings in `--litt-fg` lead; it still reaches 6.7:1 or more on every surface.
+- **changed** `app-shell`: a SidebarNav heading sits over its links with a hairline under it, smaller and quieter than the links, and groups sit 32px apart, so each category reads as its own group.
+- **changed** `litt`: two weights. `--litt-weight` (550) is the interface and `--litt-weight-text` (450) is text you read; `text-litt-reading`, `-body`, `-small` and `-caption` now carry 450 and the heading steps 550.
+  Migrate: text you wrote with a small `text-litt-` step reads at 450 now. Where it names something or is pressed (a label, a nav link, a name in a row), add `[font-weight:var(--litt-weight)]`.
+- **changed** `base-styles`: the page's text is 450, with headings, `th`, `b` and `strong` at 550.
+- **changed** `app-shell`, `avatar`, `bar-list`, `breadcrumb`, `breakdown`, `button`, `callout`, `card`, `chart`, `checkbox`, `code-block`, `combobox`, `command-menu`, `composer`, `date-picker`, `dot-plot`, `form`, `gauge`, `header`, `heatmap`, `input`, `kbd`, `list`, `menu`, `message`, `pad`, `pagination`, `plan`, `segmented`, `select`, `slider`, `spread`, `stat`, `states`, `switch`, `table`, `tabs`, `tag`, `timeline`, `toast`, `token-input`, `tool-call`: interface text (titles, labels, nav, tabs, rows you pick, tags, names and key values) sets the 550 interface weight itself; descriptions, captions, cells, typed values and message bodies read at 450.
 
 ## 2026-10-18 · Agents
 

@@ -8,10 +8,9 @@
  *   the whole field while its text input is focus-visible. An invalid field turns the edge to
  *   --danger. Like the Input it has no hover. Padding sits on the 4px grid, so the field grows
  *   by whole token rows (24px tokens, 4px apart) as they wrap.
- * - Token: the Tag's look (24px, Geist Mono at the caption size, surface-1, hairline and top
- *   highlight), because a token is data, with a 24px remove button that grows to a 44px hit
- *   area on coarse pointers through an invisible ::before. The "+N" token is a surface-2 chip
- *   with no button. The placeholder shows only while there are no tokens.
+ * - Token: the Tag's look (24px, the sans at the caption size, a flat surface-2 fill), because
+ *   a token is a value, not a control, with a 24px remove button that grows to a 44px hit area on coarse pointers
+ *   through an invisible ::before. The "+N" token is the same flat chip with no button. The placeholder shows only while there are no tokens.
  * - Adding: Enter, a comma and blur commit the typed text, and a paste is split on commas,
  *   semicolons and line breaks. Values are trimmed, and empty ones and case-insensitive
  *   duplicates are ignored. A value that `validate` rejects stays in the input with its message
@@ -70,7 +69,7 @@ export type TokenInputProps = {
 /* The field: the Input's fill, edge, focus, error and disabled looks, on a wrapper that holds
    the tokens. The ring follows the text input only (the remove buttons draw their own). */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 font-normal text-fg " +
+  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 [font-weight:var(--weight-text)] text-fg " +
   "shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
@@ -287,7 +286,7 @@ export function TokenInput({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label id={labelId} htmlFor={inputId} className={"text-small [font-weight:var(--weight)] " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
 
@@ -349,7 +348,7 @@ export function TokenInput({
                   key="more"
                   layout="position"
                   aria-label={`${more} more`}
-                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 font-mono text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]"
+                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 text-caption [font-weight:var(--weight)] text-fg-muted"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, transition: exit }}

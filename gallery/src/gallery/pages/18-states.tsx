@@ -11,8 +11,7 @@ export const meta: PageMeta = {
   id: "states",
   title: "Empty and loading states",
   order: 15.4, group: "Layout",
-  summary:
-    "What a view says when it has nothing yet, is waiting or has failed. Empty offers one action, a skeleton keeps the content's exact size, and an error says how to retry. The states are static, so only the list's own entrance and the retry button move.",
+  summary: "What a view says when it is empty, waiting or failed. Skeletons keep the content's exact size and never shimmer.",
   tiers: ["instant", "expressive"],
 };
 
@@ -104,7 +103,7 @@ function FirstProject() {
 function DeploysCard() {
   return (
     <section aria-label="Deploys" className="litt-raised grid content-start self-start rounded-surface">
-      <h3 className="border-b border-line px-6 py-4 text-small text-fg">Deploys</h3>
+      <h3 className="border-b border-line px-6 py-4 text-small [font-weight:var(--weight)] text-fg">Deploys</h3>
       <div className="p-6">
         <Empty bare title="No deploys yet." action={<Button iconRight={<ArrowUpRightIcon />}>Open in Framer</Button>}>
           Publish from Framer and each deploy is listed here.
@@ -269,7 +268,7 @@ function SyncFailed() {
   return (
     <section aria-label="Framer sync" className="litt-raised grid rounded-surface">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-line px-6 py-4">
-        <h3 className="text-small text-fg">Framer sync</h3>
+        <h3 className="text-small [font-weight:var(--weight)] text-fg">Framer sync</h3>
         <p className="text-caption text-fg-subtle">Last synced 12 min ago</p>
       </div>
       <div className="p-6">

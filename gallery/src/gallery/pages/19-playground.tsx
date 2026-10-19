@@ -32,8 +32,7 @@ export const meta: PageMeta = {
   title: "Playground",
   order: 19,
   tune: true,
-  summary:
-    "Turn the dials and the components on this page follow. Every other page always runs the locked values from the tokens.",
+  summary: "Turn the dials and the components on this page follow. Every other page runs the locked values from the tokens.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -43,7 +42,7 @@ function Row({ id, title, tiers, phone, aside, children }: { id: string; title: 
   return (
     <section aria-labelledby={`sample-${id}`} className="grid gap-4 border-t border-line py-8 first:border-t-0 first:pt-0 last:pb-0 md:grid-cols-[10rem_minmax(0,1fr)] md:gap-8">
       <div className="grid content-start gap-3">
-        <h2 id={`sample-${id}`} className="text-body text-fg">{title}</h2>
+        <h2 id={`sample-${id}`} className="text-body [font-weight:var(--weight)] text-fg">{title}</h2>
         <div className="flex flex-wrap gap-2">
           {tiers.map((t) => (
             <TierChip key={t} tier={t} />

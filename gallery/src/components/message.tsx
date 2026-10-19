@@ -9,13 +9,14 @@
  *   --space-4, text in --fg, at most 80% of the column (85% on compact screens) and 32rem. No tail and no accent
  *   fill: the accent stays on Send. Files the person sent sit above it.
  * - Who is speaking: the side says it. Each turn is an `article` named by a heading that is visually hidden ("You",
- *   or the agent's name). A `name` shows that heading instead, at the small size in --fg (never colored), with an
- *   optional sm Avatar beside it, for a thread with more than one agent or person.
+ *   or the agent's name). A `name` shows that heading instead, at the small size and the interface weight (550) in
+ *   --fg (never colored), with an optional sm Avatar beside it, for a thread with more than one agent or person.
+ *   Both turns' words are at the text weight (450).
  * - MessageText styles what a markdown renderer puts inside a turn, with no markdown library: paragraphs --space-3
- *   apart, headings at the body size in --fg, lists with the marker in --fg-subtle, links in --accent-text, inline
- *   code in the mono on fg 6% at the control radius, a `pre` as a quiet mono block on --surface-2, a blockquote
- *   with no rail, and strong text in --fg at weight 400 (P9). It never bolds, and it never italicises, because the
- *   type is one face at one weight.
+ *   apart, headings at the body size and the interface weight (550) in --fg, lists with the marker in --fg-subtle,
+ *   links in --accent-text, inline code in the mono on fg 6% at the control radius, a `pre` as a quiet mono block on
+ *   --surface-2, a blockquote with no rail, and strong text in --fg at the interface weight (P9). It never uses the
+ *   browser's bold, and it never italicises, because the type is one face at two weights.
  * - MessageActions: sm ghost icon-only buttons with tooltips (Copy swaps to a check and a polite live region says
  *   "Copied", Retry, and the caller's own). They always show under the latest turn, on hover and focus-within under
  *   older ones, and always on a coarse pointer, where they grow to 44px. A streaming turn has none.
@@ -304,7 +305,7 @@ export function Message({
     name !== undefined && name !== null && name !== false ? (
       <div className={`flex items-center gap-2 ${person ? "justify-end" : ""}`}>
         {avatar}
-        <Heading id={headingId} className="text-small text-fg">
+        <Heading id={headingId} className="text-small [font-weight:var(--weight)] text-fg">
           {name}
         </Heading>
       </div>
@@ -391,17 +392,19 @@ export function Message({
 /* ----------------------------------------------------------------- message text */
 
 /* What a markdown renderer puts inside an answer. Every rule is a descendant selector, so any renderer works, and each
-   color, size and radius is a litt token. Weight stays 400: the base layer resets headings, b, strong and th. */
+   color, size and radius is a litt token. Text is at the text weight (450) from its size class; headings, strong and
+   th take the interface weight (550). */
 const PROSE = [
   "flex min-w-0 max-w-[68ch] flex-col gap-3 text-body [&>*]:min-w-0 [&_p]:text-pretty",
-  /* Headings: the body size in --fg. The step in color is the hierarchy, as everywhere. */
-  "[&_:is(h1,h2,h3,h4)]:text-body [&_:is(h1,h2,h3,h4)]:text-fg [&>:is(h1,h2,h3,h4):not(:first-child)]:mt-2",
+  /* Headings: the body size at the interface weight in --fg. The size class would set the text weight, so the
+     weight is set again after it. */
+  "[&_:is(h1,h2,h3,h4)]:text-body [&_:is(h1,h2,h3,h4)]:[font-weight:var(--weight)] [&_:is(h1,h2,h3,h4)]:text-fg [&>:is(h1,h2,h3,h4):not(:first-child)]:mt-2",
   /* Lists: the marker steps back to --fg-subtle. A nested list tucks under its item. */
   "[&_ul]:list-disc [&_ol]:list-decimal [&_:is(ul,ol)]:ps-6 [&_li+li]:mt-1 [&_li::marker]:text-fg-subtle [&_li_:is(ul,ol)]:mt-1",
   /* Links: accent text, always underlined, so color is never the only mark. */
   "[&_a]:text-accent-text [&_a]:underline [&_a]:decoration-[color-mix(in_oklab,var(--accent-text)_40%,transparent)] [&_a]:underline-offset-2 [&_a:hover]:decoration-accent-text",
-  /* Strong and emphasis step to --fg. No bold and no italic: one face at one weight (P9). */
-  "[&_:is(strong,b)]:font-normal [&_:is(strong,b)]:text-fg [&_:is(em,i)]:not-italic [&_:is(em,i)]:text-fg",
+  /* Strong and emphasis step to --fg. Strong takes the interface weight, never the browser's bold, and nothing is italic (P9). */
+  "[&_:is(strong,b)]:[font-weight:var(--weight)] [&_:is(strong,b)]:text-fg [&_:is(em,i)]:not-italic [&_:is(em,i)]:text-fg",
   /* Inline code: the mono on fg 6% at the control radius. A pre resets it below. */
   "[&_code]:rounded-control [&_code]:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-small [&_code]:text-fg [&_code]:box-decoration-clone [&_code]:[overflow-wrap:anywhere]",
   /* A pre: a quiet mono block on --surface-2. It wraps, so it never needs a scrollbar. CodeBlock is for code to read or copy. */

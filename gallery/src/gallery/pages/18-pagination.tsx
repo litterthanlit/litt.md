@@ -8,8 +8,7 @@ export const meta: PageMeta = {
   id: "pagination",
   title: "Pagination",
   order: 17.1, group: "Data",
-  summary:
-    "Previous and next for a table that shows one page of many. The range comes first, in words and mono. Page numbers show only when the row is wide enough, and the buttons at either end disable. Nothing about it moves; the rows it pages are the table's job.",
+  summary: "Previous and next for a table showing one page of many. The range comes first, and page numbers show when they fit.",
   tiers: ["instant"],
 };
 

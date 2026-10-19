@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   title: "Glass header",
   order: 14, group: "Layout",
   summary:
-    "A sticky glass bar with a wordmark, a nav and your actions. The page blurs under it as it scrolls. When the bar is narrow, the links fold behind a menu button instead of squeezing.",
+    "A sticky glass bar with a wordmark, a nav and your actions. On a narrow bar the links fold behind a menu button.",
   tiers: ["instant", "responsive"],
 };
 
@@ -188,7 +188,7 @@ function StudioPage() {
   return (
     <div className="grid gap-16 px-gutter pt-16 pb-24">
       <div className="grid max-w-[46ch] gap-4">
-        <p className="text-caption text-fg-subtle">Independent design studio</p>
+        <p className="text-caption [font-weight:var(--weight)] text-fg-subtle">Independent design studio</p>
         <h3 className="text-h1 text-fg text-balance">Framer sites that feel finished on day one.</h3>
         <p className="text-reading text-fg-muted">
           Litt Studio designs and builds sites, identities and launch pages for teams that care how it all fits together.
@@ -204,7 +204,7 @@ function StudioPage() {
                 <ProjectCover name={w.cover} />
               </div>
               <div className="grid gap-1">
-                <p className="text-body text-fg">{w.name}</p>
+                <p className="text-body [font-weight:var(--weight)] text-fg">{w.name}</p>
                 <p className="text-small text-fg-subtle">{w.client}</p>
               </div>
             </li>
@@ -217,7 +217,7 @@ function StudioPage() {
         <ul className="grid gap-6 @min-[48rem]:grid-cols-3">
           {SERVICES.map(([title, text]) => (
             <li key={title} className="grid content-start gap-2 border-t border-line pt-4">
-              <p className="text-body text-fg">{title}</p>
+              <p className="text-body [font-weight:var(--weight)] text-fg">{title}</p>
               <p className="text-small text-fg-subtle">{text}</p>
             </li>
           ))}
@@ -229,7 +229,7 @@ function StudioPage() {
         <ul>
           {JOURNAL.map(([title, date]) => (
             <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
-              <span className="text-body text-fg">{title}</span>
+              <span className="text-body [font-weight:var(--weight)] text-fg">{title}</span>
               <span className="shrink-0 font-mono text-caption text-fg-subtle">{date}</span>
             </li>
           ))}

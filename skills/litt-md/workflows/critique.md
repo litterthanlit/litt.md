@@ -16,7 +16,7 @@ Critique what is there. When something can't be judged from the input (motion in
 Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason that points at a specific element.
 
 **A. Signature (light and material)**
-- [ ] **P1** At most one accent fill in the view, on the primary action. Checkboxes, radios and switches are `--fg`, not accent. The accent otherwise appears as light (`--light`, glow, focus).
+- [ ] **P1** At most one accent fill in the view, on the primary action. Checkboxes, radios and switches are `--fg`, not accent. The primary is Frame 103's gradient inside its deep blue edge, never flat and never glowing. The accent otherwise appears as light (`--light`, focus).
 - [ ] **P2** One light source, from the top. Highlights only on top edges.
 - [ ] **P3** Glass only on floating surfaces, with content behind it. No glass on glass.
 - [ ] **P4** No drop shadow with an offset. Cards in the flow have no shadow; floating surfaces use a zero-offset glow plus a 1px ring.
@@ -24,19 +24,19 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 
 **B. Structure**
 - [ ] **P6** Spacing on the 8px grid (4px inside components). 1px hairlines. Tracking tightens on large type.
-- [ ] **P7** One idea per section. Section spacing near 128 / 96 / 64. Left-aligned and asymmetric by default.
-- [ ] Radius is on the scale: 4px controls, 8px surfaces (a surface is a control plus the 4px inset), pills only on avatars, icon-only buttons and switches (tags and chips are 4px). No `rounded-lg`-style classes.
+- [ ] **P7** One idea per section. Section spacing near 160 / 128 / 96, gutters 48 / 32 / 16. The split by default: the title in a left column beside the content.
+- [ ] Radius is on the scale: 6px controls, 10px surfaces (a surface is a control plus the 4px inset), pills only on avatars, icon-only buttons and switches (tags and chips are 6px). No `rounded-lg`-style classes.
 - [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero CTAs and a page form's submit are lg; a dialog's fields and actions are md.
 - [ ] Cards used only for independent objects, not as the default layout.
 
 **C. Themes**
 - [ ] **P8** Both themes exist and each is tuned (material strengths differ). Neither is a mechanical inversion of the other.
-- [ ] Neutrals are cool (blue-gray), not warm and not pure gray.
+- [ ] Neutrals are true gray: not blue-gray, not warm.
 
 **D. Type**
 - [ ] Hanken Grotesk and Geist Mono only. Mono used only for code, keys and data.
 - [ ] Hierarchy comes from scale and color. One display size per page, and nothing larger than 40.
-- [ ] **P9** Nothing above weight 400: no medium, semibold or bold, including headings and buttons.
+- [ ] **P9** Two weights: running text at 450; headings, buttons, labels, nav, tags and names at 550. Nothing else, no semibold or bold.
 - [ ] Body text 13px or larger. Long text at a 65ch measure or narrower.
 
 **E. Motion** (`n/a` for static input)

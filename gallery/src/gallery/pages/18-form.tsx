@@ -15,8 +15,7 @@ export const meta: PageMeta = {
   title: "Forms",
   order: 15.5,
   group: "Layout",
-  summary:
-    "How the fields make a page: one left-aligned column, sections on a settings page, and an error summary that takes focus when a submit fails. Fields and link colors answer on the instant tier, and the saved toast is the view's one expressive moment.",
+  summary: "How fields make a page, in one left-aligned column or in sections. A failed submit moves focus to an error summary.",
   tiers: ["instant", "expressive"],
 };
 

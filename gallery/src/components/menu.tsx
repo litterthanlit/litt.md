@@ -172,14 +172,14 @@ function useRowView() {
 /* ------------------------------------------------------------------ rows */
 
 const row =
-  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
+  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small [font-weight:var(--weight)] outline-none " +
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)]";
 const tone = "text-fg-muted data-[highlighted]:text-fg pointer-coarse:active:text-fg";
 const toneDanger = "text-danger";
 /** The group label row, and the caption that names a submenu's list. */
-const labelRow = "flex h-control-sm items-center px-3 text-caption text-fg-subtle";
+const labelRow = "flex h-control-sm items-center px-3 text-caption [font-weight:var(--weight)] text-fg-subtle";
 
 /** The fixed 16px cell at the start of every row. */
 function Cell({ children }: { children?: ReactNode }) {
@@ -188,7 +188,7 @@ function Cell({ children }: { children?: ReactNode }) {
 
 /** A hint, so it is for a keyboard: a finger has no use for it, and it hides on coarse screens. */
 function Shortcut({ children }: { children: ReactNode }) {
-  return <span className="ml-auto shrink-0 pl-4 font-mono text-caption text-fg-subtle pointer-coarse:hidden">{children}</span>;
+  return <span className="ml-auto shrink-0 pl-4 font-mono text-caption [font-weight:var(--weight)] text-fg-subtle pointer-coarse:hidden">{children}</span>;
 }
 
 type ItemProps = {

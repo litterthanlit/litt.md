@@ -18,7 +18,7 @@
 .tier-ok {
   border-radius: var(--litt-radius-surface);
   box-shadow: var(--litt-shadow-float), 0 0 0 1px var(--litt-line);
-  font-weight: 400;
+  font-weight: var(--litt-weight);
   font-size: var(--litt-type-body-size);
   color: var(--litt-fg);
   background: color-mix(in oklab, var(--litt-fg) 6%, transparent);
@@ -28,6 +28,6 @@
   @apply rounded-lg bg-litt-surface-1; /* expect: radius */
 }
 .tier-apply-ok {
-  @apply rounded-litt-surface bg-litt-surface-1 text-litt-body font-normal shadow-litt-float;
+  @apply rounded-litt-surface bg-litt-surface-1 text-litt-body shadow-litt-float;
 }
 @keyframes rise { from { opacity: 0 } to { opacity: 1 } }

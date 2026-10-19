@@ -6,8 +6,7 @@ export const meta: PageMeta = {
   title: "Gauge",
   order: 17.5,
   group: "Data",
-  summary:
-    "One value against a range, drawn as a semicircle of fine ticks with the figure in the opening. The ticks up to the value take the foreground or one data hue, and the last one is longer to mark the value. It is static, like the meter.",
+  summary: "One value against a range, as a half circle of fine ticks with the figure inside. A longer tick marks the value.",
   tiers: [],
 };
 

@@ -17,7 +17,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 **Families.** `--font-sans` (Hanken Grotesk) for everything. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings, token names and tags. No third family, ever.
 
-**Weight (P9).** One weight: `--weight` (400) for everything, including display, headings, labels, buttons and the wordmark. Medium, semibold and bold read too wide and are not part of the system. `tokens.css` resets the bold browser defaults (`h1`–`h6`, `b`, `strong`, `th`) and turns off faux bold. Only the 400 faces need to load.
+**Weight (P9).** Two weights. `--weight-text` (450) for text you read: paragraphs, descriptions, captions, help and error text, table cells, message bodies, code in a block. `--weight` (550) for the interface: display and headings, buttons, labels, nav, tabs, menu rows, tags, kbd, table headers, the name in a list row, key values and the wordmark. 550 read too heavy in running text (v0.17) and 400 too thin; semibold and bold read too wide. `tokens.css` resets the bold browser defaults (`h1`–`h6`, `b`, `strong`, `th`) and turns off faux bold. Load both faces as variable fonts (Google Fonts `wght@450;550`, or `@fontsource-variable/hanken-grotesk` and `@fontsource-variable/geist-mono`), because 450 and 550 fall between the static files. In Tailwind the heading sizes carry 550 and `text-reading`, `text-body`, `text-small` and `text-caption` carry 450; interface text at a small size adds `[font-weight:var(--weight)]`. `font-normal` is not a litt weight.
 
 **Scale.** Each step bundles size, leading and tracking (`--type-<step>-size`, `-leading`, `-tracking`). Tracking tightens as size grows (P6).
 
@@ -45,7 +45,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 ## 2. Color
 
-**Neutrals** sit on one OKLCH hue (about 262, a cool blue-gray). Every role exists in both themes.
+**Neutrals** are true gray, with no hue (v0.14; until then a cool blue-gray). The accent and the data hues are the only color. Every role exists in both themes.
 
 | Role | Variables | Use |
 |---|---|---|
@@ -61,12 +61,12 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 **Accent per project.** Pick the accent at project start from the subject: the client's mark, the product's domain, or the material it sells. Set it in both themes so that:
 - `--accent`, the fill, reaches at least 3:1 on `--canvas`, so the primary action stands out;
-- `--accent-fg` reaches at least 4.5:1 on `--accent`;
+- `--accent-fg` reaches at least 4.5:1 on `--accent` and on `--accent-top`, so the label holds at both ends of the primary's fill;
 - `--accent-text`, the accent as text (links), reaches at least 4.5:1 on `--canvas`. In light it is usually the accent itself. In dark it is usually lighter than the fill, because a fill dark enough for white text is too dark to read as text on a dark canvas. Never use `--accent` as a text color.
 
-Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. In both themes the primary action is a deep cobalt with white text, as in the reference it came from. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
+Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt, the one cool note on gray. In both themes the primary action is Nick's Frame 103: a deeper blue at the top into cobalt (`--accent-fill`), a 1px deep blue edge (`--accent-edge`) and a near-white label, with no glow. Since v0.15 the light theme's fill is a clear mid cobalt rather than navy, with a white label. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
 
-**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
+**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light` and `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
 
 **Data hues (P11).** Five hues carry data, in a fixed order: blue, amber, teal, violet, rose. The first series or category takes blue, the second amber, and so on; a hue is never cycled, and a sixth series folds into "Other" or a second chart. Each hue has three tones:
 - the mark tone (`--data-blue`) for bars, dots, lines, heat cells and gauge ticks: at least 3:1 on canvas and every surface;
@@ -83,19 +83,19 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 
 **Control heights (P10).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero CTAs and a page form's submit). A dialog is compact, so its fields and actions are md. A field is lg only when it shares a row with an lg button (the inline form). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 15 / 16). Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
 
-**Section rhythm (P7).** `--section-y` is the distance between sections: 64 mobile, 96 from 640px, 128 from 1024px. Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
+**Section rhythm (P7).** `--section-y` is the distance between sections: 96 mobile, 128 from 640px, 160 from 1024px (v0.14, Nick's "Airy"). Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
 
-**Grid.** 12 columns, `--grid-gap` between them (16 mobile, 24 from 640px), and `--gutter` page padding (16 / 24 / 32).
+**Grid.** 12 columns, `--grid-gap` between them (16 mobile, 32 from 640px), and `--gutter` page padding (16 / 32 / 48).
 
 **Breakpoints.** 640 (`40rem`), 1024 (`64rem`), 1280 (`80rem`). Design mobile-first.
 
 **Containers.**
 - `--container-reading` (640) for articles and forms.
-- `--container-content` (1080) for most pages.
+- `--container-content` (1000) for most pages. It narrowed from 1080 in v0.14, so a page keeps air at its sides.
 - `--container-wide` (1280) for marketing and app shells.
 
 **Composition defaults.**
-- **Asymmetric split.** A 3/9 split: section label in columns 1–3 (sticky on desktop), content in columns 4–12. This is the default section layout.
+- **Asymmetric split.** A 3/9 split: the section's title (and a line under it) in columns 1–3, sticky on desktop, content in columns 4–12. This is the default section layout (P7); it stacks on phones, title first.
 - **Hero.** Copy in columns 1–5, the visual in columns 7–12, with column 6 left empty as air. On mobile, the copy stacks above the visual.
 - **One idea per section.** One headline-level statement per section. If a section needs two, it is two sections.
 - **Alignment.** Left-aligned by default. A centered layout is allowed only for a single short statement (a closing call to action or a quote), at most once per page.
@@ -108,11 +108,11 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 
 | Variable | Value | Use |
 |---|---|---|
-| `--radius-control` | 4px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
-| `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
+| `--radius-control` | 6px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
+| `--radius-surface` | 10px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
 | `--radius-pill` | 999px | Avatars, icon-only buttons and switches. Radio marks and slider thumbs are circles |
 
-**Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
+**Concentric.** A surface is the control radius plus the inset around it: 6 + 4 = 10. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 6px. There are no other radii: no 4, 8, 12 or 16. Nick set 6px from Frame 103 (v0.12).
 
 - `tokens.css` gives `button`, `input`, `select` and `textarea` the control radius, and `.litt-raised` and `.litt-glass` the surface radius. A full-bleed bar like the header sets `border-radius: 0`.
 - Borders are 1px (`--hairline`), drawn as `inset 0 0 0 1px var(--line)` so they don't change layout.

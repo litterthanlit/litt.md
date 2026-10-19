@@ -6,7 +6,7 @@ allowed-tools: Bash(node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs *), Bash
 
 # litt.md
 
-**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface at one weight, cool neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
+**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface at two weights, true gray neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
 
 Skill directory: `${CLAUDE_SKILL_DIR}`. Every path below is relative to it.
 
@@ -42,15 +42,15 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 
 ## The eleven signature rules
 
-1. **P1 Light, not paint.** The accent appears as light (`--light`, `--glow`, `--focus`). At most one accent fill per view, on the primary action. Checkboxes, radios and switches fill with `--fg`.
-2. **P2 One light source.** Light comes from the top. Highlights sit on top edges only.
+1. **P1 Light, not paint.** The accent appears as light (`--light`, `--focus`). At most one accent fill per view, on the primary action, and it is Nick's Frame 103: a deeper blue into cobalt (`--accent-fill`) inside a 1px deep blue edge, never flat and never glowing. Checkboxes, radios and switches fill with `--fg`.
+2. **P2 One light source.** Light comes from the top. Highlights sit on top edges only. The primary fill, bright at its bottom, is the one exception.
 3. **P3 Glass is earned.** Glass only for floating surfaces: header, command menu, popovers, modals, toasts.
 4. **P4 Depth without drop shadows.** Cards stay flat (hairline plus highlight). Floating surfaces get a zero-offset glow plus a 1px ring.
 5. **P5 Material is static.** Glow, grain, gradients and light never animate.
 6. **P6 Precision.** 8px grid (4px inside components), 1px hairlines, tracking tightens as size grows.
-7. **P7 Airy rhythm.** One idea per section, 128 / 96 / 64px between sections, asymmetric and left-aligned by default.
+7. **P7 Airy rhythm.** One idea per section, 160 / 128 / 96px between sections, gutters of 48 / 32 / 16, and the split by default: the title in a left column beside the content.
 8. **P8 Designed, not inverted.** Each theme has its own material strengths. Both are first-class.
-9. **P9 One weight.** Everything at 400, headings and buttons included. Hierarchy comes from size, color and tracking.
+9. **P9 Two weights.** 450 for text you read (`--weight-text`), 550 for headings and anything you act on or that names something (`--weight`). Nothing bolder. Hierarchy comes from size, color and tracking.
 10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them at sm and md; an lg button runs wider (pad 32), so it never reads as a block. Hero CTAs and a page form's submit are lg (56); a dialog's fields and actions are md (44).
 11. **P11 Color carries data.** Beyond the one accent, color only says something: a series, a category, a heat step, a side of a goal, an identity. Five data hues in a fixed order (blue, amber, teal, violet, rose), each with a mark tone, a `-text` tone and a `-tint`. Never on chrome: buttons, surfaces, borders, nav and running text stay neutral. A single quantity stays in the foreground.
 
@@ -61,10 +61,10 @@ Each rule's Check line, the dos and don'ts, and the open questions are in `taste
 These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
-- **Type:** Hanken Grotesk + Geist Mono only, at weight 400 only. Display stops at 40.
-- **Color:** cool neutrals at one OKLCH hue (about 262), monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
+- **Type:** Hanken Grotesk + Geist Mono only, at two weights: 450 for text, 550 for the interface. Display stops at 40.
+- **Color:** true neutral grays, monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
 - **Density:** airy.
-- **Shape:** slight radius. Controls 4px (tags and chips too), surfaces 8px, pills only for avatars, icon-only buttons and switches.
+- **Shape:** slight radius. Controls 6px (tags and chips too), surfaces 10px, pills only for avatars, icon-only buttons and switches.
 - **Motion:** three tiers. Instant 100ms ease-out; responsive spring 200ms, bounce 0; expressive spring 350ms, bounce 0.12, one per view. Exits run at 0.75× and never bounce. Transform and opacity only, plus color fades at instant. On phones the modal is a bottom sheet that drags down to dismiss (`system/foundations.md` section 6).
 
 ## Never, unless Nick asks
@@ -77,29 +77,29 @@ These change only when Nick changes them.
 - An arrow suffix on every link
 - The same uppercase mono eyebrow over every section
 - An accent-colored headline word
-- A radius off the scale (anything but 4px controls, 8px surfaces or a pill)
+- A radius off the scale (anything but 6px controls, 10px surfaces or a pill)
 - Drop shadows with an offset, or shadows on cards in the flow
 - Bounce above 0.12, bounce on exits or the responsive tier, a second expressive moment per view, scroll reveals, parallax, marquee
 - A second typeface
-- Any font weight above 400
+- Any font weight but 550, lighter or heavier
 
 ## Token quick view (values live only in `assets/tokens.css`)
 
 - **Surfaces:** `--canvas`, `--surface-1`, `--surface-2`, `--surface-3`
 - **Lines:** `--line`, `--line-strong`, `--line-control`
 - **Text:** `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled`
-- **Accent:** `--accent` (a fill only), `--accent-hover`, `--accent-fg`, `--accent-text` (links and accent text), `--accent-tint`, `--focus`
+- **Accent:** `--accent` (a fill only), `--accent-hover`, `--accent-fill` and `--accent-fill-hover` (the primary's gradient, from `--accent-top`), `--accent-edge`, `--accent-fg`, `--accent-text` (links and accent text), `--accent-tint`, `--focus`
 - **Status:** `--success`, `--warning`, `--danger`
 - **Data hues (P11):** `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` (words in the hue) and `-tint` (the fill behind them); marks take the plain name
-- **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
+- **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
-- **Type:** `--font-sans`, `--font-mono`, `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
+- **Type:** `--font-sans`, `--font-mono`, `--weight` (550, interface), `--weight-text` (450, text), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
-- **Shape:** `--radius-control` (4), `--radius-surface` (8), `--radius-pill`
+- **Shape:** `--radius-control` (6), `--radius-surface` (10), `--radius-pill`
 - **Controls:** `--control-{sm,md,lg}` (32/44/56), `--control-pad-{sm,md,lg}` (12/16/24), `--button-pad-lg` (32), `--control-text-{sm,md,lg}`, `--control-gap`, `--control-group-gap`
 - **Motion:** `--dur-{instant,responsive,expressive}`, `--dur-exit-{responsive,expressive}`, `--ease-{out,responsive,expressive}`, `--spring-{responsive,expressive}`, `--stagger`, `--travel`, `--exit`, `--press-scale`, `--dismiss-distance`, `--dismiss-velocity`
 
-For Tailwind v4, use `assets/tailwind.css`, which provides `bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `rounded-control`, `rounded-surface`, `rounded-pill`, `ease-responsive`, `shadow-float`, `py-section`, `shadow-glow` and similar. Those plain names are for showing code and for projects without the registry. In a React project you can write to, do not copy the tokens: `npx shadcn@latest add @litt/<item>` (or `https://littmd.vercel.app/r/<item>.json`) installs the tested components and adds the same utilities under `litt-` names, such as `bg-litt-canvas` and `rounded-litt-control`. `workflows/build.md` §3 has the item table and the rules. To see everything rendered, open `assets/specimen.html`.
+For Tailwind v4, use `assets/tailwind.css`, which provides `bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `rounded-control`, `rounded-surface`, `rounded-pill`, `ease-responsive`, `shadow-float`, `py-section`, `bg-(image:--accent-fill)` and similar. Those plain names are for showing code and for projects without the registry. In a React project you can write to, do not copy the tokens: `npx shadcn@latest add @litt/<item>` (or `https://littmd.vercel.app/r/<item>.json`) installs the tested components and adds the same utilities under `litt-` names, such as `bg-litt-canvas` and `rounded-litt-control`. `workflows/build.md` §3 has the item table and the rules. To see everything rendered, open `assets/specimen.html`.
 
 ## Scripts
 

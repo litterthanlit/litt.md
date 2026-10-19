@@ -746,6 +746,7 @@ export async function launchChromium() {
 const MEASURED = [
   "color",
   "background-color",
+  "background-image",
   "border-top-left-radius",
   "border-top-right-radius",
   "font-family",
@@ -1174,8 +1175,11 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("a tap did not run the target's own action");
               const b2 = await button.boundingBox();
               await p2.evaluate(() => {
-                window.__ctxAt = { touch: 0, menu: 0 };
+                // The hold's own timer sends a contextmenu event at the finger; Radix's 700ms hold sends none. Timing that
+                // event checks the hold itself, apart from how long the page takes to draw the menu.
+                window.__ctxAt = { touch: 0, fired: 0, menu: 0 };
                 document.addEventListener("pointerdown", () => (window.__ctxAt.touch = performance.now()), { capture: true, once: true });
+                document.addEventListener("contextmenu", () => (window.__ctxAt.fired = performance.now()), { capture: true, once: true });
                 new MutationObserver((_, obs) => {
                   if (!document.querySelector("[role=menu]")) return;
                   window.__ctxAt.menu = performance.now();
@@ -1190,12 +1194,15 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               await p2.waitForTimeout(500);
               const t = await p2.evaluate(() => window.__ctxAt);
               if (!t.menu) throw new Error("a press and hold did not open the menu");
+              if (!t.fired) throw new Error("the menu opened without the 500ms hold's contextmenu event (Radix's own 700ms hold?)");
+              const fired = Math.round(t.fired - t.touch);
               const after = Math.round(t.menu - t.touch);
-              if (after > 650) throw new Error(`the menu opened ${after}ms into the hold, not at 500ms`);
+              if (fired < 450 || fired > 600) throw new Error(`the hold fired ${fired}ms in, not at 500ms`);
+              if (after > 1000) throw new Error(`the hold fired at ${fired}ms, but the menu took until ${after}ms to appear`);
               if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("the hold also ran the target's own action");
               const still = await p2.getByRole("menu", { name: "Founder landing actions" }).isVisible();
               if (!still) throw new Error("the menu closed when the finger lifted");
-              held = `; a hold opened it after ${after}ms`;
+              held = `; a hold fired at ${fired}ms and the menu was up at ${after}ms`;
             } finally {
               await phone.close();
             }
@@ -2755,10 +2762,10 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (Math.abs(geo.right) > 1 || geo.left < geo.width * 0.3) throw new Error(`the bubble sits ${geo.left.toFixed(0)}px from the left and ${geo.right.toFixed(0)}px from the right of a ${geo.width.toFixed(0)}px turn, not at the right`);
           if (geo.bubbleBg !== surface) throw new Error(`the bubble fill is ${geo.bubbleBg}, not --litt-surface-1 (${surface})`);
           if (geo.bubbleColor !== fg) throw new Error(`the bubble text is ${geo.bubbleColor}, not --litt-fg (${fg})`);
-          if (geo.bubbleRadius !== "8px") throw new Error(`the bubble radius is ${geo.bubbleRadius}, not the 8px surface radius`);
+          if (geo.bubbleRadius !== "10px") throw new Error(`the bubble radius is ${geo.bubbleRadius}, not the 10px surface radius`);
           if (geo.turnBg !== "rgba(0, 0, 0, 0)" || geo.turnShadow !== "none") throw new Error(`the agent's turn has a fill (${geo.turnBg}) or a shadow (${geo.turnShadow})`);
           if (geo.answer !== muted) throw new Error(`the agent's words are ${geo.answer}, not --litt-fg-muted (${muted})`);
-          if (geo.codeBg !== code6 || geo.codeRadius !== "4px" || geo.codeWeight !== "400") throw new Error(`inline code is ${geo.codeBg} at ${geo.codeRadius}, weight ${geo.codeWeight}, not fg 6% at 4px, 400`);
+          if (geo.codeBg !== code6 || geo.codeRadius !== "6px" || geo.codeWeight !== "450") throw new Error(`inline code is ${geo.codeBg} at ${geo.codeRadius}, weight ${geo.codeWeight}, not fg 6% at 6px, 450`);
           const latest = await box.getByRole("group", { name: "Message actions" }).evaluate((g) => getComputedStyle(g.parentElement).opacity);
           if (latest !== "1") throw new Error(`the latest turn's actions have opacity ${latest}, not 1`);
           if ((await box.getByRole("button", { name: "Retry", exact: true }).count()) !== 1) throw new Error("no Retry button in the actions");

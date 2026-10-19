@@ -9,8 +9,7 @@ export const meta: PageMeta = {
   title: "Tool call",
   order: 18.94,
   group: "Agents",
-  summary:
-    "What an agent did, one row per call: a status mark, the action in words, the target in mono and the time, with the input and output folded under it. A group folds a run of calls and closes itself when they finish. An approval asks first, in the flow. Nothing spins: running is a still half circle.",
+  summary: "What an agent did, one row per call with its input and output folded under it. Running is a still half circle.",
   tiers: ["instant", "responsive"],
 };
 

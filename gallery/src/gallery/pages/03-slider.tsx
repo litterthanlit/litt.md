@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   order: 3.6,
   group: "Controls",
   summary:
-    "One value on a range, such as the default animation speed, or a span with two thumbs, such as the builds that took between 20s and 80s. A thin rail, a range filled with the foreground color (never the accent) and round thumbs. The thumbs and the range follow the pointer and the keys at once, with no easing. Only colors fade, on the instant tier.",
+    "One value on a range, or a span with two thumbs. A thin rail, a range filled with the foreground and round thumbs.",
   tiers: ["instant"],
 };
 
@@ -240,7 +240,7 @@ function BuildsDemo() {
       />
       <div className="grid min-w-0 grid-cols-1 content-start gap-4">
         <p aria-hidden="true" className="flex flex-wrap items-baseline justify-between gap-x-4 text-small">
-          <span className="tabular-nums text-fg">{matchText(matches.length)}</span>
+          <span className="tabular-nums [font-weight:var(--weight)] text-fg">{matchText(matches.length)}</span>
           {matches.length > LISTED && <span className="text-caption text-fg-subtle">The {LISTED} newest are listed</span>}
         </p>
         <p role="status" className="sr-only">

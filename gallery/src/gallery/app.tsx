@@ -1,10 +1,30 @@
-/** The gallery shell: glass header, page list and the page. Only the Playground tunes motion. */
+/**
+ * The gallery shell: glass header, page list, the page, and on wide screens a rail with the latest release and who
+ * made it. Only the Playground tunes motion.
+ *
+ * - The page has no light of its own (Nick, 2026-10-19: "remove the gradient from the page"). The header's glass is
+ *   the only material in the chrome.
+ * - The current page is a filled row, as in the app shell's sidebar (surface-2, the text at fg). The fill glides from
+ *   the old row to the new one with layoutId on the responsive tier, as the Tabs indicator does, so moving between
+ *   pages says where you went. Hover is fg at 6% on the instant tier.
+ */
 import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
-import { MotionDialProvider } from "@/motion";
+import { motion } from "motion/react";
+import { MotionDialProvider, useTransition } from "@/motion";
 import { pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { TooltipProvider } from "@/components/tooltip";
-import { MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
+import { Avatar } from "@/components/avatar";
+import { ArrowUpRightIcon, MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
+import changelog from "../generated/changelog.json";
+
+/** Who made litt, for the credit in the rail. One place to change it. */
+const MADE_BY = { name: "Nick", href: "https://github.com/litterthanlit" };
+const REPO_URL = "https://github.com/litterthanlit/litt.md";
+
+/* Header, body and footer share one frame. It widens on xl screens, where the rail takes its column, so the page
+   keeps the width it had beside the sidebar alone. */
+const FRAME = "mx-auto max-w-wide px-gutter xl:max-w-[90rem]";
 
 type ThemeChoice = "system" | "light" | "dark";
 const THEMES = [
@@ -34,7 +54,7 @@ function ThemeSwitch() {
       {THEMES.map(({ id, label, Icon }) => (
         <button
           key={id} type="button" aria-pressed={theme === id} aria-label={label} onClick={() => choose(id)}
-          className="grid h-control-sm min-w-control-sm cursor-pointer place-items-center text-small text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg pointer-coarse:h-control-md pointer-coarse:min-w-control-md sm:px-3"
+          className="grid h-control-sm min-w-control-sm cursor-pointer place-items-center text-small [font-weight:var(--weight)] text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg pointer-coarse:h-control-md pointer-coarse:min-w-control-md sm:px-3"
         >
           <Icon className="sm:hidden" />
           <span className="hidden sm:inline">{label}</span>
@@ -105,24 +125,38 @@ function Shell({ page }: { page: PageEntry | undefined }) {
     document.title = !page || page.id === pages[0]?.id ? "litt.md Gallery" : `${page.title} · litt.md Gallery`;
   }, [page]);
 
-  const navLink = (p: PageEntry, compact = false) => (
-    <a
-      key={p.id}
-      href={`#${p.id}`}
-      aria-current={p.id === page?.id ? "page" : undefined}
-      className={
-        "flex items-center gap-2 text-small transition-colors duration-(--dur-instant) ease-litt " +
-        (compact ? "h-control-sm shrink-0 px-3 " : "h-8 ") +
-        (p.id === page?.id ? "text-fg" : "text-fg-subtle hover:text-fg")
-      }
-    >
-      {p.title}
-    </a>
-  );
+  const enter = useTransition("responsive");
+  const navLink = (p: PageEntry, compact = false) => {
+    const current = p.id === page?.id;
+    return (
+      <a
+        key={p.id}
+        href={`#${p.id}`}
+        aria-current={current ? "page" : undefined}
+        className={
+          "relative isolate flex h-control-sm items-center rounded-control px-3 text-small [font-weight:var(--weight)] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
+          (compact ? "shrink-0 " : "") +
+          (current
+            ? "text-fg"
+            : "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]")
+        }
+      >
+        {current && (
+          <motion.span
+            layoutId={compact ? "nav-current-strip" : "nav-current"}
+            transition={enter}
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 rounded-control bg-surface-2"
+          />
+        )}
+        {p.title}
+      </a>
+    );
+  };
+  const latest = changelog.releases[0];
 
   return (
     <div className="relative min-h-screen">
-      <div aria-hidden="true" className="litt-lit litt-grain litt-grain-fade pointer-events-none absolute inset-x-0 top-0 h-140" />
 
       <button
         type="button"
@@ -134,9 +168,9 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
       {/* Full-bleed, so no corners: .litt-glass carries the surface radius. */}
       <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none">
-        <div className="mx-auto flex h-16 max-w-wide items-center justify-between gap-4 px-gutter">
-          <a href={`#${pages[0]?.id ?? ""}`} className="flex items-baseline gap-2 text-body text-fg">
-            litt.md <span className="text-fg-subtle">Gallery</span>
+        <div className={FRAME + " flex h-16 items-center justify-between gap-4"}>
+          <a href={`#${pages[0]?.id ?? ""}`} className="text-body [font-weight:var(--weight)] text-fg">
+            litt.md
           </a>
           <ThemeSwitch />
         </div>
@@ -146,20 +180,22 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         </div>
       </header>
 
-      <div className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
+      <div className={FRAME + " relative grid gap-x-16 lg:grid-cols-[176px_minmax(0,1fr)] xl:grid-cols-[176px_minmax(0,1fr)_176px]"}>
         <nav aria-label="Components" className="hidden lg:block">
-          {/* Its own scroller, so a short window still reaches the last group. */}
-          <div className="sticky top-16 grid max-h-[calc(100svh-4rem)] content-start gap-6 overflow-y-auto pt-24 pb-12 [scrollbar-width:none]">
+          {/* Its own scroller, so a short window still reaches the last group. The rows reach 12px into the gutter,
+              so their labels line up with the wordmark above. */}
+          <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start gap-10 overflow-y-auto pt-32 pb-12 [scrollbar-width:none]">
             {pageRuns().map((run) =>
               run.group ? (
-                <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid gap-1">
-                  <p id={`nav-${run.group}`} className="pb-1 text-caption text-fg-subtle">
+                <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid gap-px">
+                  {/* A category is a heading over its links, set off by a hairline, smaller and quieter than the links. */}
+                  <p id={`nav-${run.group}`} className="mx-3 mb-2 border-b border-line pb-2 text-caption [font-weight:var(--weight)] text-fg-subtle">
                     {run.group}
                   </p>
                   {run.pages.map((p) => navLink(p))}
                 </div>
               ) : (
-                <div key={run.pages[0]!.id} className="grid gap-1">
+                <div key={run.pages[0]!.id} className="grid gap-px">
                   {run.pages.map((p) => navLink(p))}
                 </div>
               ),
@@ -167,18 +203,61 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           </div>
         </nav>
 
-        <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-16 outline-none lg:pt-24">
+        <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-24 outline-none lg:pt-32">
           {/* Holds the page's room while its chunk loads, so the footer does not jump. */}
           <Suspense fallback={<div aria-hidden="true" className="min-h-[60svh]" />}>
             {page ? <page.Component key={page.id} /> : <p>No pages yet.</p>}
           </Suspense>
         </main>
+
+        {/* The rail: what shipped last, where the code and the agent docs live, and who made it. */}
+        <aside aria-label="About litt.md" className="hidden xl:block">
+          <div className="sticky top-16 grid h-[calc(100svh-4rem)] content-between gap-12 pt-32 pb-12">
+            <div className="grid content-start gap-8">
+              <div className="grid gap-2">
+                <p className="text-caption [font-weight:var(--weight)] text-fg-subtle">Latest release</p>
+                <a href="#changelog" className="group grid gap-1 rounded-control">
+                  <span className="text-small [font-weight:var(--weight)] text-fg text-balance transition-colors duration-(--dur-instant) ease-litt group-hover:text-accent-text">{latest.title}</span>
+                  <span className="font-mono text-caption text-fg-subtle">{latest.version}</span>
+                </a>
+              </div>
+              <ul aria-label="Links" className="grid gap-px">
+                {[
+                  ["Source on GitHub", REPO_URL],
+                  ["Registry", "/r/registry.json"],
+                  ["Docs for agents", "/llms.txt"],
+                ].map(([label, href]) => (
+                  <li key={href}>
+                    <a
+                      href={href}
+                      {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      className="-mx-3 flex h-control-sm items-center justify-between gap-2 rounded-control px-3 text-small [font-weight:var(--weight)] text-fg-subtle transition-[background-color,color] duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg"
+                    >
+                      {label}
+                      <ArrowUpRightIcon aria-hidden="true" className="shrink-0" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {/* The whole credit is the link, so it never relies on color alone inside a line of text. */}
+            <a href={MADE_BY.href} target="_blank" rel="noopener noreferrer" className="group flex w-fit items-center gap-2 rounded-control text-small [font-weight:var(--weight)] text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg-muted">
+              <Avatar name={MADE_BY.name} size="sm" decorative />
+              <span>
+                Made by <span className="text-fg-muted transition-colors duration-(--dur-instant) ease-litt group-hover:text-fg">{MADE_BY.name}</span>
+              </span>
+            </a>
+          </div>
+        </aside>
       </div>
 
       <footer className="border-t border-line">
-        <div className="mx-auto flex max-w-wide flex-wrap justify-between gap-4 px-gutter py-8 text-caption text-fg-subtle">
+        <div className={FRAME + " flex flex-wrap justify-between gap-4 py-8 text-caption text-fg-subtle"}>
           <span>litt.md Gallery v{__GALLERY_VERSION__} · tokens from litt.md v{__LITT_MD_VERSION__}</span>
-          <span>Light and material stay still. Only objects move.</span>
+          <a href={MADE_BY.href} target="_blank" rel="noopener noreferrer" className="group rounded-control transition-colors duration-(--dur-instant) ease-litt hover:text-fg-muted xl:hidden">
+            Made by <span className="text-fg-muted transition-colors duration-(--dur-instant) ease-litt group-hover:text-fg">{MADE_BY.name}</span>
+          </a>
+          <span className="hidden xl:inline">Light and material stay still. Only objects move.</span>
         </div>
       </footer>
     </div>

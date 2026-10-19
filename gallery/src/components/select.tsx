@@ -110,7 +110,7 @@ const FLOATING = ".litt-glass, [data-popover-surface]";
 
 /* The look every field shares (the same as Input): fill, edge, focus, error, disabled. */
 const field =
-  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left font-normal text-fg " +
+  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left [font-weight:var(--weight-text)] text-fg " +
   "data-placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +
@@ -143,7 +143,7 @@ type ListContext = {
 const ListCtx = createContext<ListContext | null>(null);
 
 const row =
-  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
+  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small [font-weight:var(--weight)] outline-none " +
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt " +
   "text-fg-muted data-[state=checked]:text-fg group-data-[quiet=false]/list:data-[highlighted]:text-fg " +
@@ -516,7 +516,7 @@ export function SelectField({
           e.preventDefault();
           document.getElementById(id)?.focus();
         }}
-        className={"text-small " + (rest.disabled ? "text-fg-disabled" : "text-fg")}
+        className={"text-small [font-weight:var(--weight)] " + (rest.disabled ? "text-fg-disabled" : "text-fg")}
       >
         {label}
       </label>

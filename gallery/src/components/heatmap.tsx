@@ -498,7 +498,7 @@ export function Heatmap({
           <Tip key="tip" cx={tip.x} markTop={tip.top} width={tip.width}>
             <div className="flex items-center gap-3">
               <span className="text-fg-muted">{cellName(active.r, active.c)}</span>
-              <span className="font-mono text-caption tabular-nums">{valueText(active.r, active.c)}</span>
+              <span className="font-mono text-caption [font-weight:var(--weight)] tabular-nums">{valueText(active.r, active.c)}</span>
             </div>
           </Tip>
         )}

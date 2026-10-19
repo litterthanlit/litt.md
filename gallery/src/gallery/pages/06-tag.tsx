@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Tag",
   order: 6, group: "Controls",
   summary:
-    "A small mono label at the control radius, with the look of a selected segment, that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
+    "A flat label that names a thing, files it or reports its state. A status tag colors its text, never the fill.",
   tiers: [],
 };
 
@@ -68,7 +68,7 @@ function LabelsDemo() {
       {WORK.map((p) => (
         <li key={p.name} className="grid content-start gap-4">
           <div className="grid gap-1">
-            <span className="text-body text-fg">{p.name}</span>
+            <span className="text-body [font-weight:var(--weight)] text-fg">{p.name}</span>
             <span className="text-caption text-fg-subtle">{p.client}</span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -117,7 +117,7 @@ function DeploysDemo() {
           key={d.site}
           className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-4 py-4 last:border-b-0"
         >
-          <span className="min-w-0 basis-full truncate text-body text-fg sm:flex-1 sm:basis-0">{d.site}</span>
+          <span className="min-w-0 basis-full truncate text-body [font-weight:var(--weight)] text-fg sm:flex-1 sm:basis-0">{d.site}</span>
           <span className="flex sm:w-24">
             <Tag>{d.env}</Tag>
           </span>
@@ -144,7 +144,7 @@ function CategoriesDemo() {
     <ul aria-label="Inbox" className="w-full max-w-2xl">
       {LABELS.map((m) => (
         <li key={m.mail} className="flex items-center gap-4 border-b border-line py-3 last:border-b-0">
-          <span className="w-28 shrink-0 truncate text-small text-fg">{m.from}</span>
+          <span className="w-28 shrink-0 truncate text-small [font-weight:var(--weight)] text-fg">{m.from}</span>
           <span className="w-0 min-w-0 flex-1 truncate text-small text-fg-subtle">{m.mail}</span>
           <Tag hue={m.hue}>{m.name}</Tag>
         </li>
@@ -158,7 +158,7 @@ export default function TagPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Labels"
-        caption="A plain tag is 24px tall at the control radius: a surface-1 fill with an inset hairline and the top highlight, like a selected segment, and Geist Mono at the caption size in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
+        caption="A plain tag is 24px tall at the control radius: a flat surface-2 fill with no edge and no highlight, and the sans at the caption size in fg-muted. Buttons and segments are raised; a tag sits flat, so it names a kind or a platform and never looks like something to press. Nothing moves."
         align="start"
         code="LabelsDemo"
       >
@@ -167,7 +167,7 @@ export default function TagPage() {
 
       <Stage
         title="Status"
-        caption="Only the text takes the status color. The fill stays surface-1, so a row of tags stays calm. There is no dot: every tag says its state in words, and neutral Draft and Idea differ by theirs."
+        caption="Only the text takes the status color. The fill stays a flat surface-2, so a row of tags stays calm. There is no dot: every tag says its state in words, and neutral Draft and Idea differ by theirs."
         code="StatusDemo"
       >
         <StatusDemo />

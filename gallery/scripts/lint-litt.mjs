@@ -16,7 +16,7 @@
  *
  * Put `litt-allow` on a line (in a comment) to exempt it, with a reason.
  *
- * Checks: weight 400, the three radii, zero-offset shadows, no `transition-all`,
+ * Checks: the two weights (450 text, 550 interface), the three radii, zero-offset shadows, no `transition-all`,
  * only transform, opacity and color-family fades, duration and ease classes
  * that pair by tier, no literal timings or easings, no raw or quoted colors.
  *
@@ -113,8 +113,9 @@ function lintGallery(files, root) {
       const fail = (rule, message) => fails.push({ file: rel(f), line: i + 1, rule, message });
       const warn = (rule, message) => warns.push({ file: rel(f), line: i + 1, rule, message });
 
-      if (/\bfont-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "weight above or below 400 (P9): use font-normal");
-      if (/fontWeight\s*:\s*['"]?([1-35-9]\d\d)/.test(line)) fail("weight", "fontWeight other than 400 (P9)");
+      if (/\bfont-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "two weights (P9): the text-* size classes carry 450 for text, headings carry 550; set [font-weight:var(--weight)] on interface text (labels, buttons, nav, names) and [font-weight:var(--weight-text)] where text must stay 450. font-normal is 400 in a host app");
+      const fw = /fontWeight\s*:\s*['"]?(\d{3})/.exec(line);
+      if (fw && fw[1] !== "550" && fw[1] !== "450") fail("weight", "fontWeight other than litt's two weights, 450 for text and 550 for the interface (P9)");
       for (const m of line.matchAll(/\brounded(-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
@@ -128,7 +129,7 @@ function lintGallery(files, root) {
       for (const m of line.matchAll(/(?<![\w-])shadow-([\w-]+|\[[^\]]+\])/g)) {
         const v = m[1];
         if (v.startsWith("[")) { const bad = badShadow(v.slice(1, -1)); if (bad) fail("shadow", `offset shadow "${bad}" (P4): zero-offset glow + ring only`); }
-        else if (!["glow", "float", "modal", "tooltip", "none"].includes(v) && !/^\(/.test(v)) fail("shadow", `shadow-${v}: use shadow-float, shadow-modal, shadow-tooltip or shadow-glow`);
+        else if (!["float", "modal", "tooltip", "none"].includes(v) && !/^\(/.test(v)) fail("shadow", `shadow-${v}: use shadow-float, shadow-modal or shadow-tooltip (the primary action has no glow since v0.12)`);
       }
       if (/\btransition-all\b|transition:\s*['"]?all\b|transitionProperty:\s*['"]all/.test(line)) fail("motion", "transition-all: name the properties (transform, opacity, color, background-color)");
       if (/\b(duration|delay)-(\d+|\[\d)/.test(line)) fail("motion", "literal duration/delay class: use duration-(--dur-instant) or the motion hooks");
@@ -201,7 +202,7 @@ function lintGallery(files, root) {
 /* Names the `litt` registry item adds to a host's Tailwind theme. */
 const HOST_ADVICE = {
   radius: "use rounded-litt-control (controls, rows, inputs, tags, chips), rounded-litt-surface (cards, dialogs) or rounded-litt-pill (avatars, icon-only buttons)",
-  shadow: "use shadow-litt-float, shadow-litt-modal, shadow-litt-tooltip or shadow-litt-glow",
+  shadow: "use shadow-litt-float, shadow-litt-modal or shadow-litt-tooltip",
   type: "use text-litt-display, -h1..h4, -reading, -body, -small or -caption",
   color: "use a litt token (bg-litt-surface-1, text-litt-fg-muted, border-litt-line, bg-litt-accent)",
 };
@@ -255,9 +256,9 @@ function checkDecl(prop, value) {
   if (!v) return out;
   const bare = stripVars(v);
   if (prop === "font-weight") {
-    if (!/^(?:400|normal|inherit|initial|unset|revert)$/i.test(v) && !/^var\(/.test(v)) out.push(["weight", `font-weight: ${v}: weight is 400 (P9), use 400 or var(--litt-weight)`]);
+    if (!/^(?:450|550|inherit|initial|unset|revert)$/i.test(v) && !/^var\(/.test(v)) out.push(["weight", `font-weight: ${v}: litt has two weights (P9), 450 for text and 550 for the interface: use var(--litt-weight-text) or var(--litt-weight)`]);
   } else if (prop === "font") {
-    if (/(?:^|\s)(?:bold|bolder|lighter|[1-35-9]00)(?:\s|$)/i.test(v)) out.push(["weight", `font: ${v}: weight is 400 (P9)`]);
+    if (/(?:^|\s)(?:bold|bolder|lighter|[1-9]00)(?:\s|$)/i.test(v)) out.push(["weight", `font: ${v}: litt has two weights (P9), 450 and 550`]);
   } else if (prop === "font-size") {
     const use = "use var(--litt-type-body-size) (or display, h1..h4, reading, small, caption)";
     if (/^[-+]?[\d.]/.test(v) && !/^0(?:px|rem|em)?$/.test(v) && !/^100%$/.test(v) && v !== "1em") out.push(["type", `font-size: ${v}: ${use}`]);
@@ -516,8 +517,8 @@ function checkToken(t, scope, add, isClassContext) {
   let m;
 
   // weight
-  if (/^font-(thin|extralight|light|medium|semibold|bold|extrabold|black)$/.test(b)) add("weight", `${b}: weight is 400 (P9), use font-normal`);
-  else if ((m = /^font-\[(\d+)\]$/.exec(b)) && m[1] !== "400") add("weight", `${b}: weight is 400 (P9), use font-normal`);
+  if (/^font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)$/.test(b)) add("weight", `${b}: litt has two weights (P9). The text-litt-* sizes carry them (450 text, 550 headings); set [font-weight:var(--litt-weight)] on interface text`);
+  else if ((m = /^font-\[(\d+)\]$/.exec(b)) && m[1] !== "550" && m[1] !== "450") add("weight", `${b}: litt has two weights (P9), 450 and 550: use [font-weight:var(--litt-weight)] or [font-weight:var(--litt-weight-text)]`);
 
   // radius
   if ((m = RADIUS_RE.exec(b))) {
@@ -532,7 +533,7 @@ function checkToken(t, scope, add, isClassContext) {
   if ((b === "shadow" || b === "drop-shadow") && isClassContext()) add("shadow", `${b}: Tailwind's default shadow is offset (P4), ${HOST_ADVICE.shadow}`);
   else if ((m = /^shadow-(.+)$/.exec(b))) {
     const v = m[1];
-    if (/^litt-(?:glow|float|modal|tooltip)$/.test(v) || LITT_COLOR.test(v) || v === "none" || v.startsWith("(")) { /* ok */ }
+    if (/^litt-(?:float|modal|tooltip)$/.test(v) || LITT_COLOR.test(v) || v === "none" || v.startsWith("(")) { /* ok */ }
     else if (v.startsWith("[")) {
       const inner = v.slice(1, -1);
       if (!/^(?:#|color:|rgb|hsl|oklch)/.test(inner)) { const bad = badShadow(inner); if (bad) add("shadow", `offset shadow "${bad}" (P4): zero-offset glow + ring only`); }
@@ -699,7 +700,7 @@ function lintHostFile(file, text, rel) {
 
     // warnings
     if (/(?:textTransform\s*:\s*['"]uppercase['"]|text-transform\s*:\s*uppercase)/.test(line)) warn("type", "uppercase: sentence case everywhere (Q1 is open)");
-    if (/<(?:b|strong)(?=[\s>])(?![^>]*\bfont-normal\b)/.test(line)) warn("weight", "<b>/<strong> render bold unless base-styles is installed: weight is 400 (P9), add font-normal");
+    if (/<(?:b|strong)(?=[\s>])(?![^>]*font-weight:var\(--litt-weight\))/.test(line)) warn("weight", "<b>/<strong> render bold unless base-styles is installed: litt's interface weight is 550 (P9), add [font-weight:var(--litt-weight)]");
     if (/\bonMouse(Enter|Over)\b/.test(line)) warn("other", "onMouseEnter: make sure touch and keyboard users get the same thing");
   });
 

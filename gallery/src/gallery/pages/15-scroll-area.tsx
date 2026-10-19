@@ -10,8 +10,7 @@ export const meta: PageMeta = {
   title: "Scroll area",
   order: 15.45,
   group: "Layout",
-  summary:
-    "A region that scrolls inside the page, never the page itself. The scrolling is the browser's own; only the thumb is litt's, shown while it scrolls or a mouse is over it, and a hairline marks each edge that has more beyond it. Both fade on the instant tier.",
+  summary: "A region that scrolls inside the page, the browser's own way. Litt adds a thumb and a hairline on edges with more.",
   tiers: ["instant"],
 };
 
@@ -105,7 +104,7 @@ function DeployLogDemo() {
     <section aria-labelledby="deploy-log-title" className="litt-raised w-full max-w-xl overflow-hidden rounded-surface">
       <header className="flex items-center justify-between gap-3 px-4 pt-4 pb-3">
         <div className="grid min-w-0 gap-0.5">
-          <h3 id="deploy-log-title" className="truncate text-small text-fg">
+          <h3 id="deploy-log-title" className="truncate text-small [font-weight:var(--weight)] text-fg">
             marlowlabs.com, production
           </h3>
           <p className="text-caption text-fg-subtle">Deployed by Nick, 35s</p>
@@ -142,7 +141,7 @@ const WORK: { name: string; client: string; cover: CoverName }[] = [
 function CoverStripDemo() {
   return (
     <div className="grid w-full min-w-0 gap-4">
-      <h3 className="text-small text-fg">Recent work</h3>
+      <h3 className="text-small [font-weight:var(--weight)] text-fg">Recent work</h3>
       <ScrollArea label="Recent work" orientation="horizontal">
         <ul className="flex gap-4 pb-4">
           {WORK.map((work) => (
@@ -155,7 +154,7 @@ function CoverStripDemo() {
                   <ProjectCover name={work.cover} />
                 </span>
                 <span className="grid gap-0.5 px-0.5 pb-1">
-                  <span className="text-small text-fg">{work.name}</span>
+                  <span className="text-small [font-weight:var(--weight)] text-fg">{work.name}</span>
                   <span className="text-caption text-fg-subtle">{work.client}</span>
                 </span>
               </a>
@@ -202,7 +201,7 @@ function ClientPanelDemo() {
     <div className="grid w-full max-w-2xl gap-4 sm:grid-cols-[16rem_1fr]">
       <aside aria-labelledby="clients-title" className="litt-raised grid content-start overflow-hidden rounded-surface">
         <div className="flex items-baseline justify-between px-4 pt-4 pb-3">
-          <h3 id="clients-title" className="text-small text-fg">
+          <h3 id="clients-title" className="text-small [font-weight:var(--weight)] text-fg">
             Clients
           </h3>
           <span className="font-mono text-caption text-fg-subtle tabular-nums">{CLIENTS.length}</span>
@@ -219,7 +218,7 @@ function ClientPanelDemo() {
                     aria-current={current || undefined}
                     onClick={() => setPicked(c.name)}
                     className={
-                      "flex h-control-md w-full cursor-pointer items-center gap-3 rounded-control px-3 text-left text-small " +
+                      "flex h-control-md w-full cursor-pointer items-center gap-3 rounded-control px-3 text-left text-small [font-weight:var(--weight)] " +
                       "[-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt " +
                       "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
                       "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +

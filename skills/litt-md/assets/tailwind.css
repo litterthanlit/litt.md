@@ -17,13 +17,13 @@
 
 /* Opt-in strict mode for new projects: uncomment to delete Tailwind's default
    palette, radii and weights, so off-system values (bg-blue-500, rounded-lg,
-   font-semibold) don't exist.
+   font-semibold) don't exist. Every text-* size already sets its weight: headings 550, text 450.
 @theme {
   --color-*: initial;
   --radius-*: initial;
   --shadow-*: initial;
   --font-weight-*: initial;
-  --font-weight-normal: 400;
+  --font-weight-normal: var(--weight);
 }
 */
 
@@ -102,18 +102,22 @@
   --text-reading: var(--type-reading-size);
   --text-reading--line-height: var(--type-reading-leading);
   --text-reading--letter-spacing: var(--type-reading-tracking);
+  --text-reading--font-weight: var(--weight-text);
 
   --text-body: var(--type-body-size);
   --text-body--line-height: var(--type-body-leading);
   --text-body--letter-spacing: var(--type-body-tracking);
+  --text-body--font-weight: var(--weight-text);
 
   --text-small: var(--type-small-size);
   --text-small--line-height: var(--type-small-leading);
   --text-small--letter-spacing: var(--type-small-tracking);
+  --text-small--font-weight: var(--weight-text);
 
   --text-caption: var(--type-caption-size);
   --text-caption--line-height: var(--type-caption-leading);
   --text-caption--letter-spacing: var(--type-caption-tracking);
+  --text-caption--font-weight: var(--weight-text);
 
   /* Layout: py-section, max-w-content, etc. */
   --spacing-section: var(--section-y);
@@ -131,19 +135,18 @@
   --container-content: var(--container-content);
   --container-wide: var(--container-wide);
 
-  /* Shape: slight radius. rounded-control (4) on buttons, inputs, tags and chips,
-     rounded-surface (8) on cards, menus, dialogs and toasts, rounded-pill on avatars and
+  /* Shape: slight radius. rounded-control (6) on buttons, inputs, tags and chips,
+     rounded-surface (10) on cards, menus, dialogs and toasts, rounded-pill on avatars and
      icon-only buttons. No other rounded-* class. */
   --radius-control: var(--radius-control);
   --radius-surface: var(--radius-surface);
   --radius-pill: var(--radius-pill);
 
-  /* Depth (P4): zero-offset glow + 1px ring, floating surfaces only.
-     shadow-glow is the accent glow, one per view (P1). */
+  /* Depth (P4): zero-offset glow + 1px ring, floating surfaces only. The primary action has
+     no glow (v0.12): its fill is bg-(image:--accent-fill). */
   --shadow-tooltip: var(--shadow-tooltip);
   --shadow-float: var(--shadow-float);
   --shadow-modal: var(--shadow-modal);
-  --shadow-glow: var(--glow);
   --inset-shadow-highlight: var(--highlight);
 
   /* Motion: ease-litt is the instant tween; ease-responsive and ease-expressive are the
@@ -163,6 +166,7 @@
     background: var(--canvas);
     color: var(--fg-muted);
     font-family: var(--font-sans);
+    font-weight: var(--weight-text);
     font-size: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

@@ -6,10 +6,11 @@
  *   text area has focus the edge is --focus plus --focus-ring, as the Input's. Inside it, top to bottom: the
  *   file chips, the text area, and a toolbar row of sm controls padded --space-2. The edge fades on the instant
  *   tier and nothing else about the box moves.
- * - Text: the body size (16px on coarse pointers, so iOS never zooms) in --fg, the placeholder in --fg-subtle,
- *   side padding as the Input's md. It starts one line tall and grows a line at a time up to `maxRows` (8), then
- *   scrolls inside. The height is set in a layout effect, so it snaps with the text and is never animated. A
- *   visually hidden <label> names it.
+ * - Text: the body size (16px on coarse pointers, so iOS never zooms) at the text weight (450), as the sent
+ *   message reads, in --fg, the placeholder in --fg-subtle, side padding as the Input's md. It starts one line tall
+ *   and grows a line at a time up to `maxRows` (8), then scrolls inside. The height is set in a layout effect, so it
+ *   snaps with the text and is never animated. A visually hidden <label> names it. A file chip's name is at the
+ *   interface weight (550), its size at the text weight.
  * - Keys: Enter sends and Shift+Enter starts a new line. Enter while an input method is composing (isComposing,
  *   or the keyCode 229 Safari reports for the Enter that confirms it) never sends. On a touch screen, whose soft
  *   keyboard has no Shift, Return is a new line and Send sends, unless `enterSends` says otherwise. With `enterSends={false}`,
@@ -117,14 +118,14 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
   return (
     <span
       className={[
-        "inline-flex h-8 max-w-full min-w-0 items-center gap-2 rounded-control bg-surface-1 pl-2 font-normal text-fg",
+        "inline-flex h-8 max-w-full min-w-0 items-center gap-2 rounded-control bg-surface-1 pl-2 [font-weight:var(--weight)] text-fg",
         "shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]",
         onRemove ? "pr-1" : "pr-2",
         className,
       ].join(" ")}
     >
       <FileIcon className="shrink-0 text-fg-muted" />
-      <span className="min-w-0 truncate font-mono text-caption text-fg">{name}</span>
+      <span className="min-w-0 truncate font-mono text-caption [font-weight:var(--weight)] text-fg">{name}</span>
       {uploading ? (
         <>
           <span className="sr-only">, uploading {percent} percent</span>
@@ -205,7 +206,7 @@ export type ComposerProps = {
 
 /* The box: the Input's fill, edge, focus and disabled looks on the surface radius. The ring follows the text area. */
 const BOX =
-  "group/box relative flex flex-col overflow-hidden rounded-surface bg-surface-1 font-normal text-fg " +
+  "group/box relative flex flex-col overflow-hidden rounded-surface bg-surface-1 text-fg " +
   "shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[textarea:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
@@ -215,7 +216,7 @@ const BOX =
   "forced-colors:border forced-colors:has-[textarea:focus-visible]:outline-2 forced-colors:has-[textarea:focus-visible]:outline-solid forced-colors:has-[textarea:focus-visible]:outline-offset-2";
 
 const AREA =
-  "block w-full min-w-0 resize-none overflow-y-hidden bg-transparent px-control-pad-md py-3 font-normal text-body text-fg " +
+  "block w-full min-w-0 resize-none overflow-y-hidden bg-transparent px-control-pad-md py-3 text-body text-fg " +
   "outline-none placeholder:text-fg-subtle pointer-coarse:text-(length:--control-text-lg) " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:placeholder:text-fg-disabled";
 

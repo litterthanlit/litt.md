@@ -42,12 +42,12 @@ A static SVG fractal-noise tile at `--grain-opacity` (2% light, 4% dark). It als
   - `--shadow-tooltip`: a 2px glow and the ring.
   - `--shadow-float` (menus, popovers, toasts, the glass header): 8px and 24px glows and the ring.
   - `--shadow-modal` (dialogs, command menu): 40px and 72px glows and the ring.
-- **Light:** cool ink at 6–10% for the glows and 6% for the ring.
+- **Light:** gray ink at 6–10% for the glows and 6% for the ring.
 - **Dark:** black at 30–50%. The glows darken the content around the panel, and the ring separates it.
 - **Never:** a shadow with an x or y offset, or any outer shadow on a card in the flow (see the P4 check).
 
-## Glow: `--glow` (P1)
-A 1px accent ring plus a soft, zero-offset accent light around the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (P5).
+## The primary fill: `--accent-fill` (P1, P2)
+Nick's Frame 103, kept as drawn: a vertical gradient from a deeper blue at the top (`--accent-top`) into the cobalt accent at the bottom (`--accent`), inside a 1px deep blue edge (`--accent-edge`), with a near-white label (`--accent-fg`). It is reserved for the one primary action in the view. It is the one surface brighter at its bottom than its top, so it reads as lit from within, and it carries no top highlight and no glow. Hover swaps to `--accent-fill-hover`, a step brighter at both ends; nothing animates (P5). Since v0.12 there is no `--glow`.
 
 ## Per-theme tuning (P8)
 
@@ -55,7 +55,7 @@ A 1px accent ring plus a soft, zero-offset accent light around the element. It i
 |---|---|---|---|
 | `--light-strength` | 12% | 22% | Light reads weaker on a bright canvas, so it needs less to show on dark |
 | `--grain-opacity` | 0.02 | 0.04 | Noise is more visible on light grounds |
-| `--glow-strength` | 28% | 40% | The glow needs more energy to read against dark |
+| `--accent-top`, `--accent` | mid blue into a clear cobalt, white label | lifted navy into a lighter cobalt, off-white label | On a light page a navy fill read heavy (v0.15); on a dark page the fill rises so the button still reads as the brightest object. The label keeps 4.5:1 at both ends in both |
 | `--glass-border` | dark ink at 7% | white at 8% | The edge is defined by ink in light and by light in dark |
 | `--shadow-float`, `--shadow-modal` | ink glows at 6–10%, ink ring | black glows at 30–50%, black ring | Glows vanish on dark at low strength, so dark needs more energy and leans on the ring |
 
@@ -78,15 +78,16 @@ When tuning, change both columns deliberately. Never derive one from the other.
 **Primary button.**
 ```css
 .btn-primary {
-  background: var(--accent); color: var(--accent-fg);
-  box-shadow: var(--glow), inset 0 1px 0 color-mix(in oklab, white 22%, transparent);
+  background: var(--accent) var(--accent-fill); color: var(--accent-fg);
+  box-shadow: inset 0 0 0 1px var(--accent-edge);
 }
+.btn-primary:hover { background: var(--accent-hover) var(--accent-fill-hover); }
 ```
 
 ## Self-check
-- [ ] Exactly one light source in the view, from the top.
+- [ ] Exactly one light source in the view, from the top (the primary fill, bright at its bottom, is the one exception).
 - [ ] Glass only on floating surfaces, with content behind it.
 - [ ] Highlights only on top edges.
 - [ ] Nothing material animates.
-- [ ] Glow on one element at most.
+- [ ] No glow on the primary action, and one accent fill at most.
 - [ ] Both themes look intentional, not inverted.

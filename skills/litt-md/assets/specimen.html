@@ -16,7 +16,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400&family=Geist+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@450;550&family=Geist+Mono:wght@450;550&display=swap">
 <link rel="stylesheet" href="./tokens.css">
 <style>
   /* Specimen layout. Every value comes from tokens.css. */
@@ -28,6 +28,7 @@
     background: var(--canvas);
     color: var(--fg-muted);
     font-family: var(--font-sans);
+    font-weight: var(--weight-text);
     font-size: var(--type-body-size);
     line-height: var(--type-body-leading);
     letter-spacing: var(--type-body-tracking);
@@ -58,7 +59,6 @@
   .mark { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg); font-weight: var(--weight); letter-spacing: -0.01em; }
   .mark i {
     width: 8px; height: 8px; border-radius: var(--radius-pill); background: var(--accent);
-    box-shadow: 0 0 12px 2px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
   }
   .nav { display: none; gap: var(--space-1); margin-left: var(--space-4); }
   .nav a { padding: var(--space-1) var(--space-3); border-radius: var(--radius-control); color: var(--fg-subtle); font-size: var(--type-small-size); transition: color var(--dur-instant) var(--ease-out), background-color var(--dur-instant) var(--ease-out); }
@@ -124,8 +124,8 @@
   .btn-lg { height: var(--control-lg); padding: 0 var(--button-pad-lg); font-size: var(--control-text-lg); }
   .btn-block { width: 100%; }
   .btn:active:not(:disabled) { transform: scale(var(--press-scale)); }
-  .btn-primary { background: var(--accent); color: var(--accent-fg); box-shadow: var(--glow), inset 0 1px 0 color-mix(in oklab, white 22%, transparent); }
-  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary { background: var(--accent) var(--accent-fill); color: var(--accent-fg); box-shadow: inset 0 0 0 1px var(--accent-edge); }
+  .btn-primary:hover { background: var(--accent-hover) var(--accent-fill-hover); }
   .btn-secondary { background: var(--surface-1); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line-strong), var(--highlight); }
   .btn-secondary:hover { background: var(--surface-2); }
   .btn-ghost { background: transparent; color: var(--fg-muted); }
@@ -138,12 +138,19 @@
   .window-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); }
   .window-bar strong { color: var(--fg); font-weight: var(--weight); font-size: var(--type-small-size); }
   .chips { display: flex; gap: var(--space-1); }
-  /* Tag: the selected segment's look, in mono. Status colors the text only; there is no dot. */
-  .tag {
+  /* Interface text takes the interface weight (P9): nav, segments, chips, tags, menu rows, names, labels, keys. */
+  .nav a, .segmented span, .filter, .tag, .menu-list li, .rows .name, kbd, label, th { font-weight: var(--weight); }
+  /* Filter chips are controls: raised like a secondary button, in the sans. */
+  .filter {
     display: inline-flex; align-items: center; height: 24px; padding: 0 var(--space-2);
     border-radius: var(--radius-control); background: var(--surface-1); color: var(--fg-muted);
-    font-family: var(--font-mono); font-size: var(--type-caption-size);
-    box-shadow: inset 0 0 0 1px var(--line), var(--highlight);
+    font-size: var(--type-caption-size); box-shadow: inset 0 0 0 1px var(--line-strong), var(--highlight);
+  }
+  /* Tag: a label, not a control. Flat, in the sans, no edge and no highlight. Status colors the text only; there is no dot. */
+  .tag {
+    display: inline-flex; align-items: center; height: 24px; padding: 0 var(--space-2);
+    border-radius: var(--radius-control); background: var(--surface-2); color: var(--fg-muted);
+    font-size: var(--type-caption-size);
   }
   .tag.ok { color: var(--success); } .tag.warn { color: var(--warning); } .tag.neutral { color: var(--fg-subtle); }
   .rows li { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--line); font-size: var(--type-small-size); }
@@ -355,7 +362,7 @@
     <div class="wrap">
       <div class="hero-copy">
         <h1 class="display" id="hero-title">Precise structure, lit from above.</h1>
-        <p class="lede">litt.md is Nick's design language for web and product UI. The grid is exact, the type is one family, the neutrals are cool. Light is the only ornament.</p>
+        <p class="lede">litt.md is Nick's design language for web and product UI. The grid is exact, the type is one family, the neutrals are gray. Light is the only ornament.</p>
         <div class="actions">
           <a class="btn btn-lg btn-primary" href="#rules"><span class="litt-trim">Read the rules</span></a>
           <a class="btn btn-lg btn-secondary" href="#color"><span class="litt-trim">See the tokens</span></a>
@@ -366,7 +373,7 @@
         <div class="window litt-raised">
           <div class="window-bar">
             <strong>Projects</strong>
-            <div class="chips"><span class="tag">All</span><span class="tag">Active</span></div>
+            <div class="chips"><span class="filter">All</span><span class="filter">Active</span></div>
           </div>
           <ul class="rows">
             <li><span class="name">litt.design v3</span><span class="meta"><span class="tag ok">Live</span><span class="date">2026-10-02</span></span></li>
@@ -399,15 +406,15 @@
         <p>Hanken Grotesk for everything, Geist Mono for code, keys and data. Tracking tightens as size grows. Headlines stop at 40.</p>
       </div>
       <div class="section-body">
-        <div class="type-row"><p class="t-display">Inevitable.</p><p class="spec"><b>Display</b>40 · 1.1 · −0.025em · 400</p></div>
-        <div class="type-row"><p class="t-h1">Interfaces with intent</p><p class="spec"><b>H1</b>32 · 1.15 · −0.022em · 400</p></div>
-        <div class="type-row"><p class="t-h2">Structure carries the weight</p><p class="spec"><b>H2</b>28 · 1.2 · −0.02em · 400</p></div>
-        <div class="type-row"><p class="t-h3">Light is the only ornament</p><p class="spec"><b>H3</b>24 · 1.25 · −0.018em · 400</p></div>
-        <div class="type-row"><p class="t-h4">One idea per section</p><p class="spec"><b>H4</b>20 · 1.3 · −0.012em · 400</p></div>
-        <div class="type-row"><p class="t-reading">Reading text sits at seventeen pixels with generous leading and a sixty-five character measure, so long-form pages breathe without feeling empty. Hierarchy comes from scale and color, never weight.</p><p class="spec"><b>Reading</b>17 · 1.65 · 65ch</p></div>
-        <div class="type-row"><p class="t-body">UI body runs at fifteen pixels. It is the workhorse for interfaces: settings, lists, descriptions and dialogs.</p><p class="spec"><b>Body</b>15 · 1.55</p></div>
-        <div class="type-row"><p class="t-small">Small text for supporting detail, table cells and helper copy.</p><p class="spec"><b>Small</b>13 · 1.5</p></div>
-        <div class="type-row"><p class="t-caption">Caption for timestamps and fine print.</p><p class="spec"><b>Caption</b>12 · 1.4 · +0.01em</p></div>
+        <div class="type-row"><p class="t-display">Inevitable.</p><p class="spec"><b>Display</b>40 · 1.1 · −0.025em · 550</p></div>
+        <div class="type-row"><p class="t-h1">Interfaces with intent</p><p class="spec"><b>H1</b>32 · 1.15 · −0.022em · 550</p></div>
+        <div class="type-row"><p class="t-h2">Structure carries the weight</p><p class="spec"><b>H2</b>28 · 1.2 · −0.02em · 550</p></div>
+        <div class="type-row"><p class="t-h3">Light is the only ornament</p><p class="spec"><b>H3</b>24 · 1.25 · −0.018em · 550</p></div>
+        <div class="type-row"><p class="t-h4">One idea per section</p><p class="spec"><b>H4</b>20 · 1.3 · −0.012em · 550</p></div>
+        <div class="type-row"><p class="t-reading">Reading text sits at seventeen pixels with generous leading and a sixty-five character measure, so long-form pages breathe without feeling empty. Hierarchy comes from scale and color; weight only tells text from interface.</p><p class="spec"><b>Reading</b>17 · 1.65 · 65ch · 450</p></div>
+        <div class="type-row"><p class="t-body">UI body runs at fifteen pixels. It is the workhorse for interfaces: settings, lists, descriptions and dialogs.</p><p class="spec"><b>Body</b>15 · 1.55 · 450</p></div>
+        <div class="type-row"><p class="t-small">Small text for supporting detail, table cells and helper copy.</p><p class="spec"><b>Small</b>13 · 1.5 · 450</p></div>
+        <div class="type-row"><p class="t-caption">Caption for timestamps and fine print.</p><p class="spec"><b>Caption</b>12 · 1.4 · +0.01em · 450</p></div>
         <div class="type-row"><p class="t-mono">⌘K &nbsp; v0.1.0 &nbsp; 128px &nbsp; --surface-2</p><p class="spec"><b>Mono</b>Geist Mono 13</p></div>
       </div>
     </div>
@@ -417,7 +424,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2 id="color-title">Color</h2>
-        <p>Cool neutrals on one hue. Each theme is designed, not inverted. Values and contrast ratios are read live from tokens.css.</p>
+        <p>True gray neutrals, so the accent is the only color. Each theme is designed, not inverted. Values and contrast ratios are read live from tokens.css.</p>
       </div>
       <div class="section-body">
         <div class="themes">
@@ -490,8 +497,8 @@
         <div class="comp">
           <h3>Shape</h3>
           <div class="shapes">
-            <figure><span class="shape shape-control" aria-hidden="true"></span><figcaption class="spec">control · 4</figcaption></figure>
-            <figure><span class="shape shape-surface" aria-hidden="true"></span><figcaption class="spec">surface · 8</figcaption></figure>
+            <figure><span class="shape shape-control" aria-hidden="true"></span><figcaption class="spec">control · 6</figcaption></figure>
+            <figure><span class="shape shape-surface" aria-hidden="true"></span><figcaption class="spec">surface · 10</figcaption></figure>
             <figure><span class="shape shape-nest" aria-hidden="true"><i></i></span><figcaption class="spec">control in surface · 4 in 8</figcaption></figure>
             <figure><span class="shape shape-pill" aria-hidden="true"></span><figcaption class="spec">pill</figcaption></figure>
           </div>
@@ -577,7 +584,7 @@
           <li><span class="id">P6</span><div><b>Precision</b><p>8px grid, 1px hairlines, tracking tightens with size.</p></div></li>
           <li><span class="id">P7</span><div><b>Airy rhythm</b><p>One idea per section, 128/96/64 spacing, asymmetric by default.</p></div></li>
           <li><span class="id">P8</span><div><b>Designed, not inverted</b><p>Each theme has its own material values.</p></div></li>
-          <li><span class="id">P9</span><div><b>One weight</b><p>Everything at 400. Hierarchy comes from size, color and tracking.</p></div></li>
+          <li><span class="id">P9</span><div><b>Two weights</b><p>450 for text you read, 550 for headings and anything you act on. Hierarchy comes from size, color and tracking.</p></div></li>
           <li><span class="id">P10</span><div><b>Roomy controls</b><p>Buttons and inputs share 32 / 44 / 56. Padding equals the air around the label.</p></div></li>
           <li><span class="id">P11</span><div><b>Color carries data</b><p>Five data hues mark series, categories and heat steps. Never chrome.</p></div></li>
         </ol>
