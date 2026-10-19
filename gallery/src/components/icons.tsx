@@ -16,6 +16,7 @@ export const SearchIcon = (p: IconProps) => <Icon {...p}><circle cx="7" cy="7" r
 export const CheckIcon = (p: IconProps) => <Icon {...p}><path d="m3.5 8.5 3 3 6-7" /></Icon>;
 export const ChevronRightIcon = (p: IconProps) => <Icon {...p}><path d="m6 3.5 4.5 4.5L6 12.5" /></Icon>;
 export const ChevronDownIcon = (p: IconProps) => <Icon {...p}><path d="m3.5 6 4.5 4.5L12.5 6" /></Icon>;
+export const ChevronLeftIcon = (p: IconProps) => <Icon {...p}><path d="M10 3.5 5.5 8l4.5 4.5" /></Icon>;
 export const XIcon = (p: IconProps) => <Icon {...p}><path d="m4 4 8 8M12 4l-8 8" /></Icon>;
 export const PlusIcon = (p: IconProps) => <Icon {...p}><path d="M8 3v10M3 8h10" /></Icon>;
 export const CopyIcon = (p: IconProps) => <Icon {...p}><rect x="5.25" y="5.25" width="7.5" height="7.5" /><path d="M3.25 10.25V3.25h7" /></Icon>;

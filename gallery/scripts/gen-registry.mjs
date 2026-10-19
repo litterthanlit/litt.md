@@ -977,6 +977,38 @@ const COPY = {
     description: "Code in an answer, a tool's output or a diff: mono on a quiet surface with a 32px header that holds the file name and a Copy button. tsx, ts, jsx and js are highlighted in the foreground's tones only (strings take a hint of the accent text), a diff shows a + in success and a - in danger on a faint band with hidden \"Added\" and \"Removed\" words, line numbers sit in a gutter that is not selected or copied, and long lines scroll sideways inside a focusable, labelled block. Static.",
     docs: "Import CodeBlock from components/litt/code-block. Pass the code, a lang (tsx, ts, jsx, js, diff, shell or text) and a filename for the header. The label names the scroll area and defaults to the file name. lineNumbers adds a gutter, wrap wraps long lines, and maxHeight (a number or a CSS length) makes a tall block scroll. A diff reads each line's first character as its sign. The syntax colors are declared on the block itself, so it needs no stylesheet. It imports sugar-high.",
   },
+  /* The staples step (proposals/staples.md). Each entry is owned by the agent that builds the
+     item; the lead checks every docs line against the finished component. */
+  combobox: {
+    title: "Combobox",
+    description: "Type to find one value, or several, in a long list. The Input's field with the Menu's glass list under it: filtered as you type, one gliding highlight, a check on the pick, and the picks as tokens when there are several.",
+    docs: "Import Combobox from components/litt/combobox. Give it a label and options as { value, label }, and hold the value in state with value and onValueChange (an array with multiple).",
+  },
+  "date-picker": {
+    title: "Date picker",
+    description: "A day or a range from a month calendar, as YYYY-MM-DD strings. Day numbers in mono, the picked day filled with the foreground, today ringed, six weeks always, and months that slide in from the side they come from.",
+    docs: "Import Calendar and DatePicker from components/litt/date-picker. Values are YYYY-MM-DD strings. Give DatePicker a label and hold the value in state with value and onValueChange.",
+  },
+  accordion: {
+    title: "Accordion",
+    description: "Sections that open in place, split by hairlines. The height snaps, the content fades in and drops a little, and the rows below move by transform, so the page never jumps.",
+    docs: "Import Accordion, AccordionItem, AccordionTrigger and AccordionContent from components/litt/accordion.",
+  },
+  "scroll-area": {
+    title: "Scroll area",
+    description: "Native scrolling with litt's thin thumb, shown while scrolling or hovering, and a hairline on any edge with more beyond it. No gradient fades.",
+    docs: "Import ScrollArea from components/litt/scroll-area. Give it a height and a label.",
+  },
+  breadcrumb: {
+    title: "Breadcrumb",
+    description: "Where a page sits, with slashes between the levels and the current page in the foreground. Long trails fold their middle into a menu, and phones show the last two levels.",
+    docs: "Import Breadcrumb from components/litt/breadcrumb. Pass items as { label, href }, the last one being the current page.",
+  },
+  "context-menu": {
+    title: "Context menu",
+    description: "The Menu at the pointer: right-click, Shift+F10 or a 500ms hold on touch. The same glass, rows, gliding highlight and solid submenus as the Menu.",
+    docs: "Import ContextMenu from components/litt/context-menu and fill it with the Menu's rows from components/litt/menu. Every action in it must also be reachable another way.",
+  },
 };
 
 /* =============================================================== assemble the items */
