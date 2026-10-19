@@ -129,6 +129,7 @@ The interview workflow works through these. When one is answered, move the answe
   - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The type trial paired Hanken Grotesk with JetBrains Mono by default.
 
 - **Q20.** One weight, but which? P9 holds everything at 400, from Nick's 2026-10-10 "fonts are too wide" about heavier weights. On 2026-10-19 Nick found 400 "too thin, as well as in button". Raise the one weight (450 or 500), or keep 400 and find the heft elsewhere (size, contrast)?
+  - *Evidence:* Nick's own Frame 103 (2026-10-19) sets the button label at about 500, measured against Hanken Grotesk's stroke width. The same frame brings a navy-to-cobalt gradient brighter at the bottom (light from below, against P2), corners about 6px (against the 4px control radius) and no glow (against P1's glow on the primary action).
 - **Q21.** Tags: since v0.8 they are the selected segment's look in mono (surface-1, hairline, top highlight). On 2026-10-19 Nick said they "feel off". They share that raised, edged look with the secondary button and the selected segment, so a label reads like a control. Quiet fill, outline only, or sans?
 ## Changelog
 
