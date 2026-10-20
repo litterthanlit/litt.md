@@ -4,7 +4,7 @@
  * Text spacing follows foundations.md (Type, Text spacing): stages sit 48px apart,
  * the page title 16px above its summary, and a stage's title 4px above its caption.
  */
-import { createContext, lazy, Suspense, useContext, useState, type ReactNode } from "react";
+import { Children, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useState, type ReactElement, type ReactNode } from "react";
 import type { Tier } from "@/motion";
 import { Button } from "@/components/button";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
@@ -71,10 +71,31 @@ const loadDocs = () => import("./docs/page-docs");
 const DocsActions = lazy(() => loadDocs().then((m) => ({ default: m.DocsActions })));
 const DocsSections = lazy(() => loadDocs().then((m) => ({ default: m.DocsSections })));
 
+/**
+ * Set by the sidebar's hover preview (nav-preview.tsx). A page then draws only its first
+ * stage's demo, with no title, caption or docs, so every page has a preview without a
+ * line of its own.
+ */
+export const PreviewContext = createContext(false);
+
+/** The first <Stage> among a page's children, looking through fragments. */
+function firstStage(children: ReactNode): ReactElement<StageProps> | null {
+  for (const child of Children.toArray(children)) {
+    if (!isValidElement<{ children?: ReactNode }>(child)) continue;
+    if (child.type === Stage) return child as ReactElement<StageProps>;
+    if (child.type === Fragment) {
+      const found = firstStage(child.props.children);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 /** Which page a Stage sits in, so its Code tab can find the page file. */
 const PageIdContext = createContext<string | null>(null);
 
 export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs; children: ReactNode }) {
+  if (useContext(PreviewContext)) return <>{firstStage(children)?.props.children}</>;
   return (
     <PageIdContext.Provider value={meta.id}>
       <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">
