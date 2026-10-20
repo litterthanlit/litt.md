@@ -100,11 +100,24 @@ export function checkRules(dial: Dial): RuleRow[] {
   ];
 }
 
+/**
+ * The pill: half the tallest control (lg, 56), so every control on the scale rounds fully. Not 9999px: large
+ * boxes on the control radius (a code block, a popover's inner area) would turn into stadiums and clip their text.
+ */
+export const PILL = 28;
+/** The Customize panel's radius choices: the Playground's steps, then the pill. */
+export const SHAPES = [0, 2, 4, 6, PILL] as const;
+/** The surface radius for a control radius. A pill has no concentric surface, so cards and panels take 16px with it. */
+export const shapeSurface = (control: number) => (control === PILL ? 16 : surfaceRadius(control));
+/** A control radius in words: "Square", "4px", "Pill". */
+export const shapeName = (control: number) => (control === 0 ? "Square" : control === PILL ? "Pill" : `${control}px`);
+
 /** The radius rule (check 7). */
 export function shapeRule(radius: number): RuleRow {
+  const now = radius === PILL ? "pill controls" : `${radius}px controls`;
   return {
     ok: radius === LIMITS.control,
-    text: `Controls ${LIMITS.control}px, surfaces ${surfaceRadius(LIMITS.control)}px, pills unchanged: ${radius}px controls, ${surfaceRadius(radius)}px surfaces`,
+    text: `Controls ${LIMITS.control}px, surfaces ${surfaceRadius(LIMITS.control)}px, pills unchanged: ${now}, ${shapeSurface(radius)}px surfaces`,
   };
 }
 
@@ -158,7 +171,8 @@ export function customizeSnippet(radius: number, lockedRadius: number, type: Typ
   if (type.name !== type.locked) out.push(`/* Type: sizes, weights by role and tracking stay as they are. */`, `--font-sans: ${type.stack};`);
   if (radius !== lockedRadius) {
     if (out.length) out.push(``);
-    out.push(`/* Shape: surfaces are controls plus the 4px inset. */`, `--radius-control: ${radius}px;`, `--radius-surface: ${surfaceRadius(radius)}px;`);
+    const note = radius === PILL ? `/* Shape: pill controls (28px is half the 56px lg control); surfaces take 16px, since a pill has no concentric surface. */` : `/* Shape: surfaces are controls plus the 4px inset. */`;
+    out.push(note, `--radius-control: ${radius}px;`, `--radius-surface: ${shapeSurface(radius)}px;`);
   }
   return out.join("\n");
 }

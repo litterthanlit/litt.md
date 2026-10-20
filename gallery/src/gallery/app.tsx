@@ -8,18 +8,18 @@ import { pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
-import { CustomizeProvider, useCustomize } from "./customize-state";
+import { Segmented } from "@/components/segmented";
+import { CustomizeProvider } from "./customize-state";
 import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons";
 
 /* The panel and the popover load on their own; until then the button holds its place. */
 const Customize = lazy(() => import("./customize"));
 
 function CustomizeFallback() {
-  const { modified } = useCustomize();
   return (
     <span aria-hidden="true" className="inline-flex h-control-sm items-center gap-2 px-3 text-small font-title text-fg-subtle max-sm:w-control-sm max-sm:justify-center max-sm:px-0">
       <SlidersIcon />
-      <span className="max-sm:hidden">{modified ? "Customized" : "Customize"}</span>
+      <span className="max-sm:hidden">Customize</span>
     </span>
   );
 }
@@ -46,19 +46,24 @@ function ThemeSwitch() {
       /* ignore */
     }
   };
+  /* litt's own Segmented: a quiet track with the chosen segment raised in it, and native radios underneath.
+     Icons on a phone, where three words would crowd the wordmark; the word stays for screen readers. */
   return (
-    <div className="inline-flex overflow-hidden rounded-control shadow-[inset_0_0_0_1px_var(--line-strong)]" role="group" aria-label="Theme">
-      {/* Icons on a phone, where three labels would crowd the wordmark; words from sm up. */}
-      {THEMES.map(({ id, label, Icon }) => (
-        <button
-          key={id} type="button" aria-pressed={theme === id} aria-label={label} onClick={() => choose(id)}
-          className="grid h-control-sm min-w-control-sm cursor-pointer place-items-center text-small font-title text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg pointer-coarse:h-control-md pointer-coarse:min-w-control-md sm:px-3"
-        >
-          <Icon className="sm:hidden" />
-          <span className="hidden sm:inline">{label}</span>
-        </button>
-      ))}
-    </div>
+    <Segmented
+      legend="Theme"
+      size="sm"
+      value={theme}
+      onValueChange={choose}
+      options={THEMES.map(({ id, label, Icon }) => ({
+        value: id,
+        label: (
+          <>
+            <Icon aria-hidden="true" className="sm:hidden" />
+            <span className="max-sm:sr-only">{label}</span>
+          </>
+        ),
+      }))}
+    />
   );
 }
 

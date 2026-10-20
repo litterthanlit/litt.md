@@ -13,7 +13,8 @@
  * them after that.
  */
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
-import { RADII, surfaceRadius, useMotionDial } from "@/motion";
+import { useMotionDial } from "@/motion";
+import { SHAPES, shapeSurface } from "@/motion/rules";
 import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
@@ -24,7 +25,7 @@ type Ctx = {
   typefaces: Typeface[];
   typeface: Typeface;
   setTypeface: (id: string) => void;
-  /** Control radius in px, the locked one when nothing is chosen. */
+  /** Control radius in px (PILL for the pill), the locked one when nothing is chosen. */
   radius: number;
   lockedRadius: number;
   setRadius: (r: number) => void;
@@ -49,7 +50,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   const [saved] = useState(readSaved);
   const [faceId, setFaceId] = useState(() => (typefaces.some((f) => f.id === saved.face?.id) ? saved.face!.id : "locked"));
   const [radiusTuned, setRadiusTuned] = useState<number | null>(() =>
-    (RADII as readonly number[]).includes(saved.radius as number) ? (saved.radius as number) : null,
+    (SHAPES as readonly number[]).includes(saved.radius as number) ? (saved.radius as number) : null,
   );
 
   const typeface = typefaces.find((f) => f.id === faceId) ?? typefaces[0];
@@ -69,7 +70,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       s.removeProperty("--radius-surface");
     } else {
       s.setProperty("--radius-control", `${radiusTuned}px`);
-      s.setProperty("--radius-surface", `${surfaceRadius(radiusTuned)}px`);
+      s.setProperty("--radius-surface", `${shapeSurface(radiusTuned)}px`);
     }
   }, [typeface, radiusTuned]);
 

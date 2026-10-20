@@ -39,9 +39,10 @@
           document.head.appendChild(l);
         }
       }
-      if (c.radius === 0 || c.radius === 2 || c.radius === 4 || c.radius === 6) {
+      /* The radius steps and the pill (28, with 16px surfaces): SHAPES and shapeSurface in src/motion/rules.ts. */
+      if (c.radius === 0 || c.radius === 2 || c.radius === 4 || c.radius === 6 || c.radius === 28) {
         s.setProperty("--radius-control", c.radius + "px");
-        s.setProperty("--radius-surface", (c.radius === 0 ? 0 : c.radius + 4) + "px");
+        s.setProperty("--radius-surface", (c.radius === 28 ? 16 : c.radius === 0 ? 0 : c.radius + 4) + "px");
       }
     } catch (e) {}
   })();

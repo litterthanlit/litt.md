@@ -4,8 +4,8 @@
  * the writes on <body> live in customize-state.tsx.
  */
 import { useState } from "react";
-import { RADII, surfaceRadius, useDevice } from "@/motion";
-import { customizeSnippet, shapeRule, typeRule } from "@/motion/rules";
+import { useDevice } from "@/motion";
+import { customizeSnippet, shapeName, shapeRule, shapeSurface, SHAPES, typeRule } from "@/motion/rules";
 import { Button } from "@/components/button";
 import { CheckIcon, CopyIcon, SlidersIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
@@ -49,7 +49,7 @@ function CustomizePanel() {
         size="sm"
         value={String(radius)}
         onValueChange={(v) => setRadius(Number(v))}
-        options={RADII.map((r) => ({ value: String(r), label: r === 0 ? "Square" : `${r}px` }))}
+        options={SHAPES.map((r) => ({ value: String(r), label: shapeName(r) }))}
       />
       <div className="grid gap-3 border-t border-line pt-4">
         {modified ? (
@@ -76,7 +76,7 @@ function CustomizePanel() {
           </>
         ) : (
           <p className="text-caption font-normal text-fg-subtle">
-            Locked: {typeface.name}, {radius}px controls and {surfaceRadius(radius)}px surfaces.
+            Locked: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces.
           </p>
         )}
       </div>
@@ -86,9 +86,8 @@ function CustomizePanel() {
 
 /** The header's Customize button and its panel. On a phone the button is an icon and the panel is a sheet. */
 export default function Customize() {
-  const { modified } = useCustomize();
   const { compact } = useDevice();
-  const label = modified ? "Customized" : "Customize";
+  const label = "Customize";
   return (
     <Popover>
       <PopoverTrigger asChild>
