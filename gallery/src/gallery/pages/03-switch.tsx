@@ -112,7 +112,7 @@ function DigestFormDemo() {
         <Checkbox name="approved" label="Halden Studio approved the launch" />
       </div>
       <div className="grid gap-3">
-        <Button type="submit" variant="primary" size="lg">
+        <Button type="submit" variant="primary">
           Save
         </Button>
         <p role="status" className="min-h-5 text-small text-fg-subtle">

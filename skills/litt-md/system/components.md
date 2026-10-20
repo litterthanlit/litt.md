@@ -14,7 +14,7 @@ Button · Input · Token input · Select · Combobox · Date picker · Checkbox 
 |---|---|---|---|---|
 | sm | `--control-sm` 32 | `--control-pad-sm` 12 | 13 | Table rows, toolbars, dense UI |
 | md | `--control-md` 44 | `--control-pad-md` 16 | 14 | Default |
-| lg | `--control-lg` 56 | `--button-pad-lg` 32 | 16 | Hero CTAs and the submit in a page form; full width in narrow forms. A dialog's actions are md. |
+| lg | `--control-lg` 56 | `--button-pad-lg` 32 | 16 | Hero CTAs only. A page form's submit and Cancel are md, like a dialog's actions. |
 
 The label is at `--weight-title` at every size, with no extra tracking. Hover changes the fill and color, and press scales to `--press-scale`, both on the instant tier (`--dur-instant`, `--ease-out`). On coarse screens a pressed button also takes its hover fill, so the press shows under reduced motion. The box never moves. Grouped buttons sit `--control-group-gap` (12) apart.
 
@@ -377,7 +377,7 @@ How the controls above make a page. One left-aligned column, never centered (P7)
 - **Sign-up or contact:** one narrow column (about 400 wide), md fields, a consent checkbox above the submit, and the submit lg, primary and full width (P10).
 - **Optional fields:** mark the optional ones, not the required ones: "(optional)" in `--fg-subtle` after the label. No asterisks.
 - **Errors:** validate on submit, then again as each field changes, so a fixed field clears itself. Each invalid field shows its error under it, in `--danger`, saying how to fix it. Above the form an error summary names every problem: a `.litt-raised` panel with an inset 1px `--danger` edge, a title in `--fg` ("Fix 2 fields to save") beside a 16px alert icon in `--danger`, then one link per error that moves focus to its field. The summary takes focus when a submit fails. A form of three fields or fewer skips the summary and focuses its first invalid field.
-- **Actions:** in a page form, the submit comes first at the column's start, with Cancel (ghost) after it, both lg. Below 640 they stack full width, submit on top. A dialog keeps its own order: bottom right, primary last, md. Never disable the submit to say a field is wrong; let the submit show the errors.
+- **Actions:** in a page form, the submit comes first at the column's start, with Cancel (ghost) after it, both md. Below 640 they stack full width, submit on top. A dialog keeps its own order: bottom right, primary last, md. Never disable the submit to say a field is wrong; let the submit show the errors.
 - **Saving:** the submit shows its loading state, then a toast confirms. A failed save keeps every value.
 
 ---

@@ -131,7 +131,7 @@ function LaunchDateDemo() {
         error={error}
       />
       <div className="grid gap-3">
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Schedule launch
         </Button>
         <Status>{sent}</Status>

@@ -12,7 +12,7 @@
  *   GOV.UK error summary: a focusable panel named by its heading, and one link per error. It
  *   takes focus when a submit fails, which is what reads it out. It is not a live region: it
  *   updates as fields are fixed, and an alert would re-announce it on every keystroke.
- * - FormActions is the action row of a page form: submit first, then Cancel, both lg (P10).
+ * - FormActions is the action row of a page form: submit first, then Cancel, both md (P10).
  *   They stack full width below 640, submit on top. align="fields" lines the row up with the
  *   fields column of a FormSection from 1024 up.
  * - Spacing: fields sit --space-6 (24) apart and groups --space-12 (48) apart. A Fieldset adds
@@ -263,7 +263,7 @@ export function ErrorSummary({ errors, title, focusKey, className = "" }: ErrorS
 /* ------------------------------------------------------------------ actions */
 
 export type FormActionsProps = {
-  /** The buttons, submit first. Make the submit a primary lg Button and Cancel a ghost lg Button. */
+  /** The buttons, submit first. Make the submit a primary Button and Cancel a ghost Button, both md. */
   children: ReactNode;
   /** "start" begins the row at the start of its container. "fields" lines it up with the fields column of a FormSection from 1024 up, and below 1024 it is the same plain row. */
   align?: "start" | "fields";

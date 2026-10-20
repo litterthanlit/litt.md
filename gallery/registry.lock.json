@@ -31,8 +31,8 @@
       "hash": "fd59fabd7faa5f82"
     },
     "button": {
-      "version": "2026.10.19",
-      "hash": "d7860ac6f9a8cd72"
+      "version": "2026.10.20",
+      "hash": "d95404d9a8ecdb97"
     },
     "callout": {
       "version": "2026.10.19",
@@ -83,8 +83,8 @@
       "hash": "1f226565599d4dbb"
     },
     "form": {
-      "version": "2026.10.19",
-      "hash": "2cd645830efa5639"
+      "version": "2026.10.20",
+      "hash": "dba03b98d2e0f865"
     },
     "gauge": {
       "version": "2026.10.19",

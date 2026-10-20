@@ -795,7 +795,7 @@ const COPY = {
   dialog: {
     title: "Dialog",
     description: "The one expressive moment. The panel is placed, not thrown: it rises a short distance and settles, and exits are quicker and never bounce.",
-    docs: "Import Dialog, DialogTrigger, DialogContent and DialogClose from components/litt/dialog. Pair a form's submit with a Cancel, both at size lg.",
+    docs: "Import Dialog, DialogTrigger, DialogContent and DialogClose from components/litt/dialog. Pair a form's submit with a Cancel, both at size md.",
   },
   toast: {
     title: "Toast",

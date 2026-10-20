@@ -140,7 +140,7 @@ function AccountFormDemo() {
       <TextField label="Full name" name="name" autoComplete="name" defaultValue="Mara Lindqvist" />
       <TextField label="Work email" name="email" type="email" autoComplete="email" defaultValue="mara@litt.design" />
       <div className="grid gap-3">
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Save account
         </Button>
         <Status>{sent}</Status>

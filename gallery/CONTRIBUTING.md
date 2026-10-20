@@ -97,7 +97,7 @@ These come from the audit and are candidate rules. Build them in.
 - **Depth:** `shadow-float`, `shadow-modal`, `shadow-tooltip`, `shadow-glow` (the primary action only). There are no offset shadows. Hairlines are `shadow-[inset_0_0_0_1px_var(--line)]` or `border-line`.
 - **One accent fill per view,** on the primary action (P1). Accent can also mark a focus ring. Checkboxes, radios and switches fill with `--fg`, never the accent.
 - **Never add `litt-lit` light inside a stage.** The page already has its one light source (P2).
-- **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). A page form's submit and its paired Cancel are `size="lg"` (P10: a page-form CTA below lg fails). A dialog is compact: its fields and actions are `md`.
+- **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). `size="lg"` is for hero CTAs only (P10). A page form's submit and its paired Cancel are `md`, like its fields, and so are a dialog's fields and actions.
 - **Utility classes from tokens.css:** `litt-glass`, `litt-raised`, `litt-trim` (cap-height labels).
 
 ## Your gallery page

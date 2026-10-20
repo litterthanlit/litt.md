@@ -214,7 +214,7 @@ function NewProjectDemo() {
       />
       <TextField label="Project name" name="project" defaultValue="Spring launch site" />
       <div className="grid gap-3">
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Create project
         </Button>
         <Status>{sent}</Status>

@@ -29,7 +29,7 @@ export type ButtonSize = "sm" | "md" | "lg";
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Primary is the one accent fill in a view. Secondary is the default. Ghost is for quiet actions like Cancel. */
   variant?: ButtonVariant;
-  /** Height on the shared control scale: sm is 32, md is 44, lg is 56. Use lg for hero actions and a page form's submit, md in a dialog. */
+  /** Height on the shared control scale: sm is 32, md is 44, lg is 56. Use lg for hero actions only, md in a page form and a dialog. */
   size?: ButtonSize;
   /** Swaps the label for a spinner, keeps the width, sets aria-busy and disables the button. */
   loading?: boolean;

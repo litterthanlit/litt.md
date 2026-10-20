@@ -44,7 +44,7 @@ Weight by role (P9): Regular 400 for text (Reading, Body, Small), Medium 500 for
   - sm: 32 tall, 12 side padding, 13px label.
   - md: 44 tall, 16 side padding, 14px label.
   - lg: 56 tall, 24 side padding, 16px label.
-  - Labels are Medium 500 with the line height set to 1, so the padding reads as even air. Use lg for hero CTAs and form submits, full width in narrow forms.
+  - Labels are Medium 500 with the line height set to 1, so the padding reads as even air. Use lg for hero CTAs only; a form's submit is md, full width in narrow forms.
 - **Inputs:** the same heights as the buttons, so an lg input lines up with an lg button.
 
 ## 4. Effects and material
