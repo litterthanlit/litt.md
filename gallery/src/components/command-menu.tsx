@@ -250,7 +250,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
                 >
                   {r.icon !== undefined && <span className="grid size-4 shrink-0 place-items-center">{r.icon}</span>}
                   <span className="min-w-0 truncate">{r.label}</span>
-                  {r.shortcut && !coarse && <span className="ml-auto shrink-0 pl-4 font-mono text-caption text-fg-subtle">{r.shortcut}</span>}
+                  {r.shortcut && !coarse && <span className="ml-auto shrink-0 pl-4 font-mono text-caption font-normal text-fg-subtle">{r.shortcut}</span>}
                 </div>
               ))}
             </div>
@@ -259,8 +259,8 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
       ) : (
         <div role="status" className="grid justify-items-center gap-2 px-6 py-12 text-center">
           <SearchIcon className="text-fg-subtle" />
-          <p className="max-w-full break-words text-small text-fg">No results for “{query.trim()}”</p>
-          <p className="text-caption text-fg-subtle">Check the spelling, or try a project name.</p>
+          <p className="max-w-full break-words text-small font-title text-fg">No results for “{query.trim()}”</p>
+          <p className="text-caption font-normal text-fg-subtle">Check the spelling, or try a project name.</p>
         </div>
       )}
 

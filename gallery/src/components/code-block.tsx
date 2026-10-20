@@ -60,7 +60,7 @@ type Lang = NonNullable<CodeBlockProps["lang"]>;
    the one place the accent text appears, mixed 90% into the foreground, so they sit quietly beside the code. */
 const SYNTAX =
   "[--sh-identifier:var(--fg)] [--sh-class:var(--fg)] [--sh-property:var(--fg)] [--sh-entity:var(--fg)] " +
-  "[--sh-keyword:var(--fg-muted)] [--sh-sign:var(--fg-muted)] [--sh-comment:var(--fg-subtle)] " +
+  "[--sh-keyword:var(--fg)] [--sh-sign:var(--fg-muted)] [--sh-comment:var(--fg-subtle)] " +
   "[--sh-string:color-mix(in_oklab,var(--accent-text)_90%,var(--fg))] [--sh-jsxliterals:var(--sh-string)] " +
   "[--sh-space:currentColor] [--sh-break:currentColor]";
 
@@ -184,7 +184,7 @@ export function CodeBlock({
   return (
     <div className={`relative min-w-0 max-w-full rounded-surface bg-surface-2 ${SYNTAX} ${className}`}>
       <div className="flex h-control-sm items-center justify-between gap-2 pl-4 pr-1 pointer-coarse:h-control-md">
-        <span className="min-w-0 truncate font-mono text-caption text-fg-subtle">{filename ?? lang}</span>
+        <span className="min-w-0 truncate font-mono text-caption font-normal text-fg-subtle">{filename ?? lang}</span>
         <Button
           iconOnly
           variant="ghost"
@@ -214,7 +214,7 @@ export function CodeBlock({
           {rows.map((row, i) => (
             <span key={i} className={`flex items-baseline gap-3 px-4 ${ROW_COLOR[row.kind]}`}>
               {lineNumbers && (
-                <span aria-hidden="true" className="w-(--code-gutter) shrink-0 select-none text-right font-mono text-caption text-fg-subtle">
+                <span aria-hidden="true" className="w-(--code-gutter) shrink-0 select-none text-right font-mono text-caption font-normal text-fg-subtle">
                   {i + 1}
                 </span>
               )}

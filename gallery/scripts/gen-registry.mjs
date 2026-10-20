@@ -19,7 +19,7 @@
  *
  * WHAT IT SHIPS
  *   litt          registry:style  tokens, Tailwind names and material classes, CSS only
- *   base-styles   registry:style  OPT-IN: fonts, weight 400, control radius, focus ring
+ *   base-styles   registry:style  OPT-IN: fonts, the role weights, control radius, focus ring
  *   motion        registry:lib    src/motion/* (spring tiers, the hooks)
  *   glide         registry:lib    components/glide.tsx (the gliding highlight)
  *   <stem>        registry:ui     one per src/components/*.tsx that has a page
@@ -309,8 +309,8 @@ const tokenVarRe = new RegExp(`(?<![\\w-])(${tokenVarList.map(esc).join("|")})(?
 /** --X -> --litt-X, wherever it appears in a piece of text. */
 const renameVars = (text) => text.replace(tokenVarRe, (m) => `--litt-${m.slice(2)}`);
 
-/* Tailwind theme keys. THEME_NS is longest-first so "inset-shadow" wins over "shadow". */
-const THEME_NS = ["default-transition", "inset-shadow", "container", "spacing", "radius", "shadow", "color", "text", "ease", "font"];
+/* Tailwind theme keys. THEME_NS is longest-first so "inset-shadow" wins over "shadow" and "font-weight" over "font". */
+const THEME_NS = ["default-transition", "inset-shadow", "font-weight", "container", "spacing", "radius", "shadow", "color", "text", "ease", "font"];
 const SKIPPED_THEME_NS = new Set(["default-transition"]); // would change every host `transition` utility
 
 /** @type {Map<string, Set<string>>} namespace -> base keys (the part before "--line-height" and the like) */
@@ -364,6 +364,7 @@ const UTILITY_PREFIXES = {
   "inset-shadow": ["inset-shadow"],
   ease: ["ease"],
   font: ["font"],
+  "font-weight": ["font"], // font-title, font-label: the role weights (P9)
 };
 /** prefix -> namespaces */
 const prefixNs = new Map();
@@ -494,7 +495,9 @@ const materialRe = new RegExp(`(?<![\\w-])(${materialClasses.map(esc).join("|")}
 
 function buildBaseStylesCss() {
   const css = {};
-  css['@import "@fontsource/hanken-grotesk/400.css"'] = {};
+  css['@import "@fontsource/inter/400.css"'] = {};
+  css['@import "@fontsource/inter/500.css"'] = {};
+  css['@import "@fontsource/inter/600.css"'] = {};
   css['@import "@fontsource/geist-mono/400.css"'] = {};
   // tailwind.css's html rule, minus the page colors: a shadcn host paints its own background and text.
   const twBase = tailwindCss.find((n) => n.k === "at" && n.name === "layer" && n.params === "base") ?? fail("tailwind.css: @layer base not found");
@@ -741,7 +744,7 @@ const COPY = {
   },
   "base-styles": {
     title: "litt base styles",
-    description: "Optional. Loads Hanken Grotesk and Geist Mono at weight 400 and applies litt's page defaults: weight 400, the control radius on native controls and the litt focus ring.",
+    description: "Optional. Loads Inter at 400, 500 and 600 and Geist Mono at 400, and applies litt's page defaults: headings and bold at the title weight, table headers at the label weight, the control radius on native controls and the litt focus ring.",
     docs: "This one restyles your whole app: the html font, heading weight, button and input radius and the focus outline. No component needs it. Skip it if you only want the components.",
   },
   motion: {
@@ -756,7 +759,7 @@ const COPY = {
   },
   button: {
     title: "Button",
-    description: "Roomy, slightly rounded and weight 400, in primary, secondary and ghost, on the shared control scale. Hover and press are instant and never move the box.",
+    description: "Roomy and slightly rounded, with the label at the title weight, in primary, secondary and ghost, on the shared control scale. Hover and press are instant and never move the box.",
     docs: "Import Button from components/litt/button. Primary is the one accent fill in a view. An icon-only button needs an aria-label.",
   },
   kbd: {
@@ -846,7 +849,7 @@ const COPY = {
   },
   tag: {
     title: "Tag",
-    description: "A small mono label at the control radius that names a thing or reports its state. A status tag colors its text, never the fill, and always says the status in words.",
+    description: "A small label at the control radius that names a thing or reports its state. A status tag colors its text, never the fill, and always says the status in words.",
     docs: "Import Tag from components/litt/tag. Leave status out for a plain label, or set it to success, warning, danger or neutral: the text takes that color and there is no dot, so the word carries the status.",
   },
   popover: {
@@ -1086,7 +1089,7 @@ function build() {
     type: "registry:style",
     title: COPY["base-styles"].title,
     description: COPY["base-styles"].description,
-    dependencies: ["@fontsource/hanken-grotesk", "@fontsource/geist-mono"],
+    dependencies: ["@fontsource/inter", "@fontsource/geist-mono"],
     registryDependencies: [urlOf("litt")],
     css: baseStylesCss,
     docs: COPY["base-styles"].docs,

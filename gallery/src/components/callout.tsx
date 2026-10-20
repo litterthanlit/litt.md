@@ -129,7 +129,7 @@ export function Callout({
           {icon ?? ICON[tone]}
         </span>
         <div className="min-w-0">
-          <p className="text-body text-fg">
+          <p className="text-body font-title text-fg">
             {SAID[tone] && <span className="sr-only">{SAID[tone]}</span>}
             {title}
           </p>

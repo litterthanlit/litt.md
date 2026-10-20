@@ -18,14 +18,14 @@ export default function Overview() {
   const count = WORDS[list.length] ?? String(list.length);
   const playground = pages.find((p) => p.tune);
   return (
-    <article aria-labelledby="page-overview" className="grid gap-16 pb-24">
+    <article aria-labelledby="page-overview" className="grid gap-12 pb-24">
       <header className="grid gap-4">
         <h1 id="page-overview" className="text-display text-fg text-balance">{count} components on locked tokens.</h1>
         <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
       </header>
 
-      <section className="grid gap-6" aria-labelledby="tiers-title">
-        <h2 id="tiers-title" className="text-h4 text-fg">Three tiers</h2>
+      <section className="grid gap-4" aria-labelledby="tiers-title">
+        <h2 id="tiers-title" className="-mb-3 text-h4 text-fg">Three tiers</h2>
         <div className="grid gap-4 md:grid-cols-3">
           {[
             ["instant", "Hover, press, toggles. A short ease-out tween you should never notice."],
@@ -40,20 +40,22 @@ export default function Overview() {
         </div>
       </section>
 
-      <section className="grid gap-8" aria-labelledby="components-title">
-        <h2 id="components-title" className="text-h4 text-fg">Components</h2>
+      <section className="grid gap-4" aria-labelledby="components-title">
+        <h2 id="components-title" className="-mb-3 text-h4 text-fg">Components</h2>
         {list.length === 0 ? (
           <p className="text-small text-fg-subtle">Components are being built.</p>
         ) : (
           pageRuns(list).map((run) => (
             <div key={run.group ?? "other"} className="grid gap-4">
-              {run.group && <h3 className="text-body text-fg-muted">{run.group}</h3>}
+              {run.group && <h3 className="-mb-3 text-body text-fg-muted">{run.group}</h3>}
               <ul className="grid gap-px overflow-hidden rounded-surface bg-line shadow-[inset_0_0_0_1px_var(--line)] sm:grid-cols-2">
                 {run.pages.map((p) => (
                   <li key={p.id} className="bg-surface-1">
                     <a href={`#${p.id}`} className="grid h-full content-start gap-3 p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2">
-                      <span className="text-body text-fg">{p.title}</span>
-                      <span className="text-small text-fg-subtle">{p.summary}</span>
+                      <span className="grid gap-1">
+                        <span className="text-body font-title text-fg">{p.title}</span>
+                        <span className="text-small text-fg-subtle">{p.summary}</span>
+                      </span>
                       <span className="flex flex-wrap gap-2">{p.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
                     </a>
                   </li>
@@ -65,14 +67,16 @@ export default function Overview() {
       </section>
 
       {playground && (
-        <section className="grid gap-6" aria-labelledby="playground-title">
-          <h2 id="playground-title" className="text-h4 text-fg">Try other values</h2>
+        <section className="grid gap-4" aria-labelledby="playground-title">
+          <h2 id="playground-title" className="-mb-3 text-h4 text-fg">Try other values</h2>
           <a
             href={`#${playground.id}`}
             className="litt-raised grid content-start justify-items-start gap-3 rounded-surface p-6 transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2"
           >
-            <span className="text-body text-fg">{playground.title}</span>
-            <span className="max-w-[56ch] text-small text-fg-subtle">{playground.summary}</span>
+            <span className="grid gap-1">
+              <span className="text-body font-title text-fg">{playground.title}</span>
+              <span className="max-w-[56ch] text-small text-fg-subtle">{playground.summary}</span>
+            </span>
             <span className="flex flex-wrap gap-2">{playground.tiers.map((t) => <TierChip key={t} tier={t} />)}</span>
           </a>
         </section>

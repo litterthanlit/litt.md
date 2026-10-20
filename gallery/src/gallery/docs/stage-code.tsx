@@ -15,7 +15,7 @@ export default function StageCode({ pageId, name, title }: { pageId: string; nam
     return (
       <div role="alert" className="grid gap-2 p-2 text-small">
         <p className="text-danger">The code view for {title} could not be built.</p>
-        <p className="font-mono text-caption text-fg-muted">{result.error}</p>
+        <p className="font-mono text-caption font-normal text-fg-muted">{result.error}</p>
       </div>
     );
   }

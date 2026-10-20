@@ -415,8 +415,8 @@ function ToastView({
         animate={{ opacity: showContent ? 1 : 0, transition: move }}
       >
         <div className="min-w-0 flex-1">
-          <p className={"text-small " + (tone === "error" ? "text-danger " : "text-fg ") + (item.description ? "truncate" : "line-clamp-2")}>{item.title}</p>
-          {item.description && <p className="truncate text-caption text-fg-subtle">{item.description}</p>}
+          <p className={"text-small font-title " + (tone === "error" ? "text-danger " : "text-fg ") + (item.description ? "truncate" : "line-clamp-2")}>{item.title}</p>
+          {item.description && <p className="truncate text-caption font-normal text-fg-subtle">{item.description}</p>}
         </div>
         {item.action && (
           <Button

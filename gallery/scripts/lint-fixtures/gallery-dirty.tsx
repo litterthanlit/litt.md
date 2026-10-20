@@ -15,8 +15,18 @@ export function ProjectCard({ open }: { open: boolean }) {
       />
       <h3
         className="text-h4 text-fg"
-        style={{ fontWeight: 600 }} // expect: weight
+        style={{ fontWeight: 700 }} // expect: weight
       />
+      <h3
+        className="text-body text-fg font-[500]" // expect: weight
+      />
+      <p
+        className="text-caption text-fg-subtle"
+        style={{ fontWeight: 300 }} // expect: weight
+      />
+      <h3 className="text-body text-fg font-title" style={{ fontWeight: 500 }} />
+      <span className="text-caption text-fg-subtle font-label" style={{ fontWeight: 600 }} />
+      <span className="font-mono text-caption font-normal text-fg-subtle" />
       <div
         className="rounded-md bg-surface-2" // expect: radius
       />

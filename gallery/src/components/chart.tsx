@@ -393,7 +393,7 @@ function Chart({
 
       {/* A table will not shrink to sr-only's 1px, so a wrapper clips it; otherwise a long one widens a phone's page. */}
       <div className="sr-only">
-        <table>
+        <table className="[&_th]:font-normal">
           <caption>{label}</caption>
           <thead>
             <tr>
@@ -440,7 +440,7 @@ function Grid({ g, labels, fmt }: { g: Geometry; labels: string[]; fmt: (v: numb
           className={i === 0 ? "stroke-line-strong" : "stroke-line"}
         />
       ))}
-      <g shapeRendering="auto" className="fill-fg-subtle font-mono text-caption tabular-nums">
+      <g shapeRendering="auto" className="fill-fg-subtle font-mono text-caption font-normal tabular-nums">
         {g.ticks.map((t) => (
           <text key={t} x={g.left - LABEL_GAP} y={g.y(t)} textAnchor="end" dominantBaseline="central">
             {fmt(t)}
@@ -633,7 +633,7 @@ function TipContent({
     return (
       <div className="flex items-center gap-3">
         <span className="text-fg-muted">{label}</span>
-        <span className="font-mono text-caption tabular-nums">{value(series[0]!)}</span>
+        <span className="font-mono text-caption font-normal tabular-nums">{value(series[0]!)}</span>
       </div>
     );
   }
@@ -643,7 +643,7 @@ function TipContent({
       {series.map((s) => (
         <div key={s.name} className="flex items-center justify-between gap-4">
           <span className="text-fg-muted">{s.name}</span>
-          <span className="font-mono text-caption tabular-nums">{value(s)}</span>
+          <span className="font-mono text-caption font-normal tabular-nums">{value(s)}</span>
         </div>
       ))}
     </div>
@@ -712,7 +712,7 @@ export function Meter({ label, value, max = 100, valueText, hue, target, targetT
         <span id={id} className="text-small text-fg">
           {label}
         </span>
-        <span className="font-mono text-caption tabular-nums text-fg-subtle">{reading}</span>
+        <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">{reading}</span>
       </div>
       <div className="relative">
         <div

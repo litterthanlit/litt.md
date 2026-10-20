@@ -373,7 +373,7 @@ export function Heatmap({
       className={"relative grid w-fit max-w-full grid-cols-[auto_minmax(0,max-content)_auto] " + className}
     >
       {/* Row labels: their own column, so they stay put while the dots scroll. The same words sit in each row as a hidden header. */}
-      <div aria-hidden="true" className="pt-1 pr-4 font-mono text-caption whitespace-nowrap text-fg-subtle">
+      <div aria-hidden="true" className="pt-1 pr-4 font-mono text-caption font-normal whitespace-nowrap text-fg-subtle">
         {lead > 0 && <div style={{ height: lead }} />}
         <div className="flex flex-col" style={{ gap: GAP }}>
           {rows.map((row, r) => (
@@ -400,7 +400,7 @@ export function Heatmap({
           {hasTicks && (
             <div
               aria-hidden="true"
-              className="relative font-mono text-caption whitespace-nowrap text-fg-subtle"
+              className="relative font-mono text-caption font-normal whitespace-nowrap text-fg-subtle"
               style={{ height: TICK_H, marginBottom: TICK_GAP }}
             >
               {columnTicks!.map((t) => (
@@ -498,7 +498,7 @@ export function Heatmap({
           <Tip key="tip" cx={tip.x} markTop={tip.top} width={tip.width}>
             <div className="flex items-center gap-3">
               <span className="text-fg-muted">{cellName(active.r, active.c)}</span>
-              <span className="font-mono text-caption tabular-nums">{valueText(active.r, active.c)}</span>
+              <span className="font-mono text-caption font-normal tabular-nums">{valueText(active.r, active.c)}</span>
             </div>
           </Tip>
         )}
@@ -515,7 +515,7 @@ export function Heatmap({
 
 function Legend({ hue, cell }: { hue: HeatmapHue; cell: number }) {
   return (
-    <div aria-hidden="true" className="col-start-2 col-end-3 mt-3 flex items-center gap-2 justify-self-end font-mono text-caption whitespace-nowrap text-fg-subtle">
+    <div aria-hidden="true" className="col-start-2 col-end-3 mt-3 flex items-center gap-2 justify-self-end font-mono text-caption font-normal whitespace-nowrap text-fg-subtle">
       <span>Less</span>
       <span className="flex items-center" style={{ gap: GAP }}>
         {[EMPTY, ...HUE[hue]].map((fill, i) => (

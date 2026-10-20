@@ -7,7 +7,7 @@ export const meta: PageMeta = {
   id: "button",
   title: "Button",
   order: 1, group: "Controls",
-  summary: "Roomy, slightly rounded and weight 400. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
+  summary: "Roomy and slightly rounded, with the label at the title weight. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
   tiers: ["instant"],
 };
 

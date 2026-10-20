@@ -34,7 +34,7 @@ function ThemeSwitch() {
       {THEMES.map(({ id, label, Icon }) => (
         <button
           key={id} type="button" aria-pressed={theme === id} aria-label={label} onClick={() => choose(id)}
-          className="grid h-control-sm min-w-control-sm cursor-pointer place-items-center text-small text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg pointer-coarse:h-control-md pointer-coarse:min-w-control-md sm:px-3"
+          className="grid h-control-sm min-w-control-sm cursor-pointer place-items-center text-small font-title text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg pointer-coarse:h-control-md pointer-coarse:min-w-control-md sm:px-3"
         >
           <Icon className="sm:hidden" />
           <span className="hidden sm:inline">{label}</span>
@@ -127,7 +127,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       <button
         type="button"
         onClick={() => mainRef.current?.focus()}
-        className="sr-only z-50 bg-accent px-4 py-2 text-accent-fg focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+        className="sr-only z-50 bg-accent px-4 py-2 font-title text-accent-fg focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
       >
         Skip to content
       </button>
@@ -135,7 +135,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       {/* Full-bleed, so no corners: .litt-glass carries the surface radius. */}
       <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none">
         <div className="mx-auto flex h-16 max-w-wide items-center justify-between gap-4 px-gutter">
-          <a href={`#${pages[0]?.id ?? ""}`} className="flex items-baseline gap-2 text-body text-fg">
+          <a href={`#${pages[0]?.id ?? ""}`} className="flex items-baseline gap-2 text-body font-title text-fg">
             litt.md <span className="text-fg-subtle">Gallery</span>
           </a>
           <ThemeSwitch />

@@ -170,7 +170,7 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
       <div className="grid grid-cols-1 gap-2">
         <div aria-hidden="true" className="flex items-baseline justify-between gap-4">
           <span className="min-w-0 truncate text-small text-fg">{label}</span>
-          <span className="shrink-0 whitespace-nowrap font-mono text-caption tabular-nums text-fg-subtle">{reading}</span>
+          <span className="shrink-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">{reading}</span>
         </div>
         <div role="img" aria-label={summary} className="flex h-1 gap-0.5 overflow-hidden">
           {segments.map((s, i) =>
@@ -196,7 +196,7 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
                 {p.label}
                 <span className="sr-only">, </span>
               </span>
-              <span className="shrink-0 whitespace-nowrap font-mono text-caption tabular-nums text-fg-subtle">
+              <span className="shrink-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
                 {fmt(p.value)}
                 {unit && <span className="sr-only"> {unitFor(p.value)}</span>}
               </span>
@@ -214,7 +214,7 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
                   <span id={nameId} className="min-w-0 truncate text-small text-fg">
                     {p.label}
                   </span>
-                  <span className="shrink-0 whitespace-nowrap font-mono text-caption tabular-nums text-fg-subtle">
+                  <span className="shrink-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
                     {fmt(p.value)}
                     <span className="ml-2 inline-block min-w-[4ch] text-right">{percent(share)}</span>
                   </span>

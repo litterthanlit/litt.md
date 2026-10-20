@@ -19,50 +19,56 @@
    Theme-independent tokens
    -------------------------------------------------------------------------- */
 :root {
-  /* Type: Hanken Grotesk carries everything; Geist Mono for code, keys and data. */
-  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Type: Inter carries every role, headings included. Geist Mono only for code,
+     keys, numbers in tables and data, version strings and token names. Inter loads
+     with its optical-size axis; font-optical-sizing stays at auto. */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* One weight (P9). Hierarchy comes from size, color and tracking, never weight. */
-  --weight: 400;
+  /* Weight by role (P9). Three weights and nothing else: no 700 and up, nothing
+     below 400, no 500 or 600 on running text, no 600 above the caption size. */
+  --weight: 400;               /* text: reading, body, small, nav, descriptions */
+  --weight-title: 500;         /* titles: display, h1 to h4, a lockup's title, buttons, tabs, b and strong */
+  --weight-label: 600;         /* 12px labels only: the caption step, tags, meta rows, table headers */
 
-  /* Type scale: tracking tightens as size grows (P6). Headlines stay
-     restrained: display tops out at 40, at every breakpoint. */
-  --type-display-size: 2.5rem; /* 40 */
-  --type-display-leading: 1.1;
-  --type-display-tracking: -0.025em;
+  /* Type scale (P6): each step carries its size, a whole-pixel line height and its
+     tracking, tightest at the top. Display and h1 are the ceiling at 18: nothing is set larger. h2 to h4 share one
+     style on purpose; below the page title, rank comes from weight, ink and space. */
+  --type-display-size: 1.125rem;  /* 18 */
+  --type-display-leading: 28px;
+  --type-display-tracking: -0.015em;
 
-  --type-h1-size: 2rem;        /* 32 */
-  --type-h1-leading: 1.15;
-  --type-h1-tracking: -0.022em;
+  --type-h1-size: 1.125rem;       /* 18 */
+  --type-h1-leading: 28px;
+  --type-h1-tracking: -0.015em;
 
-  --type-h2-size: 1.75rem;     /* 28 */
-  --type-h2-leading: 1.2;
-  --type-h2-tracking: -0.02em;
+  --type-h2-size: 0.875rem;       /* 14 */
+  --type-h2-leading: 22px;
+  --type-h2-tracking: -0.006em;
 
-  --type-h3-size: 1.5rem;      /* 24 */
-  --type-h3-leading: 1.25;
-  --type-h3-tracking: -0.018em;
+  --type-h3-size: 0.875rem;       /* 14 */
+  --type-h3-leading: 22px;
+  --type-h3-tracking: -0.006em;
 
-  --type-h4-size: 1.25rem;     /* 20 */
-  --type-h4-leading: 1.3;
-  --type-h4-tracking: -0.012em;
+  --type-h4-size: 0.875rem;       /* 14 */
+  --type-h4-leading: 22px;
+  --type-h4-tracking: -0.006em;
 
-  --type-reading-size: 1.0625rem; /* 17: long-form text */
-  --type-reading-leading: 1.65;
+  --type-reading-size: 0.875rem;  /* 14: long-form text */
+  --type-reading-leading: 22px;
   --type-reading-tracking: -0.006em;
 
-  --type-body-size: 0.9375rem;    /* 15: UI body */
-  --type-body-leading: 1.55;
-  --type-body-tracking: -0.003em;
+  --type-body-size: 0.875rem;     /* 14: UI body */
+  --type-body-leading: 22px;
+  --type-body-tracking: -0.006em;
 
   --type-small-size: 0.8125rem;   /* 13 */
-  --type-small-leading: 1.5;
-  --type-small-tracking: 0em;
+  --type-small-leading: 20px;
+  --type-small-tracking: -0.004em;
 
-  --type-caption-size: 0.75rem;   /* 12 */
-  --type-caption-leading: 1.4;
-  --type-caption-tracking: 0.01em;
+  --type-caption-size: 0.75rem;   /* 12: labels */
+  --type-caption-leading: 16px;
+  --type-caption-tracking: -0.005em;
 
   --measure: 65ch;
 
@@ -95,8 +101,8 @@
   --radius-pill: 999px;        /* avatars and icon-only buttons */
   --hairline: 1px;
 
-  /* Controls (P10): buttons and inputs share one height scale. Labels are
-     trimmed to the cap height (.litt-trim), so at sm and md the side padding
+  /* Controls (P10): buttons and inputs share one height scale. Labels are set at
+     --weight-title and trimmed to the cap height (.litt-trim), so at sm and md the side padding
      roughly equals the vertical air. An lg button runs wider than its air
      (--button-pad-lg), because a near-square lg reads as a block. */
   --control-sm: 32px;          /* dense UI: table rows, toolbars */
@@ -107,7 +113,7 @@
   --control-pad-lg: 24px;      /* lg fields */
   --button-pad-lg: 32px;       /* lg buttons: wider than the air above and below the label */
   --control-text-sm: 0.8125rem; /* 13 */
-  --control-text-md: 0.9375rem; /* 15 */
+  --control-text-md: 0.875rem;  /* 14 */
   --control-text-lg: 1rem;      /* 16 */
   --control-gap: 8px;          /* icon to label */
   --control-group-gap: 12px;   /* between grouped buttons */
@@ -186,9 +192,12 @@
   --line-strong: #cfd2d8;
   --line-control: #82868e;     /* input/checkbox outlines, at least 3:1 */
 
-  --fg: #0e0f11;               /* headlines, key values */
-  --fg-muted: #3c3f45;         /* body */
-  --fg-subtle: #64686f;        /* supporting */
+  /* Two inks (v0.12): fg for titles and key values, the grey for all other text.
+     --fg-muted (body) carries the same grey as --fg-subtle (metadata) in every theme;
+     the two names stay, so a later split is one edit. */
+  --fg: #0e0f11;               /* titles, key values */
+  --fg-muted: #64686f;         /* body */
+  --fg-subtle: #64686f;        /* supporting, metadata */
   --fg-disabled: #9a9ea6;      /* disabled only, exempt from contrast */
 
   /* Accent: cobalt, Litt's own (v0.9), on nearly the neutrals' hue. Swap per project. */
@@ -250,7 +259,7 @@
   --line-control: #656970;
 
   --fg: #f7f8f9;
-  --fg-muted: #d0d6e0;
+  --fg-muted: #8a8f98;
   --fg-subtle: #8a8f98;
   --fg-disabled: #62666d;
 
@@ -306,7 +315,7 @@
     --line-control: #656970;
 
     --fg: #f7f8f9;
-    --fg-muted: #d0d6e0;
+    --fg-muted: #8a8f98;
     --fg-subtle: #8a8f98;
     --fg-disabled: #62666d;
 
@@ -405,9 +414,11 @@
    still override them.
    ========================================================================== */
 @layer base {
-  /* Nothing renders above 400 (P9): override bold browser defaults and block faux bold. */
+  /* Weight by role (P9): headings and bold take the title weight, table headers the
+     label weight, never the browser's bold. Faux bold stays off. */
   html { font-synthesis-weight: none; }
-  h1, h2, h3, h4, h5, h6, b, strong, th { font-weight: var(--weight); }
+  h1, h2, h3, h4, h5, h6, b, strong { font-weight: var(--weight-title); }
+  th { font-weight: var(--weight-label); }
   /* Controls take the control radius, not the browser's default rounding. */
   button, input, select, textarea { border-radius: var(--radius-control); }
 

@@ -34,9 +34,10 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] Neutrals are cool (blue-gray), not warm and not pure gray.
 
 **D. Type**
-- [ ] Hanken Grotesk and Geist Mono only. Mono used only for code, keys and data.
-- [ ] Hierarchy comes from scale and color. One display size per page, and nothing larger than 40.
-- [ ] **P9** Nothing above weight 400: no medium, semibold or bold, including headings and buttons.
+- [ ] Inter and Geist Mono only. Mono used only for code, keys, data, versions and token names, never for tags.
+- [ ] Hierarchy comes from weight, two inks and space. Nearly everything is 14px, one display or page title per page, and nothing larger than 18.
+- [ ] **P9** Weight by role: text at 400, titles, buttons and tabs at 500, 12px labels at 600. No bold, nothing below 400, no 500 or 600 on running text, no 600 above 12px, and mono at 400.
+- [ ] Lockups are tight and gaps wide: a label 4px above its title, a title 4px above its text, blocks 16px apart, sections 48px apart.
 - [ ] Body text 13px or larger. Long text at a 65ch measure or narrower.
 
 **E. Motion** (`n/a` for static input)

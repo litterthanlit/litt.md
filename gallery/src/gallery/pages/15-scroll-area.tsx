@@ -22,7 +22,7 @@ export const docs: PageDocs = {
 
 // A height and a label. While it scrolls, the region is a Tab stop named "Build log".
 <ScrollArea label="Build log" className="h-64">
-  <ol className="pr-3 font-mono text-caption">…</ol>
+  <ol className="pr-3 font-mono text-caption font-normal">…</ol>
 </ScrollArea>
 
 // Sideways: the content keeps its own width. Leave room under it for the thumb.
@@ -113,7 +113,7 @@ function DeployLogDemo() {
         <Tag status="success">Ready</Tag>
       </header>
       <ScrollArea label="Build log" className="h-64 rounded-b-surface" viewportRef={viewport}>
-        <ol className="grid gap-1 px-4 pt-3 pb-4 font-mono text-caption">
+        <ol className="grid gap-1 px-4 pt-3 pb-4 font-mono text-caption font-normal">
           {LOG.map(([at, line], i) => (
             <li key={i} className="grid grid-cols-[auto_1fr] gap-x-4 pr-2">
               <span className="text-fg-subtle tabular-nums">{at}</span>
@@ -155,7 +155,7 @@ function CoverStripDemo() {
                   <ProjectCover name={work.cover} />
                 </span>
                 <span className="grid gap-0.5 px-0.5 pb-1">
-                  <span className="text-small text-fg">{work.name}</span>
+                  <span className="text-small font-title text-fg">{work.name}</span>
                   <span className="text-caption text-fg-subtle">{work.client}</span>
                 </span>
               </a>
@@ -205,7 +205,7 @@ function ClientPanelDemo() {
           <h3 id="clients-title" className="text-small text-fg">
             Clients
           </h3>
-          <span className="font-mono text-caption text-fg-subtle tabular-nums">{CLIENTS.length}</span>
+          <span className="font-mono text-caption font-normal text-fg-subtle tabular-nums">{CLIENTS.length}</span>
         </div>
         {/* A height that cuts the eighth row in half, so the list looks like it goes on. */}
         <ScrollArea label="Clients" className="h-84">
@@ -234,7 +234,7 @@ function ClientPanelDemo() {
             })}
           </ul>
         </ScrollArea>
-        <p className="px-4 py-3 text-caption text-fg-subtle">Archived clients are hidden.</p>
+        <p className="px-4 py-3 text-caption font-normal text-fg-subtle">Archived clients are hidden.</p>
       </aside>
       <div className="grid content-start gap-2 p-4">
         <p className="text-h4 text-fg">{client.name}</p>

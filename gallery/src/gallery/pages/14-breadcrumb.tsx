@@ -107,7 +107,7 @@ function useDemoRouter() {
 
 function Status({ children }: { children: ReactNode }) {
   return (
-    <p role="status" className="font-mono text-caption text-fg-subtle">
+    <p role="status" className="font-mono text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );

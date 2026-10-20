@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   title: "Tag",
   order: 6, group: "Controls",
   summary:
-    "A small mono label at the control radius, with the look of a selected segment, that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
+    "A small label at the control radius, with the look of a selected segment, that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
   tiers: [],
 };
 
@@ -68,7 +68,7 @@ function LabelsDemo() {
       {WORK.map((p) => (
         <li key={p.name} className="grid content-start gap-4">
           <div className="grid gap-1">
-            <span className="text-body text-fg">{p.name}</span>
+            <span className="text-body font-title text-fg">{p.name}</span>
             <span className="text-caption text-fg-subtle">{p.client}</span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -117,7 +117,7 @@ function DeploysDemo() {
           key={d.site}
           className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-4 py-4 last:border-b-0"
         >
-          <span className="min-w-0 basis-full truncate text-body text-fg sm:flex-1 sm:basis-0">{d.site}</span>
+          <span className="min-w-0 basis-full truncate text-body font-title text-fg sm:flex-1 sm:basis-0">{d.site}</span>
           <span className="flex sm:w-24">
             <Tag>{d.env}</Tag>
           </span>
@@ -158,7 +158,7 @@ export default function TagPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Labels"
-        caption="A plain tag is 24px tall at the control radius: a surface-1 fill with an inset hairline and the top highlight, like a selected segment, and Geist Mono at the caption size in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
+        caption="A plain tag is 24px tall at the control radius: a surface-1 fill with an inset hairline and the top highlight, like a selected segment, and the sans at the caption size and the label weight in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
         align="start"
         code="LabelsDemo"
       >

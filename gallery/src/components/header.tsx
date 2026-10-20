@@ -109,7 +109,7 @@ export function Header({
       {/* The bar is the container, so the layout follows the width it is given. */}
       <div className="@container">
         <div className="mx-auto flex h-(--header-h) max-w-wide items-center gap-4 px-gutter @min-[40rem]:gap-6">
-          <div className="flex shrink-0 items-center text-body text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus pointer-coarse:[&_a]:inline-flex pointer-coarse:[&_a]:h-control-md pointer-coarse:[&_a]:items-center">
+          <div className="flex shrink-0 items-center text-body font-title text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus pointer-coarse:[&_a]:inline-flex pointer-coarse:[&_a]:h-control-md pointer-coarse:[&_a]:items-center">
             {wordmark}
           </div>
 

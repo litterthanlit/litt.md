@@ -4,8 +4,8 @@
  * - Slightly rounded, three sizes on the shared control scale (P10). Labels sit in
  *   .litt-trim, so side padding equals the visible air at sm and md. lg runs wider
  *   (--button-pad-lg), so a short label never makes a square block.
- * - Weight 400 always (P9). State changes color and fill only; the box never
- *   moves or resizes (loading keeps the label mounted at opacity 0).
+ * - The label is at the title weight (P9, font-title). State changes color and fill only; the
+ *   box never moves or resizes (loading keeps the label mounted at opacity 0).
  * - Motion: the instant tier. Hover and press are CSS transitions on
  *   --dur-instant, which tokens.css owns. Press is scale(--press-scale). Tailwind's
  *   active:scale-* sets the CSS `scale` property, not `transform`, so the transition
@@ -45,7 +45,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-normal " +
+  "relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-title " +
   "cursor-pointer transition-[background-color,color,scale] duration-(--dur-instant) ease-litt " +
   "[-webkit-tap-highlight-color:transparent] " +
   "active:scale-(--press-scale) disabled:cursor-not-allowed disabled:active:scale-100 " +

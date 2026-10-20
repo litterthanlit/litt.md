@@ -77,7 +77,7 @@ function SizesDemo() {
     <div className="flex w-full flex-wrap items-end justify-center gap-x-16 gap-y-12">
       <div className="grid w-full max-w-40 gap-2">
         <Gauge label="Minutes" value={1380} max={3000} valueText="1,380 of 3,000 minutes" figure="1,380" size={160} hue="teal" />
-        <p className="font-mono text-caption text-fg-subtle">160 wide</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">160 wide</p>
       </div>
       <div className="grid w-full max-w-80 gap-2">
         <Gauge
@@ -90,7 +90,7 @@ function SizesDemo() {
           size={320}
           hue="teal"
         />
-        <p className="font-mono text-caption text-fg-subtle">320 wide</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">320 wide</p>
       </div>
       <div className="grid w-full max-w-[17.5rem] gap-2">
         <Gauge
@@ -103,7 +103,7 @@ function SizesDemo() {
           size={320}
           hue="teal"
         />
-        <p className="font-mono text-caption text-fg-subtle">A 320 gauge in a box 17.5rem wide</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">A 320 gauge in a box 17.5rem wide</p>
       </div>
     </div>
   );

@@ -15,31 +15,48 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 ## 1. Type
 
-**Families.** `--font-sans` (Hanken Grotesk) for everything. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings, token names and tags. No third family, ever.
+**Families.** `--font-sans` (Inter) for everything, headings included. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. Tags are set in the sans. No third family, ever.
 
-**Weight (P9).** One weight: `--weight` (400) for everything, including display, headings, labels, buttons and the wordmark. Medium, semibold and bold read too wide and are not part of the system. `tokens.css` resets the bold browser defaults (`h1`–`h6`, `b`, `strong`, `th`) and turns off faux bold. Only the 400 faces need to load.
+**Loading.** Inter comes from Google Fonts with its optical-size axis and the three weights: `family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=Geist+Mono:wght@400&display=swap`. Ask for opsz explicitly, because a plain `Inter:wght@400` returns a file without optical sizing. Leave `font-optical-sizing` at auto, and declare no `cv` or `ss` features: Google's Inter build strips them. Geist Mono loads at 400 only.
 
-**Scale.** Each step bundles size, leading and tracking (`--type-<step>-size`, `-leading`, `-tracking`). Tracking tightens as size grows (P6).
+**Weight (P9).** Three weights, one per role, and nothing else.
 
-| Step | Size | Use |
+| Token | Weight | Role |
 |---|---|---|
-| display | 40 | One per page, hero statement only. The same size at every breakpoint. |
-| h1 | 32 | Page title |
-| h2 | 28 | Section title on content pages |
-| h3 | 24 | Subsection, card group title |
-| h4 | 20 | Section label in the asymmetric left column |
-| reading | 17 | Long-form text, at a `--measure` (65ch) line length |
-| body | 15 | UI body: settings, lists, dialogs |
-| small | 13 | Supporting text, table cells, helper text, nav |
-| caption | 12 | Timestamps, fine print |
+| `--weight` | 400 | Text: reading, body, small, nav, descriptions |
+| `--weight-title` | 500 | Titles: display, h1 to h4, the title in a title-and-description lockup, buttons, tab and segmented triggers, `b` and `strong` |
+| `--weight-label` | 600 | 12px labels only: the caption step, tags, meta rows, table headers |
 
-**Restrained headlines.** Display stops at 40. The hero gets its presence from space, light and the product, not from poster-sized type, so the jump to 15px body is enough on its own.
+Nothing goes to 700 or above or below 400, running text never takes 500 or 600, and 600 never appears above the caption size. Geist Mono stays at 400, at the caption size too. `tokens.css` sets `h1`–`h6`, `b` and `strong` to the title weight and `th` to the label weight, and turns off faux bold. In Tailwind, display to h4 carry the title weight and the caption carries the label weight on their own; `font-title` and `font-label` set the role on anything else, and a mono caption adds `font-normal`.
 
-**Hierarchy order.** Get hierarchy from scale first, then color (`--fg` → `--fg-muted` → `--fg-subtle`), then tracking. Never from weight. When a label needs to stand out at the same size, make it `--fg` and its neighbours `--fg-subtle`.
+**Scale.** Each step bundles size, a whole-pixel line height and tracking (`--type-<step>-size`, `-leading`, `-tracking`).
+
+| Step | Size / leading | Weight | Use |
+|---|---|---|---|
+| display | 18 / 28 | 500 | One per page, the hero statement |
+| h1 | 18 / 28 | 500 | Page title |
+| h2 | 14 / 22 | 500 | Section title |
+| h3 | 14 / 22 | 500 | Subsection, card group title |
+| h4 | 14 / 22 | 500 | Section label in the asymmetric left column, a dialog's title |
+| reading | 14 / 22 | 400 | Long-form text, at a `--measure` (65ch) line length |
+| body | 14 / 22 | 400 | UI body: settings, lists, dialogs |
+| small | 13 / 20 | 400 | Supporting text, table cells, helper text, nav |
+| caption | 12 / 16 | 600 | Labels: meta rows, tags, table headers, timestamps |
+
+**Restrained headlines.** Display and h1 are the ceiling at 18: nothing is set larger, at any breakpoint. h2 to h4 share one style on purpose. Below the page title, rank comes from weight, ink and space, not size, and the hero gets its presence from space, light and the product.
+
+**Hierarchy order.** Get hierarchy from weight and ink first (a 500 title in `--fg` over 400 text in the grey), then from space (tight lockups, wide gaps), and only then from the one size step to the page title. There are two inks: `--fg` for titles and key values, and the grey for all other text. `--fg-muted` (body) and `--fg-subtle` (metadata) carry the same grey; use each name for its role, so a later split is one edit in `tokens.css`.
+
+**Text spacing.** Tight lockups and wide gaps, on the 4px grid:
+- A label sits 4px (`--space-1`) above its title, and a title 4px above its text, so a lockup reads as one unit.
+- Blocks within a section sit 16px (`--space-4`) apart.
+- A section heading sits 4px above its first content.
+- The sections of a page sit 48px (`--space-12`) apart. A marketing page's full-width sections keep `--section-y` (P7, section 3).
+- A page title sits 16px above its summary.
 
 **Rules.**
 - Display and headings use `text-wrap: balance`.
-- Never set body text below 13px, or long text wider than `--measure`.
+- Never set running text below 13px, or long text wider than `--measure`. The caption is for labels.
 - Never pick out one word of a headline in accent or italic.
 - Uppercase is not the default for labels (open question Q1). Sentence case everywhere.
 
@@ -53,7 +70,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 | Surfaces | `--surface-1`, `--surface-2`, `--surface-3` | Raised cards, then nested or hover fills, then pressed fills or wells |
 | Lines | `--line`, `--line-strong` | Decorative hairlines; dividers that need to be seen |
 | Control line | `--line-control` | Outline of inputs, checkboxes, selects and switches (at least 3:1) |
-| Text | `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled` | Headlines and key values, body, supporting text, disabled only |
+| Text | `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled` | Two inks: `--fg` for titles and key values, one grey for body (`--fg-muted`) and supporting text (`--fg-subtle`). Disabled only |
 | Accent | `--accent`, `--accent-hover`, `--accent-fg`, `--accent-text`, `--accent-tint` | The one primary action (a fill with `--accent-fg` on it), links (`--accent-text`), focus, the light source |
 | Focus | `--focus`, `--focus-ring` | Keyboard focus indicator |
 | Status | `--success`, `--warning`, `--danger` | State only: never decoration, never brand |
@@ -81,7 +98,7 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 
 **Scale.** `--space-1` to `--space-40`: 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160. The names match Tailwind's multiplier, so `--space-6` is `p-6`. Off-scale values (20, 28, 36, 40 as spacing) fail P6. 4px and 12px are for inside components only.
 
-**Control heights (P10).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero CTAs and a page form's submit). A dialog is compact, so its fields and actions are md. A field is lg only when it shares a row with an lg button (the inline form). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 15 / 16). Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
+**Control heights (P10).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero CTAs and a page form's submit). A dialog is compact, so its fields and actions are md. A field is lg only when it shares a row with an lg button (the inline form). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 14 / 16), at the title weight. Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
 
 **Section rhythm (P7).** `--section-y` is the distance between sections: 64 mobile, 96 from 640px, 128 from 1024px. Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
 

@@ -204,7 +204,7 @@ function StudioPage() {
                 <ProjectCover name={w.cover} />
               </div>
               <div className="grid gap-1">
-                <p className="text-body text-fg">{w.name}</p>
+                <p className="text-body font-title text-fg">{w.name}</p>
                 <p className="text-small text-fg-subtle">{w.client}</p>
               </div>
             </li>
@@ -217,7 +217,7 @@ function StudioPage() {
         <ul className="grid gap-6 @min-[48rem]:grid-cols-3">
           {SERVICES.map(([title, text]) => (
             <li key={title} className="grid content-start gap-2 border-t border-line pt-4">
-              <p className="text-body text-fg">{title}</p>
+              <p className="text-body font-title text-fg">{title}</p>
               <p className="text-small text-fg-subtle">{text}</p>
             </li>
           ))}
@@ -229,8 +229,8 @@ function StudioPage() {
         <ul>
           {JOURNAL.map(([title, date]) => (
             <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
-              <span className="text-body text-fg">{title}</span>
-              <span className="shrink-0 font-mono text-caption text-fg-subtle">{date}</span>
+              <span className="text-body font-title text-fg">{title}</span>
+              <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{date}</span>
             </li>
           ))}
         </ul>
@@ -342,7 +342,7 @@ function CurrentDemo() {
         />
         <StudioPage />
       </Frame>
-      <p role="status" className="font-mono text-caption text-fg-subtle">
+      <p role="status" className="font-mono text-caption font-normal text-fg-subtle">
         {path ? `aria-current="page" on ${NAV.find((l) => l.href === path)?.label}` : "No link is current at the top of the page"}
       </p>
     </div>

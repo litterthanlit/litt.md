@@ -49,7 +49,7 @@ function Row({ id, title, tiers, phone, aside, children }: { id: string; title: 
             <TierChip key={t} tier={t} />
           ))}
         </div>
-        {phone && <p className="text-caption text-fg-subtle">{phone}</p>}
+        {phone && <p className="text-caption font-normal text-fg-subtle">{phone}</p>}
         {aside}
       </div>
       <div className="min-w-0">{children}</div>
@@ -120,10 +120,10 @@ function PublishDialog() {
         <dl className="grid gap-3">
           <Fact label="Pages changed">3</Fact>
           <Fact label="Build size">
-            <span className="font-mono text-caption">418 kB</span>
+            <span className="font-mono text-caption font-normal">418 kB</span>
           </Fact>
           <Fact label="Domain">
-            <span className="font-mono text-caption">litt.design</span>
+            <span className="font-mono text-caption font-normal">litt.design</span>
           </Fact>
         </dl>
       </DialogContent>

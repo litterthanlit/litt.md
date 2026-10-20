@@ -284,7 +284,7 @@ export function DialogContent({
   /* The slots are the same on every screen; compact screens only change their padding and the footer's inset. */
   const slots = (
     <>
-      <div className="grid content-start gap-2 pt-6 pr-4 pl-6 sm:pt-8 sm:pl-8" style={{ gridArea: "head" }}>
+      <div className="grid content-start gap-1 pt-6 pr-4 pl-6 sm:pt-8 sm:pl-8" style={{ gridArea: "head" }}>
         <RadixDialog.Title className="text-h4 text-fg text-balance">{title}</RadixDialog.Title>
         {description && (
           <RadixDialog.Description className="text-small text-fg-subtle">{description}</RadixDialog.Description>

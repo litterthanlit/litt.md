@@ -8,8 +8,8 @@
  *   the whole field while its text input is focus-visible. An invalid field turns the edge to
  *   --danger. Like the Input it has no hover. Padding sits on the 4px grid, so the field grows
  *   by whole token rows (24px tokens, 4px apart) as they wrap.
- * - Token: the Tag's look (24px, Geist Mono at the caption size, surface-1, hairline and top
- *   highlight), because a token is data, with a 24px remove button that grows to a 44px hit
+ * - Token: the Tag's look (24px, the sans at the caption size and the label weight, surface-1,
+ *   hairline and top highlight), with a 24px remove button that grows to a 44px hit
  *   area on coarse pointers through an invisible ::before. The "+N" token is a surface-2 chip
  *   with no button. The placeholder shows only while there are no tokens.
  * - Adding: Enter, a comma and blur commit the typed text, and a paste is split on commas,
@@ -287,7 +287,7 @@ export function TokenInput({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label id={labelId} htmlFor={inputId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
 
@@ -349,7 +349,7 @@ export function TokenInput({
                   key="more"
                   layout="position"
                   aria-label={`${more} more`}
-                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 font-mono text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]"
+                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, transition: exit }}

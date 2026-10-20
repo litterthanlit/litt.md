@@ -4,9 +4,11 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-19 · Staples and versions
+## 2026-10-19 · Staples, versions and type
 
 Six staples, and from this release every item carries its version, in the registry and at the top of each file it installs.
+
+The type of taste profile v0.12, after Nick's own portfolio: Inter for every role, nearly everything at 14px with an 18px title, three weights by role (text 400, titles 500, 12px labels 600), two inks, and tags in the sans. The six staples below already ship it.
 
 - **added** `combobox`: type to find one value, or several, in a long list.
 - **added** `date-picker`: Calendar and DatePicker, a day or a range as YYYY-MM-DD strings.
@@ -16,6 +18,15 @@ Six staples, and from this release every item carries its version, in the regist
 - **added** `context-menu`: the Menu at the pointer, by right-click, Shift+F10 or a hold on touch.
 - **changed** `menu`: its rows also work inside a ContextMenu. Nothing changes for an existing Menu.
 - **changed** `icons`: ChevronLeftIcon.
+- **changed** `litt`: Inter replaces Hanken Grotesk in `--litt-font-sans`. Three weights by role: `--litt-weight` (400, text), `--litt-weight-title` (500, titles) and `--litt-weight-label` (600, 12px labels), with the utilities `font-litt-title` and `font-litt-label`. The scale tops out at 18px: display and h1 are 18 on 28, h2 to h4, reading and body 14 on 22, small 13 on 20 and caption 12 on 16, all on whole-pixel line heights. `text-litt-display` to `text-litt-h4` carry the title weight and `text-litt-caption` the label weight. Control labels are 13, 14 and 16. `--litt-fg-muted` takes the grey of `--litt-fg-subtle` in both themes, so there are two inks.
+- **changed** `base-styles`: loads Inter at 400, 500 and 600 and Geist Mono at 400 (`@fontsource/inter` replaces `@fontsource/hanken-grotesk`). Headings, b and strong take the title weight and table headers the label weight.
+- **changed** `tag`, `token-input`: tags are set in the sans at the caption size and the label weight, no longer in mono. The tokens of a token input and its +N chip follow.
+- **changed** `button`, `tabs`, `segmented`, `pagination`: labels at the title weight. Page numbers stay in mono at 400.
+- **changed** `input`, `select`, `checkbox`, `switch`, `slider`, `pad`, `form`: field labels, legends and form section titles at the title weight. Typed text stays at 400.
+- **changed** `card`, `callout`, `list`, `states`, `toast`, `dialog`, `command-menu`, `tool-call`, `plan`, `message`, `header`, `app-shell`: titles at the title weight, and wordmarks too. A dialog's title sits 4px above its description, and a description at the caption size stays at 400. MessageText sets headings and strong text at the title weight, never bold.
+- **changed** `table`: column headers at the label weight. Mono figures stay at 400.
+- **changed** `avatar`, `breakdown`, `chart`, `code-block`, `composer`, `dot-plot`, `gauge`, `heatmap`, `menu`, `spread`, `stat`, `thinking`, `timeline`: mono captions stay at 400 under the caption's label weight, and avatar initials stay at 400 at every size. A stat's value takes the title weight from its step.
+- **changed** `code-block`: keywords take `--fg`, so comments stay the one grey in code now that body text and metadata share an ink.
 
 ## 2026-10-18 · Agents
 

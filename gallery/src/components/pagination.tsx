@@ -72,7 +72,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
   return (
     <nav aria-label={label} className={"@container " + className}>
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-        <p aria-live="polite" aria-atomic="true" className="font-mono text-caption tabular-nums text-fg-subtle">
+        <p aria-live="polite" aria-atomic="true" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
           {total === 0 ? "No results" : `${GROUP(first)} to ${GROUP(last)} of ${GROUP(total)}`}
         </p>
         <ul className="flex items-center gap-3">
@@ -86,7 +86,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
               <ul className="flex items-center gap-1">
                 {pageItems(current, count).map((n, i) =>
                   n === null ? (
-                    <li key={`gap-${i}`} aria-hidden="true" className="grid min-w-control-sm place-items-center font-mono text-caption text-fg-subtle">
+                    <li key={`gap-${i}`} aria-hidden="true" className="grid min-w-control-sm place-items-center font-mono text-caption font-normal text-fg-subtle">
                       …
                     </li>
                   ) : (
@@ -96,7 +96,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
                         variant={n === current ? "secondary" : "ghost"}
                         aria-current={n === current ? "page" : undefined}
                         aria-label={`Page ${n}`}
-                        className={TOUCH + " min-w-control-sm pointer-coarse:min-w-control-md font-mono tabular-nums"}
+                        className={TOUCH + " min-w-control-sm pointer-coarse:min-w-control-md font-mono tabular-nums [&_.litt-trim]:font-normal"}
                         onClick={() => go(n)}
                       >
                         {n}

@@ -1,12 +1,12 @@
 # litt.md taste profile
 
-> v0.11 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 66 journal entries · October 2026
+> v0.12 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 1 split test (6 versions), 72 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
 ## Point of view
 
-**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, tight type, one font family at one weight. The one place it gets bold is light and material. Surfaces have physicality: glass that floats, a soft light source falling from the top, edges that catch the light, a trace of grain. Color barely appears, and where it does, it behaves like light or carries data.
+**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, tight type, one font family in three weights by role. The one place it gets bold is light and material. Surfaces have physicality: glass that floats, a soft light source falling from the top, edges that catch the light, a trace of grain. Color barely appears, and where it does, it behaves like light or carries data.
 
 Five words: **precise, lit, airy, calm, exact.**
 
@@ -16,7 +16,7 @@ Five words: **precise, lit, airy, calm, exact.**
 |---|---|---|
 | Character | Technical precision (Linear/Vercel lineage) | Interfaces should feel engineered and inevitable, not decorated. |
 | Themes | Light and dark are both first-class | Neither theme is an afterthought or a mechanical inversion. |
-| Type | Hanken Grotesk + Geist Mono, nothing else, weight 400 only; display stops at 40 | One grotesk carries everything; mono is for code, keys, data and tags. Heavier weights read too wide (P9), and poster-sized headlines are out. |
+| Type | Inter + Geist Mono, nothing else, in three weights by role (P9); nothing is set above 18px | Inter carries every role, headings included. Mono is for code, keys, numbers in tables and data, version strings and token names, never tags. Nearly everything is 14px with one 18px title, as on Nick's own site (litt.design): rank comes from weight, two inks and space, not size. |
 | Signature | Light and material | This is where the boldness goes, and it is what separates litt.md from generic dark mode. |
 | Color | Cool neutrals (OKLCH hue about 262), monochrome chrome, one accent per project. Litt's own accent is cobalt. Five data hues carry data and never chrome (P11) | Hierarchy comes from tone. The accent is chosen per project; Litt's own sits on nearly the neutrals' hue, so the light it casts stays cool. Color that says something (which series, which category, how much) earns its place; color on chrome is decoration. |
 | Density | Airy | One idea per section, with generous negative space. |
@@ -49,10 +49,10 @@ Five words: **precise, lit, airy, calm, exact.**
 **P8. Designed, not inverted.** Each theme has its own material values: grain is 2% in light and 4% in dark, the light tint is 12% in light and 22% in dark, glass opacity and borders are tuned separately. A theme produced by flipping the other's colors fails.
 - *Check:* both themes are specified for every surface and material token in `tokens.css`. The check script verifies this.
 
-**P9. One weight.** Hanken Grotesk and Geist Mono at 400 only. Heavier weights read too wide. Hierarchy comes from scale, color and tracking, never weight. That includes labels, buttons, headings and the wordmark.
-- *Check:* any computed font-weight above 400 fails, including browser defaults on `h1`–`h6`, `b`, `strong` and `th` (`tokens.css` resets them). `font-medium`, `font-semibold` or `font-bold` in markup fails. The check script scans the assets.
+**P9. Weight by role.** Three weights, one per role, and nothing else. Text is 400 (`--weight`): reading, body, small, nav and descriptions. Titles are 500 (`--weight-title`): display, h1 to h4, the title in a title-and-description lockup, buttons, tab and segmented triggers, `b` and `strong`. Labels are 600 (`--weight-label`), at 12px only: the caption step, tags, meta rows and table headers. Geist Mono stays at 400. Below the page title, rank comes from this weight step and the ink, not from size.
+- *Check:* any computed font-weight other than 400, 500 or 600 fails, including browser defaults (`tokens.css` sets `h1`–`h6`, `b` and `strong` to the title weight, `th` to the label weight, and turns off faux bold). 500 or 600 on running text (reading, body or small paragraphs) fails, 600 above the caption size fails, and mono above 400 fails. `font-medium`, `font-semibold` or `font-bold` in markup fails: `font-title` and `font-label` are the role utilities. Google Fonts loads Inter at 400, 500 and 600 only, and Geist Mono at 400 only. The check script scans the assets, and the gallery lint the components.
 
-**P10. Roomy controls.** Buttons and inputs share one height scale: sm 32, md 44, lg 56 (`--control-*`). The label is trimmed to its cap height (`.litt-trim`), so at sm and md the side padding roughly equals the air above and below it: sm pad 12, md pad 16. An lg button runs wider, pad 32 (`--button-pad-lg`), because at 56 tall a near-square box reads as a block; an lg field keeps pad 24. Hero CTAs and the submit of a page form use lg, and go full width in narrow forms. A dialog is compact: its fields and actions use md. A field is lg only when it shares a row with an lg button (the inline form). Labels stay 400 and small, so the box carries the presence.
+**P10. Roomy controls.** Buttons and inputs share one height scale: sm 32, md 44, lg 56 (`--control-*`). The label is trimmed to its cap height (`.litt-trim`), so at sm and md the side padding roughly equals the air above and below it: sm pad 12, md pad 16. An lg button runs wider, pad 32 (`--button-pad-lg`), because at 56 tall a near-square box reads as a block; an lg field keeps pad 24. Hero CTAs and the submit of a page form use lg, and go full width in narrow forms. A dialog is compact: its fields and actions use md. A field is lg only when it shares a row with an lg button (the inline form). Labels stay small, at the title weight, so the box carries the presence.
 - *Check:* control heights come only from the scale. For every sm and md button, side padding ÷ vertical air (from the trimmed label to the edge) sits between 0.85 and 1.25; for an lg button it sits between 1.3 and 1.6. A hero or page-form CTA below lg fails, and so does an lg field or button in a dialog.
 
 **P11. Color carries data.** Beyond the one accent, color appears only where it says something: which series or category a mark belongs to, how much (a step of a heat scale), which side of a goal a value falls on, or who or what a thing is (a category tag, an avatar). It comes from the five data hues, `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet` and `--data-rose`, assigned in that order and never cycled. Each has a mark tone (3:1 on every surface), a `-text` tone (4.5:1, also on its own tint) and a `-tint` fill. Chrome never takes a data hue: buttons, controls, surfaces, borders, nav, rails, gridlines and running text stay neutral, and the accent keeps the primary action. Within one chart or one list a hue means one thing. Status stays with success, warning and danger, and a word. A single quantity may stay in the foreground, which is the quiet default.
@@ -60,11 +60,12 @@ Five words: **precise, lit, airy, calm, exact.**
 
 ## Do
 
-- Let type do the hierarchy. Use scale jumps (40 against 15) first, then color (`--fg` against `--fg-muted`), then tracking. Never weight.
-- Use `--fg-subtle` for supporting text and `--fg-muted` for body. Keep pure `--fg` for headlines and key values.
+- Let weight, ink and space do the hierarchy. Nearly everything is 14px, with one 18px page title. A title steps up to 500 in `--fg`, its text stays 400 in the grey, and a 12px label takes 600.
+- Use two inks: `--fg` for titles and key values, the grey for all other text. `--fg-muted` (body) and `--fg-subtle` (metadata) carry the same grey; keep both names, so the two can split again with one edit.
+- Keep lockups tight and gaps wide: a label 4px above its title, a title 4px above its text, blocks 16px apart, sections 48px apart.
 - Give the primary action the only accent fill on the page, and let it glow (`--glow`).
 - Put busy content behind glass, because that is where glass earns its blur.
-- Use the mono (`--font-mono`) for real code, keyboard shortcuts (`⌘K`), numbers in tables, and version strings.
+- Use the mono (`--font-mono`) for real code, keyboard shortcuts (`⌘K`), numbers in tables and data, version strings and token names. Tags are set in the sans.
 - Design the empty, loading, error and focus states with the same care as the default.
 - Keep a visible focus ring: 2px `--focus` at a 2px offset.
 - In menus, the command menu and dense lists, use one highlight that glides from row to row. Airy content layouts keep the per-row fill.
@@ -74,7 +75,8 @@ Five words: **precise, lit, airy, calm, exact.**
 ## Don't
 
 - Add a second typeface, a serif display, or a "fun" font for one section.
-- Use a weight above 400 (medium, semibold or bold), even for a small label or button.
+- Use a weight outside the three roles: nothing at 700 or bold, nothing below 400, no 500 or 600 on running text, no 600 above the caption size.
+- Set type above 18px, or step headings down by size below the page title.
 - Use gradients as decoration (purple-to-blue heroes, gradient text, gradient borders).
 - Bounce a spring past 0.12, bounce on the responsive tier or on any exit, or give a view more than one expressive moment. The instant tween stays at or under 240ms.
 - Animate layout properties (width, height, top, left), use `transition: all`, or animate anything but transform and opacity. Color, background-color, border-color, fill and the focus ring may fade at `--dur-instant`.
@@ -99,14 +101,14 @@ Claude's default output drifts toward these. Each one is banned unless the sessi
 - The same uppercase mono eyebrow above every section ("01 / FEATURES").
 - Three equal feature cards with an icon, a title and two lines, as the default answer to every section.
 - One word of the headline picked out in accent color.
-- Inter or Space Grotesk as the "safe" face. litt.md uses Hanken Grotesk.
+- Space Grotesk, or a default system stack, as the "safe" face. litt.md sets Inter on purpose: 14px, three weights by role, two inks and tight lockups. Inter at 16px and 400 everywhere, with headings scaled up by size, is still the tell.
 
 ## Open questions
 
 The interview workflow works through these. When one is answered, move the answer into a rule (`P#`) or decision and delete it here.
 
 - **Q1.** How often may uppercase mono labels appear? Never, once per view, or as a system for metadata only?
-  - *Evidence:* v0.8 set tags in Geist Mono, in sentence case: mono as a system for metadata, without uppercase.
+  - *Evidence:* v0.8 set tags in Geist Mono, in sentence case: mono as a system for metadata, without uppercase. v0.12 moved tags to the sans at the label weight, still in sentence case.
   - *Evidence:* Fluid Functionalism bans uppercase, eyebrow labels and letter-spacing outright, enforced by lint.
 - **Q3.** Icon style: stroke weight (1.25, 1.5 or 2), set (Lucide, Phosphor, custom), and size relative to text.
   - *Evidence:* thin 1.5px line-icon sets recur on the Cosmos board (4 pins).
@@ -123,11 +125,13 @@ The interview workflow works through these. When one is answered, move the answe
   - *Evidence:* Fluid Functionalism is true neutral gray too (chroma 0).
 - **Q11.** Exposed editorial structure (visible column rules, index numbers) shows up a lot on the Pinterest "web" board. Allow it as a secondary device on content pages, or keep the language purely light-and-material?
 - **Q12.** Which theme comes first on marketing pages when the system preference is unknown? Cursor, Vercel and litt.design are all light-first.
-- **Q14.** Mono: keep Geist Mono next to Hanken Grotesk, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
-  - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The type trial paired Hanken Grotesk with JetBrains Mono by default.
+- **Q14.** Mono: keep Geist Mono next to Inter, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
+  - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The 14-face type trial (v0.4) paired its sans with JetBrains Mono by default.
+  - *Evidence:* v0.12 kept Geist Mono for code, keys, data, version strings and token names, and moved tags to the sans, so the mono now carries less.
 
 ## Changelog
 
+- **v0.12, October 2026.** Nick on the type: "I think we should add inter as body", then "inter is the way" after the type research, and "I like the type in my portfolio" (litt.design). A split test ran the real gallery in six type versions: Today (v0.11 as it shipped), Report (40/30/22), One size (16), Quartz, Portfolio (litt.design's type settings, set in Inter) and Portfolio 400 (the same layout inside P9). Portfolio was presented as "if Portfolio wins, P9 should change", and Nick chose it over the other five: "portfolio wins, also make the tags sans too". P9 changes from one weight to weight by role: text 400, titles 500, 12px labels 600, nothing else. The Type decision changes from Hanken Grotesk + Geist Mono at 400 with display at 40 to Inter + Geist Mono in three weights, with nothing above 18px: display and h1 are 18, h2 to h4 share 14 at the title weight, reading and body are 14, small 13 and caption 12 at the label weight, all on whole-pixel line heights. Hanken Grotesk is gone. The v0.8 decision that tags are set in mono is reversed: tags are the sans at the caption size and the label weight, so the mono is for code, keys, data, version strings and token names. Two inks, as on the portfolio: `--fg-muted` now carries `--fg-subtle`'s grey in both themes. A text-spacing rule joins the type section of `system/foundations.md`: lockups 4px apart, blocks 16px, sections 48px, the page title 16px above its summary. litt.design itself is set in Geist; what Nick likes is the setting, so the face is Inter. Journal: the five entries dated 2026-10-19.
 - **v0.11, October 2026.** Nick sent five reference shots of data panels (a rule builder with colored category tags, a voice pad on a dot grid, a reply-speed dot plot, a shortcut heatmap, a usage dot matrix and gauge, a deploy timeline) with "lets expand the components ... we stick to our design language, we can add some color too". New rule P11: color carries data. Five data hues (blue, amber, teal, violet, rose), fitted to litt's surfaces in both themes and checked for color-blind separation, each with a mark tone, a text tone and a tint. They mark series, categories, heat steps and identity, and never chrome; the accent still owns the primary action, and the dashboards step's foreground-only chart stays the default. The Color decision now reads "monochrome chrome". Tags take a hue for a category. The lint fails a hue's mark tone or tint used as text.
 - **v0.10, October 2026.** Nick on the dark primary button: "I think the text gets lost a bit in the dark version of the button". Its dark text on a light cobalt passed 4.5:1 but read muddy. The accent is now a fill only: in both themes the primary action is a deep cobalt with white text, as in the reference, and it stays at least 3:1 against the page. A new `--accent-text` carries the accent as text (links): the accent itself in light, a lighter cobalt in dark. The lint fails the fill used as text.
 - **v0.9, October 2026.** Nick, with a reference shot of a dashboard on a deep blue frame: "use this kind of blue", and "the large buttons are too square". Litt's own accent is now cobalt, on nearly the neutrals' hue, which closes Q2 (the placeholder signal blue is gone). Asked whether "too square" meant the corners or the shape, Nick chose wider over rounder corners and the pill: an lg button's side padding goes from 24 to 32 (`--button-pad-lg`), so P10's check gives lg its own range, and an lg field keeps 24. For the forms step Nick chose a pill track for the switch over the control radius, so switches join the pill list, and radio marks and slider thumbs are named as circles.

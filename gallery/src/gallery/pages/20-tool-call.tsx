@@ -77,9 +77,9 @@ export const docs: PageDocs = {
 
    Litt is fixing the Halo site's failing build. The log is long on purpose: past 16rem the block scrolls inside. */
 
-const SEARCH_MATCHES = `src/styles/fonts.css:1    @import "@fontsource/hanken-grotesk/400.css";
+const SEARCH_MATCHES = `src/styles/fonts.css:1    @import "@fontsource/inter/400.css";
 src/styles/fonts.css:2    @import "@fontsource/geist-mono/400.css";
-package.json:17           "@fontsource/hanken-grotesk": "^5.0.8",`;
+package.json:17           "@fontsource/inter": "^5.2.8",`;
 
 const BUILD_LOG = `> halo-site@0.4.0 build
 > vite build
@@ -194,7 +194,7 @@ function ApprovalDemo() {
             <ArrowUpIcon />
           </Button>
         </div>
-        <p className="text-caption text-fg-subtle">{waiting ? "Send is off while Litt waits for your answer." : "Send turns on when there is something to send."}</p>
+        <p className="text-caption font-normal text-fg-subtle">{waiting ? "Send is off while Litt waits for your answer." : "Send turns on when there is something to send."}</p>
       </div>
     </div>
   );

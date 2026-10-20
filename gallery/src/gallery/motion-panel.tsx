@@ -25,7 +25,7 @@ function Slider({ label, value, min, max, step, format, onChange }: {
   return (
     <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1">
       <label htmlFor={id} className="text-small text-fg-muted">{label}</label>
-      <output htmlFor={id} className="font-mono text-caption text-fg tabular-nums">{format(value)}</output>
+      <output htmlFor={id} className="font-mono text-caption font-normal text-fg tabular-nums">{format(value)}</output>
       <input
         id={id} type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
@@ -49,7 +49,7 @@ function Curve({ spring }: { spring: Spring }) {
         <path d={`M4 ${target.toFixed(1)}H116`} stroke="var(--line-strong)" strokeDasharray="2 3" fill="none" />
         <path d={d} stroke="var(--fg)" strokeWidth="1.5" fill="none" />
       </svg>
-      <p className="font-mono text-caption text-fg-subtle">
+      <p className="font-mono text-caption font-normal text-fg-subtle">
         settles {duration}ms
         <br />
         {over ? `overshoots ${over}%` : "no overshoot"}
@@ -63,7 +63,7 @@ function Group({ title, use, children }: { title: string; use: string; children:
     <section className="grid gap-4 border-t border-line pt-6">
       <header>
         <h3 className="text-body text-fg">{title}</h3>
-        <p className="text-caption text-fg-subtle">{use}</p>
+        <p className="text-caption font-normal text-fg-subtle">{use}</p>
       </header>
       {children}
     </section>
@@ -136,10 +136,10 @@ export function MotionPanel({ device, onDeviceChange }: {
           <h2 className="text-h4 text-fg">Tune</h2>
           <span className="text-caption text-fg-subtle">{preset === "custom" ? "Custom" : PRESET_LABEL[preset]}</span>
         </div>
-        <p className="text-caption text-fg-subtle">Applies on this page only. Every other page runs the locked values from tokens.css.</p>
+        <p className="text-caption font-normal text-fg-subtle">Applies on this page only. Every other page runs the locked values from tokens.css.</p>
         <div className={segmented + " grid-cols-3"} role="group" aria-label="Motion preset">
           {(Object.keys(presets) as PresetName[]).map((p) => (
-            <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className={segment + " px-2 text-small"}>
+            <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className={segment + " px-2 text-small font-title"}>
               {PRESET_LABEL[p]}
             </button>
           ))}
@@ -158,12 +158,12 @@ export function MotionPanel({ device, onDeviceChange }: {
           </Button>
         </div>
         {reduced && (
-          <p className="text-caption text-warning">
+          <p className="text-caption font-normal text-warning">
             {reducedPreview ? "Previewing reduced motion: everything is instant." : "Your system asks for reduced motion, so every component is instant."}
           </p>
         )}
         {device !== "auto" && (
-          <p className="text-caption text-warning">
+          <p className="text-caption font-normal text-warning">
             {device === "phone" ? "Previewing a phone: the narrow-screen paths are on." : "Previewing a desktop: the narrow-screen paths are off."}
           </p>
         )}
@@ -174,12 +174,12 @@ export function MotionPanel({ device, onDeviceChange }: {
           <span className="text-small text-fg-muted" id="radius-label">Radius</span>
           <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="radius-label">
             {RADII.map((r) => (
-              <button key={r} type="button" aria-pressed={radius === r} onClick={() => setRadius(r)} className={segment + " font-mono text-caption"}>
+              <button key={r} type="button" aria-pressed={radius === r} onClick={() => setRadius(r)} className={segment + " font-mono text-caption font-normal"}>
                 {r === 0 ? "Square" : `${r}px`}
               </button>
             ))}
           </div>
-          <p className="font-mono text-caption text-fg-subtle">
+          <p className="font-mono text-caption font-normal text-fg-subtle">
             controls {radius}px · surfaces {surfaceRadius(radius)}px · pills stay pills
           </p>
         </div>
@@ -208,7 +208,7 @@ export function MotionPanel({ device, onDeviceChange }: {
           <span className="text-small text-fg-muted" id="travel-label">Travel</span>
           <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="travel-label">
             {TRAVELS.map((t) => (
-              <button key={t} type="button" aria-pressed={dial.travel === t} onClick={() => update({ travel: t })} className={segment + " font-mono text-caption"}>
+              <button key={t} type="button" aria-pressed={dial.travel === t} onClick={() => update({ travel: t })} className={segment + " font-mono text-caption font-normal"}>
                 {t}px
               </button>
             ))}
@@ -223,12 +223,12 @@ export function MotionPanel({ device, onDeviceChange }: {
           <span className="text-small text-fg-muted" id="device-label">Device</span>
           <div className={segmented + " grid-cols-3"} role="group" aria-labelledby="device-label" aria-describedby="device-note">
             {DEVICES.map(({ mode, label }) => (
-              <button key={mode} type="button" aria-pressed={device === mode} onClick={() => onDeviceChange(mode)} className={segment + " px-2 text-small"}>
+              <button key={mode} type="button" aria-pressed={device === mode} onClick={() => onDeviceChange(mode)} className={segment + " px-2 text-small font-title"}>
                 {label}
               </button>
             ))}
           </div>
-          <p id="device-note" className="text-caption text-fg-subtle">
+          <p id="device-note" className="text-caption font-normal text-fg-subtle">
             Auto follows your screen. Phone lets a desktop try the sheet, the menu drill-down and the command menu at the top edge. Input details on touch, such as 44px targets and pressed fills, follow your real pointer, not this switch.
           </p>
         </div>
@@ -247,13 +247,13 @@ export function MotionPanel({ device, onDeviceChange }: {
         <div className="grid gap-2 pt-2">
           <h4 className="text-small text-fg-muted">Differs from locked</h4>
           {differs.length ? (
-            <ul className="grid gap-1 font-mono text-caption text-fg-subtle">
+            <ul className="grid gap-1 font-mono text-caption font-normal text-fg-subtle">
               {differs.map((d) => (
                 <li key={d}>{d}</li>
               ))}
             </ul>
           ) : (
-            <p className="text-caption text-fg-subtle">Nothing. This matches tokens.css.</p>
+            <p className="text-caption font-normal text-fg-subtle">Nothing. This matches tokens.css.</p>
           )}
         </div>
       </section>
@@ -264,13 +264,13 @@ export function MotionPanel({ device, onDeviceChange }: {
         </Button>
         {open && (
           <div className="grid gap-3">
-            <pre id="lock-snippet" tabIndex={0} role="region" aria-label="Tokens to paste into tokens.css" className="max-h-64 overflow-auto rounded-control bg-surface-2 p-4 font-mono text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]">
+            <pre id="lock-snippet" tabIndex={0} role="region" aria-label="Tokens to paste into tokens.css" className="max-h-64 overflow-auto rounded-control bg-surface-2 p-4 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]">
               {snippet}
             </pre>
             <Button size="sm" icon={copied ? <CheckIcon /> : <CopyIcon />} onClick={copy}>
               {copied ? "Copied" : "Copy tokens"}
             </Button>
-            <p className="text-caption text-fg-subtle">Paste these to Claude and say "lock it" to write them into litt.md.</p>
+            <p className="text-caption font-normal text-fg-subtle">Paste these to Claude and say "lock it" to write them into litt.md.</p>
           </div>
         )}
       </section>

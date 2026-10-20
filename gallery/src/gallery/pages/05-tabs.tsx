@@ -143,9 +143,9 @@ function ProjectTabs() {
             {DEPLOYS.map((d) => (
               <li key={d.hash} className="flex min-h-control-md items-center gap-3 py-2 text-small">
                 <Result tone={d.tone} />
-                <span className="font-mono text-caption text-fg-subtle">{d.hash}</span>
+                <span className="font-mono text-caption font-normal text-fg-subtle">{d.hash}</span>
                 <span className="min-w-0 flex-1 truncate text-fg">{d.message}</span>
-                <span className="shrink-0 font-mono text-caption text-fg-subtle">{d.time}</span>
+                <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{d.time}</span>
               </li>
             ))}
           </Rows>
@@ -197,7 +197,7 @@ function ViewSwitch() {
           <ul className="grid grid-cols-2 gap-3">
             {PROJECTS.map((p) => (
               <li key={p.name} className="grid h-28 content-between rounded-surface bg-surface-2 p-4">
-                <span className="text-small text-fg">{p.name}</span>
+                <span className="text-small font-title text-fg">{p.name}</span>
                 <span className="text-caption text-fg-subtle">{p.kind}</span>
               </li>
             ))}
@@ -208,7 +208,7 @@ function ViewSwitch() {
             {PROJECTS.map((p) => (
               <li key={p.name} className="relative flex items-center gap-4 text-small">
                 <span aria-hidden="true" className="relative h-px w-2 shrink-0 bg-fg-subtle" />
-                <span className="font-mono text-caption text-fg-subtle">{p.time}</span>
+                <span className="font-mono text-caption font-normal text-fg-subtle">{p.time}</span>
                 <span className="text-fg">{p.name}</span>
                 <span className="text-fg-subtle">{p.when}</span>
               </li>

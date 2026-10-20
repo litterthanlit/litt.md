@@ -288,7 +288,7 @@ export function Weights() {
       />
       <h2
         style={{
-          fontWeight: 600, // expect: weight
+          fontWeight: 700, // expect: weight
         }}
       />
       <h2
@@ -296,7 +296,18 @@ export function Weights() {
           fontWeight: "bold", // expect: weight
         }}
       />
+      <h2
+        className="font-title text-litt-h3" // expect: weight
+      />
+      <h2
+        style={{
+          fontWeight: 300, // expect: weight
+        }}
+      />
       <h2 className="font-normal font-litt-sans font-litt-mono" style={{ fontWeight: 400 }} />
+      <h2 className="font-litt-title text-litt-body text-litt-fg" style={{ fontWeight: 500 }} />
+      <span className="font-litt-label text-litt-caption text-litt-fg-subtle" style={{ fontWeight: 600 }} />
+      <strong className="font-litt-title text-litt-fg">Studio</strong>
     </div>
   );
 }

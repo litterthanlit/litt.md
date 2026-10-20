@@ -64,12 +64,12 @@ function ReleaseSection({ release }: { release: Release }) {
   const id = `release-${release.date}`;
   const when = new Date(release.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
   return (
-    <section aria-labelledby={id} className="grid content-start gap-6">
-      <header className="grid gap-2">
+    <section aria-labelledby={id} className="grid content-start gap-4">
+      <header className="grid gap-1">
         <h2 id={id} className="text-h3 text-fg text-balance">
           {release.title}
         </h2>
-        <p className="font-mono text-caption text-fg-subtle">
+        <p className="font-mono text-caption font-normal text-fg-subtle">
           <time dateTime={release.date}>{when}</time> · {release.version}
         </p>
       </header>
@@ -105,7 +105,7 @@ export default function ChangelogPage() {
   const releases = changelog.releases as Release[];
   const latest = releases[0];
   return (
-    <article aria-labelledby="page-changelog" className="grid gap-16 pb-24">
+    <article aria-labelledby="page-changelog" className="grid gap-12 pb-24">
       <header className="grid gap-4">
         <h1 id="page-changelog" className="text-h1 text-fg text-balance">
           Changelog
@@ -113,8 +113,8 @@ export default function ChangelogPage() {
         <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
       </header>
 
-      <section aria-labelledby="update-title" className="grid content-start gap-6">
-        <h2 id="update-title" className="text-h4 text-fg">
+      <section aria-labelledby="update-title" className="grid content-start gap-4">
+        <h2 id="update-title" className="-mb-3 text-h4 text-fg">
           Update an item
         </h2>
         <p className="max-w-[65ch] text-body text-fg-muted">

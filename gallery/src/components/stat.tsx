@@ -7,7 +7,7 @@
  *   group and space-6 once the group is 48rem wide. A tile links nowhere, so it has no hover and no motion.
  * - Type: the label is the small size in fg-subtle, the value is the h3 size in fg in the sans with tabular
  *   numbers (a figure that updates does not wobble), and a unit follows the value at the same size in fg-subtle.
- *   Hierarchy is size and tone, never weight (P9).
+ *   The value carries the title weight that comes with the h3 step, and the label stays at the text weight (P9).
  * - Delta: a word and the number ("Up 12% on last week") at the caption size. The word says the direction. The
  *   color says whether it is news: success for good, danger for bad, fg-subtle for neither. Hidden text repeats
  *   the judgment ("good news"), so color is never the only signal. No arrow glyph, no dot.

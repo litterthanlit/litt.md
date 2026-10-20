@@ -430,7 +430,7 @@ export function DotPlot({
                     <circle cx={px(m.value)} cy={g.cy} r={RING_R} fill="none" strokeWidth={2} className="stroke-fg" />
                   </g>
                 ))}
-                <g className="font-mono text-caption tabular-nums">
+                <g className="font-mono text-caption font-normal tabular-nums">
                   {showMedian && (
                     <text
                       x={startFor(px(med), "Median".length * MONO, width)}
@@ -528,7 +528,7 @@ export function DotPlot({
               {active !== null && (
                 <Tip key="tip" cx={g.x0 + active * PITCH + PITCH / 2} markTop={g.cy - stackHalf(active) - NEAR} height={height} width={width}>
                   <span className="text-fg-muted">{rangeOf(active)}</span>
-                  <span className="font-mono text-caption tabular-nums">{countOf(active)}</span>
+                  <span className="font-mono text-caption font-normal tabular-nums">{countOf(active)}</span>
                 </Tip>
               )}
             </AnimatePresence>
@@ -548,7 +548,7 @@ export function DotPlot({
         </ul>
       )}
 
-      <table className="sr-only">
+      <table className="sr-only [&_th]:font-normal">
         <caption>{label}</caption>
         <thead>
           <tr>
@@ -589,7 +589,7 @@ function LegendItem({ swatch, name, share }: { swatch: string; name: string; sha
         <circle cx={3} cy={3} r={3} className={swatch} />
       </svg>
       {name}
-      <span className="font-mono text-caption tabular-nums text-fg">{share}%</span>
+      <span className="font-mono text-caption font-normal tabular-nums text-fg">{share}%</span>
     </li>
   );
 }

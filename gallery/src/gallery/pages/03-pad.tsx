@@ -110,7 +110,7 @@ function VoiceDemo() {
       <div className="grid gap-1 border-t border-line pt-4">
         <p className="text-small text-fg-subtle">Reply to Mira Halden</p>
         <p className="text-small text-fg-muted">{REPLIES[toneOf(voice.y)]}</p>
-        <p className="font-mono text-caption tabular-nums text-fg-subtle">About {wordsOf(voice.x)} words</p>
+        <p className="font-mono text-caption font-normal tabular-nums text-fg-subtle">About {wordsOf(voice.x)} words</p>
       </div>
     </div>
   );

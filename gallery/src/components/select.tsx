@@ -516,7 +516,7 @@ export function SelectField({
           e.preventDefault();
           document.getElementById(id)?.focus();
         }}
-        className={"text-small " + (rest.disabled ? "text-fg-disabled" : "text-fg")}
+        className={"text-small font-title " + (rest.disabled ? "text-fg-disabled" : "text-fg")}
       >
         {label}
       </label>

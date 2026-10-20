@@ -122,7 +122,7 @@ function ProjectMenu() {
     <div className="grid w-full max-w-md gap-4">
       <div className="flex items-center justify-between gap-4 bg-surface-2 p-4 pl-6 shadow-[inset_0_0_0_1px_var(--line)] rounded-surface">
         <div className="grid min-w-0 gap-1">
-          <span className="truncate text-body text-fg">Northwind site</span>
+          <span className="truncate text-body font-title text-fg">Northwind site</span>
           <span className="truncate text-small text-fg-subtle">Framer · published 2 days ago</span>
         </div>
         <Menu
@@ -147,7 +147,7 @@ function ProjectMenu() {
           <MenuItem icon={<TrashIcon />} destructive onSelect={pick("Deleted Northwind site")}>Delete</MenuItem>
         </Menu>
       </div>
-      <p className="font-mono text-caption text-fg-subtle" role="status">{last}</p>
+      <p className="font-mono text-caption font-normal text-fg-subtle" role="status">{last}</p>
     </div>
   );
 }
@@ -179,7 +179,7 @@ function ViewMenu() {
         <MenuCheckboxItem checked={status} onCheckedChange={setStatus}>Publish status</MenuCheckboxItem>
         <MenuCheckboxItem checked={archived} onCheckedChange={setArchived}>Archived projects</MenuCheckboxItem>
       </Menu>
-      <p className="font-mono text-caption text-fg-subtle" role="status">
+      <p className="font-mono text-caption font-normal text-fg-subtle" role="status">
         {density} · {shown}
       </p>
     </div>

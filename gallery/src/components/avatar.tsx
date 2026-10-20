@@ -3,8 +3,8 @@
  *
  * - Shape (components.md, Avatar): a circle at rounded-pill, one of the three things the pill is for.
  *   Three sizes: sm 24 (beside a tag, dense rows), md 32 (list rows, the default) and lg 44
- *   (a profile header). Initials are the sans at weight 400: caption at sm, small at md, body at
- *   lg, trimmed to the cap height so they sit in the middle of the circle.
+ *   (a profile header). Initials are the sans at the text weight (400) at every size: caption at sm,
+ *   small at md, body at lg, trimmed to the cap height so they sit in the middle of the circle.
  * - Content: a photo (`src`, object-cover) with an inset line hairline over it, so a white photo
  *   keeps its edge. With no photo, or when it fails to load, the initials of `name`: the first
  *   letter of the first two words, or one letter for one word. Leading characters that are not
@@ -144,7 +144,7 @@ export function Avatar({ name, src, size = "md", hue, decorative = false, classN
           onError={() => setFailed(src)}
         />
       ) : (
-        <span className={`litt-trim ${UNCOVER} ${TEXT[s]}`}>{initialsOf(name)}</span>
+        <span className={`litt-trim font-normal ${UNCOVER} ${TEXT[s]}`}>{initialsOf(name)}</span>
       )}
       <span aria-hidden="true" className={`pointer-events-none absolute inset-0 rounded-pill ${photo ? PHOTO_EDGE : EDGE[tone]}`} />
     </span>
@@ -188,7 +188,7 @@ export function AvatarGroup({ label, children, size = "md", max = 4, total, ring
             <span
               role="img"
               aria-label={`${more} more`}
-              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 font-mono text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
+              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
             >
               <span className={`litt-trim ${UNCOVER}`}>+{more}</span>
             </span>

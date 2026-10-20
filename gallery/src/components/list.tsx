@@ -147,7 +147,7 @@ function RowContent({ project }: { project: Project }) {
   return (
     <>
       <span className="grid min-w-0 flex-1 gap-1">
-        <span className="truncate text-body text-fg">{project.name}</span>
+        <span className="truncate text-body font-title text-fg">{project.name}</span>
         <span className="truncate text-caption text-fg-subtle">
           {project.client}
           {project.deploy && <span className="hidden sm:inline"> · {project.deploy}</span>}
@@ -158,7 +158,7 @@ function RowContent({ project }: { project: Project }) {
       </span>
       <When
         value={project.updated}
-        className="hidden min-w-14 shrink-0 text-right font-mono text-caption whitespace-nowrap tabular-nums text-fg-subtle sm:block"
+        className="hidden min-w-14 shrink-0 text-right font-mono text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle sm:block"
       />
     </>
   );
@@ -275,7 +275,7 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
 
       {/* Without a cover the select box sits in the card's corner, so the title keeps clear of it. */}
       <div className={"grid gap-1 px-3 pt-4 " + (project.cover ? "" : "pr-12")}>
-        <h3 className="truncate text-body text-fg">{project.name}</h3>
+        <h3 className="truncate text-body font-title text-fg">{project.name}</h3>
         {project.description && <p className="truncate text-small text-fg-subtle">{project.description}</p>}
       </div>
       <div className="mt-auto flex flex-wrap gap-2 px-3 pt-4 pb-3">
@@ -330,7 +330,7 @@ export function ProjectFilters({
             aria-pressed={on}
             onClick={() => onChange(f.id)}
             className={
-              "inline-flex h-control-sm cursor-pointer items-center rounded-control px-control-pad-sm text-small " +
+              "inline-flex h-control-sm cursor-pointer items-center rounded-control px-control-pad-sm text-small font-title " +
               "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
               (on

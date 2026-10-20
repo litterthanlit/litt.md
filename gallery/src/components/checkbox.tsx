@@ -172,7 +172,7 @@ function Choice({
       {/* The label is stretched over the whole row, so a click anywhere in it toggles the input. */}
       <label
         htmlFor={id}
-        className="col-start-2 row-start-1 min-h-5 cursor-pointer text-small text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled"
+        className="col-start-2 row-start-1 min-h-5 cursor-pointer text-small font-title text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled"
       >
         {label}
       </label>

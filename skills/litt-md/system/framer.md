@@ -19,16 +19,16 @@ Set the project to follow the system theme. Preview both modes before publishing
 
 ## 2. Text styles
 
-Font: **Hanken Grotesk** (Google Fonts, available in Framer) and **Geist Mono**. Create text styles from the scale in `foundations.md`, with the size, line height and letter spacing taken from the `--type-*` tokens. Framer takes letter spacing in em, so enter the token value directly (for example −0.025em for display).
+Font: **Inter** (Google Fonts, available in Framer) and **Geist Mono**. Create text styles from the scale in `foundations.md`, with the size, line height and letter spacing taken from the `--type-*` tokens. Framer takes letter spacing in em, so enter the token value directly (for example −0.015em for display), and line heights in px (28, 22, 20, 16).
 
 ```
-Display  → H1 tag on the hero only (40 on every breakpoint)
+Display  → H1 tag on the hero only (18 on every breakpoint; nothing is larger)
 H1, H2, H3, H4 → their tags
 Reading, Body, Small, Caption → P tag
 Mono     → for kbd, data, versions
 ```
 
-Weight: Regular 400 only, for every text style (P9). Never Medium, Semibold or Bold. Hierarchy comes from size and color styles. Only add Hanken Grotesk Regular and Geist Mono Regular to the project.
+Weight by role (P9): Regular 400 for text (Reading, Body, Small), Medium 500 for titles (Display, H1 to H4, a title over its description, buttons, tabs), Semibold 600 for 12px labels only (Caption, tags, meta rows, table headers). Never Bold. Below the page title, hierarchy comes from weight, the two ink colors and space, not size. Add Inter Regular, Medium and Semibold and Geist Mono Regular to the project.
 
 ## 3. Layout
 
@@ -42,9 +42,9 @@ Weight: Regular 400 only, for every text style (P9). Never Medium, Semibold or B
 - **Corners:** controls (buttons, inputs, tabs) radius 4. Surfaces (cards, panels, menus, dialogs, toasts) radius 8. Tags and chips are controls at radius 4 too. Only avatars and icon-only buttons are fully round. A control 4px inside a surface keeps the corners concentric.
 - **Button component:** one component with a Size variant.
   - sm: 32 tall, 12 side padding, 13px label.
-  - md: 44 tall, 16 side padding, 15px label.
+  - md: 44 tall, 16 side padding, 14px label.
   - lg: 56 tall, 24 side padding, 16px label.
-  - Labels are Regular 400 with the line height set to 1, so the padding reads as even air. Use lg for hero CTAs and form submits, full width in narrow forms.
+  - Labels are Medium 500 with the line height set to 1, so the padding reads as even air. Use lg for hero CTAs and form submits, full width in narrow forms.
 - **Inputs:** the same heights as the buttons, so an lg input lines up with an lg button.
 
 ## 4. Effects and material
@@ -78,7 +78,7 @@ To use the exact tokens in code components or embeds, paste `assets/tokens.css` 
 
 ## 7. Framer review checklist
 - [ ] Every color comes from a color style with both modes set.
-- [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Nothing above Regular 400.
+- [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Only Regular 400, Medium 500 on titles and Semibold 600 on 12px labels.
 - [ ] Gaps and paddings are on the scale.
 - [ ] Glass only on floating frames (header, menus, modals, toasts).
 - [ ] Corners: 4 on controls, 8 on surfaces, pills only on avatars, icon-only buttons and switches. Buttons and inputs use the 32/44/56 sizes.

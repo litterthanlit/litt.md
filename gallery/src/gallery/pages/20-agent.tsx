@@ -94,7 +94,7 @@ const ASK = "The Halo site build is failing on main. Can you find out why and fi
 
 const THOUGHT: Run[][] = [
   ["The screenshot shows the deploy failing on main, but the error is cut off. I need the build output to see what it could not find."],
-  ["A missing font file is the likeliest cause. The studio dropped Inter for Hanken Grotesk, and a leftover import of the old package would break the build exactly this way."],
+  ["A missing font file is the likeliest cause. The studio dropped Geist for Inter, and a leftover import of the old package would break the build exactly this way."],
   ["I will read the layout, search the repo for any other fontsource imports, then run the build to confirm the error before I change anything."],
 ];
 
@@ -112,7 +112,7 @@ const BUILD_FAILED = `> halo-site@1.4.0 build
 Failed to compile.
 
 ./src/app/layout.tsx
-Module not found: Can't resolve '@fontsource/inter/400.css'`;
+Module not found: Can't resolve '@fontsource/geist-sans/400.css'`;
 
 const BUILD_PASSED = `> halo-site@1.4.0 build
 > next build
@@ -121,7 +121,7 @@ const BUILD_PASSED = `> halo-site@1.4.0 build
 ✓ Generating static pages (14/14)`;
 
 const SEARCH_MATCHES = `1 match in 1 file
-src/app/layout.tsx:1  import "@fontsource/inter/400.css";`;
+src/app/layout.tsx:1  import "@fontsource/geist-sans/400.css";`;
 
 type CallSpec = {
   action: string;
@@ -149,23 +149,23 @@ const RUN_SECONDS = Math.round(CALLS.reduce((sum, c) => sum + c.seconds, 0));
 const COMMAND = "npm run deploy -- --prod";
 
 const DIFF = `@@ -1,7 +1,7 @@
--import "@fontsource/inter/400.css";
-+import "@fontsource/hanken-grotesk/400.css";
+-import "@fontsource/geist-sans/400.css";
++import "@fontsource/inter/400.css";
  import "./globals.css";
 
  export default function RootLayout({ children }: { children: React.ReactNode }) {
    return (
--    <html lang="en" className="font-inter">
-+    <html lang="en" className="font-hanken">
+-    <html lang="en" className="font-geist">
++    <html lang="en" className="font-inter">
        <body>{children}</body>`;
 
 const WHAT_BROKE: Run[][] = [
   [
     "The build failed because ",
     { code: "src/app/layout.tsx" },
-    " still imported Inter from ",
-    { code: "@fontsource/inter" },
-    ". The studio dropped Inter for Hanken Grotesk, so the package is gone from the project and the build cannot find its CSS. Here is the change:",
+    " still imported Geist from ",
+    { code: "@fontsource/geist-sans" },
+    ". The studio dropped Geist for Inter, so the package is gone from the project and the build cannot find its CSS. Here is the change:",
   ],
 ];
 const LIVE: Run[][] = [["The build passes and Halo is live again."]];

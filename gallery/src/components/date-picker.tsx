@@ -467,7 +467,7 @@ export function Calendar<M extends CalendarMode = "single">({
           <AnimatePresence initial={false} mode="popLayout">
             <motion.span
               key={month}
-              className="block truncate text-body text-fg"
+              className="block truncate text-body font-title text-fg"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1, transition: enter }}
               exit={{ opacity: 0, transition: exit }}
@@ -753,7 +753,7 @@ export function DatePicker<M extends CalendarMode = "single">({
           e.preventDefault();
           trigger.current?.focus();
         }}
-        className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}
+        className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}
       >
         {label}
       </label>

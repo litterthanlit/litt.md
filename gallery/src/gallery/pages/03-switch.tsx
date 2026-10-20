@@ -70,7 +70,7 @@ function SettingsListDemo() {
 
   return (
     <div className="grid w-full max-w-lg gap-3">
-      <p className="text-small text-fg">Notifications for litt.design</p>
+      <p className="text-small font-title text-fg">Notifications for litt.design</p>
       <ul className="divide-y divide-line border-y border-line">
         <li>
           <Switch align="end" label="Email me when a build finishes" defaultChecked onCheckedChange={note("Build email")} />

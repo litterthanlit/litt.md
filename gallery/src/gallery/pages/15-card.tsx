@@ -186,7 +186,7 @@ function CoverStylesDemo() {
             <CardLink href="#card">INV-0412</CardLink>
           </CardTitle>
           <CardDescription>Halden Gallery, due 24 Oct</CardDescription>
-          <p className="mt-6 font-mono text-h4 tabular-nums text-fg">€4,800.00</p>
+          <p className="mt-6 font-mono text-h4 font-normal tabular-nums text-fg">€4,800.00</p>
           <div className="mt-auto pt-4">
             <Status tone="warning">Sent</Status>
           </div>
@@ -205,7 +205,7 @@ function LightDemo() {
         <CardBody>
           <CardTitle>Next invoice</CardTitle>
           <CardDescription>Marlow Labs, sends on 1 Nov.</CardDescription>
-          <p className="mt-6 font-mono text-h4 tabular-nums text-fg">€1,200.00</p>
+          <p className="mt-6 font-mono text-h4 font-normal tabular-nums text-fg">€1,200.00</p>
           {/* No CardLink, so this card is a surface: it has no hover, and the button inside is its own target. */}
           <div className="pt-6">
             <Button size="sm">Edit invoice</Button>

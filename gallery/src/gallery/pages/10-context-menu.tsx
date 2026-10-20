@@ -178,7 +178,7 @@ function ProjectRowsDemo() {
                 <div className={rowFill}>
                   <button type="button" className={rowButton} onClick={() => setLast(`Opened ${p.name}`)}>
                     <span className="grid min-w-0 flex-1 gap-1">
-                      <span className="truncate text-body text-fg">{p.name}</span>
+                      <span className="truncate text-body font-title text-fg">{p.name}</span>
                       <span className="truncate text-caption text-fg-subtle">{p.client}</span>
                     </span>
                     <StatusTag status={p.status} className="shrink-0" />
@@ -202,7 +202,7 @@ function ProjectRowsDemo() {
           </ContextMenu>
         ))}
       </ul>
-      <p role="status" className="font-mono text-caption text-fg-subtle">
+      <p role="status" className="font-mono text-caption font-normal text-fg-subtle">
         {last}
       </p>
     </div>
@@ -325,8 +325,8 @@ function FileGridDemo() {
                       <FileIcon />
                     </span>
                     <span className="grid min-w-0 gap-1">
-                      <span className="truncate text-small text-fg">{fileName(f)}</span>
-                      <span className="font-mono text-caption text-fg-subtle">{size(f.kb)}</span>
+                      <span className="truncate text-small font-title text-fg">{fileName(f)}</span>
+                      <span className="font-mono text-caption font-normal text-fg-subtle">{size(f.kb)}</span>
                     </span>
                   </button>
                 </li>
@@ -337,7 +337,7 @@ function FileGridDemo() {
       >
         {options}
       </ContextMenu>
-      <p role="status" className="font-mono text-caption text-fg-subtle">
+      <p role="status" className="font-mono text-caption font-normal text-fg-subtle">
         {last} · {hidden ? "hidden files shown" : "hidden files hidden"} · by {sort === "edited" ? "last edited" : sort}
       </p>
     </div>

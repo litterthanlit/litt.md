@@ -273,7 +273,7 @@ function inspect({ app, dir, task, transcript, diff, ctx }) {
     /* no global stylesheet */
   }
   if (/--color-litt-canvas|--litt-canvas/.test(css)) installed.add("litt");
-  if (/hanken-grotesk/.test(css)) installed.add("base-styles");
+  if (/@fontsource\/inter\//.test(css)) installed.add("base-styles");
 
   const changed = unique([...(diff?.added ?? []), ...(diff?.modified ?? [])].map((f) => hostRelative(f, dir)));
   const agentFiles = changed.filter((f) => {

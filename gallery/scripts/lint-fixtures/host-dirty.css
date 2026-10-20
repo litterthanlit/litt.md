@@ -1,16 +1,25 @@
 /* Lint fixture (not shipped): a pricing card styled the careless way, as a stylesheet an agent
    might add next to its page. `node scripts/lint-litt.mjs --self-test` lints it in host mode.
    Every line that ends in `expect: <rule>` in a comment must fail exactly that rule. The comment
-   itself may name border-radius: 12px or font-weight: 600 without tripping anything. */
+   itself may name border-radius: 12px or font-weight: 700 without tripping anything. */
 .tier {
   border-radius: 12px; /* expect: radius */
   box-shadow: 0 4px 12px var(--litt-line); /* expect: shadow */
-  font-weight: 600; /* expect: weight */
+  font-weight: 700; /* expect: weight */
   font-size: 14px; /* expect: type */
   color: #333333; /* expect: color */
   background: white; /* expect: color */
   transition: all 0.3s ease-in-out; /* expect: motion */
   animation: pulse 2s infinite; /* expect: motion */
+}
+.tier-light {
+  font-weight: 300; /* expect: weight */
+}
+.tier-roles {
+  font-weight: 500;
+}
+.tier-roles small {
+  font-weight: var(--litt-weight-label);
 }
 .tier-pairing {
   transition: opacity var(--litt-dur-responsive) var(--litt-ease-out); /* expect: motion */

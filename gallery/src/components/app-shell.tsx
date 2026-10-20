@@ -10,7 +10,7 @@
  * - Wordmark: the first row of the sidebar, as tall as the header (--header-h), body size, fg.
  * - Links: 36px rows at the small size and the control radius, 12px side padding. The current page is fg on a
  *   surface-2 fill with aria-current="page"; the others are fg-muted, with an fg-6% fill and brighter text on hover
- *   (instant tier, color only). No dots, no accent, no weight. On a coarse pointer a row is 44px and a pressed row
+ *   (instant tier, color only). No dots, no accent, no weight change. On a coarse pointer a row is 44px and a pressed row
  *   fills like a hovered one. Focus is an inset 2px ring, as in a list.
  * - Main: its own landmark, with the page gutter at the sides and space-8 above and below.
  *
@@ -135,7 +135,7 @@ export function AppShell({
 }
 
 const wordmarkRow =
-  "flex h-(--header-h) shrink-0 items-center text-body text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 " +
+  "flex h-(--header-h) shrink-0 items-center text-body font-title text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 " +
   "[&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus pointer-coarse:[&_a]:inline-flex " +
   "pointer-coarse:[&_a]:h-control-md pointer-coarse:[&_a]:items-center";
 
