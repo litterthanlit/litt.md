@@ -62,7 +62,7 @@ Nothing goes to 700 or above or below 400, running text never takes 500 or 600, 
 
 ## 2. Color
 
-**Neutrals** sit on one OKLCH hue (about 262, a cool blue-gray). Every role exists in both themes.
+**Neutrals** sit on one OKLCH hue (about 60, a warm stone gray) at very low chroma: warm enough to feel friendly, gray enough that tone still does the hierarchy. Every role exists in both themes.
 
 | Role | Variables | Use |
 |---|---|---|
@@ -81,7 +81,7 @@ Nothing goes to 700 or above or below 400, running text never takes 500 or 600, 
 - `--accent-fg` reaches at least 4.5:1 on `--accent`;
 - `--accent-text`, the accent as text (links), reaches at least 4.5:1 on `--canvas`. In light it is usually the accent itself. In dark it is usually lighter than the fill, because a fill dark enough for white text is too dark to read as text on a dark canvas. Never use `--accent` as a text color.
 
-Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: it sits on nearly the neutrals' hue, so the light it casts stays cool. In both themes the primary action is a deep cobalt with white text, as in the reference it came from. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
+Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: a cool light against the warm stone grays, so it reads clearly without a large fill. In both themes the primary action is a deep cobalt with white text, as in the reference it came from. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
 
 **Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
 
