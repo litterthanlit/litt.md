@@ -1,6 +1,7 @@
 /**
- * The instrument, on the Playground only. Presets, the typeface, fine
- * controls per tier, playback, a live check against the litt.md rules, and "Lock it", which
+ * The instrument, on the Playground only. Two tabs: Motion (presets, fine
+ * controls per tier, playback) and Shape and type (the typeface and the
+ * radius). Under them, shared by both, a live check against the litt.md rules, and "Lock it", which
  * writes the tokens.
  *
  * Everything here applies to the Playground page alone. Every other page runs
@@ -12,6 +13,7 @@ import { curve, overshoot, toCss, type Spring } from "@/motion/spring";
 import { checkRules, diffFromLocked, tokensSnippet } from "@/motion/rules";
 import { Button } from "@/components/button";
 import { CheckIcon, CopyIcon } from "@/components/icons";
+import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 import type { Typeface } from "./typeface";
 
@@ -61,7 +63,7 @@ function Curve({ spring }: { spring: Spring }) {
 
 function Group({ title, use, children }: { title: string; use: string; children: React.ReactNode }) {
   return (
-    <section className="grid gap-4 border-t border-line pt-6">
+    <section className="grid gap-4 border-t border-line pt-6 first:border-t-0 first:pt-0">
       <header>
         <h3 className="text-body text-fg">{title}</h3>
         <p className="text-caption font-normal text-fg-subtle">{use}</p>
@@ -139,18 +141,8 @@ export function MotionPanel({ device, onDeviceChange, typefaces, typeface, onTyp
   return (
     <div className="grid gap-6">
       <header className="grid gap-4">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="text-h4 text-fg">Tune</h2>
-          <span className="text-caption text-fg-subtle">{preset === "custom" ? "Custom" : PRESET_LABEL[preset]}</span>
-        </div>
+        <h2 className="text-h4 text-fg">Tune</h2>
         <p className="text-caption font-normal text-fg-subtle">Applies on this page only. Every other page runs the locked values from tokens.css.</p>
-        <div className={segmented + " grid-cols-3"} role="group" aria-label="Motion preset">
-          {(Object.keys(presets) as PresetName[]).map((p) => (
-            <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className={segment + " px-2 text-small font-title"}>
-              {PRESET_LABEL[p]}
-            </button>
-          ))}
-        </div>
         <div className="flex justify-start">
           <Button
             size="sm"
@@ -177,86 +169,111 @@ export function MotionPanel({ device, onDeviceChange, typefaces, typeface, onTyp
         )}
       </header>
 
-      <Group title="Type" use="The sans face. Sizes, weights by role and tracking stay locked">
-        <div className="grid gap-2">
-          <span className="text-small text-fg-muted" id="typeface-label">Typeface</span>
-          <div className={segmented + " grid-cols-2"} role="group" aria-labelledby="typeface-label">
-            {typefaces.map((face) => (
-              <button key={face.id} type="button" aria-pressed={typeface.id === face.id} onClick={() => onTypefaceChange(face)} className={segment + " truncate px-2 text-small font-title"}>
-                {face.name}
-              </button>
-            ))}
-          </div>
-          <p className="text-caption font-normal text-fg-subtle">
-            {typeface.id === "locked" ? `${typeface.name} is the locked face.` : `Trying ${typeface.name} on this page. ${typefaces[0].name} is the locked face.`} Geist Mono stays for code and data.
-          </p>
-        </div>
-      </Group>
+      <Tabs defaultValue="motion" variant="segmented" size="sm">
+        <TabsList aria-label="Tune">
+          <TabsTrigger value="motion">Motion</TabsTrigger>
+          <TabsTrigger value="shape-type">Shape and type</TabsTrigger>
+        </TabsList>
+        <TabsPanels className="pt-6">
+          <TabsPanel value="motion" tabIndex={-1} className="grid gap-6">
+            <section className="grid gap-2">
+              <div className="flex items-baseline justify-between gap-4">
+                <span className="text-small text-fg-muted">Preset</span>
+                <span className="text-caption text-fg-subtle">{preset === "custom" ? "Custom" : PRESET_LABEL[preset]}</span>
+              </div>
+              <div className={segmented + " grid-cols-3"} role="group" aria-label="Motion preset">
+                {(Object.keys(presets) as PresetName[]).map((p) => (
+                  <button key={p} type="button" aria-pressed={preset === p} onClick={() => setPreset(p)} className={segment + " px-2 text-small font-title"}>
+                    {PRESET_LABEL[p]}
+                  </button>
+                ))}
+              </div>
+            </section>
 
-      <Group title="Shape" use="Corner radius. Surfaces are controls plus the 4px inset">
-        <div className="grid gap-2">
-          <span className="text-small text-fg-muted" id="radius-label">Radius</span>
-          <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="radius-label">
-            {RADII.map((r) => (
-              <button key={r} type="button" aria-pressed={radius === r} onClick={() => setRadius(r)} className={segment + " font-mono text-caption font-normal"}>
-                {r === 0 ? "Square" : `${r}px`}
-              </button>
-            ))}
-          </div>
-          <p className="font-mono text-caption font-normal text-fg-subtle">
-            controls {radius}px · surfaces {surfaceRadius(radius)}px · pills stay pills
-          </p>
-        </div>
-      </Group>
+            <Group title="Instant" use="Hover, press, toggles">
+              <Slider label="Duration" value={dial.instant} {...instantRange} step={10} format={ms} onChange={(v) => update({ instant: v })} />
+            </Group>
 
-      <Group title="Instant" use="Hover, press, toggles">
-        <Slider label="Duration" value={dial.instant} {...instantRange} step={10} format={ms} onChange={(v) => update({ instant: v })} />
-      </Group>
+            <Group title="Responsive" use="Menus, tabs, tooltips, the gliding highlight">
+              <Slider label="Time" value={dial.responsive.time} {...respRange} step={0.01} format={sec}
+                onChange={(v) => update({ responsive: { ...dial.responsive, time: v } })} />
+              <Slider label="Bounce" value={dial.responsive.bounce} min={0} max={0.3} step={0.01} format={pct}
+                onChange={(v) => update({ responsive: { ...dial.responsive, bounce: v } })} />
+              <Curve spring={dial.responsive} />
+            </Group>
 
-      <Group title="Responsive" use="Menus, tabs, tooltips, the gliding highlight">
-        <Slider label="Time" value={dial.responsive.time} {...respRange} step={0.01} format={sec}
-          onChange={(v) => update({ responsive: { ...dial.responsive, time: v } })} />
-        <Slider label="Bounce" value={dial.responsive.bounce} min={0} max={0.3} step={0.01} format={pct}
-          onChange={(v) => update({ responsive: { ...dial.responsive, bounce: v } })} />
-        <Curve spring={dial.responsive} />
-      </Group>
+            <Group title="Expressive" use="One moment per view: dialog, toasts, the list entrance">
+              <Slider label="Time" value={dial.expressive.time} {...expRange} step={0.01} format={sec}
+                onChange={(v) => update({ expressive: { ...dial.expressive, time: v } })} />
+              <Slider label="Bounce" value={dial.expressive.bounce} min={0} max={0.4} step={0.01} format={pct}
+                onChange={(v) => update({ expressive: { ...dial.expressive, bounce: v } })} />
+              <Curve spring={dial.expressive} />
+              <Slider label="Stagger" value={dial.stagger} {...staggerRange} step={10} format={ms} onChange={(v) => update({ stagger: v })} />
+              <div className="grid gap-2">
+                <span className="text-small text-fg-muted" id="travel-label">Travel</span>
+                <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="travel-label">
+                  {TRAVELS.map((t) => (
+                    <button key={t} type="button" aria-pressed={dial.travel === t} onClick={() => update({ travel: t })} className={segment + " font-mono text-caption font-normal"}>
+                      {t}px
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </Group>
 
-      <Group title="Expressive" use="One moment per view: dialog, toasts, the list entrance">
-        <Slider label="Time" value={dial.expressive.time} {...expRange} step={0.01} format={sec}
-          onChange={(v) => update({ expressive: { ...dial.expressive, time: v } })} />
-        <Slider label="Bounce" value={dial.expressive.bounce} min={0} max={0.4} step={0.01} format={pct}
-          onChange={(v) => update({ expressive: { ...dial.expressive, bounce: v } })} />
-        <Curve spring={dial.expressive} />
-        <Slider label="Stagger" value={dial.stagger} {...staggerRange} step={10} format={ms} onChange={(v) => update({ stagger: v })} />
-        <div className="grid gap-2">
-          <span className="text-small text-fg-muted" id="travel-label">Travel</span>
-          <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="travel-label">
-            {TRAVELS.map((t) => (
-              <button key={t} type="button" aria-pressed={dial.travel === t} onClick={() => update({ travel: t })} className={segment + " font-mono text-caption font-normal"}>
-                {t}px
-              </button>
-            ))}
-          </div>
-        </div>
-      </Group>
+            <Group title="Playback" use="For looking, not for shipping">
+              <Toggle label="Slow motion ×4" checked={slow === 4} onChange={(b) => setSlow(b ? 4 : 1)} />
+              <Toggle label="Preview reduced motion" checked={reducedPreview} onChange={setReducedPreview} />
+              <div className="grid gap-2">
+                <span className="text-small text-fg-muted" id="device-label">Device</span>
+                <div className={segmented + " grid-cols-3"} role="group" aria-labelledby="device-label" aria-describedby="device-note">
+                  {DEVICES.map(({ mode, label }) => (
+                    <button key={mode} type="button" aria-pressed={device === mode} onClick={() => onDeviceChange(mode)} className={segment + " px-2 text-small font-title"}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <p id="device-note" className="text-caption font-normal text-fg-subtle">
+                  Auto follows your screen. Phone lets a desktop try the sheet, the menu drill-down and the command menu at the top edge. Input details on touch, such as 44px targets and pressed fills, follow your real pointer, not this switch.
+                </p>
+              </div>
+            </Group>
+          </TabsPanel>
+          <TabsPanel value="shape-type" tabIndex={-1} className="grid gap-6">
+            <Group title="Type" use="The sans face. Sizes, weights by role and tracking stay locked">
+              <div className="grid gap-2">
+                <span className="text-small text-fg-muted" id="typeface-label">Typeface</span>
+                <div className={segmented + " grid-cols-2"} role="group" aria-labelledby="typeface-label">
+                  {typefaces.map((face) => (
+                    <button key={face.id} type="button" aria-pressed={typeface.id === face.id} onClick={() => onTypefaceChange(face)} className={segment + " truncate px-2 text-small font-title"}>
+                      {face.name}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-caption font-normal text-fg-subtle">
+                  {typeface.id === "locked" ? `${typeface.name} is the locked face.` : `Trying ${typeface.name} on this page. ${typefaces[0].name} is the locked face.`} Geist Mono stays for code and data.
+                </p>
+              </div>
+            </Group>
 
-      <Group title="Playback" use="For looking, not for shipping">
-        <Toggle label="Slow motion ×4" checked={slow === 4} onChange={(b) => setSlow(b ? 4 : 1)} />
-        <Toggle label="Preview reduced motion" checked={reducedPreview} onChange={setReducedPreview} />
-        <div className="grid gap-2">
-          <span className="text-small text-fg-muted" id="device-label">Device</span>
-          <div className={segmented + " grid-cols-3"} role="group" aria-labelledby="device-label" aria-describedby="device-note">
-            {DEVICES.map(({ mode, label }) => (
-              <button key={mode} type="button" aria-pressed={device === mode} onClick={() => onDeviceChange(mode)} className={segment + " px-2 text-small font-title"}>
-                {label}
-              </button>
-            ))}
-          </div>
-          <p id="device-note" className="text-caption font-normal text-fg-subtle">
-            Auto follows your screen. Phone lets a desktop try the sheet, the menu drill-down and the command menu at the top edge. Input details on touch, such as 44px targets and pressed fills, follow your real pointer, not this switch.
-          </p>
-        </div>
-      </Group>
+            <Group title="Shape" use="Corner radius. Surfaces are controls plus the 4px inset">
+              <div className="grid gap-2">
+                <span className="text-small text-fg-muted" id="radius-label">Radius</span>
+                <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="radius-label">
+                  {RADII.map((r) => (
+                    <button key={r} type="button" aria-pressed={radius === r} onClick={() => setRadius(r)} className={segment + " font-mono text-caption font-normal"}>
+                      {r === 0 ? "Square" : `${r}px`}
+                    </button>
+                  ))}
+                </div>
+                <p className="font-mono text-caption font-normal text-fg-subtle">
+                  controls {radius}px · surfaces {surfaceRadius(radius)}px · pills stay pills
+                </p>
+              </div>
+            </Group>
+          </TabsPanel>
+        </TabsPanels>
+      </Tabs>
 
       <section className="grid gap-3 border-t border-line pt-6" aria-labelledby="rules-title">
         <h3 id="rules-title" className="text-body text-fg">Against litt.md v{__LITT_MD_VERSION__} rules</h3>
