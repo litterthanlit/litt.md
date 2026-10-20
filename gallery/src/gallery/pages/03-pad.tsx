@@ -6,6 +6,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "pad",
   title: "Pad",
+  lede: "Two values set at once on one surface.",
   order: 3.8,
   group: "Controls",
   summary:

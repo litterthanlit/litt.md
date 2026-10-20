@@ -5,6 +5,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "segmented",
   title: "Segmented control",
+  lede: "A short choice in one track.",
   order: 4,
   group: "Controls",
   summary:

@@ -7,6 +7,7 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "plan",
   title: "Plan",
+  lede: "An agent's steps, ticked off as it works.",
   order: 18.95,
   group: "Agents",
   summary:

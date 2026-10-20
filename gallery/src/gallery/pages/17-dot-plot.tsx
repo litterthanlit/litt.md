@@ -6,6 +6,7 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "dot-plot",
   title: "Dot plot",
+  lede: "Where most values fall, in stacks of dots.",
   order: 17.6,
   group: "Data",
   summary:

@@ -14,6 +14,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "date-picker",
   title: "Date picker",
+  lede: "A day or a range, picked from a month.",
   order: 2.7,
   group: "Controls",
   summary:

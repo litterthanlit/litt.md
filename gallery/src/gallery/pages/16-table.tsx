@@ -17,6 +17,7 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "table",
   title: "Table",
+  lede: "Rows and columns, with real table semantics.",
   order: 16, group: "Data",
   summary:
     "Real table semantics with hairline rows, mono figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything.",

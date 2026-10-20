@@ -4,6 +4,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "cohort-grid",
   title: "Cohort grid",
+  lede: "Who stayed, week by week.",
   order: 17.75,
   group: "Data",
   summary:

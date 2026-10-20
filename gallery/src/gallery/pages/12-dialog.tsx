@@ -10,6 +10,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "dialog",
   title: "Dialog",
+  lede: "The view's one expressive moment.",
   order: 12, group: "Overlays",
   summary:
     "The one expressive moment. The panel is placed, not thrown: it rises by the travel token's distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce. On a phone it is a bottom sheet you can drag away.",

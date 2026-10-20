@@ -10,6 +10,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "slider",
   title: "Slider",
+  lede: "One value, or a span, on a range.",
   order: 3.6,
   group: "Controls",
   summary:

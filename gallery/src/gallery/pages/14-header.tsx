@@ -8,6 +8,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "header",
   title: "Glass header",
+  lede: "A sticky glass bar that folds when narrow.",
   order: 14, group: "Layout",
   summary:
     "A sticky glass bar with a wordmark, a nav and your actions. The page blurs under it as it scrolls. When the bar is narrow, the links fold behind a menu button instead of squeezing.",

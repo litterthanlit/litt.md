@@ -4,6 +4,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "gauge",
   title: "Gauge",
+  lede: "One value against a range.",
   order: 17.5,
   group: "Data",
   summary:

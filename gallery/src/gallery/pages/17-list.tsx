@@ -15,6 +15,7 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "list",
   title: "List and cards",
+  lede: "Airy rows and raised cards.",
   order: 17, group: "Data",
   summary:
     "Airy project rows and raised cards. The rows arrive in one staggered cascade, this page's single expressive moment; filtering and inserting stay responsive, and hover never moves anything.",

@@ -7,6 +7,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "toast",
   title: "Toast",
+  lede: "News from the corner that leaves sideways.",
   order: 13, group: "Overlays",
   summary:
     "Toasts arrive from just below the corner and settle, and they leave sideways by the same small distance. Older ones stack behind the newest and open into a list when you hover or tab into them. On a phone they drop away on a timeout, and a swipe sends them off sideways.",

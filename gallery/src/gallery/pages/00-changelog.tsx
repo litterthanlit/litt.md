@@ -2,12 +2,13 @@ import { Fragment, type ReactNode } from "react";
 import { Tag } from "@/components/tag";
 import { CodeBlock } from "../docs/code-block";
 import { pages } from "../registry";
-import type { PageMeta } from "../kit";
+import { PageTitle, type PageMeta } from "../kit";
 import changelog from "../../generated/changelog.json";
 
 export const meta: PageMeta = {
   id: "changelog",
   title: "Changelog",
+  lede: "What changed, release by release.",
   order: 0.5,
   summary:
     "Every change to the registry, newest first. Each release is named by its date, and every file you install says which release it came from, so you can tell what changed since.",
@@ -106,12 +107,7 @@ export default function ChangelogPage() {
   const latest = releases[0];
   return (
     <article aria-labelledby="page-changelog" className="grid gap-12 pb-24">
-      <header className="grid gap-4">
-        <h1 id="page-changelog" className="text-h1 text-fg text-balance">
-          Changelog
-        </h1>
-        <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
-      </header>
+      <PageTitle id="page-changelog" title="Changelog" lede={meta.lede} />
 
       <section aria-labelledby="update-title" className="grid content-start gap-4">
         <h2 id="update-title" className="-mb-3 text-h4 text-fg">

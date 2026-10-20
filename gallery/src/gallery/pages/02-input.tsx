@@ -6,6 +6,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "input",
   title: "Input",
+  lede: "A roomy field that answers in color, not motion.",
   order: 2,
   group: "Controls",
   summary:

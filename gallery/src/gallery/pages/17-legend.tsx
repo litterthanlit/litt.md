@@ -6,6 +6,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "legend",
   title: "Legend",
+  lede: "Toggles which series a chart shows.",
   order: 17.31,
   group: "Data",
   summary:

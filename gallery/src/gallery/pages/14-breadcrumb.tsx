@@ -8,6 +8,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "breadcrumb",
   title: "Breadcrumb",
+  lede: "Where a page sits.",
   order: 14.5,
   group: "Layout",
   summary:

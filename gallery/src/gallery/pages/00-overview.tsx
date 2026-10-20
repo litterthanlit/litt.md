@@ -26,11 +26,12 @@ import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components
 import { Tag } from "@/components/tag";
 import { ToolCall } from "@/components/tool-call";
 import { pageRuns, pages } from "../registry";
-import type { PageMeta } from "../kit";
+import { PageTitle, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "overview",
   title: "Overview",
+  lede: "Real ones, on locked tokens.",
   order: 0,
   summary: "Every tile is the real component on the locked tokens. Open one to see all of it.",
   tiers: ["instant", "responsive", "expressive"],
@@ -192,10 +193,7 @@ export default function Overview() {
   const count = WORDS[list.length] ?? String(list.length);
   return (
     <article aria-labelledby="page-overview" className="grid gap-12 pb-24">
-      <header className="grid gap-4">
-        <h1 id="page-overview" className="text-display text-fg text-balance">{count} components on locked tokens.</h1>
-        <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
-      </header>
+      <PageTitle id="page-overview" title={`${count} components.`} lede={meta.lede} />
 
       <div className="grid gap-4 md:grid-cols-6">
         <Tile id="plan" title="Plan" className="md:col-span-4 md:row-span-2">

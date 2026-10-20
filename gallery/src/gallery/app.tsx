@@ -180,8 +180,16 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       {/* Full-bleed, so no corners: .litt-glass carries the surface radius. */}
       <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none">
         <div className="mx-auto flex h-16 max-w-wide items-center justify-between gap-4 px-gutter">
-          <a href={`#${pages[0]?.id ?? ""}`} className="text-body font-title text-fg">
-            litt.md
+          {/* The wordmark sits in a segmented control's anatomy: the quiet track at the surface radius with
+              the 4px inset, and one raised segment at the control radius, as tall as the theme switch at the
+              other end of the bar, so the two ends match. */}
+          <a
+            href={`#${pages[0]?.id ?? ""}`}
+            className="inline-grid h-control-sm rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-1 shadow-[inset_0_0_0_1px_var(--line)] select-none [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md"
+          >
+            <span className="grid place-items-center rounded-control bg-surface-1 px-control-pad-sm text-small font-title text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]">
+              <span className="litt-trim">litt.md</span>
+            </span>
           </a>
           <div className="flex items-center gap-1 sm:gap-2">
             <Suspense fallback={<CustomizeFallback />}>

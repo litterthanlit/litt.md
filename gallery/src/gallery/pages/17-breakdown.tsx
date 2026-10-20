@@ -5,6 +5,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "breakdown",
   title: "Breakdown",
+  lede: "One whole, split into its parts.",
   order: 17.35,
   group: "Data",
   summary:

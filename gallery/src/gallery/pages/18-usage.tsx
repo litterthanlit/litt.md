@@ -11,6 +11,7 @@ import { Page, Stage, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "usage",
   title: "Usage",
+  lede: "A plan's usage, drawn only in rails.",
   order: 18.8, group: "Data",
   summary:
     "A studio plan's usage, drawn only in rails: trends in thin lines at the foot of the figures, storage and bandwidth split by kind, the plan's limits with their budgets, and build times by site. Each hue names one kind of file across the whole page, everything else stays in the foreground, and nothing moves.",
