@@ -45,7 +45,7 @@ export function Empty({ title, children, action, bare = false, className = "", .
   return (
     <div className={"grid justify-items-start gap-6 " + (bare ? "" : PANEL + " ") + className} {...rest}>
       <div className="grid max-w-(--measure) gap-1">
-        {title && <p className="text-body text-fg-muted">{title}</p>}
+        {title && <p className="text-body font-title text-fg-muted">{title}</p>}
         <p className={"text-pretty " + (title ? "text-small text-fg-subtle" : "text-body text-fg-muted")}>{children}</p>
       </div>
       {action}
@@ -150,7 +150,7 @@ export function ErrorState({ title, children, action, bare = false, className = 
       </span>
       <div className="grid min-w-0 max-w-(--measure) justify-items-start gap-6">
         <div className="grid gap-1">
-          <p className="text-body text-fg">{title}</p>
+          <p className="text-body font-title text-fg">{title}</p>
           {children && <p className="text-pretty text-small text-fg-subtle">{children}</p>}
         </div>
         {action}

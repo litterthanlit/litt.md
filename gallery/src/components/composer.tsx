@@ -124,11 +124,11 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
       ].join(" ")}
     >
       <FileIcon className="shrink-0 text-fg-muted" />
-      <span className="min-w-0 truncate font-mono text-caption text-fg">{name}</span>
+      <span className="min-w-0 truncate font-mono text-caption font-normal text-fg">{name}</span>
       {uploading ? (
         <>
           <span className="sr-only">, uploading {percent} percent</span>
-          <span aria-hidden="true" className="min-w-[4ch] shrink-0 text-right font-mono text-caption tabular-nums text-fg-subtle">
+          <span aria-hidden="true" className="min-w-[4ch] shrink-0 text-right font-mono text-caption font-normal tabular-nums text-fg-subtle">
             {percent}%
           </span>
         </>
@@ -136,7 +136,7 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
         size !== undefined && (
           <>
             <span className="sr-only">, </span>
-            <span className="shrink-0 font-mono text-caption text-fg-subtle">{formatSize(size)}</span>
+            <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{formatSize(size)}</span>
           </>
         )
       )}
@@ -573,7 +573,7 @@ export function Composer({
             <span
               id={countId}
               className={
-                "shrink-0 px-1 font-mono text-caption tabular-nums transition-colors duration-(--dur-instant) ease-litt " +
+                "shrink-0 px-1 font-mono text-caption font-normal tabular-nums transition-colors duration-(--dur-instant) ease-litt " +
                 (full ? "text-danger" : "text-fg-subtle")
               }
             >
@@ -607,7 +607,7 @@ export function Composer({
       </div>
 
       {hint && (
-        <p id={hintId} className="px-control-pad-md text-caption text-fg-subtle">
+        <p id={hintId} className="px-control-pad-md text-caption font-normal text-fg-subtle">
           {hint}
         </p>
       )}

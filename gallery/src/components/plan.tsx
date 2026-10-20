@@ -154,10 +154,10 @@ export function Plan({ label, steps, className = "" }: PlanProps) {
     <div className={className}>
       <div className="grid gap-2">
         <div className="flex items-baseline justify-between gap-4">
-          <span id={id} className="text-small text-fg">
+          <span id={id} className="text-small font-title text-fg">
             {label}
           </span>
-          <span className="font-mono text-caption tabular-nums text-fg-subtle">
+          <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
             {done} of {total}
             <span className="sr-only"> steps done</span>
           </span>
@@ -192,7 +192,7 @@ export function Plan({ label, steps, className = "" }: PlanProps) {
                     </span>
                   )}
                 </p>
-                {step.detail != null && step.detail !== false && <p className="mt-0.5 text-caption text-fg-subtle">{step.detail}</p>}
+                {step.detail != null && step.detail !== false && <p className="mt-0.5 text-caption font-normal text-fg-subtle">{step.detail}</p>}
               </div>
             </motion.li>
           );

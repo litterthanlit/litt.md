@@ -48,8 +48,8 @@ import { Switch } from "@/components/switch";
   </FormSection>
   {/* fields: Save lines up with the fields column from 1024 up, not under the section titles. */}
   <FormActions align="fields" className="mt-12">
-    <Button variant="primary" size="lg" type="submit">Save changes</Button>
-    <Button variant="ghost" size="lg" onClick={cancel}>Cancel</Button>
+    <Button variant="primary" type="submit">Save changes</Button>
+    <Button variant="ghost" onClick={cancel}>Cancel</Button>
   </FormActions>
 </form>
 
@@ -248,7 +248,7 @@ function StartProjectDemo() {
         description={errors.consent}
         onChange={(e) => change("consent", e.target.checked)}
       />
-      <Button ref={submit} type="submit" variant="primary" size="lg" block loading={saving}>
+      <Button ref={submit} type="submit" variant="primary" block loading={saving}>
         Send brief
       </Button>
     </form>
@@ -395,10 +395,10 @@ function SettingsDemo() {
       </FormSection>
 
       <FormActions align="fields" className="mt-12">
-        <Button ref={submit} type="submit" variant="primary" size="lg" loading={saving}>
+        <Button ref={submit} type="submit" variant="primary" loading={saving}>
           Save changes
         </Button>
-        <Button variant="ghost" size="lg" disabled={saving} onClick={() => setValues(saved)}>
+        <Button variant="ghost" disabled={saving} onClick={() => setValues(saved)}>
           Cancel
         </Button>
       </FormActions>
@@ -470,7 +470,7 @@ function SignInDemo() {
         error={errors.password}
         onChange={(e) => change("password", e.target.value)}
       />
-      <Button ref={submit} type="submit" variant="primary" size="lg" block loading={saving}>
+      <Button ref={submit} type="submit" variant="primary" block loading={saving}>
         Sign in
       </Button>
       <p role="status" className="min-h-5 text-small text-fg-subtle">

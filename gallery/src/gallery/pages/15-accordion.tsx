@@ -139,7 +139,7 @@ function SiteSettingsDemo() {
 
   return (
     <div className="grid w-full max-w-xl gap-4">
-      <p className="text-small text-fg">Settings for grottatype.com</p>
+      <p className="text-small font-title text-fg">Settings for grottatype.com</p>
       <Accordion type="multiple" value={open} onValueChange={setOpen}>
         <AccordionItem value="domain">
           <AccordionTrigger>Domain</AccordionTrigger>

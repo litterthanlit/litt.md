@@ -119,7 +119,7 @@ const PAGES: SelectOption[] = [
 /** A quiet status line beside a trigger, so each stage shows what the select did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption text-fg-subtle">
+    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -140,7 +140,7 @@ function AccountFormDemo() {
       <TextField label="Full name" name="name" autoComplete="name" defaultValue="Mara Lindqvist" />
       <TextField label="Work email" name="email" type="email" autoComplete="email" defaultValue="mara@litt.design" />
       <div className="grid gap-3">
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Save account
         </Button>
         <Status>{sent}</Status>

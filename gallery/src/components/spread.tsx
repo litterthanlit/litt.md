@@ -309,7 +309,7 @@ export function Spread({ label, items, scale = "linear", domain, ticks, formatVa
                   {s && <span className={"absolute top-1/2 block h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 " + tones.tick} style={{ left: `${at(s.median)}%` }} />}
                 </span>
 
-                <span className="col-start-[median] row-start-1 text-right font-mono text-caption whitespace-nowrap tabular-nums text-fg-subtle">
+                <span className="col-start-[median] row-start-1 text-right font-mono text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle">
                   {s ? (
                     <>
                       <span className="sr-only">median </span>
@@ -334,12 +334,12 @@ export function Spread({ label, items, scale = "linear", domain, ticks, formatVa
             {width > 0 && (
               <>
                 {goalDrawn && goalText && (
-                  <span className="absolute top-0 flex h-6 items-center font-mono text-caption whitespace-nowrap tabular-nums text-fg-subtle" style={goalAt}>
+                  <span className="absolute top-0 flex h-6 items-center font-mono text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle" style={goalAt}>
                     {goalText}
                   </span>
                 )}
                 {shown.map((t) => (
-                  <span key={t.key} className="absolute bottom-0 flex h-6 items-center font-mono text-caption whitespace-nowrap tabular-nums text-fg-subtle" style={t.at}>
+                  <span key={t.key} className="absolute bottom-0 flex h-6 items-center font-mono text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle" style={t.at}>
                     {t.label}
                   </span>
                 ))}

@@ -24,6 +24,12 @@
  *
  * Stagger and travel are not hard rules in v0.5. They appear under
  * "Differs from locked" only.
+ *
+ * The Playground checks the motion rows (checkRules). The radius and the
+ * typeface are tuned in the Customize panel on every page, which checks them
+ * with shapeRule and typeRule and copies them with customizeSnippet. The
+ * typeface is the Type decision in the taste profile, not a check.mjs bound:
+ * the sans is the face tokens.css sets.
  */
 import { toCss } from "./spring";
 import { surfaceRadius, type Dial, type Locked } from "./tokens";
@@ -45,6 +51,9 @@ export const LIMITS = {
 
 export type RuleRow = { ok: boolean; text: string };
 
+/** The sans the Playground shows, beside the one tokens.css locks. */
+export type TypeChoice = { name: string; stack: string; locked: string };
+
 const ms = (v: number) => `${Math.round(v)}ms`;
 const sec = (v: number) => ms(v * 1000);
 const num = (v: number) => String(+v.toFixed(2));
@@ -61,7 +70,7 @@ export function exitTimes(dial: Dial) {
 }
 
 /** One row per hard rule, in the order check.mjs reads them. */
-export function checkRules(dial: Dial, radius: number): RuleRow[] {
+export function checkRules(dial: Dial): RuleRow[] {
   const settle = settleTimes(dial);
   return [
     {
@@ -88,15 +97,37 @@ export function checkRules(dial: Dial, radius: number): RuleRow[] {
       ok: dial.exit === LIMITS.exit,
       text: `Exits run at ${LIMITS.exit}x the spring time, as a tween that never bounces: ${num(dial.exit)}x`,
     },
-    {
-      ok: radius === LIMITS.control,
-      text: `Controls ${LIMITS.control}px, surfaces ${surfaceRadius(LIMITS.control)}px, pills unchanged: ${radius}px controls, ${surfaceRadius(radius)}px surfaces`,
-    },
   ];
 }
 
+/**
+ * The pill: half the tallest control (lg, 56), so every control on the scale rounds fully. Not 9999px: large
+ * boxes on the control radius (a code block, a popover's inner area) would turn into stadiums and clip their text.
+ */
+export const PILL = 28;
+/** The Customize panel's radius choices: the Playground's steps, then the pill. */
+export const SHAPES = [0, 2, 4, 6, PILL] as const;
+/** The surface radius for a control radius. A pill has no concentric surface, so cards and panels take 16px with it. */
+export const shapeSurface = (control: number) => (control === PILL ? 16 : surfaceRadius(control));
+/** A control radius in words: "Square", "4px", "Pill". */
+export const shapeName = (control: number) => (control === 0 ? "Square" : control === PILL ? "Pill" : `${control}px`);
+
+/** The radius rule (check 7). */
+export function shapeRule(radius: number): RuleRow {
+  const now = radius === PILL ? "pill controls" : `${radius}px controls`;
+  return {
+    ok: radius === LIMITS.control,
+    text: `Controls ${LIMITS.control}px, surfaces ${surfaceRadius(LIMITS.control)}px, pills unchanged: ${now}, ${shapeSurface(radius)}px surfaces`,
+  };
+}
+
+/** The Type decision: the sans is the face tokens.css sets. */
+export function typeRule(type: TypeChoice): RuleRow {
+  return { ok: type.name === type.locked, text: `The sans is ${type.locked}, with Geist Mono for code and data: ${type.name}` };
+}
+
 /** Every value that is not the locked one, in words. Empty when the dial matches the tokens. */
-export function diffFromLocked(dial: Dial, radius: number, locked: Locked): string[] {
+export function diffFromLocked(dial: Dial, locked: Locked): string[] {
   const out: string[] = [];
   const d = locked.dial;
   const add = (label: string, now: string, was: string) => now !== was && out.push(`${label} ${was} → ${now}`);
@@ -108,12 +139,11 @@ export function diffFromLocked(dial: Dial, radius: number, locked: Locked): stri
   add("Stagger", ms(dial.stagger), ms(d.stagger));
   add("Travel", `${dial.travel}px`, `${d.travel}px`);
   add("Exit", `${num(dial.exit)}x`, `${num(d.exit)}x`);
-  add("Control radius", `${radius}px`, `${locked.radius}px`);
   return out;
 }
 
 /** The tokens.css lines for this dial, ready to paste. Passes check.mjs when checkRules is all ok. */
-export function tokensSnippet(dial: Dial, radius: number): string {
+export function tokensSnippet(dial: Dial): string {
   const r = toCss(dial.responsive);
   const e = toCss(dial.expressive);
   const exit = exitTimes(dial);
@@ -132,9 +162,17 @@ export function tokensSnippet(dial: Dial, radius: number): string {
     `--dur-exit-expressive: ${exit.expressive}ms;`,
     `--stagger: ${Math.round(dial.stagger)}ms;`,
     `--travel: ${dial.travel}px;`,
-    ``,
-    `/* Shape: surfaces are controls plus the 4px inset. */`,
-    `--radius-control: ${radius}px;`,
-    `--radius-surface: ${surfaceRadius(radius)}px;`,
   ].join("\n");
+}
+
+/** The tokens.css lines for the Customize panel's choices: only what differs from the locked values. */
+export function customizeSnippet(radius: number, lockedRadius: number, type: TypeChoice): string {
+  const out: string[] = [];
+  if (type.name !== type.locked) out.push(`/* Type: sizes, weights by role and tracking stay as they are. */`, `--font-sans: ${type.stack};`);
+  if (radius !== lockedRadius) {
+    if (out.length) out.push(``);
+    const note = radius === PILL ? `/* Shape: pill controls (28px is half the 56px lg control); surfaces take 16px, since a pill has no concentric surface. */` : `/* Shape: surfaces are controls plus the 4px inset. */`;
+    out.push(note, `--radius-control: ${radius}px;`, `--radius-surface: ${shapeSurface(radius)}px;`);
+  }
+  return out.join("\n");
 }

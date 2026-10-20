@@ -1,7 +1,9 @@
 @import "./styles/litt.css";
 
 @layer base {
-  body { min-height: 100vh; background: var(--canvas); }
+  /* font-family again on body: the Customize panel writes --font-sans on <body> (customize-state.tsx),
+     and html's font-family has already resolved the locked face by then. */
+  body { min-height: 100vh; background: var(--canvas); font-family: var(--font-sans); }
   ::selection { background: color-mix(in oklab, var(--accent) 22%, transparent); }
 }
 
@@ -16,7 +18,7 @@
     --sh-class: var(--fg);
     --sh-property: var(--fg);
     --sh-entity: var(--fg);
-    --sh-keyword: var(--fg-muted);
+    --sh-keyword: var(--fg);
     --sh-sign: var(--fg-muted);
     --sh-comment: var(--fg-subtle);
     --sh-string: color-mix(in oklab, var(--accent-text) 90%, var(--fg));

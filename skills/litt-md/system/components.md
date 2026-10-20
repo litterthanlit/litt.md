@@ -13,10 +13,10 @@ Button · Input · Token input · Select · Combobox · Date picker · Checkbox 
 | Size | Height | Side padding | Label | Use |
 |---|---|---|---|---|
 | sm | `--control-sm` 32 | `--control-pad-sm` 12 | 13 | Table rows, toolbars, dense UI |
-| md | `--control-md` 44 | `--control-pad-md` 16 | 15 | Default |
-| lg | `--control-lg` 56 | `--button-pad-lg` 32 | 16 | Hero CTAs and the submit in a page form; full width in narrow forms. A dialog's actions are md. |
+| md | `--control-md` 44 | `--control-pad-md` 16 | 14 | Default |
+| lg | `--control-lg` 56 | `--button-pad-lg` 32 | 16 | Hero CTAs only. A page form's submit and Cancel are md, like a dialog's actions. |
 
-Weight 400 at every size, no tracking. Hover changes the fill and color, and press scales to `--press-scale`, both on the instant tier (`--dur-instant`, `--ease-out`). On coarse screens a pressed button also takes its hover fill, so the press shows under reduced motion. The box never moves. Grouped buttons sit `--control-group-gap` (12) apart.
+The label is at `--weight-title` at every size, with no extra tracking. Hover changes the fill and color, and press scales to `--press-scale`, both on the instant tier (`--dur-instant`, `--ease-out`). On coarse screens a pressed button also takes its hover fill, so the press shows under reduced motion. The box never moves. Grouped buttons sit `--control-group-gap` (12) apart.
 
 | Variant | Fill | Text | Edge | Use |
 |---|---|---|---|---|
@@ -30,18 +30,18 @@ Weight 400 at every size, no tracking. Hover changes the fill and color, and pre
 - **No arrow suffix by default.** An arrow is allowed only when the button navigates away from the site.
 
 ## Input
-`--radius-control`, on the same control scale as buttons: `--control-md` (44, padding 16, 15px text) by default, in dialogs and in stacked forms; `--control-lg` (56, padding 24, 16px) only when it shares a row with an lg button (the inline form); `--control-sm` (32) in tables and toolbars. Background `--surface-1`, text `--fg`, placeholder `--fg-subtle`. The edge is `inset 0 0 0 1px var(--line-control)`.
+`--radius-control`, on the same control scale as buttons: `--control-md` (44, padding 16, 14px text) by default, in dialogs and in stacked forms; `--control-lg` (56, padding 24, 16px) only when it shares a row with an lg button (the inline form); `--control-sm` (32) in tables and toolbars. Background `--surface-1`, text `--fg`, placeholder `--fg-subtle`. The edge is `inset 0 0 0 1px var(--line-control)`.
 - **Inline form:** an lg input and an lg primary button side by side (`1fr auto`, `--space-2` apart), stacking full width below 640px.
 - **Focus:** edge `--focus` plus `--focus-ring`. Remove the default outline only when you replace it this way.
 - **Error:** edge `--danger`, set `aria-invalid="true"`, and add help text in `--danger` linked with `aria-describedby`. The message says how to fix it.
-- **Label:** above the field, `--type-small-size` at `--weight` in `--fg` (color, not weight, sets it apart), `--space-2` gap. Placeholders are never labels.
+- **Label:** above the field, `--type-small-size` at `--weight-title` in `--fg`, `--space-2` gap. The typed text stays at `--weight`. Placeholders are never labels.
 - **Help text:** `--type-small-size` in `--fg-subtle`, `--space-2` below.
 - **Textarea:** the same field for longer text, with the same edge, focus, error, label and help text. It has no fixed height, so its size sets the air above and below the text, and it resizes vertically only.
 
 ## Token input
 A field that collects short values as removable tokens: sender domains, recipients, tags. The Input's sibling, with the Tag inside.
 - **Field:** the Input's: minimum heights `--control-sm`, `--control-md` (default) and `--control-lg`, `--radius-control`, `--surface-1`, the inset `--line-control` edge, the danger edge when invalid and the focus ring around the whole field while its text input is focus-visible. It grows by rows of 24px tokens, 4px apart; the text input takes the rest of the line, at least 8ch.
-- **Tokens:** the Tag's look in mono (they are data), with a 16px remove button named "Remove @stripe.com" whose target grows to 44px on coarse pointers. `collapseAfter` folds the rest into a "+N" token on `--surface-2` (named "N more") until the field is focused.
+- **Tokens:** the Tag's look, in the sans at the label weight, with a 16px remove button named "Remove @stripe.com" whose target grows to 44px on coarse pointers. `collapseAfter` folds the rest into a "+N" token on `--surface-2` (named "N more") until the field is focused.
 - **Adding and removing:** Enter, a comma or leaving the field adds what was typed; a paste splits on commas, semicolons and line breaks; duplicates and empties are ignored. A rejected value stays in the input with its message under the field. Backspace in an empty input removes the last token. The remove buttons are one roving stop: left and right walk them, right past the last returns to the input, and Backspace or Delete removes the focused one. `max` stops adding and says so.
 - **Accessibility:** a real label; tokens are a list named by it; a polite live region says "Added stripe.com" and "Removed stripe.com"; the hint, the rejection and the limit are linked descriptions. `name` posts one hidden input per value.
 - **Motion:** a new token fades in with a 0.98 scale on the responsive tier, its neighbors slide by transform, and a removed one fades out on the exit.
@@ -88,7 +88,7 @@ An on or off setting that takes effect as a setting, such as an email when a bui
 - **Motion:** the thumb slides by transform and the fill fades, both on the instant tier: a switch is a toggle. The box never moves.
 - **Hover and press:** a wash at fg 6% over the track, like the checkbox; on a coarse pointer a press shows the wash too.
 - **Disabled:** the track is `--surface-2` with a `--line` edge, and the thumb `--fg-disabled`; on and disabled, the track is `--surface-3`. The label dims to `--fg-disabled`, but the description stays `--fg-subtle`: it is often what says why the switch is off-limits, so it must stay readable. A checkbox's description does the same.
-- **Label:** the label sits right of the switch, `--space-2` away, at the small size, and the whole row toggles it. A description can sit under the label in `--fg-subtle`. In a settings list the label and description come first and the switch sits at the row's end (`align="end"`), so the switches line up in one column.
+- **Label:** the label sits right of the switch, `--space-2` away, at the small size and `--weight-title`, and the whole row toggles it. A description can sit under the label in `--fg-subtle`. In a settings list the label and description come first and the switch sits at the row's end (`align="end"`), so the switches line up in one column.
 - **Touch:** the row is at least 44px tall on coarse pointers.
 - Build it on a `role="switch"` button with `aria-checked`. Space toggles it. A form sends it like a checkbox.
 
@@ -115,17 +115,17 @@ Two values set at once on one surface, such as a reply's tone against its length
 - **Disabled:** the thumb in `--surface-2` with a `--line` edge, words in `--fg-disabled`, no tab stop.
 
 ## Segmented control
-A `--radius-surface` track with fill at fg 5%, an inset `--line` edge and 4px (`--space-1`) padding, so the segments inside it, at `--radius-control`, stay concentric. Each segment is caption size in `--fg-subtle`. The selected segment gets `--surface-1`, `--fg`, an inset `--line` and `--highlight`. Build it from `fieldset` and radio inputs, with a visually hidden legend.
+A `--radius-surface` track with fill at fg 5%, an inset `--line` edge and 4px (`--space-1`) padding, so the segments inside it, at `--radius-control`, stay concentric. Each segment is caption size at `--weight-title` in `--fg-subtle`. The selected segment gets `--surface-1`, `--fg`, an inset `--line` and `--highlight`. Build it from `fieldset` and radio inputs, with a visually hidden legend.
 
 ## Tabs
 Underline or segmented. Use the ARIA tabs pattern (`tablist`, `tab`, `tabpanel`); arrow keys move between tabs.
 - **Indicator:** slides to the picked tab (transform, responsive tier).
-- **Label:** changes color only, on the instant tier.
+- **Label:** at `--weight-title`. It changes color only, on the instant tier, never weight.
 - **Panel:** fades in from the side of the picked tab (opacity plus a short translate, responsive tier).
 - **Touch:** sm tabs grow to `--control-md` on coarse screens, so no tab is under 44px.
 
 ## Tag
-The selected segment's look, in mono: 24px tall, `--radius-control`, a `--surface-1` fill with an inset `--line` and `--highlight`, and `--font-mono` at the caption size. A plain tag is `--fg-muted`. A status tag colors only its text with the status color (neutral is `--fg-subtle`), never the fill, and there is no dot: the word says the status. When several tags sit on one item, keep one status tag and let the rest be plain. Filter chips sit beside tags, so they take `--radius-control` too; they stay in the sans, because they are controls.
+The selected segment's look, in the sans: 24px tall, `--radius-control`, a `--surface-1` fill with an inset `--line` and `--highlight`, and `--font-sans` at the caption size and `--weight-label`, in sentence case. A plain tag is `--fg-muted`. A status tag colors only its text with the status color (neutral is `--fg-subtle`), never the fill, and there is no dot: the word says the status. When several tags sit on one item, keep one status tag and let the rest be plain. Filter chips sit beside tags, so they take `--radius-control` too; they are controls, so their labels take `--weight-title`.
 - **Category (a hue tag, P11):** a tag that files a thing under a category (Finance, Clients, Hiring) may take one of the five data hues: the hue's `-tint` as the fill, its `-text` tone for the label (4.5:1 on the tint, checked), and an inset hairline of the hue at 24% under `--highlight`. One hue means one category in a view, and the word still says it. A hue is never a status: how something stands takes `status`. With more than five categories, leave them plain.
 
 ## Kbd
@@ -135,7 +135,7 @@ The selected segment's look, in mono: 24px tall, `--radius-control`, a `--surfac
 A round mark for a person, a client or a company, and a group that stacks them.
 - **Surface:** `--radius-pill` at sm 24 (beside a tag, dense rows), md 32 (list rows, the default) or lg 44 (a profile header). A photo is object-cover under an inset `--line` hairline, so a white photo keeps its edge.
 - **Color (P11, identity is data):** initials sit on the hue's `-tint` in its `-text` tone, with an inset hairline of the hue at 24% under `--highlight`, the hue tag's look. With no `hue`, a stable hash of the name picks one of the five, so a client keeps its hue everywhere; two names can share one, so the name stays the identifier. `neutral` is `--surface-2`, `--fg-muted` and a `--line` hairline.
-- **Type:** initials in the sans at 400: caption at sm, small at md, body at lg, from the first letter of the first two words, skipping leading symbols ("@stripe.com" gives "S").
+- **Type:** initials in the sans at `--weight` (400) at every size: caption at sm, small at md, body at lg, from the first letter of the first two words, skipping leading symbols ("@stripe.com" gives "S").
 - **Group:** avatars overlap by a quarter of their size, the first on top, each ringed 2px in the surface it sits on by a zero-offset spread shadow (`ring`: canvas, surface-1, surface-2). `max` (4) shows the first few, then a "+N" pill in mono caption on `--surface-2`, named "N more". The group is labelled ("Project team, 26 people").
 - **Accessibility:** initials are an image named by the name; a photo's alt is the name; `decorative` hides it when the name is written beside it. A failed photo falls back to the initials.
 - **States and motion:** none. No hover, no focus stop; a link around it is the caller's.
@@ -149,7 +149,7 @@ A round mark for a person, a client or a company, and a group that stacks them.
 ## Callout
 An inline note in the page flow: a tip, a heads-up, a result to act on.
 - **Surface:** `.litt-raised`, padding `--space-4`, gap `--space-3`. In the flow, so never glass and no shadow, and never a left rail, a tinted fill or a colored border.
-- **Anatomy:** a 16px icon on the title's first line, the title (body, `--fg`), a line of detail (small, `--fg-subtle`), an optional action at the end (an sm secondary Button or a Kbd) and, with `onDismiss`, a pill ghost close button named "Dismiss". It measures itself: under 28rem the action drops below the text.
+- **Anatomy:** a 16px icon on the title's first line, the title (body, `--weight-title`, `--fg`), a line of detail (small, `--fg-subtle`) 4px under it, an optional action at the end (an sm secondary Button or a Kbd) and, with `onDismiss`, a pill ghost close button named "Dismiss". It measures itself: under 28rem the action drops below the text.
 - **Color:** only the icon takes `--success`, `--warning` or `--danger`; neutral is `--fg-subtle`. A non-neutral tone puts a hidden word before the title ("Warning: "), so the color never says it alone. A tip takes the neutral tone with its own icon.
 - **Accessibility:** `role="note"`; `live` makes it a status, or an alert for danger, for a callout that appears after an action. Dismissing unmounts it, and the caller places focus.
 - **Touch:** the close button and a Button action grow to 44px; a Kbd action hides, as key hints do on touch.
@@ -157,7 +157,7 @@ An inline note in the page flow: a tip, a heads-up, a result to act on.
 
 ## Accordion
 Sections that open in place: questions and answers, groups of settings, a long spec.
-- **Anatomy:** rows split by 1px `--line` hairlines, with one above the first and one below the last. Each trigger is a full-width button at least 56px tall, its label at the body size in `--fg`, left-aligned, and a 16px chevron in `--fg-subtle` at the end that brightens to `--fg` on hover (instant tier, color only). The content sits under its trigger in `--fg-muted` at the small or body size, at most `--measure` wide, with `--space-6` below it. No card around it unless the page puts one there; no fills, no accent.
+- **Anatomy:** rows split by 1px `--line` hairlines, with one above the first and one below the last. Each trigger is a full-width button at least 56px tall, its label at the body size and `--weight-title` in `--fg`, left-aligned, and a 16px chevron in `--fg-subtle` at the end that brightens to `--fg` on hover (instant tier, color only). The content sits under its trigger in `--fg-muted` at the small or body size, at most `--measure` wide, with `--space-6` below it. No card around it unless the page puts one there; no fills, no accent.
 - **Behavior:** one open at a time by default (`type="single"`, and the open one can close), or several (`type="multiple"`). Triggers sit in headings (h3 unless told otherwise) and carry `aria-expanded` and `aria-controls`.
 - **Keyboard:** Enter or Space toggles; ↑↓ move between triggers; Home and End go to the first and last.
 - **Motion:** the panel's height is never animated: it snaps open. Its content fades in and drops a quarter of `--travel`, the chevron turns half a turn, and the rows below move to their new place by transform (Motion `layout`, position only), all on the responsive tier, so the page never jumps. Closing fades the content on the exit token while the rows below rise.
@@ -172,7 +172,7 @@ A region that scrolls inside the page: a long list in a fixed-height card, a log
 
 ## Glass header
 Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
-- Order: wordmark → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
+- Order: wordmark (body size at `--weight-title`) → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
 - The current page is `--fg` with `aria-current="page"`, a lightness step from its neighbours. No dot. In the menu on mobile, the current page carries a check.
 - It is full-bleed, so it sets `border-radius: 0` (`.litt-glass` carries the surface radius).
 - On mobile, hide the nav behind the command menu or a menu button. Don't squeeze it.
@@ -226,7 +226,7 @@ Actions on the thing under the pointer: right-click a row, a file, a card.
 - **On compact screens** it stays anchored at the finger, like the Menu, and a submenu replaces the list in place with a Back row first.
 
 ## Modal
-Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, padding `--space-8`, max width 480px (forms) or 640px. The title is `--type-h4` in `--fg`. Actions sit bottom right at md, primary last, secondary or ghost before it. Fields in a dialog are md too. The backdrop tint is `color-mix(in oklab, var(--canvas) 55%, transparent)`.
+Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, padding `--space-8`, max width 480px (forms) or 640px. The title is `--type-h4` (14px at `--weight-title`) in `--fg`, 4px above its description. Actions sit bottom right at md, primary last, secondary or ghost before it. Fields in a dialog are md too. The backdrop tint is `color-mix(in oklab, var(--canvas) 55%, transparent)`.
 - **Motion:** the view's expressive moment: placed, not thrown. It rises by `--travel` and settles from `--press-scale` (0.98), and may bounce slightly (`--dur-expressive`, `--ease-expressive`). If the view has already used its expressive moment, the dialog uses the responsive tier (a `tier` choice on the component).
 - **Exit:** `--dur-exit-expressive` with `--ease-out`. It never bounces.
 - **On compact screens** it is a bottom sheet. `side="right"` becomes the same sheet, so no strip of page is left at the edge. It is glass, flush with the bottom, with `--radius-surface` on the top corners only, and it pads its footer by the safe-area inset. A 32px by 4px grabber in `--line-strong` sits at the top centre. The body scrolls inside, with `overscroll-behavior: contain`.
@@ -235,7 +235,7 @@ Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, pa
 - **Drag and buttons:** it can be dragged down from anywhere that follows the rules in Foundations section 6. The close button is 44px on coarse screens. Cancel, Esc and a scrim tap also close it.
 
 ## Toast
-Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-4`, small size in `--fg`. No status dot: an error's title is `--danger`, and the words say the rest. Bottom right on desktop, bottom center on mobile. `role="status"` (or `alert` for errors). Auto-dismiss after 5s, but never for errors. An undo action sits on the right as a ghost button or kbd hint.
+Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-4`: the title at the small size and `--weight-title` in `--fg`, an optional description under it at the caption size in `--fg-subtle`, at `--weight`. No status dot: an error's title is `--danger`, and the words say the rest. Bottom right on desktop, bottom center on mobile. `role="status"` (or `alert` for errors). Auto-dismiss after 5s, but never for errors. An undo action sits on the right as a ghost button or kbd hint.
 - **Motion:** it arrives from just below its corner and settles. That is the expressive tier when the toast is the view's moment, otherwise the responsive tier. It leaves sideways by the same small distance, on the exit token for its tier.
 - **Stacking:** older toasts stack behind the newest and open into a list on hover or focus.
 - **On compact screens** the toast spans the page gutters, sits `--space-4` above the bottom edge or the safe-area inset, and leaves downward by `--travel` on a timeout, not sideways.
@@ -243,7 +243,7 @@ Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-
 - **Swipe:** a sideways drag moves the toast one to one. It leaves past `--dismiss-distance` of its width or faster than `--dismiss-velocity`, in the direction it was going. The close button stays, 44px on coarse screens. A tap on the stack pins it open, as before.
 
 ## Table and list rows
-Rows are separated by 1px `--line`, padding `--space-3`/`--space-4`, small size. The primary cell is `--fg`; the rest are `--fg-subtle`. Numbers and dates use `--font-mono` caption size, right-aligned. Hover is an fg-4% fill. A sticky header row is caption size in `--fg-subtle`, sentence case.
+Rows are separated by 1px `--line`, padding `--space-3`/`--space-4`, small size. The primary cell is `--fg`; the rest are `--fg-subtle`. Numbers and dates use `--font-mono` caption size at 400, right-aligned. Hover is an fg-4% fill. A sticky header row is caption size at `--weight-label` in `--fg-subtle`, sentence case.
 - **Hover:** the fg-4% fill is for airy lists (project rows, tables). Dense lists (menus, the command menu) use the gliding highlight. Hover never moves anything.
 - **Entrance:** rows and raised cards arrive in one staggered cascade (`--stagger`, `--travel`, expressive tier). That cascade is the page's single expressive moment.
 - **Filter and insert:** responsive and position-only (FLIP via transform), so text never stretches.
@@ -261,7 +261,7 @@ Previous and next for a table or list that shows one page of many. The range is 
 A number tile for one figure that tells you how things stand: active projects, deploys this week, median build time.
 - **Surface:** `.litt-raised` at `--radius-surface`, no shadow (P4), never glass (P3), never an accent rail. Padding is `--space-4` in a narrow group and `--space-6` from 48rem wide. The tile never has a hover, because it links nowhere.
 - **Label:** above the value, small size, `--fg-subtle`, sentence case, no colon.
-- **Value:** `--type-h3-size` in `--fg`, in the sans (not mono), with tabular numbers so a figure does not wobble when it updates. An optional unit ("s", "%") follows it directly, same size, in `--fg-subtle`.
+- **Value:** the h3 step (14px at `--weight-title`) in `--fg`, in the sans (not mono), with tabular numbers so a figure does not wobble when it updates. An optional unit ("s", "%") follows it directly, same size, in `--fg-subtle`.
 - **Delta:** an optional line under the value at the caption size: a word and the number, "Up 12% on last week". The word says the direction. The color says whether it is news: `--success` for good, `--danger` for bad, `--fg-subtle` for neither. So a build time that fell is "Down 3 s on last week" in `--success`. Never an arrow glyph alone, never a dot. The good or bad judgment is also in hidden text ("good news"), so color is never the only signal.
 - **Group:** a grid that measures itself. Two tiles across, four across from 40rem wide, one below 20rem. Tiles in a row share the row's height, and the gap is `--space-4`.
 - **Semantics:** a description list. The label is the term and the value is its description, so a screen reader reads "Active projects, 12".
@@ -359,7 +359,7 @@ The steps of a run in order: when each started, how long it took and how it ende
 ## App shell
 The frame around an app's pages: a sidebar for moving between them and a main area for the page.
 - **Desktop:** a 240px sidebar on `--surface-1` with a `--line` hairline on its edge, and a main area that scrolls with the page. The sidebar column runs the full height of the page, so it reaches the bottom of a tall page. Its content is sticky and as tall as the window, so the wordmark and the links stay in view while the page scrolls.
-- **Wordmark:** at the top of the sidebar, body size, `--fg`, in a row as tall as the glass header (`--header-h`).
+- **Wordmark:** at the top of the sidebar, body size, `--weight-title`, `--fg`, in a row as tall as the glass header (`--header-h`).
 - **Links:** 36px rows at the small size and `--radius-control`, with 12px side padding. The current page is `--fg` on a `--surface-2` fill with `aria-current="page"`. The others are `--fg-muted`, and hover fills them with fg at 6% and brightens the text, on the instant tier. No dots, no accent, no weight change. An optional 16px icon sits before the label. The sidebar holds one or more `nav` landmarks, each with its own name.
 - **Main:** the page's own landmark, with the page gutter at the sides and `--space-8` above and below.
 - **On compact screens** the sidebar is gone. A glass top bar, sticky at the safe-area inset like the header, shows the wordmark and an icon-only menu button, 44px, labelled "Open navigation", with `aria-expanded` and `aria-controls`. It opens the nav as the bottom sheet (see Modal): the same links in 44px rows, a heading, a close button, drag to close. Picking a link closes the sheet. The sheet does not use up the view's expressive moment.
@@ -372,12 +372,12 @@ The frame around an app's pages: a sidebar for moving between them and a main ar
 
 ## Forms
 How the controls above make a page. One left-aligned column, never centered (P7).
-- **Spacing:** fields sit `--space-6` (24) apart. Related controls share a fieldset with a legend at the small size in `--fg`, like a field's label. Groups sit `--space-12` (48) apart.
+- **Spacing:** fields sit `--space-6` (24) apart. Related controls share a fieldset with a legend at the small size and `--weight-title` in `--fg`, like a field's label. A section's title sits 4px above its description. Groups sit `--space-12` (48) apart.
 - **Settings page:** sections, each a title (`--type-body-size` in `--fg`) with one line of description in `--fg-subtle`, then its fields. From 1024 up the title and description take the left third and the fields the rest; below that they stack. A `--line` hairline and `--space-12` of air separate sections. Save comes last, alone, lg and primary.
 - **Sign-up or contact:** one narrow column (about 400 wide), md fields, a consent checkbox above the submit, and the submit lg, primary and full width (P10).
 - **Optional fields:** mark the optional ones, not the required ones: "(optional)" in `--fg-subtle` after the label. No asterisks.
 - **Errors:** validate on submit, then again as each field changes, so a fixed field clears itself. Each invalid field shows its error under it, in `--danger`, saying how to fix it. Above the form an error summary names every problem: a `.litt-raised` panel with an inset 1px `--danger` edge, a title in `--fg` ("Fix 2 fields to save") beside a 16px alert icon in `--danger`, then one link per error that moves focus to its field. The summary takes focus when a submit fails. A form of three fields or fewer skips the summary and focuses its first invalid field.
-- **Actions:** in a page form, the submit comes first at the column's start, with Cancel (ghost) after it, both lg. Below 640 they stack full width, submit on top. A dialog keeps its own order: bottom right, primary last, md. Never disable the submit to say a field is wrong; let the submit show the errors.
+- **Actions:** in a page form, the submit comes first at the column's start, with Cancel (ghost) after it, both md. Below 640 they stack full width, submit on top. A dialog keeps its own order: bottom right, primary last, md. Never disable the submit to say a field is wrong; let the submit show the errors.
 - **Saving:** the submit shows its loading state, then a toast confirms. A failed save keeps every value.
 
 ---
@@ -388,9 +388,9 @@ A chat between a person and an agent, and what the agent shows while it works: i
 
 ## Conversation and message
 A chat, read top to bottom, newest at the foot.
-- **The agent's turn has no bubble.** Its words sit on the page at the body size in `--fg-muted` (body copy, as everywhere), with a measure of about 68ch. `MessageText` styles what a markdown renderer puts inside it: paragraphs `--space-3` apart, headings at the body size in `--fg`, lists with the marker in `--fg-subtle`, links in `--accent-text`, inline code in `--font-mono` on fg 6% at `--radius-control`, and strong text in `--fg` at 400 (never bold, P9), and emphasis in `--fg`, upright. The answer is the content, and a box around long prose cramps it.
+- **The agent's turn has no bubble.** Its words sit on the page at the body size in `--fg-muted` (body copy, as everywhere), with a measure of about 68ch. `MessageText` styles what a markdown renderer puts inside it: paragraphs `--space-3` apart, headings at the body size and `--weight-title` in `--fg`, lists with the marker in `--fg-subtle`, links in `--accent-text`, inline code in `--font-mono` on fg 6% at `--radius-control`, strong text in `--fg` at `--weight-title` (never bold, P9), emphasis in `--fg`, upright, and table headers at the caption size and the label weight. The answer is the content, and a box around long prose cramps it.
 - **The person's turn is a bubble:** right-aligned, `.litt-raised` at `--radius-surface`, padding `--space-3` and `--space-4`, text at the body size in `--fg`, at most 80% of the column (85% on compact screens) and 32rem. No tail and no accent fill: the accent stays on Send. Files the person sent sit above the bubble as the Composer's chips.
-- **Who is speaking:** the side says it. Each turn is an `article` with a visually hidden heading ("You", or the agent's name). An optional `name` shows above an agent's turn at the small size in `--fg`, for a thread with more than one agent or person, with an optional sm Avatar beside it. A name is never colored.
+- **Who is speaking:** the side says it. Each turn is an `article` with a visually hidden heading ("You", or the agent's name). An optional `name` shows above an agent's turn at the small size and `--weight-title` in `--fg`, for a thread with more than one agent or person, with an optional sm Avatar beside it. A name is never colored.
 - **Spacing:** turns sit `--space-8` apart. The parts of one turn (thinking, a plan, tool calls, the answer, its actions) sit `--space-3` apart.
 - **Actions:** under a finished agent turn, a row of sm ghost icon-only buttons with tooltips: Copy (it swaps to a check and a polite live region says "Copied"), Retry, and the caller's own. They always show under the latest turn; under older turns they show on hover and focus-within, and always on coarse pointers, where they grow to 44px. A hidden row keeps its height, so nothing shifts when it shows. There are none while the turn streams, and none on a turn that stopped, whose Retry is in its error line.
 - **Streaming:** text appears as it arrives, with no fade per word, no blinking caret and no shimmer. The composer's Stop and the Thinking clock say the agent is working. The actions appear when the turn ends.
@@ -429,12 +429,12 @@ What the agent did: a row per call, a group that folds a run of them, and an app
 - **Status:** the Timeline's marks from `StatusIcon`. Running is the half-filled circle in `--fg`, never spinning. Done is the check in `--fg-muted`. Failed is the x in `--danger`, with "Failed" in words before the time. Waiting is the empty circle in `--fg-subtle` with "Waiting for approval", and denied is the dashed circle with "Denied". Every status is also said in hidden text.
 - **Details:** the input and the output, each under a caption-size label in `--fg-subtle`, in mono at the caption size in `--fg` on `--surface-2` with an inset `--line` at `--radius-surface`, padded `--space-3`. Past about 16rem they scroll inside, focusable and labelled ("Output of npm test"). Output stays `--fg` when the call failed: the status says it.
 - **Group:** `ToolCallGroup` folds a run of calls under one row with the caller's summary ("Read 3 files and ran the tests"), or "4 tool calls". Its chevron sits at the row's end. It is open while any call runs, and closes itself when they are all done unless the reader toggled it.
-- **Approval:** `ToolApproval` asks before a call runs. A `.litt-raised` panel in the flow (never glass), padded `--space-4`: a title at the body size in `--fg` ("Run a command?"), the call in mono on `--surface-2` at `--radius-control`, one line in `--fg-subtle` on what it touches, then md actions: Allow (primary, the view's one accent fill, because Send is disabled while it waits) and Deny (ghost), with an optional checkbox to always allow. After a choice it becomes a tool row, "Allowed" (the check) or "Denied" (the dashed circle). It does not take focus when it appears, because the person may be reading; a polite live region says "Waiting for your approval: npm run deploy". When the choice was made from inside the panel, focus moves to the row, so it never falls to the page.
+- **Approval:** `ToolApproval` asks before a call runs. A `.litt-raised` panel in the flow (never glass), padded `--space-4`: a title at the body size and `--weight-title` in `--fg` ("Run a command?"), the call in mono on `--surface-2` at `--radius-control`, one line in `--fg-subtle` on what it touches, then md actions: Allow (primary, the view's one accent fill, because Send is disabled while it waits) and Deny (ghost), with an optional checkbox to always allow. After a choice it becomes a tool row, "Allowed" (the check) or "Denied" (the dashed circle). It does not take focus when it appears, because the person may be reading; a polite live region says "Waiting for your approval: npm run deploy". When the choice was made from inside the panel, focus moves to the row, so it never falls to the page.
 - **Motion:** rows arrive with their turn. A status mark swaps at once and colors fade on the instant tier. Details open as Thinking's body does.
 
 ## Plan
 An agent's steps for a task, ticked off as it works.
-- **Header:** the label at the small size in `--fg` and the count in mono at the caption size in `--fg-subtle` ("3 of 7"), over a 4px rail in the Meter's look, the done share in `--fg`. Progress is not a category, so it takes no hue (P11).
+- **Header:** the label at the small size and `--weight-title` in `--fg` and the count in mono at the caption size in `--fg-subtle` ("3 of 7"), over a 4px rail in the Meter's look, the done share in `--fg`. Progress is not a category, so it takes no hue (P11).
 - **Steps:** an ordered list, rows at least 32px tall, each the 16px `StatusIcon` and the label at the small size. Pending is `--fg-subtle`. Running, the current step, is `--fg` with the half-filled circle. Done is `--fg-muted` with the check, never struck through: the color steps it back. Failed takes the x in `--danger`, its label stays `--fg`, and "Failed" follows in words. Skipped is the dashed circle in `--fg-subtle` with "Skipped". A step can carry a detail line under it at the caption size in `--fg-subtle`.
 - **Surface:** bare in a turn, like the turn's other parts. It can also sit in a raised panel beside the chat; the panel is the caller's.
 - **Accessibility:** an `ol` named by the label, each step's status in hidden text, and `aria-current="step"` on the running step. A polite live region says "Step 4 of 7: Run the build" when the running step changes, "Step 4 of 7 failed: Run the build" when one fails, and "Plan done" when every step is done or skipped. It never speaks on the first render. The count is done steps over all steps, so a skipped step leaves it one short.

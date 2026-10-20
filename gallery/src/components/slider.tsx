@@ -194,7 +194,7 @@ function Field({ labelId, label, shown, helpId, help, minLabel, maxLabel, disabl
       className={["grid gap-2", className].join(" ")}
     >
       <div className="flex items-baseline justify-between gap-4">
-        <span id={labelId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+        <span id={labelId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
           {label}
         </span>
         {shown !== undefined && (

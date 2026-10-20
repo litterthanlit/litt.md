@@ -2,8 +2,8 @@
  * Tabs: underline or segmented, built on Radix Tabs (roles, arrow keys, Home
  * and End come from Radix; everything visual is ours).
  *
- * - Labels never change weight or size. Only the color changes (fg-subtle to
- *   fg), on the instant tier.
+ * - Labels sit at the title weight (P9) and never change weight or size. Only the color
+ *   changes (fg-subtle to fg), on the instant tier.
  * - The indicator (a 2px underline, or the segmented fill block) slides
  *   between tabs with Motion layoutId on the responsive tier. It moves through
  *   transform, so it is allowed.
@@ -161,7 +161,7 @@ const PRESS =
 
 /* isolate: the indicator sits at -z-10 inside the tab, behind the label and the focus ring. */
 const triggerBase =
-  "relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-normal " +
+  "relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-title " +
   "text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg data-[state=active]:text-fg " +
   PRESS + " " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +

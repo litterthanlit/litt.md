@@ -1,12 +1,12 @@
 ---
 name: litt-md
-description: litt.md is Nick's personal design language and taste for web and product UI, motion and interaction. Use it whenever you build, restyle or review anything visual for Nick (websites, landing pages, app screens, components, prototypes or Framer sites, in React, Tailwind, HTML or CSS), when choosing type, color, spacing, radius, glass, light, shadows or motion, or when critiquing a screenshot, URL or design. Also use it for taste work - interviewing Nick about preferences, auditing a reference site, moodboard or Nick's own work, logging a reaction such as love this, hate this or more like that, and distilling the taste journal into rules. Its rules override the visual defaults of frontend-design and design-systems. Signature - technical precision, cool neutrals, Hanken Grotesk, airy layouts, light and material, quick motion with one spring moment per view, light and dark both first-class.
+description: litt.md is Nick's personal design language and taste for web and product UI, motion and interaction. Use it whenever you build, restyle or review anything visual for Nick (websites, landing pages, app screens, components, prototypes or Framer sites, in React, Tailwind, HTML or CSS), when choosing type, color, spacing, radius, glass, light, shadows or motion, or when critiquing a screenshot, URL or design. Also use it for taste work - interviewing Nick about preferences, auditing a reference site, moodboard or Nick's own work, logging a reaction such as love this, hate this or more like that, and distilling the taste journal into rules. Its rules override the visual defaults of frontend-design and design-systems. Signature - technical precision, cool neutrals, Geist in three weights, airy layouts, light and material, quick motion with one spring moment per view, light and dark both first-class.
 allowed-tools: Bash(node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs *), Bash(node ${CLAUDE_SKILL_DIR}/scripts/check.mjs*)
 ---
 
 # litt.md
 
-**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface at one weight, cool neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
+**Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, one typeface in three weights by role, cool neutrals. The only bold move is light and material: glass that floats, a soft light falling from the top, edges that catch it, a trace of grain. Color barely appears, and where it does it behaves like light.
 
 Skill directory: `${CLAUDE_SKILL_DIR}`. Every path below is relative to it.
 
@@ -50,8 +50,8 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 6. **P6 Precision.** 8px grid (4px inside components), 1px hairlines, tracking tightens as size grows.
 7. **P7 Airy rhythm.** One idea per section, 128 / 96 / 64px between sections, asymmetric and left-aligned by default.
 8. **P8 Designed, not inverted.** Each theme has its own material strengths. Both are first-class.
-9. **P9 One weight.** Everything at 400, headings and buttons included. Hierarchy comes from size, color and tracking.
-10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them at sm and md; an lg button runs wider (pad 32), so it never reads as a block. Hero CTAs and a page form's submit are lg (56); a dialog's fields and actions are md (44).
+9. **P9 Weight by role.** Text at 400 (`--weight`), titles, buttons and tabs at 500 (`--weight-title`), 12px labels at 600 (`--weight-label`). Nothing else: no bold, nothing below 400, no 600 above 12px. Below the page title, rank comes from weight, two inks and space.
+10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them at sm and md; an lg button runs wider (pad 32), so it never reads as a block. Hero CTAs are lg (56); a page form's submit and Cancel, and a dialog's fields and actions, are md (44).
 11. **P11 Color carries data.** Beyond the one accent, color only says something: a series, a category, a heat step, a side of a goal, an identity. Five data hues in a fixed order (blue, amber, teal, violet, rose), each with a mark tone, a `-text` tone and a `-tint`. Never on chrome: buttons, surfaces, borders, nav and running text stay neutral. A single quantity stays in the foreground.
 
 Each rule's Check line, the dos and don'ts, and the open questions are in `taste/profile.md`.
@@ -61,7 +61,7 @@ Each rule's Check line, the dos and don'ts, and the open questions are in `taste
 These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
-- **Type:** Hanken Grotesk + Geist Mono only, at weight 400 only. Display stops at 40.
+- **Type:** Geist + Geist Mono only, in three weights by role (P9). Nothing is set above 18px: display and h1 are 18, the rest 14, 13 and 12. Mono is for code, keys, data, versions and token names, never tags.
 - **Color:** cool neutrals at one OKLCH hue (about 262), monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
 - **Density:** airy.
 - **Shape:** slight radius. Controls 4px (tags and chips too), surfaces 8px, pills only for avatars, icon-only buttons and switches.
@@ -81,25 +81,26 @@ These change only when Nick changes them.
 - Drop shadows with an offset, or shadows on cards in the flow
 - Bounce above 0.12, bounce on exits or the responsive tier, a second expressive moment per view, scroll reveals, parallax, marquee
 - A second typeface
-- Any font weight above 400
+- A weight outside the three roles (bold, 700 and up, below 400, or 600 above 12px)
+- Type above 18px
 
 ## Token quick view (values live only in `assets/tokens.css`)
 
 - **Surfaces:** `--canvas`, `--surface-1`, `--surface-2`, `--surface-3`
 - **Lines:** `--line`, `--line-strong`, `--line-control`
-- **Text:** `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled`
+- **Text:** `--fg` (titles, key values), `--fg-muted` and `--fg-subtle` (one grey for all other text, two names), `--fg-disabled`
 - **Accent:** `--accent` (a fill only), `--accent-hover`, `--accent-fg`, `--accent-text` (links and accent text), `--accent-tint`, `--focus`
 - **Status:** `--success`, `--warning`, `--danger`
 - **Data hues (P11):** `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` (words in the hue) and `-tint` (the fill behind them); marks take the plain name
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
-- **Type:** `--font-sans`, `--font-mono`, `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
+- **Type:** `--font-sans` (Geist), `--font-mono` (Geist Mono), `--weight` (400), `--weight-title` (500), `--weight-label` (600), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
 - **Shape:** `--radius-control` (4), `--radius-surface` (8), `--radius-pill`
 - **Controls:** `--control-{sm,md,lg}` (32/44/56), `--control-pad-{sm,md,lg}` (12/16/24), `--button-pad-lg` (32), `--control-text-{sm,md,lg}`, `--control-gap`, `--control-group-gap`
 - **Motion:** `--dur-{instant,responsive,expressive}`, `--dur-exit-{responsive,expressive}`, `--ease-{out,responsive,expressive}`, `--spring-{responsive,expressive}`, `--stagger`, `--travel`, `--exit`, `--press-scale`, `--dismiss-distance`, `--dismiss-velocity`
 
-For Tailwind v4, use `assets/tailwind.css`, which provides `bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `rounded-control`, `rounded-surface`, `rounded-pill`, `ease-responsive`, `shadow-float`, `py-section`, `shadow-glow` and similar. Those plain names are for showing code and for projects without the registry. In a React project you can write to, do not copy the tokens: `npx shadcn@latest add @litt/<item>` (or `https://littmd.vercel.app/r/<item>.json`) installs the tested components and adds the same utilities under `litt-` names, such as `bg-litt-canvas` and `rounded-litt-control`. `workflows/build.md` §3 has the item table and the rules. To see everything rendered, open `assets/specimen.html`.
+For Tailwind v4, use `assets/tailwind.css`, which provides `bg-canvas`, `text-fg-muted`, `border-line`, `h-control-md`, `rounded-control`, `rounded-surface`, `rounded-pill`, `ease-responsive`, `shadow-float`, `py-section`, `shadow-glow`, `font-title`, `font-label` and similar. Those plain names are for showing code and for projects without the registry. In a React project you can write to, do not copy the tokens: `npx shadcn@latest add @litt/<item>` (or `https://littmd.vercel.app/r/<item>.json`) installs the tested components and adds the same utilities under `litt-` names, such as `bg-litt-canvas` and `rounded-litt-control`. `workflows/build.md` §3 has the item table and the rules. To see everything rendered, open `assets/specimen.html`.
 
 ## Scripts
 
@@ -110,7 +111,7 @@ node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs site <url> --out captures/<s
 # Audit a moodboard (Cosmos, Pinterest): scroll and save screenshots to read
 node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs board <url> --out captures/<slug>
 
-# After any change to tokens or docs: links, hex drift, dark parity, contrast, weight, radius, shadows, motion
+# After any change to tokens or docs: links, hex drift, dark parity, contrast, weights by role, radius, shadows, motion
 node ${CLAUDE_SKILL_DIR}/scripts/check.mjs
 ```
 

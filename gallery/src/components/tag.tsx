@@ -3,9 +3,8 @@
  * or reports its status (Live, Review).
  *
  * - The look is the selected segment's (components.md, Tag): 24px tall at the control radius,
- *   a surface-1 fill with an inset line hairline and the top highlight, and Geist Mono at the
- *   caption size. A plain tag is fg-muted. Mono marks a tag as data about the thing, not the
- *   thing itself.
+ *   a surface-1 fill with an inset line hairline and the top highlight, and the sans at the
+ *   caption size and the label weight (P9, v0.12), in sentence case. A plain tag is fg-muted.
  * - A status tag colors its text with the status color, never the fill, and there is no dot.
  *   The label says the status in words, so color never carries it alone.
  * - The status set is the tokens' own: success, warning and danger, plus neutral (fg-subtle).
@@ -53,12 +52,12 @@ export type TagProps = HTMLAttributes<HTMLSpanElement> & {
   className?: string;
 };
 
-/** A 24px mono label at the control radius. Add `status` to color its text, or `hue` to file it under a category. */
+/** A 24px label at the control radius, in the sans at the label weight. Add `status` to color its text, or `hue` to file it under a category. */
 export function Tag({ status, hue, children, className = "", ...rest }: TagProps) {
   return (
     <span
       className={
-        "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-control px-2 font-mono text-caption " +
+        "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-control px-2 text-caption " +
         (hue ? HUE[hue] : PLAIN + (status ? STATUS[status] : "text-fg-muted")) +
         " " +
         className

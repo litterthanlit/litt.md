@@ -1,8 +1,8 @@
 # Building a gallery component
 
-The gallery is the components gallery for **litt.md**, Nick's design language. Every page runs the locked v0.5 tokens. The Playground is the one place that tunes motion and shape, and Nick finds the next sweet spot there. So every component must follow `tokens.css`, and on the Playground it must follow the dial live.
+The gallery is the components gallery for **litt.md**, Nick's design language. Every page runs the locked v0.5 tokens. The Playground is the one place that tunes motion, the header's Customize panel lets anyone try another typeface and radius on every page, and Nick finds the next sweet spot there. So every component must follow `tokens.css`, and on the Playground it must follow the dial live.
 
-We studied Fluid Functionalism for ideas. **We are not copying it.** Take principles, never its look: no weight changes, no gray Inter UI, no bounce on small things. This is litt.
+We studied Fluid Functionalism for ideas. **We are not copying it.** Take principles, never its look: no weight that changes on hover or selection, no true-gray neutrals, no bounce on small things. This is litt.
 
 ## Read first
 
@@ -73,15 +73,16 @@ These come from the audit and are candidate rules. Build them in.
 
 ## Visual rules
 
-- **Slight radius (litt.md v0.5), and it must stay concentric.** `tokens.css` sets it, 4px and 8px, and the Playground can try other values live:
+- **Slight radius (litt.md v0.5), and it must stay concentric.** `tokens.css` sets it, 4px and 8px, and the Customize panel can try other values live on every page:
   - `rounded-control` on buttons, inputs, menu and list rows, tabs, segmented groups (with `overflow-hidden`), tags, chips, kbd and tooltips;
   - `rounded-surface` on cards, stages, menus, popovers, dialogs, toasts and the command menu;
   - `rounded-pill` only on avatars, icon-only buttons and switches. Tags and chips are `rounded-control`.
   - No dots for status or the current page: a status is a word (a Tag), and the current page steps the text color.
 
   An element inset 4px inside a surface uses `rounded-control`; that is what makes it concentric. No other radius exists.
-- **Weight 400 only** (`font-normal`).
-- **Type:** `text-display` 40, `text-h1` 32, `text-h2` 28, `text-h3` 24, `text-h4` 20, `text-reading` 17, `text-body` 15, `text-small` 13, `text-caption` 12. Tracking comes with the token. Use sentence case; no uppercase eyebrows.
+- **Weight by role (P9):** text at 400, titles, buttons, tabs and segments at 500 (`font-title`), 12px labels at 600 (`font-label`). `text-display` to `text-h4` carry 500 and `text-caption` carries 600 on their own, so a mono caption (kbd, numbers) adds `font-normal`, and so does a sentence set at the caption size. Never `font-medium`, `font-semibold` or `font-bold`.
+- **Type:** Geist for everything, Geist Mono for code, keys and data (never tags). `text-display` 18, `text-h1` 18, `text-h2` to `text-h4` 14, `text-reading` 14, `text-body` 14, `text-small` 13, `text-caption` 12. Line height and tracking come with the token. Never name a family: use `font-sans` or `font-mono`, so the Customize panel's typeface reaches every component. Use sentence case; no uppercase eyebrows.
+- **Text spacing:** a label 4px above its title, a title 4px above its text, blocks 16px apart, sections 48px apart (`foundations.md`, Text spacing).
 - **Color only through tokens:**
   - surfaces: `bg-canvas`, `bg-surface-1`, `bg-surface-2`, `bg-surface-3`;
   - text: `text-fg`, `text-fg-muted`, `text-fg-subtle`, `text-fg-disabled`;
@@ -96,7 +97,7 @@ These come from the audit and are candidate rules. Build them in.
 - **Depth:** `shadow-float`, `shadow-modal`, `shadow-tooltip`, `shadow-glow` (the primary action only). There are no offset shadows. Hairlines are `shadow-[inset_0_0_0_1px_var(--line)]` or `border-line`.
 - **One accent fill per view,** on the primary action (P1). Accent can also mark a focus ring. Checkboxes, radios and switches fill with `--fg`, never the accent.
 - **Never add `litt-lit` light inside a stage.** The page already has its one light source (P2).
-- **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). A page form's submit and its paired Cancel are `size="lg"` (P10: a page-form CTA below lg fails). A dialog is compact: its fields and actions are `md`.
+- **Airy density** (Nick's call): menu and list rows are 44px (`h-control-md`), with generous padding. Controls use the 32/44/56 scale (`h-control-sm/md/lg`, `px-control-pad-sm/md/lg`). `size="lg"` is for hero CTAs only (P10). A page form's submit and its paired Cancel are `md`, like its fields, and so are a dialog's fields and actions.
 - **Utility classes from tokens.css:** `litt-glass`, `litt-raised`, `litt-trim` (cap-height labels).
 
 ## Your gallery page
@@ -117,7 +118,7 @@ export default function MenuPage() {
 - Use two to four stages. Each caption says what moves, on which tier, and why. Make every demo realistic: Nick's studio, projects, Framer sites and builds; no lorem ipsum.
 - Add a Replay button (`useReplay()` and `onReplay`) wherever an entrance matters.
 - Captions are written for Nick: short, plain sentences, no em dashes. Say "the travel token" or "the stagger token", not "the dial", and avoid quoting the tunable numbers (durations, travel, stagger), so the copy cannot drift from `tokens.css`.
-- Leave `tune` off in your page meta. Only the Playground sets it, because it is the one page allowed to override the tokens.
+- Leave `tune` off in your page meta. Only the Playground sets it, because it is the one page allowed to override the motion tokens.
 - Name the file `<NN>-<meta.id>.tsx`. The Code view finds a page's source by its id.
 
 ## Document it

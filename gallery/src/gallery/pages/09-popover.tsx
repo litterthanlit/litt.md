@@ -84,7 +84,7 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/compone
 /** A quiet status line beside a trigger, so each stage shows what the popover did. */
 function Status({ children }: { children: ReactNode }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption text-fg-subtle">
+    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -160,7 +160,7 @@ function ShareDemo() {
       <PopoverContent label="Share a preview link" size="lg">
         <div className="grid gap-4">
           <div className="grid gap-1">
-            {!compact && <p className="text-body text-fg">Share a preview</p>}
+            {!compact && <p className="text-body font-title text-fg">Share a preview</p>}
             <p className="text-small text-fg-subtle">
               Anyone with the link can see the latest Northwind draft. It stops working when you unpublish.
             </p>
@@ -214,7 +214,7 @@ function ClientCardDemo() {
                 NM
               </span>
               <div className="grid min-w-0">
-                <p className="truncate text-body text-fg">Nina Morgan</p>
+                <p className="truncate text-body font-title text-fg">Nina Morgan</p>
                 <p className="truncate text-small text-fg-subtle">Head of brand, Northwind</p>
               </div>
             </div>
@@ -229,7 +229,7 @@ function ClientCardDemo() {
               </div>
               <div className="flex items-baseline justify-between gap-4">
                 <dt className="text-small text-fg-subtle">Email</dt>
-                <dd className="min-w-0 truncate font-mono text-caption text-fg">nina@northwind.co</dd>
+                <dd className="min-w-0 truncate font-mono text-caption font-normal text-fg">nina@northwind.co</dd>
               </div>
             </dl>
             <PopoverClose asChild>
@@ -355,7 +355,7 @@ function ScheduleForm({
     >
       <TextField label="Due date" type="date" value={nextDue} onChange={(e) => setNextDue(e.target.value)} />
       <fieldset className="grid gap-2">
-        <legend className="mb-2 text-small text-fg">Status</legend>
+        <legend className="mb-2 text-small font-title text-fg">Status</legend>
         <div className="-mx-3 flex">
           {STATE_OPTIONS.map((o) => (
             <Choice key={o.value} type="radio" name={name} checked={nextState === o.value} onChange={() => setNextState(o.value)}>
@@ -387,7 +387,7 @@ function ScheduleDemo() {
   return (
     <div ref={ref} className="flex items-center gap-6">
       <div className="grid justify-items-end">
-        <span className="text-small text-fg">Northwind site</span>
+        <span className="text-small font-title text-fg">Northwind site</span>
         <span role="status" className="text-caption text-fg-subtle">
           {label}
         </span>
@@ -436,9 +436,9 @@ function AccessDemo() {
       <PopoverContent label="Preview access">
         <div className="grid gap-6">
           <div className="grid gap-4">
-            {!compact && <p className="text-body text-fg">Preview access</p>}
+            {!compact && <p className="text-body font-title text-fg">Preview access</p>}
             <div className="grid gap-2">
-              <span className="text-small text-fg">Who can view</span>
+              <span className="text-small font-title text-fg">Who can view</span>
               {/* Opened from inside a glass popover, so this panel is solid. */}
               <Popover>
                 <PopoverTrigger asChild>
@@ -467,8 +467,8 @@ function AccessDemo() {
                           onChange={() => setAccess(a.value)}
                         />
                         <span className="grid min-w-0">
-                          <span className="text-small text-fg">{a.title}</span>
-                          <span className="text-caption text-fg-subtle">{a.note}</span>
+                          <span className="text-small font-title text-fg">{a.title}</span>
+                          <span className="text-caption font-normal text-fg-subtle">{a.note}</span>
                         </span>
                       </label>
                     ))}

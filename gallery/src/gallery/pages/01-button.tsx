@@ -7,7 +7,7 @@ export const meta: PageMeta = {
   id: "button",
   title: "Button",
   order: 1, group: "Controls",
-  summary: "Roomy, slightly rounded and weight 400. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
+  summary: "Roomy and slightly rounded, with the label at the title weight. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
   tiers: ["instant"],
 };
 
@@ -26,7 +26,7 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
     "A person does something: save, create, send, start a project.",
     "The main action in a view. Make it primary, because the accent fill appears once per view.",
     "Other important actions (secondary), and quiet ones like Cancel or a toolbar action (ghost).",
-    "A page form's submit and its paired Cancel. Make both size lg. In a dialog, keep them md, like the fields.",
+    "A page form's submit and its paired Cancel. Keep both md, like the fields, in a page form and in a dialog. lg is for a hero CTA.",
     "A compact, familiar action such as copy, settings or more. Use iconOnly and give it an aria-label.",
   ],
   skip: [

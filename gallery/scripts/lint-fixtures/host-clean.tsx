@@ -73,7 +73,7 @@ function Price({ tier }: { tier: Tier }) {
       <span className="text-litt-h2 text-litt-fg">{tier.price}</span>
       <span className="text-litt-small text-litt-fg-subtle">{label}</span>
       <a href="#plans" className="text-litt-small text-litt-accent-text underline underline-offset-4">Compare plans</a>
-      <span className="rounded-litt-control bg-litt-data-amber-tint px-2 font-mono text-litt-caption text-litt-data-amber-text">Finance</span>
+      <span className="rounded-litt-control bg-litt-data-amber-tint px-2 text-litt-caption text-litt-data-amber-text">Finance</span>
     </div>
   );
 }
@@ -105,7 +105,7 @@ function PricingCard({ tier, index }: { tier: Tier; index: number }) {
         Book {tier.name}
       </Button>
       {/* Nick's note: bold type, big shadows and bg-white cards are what this studio stays away from. */}
-      <p className="text-litt-caption text-litt-fg-subtle">Nick's studio keeps weight at 400. Shadows are glows, not drops.</p>
+      <p className="text-litt-small text-litt-fg-subtle">Nick's studio sets titles at 500 and labels at 600, never bold. Shadows are glows, not drops.</p>
     </motion.article>
   );
 }
@@ -140,7 +140,7 @@ export function SettingsDialog() {
           type="button"
           className={cn(
             "inline-flex h-litt-control-sm items-center rounded-litt-control px-litt-control-pad-sm",
-            "font-litt-mono text-litt-caption text-litt-fg-subtle shadow-[inset_0_0_0_1px_var(--litt-line)]",
+            "font-litt-mono font-normal text-litt-caption text-litt-fg-subtle shadow-[inset_0_0_0_1px_var(--litt-line)]",
             "transition-colors duration-(--litt-dur-instant) ease-litt hover:text-litt-fg",
           )}
         >

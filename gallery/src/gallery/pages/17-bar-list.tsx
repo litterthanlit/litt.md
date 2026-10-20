@@ -156,7 +156,7 @@ function NarrowDemo() {
   return (
     <div className="grid w-full max-w-[22.375rem] gap-4">
       <BarList label="Top repos by commits" unit={["commit", "commits"]} items={REPOS} onSelect={(item) => setOpened(item.label)} />
-      <p aria-live="polite" className="min-h-5 font-mono text-caption text-fg-subtle">
+      <p aria-live="polite" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
         {opened ? `Opened ${opened}` : ""}
       </p>
     </div>

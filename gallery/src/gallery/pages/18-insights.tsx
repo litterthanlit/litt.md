@@ -212,7 +212,7 @@ function NewRule() {
       </div>
       <div className="grid gap-2">
         <p className="flex justify-between gap-4 text-small text-fg-subtle">
-          Would catch <span className="font-mono text-caption tabular-nums text-fg">12 of the last 50</span>
+          Would catch <span className="font-mono text-caption font-normal tabular-nums text-fg">12 of the last 50</span>
         </p>
         <ul aria-label="Mail the rule would catch">
           {CAUGHT.map((m) => (
@@ -258,7 +258,7 @@ function YourVoice() {
           {greeting} Friday works. I will send the forecast by the end of the day. {signoff}
         </p>
         <div className="flex items-center justify-between gap-4">
-          <span className="font-mono text-caption text-fg-subtle">About {words(voice.x)} words</span>
+          <span className="font-mono text-caption font-normal text-fg-subtle">About {words(voice.x)} words</span>
           <Button variant="secondary" size="sm" onClick={() => setVoice(VOICE_DEFAULT)}>
             Reset
           </Button>
@@ -275,7 +275,7 @@ function Deploy() {
   return (
     <Panel title="Publish Halo case study" tag={<Tag status="success">Live</Tag>}>
       <div className="flex items-baseline justify-between gap-4">
-        <p className="font-mono text-caption text-fg-subtle">Ines · main / 7be04d1</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">Ines · main / 7be04d1</p>
         <p className="text-h3 tabular-nums text-fg">{total}s</p>
       </div>
       <TimelineBar label="Publish Halo case study" phases={DEPLOY} />

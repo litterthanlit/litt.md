@@ -156,7 +156,7 @@ function pageMarkdown(page, cp) {
     `Part of litt.md, Nick's design language, as a shadcn registry for React and Tailwind CSS v4. Version: ${versions}. Live demo: ${ORIGIN}/#${meta.id}. Source: ${REPO}/blob/main/${componentDocs[first].file}. Changes: ${ORIGIN}/changelog.md.`,
     "## Install",
     "```bash\n" + cp.installCommands(comps) + "\n```",
-    `Every token it brings is prefixed with litt (\`--litt-accent\`, \`bg-litt-surface-1\`), so nothing in the project changes. With ${code(cp.REGISTRIES_ENTRY)} in components.json the same install is \`npx shadcn@latest add @litt/${first}\`. For litt's fonts, weight 400 and focus ring across the whole app, also add ${code(cp.registryUrl("base-styles"))}.`,
+    `Every token it brings is prefixed with litt (\`--litt-accent\`, \`bg-litt-surface-1\`), so nothing in the project changes. With ${code(cp.REGISTRIES_ENTRY)} in components.json the same install is \`npx shadcn@latest add @litt/${first}\`. For litt's fonts, heading weights and focus ring across the whole app, also add ${code(cp.registryUrl("base-styles"))}.`,
     "## Usage",
     "```tsx\n" + cp.usageSnippet(docs, comps) + "\n```",
     "## Use it when",
@@ -183,7 +183,7 @@ function llmsTxt(pages) {
   const patterns = pages.filter((p) => !p.docs && p.meta.group);
   const sections = [
     "# litt.md",
-    "> Nick's design language for web and product UI as a shadcn registry: React and Tailwind CSS v4 components on locked tokens. Technical precision, lit from above: an 8px grid, hairlines, Hanken Grotesk at weight 400, cool neutrals, glass only on floating surfaces, and quick motion with one expressive moment per view.",
+    "> Nick's design language for web and product UI as a shadcn registry: React and Tailwind CSS v4 components on locked tokens. Technical precision, lit from above: an 8px grid, hairlines, Geist at 14px in three weights by role, cool neutrals, glass only on floating surfaces, and quick motion with one expressive moment per view.",
     `Every page below is Markdown with the install command, a usage example, the props, the keyboard and what it guarantees for accessibility. The gallery itself is ${ORIGIN} (each page at /#<page>), the registry index is ${ORIGIN}/r/registry.json, and the changes, release by release with migration steps, are at ${ORIGIN}/changelog.md.`,
     "## Install",
     [
@@ -192,14 +192,14 @@ function llmsTxt(pages) {
       'Or add `"registries": { "@litt": "https://littmd.vercel.app/r/{name}.json" }` to components.json once, then `npx shadcn@latest add @litt/button`.',
       bullets([
         "Needs a shadcn project (a components.json) with Tailwind CSS v4.",
-        "Optional: `npx shadcn@latest add https://littmd.vercel.app/r/base-styles.json` for litt's fonts, weight 400 and focus ring across the whole app.",
+        "Optional: `npx shadcn@latest add https://littmd.vercel.app/r/base-styles.json` for litt's fonts, heading weights and focus ring across the whole app.",
         `Every installed file names its release in its first lines (\`// @litt/button ${lock.latest}\`). To update, read the changelog since then and install again with \`--overwrite\`.`,
         `For the whole design language (taste, tokens, build and critique workflows), install the Claude Code plugin: \`claude plugin marketplace add litterthanlit/litt.md\`, then \`claude plugin install litt-md@litt\`. Source: ${REPO}.`,
       ]),
     ].join("\n\n"),
     "## House rules",
     bullets([
-      "Weight 400 everywhere. Hierarchy comes from size and color, never weight.",
+      "Weight by role: text at 400, titles, buttons and tabs at 500 (font-litt-title), 12px labels at 600 (font-litt-label, carried by text-litt-caption). Never font-medium, font-semibold or font-bold. Nothing is set above 18px.",
       "Tokens only: no hex and no raw colors. Radii are rounded-litt-control (4px), rounded-litt-surface (8px) or rounded-litt-pill (avatars, icon-only buttons, switches).",
       "One accent fill per view, on the primary action. Checkboxes, radios and switches fill with the foreground color.",
       "Glass only on floating surfaces (menus, popovers, dialogs, toasts). Cards in the page flow are raised, with no shadow.",

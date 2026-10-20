@@ -81,7 +81,7 @@ export const docs: PageDocs = {
     "Copy is named \"Copy\" and swaps to a check, and a polite status says \"Copied\", or \"Could not copy\" when the browser refuses. Retry is named \"Retry\". Each has a tooltip, and the row is a group named by its label.",
     "The actions are hidden only until hover, and they show on focus-within, so a keyboard never lands on a control it cannot see. On a coarse pointer they always show and are 44px, as are Retry and Jump to latest.",
     "An error line is words with a 16px icon: the words say it stopped, and the icon's color is only a second signal. The icon is hidden from assistive tech.",
-    "Links in MessageText are underlined as well as colored. Strong text and emphasis step the color only, because litt has one weight and no italic, so write words that carry the meaning without them.",
+    "Links in MessageText are underlined as well as colored. Strong text steps to the title weight and fg, never bold, and emphasis steps the color only, because litt has no italic, so write words that carry the meaning without it.",
     "A pre in MessageText wraps its lines, so it never becomes a scroll area a keyboard cannot reach. Use CodeBlock for code that is long, or that the reader will copy.",
     "A turn that arrives fades in once and rises half of the travel token. Reduced motion removes the movement and the fade through the motion hooks.",
     "You still need to label each conversation, keep the label unique on the page, and write the answer so that it reads in order.",
@@ -267,7 +267,7 @@ function StreamDemo({ replayed = false }: { replayed?: boolean }) {
           )}
         </Conversation>
       </Frame>
-      <p aria-hidden="true" className="font-mono text-caption text-fg-subtle">
+      <p aria-hidden="true" className="font-mono text-caption font-normal text-fg-subtle">
         {started ? `aria-busy=${streaming ? "true" : "false"}, ${shown} of ${count} words` : "waiting for the turn"}
       </p>
     </div>
@@ -419,7 +419,7 @@ function EmptyDemo() {
           </Empty>
         </Conversation>
       </Frame>
-      <p className="min-h-5 font-mono text-caption text-fg-subtle">
+      <p className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
         {picked ? `The Composer's field now holds "${picked}", ready to edit.` : "In the Composer a suggestion fills the field. It never sends."}
       </p>
     </div>
@@ -562,7 +562,7 @@ export default function MessagePage() {
         tier="instant"
         size="lg"
         code="ProseDemo"
-        caption="MessageText styles what a markdown renderer produces, with no library. Headings stay at the body size and step to fg. Strong text is fg at weight 400, and links are accent text with an underline. Inline code takes an fg 6% fill at the control radius, a pre is a quiet mono block on surface-2, and a quote has no rail. Nothing is bold."
+        caption="MessageText styles what a markdown renderer produces, with no library. Headings stay at the body size and step to the title weight and fg. Strong text is fg at the title weight, and links are accent text with an underline. Inline code takes an fg 6% fill at the control radius, a pre is a quiet mono block on surface-2, and a quote has no rail. Nothing is bold."
       >
         <ProseDemo />
       </Stage>

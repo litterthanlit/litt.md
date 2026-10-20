@@ -188,7 +188,7 @@ function Cell({ children }: { children?: ReactNode }) {
 
 /** A hint, so it is for a keyboard: a finger has no use for it, and it hides on coarse screens. */
 function Shortcut({ children }: { children: ReactNode }) {
-  return <span className="ml-auto shrink-0 pl-4 font-mono text-caption text-fg-subtle pointer-coarse:hidden">{children}</span>;
+  return <span className="ml-auto shrink-0 pl-4 font-mono text-caption font-normal text-fg-subtle pointer-coarse:hidden">{children}</span>;
 }
 
 type ItemProps = {

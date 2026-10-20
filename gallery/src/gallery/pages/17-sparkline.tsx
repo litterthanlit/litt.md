@@ -166,7 +166,7 @@ function GoalLineDemo() {
     <div className="grid w-full max-w-xl gap-2">
       <div className="flex items-baseline justify-between gap-4">
         <span className="text-small text-fg">Median reply time</span>
-        <span className="font-mono text-caption tabular-nums text-fg-subtle">2.9 h today, goal 4 h</span>
+        <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">2.9 h today, goal 4 h</span>
       </div>
       <Sparkline label="Median reply time, last 30 days" values={REPLY} formatValue={hours} baseline={4} height={64} />
     </div>
@@ -177,11 +177,11 @@ function QuietAndHueDemo() {
   return (
     <div className="grid w-full max-w-xl gap-x-12 gap-y-8 sm:grid-cols-2">
       <div className="grid gap-2">
-        <p className="font-mono text-caption text-fg-subtle">Quiet, the default</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">Quiet, the default</p>
         <Sparkline label="Page views per day, last 14 days" values={VIEWS} height={48} />
       </div>
       <div className="grid gap-2">
-        <p className="font-mono text-caption text-fg-subtle">In a hue</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">In a hue</p>
         <Sparkline label="Page views per day, last 14 days" values={VIEWS} hue="blue" height={48} />
       </div>
     </div>

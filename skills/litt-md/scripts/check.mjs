@@ -12,7 +12,11 @@
  * 4. Coverage:  every themed token is defined in both light and dark (P8).
  * 5. Contrast:  text, control lines, focus, accent, status and data-hue pairs meet WCAG
  *               (each data hue's -text tone is also checked on its own tint).
- * 6. Weight:    nothing goes above font-weight 400 (P9).
+ * 6. Weight:    weight by role (P9): --weight 400 (text), --weight-title 500 (titles),
+ *               --weight-label 600 (12px labels). Nothing at 700 or more or below 400, no
+ *               font-medium, -semibold or -bold (font-title and font-label are the role
+ *               utilities), no 600 above the caption size, Google Fonts loads only
+ *               400, 500 and 600, and the mono only 400.
  * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill.
  * 8. Shadows:   no outer shadow has an x or y offset (P4).
  * 9. Motion:    three tiers (instant tween at most 240ms; springs with visual time at most
@@ -174,19 +178,63 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
 }
 if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes`);
 
-// 6. Weight ceiling (P9) ------------------------------------------------
-console.log("Weight ceiling (P9)");
+// 6. Weight by role (P9) -------------------------------------------------
+console.log("Weight by role (P9)");
 const weightFails = [];
 const assetFiles = fs.readdirSync(path.join(skillDir, "assets")).filter((f) => /\.(css|html)$/.test(f)).map((f) => `assets/${f}`);
+// Three weights, one per role: text 400, titles 500, 12px labels 600. Nothing else exists.
+const ROLE_WEIGHTS = { "--weight": 400, "--weight-title": 500, "--weight-label": 600 };
+const roleVar = (v) => /^var\((--weight(?:-title|-label)?)\)$/.exec(v)?.[1];
+const okWeight = (v) => ["400", "500", "600", "normal", "inherit", "initial", "unset"].includes(v) || !!roleVar(v);
+const weightOf = (v) => (roleVar(v) ? ROLE_WEIGHTS[roleVar(v)] : /^\d+$/.test(v) ? Number(v) : v === "normal" ? 400 : NaN);
+const tokenDecls = strip(css);
+for (const [n, want] of Object.entries(ROLE_WEIGHTS)) {
+  const v = (tokenDecls.match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*([^;]+);`)) || [])[1]?.trim();
+  if (Number(v) !== want) weightFails.push(`tokens.css: ${n} is ${v ?? "missing"}, must be ${want}`);
+}
+const TITLE_STEPS = ["display", "h1", "h2", "h3", "h4"];
+const captionSize = (v) => /^var\(--type-caption-size\)$/.test(v) || /^(?:0?\.75rem|12px|1[01]px|[0-9]px)$/.test(v);
 for (const f of assetFiles) {
   const text = strip(read(f));
-  for (const m of text.matchAll(/font-weight\s*:\s*(\d{3})/g)) if (Number(m[1]) > 400) weightFails.push(`${f}: font-weight ${m[1]}`);
-  for (const m of text.matchAll(/--[\w-]*weight[\w-]*\s*:\s*(\d{3})/g)) if (Number(m[1]) > 400) weightFails.push(`${f}: weight token ${m[0]}`);
-  for (const m of text.matchAll(/wght@([\d;.]+)/g)) if (m[1].split(/[;.]/).some((w) => Number(w) > 400)) weightFails.push(`${f}: Google Fonts loads wght@${m[1]}`);
-  for (const m of text.matchAll(/--weight-(medium|semibold|bold)\b/g)) weightFails.push(`${f}: references ${m[0]}`);
-  for (const m of text.matchAll(/\bfont-(medium|semibold|bold|extrabold|black)\b/g)) weightFails.push(`${f}: uses ${m[0]}`);
+  for (const m of text.matchAll(/(?<![\w-])font-weight\s*:\s*([^;}"]+)/g)) {
+    const v = m[1].replace(/!important/, "").trim();
+    if (!okWeight(v)) weightFails.push(`${f}: font-weight ${v} (only 400, 500, 600 or var(--weight), var(--weight-title), var(--weight-label))`);
+  }
+  for (const m of text.matchAll(/(?<![\w-])font\s*:\s*([^;}"]+)/g))
+    if (/(?:^|\s)(?:bold|bolder|lighter|[1-37-9]00)(?:\s|$)/.test(m[1])) weightFails.push(`${f}: font: ${m[1].trim()} (only 400, 500 or 600)`);
+  for (const m of text.matchAll(/(--[\w-]*weight[\w-]*)\s*:\s*([^;]+);/g)) {
+    const [name, v] = [m[1], m[2].trim()];
+    if (/^--weight(?:-|$)/.test(name) && !(name in ROLE_WEIGHTS)) weightFails.push(`${f}: defines ${name} (only --weight, --weight-title and --weight-label exist)`);
+    else if (!okWeight(v)) weightFails.push(`${f}: ${name} is ${v} (only 400, 500, 600 or a role token)`);
+    // A type step's weight follows its role: titles for display to h4, labels for the caption, text for the rest.
+    const step = /^--text-([\w-]+?)--font-weight$/.exec(name)?.[1];
+    if (step) {
+      const want = TITLE_STEPS.includes(step) ? "--weight-title" : step === "caption" ? "--weight-label" : "--weight";
+      if (roleVar(v) !== want) weightFails.push(`${f}: ${name} is ${v}, must be var(${want})`);
+    }
+  }
+  // 600 is for 12px labels only: a rule that sets the label weight sets nothing larger than the caption.
+  for (const m of text.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const w = (/(?<![\w-])font-weight\s*:\s*([^;}]+)/.exec(m[2]) || [])[1]?.replace(/!important/, "").trim();
+    const size = (/(?<![\w-])font-size\s*:\s*([^;}]+)/.exec(m[2]) || [])[1]?.trim();
+    if (w && size && weightOf(w) === 600 && !captionSize(size)) weightFails.push(`${f}: ${m[1].trim()} sets ${w} at font-size ${size} (600 is for the caption size only)`);
+  }
+  // Google Fonts: each face loads only the weights the roles use, and the mono only 400. Ranges load everything between.
+  for (const m of text.matchAll(/[?&]family=([^&"'\s]+)/g)) {
+    const [fam, spec] = decodeURIComponent(m[1]).split(":");
+    if (!spec) continue;
+    const [axes, tuples = ""] = spec.split("@");
+    const i = axes.split(",").indexOf("wght");
+    if (i < 0) continue;
+    const allowed = /mono/i.test(fam) ? ["400"] : ["400", "500", "600"];
+    for (const t of tuples.split(";")) {
+      const w = t.split(",")[i];
+      if (!allowed.includes(w)) weightFails.push(`${f}: Google Fonts loads ${fam.replace(/\+/g, " ")} at wght ${w} (only ${allowed.join(", ")}, no ranges)`);
+    }
+  }
+  for (const m of text.matchAll(/\bfont-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/g)) weightFails.push(`${f}: uses ${m[0]} (use font-normal, font-title or font-label)`);
 }
-weightFails.length ? weightFails.forEach(fail) : ok(`no weight above 400 in ${assetFiles.length} asset files`);
+weightFails.length ? weightFails.forEach(fail) : ok(`weights by role in ${assetFiles.length} asset files: 400 text, 500 titles, 600 caption labels, nothing else`);
 
 // 7. Radius ---------------------------------------------------------------
 console.log("Radius (control 4, surface 8, pill)");

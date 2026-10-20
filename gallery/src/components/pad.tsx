@@ -166,7 +166,7 @@ const thumbOn = "bg-surface-1 shadow-[inset_0_0_0_1px_var(--line-control),var(--
 const thumbOff = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 
 /* An axis word sits on a plate in the well's color, so the dots and the crosshairs do not run through the letters. */
-const word = "pointer-events-none absolute bg-surface-2 px-1 font-mono text-caption whitespace-nowrap";
+const word = "pointer-events-none absolute bg-surface-2 px-1 font-mono text-caption font-normal whitespace-nowrap";
 
 /* ----------------------------------------------------------------- the tooltip */
 
@@ -378,7 +378,7 @@ export function Pad({
 
   return (
     <div className={["grid gap-2", className].join(" ")}>
-      <span id={labelId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <span id={labelId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </span>
       <div role="group" aria-labelledby={labelId} aria-disabled={disabled || undefined}>

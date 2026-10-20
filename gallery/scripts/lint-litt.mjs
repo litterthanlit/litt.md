@@ -16,7 +16,8 @@
  *
  * Put `litt-allow` on a line (in a comment) to exempt it, with a reason.
  *
- * Checks: weight 400, the three radii, zero-offset shadows, no `transition-all`,
+ * Checks: weight by role (400 text, 500 titles with font-title, 600 caption labels with font-label;
+ * nothing else), the three radii, zero-offset shadows, no `transition-all`,
  * only transform, opacity and color-family fades, duration and ease classes
  * that pair by tier, no literal timings or easings, no raw or quoted colors.
  *
@@ -113,8 +114,9 @@ function lintGallery(files, root) {
       const fail = (rule, message) => fails.push({ file: rel(f), line: i + 1, rule, message });
       const warn = (rule, message) => warns.push({ file: rel(f), line: i + 1, rule, message });
 
-      if (/\bfont-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "weight above or below 400 (P9): use font-normal");
-      if (/fontWeight\s*:\s*['"]?([1-35-9]\d\d)/.test(line)) fail("weight", "fontWeight other than 400 (P9)");
+      if (/\bfont-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "weight by role (P9): use font-normal (text), font-title (titles, buttons, tabs) or font-label (12px labels)");
+      if (/\bfont-\[\d+\]/.test(line)) fail("weight", "arbitrary weight (P9): use font-normal, font-title or font-label");
+      if (/fontWeight\s*:\s*['"]?(?!(?:400|500|600)\b)(?:\d|bold|bolder|lighter)/.test(line)) fail("weight", "fontWeight other than 400, 500 or 600 (P9): use font-normal, font-title or font-label");
       for (const m of line.matchAll(/\brounded(-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
@@ -255,9 +257,9 @@ function checkDecl(prop, value) {
   if (!v) return out;
   const bare = stripVars(v);
   if (prop === "font-weight") {
-    if (!/^(?:400|normal|inherit|initial|unset|revert)$/i.test(v) && !/^var\(/.test(v)) out.push(["weight", `font-weight: ${v}: weight is 400 (P9), use 400 or var(--litt-weight)`]);
+    if (!/^(?:400|500|600|normal|inherit|initial|unset|revert)$/i.test(v) && !/^var\(/.test(v)) out.push(["weight", `font-weight: ${v}: weight by role (P9), use var(--litt-weight) (400), var(--litt-weight-title) (500) or var(--litt-weight-label) (600)`]);
   } else if (prop === "font") {
-    if (/(?:^|\s)(?:bold|bolder|lighter|[1-35-9]00)(?:\s|$)/i.test(v)) out.push(["weight", `font: ${v}: weight is 400 (P9)`]);
+    if (/(?:^|\s)(?:bold|bolder|lighter|[1-37-9]00)(?:\s|$)/i.test(v)) out.push(["weight", `font: ${v}: weight by role (P9), only 400, 500 or 600`]);
   } else if (prop === "font-size") {
     const use = "use var(--litt-type-body-size) (or display, h1..h4, reading, small, caption)";
     if (/^[-+]?[\d.]/.test(v) && !/^0(?:px|rem|em)?$/.test(v) && !/^100%$/.test(v) && v !== "1em") out.push(["type", `font-size: ${v}: ${use}`]);
@@ -516,8 +518,9 @@ function checkToken(t, scope, add, isClassContext) {
   let m;
 
   // weight
-  if (/^font-(thin|extralight|light|medium|semibold|bold|extrabold|black)$/.test(b)) add("weight", `${b}: weight is 400 (P9), use font-normal`);
-  else if ((m = /^font-\[(\d+)\]$/.exec(b)) && m[1] !== "400") add("weight", `${b}: weight is 400 (P9), use font-normal`);
+  if (/^font-(thin|extralight|light|medium|semibold|bold|extrabold|black)$/.test(b)) add("weight", `${b}: weight by role (P9), use font-normal (text), font-litt-title (titles, buttons, tabs) or font-litt-label (12px labels)`);
+  else if ((m = /^font-\[(\d+)\]$/.exec(b)) && m[1] !== "400") add("weight", `${b}: weight by role (P9), use font-litt-title (500) or font-litt-label (600)`);
+  else if ((m = /^font-(title|label)$/.exec(b))) add("weight", `${b}: not a utility in this host, the litt name is font-litt-${m[1]}`);
 
   // radius
   if ((m = RADIUS_RE.exec(b))) {
@@ -699,7 +702,7 @@ function lintHostFile(file, text, rel) {
 
     // warnings
     if (/(?:textTransform\s*:\s*['"]uppercase['"]|text-transform\s*:\s*uppercase)/.test(line)) warn("type", "uppercase: sentence case everywhere (Q1 is open)");
-    if (/<(?:b|strong)(?=[\s>])(?![^>]*\bfont-normal\b)/.test(line)) warn("weight", "<b>/<strong> render bold unless base-styles is installed: weight is 400 (P9), add font-normal");
+    if (/<(?:b|strong)(?=[\s>])(?![^>]*\bfont-(?:normal|litt-title)\b)/.test(line)) warn("weight", "<b>/<strong> render at the title weight (500) only through base-styles, otherwise bold (700): add font-litt-title, or font-normal");
     if (/\bonMouse(Enter|Over)\b/.test(line)) warn("other", "onMouseEnter: make sure touch and keyboard users get the same thing");
   });
 

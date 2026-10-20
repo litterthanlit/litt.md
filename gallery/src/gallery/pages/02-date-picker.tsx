@@ -86,7 +86,7 @@ const today = getToday();
 /** A quiet status line beside a field, so each stage shows what it did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption text-fg-subtle">
+    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -131,7 +131,7 @@ function LaunchDateDemo() {
         error={error}
       />
       <div className="grid gap-3">
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Schedule launch
         </Button>
         <Status>{sent}</Status>

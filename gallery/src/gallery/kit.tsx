@@ -1,6 +1,8 @@
 /**
  * Gallery kit: the building blocks every page uses. Pages are airy (Nick's
  * call): one idea per stage, generous stages, captions that say what moves.
+ * Text spacing follows foundations.md (Type, Text spacing): stages sit 48px apart,
+ * the page title 16px above its summary, and a stage's title 4px above its caption.
  */
 import { createContext, lazy, Suspense, useContext, useState, type ReactNode } from "react";
 import type { Tier } from "@/motion";
@@ -75,7 +77,7 @@ const PageIdContext = createContext<string | null>(null);
 export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs; children: ReactNode }) {
   return (
     <PageIdContext.Provider value={meta.id}>
-      <article aria-labelledby={`page-${meta.id}`} className="grid gap-16 pb-24">
+      <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">
         <header className="grid gap-4">
           <h1 id={`page-${meta.id}`} className="text-h1 text-fg text-balance">
             {meta.title}
@@ -147,7 +149,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
   const heading = (
     <div className="grid max-w-[60ch] gap-1">
       <div className="flex flex-wrap items-center gap-3">
-        <h2 className="text-body text-fg">{title}</h2>
+        <h2 className="text-body font-title text-fg">{title}</h2>
         {tier && <TierChip tier={tier} />}
       </div>
       <p className="text-small text-fg-subtle">{caption}</p>

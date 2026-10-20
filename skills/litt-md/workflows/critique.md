@@ -26,7 +26,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] **P6** Spacing on the 8px grid (4px inside components). 1px hairlines. Tracking tightens on large type.
 - [ ] **P7** One idea per section. Section spacing near 128 / 96 / 64. Left-aligned and asymmetric by default.
 - [ ] Radius is on the scale: 4px controls, 8px surfaces (a surface is a control plus the 4px inset), pills only on avatars, icon-only buttons and switches (tags and chips are 4px). No `rounded-lg`-style classes.
-- [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero CTAs and a page form's submit are lg; a dialog's fields and actions are md.
+- [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero CTAs are lg; a page form's buttons and a dialog's fields and actions are md.
 - [ ] Cards used only for independent objects, not as the default layout.
 
 **C. Themes**
@@ -34,9 +34,10 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] Neutrals are cool (blue-gray), not warm and not pure gray.
 
 **D. Type**
-- [ ] Hanken Grotesk and Geist Mono only. Mono used only for code, keys and data.
-- [ ] Hierarchy comes from scale and color. One display size per page, and nothing larger than 40.
-- [ ] **P9** Nothing above weight 400: no medium, semibold or bold, including headings and buttons.
+- [ ] Geist and Geist Mono only. Mono used only for code, keys, data, versions and token names, never for tags.
+- [ ] Hierarchy comes from weight, two inks and space. Nearly everything is 14px, one display or page title per page, and nothing larger than 18.
+- [ ] **P9** Weight by role: text at 400, titles, buttons and tabs at 500, 12px labels at 600. No bold, nothing below 400, no 500 or 600 on running text, no 600 above 12px, and mono at 400.
+- [ ] Lockups are tight and gaps wide: a label 4px above its title, a title 4px above its text, blocks 16px apart, sections 48px apart.
 - [ ] Body text 13px or larger. Long text at a 65ch measure or narrower.
 
 **E. Motion** (`n/a` for static input)

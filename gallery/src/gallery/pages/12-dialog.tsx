@@ -156,10 +156,10 @@ function PublishDemo() {
           <dl className="grid gap-3">
             <Row label="Pages changed">3</Row>
             <Row label="Build size">
-              <span className="font-mono text-caption">418 kB</span>
+              <span className="font-mono text-caption font-normal">418 kB</span>
             </Row>
             <Row label="Domain">
-              <span className="font-mono text-caption">litt.design</span>
+              <span className="font-mono text-caption font-normal">litt.design</span>
             </Row>
           </dl>
         </DialogContent>
@@ -299,7 +299,7 @@ function DeleteDemo() {
           <TextField
             label={
               <>
-                Type <span className="font-mono text-caption text-fg">{SLUG}</span> to confirm
+                Type <span className="font-mono text-caption font-normal text-fg">{SLUG}</span> to confirm
               </>
             }
             mono

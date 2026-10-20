@@ -241,7 +241,7 @@ function BuildsDemo() {
       <div className="grid min-w-0 grid-cols-1 content-start gap-4">
         <p aria-hidden="true" className="flex flex-wrap items-baseline justify-between gap-x-4 text-small">
           <span className="tabular-nums text-fg">{matchText(matches.length)}</span>
-          {matches.length > LISTED && <span className="text-caption text-fg-subtle">The {LISTED} newest are listed</span>}
+          {matches.length > LISTED && <span className="text-caption font-normal text-fg-subtle">The {LISTED} newest are listed</span>}
         </p>
         <p role="status" className="sr-only">
           {said}

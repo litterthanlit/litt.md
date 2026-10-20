@@ -12,10 +12,9 @@
  *   or the agent's name). A `name` shows that heading instead, at the small size in --fg (never colored), with an
  *   optional sm Avatar beside it, for a thread with more than one agent or person.
  * - MessageText styles what a markdown renderer puts inside a turn, with no markdown library: paragraphs --space-3
- *   apart, headings at the body size in --fg, lists with the marker in --fg-subtle, links in --accent-text, inline
+ *   apart, headings at the body size and the title weight in --fg, lists with the marker in --fg-subtle, links in --accent-text, inline
  *   code in the mono on fg 6% at the control radius, a `pre` as a quiet mono block on --surface-2, a blockquote
- *   with no rail, and strong text in --fg at weight 400 (P9). It never bolds, and it never italicises, because the
- *   type is one face at one weight.
+ *   with no rail, and strong text in --fg at the title weight (P9). It never bolds and never italicises.
  * - MessageActions: sm ghost icon-only buttons with tooltips (Copy swaps to a check and a polite live region says
  *   "Copied", Retry, and the caller's own). They always show under the latest turn, on hover and focus-within under
  *   older ones, and always on a coarse pointer, where they grow to 44px. A streaming turn has none.
@@ -304,7 +303,7 @@ export function Message({
     name !== undefined && name !== null && name !== false ? (
       <div className={`flex items-center gap-2 ${person ? "justify-end" : ""}`}>
         {avatar}
-        <Heading id={headingId} className="text-small text-fg">
+        <Heading id={headingId} className="text-small font-title text-fg">
           {name}
         </Heading>
       </div>
@@ -391,19 +390,19 @@ export function Message({
 /* ----------------------------------------------------------------- message text */
 
 /* What a markdown renderer puts inside an answer. Every rule is a descendant selector, so any renderer works, and each
-   color, size and radius is a litt token. Weight stays 400: the base layer resets headings, b, strong and th. */
+   color, size and radius is a litt token. Weights are set here by role (P9), so an app without the base styles gets them too. */
 const PROSE = [
   "flex min-w-0 max-w-[68ch] flex-col gap-3 text-body [&>*]:min-w-0 [&_p]:text-pretty",
-  /* Headings: the body size in --fg. The step in color is the hierarchy, as everywhere. */
-  "[&_:is(h1,h2,h3,h4)]:text-body [&_:is(h1,h2,h3,h4)]:text-fg [&>:is(h1,h2,h3,h4):not(:first-child)]:mt-2",
+  /* Headings: the body size at the title weight in --fg. Weight and ink are the hierarchy, as everywhere (P9). */
+  "[&_:is(h1,h2,h3,h4)]:text-body [&_:is(h1,h2,h3,h4)]:font-title [&_:is(h1,h2,h3,h4)]:text-fg [&>:is(h1,h2,h3,h4):not(:first-child)]:mt-2",
   /* Lists: the marker steps back to --fg-subtle. A nested list tucks under its item. */
   "[&_ul]:list-disc [&_ol]:list-decimal [&_:is(ul,ol)]:ps-6 [&_li+li]:mt-1 [&_li::marker]:text-fg-subtle [&_li_:is(ul,ol)]:mt-1",
   /* Links: accent text, always underlined, so color is never the only mark. */
   "[&_a]:text-accent-text [&_a]:underline [&_a]:decoration-[color-mix(in_oklab,var(--accent-text)_40%,transparent)] [&_a]:underline-offset-2 [&_a:hover]:decoration-accent-text",
-  /* Strong and emphasis step to --fg. No bold and no italic: one face at one weight (P9). */
-  "[&_:is(strong,b)]:font-normal [&_:is(strong,b)]:text-fg [&_:is(em,i)]:not-italic [&_:is(em,i)]:text-fg",
+  /* Strong steps to the title weight in --fg, never bold, and emphasis steps to --fg. No italic (P9). */
+  "[&_:is(strong,b)]:font-title [&_:is(strong,b)]:text-fg [&_:is(em,i)]:not-italic [&_:is(em,i)]:text-fg",
   /* Inline code: the mono on fg 6% at the control radius. A pre resets it below. */
-  "[&_code]:rounded-control [&_code]:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-small [&_code]:text-fg [&_code]:box-decoration-clone [&_code]:[overflow-wrap:anywhere]",
+  "[&_code]:rounded-control [&_code]:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:font-normal [&_code]:text-small [&_code]:text-fg [&_code]:box-decoration-clone [&_code]:[overflow-wrap:anywhere]",
   /* A pre: a quiet mono block on --surface-2. It wraps, so it never needs a scrollbar. CodeBlock is for code to read or copy. */
   "[&_pre]:whitespace-pre-wrap [&_pre]:rounded-surface [&_pre]:bg-surface-2 [&_pre]:p-4 [&_pre]:font-mono [&_pre]:text-small [&_pre]:text-fg [&_pre]:shadow-[inset_0_0_0_1px_var(--line)] [&_pre]:[overflow-wrap:anywhere] [&_pre]:[tab-size:2]",
   "[&_pre_code]:rounded-none [&_pre_code]:bg-transparent [&_pre_code]:p-0",
@@ -413,7 +412,7 @@ const PROSE = [
   "[&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-surface",
   /* A table: hairlines between rows, headings in --fg, cells that wrap instead of scrolling. */
   "[&_table]:w-full [&_table]:border-collapse [&_table]:text-small [&_tr]:border-b [&_tr]:border-line",
-  "[&_th]:py-2 [&_th]:pe-4 [&_th]:text-start [&_th]:text-fg [&_td]:py-2 [&_td]:pe-4 [&_td]:align-top [&_:is(th,td)]:[overflow-wrap:anywhere]",
+  "[&_th]:py-2 [&_th]:pe-4 [&_th]:text-start [&_th]:text-caption [&_th]:text-fg [&_td]:py-2 [&_td]:pe-4 [&_td]:align-top [&_:is(th,td)]:[overflow-wrap:anywhere]",
 ].join(" ");
 
 export type MessageTextProps = {

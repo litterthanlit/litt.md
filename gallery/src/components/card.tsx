@@ -159,7 +159,7 @@ export type CardTitleProps = {
 
 /** The card's name, in body size and fg. A real heading, so a screen reader can list the cards. */
 export function CardTitle({ as: Tag = "h3", children, className = "" }: CardTitleProps) {
-  return <Tag className={"text-body text-fg " + className}>{children}</Tag>;
+  return <Tag className={"text-body font-title text-fg " + className}>{children}</Tag>;
 }
 
 export type CardDescriptionProps = {

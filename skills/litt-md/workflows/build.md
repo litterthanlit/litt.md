@@ -23,7 +23,7 @@ Accent:        <hex light> / <hex dark>, why it fits this subject
 Light source:  where the one light falls (hero? cover?)
 Glass:         which elements float (header, menus, modals, toasts), nothing else
 Primary action: the one accent fill + glow in each view
-Type steps:    which steps the page uses (display once, h2/h4 labels, body/reading)
+Type steps:    which steps the page uses (display once at 18, 14px titles at 500, body/reading at 400, 12px labels at 600)
 Layout:        ASCII wireframe on the 12-col grid (asymmetric by default)
 Specific detail: one element only THIS subject would have (from its content, not ornament)
 Components:    registry items to install (section 3) and what you must hand-build
@@ -54,7 +54,8 @@ Go through the plan line by line. If any item matches, revise that line before b
 - [ ] A radius off the scale (`rounded-lg`, `rounded-md`, anything but control, surface or pill)
 - [ ] A drop shadow with an offset, or any shadow on a card in the flow
 - [ ] Buttons off the 32/44/56 scale, a hero or page-form CTA smaller than lg, or lg fields and buttons in a dialog
-- [ ] Any font weight above 400 (`font-medium`, `font-semibold`, `font-bold`, or 500/600 in CSS)
+- [ ] A weight outside the three roles: bold or 700 and up, `font-medium`, `font-semibold` or `font-bold` (use `font-title` and `font-label`), 500 or 600 on running text, or 600 above 12px
+- [ ] Type above 18px, or headings stepped down by size instead of weight and ink
 - [ ] More than one accent fill or glow per view, counting an accent-filled checkbox, radio or switch
 - [ ] Glass on something that doesn't float
 - [ ] Motion that isn't a response to the user (reveals, parallax, marquee)
@@ -91,7 +92,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `form` | The page patterns: `FormSection` for settings sections, `Fieldset` (`rows` for a list of switches), `ErrorSummary` above a long form, `FormActions` (`align="fields"` on a settings page). |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |
 | `tabs` | Views of one thing (underline), or a compact switch (`variant="segmented"`). |
-| `tag` | A status or a label: mono, at the control radius. A status colors its text, never the fill, and has no dot. A category can take a data hue (`hue="amber"`): one hue per category in a view. |
+| `tag` | A status or a label: the sans at the label weight, at the control radius. A status colors its text, never the fill, and has no dot. A category can take a data hue (`hue="amber"`): one hue per category in a view. |
 | `kbd` | The key cap for a real shortcut, such as ⌘K. |
 | `avatar` | A person, client or company (`Avatar`, `AvatarGroup` with a +N count). The hue follows from the name; mark it `decorative` when the name sits beside it. |
 | `tooltip` | A label for an icon button or a shortcut. |
@@ -129,7 +130,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `plan` | An agent's steps for a task, ticked off as it works (`Plan` with `steps` of `{ id, label, status }`). |
 | `code-block` | Code in an answer, a tool's output or a diff (`CodeBlock` with `code`, `lang` and `filename`). Quiet colors, a Copy button, and `lang="diff"` for a change. |
 | `litt` | The tokens, the Tailwind names and the material classes. Every component brings it. Install it alone when you write all the markup yourself. |
-| `base-styles` | Opt-in. Loads Hanken Grotesk and Geist Mono at weight 400 and sets page defaults for the whole app: weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
+| `base-styles` | Opt-in. Loads Geist at 400, 500 and 600 and Geist Mono at 400, and sets page defaults for the whole app: headings, b and strong at the title weight, table headers at the label weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
 | `motion`, `glide`, `icons`, `list-cover` | Libraries that components bring along. `motion` holds the hooks below, `icons` has 30 16px icons (`SearchIcon`, `PlusIcon`, `SettingsIcon`) and `StatusIcon` with the five step marks, and both are fine to install on their own. |
 
 Each item prints a one-line import hint. The gallery page for an item (`https://littmd.vercel.app/#dialog`) has a working example.
@@ -153,7 +154,7 @@ Every installed file names its release in its first lines (`// @litt/button 2026
 Every name carries `litt-`, so none of it touches the app's own. To turn a plain name from this skill into one, insert `litt-` after the utility prefix: `bg-surface-1` becomes `bg-litt-surface-1`, `rounded-control` becomes `rounded-litt-control`, `--accent` becomes `--litt-accent`. The tokens switch theme on their own (`.dark`, `[data-theme="dark"]` or the system setting), so do not add `dark:` classes for them.
 
 - **Color:** `bg-litt-canvas`, `bg-litt-surface-1|2|3`, `border-litt-line`, `border-litt-line-strong`, `border-litt-line-control`, `text-litt-fg`, `text-litt-fg-muted|subtle|disabled`, `bg-litt-accent`, `bg-litt-accent-hover`, `text-litt-accent-fg`, `text-litt-accent-text` (links and accent text; never `text-litt-accent`), `bg-litt-accent-tint`, `outline-litt-focus`, `text-litt-success|warning|danger`.
-- **Type:** `text-litt-display|h1|h2|h3|h4|reading|body|small|caption`, each with its own leading, tracking and weight 400. Fonts: `font-litt-sans`, `font-litt-mono`.
+- **Type:** `text-litt-display|h1|h2|h3|h4|reading|body|small|caption`, each with its own leading and tracking. Display to h4 carry the title weight (500) and the caption the label weight (600); the rest are 400. Weights: `font-litt-title` for a title at the body or small size, a button or a tab, `font-litt-label` for a 12px label, `font-normal` for a mono caption. Fonts: `font-litt-sans`, `font-litt-mono`.
 - **Space and layout:** `py-litt-section`, `px-litt-gutter`, `max-w-litt-reading|content|wide`, `h-litt-control-sm|md|lg`, `px-litt-control-pad-sm|md|lg`, `gap-litt-control`.
 - **Shape and depth:** `rounded-litt-control|surface|pill` (sides such as `rounded-t-litt-surface` are fine), `shadow-litt-tooltip|float|modal|glow`, `inset-shadow-litt-highlight`.
 - **Material:** `litt-glass`, `litt-raised`, `litt-lit`, `litt-grain`, `litt-grain-fade`, `litt-trim`. Variables for arbitrary values: `var(--litt-line)`, `var(--litt-fg)`.
@@ -170,7 +171,7 @@ Inside litt UI, never use the app's own shadcn tokens or Tailwind's defaults:
 | `bg-zinc-900`, `text-gray-500`, `bg-white`, `text-black` | a litt color above |
 | `rounded`, `rounded-md`, `rounded-lg`, `rounded-full` | `rounded-litt-control`, `rounded-litt-surface` or `rounded-litt-pill` |
 | `text-xs`, `text-sm`, `text-base`, `text-xl`, `text-[15px]` | the `text-litt-` step that fits the role |
-| `font-medium`, `font-semibold`, `font-bold` | nothing. Everything is 400. |
+| `font-medium`, `font-semibold`, `font-bold` | `font-litt-title` (500) on a title, button or tab, `font-litt-label` (600) on a 12px label, nothing on text. |
 | `shadow-sm`, `shadow-md`, `shadow-xl` | nothing on a card. `shadow-litt-float` on a floating surface. |
 
 **Motion in a registry project.** The installed components already carry their tiers.

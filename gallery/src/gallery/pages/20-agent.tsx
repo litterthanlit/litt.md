@@ -94,7 +94,7 @@ const ASK = "The Halo site build is failing on main. Can you find out why and fi
 
 const THOUGHT: Run[][] = [
   ["The screenshot shows the deploy failing on main, but the error is cut off. I need the build output to see what it could not find."],
-  ["A missing font file is the likeliest cause. The studio dropped Inter for Hanken Grotesk, and a leftover import of the old package would break the build exactly this way."],
+  ["A missing font file is the likeliest cause. The studio dropped Inter for Geist, and a leftover import of the old package would break the build exactly this way."],
   ["I will read the layout, search the repo for any other fontsource imports, then run the build to confirm the error before I change anything."],
 ];
 
@@ -150,13 +150,13 @@ const COMMAND = "npm run deploy -- --prod";
 
 const DIFF = `@@ -1,7 +1,7 @@
 -import "@fontsource/inter/400.css";
-+import "@fontsource/hanken-grotesk/400.css";
++import "@fontsource/geist-sans/400.css";
  import "./globals.css";
 
  export default function RootLayout({ children }: { children: React.ReactNode }) {
    return (
 -    <html lang="en" className="font-inter">
-+    <html lang="en" className="font-hanken">
++    <html lang="en" className="font-geist">
        <body>{children}</body>`;
 
 const WHAT_BROKE: Run[][] = [
@@ -165,7 +165,7 @@ const WHAT_BROKE: Run[][] = [
     { code: "src/app/layout.tsx" },
     " still imported Inter from ",
     { code: "@fontsource/inter" },
-    ". The studio dropped Inter for Hanken Grotesk, so the package is gone from the project and the build cannot find its CSS. Here is the change:",
+    ". The studio dropped Inter for Geist, so the package is gone from the project and the build cannot find its CSS. Here is the change:",
   ],
 ];
 const LIVE: Run[][] = [["The build passes and Halo is live again."]];

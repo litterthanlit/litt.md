@@ -15,10 +15,11 @@ graders:
     tool: Skill
     input_match: '"skill"\s*:\s*"(?:[\w-]+:)?litt-md"'
     min: 1
-  # P9: no weight above 400 in markup or CSS (prose that mentions the classes is fine).
+  # P9: weight by role. No font-medium, -semibold or -bold classes (font-title and font-label are the
+  # role utilities), and nothing at 700 or more or below 400 in CSS (prose that mentions the classes is fine).
   - type: regex
     name: no-heavy-weights
-    pattern: 'class="[^"]*\bfont-(medium|semibold|bold|extrabold|black)\b|font-weight:\s*[5-9]00'
+    pattern: 'class="[^"]*\bfont-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b|font-weight:\s*(?:[1-37-9]00|bold|bolder|lighter)\b'
     match: not_contains
   # Token-named utilities from assets/tailwind.css, not raw Tailwind palette colors.
   - type: regex

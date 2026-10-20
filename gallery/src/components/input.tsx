@@ -11,7 +11,8 @@
  *   On a touch screen the sm input grows to 44px, like the small targets in Header and List.
  * - Edge: inset 1px --line-control. Focus turns the edge --focus and adds --focus-ring
  *   (:focus-visible only). Error turns the edge --danger and keeps the ring on focus.
- * - Weight 400 always (P9). The edge fades on the instant tier, the box never moves.
+ * - Typed text at the text weight and the label at the title weight (P9). The edge fades on the
+ *   instant tier, the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
  *   its fill under the cursor reads as pressed.
  */
@@ -100,7 +101,7 @@ function Field({
 }) {
   return (
     <div className="grid gap-2">
-      <label htmlFor={id} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label htmlFor={id} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
       {children}
@@ -149,7 +150,7 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "i
   help?: ReactNode;
   /** Shown in danger color and linked to the textarea with aria-describedby. Also sets aria-invalid. Say how to fix it. */
   error?: ReactNode;
-  /** Sets the air around the text and its size, like Input: sm is 13px, md is 15px, lg is 16px. The height comes from rows. */
+  /** Sets the air around the text and its size, like Input: sm is 13px, md is 14px, lg is 16px. The height comes from rows. */
   size?: InputSize;
   /** Geist Mono, for code and data. */
   mono?: boolean;

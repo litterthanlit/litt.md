@@ -2,7 +2,7 @@
 
 Nick's design language and taste for web and product UI, motion and interaction, packaged as a Claude skill that keeps developing.
 
-> **Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, Hanken Grotesk, cool neutrals. The only bold move is light and material: glass that floats, light falling from the top, edges that catch it, a trace of grain. Motion is quick, with one spring moment per view. Light and dark are both first-class.
+> **Technical precision, lit from above.** The structure is exact and quiet: an 8px grid, hairlines, Geist in three weights by role, cool neutrals. The only bold move is light and material: glass that floats, light falling from the top, edges that catch it, a trace of grain. Motion is quick, with one spring moment per view. Light and dark are both first-class.
 
 Open [`skills/litt-md/assets/specimen.html`](skills/litt-md/assets/specimen.html) in a browser to see the whole system rendered, or the [components gallery](https://littmd.vercel.app) to see it move.
 
@@ -112,7 +112,7 @@ claude plugin eval .                                      # trigger evals in eva
 
 ### Gallery
 
-`gallery/` shows every component litt.md specifies, running the locked v0.5 motion and shape, with a Playground for trying other values. Its tokens are copied from `skills/litt-md/assets/` on every run, so it never drifts. There is no root `package.json`, so use `--prefix gallery`:
+`gallery/` shows every component litt.md specifies, running the locked v0.5 motion and shape, with a Playground for trying other motion and a Customize panel for trying another typeface and radius on every page. Its tokens are copied from `skills/litt-md/assets/` on every run, so it never drifts. There is no root `package.json`, so use `--prefix gallery`:
 
 ```bash
 npm ci --prefix gallery

@@ -198,8 +198,8 @@ function DeployDemo() {
   return (
     <div className="grid w-full max-w-xl gap-6">
       <div className="grid gap-1">
-        <p className="text-body text-fg">Update pricing page</p>
-        <p className="font-mono text-caption text-fg-subtle">Ines · main / a3f91c2</p>
+        <p className="text-body font-title text-fg">Update pricing page</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">Ines · main / a3f91c2</p>
       </div>
       <Timeline label="Update pricing page, deploy steps" proportional>
         {withStarts(DEPLOY).map((phase) => (
@@ -227,8 +227,8 @@ function GlanceDemo() {
     <div className="grid w-full max-w-xl gap-8">
       <div className="flex items-end justify-between gap-6">
         <div className="grid gap-1">
-          <p className="text-body text-fg">Publish Halo case study</p>
-          <p className="font-mono text-caption text-fg-subtle">Maya · main / 7be04d1</p>
+          <p className="text-body font-title text-fg">Publish Halo case study</p>
+          <p className="font-mono text-caption font-normal text-fg-subtle">Maya · main / 7be04d1</p>
         </div>
         <p className="text-h1 tabular-nums text-fg">
           <span aria-hidden="true">{runTotal(HALO)}s</span>
@@ -253,8 +253,8 @@ function FailedDemo() {
   return (
     <div className="grid w-full max-w-xl gap-8">
       <div className="grid gap-1">
-        <p className="text-body text-fg">Update hero copy</p>
-        <p className="font-mono text-caption text-fg-subtle">Priya · main / e41c7d0</p>
+        <p className="text-body font-title text-fg">Update hero copy</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">Priya · main / e41c7d0</p>
       </div>
       <TimelineBar label="Update hero copy" phases={FAILED} />
       <Timeline label="Update hero copy, steps">

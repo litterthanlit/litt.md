@@ -136,11 +136,11 @@ function NarrowDemo() {
   return (
     <div className="grid w-full max-w-xl gap-8">
       <div className="grid gap-2">
-        <p className="font-mono text-caption text-fg-subtle">A callout 36rem wide</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">A callout 36rem wide</p>
         <RoundTwoNote />
       </div>
       <div className="grid w-full max-w-80 gap-2">
-        <p className="font-mono text-caption text-fg-subtle">A callout 20rem wide</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">A callout 20rem wide</p>
         <RoundTwoNote />
       </div>
     </div>

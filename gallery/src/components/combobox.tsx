@@ -500,7 +500,7 @@ export function Combobox<Multiple extends boolean = false>({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label id={labelId} htmlFor={inputId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
 

@@ -176,7 +176,7 @@ function BriefDemo() {
         }}
       />
       <div className="flex flex-wrap items-center gap-4">
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Send brief
         </Button>
         <p role="status" className="text-small text-fg-subtle">

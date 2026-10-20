@@ -36,7 +36,7 @@ Use these as starting points. Adapt the previews to Nick's current work.
 1. Uppercase mono labels: never / once per view / only for metadata in tables (settles Q1)
 2. Display headline length: 3–5 words / one full sentence / a two-line statement with a line break
 3. Links in body text: accent color / `--fg` with underline / `--fg-muted` with underline that darkens on hover
-4. Numbers in UI: Hanken Grotesk with tabular-nums / Geist Mono everywhere / Mono only in tables
+4. Numbers in UI: Geist with tabular-nums / Geist Mono everywhere / Mono only in tables
 
 **Color**
 5. Litt's own default accent: answered in v0.9 (cobalt). Skip unless Nick wants to revisit it

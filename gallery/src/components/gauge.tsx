@@ -118,7 +118,7 @@ export function Gauge({ label, value, min = 0, max = 100, valueText, figure, cap
         <span className="text-caption text-fg-subtle">{label}</span>
         <span className="text-h2 tabular-nums text-fg">{figure ?? valueText}</span>
         {caption && (
-          <span id={captionId} className="text-caption text-fg-subtle">
+          <span id={captionId} className="text-caption font-normal text-fg-subtle">
             {caption}
           </span>
         )}

@@ -207,7 +207,7 @@ export function Thinking({
         <span className="flex min-w-0 items-baseline gap-2">
           <span className="min-w-0 truncate">{words}</span>
           {showClock && (
-            <span aria-hidden="true" className="shrink-0 font-mono text-caption tabular-nums text-fg-subtle">
+            <span aria-hidden="true" className="shrink-0 font-mono text-caption font-normal tabular-nums text-fg-subtle">
               {formatClock(seconds)}
             </span>
           )}

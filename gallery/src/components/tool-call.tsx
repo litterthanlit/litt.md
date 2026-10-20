@@ -17,7 +17,7 @@
  *   ("Output of npm test"). Output stays fg when the call failed: the status says it.
  * - Group: ToolCallGroup folds a run of calls under one row (the caller's summary, or "4 tool calls"). It is open while
  *   `running`, and closes itself when `running` goes false unless the reader toggled it. Its calls are a list.
- * - Approval: ToolApproval is a litt-raised panel in the flow (never glass, P3): a title (body, fg), the command in mono on
+ * - Approval: ToolApproval is a litt-raised panel in the flow (never glass, P3): a title (body, the title weight, fg), the command in mono on
  *   surface-2 at the control radius, one line in fg-subtle, an optional "always allow" Checkbox, then md actions, Allow
  *   (primary, the view's one accent fill because the Composer's Send is disabled while it waits) and Deny (ghost). It does
  *   not take focus when it appears: the person may be reading. A polite live region says "Waiting for your approval:
@@ -127,7 +127,7 @@ function Chevron({ show, open }: { show: boolean; open: boolean }) {
 function Time({ value }: { value: number | string }) {
   const t = readTime(value);
   return (
-    <span className="font-mono text-caption tabular-nums whitespace-nowrap text-fg-subtle">
+    <span className="font-mono text-caption font-normal tabular-nums whitespace-nowrap text-fg-subtle">
       <span aria-hidden="true">{t.visual}</span>
       <span className="sr-only"> {t.spoken}</span>
     </span>
@@ -186,7 +186,7 @@ function Block({ caption, name, children }: { caption: string; name: string | un
         tabIndex={0}
         aria-label={name ? `${caption} of ${name}` : caption}
         className={
-          "max-h-64 overflow-auto rounded-surface bg-surface-2 p-3 font-mono text-caption text-fg " +
+          "max-h-64 overflow-auto rounded-surface bg-surface-2 p-3 font-mono text-caption font-normal text-fg " +
           "whitespace-pre-wrap [overflow-wrap:anywhere] shadow-[inset_0_0_0_1px_var(--line)] " +
           "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
         }
@@ -452,7 +452,7 @@ export function ToolApproval({
       </div>
       {decision === "pending" ? (
         <div role="group" aria-labelledby={titleId} className="litt-raised grid gap-3 p-4">
-          <p id={titleId} className="text-body text-fg">
+          <p id={titleId} className="text-body font-title text-fg">
             {title}
           </p>
           <code className="block rounded-control bg-surface-2 px-3 py-2 font-mono text-small text-fg whitespace-pre-wrap [overflow-wrap:anywhere]">

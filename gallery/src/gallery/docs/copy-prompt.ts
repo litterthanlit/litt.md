@@ -30,7 +30,7 @@ export const installCommands = (components: Pick<ComponentDoc, "stem" | "file" |
 /** The components.json entry that turns the URLs into @litt/<item>. */
 export const REGISTRIES_ENTRY = `"registries": { "@litt": "${REGISTRY_URL}" }`;
 
-const FONTS_URL = "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400&family=Geist+Mono:wght@400&display=swap";
+const FONTS_URL = "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap";
 
 /** The exports a page documents: its `exports` list in order, or every export of its components. */
 export function documentedExports(docs: Pick<PageDocs, "exports">, components: ComponentDoc[]) {
@@ -101,7 +101,7 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
       `It adds the files in components/litt and lib/litt, the npm packages they need, and litt's tokens in the global CSS. ` +
       `Every token is prefixed with litt (--litt-accent, bg-litt-surface-1, rounded-litt-control), so none of it collides with the project's own. ` +
       `Nothing else in the project changes. If a command asks to overwrite a file, say no and tell me.\n` +
-      `For litt's fonts, weight 400 and focus ring across the whole app, also run: npx shadcn@latest add ${registryUrl("base-styles")}\n` +
+      `For litt's fonts, heading weights and focus ring across the whole app, also run: npx shadcn@latest add ${registryUrl("base-styles")}\n` +
       `With ${REGISTRIES_ENTRY} in components.json, the same install is npx shadcn@latest add @litt/${first}.`,
 
     `2. Usage\n\`\`\`tsx\n${usageSnippet(docs, components)}\n\`\`\`\n` +
@@ -112,7 +112,7 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
       `In the usage above, import from "@/components/${first}" instead of "@/components/litt/${first}".\n\n` +
       `Tokens. The files read litt.md's design tokens. If the project does not have them yet, copy these two files into its styles folder, and import tailwind.css from the global CSS. It imports tokens.css and Tailwind itself, so the project needs Tailwind CSS v4.\n` +
       `${rawUrl("skills/litt-md/assets/tokens.css")}\n${rawUrl("skills/litt-md/assets/tailwind.css")}\n` +
-      `Load Hanken Grotesk and Geist Mono at weight 400: ${FONTS_URL}\n\n` +
+      `Load Geist at 400, 500 and 600, and Geist Mono at 400: ${FONTS_URL}\n\n` +
       `Packages. ` +
       (packages.length
         ? `The files need React 19 and:\nnpm i ${packages.join(" ")}`
@@ -133,10 +133,10 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
   sections.push(
     `House rules (the gallery's lint fails the build on these). The names below are the plain ones. A project installed with shadcn writes them with the litt prefix: bg-litt-surface-1, rounded-litt-control, text-litt-small, duration-(--litt-dur-instant) with ease-litt, --litt-accent.\n` +
       list([
-        `Weight 400 everywhere (font-normal). Hierarchy comes from size and color, never weight.`,
+        `Weight by role: text at 400, titles, buttons and tabs at 500 (font-title), 12px labels at 600 (font-label, which text-caption carries). Headings h1 to h4 carry 500 on their own. A mono caption adds font-normal. Never font-medium, font-semibold or font-bold.`, // litt-allow: names the banned classes in prose
         `Tokens only. No hex, no raw or quoted colors. Colors: canvas, surface-1 to surface-3, fg, fg-muted, fg-subtle, fg-disabled, line, line-strong, line-control, accent, accent-fg, accent-hover, accent-tint, focus, danger, success, warning.`,
         `Radii: only rounded-control, rounded-surface or rounded-pill, nothing else.`,
-        `Type: text-display, text-h1 to text-h4, text-reading, text-body, text-small, text-caption. Fonts: Hanken Grotesk and Geist Mono.`,
+        `Type: text-display, text-h1 to text-h4, text-reading, text-body, text-small, text-caption. Nothing above 18px: display and h1 are 18, the rest 14, 13 and 12. Fonts: Geist, and Geist Mono for code, keys and data only.`,
         `Motion goes through the tier tokens. Only transform, opacity and color fades animate. Pair each duration with its ease: duration-(--dur-instant) with ease-litt, duration-(--dur-responsive) with ease-responsive, duration-(--dur-expressive) with ease-expressive. No transition-all and no literal durations or easings.`, // litt-allow: names the banned class in prose
         `One accent fill per view, on the primary action.`,
       ]),

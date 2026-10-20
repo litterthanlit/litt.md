@@ -10,6 +10,9 @@
  * a desktop can feel every phone path: the dialog sheet and its drag, the menu
  * drill-down, the command menu at the top edge. Its state lives in the page, so
  * leaving the page puts it back to Auto like every other override.
+ *
+ * Type and shape are not here: the header's Customize panel tunes them on
+ * every page.
  */
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
@@ -33,7 +36,7 @@ export const meta: PageMeta = {
   order: 19,
   tune: true,
   summary:
-    "Turn the dials and the components on this page follow. Every other page always runs the locked values from the tokens.",
+    "Turn the motion dials and the components on this page follow. Every other page runs the locked motion from the tokens.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -49,7 +52,7 @@ function Row({ id, title, tiers, phone, aside, children }: { id: string; title: 
             <TierChip key={t} tier={t} />
           ))}
         </div>
-        {phone && <p className="text-caption text-fg-subtle">{phone}</p>}
+        {phone && <p className="text-caption font-normal text-fg-subtle">{phone}</p>}
         {aside}
       </div>
       <div className="min-w-0">{children}</div>
@@ -120,10 +123,10 @@ function PublishDialog() {
         <dl className="grid gap-3">
           <Fact label="Pages changed">3</Fact>
           <Fact label="Build size">
-            <span className="font-mono text-caption">418 kB</span>
+            <span className="font-mono text-caption font-normal">418 kB</span>
           </Fact>
           <Fact label="Domain">
-            <span className="font-mono text-caption">litt.design</span>
+            <span className="font-mono text-caption font-normal">litt.design</span>
           </Fact>
         </dl>
       </DialogContent>

@@ -213,7 +213,7 @@ export function TimelinePhase({ label, duration, hue, children, className = "" }
           {label}
         </span>
         {total && (
-          <span className="font-mono text-caption tabular-nums text-fg-subtle">
+          <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
             <span aria-hidden="true">{total.visual}</span>
             <span className="sr-only">{total.spoken}</span>
           </span>
@@ -273,7 +273,7 @@ export function TimelineStep({ at, label, status, seconds: took, previousSeconds
         className
       }
     >
-      <span className="flex h-8 items-center whitespace-nowrap font-mono text-caption tabular-nums text-fg-subtle">
+      <span className="flex h-8 items-center whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
         {at}
         {at && <span className="sr-only">,</span>}
       </span>
@@ -291,13 +291,13 @@ export function TimelineStep({ at, label, status, seconds: took, previousSeconds
         {label}
         <span className="sr-only">{`, ${status}`}</span>
         {ghost > 0 && (
-          <span aria-hidden="true" className="absolute left-0 whitespace-nowrap font-mono text-caption tabular-nums text-fg-subtle" style={{ top: captionTop }}>
+          <span aria-hidden="true" className="absolute left-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle" style={{ top: captionTop }}>
             was {formatSeconds(previousSeconds!)}
           </span>
         )}
       </span>
 
-      <span className="flex h-8 items-center justify-end whitespace-nowrap font-mono text-caption tabular-nums text-fg-subtle">
+      <span className="flex h-8 items-center justify-end whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
         {shown && <span aria-hidden="true">{shown}</span>}
         {spoken && <span className="sr-only">{`, ${spoken}`}</span>}
       </span>
@@ -492,7 +492,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
           spans.map((s) => (
             <span
               key={s.start}
-              className="absolute top-0 truncate pr-2 font-mono text-caption tabular-nums text-fg-subtle"
+              className="absolute top-0 truncate pr-2 font-mono text-caption font-normal tabular-nums text-fg-subtle"
               style={{ left: `${(s.start / total) * 100}%`, width: `${(s.seconds / total) * 100}%` }}
             >
               {s.label} · {formatSeconds(s.seconds)}
@@ -549,7 +549,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
           {seg && (
             <Tip key="tip" cx={tipCx} width={width}>
               <span className="text-fg-muted">{seg.label}</span>
-              <span className="font-mono text-caption tabular-nums">{formatSeconds(seg.seconds)}</span>
+              <span className="font-mono text-caption font-normal tabular-nums">{formatSeconds(seg.seconds)}</span>
             </Tip>
           )}
         </AnimatePresence>
@@ -561,7 +561,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
           <span
             key={it.t}
             className={
-              "absolute top-0 font-mono text-caption tabular-nums text-fg-subtle " + (it.edge === "middle" ? "-translate-x-1/2" : "")
+              "absolute top-0 font-mono text-caption font-normal tabular-nums text-fg-subtle " + (it.edge === "middle" ? "-translate-x-1/2" : "")
             }
             style={it.edge === "end" ? { right: 0 } : { left: `${it.pct}%` }}
           >

@@ -185,7 +185,7 @@ const labelIn = (groups: ComboboxGroup[], value: string) =>
 /** A quiet status line under a demo, so each stage shows what the combobox did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption text-fg-subtle">
+    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -214,7 +214,7 @@ function NewProjectDemo() {
       />
       <TextField label="Project name" name="project" defaultValue="Spring launch site" />
       <div className="grid gap-3">
-        <Button size="lg" variant="primary" type="submit">
+        <Button variant="primary" type="submit">
           Create project
         </Button>
         <Status>{sent}</Status>

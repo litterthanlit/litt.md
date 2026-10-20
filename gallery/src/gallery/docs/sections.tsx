@@ -4,8 +4,9 @@
  * linked. (The gallery routes by hash, so a bare #props would open a page called
  * "props". The ids are there for in-page use until the router learns sections.)
  *
- * Weight 400 throughout. Hierarchy comes from size (h3, body, small, caption) and
- * color (fg, fg-muted, fg-subtle).
+ * Weight by role (P9): section titles at 500, text at 400, table headers at the label weight.
+ * Hierarchy comes from weight and ink, and spacing follows foundations.md (Text spacing):
+ * sections 48px apart, blocks 16px apart, and a section's title 4px above its first content.
  */
 import type { ReactNode } from "react";
 import { Kbd } from "@/components/kbd";
@@ -17,8 +18,8 @@ import { PropsTable } from "./props-table";
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
-    <section aria-labelledby={id} className="grid content-start gap-6">
-      <h2 id={id} className="scroll-mt-24 text-h3 text-fg text-balance">
+    <section aria-labelledby={id} className="grid content-start gap-4">
+      <h2 id={id} className="-mb-3 scroll-mt-24 text-h3 text-fg text-balance">
         {title}
       </h2>
       {children}
@@ -44,8 +45,8 @@ function Keyboard({ rows }: { rows: NonNullable<PageDocs["keyboard"]> }) {
     <table className="w-full max-w-[65ch] border-collapse text-left">
       <thead>
         <tr className="border-b border-line text-caption text-fg-subtle">
-          <th scope="col" className="w-2/5 py-3 pr-6 font-normal">Keys</th>
-          <th scope="col" className="py-3 font-normal">What it does</th>
+          <th scope="col" className="w-2/5 py-3 pr-6">Keys</th>
+          <th scope="col" className="py-3">What it does</th>
         </tr>
       </thead>
       <tbody>
@@ -76,7 +77,7 @@ export function DocsSections({ docs }: { docs: PageDocs }) {
   const exportDocs = documentedExports(docs, components);
 
   return (
-    <div className="grid gap-16 border-t border-line pt-16">
+    <div className="grid gap-12 border-t border-line pt-12">
       <Section id="install" title="Install">
         <CodeBlock code={installCommands(components)} lang="shell" label="Install command" />
         <p className="max-w-[65ch] text-small text-fg-subtle [overflow-wrap:anywhere]">
@@ -87,7 +88,7 @@ export function DocsSections({ docs }: { docs: PageDocs }) {
         </p>
       </Section>
 
-      <div className="grid gap-16 sm:grid-cols-2 sm:gap-x-12">
+      <div className="grid gap-12 sm:grid-cols-2 sm:gap-x-12">
         <Section id="use-when" title="Use when">
           <Rows items={docs.use} />
         </Section>

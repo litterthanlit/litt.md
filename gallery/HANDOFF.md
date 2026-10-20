@@ -1,6 +1,6 @@
 # Gallery handoff
 
-For the next agent working on the gallery. Written 2026-10-15, updated 2026-10-16 for the dashboards step and 2026-10-17 on `claude/cool-lamport-cqbu87` for the data-color step (taste profile v0.11), then on `claude/youthful-sagan-rcaaze` for the agents step (no taste change, merged as #18), and 2026-10-19 on `claude/quirky-hawking-sc5zux` for the staples step (six staples, versions, docs for agents, the reduced-motion check; no taste change). Start new work from `main` once that branch is merged.
+For the next agent working on the gallery. Written 2026-10-15, updated 2026-10-16 for the dashboards step and 2026-10-17 on `claude/cool-lamport-cqbu87` for the data-color step (taste profile v0.11), then on `claude/youthful-sagan-rcaaze` for the agents step (no taste change, merged as #18), and 2026-10-19 on `claude/quirky-hawking-sc5zux` for the staples step (six staples, versions, docs for agents, the reduced-motion check; no taste change), then the same day for the type step (taste profile v0.12: Inter, weight by role, nearly everything at 14px, tags in the sans; see `gallery/CHANGELOG.md`). Start new work from `main` once that branch is merged.
 
 - Live gallery: https://littmd.vercel.app
 - Live registry: https://littmd.vercel.app/r/registry.json (50 items on `main`, 56 with the staples step)
@@ -25,7 +25,7 @@ For the next agent working on the gallery. Written 2026-10-15, updated 2026-10-1
 | #11 | Responsive motion, the build | Nick accepted all 14 recommendations (taste profile v0.6). On phones the Dialog and Popover are bottom sheets that drag to close, the menu drills down in place, the command menu sits at the top edge, toasts swipe away, tooltips open on a hold, and pressed rows fill. Desktop is unchanged. |
 | `claude/handoff-2` | PR check, and the open decisions (v0.7) | `.github/workflows/gallery.yml` runs `check.mjs`, `verify`, `build` and axe on every page on every PR. Nick accepted all 26 recommendations in `proposals/open-decisions.md`: checkboxes fill with `--fg`, a dialog's fields and actions are md, Button takes an icon child, sheets sit above the keyboard, a toast over a sheet docks at the top, Dialog takes `tier`, `list`'s `Project` shape is generic, the host lint fails a bare transition, and the agent test lets agents take their own screenshots. |
 
-After #12, Nick reacted to the tags ("the dots are horrible and the rounded tags dont feel right") and picked from a four-way trial: taste profile v0.8. Tags are the selected segment's look in Geist Mono (24px, the control radius, surface-1, hairline and top highlight, status as colored text). Every status dot is gone (tags, toasts, the header's current page), and filter chips take the control radius. Pills are left for avatars and icon-only buttons.
+After #12, Nick reacted to the tags ("the dots are horrible and the rounded tags dont feel right") and picked from a four-way trial: taste profile v0.8. Tags are the selected segment's look in Geist Mono (24px, the control radius, surface-1, hairline and top highlight, status as colored text); v0.12 later set them in the sans. Every status dot is gone (tags, toasts, the header's current page), and filter chips take the control radius. Pills are left for avatars and icon-only buttons.
 
 Then the forms step, on `claude/forms` (taste profile v0.9). Nick sent a reference shot (a dashboard on a deep cobalt frame) with "use this kind of blue" and "the large buttons are too square", and asked to build first and test after:
 - **Cobalt** is Litt's own accent (Q2 closed). After Nick's "the text gets lost a bit in the dark version of the button" (v0.10), `--accent` is a fill only: a deep cobalt with white text in both themes. Links and other accent text take the new `--accent-text`, which is lighter in dark. The lint fails `text-accent` and `text-litt-accent`.
@@ -89,7 +89,7 @@ The result that matters: in the #10 baseline, Sonnet wrote its own 200-line bott
      "name": "@litt",
      "homepage": "https://littmd.vercel.app",
      "url": "https://littmd.vercel.app/r/{name}.json",
-     "description": "Technical precision, lit from above. Controls, overlays, data and agent components on locked tokens: weight 400, two radii, glass only on what floats, color that carries data, and motion that stops under reduced motion. Every token is prefixed litt-, so nothing in your app changes.",
+     "description": "Technical precision, lit from above. Controls, overlays, data and agent components on locked tokens: Geist in three weights by role, two radii, glass only on what floats, color that carries data, and motion that stops under reduced motion. Every token is prefixed litt-, so nothing in your app changes.",
      "logo": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='var(--foreground)' stroke-width='1.5'><rect x='4.75' y='4.75' width='22.5' height='22.5' rx='4'/><path d='M9.5 9.75h13' stroke-linecap='round'/></svg>"
    }
    ```
