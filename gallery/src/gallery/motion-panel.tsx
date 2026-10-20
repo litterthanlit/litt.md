@@ -1,6 +1,6 @@
 /**
- * The instrument, on the Playground only. Presets, fine controls per tier,
- * playback, a live check against the litt.md rules, and "Lock it", which
+ * The instrument, on the Playground only. Presets, the typeface, fine
+ * controls per tier, playback, a live check against the litt.md rules, and "Lock it", which
  * writes the tokens.
  *
  * Everything here applies to the Playground page alone. Every other page runs
@@ -13,6 +13,7 @@ import { checkRules, diffFromLocked, tokensSnippet } from "@/motion/rules";
 import { Button } from "@/components/button";
 import { CheckIcon, CopyIcon } from "@/components/icons";
 import { Tag } from "@/components/tag";
+import type { Typeface } from "./typeface";
 
 /** A slider's range always includes its current value, so a token outside the usual range still shows. */
 const span = (value: number, min: number, max: number): { min: number; max: number } => ({ min: Math.min(min, value), max: Math.max(max, value) });
@@ -91,18 +92,24 @@ const ms = (v: number) => `${Math.round(v)}ms`;
 const sec = (v: number) => `${Math.round(v * 1000)}ms`;
 const pct = (v: number) => v.toFixed(2);
 
-export function MotionPanel({ device, onDeviceChange }: {
+export function MotionPanel({ device, onDeviceChange, typefaces, typeface, onTypefaceChange }: {
   /** Which device the demos are forced to, or "auto" for the real screen. The Playground owns it, so leaving the page resets it. */
   device: DeviceMode;
   onDeviceChange: (mode: DeviceMode) => void;
+  /** The locked face first, then the trial faces. */
+  typefaces: Typeface[];
+  /** The face the page shows. The Playground owns it, so leaving the page puts the locked face back. */
+  typeface: Typeface;
+  onTypefaceChange: (face: Typeface) => void;
 }) {
   const { dial, locked, presets, preset, setPreset, update, reset, slow, setSlow, reducedPreview, setReducedPreview, reduced, radius, setRadius } = useMotionDial();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const checks = checkRules(dial, radius);
-  const differs = diffFromLocked(dial, radius, locked);
-  const snippet = tokensSnippet(dial, radius);
+  const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
+  const checks = checkRules(dial, radius, type);
+  const differs = diffFromLocked(dial, radius, locked, type);
+  const snippet = tokensSnippet(dial, radius, type);
 
   const copy = async () => {
     try {
@@ -151,6 +158,7 @@ export function MotionPanel({ device, onDeviceChange }: {
             onClick={() => {
               reset();
               onDeviceChange("auto");
+              onTypefaceChange(typefaces[0]);
             }}
             className="-ml-3"
           >
@@ -168,6 +176,22 @@ export function MotionPanel({ device, onDeviceChange }: {
           </p>
         )}
       </header>
+
+      <Group title="Type" use="The sans face. Sizes, weights by role and tracking stay locked">
+        <div className="grid gap-2">
+          <span className="text-small text-fg-muted" id="typeface-label">Typeface</span>
+          <div className={segmented + " grid-cols-2"} role="group" aria-labelledby="typeface-label">
+            {typefaces.map((face) => (
+              <button key={face.id} type="button" aria-pressed={typeface.id === face.id} onClick={() => onTypefaceChange(face)} className={segment + " truncate px-2 text-small font-title"}>
+                {face.name}
+              </button>
+            ))}
+          </div>
+          <p className="text-caption font-normal text-fg-subtle">
+            {typeface.id === "locked" ? `${typeface.name} is the locked face.` : `Trying ${typeface.name} on this page. ${typefaces[0].name} is the locked face.`} Geist Mono stays for code and data.
+          </p>
+        </div>
+      </Group>
 
       <Group title="Shape" use="Corner radius. Surfaces are controls plus the 4px inset">
         <div className="grid gap-2">

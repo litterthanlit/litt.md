@@ -1,6 +1,6 @@
 # Building a gallery component
 
-The gallery is the components gallery for **litt.md**, Nick's design language. Every page runs the locked v0.5 tokens. The Playground is the one place that tunes motion and shape, and Nick finds the next sweet spot there. So every component must follow `tokens.css`, and on the Playground it must follow the dial live.
+The gallery is the components gallery for **litt.md**, Nick's design language. Every page runs the locked v0.5 tokens. The Playground is the one place that tunes motion, shape and the typeface, and Nick finds the next sweet spot there. So every component must follow `tokens.css`, and on the Playground it must follow the dial live.
 
 We studied Fluid Functionalism for ideas. **We are not copying it.** Take principles, never its look: no weight that changes on hover or selection, no true-gray neutrals, no bounce on small things. This is litt.
 
@@ -81,7 +81,7 @@ These come from the audit and are candidate rules. Build them in.
 
   An element inset 4px inside a surface uses `rounded-control`; that is what makes it concentric. No other radius exists.
 - **Weight by role (P9):** text at 400, titles, buttons, tabs and segments at 500 (`font-title`), 12px labels at 600 (`font-label`). `text-display` to `text-h4` carry 500 and `text-caption` carries 600 on their own, so a mono caption (kbd, numbers) adds `font-normal`, and so does a sentence set at the caption size. Never `font-medium`, `font-semibold` or `font-bold`.
-- **Type:** Geist for everything, Geist Mono for code, keys and data (never tags). `text-display` 18, `text-h1` 18, `text-h2` to `text-h4` 14, `text-reading` 14, `text-body` 14, `text-small` 13, `text-caption` 12. Line height and tracking come with the token. Use sentence case; no uppercase eyebrows.
+- **Type:** Geist for everything, Geist Mono for code, keys and data (never tags). `text-display` 18, `text-h1` 18, `text-h2` to `text-h4` 14, `text-reading` 14, `text-body` 14, `text-small` 13, `text-caption` 12. Line height and tracking come with the token. Never name a family: use `font-sans` or `font-mono`, so the Playground's Typeface switch reaches every component. Use sentence case; no uppercase eyebrows.
 - **Text spacing:** a label 4px above its title, a title 4px above its text, blocks 16px apart, sections 48px apart (`foundations.md`, Text spacing).
 - **Color only through tokens:**
   - surfaces: `bg-canvas`, `bg-surface-1`, `bg-surface-2`, `bg-surface-3`;

@@ -10,6 +10,9 @@
  * a desktop can feel every phone path: the dialog sheet and its drag, the menu
  * drill-down, the command menu at the top edge. Its state lives in the page, so
  * leaving the page puts it back to Auto like every other override.
+ *
+ * The Typeface switch works the same way: the page owns it, sets --font-sans
+ * on <html> while a trial face is picked, and removes it on leave.
  */
 import { useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
@@ -26,6 +29,7 @@ import { PROJECTS } from "../fixtures";
 import { TierChip, Page, useReplay, type PageMeta } from "../kit";
 import { DeviceProvider, useDevice, type DeviceMode, type Tier } from "@/motion";
 import { MotionPanel } from "../motion-panel";
+import { useTypefaceOverride, useTypefaces, type Typeface } from "../typeface";
 
 export const meta: PageMeta = {
   id: "playground",
@@ -33,7 +37,7 @@ export const meta: PageMeta = {
   order: 19,
   tune: true,
   summary:
-    "Turn the dials and the components on this page follow. Every other page always runs the locked values from the tokens.",
+    "Turn the dials, or try another typeface, and the components on this page follow. Every other page always runs the locked values from the tokens.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -251,6 +255,9 @@ function Sampler() {
 export default function PlaygroundPage() {
   /* Page state, so leaving the page puts the switch back to Auto. */
   const [device, setDevice] = useState<DeviceMode>("auto");
+  const typefaces = useTypefaces();
+  const [typeface, setTypeface] = useState<Typeface>(typefaces[0]);
+  useTypefaceOverride(typeface);
   return (
     <Page meta={meta}>
       <div className="grid items-start gap-12 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -271,7 +278,7 @@ export default function PlaygroundPage() {
           </DeviceProvider>
         </div>
         <aside id="tune" aria-label="Tune" className="scroll-mt-24 xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto xl:pr-1">
-          <MotionPanel device={device} onDeviceChange={setDevice} />
+          <MotionPanel device={device} onDeviceChange={setDevice} typefaces={typefaces} typeface={typeface} onTypefaceChange={setTypeface} />
         </aside>
       </div>
     </Page>

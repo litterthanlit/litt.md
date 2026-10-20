@@ -24,6 +24,10 @@
  *
  * Stagger and travel are not hard rules in v0.5. They appear under
  * "Differs from locked" only.
+ *
+ * The typeface is the Type decision in the taste profile, not a check.mjs
+ * bound: the sans is the face tokens.css sets. A trial face shows as a change,
+ * and Lock it prints its --font-sans line.
  */
 import { toCss } from "./spring";
 import { surfaceRadius, type Dial, type Locked } from "./tokens";
@@ -45,6 +49,9 @@ export const LIMITS = {
 
 export type RuleRow = { ok: boolean; text: string };
 
+/** The sans the Playground shows, beside the one tokens.css locks. */
+export type TypeChoice = { name: string; stack: string; locked: string };
+
 const ms = (v: number) => `${Math.round(v)}ms`;
 const sec = (v: number) => ms(v * 1000);
 const num = (v: number) => String(+v.toFixed(2));
@@ -61,9 +68,9 @@ export function exitTimes(dial: Dial) {
 }
 
 /** One row per hard rule, in the order check.mjs reads them. */
-export function checkRules(dial: Dial, radius: number): RuleRow[] {
+export function checkRules(dial: Dial, radius: number, type?: TypeChoice): RuleRow[] {
   const settle = settleTimes(dial);
-  return [
+  const rows: RuleRow[] = [
     {
       ok: dial.instant <= LIMITS.instantMs,
       text: `Instant tween at most ${LIMITS.instantMs}ms: ${ms(dial.instant)}`,
@@ -93,10 +100,12 @@ export function checkRules(dial: Dial, radius: number): RuleRow[] {
       text: `Controls ${LIMITS.control}px, surfaces ${surfaceRadius(LIMITS.control)}px, pills unchanged: ${radius}px controls, ${surfaceRadius(radius)}px surfaces`,
     },
   ];
+  if (type) rows.push({ ok: type.name === type.locked, text: `The sans is ${type.locked}, with Geist Mono for code and data: ${type.name}` });
+  return rows;
 }
 
 /** Every value that is not the locked one, in words. Empty when the dial matches the tokens. */
-export function diffFromLocked(dial: Dial, radius: number, locked: Locked): string[] {
+export function diffFromLocked(dial: Dial, radius: number, locked: Locked, type?: TypeChoice): string[] {
   const out: string[] = [];
   const d = locked.dial;
   const add = (label: string, now: string, was: string) => now !== was && out.push(`${label} ${was} → ${now}`);
@@ -109,11 +118,12 @@ export function diffFromLocked(dial: Dial, radius: number, locked: Locked): stri
   add("Travel", `${dial.travel}px`, `${d.travel}px`);
   add("Exit", `${num(dial.exit)}x`, `${num(d.exit)}x`);
   add("Control radius", `${radius}px`, `${locked.radius}px`);
+  if (type) add("Sans", type.name, type.locked);
   return out;
 }
 
 /** The tokens.css lines for this dial, ready to paste. Passes check.mjs when checkRules is all ok. */
-export function tokensSnippet(dial: Dial, radius: number): string {
+export function tokensSnippet(dial: Dial, radius: number, type?: TypeChoice): string {
   const r = toCss(dial.responsive);
   const e = toCss(dial.expressive);
   const exit = exitTimes(dial);
@@ -136,5 +146,8 @@ export function tokensSnippet(dial: Dial, radius: number): string {
     `/* Shape: surfaces are controls plus the 4px inset. */`,
     `--radius-control: ${radius}px;`,
     `--radius-surface: ${surfaceRadius(radius)}px;`,
+    ...(type && type.name !== type.locked
+      ? [``, `/* Type: sizes, weights by role and tracking stay as they are. */`, `--font-sans: ${type.stack};`]
+      : []),
   ].join("\n");
 }
