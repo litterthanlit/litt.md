@@ -287,18 +287,23 @@ export default function Overview() {
 
       <nav aria-labelledby="all-title" className="grid gap-6">
         <h2 id="all-title" className="text-h4 text-fg">Every component</h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* An index, not a cloud: each group is a block with its name and count, and its pages are rows on a
+            hairline, so the eye runs down even columns. Two columns of rows on a phone, one per group above it. */}
+        <div className="grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {pageRuns(list).map((run) => (
-            <div key={run.group ?? "other"} role="group" aria-labelledby={`all-${run.group}`} className="grid content-start gap-2 border-t border-line pt-4">
-              <h3 id={`all-${run.group}`} className="text-caption text-fg-muted">{run.group}</h3>
-              <ul className="flex flex-wrap gap-2">
+            <div key={run.group ?? "other"} role="group" aria-labelledby={`all-${run.group}`} className="grid content-start">
+              <h3 className="flex items-baseline justify-between border-b border-line-strong pb-2 text-caption">
+                <span id={`all-${run.group}`} className="text-fg">{run.group}</span>
+                <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
+              </h3>
+              <ul className="grid grid-cols-2 gap-x-6 sm:grid-cols-1">
                 {run.pages.map((p) => (
-                  <li key={p.id}>
+                  <li key={p.id} className="min-w-0 border-b border-line">
                     <a
                       href={`#${p.id}`}
-                      className="inline-flex h-control-sm items-center rounded-control px-3 text-small text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] transition-colors duration-(--dur-instant) ease-litt hover:bg-surface-2 hover:text-fg"
+                      className="flex h-control-md items-center text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt hover:text-fg sm:h-10"
                     >
-                      {p.title}
+                      <span className="truncate">{p.title}</span>
                     </a>
                   </li>
                 ))}
