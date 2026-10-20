@@ -1,15 +1,22 @@
 /**
- * Header: the site header. Sticky glass, a wordmark, a nav and right-aligned actions.
+ * Header: the site header. Sticky glass, a wordmark in a segment, a nav and right-aligned actions.
  *
  * - Surface: litt-glass on a sticky bar of --header-h, full-bleed so it sets rounded-none
  *   (.litt-glass carries the surface radius). It sticks at the safe-area inset, like the
  *   gallery shell. Glass is only honest with content passing under it, so the page that
  *   uses it must scroll beneath.
  * - Content sits in a max-w-wide wrap with the page gutter. Order: wordmark, nav, actions.
+ * - The wordmark sits in a segmented control's anatomy (P12): the quiet track (fg 5%, the
+ *   hairline, the surface radius, a 4px inset) holding one raised segment (surface-1, the
+ *   hairline and the top highlight, the control radius), 32px tall like the sm controls at
+ *   the other end of the bar, and the small size at the title weight. A link inside fills
+ *   the segment, so the whole segment is the target. wordmarkFrame={false} leaves a logo
+ *   that has its own shape bare.
  * - Nav links are small type in fg-subtle. Hover is fg on an fg-6% fill (instant tier,
- *   color and background-color only). The current page is fg, a lightness step from its
- *   neighbours rather than a hue, with aria-current="page". There is no dot. In the menu
- *   the current page carries a check in the icon cell, like a picked option.
+ *   color and background-color only). The current page wears the selected segment (P12):
+ *   fg on surface-1 with the hairline and the top highlight, and aria-current="page". It
+ *   keeps that look under the pointer. There is no dot. In the menu the current page
+ *   carries a check in the icon cell, like a picked option.
  * - Responsive by container, not viewport. The bar asks how wide it is (a CSS container
  *   query), so it behaves the same as a full-bleed header on a page and inside a frame,
  *   and it needs no JavaScript or hydration to pick a layout. Below navFrom the links are
@@ -58,6 +65,8 @@ export type HeaderLinkProps = {
 export type HeaderProps = {
   /** The brand: usually a link home that wraps the studio name or a logo. A logo needs an aria-label on the link. */
   wordmark: ReactNode;
+  /** Sets the wordmark in a segment: the segmented control's track with one raised segment (P12). Turn it off for a logo that has its own shape. */
+  wordmarkFrame?: boolean;
   /** The nav links, in order, each `{ label, href, current? }`. Four to six short ones fit the bar. For more, group them behind a page. Leave it empty for a bar with only a wordmark and actions. */
   links: HeaderLink[];
   /** Right-aligned actions, for example one primary Button. They stay in the bar on a phone, so keep it to one or two. */
@@ -84,14 +93,30 @@ const FROM = {
 
 const link =
   "relative flex h-control-sm items-center rounded-control px-control-pad-sm text-small whitespace-nowrap select-none " +
-  "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:h-control-md " +
-  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+  "[-webkit-tap-highlight-color:transparent] transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
+  "pointer-coarse:h-control-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+/* The current page wears the selected segment (P12); the others fill on hover, and on a press on touch. */
+const current = "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]";
+const other =
+  "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " +
+  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
+
+/* The wordmark's segment (P12): the segmented control's track and one raised segment. A link inside fills
+   the segment and carries the focus ring; a plain name or logo keeps the segment's own padding. */
+const frameTrack =
+  "inline-grid h-control-sm rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-1 " +
+  "shadow-[inset_0_0_0_1px_var(--line)] pointer-coarse:h-control-md";
+const frameSegment =
+  "grid place-items-center rounded-control bg-surface-1 px-control-pad-sm text-small font-title text-fg " +
+  "shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] has-[a]:px-0 " +
+  "[&_a]:grid [&_a]:h-full [&_a]:place-items-center [&_a]:rounded-control [&_a]:px-control-pad-sm " +
+  "[&_a]:select-none [&_a]:[-webkit-tap-highlight-color:transparent] " +
+  "[&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-2 [&_a:focus-visible]:outline-focus";
 
 /** The sticky glass header. It sits at the top of the page, with content that scrolls under it. */
 export function Header({
   wordmark,
+  wordmarkFrame = true,
   links,
   actions,
   navLabel = "Main",
@@ -109,9 +134,15 @@ export function Header({
       {/* The bar is the container, so the layout follows the width it is given. */}
       <div className="@container">
         <div className="mx-auto flex h-(--header-h) max-w-wide items-center gap-4 px-gutter @min-[40rem]:gap-6">
-          <div className="flex shrink-0 items-center text-body font-title text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus pointer-coarse:[&_a]:inline-flex pointer-coarse:[&_a]:h-control-md pointer-coarse:[&_a]:items-center">
-            {wordmark}
-          </div>
+          {wordmarkFrame ? (
+            <div className={"shrink-0 " + frameTrack}>
+              <div className={frameSegment}>{wordmark}</div>
+            </div>
+          ) : (
+            <div className="flex shrink-0 items-center text-body font-title text-fg [&_a]:rounded-control [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-focus pointer-coarse:[&_a]:inline-flex pointer-coarse:[&_a]:h-control-md pointer-coarse:[&_a]:items-center">
+              {wordmark}
+            </div>
+          )}
 
           {links.length > 0 && (
             <nav aria-label={navLabel} className={"ml-4 " + from.nav}>
@@ -119,7 +150,7 @@ export function Header({
                 {links.map((l) => (
                   <li key={l.href}>
                     {draw(l, {
-                      className: link + (l.current ? " text-fg" : " text-fg-subtle"),
+                      className: link + " " + (l.current ? current : other),
                       "aria-current": l.current ? "page" : undefined,
                       children: <span className="litt-trim">{l.label}</span>,
                     })}

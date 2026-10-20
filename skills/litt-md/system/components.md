@@ -172,8 +172,9 @@ A region that scrolls inside the page: a long list in a fixed-height card, a log
 
 ## Glass header
 Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
-- Order: wordmark (body size at `--weight-title`) → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
-- The current page is `--fg` with `aria-current="page"`, a lightness step from its neighbours. No dot. In the menu on mobile, the current page carries a check.
+- Order: wordmark → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
+- **Wordmark in a segment (P12):** the segmented control's track (fg 5% fill, the `--line` hairline, `--radius-surface`, a 4px inset, `--control-sm` tall) holding one raised segment (`--surface-1`, the hairline and `--highlight`, `--radius-control`, 12px side padding) with the name at the small size and `--weight-title`. A link inside fills the segment. A logo with its own shape may sit bare.
+- **The current page wears the selected segment (P12):** `--fg` on `--surface-1` with the hairline and `--highlight`, and `aria-current="page"`. It keeps that look on hover. No dot, no underline, no accent, no weight change. In the menu on mobile, the current page carries a check.
 - It is full-bleed, so it sets `border-radius: 0` (`.litt-glass` carries the surface radius).
 - On mobile, hide the nav behind the command menu or a menu button. Don't squeeze it.
 - **On compact screens** the nav stays behind the menu button and opens as the anchored dropdown (see Popover and dropdown). The bar stays sticky at the safe-area inset and never hides on scroll. Links and the menu button are `--control-md` on coarse screens.
@@ -389,7 +390,7 @@ The steps of a run in order: when each started, how long it took and how it ende
 The frame around an app's pages: a sidebar for moving between them and a main area for the page.
 - **Desktop:** a 240px sidebar on `--surface-1` with a `--line` hairline on its edge, and a main area that scrolls with the page. The sidebar column runs the full height of the page, so it reaches the bottom of a tall page. Its content is sticky and as tall as the window, so the wordmark and the links stay in view while the page scrolls.
 - **Wordmark:** at the top of the sidebar, body size, `--weight-title`, `--fg`, in a row as tall as the glass header (`--header-h`).
-- **Links:** 36px rows at the small size and `--radius-control`, with 12px side padding. The current page is `--fg` on a `--surface-2` fill with `aria-current="page"`. The others are `--fg-muted`, and hover fills them with fg at 6% and brightens the text, on the instant tier. No dots, no accent, no weight change. An optional 16px icon sits before the label. The sidebar holds one or more `nav` landmarks, each with its own name.
+- **Links:** 36px rows at the small size and `--radius-control`, with 12px side padding. The current page wears the selected segment (P12), one step raised from the `--surface-1` sidebar: `--fg` on `--surface-2` with the hairline and `--highlight`, and `aria-current="page"`. The others are `--fg-muted`, and hover fills them with fg at 6% and brightens the text, on the instant tier. No dots, no accent, no weight change. An optional 16px icon sits before the label. The sidebar holds one or more `nav` landmarks, each with its own name.
 - **Main:** the page's own landmark, with the page gutter at the sides and `--space-8` above and below.
 - **On compact screens** the sidebar is gone. A glass top bar, sticky at the safe-area inset like the header, shows the wordmark and an icon-only menu button, 44px, labelled "Open navigation", with `aria-expanded` and `aria-controls`. It opens the nav as the bottom sheet (see Modal): the same links in 44px rows, a heading, a close button, drag to close. Picking a link closes the sheet. The sheet does not use up the view's expressive moment.
 - **Motion:** none of its own. The sheet is the Modal's.

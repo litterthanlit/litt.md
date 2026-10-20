@@ -53,6 +53,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 9. **P9 Weight by role.** Text at 400 (`--weight`), titles, buttons and tabs at 500 (`--weight-title`), 12px labels at 600 (`--weight-label`). Nothing else: no bold, nothing below 400, no 600 above 12px. Below the page title, rank comes from weight, two inks and space.
 10. **P10 Roomy controls.** Buttons and inputs share 32 / 44 / 56. Labels are trimmed to the cap height so padding equals the air around them at sm and md; an lg button runs wider (pad 32), so it never reads as a block. Hero CTAs are lg (56); a page form's submit and Cancel, and a dialog's fields and actions, are md (44).
 11. **P11 Color carries data.** Beyond the one accent, color only says something: a series, a category, a heat step, a side of a goal, an identity. Five data hues in a fixed order (blue, amber, teal, violet, rose), each with a mark tone, a `-text` tone and a `-tint`. Never on chrome: buttons, surfaces, borders, nav and running text stay neutral. A single quantity stays in the foreground.
+12. **P12 Selected is a raised segment.** The current page in any nav wears the segmented control's selected segment: `--fg` on a fill one step raised from its ground, with the hairline and the top highlight, kept on hover. The header's wordmark sits in the segmented track with one raised segment. Never a dot, an underline, the accent or a weight change.
 
 Each rule's Check line, the dos and don'ts, and the open questions are in `taste/profile.md`.
 
