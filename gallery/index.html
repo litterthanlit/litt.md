@@ -20,6 +20,32 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap">
 </head>
 <body>
+<script>
+  /* Apply the saved Customize choices (type and shape) before first paint. They live on <body>:
+     src/gallery/customize.tsx says why, and owns them once the app runs. */
+  (function () {
+    try {
+      var c = JSON.parse(localStorage.getItem("litt-gallery:customize") || "null");
+      if (!c) return;
+      var s = document.body.style;
+      if (c.face && typeof c.face.stack === "string") {
+        s.setProperty("--font-sans", c.face.stack);
+        var href = c.face.href;
+        if (typeof href === "string" && href.indexOf("https://fonts.googleapis.com/") === 0) {
+          var l = document.createElement("link");
+          l.rel = "stylesheet";
+          l.href = href;
+          l.setAttribute("data-litt-face", href);
+          document.head.appendChild(l);
+        }
+      }
+      if (c.radius === 0 || c.radius === 2 || c.radius === 4 || c.radius === 6) {
+        s.setProperty("--radius-control", c.radius + "px");
+        s.setProperty("--radius-surface", (c.radius === 0 ? 0 : c.radius + 4) + "px");
+      }
+    } catch (e) {}
+  })();
+</script>
 <div id="root"></div>
 <script type="module" src="/src/main.tsx"></script>
 </body>

@@ -112,7 +112,7 @@ claude plugin eval .                                      # trigger evals in eva
 
 ### Gallery
 
-`gallery/` shows every component litt.md specifies, running the locked v0.5 motion and shape, with a Playground for trying other values and other typefaces. Its tokens are copied from `skills/litt-md/assets/` on every run, so it never drifts. There is no root `package.json`, so use `--prefix gallery`:
+`gallery/` shows every component litt.md specifies, running the locked v0.5 motion and shape, with a Playground for trying other motion and a Customize panel for trying another typeface and radius on every page. Its tokens are copied from `skills/litt-md/assets/` on every run, so it never drifts. There is no root `package.json`, so use `--prefix gallery`:
 
 ```bash
 npm ci --prefix gallery
