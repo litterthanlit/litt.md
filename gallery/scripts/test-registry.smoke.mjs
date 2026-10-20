@@ -302,12 +302,13 @@ const RECIPES = {
     jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" trend={<span data-testid="stat-trend">Last 14 days</span>} /></StatGroup></div>`,
   },
   chart: {
-    needs: ["BarChart", "LineChart", "Meter"],
+    needs: ["BarChart", "LineChart", "Meter", "StackedBarChart"],
     jsx: `<div className="grid w-full max-w-xl gap-6" data-testid="litt-charts">
           <BarChart label="Deploys per day" labels={["1 Oct", "2 Oct", "3 Oct", "4 Oct"]} series={[{ name: "Deploys", values: [5, 7, 4, 9] }]} height={160} />
           <LineChart label="Build time" labels={["1 Oct", "2 Oct", "3 Oct", "4 Oct"]} series={[{ name: "Build time", values: [44, 41, 46, 39] }]} formatValue={(v) => \`\${v} s\`} height={160} />
           <Meter label="Storage" value={42} valueText="42 of 100 GB" />
           <Meter label="Video" value={58} valueText="58 GB" hue="violet" />
+          <StackedBarChart label="Storage added" labels={["1 Oct", "2 Oct", "3 Oct"]} series={[{ name: "Video", values: [4, 3, 6] }, { name: "Images", values: [2, 1, 2] }]} formatValue={(v) => \`\${v} GB\`} height={160} />
         </div>`,
   },
   "app-shell": {
@@ -450,6 +451,27 @@ const RECIPES = {
           <Breakdown label="Smoke storage" total={100} totalText="85 of 100 GB" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24, hue: "teal" }, { label: "Fonts", value: 3 }]} />
           <Breakdown label="Smoke credits" unit={["credit", "credits"]} items={[{ label: "Builds", value: 40 }, { label: "Previews", value: 30 }, { label: "Resizing", value: 20 }, { label: "Analytics", value: 10 }, { label: "Forms", value: 8 }, { label: "Webhooks", value: 6 }, { label: "Redirects", value: 4 }]} />
           <div className="w-48"><Breakdown layout="legend" label="Smoke tile" formatValue={(v) => v + " GB"} items={[{ label: "Video", value: 58 }, { label: "Images", value: 24 }]} /></div>
+        </div>`,
+  },
+  funnel: {
+    needs: ["Funnel"],
+    jsx: `<div className="grid w-full max-w-md gap-8" data-testid="litt-funnel">
+          <Funnel label="Smoke funnel" hue="teal" unit={["person", "people"]} steps={[{ label: "Visited", value: 18240 }, { label: "Signed up", value: 6930 }, { label: "Activated", value: 2840 }, { label: "Paid", value: 748 }]} />
+          <div className="w-64"><Funnel label="Smoke odd" steps={[{ label: "Visited", value: 1200 }, { label: "Opened pricing", value: 1450 }, { label: "Paid", value: 40 }]} /></div>
+        </div>`,
+  },
+  "cohort-grid": {
+    needs: ["CohortGrid"],
+    jsx: `<div className="grid w-full max-w-xl gap-8" data-testid="litt-cohort-grid">
+          <CohortGrid label="Smoke retention" average steps={[1, 30, 45, 90]} cohorts={[{ label: "24 Aug", size: 100, values: [100, 50, 20] }, { label: "31 Aug", size: 300, values: [100, 40, null] }, { label: "7 Sep", size: 100, values: [100] }]} />
+          <div className="w-48"><CohortGrid label="Smoke narrow" hue="violet" valueType="count" cohorts={[{ label: "24 Aug", size: 1240, values: [1240, 610, 402, 380, 344] }]} /></div>
+        </div>`,
+  },
+  legend: {
+    needs: ["Legend"],
+    jsx: `<div className="grid gap-6" data-testid="litt-legend">
+          <Legend label="Smoke series" items={[{ name: "Builds", value: "1,240" }, { name: "Previews", hue: "teal" }, { name: "Deploys" }]} />
+          <Legend label="Smoke last" defaultHidden={["Halcyon"]} items={[{ name: "Arcadia" }, { name: "Halcyon" }]} />
         </div>`,
   },
   plan: {
@@ -1946,6 +1968,94 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           );
           if (entries.map((e) => e.text).join("|") !== "Video, 58 GB|Images, 24 GB" || entries.some((e) => e.swatch !== "12x4")) throw new Error(`the legend reads ${JSON.stringify(entries)}`);
           return `4 segments in blue, teal, amber and free; Other is ${tail.text}`;
+        });
+      }
+      if (has("funnel")) {
+        await attempt("funnel: one list of meters against the first step in one hue, the step lines in words, a step that went up held at 100%", async () => {
+          const box = page.locator("[data-testid=litt-funnel]");
+          const list = box.getByRole("list", { name: "Smoke funnel" });
+          await list.waitFor({ state: "visible", timeout: 8000 });
+          const colorOf = (v) => page.evaluate((value) => { const p = document.createElement("span"); p.style.color = value; document.body.append(p); const c = getComputedStyle(p).color; p.remove(); return c; }, v);
+          const [teal, accent] = [await colorOf("var(--litt-data-teal)"), await colorOf("var(--litt-accent)")];
+          const meters = await list.getByRole("meter").evaluateAll((els) => els.map((el) => ({ max: el.getAttribute("aria-valuemax"), now: el.getAttribute("aria-valuenow"), text: el.getAttribute("aria-valuetext"), share: el.firstElementChild.getBoundingClientRect().width / el.getBoundingClientRect().width, fill: getComputedStyle(el.firstElementChild).backgroundColor, h: el.getBoundingClientRect().height })));
+          if (meters.length !== 4) throw new Error(`the funnel has ${meters.length} meters, not 4`);
+          if (meters.some((m) => m.fill !== teal || m.fill === accent || m.h !== 4 || m.max !== "18240")) throw new Error(`the meters are ${JSON.stringify(meters)}, not teal 4px rails against 18,240`);
+          if (meters[1].text !== "6,930 people, 38% of 18,240" || Math.abs(meters[1].share - 0.38) > 0.01) throw new Error(`Signed up reads ${JSON.stringify(meters[1])}`);
+          const said = await box.locator("p.sr-only").first().textContent();
+          if (said !== "Smoke funnel, 4.1% overall: 748 of 18,240 people") throw new Error(`the overall reads "${said}"`);
+          const lines = await list.locator("li > p").allTextContents();
+          if (lines.join("|") !== "38% continued|41% continued|26% continued") throw new Error(`the step lines read ${JSON.stringify(lines)}`);
+          const odd = await box.getByRole("meter", { name: "Opened pricing" }).evaluate((el) => ({ now: el.getAttribute("aria-valuenow"), text: el.getAttribute("aria-valuetext"), share: el.firstElementChild.getBoundingClientRect().width / el.getBoundingClientRect().width }));
+          if (odd.now !== "1200" || odd.text !== "1,450, 121% of 1,200" || Math.abs(odd.share - 1) > 0.01) throw new Error(`the step that went up reads ${JSON.stringify(odd)}`);
+          if (!(await box.getByText("121% of the step before").isVisible())) throw new Error("the step that went up does not say it is more than the step before");
+          return `4 teal meters; ${meters[1].text}`;
+        });
+      }
+      if (has("cohort-grid")) {
+        await attempt("cohort-grid: a native table with caption and headers, a number in every reached cell, dots in the hue's steps, an All cohorts row weighted by size, a narrow box that scrolls as one tab stop", async () => {
+          const box = page.locator("[data-testid=litt-cohort-grid]");
+          const table = box.getByRole("table", { name: "Smoke retention" });
+          await table.waitFor({ state: "visible", timeout: 8000 });
+          const heads = (await table.getByRole("columnheader").allTextContents()).map((t) => t.trim());
+          if (heads.join("|") !== "Cohort|Users|Week 0|Week 1|Week 2") throw new Error(`the headers read ${heads.join("|")}`);
+          const rowOf = (name) => table.getByRole("row").filter({ has: page.getByRole("rowheader", { name, exact: true }) });
+          const cells = async (name) => (await rowOf(name).getByRole("cell").allTextContents()).map((t) => t.trim()).join("|");
+          if ((await cells("31 Aug")) !== "300|100%|40%|no data") throw new Error(`31 Aug reads ${await cells("31 Aug")}`);
+          /* Week 1: (50 x 100 + 40 x 300) / 400 = 42.5, so 43%. Week 2: only 24 Aug has reached it. */
+          if ((await cells("All cohorts")) !== "500|100%|43%|20%") throw new Error(`All cohorts reads ${await cells("All cohorts")}`);
+          const colorOf = (v) =>
+            page.evaluate((value) => {
+              const probe = document.createElement("span");
+              probe.style.color = value;
+              document.body.append(probe);
+              const c = getComputedStyle(probe).color;
+              probe.remove();
+              return c;
+            }, v);
+          const [teal, teal80, teal30, accent] = [
+            await colorOf("var(--litt-data-teal)"),
+            await colorOf("color-mix(in oklab, var(--litt-data-teal) 80%, transparent)"),
+            await colorOf("color-mix(in oklab, var(--litt-data-teal) 30%, transparent)"),
+            await colorOf("var(--litt-accent)"),
+          ];
+          const dots = await rowOf("24 Aug").getByRole("cell").evaluateAll((tds) =>
+            tds.slice(1).map((td) => {
+              const d = td.querySelector("[aria-hidden=true]");
+              return d ? { bg: getComputedStyle(d).backgroundColor, size: `${d.getBoundingClientRect().width}x${d.getBoundingClientRect().height}` } : null;
+            }),
+          );
+          /* Steps 1, 30, 45, 90: 100 is level 4, 50 level 3, 20 level 1. */
+          const want = [teal, teal80, teal30];
+          if (dots.length !== 3 || dots.some((d, i) => !d || d.bg !== want[i] || d.size !== "8x8")) throw new Error(`the 24 Aug dots are ${JSON.stringify(dots)}`);
+          if (dots.some((d) => d.bg === accent)) throw new Error("a dot is the accent");
+          const empty = await rowOf("31 Aug").getByRole("cell").nth(3).evaluate((td) => td.querySelector("[aria-hidden=true]") === null);
+          if (!empty) throw new Error("a cell with no data draws a dot");
+          const narrow = box.getByRole("group", { name: "Smoke narrow" });
+          await narrow.waitFor({ state: "attached", timeout: 4000 });
+          const scroll = await narrow.evaluate((el) => ({ tab: el.getAttribute("tabindex"), wider: el.scrollWidth > el.clientWidth }));
+          if (scroll.tab !== "0" || !scroll.wider) throw new Error(`the narrow box is ${JSON.stringify(scroll)}, not a scrolling tab stop`);
+          return "headers, cells, All cohorts 43%, dots in teal's steps, the narrow box scrolls as one stop";
+        });
+      }
+      if (has("legend")) {
+        await attempt("legend: a press flips aria-pressed, the last shown item stays and says why", async () => {
+          const box = page.locator("[data-testid=litt-legend]");
+          const builds = box.getByRole("group", { name: "Smoke series" }).getByRole("button", { name: /^Builds/ });
+          await builds.waitFor({ state: "visible", timeout: 8000 });
+          if ((await builds.getAttribute("aria-pressed")) !== "true") throw new Error("Builds does not start pressed");
+          await builds.click();
+          if ((await builds.getAttribute("aria-pressed")) !== "false") throw new Error("a press did not hide Builds");
+          await builds.click();
+          if ((await builds.getAttribute("aria-pressed")) !== "true") throw new Error("a second press did not show Builds");
+          const last = box.getByRole("group", { name: "Smoke last" }).getByRole("button", { name: /^Arcadia/ });
+          if ((await last.getAttribute("aria-disabled")) !== "true") throw new Error("the last shown item is not aria-disabled");
+          if ((await last.getAttribute("disabled")) !== null) throw new Error("the last item is natively disabled");
+          /* Playwright treats aria-disabled as not enabled, so force the click. */
+          await last.click({ force: true });
+          if ((await last.getAttribute("aria-pressed")) !== "true") throw new Error("the last shown item was hidden");
+          const note = await last.evaluate((b) => document.getElementById(b.getAttribute("aria-describedby") || "")?.textContent);
+          if (note !== "At least one series stays shown.") throw new Error(`the last item's note reads "${note}"`);
+          return "toggles, and the last one stays";
         });
       }
       if (has("pad")) {

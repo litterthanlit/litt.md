@@ -282,7 +282,17 @@ Bars compare amounts and a line follows change over time. Both are drawn in plai
 - **Keyboard:** one tab stop, on the current mark. Left and right arrows move along the marks, Home and End go to the ends.
 - **Accessibility:** the SVG is `role="img"` with a label that summarises the data ("Deploys per day, last 14 days: from 5 to 1, peak 9"), and a visually hidden table lists every value. A visually hidden button per category, named by its values ("3 Oct: 5 deploys"), sits in a labelled group outside the image: they are the keyboard's stops.
 - **Touch:** a finger scrubs. The mark under it is active and shows its tooltip, which stays until the next touch elsewhere, and a vertical drag still scrolls the page. A column on a phone is narrower than a finger, which is why the target is the plot and not the column. The chart fills its container's width, the height is the caller's, and the plot never needs a horizontal scroll.
+- **Stacked (growth step):** when each category is made of parts (storage added per day by kind), `StackedBarChart` stacks them into one rail per category: at most 8px wide, each segment at `--radius-control`, 2px of air between segments, like the Breakdown's split rail. A hue is a thread, never a block. Every series takes a data hue (its own `hue`, else the next in the fixed order), so a Legend can drop one without repainting the rest. The tallest stack sets the scale. The hovered or focused column takes its series' text tones over a faint column band, the tooltip lists each part and a Total under a hairline, and the hidden table adds a Total column. Up to five series.
 - **Meter:** a horizontal progress bar for one value against a limit, such as storage used. The label sits at the start in the small size, the value at the end in mono at the caption size, and the 4px rail under them is `--radius-control`, filled at fg 12% and then with `--fg` to the value, or with a data hue's mark tone when the color names the thing (images, video and fonts in a storage breakdown). `role="meter"` with a name and a value text. A `target` (a budget) is a 2px tick in `--fg-subtle`, 12px tall so it reads over the fill and the track alike, and is said after the reading. `steps` splits the rail into equal segments 2px apart for a count of a few (7 of 10 checks). The fill is never the accent. It does not animate.
+
+## Legend
+Toggles which series a chart shows. The Legend filters and the chart draws: it holds which series are hidden, and the page passes the shown series to any chart, a table, or both.
+- **Item:** a toggle button, `--control-sm` (32) tall with `--space-2` side padding at `--radius-control`: a 12 by 4px swatch rail in the hue's mark tone, the name (small, `--fg`), and an optional reading after it (mono caption at 400, `--fg-subtle`, tabular), such as a total. Hover fills fg 6%. On coarse pointers it is `--control-md` (44) tall and a press fills fg 6%, as rows do.
+- **Hidden:** the swatch becomes the Meter's track (fg 12%) and the name `--fg-subtle`. Only color changes, on the instant tier: nothing moves, the weight stays 400, and the box keeps its size.
+- **Hues (P11):** assigned exactly as the Chart's `hues`: a set hue is kept, and each item without one takes the next in the fixed order, counted over the whole list. A chart counts only the series it is given, so pin each shown series' hue (`legendHues`) and none repaints when another is hidden. Five items at most. Turn the chart's own legend off (`legend={false}`) so there is one.
+- **The last one stays:** the last shown item cannot be hidden. It carries `aria-disabled` and a hidden note, "At least one series stays shown.", and is never natively disabled, so it keeps its tab stop.
+- **Layout and keyboard:** a wrapping row, 4px apart, in a `role="group"` named by its label. Each item is its own tab stop with the house `:focus-visible` ring; Space or Enter toggles. Alt with a click or Enter shows only that item.
+- **Motion:** none beyond the instant color change.
 
 ## Sparkline
 A trend in one thin line, with no axes and no labels: median build time beside its figure, visits per day in a table row.
@@ -310,6 +320,16 @@ A ranked list where each row carries a thin bar for its share: most-used shortcu
 - **Rows:** a row with `href` is a link, and with `onSelect` a button: an fg-4% hover fill at `--radius-control` on the instant tier, fg 6% pressed on coarse pointers, and an inset focus ring. A static row has no hover and no focus stop.
 - **Accessibility:** an ordered list named by its label; a row reads "Archive, 412 times" with the delta's words. The lead and the bar are hidden: put anything that matters in the label.
 - **Motion:** none. The bars never animate.
+
+## Funnel
+How many went on at each step: visited, signed up, activated, paid. Rows, not a trapezoid: the Meter, once per step, every rail measured against the first.
+- **Header:** the Breakdown's: the label at the start (small, `--fg`) and the overall conversion at the end (mono caption, `--fg-subtle`: "4.1% overall", the last step as a share of the first). `overallText` replaces it.
+- **Steps:** one row per step, in order, each exactly a Meter: the label, the reading with the step's share of the first in mono ("6,930  38%"), and a 4px rail on the fg-12% track filled to that share. Shares are whole percentages, with one decimal under 10% so the small end still reads ("4.1%").
+- **Between steps:** one quiet line at the caption size, weight 400, in `--fg-subtle`, that says how many of the step before went on, in words ("38% continued"). Never red, never an arrow or a dash doing the talking. `formatStep` rewrites it.
+- **Hue (P11):** one data hue for the whole funnel, blue unless `hue` says otherwise. It is one quantity, so it takes one hue. Never the accent.
+- **Bad data:** a step larger than the one before still draws, held at 100% of the first, and its line says "121% of the step before" instead of calling it a conversion. A first step of 0 draws empty rails and no shares.
+- **Accessibility:** an ordered list named by the label. Each step's rail is a meter named by its label, from 0 to the first step's value, with the value and its share as its text ("6,930 people, 38% of 18,240"). The line between steps is plain text at the start of the next item, so it is read in order. The visible header and readings are hidden, and a visually hidden line says the overall ("Signups, 4.1% overall: 748 of 18,240").
+- **Motion:** none. No hover, no focus stop.
 
 ## Gauge
 One value against a range, on a half circle of fine ticks with the figure in its opening: credits left, storage used. A sibling of the Meter for when the number is the point.
@@ -345,6 +365,15 @@ A dot matrix whose depth says how much: usage per day, deploys per week, mail pe
 - **Fit:** dots keep their size. A grid wider than its box scrolls sideways inside it, starting at the latest column, with an 8px static fade on an edge that has more beyond it; labels and totals stay put. A finger scrubs while the grid fits and taps to pick while it scrolls.
 - **Accessibility:** the grid is named by its label and described by a summary ("Deploys per day, 214 in all, most on 12 Oct with 31"); every dot is named by its row, its column and its value.
 - **Motion:** none beyond the tooltip's responsive entrance.
+
+## Cohort grid
+Retention by signup week, as a real table: a row per cohort, a column per period since signup.
+- **Columns:** the cohort (small, `--fg`, sticky at the start), its size (mono caption, `--fg-subtle`, end-aligned, headed "Users"), then a cell per period: an 8px dot just before the value (mono caption at 400, `--fg`, tabular). Every number keeps the width of the grid's longest, so the dots and the figures each line up. A low value is never set quieter: both inks pass 4.5:1.
+- **Color (P11, magnitude):** the Heatmap's: zero is fg at 8%, the four steps are one hue's mark tone over transparent at 30, 55, 80 and 100%, starting at the quartiles of the non-zero values unless `steps` says otherwise. A period a cohort has not reached draws nothing. Under the table, at its end: "Less", the five levels, "More", hidden from screen readers.
+- **Look:** the Table's: a hairline box at `--radius-surface` filled surface-1, 44px rows on 1px `--line`, the header at the caption size and `--weight-label` in `--fg-subtle`. Period cells are compact, about 64px. `average` adds a last row over a `--line-strong` hairline: "All cohorts" (every user who reached the period, so cohorts weigh by size), or "Average cohort" for counts (the plain mean of the cohorts that reached the period).
+- **Fit:** the table keeps its width and scrolls sideways inside its box, so the page never does. The cohort column stays put on the box's surface, with a hairline at its edge once the periods pass under it. While it scrolls, the box is one tab stop, a group named by the caption.
+- **Accessibility:** a native table with a hidden caption, column headers and a row header per cohort ("12 Oct, Week 3, 41%"). An empty cell reads "no data". No roving grid and no tooltip: every number is on screen.
+- **Motion:** none. No hover, nothing to pick.
 
 ## Timeline
 The steps of a run in order: when each started, how long it took and how it ended, grouped into phases. TimelineBar draws the whole run as a strip beside it.
