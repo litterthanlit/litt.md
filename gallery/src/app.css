@@ -7,6 +7,50 @@
   ::selection { background: color-mix(in oklab, var(--accent) 22%, transparent); }
 }
 
+/* Neutrals trial (Q9 split test, src/gallery/neutrals.ts). The Customize panel writes data-neutrals on
+   <body>. html keeps the locked neutrals under --n-* (custom properties inherit their computed value, so
+   body reads html's even after it overrides the name), and body rebuilds each one at the same lightness
+   on a new hue and chroma. No new color: only the hue moves, so contrast and both themes hold.
+   Tokens html derives from a neutral (the focus ring's gap, the dark data tints) keep the locked one;
+   the difference is under a hair of chroma. */
+:root {
+  --n-canvas: var(--canvas);
+  --n-surface-1: var(--surface-1);
+  --n-surface-2: var(--surface-2);
+  --n-surface-3: var(--surface-3);
+  --n-line: var(--line);
+  --n-line-strong: var(--line-strong);
+  --n-line-control: var(--line-control);
+  --n-fg: var(--fg);
+  --n-fg-muted: var(--fg-muted);
+  --n-fg-subtle: var(--fg-subtle);
+  --n-fg-disabled: var(--fg-disabled);
+  --n-glass-bg: var(--glass-bg);
+  --n-glass-bg-solid: var(--glass-bg-solid);
+  --n-glass-border: var(--glass-border);
+}
+body[data-neutrals="gray"] { --n-chroma: 0; --n-hue: 0; }
+body[data-neutrals="stone"] { --n-chroma: 1; --n-hue: 60; }
+body[data-neutrals="sand"] { --n-chroma: 2; --n-hue: 75; }
+body[data-neutrals="gray"],
+body[data-neutrals="stone"],
+body[data-neutrals="sand"] {
+  --canvas: oklch(from var(--n-canvas) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial, the locked value on a new hue */
+  --surface-1: oklch(from var(--n-surface-1) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --surface-2: oklch(from var(--n-surface-2) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --surface-3: oklch(from var(--n-surface-3) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --line: oklch(from var(--n-line) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --line-strong: oklch(from var(--n-line-strong) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --line-control: oklch(from var(--n-line-control) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --fg: oklch(from var(--n-fg) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --fg-muted: oklch(from var(--n-fg-muted) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --fg-subtle: oklch(from var(--n-fg-subtle) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --fg-disabled: oklch(from var(--n-fg-disabled) l calc(c * var(--n-chroma)) var(--n-hue)); /* litt-allow: Q9 trial */
+  --glass-bg: oklch(from var(--n-glass-bg) l calc(c * var(--n-chroma)) var(--n-hue) / alpha); /* litt-allow: Q9 trial */
+  --glass-bg-solid: oklch(from var(--n-glass-bg-solid) l calc(c * var(--n-chroma)) var(--n-hue) / alpha); /* litt-allow: Q9 trial */
+  --glass-border: oklch(from var(--n-glass-border) l calc(c * var(--n-chroma)) var(--n-hue) / alpha); /* litt-allow: Q9 trial */
+}
+
 /* Syntax colors for the docs code blocks (sugar-high sets color: var(--sh-*) on each token).
    Near-monochrome on purpose: structure reads by tone, and the one tint goes to strings and
    JSX text. The tint is the accent mixed 10% toward --fg, which keeps 4.5:1 or more on

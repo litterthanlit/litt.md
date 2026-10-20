@@ -1,6 +1,6 @@
 /**
- * Customize, the panel: the header's button and the popover with the typeface
- * and the radius. It loads on its own, so the shell stays small; the state and
+ * Customize, the panel: the header's button and the popover with the typeface,
+ * the radius and the neutrals. It loads on its own, so the shell stays small; the state and
  * the writes on <body> live in customize-state.tsx.
  */
 import { useState } from "react";
@@ -12,13 +12,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { Segmented } from "@/components/segmented";
 import { Tag } from "@/components/tag";
 import { useCustomize } from "./customize-state";
+import { NEUTRALS, neutralsRule, neutralsSnippet } from "./neutrals";
 
 function CustomizePanel() {
-  const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, modified, reset } = useCustomize();
+  const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, neutrals, setNeutrals, modified, reset } = useCustomize();
   const [copied, setCopied] = useState(false);
   const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
-  const rows = [typeRule(type), shapeRule(radius)];
-  const snippet = customizeSnippet(radius, lockedRadius, type);
+  const rows = [typeRule(type), shapeRule(radius), neutralsRule(neutrals)];
+  const snippet = [customizeSnippet(radius, lockedRadius, type), ...neutralsSnippet(neutrals)].filter(Boolean).join("\n\n");
 
   const copy = async () => {
     try {
@@ -32,7 +33,7 @@ function CustomizePanel() {
 
   return (
     <div className="grid gap-6">
-      <p className="text-small text-fg-subtle">Type and shape for every page, saved in this browser. Motion lives in the Playground.</p>
+      <p className="text-small text-fg-subtle">Type, shape and neutrals for every page, saved in this browser. Motion lives in the Playground.</p>
       <Segmented
         legend="Typeface"
         showLegend
@@ -50,6 +51,15 @@ function CustomizePanel() {
         value={String(radius)}
         onValueChange={(v) => setRadius(Number(v))}
         options={SHAPES.map((r) => ({ value: String(r), label: shapeName(r) }))}
+      />
+      <Segmented
+        legend="Neutrals"
+        showLegend
+        block
+        size="sm"
+        value={neutrals.id}
+        onValueChange={setNeutrals}
+        options={NEUTRALS.map((n) => ({ value: n.id, label: n.name }))}
       />
       <div className="grid gap-3 border-t border-line pt-4">
         {modified ? (
@@ -76,7 +86,7 @@ function CustomizePanel() {
           </>
         ) : (
           <p className="text-caption font-normal text-fg-subtle">
-            Locked: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces.
+            Locked: {typeface.name}, {shapeName(radius)} controls, {shapeSurface(radius)}px surfaces and cool neutrals.
           </p>
         )}
       </div>

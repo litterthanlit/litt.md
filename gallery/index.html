@@ -21,7 +21,7 @@
 </head>
 <body>
 <script>
-  /* Apply the saved Customize choices (type and shape) before first paint. They live on <body>:
+  /* Apply the saved Customize choices (type, shape and neutrals) before first paint. They live on <body>:
      src/gallery/customize.tsx says why, and owns them once the app runs. */
   (function () {
     try {
@@ -44,6 +44,8 @@
         s.setProperty("--radius-control", c.radius + "px");
         s.setProperty("--radius-surface", (c.radius === 28 ? 16 : c.radius === 0 ? 0 : c.radius + 4) + "px");
       }
+      /* The neutrals trial (Q9): NEUTRALS in src/gallery/neutrals.ts, drawn by app.css. */
+      if (c.neutrals === "gray" || c.neutrals === "stone" || c.neutrals === "sand") document.body.setAttribute("data-neutrals", c.neutrals);
     } catch (e) {}
   })();
 </script>
