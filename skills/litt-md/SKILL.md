@@ -1,6 +1,6 @@
 ---
 name: litt-md
-description: litt.md is Nick's personal design language and taste for web and product UI, motion and interaction. Use it whenever you build, restyle or review anything visual for Nick (websites, landing pages, app screens, components, prototypes or Framer sites, in React, Tailwind, HTML or CSS), when choosing type, color, spacing, radius, glass, light, shadows or motion, or when critiquing a screenshot, URL or design. Also use it for taste work - interviewing Nick about preferences, auditing a reference site, moodboard or Nick's own work, logging a reaction such as love this, hate this or more like that, and distilling the taste journal into rules. Its rules override the visual defaults of frontend-design and design-systems. Signature - technical precision, cool neutrals, Inter in three weights, airy layouts, light and material, quick motion with one spring moment per view, light and dark both first-class.
+description: litt.md is Nick's personal design language and taste for web and product UI, motion and interaction. Use it whenever you build, restyle or review anything visual for Nick (websites, landing pages, app screens, components, prototypes or Framer sites, in React, Tailwind, HTML or CSS), when choosing type, color, spacing, radius, glass, light, shadows or motion, or when critiquing a screenshot, URL or design. Also use it for taste work - interviewing Nick about preferences, auditing a reference site, moodboard or Nick's own work, logging a reaction such as love this, hate this or more like that, and distilling the taste journal into rules. Its rules override the visual defaults of frontend-design and design-systems. Signature - technical precision, cool neutrals, Geist in three weights, airy layouts, light and material, quick motion with one spring moment per view, light and dark both first-class.
 allowed-tools: Bash(node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs *), Bash(node ${CLAUDE_SKILL_DIR}/scripts/check.mjs*)
 ---
 
@@ -61,7 +61,7 @@ Each rule's Check line, the dos and don'ts, and the open questions are in `taste
 These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
-- **Type:** Inter + Geist Mono only, in three weights by role (P9). Nothing is set above 18px: display and h1 are 18, the rest 14, 13 and 12. Mono is for code, keys, data, versions and token names, never tags.
+- **Type:** Geist + Geist Mono only, in three weights by role (P9). Nothing is set above 18px: display and h1 are 18, the rest 14, 13 and 12. Mono is for code, keys, data, versions and token names, never tags.
 - **Color:** cool neutrals at one OKLCH hue (about 262), monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
 - **Density:** airy.
 - **Shape:** slight radius. Controls 4px (tags and chips too), surfaces 8px, pills only for avatars, icon-only buttons and switches.
@@ -94,7 +94,7 @@ These change only when Nick changes them.
 - **Data hues (P11):** `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` (words in the hue) and `-tint` (the fill behind them); marks take the plain name
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
-- **Type:** `--font-sans` (Inter), `--font-mono` (Geist Mono), `--weight` (400), `--weight-title` (500), `--weight-label` (600), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
+- **Type:** `--font-sans` (Geist), `--font-mono` (Geist Mono), `--weight` (400), `--weight-title` (500), `--weight-label` (600), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
 - **Shape:** `--radius-control` (4), `--radius-surface` (8), `--radius-pill`
 - **Controls:** `--control-{sm,md,lg}` (32/44/56), `--control-pad-{sm,md,lg}` (12/16/24), `--button-pad-lg` (32), `--control-text-{sm,md,lg}`, `--control-gap`, `--control-group-gap`

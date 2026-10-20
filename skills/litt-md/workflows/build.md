@@ -130,7 +130,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `plan` | An agent's steps for a task, ticked off as it works (`Plan` with `steps` of `{ id, label, status }`). |
 | `code-block` | Code in an answer, a tool's output or a diff (`CodeBlock` with `code`, `lang` and `filename`). Quiet colors, a Copy button, and `lang="diff"` for a change. |
 | `litt` | The tokens, the Tailwind names and the material classes. Every component brings it. Install it alone when you write all the markup yourself. |
-| `base-styles` | Opt-in. Loads Inter at 400, 500 and 600 and Geist Mono at 400, and sets page defaults for the whole app: headings, b and strong at the title weight, table headers at the label weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
+| `base-styles` | Opt-in. Loads Geist at 400, 500 and 600 and Geist Mono at 400, and sets page defaults for the whole app: headings, b and strong at the title weight, table headers at the label weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
 | `motion`, `glide`, `icons`, `list-cover` | Libraries that components bring along. `motion` holds the hooks below, `icons` has 30 16px icons (`SearchIcon`, `PlusIcon`, `SettingsIcon`) and `StatusIcon` with the five step marks, and both are fine to install on their own. |
 
 Each item prints a one-line import hint. The gallery page for an item (`https://littmd.vercel.app/#dialog`) has a working example.

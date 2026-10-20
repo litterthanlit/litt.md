@@ -89,7 +89,7 @@ The result that matters: in the #10 baseline, Sonnet wrote its own 200-line bott
      "name": "@litt",
      "homepage": "https://littmd.vercel.app",
      "url": "https://littmd.vercel.app/r/{name}.json",
-     "description": "Technical precision, lit from above. Controls, overlays, data and agent components on locked tokens: Inter in three weights by role, two radii, glass only on what floats, color that carries data, and motion that stops under reduced motion. Every token is prefixed litt-, so nothing in your app changes.",
+     "description": "Technical precision, lit from above. Controls, overlays, data and agent components on locked tokens: Geist in three weights by role, two radii, glass only on what floats, color that carries data, and motion that stops under reduced motion. Every token is prefixed litt-, so nothing in your app changes.",
      "logo": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none' stroke='var(--foreground)' stroke-width='1.5'><rect x='4.75' y='4.75' width='22.5' height='22.5' rx='4'/><path d='M9.5 9.75h13' stroke-linecap='round'/></svg>"
    }
    ```

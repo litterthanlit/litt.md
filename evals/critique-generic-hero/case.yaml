@@ -22,7 +22,7 @@ graders:
     criteria: |
       Pass if the critique flags most of: the purple-blue gradient and gradient text, centered
       everything, three equal emoji cards, arrow suffixes on every button, a 64px headline where litt.md sets
-      nothing above 18px (Inter itself is litt's face, so flagging the font alone does not count),
+      nothing above 18px, Inter as the default face where litt.md sets Geist,
       the visible drop shadow and the lift-and-bounce on card hover (hover is an instant tween and
       moves nothing). It should give no more than about three ranked fixes expressed in litt.md
       terms (e.g. light source from the top, one accent fill, asymmetric layout, 100ms ease-out),

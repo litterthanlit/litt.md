@@ -1,6 +1,6 @@
 # litt.md taste profile
 
-> v0.12 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 1 split test (6 versions), 72 journal entries · October 2026
+> v0.13 · built from 2 interviews, 3 audits (8 sources), 1 type trial (14 faces), 1 components trial (8 components), 1 motion proposal (14 decisions), 1 open-decisions review (26 decisions), 1 tag trial (4 options), 1 reference set (5 shots), 1 split test (6 versions), 73 journal entries · October 2026
 
 This is Nick's design language, written as rules you can check. Every rule has an ID (`P#`) so journal entries can point at it, and a **Check** line so a critique can say pass or fail rather than "feels off".
 
@@ -16,7 +16,7 @@ Five words: **precise, lit, airy, calm, exact.**
 |---|---|---|
 | Character | Technical precision (Linear/Vercel lineage) | Interfaces should feel engineered and inevitable, not decorated. |
 | Themes | Light and dark are both first-class | Neither theme is an afterthought or a mechanical inversion. |
-| Type | Inter + Geist Mono, nothing else, in three weights by role (P9); nothing is set above 18px | Inter carries every role, headings included. Mono is for code, keys, numbers in tables and data, version strings and token names, never tags. Nearly everything is 14px with one 18px title, as on Nick's own site (litt.design): rank comes from weight, two inks and space, not size. |
+| Type | Geist + Geist Mono, nothing else, in three weights by role (P9); nothing is set above 18px | Geist carries every role, headings included, as on litt.design. Mono is for code, keys, numbers in tables and data, version strings and token names, never tags. Nearly everything is 14px with one 18px title, as on Nick's own site (litt.design): rank comes from weight, two inks and space, not size. |
 | Signature | Light and material | This is where the boldness goes, and it is what separates litt.md from generic dark mode. |
 | Color | Cool neutrals (OKLCH hue about 262), monochrome chrome, one accent per project. Litt's own accent is cobalt. Five data hues carry data and never chrome (P11) | Hierarchy comes from tone. The accent is chosen per project; Litt's own sits on nearly the neutrals' hue, so the light it casts stays cool. Color that says something (which series, which category, how much) earns its place; color on chrome is decoration. |
 | Density | Airy | One idea per section, with generous negative space. |
@@ -101,7 +101,7 @@ Claude's default output drifts toward these. Each one is banned unless the sessi
 - The same uppercase mono eyebrow above every section ("01 / FEATURES").
 - Three equal feature cards with an icon, a title and two lines, as the default answer to every section.
 - One word of the headline picked out in accent color.
-- Space Grotesk, or a default system stack, as the "safe" face. litt.md sets Inter on purpose: 14px, three weights by role, two inks and tight lockups. Inter at 16px and 400 everywhere, with headings scaled up by size, is still the tell.
+- Inter or Space Grotesk, or a default system stack, as the "safe" face. litt.md sets Geist, as on litt.design: 14px, three weights by role, two inks and tight lockups. Any sans at 16px and 400 everywhere, with headings scaled up by size, is still the tell.
 
 ## Open questions
 
@@ -125,12 +125,13 @@ The interview workflow works through these. When one is answered, move the answe
   - *Evidence:* Fluid Functionalism is true neutral gray too (chroma 0).
 - **Q11.** Exposed editorial structure (visible column rules, index numbers) shows up a lot on the Pinterest "web" board. Allow it as a secondary device on content pages, or keep the language purely light-and-material?
 - **Q12.** Which theme comes first on marketing pages when the system preference is unknown? Cursor, Vercel and litt.design are all light-first.
-- **Q14.** Mono: keep Geist Mono next to Inter, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
+- **Q14.** Mono: keep Geist Mono next to Geist, or switch to JetBrains Mono, Fragment Mono or IBM Plex Mono?
   - *Evidence:* Nick is "tired of Geist" but only replaced the sans. The 14-face type trial (v0.4) paired its sans with JetBrains Mono by default.
   - *Evidence:* v0.12 kept Geist Mono for code, keys, data, version strings and token names, and moved tags to the sans, so the mono now carries less.
 
 ## Changelog
 
+- **v0.13, October 2026.** Nick on v0.12: "replace inter with geist just like on my portfolio". litt.design is set in Geist (`GeistSans` from the `geist` package, falling back to Helvetica Neue, Helvetica and Arial), and v0.12 had kept its setting but swapped the face for Inter. The Type decision now reads Geist + Geist Mono. Everything else in v0.12 stands: the 18/14/13/12 scale, its tracking (already litt.design's), weight by role (P9), two inks and sans tags. Inter is gone, and with it the optical-size axis in the font URL. Inter joins Space Grotesk as a "safe" face in the generic-AI tells. Journal: the entry dated 2026-10-20.
 - **v0.12, October 2026.** Nick on the type: "I think we should add inter as body", then "inter is the way" after the type research, and "I like the type in my portfolio" (litt.design). A split test ran the real gallery in six type versions: Today (v0.11 as it shipped), Report (40/30/22), One size (16), Quartz, Portfolio (litt.design's type settings, set in Inter) and Portfolio 400 (the same layout inside P9). Portfolio was presented as "if Portfolio wins, P9 should change", and Nick chose it over the other five: "portfolio wins, also make the tags sans too". P9 changes from one weight to weight by role: text 400, titles 500, 12px labels 600, nothing else. The Type decision changes from Hanken Grotesk + Geist Mono at 400 with display at 40 to Inter + Geist Mono in three weights, with nothing above 18px: display and h1 are 18, h2 to h4 share 14 at the title weight, reading and body are 14, small 13 and caption 12 at the label weight, all on whole-pixel line heights. Hanken Grotesk is gone. The v0.8 decision that tags are set in mono is reversed: tags are the sans at the caption size and the label weight, so the mono is for code, keys, data, version strings and token names. Two inks, as on the portfolio: `--fg-muted` now carries `--fg-subtle`'s grey in both themes. A text-spacing rule joins the type section of `system/foundations.md`: lockups 4px apart, blocks 16px, sections 48px, the page title 16px above its summary. litt.design itself is set in Geist; what Nick likes is the setting, so the face is Inter. Journal: the five entries dated 2026-10-19.
 - **v0.11, October 2026.** Nick sent five reference shots of data panels (a rule builder with colored category tags, a voice pad on a dot grid, a reply-speed dot plot, a shortcut heatmap, a usage dot matrix and gauge, a deploy timeline) with "lets expand the components ... we stick to our design language, we can add some color too". New rule P11: color carries data. Five data hues (blue, amber, teal, violet, rose), fitted to litt's surfaces in both themes and checked for color-blind separation, each with a mark tone, a text tone and a tint. They mark series, categories, heat steps and identity, and never chrome; the accent still owns the primary action, and the dashboards step's foreground-only chart stays the default. The Color decision now reads "monochrome chrome". Tags take a hue for a category. The lint fails a hue's mark tone or tint used as text.
 - **v0.10, October 2026.** Nick on the dark primary button: "I think the text gets lost a bit in the dark version of the button". Its dark text on a light cobalt passed 4.5:1 but read muddy. The accent is now a fill only: in both themes the primary action is a deep cobalt with white text, as in the reference, and it stays at least 3:1 against the page. A new `--accent-text` carries the accent as text (links): the accent itself in light, a lighter cobalt in dark. The lint fails the fill used as text.

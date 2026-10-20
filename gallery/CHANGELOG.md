@@ -4,6 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-20 · Geist
+
+The face of taste profile v0.13: Geist replaces Inter, as on Nick's portfolio. Sizes, weights and tracking are unchanged.
+
+- **changed** `litt`: Geist replaces Inter in `--litt-font-sans`, falling back to Helvetica Neue, Helvetica and Arial. The stack names both "Geist" (Google Fonts) and "Geist Sans" (Fontsource).
+- **changed** `base-styles`: loads Geist at 400, 500 and 600 and Geist Mono at 400 (`@fontsource/geist-sans` replaces `@fontsource/inter`).
+
 ## 2026-10-19 · Staples, versions and type
 
 Six staples, and from this release every item carries its version, in the registry and at the top of each file it installs.

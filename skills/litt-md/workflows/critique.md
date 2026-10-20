@@ -34,7 +34,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] Neutrals are cool (blue-gray), not warm and not pure gray.
 
 **D. Type**
-- [ ] Inter and Geist Mono only. Mono used only for code, keys, data, versions and token names, never for tags.
+- [ ] Geist and Geist Mono only. Mono used only for code, keys, data, versions and token names, never for tags.
 - [ ] Hierarchy comes from weight, two inks and space. Nearly everything is 14px, one display or page title per page, and nothing larger than 18.
 - [ ] **P9** Weight by role: text at 400, titles, buttons and tabs at 500, 12px labels at 600. No bold, nothing below 400, no 500 or 600 on running text, no 600 above 12px, and mono at 400.
 - [ ] Lockups are tight and gaps wide: a label 4px above its title, a title 4px above its text, blocks 16px apart, sections 48px apart.

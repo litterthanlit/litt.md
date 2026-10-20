@@ -15,9 +15,9 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 ## 1. Type
 
-**Families.** `--font-sans` (Inter) for everything, headings included. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. Tags are set in the sans. No third family, ever.
+**Families.** `--font-sans` (Geist) for everything, headings included. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. Tags are set in the sans. No third family, ever.
 
-**Loading.** Inter comes from Google Fonts with its optical-size axis and the three weights: `family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=Geist+Mono:wght@400&display=swap`. Ask for opsz explicitly, because a plain `Inter:wght@400` returns a file without optical sizing. Leave `font-optical-sizing` at auto, and declare no `cv` or `ss` features: Google's Inter build strips them. Geist Mono loads at 400 only.
+**Loading.** Geist comes from Google Fonts in the three weights: `family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap`. In Next.js the `geist` package (`GeistSans`, `GeistMono`) is the same face, as on litt.design; in an app that installs the registry, `base-styles` loads it from `@fontsource/geist-sans`. The fallback is Helvetica Neue, Helvetica and Arial, as on litt.design. Declare no `cv` or `ss` features. Geist Mono loads at 400 only.
 
 **Weight (P9).** Three weights, one per role, and nothing else.
 

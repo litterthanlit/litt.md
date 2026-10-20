@@ -19,7 +19,7 @@ Set the project to follow the system theme. Preview both modes before publishing
 
 ## 2. Text styles
 
-Font: **Inter** (Google Fonts, available in Framer) and **Geist Mono**. Create text styles from the scale in `foundations.md`, with the size, line height and letter spacing taken from the `--type-*` tokens. Framer takes letter spacing in em, so enter the token value directly (for example −0.015em for display), and line heights in px (28, 22, 20, 16).
+Font: **Geist** (Google Fonts, available in Framer) and **Geist Mono**. Create text styles from the scale in `foundations.md`, with the size, line height and letter spacing taken from the `--type-*` tokens. Framer takes letter spacing in em, so enter the token value directly (for example −0.015em for display), and line heights in px (28, 22, 20, 16).
 
 ```
 Display  → H1 tag on the hero only (18 on every breakpoint; nothing is larger)
@@ -28,7 +28,7 @@ Reading, Body, Small, Caption → P tag
 Mono     → for kbd, data, versions
 ```
 
-Weight by role (P9): Regular 400 for text (Reading, Body, Small), Medium 500 for titles (Display, H1 to H4, a title over its description, buttons, tabs), Semibold 600 for 12px labels only (Caption, tags, meta rows, table headers). Never Bold. Below the page title, hierarchy comes from weight, the two ink colors and space, not size. Add Inter Regular, Medium and Semibold and Geist Mono Regular to the project.
+Weight by role (P9): Regular 400 for text (Reading, Body, Small), Medium 500 for titles (Display, H1 to H4, a title over its description, buttons, tabs), Semibold 600 for 12px labels only (Caption, tags, meta rows, table headers). Never Bold. Below the page title, hierarchy comes from weight, the two ink colors and space, not size. Add Geist Regular, Medium and Semibold and Geist Mono Regular to the project.
 
 ## 3. Layout
 

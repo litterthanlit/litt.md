@@ -77,9 +77,9 @@ export const docs: PageDocs = {
 
    Litt is fixing the Halo site's failing build. The log is long on purpose: past 16rem the block scrolls inside. */
 
-const SEARCH_MATCHES = `src/styles/fonts.css:1    @import "@fontsource/inter/400.css";
+const SEARCH_MATCHES = `src/styles/fonts.css:1    @import "@fontsource/geist-sans/400.css";
 src/styles/fonts.css:2    @import "@fontsource/geist-mono/400.css";
-package.json:17           "@fontsource/inter": "^5.2.8",`;
+package.json:17           "@fontsource/geist-sans": "^5.3.0",`;
 
 const BUILD_LOG = `> halo-site@0.4.0 build
 > vite build

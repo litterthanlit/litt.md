@@ -81,7 +81,7 @@ These come from the audit and are candidate rules. Build them in.
 
   An element inset 4px inside a surface uses `rounded-control`; that is what makes it concentric. No other radius exists.
 - **Weight by role (P9):** text at 400, titles, buttons, tabs and segments at 500 (`font-title`), 12px labels at 600 (`font-label`). `text-display` to `text-h4` carry 500 and `text-caption` carries 600 on their own, so a mono caption (kbd, numbers) adds `font-normal`, and so does a sentence set at the caption size. Never `font-medium`, `font-semibold` or `font-bold`.
-- **Type:** Inter for everything, Geist Mono for code, keys and data (never tags). `text-display` 18, `text-h1` 18, `text-h2` to `text-h4` 14, `text-reading` 14, `text-body` 14, `text-small` 13, `text-caption` 12. Line height and tracking come with the token. Use sentence case; no uppercase eyebrows.
+- **Type:** Geist for everything, Geist Mono for code, keys and data (never tags). `text-display` 18, `text-h1` 18, `text-h2` to `text-h4` 14, `text-reading` 14, `text-body` 14, `text-small` 13, `text-caption` 12. Line height and tracking come with the token. Use sentence case; no uppercase eyebrows.
 - **Text spacing:** a label 4px above its title, a title 4px above its text, blocks 16px apart, sections 48px apart (`foundations.md`, Text spacing).
 - **Color only through tokens:**
   - surfaces: `bg-canvas`, `bg-surface-1`, `bg-surface-2`, `bg-surface-3`;

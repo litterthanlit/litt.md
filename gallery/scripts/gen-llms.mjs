@@ -183,7 +183,7 @@ function llmsTxt(pages) {
   const patterns = pages.filter((p) => !p.docs && p.meta.group);
   const sections = [
     "# litt.md",
-    "> Nick's design language for web and product UI as a shadcn registry: React and Tailwind CSS v4 components on locked tokens. Technical precision, lit from above: an 8px grid, hairlines, Inter at 14px in three weights by role, cool neutrals, glass only on floating surfaces, and quick motion with one expressive moment per view.",
+    "> Nick's design language for web and product UI as a shadcn registry: React and Tailwind CSS v4 components on locked tokens. Technical precision, lit from above: an 8px grid, hairlines, Geist at 14px in three weights by role, cool neutrals, glass only on floating surfaces, and quick motion with one expressive moment per view.",
     `Every page below is Markdown with the install command, a usage example, the props, the keyboard and what it guarantees for accessibility. The gallery itself is ${ORIGIN} (each page at /#<page>), the registry index is ${ORIGIN}/r/registry.json, and the changes, release by release with migration steps, are at ${ORIGIN}/changelog.md.`,
     "## Install",
     [

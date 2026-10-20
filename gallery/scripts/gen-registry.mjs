@@ -495,9 +495,9 @@ const materialRe = new RegExp(`(?<![\\w-])(${materialClasses.map(esc).join("|")}
 
 function buildBaseStylesCss() {
   const css = {};
-  css['@import "@fontsource/inter/400.css"'] = {};
-  css['@import "@fontsource/inter/500.css"'] = {};
-  css['@import "@fontsource/inter/600.css"'] = {};
+  css['@import "@fontsource/geist-sans/400.css"'] = {};
+  css['@import "@fontsource/geist-sans/500.css"'] = {};
+  css['@import "@fontsource/geist-sans/600.css"'] = {};
   css['@import "@fontsource/geist-mono/400.css"'] = {};
   // tailwind.css's html rule, minus the page colors: a shadcn host paints its own background and text.
   const twBase = tailwindCss.find((n) => n.k === "at" && n.name === "layer" && n.params === "base") ?? fail("tailwind.css: @layer base not found");
@@ -744,7 +744,7 @@ const COPY = {
   },
   "base-styles": {
     title: "litt base styles",
-    description: "Optional. Loads Inter at 400, 500 and 600 and Geist Mono at 400, and applies litt's page defaults: headings and bold at the title weight, table headers at the label weight, the control radius on native controls and the litt focus ring.",
+    description: "Optional. Loads Geist at 400, 500 and 600 and Geist Mono at 400, and applies litt's page defaults: headings and bold at the title weight, table headers at the label weight, the control radius on native controls and the litt focus ring.",
     docs: "This one restyles your whole app: the html font, heading weight, button and input radius and the focus outline. No component needs it. Skip it if you only want the components.",
   },
   motion: {
@@ -1089,7 +1089,7 @@ function build() {
     type: "registry:style",
     title: COPY["base-styles"].title,
     description: COPY["base-styles"].description,
-    dependencies: ["@fontsource/inter", "@fontsource/geist-mono"],
+    dependencies: ["@fontsource/geist-sans", "@fontsource/geist-mono"],
     registryDependencies: [urlOf("litt")],
     css: baseStylesCss,
     docs: COPY["base-styles"].docs,
