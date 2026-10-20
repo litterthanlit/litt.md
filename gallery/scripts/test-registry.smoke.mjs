@@ -2744,7 +2744,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
         });
       }
       if (has("code-block")) {
-        await attempt("code block: a focusable labelled scroller, a keyword is not an identifier's color, a diff's + is success on a band, Copy says Copied", async () => {
+        await attempt("code block: a focusable labelled scroller, keywords in fg and comments the one grey, a diff's + is success on a band, Copy says Copied", async () => {
           const box = page.locator("[data-testid=litt-code-block]");
           const ts = box.getByRole("group", { name: "Smoke badge", exact: true });
           await ts.waitFor({ state: "visible", timeout: 8000 });
@@ -2775,8 +2775,9 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             return { keyword: of(".sh__token--keyword", "const"), identifier: of(".sh__token--identifier", "label"), comment: of(".sh__token--comment", "// halo"), string: of(".sh__token--string", "live") };
           });
           if (tones.keyword === null || tones.identifier === null || tones.comment === null || tones.string === null) throw new Error(`a token is missing: ${JSON.stringify(tones)}`);
-          if (tones.keyword === tones.identifier) throw new Error("a keyword and an identifier have the same color");
-          if (tones.keyword !== muted) throw new Error(`the keyword is ${tones.keyword}, not --litt-fg-muted (${muted})`);
+          /* v0.12: keywords take --fg, so comments stay the one grey in code now that body text and metadata share an ink. */
+          if (tones.keyword !== fg) throw new Error(`the keyword is ${tones.keyword}, not --litt-fg (${fg})`);
+          if (tones.comment === tones.keyword) throw new Error("a comment has the keyword's color; comments should be the one grey");
           if (tones.identifier !== fg) throw new Error(`the identifier is ${tones.identifier}, not --litt-fg (${fg})`);
           if (tones.comment !== subtle) throw new Error(`the comment is ${tones.comment}, not --litt-fg-subtle (${subtle})`);
           if (tones.string !== string) throw new Error(`the string is ${tones.string}, not accent text mixed 90% into fg (${string})`);
