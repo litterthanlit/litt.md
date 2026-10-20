@@ -1,5 +1,5 @@
 /**
- * Customize, the state: type, shape and neutrals for the whole gallery, chosen in the
+ * Customize, the state: type and shape for the whole gallery, chosen in the
  * header's panel (customize.tsx, loaded on first use), on every page. Motion
  * stays in the Playground.
  *
@@ -15,12 +15,11 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { useMotionDial } from "@/motion";
 import { SHAPES, shapeSurface } from "@/motion/rules";
-import { neutralsById, type Neutrals } from "./neutrals";
 import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
-type Saved = { face?: Pick<Typeface, "id" | "stack" | "href">; radius?: number; neutrals?: Neutrals["id"] };
+type Saved = { face?: Pick<Typeface, "id" | "stack" | "href">; radius?: number };
 
 type Ctx = {
   typefaces: Typeface[];
@@ -30,9 +29,6 @@ type Ctx = {
   radius: number;
   lockedRadius: number;
   setRadius: (r: number) => void;
-  /** The neutral temperature, a Q9 trial (neutrals.ts). "cool" is the locked one. */
-  neutrals: Neutrals;
-  setNeutrals: (id: string) => void;
   modified: boolean;
   reset: () => void;
 };
@@ -57,12 +53,9 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
     (SHAPES as readonly number[]).includes(saved.radius as number) ? (saved.radius as number) : null,
   );
 
-  const [neutralsId, setNeutralsId] = useState(() => neutralsById(saved.neutrals).id);
-
   const typeface = typefaces.find((f) => f.id === faceId) ?? typefaces[0];
   const radius = radiusTuned ?? locked.radius;
-  const neutrals = neutralsById(neutralsId);
-  const modified = typeface.id !== "locked" || radiusTuned !== null || neutrals.id !== "cool";
+  const modified = typeface.id !== "locked" || radiusTuned !== null;
 
   /* Write the choices on <body>, and remove what is back to locked. A layout effect, so a change never paints stale. */
   useLayoutEffect(() => {
@@ -79,9 +72,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       s.setProperty("--radius-control", `${radiusTuned}px`);
       s.setProperty("--radius-surface", `${shapeSurface(radiusTuned)}px`);
     }
-    if (neutrals.id === "cool") delete document.body.dataset.neutrals;
-    else document.body.dataset.neutrals = neutrals.id;
-  }, [typeface, radiusTuned, neutrals]);
+  }, [typeface, radiusTuned]);
 
   /* Remember a change, and only a change, so a later change to tokens.css is never shadowed. */
   useEffect(() => {
@@ -90,12 +81,11 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       const next: Saved = {};
       if (typeface.id !== "locked") next.face = { id: typeface.id, stack: typeface.stack, href: typeface.href };
       if (radiusTuned !== null) next.radius = radiusTuned;
-      if (neutrals.id !== "cool") next.neutrals = neutrals.id;
       localStorage.setItem(KEY, JSON.stringify(next));
     } catch {
       /* storage can be unavailable; the choice still applies until the page reloads */
     }
-  }, [modified, typeface, radiusTuned, neutrals]);
+  }, [modified, typeface, radiusTuned]);
 
   const value = useMemo<Ctx>(
     () => ({
@@ -105,16 +95,13 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       radius,
       lockedRadius: locked.radius,
       setRadius: (r) => setRadiusTuned(r === locked.radius ? null : r),
-      neutrals,
-      setNeutrals: (id) => setNeutralsId(neutralsById(id).id),
       modified,
       reset: () => {
         setFaceId("locked");
         setRadiusTuned(null);
-        setNeutralsId("cool");
       },
     }),
-    [typefaces, typeface, radius, locked.radius, neutrals, modified],
+    [typefaces, typeface, radius, locked.radius, modified],
   );
 
   return <CustomizeContext.Provider value={value}>{children}</CustomizeContext.Provider>;

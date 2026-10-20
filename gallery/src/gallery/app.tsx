@@ -160,8 +160,6 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
   return (
     <div className="relative min-h-screen">
-      <div aria-hidden="true" className="litt-lit litt-grain litt-grain-fade pointer-events-none absolute inset-x-0 top-0 h-140" />
-
       <button
         type="button"
         onClick={() => mainRef.current?.focus()}
