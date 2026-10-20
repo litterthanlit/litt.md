@@ -1,4 +1,4 @@
-import { BarChart, LineChart, Meter } from "@/components/chart";
+import { BarChart, LineChart, Meter, StackedBarChart } from "@/components/chart";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -12,7 +12,7 @@ export const meta: PageMeta = {
 
 export const docs: PageDocs = {
   components: ["chart"],
-  exports: ["BarChart", "LineChart", "Meter"],
+  exports: ["BarChart", "LineChart", "StackedBarChart", "Meter"],
   usage: `import { BarChart, LineChart, Meter } from "@/components/chart";
 
 const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
@@ -51,6 +51,13 @@ const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
 <LineChart label="Visits" labels={days} series={[
   { name: "This week", values: [/* … */], hue: "blue" },
   { name: "Last week", values: [/* … */] }, // stays in the foreground
+]} />
+
+// The parts of each day as one thin stacked rail, a hue per series, the total in the tooltip.
+<StackedBarChart label="Storage added per day" labels={days} formatValue={(v) => \`\${v} GB\`} series={[
+  { name: "Video", values: [/* … */] },
+  { name: "Images", values: [/* … */] },
+  { name: "Fonts", values: [/* … */] },
 ]} />
 
 // A rail for one value against a limit. A hue when the color names the thing.
@@ -203,6 +210,28 @@ function HuesDemo() {
   );
 }
 
+const ADDED = [
+  { name: "Video", values: [4.2, 3.1, 5.6, 2.4, 6.8, 1.2, 0.6, 3.9, 5.1, 4.4, 7.2, 5.8, 1.6, 0.9] },
+  { name: "Images", values: [1.8, 2.6, 1.4, 2.9, 2.2, 0.8, 0.4, 2.4, 3.1, 1.9, 2.7, 2.2, 0.7, 0.5] },
+  { name: "Documents", values: [0.6, 0.4, 0.9, 0.5, 0.7, 0.1, 0.1, 0.8, 0.6, 0.7, 0.9, 0.5, 0.2, 0.1] },
+  { name: "Fonts", values: [0.2, 0, 0.3, 0.1, 0, 0, 0, 0.4, 0.1, 0.2, 0.1, 0.3, 0, 0] },
+];
+
+function StackedDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StackedBarChart
+        label="Storage added per day, last 14 days"
+        labels={DAYS}
+        series={ADDED}
+        formatValue={(v) => `${+v.toFixed(1)} GB`}
+        xTitle="Day"
+        height={256}
+      />
+    </div>
+  );
+}
+
 function OneHueDemo() {
   return (
     <div className="w-full max-w-3xl">
@@ -318,6 +347,16 @@ export default function ChartPage() {
         caption="When telling series apart is the point, they take the data hues in their fixed order: blue, amber, teal, violet, rose. Up to five, each at 3:1 or more on the card, so no bar needs an edge and no line a dash. A hue belongs to the series, not its place: below, this week is blue and last week stays in the foreground, so the eye goes to now."
       >
         <HuesDemo />
+      </Stage>
+
+      <Stage
+        title="Stacked rails"
+        tier="responsive"
+        size="lg"
+        code="StackedDemo"
+        caption="When each day is made of parts, the parts stack into one thin rail: at most 8px wide, a data hue per series, 2px of air between segments, like the Breakdown's split rail. The tallest day sets the scale. Hover or focus a day and its parts take their text tones over a faint band, and the tooltip lists each part and the total."
+      >
+        <StackedDemo />
       </Stage>
 
       <Stage

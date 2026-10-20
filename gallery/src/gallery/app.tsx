@@ -196,7 +196,21 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         </div>
         {/* The hairline sits out here so the edge fades do not mask it. */}
         <div className="border-t border-line lg:hidden">
-          <NavStrip activeId={page?.id}>{pages.map((p) => navLink(p, true))}</NavStrip>
+          <NavStrip activeId={page?.id}>
+            {/* The sidebar's groups, in a row: each group opens with its name after a hairline. */}
+            {pageRuns().map((run) =>
+              run.group ? (
+                <div key={run.group} role="group" aria-labelledby={`strip-${run.group}`} className="flex shrink-0 items-center not-first:ml-1 not-first:border-l not-first:border-line not-first:pl-3">
+                  <span id={`strip-${run.group}`} className="shrink-0 pr-1 text-caption text-fg-subtle">{run.group}</span>
+                  {run.pages.map((p) => navLink(p, true))}
+                </div>
+              ) : (
+                <div key={run.pages[0]!.id} className="flex shrink-0 items-center not-first:ml-1 not-first:border-l not-first:border-line not-first:pl-3">
+                  {run.pages.map((p) => navLink(p, true))}
+                </div>
+              ),
+            )}
+          </NavStrip>
         </div>
       </header>
 

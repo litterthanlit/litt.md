@@ -34,10 +34,16 @@
  *   motion is the hooks' job. Hover and focus add no motion beyond a color change.
  * - Accessibility: the SVG is role="img" with a summary label, and a visually hidden table lists every value.
  *   The category buttons are in a labelled group outside the image (children of an image are presentational).
+ * - Stacked (StackedBarChart, growth step): the parts of each category as one stacked rail, a hue per series. A column
+ *   is at most 8px wide, each segment has the control radius, and segments sit 2px apart, like the Breakdown's split
+ *   rail: a hue is a thread, never a block. The tallest stack sets the scale. Series take the data hues (`hue`, else
+ *   the next in the fixed order), so a Legend can drop one without repainting the others. The active column takes its
+ *   series' text tones over a faint column band; the tooltip lists each part and the total; the hidden table adds a
+ *   Total column. Up to five series. The entrance grows each column from the baseline, like the bars.
  * - Meter: a horizontal progress bar, a 4px rail at the control radius in fg 12% filled with fg, or a data hue. A target is
  *   a 2px tick in fg-subtle taller than the rail; steps split the rail into equal segments 2px apart. Static.
  */
-import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useExit, useTransition, useTravel } from "@/motion";
 
@@ -79,12 +85,15 @@ type ChartBaseProps = {
   hues?: boolean;
   /** Plays the entrance on the responsive tier when the chart mounts. Remount with a new key to replay. */
   entrance?: boolean;
+  /** Draws the chart's own legend above the plot when there are several series. Turn it off when a Legend drives the chart, so there is only one. */
+  legend?: boolean;
   /** Extra classes for the chart's box, such as a top margin. */
   className?: string;
 };
 
 export type BarChartProps = ChartBaseProps;
 export type LineChartProps = ChartBaseProps;
+export type StackedBarChartProps = Omit<ChartBaseProps, "highlight" | "hues">;
 
 /* ----------------------------------------------------------------- helpers */
 
@@ -93,6 +102,8 @@ const AXIS = 28; // room under the plot for the category labels
 const LABEL_GAP = 6; // between a value label and the plot
 const MONO = 7.2; // advance of a 12px mono character
 const MAX_BAR = 32;
+const MAX_RAIL = 8; // a stacked column: a rail, not a block
+const RAIL_GAP = 2; // air between the segments of a stacked column, the Breakdown's
 
 const mix = (percent: number) => `color-mix(in oklab, var(--fg) ${percent}%, transparent)`;
 /** Fill of each series, as a class: 100%, 55%, 30% of the foreground. */
@@ -162,9 +173,14 @@ type Geometry = {
   step: number; // show every nth category label
 };
 
-function layout(width: number, height: number, labels: string[], series: ChartSeries[], fmt: (v: number) => string): Geometry {
+/** A category's stacked total: the sum of its non-negative values. */
+const stackTotal = (series: ChartSeries[], i: number) => series.reduce((sum, s) => sum + Math.max(0, s.values[i] ?? 0), 0);
+
+function layout(width: number, height: number, labels: string[], series: ChartSeries[], fmt: (v: number) => string, stacked = false): Geometry {
   const n = labels.length;
-  const max = Math.max(0, ...series.flatMap((s) => s.values.slice(0, n)));
+  const max = stacked
+    ? Math.max(0, ...labels.map((_, i) => stackTotal(series, i)))
+    : Math.max(0, ...series.flatMap((s) => s.values.slice(0, n)));
   const ticks = niceTicks(max);
   const top = ticks[ticks.length - 1]!;
   const valueChars = Math.max(...ticks.map((t) => fmt(t).length));
@@ -212,7 +228,7 @@ function useWidth() {
 
 /* ----------------------------------------------------------------- the shared chart */
 
-type Kind = "bar" | "line";
+type Kind = "bar" | "line" | "stack";
 
 function Chart({
   kind,
@@ -227,14 +243,16 @@ function Chart({
   highlight,
   hues = false,
   entrance,
+  legend = true,
   className = "",
 }: Required<Pick<ChartBaseProps, "height" | "xTitle" | "highlight" | "entrance">> & ChartBaseProps & { kind: Kind }) {
   const fmt = formatValue ?? groupDigits;
   const n = labels.length;
+  const stacked = kind === "stack";
   const many = series.length > 1;
-  const paint = useMemo(() => paints(series, hues), [series, hues]);
+  const paint = useMemo(() => paints(series, hues || stacked), [series, hues, stacked]);
   const [boxRef, width] = useWidth();
-  const g = useMemo(() => layout(width, height, labels, series, fmt), [width, height, labels, series, fmt]);
+  const g = useMemo(() => layout(width, height, labels, series, fmt, stacked), [width, height, labels, series, fmt, stacked]);
   const value = (s: ChartSeries, i: number) => s.values[i] ?? 0;
   const unitFor = (v: number) => (Array.isArray(unit) ? (v === 1 ? unit[0] : unit[1]) : unit);
   const withUnit = (v: number) => fmt(v) + (unit ? ` ${unitFor(v)}` : "");
@@ -291,7 +309,9 @@ function Chart({
   };
 
   const itemLabel = (i: number) =>
-    `${labels[i]}: ` + (many ? series.map((s) => `${s.name} ${withUnit(value(s, i))}`).join(", ") : withUnit(value(series[0]!, i)));
+    `${labels[i]}: ` +
+    (many ? series.map((s) => `${s.name} ${withUnit(value(s, i))}`).join(", ") : withUnit(value(series[0]!, i))) +
+    (stacked && many ? `, total ${withUnit(stackTotal(series, i))}` : "");
 
   const text = useMemo(() => {
     if (summary) return summary;
@@ -299,11 +319,15 @@ function Chart({
       const v = s.values.slice(0, n);
       return `from ${fmt(v[0] ?? 0)} to ${fmt(v[n - 1] ?? 0)}, peak ${fmt(Math.max(0, ...v))}`;
     };
+    if (stacked) {
+      const totals = labels.map((_, i) => stackTotal(series, i));
+      return `${label}: total from ${fmt(totals[0] ?? 0)} to ${fmt(totals[n - 1] ?? 0)}, peak ${fmt(Math.max(0, ...totals))}; ${series.map((s) => s.name).join(", ")}`;
+    }
     return `${label}: ` + (many ? series.map((s) => `${s.name} ${part(s)}`).join("; ") : part(series[0]!));
-  }, [summary, label, series, n, many, fmt]);
+  }, [summary, label, labels, series, n, many, fmt, stacked]);
 
   /* The tooltip sits above the tallest mark of the active column. */
-  const tipTop = active === null ? 0 : Math.min(...series.map((s) => g.y(value(s, active))));
+  const tipTop = active === null ? 0 : stacked ? g.y(stackTotal(series, active)) : Math.min(...series.map((s) => g.y(value(s, active))));
   const tipCx = active === null ? 0 : g.cx(active);
 
   const enter = useTransition("responsive");
@@ -311,7 +335,7 @@ function Chart({
 
   return (
     <div className={"w-full " + className}>
-      {many && <Legend series={series} kind={kind} paint={paint} />}
+      {many && legend && <Legend series={series} kind={kind} paint={paint} />}
       <div ref={boxRef} className="relative w-full" style={{ height }}>
         {width > 0 && !empty && (
           <>
@@ -326,7 +350,9 @@ function Chart({
                   className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]"
                 />
               )}
-              {kind === "bar" ? (
+              {kind === "stack" ? (
+                <Rails g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
+              ) : kind === "bar" ? (
                 <Bars g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
               ) : (
                 <Lines g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
@@ -383,7 +409,13 @@ function Chart({
             <AnimatePresence>
               {active !== null && (
                 <Tip key="tip" cx={tipCx} markTop={tipTop} height={height} width={width}>
-                  <TipContent label={labels[active]!} series={series} many={many} value={(s) => withUnit(value(s, active))} />
+                  <TipContent
+                    label={labels[active]!}
+                    series={series}
+                    many={many}
+                    value={(s) => withUnit(value(s, active))}
+                    total={stacked && many ? withUnit(stackTotal(series, active)) : undefined}
+                  />
                 </Tip>
               )}
             </AnimatePresence>
@@ -404,6 +436,7 @@ function Chart({
                   {unit ? ` (${unitFor(2)})` : ""}
                 </th>
               ))}
+              {stacked && many && <th scope="col">Total</th>}
             </tr>
           </thead>
           <tbody>
@@ -413,6 +446,7 @@ function Chart({
                 {series.map((s) => (
                   <td key={s.name}>{fmt(value(s, i))}</td>
                 ))}
+                {stacked && many && <td>{fmt(stackTotal(series, i))}</td>}
               </tr>
             ))}
           </tbody>
@@ -529,6 +563,71 @@ function Bars({ g, series, paint, n, emphasis, ring, entrance, enter }: MarksPro
   );
 }
 
+/* ----------------------------------------------------------------- stacked rails */
+
+/**
+ * One stacked rail per category, the first series at the bottom. Each segment keeps the control radius (set in CSS,
+ * so the Customize radius and the registry's renamed token both reach it) and 2px of air from the next. A segment too
+ * short to draw keeps 2px, taken from the air, so a tiny part still shows; a part of zero draws nothing.
+ */
+function Rails({ g, series, paint, n, emphasis, ring, entrance, enter }: MarksProps) {
+  const bw = Math.max(2, Math.min(MAX_RAIL, Math.floor(g.slotW * 0.5)));
+  const baseline = g.y(0);
+  const scale = g.plotH / Math.max(1, g.ticks[g.ticks.length - 1]!);
+  return (
+    <g aria-hidden="true">
+      {Array.from({ length: n }, (_, i) => {
+        const x = Math.round(g.left + i * g.slotW + (g.slotW - bw) / 2);
+        let y = baseline;
+        const parts = series
+          .map((s, j) => ({ j, v: Math.max(0, s.values[i] ?? 0) }))
+          .filter((p) => p.v > 0)
+          .map((p, k, all) => {
+            const h = Math.max(2, p.v * scale - (k < all.length - 1 ? RAIL_GAP : 0));
+            const top = y - h;
+            y = top - (k < all.length - 1 ? RAIL_GAP : 0);
+            return { ...p, top, h };
+          });
+        if (!parts.length) return null;
+        return (
+          <motion.g
+            key={i}
+            initial={entrance ? { scaleY: 0 } : false}
+            animate={{ scaleY: 1, transition: enter }}
+            style={{ originX: 0.5, originY: 1 }}
+          >
+            {parts.map((p) => {
+              const fill = emphasis === i ? paint[p.j]!.strong : paint[p.j]!.rest;
+              return (
+                <rect
+                  key={series[p.j]!.name}
+                  x={x}
+                  y={p.top}
+                  width={bw}
+                  height={p.h}
+                  style={{ rx: `min(var(--radius-control), ${bw / 2}px)` } as CSSProperties}
+                  className={"transition-[fill] duration-(--dur-instant) ease-litt " + fill}
+                />
+              );
+            })}
+          </motion.g>
+        );
+      })}
+      {ring !== null && (
+        <rect
+          x={Math.round(g.left + ring * g.slotW + (g.slotW - bw) / 2) - 4}
+          y={g.y(stackTotal(series, ring)) - 4}
+          width={bw + 8}
+          height={baseline - g.y(stackTotal(series, ring)) + 8}
+          fill="none"
+          strokeWidth={2}
+          className="stroke-focus"
+        />
+      )}
+    </g>
+  );
+}
+
 /* ----------------------------------------------------------------- lines */
 
 function Lines({ g, series, paint, n, emphasis, ring, entrance, enter }: MarksProps) {
@@ -565,7 +664,9 @@ function Lines({ g, series, paint, n, emphasis, ring, entrance, enter }: MarksPr
 function Swatch({ kind, paint }: { kind: Kind; paint: Paint }) {
   return (
     <svg width={16} height={8} aria-hidden="true" className="shrink-0" focusable="false">
-      {kind === "bar" ? (
+      {kind === "stack" ? (
+        <rect x={2} y={2} width={12} height={4} style={{ rx: "min(var(--radius-control), 2px)" } as CSSProperties} className={paint.rest} />
+      ) : kind === "bar" ? (
         <rect x={4} y={0} width={8} height={8} strokeWidth={1} className={paint.rest + (paint.edge ? " " + EDGE : " stroke-transparent")} />
       ) : (
         <line x1={0} x2={16} y1={4} y2={4} stroke={paint.stroke} strokeWidth={2} strokeDasharray={paint.dash ? "4 3" : undefined} />
@@ -623,11 +724,14 @@ function TipContent({
   series,
   many,
   value,
+  total,
 }: {
   label: string;
   series: ChartSeries[];
   many: boolean;
   value: (s: ChartSeries) => string;
+  /** A stacked column's total, under its parts. */
+  total?: string;
 }) {
   if (!many) {
     return (
@@ -646,6 +750,12 @@ function TipContent({
           <span className="font-mono text-caption font-normal tabular-nums">{value(s)}</span>
         </div>
       ))}
+      {total !== undefined && (
+        <div className="flex items-center justify-between gap-4 border-t border-line pt-1">
+          <span className="text-fg-muted">Total</span>
+          <span className="font-mono text-caption font-normal tabular-nums">{total}</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -660,6 +770,11 @@ export function BarChart({ height = 240, xTitle = "Label", highlight = "last", e
 /** A 2px line over the same grid. One series is fg with a marker on the current point; up to three step down, the third dashed, or up to five in data hues. */
 export function LineChart({ height = 240, xTitle = "Label", highlight = "last", entrance = true, ...rest }: LineChartProps) {
   return <Chart kind="line" height={height} xTitle={xTitle} highlight={highlight} entrance={entrance} {...rest} />;
+}
+
+/** The parts of each category as one thin stacked rail, a data hue per series, with the total in the tooltip. Up to five series. */
+export function StackedBarChart({ height = 240, xTitle = "Label", entrance = true, ...rest }: StackedBarChartProps) {
+  return <Chart kind="stack" height={height} xTitle={xTitle} highlight="none" hues entrance={entrance} {...rest} />;
 }
 
 /* ----------------------------------------------------------------- Meter */

@@ -43,8 +43,8 @@
       "hash": "d53924bb78d36f31"
     },
     "chart": {
-      "version": "2026.10.19",
-      "hash": "8e04a7380cd8e28f"
+      "version": "2026.10.20",
+      "hash": "1d0fb9c68cbc42db"
     },
     "checkbox": {
       "version": "2026.10.19",
@@ -53,6 +53,10 @@
     "code-block": {
       "version": "2026.10.19",
       "hash": "137fc3cbe5d88eda"
+    },
+    "cohort-grid": {
+      "version": "2026.10.20",
+      "hash": "03fc3f36ed7d77a9"
     },
     "combobox": {
       "version": "2026.10.19",
@@ -86,6 +90,10 @@
       "version": "2026.10.20",
       "hash": "dba03b98d2e0f865"
     },
+    "funnel": {
+      "version": "2026.10.20",
+      "hash": "67247e72e33b0301"
+    },
     "gauge": {
       "version": "2026.10.19",
       "hash": "dc81f3ff35c7d18b"
@@ -113,6 +121,10 @@
     "kbd": {
       "version": "2026.10.15",
       "hash": "a847c9a52490c6e1"
+    },
+    "legend": {
+      "version": "2026.10.20",
+      "hash": "1e874a4348b61265"
     },
     "list": {
       "version": "2026.10.19",

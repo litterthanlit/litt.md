@@ -4,12 +4,16 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-20 · Geist, and md form buttons
+## 2026-10-20 · Geist, md form buttons and growth
 
-The face of taste profile v0.13: Geist replaces Inter, as on Nick's portfolio. Sizes, weights and tracking are unchanged. And v0.14's P10: lg is for hero CTAs only, so a page form's submit and Cancel are md, like its fields.
+The face of taste profile v0.13: Geist replaces Inter, as on Nick's portfolio. Sizes, weights and tracking are unchanged. And v0.14's P10: lg is for hero CTAs only, so a page form's submit and Cancel are md, like its fields. And the growth step: three more data views in the rail idiom, a legend that filters, and stacked rails in the chart.
 
 - **changed** `litt`: Geist replaces Inter in `--litt-font-sans`, falling back to Helvetica Neue, Helvetica and Arial. The stack names both "Geist" (Google Fonts) and "Geist Sans" (Fontsource).
 - **changed** `base-styles`: loads Geist at 400, 500 and 600 and Geist Mono at 400 (`@fontsource/geist-sans` replaces `@fontsource/inter`).
+- **added** `funnel`: how many went on at each step, as rows: a thin rail per step against the first, in one data hue, with the step-to-step conversion in words.
+- **added** `cohort-grid`: retention by signup week as a real table, a dot in one hue's four steps and the number in every cell, the cohort column held while the periods scroll.
+- **added** `legend`: toggles which series a chart shows, each item a hued rail swatch and a name, pressed while its series shows. `legendHues` keeps a series' color when another is hidden.
+- **changed** `chart`: `StackedBarChart`, each category's parts as one thin stacked rail with a hue per series and the total in the tooltip; and `legend={false}` turns off a chart's own legend when a Legend drives it. Nothing changes for an existing chart.
 - **changed** `button`: the size docs say lg is for hero actions only, md in a page form and a dialog. Nothing renders differently; pass `size="md"` (or leave size out) on a page form's buttons.
 - **changed** `form`: FormActions' docs ask for md buttons, submit and Cancel. Nothing renders differently; drop `size="lg"` from the buttons you pass it.
 

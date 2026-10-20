@@ -879,8 +879,8 @@ const COPY = {
   },
   chart: {
     title: "Chart",
-    description: "Bar and line charts in plain SVG, and a meter. The marks are never the accent: the quiet foreground by default, one series at 55% with the current mark full or up to three stepping down, or up to five data hues when color tells the series apart. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
-    docs: "Import BarChart, LineChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }, with an optional hue per series or hues on the chart. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
+    description: "Bar, line and stacked charts in plain SVG, and a meter. The marks are never the accent: the quiet foreground by default, one series at 55% with the current mark full or up to three stepping down, or up to five data hues when color tells the series apart. The stacked chart draws each category's parts as one thin rail, a hue per series, with the total in the tooltip. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+    docs: "Import BarChart, LineChart, StackedBarChart and Meter from components/litt/chart. Pass a label, the category labels and series of { name, values }, with an optional hue per series or hues on the chart. The chart measures its container, so give it a width. Every chart ships a hidden table and a summary for screen readers.",
   },
   "app-shell": {
     title: "App shell",
@@ -949,6 +949,22 @@ const COPY = {
     title: "Breakdown",
     description: "One whole split into its parts: a thin split rail with a segment per part in the data hues, then a row per part with its own 4px rail, a label and a mono reading, or a small legend for a tile. Storage by file type, credits by feature.",
     docs: "Import Breakdown from components/litt/breakdown. Pass a label, the parts as { label, value } largest first, and the total when there is free space. Past five parts the rest fold into Other. Pin a hue on a part to keep a kind's color across a page.",
+  },
+  /* The growth step: more data views in the rail idiom, and a legend that filters. */
+  funnel: {
+    title: "Funnel",
+    description: "How many went on at each step, as rows rather than a trapezoid: a thin 4px rail per step filled to its share of the first, in one data hue, with the label and a mono reading beside it, and between two steps a quiet line that says in words how many went on (\"38% continued\"). The header ends with the overall conversion. Static. Visited, signed up, activated, paid.",
+    docs: "Import Funnel from components/litt/funnel. Pass a label and the steps as { label, value } in the order people go through them. Every rail is measured against the first step. hue picks the one data hue (blue by default), unit or formatValue writes the numbers, overallText replaces \"4.1% overall\", and formatStep(value, previous) rewrites the line between steps.",
+  },
+  "cohort-grid": {
+    title: "Cohort grid",
+    description: "Retention by signup week as a real table: a row per cohort, a column per period since signup, and in every cell the number in mono with a dot before it in one data hue's four steps. Younger cohorts have fewer periods and their empty cells draw nothing. An optional row sums up every cohort, weighted by size. The cohort column stays put while the periods scroll sideways inside the grid's own box. Static, with a legend from less to more.",
+    docs: "Import CohortGrid from components/litt/cohort-grid. Pass a label and cohorts as { label, size, values }, oldest first. Each value is the share still active (0 to 100), or a count with valueType=\"count\", and a missing or null value is a period the cohort has not reached. Set periodLabel=\"Month\" or pass periods for other headers. Add average for an All cohorts row and pick a hue.",
+  },
+  legend: {
+    title: "Legend",
+    description: "Toggles which series a chart shows: a wrapping row of buttons, each a 12 by 4px hued rail swatch, the name and an optional mono reading, pressed while its series shows. Hidden turns the swatch to the grey track and the name to the subtle ink. The last shown series cannot be hidden.",
+    docs: "Import Legend and legendHues from components/litt/legend. Pass a label and the items as { name, hue?, value? } in the chart's order, five at most. Control it with hidden and onHiddenChange, or start it with defaultHidden. Pass the chart only the shown series, each with hue: legendHues(items)[name], so a series keeps its color when another is hidden, and turn the chart's own legend off with legend={false}. Alt with a click or Enter shows only that series.",
   },
   sparkline: {
     title: "Sparkline",
