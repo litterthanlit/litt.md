@@ -297,6 +297,13 @@ const RECIPES = {
           <Calendar label="Studio schedule" defaultValue="2026-10-17" isDisabled={(d) => d === "2026-10-20"} />
         </form>`,
   },
+  "color-picker": {
+    needs: ["ColorPicker", "ColorPanel"],
+    jsx: `<form className="grid w-full max-w-sm gap-6" data-testid="litt-color-picker" aria-label="Color picker smoke">
+          <ColorPicker label="Brand color" name="brand" defaultValue="#2f5bd3" swatches={[{ label: "Nord teal", value: "#1d5c5a" }, { label: "Clay", value: "#c2643f" }]} />
+          <ColorPanel label="Cover color" defaultValue="#1d5c5a" />
+        </form>`,
+  },
   stat: {
     needs: ["Stat", "StatGroup"],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" trend={<span data-testid="stat-trend">Last 14 days</span>} /></StatGroup></div>`,
@@ -1572,6 +1579,31 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const sent = await page.locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
           if (sent.join("|") !== "99|100") throw new Error(`the form sent window=${sent.join(",")}, expected 99 and 100 under one name`);
           return `${dragged}, sent ${sent.join(" and ")}`;
+        });
+      }
+      if (has("color-picker")) {
+        await attempt("color picker opens on the area, the keys and the hex change it, the form sends the hex", async () => {
+          const field = page.getByRole("button", { name: /^Brand color/ });
+          const before = (await field.textContent())?.trim() ?? "";
+          if (!before.startsWith("#2f5bd3")) throw new Error(`the field reads "${before}"`);
+          await field.click();
+          const dialog = page.getByRole("dialog", { name: "Brand color" });
+          await dialog.waitFor({ state: "visible", timeout: 5000 });
+          await page.waitForTimeout(500);
+          await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-color-picker.png`) });
+          const first = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (first !== "Saturation") throw new Error(`focus opened on "${first}", not the area`);
+          await page.keyboard.press("Home");
+          const grey = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-color-picker]")).get("brand"));
+          if (grey !== "#d3d3d3") throw new Error(`Home on the area made ${grey}, not #d3d3d3`);
+          const hex = dialog.getByRole("textbox", { name: "Hex" });
+          await hex.fill("c2643f");
+          await hex.press("Enter");
+          await page.keyboard.press("Escape");
+          await dialog.waitFor({ state: "hidden", timeout: 4000 });
+          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-color-picker]")).get("brand"));
+          if (sent !== "#c2643f") throw new Error(`the form sends brand=${sent}`);
+          return `${before.slice(0, 7)} to ${sent}`;
         });
       }
       if (has("date-picker")) {

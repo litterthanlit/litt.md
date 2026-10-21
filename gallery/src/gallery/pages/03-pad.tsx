@@ -44,7 +44,7 @@ const [voice, setVoice] = useState<PadValue>({ x: 10, y: 55 });
     "One value on a range. Use Slider.",
     "The exact numbers matter, such as a position in pixels. Use two Inputs.",
     "A few named choices, such as Casual or Formal. Use Segmented.",
-    "A color, a point on a map or any other canvas with its own meaning. Build the control for that thing.",
+    "A color. Use Color picker. A point on a map or any other canvas with its own meaning needs a control for that thing.",
     "Three or more values. Use a Slider for each.",
   ],
   keyboard: [
