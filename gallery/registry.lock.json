@@ -58,6 +58,10 @@
       "version": "2026.10.20",
       "hash": "03fc3f36ed7d77a9"
     },
+    "color-picker": {
+      "version": "2026.10.21",
+      "hash": "b1bfccd0c956d453"
+    },
     "combobox": {
       "version": "2026.10.19",
       "hash": "58d821cd8cb895ba"

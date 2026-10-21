@@ -1014,6 +1014,11 @@ const COPY = {
     description: "Type to find one value, or several, in a long list: a client, a framework, a teammate. The Input's field with the Menu's glass list under it: filtered as you type, ignoring case and accents, with the first match lit, one gliding highlight, a check on each pick and optional group labels. With multiple the picks sit in the field as removable tokens. Solid inside a dialog, and anchored under the field on a phone.",
     docs: "Import Combobox from components/litt/combobox. Give it a label and options as { value, label, disabled?, group? } or groups of { label, options }, and hold the value in state with value and onValueChange: a string (\"\" for none), or an array with multiple. Add hint, error and placeholder as on a field, and name to post the value with a form.",
   },
+  "color-picker": {
+    title: "Color picker",
+    description: "One color as a hex string: a saturation and brightness area, a hue rail, the hex in mono, an eyedropper where the browser has one, and optional swatches as radios. A field in the Select trigger's look opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once, and every input says the color in words.",
+    docs: "Import ColorPicker and ColorPanel from components/litt/color-picker, plus parseHex, describeColor, getContrastInk, hexToHsv and hsvToHex. Values are six-digit lowercase hex strings with the hash. ColorPicker needs a label; hold the value in state with value and onValueChange (null for none), pass name for a form, and swatches as { label, value }. Save with onValueCommit, which fires on release. Use getContrastInk for text drawn on the picked color.",
+  },
   "date-picker": {
     title: "Date picker",
     description: "A day or a range from a month calendar, as YYYY-MM-DD strings. A field in the Select trigger's look opens the calendar in a popover, a bottom sheet on a phone, with optional presets. Day numbers in mono, the picked day filled with the foreground, today ringed, six weeks always, the full date-grid keyboard, and months that slide in from the side they come from.",
