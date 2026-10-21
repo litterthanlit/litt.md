@@ -16,7 +16,7 @@
  * again the moment the page is left. Components never write durations or
  * springs. They ask these hooks, so they follow the dial and reduced motion.
  */
-import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { MotionConfig, useReducedMotion, type Transition } from "motion/react";
 import { toCss, type Spring } from "./spring";
 import { readLocked, surfaceRadius, type Dial, type Locked } from "./tokens";
@@ -258,6 +258,38 @@ export function useMotionDial(): Ctx {
   const ctx = useContext(DialContext);
   const standalone = useStandaloneDial(ctx === null);
   return ctx ?? standalone!;
+}
+
+/* What tokens.css's reduced-motion block sets, for CSS transitions inside StillMotion. */
+const STILL_TOKENS = {
+  "--dur-instant": "0ms",
+  "--dur-responsive": "0ms",
+  "--dur-expressive": "0ms",
+  "--dur-exit-responsive": "0ms",
+  "--dur-exit-expressive": "0ms",
+  "--stagger": "0ms",
+  "--travel": "0px",
+  "--press-scale": "1",
+} as CSSProperties;
+
+/**
+ * Holds everything inside it still, as reduced motion does: the hooks return 0 (no duration, travel or stagger),
+ * Motion skips its animations, and the CSS transitions read zeroed tier tokens from a display: contents wrapper,
+ * which takes no part in layout. For a thumbnail or a preview of live components, where many entrances at once would
+ * break the one expressive moment per view. Outside it, nothing changes.
+ */
+export function StillMotion({ children }: { children: ReactNode }) {
+  const ctx = useMotionDial();
+  const still = useMemo(() => ({ ...ctx, reduced: true }), [ctx]);
+  return (
+    <DialContext.Provider value={still}>
+      <MotionConfig reducedMotion="always">
+        <div className="contents" style={STILL_TOKENS}>
+          {children}
+        </div>
+      </MotionConfig>
+    </DialContext.Provider>
+  );
 }
 
 /** The enter transition for a tier. Pass it to a motion component's `transition`. */

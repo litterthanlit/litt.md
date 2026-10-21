@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   lede: "On or off, in a pill that slides.",
   order: 3.3,
   group: "Controls",
+  verbs: ["press"],
   summary:
     "An on or off setting. A pill track with a round thumb, filled with the foreground color when on and never the accent. The thumb slides and the fills fade on the instant tier, and the box never moves. The label sits beside it, or the switch sits at the end of a settings row.",
   tiers: ["instant"],

@@ -16,6 +16,7 @@ export const meta: PageMeta = {
   lede: "Fields that make a page.",
   order: 15.5,
   group: "Layout",
+  verbs: ["type"],
   summary:
     "How the fields make a page: one left-aligned column, sections on a settings page, and an error summary that takes focus when a submit fails. Fields and link colors answer on the instant tier, and the saved toast is the view's one expressive moment.",
   tiers: ["instant", "expressive"],

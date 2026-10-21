@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   lede: "A figure whose changed digits roll to the new value.",
   order: 17.25,
   group: "Data",
+  verbs: ["watch"],
   summary:
     "A number that updates in place, such as a Stat's value. Only the digits that change move: each leaves half of the travel token and fades as the new one comes in from the other side, on the responsive tier. Up from below when the value rises, down from above when it falls. The first render and reduced motion just show the number.",
   tiers: ["responsive"],

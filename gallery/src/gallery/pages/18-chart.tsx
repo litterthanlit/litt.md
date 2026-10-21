@@ -6,6 +6,7 @@ export const meta: PageMeta = {
   title: "Chart",
   lede: "Bars, lines and a meter in plain SVG.",
   order: 17.3, group: "Data",
+  verbs: ["hover"],
   summary:
     "Bar and line charts in plain SVG, and a meter. Marks are never the accent: by default the foreground, one series at 55% with the current mark full, or up to three stepping down; or the data hues, when color says which series is which. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
   tiers: ["instant", "responsive"],

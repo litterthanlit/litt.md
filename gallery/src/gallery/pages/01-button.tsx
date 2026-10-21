@@ -8,6 +8,7 @@ export const meta: PageMeta = {
   title: "Button",
   lede: "The action, answered without moving its box.",
   order: 1, group: "Controls",
+  verbs: ["press"],
   summary: "Roomy and slightly rounded, with the label at the title weight. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
   tiers: ["instant"],
 };

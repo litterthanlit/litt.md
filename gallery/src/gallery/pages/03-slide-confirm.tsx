@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "A deliberate yes to something that cannot be undone.",
   order: 3.95,
   group: "Controls",
+  verbs: ["drag", "press"],
   summary:
     "A track and a thumb to slide to the end, for an action that cannot be undone, such as deleting a project on a phone. The thumb follows the finger one to one; let go early and it springs back on the responsive tier, reach the end and it confirms. The thumb is also a button, so Enter, Space or a screen reader confirms too.",
   tiers: ["responsive"],
