@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { ArrowUpRightIcon, CopyIcon, MoreIcon, PlusIcon, SettingsIcon, TrashIcon } from "@/components/icons";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "button",
@@ -125,6 +125,8 @@ export default function ButtonPage() {
       <Stage title="Icons" tier="instant" caption="16px icons at 1.5px stroke, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo">
         <IconsDemo />
       </Stage>
+
+      <TryIt of="Button" component={Button} props={{ children: "Deploy site" }} controls={["variant", "size", "loading", "block", { name: "disabled", type: "boolean" }]} />
     </Page>
   );
 }

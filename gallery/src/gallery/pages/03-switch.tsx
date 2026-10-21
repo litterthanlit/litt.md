@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { Switch } from "@/components/switch";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "switch",
@@ -168,6 +168,8 @@ export default function SwitchPage() {
       >
         <DisabledDemo />
       </Stage>
+
+      <TryIt of="Switch" component={Switch} props={{ label: "Email me when a build finishes", description: "One email per build, never a digest." }} />
     </Page>
   );
 }

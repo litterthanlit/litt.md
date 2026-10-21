@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { Checkbox, CheckboxGroup, Radio, RadioGroup } from "@/components/checkbox";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "checkbox",
@@ -224,6 +224,8 @@ export default function CheckboxPage() {
       >
         <AppearanceDemo />
       </Stage>
+
+      <TryIt of="Checkbox" component={Checkbox} props={{ label: "Send the invoice to Marlow Labs", description: "A PDF goes to billing@marlowlabs.com." }} controls={["label", "description", "appearance", "indeterminate", "invalid", { name: "disabled", type: "boolean" }]} />
     </Page>
   );
 }

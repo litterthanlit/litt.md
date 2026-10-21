@@ -150,6 +150,7 @@ export default function MenuPage() {
 - **Props are generated, not written.** `scripts/gen-docs.mjs` reads your component with the TypeScript checker: each prop's type, whether it is required, the default from the destructuring in the signature, and the JSDoc above it. So give every prop a one-line JSDoc. `children` and `ref` only appear when they have one.
 - **Code views are your demos.** `code="Name"` shows that function from the page file, with the imports and page helpers it uses. Write demos someone could paste.
 - Only claim what the code does. Check every keyboard and accessibility line against the component and its Radix part.
+- **Try it** (`<TryIt>` from `../kit`, after the last stage) puts the component beside controls for its props and shows the JSX for what is set. The controls come from the generated prop types: a boolean is a Switch, a union of string literals a Segmented control or a Select, and a string (or a ReactNode you start as text) an Input. Name the export and pass the component and the props it always needs: `<TryIt of="Tag" component={Tag} props={{ children: "In review" }} />`. Add `controls` to choose and order the props, or to offer a DOM attribute such as `{ name: "disabled", type: "boolean" }`, and `derive` for a prop that follows another, such as a Gauge's valueText.
 
 ## It ships in the registry
 

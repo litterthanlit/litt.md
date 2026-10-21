@@ -49,3 +49,8 @@ export function componentDoc(stem: string): ComponentDoc {
   }
   return doc;
 }
+
+/** Every documented export across the components, in file order. */
+export function allExports(): ExportDoc[] {
+  return Object.values(docs).flatMap((d) => d.exports);
+}

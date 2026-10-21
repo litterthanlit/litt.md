@@ -181,6 +181,22 @@ type StageProps = {
   children: ReactNode;
 };
 
+/* Try it reads the generated docs data, so it loads with the docs layer, not with every page. */
+const LazyTryIt = lazy(() => import("./docs/try-it").then((m) => ({ default: m.TryIt })));
+
+/**
+ * The component beside controls for its props, and the JSX for what you set (docs/try-it.tsx). Put it after a
+ * page's stages. The controls come from the prop types in the generated docs, so name the export (`of`), pass the
+ * component, and pass the props it always needs (`props`), such as its children or a label.
+ */
+export function TryIt(props: import("./docs/try-it").TryItProps) {
+  return (
+    <Suspense fallback={<div aria-hidden="true" className="min-h-80" />}>
+      <LazyTryIt {...props} />
+    </Suspense>
+  );
+}
+
 const loadStageCode = () => import("./docs/stage-code");
 const StageCode = lazy(loadStageCode);
 

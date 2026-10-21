@@ -1,5 +1,5 @@
 import { Tag, type TagHue, type TagStatus } from "@/components/tag";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "tag",
@@ -191,6 +191,8 @@ export default function TagPage() {
       >
         <DeploysDemo />
       </Stage>
+
+      <TryIt of="Tag" component={Tag} props={{ children: "In review" }} />
     </Page>
   );
 }

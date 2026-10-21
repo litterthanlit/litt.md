@@ -1,7 +1,7 @@
 import { useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/button";
 import { Input, TextField, Textarea } from "@/components/input";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "input",
@@ -226,6 +226,8 @@ export default function InputPage() {
       >
         <BriefDemo />
       </Stage>
+
+      <TryIt of="TextField" component={TextField} props={{ label: "Site name", help: "Shown in the browser tab.", error: "", placeholder: "Atelier Nord" }} controls={["label", "help", "error", "size", "mono", { name: "placeholder", type: "text" }, { name: "disabled", type: "boolean" }]} />
     </Page>
   );
 }

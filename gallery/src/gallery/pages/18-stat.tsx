@@ -1,6 +1,6 @@
 import { Sparkline } from "@/components/sparkline";
 import { Stat, StatGroup } from "@/components/stat";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "stat",
@@ -181,6 +181,8 @@ export default function StatPage() {
       >
         <NarrowDemo />
       </Stage>
+
+      <TryIt of="Stat" component={Stat} props={{ label: "Median build", value: "41", unit: "s", delta: "Down 6 s on last week" }} />
     </Page>
   );
 }

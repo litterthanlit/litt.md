@@ -1,5 +1,5 @@
 import { Avatar, AvatarGroup, type AvatarHue } from "@/components/avatar";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "avatar",
@@ -235,6 +235,8 @@ export default function AvatarPage() {
       >
         <PhotosDemo />
       </Stage>
+
+      <TryIt of="Avatar" component={Avatar} props={{ name: "Mira Halden" }} controls={["name", "size", "hue", "decorative"]} />
     </Page>
   );
 }
