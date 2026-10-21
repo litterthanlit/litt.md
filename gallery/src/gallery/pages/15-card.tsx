@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   title: "Card",
   lede: "A raised surface for one thing that links.",
   order: 15, group: "Layout",
+  verbs: ["press"],
   summary:
     "A raised surface for one independent object that links somewhere. A linked card is one real link stretched over the card; hover moves its fill one step, and nothing lifts, grows or scales.",
   tiers: ["instant"],

@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   lede: "One value from a short list.",
   order: 2.5,
   group: "Controls",
+  verbs: ["select", "open"],
   summary:
     "One value from a short list. The trigger is the Input's field, and the list is the Menu's glass panel: 44px rows, one gliding highlight and a check on the current option. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
   tiers: ["instant", "responsive"],

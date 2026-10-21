@@ -29,6 +29,7 @@ export const meta: PageMeta = {
   title: "Menu",
   lede: "A glass dropdown with one gliding highlight.",
   order: 10, group: "Overlays",
+  verbs: ["open", "select"],
   summary:
     "A glass dropdown with one highlight that glides from row to row. It grows from its trigger and travels from the side it really opens on. On a phone a submenu replaces the list in the same panel.",
   tiers: ["instant", "responsive"],

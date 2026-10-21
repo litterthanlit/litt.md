@@ -16,6 +16,7 @@ export const meta: PageMeta = {
   lede: "Twelve weeks of growth, drawn in rails.",
   order: 18.75,
   group: "Data",
+  verbs: ["hover", "press"],
   summary:
     "A template store's last twelve weeks, drawn in rails: sign-ups by source as thin stacked columns you can filter by source and by week, the funnel from visit to paid, and retention by signup week. Each source keeps one hue, everything else stays in the foreground, and only the chart's entrance moves.",
   tiers: ["instant", "responsive"],

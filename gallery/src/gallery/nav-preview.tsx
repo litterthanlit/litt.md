@@ -3,8 +3,8 @@
  * demo floats beside the sidebar, live and in miniature, so you can see a component
  * before you open it.
  *
- * - The demo is the page itself in preview mode (PreviewContext in kit.tsx): its first
- *   stage's demo, without the title, captions or docs. No page writes anything for it.
+ * - The demo is the page's Miniature (miniature.tsx): its first stage's demo, live and
+ *   scaled to the panel. No page writes anything for it.
  * - It is a picture, not a second copy of the page: aria-hidden and inert, so nothing in
  *   it takes focus or a click, and the link stays the one thing to act on.
  * - Opens after 300ms of hover intent (an interaction delay, like the tooltip's), then
@@ -14,17 +14,16 @@
  * - Surface: solid surface-1 at the surface radius with --shadow-float (P4). Not glass:
  *   a demo inside it can carry glass of its own.
  */
-import { Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { useExit, useTransition, useTravel } from "@/motion";
 import { pages, type PageEntry } from "./registry";
-import { PreviewContext } from "./kit";
+import { Miniature } from "./miniature";
 
 /* The panel, and the stage the demo is laid out on before it is scaled to fit. */
 const W = 480;
 const H = 304;
-const STAGE = 640;
 const INSET = 24;
 const GAP = 24;
 const HEADER = 64;
@@ -115,45 +114,7 @@ function Panel({ shown }: { shown: Shown }) {
       animate={{ opacity: 1, x: shown.x, y: shown.y, transition: enter }}
       exit={{ opacity: 0, transition: exit }}
     >
-      <Miniature key={shown.page.id} page={shown.page} />
+      <Miniature key={shown.page.id} page={shown.page} width={W} height={H} inset={INSET} />
     </motion.div>
-  );
-}
-
-/**
- * The page's first demo on a stage as wide as a real one, scaled to the panel's width.
- * A short demo sits in the middle; a tall one (a dashboard, a long list) shows its top
- * and runs off the bottom edge, like a thumbnail, rather than shrinking out of reach.
- */
-function Miniature({ page }: { page: PageEntry }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [fit, setFit] = useState({ scale: 0, x: 0, y: 0 });
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const measure = () => {
-      const scale = Math.min(1, (W - 2 * INSET) / el.offsetWidth);
-      const h = el.offsetHeight * scale;
-      setFit({ scale, x: (W - el.offsetWidth * scale) / 2, y: h <= H ? (H - h) / 2 : 0 });
-    };
-    measure();
-    const watch = new ResizeObserver(measure);
-    watch.observe(el);
-    return () => watch.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className="absolute top-0 left-0 grid min-h-80 origin-top-left place-items-center p-8"
-      style={{ width: STAGE, transform: `translate(${fit.x}px, ${fit.y}px) scale(${fit.scale})` }}
-    >
-      <PreviewContext.Provider value={true}>
-        <Suspense fallback={null}>
-          <page.Component />
-        </Suspense>
-      </PreviewContext.Provider>
-    </div>
   );
 }

@@ -13,6 +13,7 @@ export const meta: PageMeta = {
   title: "Dashboard",
   lede: "A deploy dashboard, built from the parts.",
   order: 18.6, group: "Data",
+  verbs: ["hover"],
   summary:
     "The studio's deploy dashboard, built from the parts: an app shell with a full-height sidebar, four number tiles, a chart of deploys per day, and a table of recent deploys with its pagination. On a phone the sidebar becomes the bottom sheet. One accent fill in the view would be a primary button, and this view has none.",
   tiers: ["instant", "responsive"],

@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   lede: "A note in the page flow.",
   order: 15.2,
   group: "Layout",
+  verbs: ["press"],
   summary:
     "An inline note in the page flow: a tip, a heads-up or a result to act on. A raised surface with an icon, a title, a line of detail and an optional action. Only the icon takes the status color, and a hidden word says the same thing. It measures its own width, and nothing about it moves.",
   tiers: [],

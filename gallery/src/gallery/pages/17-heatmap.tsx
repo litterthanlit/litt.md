@@ -7,6 +7,7 @@ export const meta: PageMeta = {
   lede: "How much, in four steps of one hue.",
   order: 17.7,
   group: "Data",
+  verbs: ["hover"],
   summary:
     "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, mono labels, a tooltip on hover, touch and focus, and a legend from less to more.",
   tiers: ["instant", "responsive"],

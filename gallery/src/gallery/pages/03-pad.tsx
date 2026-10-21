@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "Two values set at once on one surface.",
   order: 3.8,
   group: "Controls",
+  verbs: ["drag"],
   summary:
     "Two values set at once on one surface, like tone against length. A dark well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. The thumb follows the pointer and the keys at once, with no easing. Only the tooltip fades, on the responsive tier.",
   tiers: ["responsive"],

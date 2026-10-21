@@ -13,6 +13,7 @@ export const meta: PageMeta = {
   lede: "One value, or a span, on a range.",
   order: 3.6,
   group: "Controls",
+  verbs: ["drag"],
   summary:
     "One value on a range, such as the default animation speed, or a span with two thumbs, such as the builds that took between 20s and 80s. A thin rail, a range filled with the foreground color (never the accent) and round thumbs. The thumbs and the range follow the pointer and the keys at once, with no easing. Only colors fade, on the instant tier.",
   tiers: ["instant"],

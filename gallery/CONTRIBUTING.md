@@ -120,6 +120,7 @@ export default function MenuPage() {
 - Captions are written for Nick: short, plain sentences, no em dashes. Say "the travel token" or "the stagger token", not "the dial", and avoid quoting the tunable numbers (durations, travel, stagger), so the copy cannot drift from `tokens.css`.
 - Leave `tune` off in your page meta. Only the Playground sets it, because it is the one page allowed to override the motion tokens.
 - Name the file `<NN>-<meta.id>.tsx`. The Code view finds a page's source by its id.
+- Tag the page with what a person does to the component, for the overview's filter: `verbs: ["drag", "type"]` in `meta`, from press, type, select, drag, hover, open, and watch (it moves on its own). Leave it out for a static piece such as a tag. The overview shows every page as a card: its first stage's demo, live and held still.
 
 ## Document it
 
