@@ -201,8 +201,20 @@ function parseImports(src: string): Import[] {
   return out;
 }
 
+/**
+ * The code alone: comments and the text of strings and template literals become spaces (code inside a template's
+ * `${}` stays), so a name in a comment ("needs a <Toaster> above it") or a class ("size-full") is not a use of it.
+ */
+function codeOnly(src: string): string {
+  const out: string[] = Array.from(src, (c) => (c === "\n" ? "\n" : " "));
+  scan(src, 0, (ch, i) => {
+    out[i] = ch;
+  });
+  return out.join("");
+}
+
 const uses = (code: string, name: string) =>
-  new RegExp(`(?<![\\w$.])${name.replace(/[$]/g, "\\$&")}(?![\\w$])`).test(code);
+  new RegExp(`(?<![\\w$.])${name.replace(/[$]/g, "\\$&")}(?![\\w$])`).test(codeOnly(code));
 
 /** One import line with only the names the code uses, or null when it uses none. */
 function trimImport(imp: Import, code: string): string | null {

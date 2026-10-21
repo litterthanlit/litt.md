@@ -93,6 +93,10 @@ Claude loads the skill on its own when you build, restyle or review UI. You can 
 | "I hate that hover lift, log it" | log: one journal entry |
 | "Distill my journal" | distill: three or more consistent entries become a rule; you approve the diff |
 
+### In Cursor, VS Code, Codex or Claude Code, through shadcn's MCP
+
+The components are a shadcn registry, so shadcn's own MCP server can search them, read each one with a working example (`@litt/<name>-demo`), and install them. Add `"registries": { "@litt": "https://littmd.vercel.app/r/{name}.json" }` to your project's `components.json`, then connect the server (`npx shadcn@latest mcp init --client claude`, or `cursor`, `vscode`, `codex`). The [AI tools page](https://littmd.vercel.app/#ai) has the setup for each tool and prompts that work.
+
 ## How the taste evolves
 
 1. **React.** Every "love this" or "too much glow" becomes one dated journal entry.
