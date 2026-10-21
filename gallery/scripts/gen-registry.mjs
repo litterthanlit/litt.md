@@ -1032,6 +1032,11 @@ const COPY = {
     description: "One color as a hex string: a saturation and brightness area, a hue rail, the hex in mono, an eyedropper where the browser has one, and optional swatches as radios. A field in the Select trigger's look opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once, and every input says the color in words.",
     docs: "Import ColorPicker and ColorPanel from components/litt/color-picker, plus parseHex, describeColor, getContrastInk, hexToHsv and hsvToHex. Values are six-digit lowercase hex strings with the hash. ColorPicker needs a label; hold the value in state with value and onValueChange (null for none), pass name for a form, and swatches as { label, value }. Save with onValueCommit, which fires on release. Use getContrastInk for text drawn on the picked color.",
   },
+  "slide-confirm": {
+    title: "Slide to confirm",
+    description: "A deliberate yes to something that cannot be undone: the segmented control's track and a raised thumb to slide to the end. The thumb follows the finger one to one, springs back on the responsive tier if let go early, and confirms at the end with a check. The thumb is also a button: Enter, Space or a screen reader confirms, a mouse click alone does not.",
+    docs: "Import SlideConfirm from components/litt/slide-confirm. Give it a label that says what happens (\"Slide to delete Atelier Nord\"), a confirmedLabel and onConfirm, which runs once. Remount it with a new key to ask again. Use it for what cannot be undone, on touch screens; anything that can be undone should just happen, with Undo in a toast.",
+  },
   "rolling-number": {
     title: "Rolling number",
     description: "A figure whose changed digits roll to the new value: each leaves half of the travel token and fades as the new one comes in from the other side, on the responsive tier, up when the value rises and down when it falls. Any Intl.NumberFormat format, tabular figures, the whole figure as text for screen readers. The first render and reduced motion just show the number.",
