@@ -172,8 +172,7 @@ A region that scrolls inside the page: a long list in a fixed-height card, a log
 
 ## Glass header
 Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
-- Order: wordmark → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
-- **Wordmark in a segment (P12):** the segmented control's track (fg 5% fill, the `--line` hairline, `--radius-surface`, a 4px inset, `--control-sm` tall) holding one raised segment (`--surface-1`, the hairline and `--highlight`, `--radius-control`, 12px side padding) with the name at the small size and `--weight-title`. A link inside fills the segment. A logo with its own shape may sit bare.
+- Order: wordmark (body size at `--weight-title`) → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
 - **The current page wears the selected segment (P12):** `--fg` on `--surface-1` with the hairline and `--highlight`, and `aria-current="page"`. It keeps that look on hover. No dot, no underline, no accent, no weight change. In the menu on mobile, the current page carries a check.
 - It is full-bleed, so it sets `border-radius: 0` (`.litt-glass` carries the surface radius).
 - On mobile, hide the nav behind the command menu or a menu button. Don't squeeze it.

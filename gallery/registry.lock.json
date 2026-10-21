@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.10.20",
+  "latest": "2026.10.21",
   "items": {
     "accordion": {
       "version": "2026.10.19",
@@ -103,8 +103,8 @@
       "hash": "f3e980184f6443ef"
     },
     "header": {
-      "version": "2026.10.20",
-      "hash": "cd41d4f029699ba6"
+      "version": "2026.10.21",
+      "hash": "f0efc61b1576305f"
     },
     "heatmap": {
       "version": "2026.10.19",
