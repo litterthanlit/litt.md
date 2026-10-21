@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   lede: "Where you write to an agent.",
   order: 18.92,
   group: "Agents",
+  verbs: ["type"],
   summary:
     "Where the person writes to an agent: a text field that grows a line at a time, file chips, a toolbar and a round Send that turns into Stop while the agent answers. Send is the view's one accent fill. Only colors and the edge fade, on the instant tier, and a file chip enters on the responsive tier.",
   tiers: ["instant", "responsive"],

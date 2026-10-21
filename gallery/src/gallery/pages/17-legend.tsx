@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   lede: "Toggles which series a chart shows.",
   order: 17.31,
   group: "Data",
+  verbs: ["press"],
   summary:
     "Toggles which series a chart shows: a row of buttons, each a hued rail swatch and a name, pressed while its series shows. The Legend filters and the chart draws. Only color changes, on the instant tier, and nothing moves.",
   tiers: ["instant"],

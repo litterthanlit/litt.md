@@ -6,7 +6,7 @@
  * Text spacing follows foundations.md (Type, Text spacing): stages sit 48px apart,
  * the page title 16px above its summary, and a stage's title 4px above its caption.
  */
-import { Children, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type ReactElement, type ReactNode } from "react";
+import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type ReactElement, type ReactNode } from "react";
 import type { Tier } from "@/motion";
 import { Button } from "@/components/button";
 import { ChevronDownIcon } from "@/components/icons";
@@ -16,6 +16,13 @@ import { Tag } from "@/components/tag";
 /** The sidebar's groups, in the order they appear. */
 export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents"] as const;
 export type PageGroup = (typeof PAGE_GROUPS)[number];
+
+/**
+ * How a component is used, for the overview's filter: what a person does to it, or Watch for what moves on its own.
+ * A page lists the ones its component answers to; a static piece (a tag, a stat) lists none and shows under All.
+ */
+export const VERBS = ["press", "type", "select", "drag", "hover", "open", "watch"] as const;
+export type Verb = (typeof VERBS)[number];
 
 export type PageMeta = {
   /** URL hash and nav id: letters, digits and dashes only. */
@@ -31,6 +38,8 @@ export type PageMeta = {
   order: number;
   /** The sidebar group. Overview and Playground have none, so they sit above and below the groups. */
   group?: PageGroup;
+  /** What a person does with the component, for the overview's filter. Leave it out for a static piece. */
+  verbs?: Verb[];
   /** One sentence: what the component is and what its motion does. */
   summary: string;
   tiers: Tier[];
@@ -87,15 +96,19 @@ const DocsSections = lazy(() => loadDocs().then((m) => ({ default: m.DocsSection
  */
 export const PreviewContext = createContext(false);
 
-/** The first <Stage> among a page's children, looking through fragments. */
-function firstStage(children: ReactNode): ReactElement<StageProps> | null {
+/**
+ * The first <Stage>'s demo among a page's children, for preview mode. It looks through fragments and through any
+ * wrapper (a page may wrap its stages in a <Toaster>), and keeps the wrapper around the demo, because the demo may
+ * need what it provides. Null when the page has no stage.
+ */
+function firstDemo(children: ReactNode): ReactNode | null {
   for (const child of Children.toArray(children)) {
     if (!isValidElement<{ children?: ReactNode }>(child)) continue;
-    if (child.type === Stage) return child as ReactElement<StageProps>;
-    if (child.type === Fragment) {
-      const found = firstStage(child.props.children);
-      if (found) return found;
-    }
+    if (child.type === Stage) return (child as ReactElement<StageProps>).props.children;
+    if (child.props.children === undefined) continue;
+    const found = firstDemo(child.props.children);
+    if (found === null) continue;
+    return child.type === Fragment ? found : cloneElement(child, undefined, found);
   }
   return null;
 }
@@ -104,7 +117,7 @@ function firstStage(children: ReactNode): ReactElement<StageProps> | null {
 const PageIdContext = createContext<string | null>(null);
 
 export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs; children: ReactNode }) {
-  if (useContext(PreviewContext)) return <>{firstStage(children)?.props.children}</>;
+  if (useContext(PreviewContext)) return <>{firstDemo(children)}</>;
   return (
     <PageIdContext.Provider value={meta.id}>
       <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">

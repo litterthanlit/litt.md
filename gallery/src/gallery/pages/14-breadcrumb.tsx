@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   lede: "Where a page sits.",
   order: 14.5,
   group: "Layout",
+  verbs: ["open"],
   summary:
     "Where a page sits, with a slash between the levels and the current page in the foreground. A long trail folds its middle into a menu, and a phone shows the last two levels.",
   tiers: ["instant", "responsive"],

@@ -7,8 +7,12 @@
  * before you touch anything. A loop only runs while its tile is on screen, stops
  * for good once you reach into the tile, and never runs under reduced motion:
  * the tile then shows one finished state.
+ *
+ * Under it, every component as a live card, filtered by what you do with it (Press, Type, Drag…, each page's
+ * meta.verbs). A card is the page's first demo in miniature, held still (StillMotion), so fifty cards never play
+ * fifty entrances and the bento above keeps the page's one expressive moment.
  */
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { useMotionDial } from "@/motion";
 import { Avatar, AvatarGroup } from "@/components/avatar";
 import { BarList } from "@/components/bar-list";
@@ -25,8 +29,9 @@ import { Switch } from "@/components/switch";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 import { ToolCall } from "@/components/tool-call";
-import { pageRuns, pages } from "../registry";
-import { PageTitle, type PageMeta } from "../kit";
+import { pages, type PageEntry } from "../registry";
+import { Miniature } from "../miniature";
+import { PageTitle, VERBS, type PageMeta, type Verb } from "../kit";
 
 export const meta: PageMeta = {
   id: "overview",
@@ -98,6 +103,118 @@ function Tile({ id, title, className = "", children }: { id: string; title: stri
         <h2 id={`tile-${id}`} className="text-small font-title text-fg">{title}</h2>
         <ChevronRightIcon className="text-fg-subtle transition-colors duration-(--dur-instant) ease-litt group-hover:text-fg" />
       </a>
+    </section>
+  );
+}
+
+/* ---------- every component, live ---------- */
+
+const VERB_LABEL: Record<Verb, string> = { press: "Press", type: "Type", select: "Select", drag: "Drag", hover: "Hover", open: "Open", watch: "Watch" };
+const CARD_H = 200;
+
+/** Width of an element, kept current. 0 until measured. */
+function useWidth<T extends HTMLElement>(): [React.RefObject<T | null>, number] {
+  const ref = useRef<T>(null);
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setWidth(el.clientWidth));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, width];
+}
+
+/** True once the element has come within a screen of the viewport, and stays true. */
+function useNear<T extends HTMLElement>(ref: React.RefObject<T | null>): boolean {
+  const [near, setNear] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || near) return;
+    const io = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && setNear(true), { rootMargin: "100% 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ref, near]);
+  return near;
+}
+
+/**
+ * One component as a card: its first demo, live but still and out of reach (a picture of it), over its name. The
+ * whole card is the link. The demo mounts only when the card nears the screen, so the page never loads 50 at once.
+ */
+function Card({ page }: { page: PageEntry }) {
+  const [frame, width] = useWidth<HTMLDivElement>();
+  const near = useNear(frame);
+  return (
+    <a
+      href={`#${page.id}`}
+      className={
+        "group litt-raised flex min-w-0 flex-col overflow-hidden rounded-surface [-webkit-tap-highlight-color:transparent] " +
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      }
+    >
+      <div ref={frame} aria-hidden="true" inert className="pointer-events-none relative overflow-hidden" style={{ height: CARD_H }}>
+        {near && width > 0 && <Miniature page={page} width={width} height={CARD_H} still />}
+      </div>
+      <div className="flex items-center justify-between gap-4 border-t border-line px-4 py-3 transition-colors duration-(--dur-instant) ease-litt group-hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] pointer-coarse:group-active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]">
+        <span className="truncate text-small font-title text-fg">{page.title}</span>
+        <span className="shrink-0 text-caption font-normal text-fg-subtle">{page.group}</span>
+      </div>
+    </a>
+  );
+}
+
+/** A chip in the filter: a native radio, the selected one in the raised segment's look (P12). */
+function Chip({ name, value, label, count, checked, onPick }: { name: string; value: string; label: string; count: number; checked: boolean; onPick: () => void }) {
+  return (
+    <label
+      className={
+        "relative flex h-control-sm cursor-pointer items-center gap-2 rounded-control px-3 text-small font-title select-none [-webkit-tap-highlight-color:transparent] " +
+        "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md " +
+        (checked
+          ? "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] forced-colors:border-2"
+          : "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]")
+      }
+    >
+      <input type="radio" name={name} value={value} checked={checked} onChange={onPick} className="peer sr-only" />
+      <span className="litt-trim">{label}</span>
+      <span className="font-mono text-caption font-normal text-fg-subtle tabular-nums">{count}</span>
+      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus" />
+    </label>
+  );
+}
+
+/** Every component as a live card, filtered by what you do with it. */
+function EveryComponent({ list }: { list: PageEntry[] }) {
+  const [verb, setVerb] = useState<Verb | "all">("all");
+  const name = useId();
+  const shown = verb === "all" ? list : list.filter((p) => p.verbs?.includes(verb));
+  const verbs = VERBS.filter((v) => list.some((p) => p.verbs?.includes(v)));
+  return (
+    <section aria-labelledby="all-title" className="grid gap-6">
+      <h2 id="all-title" className="text-h4 text-fg">
+        Every component
+      </h2>
+      <fieldset className="m-0 min-w-0 border-0 p-0">
+        <legend className="sr-only">Show the components you</legend>
+        <div className="flex flex-wrap gap-1">
+          <Chip name={name} value="all" label="All" count={list.length} checked={verb === "all"} onPick={() => setVerb("all")} />
+          {verbs.map((v) => (
+            <Chip key={v} name={name} value={v} label={VERB_LABEL[v]} count={list.filter((p) => p.verbs?.includes(v)).length} checked={verb === v} onPick={() => setVerb(v)} />
+          ))}
+        </div>
+      </fieldset>
+      <p role="status" className="sr-only">
+        {shown.length} components
+      </p>
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {shown.map((p) => (
+          <li key={p.id} className="grid">
+            <Card page={p} />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -283,33 +400,7 @@ export default function Overview() {
         </Tile>
       </div>
 
-      <nav aria-labelledby="all-title" className="grid gap-6">
-        <h2 id="all-title" className="text-h4 text-fg">Every component</h2>
-        {/* An index, not a cloud: each group is a block with its name and count, and its pages are rows on a
-            hairline, so the eye runs down even columns. Two columns of rows on a phone, one per group above it. */}
-        <div className="grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {pageRuns(list).map((run) => (
-            <div key={run.group ?? "other"} role="group" aria-labelledby={`all-${run.group}`} className="grid content-start">
-              <h3 className="flex items-baseline justify-between border-b border-line-strong pb-2 text-caption">
-                <span id={`all-${run.group}`} className="text-fg">{run.group}</span>
-                <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
-              </h3>
-              <ul className="grid grid-cols-2 gap-x-6 sm:grid-cols-1">
-                {run.pages.map((p) => (
-                  <li key={p.id} className="min-w-0 border-b border-line">
-                    <a
-                      href={`#${p.id}`}
-                      className="flex h-control-md items-center text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt hover:text-fg sm:h-10"
-                    >
-                      <span className="truncate">{p.title}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </nav>
+      <EveryComponent list={list} />
     </article>
   );
 }

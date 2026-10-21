@@ -22,6 +22,7 @@ export const meta: PageMeta = {
   title: "Insights",
   lede: "Inbox and build insights, in the data colors.",
   order: 18.7, group: "Data",
+  verbs: ["hover"],
   summary:
     "The studio's inbox and build insights, built from the data-color parts: a dot plot of reply times, a bar list of shortcuts, a mail rule, a voice pad, a deploy timeline, a credits gauge and a heatmap of the credits by day. Each hue means one thing in its panel, the deploy stays in the quiet foreground, and Create rule is the one accent fill in the view.",
   tiers: ["instant", "responsive"],

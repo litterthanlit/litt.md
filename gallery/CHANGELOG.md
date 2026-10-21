@@ -9,7 +9,7 @@ To update an item, read the entries since your version, then reinstall it with `
 Taste profile v0.16's P12 covers the current page only: the wordmark in a segment stays the gallery's own, not the language's. And a staple: a color picker for the person's own colors.
 
 - **added** `color-picker`: ColorPicker and ColorPanel, one color as a hex string, from a saturation and brightness area, a hue rail, the hex, an eyedropper where the browser has one, or swatches.
-
+- **changed** `motion`: `StillMotion` holds everything inside it still, as reduced motion does: the hooks return 0, Motion skips its animations and the CSS tier tokens read 0. Wrap a thumbnail or a preview of live components in it. Nothing changes for existing code.
 - **breaking** `header`: the wordmark is bare again, as before 2026.10.20, and the `wordmarkFrame` prop is gone. The current link keeps the selected segment's look (P12).
   Migrate: drop `wordmarkFrame` if you passed it. To keep the segment around your wordmark, wrap it yourself in the segmented control's track and one raised segment.
 

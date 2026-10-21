@@ -19,6 +19,7 @@ export const meta: PageMeta = {
   title: "Table",
   lede: "Rows and columns, with real table semantics.",
   order: 16, group: "Data",
+  verbs: ["press"],
   summary:
     "Real table semantics with hairline rows, mono figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything.",
   tiers: ["instant", "responsive", "expressive"],
