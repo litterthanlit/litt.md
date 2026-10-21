@@ -31,7 +31,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 
 **C. Themes**
 - [ ] **P8** Both themes exist and each is tuned (material strengths differ). Neither is a mechanical inversion of the other.
-- [ ] Neutrals are cool (blue-gray), not warm and not pure gray.
+- [ ] Neutrals are warm stone (gray with a trace of warmth), not cool blue-gray, not pure gray and not beige.
 
 **D. Type**
 - [ ] Geist and Geist Mono only. Mono used only for code, keys, data, versions and token names, never for tags.

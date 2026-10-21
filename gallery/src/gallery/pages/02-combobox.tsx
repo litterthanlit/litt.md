@@ -8,6 +8,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "combobox",
   title: "Combobox",
+  lede: "Type to find one value, or several, in a long list.",
   order: 2.6,
   group: "Controls",
   summary:

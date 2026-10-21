@@ -1,12 +1,15 @@
 /**
  * Gallery kit: the building blocks every page uses. Pages are airy (Nick's
- * call): one idea per stage, generous stages, captions that say what moves.
+ * call): one idea per stage, generous stages. A page shows before it explains:
+ * the title and a one-line lede, then the first demo; each stage's caption folds
+ * behind "How it works", and the full summary waits under the demos.
  * Text spacing follows foundations.md (Type, Text spacing): stages sit 48px apart,
  * the page title 16px above its summary, and a stage's title 4px above its caption.
  */
-import { createContext, lazy, Suspense, useContext, useState, type ReactNode } from "react";
+import { Children, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type ReactElement, type ReactNode } from "react";
 import type { Tier } from "@/motion";
 import { Button } from "@/components/button";
+import { ChevronDownIcon } from "@/components/icons";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 
@@ -18,6 +21,12 @@ export type PageMeta = {
   /** URL hash and nav id: letters, digits and dashes only. */
   id: string;
   title: string;
+  /**
+   * One short line under the title, set in the grey beside it as one sentence: what the
+   * component is, in plain words. The page shows it; the summary is for the docs, the
+   * agents and the About section under the demos.
+   */
+  lede: string;
   /** Sidebar order. 0 is the overview. */
   order: number;
   /** The sidebar group. Overview and Playground have none, so they sit above and below the groups. */
@@ -71,33 +80,56 @@ const loadDocs = () => import("./docs/page-docs");
 const DocsActions = lazy(() => loadDocs().then((m) => ({ default: m.DocsActions })));
 const DocsSections = lazy(() => loadDocs().then((m) => ({ default: m.DocsSections })));
 
+/**
+ * Set by the sidebar's hover preview (nav-preview.tsx). A page then draws only its first
+ * stage's demo, with no title, caption or docs, so every page has a preview without a
+ * line of its own.
+ */
+export const PreviewContext = createContext(false);
+
+/** The first <Stage> among a page's children, looking through fragments. */
+function firstStage(children: ReactNode): ReactElement<StageProps> | null {
+  for (const child of Children.toArray(children)) {
+    if (!isValidElement<{ children?: ReactNode }>(child)) continue;
+    if (child.type === Stage) return child as ReactElement<StageProps>;
+    if (child.type === Fragment) {
+      const found = firstStage(child.props.children);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
 /** Which page a Stage sits in, so its Code tab can find the page file. */
 const PageIdContext = createContext<string | null>(null);
 
 export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs; children: ReactNode }) {
+  if (useContext(PreviewContext)) return <>{firstStage(children)?.props.children}</>;
   return (
     <PageIdContext.Provider value={meta.id}>
       <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">
-        <header className="grid gap-4">
-          <h1 id={`page-${meta.id}`} className="text-h1 text-fg text-balance">
-            {meta.title}
-          </h1>
-          <p className="max-w-[56ch] text-reading text-fg-muted">{meta.summary}</p>
-          <div className="flex flex-wrap gap-2">
-            {meta.tiers.map((t) => (
-              <TierChip key={t} tier={t} />
-            ))}
-          </div>
-          {docs && (
-            <div className="pt-4">
-              {/* Holds the row's height while the docs chunk loads, so nothing below jumps. */}
+        <header className="grid gap-6">
+          <PageTitle id={`page-${meta.id}`} title={meta.title} lede={meta.lede} />
+          {/* The tiers and the docs actions share one row, so the first demo comes up sooner. */}
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+            <div className="flex flex-wrap gap-2">
+              {meta.tiers.map((t) => (
+                <TierChip key={t} tier={t} />
+              ))}
+            </div>
+            {docs && (
+              /* Holds the row's height while the docs chunk loads, so nothing below jumps. */
               <Suspense fallback={<div aria-hidden="true" className="h-control-sm" />}>
                 <DocsActions meta={meta} docs={docs} />
               </Suspense>
-            </div>
-          )}
+            )}
+          </div>
         </header>
         {children}
+        <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4">
+          <h2 id={`about-${meta.id}`} className="-mb-3 text-h3 text-fg">About</h2>
+          <p className="max-w-[60ch] text-reading text-fg-muted">{meta.summary}</p>
+        </section>
         {docs && (
           <Suspense fallback={<div aria-hidden="true" className="min-h-[60svh]" />}>
             <DocsSections docs={docs} />
@@ -105,6 +137,20 @@ export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs
         )}
       </article>
     </PageIdContext.Provider>
+  );
+}
+
+/**
+ * A page's title and lede as one sentence in two inks, at the title size: the name in
+ * --fg at the title weight, then the lede in the grey at the text weight (P9). The h1
+ * stays the name alone, so the page's landmark is still called "Button".
+ */
+export function PageTitle({ id, title, lede, className = "" }: { id: string; title: string; lede: string; className?: string }) {
+  return (
+    <div className={"flex max-w-[64ch] flex-wrap items-baseline gap-x-2 text-h1 text-balance " + className}>
+      <h1 id={id} className="text-fg">{title}</h1>
+      <p className="text-fg-subtle">{lede}</p>
+    </div>
   );
 }
 
@@ -143,16 +189,32 @@ type View = "preview" | "code";
 export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", size = "md", align = "center", code, children }: StageProps) {
   const pageId = useContext(PageIdContext);
   const [view, setView] = useState<View>("preview");
+  const [notes, setNotes] = useState(false);
+  const notesId = useId();
   const place = align === "center" ? "place-items-center" : align === "start" ? "place-items-start" : "place-items-end";
   const height = size === "lg" ? "min-h-112" : "min-h-80";
 
+  /* The caption folds behind "How it works", so the demo speaks first. The chevron turns half a
+     turn on the responsive tier, as in the Accordion; the text itself appears at once. */
   const heading = (
     <div className="grid max-w-[60ch] gap-1">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <h2 className="text-body font-title text-fg">{title}</h2>
         {tier && <TierChip tier={tier} />}
+        <button
+          type="button"
+          aria-expanded={notes}
+          aria-controls={notesId}
+          onClick={() => setNotes((n) => !n)}
+          className="group/notes -mx-2 flex h-control-sm items-center gap-1 rounded-control px-2 text-small text-fg-subtle select-none [-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          How it works
+          <ChevronDownIcon className="transition-[rotate] duration-(--dur-responsive) ease-responsive group-aria-expanded/notes:rotate-180" />
+        </button>
       </div>
-      <p className="text-small text-fg-subtle">{caption}</p>
+      <p id={notesId} hidden={!notes} className="text-small text-fg-subtle">
+        {caption}
+      </p>
     </div>
   );
 

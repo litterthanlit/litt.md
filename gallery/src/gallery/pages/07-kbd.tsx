@@ -7,6 +7,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "kbd",
   title: "Kbd",
+  lede: "The key cap for a real shortcut.",
   order: 7, group: "Controls",
   summary:
     "The key cap for a real shortcut: a 20px chip in Geist Mono. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",

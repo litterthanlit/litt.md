@@ -9,6 +9,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "select",
   title: "Select",
+  lede: "One value from a short list.",
   order: 2.5,
   group: "Controls",
   summary:

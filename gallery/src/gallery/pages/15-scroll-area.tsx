@@ -8,6 +8,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "scroll-area",
   title: "Scroll area",
+  lede: "A box that scrolls inside the page.",
   order: 15.45,
   group: "Layout",
   summary:

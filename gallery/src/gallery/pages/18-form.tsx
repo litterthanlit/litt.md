@@ -13,6 +13,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "form",
   title: "Forms",
+  lede: "Fields that make a page.",
   order: 15.5,
   group: "Layout",
   summary:

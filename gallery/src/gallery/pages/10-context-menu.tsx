@@ -19,6 +19,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "context-menu",
   title: "Context menu",
+  lede: "The menu, right where you clicked.",
   order: 10.5,
   group: "Overlays",
   summary:

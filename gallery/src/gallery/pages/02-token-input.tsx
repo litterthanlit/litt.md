@@ -7,6 +7,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "token-input",
   title: "Token input",
+  lede: "Typed values that turn into tokens.",
   order: 2.3,
   group: "Controls",
   summary:

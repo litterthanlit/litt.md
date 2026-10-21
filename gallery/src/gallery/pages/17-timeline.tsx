@@ -12,6 +12,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "timeline",
   title: "Timeline",
+  lede: "The steps of a run, in order.",
   order: 17.8,
   group: "Data",
   summary:

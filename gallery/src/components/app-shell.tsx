@@ -8,8 +8,9 @@
  *   wordmark and the links stay in view while the page scrolls. The page scrolls as one document: there is no
  *   fixed-height shell with an inner scroller, which would hide everything below the first screen.
  * - Wordmark: the first row of the sidebar, as tall as the header (--header-h), body size, fg.
- * - Links: 36px rows at the small size and the control radius, 12px side padding. The current page is fg on a
- *   surface-2 fill with aria-current="page"; the others are fg-muted, with an fg-6% fill and brighter text on hover
+ * - Links: 36px rows at the small size and the control radius, 12px side padding. The current page wears the
+ *   selected segment (P12), one step raised from the sidebar: fg on surface-2 with the hairline and the top
+ *   highlight, and aria-current="page"; the others are fg-muted, with an fg-6% fill and brighter text on hover
  *   (instant tier, color only). No dots, no accent, no weight change. On a coarse pointer a row is 44px and a pressed row
  *   fills like a hovered one. Focus is an inset 2px ring, as in a list.
  * - Main: its own landmark, with the page gutter at the sides and space-8 above and below.
@@ -190,7 +191,7 @@ export function SidebarLink({ current = false, icon, as: Tag = "a", className = 
             row,
             sheet ? "h-control-md text-body" : "h-9 text-small pointer-coarse:h-control-md",
             current
-              ? "bg-surface-2 text-fg"
+              ? "bg-surface-2 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]"
               : "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " +
                 "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg",
             className,

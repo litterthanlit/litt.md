@@ -33,6 +33,7 @@ import { MotionPanel } from "../motion-panel";
 export const meta: PageMeta = {
   id: "playground",
   title: "Playground",
+  lede: "Turn the dials and the components follow.",
   order: 19,
   tune: true,
   summary:

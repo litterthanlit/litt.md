@@ -6,6 +6,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "button",
   title: "Button",
+  lede: "The action, answered without moving its box.",
   order: 1, group: "Controls",
   summary: "Roomy and slightly rounded, with the label at the title weight. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
   tiers: ["instant"],

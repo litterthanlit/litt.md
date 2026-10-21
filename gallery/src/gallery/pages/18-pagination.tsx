@@ -7,6 +7,7 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "pagination",
   title: "Pagination",
+  lede: "Previous and next, for one page of many.",
   order: 17.1, group: "Data",
   summary:
     "Previous and next for a table that shows one page of many. The range comes first, in words and mono. Page numbers show only when the row is wide enough, and the buttons at either end disable. Nothing about it moves; the rows it pages are the table's job.",

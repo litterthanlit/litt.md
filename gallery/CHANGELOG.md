@@ -4,10 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-20 · Geist, md form buttons and growth
+## 2026-10-20 · Geist, md form buttons, growth and stone neutrals
 
-The face of taste profile v0.13: Geist replaces Inter, as on Nick's portfolio. Sizes, weights and tracking are unchanged. And v0.14's P10: lg is for hero CTAs only, so a page form's submit and Cancel are md, like its fields. And the growth step: three more data views in the rail idiom, a legend that filters, and stacked rails in the chart.
+The face of taste profile v0.13: Geist replaces Inter, as on Nick's portfolio. Sizes, weights and tracking are unchanged. And v0.14's P10: lg is for hero CTAs only, so a page form's submit and Cancel are md, like its fields. And the growth step: three more data views in the rail idiom, a legend that filters, and stacked rails in the chart. And v0.15's Color decision: the neutrals move from cool blue-gray to warm stone. And v0.16's P12: selected is a raised segment, in the header's current link, its wordmark and the app shell's current link.
 
+- **changed** `header`: the current link wears the selected segment (P12), `surface-1` with the hairline and the top highlight, and keeps it on hover; the others keep the hover fill. The wordmark sits in a segment, the segmented control's track with one raised segment; pass `wordmarkFrame={false}` to keep a logo bare. Nothing in your code has to change.
+- **changed** `app-shell`: the current sidebar link keeps its `surface-2` fill and gains the hairline and the top highlight, the selected segment's look (P12). Nothing in your code has to change.
+- **changed** `litt`: the neutrals are warm stone (OKLCH hue about 60) in both themes: `--litt-canvas`, the surfaces, the lines, the inks, the dark glass and the light theme's glass border and glows. Lightness and chroma are unchanged, so contrast is too. Reinstall to pick it up; nothing in your code changes.
 - **changed** `litt`: Geist replaces Inter in `--litt-font-sans`, falling back to Helvetica Neue, Helvetica and Arial. The stack names both "Geist" (Google Fonts) and "Geist Sans" (Fontsource).
 - **changed** `base-styles`: loads Geist at 400, 500 and 600 and Geist Mono at 400 (`@fontsource/geist-sans` replaces `@fontsource/inter`).
 - **added** `funnel`: how many went on at each step, as rows: a thin rail per step against the first, in one data hue, with the step-to-step conversion in words.

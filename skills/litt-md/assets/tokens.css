@@ -177,30 +177,30 @@
 
 /* --------------------------------------------------------------------------
    Light theme (default)
-   Neutrals sit on one OKLCH hue (about 262), so "cool" is checkable.
+   Neutrals sit on one OKLCH hue (about 60, a warm stone), so "warm" is checkable.
    -------------------------------------------------------------------------- */
 :root,
 [data-theme="light"] {
   color-scheme: light;
 
-  --canvas: #fafbfc;
+  --canvas: #fcfbfa;
   --surface-1: #ffffff;
-  --surface-2: #f4f5f7;
-  --surface-3: #ebedf0;
+  --surface-2: #f7f5f3;
+  --surface-3: #efecea;
 
-  --line: #e3e5e9;             /* decorative hairline */
-  --line-strong: #cfd2d8;
-  --line-control: #82868e;     /* input/checkbox outlines, at least 3:1 */
+  --line: #e8e4e1;             /* decorative hairline */
+  --line-strong: #d7d1cc;
+  --line-control: #8c847e;     /* input/checkbox outlines, at least 3:1 */
 
   /* Two inks (v0.12): fg for titles and key values, the grey for all other text.
      --fg-muted (body) carries the same grey as --fg-subtle (metadata) in every theme;
      the two names stay, so a later split is one edit. */
-  --fg: #0e0f11;               /* titles, key values */
-  --fg-muted: #64686f;         /* body */
-  --fg-subtle: #64686f;        /* supporting, metadata */
-  --fg-disabled: #9a9ea6;      /* disabled only, exempt from contrast */
+  --fg: #110f0d;               /* titles, key values */
+  --fg-muted: #6d6661;         /* body */
+  --fg-subtle: #6d6661;        /* supporting, metadata */
+  --fg-disabled: #a49c96;      /* disabled only, exempt from contrast */
 
-  /* Accent: cobalt, Litt's own (v0.9), on nearly the neutrals' hue. Swap per project. */
+  /* Accent: cobalt, Litt's own (v0.9), a cool light on the warm stone neutrals (v0.15). Swap per project. */
   --accent: #264bd1;
   --accent-hover: #1c3cb2;
   --accent-fg: #ffffff;        /* text on accent, at least 4.5:1 */
@@ -232,12 +232,12 @@
   /* Material, tuned for light (P8) */
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-bg-solid: rgba(255, 255, 255, 0.94);
-  --glass-border: rgba(14, 15, 17, 0.07);
+  --glass-border: rgba(17, 15, 13, 0.07);
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   /* Depth (P4): zero-offset glow plus a 1px ring, on floating surfaces only. */
-  --shadow-tooltip: 0 0 2px rgba(14, 15, 17, 0.08), 0 0 0 1px rgba(14, 15, 17, 0.06);
-  --shadow-float: 0 0 8px rgba(14, 15, 17, 0.08), 0 0 24px rgba(14, 15, 17, 0.06), 0 0 0 1px rgba(14, 15, 17, 0.06);
-  --shadow-modal: 0 0 40px rgba(14, 15, 17, 0.10), 0 0 72px rgba(14, 15, 17, 0.06), 0 0 0 1px rgba(14, 15, 17, 0.06);
+  --shadow-tooltip: 0 0 2px rgba(17, 15, 13, 0.08), 0 0 0 1px rgba(17, 15, 13, 0.06);
+  --shadow-float: 0 0 8px rgba(17, 15, 13, 0.08), 0 0 24px rgba(17, 15, 13, 0.06), 0 0 0 1px rgba(17, 15, 13, 0.06);
+  --shadow-modal: 0 0 40px rgba(17, 15, 13, 0.10), 0 0 72px rgba(17, 15, 13, 0.06), 0 0 0 1px rgba(17, 15, 13, 0.06);
   --light-strength: 12%;
   --glow-strength: 28%;
   --grain-opacity: 0.02;
@@ -249,19 +249,19 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --canvas: #08090a;
-  --surface-1: #0f1011;
-  --surface-2: #161719;
-  --surface-3: #1c1e20;
+  --canvas: #0a0908;
+  --surface-1: #11100f;
+  --surface-2: #191715;
+  --surface-3: #201d1b;
 
-  --line: #232529;
-  --line-strong: #313439;
-  --line-control: #656970;
+  --line: #282421;
+  --line-strong: #38332f;
+  --line-control: #6e6762;
 
-  --fg: #f7f8f9;
-  --fg-muted: #8a8f98;
-  --fg-subtle: #8a8f98;
-  --fg-disabled: #62666d;
+  --fg: #f9f8f7;
+  --fg-muted: #968d86;
+  --fg-subtle: #968d86;
+  --fg-disabled: #6b645f;
 
   --accent: #2d57e5;
   --accent-hover: #3864eb;
@@ -286,8 +286,8 @@
   --data-rose-text: #eb81a7;
   --tint-strength: 18%;        /* a dark tint needs more of the hue to read as a color */
 
-  --glass-bg: rgba(15, 16, 17, 0.72);
-  --glass-bg-solid: rgba(15, 16, 17, 0.94);
+  --glass-bg: rgba(17, 16, 15, 0.72);
+  --glass-bg-solid: rgba(17, 16, 15, 0.94);
   --glass-border: rgba(255, 255, 255, 0.08);
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--line-strong); /* a dark ring vanishes on a dark page */
@@ -305,19 +305,19 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
 
-    --canvas: #08090a;
-    --surface-1: #0f1011;
-    --surface-2: #161719;
-    --surface-3: #1c1e20;
+    --canvas: #0a0908;
+    --surface-1: #11100f;
+    --surface-2: #191715;
+    --surface-3: #201d1b;
 
-    --line: #232529;
-    --line-strong: #313439;
-    --line-control: #656970;
+    --line: #282421;
+    --line-strong: #38332f;
+    --line-control: #6e6762;
 
-    --fg: #f7f8f9;
-    --fg-muted: #8a8f98;
-    --fg-subtle: #8a8f98;
-    --fg-disabled: #62666d;
+    --fg: #f9f8f7;
+    --fg-muted: #968d86;
+    --fg-subtle: #968d86;
+    --fg-disabled: #6b645f;
 
     --accent: #2d57e5;
     --accent-hover: #3864eb;
@@ -342,8 +342,8 @@
     --data-rose-text: #eb81a7;
     --tint-strength: 18%;
 
-    --glass-bg: rgba(15, 16, 17, 0.72);
-    --glass-bg-solid: rgba(15, 16, 17, 0.94);
+    --glass-bg: rgba(17, 16, 15, 0.72);
+    --glass-bg-solid: rgba(17, 16, 15, 0.94);
     --glass-border: rgba(255, 255, 255, 0.08);
     --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     --shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--line-strong);

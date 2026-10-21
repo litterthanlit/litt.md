@@ -10,6 +10,7 @@ import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
 import { Segmented } from "@/components/segmented";
 import { CustomizeProvider } from "./customize-state";
+import { NavPreview } from "./nav-preview";
 import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons";
 
 /* The panel and the popover load on their own; until then the button holds its place. */
@@ -143,15 +144,23 @@ function Shell({ page }: { page: PageEntry | undefined }) {
     document.title = !page || page.id === pages[0]?.id ? "litt.md Gallery" : `${page.title} · litt.md Gallery`;
   }, [page]);
 
+  /* The current page wears the segmented control's selected segment: surface-1, the hairline and the
+     top highlight. The others take the header's hover fill. In the sidebar the fill bleeds 12px past
+     the text, so names stay aligned with the group headings. A component's name previews it on hover. */
   const navLink = (p: PageEntry, compact = false) => (
     <a
       key={p.id}
       href={`#${p.id}`}
       aria-current={p.id === page?.id ? "page" : undefined}
+      data-preview={compact || !p.group ? undefined : p.id}
       className={
-        "flex items-center gap-2 text-small transition-colors duration-(--dur-instant) ease-litt " +
-        (compact ? "h-control-sm shrink-0 px-3 " : "h-8 ") +
-        (p.id === page?.id ? "text-fg" : "text-fg-subtle hover:text-fg")
+        "flex items-center gap-2 rounded-control px-3 text-small select-none [-webkit-tap-highlight-color:transparent] " +
+        "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+        (compact ? "h-control-sm shrink-0 " : "-mx-3 h-8 ") +
+        (p.id === page?.id
+          ? "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]"
+          : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg")
       }
     >
       {p.title}
@@ -160,8 +169,6 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
   return (
     <div className="relative min-h-screen">
-      <div aria-hidden="true" className="litt-lit litt-grain litt-grain-fade pointer-events-none absolute inset-x-0 top-0 h-140" />
-
       <button
         type="button"
         onClick={() => mainRef.current?.focus()}
@@ -173,8 +180,16 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       {/* Full-bleed, so no corners: .litt-glass carries the surface radius. */}
       <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none">
         <div className="mx-auto flex h-16 max-w-wide items-center justify-between gap-4 px-gutter">
-          <a href={`#${pages[0]?.id ?? ""}`} className="text-body font-title text-fg">
-            litt.md
+          {/* The wordmark sits in a segmented control's anatomy: the quiet track at the surface radius with
+              the 4px inset, and one raised segment at the control radius, as tall as the theme switch at the
+              other end of the bar, so the two ends match. */}
+          <a
+            href={`#${pages[0]?.id ?? ""}`}
+            className="inline-grid h-control-sm rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-1 shadow-[inset_0_0_0_1px_var(--line)] select-none [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md"
+          >
+            <span className="grid place-items-center rounded-control bg-surface-1 px-control-pad-sm text-small font-title text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]">
+              <span className="litt-trim">litt.md</span>
+            </span>
           </a>
           <div className="flex items-center gap-1 sm:gap-2">
             <Suspense fallback={<CustomizeFallback />}>
@@ -216,25 +231,28 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
       <div className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
         <nav aria-label="Components" className="hidden lg:block">
-          {/* Its own scroller, so a short window still reaches the last group. */}
-          {/* Each group is its own segment: a hairline above it, its name and count, then its pages. */}
-          <div className="sticky top-16 grid max-h-[calc(100svh-4rem)] content-start overflow-y-auto pt-24 pb-12 [scrollbar-width:none]">
-            {pageRuns().map((run) =>
-              run.group ? (
-                <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4">
-                  <p className="flex items-baseline justify-between pb-2 text-caption">
-                    <span id={`nav-${run.group}`} className="text-fg-muted">{run.group}</span>
-                    <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
-                  </p>
-                  {run.pages.map((p) => navLink(p))}
-                </div>
-              ) : (
-                <div key={run.pages[0]!.id} className="grid border-t border-line py-4 first:border-t-0 first:pt-0">
-                  {run.pages.map((p) => navLink(p))}
-                </div>
-              ),
-            )}
-          </div>
+          <NavPreview className="h-full">
+            {/* Its own scroller, so a short window still reaches the last group. It reaches 12px past the
+                column on each side, so the selected fill and the focus ring are never clipped. */}
+            {/* Each group is its own segment: a hairline above it, its name and count, then its pages. */}
+            <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start overflow-y-auto px-3 pt-24 pb-12 [scrollbar-width:none]">
+              {pageRuns().map((run) =>
+                run.group ? (
+                  <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4">
+                    <p className="flex items-baseline justify-between pb-2 text-caption">
+                      <span id={`nav-${run.group}`} className="text-fg-muted">{run.group}</span>
+                      <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
+                    </p>
+                    {run.pages.map((p) => navLink(p))}
+                  </div>
+                ) : (
+                  <div key={run.pages[0]!.id} className="grid border-t border-line py-4 first:border-t-0 first:pt-0">
+                    {run.pages.map((p) => navLink(p))}
+                  </div>
+                ),
+              )}
+            </div>
+          </NavPreview>
         </nav>
 
         <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-16 outline-none lg:pt-24">

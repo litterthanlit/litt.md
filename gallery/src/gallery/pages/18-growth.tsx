@@ -13,6 +13,7 @@ import { Page, Stage, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "growth",
   title: "Growth",
+  lede: "Twelve weeks of growth, drawn in rails.",
   order: 18.75,
   group: "Data",
   summary:

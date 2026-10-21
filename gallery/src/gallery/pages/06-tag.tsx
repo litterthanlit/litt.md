@@ -4,6 +4,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "tag",
   title: "Tag",
+  lede: "A small label that names, files or reports.",
   order: 6, group: "Controls",
   summary:
     "A small label at the control radius, with the look of a selected segment, that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",

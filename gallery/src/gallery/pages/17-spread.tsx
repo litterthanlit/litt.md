@@ -4,6 +4,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "spread",
   title: "Spread",
+  lede: "How values spread, one rail per row.",
   order: 17.65,
   group: "Data",
   summary:

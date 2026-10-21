@@ -7,6 +7,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "code-block",
   title: "Code block",
+  lede: "Code, quiet and copyable.",
   order: 18.96,
   group: "Agents",
   summary:

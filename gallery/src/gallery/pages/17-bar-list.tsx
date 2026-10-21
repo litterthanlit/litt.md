@@ -6,6 +6,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "bar-list",
   title: "Bar list",
+  lede: "A ranked list with a thin bar for each share.",
   order: 17.4,
   group: "Data",
   summary:

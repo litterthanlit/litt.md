@@ -4,6 +4,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "funnel",
   title: "Funnel",
+  lede: "How many went on at each step.",
   order: 17.45,
   group: "Data",
   summary:

@@ -4,6 +4,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "heatmap",
   title: "Heatmap",
+  lede: "How much, in four steps of one hue.",
   order: 17.7,
   group: "Data",
   summary:

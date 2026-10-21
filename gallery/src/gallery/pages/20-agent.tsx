@@ -13,6 +13,7 @@ import { Page, Stage, useReplay, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "agent",
   title: "Agent",
+  lede: "A chat with an agent, from the first word to the deploy.",
   order: 18.99,
   group: "Agents",
   summary:

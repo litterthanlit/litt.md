@@ -7,6 +7,7 @@ import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "composer",
   title: "Composer",
+  lede: "Where you write to an agent.",
   order: 18.92,
   group: "Agents",
   summary:

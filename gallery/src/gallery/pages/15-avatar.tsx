@@ -4,6 +4,7 @@ import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "avatar",
   title: "Avatar",
+  lede: "A round mark for a person or a company.",
   order: 15.1,
   group: "Layout",
   summary:
