@@ -13,7 +13,7 @@ import { buildPrompt, markdownUrl, sourceUrl } from "./copy-prompt";
 import { DocsSections as Sections } from "./sections";
 
 /** A wrong stem in `docs.components` should say so on the page, not blank the whole gallery. */
-class DocsBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
+export class DocsBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
   static getDerivedStateFromError(error: Error) {
     return { error };

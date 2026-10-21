@@ -1,5 +1,5 @@
 import { Gauge } from "@/components/gauge";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "gauge",
@@ -136,6 +136,8 @@ export default function GaugePage() {
       >
         <SizesDemo />
       </Stage>
+
+      <TryIt of="Gauge" component={Gauge} props={{ label: "Build minutes", value: 62 }} derive={(v) => ({ valueText: `${v.value} of 100 minutes used` })} controls={[{ name: "value", type: "number", min: 0, max: 100, step: 1 }, "hue", "label"]} />
     </Page>
   );
 }

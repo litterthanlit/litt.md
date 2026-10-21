@@ -5,7 +5,7 @@ import { SettingsIcon } from "@/components/icons";
 import { RangeSlider, Slider } from "@/components/slider";
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from "@/components/table";
 import { DeviceProvider } from "@/motion";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "slider",
@@ -480,6 +480,8 @@ export default function SliderPage() {
       >
         <PhoneDemo />
       </Stage>
+
+      <TryIt of="Slider" component={Slider} props={{ label: "Animation speed", defaultValue: 40, minLabel: "Slower", maxLabel: "Faster" }} />
     </Page>
   );
 }

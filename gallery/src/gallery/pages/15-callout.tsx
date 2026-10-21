@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { Callout } from "@/components/callout";
 import { Kbd } from "@/components/kbd";
-import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
+import { Page, Stage, TryIt, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "callout",
@@ -191,6 +191,8 @@ export default function CalloutPage() {
       >
         <NarrowDemo />
       </Stage>
+
+      <TryIt of="Callout" component={Callout} props={{ title: "The deploy to atelier-nord.com is queued.", description: "It starts when the build for Marlow Labs finishes." }} controls={["title", "description", "tone"]} />
     </Page>
   );
 }
