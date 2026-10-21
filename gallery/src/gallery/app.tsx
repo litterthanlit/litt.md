@@ -2,7 +2,7 @@
  * The gallery shell: glass header, page list and the page. Only the Playground
  * tunes motion; the header's Customize panel tunes type and shape on every page.
  */
-import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { MotionDialProvider } from "@/motion";
 import { pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
@@ -11,6 +11,7 @@ import { Avatar } from "@/components/avatar";
 import { Segmented } from "@/components/segmented";
 import { CustomizeProvider } from "./customize-state";
 import { NavPreview } from "./nav-preview";
+import { MenuButton, MobileMenu } from "./mobile-menu";
 import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons";
 
 /* The panel and the popover load on their own; until then the button holds its place. */
@@ -32,7 +33,8 @@ const THEMES = [
   { id: "dark", label: "Dark", Icon: MoonIcon },
 ] satisfies { id: ThemeChoice; label: string; Icon: typeof SunIcon }[];
 
-function ThemeSwitch() {
+/** The theme, read from the attribute the pre-paint script set, and written back with the choice. */
+function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
   const [theme, setTheme] = useState<ThemeChoice>(() => {
     const t = document.documentElement.getAttribute("data-theme");
     return t === "light" || t === "dark" ? t : "system";
@@ -47,17 +49,28 @@ function ThemeSwitch() {
       /* ignore */
     }
   };
-  /* litt's own Segmented: a quiet track with the chosen segment raised in it, and native radios underneath.
-     Icons on a phone, where three words would crowd the wordmark; the word stays for screen readers. */
+  return [theme, choose];
+}
+
+/* litt's own Segmented: a quiet track with the chosen segment raised in it, and native radios underneath.
+   In the header, icons on a phone, where three words would crowd the wordmark; the word stays for screen readers.
+   In the menu (`full`), the whole width with icons and words. */
+function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
   return (
     <Segmented
       legend="Theme"
-      size="sm"
+      size={full ? "md" : "sm"}
+      block={full}
       value={theme}
-      onValueChange={choose}
+      onValueChange={onChange}
       options={THEMES.map(({ id, label, Icon }) => ({
         value: id,
-        label: (
+        label: full ? (
+          <span className="flex items-center gap-2">
+            <Icon aria-hidden="true" />
+            {label}
+          </span>
+        ) : (
           <>
             <Icon aria-hidden="true" className="sm:hidden" />
             <span className="max-sm:sr-only">{label}</span>
@@ -83,61 +96,34 @@ function GitHubMark({ className = "" }: { className?: string }) {
 const iconLink =
   "grid size-control-sm shrink-0 place-items-center rounded-control text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:size-control-md";
 
-/** Room the edge fades take, and the margin kept around the active link. Keep it equal to the 32px in the classes below. */
-const FADE = 32;
-
-/**
- * The phone nav. It scrolls sideways with no scrollbar, so each edge fades while
- * more links sit behind it, and a route change brings the active link into view.
- */
-function NavStrip({ activeId, children }: { activeId: string | undefined; children: ReactNode }) {
-  const ref = useRef<HTMLElement>(null);
-
-  /* The fades follow the scroll position, so they show only where there is more to see. */
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const update = () => {
-      el.toggleAttribute("data-fade-start", el.scrollLeft > 1);
-      el.toggleAttribute("data-fade-end", el.scrollLeft + el.clientWidth < el.scrollWidth - 1);
-    };
-    update();
-    el.addEventListener("scroll", update, { passive: true });
-    const resize = new ResizeObserver(update);
-    resize.observe(el);
-    Array.from(el.children).forEach((link) => resize.observe(link)); // links change width when the font loads
-    return () => {
-      el.removeEventListener("scroll", update);
-      resize.disconnect();
-    };
-  }, []);
-
-  /* Scroll the strip itself, instantly. scrollIntoView could move the page too. */
-  useEffect(() => {
-    const el = ref.current;
-    const link = el?.querySelector<HTMLElement>('[aria-current="page"]');
-    if (!el || !link) return;
-    const strip = el.getBoundingClientRect();
-    const box = link.getBoundingClientRect();
-    const hiddenAtStart = strip.left + FADE - box.left;
-    const hiddenAtEnd = box.right - (strip.right - FADE);
-    if (hiddenAtStart > 0) el.scrollTo({ left: el.scrollLeft - hiddenAtStart, behavior: "instant" });
-    else if (hiddenAtEnd > 0) el.scrollTo({ left: el.scrollLeft + hiddenAtEnd, behavior: "instant" });
-  }, [activeId]);
-
-  return (
-    <nav
-      ref={ref}
-      aria-label="Components"
-      className="flex overflow-x-auto px-[calc(var(--gutter)-12px)] [scrollbar-width:none] data-[fade-start]:[--fade-start:32px] data-[fade-end]:[--fade-end:32px] [&:is([data-fade-start],[data-fade-end])]:[mask-image:linear-gradient(to_right,transparent,var(--fg)_var(--fade-start,0px),var(--fg)_calc(100%_-_var(--fade-end,0px)),transparent)]"
-    >
-      {children}
-    </nav>
-  );
-}
-
 function Shell({ page }: { page: PageEntry | undefined }) {
   const mainRef = useRef<HTMLElement>(null);
+  const [theme, setTheme] = useTheme();
+  const [menu, setMenu] = useState(false);
+  const menuButton = useRef<HTMLButtonElement>(null);
+  /* Esc and the button give focus back to the button; a link moves it to the page it opened. The focus moves once
+     the menu has closed, because the page is inert until then and would refuse it. */
+  const focusAfter = useRef<"button" | "main" | null>(null);
+  const closeMenu = useCallback((restore: boolean) => {
+    focusAfter.current = restore ? "button" : "main";
+    setMenu(false);
+  }, []);
+  useEffect(() => {
+    if (menu || !focusAfter.current) return;
+    (focusAfter.current === "button" ? menuButton.current : mainRef.current)?.focus({ preventScroll: true });
+    focusAfter.current = null;
+  }, [menu]);
+
+  /* While the menu covers the page, the page under it is inert and does not scroll; the header stays live. */
+  useEffect(() => {
+    if (!menu) return;
+    const root = document.documentElement;
+    const before = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      root.style.overflow = before;
+    };
+  }, [menu]);
 
   /* Each page names itself in the tab, so history and screen readers can tell them apart. */
   useEffect(() => {
@@ -196,7 +182,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
               <Customize />
             </Suspense>
             <Tooltip content="Source on GitHub">
-              <a href={REPO} target="_blank" rel="noreferrer" aria-label="litt.md on GitHub" className={iconLink}>
+              <a href={REPO} target="_blank" rel="noreferrer" aria-label="litt.md on GitHub" className={iconLink + " max-sm:hidden"}>
                 <GitHubMark />
               </a>
             </Tooltip>
@@ -206,30 +192,27 @@ function Shell({ page }: { page: PageEntry | undefined }) {
               </a>
             </Tooltip>
             <span aria-hidden="true" className="mx-1 h-5 w-px bg-line max-sm:hidden" />
-            <ThemeSwitch />
+            {/* On a phone the theme and GitHub live in the menu, so the bar keeps the wordmark, Customize and the menu. */}
+            <div className="max-sm:hidden">
+              <ThemeSwitch theme={theme} onChange={setTheme} />
+            </div>
+            <MenuButton open={menu} onToggle={() => (menu ? closeMenu(true) : setMenu(true))} ref={menuButton} />
           </div>
-        </div>
-        {/* The hairline sits out here so the edge fades do not mask it. */}
-        <div className="border-t border-line lg:hidden">
-          <NavStrip activeId={page?.id}>
-            {/* The sidebar's groups, in a row: each group opens with its name after a hairline. */}
-            {pageRuns().map((run) =>
-              run.group ? (
-                <div key={run.group} role="group" aria-labelledby={`strip-${run.group}`} className="flex shrink-0 items-center not-first:ml-1 not-first:border-l not-first:border-line not-first:pl-3">
-                  <span id={`strip-${run.group}`} className="shrink-0 pr-1 text-caption text-fg-subtle">{run.group}</span>
-                  {run.pages.map((p) => navLink(p, true))}
-                </div>
-              ) : (
-                <div key={run.pages[0]!.id} className="flex shrink-0 items-center not-first:ml-1 not-first:border-l not-first:border-line not-first:pl-3">
-                  {run.pages.map((p) => navLink(p, true))}
-                </div>
-              ),
-            )}
-          </NavStrip>
         </div>
       </header>
 
-      <div className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
+      <MobileMenu
+        open={menu}
+        onClose={closeMenu}
+        current={page}
+        theme={<ThemeSwitch theme={theme} onChange={setTheme} full />}
+        links={[
+          { label: "Source on GitHub", href: REPO, detail: "litterthanlit/litt.md", lead: <GitHubMark className="text-fg-subtle" /> },
+          { label: `Made by ${MAKER.name}`, href: MAKER.href, detail: MAKER.handle, lead: <Avatar name={MAKER.name} src={MAKER.photo} size="sm" decorative /> },
+        ]}
+      />
+
+      <div inert={menu} className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
         <nav aria-label="Components" className="hidden lg:block">
           <NavPreview className="h-full">
             {/* Its own scroller, so a short window still reaches the last group. It reaches 12px past the
@@ -263,7 +246,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         </main>
       </div>
 
-      <footer className="border-t border-line">
+      <footer inert={menu} className="border-t border-line">
         <div className="mx-auto flex max-w-wide flex-wrap items-center justify-between gap-4 px-gutter py-8 text-caption text-fg-subtle">
           <a href={MAKER.href} target="_blank" rel="noreferrer" className="group flex items-center gap-2 transition-colors duration-(--dur-instant) ease-litt hover:text-fg">
             <Avatar name={MAKER.name} src={MAKER.photo} size="sm" decorative />
