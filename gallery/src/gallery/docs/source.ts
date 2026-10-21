@@ -5,9 +5,26 @@
  * opens a Code tab. It is a different query from the registry's `?page-meta`, so the
  * two never meet. Nothing here runs at startup.
  */
+import { installCommand } from "./copy-prompt";
 import { extractDemo } from "./extract";
 
 const sources = import.meta.glob<string>("../pages/*.tsx", { query: "?raw", import: "default" });
+const blocks = import.meta.glob<string>("../../blocks/*.tsx", { query: "?raw", import: "default" });
+
+/**
+ * A demo that renders a block is a few lines around it, and the block is the part worth reading. So each block the demo
+ * imports follows it, whole, under a comment that names the file and how to install it.
+ */
+async function withBlocks(code: string): Promise<string> {
+  const names = [...code.matchAll(/from\s+"@\/blocks\/([\w-]+)"/g)].map((m) => m[1]!);
+  const parts = [code];
+  for (const name of names) {
+    const load = blocks[`../../blocks/${name}.tsx`];
+    if (!load) throw new Error(`The demo imports @/blocks/${name}, and src/blocks/${name}.tsx does not exist.`);
+    parts.push(`// src/blocks/${name}.tsx, the block. Install it: ${installCommand(name)}\n\n${(await load()).trim()}`);
+  }
+  return parts.join("\n\n");
+}
 
 /** Page files are named <NN>-<meta.id>.tsx (CONTRIBUTING.md), so the id finds the file. */
 function fileFor(pageId: string): string | undefined {
@@ -33,7 +50,7 @@ export function demoSource(pageId: string, name: string): Promise<DemoSource> {
         if (!file) {
           throw new Error(`No page file for "${pageId}". Page files are named <NN>-<meta.id>.tsx in src/gallery/pages/.`);
         }
-        return { code: extractDemo(await sources[file]!(), name, `src/gallery/pages/${file.split("/").pop()}`) };
+        return { code: await withBlocks(extractDemo(await sources[file]!(), name, `src/gallery/pages/${file.split("/").pop()}`)) };
       } catch (e) {
         console.error(`Stage code="${name}" on page "${pageId}":`, e);
         return { error: e instanceof Error ? e.message : String(e) };

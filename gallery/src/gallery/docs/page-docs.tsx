@@ -8,7 +8,7 @@ import { Button } from "@/components/button";
 import { ArrowUpRightIcon, CheckIcon, CopyIcon } from "@/components/icons";
 import type { PageDocs, PageMeta } from "../kit";
 import { componentDoc } from "../docs-data";
-import { CopyStatus, useCopy } from "./copy";
+import { CopyStatus, ghostSm, useCopy } from "./copy";
 import { buildPrompt, markdownUrl, sourceUrl } from "./copy-prompt";
 import { DocsSections as Sections } from "./sections";
 
@@ -31,14 +31,6 @@ export class DocsBoundary extends Component<{ children: ReactNode }, { error: Er
   }
 }
 
-/* The same look as Button's ghost, sm: a link that leaves the site. Button renders a
-   <button>, and a link needs an <a> to be a link (middle click, "open in new tab"). */
-const ghostSm =
-  "relative inline-flex h-control-sm shrink-0 items-center justify-center gap-control rounded-control px-control-pad-sm " +
-  "whitespace-nowrap select-none text-small font-title text-fg-muted " +
-  "cursor-pointer transition-[background-color,color,transform] duration-(--dur-instant) ease-litt " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg active:scale-(--press-scale) " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 function Actions({ meta, docs }: { meta: Pick<PageMeta, "id" | "title" | "summary">; docs: PageDocs }) {
   const components = useMemo(() => docs.components.map(componentDoc), [docs]);

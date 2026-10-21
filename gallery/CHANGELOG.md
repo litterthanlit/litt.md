@@ -4,14 +4,21 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
+## 2026-10-21 · The header's wordmark is bare again, three staples and the first blocks
 
 Taste profile v0.16's P12 covers the current page only: the wordmark in a segment stays the gallery's own, not the language's. And three staples: a color picker for the person's own colors, a rolling number for a figure that changes while someone watches, and slide to confirm for what cannot be undone.
+
+And the first blocks: the gallery's five composed screens, each installable as one item that brings the components it uses. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
 
 - **added** `color-picker`: ColorPicker and ColorPanel, one color as a hex string, from a saturation and brightness area, a hue rail, the hex, an eyedropper where the browser has one, or swatches.
 - **added** `rolling-number`: RollingNumber, a figure whose changed digits roll to the new value, up when it rises and down when it falls. Pass it as a Stat's value to roll a tile.
 - **added** `slide-confirm`: SlideConfirm, a track and a thumb to slide to the end for an action that cannot be undone. The thumb is also a button, so keys and screen readers confirm too.
 - **changed** `motion`: `StillMotion` holds everything inside it still, as reduced motion does: the hooks return 0, Motion skips its animations and the CSS tier tokens read 0. Wrap a thumbnail or a preview of live components in it. Nothing changes for existing code.
+- **added** `dashboard`: Dashboard, a deploy dashboard as one screen: an app shell with a sidebar, four number tiles, a chart of deploys per day and a table of recent deploys with its pagination.
+- **added** `usage`: Usage, a plan's usage as one screen, drawn only in rails: trends, storage and bandwidth by kind of file, limits against their budgets and build times by site.
+- **added** `growth`: Growth, twelve weeks of growth as one screen: sign-ups by source with a legend and a week range that filter them, the funnel from visit to paid and retention by signup week.
+- **added** `insights`: Insights, seven panels of inbox and build insights in the data colors, two columns when wide and one on a phone.
+- **added** `agent`: AgentChat, a chat with an agent as one screen, from the first word to the deploy, played by a script you replace with your agent's stream.
 - **breaking** `header`: the wordmark is bare again, as before 2026.10.20, and the `wordmarkFrame` prop is gone. The current link keeps the selected segment's look (P12).
   Migrate: drop `wordmarkFrame` if you passed it. To keep the segment around your wordmark, wrap it yourself in the segmented control's track and one raised segment.
 
