@@ -4,6 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-21 · The header's wordmark is bare again
+
+Taste profile v0.16's P12 covers the current page only: the wordmark in a segment stays the gallery's own, not the language's.
+
+- **breaking** `header`: the wordmark is bare again, as before 2026.10.20, and the `wordmarkFrame` prop is gone. The current link keeps the selected segment's look (P12).
+  Migrate: drop `wordmarkFrame` if you passed it. To keep the segment around your wordmark, wrap it yourself in the segmented control's track and one raised segment.
+
 ## 2026-10-20 · Geist, md form buttons, growth and stone neutrals
 
 The face of taste profile v0.13: Geist replaces Inter, as on Nick's portfolio. Sizes, weights and tracking are unchanged. And v0.14's P10: lg is for hero CTAs only, so a page form's submit and Cancel are md, like its fields. And the growth step: three more data views in the rail idiom, a legend that filters, and stacked rails in the chart. And v0.15's Color decision: the neutrals move from cool blue-gray to warm stone. And v0.16's P12: selected is a raised segment, in the header's current link, its wordmark and the app shell's current link.
