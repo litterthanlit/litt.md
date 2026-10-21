@@ -4,7 +4,7 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-21 · The header's wordmark is bare again, and a color picker
+## 2026-10-21 · The header's wordmark is bare again, a color picker and a rolling number
 
 Taste profile v0.16's P12 covers the current page only: the wordmark in a segment stays the gallery's own, not the language's. And a staple: a color picker for the person's own colors.
 
@@ -94,6 +94,7 @@ Select, Switch, Slider and the field patterns, and Litt's own accent (taste prof
 
 Motion on phones and touch (taste profile v0.6), the open decisions after the agent tests (v0.7) and tags in mono (v0.8). Desktop motion is unchanged.
 
+- **added** `rolling-number`: RollingNumber, a figure whose changed digits roll to the new value, up when it rises and down when it falls. Pass it as a Stat's value to roll a tile.
 - **changed** `motion`: the compact and coarse device signals and drag to dismiss.
 - **changed** `dialog`: a bottom sheet on phones that drags to close and sits above the keyboard. Dialog takes a `tier`.
 - **changed** `popover`: a bottom sheet on phones.

@@ -304,6 +304,10 @@ const RECIPES = {
           <ColorPanel label="Cover color" defaultValue="#1d5c5a" />
         </form>`,
   },
+  "rolling-number": {
+    needs: ["RollingNumber"],
+    jsx: `<p className="text-xl" data-testid="litt-rolling-number"><RollingNumber value={12480} /> <RollingNumber value={0.64} format={{ style: "percent" }} /></p>`,
+  },
   stat: {
     needs: ["Stat", "StatGroup"],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-stats"><StatGroup><Stat label="Active projects" value={12} /><Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" trend={<span data-testid="stat-trend">Last 14 days</span>} /></StatGroup></div>`,
