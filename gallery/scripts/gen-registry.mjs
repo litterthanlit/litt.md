@@ -13,6 +13,7 @@
  *   node scripts/gen-registry.mjs                     write public/r
  *   node scripts/gen-registry.mjs --check             fail if public/r is missing or stale
  *   node scripts/gen-registry.mjs --out DIR           write somewhere else (the install test does)
+ *   node scripts/gen-registry.mjs --explain           also name the pages that ship no example, and why
  *   node scripts/gen-registry.mjs --origin URL        origin used in registryDependencies
  *                                                     (default https://littmd.vercel.app,
  *                                                     or $LITT_REGISTRY_ORIGIN, or the preview URL on Vercel)
@@ -23,6 +24,7 @@
  *   motion        registry:lib    src/motion/* (spring tiers, the hooks)
  *   glide         registry:lib    components/glide.tsx (the gliding highlight)
  *   <stem>        registry:ui     one per src/components/*.tsx that has a page
+ *   <stem>-demo   registry:example  the first demo on the component's page, as a working component (see EXAMPLES)
  *
  * WHY THE FILES ARE TRANSFORMED (nothing in src/, tokens.css or tailwind.css is edited)
  *   tokens.css declares --accent, --font-sans, --radius-control and friends globally, and its
@@ -63,6 +65,16 @@
  *   asChild            a written asChild becomes {...asChildProps}: shadcn's CLI rewrites the attribute to Base UI's
  *                      render prop in every host whose style starts with "base-" (the default of `shadcn init`).
  *
+ * EXAMPLES
+ *   shadcn's MCP server answers "show me a button example" with an item named <name>-demo, and with no such item it
+ *   shows whatever loosely matches (asked for button-demo, it once answered with the code block's source). So every
+ *   page whose first Stage has a code demo ships it: the same function the Code tab shows (src/gallery/docs/extract.ts,
+ *   transpiled on the fly), exported as the default, its imports and token names rewritten like any component's, and
+ *   installed to components/litt/examples/<stem>-demo.tsx with the components it uses as registryDependencies. A demo
+ *   that needs the gallery's own plumbing (the kit, the fixtures) is left out and named in the log. An example is
+ *   documentation, so it is not in registry.lock.json and needs no changelog line: it carries the version of the
+ *   component it shows.
+ *
  * VERSIONS (CHANGELOG.md, registry.lock.json; see scripts/changelog.mjs)
  *   Every item's version is the newest release in CHANGELOG.md that names it, by date (2026.10.19). It goes into
  *   the item's meta.version and into a comment at the top of every file it installs ("// @litt/button 2026.10.19
@@ -87,6 +99,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
@@ -639,9 +652,9 @@ const DEFINES = { __LITT_MD_VERSION__: JSON.stringify(littMdVersion) };
  * Analyse and transform one source file.
  * Returns { text, imports: [{spec, file?}], stats, usesLitt }.
  */
-function transformFile(file, targets) {
+function transformFile(file, targets, source) {
   const key = norm(path.relative(srcDir, file));
-  let text = read(file);
+  let text = source ?? read(file);
   for (const p of PATCHES[key] ?? []) {
     if (!text.includes(p.find)) fail(`${rel(file)}: the patch anchor moved (${p.why}). Update PATCHES in gen-registry.mjs, or move the fix into the source.`);
     const replacement = p.replace(text);
@@ -1046,13 +1059,81 @@ const COPY = {
   },
 };
 
+/* ======================================================================== examples */
+
+const pagesDir = path.join(srcDir, "gallery", "pages");
+const examplesDir = path.join(componentsDir, "examples"); // virtual: nothing is written there
+
+/** extract.ts has no imports, so a plain transpile runs it under Node (gen-llms.mjs loads copy-prompt.ts the same way). */
+async function loadExtract() {
+  const src = read(path.join(srcDir, "gallery", "docs", "extract.ts"));
+  const js = ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "litt-registry-"));
+  const tmp = path.join(dir, "extract.mjs");
+  fs.writeFileSync(tmp, js);
+  try {
+    return await import(pathToFileURL(tmp).href);
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+/**
+ * One demo per component page: [{ stem, page, name, file, text }] for the examples, and [{ page, why }] for the pages
+ * left out. `file` is a path under src/components/examples that does not exist; transformFile gets the text instead.
+ */
+function collectDemos(extractDemo) {
+  const demos = [];
+  const skipped = [];
+  for (const f of fs.readdirSync(pagesDir).filter((x) => x.endsWith(".tsx")).sort()) {
+    const src = read(path.join(pagesDir, f));
+    const stem = /export const docs[^=]*=\s*\{\s*components:\s*\[\s*"([\w-]+)"/.exec(src)?.[1];
+    if (!stem || !docs[stem]) continue;
+    const name = /<Stage\b[^>]*?\bcode="(\w+)"/s.exec(src)?.[1];
+    if (!name) {
+      skipped.push({ page: f, why: "its first stages have no code demo" });
+      continue;
+    }
+    if (demos.some((d) => d.stem === stem)) continue; // one example per component, from its first page
+    let code;
+    try {
+      code = extractDemo(src, name, f);
+    } catch (e) {
+      skipped.push({ page: f, why: e.message });
+      continue;
+    }
+    /* The kit is dropped from the extract. If the demo reaches for any of its names, the example would not compile. */
+    const kitNames = [.../import\s*\{([^}]*)\}\s*from\s*"\.\.\/kit"/.exec(src)?.[1].split(",") ?? []]
+      .map((x) => x.trim().replace(/^type\s+/, ""))
+      .filter((x) => x && !/^(?:Page|Stage|TryIt)$/.test(x));
+    const usesKit = kitNames.find((k) => new RegExp(`\\b${k}\\b`).test(code));
+    if (usesKit) {
+      skipped.push({ page: f, why: `${name} uses ${usesKit} from the gallery kit` });
+      continue;
+    }
+    const outside = [...code.matchAll(/from\s+"((?:\.{1,2}\/|@\/)[^"]+)"/g)].map((m) => m[1]).find((spec) => !/^@\/(?:components|motion)(?:\/|$)/.test(spec));
+    if (outside) {
+      skipped.push({ page: f, why: `${name} imports ${outside}, which does not ship` });
+      continue;
+    }
+    const exported = code.replace(new RegExp(`^function ${name}\\(`, "m"), `export default function ${name}(`);
+    if (exported === code) {
+      skipped.push({ page: f, why: `${name} is not a plain function declaration` });
+      continue;
+    }
+    const file = path.join(examplesDir, `${stem}-demo.tsx`);
+    demos.push({ stem, page: f, name, file, text: exported + "\n" });
+  }
+  return { demos, skipped };
+}
+
 /* =============================================================== assemble the items */
 
 const SCHEMA_URL = "https://ui.shadcn.com/schema/registry-item.json";
 const urlOf = (name) => `${origin}/r/${name}.json`;
 const ITEM_TYPE = { motion: "registry:lib", glide: "registry:lib" };
 
-function build() {
+function build(demos = []) {
   // 1. Which files ship, and where.
   const componentFiles = stems.map((s) => path.join(componentsDir, `${s}.tsx`));
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
@@ -1148,6 +1229,32 @@ function build() {
       docs: COPY[name].docs,
     }));
   }
+  // examples: the first demo of each component page
+  for (const demo of demos) {
+    const target = `components/litt/examples/${demo.stem}-demo.tsx`;
+    targets.set(demo.file, target);
+    const t = transformFile(demo.file, targets, demo.text);
+    transformed.set(demo.file, t);
+    const deps = new Set();
+    const pkgs = new Set();
+    for (const imp of t.imports) {
+      if (imp.file) deps.add(itemOf(imp.file));
+      else if (!["react", "react-dom"].includes(packageOf(imp.spec))) pkgs.add(packageOf(imp.spec));
+    }
+    const registryDependencies = [...(t.usesLitt ? ["litt"] : []), ...[...deps].sort()].map(urlOf);
+    const pageId = demo.page.replace(/^\d+-/, "").replace(/\.tsx$/, "");
+    items.push(base({
+      name: `${demo.stem}-demo`,
+      type: "registry:example",
+      title: `${COPY[demo.stem].title} example`,
+      description: `A working ${COPY[demo.stem].title.toLowerCase()}: ${demo.name}, the first demo on its page (${PRODUCTION_ORIGIN}/#${pageId}). It installs the components it uses.`,
+      ...(pkgs.size ? { dependencies: [...pkgs].sort() } : {}),
+      ...(registryDependencies.length ? { registryDependencies } : {}),
+      files: [{ path: `registry/litt/examples/${demo.stem}-demo.tsx`, type: "registry:example", content: t.text, target }],
+      docs: `Import ${demo.name} from components/litt/examples/${demo.stem}-demo, or read it for how @litt/${demo.stem} is used. ${COPY[demo.stem].docs}`,
+      meta: { of: demo.stem },
+    }));
+  }
   return { items, targets, transformed };
 }
 
@@ -1187,7 +1294,7 @@ function versionItems(items) {
   }
   let versions;
   try {
-    versions = itemVersions(changelog, items.map((i) => i.name));
+    versions = itemVersions(changelog, items.filter((i) => i.type !== "registry:example").map((i) => i.name));
   } catch (e) {
     return { errs: [e.message], lock: null };
   }
@@ -1196,6 +1303,13 @@ function versionItems(items) {
   const old = fs.existsSync(lockFile) ? JSON.parse(read(lockFile)) : { items: {} };
   const lock = {};
   for (const item of items) {
+    if (item.type === "registry:example") {
+      /* Documentation, not a component: no lock entry, the version of the component it shows. */
+      const version = versions.get(item.meta.of);
+      item.meta = { version, released: released.get(version), changelog: CHANGELOG_URL, example: `@litt/${item.meta.of}` };
+      for (const f of item.files) f.content = f.content.replace(/^"use client";\n/, `"use client";\n// @litt/${item.name}, an example for @litt/${item.meta.example.slice(6)} ${version}. What changed: ${CHANGELOG_URL}\n`);
+      continue;
+    }
     const version = versions.get(item.name);
     const hash = installHash(item);
     const before = old.items?.[item.name];
@@ -1404,7 +1518,9 @@ function verify(items, targets, transformed, shadcn) {
       unprefixedVarRe.lastIndex = 0;
       const stray = [...text.matchAll(unprefixedVarRe)].map((m) => m[0]);
       if (stray.length) bad(where, `unprefixed litt custom property survives: ${[...new Set(stray)].join(", ")}`);
-      const names = new Set([...text.matchAll(/(?<![\w-])(--[a-zA-Z][\w-]*)/g)].map((m) => m[1]));
+      /* An example's text is a page's words too ("git push --force"), so it is read only where CSS reads a property. */
+      const varRe = item.type === "registry:example" ? /(?:var\(\s*|\(|["'`])(--[a-zA-Z][\w-]*)/g : /(?<![\w-])(--[a-zA-Z][\w-]*)/g;
+      const names = new Set([...text.matchAll(varRe)].map((m) => m[1]));
       for (const n of names) {
         if (ALLOWED_FOREIGN_VARS.some((re) => re.test(n))) continue;
         if (local.has(n)) continue;
@@ -1570,7 +1686,9 @@ function serialize(items) {
 
 async function main() {
   const shadcn = await loadShadcnSchema();
-  const { items, targets, transformed } = build();
+  const { extractDemo } = await loadExtract();
+  const { demos, skipped } = collectDemos(extractDemo);
+  const { items, targets, transformed } = build(demos);
   const versioned = versionItems(items);
   if (versioned.errs.length) {
     console.error(`gen-registry: ${versioned.errs.length} version problem${versioned.errs.length === 1 ? "" : "s"}:`);
@@ -1615,10 +1733,11 @@ async function main() {
     fs.renameSync(next, outDir);
   }
 
+  if (flag("--explain")) for (const sk of skipped) console.log(`  no example: ${sk.page}: ${sk.why}`);
   const fileCount = items.reduce((n, i) => n + (i.files?.length ?? 0), 0);
   console.log(
     `gen-registry: ${items.length} items, ${fileCount} files -> ${path.relative(root, outDir) || "."} ` +
-      `(origin ${origin}, ${cross.count} classes cross-checked${shadcn ? ", shadcn schema ok" : ""}, release ${versioned.lock.latest}${lockStale && !check && !option("--out") ? ", registry.lock.json updated" : ""})`,
+      `(${demos.length} examples, ${skipped.length} pages without one; origin ${origin}, ${cross.count} classes cross-checked${shadcn ? ", shadcn schema ok" : ""}, release ${versioned.lock.latest}${lockStale && !check && !option("--out") ? ", registry.lock.json updated" : ""})`,
   );
 }
 

@@ -194,6 +194,7 @@ function llmsTxt(pages) {
         "Needs a shadcn project (a components.json) with Tailwind CSS v4.",
         "Optional: `npx shadcn@latest add https://littmd.vercel.app/r/base-styles.json` for litt's fonts, heading weights and focus ring across the whole app.",
         `Every installed file names its release in its first lines (\`// @litt/button ${lock.latest}\`). To update, read the changelog since then and install again with \`--overwrite\`.`,
+        "In an AI tool: with the @litt registry in components.json, shadcn's MCP server (`npx shadcn@latest mcp init --client claude`, or cursor, vscode, codex) can search litt, read each item and its `<name>-demo` example (`npx shadcn@latest view @litt/button-demo`), and install it. Setup for each tool: " + `${ORIGIN}/#ai.`,
         `For the whole design language (taste, tokens, build and critique workflows), install the Claude Code plugin: \`claude plugin marketplace add litterthanlit/litt.md\`, then \`claude plugin install litt-md@litt\`. Source: ${REPO}.`,
       ]),
     ].join("\n\n"),
