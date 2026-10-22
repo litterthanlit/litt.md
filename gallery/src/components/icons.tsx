@@ -20,6 +20,7 @@ export const ChevronLeftIcon = (p: IconProps) => <Icon {...p}><path d="M10 3.5 5
 export const XIcon = (p: IconProps) => <Icon {...p}><path d="m4 4 8 8M12 4l-8 8" /></Icon>;
 export const PlusIcon = (p: IconProps) => <Icon {...p}><path d="M8 3v10M3 8h10" /></Icon>;
 export const MinusIcon = (p: IconProps) => <Icon {...p}><path d="M3 8h10" /></Icon>;
+export const FilterIcon = (p: IconProps) => <Icon {...p}><path d="M2.25 3.25h11.5L9.25 8.5v4.25l-2.5 1v-5.25z" /></Icon>;
 export const CopyIcon = (p: IconProps) => <Icon {...p}><rect x="5.25" y="5.25" width="7.5" height="7.5" /><path d="M3.25 10.25V3.25h7" /></Icon>;
 export const ArrowUpRightIcon = (p: IconProps) => <Icon {...p}><path d="M5 11 11 5M6 5h5v5" /></Icon>;
 export const MoreIcon = (p: IconProps) => <Icon {...p}><circle cx="3.5" cy="8" r=".75" /><circle cx="8" cy="8" r=".75" /><circle cx="12.5" cy="8" r=".75" /></Icon>;

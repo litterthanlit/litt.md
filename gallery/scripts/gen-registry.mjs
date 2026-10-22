@@ -1143,6 +1143,11 @@ const COPY = {
     description: "An information card of labelled facts about one thing, such as a deployment or a client: rows with the labels in one column, or a grid with each label above its value. Values can be copied, a missing one says Not set, and a loading card keeps its height.",
     docs: "Import Details, DetailsItem and DetailsLink from components/litt/details. Give Details a title and one DetailsItem per fact, with copy on the values people paste. Use layout=\"grid\" for a few short facts, and bare inside a dialog or a panel.",
   },
+  "table-filter": {
+    title: "Table filter",
+    description: "A filter for one column of a Table, in its header: a funnel button that opens the column's values as Menu rows, checkboxes with how many rows each would show, or radio buckets for a number. A filtering column's button wears the selected segment.",
+    docs: "Import TableFilter from components/litt/table-filter and pass it as a TableHead's filter. Hold the values on in state ([] is no filter) and filter your rows with them; count each value against the other filters.",
+  },
   /* Blocks: whole screens. The docs line says where the sample data is, because that is the first thing to change. */
   dashboard: {
     title: "Dashboard block",

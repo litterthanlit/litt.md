@@ -164,7 +164,7 @@
     },
     "icons": {
       "version": "2026.10.22",
-      "hash": "2637146ecda118fc"
+      "hash": "176022fb6144a227"
     },
     "input": {
       "version": "2026.10.19",
@@ -308,7 +308,11 @@
     },
     "table": {
       "version": "2026.10.22",
-      "hash": "c10587fe081865c9"
+      "hash": "629cd8019a0e4e44"
+    },
+    "table-filter": {
+      "version": "2026.10.22",
+      "hash": "171fbfbbb81b59aa"
     },
     "tabs": {
       "version": "2026.10.19",

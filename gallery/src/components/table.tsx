@@ -529,9 +529,11 @@ function SortIcon({ direction }: { direction: SortDirection }) {
   );
 }
 
-export type TableHeadProps = Omit<ComponentProps<"th">, "ref" | "scope" | "aria-sort"> & {
+export type TableHeadProps = Omit<ComponentProps<"th">, "ref" | "scope" | "aria-sort" | "filter"> & {
   /** Right-aligns the header over a column of numbers or dates. */
   numeric?: boolean;
+  /** A TableFilter (table-filter) for this column. It sits at the end of the header, or before the label over numbers. */
+  filter?: ReactNode;
   /** Which way this column is sorted now. Only read when onSort is set. */
   sort?: SortDirection;
   /** Makes the header a sortable button and sets aria-sort. Called when it is pressed; you sort the rows and pass the new `sort`. */
@@ -542,34 +544,46 @@ export type TableHeadProps = Omit<ComponentProps<"th">, "ref" | "scope" | "aria-
   className?: string;
 };
 
-/** A column header. Sticky, caption size at the label weight, fg-subtle. Add onSort to make it a sortable button. */
-export function TableHead({ numeric = false, sort = "none", onSort, className = "", children, ...rest }: TableHeadProps) {
+/** A column header. Sticky, caption size at the label weight, fg-subtle. Add onSort to make it a sortable button, and filter for a TableFilter. */
+export function TableHead({ numeric = false, sort = "none", onSort, filter, className = "", children, ...rest }: TableHeadProps) {
   const align = numeric ? "text-right" : "text-left";
+  /* With a filter the cell is a row of two: the label (or the sort button) and the filter's button. Over numbers the
+     filter goes first, so the label stays flush right above the figures. */
+  const withFilter = (label: ReactNode) => (
+    <div className={"flex h-control-md items-center " + (numeric ? "flex-row-reverse pl-2" : "pr-2")}>
+      <div className="min-w-0 flex-1">{label}</div>
+      <div className="shrink-0">{filter}</div>
+    </div>
+  );
   if (!onSort) {
+    const label = filter ? <span className={"block px-4 " + align}>{children}</span> : children;
     return (
-      <th scope="col" className={[head, align, "px-4 py-3 text-fg-subtle", className].join(" ")} {...rest}>
-        {children}
+      <th scope="col" className={[head, align, filter ? "p-0 text-fg-subtle" : "px-4 py-3 text-fg-subtle", className].join(" ")} {...rest}>
+        {filter ? withFilter(label) : label}
       </th>
     );
   }
+  const button = (
+    <button
+      type="button"
+      onClick={onSort}
+      className={[
+        "flex h-control-md w-full cursor-pointer items-center gap-1 px-4 text-caption",
+        // Numbers sit flush right, so the icon goes to the left of the label to keep the label above the figures.
+        numeric ? "flex-row-reverse" : "",
+        "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent]",
+        "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
+        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus",
+        sort === "none" ? "text-fg-subtle hover:text-fg pointer-coarse:active:text-fg" : "text-fg",
+      ].join(" ")}
+    >
+      <span>{children}</span>
+      <SortIcon direction={sort} />
+    </button>
+  );
   return (
     <th scope="col" aria-sort={sort} className={[head, align, "p-0", className].join(" ")} {...rest}>
-      <button
-        type="button"
-        onClick={onSort}
-        className={[
-          "flex h-control-md w-full cursor-pointer items-center gap-1 px-4 text-caption",
-          // Numbers sit flush right, so the icon goes to the left of the label to keep the label above the figures.
-          numeric ? "flex-row-reverse" : "",
-          "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent]",
-          "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
-          "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus",
-          sort === "none" ? "text-fg-subtle hover:text-fg pointer-coarse:active:text-fg" : "text-fg",
-        ].join(" ")}
-      >
-        <span>{children}</span>
-        <SortIcon direction={sort} />
-      </button>
+      {filter ? withFilter(button) : button}
     </th>
   );
 }
