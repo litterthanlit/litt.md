@@ -1099,6 +1099,31 @@ const COPY = {
     description: "A chat with an agent as one screen, from the first word to the deploy: the conversation, the thinking, a plan, a run of tool calls, an approval, the answer with its code and the composer. A scripted run plays every state without a model and waits for you at the approval.",
     docs: "Import AgentChat from components/litt-blocks/agent and give its box a height; the conversation scrolls inside it. The run is a script: to wire in your agent, keep LittTurn and the layout and replace useRun with your stream.",
   },
+  projects: {
+    title: "Projects block",
+    description: "A studio's projects as one screen: a title with the count, a toolbar with the status filters, a search, a list or grid switch and New project, then the rows or the cards. Every empty case says why and offers the way back.",
+    docs: "Import Projects from components/litt-blocks/projects and render it inside your app's shell. The sample projects sit at the top of the file in the list's Project shape; give each one an href to make its row a link.",
+  },
+  settings: {
+    title: "Settings block",
+    description: "An account's settings as one screen: the profile, the notifications and the appearance, Save and Cancel, and deleting the studio apart behind a slide to confirm. A failed save puts a summary on top that takes focus, and a good one ends in a toast.",
+    docs: "Import Settings from components/litt-blocks/settings and render it inside your app's shell, with the Toaster mounted once near your root. The saved values sit at the top of the file, and useSave stands in for your request.",
+  },
+  team: {
+    title: "Team block",
+    description: "A studio's people as one screen: the seats as a meter, and a table with each person's role to change in place, open invites, when they were last active and a menu of actions. Invite opens a dialog that takes several addresses, and a removal is undone from its toast.",
+    docs: "Import Team from components/litt-blocks/team and render it inside your app's shell, with the Toaster mounted once near your root. The members and the seat count sit at the top of the file; setRole, remove and invite are where your requests go.",
+  },
+  activity: {
+    title: "Activity block",
+    description: "A studio's activity as one screen: a filter by kind, then the events grouped by day, each one sentence with who and what in the foreground and the time in the mono. A deploy says how it ended in a tag, and Show earlier adds the day before below.",
+    docs: "Import Activity from components/litt-blocks/activity and render it inside your app's shell. The sample days sit at the top of the file, newest first; Show earlier is where your next page loads.",
+  },
+  "sign-in": {
+    title: "Sign in block",
+    description: "The page before the app: the wordmark, one left-aligned column with email, password, Sign in and a second way in, and a quiet column of what is new on a wide screen. Wrong fields say so under themselves and take focus, and a refusal shows in a callout.",
+    docs: "Import SignIn from components/litt-blocks/sign-in and render it as a whole page. signIn at the top of the file stands in for your auth call; return your server's message the same way, and point the links at your routes.",
+  },
 };
 
 /* ======================================================================== examples */

@@ -80,6 +80,7 @@ const GROUP_ICON: Record<PageGroup, ReactNode> = {
   Layout: <Glyph d="M2.75 2.75h10.5v10.5H2.75zM2.75 6.25h10.5M6.25 6.25v7" />, // a header and a sidebar
   Data: <Glyph d="M3.25 13.25v-4M8 13.25v-10M12.75 13.25v-6.5" />, // three rails
   Agents: <Glyph d="M8 2.5v3M8 10.5v3M2.5 8h3M10.5 8h3M4.4 4.4l1.6 1.6M10 10l1.6 1.6M4.4 11.6 6 10M10 6l1.6-1.6" />, // a spark
+  Blocks: <Glyph d="M2.75 2.75h4.5v4.5h-4.5zM8.75 2.75h4.5v4.5h-4.5zM2.75 8.75h4.5v4.5h-4.5zM8.75 8.75h4.5v4.5h-4.5z" />, // four parts, one screen
 };
 
 /* ---------------------------------------------------------------- rows */

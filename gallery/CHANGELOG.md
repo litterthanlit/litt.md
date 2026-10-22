@@ -6,13 +6,18 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-10-22 · Blocks
 
-The first blocks: the gallery's five composed screens, each installable as one item that brings the components it uses. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
+The first blocks: ten whole screens, the gallery's five composed pages and five app screens (projects, settings, team, activity and sign in), each installable as one item that brings the components it uses. The app screens are a page's content, to render inside your app's shell. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
 
 - **added** `dashboard`: Dashboard, a deploy dashboard as one screen: an app shell with a sidebar, four number tiles, a chart of deploys per day and a table of recent deploys with its pagination.
 - **added** `usage`: Usage, a plan's usage as one screen, drawn only in rails: trends, storage and bandwidth by kind of file, limits against their budgets and build times by site.
 - **added** `growth`: Growth, twelve weeks of growth as one screen: sign-ups by source with a legend and a week range that filter them, the funnel from visit to paid and retention by signup week.
 - **added** `insights`: Insights, seven panels of inbox and build insights in the data colors, two columns when wide and one on a phone.
 - **added** `agent`: AgentChat, a chat with an agent as one screen, from the first word to the deploy, played by a script you replace with your agent's stream.
+- **added** `projects`: Projects, a studio's projects as one screen: status filters, a search, a list or grid switch and New project, with an empty state for every case.
+- **added** `settings`: Settings, an account's settings as one screen: profile, notifications and appearance, an error summary on a failed save, a toast on a good one, and deleting the studio behind a slide to confirm.
+- **added** `team`: Team, a studio's people as one screen: seats as a meter, roles changed in place, open invites, an invite dialog for several addresses and a removal undone from its toast.
+- **added** `activity`: Activity, a studio's activity as one screen: events grouped by day, filtered by kind, each one sentence in two inks with its time in the mono.
+- **added** `sign-in`: SignIn, the page before the app: email and password, a second way in, wrong fields that take focus and a refusal in a callout.
 
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
 

@@ -1,13 +1,11 @@
 import { Growth } from "@/blocks/growth";
-import { DeviceProvider } from "@/motion";
-import { Page, Stage, type PageMeta } from "../kit";
+import { AppFrame, Page, Stage, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "growth",
   title: "Growth",
   lede: "Twelve weeks of growth, drawn in rails.",
-  order: 18.75,
-  group: "Data",
+  order: 30.3, group: "Blocks",
   verbs: ["hover", "press"],
   summary:
     "A template store's last twelve weeks, drawn in rails: sign-ups by source as thin stacked columns you can filter by source and by week, the funnel from visit to paid, and retention by signup week. Each source keeps one hue, everything else stays in the foreground, and only the chart's entrance moves.",
@@ -21,21 +19,9 @@ function GrowthDemo() {
 
 function PhoneDemo() {
   return (
-    <div className="mx-auto w-full max-w-sm">
-      <div
-        role="region"
-        aria-label="Growth, phone"
-        tabIndex={0}
-        className={
-          "h-176 overflow-y-auto overscroll-contain rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line " +
-          "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
-        }
-      >
-        <DeviceProvider mode="phone">
-          <Growth />
-        </DeviceProvider>
-      </div>
-    </div>
+    <AppFrame label="Growth, phone" phone>
+      <Growth />
+    </AppFrame>
   );
 }
 

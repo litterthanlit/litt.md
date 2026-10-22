@@ -586,6 +586,11 @@ const RECIPES = {
   growth: { needs: ["Growth"], jsx: `<div className="w-full" data-testid="litt-block-growth"><Growth /></div>` },
   insights: { needs: ["Insights"], jsx: `<div className="w-full" data-testid="litt-block-insights"><Insights /></div>` },
   agent: { needs: ["AgentChat"], jsx: `<div className="h-[36rem] w-full max-w-3xl" data-testid="litt-block-agent"><AgentChat finished label="Smoke agent chat" /></div>` },
+  projects: { needs: ["Projects"], jsx: `<div className="w-full" data-testid="litt-block-projects"><Projects /></div>` },
+  settings: { needs: ["Settings"], jsx: `<div className="w-full" data-testid="litt-block-settings"><Settings /></div>` },
+  team: { needs: ["Team"], jsx: `<div className="w-full" data-testid="litt-block-team"><Team /></div>` },
+  activity: { needs: ["Activity"], jsx: `<div className="w-full" data-testid="litt-block-activity"><Activity /></div>` },
+  "sign-in": { needs: ["SignIn"], jsx: `<div className="h-[40rem] w-full" data-testid="litt-block-sign-in"><SignIn /></div>` },
 };
 
 /** Recipes for shadcn's own registry, used by `--registry shadcn` to prove the harness itself. */
