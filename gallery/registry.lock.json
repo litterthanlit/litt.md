@@ -56,7 +56,7 @@
     },
     "carousel": {
       "version": "2026.10.22",
-      "hash": "cd6a113ab725ce31"
+      "hash": "eb0fb1efbc838cbc"
     },
     "case-study": {
       "version": "2026.10.22",
@@ -216,7 +216,7 @@
     },
     "motion": {
       "version": "2026.10.22",
-      "hash": "fef7d4d7aacc3bd7"
+      "hash": "42dff60e45e1be83"
     },
     "number-field": {
       "version": "2026.10.22",
@@ -275,12 +275,12 @@
       "hash": "64e123df8ac6d468"
     },
     "slide-confirm": {
-      "version": "2026.10.21",
-      "hash": "573f6426a47964a1"
+      "version": "2026.10.22",
+      "hash": "ebd8b25621d1cfe0"
     },
     "slider": {
-      "version": "2026.10.19",
-      "hash": "33fd6c721813cbcc"
+      "version": "2026.10.22",
+      "hash": "b28b5b32e8fb0a14"
     },
     "sparkline": {
       "version": "2026.10.22",
@@ -303,8 +303,8 @@
       "hash": "0936ddf6531deee4"
     },
     "switch": {
-      "version": "2026.10.19",
-      "hash": "9d72af4f55b2b53b"
+      "version": "2026.10.22",
+      "hash": "305ad5e0dcb33d37"
     },
     "table": {
       "version": "2026.10.22",
