@@ -133,7 +133,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `base-styles` | Opt-in. Loads Geist at 400, 500 and 600 and Geist Mono at 400, and sets page defaults for the whole app: headings, b and strong at the title weight, table headers at the label weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
 | `motion`, `glide`, `icons`, `list-cover` | Libraries that components bring along. `motion` holds the hooks below, `icons` has 30 16px icons (`SearchIcon`, `PlusIcon`, `SettingsIcon`) and `StatusIcon` with the five step marks, and both are fine to install on their own. |
 
-**Blocks** are whole screens built from the items above. When the task asks for a screen like one of these, start from the block instead of composing it from nothing. It brings every component it uses.
+**Blocks** are whole screens built from the items above. When the task asks for a screen like one of these, start from the block instead of composing it from nothing. It brings every component it uses. The app screens (`projects`, `settings`, `team`, `activity`) are a page's content: render them inside the app's shell, such as `dashboard`'s `AppShell`.
 
 | Block | Install it for |
 |---|---|
@@ -142,6 +142,11 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `growth` | A growth or analytics report: stacked columns filtered by a Legend and a week range, a funnel, retention (`Growth`). |
 | `insights` | A grid of insight panels, one idea each: a dot plot, a bar list, a rule form, a timeline, a gauge, a heatmap (`Insights`). |
 | `agent` | A chat with an agent, every state of a turn, with a composer (`AgentChat`). The run is a script: replace `useRun` with your agent's stream. |
+| `projects` | A list of projects or other records with status filters, a search and a list or grid switch (`Projects`). It uses the list's `Project` shape. |
+| `settings` | An account or studio settings page: sections, an error summary, a saved toast and a danger zone behind a slide to confirm (`Settings`). |
+| `team` | Members, roles and invites: a seats meter, a table with a role picker per row, an invite dialog for several addresses (`Team`). |
+| `activity` | A feed of what happened, grouped by day and filtered by kind (`Activity`). |
+| `sign-in` | A sign-in page with field errors, a server refusal and a second way in (`SignIn`). A whole page, not a part of the app shell. |
 
 A block lands in `components/litt-blocks/<name>.tsx`, outside `components/litt/`, because it is a starting point. Change it in place: replace the sample data at the top of the file, rename things, drop the panels you do not need. Keep its layout, its spacing and its one accent fill. Never reinstall a block over your edits.
 

@@ -1,12 +1,11 @@
 import { Insights } from "@/blocks/insights";
-import { DeviceProvider } from "@/motion";
-import { Page, Stage, useReplay, type PageMeta } from "../kit";
+import { AppFrame, Page, Stage, useReplay, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "insights",
   title: "Insights",
   lede: "Inbox and build insights, in the data colors.",
-  order: 18.7, group: "Data",
+  order: 30.4, group: "Blocks",
   verbs: ["hover"],
   summary:
     "The studio's inbox and build insights, built from the data-color parts: a dot plot of reply times, a bar list of shortcuts, a mail rule, a voice pad, a deploy timeline, a credits gauge and a heatmap of the credits by day. Each hue means one thing in its panel, the deploy stays in the quiet foreground, and Create rule is the one accent fill in the view.",
@@ -20,21 +19,9 @@ function InsightsDemo() {
 
 function PhoneDemo() {
   return (
-    <div className="mx-auto w-full max-w-sm">
-      <div
-        role="region"
-        aria-label="Insights, phone"
-        tabIndex={0}
-        className={
-          "h-176 overflow-y-auto overscroll-contain rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line " +
-          "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
-        }
-      >
-        <DeviceProvider mode="phone">
-          <Insights />
-        </DeviceProvider>
-      </div>
-    </div>
+    <AppFrame label="Insights, phone" phone>
+      <Insights />
+    </AppFrame>
   );
 }
 

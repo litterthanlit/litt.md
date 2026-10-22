@@ -7,8 +7,7 @@ export const meta: PageMeta = {
   id: "agent",
   title: "Agent",
   lede: "A chat with an agent, from the first word to the deploy.",
-  order: 18.99,
-  group: "Agents",
+  order: 30.5, group: "Blocks",
   verbs: ["watch", "type"],
   summary:
     "A chat with Litt, the studio's agent, fixing the failing Halo build, built from the agent parts: the conversation, the thinking, a plan, a run of tool calls, an approval, the answer with its code, and the composer. The run waits for you at the deploy. The one accent fill is Allow while the approval waits, and Send when there is something to send.",

@@ -6,6 +6,10 @@
       "version": "2026.10.19",
       "hash": "eee7d4cb1b662733"
     },
+    "activity": {
+      "version": "2026.10.22",
+      "hash": "ef846c5e05e0c1f7"
+    },
     "agent": {
       "version": "2026.10.22",
       "hash": "e94b6101eb8424b0"
@@ -186,6 +190,10 @@
       "version": "2026.10.15",
       "hash": "2cb4d20598f1de38"
     },
+    "projects": {
+      "version": "2026.10.22",
+      "hash": "7f638888dd29ec56"
+    },
     "rolling-number": {
       "version": "2026.10.21",
       "hash": "b586cbb15698859e"
@@ -201,6 +209,14 @@
     "select": {
       "version": "2026.10.19",
       "hash": "1721ea292dd0cef6"
+    },
+    "settings": {
+      "version": "2026.10.22",
+      "hash": "e259c1eecba4d39d"
+    },
+    "sign-in": {
+      "version": "2026.10.22",
+      "hash": "64e123df8ac6d468"
     },
     "slide-confirm": {
       "version": "2026.10.21",
@@ -241,6 +257,10 @@
     "tag": {
       "version": "2026.10.19",
       "hash": "6f2bc336e22782c3"
+    },
+    "team": {
+      "version": "2026.10.22",
+      "hash": "ecde187ad981bef5"
     },
     "thinking": {
       "version": "2026.10.19",

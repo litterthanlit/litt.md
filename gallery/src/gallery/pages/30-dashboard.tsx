@@ -1,13 +1,11 @@
-import type { MouseEvent, ReactNode } from "react";
 import { Dashboard } from "@/blocks/dashboard";
-import { DeviceProvider } from "@/motion";
-import { Page, Stage, useReplay, type PageMeta } from "../kit";
+import { AppFrame, Page, Stage, useReplay, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "dashboard",
   title: "Dashboard",
   lede: "A deploy dashboard, built from the parts.",
-  order: 18.6, group: "Data",
+  order: 30.1, group: "Blocks",
   verbs: ["hover"],
   summary:
     "The studio's deploy dashboard, built from the parts: an app shell with a full-height sidebar, four number tiles, a chart of deploys per day, and a table of recent deploys with its pagination. On a phone the sidebar becomes the bottom sheet. One accent fill in the view would be a primary button, and this view has none.",
@@ -15,46 +13,19 @@ export const meta: PageMeta = {
   block: "dashboard",
 };
 
-/** The block's links point at an app's routes. Here they go nowhere, and must not move the gallery's own hash. */
-const stayPut = (e: MouseEvent) => {
-  if (e.target instanceof Element && e.target.closest("a[href]")) e.preventDefault();
-};
-
-function Frame({ label, className = "", children }: { label: string; className?: string; children: ReactNode }) {
-  return (
-    <div
-      role="region"
-      aria-label={label}
-      tabIndex={0}
-      onClickCapture={stayPut}
-      className={
-        "relative h-176 w-full overflow-y-auto overscroll-contain rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line " +
-        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
-        className
-      }
-    >
-      {children}
-    </div>
-  );
-}
-
 function DesktopDemo() {
   return (
-    <Frame label="Studio dashboard, desktop" className="[--gutter:var(--space-8)]">
+    <AppFrame label="Studio dashboard, desktop" bare className="[--gutter:var(--space-8)]">
       <Dashboard label="Desktop" viewportHeight="44rem" />
-    </Frame>
+    </AppFrame>
   );
 }
 
 function PhoneDemo() {
   return (
-    <div className="mx-auto w-full max-w-sm">
-      <Frame label="Studio dashboard, phone" className="[--gutter:var(--space-4)]">
-        <DeviceProvider mode="phone">
-          <Dashboard label="Phone" viewportHeight="44rem" />
-        </DeviceProvider>
-      </Frame>
-    </div>
+    <AppFrame label="Studio dashboard, phone" phone bare className="[--gutter:var(--space-4)]">
+      <Dashboard label="Phone" viewportHeight="44rem" />
+    </AppFrame>
   );
 }
 

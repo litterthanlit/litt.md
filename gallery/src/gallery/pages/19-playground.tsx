@@ -34,7 +34,7 @@ export const meta: PageMeta = {
   id: "playground",
   title: "Playground",
   lede: "Turn the dials and the components follow.",
-  order: 19,
+  order: 40,
   tune: true,
   summary:
     "Turn the motion dials and the components on this page follow. Every other page runs the locked motion from the tokens.",

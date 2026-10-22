@@ -6,15 +6,16 @@
  * Text spacing follows foundations.md (Type, Text spacing): stages sit 48px apart,
  * the page title 16px above its summary, and a stage's title 4px above its caption.
  */
-import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type ReactElement, type ReactNode } from "react";
-import type { Tier } from "@/motion";
+import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
+import { DeviceProvider, type Tier } from "@/motion";
 import { Button } from "@/components/button";
 import { ChevronDownIcon } from "@/components/icons";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 
 /** The sidebar's groups, in the order they appear. */
-export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents"] as const;
+/** Blocks come last: whole screens built from the components in the groups above them. */
+export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents", "Blocks"] as const;
 export type PageGroup = (typeof PAGE_GROUPS)[number];
 
 /**
@@ -178,6 +179,41 @@ export function PageTitle({ id, title, lede, className = "" }: { id: string; tit
     <div className={"flex max-w-[64ch] flex-wrap items-baseline gap-x-2 text-h1 text-balance " + className}>
       <h1 id={id} className="text-fg">{title}</h1>
       <p className="text-fg-subtle">{lede}</p>
+    </div>
+  );
+}
+
+/** A block's links point at an app's routes. In the gallery they go nowhere, and must not move its own hash. */
+const stayPut = (e: MouseEvent) => {
+  if (e.target instanceof Element && e.target.closest("a[href]")) e.preventDefault();
+};
+
+/**
+ * A window onto an app, for a block: the canvas with a hairline, scrolling inside itself, at a fixed height so a
+ * stage stays one size. `phone` makes it phone wide and tells the components inside they are on a phone. `bare`
+ * drops the padding, for a block that brings its own (a full page, an app shell).
+ */
+export function AppFrame({ label, phone = false, bare = false, className = "", children }: { label: string; phone?: boolean; bare?: boolean; className?: string; children: ReactNode }) {
+  const frame = (
+    <div
+      role="region"
+      aria-label={label}
+      tabIndex={0}
+      onClickCapture={stayPut}
+      className={
+        "relative h-176 w-full overflow-y-auto overscroll-contain rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line " +
+        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
+        (bare ? "" : phone ? "p-4 " : "p-8 ") +
+        className
+      }
+    >
+      {children}
+    </div>
+  );
+  if (!phone) return frame;
+  return (
+    <div className="mx-auto w-full max-w-sm">
+      <DeviceProvider mode="phone">{frame}</DeviceProvider>
     </div>
   );
 }
