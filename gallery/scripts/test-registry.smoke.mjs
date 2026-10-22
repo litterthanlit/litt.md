@@ -611,6 +611,10 @@ const RECIPES = {
     state: [`const [lbOpen, setLbOpen] = useState<number | null>(null);`],
     jsx: `<div data-testid="litt-lightbox"><@Btn type="button" onClick={() => setLbOpen(0)}>Open lightbox</@Btn><Lightbox label="Smoke set" items={[{ src: SMOKE_LIGHTBOX_SRC, alt: "A grey rectangle", caption: "Smoke image", width: 16, height: 10 }]} index={lbOpen} onIndexChange={setLbOpen} /></div>`,
   },
+  details: {
+    needs: ["Details", "DetailsItem", "DetailsLink"],
+    jsx: `<div className="w-full max-w-lg" data-testid="litt-details"><Details title="Deployment"><DetailsItem label="Domain" copy="halo.studio"><DetailsLink href="https://halo.studio">halo.studio</DetailsLink></DetailsItem><DetailsItem label="Region" mono>fra1</DetailsItem><DetailsItem label="PO number" /></Details></div>`,
+  },
   /* Blocks: whole screens, rendered as they ship, sample data and all. The agent chat is the finished one, so no script runs. */
   dashboard: { needs: ["Dashboard"], jsx: `<div className="w-full" data-testid="litt-block-dashboard"><Dashboard label="Smoke dashboard" viewportHeight="32rem" /></div>` },
   usage: { needs: ["Usage"], jsx: `<div className="w-full" data-testid="litt-block-usage"><Usage /></div>` },
