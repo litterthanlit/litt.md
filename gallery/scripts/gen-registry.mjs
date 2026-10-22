@@ -1108,6 +1108,36 @@ const COPY = {
     description: "One image of a set at the size of the screen, on the canvas, opened from a Media. Opening is the view's expressive moment; arrow keys, Previous and Next or a swipe move through the set, and Esc, Close or a click around the image closes it.",
     docs: "Import Lightbox from components/litt/lightbox and hold the open index in state: set it from each Media's onOpen and pass setIndex as onIndexChange. Give each item its width and height.",
   },
+  "number-field": {
+    title: "Number field",
+    description: "A labelled number with − and + inside the field's end: steps by the arrow keys, a press or a hold, reads what is typed in the page's locale, keeps it between its bounds and on its step, and shows it formatted with Intl.NumberFormat.",
+    docs: "Import NumberField from components/litt/number-field. Pass a label, min, max and step, and a unit or a format for a currency or a percent. The value is a number, or null when empty.",
+  },
+  "hover-card": {
+    title: "Hover card",
+    description: "A preview of what a link points at, opened after the pointer rests on it or at once on keyboard focus, and kept while the pointer crosses into it. Floating glass that grows from the link on the responsive tier. A touch never opens it.",
+    docs: "Import HoverCard, HoverCardTrigger and HoverCardContent from components/litt/hover-card, as shadcn's hover card is written. The trigger must be a real link to the same information: never put anything only in the card.",
+  },
+  "action-bar": {
+    title: "Action bar",
+    description: "A glass bar that floats at the bottom of the view while rows or cards are selected: the count in words, the actions as small buttons and Clear. A toolbar with one Tab stop and the arrow keys inside; Esc clears.",
+    docs: "Import ActionBar from components/litt/action-bar and place it after the list, inside the same scrolling area. Pass the count, a noun and onClear, and sm Buttons as children. Never an accent fill.",
+  },
+  tree: {
+    title: "Tree",
+    description: "Things inside things, opened a level at a time: a project's files, a docs site's pages. Indented rows with a hairline guide down each level, the selected row in the selected segment's look, and the keys of a file tree.",
+    docs: "Import Tree and TreeNode from components/litt/tree. Pass a label and items as data ({ id, label, detail, children }); an item with children is a branch. Hold expanded and selected in state, or leave them to the tree.",
+  },
+  resizable: {
+    title: "Resizable",
+    description: "Panels side by side or stacked, with a hairline between each two that follows the pointer one to one. Each panel keeps between its smallest and largest size, the arrow keys move the line, a double click puts it back, and autoSaveId keeps the layout.",
+    docs: "Import ResizablePanelGroup, ResizablePanel and ResizableHandle from components/litt/resizable, as shadcn's resizable is written. Sizes are percents. On a phone, show one panel at a time instead.",
+  },
+  "log-view": {
+    title: "Log view",
+    description: "A build's or a deploy's output as it arrives, on the code block's surface: numbered, timed lines, warnings and errors in their status color with a mark and a hidden word, following the newest line until you scroll up to read.",
+    docs: "Import LogView and LogLine from components/litt/log-view. Append lines ({ time, level, text }) as the run writes, and give it a height. Say how the run ended in your own status; lines are not read out one by one.",
+  },
   details: {
     title: "Details",
     description: "An information card of labelled facts about one thing, such as a deployment or a client: rows with the labels in one column, or a grid with each label above its value. Values can be copied, a missing one says Not set, and a loading card keeps its height.",
@@ -1158,6 +1188,11 @@ const COPY = {
     title: "Activity block",
     description: "A studio's activity as one screen: a filter by kind, then the events grouped by day, each one sentence with who and what in the foreground and the time in the mono. A deploy says how it ended in a tag, and Show earlier adds the day before below.",
     docs: "Import Activity from components/litt-blocks/activity and render it inside your app's shell. The sample days sit at the top of the file, newest first; Show earlier is where your next page loads.",
+  },
+  deployment: {
+    title: "Deployment block",
+    description: "One deploy as a screen: its commit and who started it, the status, the facts and a progress rail, then the changed files in a tree beside the build log with a line to drag, and each file's diff a press away. On a phone the two take turns.",
+    docs: "Import Deployment from components/litt-blocks/deployment and render it inside your app's shell. The deploy, its files and diffs and the build script sit at the top of the file; replace useBuild with your build's stream.",
   },
   "sign-in": {
     title: "Sign in block",

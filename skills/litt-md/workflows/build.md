@@ -81,6 +81,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 |---|---|
 | `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), or as a child next to the label, as shadcn writes it. It always renders a `<button>`, so a link to another page is an `<a>`. |
 | `input` | `TextField` (label, hint, error), the bare `Input` for inline forms and toolbars, `Textarea`. |
+| `number-field` | A number someone sets with bounds and a step: seats, a limit, a price (`NumberField` with `min`, `max`, `step`, a `unit` or a `format`). It reads typed text in the page's locale. Never `type="number"`. |
 | `code-input` | A one-time code from an email, a text or an authenticator app (`CodeInput`). One real field drawn as cells, so paste and autofill work; check the code in `onComplete`. |
 | `token-input` | A field that collects several short values as tokens: recipients, sender domains, tags (`TokenInput`). Hold the values in state. |
 | `combobox` | A searchable field for one value, or several, from a long list: a client, a framework, a teammate (`Combobox` with `options` as `{ value, label, group? }` and `multiple` for tokens). A short fixed list is a `select`. |
@@ -103,6 +104,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `context-menu` | Actions on the thing under the pointer, on right-click, Shift+F10 or a hold on touch (`ContextMenu` with the Menu's rows). Every action in it must also be on a visible control, such as a ⋯ `menu` on the row. |
 | `command-menu` | ⌘K search for pages, projects and actions. Give it a visible Search button that shows the `kbd` hint. |
 | `dialog` | A confirm or a short form that needs full attention. `side="right"` makes a side sheet on desktop. On a phone every dialog is a bottom sheet that drags down to close, with no code of yours: never build your own sheet or drawer. |
+| `hover-card` | A preview behind a name or a link, on hover or keyboard focus (`HoverCard`, `HoverCardTrigger`, `HoverCardContent`). The trigger must lead to the same thing: a touch never opens the card. |
 | `lightbox` | Images people should see larger: one of a set at the size of the screen (`Lightbox` with `items` and the open `index` in state, set from each `Media`'s `onOpen`). Give every item its `width` and `height`. Never a hand-built overlay for images. |
 | `toast` | Feedback after an action. Mount `Toaster` once, then call `toast()`. On a phone toasts swipe away by themselves. |
 | `header` | A sticky glass bar with a wordmark, a nav and actions. |
@@ -112,9 +114,12 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `callout` | An inline note in the flow: a tip, a heads-up, a result to act on (`Callout`). Color lives in the icon only, never a rail or a tinted box. |
 | `accordion` | Sections that open in place: questions and answers, groups of settings (`Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent`). The page never jumps, and nothing animates its height. |
 | `scroll-area` | A region that scrolls inside the page, such as a log or a long list in a fixed-height card (`ScrollArea` with a `label` and a height). Never the page itself. |
+| `tree` | Files, pages or folders opened a level at a time (`Tree` with `items` as `{ id, label, detail, children }`). It has a file tree's keys. A flat list is a list. |
+| `resizable` | Panels with a line to drag between them: a tree beside a log, a list beside its detail (`ResizablePanelGroup`, `ResizablePanel`, `ResizableHandle`, as shadcn's). On a phone show one at a time instead. |
 | `breadcrumb` | Where a page sits: Studio / Projects / Marlow Labs (`Breadcrumb` with `items` as `{ label, href }`, the last being the current page). Long trails fold into a menu. |
 | `steps` | Where someone is in a flow of three to six steps, such as setup or checkout (`Steps`). Views moved between freely are Tabs. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
+| `action-bar` | Actions for the rows or cards someone selected (`ActionBar` with `count`, `noun`, `onClear` and sm Buttons), after the list. Never an accent fill. |
 | `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. `trend` takes a Sparkline at the foot of the tile. |
 | `details` | An information card of labelled facts about one thing: a deployment, an invoice, a client (`Details`, `DetailsItem`, `DetailsLink`). Rows by default, `layout="grid"` for a few short facts, `copy` on values people paste, `bare` inside a dialog or panel. Many things compared side by side are a `table`. |
 | `chart` | `BarChart`, `LineChart` and `Meter`, never the accent: the foreground by default, or data hues when color tells series apart (`hue` on a series, or `hues` on the chart). Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
@@ -137,6 +142,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `tool-call` | What an agent did (`ToolCall` rows with a status, the action, the target and the time; `ToolCallGroup` to fold a run; `ToolApproval` to ask before a call runs, with Allow as the accent). |
 | `plan` | An agent's steps for a task, ticked off as it works (`Plan` with `steps` of `{ id, label, status }`). |
 | `code-block` | Code in an answer, a tool's output or a diff (`CodeBlock` with `code`, `lang` and `filename`). Quiet colors, a Copy button, and `lang="diff"` for a change. |
+| `log-view` | A build's or a deploy's output as it arrives (`LogView` with `lines` as `{ time, level, text }` and a `height`). It follows the newest line. Code is a `code-block`. |
 | `litt` | The tokens, the Tailwind names and the material classes. Every component brings it. Install it alone when you write all the markup yourself. |
 | `base-styles` | Opt-in. Loads Geist at 400, 500 and 600 and Geist Mono at 400, and sets page defaults for the whole app: headings, b and strong at the title weight, table headers at the label weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
 | `motion`, `glide`, `icons`, `list-cover` | Libraries that components bring along. `motion` holds the hooks below, `icons` has 30 16px icons (`SearchIcon`, `PlusIcon`, `SettingsIcon`) and `StatusIcon` with the five step marks, and both are fine to install on their own. |
@@ -150,11 +156,12 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `growth` | A growth or analytics report: stacked columns filtered by a Legend and a week range, a funnel, retention (`Growth`). |
 | `insights` | A grid of insight panels, one idea each: a dot plot, a bar list, a rule form, a timeline, a gauge, a heatmap (`Insights`). |
 | `agent` | A chat with an agent, every state of a turn, with a composer (`AgentChat`). The run is a script: replace `useRun` with your agent's stream. |
-| `projects` | A list of projects or other records with status filters, a search and a list or grid switch (`Projects`). It uses the list's `Project` shape. |
+| `projects` | A list of projects or other records with status filters, a search and a list or grid switch, and an action bar for the cards ticked in the grid (`Projects`). It uses the list's `Project` shape. |
 | `settings` | An account or studio settings page: sections, an error summary, a saved toast and a danger zone behind a slide to confirm (`Settings`). |
 | `team` | Members, roles and invites: a seats meter, a table with a role picker per row, an invite dialog for several addresses (`Team`). |
 | `activity` | A feed of what happened, grouped by day and filtered by kind (`Activity`). |
 | `sign-in` | A sign-in page with field errors, a server refusal and a second way in (`SignIn`). A whole page, not a part of the app shell. |
+| `deployment` | One deploy as a screen: status, facts, a progress rail, the changed files in a tree beside the build log with a line to drag, and each file's diff (`Deployment`). Inside the app shell. |
 | `case-study` | One project told as a page: a hero image, the facts, the story beside its labels, a carousel, a grid of details and the next project, with one lightbox for every image (`CaseStudy`). A page's content, inside a site's layout. |
 
 A block lands in `components/litt-blocks/<name>.tsx`, outside `components/litt/`, because it is a starting point. Change it in place: replace the sample data at the top of the file, rename things, drop the panels you do not need. Keep its layout, its spacing and its one accent fill. Never reinstall a block over your edits.

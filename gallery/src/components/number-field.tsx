@@ -1,0 +1,335 @@
+/**
+ * NumberField: a number someone sets, such as seats on a plan, a limit or a price (components.md, "Number field").
+ * The Input's field with − and + inside its end, a label above and a hint or an error below, like TextField.
+ *
+ * - Field: the Input's look and sizes (sm 32, md 44, lg 56; sm grows to 44 on a touch screen): surface-1, the inset
+ *   --line-control edge, the focus edge and ring while the text is focus-visible, the danger edge with an error,
+ *   surface-2 when disabled. The number at the text weight with tabular figures, so it does not shift as it changes,
+ *   and an optional unit after it in --fg-subtle ("seats", "GB").
+ * - Steppers: round ghost icon buttons inside the field's end, − then +, 24, 32 or 40px with the field's own air
+ *   around them. Each is disabled at its bound. A press steps once; held, it repeats after 400ms, every 70ms, until
+ *   it lets go or reaches the bound. They are not Tab stops (the arrow keys do the same in the field), and pressing
+ *   one leaves focus where it was.
+ * - Typing is free: what is typed is read when the field is left or Enter is pressed, in the page's locale (group
+ *   separators, a comma decimal). Then it is kept between min and max, put on the step, and shown formatted
+ *   (Intl.NumberFormat, with `format` for a currency or a percent). Text that is not a number goes back to the last
+ *   value. Empty is allowed unless `required`, and gives null.
+ * - Keys: ↑ and ↓ step, Shift with them or Page Up and Page Down step ten times, Home and End go to min and max.
+ * - Motion: none of its own. The edge fades on the instant tier, as the Input's does; the value changes at once.
+ * - Accessibility: the input is a spinbutton named by the label, with aria-valuenow, -valuemin, -valuemax and the
+ *   formatted value and unit as aria-valuetext. The steppers are named "Decrease seats" and "Increase seats".
+ */
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { MinusIcon, PlusIcon } from "@/components/icons";
+
+export type NumberFieldSize = "sm" | "md" | "lg";
+
+/* The Input's field, on a wrapper that holds the text and the steppers. The ring follows the text only. */
+const FIELD =
+  "relative flex w-full min-w-0 items-center rounded-control bg-surface-1 font-normal text-fg " +
+  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
+  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
+  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
+  "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
+
+/* Height, the text's size, the air before it, the air at the end around the steppers (the field's height less theirs,
+   halved) and the steppers' size. */
+const SIZE: Record<NumberFieldSize, { field: string; type: string; pad: string; end: string; step: string }> = {
+  sm: { field: "h-control-sm pointer-coarse:h-control-md", type: "text-small", pad: "pl-control-pad-sm", end: "pr-1", step: "size-6 pointer-coarse:size-8" },
+  md: { field: "h-control-md", type: "text-body", pad: "pl-control-pad-md", end: "pr-1.5", step: "size-8" },
+  lg: { field: "h-control-lg", type: "text-(length:--control-text-lg)", pad: "pl-control-pad-lg", end: "pr-2", step: "size-10" },
+};
+
+const STEPPER =
+  "grid shrink-0 place-items-center rounded-pill text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
+  "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
+  "enabled:cursor-pointer enabled:hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] enabled:hover:text-fg " +
+  "enabled:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] enabled:active:text-fg " +
+  "disabled:cursor-not-allowed disabled:text-fg-disabled";
+
+const HOLD_DELAY = 400; // ms before a held stepper starts repeating
+const HOLD_EVERY = 70; // ms between repeats
+
+/** The decimals a step has, so 0.1 + 0.2 lands on 0.3 and not 0.30000000000000004. */
+const decimalsOf = (n: number) => {
+  const s = String(n);
+  if (s.includes("e-")) return Number(s.split("e-")[1]);
+  return s.includes(".") ? s.split(".")[1]!.length : 0;
+};
+
+export type NumberFieldProps = {
+  /** The label above the field. Required: it names the field and its steppers ("Increase seats"). */
+  label: ReactNode;
+  /** The value, or null when the field is empty. Pair it with onValueChange. Leave it out and the field keeps its own. */
+  value?: number | null;
+  /** The value to start with when you do not control it. */
+  defaultValue?: number | null;
+  /** Called with the new value after a step, a key or a typed number is read. */
+  onValueChange?: (value: number | null) => void;
+  /** The lowest value. − is disabled at it, and Home goes to it. */
+  min?: number;
+  /** The highest value. + is disabled at it, and End goes to it. */
+  max?: number;
+  /** How much one step moves, and the grid a typed value is put on (from min, or from 0). */
+  step?: number;
+  /** How the value is shown, as Intl.NumberFormat takes it: { style: "currency", currency: "EUR" }, { style: "percent" }, { maximumFractionDigits: 1 }. */
+  format?: Intl.NumberFormatOptions;
+  /** A word after the number, in the grey: "seats", "GB", "days". */
+  unit?: string;
+  /** A hint under the field. An error replaces it. */
+  help?: ReactNode;
+  /** Shown in the danger color under the field and linked to it. Also sets aria-invalid. Say how to fix it. */
+  error?: ReactNode;
+  /** Empty is not allowed: leaving the field empty goes back to the last value. */
+  required?: boolean;
+  /** Height on the shared control scale: sm is 32, md is 44, lg is 56. */
+  size?: NumberFieldSize;
+  disabled?: boolean;
+  /** The field name a form sends the value under, as a plain number. */
+  name?: string;
+  /** The id of the input, when you need your own. */
+  id?: string;
+  /** Extra classes for the whole component, such as a max width. */
+  className?: string;
+};
+
+/** A labelled number with − and + in the field: steps by key, by press or by hold, and reads what is typed in the page's locale. */
+export function NumberField({
+  label,
+  value: valueProp,
+  defaultValue = null,
+  onValueChange,
+  min,
+  max,
+  step = 1,
+  format,
+  unit,
+  help,
+  error,
+  required = false,
+  size = "md",
+  disabled = false,
+  name,
+  id: idProp,
+  className = "",
+}: NumberFieldProps) {
+  const auto = useId();
+  const id = idProp ?? auto;
+  const noteId = `${id}-note`;
+  const note = error ?? help;
+  const [inner, setInner] = useState<number | null>(defaultValue);
+  const value = valueProp !== undefined ? valueProp : inner;
+  const input = useRef<HTMLInputElement>(null);
+
+  const formatter = useMemo(() => new Intl.NumberFormat(undefined, format), [format]);
+  /* The page locale's own marks, so "1.234,5" reads as 1234.5 in German and "1,234.5" in English. */
+  const marks = useMemo(() => {
+    const parts = new Intl.NumberFormat(undefined).formatToParts(-12345.6);
+    const of = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+    return { group: of("group"), decimal: of("decimal") || "." };
+  }, []);
+  const percent = format?.style === "percent";
+  const show = (n: number | null) => (n === null ? "" : formatter.format(n));
+
+  /* While someone types, the field holds their text; otherwise it shows the value, formatted. */
+  const [draft, setDraft] = useState<string | null>(null);
+  const text = draft ?? show(value);
+
+  const fit = (n: number) => {
+    const base = min ?? 0;
+    const places = Math.max(decimalsOf(step), decimalsOf(base));
+    let v = Math.round((n - base) / step) * step + base;
+    v = Number(v.toFixed(places));
+    if (min !== undefined) v = Math.max(min, v);
+    if (max !== undefined) v = Math.min(max, v);
+    return v;
+  };
+
+  const set = (next: number | null) => {
+    if (valueProp === undefined) setInner(next);
+    if (next !== value) onValueChange?.(next);
+  };
+
+  const parse = (raw: string): number | null | undefined => {
+    let s = raw.trim();
+    if (!s) return null;
+    if (marks.group) s = s.split(marks.group).join("");
+    s = s.replace(/[\s  ]/g, "").split(marks.decimal).join(".");
+    s = s.replace(/[−‒–]/g, "-").replace(/[^\d.-]/g, "");
+    if (!s || s === "-" || s === ".") return undefined;
+    const n = Number(s);
+    if (!Number.isFinite(n)) return undefined;
+    return percent ? n / 100 : n;
+  };
+
+  const commit = () => {
+    if (draft === null) return;
+    const n = parse(draft);
+    setDraft(null);
+    if (n === undefined || (n === null && required)) return; // not a number: back to the last value
+    set(n === null ? null : fit(n));
+  };
+
+  const stepBy = (times: number) => {
+    const from = value ?? (times > 0 ? (min ?? 0) - step : (max ?? 0) + step);
+    setDraft(null);
+    set(fit(from + times * step));
+  };
+
+  const atMin = min !== undefined && value !== null && value <= min;
+  const atMax = max !== undefined && value !== null && value >= max;
+
+  const jumpTo = (bound: number) => {
+    setDraft(null);
+    set(bound);
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    const times = e.shiftKey ? 10 : 1;
+    switch (e.key) {
+      case "ArrowUp":
+        stepBy(times);
+        break;
+      case "ArrowDown":
+        stepBy(-times);
+        break;
+      case "PageUp":
+        stepBy(10);
+        break;
+      case "PageDown":
+        stepBy(-10);
+        break;
+      case "Home":
+        if (min === undefined) return;
+        jumpTo(min);
+        break;
+      case "End":
+        if (max === undefined) return;
+        jumpTo(max);
+        break;
+      case "Enter":
+        commit();
+        return;
+      default:
+        return;
+    }
+    e.preventDefault();
+  };
+
+  /* Held steppers repeat. The latest stepBy is read through a ref, so a repeat sees the value the last one set. */
+  const latest = useRef(stepBy);
+  latest.current = stepBy;
+  const timers = useRef<{ delay?: number; every?: number }>({});
+  const stop = () => {
+    window.clearTimeout(timers.current.delay);
+    window.clearInterval(timers.current.every);
+    timers.current = {};
+  };
+  useEffect(() => stop, []);
+  useEffect(() => {
+    if (atMin || atMax) stop(); // the bound ends a hold
+  }, [atMin, atMax]);
+  /* A press with a pointer steps on pointerdown; the click that follows must not step again. */
+  const pointerStep = useRef(false);
+
+  const stepper = (dir: 1 | -1) => {
+    const bound = dir < 0 ? atMin : atMax;
+    const word = dir < 0 ? "Decrease" : "Increase";
+    return (
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label={typeof label === "string" ? `${word} ${label.toLowerCase()}` : word}
+        aria-controls={id}
+        disabled={disabled || bound}
+        className={STEPPER + " " + SIZE[size].step}
+        onPointerDown={(e: ReactPointerEvent<HTMLButtonElement>) => {
+          if (e.button !== 0) return;
+          e.preventDefault(); // focus stays where it was
+          pointerStep.current = true;
+          latest.current(dir);
+          timers.current.delay = window.setTimeout(() => {
+            timers.current.every = window.setInterval(() => latest.current(dir), HOLD_EVERY);
+          }, HOLD_DELAY);
+        }}
+        onPointerUp={stop}
+        onPointerLeave={stop}
+        onPointerCancel={stop}
+        onClick={() => {
+          /* A screen reader or a keyboard activates without a pointer. */
+          if (pointerStep.current) pointerStep.current = false;
+          else stepBy(dir);
+        }}
+      >
+        {dir < 0 ? <MinusIcon /> : <PlusIcon />}
+      </button>
+    );
+  };
+
+  const valueText = value === null ? undefined : `${show(value)}${unit ? ` ${unit}` : ""}`;
+
+  return (
+    <div className={"grid gap-2 " + className}>
+      <label htmlFor={id} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
+        {label}
+      </label>
+      <div
+        data-invalid={error ? "" : undefined}
+        data-disabled={disabled ? "" : undefined}
+        className={FIELD + " " + SIZE[size].field + " " + SIZE[size].end}
+        onClick={(e) => {
+          /* A press on the field's air focuses the text; a press on a stepper leaves focus where it was, so a phone's
+             keyboard does not open under a thumb that is only stepping. */
+          if (!(e.target as Element).closest("button")) input.current?.focus();
+        }}
+      >
+        <input
+          ref={input}
+          id={id}
+          type="text"
+          inputMode={(format?.maximumFractionDigits ?? 0) > 0 || decimalsOf(step) > 0 || percent ? "decimal" : "numeric"}
+          role="spinbutton"
+          autoComplete="off"
+          spellCheck={false}
+          aria-valuenow={value ?? undefined}
+          aria-valuemin={min}
+          aria-valuemax={max}
+          aria-valuetext={valueText}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={note ? noteId : undefined}
+          aria-required={required || undefined}
+          disabled={disabled}
+          value={text}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={onKeyDown}
+          className={
+            "h-full min-w-0 flex-1 bg-transparent tabular-nums outline-none placeholder:text-fg-subtle disabled:cursor-not-allowed " +
+            "pointer-coarse:text-(length:--control-text-lg) " +
+            SIZE[size].pad +
+            " " +
+            SIZE[size].type
+          }
+        />
+        {unit && (
+          <span aria-hidden="true" className={"shrink-0 pr-2 pl-1 pointer-coarse:text-(length:--control-text-lg) " + (disabled ? "text-fg-disabled " : "text-fg-subtle ") + SIZE[size].type}>
+            {unit}
+          </span>
+        )}
+        <span className="flex shrink-0 items-center gap-0.5">
+          {stepper(-1)}
+          {stepper(1)}
+        </span>
+      </div>
+      {name && <input type="hidden" name={name} value={value ?? ""} />}
+      {note && (
+        <p id={noteId} className={"text-small " + (error ? "text-danger" : "text-fg-subtle")}>
+          {note}
+        </p>
+      )}
+    </div>
+  );
+}

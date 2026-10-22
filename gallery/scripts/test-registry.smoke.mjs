@@ -611,6 +611,31 @@ const RECIPES = {
     state: [`const [lbOpen, setLbOpen] = useState<number | null>(null);`],
     jsx: `<div data-testid="litt-lightbox"><@Btn type="button" onClick={() => setLbOpen(0)}>Open lightbox</@Btn><Lightbox label="Smoke set" items={[{ src: SMOKE_LIGHTBOX_SRC, alt: "A grey rectangle", caption: "Smoke image", width: 16, height: 10 }]} index={lbOpen} onIndexChange={setLbOpen} /></div>`,
   },
+  "number-field": {
+    needs: ["NumberField"],
+    jsx: `<div className="w-full max-w-xs" data-testid="litt-number-field"><NumberField label="Seats" unit="seats" min={1} max={50} defaultValue={8} help="€12 a seat a month." /></div>`,
+  },
+  "hover-card": {
+    needs: ["HoverCard", "HoverCardTrigger", "HoverCardContent"],
+    jsx: `<p data-testid="litt-hover-card">Deployed by <HoverCard><HoverCardTrigger><a href="#people">Ines Duarte</a></HoverCardTrigger><HoverCardContent><p>Design lead, Halo Studio</p></HoverCardContent></HoverCard>.</p>`,
+  },
+  "action-bar": {
+    needs: ["ActionBar"],
+    state: [`const [abCount, setAbCount] = useState(3);`],
+    jsx: `<div className="w-full" data-testid="litt-action-bar"><ActionBar count={abCount} noun="projects" onClear={() => setAbCount(0)}><@Btn type="button">Archive</@Btn></ActionBar></div>`,
+  },
+  tree: {
+    needs: ["Tree"],
+    jsx: `<div className="w-full max-w-xs" data-testid="litt-tree"><Tree label="Files" defaultExpanded={["src"]} defaultSelected="src/app.tsx" items={[{ id: "src", label: "src", children: [{ id: "src/app.tsx", label: "app.tsx", detail: "M" }] }, { id: "package.json", label: "package.json" }]} /></div>`,
+  },
+  resizable: {
+    needs: ["ResizablePanelGroup", "ResizablePanel", "ResizableHandle"],
+    jsx: `<div className="h-40 w-full max-w-xl" data-testid="litt-resizable"><ResizablePanelGroup direction="horizontal" className="h-full"><ResizablePanel defaultSize={30} minSize={20}><p>Files</p></ResizablePanel><ResizableHandle label="Resize the files" /><ResizablePanel><p>Log</p></ResizablePanel></ResizablePanelGroup></div>`,
+  },
+  "log-view": {
+    needs: ["LogView"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-log-view"><LogView label="Build log" height="10rem" lines={[{ time: "+0.0s", text: "Running npm run build" }, { time: "+12.1s", level: "warn", text: "Image is 2.4 MB." }, { time: "+29.0s", level: "success", text: "Build completed." }]} /></div>`,
+  },
   details: {
     needs: ["Details", "DetailsItem", "DetailsLink"],
     jsx: `<div className="w-full max-w-lg" data-testid="litt-details"><Details title="Deployment"><DetailsItem label="Domain" copy="halo.studio"><DetailsLink href="https://halo.studio">halo.studio</DetailsLink></DetailsItem><DetailsItem label="Region" mono>fra1</DetailsItem><DetailsItem label="PO number" /></Details></div>`,
@@ -626,6 +651,7 @@ const RECIPES = {
   team: { needs: ["Team"], jsx: `<div className="w-full" data-testid="litt-block-team"><Team /></div>` },
   activity: { needs: ["Activity"], jsx: `<div className="w-full" data-testid="litt-block-activity"><Activity /></div>` },
   "sign-in": { needs: ["SignIn"], jsx: `<div className="h-[40rem] w-full" data-testid="litt-block-sign-in"><SignIn /></div>` },
+  deployment: { needs: ["Deployment"], jsx: `<div className="w-full" data-testid="litt-block-deployment"><Deployment /></div>` },
   "case-study": { needs: ["CaseStudy"], jsx: `<div className="w-full" data-testid="litt-block-case-study"><CaseStudy /></div>` },
 };
 

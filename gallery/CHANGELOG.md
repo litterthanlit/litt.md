@@ -4,13 +4,15 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-22 · Blocks, four new components, and images
+## 2026-10-22 · Blocks, images, and the parts a web app needs
 
 The first blocks: ten whole screens, the gallery's five composed pages and five app screens (projects, settings, team, activity and sign in), each installable as one item that brings the components it uses. The app screens are a page's content, to render inside your app's shell. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
 
 And four components app screens need: a progress rail for work happening now, a one-time code input, a file drop and steps for a flow.
 
 And the first image components: a frame for one picture that keeps its shape while it loads, a carousel that never moves on its own, a lightbox for seeing a set at the size of the screen, and a case study page that puts the three together.
+
+And six parts every web app reaches for: a number field with steppers, a hover card that previews a link, an action bar for a selection, a tree for files, panels with a line to drag between them, and a log view for a build as it runs. The deployment screen puts four of them together, and the projects screen's grid now acts on what it selects.
 
 - **added** `dashboard`: Dashboard, a deploy dashboard as one screen: an app shell with a sidebar, four number tiles, a chart of deploys per day and a table of recent deploys with its pagination.
 - **added** `usage`: Usage, a plan's usage as one screen, drawn only in rails: trends, storage and bandwidth by kind of file, limits against their budgets and build times by site.
@@ -32,6 +34,15 @@ And the first image components: a frame for one picture that keeps its shape whi
 - **added** `details`: Details, DetailsItem and DetailsLink, an information card of labelled facts about one thing: rows with the labels in one column, or a grid with each label above its value. A value can be copied, a missing one says Not set, and a loading card keeps its height.
 - **added** `case-study`: CaseStudy, one project told as a page: a hero image, the facts, the story beside its labels, the series in a carousel, the details in a grid and the next project, with one lightbox for every image.
 - **changed** `icons`: `ImageIcon`, a picture's mark, which Media shows when an image fails to load. Nothing in your code has to change.
+- **added** `number-field`: NumberField, a labelled number with − and + in the field: arrow keys, a press or a hold to step, typed text read in the page's locale, kept between min and max and on the step, shown with Intl.NumberFormat.
+- **added** `hover-card`: HoverCard, HoverCardTrigger and HoverCardContent: a preview of what a link points at, after the pointer rests or at once on keyboard focus. A touch never opens it, so the link must lead to the same thing.
+- **added** `action-bar`: ActionBar, a glass toolbar that floats at the bottom of the view while something is selected: the count in words, sm actions and Clear; arrow keys inside, Esc clears.
+- **added** `tree`: Tree, things inside things from data: indented rows with a hairline guide per level, the selected segment's look, and a file tree's keys, including typing to jump.
+- **added** `resizable`: ResizablePanelGroup, ResizablePanel and ResizableHandle: panels with a hairline to drag between them, kept between their bounds, moved by the arrow keys too, and kept for next time with autoSaveId.
+- **added** `log-view`: LogView, a run's output as it arrives: numbered, timed lines, warnings and errors in their color with a mark and a hidden word, following the newest line until you scroll up.
+- **added** `deployment`: Deployment, one deploy as a screen: its status and facts, a progress rail, the changed files in a tree beside the build log with a line to drag, and each file's diff a press away.
+- **changed** `projects`: cards ticked in the grid bring up an action bar with Archive for all of them. Reinstall only if you have not edited the block; otherwise copy the ActionBar lines from the new file.
+- **changed** `icons`: `MinusIcon`, for the number field's stepper. Nothing in your code has to change.
 
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
 

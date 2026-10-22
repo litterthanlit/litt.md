@@ -1,9 +1,9 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, details cards, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) the staples (combobox, date picker, color picker, slide to confirm, rolling number, accordion, scroll area, breadcrumb, context menu) the app screens' parts (code input, file drop, steps, progress) and the image parts (media, carousel, lightbox) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, details cards, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) the staples (combobox, date picker, color picker, slide to confirm, rolling number, accordion, scroll area, breadcrumb, context menu) the app screens' parts (code input, file drop, steps, progress) and the image parts (media, carousel, lightbox) and the web app parts (number field, hover card, action bar, tree, resizable, log view) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Code input · Token input · File drop · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Color picker · Slide to confirm · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Media · Carousel · Callout · Accordion · Scroll area · Glass header · Breadcrumb · Steps · Tooltip · Command menu · Popover and dropdown · Context menu · Modal · Lightbox · Toast · Table and list rows · Pagination · Stat · Details · Rolling number · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · App shell · Empty and loading states · Progress · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
+Button · Input · Number field · Code input · Token input · File drop · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Color picker · Slide to confirm · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Media · Carousel · Callout · Accordion · Scroll area · Tree · Resizable · Glass header · Breadcrumb · Steps · Tooltip · Command menu · Popover and dropdown · Hover card · Context menu · Modal · Lightbox · Toast · Table and list rows · Action bar · Pagination · Stat · Details · Rolling number · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · Log view · App shell · Empty and loading states · Progress · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
 
 ---
 
@@ -37,6 +37,15 @@ The label is at `--weight-title` at every size, with no extra tracking. Hover ch
 - **Label:** above the field, `--type-small-size` at `--weight-title` in `--fg`, `--space-2` gap. The typed text stays at `--weight`. Placeholders are never labels.
 - **Help text:** `--type-small-size` in `--fg-subtle`, `--space-2` below.
 - **Textarea:** the same field for longer text, with the same edge, focus, error, label and help text. It has no fixed height, so its size sets the air above and below the text, and it resizes vertically only.
+
+## Number field
+A number someone sets: seats on a plan, a limit, a price. The Input's field with − and + inside its end, a label above and a hint or an error below.
+- **Field:** the Input's look, sizes and states (sm 32, md 44, lg 56; sm grows to 44 on coarse pointers). The number at `--weight` with tabular figures, so it never shifts as it changes, and an optional unit after it in `--fg-subtle`.
+- **Steppers:** round ghost icon buttons in the field's end, − then +, 24, 32 or 40px with the field's own air around them, each disabled at its bound. A press steps once; held, it repeats after 400ms, every 70ms. They are not Tab stops and leave focus where it was, so a phone's keyboard never opens under a thumb that is only stepping.
+- **Typing:** free while focused; read on leaving the field or Enter, in the page's locale, then kept between min and max, put on the step and shown formatted (`Intl.NumberFormat`, a currency or a percent). Text that is not a number goes back to the last value.
+- **Keys:** ↑ ↓ step, Shift or Page Up and Page Down ten steps, Home and End the bounds.
+- **Accessibility:** a spinbutton named by the label, with its value, bounds and the formatted value with its unit as `aria-valuetext`; the steppers are named "Increase seats".
+- **Motion:** none. The edge fades on the instant tier, as the Input's.
 
 ## Code input
 A short one-time code, such as the six digits from a sign-in email. It looks like one box per character and behaves like one text field.
@@ -228,6 +237,21 @@ A region that scrolls inside the page: a long list in a fixed-height card, a log
 - **Axes:** vertical by default, horizontal or both on request.
 - **On coarse pointers** the thumb shows only while scrolling, because there is no hover.
 
+## Tree
+Things inside things, opened a level at a time: a project's files, a docs site's pages.
+- **Rows:** 32px (44 on coarse pointers) at `--radius-control`, indented 16px a level. A 16px chevron for a branch, an icon (folder or file unless given), the label at the small size, truncated, and an optional detail in mono caption `--fg-subtle` at the end (a size, a change mark). A 1px `--line` guide runs down each level under the chevrons, so nesting reads without color.
+- **States:** hover fills fg 6% on the instant tier. The selected row is the selected segment (P12): one surface up from what the tree sits on, the hairline and `--highlight`, its label in `--fg` at `--weight-title`. Never the accent.
+- **Opening:** the chevron turns a quarter on the responsive tier; the children appear in place at once. No height animates, as in the Accordion.
+- **Keys:** one Tab stop. ↑ ↓ through the rows that show, → opens or goes in, ← closes or goes out, Home and End, Enter and Space select (and toggle a branch), * opens the siblings, typing jumps to a name.
+- **Accessibility:** the WAI-ARIA tree: `tree`, `treeitem` with level, set size, position, `aria-expanded` and `aria-selected`, children in a `group`.
+
+## Resizable
+Panels side by side or stacked, with a line between each two that a person drags: a tree beside a log, a list beside its detail.
+- **Line:** a 1px `--line` hairline with a 12px hit area (44 on coarse pointers). `--line-strong` under the pointer and `--fg-subtle` while dragged, on the instant tier. No grip and no dots; the cursor says it moves. The focus ring when it has keyboard focus.
+- **Behavior:** sizes are percents, each panel between its minimum and maximum. A handle moves only the two panels beside it, one to one with the pointer, with no easing or snapping. A double click puts the two back. ← → (↑ ↓ stacked) move it 5%, Shift 20%; Home and End give the panel before it its bounds. The layout can be kept in the browser.
+- **On compact screens** two panels side by side are rarely both readable: show one at a time behind a Segmented control.
+- **Accessibility:** each handle is a `separator` with its value (the size of the panel before it), its bounds and `aria-controls`, named for what it resizes.
+
 ## Glass header
 Sticky, `--header-h`, `.litt-glass`, content in a `--container-wide` wrap.
 - Order: wordmark (body size at `--weight-title`) → nav (small size in `--fg-subtle`; hover `--fg` with fg-6% fill) → right-aligned actions.
@@ -284,6 +308,13 @@ Glass with `--shadow-float`, `--radius-surface`, padding `--space-1`, rows at `-
 - **Submenus on compact screens** do not fly out sideways. The submenu replaces the list in the same panel, with a Back row first. The two lists cross-fade and slide as Tabs panels do: half of `--travel` in, a quarter out, on the responsive tier. The panel's height snaps to the new list and is never animated.
 - **Touch rows** fill when pressed (instant tier, color only). Shortcut hints are hidden on coarse screens.
 
+## Hover card
+A preview of what a link points at: a person behind their name, a project behind its link.
+- **Only a preview.** The trigger is a real link or button to the same thing. A touch screen has no hover, so a tap follows the link and the card never opens: nothing may live only in the card.
+- **Open and close:** after the pointer rests 500ms on the trigger, or at once on keyboard focus (focus-visible only, so a tap never opens it). It closes 200ms after the pointer leaves both the trigger and the card, so the pointer can cross the gap, and at once on blur or Esc. Focus never moves into it.
+- **Surface:** the Popover's: floating glass at `--radius-surface` with `--shadow-float`, padded `--space-4`, 256 or 320 wide; solid when its trigger sits inside glass.
+- **Motion:** the Popover's, on the responsive tier: it grows from the trigger and travels a quarter of `--travel` from the side it opens on, and leaves on the exit token.
+
 ## Context menu
 Actions on the thing under the pointer: right-click a row, a file, a card.
 - **Look and rows:** the Menu's exactly: glass at `--radius-surface` with `--shadow-float`, 44px rows, the gliding highlight, checkbox and radio rows in a fixed 16px cell, solid submenus, labels and separators. The same row components work in both.
@@ -324,6 +355,14 @@ Rows are separated by 1px `--line`, padding `--space-3`/`--space-4`, small size.
 - **Hover:** the fg-4% fill is for airy lists (project rows, tables). Dense lists (menus, the command menu) use the gliding highlight. Hover never moves anything.
 - **Entrance:** rows and raised cards arrive in one staggered cascade (`--stagger`, `--travel`, expressive tier). That cascade is the page's single expressive moment.
 - **Filter and insert:** responsive and position-only (FLIP via transform), so text never stretches.
+
+## Action bar
+What can be done to the rows or cards someone selected, while the selection lasts.
+- **Place:** after the list, in the same scrolling area, sticky `--space-4` above the bottom of the view, centered; at the list's end it rests under it, so it never covers the last row.
+- **Surface:** floating glass (it floats over content, P3) at `--radius-surface` with `--shadow-float`, padded `--space-1`. The count in words at the start ("3 selected", small, `--fg`), a hairline, the actions as sm buttons (secondary, or ghost for quieter ones), then a round ghost Clear. Never an accent fill; a destructive action says so in its word. Two or three actions; the rest behind a "More" Menu.
+- **Motion:** it rises by `--travel` and fades in on the responsive tier, and drops by half that on the exit token. The count changes in place.
+- **Keyboard:** a toolbar: one Tab stop, ← → between its buttons, Home and End, Esc clears. When it goes with focus inside, focus returns to where it came from.
+- **Accessibility:** `role="toolbar"` named for what it acts on, and the count said once in a polite status as it changes.
 
 ## Pagination
 Previous and next for a table or list that shows one page of many. The range is the main information, so it comes first, in words.
@@ -480,6 +519,14 @@ The steps of a run in order: when each started, how long it took and how it ende
 - **Strip:** `TimelineBar`, 32px at `--radius-control`, segments sized by seconds, square and 2px apart, in their phase's hue; phase labels above ("Build · 24s") and the times at phase boundaries below, in mono caption. A hovered or touched segment lifts by an fg-16% wash on the instant tier and shows the chart's tooltip. It is an image with a summary ("Build 24 seconds, deploy 18 seconds, 42 seconds in all"), and its segments are not focusable, because it always sits beside a list or a table of the same steps. On coarse pointers its hit layer is 44px tall; a tap pins the tooltip and a drag scrubs.
 - **Accessibility:** a step reads "00:02, Run build commands, done, 19 seconds".
 - **Motion:** none in the list; a running step never moves. Only the strip's tooltip enters, on the responsive tier.
+
+## Log view
+The lines a build, a deploy or a job writes as it runs. The Code block's surface, for output.
+- **Surface:** `--surface-2` with the inset `--line` hairline at `--radius-surface`, a 32px header with the label in mono caption `--fg-subtle`, actions and Copy, and the lines in mono at the small size, padded `--space-4`.
+- **A line:** its number in a gutter (mono caption, `--fg-subtle`, never selected or copied), its time, then the text: info in `--fg-muted`, debug in `--fg-subtle`, success in `--success`. A warning's text is `--warning` and an error's `--danger`, each with the alert mark in the gutter and a hidden "Warning:" or "Error:", so color is never alone.
+- **Following:** at the bottom, new lines keep the view there. Scroll up to read and it stays; a secondary sm button at the bottom says how many lines came since and goes back (smoothly, at once under reduced motion).
+- **Accessibility:** the scroller is a named region and a Tab stop; lines are an ordered list and are not read out one by one. Say how the run ended in a status of its own (a Progress, a Toast).
+- **Motion:** none of its own.
 
 ## App shell
 The frame around an app's pages: a sidebar for moving between them and a main area for the page.
