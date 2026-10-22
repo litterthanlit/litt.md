@@ -438,6 +438,10 @@ const RECIPES = {
             <Avatar name="Sidebar Weekly" />
             <Avatar name="Grotta Type" />
           </AvatarGroup>
+          <Avatar name="Halo Studio" look="fluid" size="lg" data-testid="avatar-fluid" />
+          <Avatar name="Halo Studio" look="fluid" size="lg" data-testid="avatar-fluid-2" />
+          <Avatar name="Halo Studio" look="film" size="lg" data-testid="avatar-film" />
+          <Avatar name="Halo Studio" look="thermal" size="lg" data-testid="avatar-thermal" />
         </div>`,
   },
   callout: {
@@ -2649,7 +2653,31 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const [w0, w1] = [await wrap(0), await wrap(1)];
           if (!(Number(w0.z) > Number(w1.z))) throw new Error(`the first avatar is not on top (z ${w0.z} against ${w1.z})`);
           if (!/\b2px\b/.test(w0.ring)) throw new Error(`the ring is "${w0.ring}"`);
-          return `32px, ${lap}px overlap, ${names.length} marks`;
+          /* Pictures: each look paints its canvas from the renamed tokens, a name draws the same pixels twice, and the
+             looks differ. All black would mean the tokens did not resolve. */
+          const art = (id) =>
+            box.getByTestId(id).evaluate((el) => {
+              const c = el.querySelector("canvas");
+              if (!c || !c.width) return null;
+              const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data;
+              let sum = 0;
+              let hash = 0;
+              for (let i = 0; i < d.length; i += 4) {
+                sum += d[i] + d[i + 1] + d[i + 2];
+                hash = (Math.imul(hash, 31) + d[i] * 7 + d[i + 1] * 3 + d[i + 2]) | 0;
+              }
+              return { mean: sum / (d.length / 4) / 3, hash, label: el.getAttribute("aria-label"), initials: el.innerText.trim(), opaque: d[3 + 4 * Math.floor(d.length / 8)] };
+            });
+          const [fluid, again2, film, thermal] = [await art("avatar-fluid"), await art("avatar-fluid-2"), await art("avatar-film"), await art("avatar-thermal")];
+          for (const [look, a] of [["fluid", fluid], ["film", film], ["thermal", thermal]]) {
+            if (!a) throw new Error(`look="${look}" drew no canvas`);
+            if (a.opaque !== 255) throw new Error(`look="${look}" left its canvas transparent`);
+            if (a.mean < 30) throw new Error(`look="${look}" is nearly black (mean ${a.mean.toFixed(0)}): the tokens did not resolve`);
+            if (a.label !== "Halo Studio") throw new Error(`look="${look}" is named "${a.label}"`);
+          }
+          if (fluid.hash !== again2.hash) throw new Error("the same name drew two different fluid marks");
+          if (fluid.hash === film.hash || film.hash === thermal.hash) throw new Error("two looks drew the same picture");
+          return `32px, ${lap}px overlap, ${names.length} marks, three looks painted`;
         });
       }
       if (has("callout")) {
