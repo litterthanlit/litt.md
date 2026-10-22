@@ -16,6 +16,7 @@ import { SlideConfirm } from "@/components/slide-confirm";
 import { Empty } from "@/components/states";
 import { Switch } from "@/components/switch";
 import { Tag } from "@/components/tag";
+import { FUN_ITEMS } from "./fun-items";
 import { BOUNCY, Burst, DotTick, DrawnCheckbox, Entrance, SpringySegmented, Squish, StretchSwitch } from "./experiments";
 
 export type CanvasItem = {
@@ -263,4 +264,7 @@ export const ITEMS: CanvasItem[] = [
 
   { id: "card-today", name: "Card · 4 and 8 radius", x: at(1, 0), y: ROW_B[3], width: 400, height: 220, render: () => <ProjectCard rounder={false} /> },
   { id: "card-rounder", name: "Card · 6 and 12 radius", x: at(1, 1), y: ROW_B[3], width: 400, height: 220, render: () => <ProjectCard rounder /> },
+
+  /* Fun mode: litt's data parts, today beside fun mode (fun-items.tsx). */
+  ...FUN_ITEMS,
 ];
