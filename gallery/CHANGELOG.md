@@ -4,11 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-22 · Blocks, and four new components
+## 2026-10-22 · Blocks, four new components, and images
 
 The first blocks: ten whole screens, the gallery's five composed pages and five app screens (projects, settings, team, activity and sign in), each installable as one item that brings the components it uses. The app screens are a page's content, to render inside your app's shell. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
 
 And four components app screens need: a progress rail for work happening now, a one-time code input, a file drop and steps for a flow.
+
+And the first image components: a frame for one picture that keeps its shape while it loads, a carousel that never moves on its own, a lightbox for seeing a set at the size of the screen, and a case study page that puts the three together.
 
 - **added** `dashboard`: Dashboard, a deploy dashboard as one screen: an app shell with a sidebar, four number tiles, a chart of deploys per day and a table of recent deploys with its pagination.
 - **added** `usage`: Usage, a plan's usage as one screen, drawn only in rails: trends, storage and bandwidth by kind of file, limits against their budgets and build times by site.
@@ -24,6 +26,11 @@ And four components app screens need: a progress rail for work happening now, a 
 - **added** `code-input`: CodeInput, a one-time code drawn as one cell per character and built as one real field, so paste and one-time-code autofill work; onComplete runs once.
 - **added** `file-drop`: FileDrop, FileList and FileRow: drop or choose files, turned away by type or size with a reason, each uploading on a Progress rail with Retry and Remove.
 - **added** `steps`: Steps, where someone is in a flow of a few steps, in the step marks, as a row, a column or Step 2 of 4 in a narrow box.
+- **added** `media`: Media, one picture in a frame with a fixed shape: still surface-2 while it loads, then a fade in on the instant tier, and its words when it fails. Lazy unless `priority`; with `onOpen` it is a button that opens a Lightbox.
+- **added** `carousel`: Carousel, CarouselContent, CarouselItem and CarouselControls: slides that scroll sideways with the browser's own scrolling and snap to the start edge, one, two or three in view with the next one peeking. The range in words, a page per press, never autoplay.
+- **added** `lightbox`: Lightbox, one image of a set at the size of the screen, opened from a Media. The view's expressive moment; arrow keys, Previous and Next or a swipe move through the set.
+- **added** `case-study`: CaseStudy, one project told as a page: a hero image, the facts, the story beside its labels, the series in a carousel, the details in a grid and the next project, with one lightbox for every image.
+- **changed** `icons`: `ImageIcon`, a picture's mark, which Media shows when an image fails to load. Nothing in your code has to change.
 
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
 

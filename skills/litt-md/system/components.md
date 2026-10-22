@@ -1,9 +1,9 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) the staples (combobox, date picker, color picker, slide to confirm, rolling number, accordion, scroll area, breadcrumb, context menu) and the app screens' parts (code input, file drop, steps, progress) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) the staples (combobox, date picker, color picker, slide to confirm, rolling number, accordion, scroll area, breadcrumb, context menu) the app screens' parts (code input, file drop, steps, progress) and the image parts (media, carousel, lightbox) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Code input · Token input · File drop · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Color picker · Slide to confirm · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Callout · Accordion · Scroll area · Glass header · Breadcrumb · Steps · Tooltip · Command menu · Popover and dropdown · Context menu · Modal · Toast · Table and list rows · Pagination · Stat · Rolling number · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · App shell · Empty and loading states · Progress · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
+Button · Input · Code input · Token input · File drop · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Color picker · Slide to confirm · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Media · Carousel · Callout · Accordion · Scroll area · Glass header · Breadcrumb · Steps · Tooltip · Command menu · Popover and dropdown · Context menu · Modal · Lightbox · Toast · Table and list rows · Pagination · Stat · Rolling number · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · App shell · Empty and loading states · Progress · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
 
 ---
 
@@ -185,6 +185,25 @@ A round mark for a person, a client or a company, and a group that stacks them.
 - Hover (when the card links somewhere): the fill moves one step (`--surface-2`). No lift, no shadow growth, no scale. On coarse screens a press shows the same step.
 - Cards are never glass (P3), never have an accent rail, and are not the default layout for features.
 
+## Media
+One picture in a frame: a screenshot, a photograph, a poster. Every image in the page flow sits in one, and so do a card's cover, a carousel's slide and the lightbox's image.
+- **Frame:** a fixed shape (16/9, 8/5 the default, 4/3, 1/1, 4/5, or the image's own as a number), so the page never jumps when the image arrives. `auto` lets the image set the height, with its width and height passed so the space is kept. `--radius-surface` on its own, `--radius-control` inside a card that pads it by 4px, none at the edge of a full-bleed area. An inset `--line` hairline lies over the image, so a pale image keeps its edge, as an avatar's photo does.
+- **Loading:** the frame is `--surface-2` and still, the skeleton's look: no pulse, no shimmer, no blur-up. The image fades in on the instant tier when it has loaded, opacity only. Lazy unless it is the one image the page opens on (`priority`, which also raises its fetch priority).
+- **Failed:** the frame keeps its size and says "Image didn't load" beside a 16px image mark in `--fg-subtle`; a narrow frame shows the mark only. The alt text still names it.
+- **Open:** a frame that opens a larger view is a button named by its alt, with `aria-haspopup="dialog"`. Hover strengthens the hairline to `--line-strong` on the instant tier and the pointer is a zoom; nothing lifts or scales. Focus is the 2px ring at a 2px offset around the frame.
+- **Caption:** small, `--fg-subtle`, 8px under the frame, in a figure.
+- **Never** text over a photograph (it fails contrast somewhere in the image), a video that plays on its own, or an image that animates on scroll.
+
+## Carousel
+A set people look through in order, such as a project's screens, or a strip of cards. Never for content people must see: most people never reach a later slide.
+- **Scrolling** is the browser's: a track with scroll snap, each slide resting at the start edge, so a swipe, a trackpad and Shift and the wheel keep their own momentum. A mouse can drag it, and the release goes to the nearest slide in the way it was going. The scrollbar is hidden; the peek and the controls say there is more.
+- **Never on its own:** no autoplay, no loop, no timer. The person always moves it, so there is nothing to pause (Foundations, Motion).
+- **Slides per view:** one, two or three, with the next slide peeking 48px (96px for one slide in a wide box), or slides of their own width. The box decides by a container query, not the screen; a narrow box is always one slide and a peek. Slides sit 16px apart.
+- **Controls:** under the track, the range in words at the start ("3 of 12", "4 to 6 of 12"), in the mono at the caption size in `--fg-subtle`, as Pagination's; round secondary sm icon buttons for Previous and Next at the end, 44px on coarse pointers. Next brings the first slide not wholly in view to the start; Previous goes a page back. At an end the button is disabled and hands its focus to the other one.
+- **Keys:** the track is a tab stop with an inset focus ring; ← and → move one slide (swapped right to left), Home and End go to the ends.
+- **Motion:** a button, a key or a drag's release scrolls smoothly; under reduced motion it jumps. No fades at the edges: material is static (P5).
+- **Accessibility:** a region named by its label with `aria-roledescription="carousel"`, each slide a group with `aria-roledescription="slide"` named "3 of 12". Slides out of view stay readable. After a button or a key the new range is said once in a polite status.
+
 ## Callout
 An inline note in the page flow: a tip, a heads-up, a result to act on.
 - **Surface:** `.litt-raised`, padding `--space-4`, gap `--space-3`. In the flow, so never glass and no shadow, and never a left rail, a tinted fill or a colored border.
@@ -281,6 +300,16 @@ Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, pa
 - **Motion on compact:** it always rises on the expressive spring and does not use up the view's expressive moment (Foundations section 6), whatever `tier` says. It rises by its own height, by transform only, and may bounce as the token allows (`--ease-expressive` peaks at 1.0012, about half a pixel on a 450px sheet). It leaves the same way on `--dur-exit-expressive` with `--ease-out`.
 - **Above the keyboard:** the sheet's bottom follows the visual viewport, so the keyboard never covers its footer or the field being typed in.
 - **Drag and buttons:** it can be dragged down from anywhere that follows the rules in Foundations section 6. The close button is 44px on coarse screens. Cancel, Esc and a scrim tap also close it.
+
+## Lightbox
+One image of a set at the size of the screen, opened from a Media.
+- **Layer:** the whole screen, on the canvas at 97% that only fades (instant tier), so the image is the one surface and the page behind is a trace. No blur and no glass: the image is the material.
+- **Image:** as large as the screen allows less the bars, at its own shape, in a Media frame (the surface radius, the hairline, `--surface-2` while it loads). Its width and height give it its shape before it loads.
+- **Bars:** the label at the small size and `--weight-title` with "3 of 12" in the mono caption beside it, and a round Close at the end, at the top. The caption under the image at the small size in `--fg-muted`, at most `--measure` wide. Previous and Next are round secondary buttons beside the image on a wide screen and at the end of the caption row on a compact one, 44px on coarse pointers, disabled at the ends. Nothing loops.
+- **Motion:** opening is the view's expressive moment, as a dialog's: the image rises by `--travel` and settles from `--press-scale`, and leaves on the exit token; `tier="responsive"` when the view has spent it. The next image fades in from `--travel` on the side it comes from and the last one out by half that, on the responsive tier.
+- **Touch:** a finger swipes the image sideways one to one (Foundations section 6). Past `--dismiss-distance` of its width or faster than `--dismiss-velocity` it carries on out and the next one comes in; pulled where there is nothing, it resists. The buttons stay.
+- **Keys and focus:** focus lands on the panel so ← → Home and End work at once; Esc, Close or a click on the ground around the image closes it, and focus goes back to the image that opened it, or the slide it closed on.
+- **On compact screens** it stays full screen; it is not a sheet, because it already fills the screen.
 
 ## Toast
 Glass at `--radius-surface` with `--shadow-float`, padding `--space-3`/`--space-4`: the title at the small size and `--weight-title` in `--fg`, an optional description under it at the caption size in `--fg-subtle`, at `--weight`. No status dot: an error's title is `--danger`, and the words say the rest. Bottom right on desktop, bottom center on mobile. `role="status"` (or `alert` for errors). Auto-dismiss after 5s, but never for errors. An undo action sits on the right as a ghost button or kbd hint.

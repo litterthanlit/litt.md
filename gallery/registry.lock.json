@@ -50,6 +50,14 @@
       "version": "2026.10.19",
       "hash": "d53924bb78d36f31"
     },
+    "carousel": {
+      "version": "2026.10.22",
+      "hash": "cd6a113ab725ce31"
+    },
+    "case-study": {
+      "version": "2026.10.22",
+      "hash": "c63b2c9312bb3ebf"
+    },
     "chart": {
       "version": "2026.10.20",
       "hash": "1d0fb9c68cbc42db"
@@ -139,8 +147,8 @@
       "hash": "937863057164371c"
     },
     "icons": {
-      "version": "2026.10.19",
-      "hash": "be17e65e4215bf62"
+      "version": "2026.10.22",
+      "hash": "ac821bf30f38a5eb"
     },
     "input": {
       "version": "2026.10.19",
@@ -158,6 +166,10 @@
       "version": "2026.10.20",
       "hash": "1e874a4348b61265"
     },
+    "lightbox": {
+      "version": "2026.10.22",
+      "hash": "b238e864b82fcc40"
+    },
     "list": {
       "version": "2026.10.19",
       "hash": "ea5003aa8279ca51"
@@ -169,6 +181,10 @@
     "litt": {
       "version": "2026.10.20",
       "hash": "f660d3a6cdeede4a"
+    },
+    "media": {
+      "version": "2026.10.22",
+      "hash": "6bc2611a9862421a"
     },
     "menu": {
       "version": "2026.10.19",

@@ -1093,6 +1093,21 @@ const COPY = {
     description: "Where someone is in a flow of a few steps, in the step marks: a check for done, a half-filled circle for now, an empty circle for what is left. A row, a column, or in a narrow box Step 2 of 4 with a rail per step.",
     docs: "Import Steps from components/litt/steps. Pass the steps and the current index; onStepSelect lets done steps go back.",
   },
+  media: {
+    title: "Media",
+    description: "One picture in a frame with a fixed shape, so the page never jumps when it arrives: still surface-2 while it loads, a fade in on the instant tier, and its words when it fails. A hairline lies over the image, and with onOpen the frame is a button that opens a Lightbox.",
+    docs: "Import Media from components/litt/media. Pass src, a sentence of alt text and a ratio; priority only for the image the page opens on. Use it for every image in the page flow instead of a bare img.",
+  },
+  carousel: {
+    title: "Carousel",
+    description: "A row of slides that scrolls sideways with the browser's own scrolling, snaps each slide to the start edge and lets the next one peek. The range in words with Previous and Next, arrow keys on the track and a mouse drag. It never moves on its own.",
+    docs: "Import Carousel, CarouselContent, CarouselItem and CarouselControls from components/litt/carousel, as shadcn's carousel is written. Give Carousel a label and perView; never add autoplay.",
+  },
+  lightbox: {
+    title: "Lightbox",
+    description: "One image of a set at the size of the screen, on the canvas, opened from a Media. Opening is the view's expressive moment; arrow keys, Previous and Next or a swipe move through the set, and Esc, Close or a click around the image closes it.",
+    docs: "Import Lightbox from components/litt/lightbox and hold the open index in state: set it from each Media's onOpen and pass setIndex as onIndexChange. Give each item its width and height.",
+  },
   /* Blocks: whole screens. The docs line says where the sample data is, because that is the first thing to change. */
   dashboard: {
     title: "Dashboard block",
@@ -1143,6 +1158,11 @@ const COPY = {
     title: "Sign in block",
     description: "The page before the app: the wordmark, one left-aligned column with email, password, Sign in and a second way in, and a quiet column of what is new on a wide screen. Wrong fields say so under themselves and take focus, and a refusal shows in a callout.",
     docs: "Import SignIn from components/litt-blocks/sign-in and render it as a whole page. signIn at the top of the file stands in for your auth call; return your server's message the same way, and point the links at your routes.",
+  },
+  "case-study": {
+    title: "Case study block",
+    description: "One project told as a page: a wide hero image, the facts in a row, the story with its labels in a narrow left column, the series in a carousel, the details in a grid and the next project as a card. Every image opens one lightbox that runs through them all, and the carousel follows it.",
+    docs: "Import CaseStudy from components/litt-blocks/case-study and render it as a page's content. The project, its words and its images sit at the top of the file: replace the drawn stand-ins with your images and give each its width and height.",
   },
 };
 

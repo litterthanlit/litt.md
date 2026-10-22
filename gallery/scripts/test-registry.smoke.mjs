@@ -596,6 +596,21 @@ const RECIPES = {
     needs: ["Steps"],
     jsx: `<div className="w-full max-w-2xl" data-testid="litt-steps"><Steps label="Set up your studio" current={1} steps={[{ id: "a", label: "Details" }, { id: "b", label: "Team" }, { id: "c", label: "Billing" }]} /></div>`,
   },
+  media: {
+    needs: ["Media"],
+    top: [`const SMOKE_MEDIA_SRC = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Crect width='16' height='10' fill='gray'/%3E%3C/svg%3E";`],
+    jsx: `<div className="grid w-full max-w-md gap-4" data-testid="litt-media"><Media src={SMOKE_MEDIA_SRC} alt="A grey rectangle" ratio="16/9" caption="Smoke image" /><Media src="data:image/png;base64,AAAA" alt="A broken image" ratio="4/3" /></div>`,
+  },
+  carousel: {
+    needs: ["Carousel", "CarouselContent", "CarouselItem", "CarouselControls"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-carousel"><Carousel label="Smoke slides" perView="two"><CarouselContent><CarouselItem><div className="h-32">Slide one</div></CarouselItem><CarouselItem><div className="h-32">Slide two</div></CarouselItem><CarouselItem><div className="h-32">Slide three</div></CarouselItem><CarouselItem><div className="h-32">Slide four</div></CarouselItem></CarouselContent><CarouselControls /></Carousel></div>`,
+  },
+  lightbox: {
+    needs: ["Lightbox"],
+    top: [`const SMOKE_LIGHTBOX_SRC = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Crect width='16' height='10' fill='gray'/%3E%3C/svg%3E";`],
+    state: [`const [lbOpen, setLbOpen] = useState<number | null>(null);`],
+    jsx: `<div data-testid="litt-lightbox"><@Btn type="button" onClick={() => setLbOpen(0)}>Open lightbox</@Btn><Lightbox label="Smoke set" items={[{ src: SMOKE_LIGHTBOX_SRC, alt: "A grey rectangle", caption: "Smoke image", width: 16, height: 10 }]} index={lbOpen} onIndexChange={setLbOpen} /></div>`,
+  },
   /* Blocks: whole screens, rendered as they ship, sample data and all. The agent chat is the finished one, so no script runs. */
   dashboard: { needs: ["Dashboard"], jsx: `<div className="w-full" data-testid="litt-block-dashboard"><Dashboard label="Smoke dashboard" viewportHeight="32rem" /></div>` },
   usage: { needs: ["Usage"], jsx: `<div className="w-full" data-testid="litt-block-usage"><Usage /></div>` },
@@ -607,6 +622,7 @@ const RECIPES = {
   team: { needs: ["Team"], jsx: `<div className="w-full" data-testid="litt-block-team"><Team /></div>` },
   activity: { needs: ["Activity"], jsx: `<div className="w-full" data-testid="litt-block-activity"><Activity /></div>` },
   "sign-in": { needs: ["SignIn"], jsx: `<div className="h-[40rem] w-full" data-testid="litt-block-sign-in"><SignIn /></div>` },
+  "case-study": { needs: ["CaseStudy"], jsx: `<div className="w-full" data-testid="litt-block-case-study"><CaseStudy /></div>` },
 };
 
 /** Recipes for shadcn's own registry, used by `--registry shadcn` to prove the harness itself. */
