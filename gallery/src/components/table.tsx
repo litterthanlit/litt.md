@@ -39,6 +39,11 @@
  *   one line) and a Table with a max height, which is the scroller. The header stays sticky, and the table keeps its
  *   semantics: aria-rowcount on the table and aria-rowindex on each row, so a screen reader still says "row 4,812 of
  *   10,001". The entrance and change motion are off in it: a long list arrives at once.
+ * - Loading as you scroll: with `hasMore` and `onLoadMore` the body asks for the next page once the view comes within
+ *   `loadAhead` rows of the last one loaded, once per count, so a fast scroll never asks twice. While `loading`, three
+ *   skeleton rows wait after the last row (static, as every skeleton) and the table says "Loading more rows" in its
+ *   status. A failed page is one row in words with Retry, which asks again. `total`, when the server knows it, makes
+ *   aria-rowcount true; without it, while more can come, it is -1, which says the size is not known yet.
  * - Sticky columns: `stickyColumns` keeps the first one or two columns (a box and the row's name) in view while the table
  *   scrolls sideways. They take an opaque fill that follows the row's hover and selection, and a 1px --line hairline
  *   appears at their edge once anything is scrolled under them. No shadow: depth comes from the hairline (P4).
@@ -74,7 +79,9 @@ import {
 } from "react";
 import { AnimatePresence, motion, type HTMLMotionProps } from "motion/react";
 import { useExit, useStagger, useTransition, useTravel } from "@/motion";
+import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
+import { AlertIcon, RetryIcon } from "@/components/icons";
 
 /** The entrance cascade stops counting at this many rows, so a long table never drags. */
 const CASCADE_CAP = 6;
@@ -93,6 +100,8 @@ type TableState = {
   settleColumns: () => void;
   /** Fixes the widths the columns have now, if nothing has yet: a virtual body does it, so columns never shift as rows scroll by. */
   freezeColumns: () => void;
+  /** A virtual body says it is loading more rows, so the table's status says so. */
+  setLoadingMore: (loading: boolean) => void;
 };
 const TableContext = createContext<TableState>({
   entrance: false,
@@ -104,6 +113,7 @@ const TableContext = createContext<TableState>({
   resizeColumn: () => {},
   settleColumns: () => {},
   freezeColumns: () => {},
+  setLoadingMore: () => {},
 });
 /* Inside a TableVirtualBody: the row's place in the whole table, for aria-rowindex. Null elsewhere. */
 const VirtualIndexContext = createContext<number | null>(null);
@@ -186,6 +196,7 @@ export function Table({
   const [frozenBy, setFrozenBy] = useState<"auto" | "person">("auto");
   const [scrolledX, setScrolledX] = useState(false);
   const [stickyStart, setStickyStart] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   /* The widths the header cells have now, to freeze before the first resize. */
   const measureColumns = useCallback(() => {
@@ -278,7 +289,9 @@ export function Table({
   }, []);
 
   return (
-    <TableContext.Provider value={{ entrance, animateChanges, ready, region, table, widths, resizeColumn, settleColumns, freezeColumns }}>
+    <TableContext.Provider
+      value={{ entrance, animateChanges, ready, region, table, widths, resizeColumn, settleColumns, freezeColumns, setLoadingMore }}
+    >
       <motion.div
         ref={region}
         layoutScroll
@@ -316,7 +329,7 @@ export function Table({
           {children}
         </table>
         <div role="status" className="sr-only">
-          {busy ? `Loading ${label}` : ""}
+          {busy ? `Loading ${label}` : loadingMore ? "Loading more rows" : ""}
         </div>
       </motion.div>
     </TableContext.Provider>
@@ -387,24 +400,46 @@ export type TableVirtualBodyProps = {
   overscan?: number;
   /** How many columns the table has, so the spacer rows span it. */
   columns: number;
+  /** There are rows beyond `count` still to load: the body calls onLoadMore as the view nears the last row loaded. */
+  hasMore?: boolean;
+  /** Called once per count when the view comes within `loadAhead` rows of the end and hasMore is set. Fetch the next page and append it. To start over (a new filter on the server), empty the rows: the body asks for the first page itself. */
+  onLoadMore?: () => void;
+  /** A page is on its way: skeleton rows wait after the last row, and the table says "Loading more rows". */
+  loading?: boolean;
+  /** The last page failed, in plain words: "The next deploys did not load.". It shows as the last row, with Retry calling onLoadMore. */
+  loadError?: string;
+  /** How many rows before the last one loaded to ask for more, so the next page is usually there before anyone reaches the end. */
+  loadAhead?: number;
+  /** How many rows there are on the server, when it says. It makes aria-rowcount true while rows are still loading. */
+  total?: number;
+  /** One entry per column for the loading rows, as TableSkeleton's columns. By default a text bar in each. */
+  skeleton?: SkeletonColumn[];
 };
 
 /**
  * A body that draws only the rows in view. Give the Table a max height (it is the scroller) and keep each row on one
- * line, so every row is the same height. The rows are read from `children(index)`.
+ * line, so every row is the same height. The rows are read from `children(index)`. With hasMore and onLoadMore it
+ * loads the next page from a server as the view nears the end.
  */
-export function TableVirtualBody({ count, children, overscan = 8, columns }: TableVirtualBodyProps) {
-  const { region, table, freezeColumns } = useContext(TableContext);
+export function TableVirtualBody({
+  count,
+  children,
+  overscan = 8,
+  columns,
+  hasMore = false,
+  onLoadMore,
+  loading = false,
+  loadError,
+  loadAhead = 20,
+  total,
+  skeleton,
+}: TableVirtualBodyProps) {
+  const { region, table, freezeColumns, setLoadingMore } = useContext(TableContext);
   const body = useRef<HTMLTableSectionElement>(null);
 
-  /* The browser sizes a table's columns from the rows it has, and a virtual body has different rows at every scroll
-     position, so the columns would shift as it scrolls. Fix them at the widths the first rows give. A passive effect,
-     because React attaches the <table>'s ref after this body's layout effects run. */
-  useEffect(() => {
-    if (count > 0) freezeColumns();
-  }, [count, freezeColumns]);
   const [height, setHeight] = useState(ROW_HEIGHT);
-  const [range, setRange] = useState({ start: 0, end: Math.min(count, 30) });
+  /* start and end are the rows drawn; last is the last row in view, which decides when to load more. */
+  const [range, setRange] = useState({ start: 0, end: Math.min(count, 30), last: Math.min(count, 30) });
 
   /* Which rows the view shows, from the scroll position, less the sticky header's height above the first row. */
   const measure = useCallback(() => {
@@ -416,7 +451,8 @@ export function TableVirtualBody({ count, children, overscan = 8, columns }: Tab
     const shown = Math.ceil(el.clientHeight / height);
     const start = Math.max(0, first - overscan);
     const end = Math.min(count, first + shown + overscan);
-    setRange((r) => (r.start === start && r.end === end ? r : { start, end }));
+    const last = first + shown;
+    setRange((r) => (r.start === start && r.end === end && r.last === last ? r : { start, end, last }));
   }, [region, height, overscan, count]);
 
   useLayoutEffect(() => {
@@ -449,16 +485,40 @@ export function TableVirtualBody({ count, children, overscan = 8, columns }: Tab
     if (real && Math.abs(real - height) > 0.5) setHeight(real);
   });
 
-  /* The whole table's size, for screen readers: the header row plus every row. */
+  /* The whole table's size, for screen readers: the header row plus every row. -1 says it is not known yet. */
   useEffect(() => {
     const el = table.current;
     if (!el) return;
-    el.setAttribute("aria-rowcount", String(count + 1));
+    el.setAttribute("aria-rowcount", String(total !== undefined ? total + 1 : hasMore ? -1 : count + 1));
     return () => el.removeAttribute("aria-rowcount");
-  }, [table, count]);
+  }, [table, count, total, hasMore]);
+
+  /* The next page, asked for once per count: a scroll that keeps moving near the end, or a second run of this effect in
+     development, never asks twice for the same page. Retry asks again on purpose. */
+  const asked = useRef(-1);
+  useEffect(() => {
+    if (!hasMore || loading || loadError || !onLoadMore) return;
+    if (count - range.last > loadAhead || asked.current === count) return;
+    asked.current = count;
+    onLoadMore();
+  }, [hasMore, loading, loadError, onLoadMore, count, range.last, loadAhead]);
+
+  useEffect(() => {
+    setLoadingMore(loading);
+    return () => setLoadingMore(false);
+  }, [loading, setLoadingMore]);
 
   const start = Math.min(range.start, count);
   const end = Math.min(range.end, count);
+
+  /* The browser sizes a table's columns from the rows it has, and a virtual body has different rows at every scroll
+     position, so the columns would shift as it scrolls. Fix them at the widths the first rows drawn give: not before,
+     or a first page from a server would fix them to the header's words alone. A passive effect, because React attaches
+     the <table>'s ref after this body's layout effects run. */
+  const drawn = end > start;
+  useEffect(() => {
+    if (drawn) freezeColumns();
+  }, [drawn, freezeColumns]);
   const rows: ReactNode[] = [];
   for (let i = start; i < end; i++) {
     rows.push(
@@ -474,6 +534,11 @@ export function TableVirtualBody({ count, children, overscan = 8, columns }: Tab
       </tr>
     ) : null;
 
+  const retry = () => {
+    asked.current = count;
+    onLoadMore?.();
+  };
+
   return (
     <SectionContext.Provider value="body">
       {/* The last row keeps no line under it. At the end of the list that is the last real row; before it, the spacer. */}
@@ -481,6 +546,24 @@ export function TableVirtualBody({ count, children, overscan = 8, columns }: Tab
         {spacer(start * height, "before")}
         {rows}
         {spacer((count - end) * height, "after")}
+        {loadError ? (
+          <tr>
+            <td colSpan={columns} className="h-control-md border-b border-line px-4 py-1 align-middle">
+              {/* Sticky, so the words and Retry stay in view in a table scrolled sideways. */}
+              <div role="alert" className="sticky start-4 flex w-max items-center gap-3 text-small text-fg-subtle">
+                <span className="text-danger">
+                  <AlertIcon />
+                </span>
+                {loadError}
+                <Button size="sm" variant="ghost" icon={<RetryIcon />} onClick={retry}>
+                  Retry
+                </Button>
+              </div>
+            </td>
+          </tr>
+        ) : (
+          loading && hasMore && <TableSkeleton columns={skeleton ?? Array.from({ length: columns }, () => "text")} rows={3} />
+        )}
       </tbody>
     </SectionContext.Provider>
   );
@@ -960,15 +1043,16 @@ export function TableEmpty({ columns, children, action }: TableEmptyProps) {
   );
 }
 
-type SkeletonColumn = "primary" | "text" | "number";
+export type SkeletonColumn = "primary" | "text" | "number" | "box";
 const skeletonBar: Record<SkeletonColumn, string> = {
-  primary: "w-40",
-  text: "w-24",
-  number: "ml-auto w-12",
+  primary: "h-4 w-40",
+  text: "h-4 w-24",
+  number: "ml-auto h-4 w-12",
+  box: "size-5",
 };
 
 export type TableSkeletonProps = {
-  /** One entry per column, so each bar has its column's width and alignment: primary, text or number. */
+  /** One entry per column, so each bar has its column's width and alignment: primary, text or number, or box for a TableSelectCell's column. */
   columns: SkeletonColumn[];
   /** How many placeholder rows to draw. */
   rows?: number;
@@ -982,7 +1066,7 @@ export function TableSkeleton({ columns, rows = 4 }: TableSkeletonProps) {
         <tr key={row} aria-hidden="true">
           {columns.map((kind, col) => (
             <td key={col} className="h-control-md border-b border-line px-4 py-3 align-middle">
-              <span className={"block h-4 rounded-control bg-surface-2 " + skeletonBar[kind]} />
+              <span className={"block rounded-control bg-surface-2 " + skeletonBar[kind]} />
             </td>
           ))}
         </tr>

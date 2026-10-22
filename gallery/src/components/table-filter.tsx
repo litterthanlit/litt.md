@@ -15,8 +15,22 @@
  * - Accessibility: the button is named for the column and what it holds ("Filter status, 2 of 4 on"), and the menu is
  *   named "Filter status". Say the result in a polite status of your own ("1,170 of 10,000 deploys").
  * - Motion: the Menu's, on the responsive tier. The button's fill changes on the instant tier.
+ *
+ * Filters in the page address (components.md, "Table and list rows", Filters in the address): useUrlFilter and
+ * useUrlParam keep a filter, a search or a sort in the query string, so a filtered view can be bookmarked, shared or
+ * reloaded, and Back and Forward bring the last one back.
+ * - Each value is its own parameter, readable and safe for any text: ?status=failed&site=Halden+Gallery. An empty value
+ *   leaves the address, so an unfiltered table has a clean one.
+ * - Writes replace the history entry instead of adding one, so Back leaves the page instead of undoing toggles one by
+ *   one. They wait 200ms after the last change, so typing a search never floods the history API (Safari throttles it),
+ *   while the hooks hand back the new value at once. A write the page has moved on from (another path or hash) is dropped.
+ * - The address is untrusted: useUrlFilter keeps only the `values` you allow, so a stale or hand-edited link can never
+ *   leave a filter on that nothing can turn off.
+ * - Any router: it reads location and writes with history.replaceState, keeping history.state, which Next.js's App
+ *   Router and React Router both follow. On the server, and in the render that hydrates, every value is empty, so the
+ *   two agree; the address is read right after. In an app without server rendering it is read in the first render.
  */
-import { type ReactNode } from "react";
+import { useCallback, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { FilterIcon } from "@/components/icons";
 import { Menu, MenuCheckboxItem, MenuItem, MenuLabel, MenuRadioGroup, MenuRadioItem, MenuSeparator } from "@/components/menu";
 
@@ -118,4 +132,114 @@ export function TableFilter({ column, options, value, onValueChange, multiple = 
       )}
     </Menu>
   );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Filters in the page address                                                */
+/* -------------------------------------------------------------------------- */
+
+/** How long a write waits after the last change before it reaches the history, in ms. */
+const WRITE_AFTER = 200;
+
+/* One store for every hook on the page: the query string, with a write that has not reached the history yet. */
+const listeners = new Set<() => void>();
+let pending: { search: string; at: string } | null = null;
+let timer: ReturnType<typeof setTimeout> | undefined;
+
+const here = () => window.location.pathname + window.location.hash;
+const readSearch = () => (pending && pending.at === here() ? pending.search : window.location.search);
+const notify = () => listeners.forEach((listener) => listener());
+
+function flush() {
+  clearTimeout(timer);
+  if (!pending) return;
+  const { search, at } = pending;
+  /* The page moved on while the write waited: never put one page's filters on another. */
+  if (at !== here()) {
+    pending = null;
+    notify();
+    return;
+  }
+  try {
+    window.history.replaceState(window.history.state, "", window.location.pathname + search + window.location.hash);
+    pending = null;
+  } catch {
+    /* The browser throttled the history API: the value holds, and it tries again in a moment. */
+    timer = setTimeout(flush, 1000);
+  }
+}
+
+/* Back and Forward: the address wins over a write still waiting. */
+function onPopState() {
+  clearTimeout(timer);
+  pending = null;
+  notify();
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  if (listeners.size === 1) {
+    window.addEventListener("popstate", onPopState);
+    window.addEventListener("pagehide", flush);
+  }
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size > 0) return;
+    window.removeEventListener("popstate", onPopState);
+    window.removeEventListener("pagehide", flush);
+  };
+}
+
+function writeParam(name: string, values: readonly string[]) {
+  const params = new URLSearchParams(readSearch());
+  params.delete(name);
+  for (const v of values) if (v !== "") params.append(name, v);
+  const text = params.toString();
+  const search = text ? `?${text}` : "";
+  if (search === readSearch()) return;
+  pending = { search, at: here() };
+  notify();
+  clearTimeout(timer);
+  timer = setTimeout(flush, WRITE_AFTER);
+}
+
+/** The query string, empty on the server and in the render that hydrates. */
+function useSearch() {
+  return useSyncExternalStore(subscribe, readSearch, () => "");
+}
+
+export type UrlFilterOptions = {
+  /** The values this parameter may hold, such as the TableFilter's option values. Anything else in the address is ignored. */
+  values?: readonly string[];
+  /** false keeps one value at most, for a TableFilter with multiple={false}. */
+  multiple?: boolean;
+};
+
+/**
+ * A TableFilter's values, kept in the page address as one parameter per value: `?status=ready&status=failed`. Returns
+ * the values on and a setter, the shape of TableFilter's `value` and `onValueChange`. The list keeps its identity until
+ * the parameter changes, so it can sit in a useMemo's or useDeferredValue's inputs.
+ */
+export function useUrlFilter(name: string, { values, multiple = true }: UrlFilterOptions = {}): [string[], (next: string[]) => void] {
+  const search = useSearch();
+  /* Joined, so an options list rebuilt every render does not count as a change. */
+  const allowed = values?.join("\u0000");
+  const value = useMemo(() => {
+    const ok = allowed === undefined ? null : new Set(allowed.split("\u0000"));
+    const all = new URLSearchParams(search).getAll(name).filter((v, i, list) => (!ok || ok.has(v)) && list.indexOf(v) === i);
+    return multiple ? all : all.slice(0, 1);
+  }, [search, name, allowed, multiple]);
+  const set = useCallback((next: string[]) => writeParam(name, multiple ? next : next.slice(0, 1)), [name, multiple]);
+  return [value, set];
+}
+
+/**
+ * One text value kept in the page address, such as a search (`?q=halden`) or a sort (`?sort=slow`). Returns it, or ""
+ * when the address has none, and a setter; setting "" takes the parameter out.
+ */
+export function useUrlParam(name: string): [string, (next: string) => void] {
+  const search = useSearch();
+  const value = useMemo(() => new URLSearchParams(search).get(name) ?? "", [search, name]);
+  const set = useCallback((next: string) => writeParam(name, [next]), [name]);
+  return [value, set];
 }

@@ -5,6 +5,7 @@ import { Lightbox } from "@/components/lightbox";
 import { ProjectCover, type CoverName } from "@/components/list-cover";
 import { Media } from "@/components/media";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { SERIES } from "../plates";
 
 export const meta: PageMeta = {
   id: "carousel",
@@ -75,38 +76,13 @@ const [slide, setSlide] = useState(0);
   ],
 };
 
-/* Drawn stand-ins for photographs: a sky in two colors, light falling from the top, two ridges and a trace of grain.
-   An SVG, so the page fetches nothing; named colors, because these are pictures, not the interface. The scene is
-   cropped to the width and height asked for, as a photograph would be. */
-function plate(sky: string, glow: string, far: string, near: string, width = 1600, height = 1000) {
-  const svg =
-    `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' viewBox='0 0 1600 1000' preserveAspectRatio='xMidYMid slice'>` +
-    `<defs><linearGradient id='s' x2='0' y2='1'><stop offset='0' stop-color='${sky}'/><stop offset='1' stop-color='${glow}'/></linearGradient>` +
-    `<radialGradient id='l' cx='.5' cy='0' r='.9'><stop offset='0' stop-color='${glow}' stop-opacity='.7'/><stop offset='1' stop-color='${glow}' stop-opacity='0'/></radialGradient>` +
-    `<filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .12 0'/></filter></defs>` +
-    `<rect width='1600' height='1000' fill='url(#s)'/><rect width='1600' height='1000' fill='url(#l)'/>` +
-    `<path d='M0 620C260 540 430 590 650 530S1110 450 1600 545V1000H0Z' fill='${far}'/>` +
-    `<path d='M0 780C310 700 560 765 830 720S1310 655 1600 735V1000H0Z' fill='${near}'/>` +
-    `<rect width='1600' height='1000' filter='url(#g)'/></svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
-
-const SERIES = [
-  { id: "dawn", name: "Dawn over the ridge", alt: "Dawn over two ridges, the sky pale blue going pink", src: plate("lightsteelblue", "mistyrose", "slategray", "darkslategray") },
-  { id: "dune", name: "Dunes at noon", alt: "Dunes at noon, a ridge of shadow across the middle", src: plate("peachpuff", "navajowhite", "peru", "sienna") },
-  { id: "fog", name: "Fog bank", alt: "Fog over two grey ridges", src: plate("gainsboro", "whitesmoke", "darkgray", "dimgray") },
-  { id: "tide", name: "Tide line", alt: "A blue evening over a dark shore", src: plate("steelblue", "lightblue", "cadetblue", "darkslategray") },
-  { id: "dusk", name: "Dusk", alt: "A violet dusk going salmon at the horizon, over grey hills", src: plate("darkslateblue", "lightsalmon", "dimgray", "darkslategray") },
-  { id: "valley", name: "Valley", alt: "A green valley under a pale sky", src: plate("honeydew", "darkseagreen", "seagreen", "darkolivegreen") },
-];
-
 function SeriesDemo() {
   return (
-    <Carousel label="Atlas, landscapes" className="w-full max-w-3xl">
+    <Carousel label="Field studies" className="w-full max-w-3xl">
       <CarouselContent>
         {SERIES.map((image) => (
           <CarouselItem key={image.id} label={image.name}>
-            <Media src={image.src} alt={image.alt} ratio="16/9" caption={image.name} />
+            <Media src={image.src} srcSet={image.srcSet} sizes="(min-width: 48rem) 40rem, 90vw" alt={image.alt} ratio="16/9" caption={image.name} />
           </CarouselItem>
         ))}
       </CarouselContent>
@@ -155,19 +131,19 @@ function LightboxDemo() {
   const slides = useRef<HTMLDivElement>(null);
   return (
     <div ref={slides} className="w-full max-w-3xl">
-      <Carousel label="Atlas, landscapes" perView="two" index={slide} onIndexChange={setSlide}>
+      <Carousel label="Field studies" perView="two" index={slide} onIndexChange={setSlide}>
         <CarouselContent>
           {SERIES.map((image, i) => (
             <CarouselItem key={image.id} label={image.name}>
-              <Media src={image.src} alt={image.alt} ratio="4/3" onOpen={() => setOpen(i)} />
+              <Media src={image.src} srcSet={image.srcSet} sizes="(min-width: 48rem) 24rem, 90vw" alt={image.alt} ratio="4/3" onOpen={() => setOpen(i)} />
             </CarouselItem>
           ))}
         </CarouselContent>
         <CarouselControls />
       </Carousel>
       <Lightbox
-        label="Atlas, landscapes"
-        items={SERIES.map((image) => ({ src: image.src, alt: image.alt, caption: image.name, width: 1600, height: 1000 }))}
+        label="Field studies"
+        items={SERIES.map((image) => ({ src: image.src, srcSet: image.srcSet, alt: image.alt, caption: image.name, width: image.width, height: image.height }))}
         index={open}
         onIndexChange={(i) => {
           setOpen(i);

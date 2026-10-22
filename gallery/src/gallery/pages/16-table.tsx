@@ -1,4 +1,4 @@
-import { useDeferredValue, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { ActionBar } from "@/components/action-bar";
 import { Button } from "@/components/button";
 import { PlusIcon, RetryIcon } from "@/components/icons";
@@ -17,7 +17,7 @@ import {
   TableVirtualBody,
   useRowSelection,
 } from "@/components/table";
-import { TableFilter } from "@/components/table-filter";
+import { TableFilter, useUrlFilter, useUrlParam } from "@/components/table-filter";
 import { Tag } from "@/components/tag";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
@@ -28,13 +28,13 @@ export const meta: PageMeta = {
   order: 16, group: "Data",
   verbs: ["press"],
   summary:
-    "Real table semantics with hairline rows, mono figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything. A virtual body draws only the rows in view, so ten thousand rows scroll as lightly as forty, and rows can be selected with a box, Shift for a range.",
+    "Real table semantics with hairline rows, mono figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything. A virtual body draws only the rows in view, so ten thousand rows scroll as lightly as forty, loads the next page from a server as you near the end, and rows can be selected with a box, Shift for a range. Filters can live in the page address, so a filtered view can be bookmarked or shared.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
 export const docs: PageDocs = {
   components: ["table", "table-filter"],
-  exports: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell", "TableEmpty", "TableSkeleton", "TableVirtualBody", "TableSelectHead", "TableSelectCell", "useRowSelection", "TableFilter"],
+  exports: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell", "TableEmpty", "TableSkeleton", "TableVirtualBody", "TableSelectHead", "TableSelectCell", "useRowSelection", "TableFilter", "useUrlFilter", "useUrlParam"],
   usage: `import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/table";
@@ -114,6 +114,23 @@ import { TableFilter } from "@/components/table-filter";
   …
 </Table>
 
+// Loading from a server as you scroll: the body asks for the next page twenty rows before the end, once per count.
+// Skeleton rows wait at the end while loading; a failed page is a row with Retry, which calls onLoadMore again.
+<TableVirtualBody
+  count={rows.length} columns={5} total={total}
+  hasMore={cursor !== null} loading={loading} onLoadMore={loadMore}
+  loadError={failed ? "The next deploys did not load." : undefined}
+  skeleton={["primary", "text", "text", "number", "number"]}
+>
+  {(i) => <TableRow key={rows[i].id}>…</TableRow>}
+</TableVirtualBody>
+
+// Filters in the page address: ?status=failed&site=Halden+Gallery&q=main. A filtered view can be bookmarked, shared
+// or reloaded, and Back brings the last one back. values drops anything a stale link holds that is no longer an option.
+import { useUrlFilter, useUrlParam } from "@/components/table-filter";
+const [statuses, setStatuses] = useUrlFilter("status", { values: ["ready", "failed"] });
+const [search, setSearch] = useUrlParam("q");
+
 // Buckets of a number: one choice, All first.
 <TableHead numeric filter={<TableFilter column="Build time" multiple={false} align="end" value={speed} onValueChange={setSpeed}
   options={[{ value: "fast", label: "Under 30 s" }, { value: "slow", label: "Over 60 s" }]} />}>
@@ -126,6 +143,8 @@ import { TableFilter } from "@/components/table-filter";
     "Thousands of rows, such as a deploy history or an audit log. Use TableVirtualBody, so only the rows in view are drawn.",
     "People act on several rows at once. Add TableSelectHead and TableSelectCell with useRowSelection, and an ActionBar after the table.",
     "People narrow a long table by a column's values: status, site, a range of build times. Give that column's TableHead a TableFilter.",
+    "Rows live on a server and there are too many to load at once. Give TableVirtualBody hasMore and onLoadMore, and it asks for each page as the view nears the end.",
+    "People come back to a filtered view, or send it to someone. Hold the filters, the search and the sort with useUrlFilter and useUrlParam, so they live in the page address.",
     "A table wider than its space. stickyColumns keeps the box and the row's name in view while it scrolls sideways, and resizable lets people give a long column room.",
     "Rows can be sorted, filtered or inserted. Turn on animateChanges and they glide to their new places.",
     "You need a table on a phone. It scrolls sideways inside its own labelled region and never widens the page.",
@@ -135,6 +154,8 @@ import { TableFilter } from "@/components/table-filter";
     "A short list of one field, such as actions or commands. Use Menu or the Command menu.",
     "Layout. A table is for data, so do not use it to place things in columns.",
     "Rows of different heights in a long list, such as wrapped notes. The virtual body needs every row one line tall; use Pagination instead.",
+    "People need to jump to row 8,000 of a server's list, or know where they are by page. Loading as you scroll only goes forward; use Pagination.",
+    "State that is private or only for this visit, such as a selection or a draft. The page address is for what someone would want to send or reload.",
     "You want a whole row to be a button. Put a real link in the primary cell instead, because a click handler on a row is not reachable by keyboard.",
   ],
   keyboard: [
@@ -160,6 +181,8 @@ import { TableFilter } from "@/components/table-filter";
     "A resize handle is a separator named for its column (\"Resize the commit column\") with its width in px as its value, so the arrow keys and a screen reader can use it. It shows its hairline under the pointer and on focus; a double click fits the column to its widest cell.",
     "Sticky columns keep the row's name beside every value as the table scrolls sideways, so a row never loses its label; the edge between them and the rest is a hairline, not color.",
     "A column's filter button is named for the column and what it holds (\"Filter status, 2 of 4 on\"), and its menu is named \"Filter status\". A filtering column's button looks selected and says how many values are on, so color never says it alone. Say the result in a polite status, as the count above the table does.",
+    "Loading as you scroll keeps aria-rowcount true when you pass total, and -1 (not known yet) while more can come without it. The table says \"Loading more rows\" in its status while a page loads; the skeleton rows are hidden from screen readers. A failed page is an alert in words with a Retry button, so nothing fails silently.",
+    "Filters kept in the page address are restored on reload and by Back and Forward, and each one still shows on its funnel button and in the count above the table, so nobody has to read the address to know what is filtered.",
     "Each row's box is named for the row (\"Select Halden Gallery\") and the head box for what it selects; it is mixed while only some rows shown are selected. A selected row is also filled, but the box carries the state.",
   ],
 };
@@ -278,12 +301,17 @@ const STATUSES = [
   { value: "failed", label: "Failed" },
 ];
 
+const STATUS_VALUES = STATUSES.map((s) => s.value);
+const SPEED_VALUES = SPEEDS.map((s) => s.value);
+
 function ManyDeploysDemo() {
-  const [search, setSearch] = useState("");
-  const [slowFirst, setSlowFirst] = useState(false);
-  const [statusOn, setStatusOn] = useState<string[]>([]);
-  const [sitesOn, setSitesOn] = useState<string[]>([]);
-  const [speedOn, setSpeedOn] = useState<string[]>([]);
+  /* The search, the sort and the filters live in the page address, so this view can be reloaded or shared as it is. */
+  const [search, setSearch] = useUrlParam("q");
+  const [sort, setSort] = useUrlParam("sort");
+  const slowFirst = sort === "slow";
+  const [statusOn, setStatusOn] = useUrlFilter("status", { values: STATUS_VALUES });
+  const [sitesOn, setSitesOn] = useUrlFilter("site", { values: SITES });
+  const [speedOn, setSpeedOn] = useUrlFilter("time", { values: SPEED_VALUES, multiple: false });
   /* The table follows the query and the filters a beat behind the controls, so nothing waits on ten thousand rows. */
   const query = useDeferredValue(search.trim().toLowerCase());
   /* Each list is deferred on its own: they keep their identity until they change, so the rows are worked out again only then. */
@@ -380,7 +408,7 @@ function ManyDeploysDemo() {
             <TableHead
               numeric
               sort={slowFirst ? "descending" : "none"}
-              onSort={() => setSlowFirst((v) => !v)}
+              onSort={() => setSort(slowFirst ? "" : "slow")}
               filter={<TableFilter column="Build time" multiple={false} align="end" value={speedOn} onValueChange={setSpeedOn} options={SPEEDS} allLabel="Any time" />}
             >
               Build time
@@ -429,6 +457,118 @@ function ManyDeploysDemo() {
           Redeploy
         </Button>
       </ActionBar>
+    </div>
+  );
+}
+
+/* ---------- (a3) Loading as you scroll: pages from a server ---------- */
+
+const PAGE = 50;
+type DeployPage = { rows: BigDeploy[]; next: number | null; total: number };
+
+/** A stand-in for your API: the page of deploys after a cursor, most of a second later, or a failure when asked for one. */
+function fetchDeploys(cursor: number, fail: boolean): Promise<DeployPage> {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (fail) return reject(new Error("The network went away"));
+        const rows = MANY.slice(cursor, cursor + PAGE);
+        const next = cursor + rows.length;
+        resolve({ rows, next: next < MANY.length ? next : null, total: MANY.length });
+      },
+      600 + Math.random() * 300,
+    );
+  });
+}
+
+function ServerDeploysDemo() {
+  const [rows, setRows] = useState<BigDeploy[]>([]);
+  /* Where the next page starts, or null once the server has no more. */
+  const [cursor, setCursor] = useState<number | null>(0);
+  const [total, setTotal] = useState<number>();
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [failNext, setFailNext] = useState(false);
+  /* A page that lands after the demo is reset or left is dropped. */
+  const live = useRef(true);
+  useEffect(() => {
+    live.current = true;
+    return () => {
+      live.current = false;
+    };
+  }, []);
+
+  const loadMore = useCallback(() => {
+    if (cursor === null) return;
+    setLoading(true);
+    setFailed(false);
+    setFailNext(false);
+    fetchDeploys(cursor, failNext).then(
+      (page) => {
+        if (!live.current) return;
+        setRows((all) => [...all, ...page.rows]);
+        setCursor(page.next);
+        setTotal(page.total);
+        setLoading(false);
+      },
+      () => {
+        if (!live.current) return;
+        setFailed(true);
+        setLoading(false);
+      },
+    );
+  }, [cursor, failNext]);
+
+  return (
+    <div className="grid w-full max-w-3xl gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Button size="sm" variant={failNext ? "secondary" : "ghost"} aria-pressed={failNext} onClick={() => setFailNext((v) => !v)}>
+          Fail the next page
+        </Button>
+        <p aria-live="polite" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+          {total === undefined ? "Loading deploys" : `${COUNT.format(rows.length)} of ${COUNT.format(total)} loaded`}
+        </p>
+      </div>
+      <Table label="Deploys from the server" className="max-h-[28rem]">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Deploy</TableHead>
+            <TableHead>Site</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead numeric>Build time</TableHead>
+            <TableHead numeric>Deployed</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableVirtualBody
+          count={rows.length}
+          columns={5}
+          total={total}
+          hasMore={cursor !== null}
+          loading={loading}
+          onLoadMore={loadMore}
+          loadError={failed ? "The next deploys did not load." : undefined}
+          skeleton={["primary", "text", "text", "number", "number"]}
+        >
+          {(i) => {
+            const d = rows[i]!;
+            return (
+              <TableRow key={d.id}>
+                <TableCell primary>
+                  <span className="font-mono text-caption font-normal">{d.id}</span>
+                </TableCell>
+                <TableCell>{d.site}</TableCell>
+                <TableCell>
+                  <Status tone={d.ok ? "success" : "danger"}>{d.ok ? "Ready" : "Failed"}</Status>
+                </TableCell>
+                <TableCell numeric>{d.seconds} s</TableCell>
+                <TableCell numeric>
+                  <time dateTime={d.at}>{shortDate(d.at)}</time>
+                </TableCell>
+              </TableRow>
+            );
+          }}
+        </TableVirtualBody>
+      </Table>
     </div>
   );
 }
@@ -663,6 +803,7 @@ export default function TablePage() {
   const [deployKey, replayDeploys] = useReplay();
   const [invoiceKey, resetInvoices] = useReplay();
   const [stateKey, resetStates] = useReplay();
+  const [serverKey, resetServer] = useReplay();
   return (
     <Page meta={meta} docs={docs}>
       <Stage
@@ -683,9 +824,22 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="ManyDeploysDemo"
-        caption="Ten thousand rows, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Filter by site, status or build time from the funnels in the headers: each value says how many deploys it would show, and a column that filters wears the selected segment. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every deploy shown, and the action bar counts them. Scroll sideways: the box and the deploy stay put, with a hairline at their edge. Drag the edge of Site, Branch, Commit or Author to resize it, or double click it to fit; the widths are kept for next time."
+        caption="Ten thousand rows, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Filter by site, status or build time from the funnels in the headers: each value says how many deploys it would show, and a column that filters wears the selected segment. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every deploy shown, and the action bar counts them. Scroll sideways: the box and the deploy stay put, with a hairline at their edge. Drag the edge of Site, Branch, Commit or Author to resize it, or double click it to fit; the widths are kept for next time. The filters, the search and the sort are kept in the page address: reload, or send the link, and the same view comes back, and Back brings the last one."
       >
         <ManyDeploysDemo />
+      </Stage>
+
+      <Stage
+        title="Loading as you scroll"
+        tier="instant"
+        size="lg"
+        align="start"
+        code="ServerDeploysDemo"
+        onReplay={resetServer}
+        replayLabel="Reset"
+        caption="Fifty deploys at a time from a pretend server that takes most of a second. The next page is asked for twenty rows before the end, so a steady scroll rarely reaches it; scroll fast and three skeleton rows wait at the end, still, while the table says it is loading more. Press Fail the next page, then scroll: the last row says the page did not load, with Retry. Reset starts again from nothing."
+      >
+        <ServerDeploysDemo key={serverKey} />
       </Stage>
 
       <Stage
