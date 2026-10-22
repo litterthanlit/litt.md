@@ -3,7 +3,7 @@ import { Button } from "@/components/button";
 import { Lightbox } from "@/components/lightbox";
 import { Media, type MediaProps } from "@/components/media";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
-import { FILM_DAY, FILM_NIGHT, FILM_UPRIGHT, FLUID_COBALT, FLUID_STONE, THERMAL_NIGHT, THERMAL_STONE } from "../plates";
+import { BUDS, GRAPHITE, OPEN_WATER, RED_SUN, SILK, SPRIG } from "../plates";
 
 export const meta: PageMeta = {
   id: "media",
@@ -65,8 +65,8 @@ const BROKEN = "data:image/png;base64,AAAA";
 function FramesDemo() {
   return (
     <div className="grid w-full max-w-3xl gap-6 sm:grid-cols-[2fr_1fr]">
-      <Media src={FLUID_COBALT.src} srcSet={FLUID_COBALT.srcSet} sizes="(min-width: 48rem) 32rem, 100vw" alt={FLUID_COBALT.alt} ratio="16/9" caption="Fluid, cobalt, 2026" />
-      <Media src={FILM_UPRIGHT.src} srcSet={FILM_UPRIGHT.srcSet} sizes="(min-width: 48rem) 16rem, 100vw" alt={FILM_UPRIGHT.alt} ratio="4/5" caption="Film, upright, 2026" />
+      <Media src={OPEN_WATER.src} srcSet={OPEN_WATER.srcSet} sizes="(min-width: 48rem) 32rem, 100vw" alt={OPEN_WATER.alt} ratio="16/9" caption="Open water, 2026" />
+      <Media src={BUDS.src} srcSet={BUDS.srcSet} sizes="(min-width: 48rem) 16rem, 100vw" alt={BUDS.alt} ratio="4/5" caption="Two buds, 2026" />
     </div>
   );
 }
@@ -77,14 +77,14 @@ function StatesDemo() {
   const [src, setSrc] = useState<string | undefined>(undefined);
   useEffect(() => {
     setSrc(undefined);
-    const timer = window.setTimeout(() => setSrc(FLUID_STONE.src), 1200);
+    const timer = window.setTimeout(() => setSrc(SILK.src), 1200);
     return () => window.clearTimeout(timer);
   }, [run]);
   return (
     <div className="grid w-full max-w-3xl gap-6">
       <div className="grid gap-6 sm:grid-cols-2">
         {/* No src yet is how a slow image looks: the still frame, until it arrives and fades in. */}
-        <Media key={run} src={src} srcSet={src && FLUID_STONE.srcSet} sizes="(min-width: 40rem) 24rem, 100vw" alt={FLUID_STONE.alt} ratio="4/3" caption={src ? "Loaded" : "Loading"} />
+        <Media key={run} src={src} srcSet={src && SILK.srcSet} sizes="(min-width: 40rem) 24rem, 100vw" alt={SILK.alt} ratio="4/3" caption={src ? "Loaded" : "Loading"} />
         <Media src={BROKEN} alt="The tide line at dusk" ratio="4/3" caption="Failed" />
       </div>
       <Button size="sm" className="justify-self-start" onClick={() => setRun((r) => r + 1)}>
@@ -94,7 +94,7 @@ function StatesDemo() {
   );
 }
 
-const SET = [THERMAL_NIGHT, FILM_NIGHT, THERMAL_STONE].map(({ src, srcSet, alt, name, width, height }) => ({ src, srcSet, alt, caption: `${name}, 2026`, width, height }));
+const SET = [RED_SUN, SPRIG, GRAPHITE].map(({ src, srcSet, alt, name, width, height }) => ({ src, srcSet, alt, caption: `${name}, 2026`, width, height }));
 
 function OpenDemo() {
   const [open, setOpen] = useState<number | null>(null);
@@ -107,14 +107,14 @@ function OpenDemo() {
           </li>
         ))}
       </ul>
-      <Lightbox label="Thermal, film, fluid" items={SET} index={open} onIndexChange={setOpen} />
+      <Lightbox label="Field studies" items={SET} index={open} onIndexChange={setOpen} />
     </>
   );
 }
 
 /* Try it shows an address of your own in its code; the stage shows a study from the gallery's set. */
 function TryMedia(props: MediaProps) {
-  return <Media {...props} src={FILM_DAY.src} srcSet={FILM_DAY.srcSet} sizes="28rem" />;
+  return <Media {...props} src={GRAPHITE.src} srcSet={GRAPHITE.srcSet} sizes="28rem" />;
 }
 
 export default function MediaPage() {
@@ -124,7 +124,7 @@ export default function MediaPage() {
         title="Pictures in frames"
         align="start"
         code="FramesDemo"
-        caption="Each frame has its shape before the image arrives, so nothing below it moves. The radius is the surface's, and a hairline lies over the image so a pale sky keeps its edge on a pale page. The caption sits 8px under the frame, in the grey. These are renders from the Brand Playground in litt's tokens, loaded as a site would load photographs: lazily, at the size the frame needs."
+        caption="Each frame has its shape before the image arrives, so nothing below it moves. The radius is the surface's, and a hairline lies over the image so a pale sky keeps its edge on a pale page. The caption sits 8px under the frame, in the grey. These are renders from the Brand Playground, loaded as a site would load photographs: lazily, at the size the frame needs."
       >
         <FramesDemo />
       </Stage>
@@ -152,7 +152,7 @@ export default function MediaPage() {
       <TryIt
         of="Media"
         component={TryMedia}
-        props={{ src: "/work/studies/film-day.webp", alt: FILM_DAY.alt, caption: "Film, day, 2026", className: "w-full max-w-md" }}
+        props={{ src: "/work/studies/graphite.webp", alt: GRAPHITE.alt, caption: "Graphite, 2026", className: "w-full max-w-md" }}
         controls={[{ name: "ratio", options: ["16/9", "8/5", "4/3", "1/1", "4/5", "auto"] }, "fit", "radius", "caption", "priority"]}
       />
     </Page>

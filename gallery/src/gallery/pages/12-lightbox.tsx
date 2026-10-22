@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Lightbox, type LightboxItem } from "@/components/lightbox";
 import { Media } from "@/components/media";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
-import { FILM_UPRIGHT, FLUID_WIDE, SERIES, THERMAL_SQUARE } from "../plates";
+import { BLUE_HOUR, BUDS, SERIES, TIDE_WIDE } from "../plates";
 
 export const meta: PageMeta = {
   id: "lightbox",
@@ -68,33 +68,33 @@ function GridDemo() {
   const [open, setOpen] = useState<number | null>(null);
   return (
     <>
-      <ul aria-label="Thermal, film, fluid" className="grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
+      <ul aria-label="Field studies" className="grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
         {PHOTOS.map((photo, i) => (
           <li key={photo.alt}>
             <Media src={photo.src} srcSet={photo.srcSet} sizes="(min-width: 40rem) 16rem, 50vw" alt={photo.alt} ratio="1/1" onOpen={() => setOpen(i)} />
           </li>
         ))}
       </ul>
-      <Lightbox label="Thermal, film, fluid" items={PHOTOS} index={open} onIndexChange={setOpen} />
+      <Lightbox label="Field studies" items={PHOTOS} index={open} onIndexChange={setOpen} />
     </>
   );
 }
 
 /* Tall and wide in one set, with no width and height given: each frame takes its image's own shape once it loads. */
-const MIXED: LightboxItem[] = [FILM_UPRIGHT, FLUID_WIDE, THERMAL_SQUARE].map(({ src, srcSet, alt, name }) => ({ src, srcSet, alt, caption: `${name}, 2026` }));
+const MIXED: LightboxItem[] = [BUDS, TIDE_WIDE, BLUE_HOUR].map(({ src, srcSet, alt, name }) => ({ src, srcSet, alt, caption: `${name}, 2026` }));
 
 function ShapesDemo() {
   const [open, setOpen] = useState<number | null>(null);
   return (
     <>
-      <ul aria-label="Thermal, film, fluid, mixed shapes" className="flex w-full max-w-3xl flex-wrap items-end gap-4">
+      <ul aria-label="Field studies, mixed shapes" className="flex w-full max-w-3xl flex-wrap items-end gap-4">
         {MIXED.map((photo, i) => (
           <li key={photo.alt} className={i === 1 ? "w-full sm:w-72" : "w-32 sm:w-40"}>
             <Media src={photo.src} srcSet={photo.srcSet} sizes={i === 1 ? "(min-width: 40rem) 18rem, 100vw" : "10rem"} alt={photo.alt} ratio="auto" onOpen={() => setOpen(i)} />
           </li>
         ))}
       </ul>
-      <Lightbox label="Thermal, film, fluid, mixed shapes" items={MIXED} index={open} onIndexChange={setOpen} tier="responsive" />
+      <Lightbox label="Field studies, mixed shapes" items={MIXED} index={open} onIndexChange={setOpen} tier="responsive" />
     </>
   );
 }
