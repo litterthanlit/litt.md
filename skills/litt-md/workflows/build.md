@@ -81,8 +81,10 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 |---|---|
 | `button` | Every button: primary, secondary, ghost, icon-only, loading. One primary per view. Pass an icon with `icon` (or `iconRight`), or as a child next to the label, as shadcn writes it. It always renders a `<button>`, so a link to another page is an `<a>`. |
 | `input` | `TextField` (label, hint, error), the bare `Input` for inline forms and toolbars, `Textarea`. |
+| `code-input` | A one-time code from an email, a text or an authenticator app (`CodeInput`). One real field drawn as cells, so paste and autofill work; check the code in `onComplete`. |
 | `token-input` | A field that collects several short values as tokens: recipients, sender domains, tags (`TokenInput`). Hold the values in state. |
 | `combobox` | A searchable field for one value, or several, from a long list: a client, a framework, a teammate (`Combobox` with `options` as `{ value, label, group? }` and `multiple` for tokens). A short fixed list is a `select`. |
+| `file-drop` | Adding files: drop or choose, turned away by type or size with a reason (`FileDrop`), and each file uploading on a rail with Retry and Remove (`FileList`, `FileRow`). Never a bare file input. |
 | `date-picker` | A day or a range: a launch date, a report period (`DatePicker`, or `Calendar` on its own). Values are `YYYY-MM-DD` strings, or `{ start, end }` with `mode="range"`; `presets` for "Last 7 days". On a phone it opens as a bottom sheet by itself. |
 | `checkbox` | `Checkbox`, `CheckboxGroup`, `Radio`, `RadioGroup`, a select-all box. |
 | `select` | One value from a short list (`SelectField` with a label, the bare `Select` in a toolbar). Never a native `<select>`. Pass `options` as `{ value, label }`. It stays anchored on a phone. |
@@ -108,6 +110,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `accordion` | Sections that open in place: questions and answers, groups of settings (`Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent`). The page never jumps, and nothing animates its height. |
 | `scroll-area` | A region that scrolls inside the page, such as a log or a long list in a fixed-height card (`ScrollArea` with a `label` and a height). Never the page itself. |
 | `breadcrumb` | Where a page sits: Studio / Projects / Marlow Labs (`Breadcrumb` with `items` as `{ label, href }`, the last being the current page). Long trails fold into a menu. |
+| `steps` | Where someone is in a flow of three to six steps, such as setup or checkout (`Steps`). Views moved between freely are Tabs. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
 | `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. `trend` takes a Sparkline at the foot of the tile. |
 | `chart` | `BarChart`, `LineChart` and `Meter`, never the accent: the foreground by default, or data hues when color tells series apart (`hue` on a series, or `hues` on the chart). Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
@@ -123,6 +126,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `pagination` | The range ("21 to 40 of 143") with Previous and Next under a table. You hold the page in state. |
 | `list` | Project rows and cards with status filters (`ProjectList`, `ProjectGrid`, `ProjectFilters`). It reads a `Project` (`id`, `name`, `client`, `deploy`, `status`, `updated`, `description`, `tags`, `cover`), so map your data into that shape. |
 | `states` | Empty, skeleton, loading and error views. |
+| `progress` | Work happening now with a known end: an upload, an import (`Progress`). It ends done or failed in words. A quantity that stands still is a `Meter` (chart). |
 | `message` | A chat with an agent (`Conversation`, `Message`, `MessageText`, `MessageActions`). The agent's turn has no bubble and the person's is a raised bubble on the right. Put the agent's thinking, plan and tool calls inside its `Message`, and render markdown inside `MessageText`. Pass `busy` while it answers. Never hand-build bubbles or a stick-to-bottom scroller. |
 | `composer` | Where the person writes to an agent (`Composer`): a growing field, file chips, a toolbar slot and Send, which becomes Stop while `streaming`. Send is the view's one accent fill; pass `sendDisabled` while an approval waits. `FileChip` shows a sent file. |
 | `thinking` | The agent's reasoning above its answer (`Thinking`): "Thinking 4s" with a clock while `active`, then "Thought for 12s". Never a shimmer, a pulse or animated dots. |
