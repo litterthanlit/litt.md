@@ -48,6 +48,8 @@ And six parts every web app reaches for: a number field with steppers, a hover c
 - **changed** `table`: `filter` on a TableHead takes a TableFilter, beside the label or the sort button (before it over numbers). Nothing in your code has to change.
 - **changed** `table`: wide tables. `stickyColumns` keeps the first one or two columns in view while the table scrolls sideways, with a hairline at their edge once something is under them; `resizable` on a TableHead adds a handle to drag, step with the arrow keys or double click to fit, and `columnsId` keeps the widths. Nothing in your code has to change.
 - **changed** `icons`: `FilterIcon`, the funnel. Nothing in your code has to change.
+- **changed** `table`: loading from a server as you scroll. `TableVirtualBody` takes `hasMore` and `onLoadMore` and asks for the next page twenty rows before the end, once per count; `loading` draws three still skeleton rows at the end and says "Loading more rows", `loadError` is a row in words with Retry, and `total` keeps aria-rowcount true. TableSkeleton takes a `box` column. It now installs `button` with it. Nothing in your code has to change.
+- **changed** `table-filter`: `useUrlFilter` and `useUrlParam` keep filters, a search or a sort in the page address, so a filtered view can be bookmarked, shared or reloaded, and Back brings the last one back. Nothing in your code has to change.
 
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
 

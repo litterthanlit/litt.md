@@ -888,7 +888,7 @@ const COPY = {
   },
   table: {
     title: "Table",
-    description: "A table with real semantics, hairline rows, mono figures and a sticky header. It scrolls inside its own region on a phone, and its rows can arrive in one staggered cascade, sort, filter and insert.",
+    description: "A table with real semantics, hairline rows, mono figures and a sticky header. It scrolls inside its own region on a phone, and its rows can arrive in one staggered cascade, sort, filter and insert. A virtual body draws ten thousand rows and loads more from a server as you scroll.",
     docs: "Import Table, TableHeader, TableBody, TableRow, TableHead and TableCell from components/litt/table. Give the Table a label, and a max height such as max-h-96 if you want the header to stick. The entrance is off until you pass entrance.",
   },
   stat: {
@@ -1146,7 +1146,7 @@ const COPY = {
   "table-filter": {
     title: "Table filter",
     description: "A filter for one column of a Table, in its header: a funnel button that opens the column's values as Menu rows, checkboxes with how many rows each would show, or radio buckets for a number. A filtering column's button wears the selected segment.",
-    docs: "Import TableFilter from components/litt/table-filter and pass it as a TableHead's filter. Hold the values on in state ([] is no filter) and filter your rows with them; count each value against the other filters.",
+    docs: "Import TableFilter from components/litt/table-filter and pass it as a TableHead's filter. Hold the values on in state ([] is no filter) and filter your rows with them; count each value against the other filters. To keep them in the page address, so the view can be shared or reloaded, hold them with useUrlFilter (and a search or sort with useUrlParam) instead of useState.",
   },
   /* Blocks: whole screens. The docs line says where the sample data is, because that is the first thing to change. */
   dashboard: {

@@ -101,6 +101,10 @@ const RECIPES = {
               {(i) => <TableRow key={SMOKE_ROWS[i].id} selected={tableSel.isSelected(SMOKE_ROWS[i].id)}><TableSelectCell label={"Select " + SMOKE_ROWS[i].name} checked={tableSel.isSelected(SMOKE_ROWS[i].id)} onToggle={(range) => tableSel.toggle(SMOKE_ROWS[i].id, range)} /><TableCell primary>{SMOKE_ROWS[i].name}</TableCell><TableCell numeric>{SMOKE_ROWS[i].seconds} s</TableCell></TableRow>}
             </TableVirtualBody>
           </Table>
+          <Table label="Paged deploys" className="max-h-40">
+            <TableHeader><TableRow><TableHead>Deploy</TableHead><TableHead numeric>Build time</TableHead></TableRow></TableHeader>
+            <TableVirtualBody count={0} columns={2} hasMore loading onLoadMore={() => {}} skeleton={["primary", "number"]}>{() => null}</TableVirtualBody>
+          </Table>
           <Table label="Deploy history" entrance>
             <TableHeader><TableRow><TableHead>Site</TableHead><TableHead numeric>Build time</TableHead></TableRow></TableHeader>
             <TableBody>
@@ -649,9 +653,9 @@ const RECIPES = {
     jsx: `<div className="w-full max-w-lg" data-testid="litt-details"><Details title="Deployment"><DetailsItem label="Domain" copy="halo.studio"><DetailsLink href="https://halo.studio">halo.studio</DetailsLink></DetailsItem><DetailsItem label="Region" mono>fra1</DetailsItem><DetailsItem label="PO number" /></Details></div>`,
   },
   "table-filter": {
-    needs: ["TableFilter"],
-    state: [`const [tfOn, setTfOn] = useState<string[]>(["ready"]);`],
-    jsx: `<div className="flex items-center gap-3" data-testid="litt-table-filter"><span>Status</span><TableFilter column="Status" value={tfOn} onValueChange={setTfOn} options={[{ value: "ready", label: "Ready", count: 9214 }, { value: "failed", label: "Failed", count: 786 }]} /></div>`,
+    needs: ["TableFilter", "useUrlFilter", "useUrlParam"],
+    state: [`const [tfOn, setTfOn] = useUrlFilter("smoke-status", { values: ["ready", "failed"] });`, `const [tfQuery] = useUrlParam("smoke-q");`],
+    jsx: `<div className="flex items-center gap-3" data-testid="litt-table-filter"><span>Status{tfQuery}</span><TableFilter column="Status" value={tfOn} onValueChange={setTfOn} options={[{ value: "ready", label: "Ready", count: 9214 }, { value: "failed", label: "Failed", count: 786 }]} /></div>`,
   },
   /* Blocks: whole screens, rendered as they ship, sample data and all. The agent chat is the finished one, so no script runs. */
   dashboard: { needs: ["Dashboard"], jsx: `<div className="w-full" data-testid="litt-block-dashboard"><Dashboard label="Smoke dashboard" viewportHeight="32rem" /></div>` },
@@ -768,7 +772,8 @@ export function buildSmokePage({ app, pageRel, items, files, shadcnRegistry = fa
   for (const x of sections) x.jsx = x.jsx.replaceAll("@Btn", btn);
   const lines = [];
   if (app === "next") lines.push('"use client";');
-  if (state.length) lines.push('import { useState } from "react";');
+  /* Only when a state line calls it: a recipe can hold its state in a component's own hook. */
+  if (state.some((line) => line.includes("useState"))) lines.push('import { useState } from "react";');
   lines.push('import { Button as HostButton } from "@/components/ui/button";');
   for (const [rel, { values, types }] of imports) {
     if (values.size) lines.push(`import { ${[...values].join(", ")} } from "${importPath(pageRel, rel)}";`);
