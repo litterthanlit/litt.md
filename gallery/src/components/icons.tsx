@@ -43,6 +43,7 @@ export const ArrowDownIcon = (p: IconProps) => <Icon {...p}><path d="M8 3v10M3.7
 export const StopIcon = (p: IconProps) => <Icon {...p}><rect x="4.25" y="4.25" width="7.5" height="7.5" rx="1" fill="currentColor" /></Icon>;
 export const PaperclipIcon = (p: IconProps) => <Icon {...p}><path d="m13 7.25-5.3 5.3a3.25 3.25 0 0 1-4.6-4.6l5.65-5.65a2.1 2.1 0 0 1 3 3L6.1 10.95a1 1 0 0 1-1.4-1.4l5.05-5.05" /></Icon>;
 export const RetryIcon = (p: IconProps) => <Icon {...p}><path d="M13.25 8a5.25 5.25 0 1 1-1.55-3.7M13.25 2.75v3h-3" /></Icon>;
+export const ImageIcon = (p: IconProps) => <Icon {...p}><rect x="2.25" y="2.75" width="11.5" height="10.5" /><circle cx="5.75" cy="6.25" r="1.25" /><path d="m2.25 11.75 3.5-3.5 2.75 2.75 1.75-1.75 3.5 3.5" /></Icon>;
 
 /** Where a step, a tool call or a task stands. The Timeline draws the same five marks. */
 export type StepStatus = "pending" | "running" | "done" | "failed" | "skipped";

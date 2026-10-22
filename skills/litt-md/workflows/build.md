@@ -103,9 +103,12 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `context-menu` | Actions on the thing under the pointer, on right-click, Shift+F10 or a hold on touch (`ContextMenu` with the Menu's rows). Every action in it must also be on a visible control, such as a ⋯ `menu` on the row. |
 | `command-menu` | ⌘K search for pages, projects and actions. Give it a visible Search button that shows the `kbd` hint. |
 | `dialog` | A confirm or a short form that needs full attention. `side="right"` makes a side sheet on desktop. On a phone every dialog is a bottom sheet that drags down to close, with no code of yours: never build your own sheet or drawer. |
+| `lightbox` | Images people should see larger: one of a set at the size of the screen (`Lightbox` with `items` and the open `index` in state, set from each `Media`'s `onOpen`). Give every item its `width` and `height`. Never a hand-built overlay for images. |
 | `toast` | Feedback after an action. Mount `Toaster` once, then call `toast()`. On a phone toasts swipe away by themselves. |
 | `header` | A sticky glass bar with a wordmark, a nav and actions. |
 | `card` | A raised surface for one object that links somewhere. |
+| `media` | Every image in the page flow (`Media` with `src`, a sentence of `alt` and a `ratio`): it keeps its shape while it loads and says so when it fails. `priority` only on the image the page opens on; `onOpen` to open a `lightbox`. Never a bare `<img>`. |
+| `carousel` | A set people look through in order, such as a project's screens, or a strip of cards (`Carousel`, `CarouselContent`, `CarouselItem`, `CarouselControls`, as shadcn's). `perView` one, two or three. It never autoplays or loops; key content goes in the page, not on a later slide. |
 | `callout` | An inline note in the flow: a tip, a heads-up, a result to act on (`Callout`). Color lives in the icon only, never a rail or a tinted box. |
 | `accordion` | Sections that open in place: questions and answers, groups of settings (`Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent`). The page never jumps, and nothing animates its height. |
 | `scroll-area` | A region that scrolls inside the page, such as a log or a long list in a fixed-height card (`ScrollArea` with a `label` and a height). Never the page itself. |
@@ -151,6 +154,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `team` | Members, roles and invites: a seats meter, a table with a role picker per row, an invite dialog for several addresses (`Team`). |
 | `activity` | A feed of what happened, grouped by day and filtered by kind (`Activity`). |
 | `sign-in` | A sign-in page with field errors, a server refusal and a second way in (`SignIn`). A whole page, not a part of the app shell. |
+| `case-study` | One project told as a page: a hero image, the facts, the story beside its labels, a carousel, a grid of details and the next project, with one lightbox for every image (`CaseStudy`). A page's content, inside a site's layout. |
 
 A block lands in `components/litt-blocks/<name>.tsx`, outside `components/litt/`, because it is a starting point. Change it in place: replace the sample data at the top of the file, rename things, drop the panels you do not need. Keep its layout, its spacing and its one accent fill. Never reinstall a block over your edits.
 
