@@ -1,4 +1,4 @@
-import { Avatar, AvatarGroup, type AvatarHue } from "@/components/avatar";
+import { Avatar, AvatarGroup, type AvatarHue, type AvatarLook } from "@/components/avatar";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   order: 15.1,
   group: "Layout",
   summary:
-    "A round mark for a person, a client or a company: a photo, or initials on the tint of one of the five data hues. The hue follows from the name, so the same name looks the same everywhere. A group overlaps them and counts the rest. Nothing about it moves.",
+    "A round mark for a person, a client or a company: a photo, initials on the tint of one of the five data hues, or a picture drawn from the name in that hue: fluid, film or thermal, under static grain. The hue and the picture follow from the name, so the same name looks the same everywhere. A group overlaps them and counts the rest. Nothing about it moves.",
   tiers: [],
 };
 
@@ -29,6 +29,9 @@ export const docs: PageDocs = {
 // A photo, with the initials as the fallback if it fails to load.
 <Avatar name="Ines Duarte" src="/people/ines.jpg" size="lg" />
 
+// A picture drawn from the name instead of initials: fluid, film or thermal. The same name draws the same one every time.
+<Avatar name="Marlow Labs" look="fluid" />
+
 // A stack: pass the first few, and the total for the "+N" pill.
 <AvatarGroup label="Project team, 26 people" total={26} ring="surface-1">
   <Avatar name="Ines Duarte" />
@@ -40,6 +43,7 @@ export const docs: PageDocs = {
     "A row of names is easier to scan with a mark beside each one. The hue is the same every time, so the eye learns it.",
     "A project card shows who works on it. A group shows the first few and counts the rest.",
     "You only have a name. Initials on a hue are a finished mark, not a placeholder, and a photo can replace them later.",
+    "You want something richer than two letters, and the name is written beside the mark. Pick one look for the whole product: fluid and film use the name's hue alone, thermal adds a partner hue.",
   ],
   skip: [
     "The mark would say how something stands, such as live or failed. Use a Tag with a status. A color on a face is who it is, never a state.",
@@ -54,6 +58,7 @@ export const docs: PageDocs = {
     "A group is a labelled group, such as \"Project team, 26 people\", and the \"+N\" pill is an image named \"22 more\". Write the label for the whole team, not only the faces shown.",
     "The initials are the hue's text tone on its tint, which reaches 4.5:1 in light and dark (check.mjs checks every pair). Neutral is fg-muted on surface-2.",
     "The hue is never the only signal. The name or the initials say who it is, and a hue shared by two names changes nothing for someone who cannot see color.",
+    "A picture (fluid, film, thermal) carries no letters, so it is named by the name exactly as initials are. Keep the name written beside it: nobody recognizes a client by a pattern alone.",
     "A photo gets an inset line hairline, so a white photo keeps its edge on a white card. A photo that fails to load falls back to the initials.",
     "Nothing moves and nothing takes focus. At 24px an avatar is too small to press, so if it must be a control, give the control a 32 or 44px target.",
   ],
@@ -112,6 +117,49 @@ function SizesAndHuesDemo() {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+const STUDIO = ["Nick", "Ines Duarte", "Marlow Labs", "Halden Gallery", "Atelier Nord", "Halo Studio", "Tomas Berg", "Priya Nair"];
+const LOOKS: { look: AvatarLook; about: string }[] = [
+  { look: "fluid", about: "Warped noise from ink through the hue to cream" },
+  { look: "film", about: "Bands of pale, ink and the hue, with a streak of light" },
+  { look: "thermal", about: "A heat map in the hue and its partner" },
+];
+
+function LooksDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-10">
+      {LOOKS.map(({ look, about }) => (
+        <section key={look} aria-label={look} className="grid gap-4">
+          <div className="grid gap-1">
+            <p className="font-mono text-caption font-normal text-fg">look=&quot;{look}&quot;</p>
+            <p className="text-small text-fg-subtle">{about}</p>
+          </div>
+          <ul aria-label={`Eight names, ${look}`} className="grid grid-cols-4 gap-x-2 gap-y-4 sm:grid-cols-8">
+            {STUDIO.map((name) => (
+              <li key={name} className="grid min-w-0 justify-items-center gap-2">
+                <Avatar name={name} look={look} size="lg" decorative />
+                <span className="w-full truncate text-center text-caption font-normal text-fg-subtle">{name}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap items-center gap-6">
+            {(["sm", "md"] as const).map((size) => (
+              <div key={size} className="flex items-center gap-2">
+                <Avatar name="Marlow Labs" look={look} size={size} decorative />
+                <span className="text-small text-fg">Marlow Labs</span>
+              </div>
+            ))}
+            <AvatarGroup label={`Halo Studio team, ${look}, 6 people`} total={6}>
+              {TEAM.slice(0, 4).map((name) => (
+                <Avatar key={name} name={name} look={look} />
+              ))}
+            </AvatarGroup>
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
@@ -219,6 +267,15 @@ export default function AvatarPage() {
       </Stage>
 
       <Stage
+        title="Pictures from the name"
+        align="start"
+        code="LooksDemo"
+        caption="Instead of initials, a soft field drawn from the name under static grain, like a small photograph: fluid, film or thermal. A hash of the name places everything, so the same name draws the same mark everywhere. The colors are the data hues, read from the light theme in both themes, the way a photo looks the same on a dark page. Fluid and film use the name's hue alone; thermal adds its partner, warm against cool. It never moves."
+      >
+        <LooksDemo />
+      </Stage>
+
+      <Stage
         title="A team stack"
         align="start"
         code="TeamDemo"
@@ -236,7 +293,7 @@ export default function AvatarPage() {
         <PhotosDemo />
       </Stage>
 
-      <TryIt of="Avatar" component={Avatar} props={{ name: "Mira Halden" }} controls={["name", "size", "hue", "decorative"]} />
+      <TryIt of="Avatar" component={Avatar} props={{ name: "Mira Halden" }} controls={["name", "size", "hue", "look", "decorative"]} />
     </Page>
   );
 }
