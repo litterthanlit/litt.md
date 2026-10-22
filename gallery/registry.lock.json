@@ -1,13 +1,13 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.10.21",
+  "latest": "2026.10.22",
   "items": {
     "accordion": {
       "version": "2026.10.19",
       "hash": "eee7d4cb1b662733"
     },
     "agent": {
-      "version": "2026.10.21",
+      "version": "2026.10.22",
       "hash": "e94b6101eb8424b0"
     },
     "app-shell": {
@@ -83,7 +83,7 @@
       "hash": "0e0950f318d38a8d"
     },
     "dashboard": {
-      "version": "2026.10.21",
+      "version": "2026.10.22",
       "hash": "d702ebd49b3b9866"
     },
     "date-picker": {
@@ -115,7 +115,7 @@
       "hash": "f3e980184f6443ef"
     },
     "growth": {
-      "version": "2026.10.21",
+      "version": "2026.10.22",
       "hash": "70daa8270447cd1c"
     },
     "header": {
@@ -135,7 +135,7 @@
       "hash": "2c91fd9e5b17d054"
     },
     "insights": {
-      "version": "2026.10.21",
+      "version": "2026.10.22",
       "hash": "320325337d926ec6"
     },
     "kbd": {
@@ -267,7 +267,7 @@
       "hash": "bca14735046dd898"
     },
     "usage": {
-      "version": "2026.10.21",
+      "version": "2026.10.22",
       "hash": "0607a865ab1f8651"
     }
   }
