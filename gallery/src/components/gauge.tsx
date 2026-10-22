@@ -16,8 +16,14 @@
  * - Semantics: role="meter" with the label as its name, a min, a max, a now and the value text; the caption is its
  *   description. The ticks and the text over them are hidden from assistive tech, so nothing is read twice.
  * - Motion: none. Static, like the Meter: no entrance, no hover, no focus stop. A value that changes just changes.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the lit ticks sweep up to the value on arrival
+ *   and to each new value, on the grow spring, so the marking tick runs a tick or two past and settles back like a
+ *   needle with weight; the figure counts with the sweep and never shows more than the value. Still ticks lighting up:
+ *   no needle, no glow. At rest it is the static Gauge exactly; reduced motion turns it off.
  */
-import { useId } from "react";
+import { useId, useState } from "react";
+import { useMotionValueEvent } from "motion/react";
+import { countText, useFun, useFunValue } from "@/motion";
 
 /** The five data hues, in their fixed order (P11). */
 export type GaugeHue = "blue" | "amber" | "teal" | "violet" | "rose";
@@ -75,6 +81,15 @@ export function Gauge({ label, value, min = 0, max = 100, valueText, figure, cap
   const filled = share <= 0 ? 0 : Math.max(1, Math.round(share * count));
   const now = span > 0 ? Math.max(min, Math.min(max, value)) : min;
 
+  /* Fun mode: the ticks drawn while the sweep moves, and the figure counting with it. Off or still, the value's own. */
+  const fun = useFun();
+  const sweep = useFunValue(filled, { count: value });
+  /* The ticks follow the sweep through its overshoot and settle, after the figure has stopped counting. */
+  const [swept, setSwept] = useState(filled);
+  useMotionValueEvent(sweep.value, "change", (t) => setSwept(Math.max(0, Math.min(count, Math.round(t)))));
+  const lit = fun && sweep.moving ? swept : filled;
+  const shownFigure = fun ? countText(figure ?? valueText, value, sweep.shown) : (figure ?? valueText);
+
   const half = size / 2;
   const outer = half - EDGE;
   const length = Math.max(8, Math.round(size / 16));
@@ -109,14 +124,14 @@ export function Gauge({ label, value, min = 0, max = 100, valueText, figure, cap
     >
       <svg viewBox={`0 0 ${size} ${Math.ceil(half) + 1}`} width={size} height={Math.ceil(half) + 1} aria-hidden="true" focusable="false" className="block h-auto w-full">
         <g fill="none" strokeWidth={TICK} strokeLinecap="butt">
-          <path d={run(filled, count)} className={REST} />
-          {filled > 1 && <path d={run(0, filled - 1)} className={tone.mark} />}
-          {filled > 0 && <path d={tick(filled - 1, inner, outer + REACH)} className={tone.value} />}
+          <path d={run(lit, count)} className={REST} />
+          {lit > 1 && <path d={run(0, lit - 1)} className={tone.mark} />}
+          {lit > 0 && <path d={tick(lit - 1, inner, outer + REACH)} className={tone.value} />}
         </g>
       </svg>
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 text-center" style={{ paddingInline: pad }}>
         <span className="text-caption text-fg-subtle">{label}</span>
-        <span className="text-h2 tabular-nums text-fg">{figure ?? valueText}</span>
+        <span className="text-h2 tabular-nums text-fg">{shownFigure}</span>
         {caption && (
           <span id={captionId} className="text-caption font-normal text-fg-subtle">
             {caption}

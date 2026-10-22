@@ -41,11 +41,13 @@
  *   series' text tones over a faint column band; the tooltip lists each part and the total; the hidden table adds a
  *   Total column. Up to five series. The entrance grows each column from the baseline, like the bars.
  * - Meter: a horizontal progress bar, a 4px rail at the control radius in fg 12% filled with fg, or a data hue. A target is
- *   a 2px tick in fg-subtle taller than the rail; steps split the rail into equal segments 2px apart. Static.
+ *   a 2px tick in fg-subtle taller than the rail; steps split the rail into equal segments 2px apart. Static, unless fun
+ *   mode (motion/fun.tsx, a trial) is on: then the fill grows in and springs to each new value, the reading counts with
+ *   it, the target tick pops as the fill passes it and steps light in turn. At rest it is the static Meter exactly.
  */
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { animate, AnimatePresence, motion, useMotionValueEvent, useTransform } from "motion/react";
+import { countText, useExit, useFun, useFunValue, useTransition, useTravel } from "@/motion";
 
 /* ----------------------------------------------------------------- types */
 
@@ -821,13 +823,43 @@ export function Meter({ label, value, max = 100, valueText, hue, target, targetT
   const filled = Math.round((percent / 100) * count);
   const aim = target === undefined ? null : share(target);
   const spoken = aim === null ? reading : `${reading}, ${targetText ?? `target ${Math.round(aim)}%`}`;
+
+  /* Fun mode (motion/fun.tsx): the fill grows in from the start and springs to each new value, the reading counts with
+     it, and the target tick pops as the fill passes it. Moving, the fill slides (a transform, so its rounded end never
+     squashes); still, it is the plain fill below. Off, none of this runs. */
+  const fun = useFun();
+  const grow = useFunValue(percent, { count: valueText ? value : percent });
+  const slide = useTransform(grow.value, (r) => `${r - 100}%`);
+  const tick = useRef<HTMLSpanElement>(null);
+  const passed = useRef(percent);
+  useMotionValueEvent(grow.value, "change", (r) => {
+    const el = tick.current;
+    if (fun && el && aim !== null && passed.current < aim && r >= aim) {
+      animate(el, { scale: [1.8, 1] }, fun.pop).then(() => void (el.style.transform = ""));
+    }
+    passed.current = r;
+  });
+  const segments = useRef<(HTMLDivElement | null)[]>([]);
+  useLayoutEffect(() => {
+    if (!fun || !count) return;
+    /* Steps light in turn on arrival, each popping into place. */
+    const runs = segments.current.slice(0, filled).map((el, i) => {
+      if (!el) return null;
+      return animate(el, { opacity: [0, 1], scale: [0.3, 1] }, { ...fun.pop, delay: i * fun.wave * 6 });
+    });
+    Promise.all(runs).then(() => segments.current.forEach((el) => el && Object.assign(el.style, { opacity: "", transform: "" })));
+    return () => runs.forEach((r) => r?.stop());
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the arrival plays on mount only
+  }, []);
+  const shownReading = fun && !count ? (valueText ? countText(valueText, value, grow.shown) : `${Math.round(grow.shown)}%`) : reading;
+
   return (
     <div className={"grid gap-2 " + className}>
       <div className="flex items-baseline justify-between gap-4">
         <span id={id} className="text-small text-fg">
           {label}
         </span>
-        <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">{reading}</span>
+        <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">{shownReading}</span>
       </div>
       <div className="relative">
         <div
@@ -840,14 +872,24 @@ export function Meter({ label, value, max = 100, valueText, hue, target, targetT
           className={count ? "flex h-1 gap-0.5" : "h-1 overflow-hidden rounded-control " + TRACK}
         >
           {count ? (
-            Array.from({ length: count }, (_, i) => <div key={i} className={"h-full flex-1 rounded-control " + (i < filled ? fill : TRACK)} />)
+            Array.from({ length: count }, (_, i) => (
+              <div
+                key={i}
+                ref={(el) => {
+                  segments.current[i] = el;
+                }}
+                className={"h-full flex-1 rounded-control " + (i < filled ? fill : TRACK)}
+              />
+            ))
+          ) : grow.moving ? (
+            <motion.div className={"h-full w-full rounded-control " + fill} style={{ x: slide }} />
           ) : (
             <div className={"h-full rounded-control " + fill} style={{ width: `${percent}%` }} />
           )}
         </div>
         {/* The target: a neutral tick taller than the rail, so it reads over the fill and the track alike. */}
         {aim !== null && (
-          <span aria-hidden="true" className="absolute top-1/2 h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-fg-subtle" style={{ left: `${aim}%` }} />
+          <span ref={tick} aria-hidden="true" className="absolute top-1/2 h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-fg-subtle" style={{ left: `${aim}%` }} />
         )}
       </div>
     </div>

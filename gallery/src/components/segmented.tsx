@@ -12,7 +12,9 @@
  * - Segments share one width (the widest label), so the selected surface keeps its shape as
  *   it moves.
  * - Motion: the selected surface glides to the picked segment on the responsive tier (it
- *   moves through transform), as in Tabs. Color changes are instant.
+ *   moves through transform), as in Tabs. Color changes are instant. In fun mode (motion/fun.tsx, a trial, off unless
+ *   a <FunMode> is on) it glides on fun mode's glide spring and settles a hair past the segment; reduced motion turns
+ *   it off.
  * - Touch: there is no hover, so on a coarse pointer an unselected segment that is held down fills
  *   (PRESS: fg 6%, color only, instant tier) and takes the --fg text. The selected one needs no fill,
  *   its surface is the answer. The box never moves. The OS tap flash is off, so the two do not double.
@@ -20,7 +22,7 @@
  */
 import { useId, useState, type ReactNode } from "react";
 import { LayoutGroup, motion } from "motion/react";
-import { useTransition } from "@/motion";
+import { useFun, useTransition } from "@/motion";
 
 export type SegmentedSize = "sm" | "md";
 export type SegmentedOption<T extends string> = {
@@ -81,7 +83,10 @@ export function Segmented<T extends string>({
 }: SegmentedProps<T>) {
   const auto = useId();
   const name = nameProp ?? auto;
-  const enter = useTransition("responsive");
+  const responsive = useTransition("responsive");
+  /* Fun mode (motion/fun.tsx, a trial): the selected surface glides on a springier spring and settles past its mark. */
+  const fun = useFun();
+  const enter = fun ? fun.glide : responsive;
   const [inner, setInner] = useState<T | undefined>(defaultValue ?? options.find((o) => !o.disabled)?.value);
   const value = valueProp ?? inner;
   const look = sizes[size];

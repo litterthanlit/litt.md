@@ -23,9 +23,13 @@
  * - Accessibility: the SVG is `role="img"` named by a summary ("Median build time, last 14 days: from 44 s to 41 s,
  *   low 37 s, high 46 s", from `formatValue`). It is not interactive: no tab stop, no tooltip. Because it shows shape
  *   and not values, the exact figure belongs beside it, in a Stat or a table cell.
- * - Motion: none. New data redraws at once.
+ * - Motion: none. New data redraws at once. In fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on) the
+ *   line draws itself on arrival at a steady hand and the dot lands as the pen reaches it; each then hands over to the
+ *   plain mark, so at rest it is the static Sparkline exactly. Reduced motion turns it off.
  */
 import { useLayoutEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { useFun } from "@/motion";
 
 /** The five data hues, in their fixed order (P11). */
 export type SparklineHue = "blue" | "amber" | "teal" | "violet" | "rose";
@@ -142,6 +146,12 @@ export function Sparkline({
           (goal === undefined ? "" : `, baseline ${fmt(goal)}`));
 
   const tone = hue ? HUE[hue] : QUIET;
+  /* Fun mode: on arrival the line draws itself at a steady hand and the dot lands as the pen reaches it. Each hands
+     over to the plain mark once done (a drawn path keeps a dash pattern that antialiases its caps a hair differently). */
+  const fun = useFun();
+  const [drawing, setDrawing] = useState(() => !!fun);
+  const [landing, setLanding] = useState(() => !!fun);
+  const land = fun ? { ...fun.pop, delay: data.length > 1 ? fun.draw.duration : 0 } : undefined;
   const line = data.map((v, i) => `${i === 0 ? "M" : "L"}${x(i)} ${y(v)}`).join(" ");
   /* A 1px line is crisp on the half pixel. */
   const goalY = goal === undefined ? 0 : Math.round(y(goal)) + 0.5;
@@ -162,15 +172,41 @@ export function Sparkline({
               className="stroke-line-strong"
             />
           )}
-          {n > 1 && (
-            <path d={line} fill="none" strokeWidth={STROKE} strokeLinejoin="round" strokeLinecap="round" className={tone.line} />
-          )}
-          {n > 0 && (
-            <>
-              <circle cx={x(n - 1)} cy={y(data[n - 1]!)} r={DOT + GAP} stroke="none" className={RING[surface]} />
-              <circle cx={x(n - 1)} cy={y(data[n - 1]!)} r={DOT} stroke="none" className={tone.dot} />
-            </>
-          )}
+          {n > 1 &&
+            (fun && drawing ? (
+              <motion.path
+                d={line}
+                fill="none"
+                strokeWidth={STROKE}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                className={tone.line}
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={fun.draw}
+                onAnimationComplete={() => setDrawing(false)}
+              />
+            ) : (
+              <path d={line} fill="none" strokeWidth={STROKE} strokeLinejoin="round" strokeLinecap="round" className={tone.line} />
+            ))}
+          {n > 0 &&
+            (fun && landing ? (
+              <motion.g
+                style={{ originX: `${x(n - 1)}px`, originY: `${y(data[n - 1]!)}px` }}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={land}
+                onAnimationComplete={() => setLanding(false)}
+              >
+                <circle cx={x(n - 1)} cy={y(data[n - 1]!)} r={DOT + GAP} stroke="none" className={RING[surface]} />
+                <circle cx={x(n - 1)} cy={y(data[n - 1]!)} r={DOT} stroke="none" className={tone.dot} />
+              </motion.g>
+            ) : (
+              <>
+                <circle cx={x(n - 1)} cy={y(data[n - 1]!)} r={DOT + GAP} stroke="none" className={RING[surface]} />
+                <circle cx={x(n - 1)} cy={y(data[n - 1]!)} r={DOT} stroke="none" className={tone.dot} />
+              </>
+            ))}
         </svg>
       )}
     </div>

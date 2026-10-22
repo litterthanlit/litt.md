@@ -51,7 +51,7 @@
  *
  * WHERE FILES LAND IN A HOST (shadcn puts a target without "~/" under src/ when the host has one)
  *   components/litt/<stem>.tsx       the components
- *   lib/litt/motion/{index,spring,tokens,device,drag}.ts(x), lib/litt/glide.tsx     the engines
+ *   lib/litt/motion/{index,spring,tokens,device,drag,fun}.ts(x), lib/litt/glide.tsx     the engines
  *   components/litt-blocks/<block>.tsx   the blocks: outside components/litt/, because a block is a starting point the host edits
  *   Every import between shipped files is relative, so no alias in the host matters, and none of
  *   it collides with the host's own components/ui/button.tsx. registryDependencies are absolute
@@ -1298,7 +1298,7 @@ function build(demos = []) {
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
   const onDisk = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
-  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts"].map((f) => path.join(motionDir, f));
+  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
   // A block is named after the page that shows it, so its name finds that page, and never after a component.
   const blockFiles = blockNames.map((b) => path.join(blocksDir, `${b}.tsx`));

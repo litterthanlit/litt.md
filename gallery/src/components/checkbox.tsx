@@ -14,6 +14,9 @@
  *   clickable. The label is a real <label for>, stretched over the row, so its accessible
  *   name is only its text and the description is linked with aria-describedby.
  * - Motion: the instant tier. Fill, edge and the mark fade with color. The box never moves.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): checking a drawn box pops it on fun mode's pop
+ *   spring and the tick draws itself in, as a pen would. Only on a person's change, and only while it moves: once
+ *   still, the box and the tick are exactly the drawn ones above. Reduced motion turns it off.
  * - Touch: rows grow from 36 to 44px tall on coarse pointers.
  */
 import {
@@ -29,6 +32,8 @@ import {
   type ReactNode,
   type Ref,
 } from "react";
+import { animate } from "motion/react";
+import { useFun } from "@/motion";
 import { CheckIcon } from "@/components/icons";
 
 export type ChoiceAppearance = "drawn" | "native";
@@ -136,6 +141,29 @@ function Choice({
     [ref],
   );
 
+  /* Fun mode: a box a person checks pops, and its tick draws in. Inline styles only while it moves, then cleared. */
+  const fun = useFun();
+  const tick = useRef<HTMLSpanElement>(null);
+  const onChange = rest.onChange;
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    onChange?.(e);
+    const box = input.current;
+    const path = tick.current?.querySelector("path");
+    if (!fun || kind !== "checkbox" || appearance !== "drawn" || !e.target.checked || !box || !path || !tick.current) return;
+    const mark = tick.current;
+    path.setAttribute("pathLength", "1");
+    path.style.strokeDasharray = "1";
+    animate(path, { strokeDashoffset: [1, 0] }, fun.tick).then(() => {
+      path.removeAttribute("pathLength");
+      path.style.strokeDasharray = "";
+      path.style.strokeDashoffset = "";
+    });
+    animate([box, mark], { scale: [0.8, 1] }, fun.pop).then(() => {
+      box.style.transform = "";
+      mark.style.transform = "";
+    });
+  };
+
   const radio = kind === "radio";
   return (
     <div className={"group/choice relative grid w-fit select-none grid-cols-[auto_1fr] gap-x-2 py-2 pointer-coarse:py-3 " + className}>
@@ -147,6 +175,7 @@ function Choice({
         aria-describedby={[describedByProp, descriptionId].filter(Boolean).join(" ") || undefined}
         className={appearance === "native" ? nativeInput : drawnInput + (radio ? " rounded-pill" : " rounded-control" + mixed)}
         {...rest}
+        onChange={handleChange}
       />
       {appearance === "drawn" && (
         <>
@@ -159,7 +188,7 @@ function Choice({
             </span>
           ) : (
             <>
-              <span aria-hidden="true" className={mark + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>
+              <span ref={tick} aria-hidden="true" className={mark + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>
                 <CheckIcon />
               </span>
               <span aria-hidden="true" className={mark + " peer-indeterminate:opacity-100"}>

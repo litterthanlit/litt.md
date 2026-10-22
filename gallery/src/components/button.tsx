@@ -17,11 +17,15 @@
  *   (`<Button><PlusIcon /> New</Button>`, as shadcn writes it) sit side by side: each
  *   run of text is a trimmed label, and each element sits in the row. A child SVG is
  *   16px, like every button icon. The icon prop is still the documented way.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the press goes deeper (0.95) and the scale moves
+ *   on fun mode's press spring, as a CSS linear() easing, so the release springs back with a little life. Only the
+ *   scale's timing changes; fills keep the instant tier. Still CSS, no script per press. Reduced motion turns it off.
  * - Disabled keeps a hairline, so the button keeps its shape on a surface-2 area.
  * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
  *   round (pill) and need an aria-label.
  */
-import { Children, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { Children, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from "react";
+import { useFun } from "@/motion";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -103,15 +107,26 @@ export function Button({
   children,
   disabled,
   type = "button",
+  style,
   ...rest
 }: ButtonProps) {
+  const fun = useFun();
   const shape = iconOnly ? `${iconSizes[size]} px-0 rounded-pill` : "rounded-control";
+  /* Fun mode: the scale (the third transitioned property) takes the press spring; the fills keep the instant tier. */
+  const press: CSSProperties | undefined = fun
+    ? ({
+        "--press-scale": fun.press.scale,
+        transitionDuration: `var(--dur-instant), var(--dur-instant), ${fun.press.duration}ms`,
+        transitionTimingFunction: `var(--ease-out), var(--ease-out), ${fun.press.easing}`,
+      } as CSSProperties)
+    : undefined;
   return (
     <button
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={[base, sizes[size], variants[variant], disabledLook, shape, block ? "w-full" : "", className].join(" ")}
+      style={press ? { ...press, ...style } : style}
       {...rest}
     >
       <span

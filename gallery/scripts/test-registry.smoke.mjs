@@ -357,10 +357,11 @@ const RECIPES = {
     jsx: `<div className="w-full max-w-sm" data-testid="litt-pad"><Pad label="Your voice" help="How replies sound." x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }} y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }} value={voice} onValueChange={setVoice} defaultMark={{ x: 30, y: 40 }} formatValue={(v) => \`Tone \${v.y}, length \${v.x}\`} /></div>`,
   },
   gauge: {
-    needs: ["Gauge"],
+    needs: ["Gauge", "FunMode"],
     jsx: `<div className="grid w-full max-w-xs gap-6" data-testid="litt-gauges">
           <Gauge label="Credits left" value={20830} max={30000} valueText="20,830 credits" figure="20,830" caption="2k a day on average" hue="teal" />
           <div className="w-40" data-testid="litt-gauge-small"><Gauge label="Storage" value={42} valueText="42 of 100 GB" size={320} /></div>
+          <div data-testid="litt-gauge-fun"><FunMode><Gauge label="Credits in fun mode" value={20830} max={30000} valueText="20,830 credits" figure="20,830" hue="teal" /></FunMode></div>
         </div>`,
   },
   "bar-list": {
@@ -2283,6 +2284,15 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const fit = await small.evaluate((el) => ({ box: el.getBoundingClientRect().width, svg: el.querySelector("svg").getBoundingClientRect().width }));
           if (fit.svg > fit.box + 0.5 || fit.box > 161) throw new Error(`a 320 gauge in a ${fit.box}px box draws ${fit.svg}px wide`);
           return `${rest.ticks}/${body.ticks}/${marker.ticks} ticks, a ${fit.svg.toFixed(0)}px drawing in a ${fit.box.toFixed(0)}px box`;
+        });
+        await attempt("gauge in fun mode comes to rest on the calm gauge's ticks and figure", async () => {
+          const meter = page.locator("[data-testid=litt-gauge-fun]").getByRole("meter", { name: "Credits in fun mode" });
+          await meter.waitFor({ state: "visible", timeout: 8000 });
+          /* By now the arrival has played; what fun mode promises is that it rests on the calm gauge's frame. */
+          await page.waitForTimeout(2500);
+          const got = await meter.evaluate((el) => ({ figure: el.querySelector(":scope > div[aria-hidden] > span:nth-child(2)")?.textContent, ticks: [...el.querySelectorAll("svg path")].map((p) => ((p.getAttribute("d") || "").match(/M/g) || []).length), now: el.getAttribute("aria-valuenow") }));
+          if (got.figure !== "20,830" || got.ticks.join("/") !== "15/32/1" || got.now !== "20830") throw new Error(`fun mode rests on ${JSON.stringify(got)}, not 20,830 on 15/32/1 ticks`);
+          return "rests on 20,830 over 15/32/1 ticks, as the calm gauge does";
         });
       }
       if (has("bar-list")) {

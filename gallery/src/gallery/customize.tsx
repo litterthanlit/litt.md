@@ -14,10 +14,14 @@ import { Tag } from "@/components/tag";
 import { useCustomize } from "./customize-state";
 
 function CustomizePanel() {
-  const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, modified, reset } = useCustomize();
+  const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, fun, setFun, modified, reset } = useCustomize();
   const [copied, setCopied] = useState(false);
   const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
-  const rows = [typeRule(type), shapeRule(radius)];
+  const rows = [
+    typeRule(type),
+    shapeRule(radius),
+    ...(fun ? [{ ok: false, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Nothing to paste yet; if it wins, it goes into tokens.css and the rules." }] : []),
+  ];
   const snippet = customizeSnippet(radius, lockedRadius, type);
 
   const copy = async () => {
@@ -32,7 +36,7 @@ function CustomizePanel() {
 
   return (
     <div className="grid gap-6">
-      <p className="text-small text-fg-subtle">Type and shape for every page, saved in this browser. Motion lives in the Playground.</p>
+      <p className="text-small text-fg-subtle">Type, shape and how motion feels, for every page, saved in this browser. The motion dial lives in the Playground.</p>
       <Segmented
         legend="Typeface"
         showLegend
@@ -51,6 +55,18 @@ function CustomizePanel() {
         onValueChange={(v) => setRadius(Number(v))}
         options={SHAPES.map((r) => ({ value: String(r), label: shapeName(r) }))}
       />
+      <Segmented
+        legend="Motion"
+        showLegend
+        block
+        size="sm"
+        value={fun ? "fun" : "calm"}
+        onValueChange={(v) => setFun(v === "fun")}
+        options={[
+          { value: "calm", label: "Calm" },
+          { value: "fun", label: "Fun" },
+        ]}
+      />
       <div className="grid gap-3 border-t border-line pt-4">
         {modified ? (
           <>
@@ -62,13 +78,17 @@ function CustomizePanel() {
                 </li>
               ))}
             </ul>
-            <pre tabIndex={0} aria-label="Tokens to paste into tokens.css" className="max-h-40 overflow-auto rounded-control bg-surface-2 p-3 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]">
-              {snippet}
-            </pre>
+            {snippet && (
+              <pre tabIndex={0} aria-label="Tokens to paste into tokens.css" className="max-h-40 overflow-auto rounded-control bg-surface-2 p-3 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]">
+                {snippet}
+              </pre>
+            )}
             <div className="flex gap-2">
-              <Button size="sm" icon={copied ? <CheckIcon /> : <CopyIcon />} onClick={copy}>
-                {copied ? "Copied" : "Copy tokens"}
-              </Button>
+              {snippet && (
+                <Button size="sm" icon={copied ? <CheckIcon /> : <CopyIcon />} onClick={copy}>
+                  {copied ? "Copied" : "Copy tokens"}
+                </Button>
+              )}
               <Button size="sm" variant="ghost" onClick={reset}>
                 Reset to locked
               </Button>
@@ -76,7 +96,7 @@ function CustomizePanel() {
           </>
         ) : (
           <p className="text-caption font-normal text-fg-subtle">
-            Locked: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces.
+            Locked: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, calm motion.
           </p>
         )}
       </div>

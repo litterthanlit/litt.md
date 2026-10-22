@@ -529,7 +529,7 @@ function ServerDeploysDemo() {
           {total === undefined ? "Loading deploys" : `${COUNT.format(rows.length)} of ${COUNT.format(total)} loaded`}
         </p>
       </div>
-      <Table label="Deploys from the server" className="max-h-[28rem]">
+      <Table label="Deploys from the server" busy={total === undefined && !failed} className="max-h-[28rem]">
         <TableHeader>
           <TableRow>
             <TableHead>Deploy</TableHead>
