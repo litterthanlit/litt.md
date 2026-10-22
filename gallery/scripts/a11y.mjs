@@ -59,6 +59,31 @@ const server = http.createServer((req, res) => {
 const port = server.address().port;
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
+/*
+ * Then wait for data to land: nothing marked aria-busy, and no rows added and no role or tabindex changed for `still`
+ * ms, or `most` ms at the outside (a page that shows a loading state on purpose stays busy). A page still loading can
+ * be caught between two states: the Table's pretend server takes most of a second, and when its rows land the region
+ * scrolls a frame before the Table makes it focusable.
+ */
+const QUIET = { still: 300, most: 2000 };
+const quiet = ({ still, most }) =>
+  new Promise((done) => {
+    let timer;
+    const wait = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => (document.querySelector("[aria-busy=true]") ? wait() : end()), still);
+    };
+    const observer = new MutationObserver(wait);
+    const cap = setTimeout(end, most);
+    function end() {
+      observer.disconnect();
+      clearTimeout(timer);
+      clearTimeout(cap);
+      done();
+    }
+    observer.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["role", "tabindex", "aria-busy", "hidden"] });
+    wait();
+  });
 const browser = await chromium.launch();
 const found = [];
 let runs = 0;
@@ -74,6 +99,7 @@ for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"
       await pg.evaluate(() => document.fonts.ready);
       await pg.waitForSelector("h1", { timeout: 10_000 });
       await pg.waitForTimeout(400); // let entrances settle, so axe reads the resting colors
+      await pg.evaluate(quiet, QUIET);
       await pg.addScriptTag({ content: axeSource });
       const violations = await pg.evaluate(async (tags) => {
         const r = await window.axe.run(document, { runOnly: { type: "tag", values: tags }, resultTypes: ["violations"] });
