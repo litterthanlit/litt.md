@@ -30,27 +30,52 @@
  * - Corners: the region is rounded-surface, and clips the hover fill of the first and last row to it.
  * - Sorting is a small, accessible step, not a data layer: the header says which way it is sorted and reports
  *   the press; you sort your rows and keep them keyed, and `animateChanges` moves them.
+ *
+ * Big tables (components.md, "Table and list rows", Big tables):
+ * - TableVirtualBody draws only the rows in view, plus a few either side, between two spacer rows that keep the
+ *   scroll height true. Ten thousand rows cost what forty do. It needs fixed-height rows (the 44px row: keep cells on
+ *   one line) and a Table with a max height, which is the scroller. The header stays sticky, and the table keeps its
+ *   semantics: aria-rowcount on the table and aria-rowindex on each row, so a screen reader still says "row 4,812 of
+ *   10,001". The entrance and change motion are off in it: a long list arrives at once.
+ * - Selection: TableSelectHead and TableSelectCell are the select-all and per-row boxes (the Checkbox, its label
+ *   hidden and named for the row), and `selected` on a TableRow fills it fg 6%. useRowSelection holds the selected ids
+ *   in a Set, so a check is constant time at any size: Shift selects the range from the last box pressed, the head
+ *   box selects or clears the rows shown, and it counts what is selected for an ActionBar.
  */
 import {
   Children,
   createContext,
   isValidElement,
+  useCallback,
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
+  useMemo,
   useRef,
   useState,
+  type ChangeEvent,
   type ComponentProps,
   type ReactNode,
+  type RefObject,
 } from "react";
 import { AnimatePresence, motion, type HTMLMotionProps } from "motion/react";
 import { useExit, useStagger, useTransition, useTravel } from "@/motion";
+import { Checkbox } from "@/components/checkbox";
 
 /** The entrance cascade stops counting at this many rows, so a long table never drags. */
 const CASCADE_CAP = 6;
 
-type TableState = { entrance: boolean; animateChanges: boolean; ready: boolean };
-const TableContext = createContext<TableState>({ entrance: false, animateChanges: false, ready: true });
+type TableState = {
+  entrance: boolean;
+  animateChanges: boolean;
+  ready: boolean;
+  region: RefObject<HTMLDivElement | null>;
+  table: RefObject<HTMLTableElement | null>;
+};
+const TableContext = createContext<TableState>({ entrance: false, animateChanges: false, ready: true, region: { current: null }, table: { current: null } });
+/* Inside a TableVirtualBody: the row's place in the whole table, for aria-rowindex. Null elsewhere. */
+const VirtualIndexContext = createContext<number | null>(null);
 const SectionContext = createContext<"head" | "body">("body");
 const RowIndexContext = createContext(0);
 
@@ -97,7 +122,7 @@ export function Table({ label, entrance = false, animateChanges = false, busy = 
   }, []);
 
   return (
-    <TableContext.Provider value={{ entrance, animateChanges, ready }}>
+    <TableContext.Provider value={{ entrance, animateChanges, ready, region, table }}>
       <motion.div
         ref={region}
         layoutScroll
@@ -172,15 +197,248 @@ export function TableBody({ children }: TableBodyProps) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* TableVirtualBody                                                           */
+/* -------------------------------------------------------------------------- */
+
+/** The row height a virtual body starts from: the 44px row (h-control-md). It measures the real one once drawn. */
+const ROW_HEIGHT = 44;
+
+export type TableVirtualBodyProps = {
+  /** How many rows there are in all. */
+  count: number;
+  /** Draws row `index`: a TableRow with a stable key. Called only for the rows in view. */
+  children: (index: number) => ReactNode;
+  /** How many rows to draw beyond each edge of the view, so a fast scroll never shows a gap. */
+  overscan?: number;
+  /** How many columns the table has, so the spacer rows span it. */
+  columns: number;
+};
+
+/**
+ * A body that draws only the rows in view. Give the Table a max height (it is the scroller) and keep each row on one
+ * line, so every row is the same height. The rows are read from `children(index)`.
+ */
+export function TableVirtualBody({ count, children, overscan = 8, columns }: TableVirtualBodyProps) {
+  const { region, table } = useContext(TableContext);
+  const body = useRef<HTMLTableSectionElement>(null);
+  const [height, setHeight] = useState(ROW_HEIGHT);
+  const [range, setRange] = useState({ start: 0, end: Math.min(count, 30) });
+
+  /* Which rows the view shows, from the scroll position, less the sticky header's height above the first row. */
+  const measure = useCallback(() => {
+    const el = region.current;
+    const tbody = body.current;
+    if (!el || !tbody) return;
+    const top = tbody.offsetTop;
+    const first = Math.floor(Math.max(0, el.scrollTop - top) / height);
+    const shown = Math.ceil(el.clientHeight / height);
+    const start = Math.max(0, first - overscan);
+    const end = Math.min(count, first + shown + overscan);
+    setRange((r) => (r.start === start && r.end === end ? r : { start, end }));
+  }, [region, height, overscan, count]);
+
+  useLayoutEffect(() => {
+    measure();
+    const el = region.current;
+    if (!el) return;
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    const observer = new ResizeObserver(() => measure());
+    observer.observe(el);
+    /* Spacer heights change as it scrolls, so the browser must not try to keep a row anchored in place. */
+    const anchor = el.style.overflowAnchor;
+    el.style.overflowAnchor = "none";
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      el.style.overflowAnchor = anchor;
+    };
+  }, [region, measure]);
+
+  /* The real row height, read from the first row drawn, in case the host's type makes it taller than 44px. */
+  useLayoutEffect(() => {
+    const row = body.current?.querySelector<HTMLElement>("tr[aria-rowindex]");
+    const real = row?.getBoundingClientRect().height;
+    if (real && Math.abs(real - height) > 0.5) setHeight(real);
+  });
+
+  /* The whole table's size, for screen readers: the header row plus every row. */
+  useEffect(() => {
+    const el = table.current;
+    if (!el) return;
+    el.setAttribute("aria-rowcount", String(count + 1));
+    return () => el.removeAttribute("aria-rowcount");
+  }, [table, count]);
+
+  const start = Math.min(range.start, count);
+  const end = Math.min(range.end, count);
+  const rows: ReactNode[] = [];
+  for (let i = start; i < end; i++) {
+    rows.push(
+      <VirtualIndexContext.Provider key={i} value={i + 2}>
+        {children(i)}
+      </VirtualIndexContext.Provider>,
+    );
+  }
+  const spacer = (h: number, key: string) =>
+    h > 0 ? (
+      <tr key={key} aria-hidden="true">
+        <td colSpan={columns} className="border-0 p-0" style={{ height: h }} />
+      </tr>
+    ) : null;
+
+  return (
+    <SectionContext.Provider value="body">
+      {/* The last row keeps no line under it. At the end of the list that is the last real row; before it, the spacer. */}
+      <tbody ref={body} className="[&>tr:last-child>*]:border-b-0">
+        {spacer(start * height, "before")}
+        {rows}
+        {spacer((count - end) * height, "after")}
+      </tbody>
+    </SectionContext.Provider>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Selection                                                                  */
+/* -------------------------------------------------------------------------- */
+
+export type RowSelection = {
+  /** The selected ids. */
+  selected: ReadonlySet<string>;
+  /** How many are selected, shown or not. */
+  count: number;
+  /** Whether one id is selected. Constant time. */
+  isSelected: (id: string) => boolean;
+  /** Turns one row on or off. With `range` (Shift held), every row shown between it and the last row pressed follows. */
+  toggle: (id: string, range?: boolean) => void;
+  /** The head box's state over the rows shown: all, some or none of them selected. */
+  head: "all" | "some" | "none";
+  /** The head box: selects every row shown, or clears them when all are selected. */
+  toggleAll: () => void;
+  /** Clears the whole selection, for an ActionBar's Clear. */
+  clear: () => void;
+};
+
+/**
+ * Selected rows for a Table of any size, by id. Pass the ids of the rows shown, in their order (after your filter and
+ * sort): Shift ranges follow that order and the head box acts on those rows. Rows hidden by a filter stay selected.
+ */
+export function useRowSelection(shown: readonly string[], initial: Iterable<string> = []): RowSelection {
+  const [selected, setSelected] = useState<ReadonlySet<string>>(() => new Set(initial));
+  const anchor = useRef<string | null>(null);
+  const order = useMemo(() => new Map(shown.map((id, i) => [id, i])), [shown]);
+
+  const toggle = useCallback(
+    (id: string, range = false) => {
+      setSelected((now) => {
+        const next = new Set(now);
+        const on = !now.has(id);
+        const from = anchor.current === null ? undefined : order.get(anchor.current);
+        const to = order.get(id);
+        if (range && from !== undefined && to !== undefined) {
+          for (let i = Math.min(from, to); i <= Math.max(from, to); i++) {
+            if (on) next.add(shown[i]!);
+            else next.delete(shown[i]!);
+          }
+        } else if (on) next.add(id);
+        else next.delete(id);
+        return next;
+      });
+      anchor.current = id;
+    },
+    [order, shown],
+  );
+
+  let inView = 0;
+  for (const id of shown) if (selected.has(id)) inView++;
+  const head = inView === 0 ? "none" : inView === shown.length ? "all" : "some";
+
+  const toggleAll = useCallback(() => {
+    setSelected((now) => {
+      const next = new Set(now);
+      const all = shown.length > 0 && shown.every((id) => now.has(id));
+      for (const id of shown) {
+        if (all) next.delete(id);
+        else next.add(id);
+      }
+      return next;
+    });
+  }, [shown]);
+
+  const clear = useCallback(() => {
+    setSelected(new Set());
+    anchor.current = null;
+  }, []);
+
+  return { selected, count: selected.size, isSelected: (id) => selected.has(id), toggle, head, toggleAll, clear };
+}
+
+/** Whether Shift was held for this change: a click's, or the key's on Space. */
+const shifted = (e: ChangeEvent<HTMLInputElement>) => (e.nativeEvent as MouseEvent).shiftKey === true;
+
+const selectCell = "w-12 border-b border-line py-0 pr-0 pl-4 align-middle [&>div]:py-0";
+
+export type TableSelectHeadProps = {
+  /** All, some or none of the rows shown are selected: useRowSelection's `head`. */
+  state: "all" | "some" | "none";
+  /** Called when the box is pressed: useRowSelection's `toggleAll`. */
+  onToggle: () => void;
+  /** What the box selects, for screen readers: "Select every deploy shown". */
+  label?: string;
+};
+
+/** The select-all box, as the first header cell. Mixed while some of the rows shown are selected. */
+export function TableSelectHead({ state, onToggle, label = "Select every row shown" }: TableSelectHeadProps) {
+  return (
+    <th scope="col" className={head + " " + selectCell}>
+      <Checkbox
+        label={<span className="sr-only">{label}</span>}
+        checked={state === "all"}
+        indeterminate={state === "some"}
+        onChange={onToggle}
+      />
+    </th>
+  );
+}
+
+export type TableSelectCellProps = {
+  /** Whether the row is selected: useRowSelection's `isSelected(id)`. */
+  checked: boolean;
+  /** Called with whether Shift was held: pass it to useRowSelection's `toggle(id, range)`. */
+  onToggle: (range: boolean) => void;
+  /** Names the box for the row: "Select deploy 8f2ka1c". */
+  label: string;
+};
+
+/** The row's box, as the first cell. Shift-press selects the range from the last box pressed. */
+export function TableSelectCell({ checked, onToggle, label }: TableSelectCellProps) {
+  return (
+    <td className={selectCell + " h-control-md"}>
+      <Checkbox label={<span className="sr-only">{label}</span>} checked={checked} onChange={(e) => onToggle(shifted(e))} />
+    </td>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /* TableRow                                                                   */
 /* -------------------------------------------------------------------------- */
 
 const rowHover =
   "transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " +
-  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
+  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+  /* A selected row keeps the press fill, hovered or not. The box says it in words; the fill only helps the eye. */
+  "data-selected:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
 
 export type TableRowProps = Omit<ComponentProps<"tr">, "ref"> & {
+  /** Fills the row fg 6%, for a row whose TableSelectCell is checked. */
+  selected?: boolean;
   /** The row's cells. */
   children?: ReactNode;
   /** Extra classes for the row. */
@@ -188,18 +446,20 @@ export type TableRowProps = Omit<ComponentProps<"tr">, "ref"> & {
 };
 
 /** A row. In the body it gets the hover fill, and the entrance or change motion when the Table asks for it. */
-export function TableRow({ className = "", children, ...rest }: TableRowProps) {
+export function TableRow({ selected = false, className = "", children, ...rest }: TableRowProps) {
   const section = useContext(SectionContext);
   const { entrance, animateChanges } = useContext(TableContext);
-  if (section === "head" || !(entrance || animateChanges)) {
+  const virtualIndex = useContext(VirtualIndexContext);
+  const marks = { "data-selected": selected || undefined, "aria-rowindex": virtualIndex ?? undefined };
+  if (section === "head" || virtualIndex !== null || !(entrance || animateChanges)) {
     return (
-      <tr className={(section === "head" ? "" : rowHover + " ") + className} {...rest}>
+      <tr className={(section === "head" ? "" : rowHover + " ") + className} {...marks} {...rest}>
         {children}
       </tr>
     );
   }
   return (
-    <MotionRow className={className} {...rest}>
+    <MotionRow className={className} {...marks} {...rest}>
       {children}
     </MotionRow>
   );
