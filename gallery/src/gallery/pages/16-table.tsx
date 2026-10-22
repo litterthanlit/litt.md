@@ -102,6 +102,18 @@ import { TableFilter } from "@/components/table-filter";
   options={[{ value: "ready", label: "Ready", count: 9214 }, { value: "failed", label: "Failed", count: 786 }]} />}>
   Status
 </TableHead>
+// Wide tables: keep the box and the name in view, and let people resize the text columns. columnsId keeps the widths.
+<Table label="Deploys" stickyColumns={2} columnsId="deploys" className="max-h-[28rem]">
+  <TableHeader>
+    <TableRow>
+      <TableSelectHead state={selection.head} onToggle={selection.toggleAll} />
+      <TableHead>Deploy</TableHead>
+      <TableHead resizable minWidth={120}>Commit</TableHead>
+    </TableRow>
+  </TableHeader>
+  …
+</Table>
+
 // Buckets of a number: one choice, All first.
 <TableHead numeric filter={<TableFilter column="Build time" multiple={false} align="end" value={speed} onValueChange={setSpeed}
   options={[{ value: "fast", label: "Under 30 s" }, { value: "slow", label: "Over 60 s" }]} />}>
@@ -114,6 +126,7 @@ import { TableFilter } from "@/components/table-filter";
     "Thousands of rows, such as a deploy history or an audit log. Use TableVirtualBody, so only the rows in view are drawn.",
     "People act on several rows at once. Add TableSelectHead and TableSelectCell with useRowSelection, and an ActionBar after the table.",
     "People narrow a long table by a column's values: status, site, a range of build times. Give that column's TableHead a TableFilter.",
+    "A table wider than its space. stickyColumns keeps the box and the row's name in view while it scrolls sideways, and resizable lets people give a long column room.",
     "Rows can be sorted, filtered or inserted. Turn on animateChanges and they glide to their new places.",
     "You need a table on a phone. It scrolls sideways inside its own labelled region and never widens the page.",
   ],
@@ -130,6 +143,8 @@ import { TableFilter } from "@/components/table-filter";
     [["↑", "↓", "←", "→"], "On the focused scroll region, scrolls it. The region only takes focus when there is something to scroll."],
     [["Space"], "On a row's box, selects or clears the row. On the head box, selects or clears every row shown."],
     [["Shift"], "Held while pressing a row's box (click or Space), selects or clears every row between it and the last box pressed."],
+    [["ArrowLeft", "ArrowRight"], "On a column's resize handle, narrows or widens the column by 16px; with Shift, 64px."],
+    [["Home"], "On a column's resize handle, gives the column its narrowest width."],
     [["Enter", "Space", "ArrowDown"], "On a column's filter button, opens its values. In the menu, Space toggles a value and keeps the menu open; Esc closes it."],
   ],
   a11y: [
@@ -142,6 +157,8 @@ import { TableFilter } from "@/components/table-filter";
     "Color never carries a status alone. The demos use status Tags, which always say the status in words.",
     "Under reduced motion the rows appear at once, with no travel or stagger, and the hover fill changes without a fade.",
     "A virtual body keeps the table's semantics: aria-rowcount on the table and aria-rowindex on each row, so a screen reader says where a row sits in the whole list. Only the drawn rows can be tabbed to or found with the browser's find, so give a long table a search field.",
+    "A resize handle is a separator named for its column (\"Resize the commit column\") with its width in px as its value, so the arrow keys and a screen reader can use it. It shows its hairline under the pointer and on focus; a double click fits the column to its widest cell.",
+    "Sticky columns keep the row's name beside every value as the table scrolls sideways, so a row never loses its label; the edge between them and the rest is a hairline, not color.",
     "A column's filter button is named for the column and what it holds (\"Filter status, 2 of 4 on\"), and its menu is named \"Filter status\". A filtering column's button looks selected and says how many values are on, so color never says it alone. Say the result in a polite status, as the count above the table does.",
     "Each row's box is named for the row (\"Select Halden Gallery\") and the head box for what it selects; it is mixed while only some rows shown are selected. A selected row is also filled, but the box carries the state.",
   ],
@@ -211,10 +228,20 @@ function DeployHistoryDemo() {
 
 /* ---------- (a2) Ten thousand deploys: the virtual body and selection ---------- */
 
-type BigDeploy = { id: string; site: string; branch: string; ok: boolean; seconds: number; at: string };
+type BigDeploy = { id: string; site: string; branch: string; commit: string; author: string; ok: boolean; seconds: number; at: string };
 
 const SITES = ["litt.design v3", "Studio site refresh", "Halden Gallery", "Founder landing", "Kassa dashboard", "Grotta Type", "Marlow Labs docs", "Atlas portfolio"];
 const BRANCHES = ["main", "preview/type", "fix/og-image", "feat/cms", "main", "main"];
+const COMMITS = [
+  "Swap Inter for Geist in the layout",
+  "Crop the series for phones by hand",
+  "Move launches to Tuesdays in the CMS",
+  "Serve the og image at 1200 wide",
+  "Fix the header's current link on the work page",
+  "Add the Atlas case study",
+  "Bump Next to 16.3.6",
+];
+const AUTHORS = ["Ines Duarte", "Tomas Berg", "Ava Okafor", "Nick"];
 
 /** Ten thousand deploys, the same every time: a small seeded generator, so the page fetches nothing. */
 const MANY: BigDeploy[] = (() => {
@@ -228,6 +255,8 @@ const MANY: BigDeploy[] = (() => {
       id: `dpl_${(10000 - i).toString(36).padStart(4, "0")}`,
       site: SITES[Math.floor(next() * SITES.length)]!,
       branch: BRANCHES[Math.floor(next() * BRANCHES.length)]!,
+      commit: COMMITS[Math.floor(next() * COMMITS.length)]!,
+      author: AUTHORS[Math.floor(next() * AUTHORS.length)]!,
       ok: next() > 0.08,
       seconds: 20 + Math.floor(next() * 70),
       at: new Date(day).toISOString().slice(0, 10),
@@ -313,12 +342,13 @@ function ManyDeploysDemo() {
           )}
         </div>
       </div>
-      <Table label="Deploys" className="max-h-[28rem]">
+      <Table label="Deploys" className="max-h-[28rem]" stickyColumns={2} columnsId="litt-gallery-deploys">
         <TableHeader>
           <TableRow>
             <TableSelectHead state={selection.head} onToggle={selection.toggleAll} label="Select every deploy shown" />
             <TableHead>Deploy</TableHead>
             <TableHead
+              resizable
               filter={
                 <TableFilter
                   column="Site"
@@ -330,7 +360,11 @@ function ManyDeploysDemo() {
             >
               Site
             </TableHead>
-            <TableHead>Branch</TableHead>
+            <TableHead resizable>Branch</TableHead>
+            <TableHead resizable minWidth={120}>
+              Commit
+            </TableHead>
+            <TableHead resizable>Author</TableHead>
             <TableHead
               filter={
                 <TableFilter
@@ -355,7 +389,7 @@ function ManyDeploysDemo() {
           </TableRow>
         </TableHeader>
         {shown.length ? (
-          <TableVirtualBody count={shown.length} columns={7}>
+          <TableVirtualBody count={shown.length} columns={9}>
             {(i) => {
               const d = shown[i]!;
               const on = selection.isSelected(d.id);
@@ -369,6 +403,8 @@ function ManyDeploysDemo() {
                   <TableCell>
                     <span className="font-mono text-caption font-normal">{d.branch}</span>
                   </TableCell>
+                  <TableCell>{d.commit}</TableCell>
+                  <TableCell>{d.author}</TableCell>
                   <TableCell>
                     <Status tone={d.ok ? "success" : "danger"}>{d.ok ? "Ready" : "Failed"}</Status>
                   </TableCell>
@@ -382,7 +418,7 @@ function ManyDeploysDemo() {
           </TableVirtualBody>
         ) : (
           <TableBody>
-            <TableEmpty columns={7} action={<Button size="sm" onClick={clearAll}>Clear filters</Button>}>
+            <TableEmpty columns={9} action={<Button size="sm" onClick={clearAll}>Clear filters</Button>}>
               No deploy matches these filters.
             </TableEmpty>
           </TableBody>
@@ -647,7 +683,7 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="ManyDeploysDemo"
-        caption="Ten thousand rows, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Filter by site, status or build time from the funnels in the headers: each value says how many deploys it would show, and a column that filters wears the selected segment. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every deploy shown, and the action bar counts them."
+        caption="Ten thousand rows, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Filter by site, status or build time from the funnels in the headers: each value says how many deploys it would show, and a column that filters wears the selected segment. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every deploy shown, and the action bar counts them. Scroll sideways: the box and the deploy stay put, with a hairline at their edge. Drag the edge of Site, Branch, Commit or Author to resize it, or double click it to fit; the widths are kept for next time."
       >
         <ManyDeploysDemo />
       </Stage>

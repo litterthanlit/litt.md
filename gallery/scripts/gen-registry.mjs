@@ -1281,6 +1281,13 @@ function collectDemos(extractDemo) {
 
 /* =============================================================== assemble the items */
 
+/**
+ * A class with any variants in front of `rest`: named ones (hover:, pointer-coarse:) and arbitrary ones, whose
+ * selector may hold one level of brackets ([&_tbody_tr[data-selected]>*:first-child]:). The transition checks use it,
+ * so a transition behind an arbitrary variant is held to the same rule as any other.
+ */
+const VARIANTS_THEN = (rest) => new RegExp(String.raw`^(?:(?:[\w-]+|\[(?:[^\s\[\]]|\[[^\s\[\]]*\])*\]):)*` + rest);
+
 const SCHEMA_URL = "https://ui.shadcn.com/schema/registry-item.json";
 const urlOf = (name) => `${origin}/r/${name}.json`;
 const ITEM_TYPE = { motion: "registry:lib", glide: "registry:lib" };
@@ -1693,7 +1700,7 @@ function verify(items, targets, transformed, shadcn) {
       if (/(?<![\w$])__[A-Z][A-Z_]*__(?![\w$])/.test(text)) bad(where, "uses a build-time global (__X__) that a host does not define");
       for (const lit of stringLiterals(text, file.target)) {
         const words = lit.split(/\s+/);
-        if (words.some((w) => /^(?:[\w-]+:)*transition(?:-|$)/.test(w)) && !(words.some((w) => /^(?:[\w-]+:)*duration-/.test(w)) && words.some((w) => /^(?:[\w-]+:)*ease-/.test(w)))) {
+        if (words.some((w) => VARIANTS_THEN("transition(?:-|$)").test(w)) && !(words.some((w) => VARIANTS_THEN("duration-").test(w)) && words.some((w) => VARIANTS_THEN("ease-").test(w)))) {
           bad(where, `"${lit.slice(0, 60)}..." has a transition without its own duration and ease; a host's default transition would apply`);
         }
       }
@@ -1818,7 +1825,7 @@ async function tailwindCrossCheck(items) {
     const cb = rulesB.get(ren);
     // transition utilities fall back on --default-transition-*, which the gallery points at the instant tier and
     // a host keeps for itself. The source check in verify() makes sure every one sets its own duration and ease.
-    if (/^(?:[\w-]+:)*transition(?:-|$)/.test(orig) && cb !== undefined) continue;
+    if (VARIANTS_THEN("transition(?:-|$)").test(orig) && cb !== undefined) continue;
     if (cb === undefined) { errs.push(`class "${orig}" makes CSS in the gallery, but "${ren}" makes none in a host`); continue; }
     // Same CSS once the prefix is taken off: --litt-x -> --x, bg-litt-x -> bg-x.
     const strip = (css) => css.replace(/(?<=[-.\\(])litt-/g, "");

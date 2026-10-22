@@ -33,10 +33,20 @@
  *
  * Big tables (components.md, "Table and list rows", Big tables):
  * - TableVirtualBody draws only the rows in view, plus a few either side, between two spacer rows that keep the
- *   scroll height true. Ten thousand rows cost what forty do. It needs fixed-height rows (the 44px row: keep cells on
+ *   scroll height true. Ten thousand rows cost what forty do. It fixes the column widths the first rows give, so the
+ *   columns never shift as other rows scroll by; a cell wider than its column ends in an ellipsis, and a resizable
+ *   column can be widened. It needs fixed-height rows (the 44px row: keep cells on
  *   one line) and a Table with a max height, which is the scroller. The header stays sticky, and the table keeps its
  *   semantics: aria-rowcount on the table and aria-rowindex on each row, so a screen reader still says "row 4,812 of
  *   10,001". The entrance and change motion are off in it: a long list arrives at once.
+ * - Sticky columns: `stickyColumns` keeps the first one or two columns (a box and the row's name) in view while the table
+ *   scrolls sideways. They take an opaque fill that follows the row's hover and selection, and a 1px --line hairline
+ *   appears at their edge once anything is scrolled under them. No shadow: depth comes from the hairline (P4).
+ * - Resizable columns: `resizable` on a TableHead puts a handle at its end edge. The first drag freezes the widths the
+ *   columns have, so nothing jumps, and the table becomes fixed-layout: each column then keeps the width it is given,
+ *   and what no longer fits ends in an ellipsis. The handle follows the pointer one to one, ← and → move it 16px (Shift
+ *   64), Home gives it its minimum, and a double click fits the column to its widest cell. `columnsId` keeps the widths
+ *   in the browser. Its hairline shows under the pointer and on focus, as the Resizable's does.
  * - Selection: TableSelectHead and TableSelectCell are the select-all and per-row boxes (the Checkbox, its label
  *   hidden and named for the row), and `selected` on a TableRow fills it fg 6%. useRowSelection holds the selected ids
  *   in a Set, so a check is constant time at any size: Shift selects the range from the last box pressed, the head
@@ -56,6 +66,9 @@ import {
   useState,
   type ChangeEvent,
   type ComponentProps,
+  type CSSProperties,
+  type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
   type ReactNode,
   type RefObject,
 } from "react";
@@ -72,8 +85,26 @@ type TableState = {
   ready: boolean;
   region: RefObject<HTMLDivElement | null>;
   table: RefObject<HTMLTableElement | null>;
+  /** The columns' widths once one has been resized, else null (the table lays itself out). */
+  widths: number[] | null;
+  /** Gives column `index` a width, freezing the others at the widths they have. */
+  resizeColumn: (index: number, width: number) => void;
+  /** Tells onColumnsResize and the browser's storage after a drag or a key. */
+  settleColumns: () => void;
+  /** Fixes the widths the columns have now, if nothing has yet: a virtual body does it, so columns never shift as rows scroll by. */
+  freezeColumns: () => void;
 };
-const TableContext = createContext<TableState>({ entrance: false, animateChanges: false, ready: true, region: { current: null }, table: { current: null } });
+const TableContext = createContext<TableState>({
+  entrance: false,
+  animateChanges: false,
+  ready: true,
+  region: { current: null },
+  table: { current: null },
+  widths: null,
+  resizeColumn: () => {},
+  settleColumns: () => {},
+  freezeColumns: () => {},
+});
 /* Inside a TableVirtualBody: the row's place in the whole table, for aria-rowindex. Null elsewhere. */
 const VirtualIndexContext = createContext<number | null>(null);
 const SectionContext = createContext<"head" | "body">("body");
@@ -92,19 +123,144 @@ export type TableProps = {
   animateChanges?: boolean;
   /** Marks the table as loading: sets aria-busy and announces "Loading" with the label. Render a TableSkeleton for the rows. */
   busy?: boolean;
+  /** Keeps the first one or two columns in view while the table scrolls sideways: the row's box and its name. */
+  stickyColumns?: 0 | 1 | 2;
+  /** Keeps resized column widths in the browser under this name, so the layout someone chose comes back. */
+  columnsId?: string;
+  /** Called with every column's width in px after one is resized. */
+  onColumnsResize?: (widths: number[]) => void;
   /** Extra classes for the scroll region: a max width, or a max height such as max-h-96 so the header sticks while the rows scroll. */
   className?: string;
   /** A TableHeader and a TableBody. */
   children: ReactNode;
 };
 
+/* Sticky columns. Tailwind only builds classes it can read, so each count is written out. The cells stick to the start
+   edge with an opaque fill that follows the row's hover and selection (fg mixed into surface-1), the header's corner
+   cells sit above both, and the edge cell draws a hairline once something is scrolled under it. */
+const STICKY_1 = [
+  "[&_tr>*:first-child]:sticky [&_tr>*:first-child]:start-0",
+  "[&_thead_tr>*:first-child]:z-20 [&_tbody_tr>*:first-child]:z-1 [&_tbody_tr>*:first-child]:bg-surface-1",
+  "[&_tbody_tr>*:first-child]:transition-[background-color] [&_tbody_tr>*:first-child]:duration-(--dur-instant) [&_tbody_tr>*:first-child]:ease-litt",
+  "[&_tbody_tr:hover>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
+  "[&_tbody_tr[data-selected]>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
+  "[&_tr>*:first-child]:after:pointer-events-none [&_tr>*:first-child]:after:absolute [&_tr>*:first-child]:after:inset-y-0 [&_tr>*:first-child]:after:end-0",
+  "[&_tr>*:first-child]:after:w-px [&_tr>*:first-child]:after:bg-line [&_tr>*:first-child]:after:opacity-0 data-scrolled:[&_tr>*:first-child]:after:opacity-100",
+].join(" ");
+const STICKY_2 = [
+  "[&_tr>*:nth-child(-n+2)]:sticky [&_tr>*:first-child]:start-0 [&_tr>*:nth-child(2)]:start-(--sticky-2)",
+  "[&_thead_tr>*:nth-child(-n+2)]:z-20 [&_tbody_tr>*:nth-child(-n+2)]:z-1 [&_tbody_tr>*:nth-child(-n+2)]:bg-surface-1",
+  "[&_tbody_tr>*:nth-child(-n+2)]:transition-[background-color] [&_tbody_tr>*:nth-child(-n+2)]:duration-(--dur-instant) [&_tbody_tr>*:nth-child(-n+2)]:ease-litt",
+  "[&_tbody_tr:hover>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
+  "[&_tbody_tr[data-selected]>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
+  "[&_tr>*:nth-child(2)]:after:pointer-events-none [&_tr>*:nth-child(2)]:after:absolute [&_tr>*:nth-child(2)]:after:inset-y-0 [&_tr>*:nth-child(2)]:after:end-0",
+  "[&_tr>*:nth-child(2)]:after:w-px [&_tr>*:nth-child(2)]:after:bg-line [&_tr>*:nth-child(2)]:after:opacity-0 data-scrolled:[&_tr>*:nth-child(2)]:after:opacity-100",
+].join(" ");
+
+/* Once resized, every cell clips to its column and ends in an ellipsis. */
+const FIXED = "table-fixed [&_td]:overflow-hidden [&_td]:text-ellipsis [&_th]:overflow-hidden [&_th]:text-ellipsis";
+
+const COLUMNS_STORE = (id: string) => `litt-table-columns:${id}`;
+
 /** A table in its own scroll region. Compose it from TableHeader and TableBody. */
-export function Table({ label, entrance = false, animateChanges = false, busy = false, className = "", children }: TableProps) {
+export function Table({
+  label,
+  entrance = false,
+  animateChanges = false,
+  busy = false,
+  stickyColumns = 0,
+  columnsId,
+  onColumnsResize,
+  className = "",
+  children,
+}: TableProps) {
   const captionId = useId();
   const region = useRef<HTMLDivElement>(null);
   const table = useRef<HTMLTableElement>(null);
   const [ready, setReady] = useState(false);
   const [scrolls, setScrolls] = useState(false);
+  const [widths, setWidths] = useState<number[] | null>(null);
+  const latestWidths = useRef<number[] | null>(null);
+  latestWidths.current = widths;
+  /* Who fixed the widths: a virtual body (the table still fills its region) or a person (each column keeps its width). */
+  const [frozenBy, setFrozenBy] = useState<"auto" | "person">("auto");
+  const [scrolledX, setScrolledX] = useState(false);
+  const [stickyStart, setStickyStart] = useState(0);
+
+  /* The widths the header cells have now, to freeze before the first resize. */
+  const measureColumns = useCallback(() => {
+    const cells = table.current?.tHead?.rows[0]?.cells;
+    /* Rounded up, so a column fixed at the width it had never clips its own widest cell by a fraction of a pixel. */
+    return cells ? Array.from(cells, (c) => Math.ceil(c.getBoundingClientRect().width)) : [];
+  }, []);
+
+  const resizeColumn = useCallback(
+    (index: number, width: number) => {
+      const base = latestWidths.current ?? measureColumns();
+      if (index < 0 || index >= base.length) return;
+      const next = [...base];
+      next[index] = Math.round(width);
+      latestWidths.current = next;
+      setWidths(next);
+      setFrozenBy("person");
+    },
+    [measureColumns],
+  );
+
+  const freezeColumns = useCallback(() => {
+    if (latestWidths.current) return;
+    const now = measureColumns();
+    /* A table drawn while hidden (a closed tab) measures zeros: leave it to lay itself out. */
+    if (!now.length || now.some((w) => w === 0)) return;
+    latestWidths.current = now;
+    setWidths(now);
+  }, [measureColumns]);
+
+  const settleColumns = useCallback(() => {
+    const now = latestWidths.current;
+    if (!now) return;
+    onColumnsResize?.(now);
+    if (!columnsId) return;
+    try {
+      localStorage.setItem(COLUMNS_STORE(columnsId), JSON.stringify(now));
+    } catch {
+      /* storage is full or off: the widths still hold for this visit */
+    }
+  }, [columnsId, onColumnsResize]);
+
+  /* Saved widths come back after the first render, so the server and the browser agree on that one. A saved list that
+     no longer has one width per column is ignored. */
+  useLayoutEffect(() => {
+    if (!columnsId) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem(COLUMNS_STORE(columnsId)) ?? "null") as unknown;
+      const count = table.current?.tHead?.rows[0]?.cells.length ?? -1;
+      if (Array.isArray(saved) && saved.length === count && saved.every((n) => typeof n === "number" && n > 0)) {
+        latestWidths.current = saved as number[];
+        setWidths(saved as number[]);
+        setFrozenBy("person");
+      }
+    } catch {
+      /* no storage, or something else stored there */
+    }
+  }, [columnsId]);
+
+  /* Sticky columns: the second one starts where the first ends, and the edge hairline shows once anything is scrolled under them. */
+  useLayoutEffect(() => {
+    if (stickyColumns === 0) return;
+    const el = region.current;
+    const first = table.current?.tHead?.rows[0]?.cells[0];
+    if (!el) return;
+    const onScroll = () => setScrolledX(Math.abs(el.scrollLeft) > 0);
+    onScroll();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    const observer = first ? new ResizeObserver(() => setStickyStart(first.getBoundingClientRect().width)) : null;
+    if (first && observer) observer.observe(first);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      observer?.disconnect();
+    };
+  }, [stickyColumns]);
 
   // Rows that mount with the table are its first wave. Rows that mount later are insertions.
   useEffect(() => setReady(true), []);
@@ -122,7 +278,7 @@ export function Table({ label, entrance = false, animateChanges = false, busy = 
   }, []);
 
   return (
-    <TableContext.Provider value={{ entrance, animateChanges, ready, region, table }}>
+    <TableContext.Provider value={{ entrance, animateChanges, ready, region, table, widths, resizeColumn, settleColumns, freezeColumns }}>
       <motion.div
         ref={region}
         layoutScroll
@@ -134,10 +290,29 @@ export function Table({ label, entrance = false, animateChanges = false, busy = 
           className
         }
       >
-        <table ref={table} className="w-full min-w-max border-separate border-spacing-0 contain-paint text-left text-small">
+        <table
+          ref={table}
+          data-scrolled={scrolledX || undefined}
+          className={[
+            "border-separate border-spacing-0 contain-paint text-left text-small",
+            widths ? FIXED + (frozenBy === "auto" ? " min-w-full" : "") : "w-full min-w-max",
+            stickyColumns === 1 ? STICKY_1 : stickyColumns === 2 ? STICKY_2 : "",
+          ].join(" ")}
+          style={{
+            ...(widths ? { width: widths.reduce((a, b) => a + b, 0) } : {}),
+            ...(stickyColumns === 2 ? ({ "--sticky-2": `${stickyStart}px` } as CSSProperties) : {}),
+          }}
+        >
           <caption id={captionId} className="sr-only">
             {label}
           </caption>
+          {widths && (
+            <colgroup>
+              {widths.map((w, i) => (
+                <col key={i} style={{ width: w }} />
+              ))}
+            </colgroup>
+          )}
           {children}
         </table>
         <div role="status" className="sr-only">
@@ -219,8 +394,15 @@ export type TableVirtualBodyProps = {
  * line, so every row is the same height. The rows are read from `children(index)`.
  */
 export function TableVirtualBody({ count, children, overscan = 8, columns }: TableVirtualBodyProps) {
-  const { region, table } = useContext(TableContext);
+  const { region, table, freezeColumns } = useContext(TableContext);
   const body = useRef<HTMLTableSectionElement>(null);
+
+  /* The browser sizes a table's columns from the rows it has, and a virtual body has different rows at every scroll
+     position, so the columns would shift as it scrolls. Fix them at the widths the first rows give. A passive effect,
+     because React attaches the <table>'s ref after this body's layout effects run. */
+  useEffect(() => {
+    if (count > 0) freezeColumns();
+  }, [count, freezeColumns]);
   const [height, setHeight] = useState(ROW_HEIGHT);
   const [range, setRange] = useState({ start: 0, end: Math.min(count, 30) });
 
@@ -498,7 +680,118 @@ function MotionRow({ className = "", children, ...rest }: TableRowProps) {
 /* -------------------------------------------------------------------------- */
 
 const head =
-  "sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption font-label whitespace-nowrap";
+  "group/head sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption font-label whitespace-nowrap";
+
+/** How far one press of ← or → moves a column's edge, in px; Shift moves four times as far. */
+const COLUMN_STEP = 16;
+
+/**
+ * The end edge of a resizable column: a 12px handle inside the header with a 1px hairline at the edge, shown under the
+ * pointer, on focus and while dragged. A separator, valued in px, so a screen reader can say how wide the column is.
+ */
+function ColumnHandle({ name, minWidth }: { name: string; minWidth: number }) {
+  const { widths, resizeColumn, settleColumns, table } = useContext(TableContext);
+  const ref = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(-1);
+  const [dragging, setDragging] = useState(false);
+  const [natural, setNatural] = useState(0);
+  useLayoutEffect(() => {
+    const th = ref.current?.closest("th");
+    if (!th) return;
+    setIndex(th.cellIndex);
+    setNatural(Math.round(th.getBoundingClientRect().width));
+  }, [widths]);
+  const width = (index >= 0 && widths?.[index]) || natural;
+  const rtl = () => (ref.current ? getComputedStyle(ref.current).direction === "rtl" : false);
+  const set = (w: number) => resizeColumn(index, Math.max(minWidth, w));
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const th = ref.current?.closest("th");
+    if (e.button !== 0 || !th) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const el = e.currentTarget;
+    el.focus({ preventScroll: true });
+    const start = th.getBoundingClientRect().width;
+    const from = e.clientX;
+    const sign = rtl() ? -1 : 1;
+    el.setPointerCapture(e.pointerId);
+    setDragging(true);
+    const cursor = document.body.style.cursor;
+    document.body.style.cursor = "col-resize";
+    const move = (ev: PointerEvent) => set(start + (ev.clientX - from) * sign);
+    const up = () => {
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerup", up);
+      el.removeEventListener("pointercancel", up);
+      document.body.style.cursor = cursor;
+      setDragging(false);
+      settleColumns();
+    };
+    el.addEventListener("pointermove", move);
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", up);
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const by = e.shiftKey ? COLUMN_STEP * 4 : COLUMN_STEP;
+    const grow = rtl() ? "ArrowLeft" : "ArrowRight";
+    const shrink = rtl() ? "ArrowRight" : "ArrowLeft";
+    if (e.key === grow) set(width + by);
+    else if (e.key === shrink) set(width - by);
+    else if (e.key === "Home") set(minWidth);
+    else return;
+    e.preventDefault();
+    settleColumns();
+  };
+
+  /* A double click fits the column to its widest cell drawn: what each cell would need with nothing clipped. */
+  const fit = () => {
+    const rows = table.current?.rows;
+    if (!rows || index < 0) return;
+    let widest = minWidth;
+    for (const row of Array.from(rows)) {
+      const cell = row.cells[index];
+      if (!cell || cell.colSpan > 1) continue;
+      const clone = cell.cloneNode(true) as HTMLElement;
+      clone.style.cssText = "position:absolute;visibility:hidden;width:auto;max-width:none;overflow:visible";
+      row.appendChild(clone);
+      widest = Math.max(widest, Math.ceil(clone.getBoundingClientRect().width));
+      clone.remove();
+    }
+    set(widest);
+    settleColumns();
+  };
+
+  return (
+    <div
+      ref={ref}
+      role="separator"
+      tabIndex={0}
+      aria-orientation="vertical"
+      aria-label={`Resize the ${name.toLowerCase()} column`}
+      aria-valuenow={Math.round(width)}
+      aria-valuemin={minWidth}
+      data-dragging={dragging || undefined}
+      onPointerDown={onPointerDown}
+      onKeyDown={onKeyDown}
+      onDoubleClick={fit}
+      onClick={(e) => e.stopPropagation()}
+      className={
+        "group/edge absolute inset-y-0 end-0 z-1 w-3 cursor-col-resize touch-none outline-none pointer-coarse:w-5 " +
+        "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
+      }
+    >
+      <span
+        aria-hidden="true"
+        className={
+          "absolute inset-y-2 end-0 w-px bg-line-strong opacity-0 transition-[opacity,background-color] duration-(--dur-instant) ease-litt " +
+          "group-hover/head:opacity-100 group-focus-visible/edge:opacity-100 group-data-dragging/edge:bg-fg-subtle group-data-dragging/edge:opacity-100"
+        }
+      />
+    </div>
+  );
+}
 
 export type SortDirection = "ascending" | "descending" | "none";
 
@@ -534,6 +827,10 @@ export type TableHeadProps = Omit<ComponentProps<"th">, "ref" | "scope" | "aria-
   numeric?: boolean;
   /** A TableFilter (table-filter) for this column. It sits at the end of the header, or before the label over numbers. */
   filter?: ReactNode;
+  /** Puts a handle at the header's end edge to drag the column wider or narrower. Name the column in children, so the handle says what it resizes. */
+  resizable?: boolean;
+  /** The narrowest a resizable column may be, in px. */
+  minWidth?: number;
   /** Which way this column is sorted now. Only read when onSort is set. */
   sort?: SortDirection;
   /** Makes the header a sortable button and sets aria-sort. Called when it is pressed; you sort the rows and pass the new `sort`. */
@@ -545,8 +842,19 @@ export type TableHeadProps = Omit<ComponentProps<"th">, "ref" | "scope" | "aria-
 };
 
 /** A column header. Sticky, caption size at the label weight, fg-subtle. Add onSort to make it a sortable button, and filter for a TableFilter. */
-export function TableHead({ numeric = false, sort = "none", onSort, filter, className = "", children, ...rest }: TableHeadProps) {
+export function TableHead({
+  numeric = false,
+  sort = "none",
+  onSort,
+  filter,
+  resizable = false,
+  minWidth = 64,
+  className = "",
+  children,
+  ...rest
+}: TableHeadProps) {
   const align = numeric ? "text-right" : "text-left";
+  const handle = resizable ? <ColumnHandle name={typeof children === "string" ? children : "this"} minWidth={minWidth} /> : null;
   /* With a filter the cell is a row of two: the label (or the sort button) and the filter's button. Over numbers the
      filter goes first, so the label stays flush right above the figures. */
   const withFilter = (label: ReactNode) => (
@@ -560,6 +868,7 @@ export function TableHead({ numeric = false, sort = "none", onSort, filter, clas
     return (
       <th scope="col" className={[head, align, filter ? "p-0 text-fg-subtle" : "px-4 py-3 text-fg-subtle", className].join(" ")} {...rest}>
         {filter ? withFilter(label) : label}
+        {handle}
       </th>
     );
   }
@@ -584,6 +893,7 @@ export function TableHead({ numeric = false, sort = "none", onSort, filter, clas
   return (
     <th scope="col" aria-sort={sort} className={[head, align, "p-0", className].join(" ")} {...rest}>
       {filter ? withFilter(button) : button}
+      {handle}
     </th>
   );
 }
