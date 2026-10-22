@@ -95,7 +95,7 @@ function DeploymentDemo() {
       <DetailsItem label="Build time">41 s</DetailsItem>
       <DetailsItem label="Shipped by">
         <span className="inline-flex items-center gap-2">
-          <Avatar name="Nick" size="sm" decorative />
+          <Avatar name="Nick" size="sm" look="dither" decorative />
           Nick, today at 14:32
         </span>
       </DetailsItem>

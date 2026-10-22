@@ -31,6 +31,7 @@ And the first image components: a frame for one picture that keeps its shape whi
 - **added** `lightbox`: Lightbox, one image of a set at the size of the screen, opened from a Media. The view's expressive moment; arrow keys, Previous and Next or a swipe move through the set.
 - **added** `details`: Details, DetailsItem and DetailsLink, an information card of labelled facts about one thing: rows with the labels in one column, or a grid with each label above its value. A value can be copied, a missing one says Not set, and a loading card keeps its height.
 - **added** `case-study`: CaseStudy, one project told as a page: a hero image, the facts, the story beside its labels, the series in a carousel, the details in a grid and the next project, with one lightbox for every image.
+- **changed** `avatar`: `look="dither"` draws an abstract mark from the name in place of the initials: an orb, waves, rings or a horizon, dithered into 2px pixels of the name's hue. The default is still the initials, so nothing in your code has to change.
 - **changed** `icons`: `ImageIcon`, a picture's mark, which Media shows when an image fails to load. Nothing in your code has to change.
 
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm

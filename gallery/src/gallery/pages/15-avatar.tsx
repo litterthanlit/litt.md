@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   order: 15.1,
   group: "Layout",
   summary:
-    "A round mark for a person, a client or a company: a photo, or initials on the tint of one of the five data hues. The hue follows from the name, so the same name looks the same everywhere. A group overlaps them and counts the rest. Nothing about it moves.",
+    "A round mark for a person, a client or a company: a photo, or initials (or an abstract dither) on the tint of one of the five data hues. The hue follows from the name, so the same name looks the same everywhere. A group overlaps them and counts the rest. Nothing about it moves.",
   tiers: [],
 };
 
@@ -29,6 +29,9 @@ export const docs: PageDocs = {
 // A photo, with the initials as the fallback if it fails to load.
 <Avatar name="Ines Duarte" src="/people/ines.jpg" size="lg" />
 
+// A dither instead of initials: an abstract mark drawn from the name, the same one every time.
+<Avatar name="Marlow Labs" look="dither" />
+
 // A stack: pass the first few, and the total for the "+N" pill.
 <AvatarGroup label="Project team, 26 people" total={26} ring="surface-1">
   <Avatar name="Ines Duarte" />
@@ -40,6 +43,7 @@ export const docs: PageDocs = {
     "A row of names is easier to scan with a mark beside each one. The hue is the same every time, so the eye learns it.",
     "A project card shows who works on it. A group shows the first few and counts the rest.",
     "You only have a name. Initials on a hue are a finished mark, not a placeholder, and a photo can replace them later.",
+    "The name is written beside the mark and you want something richer than two letters. Use look=\"dither\": a pattern in the hue that only that name draws.",
   ],
   skip: [
     "The mark would say how something stands, such as live or failed. Use a Tag with a status. A color on a face is who it is, never a state.",
@@ -54,6 +58,7 @@ export const docs: PageDocs = {
     "A group is a labelled group, such as \"Project team, 26 people\", and the \"+N\" pill is an image named \"22 more\". Write the label for the whole team, not only the faces shown.",
     "The initials are the hue's text tone on its tint, which reaches 4.5:1 in light and dark (check.mjs checks every pair). Neutral is fg-muted on surface-2.",
     "The hue is never the only signal. The name or the initials say who it is, and a hue shared by two names changes nothing for someone who cannot see color.",
+    "A dither is a picture, not text, so it carries no letters to read. It is named by the name like initials are; keep the name written beside it, because no one recognizes a client by a pattern alone.",
     "A photo gets an inset line hairline, so a white photo keeps its edge on a white card. A photo that fails to load falls back to the initials.",
     "Nothing moves and nothing takes focus. At 24px an avatar is too small to press, so if it must be a control, give the control a 32 or 44px target.",
   ],
@@ -112,6 +117,36 @@ function SizesAndHuesDemo() {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+const STUDIO = ["Nick", "Ines Duarte", "Marlow Labs", "Halden Gallery", "Atelier Nord", "Halo Studio", "Tomas Berg", "Priya Nair"];
+
+function DitherDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <ul aria-label="Dither marks" className="flex flex-wrap gap-6">
+        {STUDIO.map((name) => (
+          <li key={name} className="grid w-20 justify-items-center gap-2">
+            <Avatar name={name} look="dither" size="lg" />
+            <span className="w-full truncate text-center text-caption font-normal text-fg-subtle">{name}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-wrap items-center gap-8">
+        {(["sm", "md", "lg"] as const).map((size) => (
+          <div key={size} className="flex items-center gap-3">
+            <Avatar name="Marlow Labs" look="dither" size={size} decorative />
+            <span className="text-small text-fg">Marlow Labs</span>
+          </div>
+        ))}
+        <AvatarGroup label="Halo Studio team, 6 people" total={6}>
+          {TEAM.slice(0, 4).map((name) => (
+            <Avatar key={name} name={name} look="dither" />
+          ))}
+        </AvatarGroup>
+      </div>
     </div>
   );
 }
@@ -219,6 +254,15 @@ export default function AvatarPage() {
       </Stage>
 
       <Stage
+        title="Dither"
+        align="start"
+        code="DitherDemo"
+        caption="Instead of initials, an abstract field drawn from the name: an orb, waves, rings or a horizon, placed by a hash and ordered-dithered into 2px pixels of the hue's mark tone. It thins toward the top, where the page's light comes from. The same name always draws the same mark, so like the hue it needs no state. It never moves."
+      >
+        <DitherDemo />
+      </Stage>
+
+      <Stage
         title="A team stack"
         align="start"
         code="TeamDemo"
@@ -236,7 +280,7 @@ export default function AvatarPage() {
         <PhotosDemo />
       </Stage>
 
-      <TryIt of="Avatar" component={Avatar} props={{ name: "Mira Halden" }} controls={["name", "size", "hue", "decorative"]} />
+      <TryIt of="Avatar" component={Avatar} props={{ name: "Mira Halden" }} controls={["name", "size", "hue", "look", "decorative"]} />
     </Page>
   );
 }
