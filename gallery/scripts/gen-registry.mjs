@@ -1138,6 +1138,11 @@ const COPY = {
     description: "A build's or a deploy's output as it arrives, on the code block's surface: numbered, timed lines, warnings and errors in their status color with a mark and a hidden word, following the newest line until you scroll up to read.",
     docs: "Import LogView and LogLine from components/litt/log-view. Append lines ({ time, level, text }) as the run writes, and give it a height. Say how the run ended in your own status; lines are not read out one by one.",
   },
+  details: {
+    title: "Details",
+    description: "An information card of labelled facts about one thing, such as a deployment or a client: rows with the labels in one column, or a grid with each label above its value. Values can be copied, a missing one says Not set, and a loading card keeps its height.",
+    docs: "Import Details, DetailsItem and DetailsLink from components/litt/details. Give Details a title and one DetailsItem per fact, with copy on the values people paste. Use layout=\"grid\" for a few short facts, and bare inside a dialog or a panel.",
+  },
   /* Blocks: whole screens. The docs line says where the sample data is, because that is the first thing to change. */
   dashboard: {
     title: "Dashboard block",

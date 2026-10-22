@@ -636,6 +636,10 @@ const RECIPES = {
     needs: ["LogView"],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-log-view"><LogView label="Build log" height="10rem" lines={[{ time: "+0.0s", text: "Running npm run build" }, { time: "+12.1s", level: "warn", text: "Image is 2.4 MB." }, { time: "+29.0s", level: "success", text: "Build completed." }]} /></div>`,
   },
+  details: {
+    needs: ["Details", "DetailsItem", "DetailsLink"],
+    jsx: `<div className="w-full max-w-lg" data-testid="litt-details"><Details title="Deployment"><DetailsItem label="Domain" copy="halo.studio"><DetailsLink href="https://halo.studio">halo.studio</DetailsLink></DetailsItem><DetailsItem label="Region" mono>fra1</DetailsItem><DetailsItem label="PO number" /></Details></div>`,
+  },
   /* Blocks: whole screens, rendered as they ship, sample data and all. The agent chat is the finished one, so no script runs. */
   dashboard: { needs: ["Dashboard"], jsx: `<div className="w-full" data-testid="litt-block-dashboard"><Dashboard label="Smoke dashboard" viewportHeight="32rem" /></div>` },
   usage: { needs: ["Usage"], jsx: `<div className="w-full" data-testid="litt-block-usage"><Usage /></div>` },
