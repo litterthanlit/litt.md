@@ -3,6 +3,7 @@ import { Button } from "@/components/button";
 import { Lightbox } from "@/components/lightbox";
 import { Media, type MediaProps } from "@/components/media";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { BUDS, GRAPHITE, OPEN_WATER, RED_SUN, SILK, SPRIG } from "../plates";
 
 export const meta: PageMeta = {
   id: "media",
@@ -58,34 +59,14 @@ export const docs: PageDocs = {
   ],
 };
 
-/* Drawn stand-ins for photographs: a sky in two colors, light falling from the top, two ridges and a trace of grain.
-   An SVG, so the page fetches nothing; named colors, because these are pictures, not the interface. The scene is
-   cropped to the width and height asked for, as a photograph would be. */
-function plate(sky: string, glow: string, far: string, near: string, width = 1600, height = 1000) {
-  const svg =
-    `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' viewBox='0 0 1600 1000' preserveAspectRatio='xMidYMid slice'>` +
-    `<defs><linearGradient id='s' x2='0' y2='1'><stop offset='0' stop-color='${sky}'/><stop offset='1' stop-color='${glow}'/></linearGradient>` +
-    `<radialGradient id='l' cx='.5' cy='0' r='.9'><stop offset='0' stop-color='${glow}' stop-opacity='.7'/><stop offset='1' stop-color='${glow}' stop-opacity='0'/></radialGradient>` +
-    `<filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .12 0'/></filter></defs>` +
-    `<rect width='1600' height='1000' fill='url(#s)'/><rect width='1600' height='1000' fill='url(#l)'/>` +
-    `<path d='M0 620C260 540 430 590 650 530S1110 450 1600 545V1000H0Z' fill='${far}'/>` +
-    `<path d='M0 780C310 700 560 765 830 720S1310 655 1600 735V1000H0Z' fill='${near}'/>` +
-    `<rect width='1600' height='1000' filter='url(#g)'/></svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
-
-const DAWN = plate("lightsteelblue", "mistyrose", "slategray", "darkslategray");
-const DUNE = plate("peachpuff", "navajowhite", "peru", "sienna");
-const FOG = plate("gainsboro", "whitesmoke", "darkgray", "dimgray");
-const MOSS = plate("honeydew", "darkseagreen", "seagreen", "darkolivegreen");
 /* An image that cannot be decoded, so the failed state shows without a request. */
 const BROKEN = "data:image/png;base64,AAAA";
 
 function FramesDemo() {
   return (
     <div className="grid w-full max-w-3xl gap-6 sm:grid-cols-[2fr_1fr]">
-      <Media src={DAWN} alt="Dawn over two ridges, the sky pale blue going pink" ratio="16/9" caption="Dawn over the ridge, 2025" />
-      <Media src={MOSS} alt="A green valley under a pale sky" ratio="4/5" caption="Valley, 2024" />
+      <Media src={OPEN_WATER.src} srcSet={OPEN_WATER.srcSet} sizes="(min-width: 48rem) 32rem, 100vw" alt={OPEN_WATER.alt} ratio="16/9" caption="Open water, 2026" />
+      <Media src={BUDS.src} srcSet={BUDS.srcSet} sizes="(min-width: 48rem) 16rem, 100vw" alt={BUDS.alt} ratio="4/5" caption="Two buds, 2026" />
     </div>
   );
 }
@@ -96,14 +77,14 @@ function StatesDemo() {
   const [src, setSrc] = useState<string | undefined>(undefined);
   useEffect(() => {
     setSrc(undefined);
-    const timer = window.setTimeout(() => setSrc(DUNE), 1200);
+    const timer = window.setTimeout(() => setSrc(SILK.src), 1200);
     return () => window.clearTimeout(timer);
   }, [run]);
   return (
     <div className="grid w-full max-w-3xl gap-6">
       <div className="grid gap-6 sm:grid-cols-2">
         {/* No src yet is how a slow image looks: the still frame, until it arrives and fades in. */}
-        <Media key={run} src={src} alt="Dunes at noon, a ridge of shadow across the middle" ratio="4/3" caption={src ? "Loaded" : "Loading"} />
+        <Media key={run} src={src} srcSet={src && SILK.srcSet} sizes="(min-width: 40rem) 24rem, 100vw" alt={SILK.alt} ratio="4/3" caption={src ? "Loaded" : "Loading"} />
         <Media src={BROKEN} alt="The tide line at dusk" ratio="4/3" caption="Failed" />
       </div>
       <Button size="sm" className="justify-self-start" onClick={() => setRun((r) => r + 1)}>
@@ -113,11 +94,7 @@ function StatesDemo() {
   );
 }
 
-const SET = [
-  { src: FOG, alt: "Fog over two grey ridges", caption: "Fog bank, 2025" },
-  { src: DAWN, alt: "Dawn over two ridges, the sky pale blue going pink", caption: "Dawn over the ridge, 2025" },
-  { src: DUNE, alt: "Dunes at noon, a ridge of shadow across the middle", caption: "Dunes at noon, 2024" },
-];
+const SET = [RED_SUN, SPRIG, GRAPHITE].map(({ src, srcSet, alt, name, width, height }) => ({ src, srcSet, alt, caption: `${name}, 2026`, width, height }));
 
 function OpenDemo() {
   const [open, setOpen] = useState<number | null>(null);
@@ -126,18 +103,18 @@ function OpenDemo() {
       <ul aria-label="Photographs" className="grid w-full max-w-3xl grid-cols-3 gap-4">
         {SET.map((image, i) => (
           <li key={image.alt}>
-            <Media src={image.src} alt={image.alt} ratio="1/1" onOpen={() => setOpen(i)} />
+            <Media src={image.src} srcSet={image.srcSet} sizes="(min-width: 48rem) 16rem, 33vw" alt={image.alt} ratio="1/1" onOpen={() => setOpen(i)} />
           </li>
         ))}
       </ul>
-      <Lightbox label="Atlas, landscapes" items={SET.map((image) => ({ ...image, width: 1600, height: 1000 }))} index={open} onIndexChange={setOpen} />
+      <Lightbox label="Field studies" items={SET} index={open} onIndexChange={setOpen} />
     </>
   );
 }
 
-/* Try it shows a real address in its code; the stage draws the stand-in. */
+/* Try it shows an address of your own in its code; the stage shows a study from the gallery's set. */
 function TryMedia(props: MediaProps) {
-  return <Media {...props} src={FOG} />;
+  return <Media {...props} src={GRAPHITE.src} srcSet={GRAPHITE.srcSet} sizes="28rem" />;
 }
 
 export default function MediaPage() {
@@ -147,7 +124,7 @@ export default function MediaPage() {
         title="Pictures in frames"
         align="start"
         code="FramesDemo"
-        caption="Each frame has its shape before the image arrives, so nothing below it moves. The radius is the surface's, and a hairline lies over the image so a pale sky keeps its edge on a pale page. The caption sits 8px under the frame, in the grey. These pictures are drawn inline, so the page fetches nothing."
+        caption="Each frame has its shape before the image arrives, so nothing below it moves. The radius is the surface's, and a hairline lies over the image so a pale sky keeps its edge on a pale page. The caption sits 8px under the frame, in the grey. These are renders from the Brand Playground, loaded as a site would load photographs: lazily, at the size the frame needs."
       >
         <FramesDemo />
       </Stage>
@@ -175,7 +152,7 @@ export default function MediaPage() {
       <TryIt
         of="Media"
         component={TryMedia}
-        props={{ src: "/work/atlas/fog.jpg", alt: "Fog over two grey ridges", caption: "Fog bank, 2025", className: "w-full max-w-md" }}
+        props={{ src: "/work/studies/graphite.webp", alt: GRAPHITE.alt, caption: "Graphite, 2026", className: "w-full max-w-md" }}
         controls={[{ name: "ratio", options: ["16/9", "8/5", "4/3", "1/1", "4/5", "auto"] }, "fit", "radius", "caption", "priority"]}
       />
     </Page>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Lightbox, type LightboxItem } from "@/components/lightbox";
 import { Media } from "@/components/media";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { BLUE_HOUR, BUDS, SERIES, TIDE_WIDE } from "../plates";
 
 export const meta: PageMeta = {
   id: "lightbox",
@@ -61,66 +62,39 @@ const [open, setOpen] = useState<number | null>(null);
   ],
 };
 
-/* Drawn stand-ins for photographs: a sky in two colors, light falling from the top, two ridges and a trace of grain.
-   An SVG, so the page fetches nothing; named colors, because these are pictures, not the interface. The scene is
-   cropped to the width and height asked for, as a photograph would be. */
-function plate(sky: string, glow: string, far: string, near: string, width = 1600, height = 1000) {
-  const svg =
-    `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' viewBox='0 0 1600 1000' preserveAspectRatio='xMidYMid slice'>` +
-    `<defs><linearGradient id='s' x2='0' y2='1'><stop offset='0' stop-color='${sky}'/><stop offset='1' stop-color='${glow}'/></linearGradient>` +
-    `<radialGradient id='l' cx='.5' cy='0' r='.9'><stop offset='0' stop-color='${glow}' stop-opacity='.7'/><stop offset='1' stop-color='${glow}' stop-opacity='0'/></radialGradient>` +
-    `<filter id='g'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .12 0'/></filter></defs>` +
-    `<rect width='1600' height='1000' fill='url(#s)'/><rect width='1600' height='1000' fill='url(#l)'/>` +
-    `<path d='M0 620C260 540 430 590 650 530S1110 450 1600 545V1000H0Z' fill='${far}'/>` +
-    `<path d='M0 780C310 700 560 765 830 720S1310 655 1600 735V1000H0Z' fill='${near}'/>` +
-    `<rect width='1600' height='1000' filter='url(#g)'/></svg>`;
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
-
-const PHOTOS: LightboxItem[] = [
-  { src: plate("lightsteelblue", "mistyrose", "slategray", "darkslategray"), alt: "Dawn over two ridges, the sky pale blue going pink", caption: "Dawn over the ridge, 2025", width: 1600, height: 1000 },
-  { src: plate("peachpuff", "navajowhite", "peru", "sienna"), alt: "Dunes at noon, a ridge of shadow across the middle", caption: "Dunes at noon, 2024", width: 1600, height: 1000 },
-  { src: plate("gainsboro", "whitesmoke", "darkgray", "dimgray"), alt: "Fog over two grey ridges", caption: "Fog bank, 2025", width: 1600, height: 1000 },
-  { src: plate("steelblue", "lightblue", "cadetblue", "darkslategray"), alt: "A blue evening over a dark shore", caption: "Tide line, 2023", width: 1600, height: 1000 },
-  { src: plate("darkslateblue", "lightsalmon", "dimgray", "darkslategray"), alt: "A violet dusk going salmon at the horizon, over grey hills", caption: "Dusk, 2024", width: 1600, height: 1000 },
-  { src: plate("honeydew", "darkseagreen", "seagreen", "darkolivegreen"), alt: "A green valley under a pale sky", caption: "Valley, 2025", width: 1600, height: 1000 },
-];
+const PHOTOS: LightboxItem[] = SERIES.map(({ src, srcSet, alt, name, width, height }) => ({ src, srcSet, alt, caption: `${name}, 2026`, width, height }));
 
 function GridDemo() {
   const [open, setOpen] = useState<number | null>(null);
   return (
     <>
-      <ul aria-label="Atlas, landscapes" className="grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
+      <ul aria-label="Field studies" className="grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
         {PHOTOS.map((photo, i) => (
           <li key={photo.alt}>
-            <Media src={photo.src} alt={photo.alt} ratio="1/1" onOpen={() => setOpen(i)} />
+            <Media src={photo.src} srcSet={photo.srcSet} sizes="(min-width: 40rem) 16rem, 50vw" alt={photo.alt} ratio="1/1" onOpen={() => setOpen(i)} />
           </li>
         ))}
       </ul>
-      <Lightbox label="Atlas, landscapes" items={PHOTOS} index={open} onIndexChange={setOpen} />
+      <Lightbox label="Field studies" items={PHOTOS} index={open} onIndexChange={setOpen} />
     </>
   );
 }
 
 /* Tall and wide in one set, with no width and height given: each frame takes its image's own shape once it loads. */
-const MIXED: LightboxItem[] = [
-  { src: plate("honeydew", "darkseagreen", "seagreen", "darkolivegreen", 1200, 1500), alt: "A green valley under a pale sky, upright", caption: "Valley, upright, 2025" },
-  { src: plate("darkslateblue", "lightsalmon", "dimgray", "darkslategray", 2000, 900), alt: "A violet dusk over grey hills, very wide", caption: "Dusk, panorama, 2024" },
-  { src: plate("peachpuff", "navajowhite", "peru", "sienna", 1400, 1400), alt: "Dunes at noon, square", caption: "Dunes, square, 2024" },
-];
+const MIXED: LightboxItem[] = [BUDS, TIDE_WIDE, BLUE_HOUR].map(({ src, srcSet, alt, name }) => ({ src, srcSet, alt, caption: `${name}, 2026` }));
 
 function ShapesDemo() {
   const [open, setOpen] = useState<number | null>(null);
   return (
     <>
-      <ul aria-label="Atlas, mixed shapes" className="flex w-full max-w-3xl flex-wrap items-end gap-4">
+      <ul aria-label="Field studies, mixed shapes" className="flex w-full max-w-3xl flex-wrap items-end gap-4">
         {MIXED.map((photo, i) => (
           <li key={photo.alt} className={i === 1 ? "w-full sm:w-72" : "w-32 sm:w-40"}>
-            <Media src={photo.src} alt={photo.alt} ratio="auto" onOpen={() => setOpen(i)} />
+            <Media src={photo.src} srcSet={photo.srcSet} sizes={i === 1 ? "(min-width: 40rem) 18rem, 100vw" : "10rem"} alt={photo.alt} ratio="auto" onOpen={() => setOpen(i)} />
           </li>
         ))}
       </ul>
-      <Lightbox label="Atlas, mixed shapes" items={MIXED} index={open} onIndexChange={setOpen} tier="responsive" />
+      <Lightbox label="Field studies, mixed shapes" items={MIXED} index={open} onIndexChange={setOpen} tier="responsive" />
     </>
   );
 }
@@ -129,11 +103,11 @@ export default function LightboxPage() {
   return (
     <Page meta={meta} docs={docs}>
       <Stage
-        title="A set of photographs"
+        title="A set of images"
         tier="expressive"
         align="start"
         code="GridDemo"
-        caption="Press a photograph. It rises by the travel token and settles from 0.98 on the expressive tier, on the canvas at 97%, so the page behind is a trace and the image is the only surface. Use the arrow keys, Previous and Next, or on a phone swipe it; the next one fades in from the side it comes from on the responsive tier. Esc, Close or a click around the image closes it, and focus goes back to the one you pressed."
+        caption="Press an image. It rises by the travel token and settles from 0.98 on the expressive tier, on the canvas at 97%, so the page behind is a trace and the image is the only surface. Use the arrow keys, Previous and Next, or on a phone swipe it; the next one fades in from the side it comes from on the responsive tier. Esc, Close or a click around the image closes it, and focus goes back to the one you pressed."
       >
         <GridDemo />
       </Stage>
