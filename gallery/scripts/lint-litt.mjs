@@ -19,7 +19,8 @@
  * Checks: weight by role (400 text, 500 titles with font-title, 600 caption labels with font-label;
  * nothing else), the three radii, zero-offset shadows, no `transition-all`,
  * only transform, opacity and color-family fades, duration and ease classes
- * that pair by tier, no literal timings or easings, no raw or quoted colors.
+ * that pair by tier, no literal timings or easings, no raw or quoted colors. Gallery mode also reads
+ * every <Stage> caption: a control size it names (sm, md, lg) must be one its demo renders.
  *
  *   node scripts/lint-litt.mjs [files...]                         gallery mode, text output
  *   node scripts/lint-litt.mjs --host [--json] [--root DIR] FILE...   host mode (files or folders)
@@ -30,7 +31,7 @@
  *   --json       Print one JSON object and nothing else:
  *                { "mode": "gallery"|"host", "files": n, "fails": [...], "warns": [...] }
  *                where each entry is { "file", "line", "rule", "message" }.
- *                `rule` is weight, radius, shadow, color, type, motion or other.
+ *                `rule` is weight, radius, shadow, color, type, motion, caption (gallery mode) or other.
  *   --root DIR   Paths in the output are relative to DIR (gallery mode: the gallery root; host mode: the cwd).
  *   --self-test  Lint the fixtures in lint-fixtures/: host-clean.tsx must be clean, and every line of
  *                host-dirty.tsx, host-dirty.css (host mode) and gallery-dirty.tsx (gallery mode) that
@@ -51,7 +52,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const galleryRoot = path.resolve(here, "..");
-const RULES = ["weight", "radius", "shadow", "color", "type", "motion", "other"];
+const RULES = ["weight", "radius", "shadow", "color", "type", "motion", "caption", "other"];
 
 class UsageError extends Error {}
 
@@ -194,8 +195,91 @@ function lintGallery(files, root) {
           fails.push({ file: rel(f), line, rule: "motion", message: `motion animates "${k[2]}": only transform (x, y, scale) and opacity move; use layout/layoutId for size changes` });
       }
     }
+    if (f.endsWith(".tsx")) checkCaptions(text, (line, message) => fails.push({ file: rel(f), line, rule: "caption", message }));
   }
   return { fails, warns };
+}
+
+/* ---------------------------------------------------------------------- stage captions */
+
+/* A Stage caption that names a control size (sm, md, lg) has to describe its demo, so a caption
+   can't keep saying "an lg submit" after the taste moves the submit to md. The demo is the Stage's
+   children plus every component defined in the same file that they render, and it renders a size
+   when it sets it (size="lg"), names it as a literal (a list of sizes it maps over, navFrom="sm"),
+   or leaves a sized component on its default (a <Button> with no size is md, per docs.json). */
+const SIZE_WORD = /(?<![\w-])(sm|md|lg)(?![\w-])/g;
+let sizeDefaults;
+function loadSizeDefaults() {
+  if (sizeDefaults) return sizeDefaults;
+  const file = path.join(galleryRoot, "src", "generated", "docs.json");
+  if (!fs.existsSync(file)) throw new UsageError("src/generated/docs.json is missing; run npm run gen:docs --prefix gallery first");
+  sizeDefaults = new Map();
+  for (const doc of Object.values(JSON.parse(fs.readFileSync(file, "utf8"))))
+    for (const e of doc.exports) {
+      const p = (e.props ?? []).find((x) => x.name === "size");
+      // A size with no default of its own (SelectField) passes it on to a control whose default is md.
+      if (p && /"md"/.test(p.type)) sizeDefaults.set(e.name, p.default ? p.default.replace(/"/g, "") : "md");
+    }
+  return sizeDefaults;
+}
+
+/** The capitalised JSX opening tags in code, as { name, at, end, attrs }: attrs is the text between the name and the closing >. */
+function jsxTags(code) {
+  const out = [];
+  for (const m of code.matchAll(/<([A-Z][\w.]*)(?=[\s/>])/g)) {
+    let i = m.index + m[0].length, depth = 0, quote = null;
+    for (; i < code.length; i++) {
+      const ch = code[i];
+      if (quote) { if (ch === quote) quote = null; continue; }
+      if (ch === "/" && code[i + 1] === "/") i = code.indexOf("\n", i);
+      else if (ch === "/" && code[i + 1] === "*") i = code.indexOf("*/", i) + 1;
+      else if (ch === '"' || ch === "'" || ch === "`") quote = ch;
+      else if (ch === "{") depth++;
+      else if (ch === "}") depth--;
+      else if (ch === ">" && depth === 0) break;
+      if (i < 0) { i = code.length; break; }
+    }
+    out.push({ name: m[1], at: m.index, end: i + 1, attrs: code.slice(m.index + m[0].length, i) });
+  }
+  return out;
+}
+
+/** A demo's source and that of every component it renders that this file defines, once each. */
+function expandDemo(text, src, seen = new Set()) {
+  let all = src;
+  for (const { name } of jsxTags(src)) {
+    if (seen.has(name)) continue;
+    seen.add(name);
+    const start = text.search(new RegExp(`^(?:export )?(?:function|const) ${name}\\b`, "m"));
+    if (start < 0) continue;
+    const end = text.indexOf("\n}", start);
+    all += "\n" + expandDemo(text, text.slice(start, end < 0 ? undefined : end + 2), seen);
+  }
+  return all;
+}
+
+function renderedSizes(src) {
+  const defaults = loadSizeDefaults();
+  const sizes = new Set([...src.matchAll(/(["'`])(sm|md|lg)\1/g)].map((m) => m[2]));
+  for (const t of jsxTags(src))
+    if (defaults.has(t.name) && !/(?:^|\s)size=|\{\s*\.\.\./.test(t.attrs)) sizes.add(defaults.get(t.name));
+  return sizes;
+}
+
+function checkCaptions(text, fail) {
+  const lines = text.split("\n");
+  for (const stage of jsxTags(text)) {
+    if (stage.name !== "Stage") continue;
+    const cap = /(?:^|\s)caption="([^"]*)"/.exec(stage.attrs);
+    if (!cap) continue;
+    const words = [...new Set([...cap[1].matchAll(SIZE_WORD)].map((m) => m[1]))];
+    const line = text.slice(0, stage.at + "<Stage".length + cap.index).split("\n").length + (cap[0].startsWith("\n") ? 1 : 0);
+    if (!words.length || lines[line - 1].includes("litt-allow")) continue;
+    const close = text.indexOf("</Stage>", stage.end);
+    const sizes = renderedSizes(expandDemo(text, text.slice(stage.end, close < 0 ? stage.end : close)));
+    const missing = words.filter((w) => !sizes.has(w));
+    if (missing.length) fail(line, `caption names ${missing.join(" and ")}, but its demo renders ${sizes.size ? [...sizes].join(", ") : "no sized control"}: say what the demo renders`);
+  }
 }
 
 /* ============================================================================== host mode */

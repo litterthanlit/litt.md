@@ -6,6 +6,7 @@
  */
 import { motion } from "motion/react";
 import { Button } from "@/components/button";
+import { Stage } from "@/gallery/kit";
 
 export function ProjectCard({ open }: { open: boolean }) {
   return (
@@ -114,5 +115,36 @@ export function ProjectCard({ open }: { open: boolean }) {
       />
       <Button size="lg">Open</Button>
     </div>
+  );
+}
+
+/* Stage captions: a size the caption names has to be one the demo renders. */
+function SaveDemo() {
+  return <Button variant="primary">Save</Button>;
+}
+
+function SizesDemo() {
+  return (["sm", "md"] as const).map((size) => <Button key={size} size={size}>Save</Button>);
+}
+
+export function CaptionStages() {
+  return (
+    <>
+      <Stage
+        title="Stale size"
+        caption="Save is lg and primary." // expect: caption
+      >
+        <SaveDemo />
+      </Stage>
+      <Stage title="Default size" caption="Save is md and primary.">
+        <SaveDemo />
+      </Stage>
+      <Stage title="Mapped sizes" caption="sm for toolbars, md for forms.">
+        <SizesDemo />
+      </Stage>
+      <Stage title="Inline demo" caption="An lg hero button.">
+        <Button size="lg">Start</Button>
+      </Stage>
+    </>
   );
 }
