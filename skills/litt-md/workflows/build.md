@@ -118,7 +118,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `resizable` | Panels with a line to drag between them: a tree beside a log, a list beside its detail (`ResizablePanelGroup`, `ResizablePanel`, `ResizableHandle`, as shadcn's). On a phone show one at a time instead. |
 | `breadcrumb` | Where a page sits: Studio / Projects / Marlow Labs (`Breadcrumb` with `items` as `{ label, href }`, the last being the current page). Long trails fold into a menu. |
 | `steps` | Where someone is in a flow of three to six steps, such as setup or checkout (`Steps`). Views moved between freely are Tabs. |
-| `table` | Rows and columns of data: sticky header, mono figures, sort. |
+| `table` | Rows and columns of data: sticky header, mono figures, sort. Thousands of rows go in `TableVirtualBody` (only the rows in view are drawn; give the Table a max height). Selecting rows is `TableSelectHead`, `TableSelectCell` and `useRowSelection`, with an `action-bar` after the table. Never a hand-rolled virtual list of divs. |
 | `action-bar` | Actions for the rows or cards someone selected (`ActionBar` with `count`, `noun`, `onClear` and sm Buttons), after the list. Never an accent fill. |
 | `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. `trend` takes a Sparkline at the foot of the tile. |
 | `details` | An information card of labelled facts about one thing: a deployment, an invoice, a client (`Details`, `DetailsItem`, `DetailsLink`). Rows by default, `layout="grid"` for a few short facts, `copy` on values people paste, `bare` inside a dialog or panel. Many things compared side by side are a `table`. |

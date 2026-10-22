@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
+import { ActionBar } from "@/components/action-bar";
 import { Button } from "@/components/button";
-import { PlusIcon } from "@/components/icons";
+import { PlusIcon, RetryIcon } from "@/components/icons";
+import { Input } from "@/components/input";
 import {
   Table,
   TableBody,
@@ -9,7 +11,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableSelectCell,
+  TableSelectHead,
   TableSkeleton,
+  TableVirtualBody,
+  useRowSelection,
 } from "@/components/table";
 import { Tag } from "@/components/tag";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
@@ -21,13 +27,13 @@ export const meta: PageMeta = {
   order: 16, group: "Data",
   verbs: ["press"],
   summary:
-    "Real table semantics with hairline rows, mono figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything.",
+    "Real table semantics with hairline rows, mono figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything. A virtual body draws only the rows in view, so ten thousand rows scroll as lightly as forty, and rows can be selected with a box, Shift for a range.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
 export const docs: PageDocs = {
   components: ["table"],
-  exports: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell", "TableEmpty", "TableSkeleton"],
+  exports: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell", "TableEmpty", "TableSkeleton", "TableVirtualBody", "TableSelectHead", "TableSelectCell", "useRowSelection"],
   usage: `import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/table";
@@ -58,11 +64,42 @@ export const docs: PageDocs = {
 
 // Loading and empty rows.
 <TableBody>{loading ? <TableSkeleton columns={["primary", "text", "number"]} /> : rows}</TableBody>
-<TableEmpty columns={3} action={<Button size="sm">Add site</Button>}>No deploys yet.</TableEmpty>`,
+<TableEmpty columns={3} action={<Button size="sm">Add site</Button>}>No deploys yet.</TableEmpty>
+
+// Thousands of rows: a virtual body draws only the ones in view. The Table's max height is the scroller.
+// Filter with a deferred query, so typing never waits for the table.
+const query = useDeferredValue(search);
+const shown = useMemo(() => deploys.filter((d) => d.site.includes(query)), [query]);
+const selection = useRowSelection(shown.map((d) => d.id));
+
+<Table label="Deploys" className="max-h-[28rem]">
+  <TableHeader>
+    <TableRow>
+      <TableSelectHead state={selection.head} onToggle={selection.toggleAll} />
+      <TableHead>Site</TableHead>
+      <TableHead numeric>Build time</TableHead>
+    </TableRow>
+  </TableHeader>
+  <TableVirtualBody count={shown.length} columns={3}>
+    {(i) => {
+      const d = shown[i];
+      return (
+        <TableRow key={d.id} selected={selection.isSelected(d.id)}>
+          <TableSelectCell label={\`Select \${d.site}\`} checked={selection.isSelected(d.id)} onToggle={(range) => selection.toggle(d.id, range)} />
+          <TableCell primary>{d.site}</TableCell>
+          <TableCell numeric>{d.seconds} s</TableCell>
+        </TableRow>
+      );
+    }}
+  </TableVirtualBody>
+</Table>
+<ActionBar count={selection.count} noun="deploys" onClear={selection.clear}>…</ActionBar>`,
   use: [
     "People compare rows across the same few fields: deploys, invoices, clients, builds. A table lines the values up so the eye can run down a column.",
     "The numbers and dates matter. They are set in mono, right-aligned, so figures line up by place.",
     "The list is long enough to scroll. The header stays in view once you give the Table a max height.",
+    "Thousands of rows, such as a deploy history or an audit log. Use TableVirtualBody, so only the rows in view are drawn.",
+    "People act on several rows at once. Add TableSelectHead and TableSelectCell with useRowSelection, and an ActionBar after the table.",
     "Rows can be sorted, filtered or inserted. Turn on animateChanges and they glide to their new places.",
     "You need a table on a phone. It scrolls sideways inside its own labelled region and never widens the page.",
   ],
@@ -70,13 +107,15 @@ export const docs: PageDocs = {
     "Each item is an independent object with a picture, such as a client site. Use Card, or List and cards.",
     "A short list of one field, such as actions or commands. Use Menu or the Command menu.",
     "Layout. A table is for data, so do not use it to place things in columns.",
-    "Thousands of rows. Nothing here is virtualised, so reach for a virtualised table.",
+    "Rows of different heights in a long list, such as wrapped notes. The virtual body needs every row one line tall; use Pagination instead.",
     "You want a whole row to be a button. Put a real link in the primary cell instead, because a click handler on a row is not reachable by keyboard.",
   ],
   keyboard: [
     [["Tab"], "Moves through the sortable headers and any links or buttons in the cells. When the table scrolls, it also stops once on the scroll region itself."],
     [["Enter", "Space"], "On a sortable header, calls onSort."],
     [["↑", "↓", "←", "→"], "On the focused scroll region, scrolls it. The region only takes focus when there is something to scroll."],
+    [["Space"], "On a row's box, selects or clears the row. On the head box, selects or clears every row shown."],
+    [["Shift"], "Held while pressing a row's box (click or Space), selects or clears every row between it and the last box pressed."],
   ],
   a11y: [
     "It is a real <table> with a hidden <caption>, <th scope=\"col\"> headers and a <th scope=\"row\"> for each primary cell, so a screen reader can read a value with its column and its row.",
@@ -87,6 +126,8 @@ export const docs: PageDocs = {
     "Hover is a fill and never reveals anything, so touch loses nothing. On a touch screen a row held down gets the same kind of fill, and so does a sortable header, as feedback only: a row is not a button. Rows are 44px tall, and a sortable header is 44px.",
     "Color never carries a status alone. The demos use status Tags, which always say the status in words.",
     "Under reduced motion the rows appear at once, with no travel or stagger, and the hover fill changes without a fade.",
+    "A virtual body keeps the table's semantics: aria-rowcount on the table and aria-rowindex on each row, so a screen reader says where a row sits in the whole list. Only the drawn rows can be tabbed to or found with the browser's find, so give a long table a search field.",
+    "Each row's box is named for the row (\"Select Halden Gallery\") and the head box for what it selects; it is mixed while only some rows shown are selected. A selected row is also filled, but the box carries the state.",
   ],
 };
 
@@ -149,6 +190,120 @@ function DeployHistoryDemo() {
         ))}
       </TableBody>
     </Table>
+  );
+}
+
+/* ---------- (a2) Ten thousand deploys: the virtual body and selection ---------- */
+
+type BigDeploy = { id: string; site: string; branch: string; ok: boolean; seconds: number; at: string };
+
+const SITES = ["litt.design v3", "Studio site refresh", "Halden Gallery", "Founder landing", "Kassa dashboard", "Grotta Type", "Marlow Labs docs", "Atlas portfolio"];
+const BRANCHES = ["main", "preview/type", "fix/og-image", "feat/cms", "main", "main"];
+
+/** Ten thousand deploys, the same every time: a small seeded generator, so the page fetches nothing. */
+const MANY: BigDeploy[] = (() => {
+  let seed = 7;
+  const next = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const out: BigDeploy[] = [];
+  let day = Date.UTC(2026, 9, 22);
+  for (let i = 0; i < 10000; i++) {
+    if (next() < 0.3) day -= 86400000;
+    out.push({
+      id: `dpl_${(10000 - i).toString(36).padStart(4, "0")}`,
+      site: SITES[Math.floor(next() * SITES.length)]!,
+      branch: BRANCHES[Math.floor(next() * BRANCHES.length)]!,
+      ok: next() > 0.08,
+      seconds: 20 + Math.floor(next() * 70),
+      at: new Date(day).toISOString().slice(0, 10),
+    });
+  }
+  return out;
+})();
+
+const COUNT = new Intl.NumberFormat("en-GB");
+
+function ManyDeploysDemo() {
+  const [search, setSearch] = useState("");
+  const [slowFirst, setSlowFirst] = useState(false);
+  /* The table follows the query a beat behind the field, so typing never waits on ten thousand rows. */
+  const query = useDeferredValue(search.trim().toLowerCase());
+  const shown = useMemo(() => {
+    const found = query ? MANY.filter((d) => d.site.toLowerCase().includes(query) || d.branch.includes(query) || d.id.includes(query)) : MANY;
+    return slowFirst ? [...found].sort((a, b) => b.seconds - a.seconds) : found;
+  }, [query, slowFirst]);
+  const ids = useMemo(() => shown.map((d) => d.id), [shown]);
+  const selection = useRowSelection(ids);
+
+  return (
+    <div className="grid w-full max-w-4xl gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Input
+          size="sm"
+          type="search"
+          aria-label="Search deploys"
+          placeholder="Search site, branch or id"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:w-64"
+        />
+        <p aria-live="polite" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+          {shown.length === MANY.length ? `${COUNT.format(MANY.length)} deploys` : `${COUNT.format(shown.length)} of ${COUNT.format(MANY.length)} deploys`}
+        </p>
+      </div>
+      <Table label="Deploys" className="max-h-[28rem]">
+        <TableHeader>
+          <TableRow>
+            <TableSelectHead state={selection.head} onToggle={selection.toggleAll} label="Select every deploy shown" />
+            <TableHead>Deploy</TableHead>
+            <TableHead>Site</TableHead>
+            <TableHead>Branch</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead numeric sort={slowFirst ? "descending" : "none"} onSort={() => setSlowFirst((v) => !v)}>
+              Build time
+            </TableHead>
+            <TableHead numeric>Deployed</TableHead>
+          </TableRow>
+        </TableHeader>
+        {shown.length ? (
+          <TableVirtualBody count={shown.length} columns={7}>
+            {(i) => {
+              const d = shown[i]!;
+              const on = selection.isSelected(d.id);
+              return (
+                <TableRow key={d.id} selected={on}>
+                  <TableSelectCell label={`Select ${d.id}`} checked={on} onToggle={(range) => selection.toggle(d.id, range)} />
+                  <TableCell primary>
+                    <span className="font-mono text-caption font-normal">{d.id}</span>
+                  </TableCell>
+                  <TableCell>{d.site}</TableCell>
+                  <TableCell>
+                    <span className="font-mono text-caption font-normal">{d.branch}</span>
+                  </TableCell>
+                  <TableCell>
+                    <Status tone={d.ok ? "success" : "danger"}>{d.ok ? "Ready" : "Failed"}</Status>
+                  </TableCell>
+                  <TableCell numeric>{d.seconds} s</TableCell>
+                  <TableCell numeric>
+                    <time dateTime={d.at}>{shortDate(d.at)}</time>
+                  </TableCell>
+                </TableRow>
+              );
+            }}
+          </TableVirtualBody>
+        ) : (
+          <TableBody>
+            <TableEmpty columns={7} action={<Button size="sm" onClick={() => setSearch("")}>Clear search</Button>}>
+              No deploy matches “{search.trim()}”.
+            </TableEmpty>
+          </TableBody>
+        )}
+      </Table>
+      <ActionBar count={selection.count} noun="deploys" onClear={selection.clear}>
+        <Button size="sm" icon={<RetryIcon />} onClick={selection.clear}>
+          Redeploy
+        </Button>
+      </ActionBar>
+    </div>
   );
 }
 
@@ -394,6 +549,17 @@ export default function TablePage() {
         caption="Rows fade in and rise from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token, and the cascade stops counting at six. It is this page's one expressive moment. The header is sticky inside the table's region, so scroll the rows and it stays. Hover fills a row and nothing moves; on a touch screen the row you hold fills instead. Press Replay to watch it again."
       >
         <DeployHistoryDemo key={deployKey} />
+      </Stage>
+
+      <Stage
+        title="Ten thousand deploys"
+        tier="responsive"
+        size="lg"
+        align="start"
+        code="ManyDeploysDemo"
+        caption="Ten thousand rows, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every deploy shown, and the action bar counts them."
+      >
+        <ManyDeploysDemo />
       </Stage>
 
       <Stage

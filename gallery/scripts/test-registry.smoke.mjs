@@ -91,8 +91,16 @@ const RECIPES = {
         </div>`,
   },
   table: {
-    needs: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell"],
-    jsx: `<div className="w-full max-w-md" data-testid="litt-table-wrap">
+    needs: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell", "TableVirtualBody", "TableSelectHead", "TableSelectCell", "useRowSelection"],
+    top: [`const SMOKE_ROWS = Array.from({ length: 2000 }, (_, i) => ({ id: "r" + i, name: "Deploy " + (i + 1), seconds: 20 + (i % 60) }));`],
+    state: [`const [tableIds] = useState(() => SMOKE_ROWS.map((r) => r.id));`, `const tableSel = useRowSelection(tableIds);`],
+    jsx: `<div className="grid w-full max-w-md gap-4" data-testid="litt-table-wrap">
+          <Table label="Many deploys" className="max-h-64">
+            <TableHeader><TableRow><TableSelectHead state={tableSel.head} onToggle={tableSel.toggleAll} /><TableHead>Deploy</TableHead><TableHead numeric>Build time</TableHead></TableRow></TableHeader>
+            <TableVirtualBody count={SMOKE_ROWS.length} columns={3}>
+              {(i) => <TableRow key={SMOKE_ROWS[i].id} selected={tableSel.isSelected(SMOKE_ROWS[i].id)}><TableSelectCell label={"Select " + SMOKE_ROWS[i].name} checked={tableSel.isSelected(SMOKE_ROWS[i].id)} onToggle={(range) => tableSel.toggle(SMOKE_ROWS[i].id, range)} /><TableCell primary>{SMOKE_ROWS[i].name}</TableCell><TableCell numeric>{SMOKE_ROWS[i].seconds} s</TableCell></TableRow>}
+            </TableVirtualBody>
+          </Table>
           <Table label="Deploy history" entrance>
             <TableHeader><TableRow><TableHead>Site</TableHead><TableHead numeric>Build time</TableHead></TableRow></TableHeader>
             <TableBody>

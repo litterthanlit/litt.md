@@ -355,6 +355,8 @@ Rows are separated by 1px `--line`, padding `--space-3`/`--space-4`, small size.
 - **Hover:** the fg-4% fill is for airy lists (project rows, tables). Dense lists (menus, the command menu) use the gliding highlight. Hover never moves anything.
 - **Entrance:** rows and raised cards arrive in one staggered cascade (`--stagger`, `--travel`, expressive tier). That cascade is the page's single expressive moment.
 - **Filter and insert:** responsive and position-only (FLIP via transform), so text never stretches.
+- **Selection:** a 20px box as the first column (the Checkbox, its label hidden and named for the row), a select-all box in the header that is mixed while only some rows shown are selected, and Shift for the range from the last box pressed. A selected row fills fg 6%, the press fill; the box carries the state. What to do with them goes in an Action bar after the table.
+- **Big tables:** past a few hundred rows draw only the rows in view (a virtual body between two spacer rows), so ten thousand scroll as lightly as forty. Every row is then one line, the same height, and the table has a max height. It keeps its semantics: `aria-rowcount` on the table and `aria-rowindex` on each row. The entrance cascade and change motion are off: a long list arrives at once. Filter with a deferred query, so typing never waits on the rows, and give the table a search field, because the browser's find only sees the rows drawn.
 
 ## Action bar
 What can be done to the rows or cards someone selected, while the selection lasts.
