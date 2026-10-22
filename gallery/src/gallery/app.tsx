@@ -16,6 +16,8 @@ import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons"
 
 /* The panel and the popover load on their own; until then the button holds its place. */
 const Customize = lazy(() => import("./customize"));
+/* The brainstorm canvas, at #canvas: no nav, no docs, the whole viewport. */
+const Canvas = lazy(() => import("../canvas/canvas"));
 
 function CustomizeFallback() {
   return (
@@ -34,7 +36,7 @@ const THEMES = [
 ] satisfies { id: ThemeChoice; label: string; Icon: typeof SunIcon }[];
 
 /** The theme, read from the attribute the pre-paint script set, and written back with the choice. */
-function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
+export function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
   const [theme, setTheme] = useState<ThemeChoice>(() => {
     const t = document.documentElement.getAttribute("data-theme");
     return t === "light" || t === "dark" ? t : "system";
@@ -55,7 +57,7 @@ function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
 /* litt's own Segmented: a quiet track with the chosen segment raised in it, and native radios underneath.
    In the header, icons on a phone, where three words would crowd the wordmark; the word stays for screen readers.
    In the menu (`full`), the whole width with icons and words. */
-function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
+export function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
   return (
     <Segmented
       legend="Theme"
@@ -277,7 +279,13 @@ export function App() {
     <MotionDialProvider tuning={page?.tune === true}>
       <CustomizeProvider>
         <TooltipProvider>
-          <Shell page={page} />
+          {route === "canvas" ? (
+            <Suspense fallback={null}>
+              <Canvas />
+            </Suspense>
+          ) : (
+            <Shell page={page} />
+          )}
         </TooltipProvider>
       </CustomizeProvider>
     </MotionDialProvider>
