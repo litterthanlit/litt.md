@@ -78,7 +78,7 @@ const [slide, setSlide] = useState(0);
 
 function SeriesDemo() {
   return (
-    <Carousel label="Field studies" className="w-full max-w-3xl">
+    <Carousel label="Thermal, film, fluid" className="w-full max-w-3xl">
       <CarouselContent>
         {SERIES.map((image) => (
           <CarouselItem key={image.id} label={image.name}>
@@ -131,7 +131,7 @@ function LightboxDemo() {
   const slides = useRef<HTMLDivElement>(null);
   return (
     <div ref={slides} className="w-full max-w-3xl">
-      <Carousel label="Field studies" perView="two" index={slide} onIndexChange={setSlide}>
+      <Carousel label="Thermal, film, fluid" perView="two" index={slide} onIndexChange={setSlide}>
         <CarouselContent>
           {SERIES.map((image, i) => (
             <CarouselItem key={image.id} label={image.name}>
@@ -142,7 +142,7 @@ function LightboxDemo() {
         <CarouselControls />
       </Carousel>
       <Lightbox
-        label="Field studies"
+        label="Thermal, film, fluid"
         items={SERIES.map((image) => ({ src: image.src, srcSet: image.srcSet, alt: image.alt, caption: image.name, width: image.width, height: image.height }))}
         index={open}
         onIndexChange={(i) => {
