@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { Button } from "@/components/button";
+import { RetryIcon } from "@/components/icons";
 import {
   Timeline,
   TimelineBar,
@@ -278,6 +281,86 @@ function FailedDemo() {
   );
 }
 
+/* A live run: the same deploy, played from its own clock five run seconds to the real one. A run's ending is fixed
+   when it starts, so turning Fail the build afterwards never rewrites a run that already happened. */
+const LIVE = [
+  { label: "Build", hue: "blue" as const, steps: [{ label: "Clone repository", seconds: 2 }, { label: "Install dependencies", seconds: 9 }, { label: "Run build commands", seconds: 19 }] },
+  { label: "Deploy", hue: "teal" as const, steps: [{ label: "Upload output", seconds: 6 }, { label: "Assign atelier-nord.com", seconds: 2 }] },
+];
+const LIVE_SPEED = 5;
+
+function LiveDemo() {
+  const [run, setRun] = useState(0);
+  const [failNext, setFailNext] = useState(false);
+  const [fails, setFails] = useState(false);
+  const flat = LIVE.flatMap((p, pi) => p.steps.map((s) => ({ ...s, phase: pi })));
+  let at = 0;
+  const steps = flat.map((s) => ({ ...s, start: (at += s.seconds) - s.seconds, end: at }));
+  const end = at;
+  const failStep = LIVE[0]!.steps.length - 1;
+  const failAt = Math.floor(steps[failStep]!.start + steps[failStep]!.seconds * 0.7);
+  const stop = fails ? failAt : end;
+  const [t, setT] = useState(end);
+  useEffect(() => {
+    if (run === 0) return;
+    let frame = 0;
+    const began = performance.now();
+    const tick = (now: number) => {
+      const next = Math.min(stop, Math.floor(((now - began) / 1000) * LIVE_SPEED));
+      setT(next);
+      if (next < stop) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [run, stop]);
+  const statusOf = (i: number): TimelineStatus => {
+    const s = steps[i]!;
+    if (fails && t >= failAt && i === failStep) return "failed";
+    if (fails && t >= failAt && i > failStep) return "skipped";
+    if (t >= s.end) return "done";
+    if (t >= s.start) return "running";
+    return "pending";
+  };
+  const over = t >= stop;
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          size="sm"
+          icon={<RetryIcon />}
+          onClick={() => {
+            setFails(failNext);
+            setT(0);
+            setRun((n) => n + 1);
+          }}
+        >
+          Run deploy
+        </Button>
+        <Button size="sm" variant={failNext ? "secondary" : "ghost"} aria-pressed={failNext} onClick={() => setFailNext((v) => !v)}>
+          Fail the build
+        </Button>
+      </div>
+      <Timeline label="Update pricing page, live deploy steps">
+        {LIVE.map((phase, pi) => {
+          const mine = steps.map((s, i) => ({ ...s, i })).filter((s) => s.phase === pi);
+          const finished = mine.every((s) => statusOf(s.i) === "done");
+          return (
+            <TimelinePhase key={phase.label} label={phase.label} hue={phase.hue} duration={finished ? mine.reduce((sum, s) => sum + s.seconds, 0) : undefined}>
+              {mine.map((s) => {
+                const status = statusOf(s.i);
+                const ran = status === "done" || status === "running" || status === "failed";
+                const took = status === "running" ? t - s.start : status === "failed" ? failAt - s.start : s.seconds;
+                return <TimelineStep key={s.label} at={ran ? clock(s.start) : undefined} label={s.label} status={status} seconds={ran ? took : undefined} />;
+              })}
+            </TimelinePhase>
+          );
+        })}
+        {over && (fails ? <TimelineResult tone="danger" label="Build failed" total={failAt} /> : <TimelineResult tone="success" label="Live on atelier-nord.com" total={end} />)}
+      </Timeline>
+    </div>
+  );
+}
+
 function RunningDemo() {
   return (
     <div className="w-full max-w-[22.375rem]">
@@ -329,6 +412,17 @@ export default function TimelinePage() {
         caption="The build stopped at a step, so that step has an x in danger and the steps after it are pending: an empty circle, no time and no start. The deploy never began, so its phase has no total and takes no room in the strip. The failed segment is the one place a mark takes danger. The result says it in words, in danger, with the time it took to fail."
       >
         <FailedDemo />
+      </Stage>
+
+      <Stage
+        title="A run as it happens"
+        tier="instant"
+        size="lg"
+        align="start"
+        code="LiveDemo"
+        caption="Press Run deploy and the same timeline follows the run, five seconds of it to each real one: the running step is a half-filled circle, its time ticks, finished steps take their check, and each phase gets its total as it ends. Each state simply replaces the last; nothing animates a status. Turn on Fail the build first and the build stops with an x in danger and the deploy skipped. With fun mode on (Customize, Motion), the icons pop, the checks draw, the failure shakes once, the totals and the result arrive, and a run that went live scatters a few dots in its phases' colors."
+      >
+        <LiveDemo />
       </Stage>
 
       <Stage

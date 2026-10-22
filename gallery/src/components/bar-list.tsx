@@ -23,8 +23,15 @@
  *   from the visible text and hidden words. The lead and the bar are hidden from assistive tech: put anything that
  *   matters in the label.
  * - Motion: none. The bars never animate, and hover and press are color changes at `--dur-instant`.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the bars grow in rank order on arrival, a beat
+ *   apart, and spring to new lengths; each value counts with its bar and never shows more than it holds. Rows that
+ *   trade places slide past each other, the climber over the other, measured from layout offsets. While a row slides it
+ *   borrows the list's own background, so the two never show through each other; still, every row is the static row.
+ *   Rows are keyed by label in fun mode, so a row keeps its identity when it moves. Reduced motion turns it off.
  */
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { animate, motion, useTransform } from "motion/react";
+import { useFun, useFunValue } from "@/motion";
 
 /** The five data hues, in their fixed order (P11). */
 export type BarListHue = "blue" | "amber" | "teal" | "violet" | "rose";
@@ -105,18 +112,27 @@ function Row({
   share,
   fill,
   shown,
+  format,
   said,
   onSelect,
+  register,
 }: {
   item: BarListItem;
   index: number;
   share: number;
   fill: string;
   shown: string;
+  format: (value: number) => string;
   said: string;
   onSelect?: (item: BarListItem, index: number) => void;
+  register?: (el: HTMLLIElement | null) => void;
 }) {
   const tone = item.tone ?? "neutral";
+  /* Fun mode: the bar grows in rank order and springs to new lengths, the value counting with it. */
+  const fun = useFun();
+  const grow = useFunValue(share, { count: item.value, delay: index * (fun?.wave ?? 0) * 5 });
+  const slide = useTransform(grow.value, (r) => `${r - 100}%`);
+  const value = fun && grow.moving ? format(Math.round(grow.shown)) : shown;
   const press = () => onSelect?.(item, index);
   const cells = (
     <>
@@ -134,11 +150,15 @@ function Row({
         className="col-start-[bar] row-start-1 px-4 @max-[28rem]:col-start-[label] @max-[28rem]:col-end-[end] @max-[28rem]:row-start-2 @max-[28rem]:px-0 @max-[28rem]:pt-1"
       >
         <span className="block h-1 overflow-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]">
-          <span className={"block h-full rounded-control " + fill} style={{ width: `${share}%` }} />
+          {grow.moving ? (
+            <motion.span className={"block h-full w-full rounded-control " + fill} style={{ x: slide }} />
+          ) : (
+            <span className={"block h-full rounded-control " + fill} style={{ width: `${share}%` }} />
+          )}
         </span>
       </span>
       <span className="col-start-[value] row-start-1 text-right @max-[28rem]:pl-3 font-mono text-small tabular-nums text-fg">
-        {shown}
+        {value}
         {said && <span className="sr-only">{said}</span>}
       </span>
       {item.delta && (
@@ -150,7 +170,7 @@ function Row({
     </>
   );
   return (
-    <li className="col-span-full grid grid-cols-subgrid border-t border-line first:border-t-0">
+    <li ref={register} className="col-span-full grid grid-cols-subgrid border-t border-line first:border-t-0">
       {item.href ? (
         <a href={item.href} onClick={press} className={ROW + " " + PRESS}>
           {cells}
@@ -172,6 +192,25 @@ export function BarList({ label, items, max, formatValue, unit, hue, onSelect, c
   const top = max ?? Math.max(0, ...items.map((item) => item.value));
   const fill = hue ? HUE[hue] : "bg-fg";
   const unitFor = (v: number) => (Array.isArray(unit) ? (v === 1 ? unit[0] : unit[1]) : unit);
+
+  /* Fun mode: rows keep their identity by label (when labels are unique), and a row that changed place slides from
+     where it was. Offsets, not the screen, so a zoomed or scaled parent never skews the slide. */
+  const fun = useFun();
+  const byLabel = !!fun && new Set(items.map((i) => i.label)).size === items.length;
+  const rows = useRef(new Map<string, HTMLLIElement>());
+  const was = useRef(new Map<string, number>());
+  useLayoutEffect(() => {
+    if (!byLabel || !fun) return void was.current.clear();
+    rows.current.forEach((el, key) => {
+      const from = was.current.get(key);
+      const to = el.offsetTop;
+      was.current.set(key, to);
+      if (from === undefined || from === to) return;
+      Object.assign(el.style, { position: "relative", zIndex: from > to ? "2" : "1", background: backdrop(el) });
+      animate(el, { y: [from - to, 0] }, fun.swap).then(() => Object.assign(el.style, { position: "", zIndex: "", background: "", transform: "" }));
+    });
+  });
+
   return (
     <div className={"@container w-full " + className}>
       <ol role="list" aria-label={label} className={"m-0 grid list-none p-0 " + WIDE + " " + NARROW}>
@@ -180,9 +219,39 @@ export function BarList({ label, items, max, formatValue, unit, hue, onSelect, c
           const word = unit ? unitFor(item.value) : "";
           /* Hidden words after the number: the unit, then a comma when the delta follows. */
           const said = (word ? ` ${word}` : "") + (item.delta ? ", " : "");
-          return <Row key={`${i}-${item.label}`} item={item} index={i} share={share} fill={item.hue ? HUE[item.hue] : fill} shown={fmt(item.value)} said={said} onSelect={onSelect} />;
+          const key = byLabel ? item.label : `${i}-${item.label}`;
+          return (
+            <Row
+              key={key}
+              item={item}
+              index={i}
+              share={share}
+              fill={item.hue ? HUE[item.hue] : fill}
+              shown={fmt(item.value)}
+              format={fmt}
+              said={said}
+              onSelect={onSelect}
+              register={
+                byLabel
+                  ? (el) => {
+                      if (el) rows.current.set(key, el);
+                      else rows.current.delete(key);
+                    }
+                  : undefined
+              }
+            />
+          );
         })}
       </ol>
     </div>
   );
+}
+
+/** The first background behind an element that is not transparent: what a sliding row borrows so it covers the other. */
+function backdrop(el: HTMLElement) {
+  for (let at: HTMLElement | null = el.parentElement; at; at = at.parentElement) {
+    const bg = getComputedStyle(at).backgroundColor;
+    if (bg && bg !== "transparent" && !/^rgba\(.*,\s*0\)$/.test(bg)) return bg;
+  }
+  return "";
 }

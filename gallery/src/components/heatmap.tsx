@@ -35,10 +35,19 @@
  *   null), so color is never the only signal. The visible row labels and totals are drawn in their own columns
  *   and hidden from screen readers; the same words sit in each row as a hidden row header and cell.
  * - Motion: none beyond the tooltip's responsive entrance, the chart's. Reduced motion is the hooks' job.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on):
+ *   - Arrival, in two beats: the empty grid pops in on a diagonal wave, then the data fills in by level, the quietest
+ *     dots first and the busiest last, and totals that are plain counts count up as their rows fill. It is drawn on one
+ *     canvas over the grid, on fun mode's own springs, because hundreds of animated dots would each need a compositing
+ *     layer; the real grid waits under it (transparent, still focusable) and is what remains when the last dot lands.
+ *   - A lens follows the pointer, as on the Apple Watch's app grid: dots near it swell and ease their neighbours aside,
+ *     falling off over two and a half dots, deeper while pressed. It writes transforms itself, once a frame, to the
+ *     dots it reaches, and lets go of each one as it leaves. The ring and the tooltip work as they always do.
+ *   At rest it is the static Heatmap exactly. Reduced motion turns all of it off.
  */
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { animate, AnimatePresence, motion, spring, useMotionValue, useMotionValueEvent, useSpring } from "motion/react";
+import { countText, FUN_SPRINGS, useExit, useFun, useTransition, useTravel } from "@/motion";
 
 /* ----------------------------------------------------------------- types */
 
@@ -88,6 +97,14 @@ const TICK_H = 16; // the row of column ticks
 const TICK_GAP = 8; // between the ticks and the first row
 const MONO = 7.2; // advance of a 12px mono character
 const FADE = 8; // the soft edge where more dots lie beyond the scroll box
+
+/* Fun mode's lens: how far it reaches, in dots, how much the centre swells and how far neighbours step aside, in px. */
+const LENS_REACH = 2.6;
+const LENS_SWELL = 0.55;
+const LENS_PUSH = 3;
+/* Fun mode's arrival: when the data starts filling in after the grid, and the extra beat per level, in seconds. */
+const DATA_AT = 0.32;
+const DATA_PER_LEVEL = 0.11;
 
 /** An empty dot: the foreground at 8%. */
 const EMPTY = "bg-[color-mix(in_oklab,var(--fg)_8%,transparent)]";
@@ -201,6 +218,152 @@ export function Heatmap({
   const overlayRef = useRef<HTMLDivElement>(null);
   const cells = useRef(new Map<string, HTMLDivElement>());
 
+  /* ---------------------------------------------------------- fun mode */
+
+  const fun = useFun();
+  /* The pointer in dots, smoothed so the lens glides. Strength 0 is no lens, 1 is a hover, more is a press. */
+  const rawX = useMotionValue(-10);
+  const rawY = useMotionValue(-10);
+  const lensX = useSpring(rawX, { visualDuration: FUN_SPRINGS.follow.time, bounce: FUN_SPRINGS.follow.bounce });
+  const lensY = useSpring(rawY, { visualDuration: FUN_SPRINGS.follow.time, bounce: FUN_SPRINGS.follow.bounce });
+  const strength = useMotionValue(0);
+  const lensed = useRef(new Set<HTMLDivElement>());
+  const lensFrame = useRef(0);
+  const paintLens = () => {
+    lensFrame.current = 0;
+    const x = lensX.get();
+    const y = lensY.get();
+    const s = strength.get();
+    const touched = new Set<HTMLDivElement>();
+    if (s > 0.001) {
+      const reach = Math.ceil(LENS_REACH);
+      for (let r = Math.max(0, Math.floor(y) - reach); r <= Math.min(rows.length - 1, Math.ceil(y) + reach); r++) {
+        for (let c = Math.max(0, Math.floor(x) - reach); c <= Math.min(cols - 1, Math.ceil(x) + reach); c++) {
+          const el = cells.current.get(`${r}:${c}`);
+          if (!el) continue;
+          const dx = c - x;
+          const dy = r - y;
+          const d = Math.hypot(dx, dy);
+          const f = Math.max(0, 1 - d / LENS_REACH) ** 2 * s;
+          if (f < 0.002) continue;
+          const push = d > 0.001 ? (LENS_PUSH * f) / d : 0;
+          el.style.transform = `translate(${(dx * push).toFixed(2)}px, ${(dy * push).toFixed(2)}px) scale(${(1 + LENS_SWELL * f).toFixed(3)})`;
+          touched.add(el);
+        }
+      }
+    }
+    /* The dots the lens just left go back to their own, untransformed markup. */
+    lensed.current.forEach((el) => !touched.has(el) && (el.style.transform = ""));
+    lensed.current = touched;
+  };
+  const scheduleLens = () => {
+    if (!lensFrame.current) lensFrame.current = requestAnimationFrame(paintLens);
+  };
+  useMotionValueEvent(lensX, "change", scheduleLens);
+  useMotionValueEvent(lensY, "change", scheduleLens);
+  useMotionValueEvent(strength, "change", scheduleLens);
+  useEffect(() => {
+    if (fun) return;
+    /* Fun mode turned off: let go of every dot. */
+    strength.jump(0);
+    lensed.current.forEach((el) => (el.style.transform = ""));
+    lensed.current.clear();
+  }, [fun, strength]);
+  useEffect(() => () => cancelAnimationFrame(lensFrame.current), []);
+  /* The pointer in the grid's own units, so the lens stays exact inside a scaled parent. */
+  const lensAt = (e: PointerEvent<HTMLDivElement>) => {
+    const box = overlayRef.current?.getBoundingClientRect();
+    if (!fun || !box || !box.width) return;
+    const k = gridW / box.width;
+    const x = ((e.clientX - box.left) * k + GAP / 2) / pitch - 0.5;
+    const y = ((e.clientY - box.top) * k + GAP / 2) / pitch - 0.5;
+    if (strength.get() === 0) {
+      /* A fresh entry: the lens starts where the pointer is, never sliding in from where it last left. */
+      lensX.jump(x);
+      lensY.jump(y);
+    }
+    rawX.set(x);
+    rawY.set(y);
+    if (strength.get() < 1 && !strength.isAnimating()) animate(strength, 1, fun.follow);
+  };
+
+  /* Arrival: one canvas draws the grid's two beats while the real grid waits under it. */
+  const [arriving, setArriving] = useState(() => !!fun);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const probeRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!arriving) return;
+    const el = canvasRef.current;
+    const ctx = el?.getContext("2d");
+    const probe = probeRef.current;
+    if (!fun || !el || !ctx || !probe) return setArriving(false);
+    /* The tokens, resolved by the browser: the empty dot and the four steps, in the current theme. */
+    const colors = [EMPTY, ...HUE[hue]].map((cls) => {
+      probe.className = cls + " hidden";
+      return getComputedStyle(probe).backgroundColor;
+    });
+    /* Drawn at the size it shows, so the dots are crisp in a scaled parent too. */
+    const shown = el.getBoundingClientRect().width / Math.max(1, gridW);
+    const px = Math.max(1, devicePixelRatio * shown);
+    el.width = Math.round(gridW * px);
+    el.height = Math.round(gridH * px);
+    ctx.setTransform(px, 0, 0, px, 0, 0);
+    const pop = spring({ keyframes: [0, 1], visualDuration: FUN_SPRINGS.pop.time, bounce: FUN_SPRINGS.pop.bounce });
+    const at = (t: number) => (t <= 0 ? 0 : pop.next(t * 1000).value);
+    const clamp = (v: number) => Math.max(0, Math.min(1, v));
+    const half = cell / 2;
+    const levels = rows.map((row) => row.values.map((v) => (v === null ? -1 : levelOf(v, scale))));
+    const end = Math.max((rows.length + cols) * fun.wave, DATA_AT + 3 * DATA_PER_LEVEL + cols * fun.wave * 0.5) + 1.2;
+    let frame = 0;
+    const began = performance.now();
+    const draw = (now: number) => {
+      const t = (now - began) / 1000;
+      ctx.clearRect(0, 0, gridW, gridH);
+      const lx = lensX.get();
+      const ly = lensY.get();
+      const ls = strength.get();
+      levels.forEach((row, r) =>
+        row.forEach((level, c) => {
+          if (level < 0) return;
+          const a = at(t - (r + c) * fun.wave); // the diagonal wave of the empty grid
+          if (a <= 0) return;
+          const data = DATA_AT + (level - 1) * DATA_PER_LEVEL + c * fun.wave * 0.5; // then the data, peaks last
+          const dx = c - lx;
+          const dy = r - ly;
+          const d = Math.hypot(dx, dy);
+          const f = ls > 0 ? Math.max(0, 1 - d / LENS_REACH) ** 2 * ls : 0;
+          const push = d > 0.001 ? (LENS_PUSH * f) / d : 0;
+          const cx = c * pitch + half + dx * push;
+          const cy = r * pitch + half + dy * push;
+          const size = a * (1 + LENS_SWELL * f);
+          const emptyAlpha = level === 0 ? 1 : 1 - clamp((t - data) / 0.2);
+          if (emptyAlpha > 0) {
+            ctx.globalAlpha = clamp(a) * emptyAlpha;
+            ctx.fillStyle = colors[0]!;
+            ctx.beginPath();
+            ctx.arc(cx, cy, Math.max(0, half * size), 0, Math.PI * 2);
+            ctx.fill();
+          }
+          if (level > 0) {
+            const g = at(t - data);
+            if (g > 0) {
+              ctx.globalAlpha = clamp(a) * clamp(g);
+              ctx.fillStyle = colors[level]!;
+              ctx.beginPath();
+              ctx.arc(cx, cy, Math.max(0, half * size * (0.4 + 0.6 * g)), 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }),
+      );
+      ctx.globalAlpha = 1;
+      if (t < end) frame = requestAnimationFrame(draw);
+      else setArriving(false);
+    };
+    frame = requestAnimationFrame(draw);
+    return () => cancelAnimationFrame(frame);
+  }, [arriving]); // eslint-disable-line react-hooks/exhaustive-deps -- one arrival; the rest is read as it draws
+
   /* Which dot is active: a hovered one, else a focused one, else a pinned one (a touch). */
   const [hover, setHover] = useState<Cell | null>(null);
   const [focus, setFocus] = useState<Cell | null>(null);
@@ -293,18 +456,21 @@ export function Heatmap({
   };
 
   const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
+    lensAt(e);
     const next = cellAt(e.clientX, e.clientY);
     if (e.pointerType === "touch") {
       if (e.buttons && !overflowing) setPinned(next);
     } else setHover((prev) => (same(prev, next) ? prev : next));
   };
   const onPointerDown = (e: PointerEvent<HTMLDivElement>) => {
+    if (fun) animate(strength, 1.35, fun.pop);
     /* While the grid scrolls, a drag is a scroll, so a touch picks its dot on release. */
     if (e.pointerType !== "touch" || overflowing) return;
     const next = cellAt(e.clientX, e.clientY);
     setPinned((p) => (same(p, next) ? null : next));
   };
   const onPointerUp = (e: PointerEvent<HTMLDivElement>) => {
+    if (fun) animate(strength, e.pointerType === "touch" ? 0 : 1, fun.pop);
     if (e.pointerType !== "touch" || !overflowing) return;
     const next = cellAt(e.clientX, e.clientY);
     setPinned((p) => (same(p, next) ? null : next));
@@ -419,7 +585,7 @@ export function Heatmap({
             }
           }} onBlur={(e) => {
             if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocus(null);
-          }} className="flex flex-col" style={{ gap: GAP }}>
+          }} className="flex flex-col" style={arriving ? { gap: GAP, opacity: 0 } : { gap: GAP }}>
             {rows.map((row, r) => (
               <div key={r} role="row" className="flex items-center" style={{ gap: GAP, height: cell }}>
                 <span role="rowheader" className="sr-only">
@@ -461,6 +627,10 @@ export function Heatmap({
 
           {/* One layer takes the pointer, so the target is the whole grid and not a 12px dot. When the grid fits, a touch
               scrubs across it (pan-y); when it scrolls, a drag has to scroll it, so a touch picks a dot on release. */}
+          {arriving && (
+            <canvas ref={canvasRef} aria-hidden="true" className="pointer-events-none absolute left-0" style={{ top: lead, width: gridW, height: gridH }} />
+          )}
+          {arriving && <span ref={probeRef} className="hidden" />}
           <div
             ref={overlayRef}
             aria-hidden="true"
@@ -468,6 +638,7 @@ export function Heatmap({
             style={{ top: lead, height: gridH }}
             onPointerMove={onPointerMove}
             onPointerLeave={(e) => {
+              if (fun) animate(strength, 0, fun.follow);
               if (e.pointerType !== "touch") setHover(null);
             }}
             onPointerDown={onPointerDown}
@@ -484,7 +655,9 @@ export function Heatmap({
             {rows.map((row, r) => (
               <div key={r} className="flex items-center justify-end" style={{ height: cell }}>
                 {/* The same rule as the labels: a total is a line of text, so rows closer than one show every nth. */}
-                <span className={"litt-trim" + (r % labelEvery === 0 ? "" : " invisible")}>{row.total}</span>
+                <span className={"litt-trim" + (r % labelEvery === 0 ? "" : " invisible")}>
+                  {fun && arriving && row.total ? <CountingTotal text={row.total} /> : row.total}
+                </span>
               </div>
             ))}
           </div>
@@ -509,6 +682,19 @@ export function Heatmap({
       </span>
     </div>
   );
+}
+
+/** Fun mode's arrival: a total that is a plain count ("1,204") counts up as its row fills; any other total shows as it is. */
+function CountingTotal({ text }: { text: string }) {
+  const fun = useFun();
+  const n = /^[\d,]+$/.test(text) ? Number(text.replace(/,/g, "")) : NaN;
+  const [shown, setShown] = useState(Number.isFinite(n) ? 0 : n);
+  useEffect(() => {
+    if (!fun || !Number.isFinite(n)) return;
+    const run = animate(0, n, { ...fun.draw, delay: DATA_AT, onUpdate: (v) => setShown(v) });
+    return () => run.stop();
+  }, [fun, n]);
+  return <>{Number.isFinite(n) ? countText(text, n, shown) : text}</>;
 }
 
 /* ----------------------------------------------------------------- legend */

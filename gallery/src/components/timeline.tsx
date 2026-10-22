@@ -34,10 +34,15 @@
  *   steps, so a keyboard user and a screen reader get every step there.
  * - Motion: none in the timeline. A running step does not move. The bar's tooltip uses the responsive tier like
  *   every tooltip, and hover changes color only, at the instant tier.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on) moves the timeline only as a run changes: a step
+ *   whose status changes pops its icon in, a step that finishes draws its check as a pen would, a step that fails
+ *   shakes once sideways, a phase's total arrives with a small pop, and a result added after the timeline mounted rises
+ *   in on the expressive tier; a run that went live scatters a few dots in its phases' hues, once. A timeline that
+ *   loads finished stays still. Each change hands back to the static markup when it lands. Reduced motion turns it off.
  */
-import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { createContext, useCallback, useContext, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode, type Ref } from "react";
+import { animate, AnimatePresence, motion, type Transition } from "motion/react";
+import { useExit, useFun, useTransition, useTravel } from "@/motion";
 
 /* ----------------------------------------------------------------- types */
 
@@ -129,16 +134,24 @@ function readTime(value: number | string) {
 
 /* ----------------------------------------------------------------- context */
 
-type TimelineContextValue = { proportional: boolean; secondHeight: number };
-const TimelineContext = createContext<TimelineContextValue>({ proportional: false, secondHeight: 4 });
+type TimelineContextValue = {
+  proportional: boolean;
+  secondHeight: number;
+  /** True once the timeline has mounted: what arrives after that is a change, which fun mode may move. */
+  mounted: { current: boolean };
+  /** The phases' hues, for a run's celebration in fun mode. */
+  hues: { current: Set<TimelineHue> };
+};
+const TimelineContext = createContext<TimelineContextValue>({ proportional: false, secondHeight: 4, mounted: { current: true }, hues: { current: new Set() } });
 const PhaseContext = createContext<{ hue?: TimelineHue }>({});
 
 /* ----------------------------------------------------------------- the icons */
 
-function StatusIcon({ status }: { status: TimelineStatus }) {
+function StatusIcon({ status, ref }: { status: TimelineStatus; ref?: Ref<SVGSVGElement> }) {
   const skipped = status === "skipped";
   return (
     <svg
+      ref={ref}
       width={16}
       height={16}
       viewBox="0 0 16 16"
@@ -176,7 +189,12 @@ export type TimelineProps = {
 
 /** The steps of a run as an ordered list in four columns: start, rail, label, duration. Compose it from TimelinePhase, TimelineStep and TimelineResult. */
 export function Timeline({ label, proportional = false, secondHeight = 4, children, className = "" }: TimelineProps) {
-  const value = useMemo(() => ({ proportional, secondHeight }), [proportional, secondHeight]);
+  const mounted = useRef(false);
+  const hues = useRef(new Set<TimelineHue>());
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
+  const value = useMemo(() => ({ proportional, secondHeight, mounted, hues }), [proportional, secondHeight]);
   return (
     <TimelineContext.Provider value={value}>
       <ol role="list" aria-label={label} className={"@container m-0 list-none p-0 " + className}>
@@ -206,6 +224,21 @@ export function TimelinePhase({ label, duration, hue, children, className = "" }
   const id = useId();
   const total = duration === undefined ? null : readTime(duration);
   const value = useMemo(() => ({ hue }), [hue]);
+  const { hues } = useContext(TimelineContext);
+  useEffect(() => {
+    if (hue) hues.current.add(hue);
+  }, [hue, hues]);
+  /* Fun mode: a total that appears (the phase just finished) arrives with a small pop. */
+  const fun = useFun();
+  const totalRef = useRef<HTMLSpanElement>(null);
+  const hadTotal = useRef(total !== null);
+  useLayoutEffect(() => {
+    const el = totalRef.current;
+    if (fun && el && total && !hadTotal.current) {
+      animate(el, { opacity: [0, 1], y: [4, 0] }, fun.pop).then(() => Object.assign(el.style, { opacity: "", transform: "" }));
+    }
+    hadTotal.current = total !== null;
+  }, [total !== null]); // eslint-disable-line react-hooks/exhaustive-deps -- only its arrival matters
   return (
     <li className={"not-first:mt-4 " + className}>
       <div className="flex min-h-8 items-center justify-between gap-4">
@@ -213,7 +246,7 @@ export function TimelinePhase({ label, duration, hue, children, className = "" }
           {label}
         </span>
         {total && (
-          <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+          <span ref={totalRef} className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
             <span aria-hidden="true">{total.visual}</span>
             <span className="sr-only">{total.spoken}</span>
           </span>
@@ -250,6 +283,29 @@ export function TimelineStep({ at, label, status, seconds: took, previousSeconds
   const { proportional, secondHeight } = useContext(TimelineContext);
   const { hue } = useContext(PhaseContext);
 
+  /* Fun mode: a status that changes pops the icon in, a finished step draws its check, a failed one shakes once. */
+  const fun = useFun();
+  const icon = useRef<SVGSVGElement>(null);
+  const was = useRef(status);
+  useLayoutEffect(() => {
+    const el = icon.current;
+    const changed = was.current !== status;
+    was.current = status;
+    if (!fun || !el || !changed || status === "pending") return;
+    const settle = () => Object.assign(el.style, { transform: "" });
+    if (status === "failed") animate(el, { x: fun.shake.x }, fun.shake.transition).then(settle);
+    else animate(el, { scale: [0.6, 1] }, fun.pop).then(settle);
+    const check = status === "done" ? el.querySelector<SVGPathElement>("path") : null;
+    if (check) {
+      check.setAttribute("pathLength", "1");
+      check.style.strokeDasharray = "1";
+      animate(check, { strokeDashoffset: [1, 0] }, fun.tick).then(() => {
+        check.removeAttribute("pathLength");
+        Object.assign(check.style, { strokeDasharray: "", strokeDashoffset: "" });
+      });
+    }
+  }, [status]); // eslint-disable-line react-hooks/exhaustive-deps -- a status change is what moves it
+
   const ran = isNum(took) && status !== "skipped" && status !== "pending";
   const bar = proportional && ran ? clean(took) * secondHeight : 0;
   const ghost = proportional && isNum(previousSeconds) && previousSeconds > 0 ? previousSeconds * secondHeight : 0;
@@ -282,7 +338,7 @@ export function TimelineStep({ at, label, status, seconds: took, previousSeconds
       <span aria-hidden="true" className="relative block self-stretch">
         <span className="absolute top-0 left-1/2 hidden h-2 w-px -translate-x-1/2 bg-line-strong [[data-step]+[data-step]_&]:block" />
         <span className="absolute top-6 bottom-0 left-1/2 hidden w-px -translate-x-1/2 bg-line-strong [[data-step]:has(+[data-step])_&]:block" />
-        <StatusIcon status={status} />
+        <StatusIcon ref={icon} status={status} />
         {ghost > 0 && <span className={"absolute top-6 left-3 w-1 rounded-control " + GHOST} style={{ height: ghost }} />}
         {showBar && <span className={"absolute top-6 left-1.5 z-10 w-1 rounded-control " + barTone} style={{ height: bar }} />}
       </span>
@@ -321,17 +377,55 @@ export type TimelineResultProps = {
 /** The closing row of a run, under a hairline: the outcome in words, colored by its tone, and the total in mono. */
 export function TimelineResult({ label, total, tone = "neutral", className = "" }: TimelineResultProps) {
   const t = readTime(total);
+  /* Fun mode: a result that arrives after the timeline mounted (the run just ended) rises in, and a run that went live
+     scatters a few dots in its phases' hues, once. A timeline that loads finished stays still. */
+  const fun = useFun();
+  const { mounted, hues } = useContext(TimelineContext);
+  const rise = useTransition("expressive");
+  const travel = useTravel();
+  const row = useRef<HTMLLIElement>(null);
+  const [burst, setBurst] = useState<TimelineHue[] | null>(null);
+  useLayoutEffect(() => {
+    const el = row.current;
+    if (!fun || !el || !mounted.current) return;
+    animate(el, { opacity: [0, 1], y: [travel, 0] }, rise).then(() => Object.assign(el.style, { opacity: "", transform: "" }));
+    if (tone === "success") setBurst(hues.current.size ? [...hues.current] : []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- on arrival only
   return (
-    <li className={"mt-4 flex items-baseline justify-between gap-4 border-t border-line pt-4 " + className}>
-      <span className={"min-w-0 text-body " + RESULT_TONE[tone]}>
+    <li ref={row} className={"mt-4 flex items-baseline justify-between gap-4 border-t border-line pt-4 " + className}>
+      <span className={"relative min-w-0 text-body " + RESULT_TONE[tone]}>
         {label}
         <span className="sr-only">{RESULT_WORD[tone]}</span>
+        {fun && burst && <Burst hues={burst} transition={fun.burst} onDone={() => setBurst(null)} />}
       </span>
       <span className="font-mono text-small tabular-nums whitespace-nowrap text-fg">
         <span aria-hidden="true">{t.visual}</span>
         <span className="sr-only">{`, ${t.spoken}`}</span>
       </span>
     </li>
+  );
+}
+
+/** A run that went live: twelve dots in the phases' hues (fg at 55% without any) scatter from the result and fade, once. */
+function Burst({ hues, transition, onDone }: { hues: TimelineHue[]; transition: Transition; onDone: () => void }) {
+  return (
+    <span aria-hidden="true" className="pointer-events-none absolute top-1/2 left-0">
+      {Array.from({ length: 12 }, (_, i) => {
+        const a = (i / 12) * Math.PI * 2;
+        const reach = 22 + (i % 3) * 9;
+        const hue = hues[i % Math.max(1, hues.length)];
+        return (
+          <motion.span
+            key={i}
+            className={"absolute size-1.5 rounded-pill " + (hue ? MARK[hue] : MARK_FG)}
+            initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+            animate={{ x: Math.cos(a) * reach, y: Math.sin(a) * reach * 0.7, opacity: 0, scale: 0.4 }}
+            transition={transition}
+            onAnimationComplete={i === 11 ? onDone : undefined}
+          />
+        );
+      })}
+    </span>
   );
 }
 

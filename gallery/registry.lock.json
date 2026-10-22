@@ -27,8 +27,8 @@
       "hash": "c4230dfb67f8b2d4"
     },
     "bar-list": {
-      "version": "2026.10.17",
-      "hash": "ee2b309f6dfebd29"
+      "version": "2026.10.22",
+      "hash": "7bfb1169d98092da"
     },
     "base-styles": {
       "version": "2026.10.20",
@@ -43,8 +43,8 @@
       "hash": "fd59fabd7faa5f82"
     },
     "button": {
-      "version": "2026.10.20",
-      "hash": "d95404d9a8ecdb97"
+      "version": "2026.10.22",
+      "hash": "b7d2c310ccd3b8de"
     },
     "callout": {
       "version": "2026.10.19",
@@ -63,12 +63,12 @@
       "hash": "c63b2c9312bb3ebf"
     },
     "chart": {
-      "version": "2026.10.20",
-      "hash": "1d0fb9c68cbc42db"
+      "version": "2026.10.22",
+      "hash": "84d669d9c88a4407"
     },
     "checkbox": {
-      "version": "2026.10.19",
-      "hash": "2240628d76fb9cf0"
+      "version": "2026.10.22",
+      "hash": "923a8b0c469dc228"
     },
     "code-block": {
       "version": "2026.10.19",
@@ -139,8 +139,8 @@
       "hash": "67247e72e33b0301"
     },
     "gauge": {
-      "version": "2026.10.19",
-      "hash": "dc81f3ff35c7d18b"
+      "version": "2026.10.22",
+      "hash": "148a99de83cd6964"
     },
     "glide": {
       "version": "2026.10.12",
@@ -155,8 +155,8 @@
       "hash": "f0efc61b1576305f"
     },
     "heatmap": {
-      "version": "2026.10.19",
-      "hash": "937863057164371c"
+      "version": "2026.10.22",
+      "hash": "33cfc1e24e34f9b3"
     },
     "hover-card": {
       "version": "2026.10.22",
@@ -215,8 +215,8 @@
       "hash": "a37d5c6f399661d1"
     },
     "motion": {
-      "version": "2026.10.21",
-      "hash": "a5c60ef4dc0aa7f5"
+      "version": "2026.10.22",
+      "hash": "fef7d4d7aacc3bd7"
     },
     "number-field": {
       "version": "2026.10.22",
@@ -259,8 +259,8 @@
       "hash": "e570369c7072e813"
     },
     "segmented": {
-      "version": "2026.10.19",
-      "hash": "5f5f782141e0fbc5"
+      "version": "2026.10.22",
+      "hash": "ef446cf1f3aa1833"
     },
     "select": {
       "version": "2026.10.19",
@@ -283,16 +283,16 @@
       "hash": "33fd6c721813cbcc"
     },
     "sparkline": {
-      "version": "2026.10.17",
-      "hash": "aa9cffee188f7b01"
+      "version": "2026.10.22",
+      "hash": "66c8c6effea367eb"
     },
     "spread": {
       "version": "2026.10.19",
       "hash": "85417b4a1a0e508f"
     },
     "stat": {
-      "version": "2026.10.19",
-      "hash": "b2f786fa1d6f24c4"
+      "version": "2026.10.22",
+      "hash": "5305ad81ea1f2858"
     },
     "states": {
       "version": "2026.10.19",
@@ -331,8 +331,8 @@
       "hash": "9b874d6a0a1ed61c"
     },
     "timeline": {
-      "version": "2026.10.19",
-      "hash": "a58724b2ef1ff8af"
+      "version": "2026.10.22",
+      "hash": "bca33598c63304cd"
     },
     "toast": {
       "version": "2026.10.19",

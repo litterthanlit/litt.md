@@ -20,8 +20,12 @@
  * - Semantics: each tile is a term (the label) and its description (the value), so a screen reader reads
  *   "Active projects, 12". A Stat outside a group wraps itself in its own list.
  * - Motion: none. A value that changes just changes; an entrance cascade belongs to the page.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a value given as a number counts up on arrival
+ *   with fun mode's pen, the same steady hand that draws a Sparkline in the trend slot, so the figure and its line
+ *   arrive together. While it counts, screen readers get the value itself. At rest it is the static tile exactly.
  */
 import { createContext, useContext, type ReactNode } from "react";
+import { useFun, useFunValue } from "@/motion";
 
 /** Whether a change is good news, bad news or neither. It sets the delta's color, and a hidden word for screen readers. */
 export type StatTone = "good" | "bad" | "neutral";
@@ -55,6 +59,19 @@ export type StatProps = {
 /** One number tile. Put it in a StatGroup, or on its own. */
 export function Stat({ label, value, unit, delta, tone = "neutral", trend, className = "" }: StatProps) {
   const grouped = useContext(InGroup);
+  /* Fun mode: a number counts with the pen. Its digits are hidden from screen readers while they move. */
+  const fun = useFun();
+  const numeric = typeof value === "number";
+  const counted = useFunValue(numeric ? value : 0, { kind: "draw" });
+  const figure =
+    fun && numeric && counted.moving ? (
+      <>
+        <span aria-hidden="true">{Math.round(counted.shown)}</span>
+        <span className="sr-only">{value}</span>
+      </>
+    ) : (
+      value
+    );
   const tile = (
     <div
       className={
@@ -64,7 +81,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", trend, class
       <dt className="text-small text-fg-subtle">{label}</dt>
       <dd className="m-0 flex flex-1 flex-col gap-1">
         <span className="text-h3 tabular-nums text-fg">
-          {value}
+          {figure}
           {unit && <span className="text-fg-subtle">{unit}</span>}
         </span>
         {delta && (
