@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { Callout } from "@/components/callout";
+import { LightbulbIcon } from "@/components/icons";
 import { Kbd } from "@/components/kbd";
 import { Page, Stage, TryIt, useReplay, type PageDocs, type PageMeta } from "../kit";
 
@@ -64,15 +65,6 @@ import { Kbd } from "@/components/kbd";
     "Nothing moves. Dismissing just unmounts it.",
   ],
 };
-
-function LightbulbIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-      <path d="M6 11v-.4c0-.9-.5-1.5-1.1-2.2A4.25 4.25 0 1 1 11.1 8.4c-.6.7-1.1 1.3-1.1 2.2v.4z" />
-      <path d="M6.5 13.25h3" />
-    </svg>
-  );
-}
 
 function TipDemo() {
   return (
