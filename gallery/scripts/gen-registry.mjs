@@ -1108,6 +1108,11 @@ const COPY = {
     description: "One image of a set at the size of the screen, on the canvas, opened from a Media. Opening is the view's expressive moment; arrow keys, Previous and Next or a swipe move through the set, and Esc, Close or a click around the image closes it.",
     docs: "Import Lightbox from components/litt/lightbox and hold the open index in state: set it from each Media's onOpen and pass setIndex as onIndexChange. Give each item its width and height.",
   },
+  details: {
+    title: "Details",
+    description: "An information card of labelled facts about one thing, such as a deployment or a client: rows with the labels in one column, or a grid with each label above its value. Values can be copied, a missing one says Not set, and a loading card keeps its height.",
+    docs: "Import Details, DetailsItem and DetailsLink from components/litt/details. Give Details a title and one DetailsItem per fact, with copy on the values people paste. Use layout=\"grid\" for a few short facts, and bare inside a dialog or a panel.",
+  },
   /* Blocks: whole screens. The docs line says where the sample data is, because that is the first thing to change. */
   dashboard: {
     title: "Dashboard block",

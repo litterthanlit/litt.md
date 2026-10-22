@@ -116,6 +116,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `steps` | Where someone is in a flow of three to six steps, such as setup or checkout (`Steps`). Views moved between freely are Tabs. |
 | `table` | Rows and columns of data: sticky header, mono figures, sort. |
 | `stat` | A number tile for one figure (`Stat`, `StatGroup`): a label, the value, and a change said in words such as "Up 12% on last week". `tone` says whether it is good or bad news. `trend` takes a Sparkline at the foot of the tile. |
+| `details` | An information card of labelled facts about one thing: a deployment, an invoice, a client (`Details`, `DetailsItem`, `DetailsLink`). Rows by default, `layout="grid"` for a few short facts, `copy` on values people paste, `bare` inside a dialog or panel. Many things compared side by side are a `table`. |
 | `chart` | `BarChart`, `LineChart` and `Meter`, never the accent: the foreground by default, or data hues when color tells series apart (`hue` on a series, or `hues` on the chart). Pass a `label`, the category `labels` and `series` of `{ name, values }`. It fills its container's width. |
 | `sparkline` | A trend in one thin line beside its figure: in a Stat's `trend` slot, a table cell or a list row (`Sparkline`). Fix `min` and `max` so a column compares. |
 | `breakdown` | One whole split into its parts: storage by kind, credits by feature (`Breakdown`). A split rail and a meter row per part, or a legend for a tile. |
