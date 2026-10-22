@@ -46,6 +46,7 @@ And six parts every web app reaches for: a number field with steppers, a hover c
 - **changed** `table`: big tables. `TableVirtualBody` draws only the rows in view, so ten thousand scroll as lightly as forty, with aria-rowcount and aria-rowindex kept; `TableSelectHead`, `TableSelectCell` and `useRowSelection` select rows by box, Shift for a range, and `selected` on a `TableRow` fills it. It now installs `checkbox` with it. Nothing in your code has to change.
 - **added** `table-filter`: TableFilter, a column's filter in its header: a funnel button that opens the column's values as Menu rows, checkboxes with a count each or radio buckets for a number, and wears the selected segment while it filters.
 - **changed** `table`: `filter` on a TableHead takes a TableFilter, beside the label or the sort button (before it over numbers). Nothing in your code has to change.
+- **changed** `table`: wide tables. `stickyColumns` keeps the first one or two columns in view while the table scrolls sideways, with a hairline at their edge once something is under them; `resizable` on a TableHead adds a handle to drag, step with the arrow keys or double click to fit, and `columnsId` keeps the widths. Nothing in your code has to change.
 - **changed** `icons`: `FilterIcon`, the funnel. Nothing in your code has to change.
 
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
