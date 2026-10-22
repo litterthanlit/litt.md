@@ -3,7 +3,7 @@
 Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, details cards, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) the staples (combobox, date picker, color picker, slide to confirm, rolling number, accordion, scroll area, breadcrumb, context menu) the app screens' parts (code input, file drop, steps, progress) and the image parts (media, carousel, lightbox) and the web app parts (number field, hover card, action bar, tree, resizable, log view) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Number field · Code input · Token input · File drop · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Color picker · Slide to confirm · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Media · Carousel · Callout · Accordion · Scroll area · Tree · Resizable · Glass header · Breadcrumb · Steps · Tooltip · Command menu · Popover and dropdown · Hover card · Context menu · Modal · Lightbox · Toast · Table and list rows · Action bar · Pagination · Stat · Details · Rolling number · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · Log view · App shell · Empty and loading states · Progress · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
+Button · Input · Number field · Code input · Token input · File drop · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Color picker · Slide to confirm · Segmented control · Tabs · Tag · Kbd · Icons · Avatar · Card · Media · Carousel · Callout · Accordion · Scroll area · Tree · Resizable · Glass header · Breadcrumb · Steps · Tooltip · Command menu · Popover and dropdown · Hover card · Context menu · Modal · Lightbox · Toast · Table and list rows · Action bar · Pagination · Stat · Details · Rolling number · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · Log view · App shell · Empty and loading states · Progress · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
 
 ---
 
@@ -178,6 +178,17 @@ The selected segment's look, in the sans: 24px tall, `--radius-control`, a `--su
 
 ## Kbd
 `--font-mono` at the caption size (12px) and weight 400, a 20px chip at `--radius-control`, `--surface-2`, inset `--line`. Use it for real shortcuts only.
+
+## Icons
+One set, drawn for litt on one grid. Use it before reaching for another set, so a view never mixes two drawings.
+- **Grid:** 16 units, a 1.5 stroke, round caps and joins, in `currentColor`, with no fill except a solid mark (Stop, the running status, the grip's dots). Shapes are drawn square; the round join is their only softening, as the radius is the controls'. Strokes stay inside 1 to 15, so nothing clips at any size.
+- **Keylines:** every icon fits one of four: a circle of radius 6.25, a square of 11.5, a landscape box of 12.5 by 9.5 or a portrait one of 9.5 by 12.5. A circle is drawn larger than a square because it covers less of its box, so the four read as one size in a row.
+- **Details:** arrows carry 4.25 heads on their own and 3 heads inside a mark (download, sort, undo). A point (the dot of an i) is a zero-length line, a row of dots is circles of 0.75, and a grid of six is filled circles of 0.5, so the grip weighs what a line icon weighs. A circle smaller than its stroke is filled, or some browsers draw it with a hole. Two strokes that cross a gap leave at least one stroke width of air.
+- **Size:** 16px beside text and in every control, `--control-gap` (8) from its label. 24 or 32 only alone, as in an empty state; the stroke scales with it.
+- **Color:** the text color it sits in. A status color goes on the icon only, never on its own: the words beside it say the same thing.
+- **Still:** an icon never spins, pulses, bounces or draws itself in. A running step is the half-filled circle, not a spinner.
+- **Look-alikes:** a mark that reads like another one at 16px gets redrawn. Settings is a gear because spokes read as the sun; Frame has its lines at the edges because the hash is a #.
+- **Missing one:** draw it on the same grid and keylines, or write the word. Never fill the gap from another set.
 
 ## Avatar
 A round mark for a person, a client or a company, and a group that stacks them.

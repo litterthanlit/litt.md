@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { ContextMenu } from "@/components/context-menu";
-import { ArchiveIcon, ChevronDownIcon, CopyIcon, FileIcon, FolderIcon, MoreIcon, SlidersIcon, TrashIcon } from "@/components/icons";
+import { ArchiveIcon, ChevronDownIcon, CopyIcon, EditIcon, FileIcon, FolderIcon, MoreIcon, SlidersIcon, TrashIcon } from "@/components/icons";
 import { StatusTag, type ProjectStatus } from "@/components/list";
 import {
   Menu,
@@ -113,16 +113,6 @@ const PROJECTS: { id: string; name: string; client: string; status: ProjectStatu
 ];
 const FOLDERS = ["Client work", "Templates", "Experiments", "Archive 2025"];
 
-/** Rename has no icon in the set, so it gets one here: 16px, a 1.5px stroke, like the rest. */
-function PencilIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M10.5 2.5l3 3L6 13H3v-3l7.5-7.5Z" />
-      <path d="M9 4l3 3" />
-    </svg>
-  );
-}
-
 /** One set of rows for both ways in: the context menu and the row's ⋯ Menu. */
 function ProjectActions({ name, pick }: { name: string; pick: (what: string) => void }) {
   return (
@@ -130,7 +120,7 @@ function ProjectActions({ name, pick }: { name: string; pick: (what: string) => 
       <MenuItem icon={<FileIcon />} shortcut="↵" onSelect={() => pick(`Opened ${name}`)}>
         Open
       </MenuItem>
-      <MenuItem icon={<PencilIcon />} onSelect={() => pick(`Renaming ${name}`)}>
+      <MenuItem icon={<EditIcon />} onSelect={() => pick(`Renaming ${name}`)}>
         Rename
       </MenuItem>
       <MenuItem icon={<CopyIcon />} shortcut="⌘D" onSelect={() => pick(`Duplicated ${name}`)}>
