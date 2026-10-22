@@ -17,6 +17,7 @@ import {
   TableVirtualBody,
   useRowSelection,
 } from "@/components/table";
+import { TableFilter } from "@/components/table-filter";
 import { Tag } from "@/components/tag";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
@@ -32,8 +33,8 @@ export const meta: PageMeta = {
 };
 
 export const docs: PageDocs = {
-  components: ["table"],
-  exports: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell", "TableEmpty", "TableSkeleton", "TableVirtualBody", "TableSelectHead", "TableSelectCell", "useRowSelection"],
+  components: ["table", "table-filter"],
+  exports: ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell", "TableEmpty", "TableSkeleton", "TableVirtualBody", "TableSelectHead", "TableSelectCell", "useRowSelection", "TableFilter"],
   usage: `import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/table";
@@ -93,13 +94,26 @@ const selection = useRowSelection(shown.map((d) => d.id));
     }}
   </TableVirtualBody>
 </Table>
-<ActionBar count={selection.count} noun="deploys" onClear={selection.clear}>…</ActionBar>`,
+<ActionBar count={selection.count} noun="deploys" onClear={selection.clear}>…</ActionBar>
+
+// A column filter sits in its header. Checkbox rows by default (none on is no filter), with counts.
+import { TableFilter } from "@/components/table-filter";
+<TableHead filter={<TableFilter column="Status" value={statuses} onValueChange={setStatuses}
+  options={[{ value: "ready", label: "Ready", count: 9214 }, { value: "failed", label: "Failed", count: 786 }]} />}>
+  Status
+</TableHead>
+// Buckets of a number: one choice, All first.
+<TableHead numeric filter={<TableFilter column="Build time" multiple={false} align="end" value={speed} onValueChange={setSpeed}
+  options={[{ value: "fast", label: "Under 30 s" }, { value: "slow", label: "Over 60 s" }]} />}>
+  Build time
+</TableHead>`,
   use: [
     "People compare rows across the same few fields: deploys, invoices, clients, builds. A table lines the values up so the eye can run down a column.",
     "The numbers and dates matter. They are set in mono, right-aligned, so figures line up by place.",
     "The list is long enough to scroll. The header stays in view once you give the Table a max height.",
     "Thousands of rows, such as a deploy history or an audit log. Use TableVirtualBody, so only the rows in view are drawn.",
     "People act on several rows at once. Add TableSelectHead and TableSelectCell with useRowSelection, and an ActionBar after the table.",
+    "People narrow a long table by a column's values: status, site, a range of build times. Give that column's TableHead a TableFilter.",
     "Rows can be sorted, filtered or inserted. Turn on animateChanges and they glide to their new places.",
     "You need a table on a phone. It scrolls sideways inside its own labelled region and never widens the page.",
   ],
@@ -116,6 +130,7 @@ const selection = useRowSelection(shown.map((d) => d.id));
     [["↑", "↓", "←", "→"], "On the focused scroll region, scrolls it. The region only takes focus when there is something to scroll."],
     [["Space"], "On a row's box, selects or clears the row. On the head box, selects or clears every row shown."],
     [["Shift"], "Held while pressing a row's box (click or Space), selects or clears every row between it and the last box pressed."],
+    [["Enter", "Space", "ArrowDown"], "On a column's filter button, opens its values. In the menu, Space toggles a value and keeps the menu open; Esc closes it."],
   ],
   a11y: [
     "It is a real <table> with a hidden <caption>, <th scope=\"col\"> headers and a <th scope=\"row\"> for each primary cell, so a screen reader can read a value with its column and its row.",
@@ -127,6 +142,7 @@ const selection = useRowSelection(shown.map((d) => d.id));
     "Color never carries a status alone. The demos use status Tags, which always say the status in words.",
     "Under reduced motion the rows appear at once, with no travel or stagger, and the hover fill changes without a fade.",
     "A virtual body keeps the table's semantics: aria-rowcount on the table and aria-rowindex on each row, so a screen reader says where a row sits in the whole list. Only the drawn rows can be tabbed to or found with the browser's find, so give a long table a search field.",
+    "A column's filter button is named for the column and what it holds (\"Filter status, 2 of 4 on\"), and its menu is named \"Filter status\". A filtering column's button looks selected and says how many values are on, so color never says it alone. Say the result in a polite status, as the count above the table does.",
     "Each row's box is named for the row (\"Select Halden Gallery\") and the head box for what it selects; it is mixed while only some rows shown are selected. A selected row is also filled, but the box carries the state.",
   ],
 };
@@ -222,17 +238,57 @@ const MANY: BigDeploy[] = (() => {
 
 const COUNT = new Intl.NumberFormat("en-GB");
 
+/* Build time in buckets, for the single-choice filter. */
+const SPEEDS = [
+  { value: "fast", label: "Under 30 s", test: (s: number) => s < 30 },
+  { value: "usual", label: "30 to 60 s", test: (s: number) => s >= 30 && s <= 60 },
+  { value: "slow", label: "Over 60 s", test: (s: number) => s > 60 },
+];
+const STATUSES = [
+  { value: "ready", label: "Ready" },
+  { value: "failed", label: "Failed" },
+];
+
 function ManyDeploysDemo() {
   const [search, setSearch] = useState("");
   const [slowFirst, setSlowFirst] = useState(false);
-  /* The table follows the query a beat behind the field, so typing never waits on ten thousand rows. */
+  const [statusOn, setStatusOn] = useState<string[]>([]);
+  const [sitesOn, setSitesOn] = useState<string[]>([]);
+  const [speedOn, setSpeedOn] = useState<string[]>([]);
+  /* The table follows the query and the filters a beat behind the controls, so nothing waits on ten thousand rows. */
   const query = useDeferredValue(search.trim().toLowerCase());
-  const shown = useMemo(() => {
-    const found = query ? MANY.filter((d) => d.site.toLowerCase().includes(query) || d.branch.includes(query) || d.id.includes(query)) : MANY;
-    return slowFirst ? [...found].sort((a, b) => b.seconds - a.seconds) : found;
-  }, [query, slowFirst]);
+  /* Each list is deferred on its own: they keep their identity until they change, so the rows are worked out again only then. */
+  const statusD = useDeferredValue(statusOn);
+  const sitesD = useDeferredValue(sitesOn);
+  const speedD = useDeferredValue(speedOn);
+
+  /* One pass: the rows that match everything, and for each filter's values how many rows match everything else, so
+     each count in a menu is what picking that value would give. */
+  const { shown, counts } = useMemo(() => {
+    const speed = SPEEDS.find((b) => b.value === speedD[0]);
+    const counts = { status: new Map<string, number>(), site: new Map<string, number>() };
+    const found: BigDeploy[] = [];
+    for (const d of MANY) {
+      if (query && !(d.site.toLowerCase().includes(query) || d.branch.includes(query) || d.id.includes(query))) continue;
+      const status = d.ok ? "ready" : "failed";
+      const byStatus = !statusD.length || statusD.includes(status);
+      const bySite = !sitesD.length || sitesD.includes(d.site);
+      const bySpeed = !speed || speed.test(d.seconds);
+      if (bySite && bySpeed) counts.status.set(status, (counts.status.get(status) ?? 0) + 1);
+      if (byStatus && bySpeed) counts.site.set(d.site, (counts.site.get(d.site) ?? 0) + 1);
+      if (byStatus && bySite && bySpeed) found.push(d);
+    }
+    return { shown: slowFirst ? found.sort((a, b) => b.seconds - a.seconds) : found, counts };
+  }, [query, statusD, sitesD, speedD, slowFirst]);
   const ids = useMemo(() => shown.map((d) => d.id), [shown]);
   const selection = useRowSelection(ids);
+  const filtering = statusOn.length + sitesOn.length + speedOn.length > 0;
+  const clearAll = () => {
+    setStatusOn([]);
+    setSitesOn([]);
+    setSpeedOn([]);
+    setSearch("");
+  };
 
   return (
     <div className="grid w-full max-w-4xl gap-4">
@@ -246,19 +302,53 @@ function ManyDeploysDemo() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-64"
         />
-        <p aria-live="polite" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
-          {shown.length === MANY.length ? `${COUNT.format(MANY.length)} deploys` : `${COUNT.format(shown.length)} of ${COUNT.format(MANY.length)} deploys`}
-        </p>
+        <div className="flex items-center gap-3">
+          <p aria-live="polite" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+            {shown.length === MANY.length ? `${COUNT.format(MANY.length)} deploys` : `${COUNT.format(shown.length)} of ${COUNT.format(MANY.length)} deploys`}
+          </p>
+          {(filtering || search) && (
+            <Button size="sm" variant="ghost" onClick={clearAll}>
+              Clear filters
+            </Button>
+          )}
+        </div>
       </div>
       <Table label="Deploys" className="max-h-[28rem]">
         <TableHeader>
           <TableRow>
             <TableSelectHead state={selection.head} onToggle={selection.toggleAll} label="Select every deploy shown" />
             <TableHead>Deploy</TableHead>
-            <TableHead>Site</TableHead>
+            <TableHead
+              filter={
+                <TableFilter
+                  column="Site"
+                  value={sitesOn}
+                  onValueChange={setSitesOn}
+                  options={SITES.map((site) => ({ value: site, label: site, count: counts.site.get(site) ?? 0 }))}
+                />
+              }
+            >
+              Site
+            </TableHead>
             <TableHead>Branch</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead numeric sort={slowFirst ? "descending" : "none"} onSort={() => setSlowFirst((v) => !v)}>
+            <TableHead
+              filter={
+                <TableFilter
+                  column="Status"
+                  value={statusOn}
+                  onValueChange={setStatusOn}
+                  options={STATUSES.map((st) => ({ ...st, count: counts.status.get(st.value) ?? 0 }))}
+                />
+              }
+            >
+              Status
+            </TableHead>
+            <TableHead
+              numeric
+              sort={slowFirst ? "descending" : "none"}
+              onSort={() => setSlowFirst((v) => !v)}
+              filter={<TableFilter column="Build time" multiple={false} align="end" value={speedOn} onValueChange={setSpeedOn} options={SPEEDS} allLabel="Any time" />}
+            >
               Build time
             </TableHead>
             <TableHead numeric>Deployed</TableHead>
@@ -292,8 +382,8 @@ function ManyDeploysDemo() {
           </TableVirtualBody>
         ) : (
           <TableBody>
-            <TableEmpty columns={7} action={<Button size="sm" onClick={() => setSearch("")}>Clear search</Button>}>
-              No deploy matches “{search.trim()}”.
+            <TableEmpty columns={7} action={<Button size="sm" onClick={clearAll}>Clear filters</Button>}>
+              No deploy matches these filters.
             </TableEmpty>
           </TableBody>
         )}
@@ -557,7 +647,7 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="ManyDeploysDemo"
-        caption="Ten thousand rows, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every deploy shown, and the action bar counts them."
+        caption="Ten thousand rows, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Filter by site, status or build time from the funnels in the headers: each value says how many deploys it would show, and a column that filters wears the selected segment. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every deploy shown, and the action bar counts them."
       >
         <ManyDeploysDemo />
       </Stage>

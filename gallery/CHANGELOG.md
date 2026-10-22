@@ -44,6 +44,9 @@ And six parts every web app reaches for: a number field with steppers, a hover c
 - **changed** `projects`: cards ticked in the grid bring up an action bar with Archive for all of them. Reinstall only if you have not edited the block; otherwise copy the ActionBar lines from the new file.
 - **changed** `icons`: `MinusIcon`, for the number field's stepper. Nothing in your code has to change.
 - **changed** `table`: big tables. `TableVirtualBody` draws only the rows in view, so ten thousand scroll as lightly as forty, with aria-rowcount and aria-rowindex kept; `TableSelectHead`, `TableSelectCell` and `useRowSelection` select rows by box, Shift for a range, and `selected` on a `TableRow` fills it. It now installs `checkbox` with it. Nothing in your code has to change.
+- **added** `table-filter`: TableFilter, a column's filter in its header: a funnel button that opens the column's values as Menu rows, checkboxes with a count each or radio buckets for a number, and wears the selected segment while it filters.
+- **changed** `table`: `filter` on a TableHead takes a TableFilter, beside the label or the sort button (before it over numbers). Nothing in your code has to change.
+- **changed** `icons`: `FilterIcon`, the funnel. Nothing in your code has to change.
 
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
 

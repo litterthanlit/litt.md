@@ -648,6 +648,11 @@ const RECIPES = {
     needs: ["Details", "DetailsItem", "DetailsLink"],
     jsx: `<div className="w-full max-w-lg" data-testid="litt-details"><Details title="Deployment"><DetailsItem label="Domain" copy="halo.studio"><DetailsLink href="https://halo.studio">halo.studio</DetailsLink></DetailsItem><DetailsItem label="Region" mono>fra1</DetailsItem><DetailsItem label="PO number" /></Details></div>`,
   },
+  "table-filter": {
+    needs: ["TableFilter"],
+    state: [`const [tfOn, setTfOn] = useState<string[]>(["ready"]);`],
+    jsx: `<div className="flex items-center gap-3" data-testid="litt-table-filter"><span>Status</span><TableFilter column="Status" value={tfOn} onValueChange={setTfOn} options={[{ value: "ready", label: "Ready", count: 9214 }, { value: "failed", label: "Failed", count: 786 }]} /></div>`,
+  },
   /* Blocks: whole screens, rendered as they ship, sample data and all. The agent chat is the finished one, so no script runs. */
   dashboard: { needs: ["Dashboard"], jsx: `<div className="w-full" data-testid="litt-block-dashboard"><Dashboard label="Smoke dashboard" viewportHeight="32rem" /></div>` },
   usage: { needs: ["Usage"], jsx: `<div className="w-full" data-testid="litt-block-usage"><Usage /></div>` },
