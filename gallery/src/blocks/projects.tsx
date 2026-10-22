@@ -6,11 +6,13 @@
  * A title with the count, then one toolbar: the status filters, a search field, a list or grid switch and New project,
  * the one accent fill. The rows arrive in one staggered cascade, the view's expressive moment. Every empty case says
  * why and offers the way back: a search with no match clears the search, and an empty status shows everything.
+ * Cards ticked in the grid bring up the action bar at the bottom of the view, with Archive for all of them at once.
  * Render it inside your app's shell (the dashboard block's AppShell, for one).
  */
 import { useState } from "react";
+import { ActionBar } from "@/components/action-bar";
 import { Button } from "@/components/button";
-import { PlusIcon } from "@/components/icons";
+import { ArchiveIcon, PlusIcon } from "@/components/icons";
 import { Input } from "@/components/input";
 import { ProjectFilters, ProjectGrid, ProjectList, ProjectsEmpty, matchesFilter, type Project, type ProjectFilter } from "@/components/list";
 import { Segmented } from "@/components/segmented";
@@ -50,6 +52,12 @@ export function Projects() {
   const found = projects.filter((p) => matchesQuery(p, query));
   const shown = found.filter((p) => matchesFilter(p, filter));
   const live = projects.filter((p) => p.status === "live").length;
+
+  /* Archiving takes the selected projects off the screen and ends the selection. */
+  const archive = () => {
+    setProjects((all) => all.filter((p) => !selected.includes(p.id)));
+    setSelected([]);
+  };
 
   /* A new project is a draft at the top. Live and Review would hide it, so the filter goes back to All. */
   const create = () => {
@@ -115,6 +123,13 @@ export function Projects() {
       ) : (
         <ProjectsEmpty filter={filter} onClearFilter={() => setFilter("all")} />
       )}
+
+      {/* The grid's selection: what to do with the cards ticked. The list has no boxes, so the bar waits for the grid. */}
+      <ActionBar count={view === "grid" ? selected.length : 0} noun="projects" onClear={() => setSelected([])}>
+        <Button size="sm" icon={<ArchiveIcon />} onClick={archive}>
+          Archive
+        </Button>
+      </ActionBar>
     </div>
   );
 }

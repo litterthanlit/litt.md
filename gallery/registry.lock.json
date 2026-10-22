@@ -6,6 +6,10 @@
       "version": "2026.10.19",
       "hash": "eee7d4cb1b662733"
     },
+    "action-bar": {
+      "version": "2026.10.22",
+      "hash": "07d26dbd704e3902"
+    },
     "activity": {
       "version": "2026.10.22",
       "hash": "ef846c5e05e0c1f7"
@@ -106,6 +110,10 @@
       "version": "2026.10.19",
       "hash": "e23f7927e03efec0"
     },
+    "deployment": {
+      "version": "2026.10.22",
+      "hash": "4eae3469fb539581"
+    },
     "dialog": {
       "version": "2026.10.19",
       "hash": "b00dcd792929bd73"
@@ -146,9 +154,13 @@
       "version": "2026.10.19",
       "hash": "937863057164371c"
     },
+    "hover-card": {
+      "version": "2026.10.22",
+      "hash": "cf7cb7720636e458"
+    },
     "icons": {
       "version": "2026.10.22",
-      "hash": "ac821bf30f38a5eb"
+      "hash": "2637146ecda118fc"
     },
     "input": {
       "version": "2026.10.19",
@@ -182,6 +194,10 @@
       "version": "2026.10.20",
       "hash": "f660d3a6cdeede4a"
     },
+    "log-view": {
+      "version": "2026.10.22",
+      "hash": "159f54b19cee3915"
+    },
     "media": {
       "version": "2026.10.22",
       "hash": "6bc2611a9862421a"
@@ -197,6 +213,10 @@
     "motion": {
       "version": "2026.10.21",
       "hash": "a5c60ef4dc0aa7f5"
+    },
+    "number-field": {
+      "version": "2026.10.22",
+      "hash": "b800aefe731f26c4"
     },
     "pad": {
       "version": "2026.10.19",
@@ -220,7 +240,11 @@
     },
     "projects": {
       "version": "2026.10.22",
-      "hash": "7f638888dd29ec56"
+      "hash": "cafeb35300a0ae42"
+    },
+    "resizable": {
+      "version": "2026.10.22",
+      "hash": "97c0d63b0e1a69b3"
     },
     "rolling-number": {
       "version": "2026.10.21",
@@ -317,6 +341,10 @@
     "tooltip": {
       "version": "2026.10.15",
       "hash": "bca14735046dd898"
+    },
+    "tree": {
+      "version": "2026.10.22",
+      "hash": "688e2d5ed42a04b2"
     },
     "usage": {
       "version": "2026.10.22",
