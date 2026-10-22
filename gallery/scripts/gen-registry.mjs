@@ -24,6 +24,7 @@
  *   motion        registry:lib    src/motion/* (spring tiers, the hooks)
  *   glide         registry:lib    components/glide.tsx (the gliding highlight)
  *   <stem>        registry:ui     one per src/components/*.tsx that has a page
+ *   <block>       registry:block  one per src/blocks/*.tsx: a whole screen built from the components, named after its page
  *   <stem>-demo   registry:example  the first demo on the component's page, as a working component (see EXAMPLES)
  *
  * WHY THE FILES ARE TRANSFORMED (nothing in src/, tokens.css or tailwind.css is edited)
@@ -51,6 +52,7 @@
  * WHERE FILES LAND IN A HOST (shadcn puts a target without "~/" under src/ when the host has one)
  *   components/litt/<stem>.tsx       the components
  *   lib/litt/motion/{index,spring,tokens,device,drag}.ts(x), lib/litt/glide.tsx     the engines
+ *   components/litt-blocks/<block>.tsx   the blocks: outside components/litt/, because a block is a starting point the host edits
  *   Every import between shipped files is relative, so no alias in the host matters, and none of
  *   it collides with the host's own components/ui/button.tsx. registryDependencies are absolute
  *   URLs, because shadcn resolves a bare name against its own registry.
@@ -116,6 +118,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repo = path.resolve(root, "..");
 const srcDir = path.join(root, "src");
 const componentsDir = path.join(srcDir, "components");
+const blocksDir = path.join(srcDir, "blocks");
 const motionDir = path.join(srcDir, "motion");
 const assetsDir = path.join(repo, "skills", "litt-md", "assets");
 const docsFile = path.join(srcDir, "generated", "docs.json");
@@ -542,22 +545,25 @@ const baseStylesCss = buildBaseStylesCss();
 
 const docs = JSON.parse(read(docsFile));
 const stems = Object.keys(docs).sort();
+/** The blocks: every file in src/blocks, each a whole screen that imports only components and the motion engine. */
+const blockNames = fs.existsSync(blocksDir) ? fs.readdirSync(blocksDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort() : [];
 
 /** Where a source file lands in a host, relative to the host's src/ (or root). */
 function targetOf(file) {
   const r = norm(path.relative(srcDir, file));
   if (r === "components/glide.tsx") return "lib/litt/glide.tsx";
+  if (r.startsWith("blocks/")) return `components/litt-blocks/${r.slice("blocks/".length)}`;
   if (r.startsWith("components/")) return `components/litt/${r.slice("components/".length)}`;
   if (r.startsWith("motion/")) return `lib/litt/motion/${r.slice("motion/".length)}`;
-  return fail(`${rel(file)}: only src/components and src/motion can be shipped`);
+  return fail(`${rel(file)}: only src/components, src/blocks and src/motion can be shipped`);
 }
 
 /** Which item a source file belongs to. */
 function itemOf(file) {
   const r = norm(path.relative(srcDir, file));
   if (r.startsWith("motion/")) return "motion";
-  const m = /^components\/([\w-]+)\.tsx$/.exec(r);
-  if (!m) return fail(`${rel(file)}: not a component file`);
+  const m = /^(?:components|blocks)\/([\w-]+)\.tsx$/.exec(r);
+  if (!m) return fail(`${rel(file)}: not a component or block file`);
   return m[1];
 }
 
@@ -1067,6 +1073,32 @@ const COPY = {
     description: "The Menu at the pointer: a right-click, Shift+F10 or a 500ms hold on touch. The same glass, rows, gliding highlight and solid submenus as the Menu, grown from the pointer's corner, and on a phone a submenu that replaces the list in place.",
     docs: "Import ContextMenu from components/litt/context-menu and fill it with the Menu's rows from components/litt/menu. Pass the target element as trigger and a label. Every action in it must also be reachable another way, such as a Menu on the row.",
   },
+  /* Blocks: whole screens. The docs line says where the sample data is, because that is the first thing to change. */
+  dashboard: {
+    title: "Dashboard block",
+    description: "A deploy dashboard as one screen: an app shell with a full-height sidebar, four number tiles, a chart of deploys per day and a table of recent deploys with its pagination. On a phone the sidebar becomes a top bar and its nav opens in the bottom sheet.",
+    docs: "Import Dashboard from components/litt-blocks/dashboard and render it as a whole page. The sample deploys and the sidebar links sit at the top of the file: replace them with your data and your routes.",
+  },
+  usage: {
+    title: "Usage block",
+    description: "A plan's usage as one screen, drawn only in rails: trends under the figures, storage and bandwidth by kind of file, the plan's limits against their budgets and build times by site. Each kind of file keeps one data hue on the whole screen, and nothing moves.",
+    docs: "Import Usage from components/litt-blocks/usage. The sample data sits at the top of the file: keep one hue per kind of thing across the screen when you replace it.",
+  },
+  growth: {
+    title: "Growth block",
+    description: "Twelve weeks of growth as one screen: sign-ups by source as thin stacked columns with a legend and a week range that filter them, the funnel from visit to paid and retention by signup week. Each source keeps one data hue.",
+    docs: "Import Growth from components/litt-blocks/growth. The sample weeks and sources sit at the top of the file: give each of your sources its own hue and keep it when the legend hides one.",
+  },
+  insights: {
+    title: "Insights block",
+    description: "Seven raised panels, one idea each: reply times as a dot plot, shortcuts as a bar list, a mail rule, a voice pad, a deploy timeline, a credits gauge and a heatmap of credits by day. Two columns when wide, one on a phone, and Create rule is the one accent fill.",
+    docs: "Import Insights from components/litt-blocks/insights, or copy the panels you need: each is its own function in the file, with its sample data above it.",
+  },
+  agent: {
+    title: "Agent block",
+    description: "A chat with an agent as one screen, from the first word to the deploy: the conversation, the thinking, a plan, a run of tool calls, an approval, the answer with its code and the composer. A scripted run plays every state without a model and waits for you at the approval.",
+    docs: "Import AgentChat from components/litt-blocks/agent and give its box a height; the conversation scrolls inside it. The run is a script: to wire in your agent, keep LittTurn and the layout and replace useRun with your stream.",
+  },
 };
 
 /* ======================================================================== examples */
@@ -1151,9 +1183,16 @@ function build(demos = []) {
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
   const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
+  // A block is named after the page that shows it, so its name finds that page, and never after a component.
+  const blockFiles = blockNames.map((b) => path.join(blocksDir, `${b}.tsx`));
+  const pageFiles = fs.readdirSync(pagesDir);
+  for (const b of blockNames) {
+    if (stems.includes(b)) fail(`src/blocks/${b}.tsx: "${b}" is already a component. Name the block after its page instead.`);
+    if (!pageFiles.some((f) => f.replace(/^\d+-/, "") === `${b}.tsx`)) fail(`src/blocks/${b}.tsx: no gallery page with the id "${b}" shows it. A block is named after its page (src/gallery/pages/<NN>-${b}.tsx).`);
+  }
 
   const targets = new Map();
-  for (const f of [...componentFiles, ...motionFiles]) targets.set(f, targetOf(f));
+  for (const f of [...componentFiles, ...motionFiles, ...blockFiles]) targets.set(f, targetOf(f));
 
   // 2. Transform every file once.
   const transformed = new Map();
@@ -1207,9 +1246,10 @@ function build(demos = []) {
     docs: COPY["base-styles"].docs,
   }));
 
-  // components and engines
+  // components, engines and blocks
   for (const name of itemNames) {
-    const type = ITEM_TYPE[name] ?? "registry:ui";
+    const block = blockNames.includes(name);
+    const type = ITEM_TYPE[name] ?? (block ? "registry:block" : "registry:ui");
     const files = itemFiles.get(name);
     const deps = new Set();
     const pkgs = new Set();
@@ -1231,12 +1271,14 @@ function build(demos = []) {
       ...(pkgs.size ? { dependencies: [...pkgs].sort() } : {}),
       ...(registryDependencies.length ? { registryDependencies } : {}),
       files: files.map((f) => ({
-        path: `registry/litt/${type === "registry:lib" ? "lib" : "ui"}/${targets.get(f).replace(/^(?:components|lib)\/litt\//, "")}`,
-        type,
+        // registry/litt/ui/button.tsx, registry/litt/lib/motion/index.tsx, registry/litt/blocks/dashboard.tsx
+        path: `registry/litt/${type === "registry:lib" ? "lib/" : block ? "" : "ui/"}${targets.get(f).replace(/^(?:components|lib)\/litt\//, "")}`,
+        // A block's file is a component in shadcn's terms; the block is the item that brings it with its dependencies.
+        type: block ? "registry:component" : type,
         content: transformed.get(f).text,
         target: targets.get(f),
       })),
-      docs: COPY[name].docs,
+      docs: block ? `${COPY[name].docs} See it live at ${PRODUCTION_ORIGIN}/#${name}.` : COPY[name].docs,
     }));
   }
   // examples: the first demo of each component page
@@ -1528,8 +1570,8 @@ function verify(items, targets, transformed, shadcn) {
       unprefixedVarRe.lastIndex = 0;
       const stray = [...text.matchAll(unprefixedVarRe)].map((m) => m[0]);
       if (stray.length) bad(where, `unprefixed litt custom property survives: ${[...new Set(stray)].join(", ")}`);
-      /* An example's text is a page's words too ("git push --force"), so it is read only where CSS reads a property. */
-      const varRe = item.type === "registry:example" ? /(?:var\(\s*|\(|["'`])(--[a-zA-Z][\w-]*)/g : /(?<![\w-])(--[a-zA-Z][\w-]*)/g;
+      /* An example's or a block's text is a page's words too ("git push --force"), so it is read only where CSS reads a property. */
+      const varRe = item.type === "registry:example" || item.type === "registry:block" ? /(?:var\(\s*|\(|["'`])(--[a-zA-Z][\w-]*)/g : /(?<![\w-])(--[a-zA-Z][\w-]*)/g;
       const names = new Set([...text.matchAll(varRe)].map((m) => m[1]));
       for (const n of names) {
         if (ALLOWED_FOREIGN_VARS.some((re) => re.test(n))) continue;
@@ -1633,7 +1675,7 @@ async function tailwindCrossCheck(items) {
 
   // Candidates: every whitespace-separated word of every original string literal, with its renamed twin.
   const pairs = new Map();
-  for (const f of [...fs.readdirSync(componentsDir).map((x) => path.join(componentsDir, x)), ...fs.readdirSync(motionDir).map((x) => path.join(motionDir, x))]) {
+  for (const f of [componentsDir, motionDir, blocksDir].filter((d) => fs.existsSync(d)).flatMap((d) => fs.readdirSync(d).map((x) => path.join(d, x)))) {
     if (!/\.tsx?$/.test(f)) continue;
     const sf = ts.createSourceFile(f, read(f), ts.ScriptTarget.Latest, true, f.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
     const take = (s) => { for (const tok of s.split(/\s+/)) if (/[a-z]/.test(tok)) pairs.set(tok, renameText(tok, "class")); };

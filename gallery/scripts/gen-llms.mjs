@@ -178,7 +178,7 @@ function pageMarkdown(page, cp) {
   return parts.join("\n\n") + "\n";
 }
 
-function llmsTxt(pages) {
+function llmsTxt(pages, cp) {
   const withDocs = pages.filter((p) => p.docs);
   const patterns = pages.filter((p) => !p.docs && p.meta.group);
   const sections = [
@@ -213,11 +213,20 @@ function llmsTxt(pages) {
     if (!list.length) continue;
     sections.push(`## ${g}`, list.map((p) => `- [${p.meta.title}](${ORIGIN}/docs/${p.meta.id}.md): ${p.meta.summary}`).join("\n"));
   }
-  if (patterns.length) {
+  const blocks = patterns.filter((p) => p.meta.block);
+  const demos = patterns.filter((p) => !p.meta.block);
+  if (blocks.length) {
+    sections.push(
+      "## Blocks",
+      "Whole screens composed from the components, each one registry item (`registry:block`) that installs the components it uses into `components/litt/` and the screen itself into `components/litt-blocks/<name>.tsx`. Unlike the components, the screen is yours to change: replace the sample data at the top of the file, keep the layout, and never reinstall it over your edits. Start from a block when a task asks for a screen like one of these.\n\n" +
+        blocks.map((p) => `- [${p.meta.title}](${ORIGIN}/#${p.meta.id}): ${p.meta.summary} Install: ${code(cp.installCommand(p.meta.block))}`).join("\n"),
+    );
+  }
+  if (demos.length) {
     sections.push(
       "## Patterns",
       "Pages that compose the components into whole screens. They are demos in the gallery, not registry items.\n\n" +
-        patterns.map((p) => `- [${p.meta.title}](${ORIGIN}/#${p.meta.id}): ${p.meta.summary}`).join("\n"),
+        demos.map((p) => `- [${p.meta.title}](${ORIGIN}/#${p.meta.id}): ${p.meta.summary}`).join("\n"),
     );
   }
   sections.push("## Optional", `- [Changelog](${ORIGIN}/changelog.md): every release, with an install line per item and migration steps.\n- [Everything in one file](${ORIGIN}/llms-full.txt)`);
@@ -232,7 +241,7 @@ async function main() {
   const files = new Map();
   const docsPages = pages.filter((p) => p.docs);
   for (const p of docsPages) files.set(`docs/${p.meta.id}.md`, pageMarkdown(p, cp));
-  const llms = llmsTxt(pages);
+  const llms = llmsTxt(pages, cp);
   files.set("llms.txt", llms);
   files.set("llms-full.txt", llms + "\n---\n\n" + docsPages.map((p) => files.get(`docs/${p.meta.id}.md`)).join("\n---\n\n"));
   files.set("changelog.md", read(path.join(root, "CHANGELOG.md")));

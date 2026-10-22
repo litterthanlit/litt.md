@@ -4,6 +4,16 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-22 · Blocks
+
+The first blocks: the gallery's five composed screens, each installable as one item that brings the components it uses. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
+
+- **added** `dashboard`: Dashboard, a deploy dashboard as one screen: an app shell with a sidebar, four number tiles, a chart of deploys per day and a table of recent deploys with its pagination.
+- **added** `usage`: Usage, a plan's usage as one screen, drawn only in rails: trends, storage and bandwidth by kind of file, limits against their budgets and build times by site.
+- **added** `growth`: Growth, twelve weeks of growth as one screen: sign-ups by source with a legend and a week range that filter them, the funnel from visit to paid and retention by signup week.
+- **added** `insights`: Insights, seven panels of inbox and build insights in the data colors, two columns when wide and one on a phone.
+- **added** `agent`: AgentChat, a chat with an agent as one screen, from the first word to the deploy, played by a script you replace with your agent's stream.
+
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
 
 Taste profile v0.16's P12 covers the current page only: the wordmark in a segment stays the gallery's own, not the language's. And three staples: a color picker for the person's own colors, a rolling number for a figure that changes while someone watches, and slide to confirm for what cannot be undone.

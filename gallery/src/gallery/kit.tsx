@@ -44,6 +44,11 @@ export type PageMeta = {
   summary: string;
   tiers: Tier[];
   /**
+   * The registry block this page shows: the name of a file in src/blocks, which is also this page's id. The header
+   * then offers the block's install command and its source, and a Code tab whose demo imports it shows the block too.
+   */
+  block?: string;
+  /**
    * The page may override the locked tokens with the motion dial. Every page
    * leaves this off except the Playground; the dial's CSS variables exist only
    * while a page with `tune` is open.
@@ -88,6 +93,8 @@ export function TierChip({ tier }: { tier: Tier }) {
 const loadDocs = () => import("./docs/page-docs");
 const DocsActions = lazy(() => loadDocs().then((m) => ({ default: m.DocsActions })));
 const DocsSections = lazy(() => loadDocs().then((m) => ({ default: m.DocsSections })));
+/* A block page's actions need no docs data, so they are a small chunk of their own. */
+const BlockActions = lazy(() => import("./docs/block-actions"));
 
 /**
  * Set by the sidebar's hover preview (nav-preview.tsx). A page then draws only its first
@@ -125,15 +132,23 @@ export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs
           <PageTitle id={`page-${meta.id}`} title={meta.title} lede={meta.lede} />
           {/* The tiers and the docs actions share one row, so the first demo comes up sooner. */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            <div className="flex flex-wrap gap-2">
-              {meta.tiers.map((t) => (
-                <TierChip key={t} tier={t} />
-              ))}
-            </div>
+            {/* A page with no tiers (nothing moves) leaves no empty group, so the actions start at the edge. */}
+            {meta.tiers.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {meta.tiers.map((t) => (
+                  <TierChip key={t} tier={t} />
+                ))}
+              </div>
+            )}
             {docs && (
               /* Holds the row's height while the docs chunk loads, so nothing below jumps. */
               <Suspense fallback={<div aria-hidden="true" className="h-control-sm" />}>
                 <DocsActions meta={meta} docs={docs} />
+              </Suspense>
+            )}
+            {meta.block && (
+              <Suspense fallback={<div aria-hidden="true" className="h-control-sm" />}>
+                <BlockActions block={meta.block} />
               </Suspense>
             )}
           </div>

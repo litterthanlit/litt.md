@@ -1,10 +1,14 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.10.21",
+  "latest": "2026.10.22",
   "items": {
     "accordion": {
       "version": "2026.10.19",
       "hash": "eee7d4cb1b662733"
+    },
+    "agent": {
+      "version": "2026.10.22",
+      "hash": "e94b6101eb8424b0"
     },
     "app-shell": {
       "version": "2026.10.20",
@@ -78,6 +82,10 @@
       "version": "2026.10.19",
       "hash": "0e0950f318d38a8d"
     },
+    "dashboard": {
+      "version": "2026.10.22",
+      "hash": "d702ebd49b3b9866"
+    },
     "date-picker": {
       "version": "2026.10.19",
       "hash": "e23f7927e03efec0"
@@ -106,6 +114,10 @@
       "version": "2026.10.12",
       "hash": "f3e980184f6443ef"
     },
+    "growth": {
+      "version": "2026.10.22",
+      "hash": "70daa8270447cd1c"
+    },
     "header": {
       "version": "2026.10.21",
       "hash": "f0efc61b1576305f"
@@ -121,6 +133,10 @@
     "input": {
       "version": "2026.10.19",
       "hash": "2c91fd9e5b17d054"
+    },
+    "insights": {
+      "version": "2026.10.22",
+      "hash": "320325337d926ec6"
     },
     "kbd": {
       "version": "2026.10.15",
@@ -249,6 +265,10 @@
     "tooltip": {
       "version": "2026.10.15",
       "hash": "bca14735046dd898"
+    },
+    "usage": {
+      "version": "2026.10.22",
+      "hash": "0607a865ab1f8651"
     }
   }
 }

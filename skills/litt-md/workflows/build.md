@@ -133,6 +133,18 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `base-styles` | Opt-in. Loads Geist at 400, 500 and 600 and Geist Mono at 400, and sets page defaults for the whole app: headings, b and strong at the title weight, table headers at the label weight, the control radius on native controls, the focus ring. Add it when the app is new or Nick wants the whole app in litt. Skip it in an app with its own type system. |
 | `motion`, `glide`, `icons`, `list-cover` | Libraries that components bring along. `motion` holds the hooks below, `icons` has 30 16px icons (`SearchIcon`, `PlusIcon`, `SettingsIcon`) and `StatusIcon` with the five step marks, and both are fine to install on their own. |
 
+**Blocks** are whole screens built from the items above. When the task asks for a screen like one of these, start from the block instead of composing it from nothing. It brings every component it uses.
+
+| Block | Install it for |
+|---|---|
+| `dashboard` | An app's overview: the app shell, four Stat tiles, a bar chart and a paginated table (`Dashboard`). |
+| `usage` | A plan's usage or billing page, drawn in rails: trends, a breakdown by kind, limits against budgets (`Usage`). |
+| `growth` | A growth or analytics report: stacked columns filtered by a Legend and a week range, a funnel, retention (`Growth`). |
+| `insights` | A grid of insight panels, one idea each: a dot plot, a bar list, a rule form, a timeline, a gauge, a heatmap (`Insights`). |
+| `agent` | A chat with an agent, every state of a turn, with a composer (`AgentChat`). The run is a script: replace `useRun` with your agent's stream. |
+
+A block lands in `components/litt-blocks/<name>.tsx`, outside `components/litt/`, because it is a starting point. Change it in place: replace the sample data at the top of the file, rename things, drop the panels you do not need. Keep its layout, its spacing and its one accent fill. Never reinstall a block over your edits.
+
 Each item prints a one-line import hint. The gallery page for an item (`https://littmd.vercel.app/#dialog`) has a working example.
 
 Every item also has its docs as Markdown at `https://littmd.vercel.app/docs/<item>.md` (props, keyboard, accessibility), and `https://littmd.vercel.app/llms.txt` lists them all. Read one when the installed file's JSDoc is not enough.
@@ -144,7 +156,7 @@ Every installed file names its release in its first lines (`// @litt/button 2026
 ### After installing
 
 - **Compose, never copy.** Import from `@/components/litt/<item>` (the `components` alias plus `litt/`). Do not write your own `Button`, `Dialog`, `Input` or any other component the registry has, not even a small one. A fresh shadcn app has its own `components/ui/button.tsx`: leave it alone and use litt's `Button` in litt UI.
-- **Never edit** a file under `components/litt/` or `lib/litt/`, or the `--litt-*` block in the global CSS. They are the tested copies, and a later install can overwrite your changes. Read the installed file for props: its exports and JSDoc are the source of truth.
+- **Never edit** a file under `components/litt/` or `lib/litt/`, or the `--litt-*` block in the global CSS. They are the tested copies, and a later install can overwrite your changes. Read the installed file for props: its exports and JSDoc are the source of truth. A block in `components/litt-blocks/` is the one installed file you change.
 - **If a component lacks something,** wrap it in your own file and tell Nick. That is a registry gap worth logging.
 - **Hand-build only what the registry lacks** (a hero, a pricing tier, a testimonial). Write it in your own file from `system/components.md`, with the names below.
 - **Phones come with the components.** The dialog, popover, menu, command menu, tooltip and toast already adapt to phones and touch (`system/foundations.md` section 6). If your own markup needs to know, read `useDevice()` from `@/lib/litt/motion` (`compact` for layout, `coarse` for touch) or use `max-sm:` and `pointer-coarse:`; never read the user agent.

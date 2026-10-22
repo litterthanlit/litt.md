@@ -580,6 +580,12 @@ const RECIPES = {
     ],
     jsx: `<div className="w-full max-w-xl"><ProjectList projects={projects} /></div>`,
   },
+  /* Blocks: whole screens, rendered as they ship, sample data and all. The agent chat is the finished one, so no script runs. */
+  dashboard: { needs: ["Dashboard"], jsx: `<div className="w-full" data-testid="litt-block-dashboard"><Dashboard label="Smoke dashboard" viewportHeight="32rem" /></div>` },
+  usage: { needs: ["Usage"], jsx: `<div className="w-full" data-testid="litt-block-usage"><Usage /></div>` },
+  growth: { needs: ["Growth"], jsx: `<div className="w-full" data-testid="litt-block-growth"><Growth /></div>` },
+  insights: { needs: ["Insights"], jsx: `<div className="w-full" data-testid="litt-block-insights"><Insights /></div>` },
+  agent: { needs: ["AgentChat"], jsx: `<div className="h-[36rem] w-full max-w-3xl" data-testid="litt-block-agent"><AgentChat finished label="Smoke agent chat" /></div>` },
 };
 
 /** Recipes for shadcn's own registry, used by `--registry shadcn` to prove the harness itself. */
