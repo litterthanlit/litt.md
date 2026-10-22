@@ -493,7 +493,7 @@ export default function FormPage() {
           tier="expressive"
           align="start"
           code="StartProjectDemo"
-          caption="A narrow column of md fields, a consent box above a full-width lg submit. Send it empty: each wrong field shows its error under it, and the summary on top takes focus. Its links move focus to the fields. Typing in a wrong field checks it again, so its error and its summary line clear as soon as the value is fine. A good send shows the button's loading state, then a toast, and keeps what you typed."
+          caption="A narrow column of md fields, a consent box above a full-width md submit. Send it empty: each wrong field shows its error under it, and the summary on top takes focus. Its links move focus to the fields. Typing in a wrong field checks it again, so its error and its summary line clear as soon as the value is fine. A good send shows the button's loading state, then a toast, and keeps what you typed."
         >
           <StartProjectDemo />
         </Stage>
@@ -503,7 +503,7 @@ export default function FormPage() {
           tier="instant"
           align="start"
           code="SettingsDemo"
-          caption="From 1024 up each section's title and description take the left third and the fields the rest. Below that they stack. A hairline and 48px of air separate sections, and a group of fields sits 48px from its neighbours. The two switches are one list: a Fieldset with rows puts a hairline between them and at both ends. Save is lg and primary, then a ghost Cancel. From 1024 up they line up with the fields. Below 640 they stack full width with Save on top. Cancel puts back every saved value, the select, switches and slider included."
+          caption="From 1024 up each section's title and description take the left third and the fields the rest. Below that they stack. A hairline and 48px of air separate sections, and a group of fields sits 48px from its neighbours. The two switches are one list: a Fieldset with rows puts a hairline between them and at both ends. Save is md and primary, then a ghost Cancel. From 1024 up they line up with the fields. Below 640 they stack full width with Save on top. Cancel puts back every saved value, the select, switches and slider included."
         >
           <SettingsDemo />
         </Stage>
