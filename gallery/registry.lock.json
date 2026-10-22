@@ -62,6 +62,10 @@
       "version": "2026.10.19",
       "hash": "137fc3cbe5d88eda"
     },
+    "code-input": {
+      "version": "2026.10.22",
+      "hash": "d2aaa4156a3965a5"
+    },
     "cohort-grid": {
       "version": "2026.10.20",
       "hash": "03fc3f36ed7d77a9"
@@ -101,6 +105,10 @@
     "dot-plot": {
       "version": "2026.10.19",
       "hash": "1f226565599d4dbb"
+    },
+    "file-drop": {
+      "version": "2026.10.22",
+      "hash": "df2f86e8b8851f25"
     },
     "form": {
       "version": "2026.10.20",
@@ -190,6 +198,10 @@
       "version": "2026.10.15",
       "hash": "2cb4d20598f1de38"
     },
+    "progress": {
+      "version": "2026.10.22",
+      "hash": "cb3d38c19c1c882a"
+    },
     "projects": {
       "version": "2026.10.22",
       "hash": "7f638888dd29ec56"
@@ -241,6 +253,10 @@
     "states": {
       "version": "2026.10.19",
       "hash": "6fea99e54da1c2d6"
+    },
+    "steps": {
+      "version": "2026.10.22",
+      "hash": "0936ddf6531deee4"
     },
     "switch": {
       "version": "2026.10.19",

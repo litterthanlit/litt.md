@@ -1073,6 +1073,26 @@ const COPY = {
     description: "The Menu at the pointer: a right-click, Shift+F10 or a 500ms hold on touch. The same glass, rows, gliding highlight and solid submenus as the Menu, grown from the pointer's corner, and on a phone a submenu that replaces the list in place.",
     docs: "Import ContextMenu from components/litt/context-menu and fill it with the Menu's rows from components/litt/menu. Pass the target element as trigger and a label. Every action in it must also be reachable another way, such as a Menu on the row.",
   },
+  progress: {
+    title: "Progress",
+    description: "A thin rail for work that is happening now, such as an upload or an import. It fills on the instant tier, ends done or failed in words, and with no value yet stays empty: nothing sweeps, pulses or shimmers.",
+    docs: "Import Progress from components/litt/progress. Pass a label, a value and a max, and status=\"done\" or \"failed\" when it ends. A quantity that does not move while you watch is a Meter.",
+  },
+  "code-input": {
+    title: "Code input",
+    description: "A short one-time code drawn as one cell per character but built as one real field, so paste, one-time-code autofill and screen readers work as in any field. The last character runs onComplete once.",
+    docs: "Import CodeInput from components/litt/code-input. Give it a label and check the code in onComplete; show what was wrong in error.",
+  },
+  "file-drop": {
+    title: "File drop",
+    description: "An area to drop files on or choose them from, that turns away the wrong type or size and says why, and rows that show each file uploading on a Progress rail, with Retry for one that failed.",
+    docs: "Import FileDrop, FileList and FileRow from components/litt/file-drop. FileDrop hands the files that passed to onFiles; you upload them and render a FileRow for each.",
+  },
+  steps: {
+    title: "Steps",
+    description: "Where someone is in a flow of a few steps, in the step marks: a check for done, a half-filled circle for now, an empty circle for what is left. A row, a column, or in a narrow box Step 2 of 4 with a rail per step.",
+    docs: "Import Steps from components/litt/steps. Pass the steps and the current index; onStepSelect lets done steps go back.",
+  },
   /* Blocks: whole screens. The docs line says where the sample data is, because that is the first thing to change. */
   dashboard: {
     title: "Dashboard block",

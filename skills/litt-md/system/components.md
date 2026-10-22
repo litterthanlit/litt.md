@@ -1,9 +1,9 @@
 # Components
 
-Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) and the staples (combobox, date picker, color picker, slide to confirm, rolling number, accordion, scroll area, breadcrumb, context menu) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
+Reference specs for the core components. `assets/specimen.html` shows the static look of most of them (buttons, inputs, checkboxes, the segmented control, tags, kbd, cards, the glass header, the command menu, a static menu and a toast), so copy from there. Their motion behavior is specified below and built in the gallery (`gallery/` in this repo). Tooltip, tabs, modal, tables, pagination, stat tiles, charts, the app shell, empty and loading states, select, switch, slider, forms and the data-color step's items (token input, pad, avatar, callout, sparkline, breakdown, bar list, gauge, dot plot, spread, heatmap, timeline) the agents step's items (conversation and message, composer, thinking, tool call, plan, code block) the staples (combobox, date picker, color picker, slide to confirm, rolling number, accordion, scroll area, breadcrumb, context menu) and the app screens' parts (code input, file drop, steps, progress) are not in the specimen. Every component needs all of its states designed: default, hover, active, focus-visible, disabled, and loading, empty or error where they apply.
 
 ## Contents
-Button · Input · Token input · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Color picker · Slide to confirm · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Callout · Accordion · Scroll area · Glass header · Breadcrumb · Tooltip · Command menu · Popover and dropdown · Context menu · Modal · Toast · Table and list rows · Pagination · Stat · Rolling number · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · App shell · Empty and loading states · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
+Button · Input · Code input · Token input · File drop · Select · Combobox · Date picker · Checkbox and radio · Switch · Slider · Pad · Color picker · Slide to confirm · Segmented control · Tabs · Tag · Kbd · Avatar · Card · Callout · Accordion · Scroll area · Glass header · Breadcrumb · Steps · Tooltip · Command menu · Popover and dropdown · Context menu · Modal · Toast · Table and list rows · Pagination · Stat · Rolling number · Chart · Sparkline · Breakdown · Bar list · Gauge · Dot plot · Spread · Heatmap · Timeline · App shell · Empty and loading states · Progress · Forms · Conversation and message · Composer · Thinking · Tool call · Plan · Code block
 
 ---
 
@@ -38,6 +38,14 @@ The label is at `--weight-title` at every size, with no extra tracking. Hover ch
 - **Help text:** `--type-small-size` in `--fg-subtle`, `--space-2` below.
 - **Textarea:** the same field for longer text, with the same edge, focus, error, label and help text. It has no fixed height, so its size sets the air above and below the text, and it resizes vertically only.
 
+## Code input
+A short one-time code, such as the six digits from a sign-in email. It looks like one box per character and behaves like one text field.
+- **Build:** one real `<input>` lies over the cells, invisible, with `autocomplete="one-time-code"`, so paste, the browser's autofill from a text message, password managers and screen readers all treat it as one field with its label. The cells are drawn from its value and hidden from assistive tech.
+- **Anatomy:** the Input's field per cell (`--surface-1`, the inset `--line-control` edge, `--radius-control`), square on the control scale (md 44, lg 56), each character in the mono at the body size. In a box too narrow for them the cells share its width, never below 32px, so the page never scrolls sideways. Six cells split three and three with a wider gap. The label above at `--weight-title`, a hint or an error below, as a TextField.
+- **Focus:** the cell the next character goes into takes the focus edge and ring, and an empty one shows a still 1px caret. Nothing blinks.
+- **Typing:** only what the code can hold gets in (digits, or letters and digits in capitals), so a pasted "123 456" lands as 123456. The last character runs the completion callback once; the caller checks the code there. Backspace clears from the end.
+- **Error and disabled:** an error puts the `--danger` edge on every cell and says what to do under them. Disabled is `--surface-2` and `--fg-disabled`. The edges fade on the instant tier.
+
 ## Token input
 A field that collects short values as removable tokens: sender domains, recipients, tags. The Input's sibling, with the Tag inside.
 - **Field:** the Input's: minimum heights `--control-sm`, `--control-md` (default) and `--control-lg`, `--radius-control`, `--surface-1`, the inset `--line-control` edge, the danger edge when invalid and the focus ring around the whole field while its text input is focus-visible. It grows by rows of 24px tokens, 4px apart; the text input takes the rest of the line, at least 8ch.
@@ -45,6 +53,14 @@ A field that collects short values as removable tokens: sender domains, recipien
 - **Adding and removing:** Enter, a comma or leaving the field adds what was typed; a paste splits on commas, semicolons and line breaks; duplicates and empties are ignored. A rejected value stays in the input with its message under the field. Backspace in an empty input removes the last token. The remove buttons are one roving stop: left and right walk them, right past the last returns to the input, and Backspace or Delete removes the focused one. `max` stops adding and says so.
 - **Accessibility:** a real label; tokens are a list named by it; a polite live region says "Added stripe.com" and "Removed stripe.com"; the hint, the rejection and the limit are linked descriptions. `name` posts one hidden input per value.
 - **Motion:** a new token fades in with a 0.98 scale on the responsive tier, its neighbors slide by transform, and a removed one fades out on the exit.
+
+## File drop
+Where someone adds files, by dropping or choosing them, and watches them upload.
+- **Area:** a quiet panel at `--radius-surface` with a dashed `--line-strong` edge (a dashed edge is what says "drop here") and fg 3% inside. A row, not a centered stack: a raised 32px square with an up arrow, the words ("Drop files here", then the types and the limit in `--fg-subtle`) and a secondary sm button, Choose files. While files are over it the edge turns solid `--fg`, the fill goes to fg 6% and the words say what a drop will do, on the instant tier. On a touch screen it says "Add files".
+- **Choosing:** the button opens the picker and is the only tab stop; a click anywhere on the area opens it too. Dragging is never the only way.
+- **Checking:** a file of the wrong type or over the limit is turned away with one sentence under the area, in `--danger`, naming the file and why, in an alert. The rest are handed over.
+- **Rows:** one per file, the name in the mono at the caption size, the size at the end, a Progress rail under the name while it uploads. A failed file keeps its rail where it stopped and says why, with Retry; Remove (or Cancel while it uploads) is a ghost icon button named for the file.
+- **Disabled:** fg 3% with a `--line` edge, no drop and no tab stop. The words stay `--fg-subtle`, because they still say something (when it opens again), as a disabled Slide to confirm's do.
 
 ## Select
 One value from a short list (a role, a region, a plan). It replaces the native `<select>`, whose list cannot be styled on the desktop and whose rows are 28 to 30px on a phone.
@@ -209,6 +225,15 @@ Where a page sits: Studio / Projects / Marlow Labs / Settings.
 - **On compact screens** only the last two levels show; the rest fold into the "…" button.
 - **Router:** links are plain `<a>` unless the caller passes its own link component.
 - **Motion:** none.
+
+## Steps
+Where someone is in a flow of three to six steps, such as setting up a studio. Not for views someone moves between freely (Tabs) or a page's place in a hierarchy (Breadcrumb).
+- **Marks:** the step marks of Plan and Tool call, so one mark means one thing everywhere: a check in a circle for done (`--fg-muted`), a half-filled circle for the current step (`--fg`, never spinning or pulsing), an empty circle for what is left (`--fg-subtle`). Never a number in a colored disc and never the accent.
+- **Words:** the current label at `--weight-title` in `--fg`, done ones in `--fg-muted`, the rest in `--fg-subtle`, at the small size.
+- **Row:** a hairline between steps, in `--fg` once the step before it is done. In a box narrower than about 640px it becomes "Step 2 of 4" and the current label, with one 4px rail per step, done and current in `--fg`. The box decides, by a container query, not the screen.
+- **Column:** the hairline runs down between the marks, with a line under each step, for a side panel or a checklist.
+- **Going back:** done steps may be buttons that go back. The current step and what is left never are: a flow moves forward by its own Continue.
+- **Accessibility:** an ordered list named by the flow, `aria-current="step"` on the current one, each state in hidden text. Nothing animates.
 
 ## Tooltip
 Solid, not glass, with `--shadow-tooltip`, `--radius-control` and small type in `--fg`.
@@ -428,6 +453,14 @@ The frame around an app's pages: a sidebar for moving between them and a main ar
 - **Empty:** one sentence saying what will appear here and one action to make it appear. Left-aligned in the container. No illustration unless art direction (Q5) says so.
 - **Loading:** the skeleton fills with `--surface-2` at the real content's dimensions, and it is static. No pulse and no shimmer: a loop is motion that is not a response to the user, and a sweeping gradient animates material (P5).
 - **Error:** what went wrong, in plain words, plus how to fix it or retry. Status color on the text or icon only.
+
+## Progress
+Work that is happening now, such as an upload or an import, with a known end. A quantity against a limit that stands still is a Meter (Chart).
+- **Anatomy:** the Meter's lockup: the label at the small size in `--fg`, the reading at the end in the mono at the caption size in `--fg-subtle`, and a 4px rail at `--radius-control`, the track at fg 12% and the done part in `--fg`. Never the accent and never a data hue.
+- **Ending:** done fills the rail and the reading says Done; failed keeps the rail where it stopped in `--danger` and says Failed, with a message under it that says what to do. The end is announced once in a polite status.
+- **Not known yet:** an empty rail and the reading in words ("Waiting"). Nothing sweeps, pulses or shimmers; a wait with no end in sight is the loading state of the button that started it.
+- **Motion:** the done part is a full-width band scaled from the left, a transform on the instant tier. Under reduced motion it jumps.
+- **Accessibility:** `role="progressbar"`, named by the label, `aria-valuenow` while known and the reading as `aria-valuetext`.
 
 ## Forms
 How the controls above make a page. One left-aligned column, never centered (P7).

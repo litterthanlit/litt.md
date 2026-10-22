@@ -580,6 +580,22 @@ const RECIPES = {
     ],
     jsx: `<div className="w-full max-w-xl"><ProjectList projects={projects} /></div>`,
   },
+  progress: {
+    needs: ["Progress"],
+    jsx: `<div className="grid w-full max-w-sm gap-4" data-testid="litt-progress"><Progress label="Uploading brief.pdf" value={3.2} max={8} valueText="3.2 of 8 MB" /><Progress label="Importing pages" status="failed" value={412} max={1204} message="The export file ends early." /></div>`,
+  },
+  "code-input": {
+    needs: ["CodeInput"],
+    jsx: `<div data-testid="litt-code-input"><CodeInput label="Sign-in code" defaultValue="246" help="We sent six digits to ines@halo.studio." /></div>`,
+  },
+  "file-drop": {
+    needs: ["FileDrop", "FileList", "FileRow"],
+    jsx: `<div className="grid w-full max-w-lg gap-4" data-testid="litt-file-drop"><FileDrop label="Project files" accept={[".pdf", "image/*"]} hint="PDF or images, up to 10 MB" onFiles={() => {}} /><FileList label="Project files"><FileRow name="halo-brief.pdf" size={2516582} /><FileRow name="brand-fonts.zip" size={6291456} progress={64} error="The connection dropped." onRetry={() => {}} onRemove={() => {}} /></FileList></div>`,
+  },
+  steps: {
+    needs: ["Steps"],
+    jsx: `<div className="w-full max-w-2xl" data-testid="litt-steps"><Steps label="Set up your studio" current={1} steps={[{ id: "a", label: "Details" }, { id: "b", label: "Team" }, { id: "c", label: "Billing" }]} /></div>`,
+  },
   /* Blocks: whole screens, rendered as they ship, sample data and all. The agent chat is the finished one, so no script runs. */
   dashboard: { needs: ["Dashboard"], jsx: `<div className="w-full" data-testid="litt-block-dashboard"><Dashboard label="Smoke dashboard" viewportHeight="32rem" /></div>` },
   usage: { needs: ["Usage"], jsx: `<div className="w-full" data-testid="litt-block-usage"><Usage /></div>` },

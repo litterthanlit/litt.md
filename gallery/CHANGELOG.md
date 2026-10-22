@@ -4,9 +4,11 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-22 · Blocks
+## 2026-10-22 · Blocks, and four new components
 
 The first blocks: ten whole screens, the gallery's five composed pages and five app screens (projects, settings, team, activity and sign in), each installable as one item that brings the components it uses. The app screens are a page's content, to render inside your app's shell. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
+
+And four components app screens need: a progress rail for work happening now, a one-time code input, a file drop and steps for a flow.
 
 - **added** `dashboard`: Dashboard, a deploy dashboard as one screen: an app shell with a sidebar, four number tiles, a chart of deploys per day and a table of recent deploys with its pagination.
 - **added** `usage`: Usage, a plan's usage as one screen, drawn only in rails: trends, storage and bandwidth by kind of file, limits against their budgets and build times by site.
@@ -18,6 +20,10 @@ The first blocks: ten whole screens, the gallery's five composed pages and five 
 - **added** `team`: Team, a studio's people as one screen: seats as a meter, roles changed in place, open invites, an invite dialog for several addresses and a removal undone from its toast.
 - **added** `activity`: Activity, a studio's activity as one screen: events grouped by day, filtered by kind, each one sentence in two inks with its time in the mono.
 - **added** `sign-in`: SignIn, the page before the app: email and password, a second way in, wrong fields that take focus and a refusal in a callout.
+- **added** `progress`: Progress, a rail for work happening now, filling on the instant tier and ending done or failed in words; with no value yet it stays empty and still.
+- **added** `code-input`: CodeInput, a one-time code drawn as one cell per character and built as one real field, so paste and one-time-code autofill work; onComplete runs once.
+- **added** `file-drop`: FileDrop, FileList and FileRow: drop or choose files, turned away by type or size with a reason, each uploading on a Progress rail with Retry and Remove.
+- **added** `steps`: Steps, where someone is in a flow of a few steps, in the step marks, as a row, a column or Step 2 of 4 in a narrow box.
 
 ## 2026-10-21 · The header's wordmark is bare again, a color picker, a rolling number and slide to confirm
 
