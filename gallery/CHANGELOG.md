@@ -4,6 +4,16 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-23 · Fun mode, more to touch
+
+More of fun mode's touch, still a trial and still only with a `FunMode` on: highlights that reach for where they are going, numbers you can scrub, and toasts you can throw. Each comes to rest on exactly the frame it draws without fun mode, and reduced motion turns it all off. Off by default, so nothing changes until you turn it on.
+
+- **changed** `motion`: in fun mode, anything dragged and let go short of leaving (a toast, a sheet) springs home on fun mode's throw spring, with a little life, instead of without a bounce. Nothing in your code has to change.
+- **changed** `glide`: in fun mode the highlight stretches toward the row it is going to and gathers itself there, in every menu, context menu, select, combobox and command menu. Nothing in your code has to change.
+- **changed** `tabs`: in fun mode the underline stretches to the new tab, its leading edge first, and the segmented fill springs to its tab. Nothing in your code has to change.
+- **changed** `number-field`: in fun mode a step kicks the number the way it went, and dragging the label sideways scrubs the value, giving like a rubber band past min and max. Nothing in your code has to change.
+- **changed** `toast`: in fun mode a mouse can throw the front toast away too, and it leaves with the speed it was thrown at. Nothing in your code has to change.
+
 ## 2026-10-22 · Blocks, images, and the parts a web app needs
 
 The first blocks: ten whole screens, the gallery's five composed pages and five app screens (projects, settings, team, activity and sign in), each installable as one item that brings the components it uses. The app screens are a page's content, to render inside your app's shell. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
@@ -12,17 +22,21 @@ And four components app screens need: a progress rail for work happening now, a 
 
 And the first image components: a frame for one picture that keeps its shape while it loads, a carousel that never moves on its own, a lightbox for seeing a set at the size of the screen, and a case study page that puts the three together.
 
-And fun mode, a trial: a switch that changes how litt moves, never how it looks at rest. Wrap any part of your app in `FunMode` (from the motion engine) and the data parts arrive and change with springs (a heatmap's dots in two waves with a lens under the pointer, a gauge's needle with weight, meters, bars, sparklines and stats that grow and count honestly, a timeline that pops, draws and celebrates a run that went live), while buttons squish, checkboxes draw their tick and the segmented control's surface springs. Each comes to rest on exactly the frame it draws without fun mode, and reduced motion turns it all off. Off by default, so nothing changes until you turn it on.
+And fun mode, a trial: a switch that changes how litt moves, never how it looks at rest. Wrap any part of your app in `FunMode` (from the motion engine) and the data parts arrive and change with springs (a heatmap's dots in two waves with a lens under the pointer, a gauge's needle with weight, meters, bars, sparklines and stats that grow and count honestly, a timeline that pops, draws and celebrates a run that went live), while buttons squish, checkboxes draw their tick and the segmented control's surface springs. What you hold is physical too: a switch stretches toward where it will go, a slider's thumb lifts and stretches with your speed, and a slide to confirm or a carousel can be thrown, coasting to where that speed carries it. Each comes to rest on exactly the frame it draws without fun mode, and reduced motion turns it all off. Off by default, so nothing changes until you turn it on.
 
 And six parts every web app reaches for: a number field with steppers, a hover card that previews a link, an action bar for a selection, a tree for files, panels with a line to drag between them, and a log view for a build as it runs. The deployment screen puts four of them together, and the projects screen's grid now acts on what it selects.
 
 And the icon set, grown from 34 to 98 and redrawn to one grid, with a page of its own to search it.
 
 - **changed** `icons`: the set grows from 34 to 98, drawn on one grid with four keylines. New in navigation: ChevronUp, ChevronsUpDown, ArrowLeft, ArrowRight, Home, Sidebar, Expand, Shrink, Undo, Redo and LogOut. In actions: Edit, Link, Download, Send, Sort, Grip, Eye, EyeOff, Lock, Unlock, Star and Pin. In objects: Play, Pause, Code, Terminal, Globe, Layers, Frame, Cursor, Grid, List, Box, Database and GitBranch. In status: CheckCircle, XCircle, Warning, Help, Clock, History, Zap, Activity, Shield, Key, Flag, Cloud, Sparkle and Lightbulb. In people and data: Users, Building, Mail, Inbox, Message, AtSign, Hash, Command, ChartBar, ChartLine, ChartPie, TrendUp, TrendDown and CreditCard. SettingsIcon is a gear now, because its spokes read as SunIcon, and ArrowUpRightIcon is a size larger, to match the other arrows. Nothing in your code has to change.
-- **changed** `motion`: `FunMode` and `useFun` turn on fun mode, a trial, for everything inside (reduced motion and `StillMotion` still win), and `useFunValue` and `countText` are the honest count the parts share: a figure never shows more than its data and never counts back. Nothing changes until you render a `FunMode`.
+- **changed** `motion`: `FunMode` and `useFun` turn on fun mode, a trial, for everything inside (reduced motion and `StillMotion` still win), and `useFunValue` and `countText` are the honest count the parts share: a figure never shows more than its data and never counts back. `useFunGrab` is a thumb you hold (it lifts, stretches with the finger's speed and wobbles back), and fun mode's motion has a throw spring with `coast` and `rubber` for things you throw. Nothing changes until you render a `FunMode`.
 - **changed** `button`: in fun mode the press goes deeper and springs back on fun mode's press spring, still in CSS. Nothing in your code has to change.
 - **changed** `checkbox`: in fun mode a drawn box that someone checks pops and draws its tick. Nothing in your code has to change.
 - **changed** `segmented`: in fun mode the selected surface springs to its segment and settles. Nothing in your code has to change.
+- **changed** `switch`: in fun mode the thumb crosses on a spring and lands a hair past its end, and while held it stretches toward where it will go. Nothing in your code has to change.
+- **changed** `slider`: in fun mode a held thumb lifts, stretches along the rail with your speed and wobbles back to its size when let go, on the Slider and the RangeSlider. Nothing in your code has to change.
+- **changed** `slide-confirm`: in fun mode the thumb can be thrown: it coasts to the end and confirms if your speed would carry it there, or springs back, squashing against the end it hits; the check pops in. Nothing in your code has to change.
+- **changed** `carousel`: in fun mode a mouse drag can be thrown and coasts to the slide its speed reaches, buttons and keys land on the same spring, and a drag past either end gives like a rubber band. Nothing in your code has to change.
 - **changed** `chart`: in fun mode a Meter's fill grows in and springs to new values, its reading counts with it, the target tick pops as the fill passes it and steps light in turn. Nothing in your code has to change.
 - **changed** `gauge`: in fun mode the lit ticks sweep to the value with a needle's weight and the figure counts with them. Nothing in your code has to change.
 - **changed** `bar-list`: in fun mode the bars grow in rank order and spring to new values, the values count, and rows that trade places slide past each other (rows are keyed by label while it is on). Nothing in your code has to change.

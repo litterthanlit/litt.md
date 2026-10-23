@@ -22,7 +22,7 @@ import { toCss, type Spring } from "./spring";
 import { readLocked, surfaceRadius, type Dial, type Locked } from "./tokens";
 
 export { surfaceRadius, type Dial };
-export { countText, FUN_SPRINGS, FunMode, honestCount, useFun, useFunValue, type FunMotion, type FunValue } from "./fun";
+export { countText, FUN_SPRINGS, FunMode, honestCount, useFun, useFunGrab, useFunValue, type FunGrab, type FunMotion, type FunValue } from "./fun";
 export {
   DeviceProvider,
   readDismiss,

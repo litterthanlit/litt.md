@@ -18,12 +18,17 @@
  *   so the switches of a settings list line up in one column.
  * - Motion: the instant tier only. The thumb slides by translate and the fills fade. The
  *   box never moves. Hover and press show a wash over the track.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the thumb crosses on fun mode's glide spring, as
+ *   a CSS linear() easing, so it lands a hair past its end and settles. While the row is held the thumb stretches 4px
+ *   toward where it will go (a second circle under it slides out, by transform, and fades away when let go), so a
+ *   press says which way it is about to move. At rest the thumb is exactly the circle above. Reduced motion turns it off.
  * - Touch: rows are at least 44px tall on coarse pointers.
  * - Forced colors drops box-shadow and background colors, so the track gets a real border and
  *   system colors mark the on state.
  */
-import { useId, type ReactNode, type Ref } from "react";
+import { useId, type CSSProperties, type ReactNode, type Ref } from "react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
+import { useFun } from "@/motion";
 
 export type SwitchAlign = "start" | "end";
 
@@ -80,6 +85,14 @@ const thumb =
   "forced-colors:bg-[ButtonText] forced-colors:data-[state=checked]:bg-[HighlightText] " + // a token color would be forced to the canvas, so the thumb names system colors
   "forced-colors:data-disabled:bg-[GrayText] forced-colors:data-disabled:data-[state=checked]:bg-[GrayText]";
 
+/* Fun mode's stretch: a second circle, the thumb's ::after in the thumb's own color, hidden at rest. While the row is held
+   it shows and slides 4px toward the other end, so the thumb reads as a capsule leaning the way it will go. */
+const stretch =
+  "relative after:absolute after:inset-0 after:rounded-pill after:bg-inherit after:opacity-0 " +
+  "after:transition-[translate,opacity] after:duration-(--dur-instant) after:ease-litt " +
+  "group-active/switch:after:translate-x-1 group-active/switch:after:opacity-100 " +
+  "group-active/switch:data-[state=checked]:after:-translate-x-1 data-disabled:after:hidden forced-colors:after:hidden";
+
 /* Hover and press, as a wash over the track. It is not tied to the button's own :hover, because the row is the target.
    When on, the track is --fg, so an --fg wash would not show: the wash there is --canvas instead. */
 const wash =
@@ -110,6 +123,14 @@ export function Switch({
   const id = idProp ?? auto;
   const descriptionId = description ? `${id}-description` : undefined;
   const end = align === "end";
+  /* Fun mode: the thumb's travel (the first transitioned property) takes the glide spring; its fill keeps the instant tier. */
+  const fun = useFun();
+  const glide: CSSProperties | undefined = fun
+    ? {
+        transitionDuration: `${fun.glideCss.duration}ms, var(--dur-instant)`,
+        transitionTimingFunction: `${fun.glideCss.easing}, var(--ease-out)`,
+      }
+    : undefined;
 
   return (
     <div
@@ -132,7 +153,7 @@ export function Switch({
         aria-describedby={descriptionId}
         className={trackBase + (end ? " col-start-2 row-start-1" : " col-start-1 row-start-1")}
       >
-        <SwitchPrimitive.Thumb className={thumb} />
+        <SwitchPrimitive.Thumb className={fun ? thumb + " " + stretch : thumb} style={glide} />
       </SwitchPrimitive.Root>
       <span aria-hidden="true" className={wash + (end ? " col-start-2" : " col-start-1")} />
       {/* The label is stretched over the whole row, so a click anywhere in it toggles the switch. */}

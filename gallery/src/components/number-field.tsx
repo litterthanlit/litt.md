@@ -16,10 +16,17 @@
  *   value. Empty is allowed unless `required`, and gives null.
  * - Keys: ↑ and ↓ step, Shift with them or Page Up and Page Down step ten times, Home and End go to min and max.
  * - Motion: none of its own. The edge fades on the instant tier, as the Input's does; the value changes at once.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a step by a stepper or a key kicks the number
+ *   the way it went (up from below for more, down from above for less) and it lands on fun mode's pop spring. The
+ *   label can be dragged sideways to scrub the value, a step every 8px, and past min or max the number gives like a
+ *   rubber band and springs back when let go. The steppers and keys still do everything a scrub does. Transform only,
+ *   and the field rests exactly as it does without fun mode. Reduced motion turns it off.
  * - Accessibility: the input is a spinbutton named by the label, with aria-valuenow, -valuemin, -valuemax and the
  *   formatted value and unit as aria-valuetext. The steppers are named "Decrease seats" and "Increase seats".
  */
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { animate } from "motion/react";
+import { useFun } from "@/motion";
 import { MinusIcon, PlusIcon } from "@/components/icons";
 
 export type NumberFieldSize = "sm" | "md" | "lg";
@@ -52,6 +59,9 @@ const STEPPER =
 
 const HOLD_DELAY = 400; // ms before a held stepper starts repeating
 const HOLD_EVERY = 70; // ms between repeats
+const SCRUB_PX = 8; // fun mode: px of sideways drag on the label per step
+const SCRUB_SLOP = 4; // px before a press on the label is a scrub, not a click
+const KICK = 4; // fun mode: px a step starts the number from, the way it went
 
 /** The decimals a step has, so 0.1 + 0.2 lands on 0.3 and not 0.30000000000000004. */
 const decimalsOf = (n: number) => {
@@ -173,10 +183,18 @@ export function NumberField({
     set(n === null ? null : fit(n));
   };
 
+  /* Fun mode: the number lands from the way it went. */
+  const fun = useFun();
+  const kick = (dir: number) => {
+    if (fun && input.current && dir) void animate(input.current, { y: [dir > 0 ? KICK : -KICK, 0] }, fun.pop);
+  };
+
   const stepBy = (times: number) => {
     const from = value ?? (times > 0 ? (min ?? 0) - step : (max ?? 0) + step);
     setDraft(null);
-    set(fit(from + times * step));
+    const next = fit(from + times * step);
+    set(next);
+    if (fun) kick(Math.sign(next - (value ?? next - times)));
   };
 
   const atMin = min !== undefined && value !== null && value <= min;
@@ -185,6 +203,62 @@ export function NumberField({
   const jumpTo = (bound: number) => {
     setDraft(null);
     set(bound);
+    if (fun) kick(Math.sign(bound - (value ?? bound)));
+  };
+
+  /* Fun mode: scrub by dragging the label sideways. Past a bound the number gives like a rubber band. */
+  const scrub = (e: ReactPointerEvent<HTMLLabelElement>) => {
+    if (!fun || disabled || (e.pointerType === "mouse" && e.button !== 0)) return;
+    const el = e.currentTarget;
+    const id0 = e.pointerId;
+    const x0 = e.clientX;
+    const start = value ?? min ?? 0;
+    let last = value;
+    let claimed = false;
+    const move = (ev: PointerEvent) => {
+      if (ev.pointerId !== id0) return;
+      const dx = ev.clientX - x0;
+      if (!claimed) {
+        if (Math.abs(dx) < SCRUB_SLOP) return;
+        claimed = true;
+        try {
+          el.setPointerCapture(id0);
+        } catch {
+          /* the pointer is already gone */
+        }
+      }
+      const raw = start + Math.round(dx / SCRUB_PX) * step;
+      const next = fit(raw);
+      if (next !== last) {
+        /* Told directly, not through set(): set compares with the value this render saw, which a scrub has moved on from. */
+        last = next;
+        setDraft(null);
+        if (valueProp === undefined) setInner(next);
+        onValueChange?.(next);
+      }
+      const over = raw === next ? 0 : ((raw - next) / step) * SCRUB_PX;
+      if (input.current) input.current.style.translate = over ? `${fun.rubber(over)}px` : "";
+    };
+    const up = (ev: PointerEvent) => {
+      if (ev.pointerId !== id0) return;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+      if (!claimed) return;
+      /* The click that ends a scrub is not a press on the label, which would focus the text. */
+      const swallow = (c: Event) => {
+        c.stopPropagation();
+        c.preventDefault();
+      };
+      window.addEventListener("click", swallow, { capture: true, once: true });
+      setTimeout(() => window.removeEventListener("click", swallow, true), 0);
+      const field = input.current;
+      const pulled = field ? parseFloat(field.style.translate) || 0 : 0;
+      if (field && pulled) void animate(pulled, 0, { ...fun.throw, onUpdate: (v) => (field.style.translate = v ? `${v}px` : "") });
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -273,7 +347,11 @@ export function NumberField({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <label htmlFor={id} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label
+        htmlFor={id}
+        onPointerDown={fun ? scrub : undefined}
+        className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg") + (fun && !disabled ? " w-fit cursor-ew-resize touch-pan-y select-none" : "")}
+      >
         {label}
       </label>
       <div

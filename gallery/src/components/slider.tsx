@@ -15,6 +15,10 @@
  * - Motion: none on the position. The thumb and the range follow the pointer and the keys at
  *   once, because position is a layout value and an eased jump would lag the input. Only colors
  *   fade, on the instant tier. The thumb never changes size on hover, focus or drag.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a thumb a finger holds lifts, stretches along
+ *   the rail with the finger's speed (and thins across it), and wobbles back to its own size when let go
+ *   (useFunGrab). Only its scale moves: it still sits exactly where the value puts it, and keys move it as before.
+ *   Reduced motion turns it off.
  * - Keys: arrows step, Home and End go to the ends, Page Up and Page Down move about a tenth of
  *   the range (whole steps, never fewer than one). The focus ring is :focus-visible only.
  * - Touch: the hit area is 44px tall on coarse pointers. The row grows, the rail does not. The
@@ -38,8 +42,9 @@
  *   handled here, because Radix sends Home to the first thumb and End to the last, whichever has focus.
  * - A form sends both values under name (FormData.getAll(name) is [from, to]), not under name[].
  */
-import { useId, useState, type KeyboardEvent, type ReactNode, type Ref } from "react";
+import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
 import * as RadixSlider from "@radix-ui/react-slider";
+import { useFunGrab, type FunGrab } from "@/motion";
 
 export type SliderProps = {
   /** The label above the slider. Required, because it names the thumb for screen readers. */
@@ -167,6 +172,41 @@ function pageSteps(min: number, max: number, step: number) {
   return Math.max(1, Math.round((max - min) / step / 10));
 }
 
+/** Hands an element to a ref the caller passed, of either kind. */
+function setRef<T>(ref: Ref<T> | undefined, el: T | null) {
+  if (typeof ref === "function") ref(el);
+  else if (ref) (ref as RefObject<T | null>).current = el;
+}
+
+/**
+ * Fun mode's held thumb (useFunGrab): the pointer handler for the root, which takes hold of the thumb nearest the
+ * finger, the refs for the root and the thumbs, and `moved`, which tells the grab where the value has gone.
+ */
+function useHeldThumb(grab: FunGrab | null, min: number, max: number, ref: Ref<HTMLSpanElement> | undefined) {
+  const root = useRef<HTMLSpanElement>(null);
+  const thumbs = useRef<(HTMLSpanElement | null)[]>([]);
+  return {
+    root,
+    thumbRef: (i: number) => (el: HTMLSpanElement | null) => {
+      thumbs.current[i] = el;
+      if (i === 0) setRef(ref, el);
+    },
+    onPointerDown: (event: PointerEvent<HTMLSpanElement>) => {
+      if (!grab || (event.pointerType === "mouse" && event.button !== 0)) return;
+      let near: HTMLSpanElement | null = null;
+      let best = Infinity;
+      for (const el of thumbs.current) {
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        const d = Math.abs(event.clientX - (r.left + r.width / 2));
+        if (d < best) [near, best] = [el, d];
+      }
+      grab.grab(near);
+    },
+    moved: (value: number) => grab?.move(((value - min) / (max - min || 1)) * (root.current?.offsetWidth ?? 0)),
+  };
+}
+
 type FieldProps = {
   labelId: string;
   label: ReactNode;
@@ -252,11 +292,15 @@ export function Slider({
   const [inner, setInner] = useState(defaultValue ?? min);
   const value = valueProp ?? inner;
   const text = formatValue ? formatValue(value) : String(value);
+  /* Fun mode: the held thumb. With it off, the root and the thumb get exactly what they always got. */
+  const grab = useFunGrab();
+  const held = useHeldThumb(grab, min, max, ref);
 
   const change = (next: number | undefined) => {
     if (next === undefined) return;
     if (valueProp === undefined) setInner(next);
     onValueChange?.(next);
+    held.moved(next);
   };
 
   /* Radix moves ten steps on Page Up and Page Down. The spec says about a tenth of the range, in whole steps. */
@@ -292,6 +336,8 @@ export function Slider({
         onValueChange={(v) => change(v[0])}
         onValueCommit={(v) => v[0] !== undefined && onValueCommit?.(v[0])}
         onKeyDown={pageKeys}
+        ref={grab ? held.root : undefined}
+        onPointerDown={grab ? held.onPointerDown : undefined}
         data-no-drag=""
         className={root}
       >
@@ -299,7 +345,7 @@ export function Slider({
           <RadixSlider.Range className={range} />
         </RadixSlider.Track>
         <RadixSlider.Thumb
-          ref={ref}
+          ref={grab ? held.thumbRef(0) : ref}
           id={id}
           aria-labelledby={labelId}
           aria-describedby={helpId}
@@ -366,11 +412,16 @@ export function RangeSlider({
   };
   const same = (a: number[], b: number[]) => a[0] === b[0] && a[1] === b[1];
 
+  /* Fun mode: the held thumb. With it off, the root and the thumbs get exactly what they always got. */
+  const grab = useFunGrab();
+  const grip = useHeldThumb(grab, min, max, ref);
+
   const change = (next: number[]) => {
     const held = hold(next);
     if (same(held, values)) return;
     if (valueProp === undefined) setInner(held);
     onValueChange?.(held);
+    grip.moved(held[0] !== from ? held[0] : held[1]);
   };
 
   /* Radix commits a key press with the move it wanted. When the other thumb held it back, nothing moved, so nothing is saved.
@@ -423,6 +474,8 @@ export function RangeSlider({
         preserveThumbOrder
         onValueChange={change}
         onValueCommit={commit}
+        ref={grab ? grip.root : undefined}
+        onPointerDown={grab ? grip.onPointerDown : undefined}
         data-no-drag=""
         className={root}
       >
@@ -432,7 +485,7 @@ export function RangeSlider({
         {([0, 1] as const).map((i) => (
           <RadixSlider.Thumb
             key={i}
-            ref={i === 0 ? ref : undefined}
+            ref={grab ? grip.thumbRef(i) : i === 0 ? ref : undefined}
             id={thumbId(i)}
             /* A form sends both values under the same name (Radix would add [] to it). */
             name={disabled ? undefined : name}

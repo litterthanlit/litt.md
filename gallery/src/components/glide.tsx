@@ -13,6 +13,11 @@
  *   Keyboard: it follows the highlighted item.
  * - Keyboard-driven highlights also show an inset 1px focus ring for 3:1
  *   visibility. A pointer-driven highlight shows no ring.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the highlight
+ *   stretches toward the row it is going to. Its leading edge goes on fun mode's glide
+ *   spring and its trailing edge follows on the slower swap spring, so it reaches out,
+ *   then gathers itself on the row (a scale along y, from its top). It rests exactly
+ *   where it does without fun mode. Reduced motion turns it off.
  *
  * Usage
  *   const glide = useGlide();
@@ -26,8 +31,8 @@
  * in DOM order. A row marked data-disabled or aria-disabled is skipped by the pointer.
  */
 import { useCallback, useMemo, useRef, type KeyboardEvent, type PointerEvent } from "react";
-import { animate, motion, useMotionValue, type AnimationPlaybackControls } from "motion/react";
-import { useExit, useTransition } from "@/motion";
+import { animate, motion, useMotionValue, useTransform, type AnimationPlaybackControls } from "motion/react";
+import { useExit, useFun, useTransition } from "@/motion";
 
 export type GlideSource = "pointer" | "keyboard" | "touch";
 
@@ -57,10 +62,15 @@ const isDisabled = (el: HTMLElement) => el.hasAttribute("data-disabled") || el.g
 export function useGlide(options: GlideOptions = {}) {
   const enter = useTransition("responsive");
   const exit = useExit("responsive");
-  const latest = useRef({ enter, exit, options });
-  latest.current = { enter, exit, options };
+  const fun = useFun();
+  const latest = useRef({ enter, exit, options, fun });
+  latest.current = { enter, exit, options, fun };
 
   const y = useMotionValue(0);
+  /* Fun mode: the bottom edge moves on its own spring, and the highlight is drawn from y to it. */
+  const bottom = useMotionValue(0);
+  const height = useRef(1);
+  const scaleY = useTransform(() => (bottom.get() - y.get()) / height.current);
   const opacity = useMotionValue(0);
   const list = useRef<HTMLElement | null>(null);
   const hl = useRef<HTMLDivElement | null>(null);
@@ -70,7 +80,7 @@ export function useGlide(options: GlideOptions = {}) {
   const modality = useRef<"pointer" | "keyboard">("keyboard");
   const inside = useRef(false);
   const lastPoint = useRef({ x: -1, y: -1 });
-  const runs = useRef<{ y?: AnimationPlaybackControls; o?: AnimationPlaybackControls }>({});
+  const runs = useRef<{ y?: AnimationPlaybackControls; b?: AnimationPlaybackControls; o?: AnimationPlaybackControls }>({});
 
   const rows = useCallback(() => Array.from(list.current?.querySelectorAll<HTMLElement>(ROW) ?? []), []);
 
@@ -83,10 +93,29 @@ export function useGlide(options: GlideOptions = {}) {
       el.style.width = `${row.offsetWidth}px`;
       el.style.height = `${row.offsetHeight}px`;
       runs.current.y?.stop();
+      runs.current.b?.stop();
+      const f = latest.current.fun;
+      if (f) {
+        /* Fun mode: the edge on the side it is going leads on the glide spring, the other trails on the swap spring. */
+        const top = row.offsetTop;
+        const end = top + row.offsetHeight;
+        height.current = row.offsetHeight || 1;
+        if (jump) {
+          y.jump(top);
+          bottom.jump(end);
+          return;
+        }
+        /* Fun mode turned on while a highlight showed: the bottom edge starts where the highlight is. */
+        if (Math.abs(bottom.get() - y.get() - row.offsetHeight) > 1 && !runs.current.b) bottom.jump(y.get() + row.offsetHeight);
+        const down = top > y.get();
+        runs.current.y = animate(y, top, down ? f.swap : f.glide);
+        runs.current.b = animate(bottom, end, down ? f.glide : f.swap);
+        return;
+      }
       if (jump) y.jump(row.offsetTop);
       else runs.current.y = animate(y, row.offsetTop, latest.current.enter);
     },
-    [y],
+    [y, bottom],
   );
 
   const hide = useCallback(() => {
@@ -229,7 +258,7 @@ export function useGlide(options: GlideOptions = {}) {
       aria-hidden="true"
       data-ring="false"
       className="pointer-events-none absolute top-0 left-0 rounded-control bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] data-[ring=true]:shadow-[inset_0_0_0_1px_var(--focus)]"
-      style={{ y, opacity }}
+      style={fun ? { y, opacity, scaleY, originY: 0 } : { y, opacity }}
     />
   );
 

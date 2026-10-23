@@ -8,6 +8,9 @@
  * - Arrival: a data part's marks grow to their values in a choreographed wave, and its figures count up with them.
  * - Change: a new value springs from the old one, interruptibly.
  * - Touch: what is under the finger answers it (a press that squishes, a tick that draws, a lens over a heatmap).
+ *   Things you hold are physical: a held thumb lifts and stretches with the speed of the finger (useFunGrab), a held
+ *   switch stretches toward where it will go, and a thrown thing keeps the speed it was let go at, coasts (coast) and
+ *   settles on a step (the throw spring). Past an end it gives like a rubber band (rubber) and comes back.
  *
  * Two honesty rules: a mark may overshoot by a hair, as a physical thing would, but a figure never shows a value the
  * data does not hold, and a count never goes back while a mark settles. And celebration is earned: only a real
@@ -37,7 +40,22 @@ export const FUN_SPRINGS = {
   glide: { time: 0.3, bounce: 0.3 },
   /** A press: down and back with a little life. */
   press: { time: 0.2, bounce: 0.45 },
+  /** A thrown thing landing on its step: it carries the speed it was let go at, so the time is the settle, not the trip. */
+  throw: { time: 0.45, bounce: 0.22 },
 } satisfies Record<string, Spring>;
+
+/** How far a throw carries: the distance it would cover in this many seconds at the speed it was let go. */
+const COAST_SECONDS = 0.2;
+/** How far past an end a pull can go, in px, however hard it pulls. */
+const RUBBER_LIMIT = 40;
+/** How stiff the pull past an end starts (1 would be one to one). */
+const RUBBER_GIVE = 0.55;
+/** A held thumb lifts this much, and stretches along the way it moves by up to STRETCH_MAX, reached at STRETCH_SPEED px/s. */
+const LIFT = 1.15;
+const STRETCH_MAX = 0.3;
+const STRETCH_SPEED = 1600;
+/** A held thumb that stops moving for this long, in ms, loses its stretch. */
+const STRETCH_REST_MS = 80;
 
 /** Drawing a line or a count: a tween, so the pen moves at a steady hand and a count never overshoots. */
 const DRAW_SECONDS = 0.9;
@@ -77,6 +95,14 @@ export type FunMotion = {
   burst: Transition;
   /** For CSS: the press as a scale, a linear() easing and its settle time in ms. */
   press: { scale: number; easing: string; duration: number };
+  /** For CSS: the glide as a linear() easing and its settle time in ms, for a thumb that crosses its track. */
+  glideCss: { easing: string; duration: number };
+  /** A thrown thing landing on its step. Pass the release speed as `velocity`, in the animated value's units per second. */
+  throw: Transition;
+  /** How far a throw at `velocity` (px per second, signed) carries past where it was let go, in px. */
+  coast: (velocity: number) => number;
+  /** A pull `over` px past an end, as the px it shows: one to one at first, then giving less and less, never past a limit. */
+  rubber: (over: number) => number;
 };
 
 const MOTION: FunMotion = {
@@ -91,6 +117,10 @@ const MOTION: FunMotion = {
   shake: { x: SHAKE, transition: { type: "tween", duration: SHAKE_SECONDS, ease: "easeOut" } },
   burst: { type: "tween", duration: BURST_SECONDS, delay: BURST_DELAY, ease: BURST_EASE },
   press: { scale: PRESS_SCALE, easing: press.easing, duration: press.duration },
+  glideCss: toCss(FUN_SPRINGS.glide),
+  throw: spring(FUN_SPRINGS.throw),
+  coast: (velocity) => velocity * COAST_SECONDS,
+  rubber: (over) => Math.sign(over) * RUBBER_LIMIT * (1 - Math.exp((-RUBBER_GIVE * Math.abs(over)) / RUBBER_LIMIT)),
 };
 
 const FunContext = createContext(false);
@@ -194,4 +224,67 @@ export function useFunValue(target: number, { kind = "grow", delay = 0, count = 
   }, [target, count]);
 
   return { value, shown, moving };
+}
+
+export type FunGrab = {
+  /** A finger took hold of `el`: it lifts. Lets go by itself when the pointer comes up anywhere. */
+  grab: (el: HTMLElement | null) => void;
+  /** The held thing is now at `at` px along its track: it stretches along the way it moves, by the finger's speed. */
+  move: (at: number) => void;
+};
+
+/**
+ * A thumb you hold, in fun mode: it lifts when a finger takes it, stretches along the way it moves with the finger's
+ * speed (and thins across it, so it reads as one soft thing), and wobbles back to its own size when let go. Only its
+ * scale moves, never its place, so the thumb still sits exactly where the value puts it. Null with fun mode off.
+ */
+export function useFunGrab(): FunGrab | null {
+  const fun = useFun();
+  const held = useRef<{ el: HTMLElement; at: number | null; t: number; rest: number } | null>(null);
+
+  useEffect(
+    () => () => {
+      const h = held.current;
+      if (h) window.clearTimeout(h.rest);
+      held.current = null;
+    },
+    [],
+  );
+
+  if (!fun) return null;
+
+  const stretch = (el: HTMLElement, s: number) =>
+    animate(el, { scaleX: LIFT * (1 + s), scaleY: LIFT * (1 - s / 2) }, fun.follow);
+
+  return {
+    grab(el) {
+      if (!el) return;
+      held.current = { el, at: null, t: 0, rest: 0 };
+      animate(el, { scaleX: LIFT, scaleY: LIFT }, fun.pop);
+      const up = () => {
+        window.removeEventListener("pointerup", up);
+        window.removeEventListener("pointercancel", up);
+        const h = held.current;
+        if (!h || h.el !== el) return;
+        window.clearTimeout(h.rest);
+        held.current = null;
+        animate(el, { scaleX: 1, scaleY: 1 }, fun.pop);
+      };
+      window.addEventListener("pointerup", up);
+      window.addEventListener("pointercancel", up);
+    },
+    move(at) {
+      const h = held.current;
+      if (!h) return;
+      const now = performance.now();
+      if (h.at !== null && now > h.t) {
+        const speed = (Math.abs(at - h.at) / (now - h.t)) * 1000;
+        stretch(h.el, STRETCH_MAX * Math.min(1, speed / STRETCH_SPEED));
+      }
+      h.at = at;
+      h.t = now;
+      window.clearTimeout(h.rest);
+      h.rest = window.setTimeout(() => held.current === h && stretch(h.el, 0), STRETCH_REST_MS);
+    },
+  };
 }

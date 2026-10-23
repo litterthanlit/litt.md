@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.10.22",
+  "latest": "2026.10.23",
   "items": {
     "accordion": {
       "version": "2026.10.19",
@@ -56,7 +56,7 @@
     },
     "carousel": {
       "version": "2026.10.22",
-      "hash": "cd6a113ab725ce31"
+      "hash": "eb0fb1efbc838cbc"
     },
     "case-study": {
       "version": "2026.10.22",
@@ -143,8 +143,8 @@
       "hash": "148a99de83cd6964"
     },
     "glide": {
-      "version": "2026.10.12",
-      "hash": "f3e980184f6443ef"
+      "version": "2026.10.23",
+      "hash": "0c0d0188cc46ccd3"
     },
     "growth": {
       "version": "2026.10.22",
@@ -215,12 +215,12 @@
       "hash": "a37d5c6f399661d1"
     },
     "motion": {
-      "version": "2026.10.22",
-      "hash": "fef7d4d7aacc3bd7"
+      "version": "2026.10.23",
+      "hash": "c2214725755a0f6b"
     },
     "number-field": {
-      "version": "2026.10.22",
-      "hash": "b800aefe731f26c4"
+      "version": "2026.10.23",
+      "hash": "102a1fc03f619c22"
     },
     "pad": {
       "version": "2026.10.19",
@@ -275,12 +275,12 @@
       "hash": "64e123df8ac6d468"
     },
     "slide-confirm": {
-      "version": "2026.10.21",
-      "hash": "573f6426a47964a1"
+      "version": "2026.10.22",
+      "hash": "ebd8b25621d1cfe0"
     },
     "slider": {
-      "version": "2026.10.19",
-      "hash": "33fd6c721813cbcc"
+      "version": "2026.10.22",
+      "hash": "b28b5b32e8fb0a14"
     },
     "sparkline": {
       "version": "2026.10.22",
@@ -303,8 +303,8 @@
       "hash": "0936ddf6531deee4"
     },
     "switch": {
-      "version": "2026.10.19",
-      "hash": "9d72af4f55b2b53b"
+      "version": "2026.10.22",
+      "hash": "305ad5e0dcb33d37"
     },
     "table": {
       "version": "2026.10.22",
@@ -315,8 +315,8 @@
       "hash": "7d0af029a2a5c080"
     },
     "tabs": {
-      "version": "2026.10.19",
-      "hash": "fdc13a1e886d32ac"
+      "version": "2026.10.23",
+      "hash": "86d8fbaf96b68d4c"
     },
     "tag": {
       "version": "2026.10.19",
@@ -335,8 +335,8 @@
       "hash": "bca33598c63304cd"
     },
     "toast": {
-      "version": "2026.10.19",
-      "hash": "6d0dbffa168d16d5"
+      "version": "2026.10.23",
+      "hash": "0bebdbd535b5fb66"
     },
     "token-input": {
       "version": "2026.10.19",
