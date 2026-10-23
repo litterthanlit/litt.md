@@ -120,7 +120,7 @@ export default function MenuPage() {
 - Captions are written for Nick: short, plain sentences, no em dashes. Say "the travel token" or "the stagger token", not "the dial", and avoid quoting the tunable numbers (durations, travel, stagger), so the copy cannot drift from `tokens.css`.
 - Leave `tune` off in your page meta. Only the Playground sets it, because it is the one page allowed to override the motion tokens.
 - Name the file `<NN>-<meta.id>.tsx`. The Code view finds a page's source by its id.
-- Tag the page with what a person does to the component, for the overview's filter: `verbs: ["drag", "type"]` in `meta`, from press, type, select, drag, hover, open, and watch (it moves on its own). Leave it out for a static piece such as a tag. The overview shows every page as a card: its first stage's demo, live and held still.
+- Tag the page with what a person does to the component, for the overview's filter: `verbs: ["drag", "type"]` in `meta`, from press, type, select, drag, hover, open, and watch (it moves on its own). Leave it out for a static piece such as a tag. The overview is a wall of every component page as a tile: its first stage's demo, live at its real size in a tile about 520px wide, held still until someone reaches for it, then moving as it does on its page. Make sure your first demo reads at that width. When it is more than one tile should hold (a whole set, a page's worth), give it a specimen in the overview's `SPECIMENS`; when it needs the height, add it to `TALL`. Blocks are screens, so they show below the wall as pictures.
 
 ## Document it
 
