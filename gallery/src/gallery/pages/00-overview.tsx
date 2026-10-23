@@ -5,10 +5,11 @@
  * is its title, the site's own pages, a filter by what you do (Press, Type, Drag…, each page's meta.verbs) and every
  * component as a tile you can use right here. No sidebar (meta.wall): the tiles are the way in.
  *
- * - A tile is the quiet track of the Segmented control at the size of a stage: fg 5% on the canvas, the hairline, the
- *   surface radius. The component sits on it the way the selected segment sits on its track, so the raised surfaces
- *   in it read as objects, and the tile itself carries no chrome: the component, then its name in the grey, which
- *   links to its page and turns --fg while the pointer is on the tile.
+ * - A tile is one step down from a stage: --surface-2 with the hairline at the surface radius, so the raised surfaces
+ *   in it read as objects, as a selected segment does on its track. It is a surface token, not a tint, because a
+ *   component's own quiet track (fg 5%, as in Slide to confirm) then lands on a ground whose contrast is checked:
+ *   a 5% tile under a 5% track took the grey under 4.5:1. The tile carries no chrome: the component, then its name
+ *   in the grey, which links to its page and turns --fg while the pointer is on the tile.
  * - The component is the real one at its real size: the page's first demo (PreviewContext), or a specimen made for
  *   the wall (SPECIMENS) where the first demo is a whole page's worth.
  * - Still until reached for. A tile mounts as it nears the screen, held still (StillMotion), so arriving, scrolling
@@ -137,7 +138,7 @@ function useNear<T extends HTMLElement>(ref: React.RefObject<T | null>): boolean
 }
 
 /**
- * One component on the wall: the real one, live, on the quiet track, with its name under it. It mounts as it nears
+ * One component on the wall: the real one, live, on its tile, with its name under it. It mounts as it nears
  * the screen and stays out of reach for two frames, so a demo that moves focus as it mounts cannot pull the page.
  * `hold` keeps it still until the pointer, a press or focus reaches it; a specimen that plays on its own passes false.
  */
@@ -164,7 +165,7 @@ function Tile({ page, hold = true, children }: { page: PageEntry; hold?: boolean
       onPointerDown={wake}
       onFocus={wake}
       className={
-        "group/tile grid min-w-0 grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] shadow-[inset_0_0_0_1px_var(--line)]"
+        "group/tile grid min-w-0 grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
       }
     >
       <div inert={!settled} className="grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
@@ -298,14 +299,14 @@ function useWidth<T extends HTMLElement>(): [React.RefObject<T | null>, number] 
 
 /**
  * A block is a whole screen, so the wall shows it as one: a picture of its top, still and out of reach, on the same
- * quiet track as a tile. Its name is the link and stretches over the card, so the whole card opens the block without
+ * ground as a tile. Its name is the link and stretches over the card, so the whole card opens the block without
  * wrapping the screen's own links in another. It mounts as it nears the screen.
  */
 function Screen({ page }: { page: PageEntry }) {
   const [frame, width] = useWidth<HTMLDivElement>();
   const near = useNear(frame);
   return (
-    <div className="group/tile relative grid min-w-0 rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] shadow-[inset_0_0_0_1px_var(--line)]">
+    <div className="group/tile relative grid min-w-0 rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]">
       <div ref={frame} aria-hidden="true" inert className="pointer-events-none relative overflow-hidden rounded-t-surface" style={{ height: SCREEN_H }}>
         {near && width > 0 && <Miniature page={page} width={width} height={SCREEN_H} still />}
       </div>
