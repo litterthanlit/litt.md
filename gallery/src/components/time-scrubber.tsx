@@ -6,12 +6,13 @@
  *   label of the event under the needle before it, in --fg-subtle), then a 56px track: the Segmented control's well
  *   (fg 5%, the inset --line, the surface radius). On it a ruler: a minor tick every step (8px, --line-strong), a major
  *   tick every `majorEvery` steps (14px, --fg-subtle) with its time under it in the mono at the caption size, and the
- *   events as 2px marks, 20px tall, in their status color (neutral is --fg-muted), so a warning or a failure stands out
- *   on the ruler. The needle is a 2px --fg line in the middle, over the ticks and marks and ending above the times so
- *   it never cuts one, and never the accent (P1). Steps sit 12px apart.
+ *   events as pins: an 8px dot in their status color (neutral is --fg-muted) on a 10px --line-strong stem, so a
+ *   warning or a failure stands out on the ruler. A 2px line is too thin to show a color; a dot is not. The needle is
+ *   a 2px --fg line in the middle, over the ticks and pins and ending above the times so it never cuts one, and never
+ *   the accent (P1). Steps sit 12px apart.
  * - Drag: the ruler follows the pointer one to one, as the Slider's thumb does. Let go and it settles on the nearest
- *   step, or on an event within half a step of the needle, on the responsive tier with the speed it was let go at,
- *   never past either end. A press without a drag goes to the time under the pointer.
+ *   step, or on an event within half a step of the needle, on the responsive tier and from rest, so it never passes
+ *   either end. A press without a drag goes to the time under the pointer.
  * - Keys and assistive tech: the track is the slider (role slider, named by the label), so the reading, the event and
  *   the bounds are read out. ← and → move a step, with Shift ten; Page Up and Page Down go to the next and previous
  *   event (ten steps when there are none); Home and End go to the ends. The value is the time, aria-valuetext says it
@@ -326,11 +327,11 @@ export function TimeScrubber({
             </div>
           ))}
           {sorted.map((m) => (
-            <span
-              key={`${m.at}-${m.label}`}
-              className={"absolute top-2 h-5 w-0.5 -translate-x-1/2 rounded-pill forced-colors:bg-[CanvasText] " + TONE[m.tone ?? "neutral"]}
-              style={{ left: (m.at - min) * perUnit }}
-            />
+            /* A pin: the dot holds the color, big enough to read; the stem says where on the ruler it is. */
+            <span key={`${m.at}-${m.label}`} className="absolute top-2 flex -translate-x-1/2 flex-col items-center" style={{ left: (m.at - min) * perUnit }}>
+              <span className={"size-2 rounded-pill forced-colors:bg-[CanvasText] " + TONE[m.tone ?? "neutral"]} />
+              <span className="h-2.5 w-px bg-line-strong forced-colors:bg-[CanvasText]" />
+            </span>
           ))}
         </motion.div>
         <span
