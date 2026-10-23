@@ -5,9 +5,10 @@
  * - Anatomy: the Slider's label row (the label at the small size in --fg, the reading at its end in the mono, with the
  *   label of the event under the needle before it, in --fg-subtle), then a 56px track: the Segmented control's well
  *   (fg 5%, the inset --line, the surface radius). On it a ruler: a minor tick every step (8px, --line-strong), a major
- *   tick every `majorEvery` steps (14px, --fg-subtle) with its time under it in the mono at the caption size, and the
- *   events as pins: an 8px dot in their status color (neutral is --fg-muted) on a 10px --line-strong stem, so a
- *   warning or a failure stands out on the ruler. A 2px line is too thin to show a color; a dot is not. The needle is
+ *   tick every `majorEvery` steps (14px, --fg-disabled) with its time under it in the mono at the caption size, and
+ *   the events as 2px marks, 20px tall, in their status color (neutral is --fg-muted). The ticks are lighter than any
+ *   mark in light mode and dimmer in dark, so a mark stands out by lightness, height and width, not by hue alone (in
+ *   light mode the status colors are as dark as --fg-subtle, so --fg-subtle ticks would hide them). The needle is
  *   a 2px --fg line in the middle, over the ticks and pins and ending above the times so it never cuts one, and never
  *   the accent (P1). Steps sit 12px apart.
  * - Drag: the ruler follows the pointer one to one, as the Slider's thumb does. Let go and it settles on the nearest
@@ -322,16 +323,16 @@ export function TimeScrubber({
           />
           {majors.map((t) => (
             <div key={t} className="absolute top-2 flex -translate-x-1/2 flex-col items-center gap-1.5" style={{ left: (t - min) * perUnit }}>
-              <span className="h-3.5 w-px bg-fg-subtle" />
+              <span className="h-3.5 w-px bg-fg-disabled" />
               <span className="font-mono text-caption font-normal whitespace-nowrap text-fg-subtle tabular-nums">{formatValue(t)}</span>
             </div>
           ))}
           {sorted.map((m) => (
-            /* A pin: the dot holds the color, big enough to read; the stem says where on the ruler it is. */
-            <span key={`${m.at}-${m.label}`} className="absolute top-2 flex -translate-x-1/2 flex-col items-center" style={{ left: (m.at - min) * perUnit }}>
-              <span className={"size-2 rounded-pill forced-colors:bg-[CanvasText] " + TONE[m.tone ?? "neutral"]} />
-              <span className="h-2.5 w-px bg-line-strong forced-colors:bg-[CanvasText]" />
-            </span>
+            <span
+              key={`${m.at}-${m.label}`}
+              className={"absolute top-2 h-5 w-0.5 -translate-x-1/2 rounded-pill forced-colors:bg-[CanvasText] " + TONE[m.tone ?? "neutral"]}
+              style={{ left: (m.at - min) * perUnit }}
+            />
           ))}
         </motion.div>
         <span
