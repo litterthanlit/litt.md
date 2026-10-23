@@ -132,10 +132,22 @@ function NarrowDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/** The control alone: where you are in 143 clients, and the way to the next twenty. */
+function PagesTile() {
+  const [page, setPage] = useState(1);
+  return (
+    <div className="w-full max-w-sm">
+      <Pagination label="Clients pages" page={page} pageSize={20} total={143} onPageChange={setPage} />
+    </div>
+  );
+}
+
 export default function PaginationPage() {
   const [key, reset] = useReplay();
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<PagesTile />}>
       <Stage
         title="Under a table"
         tier="instant"

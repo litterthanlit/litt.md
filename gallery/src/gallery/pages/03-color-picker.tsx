@@ -183,9 +183,30 @@ function StatesDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/** The picker and what it paints: the site's header in the chosen color, with ink picked to read on it. It starts on
+    Nord teal, so the wall's one cobalt stays the Button tile's. */
+function BrandTile() {
+  const [brand, setBrand] = useState<string | null>(PALETTE[1]!.value);
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <ColorPicker label="Brand color" name="brand" value={brand} onValueChange={setBrand} swatches={PALETTE} />
+      {brand && (
+        <div className="overflow-hidden rounded-surface shadow-[inset_0_0_0_1px_var(--line)]" aria-label="Preview of the site header" role="img">
+          <div className="flex h-12 items-center justify-between px-4 text-small" style={{ backgroundColor: brand, color: getContrastInk(brand) }}>
+            <span className="font-title">Atelier Nord</span>
+            <span>Work · Studio · Contact</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ColorPickerPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<BrandTile />}>
       <Stage
         title="A brand color for a Framer site"
         tier="responsive"

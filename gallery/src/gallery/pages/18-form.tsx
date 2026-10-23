@@ -484,9 +484,23 @@ function SignInDemo() {
 
 /* ------------------------------------------------------------------ page */
 
+/* ---------- the overview's tile ---------- */
+
+/** One section of a settings form: its title and line on one side, its fields on the other. */
+function ProfileTile() {
+  return (
+    <div className="w-full max-w-md">
+      <FormSection title="Profile" description="Shown to the clients you invite to a project.">
+        <TextField label="Name" autoComplete="name" defaultValue="Ines Ortega" />
+        <TextField label="Email" type="email" inputMode="email" autoComplete="email" defaultValue="ines@halo.studio" />
+      </FormSection>
+    </div>
+  );
+}
+
 export default function FormPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<ProfileTile />}>
       <Toaster>
         <Stage
           title="Start a project"

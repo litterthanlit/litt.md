@@ -228,9 +228,40 @@ function LightDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function CardTile() {
+  const site = SITES[0]!;
+  return (
+    <ul className="grid w-full max-w-xs">
+      <Card as="li" cover="inset">
+        <CardCover>
+          <ProjectCover name={site.cover} />
+        </CardCover>
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">{site.name}</CardLink>
+          </CardTitle>
+          <CardDescription>{site.note}</CardDescription>
+          <div className="mt-auto flex items-center justify-between pt-4">
+            <Status tone={site.tone}>{site.status}</Status>
+            <a
+              href={site.url}
+              className="relative inline-flex h-control-sm items-center gap-1 text-caption text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
+            >
+              Visit site
+              <ArrowUpRightIcon />
+            </a>
+          </div>
+        </CardBody>
+      </Card>
+    </ul>
+  );
+}
+
 export default function CardPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<CardTile />}>
       <Stage
         title="Linked cards"
         tier="instant"

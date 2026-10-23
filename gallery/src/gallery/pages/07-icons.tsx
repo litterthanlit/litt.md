@@ -491,9 +491,30 @@ function ContextDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/* Eighteen of the set, a row each of things, actions and places. */
+const TILE_ICONS = [
+  ["Search", Icons.SearchIcon], ["Copy", Icons.CopyIcon], ["Send", Icons.SendIcon], ["Archive", Icons.ArchiveIcon], ["Settings", Icons.SettingsIcon], ["Command", Icons.CommandIcon],
+  ["Folder", Icons.FolderIcon], ["Code", Icons.CodeIcon], ["Terminal", Icons.TerminalIcon], ["Branch", Icons.GitBranchIcon], ["Layers", Icons.LayersIcon], ["Globe", Icons.GlobeIcon],
+  ["Mail", Icons.MailIcon], ["Bell", Icons.BellIcon], ["Calendar", Icons.CalendarIcon], ["Lock", Icons.LockIcon], ["Zap", Icons.ZapIcon], ["Sparkle", Icons.SparkleIcon],
+] as const;
+
+function IconsTile() {
+  return (
+    <div role="img" aria-label={`Icons: ${TILE_ICONS.map(([name]) => name).join(", ")}`} className="grid grid-cols-6 gap-1 text-fg-muted">
+      {TILE_ICONS.map(([name, Glyph]) => (
+        <span key={name} className="grid size-control-md place-items-center">
+          <Glyph />
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function IconsPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<IconsTile />}>
       <Stage
         title="The set"
         size="lg"

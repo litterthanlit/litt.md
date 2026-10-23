@@ -93,9 +93,24 @@ function RevenueDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/** One figure and the button that changes it, so the roll is yours to start. */
+function DeployTile() {
+  const [deploys, setDeploys] = useState(38);
+  return (
+    <div className="grid w-full max-w-xs gap-4">
+      <Stat label="Deploys this week" value={<RollingNumber value={deploys} />} delta="Up 12% on last week" tone="good" />
+      <Button size="sm" className="justify-self-start" onClick={() => setDeploys((d) => d + 1)}>
+        Deploy
+      </Button>
+    </div>
+  );
+}
+
 export default function RollingNumberPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<DeployTile />}>
       <Stage
         title="Deploys and credits"
         tier="responsive"

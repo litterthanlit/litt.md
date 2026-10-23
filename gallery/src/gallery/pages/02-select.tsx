@@ -311,9 +311,19 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function RoleTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <SelectField label="Role" name="role" options={ROLES} defaultValue="designer" help="Sets what you see in the studio." />
+    </div>
+  );
+}
+
 export default function SelectPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<RoleTile />}>
       <Stage
         title="A role in an account form"
         tier="responsive"
