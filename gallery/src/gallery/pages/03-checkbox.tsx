@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   verbs: ["press"],
   summary:
     "Real checkboxes and radios, drawn in the litt look: a 20px chip at the control radius, or a circle for a radio, filled with the foreground color when on. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
+  fun: "Check a box: it pops and draws its tick.",
   tiers: ["instant"],
 };
 

@@ -83,8 +83,8 @@
       "hash": "03fc3f36ed7d77a9"
     },
     "color-picker": {
-      "version": "2026.10.21",
-      "hash": "b1bfccd0c956d453"
+      "version": "2026.10.23",
+      "hash": "269e47660824573b"
     },
     "combobox": {
       "version": "2026.10.19",
@@ -195,12 +195,12 @@
       "hash": "339c4497d7123128"
     },
     "litt": {
-      "version": "2026.10.20",
-      "hash": "f660d3a6cdeede4a"
+      "version": "2026.10.23",
+      "hash": "202dadc85b18e234"
     },
     "log-view": {
-      "version": "2026.10.22",
-      "hash": "159f54b19cee3915"
+      "version": "2026.10.23",
+      "hash": "4c9bab99662cd712"
     },
     "media": {
       "version": "2026.10.22",
@@ -329,6 +329,10 @@
     "thinking": {
       "version": "2026.10.19",
       "hash": "9b874d6a0a1ed61c"
+    },
+    "time-scrubber": {
+      "version": "2026.10.23",
+      "hash": "e59c82c792c16a19"
     },
     "timeline": {
       "version": "2026.10.22",

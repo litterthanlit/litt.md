@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   verbs: ["hover"],
   summary:
     "Bar and line charts in plain SVG, and a meter. Marks are never the accent: by default the foreground, one series at 55% with the current mark full, or up to three stepping down; or the data hues, when color says which series is which. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+  fun: "A meter's fill grows in, its reading counts with it, and the target tick pops as the fill passes.",
   tiers: ["instant", "responsive"],
 };
 

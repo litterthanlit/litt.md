@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   verbs: ["select"],
   summary:
     "Underline or segmented. The indicator slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked.",
+  fun: "Pick a tab far away: the underline stretches over, leading edge first, and gathers under it.",
   tiers: ["instant", "responsive"],
 };
 

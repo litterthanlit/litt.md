@@ -7,9 +7,9 @@
  * the page title 16px above its summary, and a stage's title 4px above its caption.
  */
 import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
-import { DeviceProvider, type Tier } from "@/motion";
+import { DeviceProvider, useFun, type Tier } from "@/motion";
 import { Button } from "@/components/button";
-import { ChevronDownIcon } from "@/components/icons";
+import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 
@@ -43,6 +43,12 @@ export type PageMeta = {
   verbs?: Verb[];
   /** One sentence: what the component is and what its motion does. */
   summary: string;
+  /**
+   * What fun mode changes here, as something to try: "Throw the thumb: it coasts to the end and confirms." Set it on
+   * every page whose component moves differently in fun mode. With fun mode on, the gallery leads with these pages:
+   * a Fun group at the top of the nav, a Fun filter first on the overview, and this line under the page's title.
+   */
+  fun?: string;
   tiers: Tier[];
   /**
    * The registry block this page shows: the name of a file in src/blocks, which is also this page's id. The header
@@ -124,6 +130,20 @@ function firstDemo(children: ReactNode): ReactNode | null {
 /** Which page a Stage sits in, so its Code tab can find the page file. */
 const PageIdContext = createContext<string | null>(null);
 
+/** With fun mode on (and only then, so never under reduced motion), what to try on this page. */
+function FunHint({ text }: { text?: string }) {
+  const fun = useFun();
+  if (!fun || !text) return null;
+  return (
+    <p data-fun-cue="" className="-mt-3 flex max-w-[60ch] items-start gap-2 text-small text-fg-muted">
+      <SparkleIcon className="mt-0.5 shrink-0 text-fg-subtle" />
+      <span>
+        <span className="font-title text-fg">Fun mode.</span> {text}
+      </span>
+    </p>
+  );
+}
+
 export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs; children: ReactNode }) {
   if (useContext(PreviewContext)) return <>{firstDemo(children)}</>;
   return (
@@ -131,6 +151,7 @@ export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs
       <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">
         <header className="grid gap-6">
           <PageTitle id={`page-${meta.id}`} title={meta.title} lede={meta.lede} />
+          <FunHint text={meta.fun} />
           {/* The tiers and the docs actions share one row, so the first demo comes up sooner. */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
             {/* A page with no tiers (nothing moves) leaves no empty group, so the actions start at the edge. */}

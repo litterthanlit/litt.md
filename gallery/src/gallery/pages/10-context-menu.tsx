@@ -25,6 +25,7 @@ export const meta: PageMeta = {
   verbs: ["open", "select"],
   summary:
     "The Menu at the pointer: a right-click, Shift+F10 or a press and hold on touch. The same glass, rows and gliding highlight, grown from the pointer's corner. Every action in it is also somewhere else.",
+  fun: "Move down the rows: the highlight reaches for each one, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
 
