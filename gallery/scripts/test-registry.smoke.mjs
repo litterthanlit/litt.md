@@ -316,6 +316,10 @@ const RECIPES = {
           <ColorPanel label="Cover color" defaultValue="#1d5c5a" />
         </form>`,
   },
+  "time-scrubber": {
+    needs: ["TimeScrubber"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-time-scrubber"><TimeScrubber label="Replay" max={48} defaultValue={31} marks={[{ at: 12.1, label: "Image is 2.4 MB", tone: "warning" }, { at: 31, label: "Module not found", tone: "danger" }]} /></div>`,
+  },
   "slide-confirm": {
     needs: ["SlideConfirm"],
     jsx: `<div className="w-full max-w-sm" data-testid="litt-slide-confirm"><SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" /></div>`,

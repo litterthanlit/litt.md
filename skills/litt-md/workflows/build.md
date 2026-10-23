@@ -91,6 +91,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `select` | One value from a short list (`SelectField` with a label, the bare `Select` in a toolbar). Never a native `<select>`. Pass `options` as `{ value, label }`. It stays anchored on a phone. |
 | `switch` | An on or off setting (`Switch`). `align="end"` lines switches up at the end of settings rows. A choice that can be wrong, such as accepting terms, is a checkbox. |
 | `slider` | A value on a range, such as an animation speed (`Slider`), or a span with two thumbs, such as build times between 20s and 80s in a filter (`RangeSlider`). Give it `minLabel` and `maxLabel` so the direction is clear. |
+| `time-scrubber` | Going back through a run that already happened: a moment in a build's log, a deploy's steps or an agent's run (`TimeScrubber` with `max`, `marks` as `{ at, label, tone }` and a `formatValue`). Pair it with what it replays, such as a `log-view` showing the lines up to the needle. A value that stays is a `slider`. |
 | `pad` | Two related values set at once on one surface, such as tone against length (`Pad`). Two independent values are two Sliders. |
 | `form` | The page patterns: `FormSection` for settings sections, `Fieldset` (`rows` for a list of switches), `ErrorSummary` above a long form, `FormActions` (`align="fields"` on a settings page). |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |

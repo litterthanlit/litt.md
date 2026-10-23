@@ -330,6 +330,10 @@
       "version": "2026.10.19",
       "hash": "9b874d6a0a1ed61c"
     },
+    "time-scrubber": {
+      "version": "2026.10.23",
+      "hash": "3072c441b8f486aa"
+    },
     "timeline": {
       "version": "2026.10.22",
       "hash": "bca33598c63304cd"
