@@ -259,8 +259,8 @@
   --line-control: #6e6762;
 
   --fg: #f9f8f7;
-  --fg-muted: #968d86;
-  --fg-subtle: #968d86;
+  --fg-muted: #cec4bd;
+  --fg-subtle: #cec4bd;
   --fg-disabled: #6b645f;
 
   --accent: #2d57e5;
@@ -315,8 +315,8 @@
     --line-control: #6e6762;
 
     --fg: #f9f8f7;
-    --fg-muted: #968d86;
-    --fg-subtle: #968d86;
+    --fg-muted: #cec4bd;
+    --fg-subtle: #cec4bd;
     --fg-disabled: #6b645f;
 
     --accent: #2d57e5;

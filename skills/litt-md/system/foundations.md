@@ -70,7 +70,7 @@ Nothing goes to 700 or above or below 400, running text never takes 500 or 600, 
 | Surfaces | `--surface-1`, `--surface-2`, `--surface-3` | Raised cards, then nested or hover fills, then pressed fills or wells |
 | Lines | `--line`, `--line-strong` | Decorative hairlines; dividers that need to be seen |
 | Control line | `--line-control` | Outline of inputs, checkboxes, selects and switches (at least 3:1) |
-| Text | `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled` | Two inks: `--fg` for titles and key values, one grey for body (`--fg-muted`) and supporting text (`--fg-subtle`). Disabled only |
+| Text | `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled` | Two inks: `--fg` for titles and key values, one grey for body (`--fg-muted`) and supporting text (`--fg-subtle`), at about APCA Lc 70 in both themes and never under 60 on any surface (the checks hold it). Disabled only |
 | Accent | `--accent`, `--accent-hover`, `--accent-fg`, `--accent-text`, `--accent-tint` | The one primary action (a fill with `--accent-fg` on it), links (`--accent-text`), focus, the light source |
 | Focus | `--focus`, `--focus-ring` | Keyboard focus indicator |
 | Status | `--success`, `--warning`, `--danger` | State only: never decoration, never brand |
