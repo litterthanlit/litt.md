@@ -38,6 +38,10 @@
  *   --dismiss-velocity, it carries on the way it was going on the exit token;
  *   otherwise it springs back. The dismiss button stays and is 44px, so a swipe is
  *   never the only way. Fine pointers get no drag.
+ *
+ * Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a mouse can throw the front toast away too, and
+ * a thrown toast leaves with the speed it was let go at, on fun mode's throw spring, as it fades. One let go short
+ * springs back with a little life. The close button is still there. Reduced motion turns it off.
  */
 import {
   createContext,
@@ -52,7 +56,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
-import { useDevice, useSheetOpen, useTransition, useTravel } from "@/motion";
+import { useDevice, useFun, useSheetOpen, useTransition, useTravel } from "@/motion";
 import { useDismissDrag, type DismissInfo } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
@@ -321,6 +325,9 @@ function ToastView({
   /* The way a swipe sent this toast. A timeout, the close button and Esc leave it null: they drop on compact
      screens and go right elsewhere. */
   const swiped = useRef<"left" | "right" | null>(null);
+  /* Fun mode: how fast the swipe was going when it let go, in px/ms, so the toast leaves at that speed. */
+  const thrown = useRef(0);
+  const fun = useFun();
   const [held, setHeld] = useState(false);
 
   const tone = item.tone ?? "neutral";
@@ -330,13 +337,15 @@ function ToastView({
   const edge = top ? -travel : travel;
   const showContent = depth === 0 || expanded;
 
-  /* A finger swipes a toast sideways, one to one. It is off for a mouse, which has the close button. */
+  /* A finger swipes a toast sideways, one to one. It is off for a mouse, which has the close button, except in fun
+     mode, where a mouse can throw it too. */
   const drag = useDismissDrag({
     direction: "sideways",
     tier: "expressive",
-    enabled: coarse,
+    enabled: coarse || !!fun,
     onDismiss: (info: DismissInfo) => {
       swiped.current = info.direction === "down" ? null : info.direction;
+      thrown.current = info.velocity;
       onDismiss(item.id);
     },
   });
@@ -397,7 +406,13 @@ function ToastView({
             const now = drag.offset.get() as unknown;
             const from = typeof now === "number" ? now : 0;
             const by = node.current?.offsetWidth ?? 0;
-            return { opacity: 0, x: from + (swiped.current === "left" ? -by : by), transition: drag.exit };
+            const to = from + (swiped.current === "left" ? -by : by);
+            if (fun) {
+              /* Fun mode: it carries the speed it was thrown at, the way it was going, and fades on the exit token. */
+              const velocity = (swiped.current === "left" ? -1 : 1) * thrown.current * 1000;
+              return { opacity: 0, x: to, transition: { x: { ...fun.throw, velocity }, opacity: drag.exit } };
+            }
+            return { opacity: 0, x: to, transition: drag.exit };
           }
           return compact
             ? { opacity: 0, y: slot.y + edge, transition: drag.exit }

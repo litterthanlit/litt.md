@@ -18,6 +18,8 @@
  *   or moves faster than `--dismiss-velocity`. `onDismiss` fires once; the caller closes the surface and its exit
  *   (`exit={{ ..., transition: drag.exit }}`) plays from where the finger let go, on the exit token for the tier.
  * - Otherwise it springs back on the responsive tier with the speed it was released at, and never bounces.
+ *   In fun mode (fun.tsx, a trial) it springs back on fun mode's throw spring instead, so it comes home with a
+ *   little life; it still rests exactly at 0. Reduced motion turns fun mode off.
  * - Pulled the wrong way it resists and stops at `--space-6` (sideways has no wrong way).
  * - A drag cannot start in a slider (`input[type=range]`, `[role=slider]`), in `[data-no-drag]`, in a text field
  *   or select that has focus, in a scrolling region that is not at its start, or in the first 500ms after
@@ -56,6 +58,7 @@
 import { useCallback, useEffect, useMemo, useRef, type PointerEvent as ReactPointerEvent } from "react";
 import { animate, useIsPresent, useMotionValue, type AnimationPlaybackControls, type MotionStyle, type MotionValue, type Transition, type ValueAnimationTransition } from "motion/react";
 import { readDismiss } from "./device";
+import { useFun } from "./fun";
 import { useExit, useTransition } from "./index";
 
 export type DismissDirection = "down" | "left" | "right" | "sideways";
@@ -159,7 +162,9 @@ export function useDismissDrag({ direction, onDismiss, enabled = true, tier }: D
   /* Inside an AnimatePresence the surface is also off while it leaves, so a late release can never fight the exit. */
   const present = useIsPresent();
   const active = enabled && present;
-  const spring = useTransition("responsive");
+  const responsive = useTransition("responsive");
+  const fun = useFun();
+  const spring = fun ? fun.throw : responsive;
   const exit = useExit(tier ?? (direction === "down" ? "expressive" : "responsive"));
 
   /* Handlers live as long as a gesture, so they read the latest options through a ref. */

@@ -4,6 +4,16 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-23 · Fun mode, more to touch
+
+More of fun mode's touch, still a trial and still only with a `FunMode` on: highlights that reach for where they are going, numbers you can scrub, and toasts you can throw. Each comes to rest on exactly the frame it draws without fun mode, and reduced motion turns it all off. Off by default, so nothing changes until you turn it on.
+
+- **changed** `motion`: in fun mode, anything dragged and let go short of leaving (a toast, a sheet) springs home on fun mode's throw spring, with a little life, instead of without a bounce. Nothing in your code has to change.
+- **changed** `glide`: in fun mode the highlight stretches toward the row it is going to and gathers itself there, in every menu, context menu, select, combobox and command menu. Nothing in your code has to change.
+- **changed** `tabs`: in fun mode the underline stretches to the new tab, its leading edge first, and the segmented fill springs to its tab. Nothing in your code has to change.
+- **changed** `number-field`: in fun mode a step kicks the number the way it went, and dragging the label sideways scrubs the value, giving like a rubber band past min and max. Nothing in your code has to change.
+- **changed** `toast`: in fun mode a mouse can throw the front toast away too, and it leaves with the speed it was thrown at. Nothing in your code has to change.
+
 ## 2026-10-22 · Blocks, images, and the parts a web app needs
 
 The first blocks: ten whole screens, the gallery's five composed pages and five app screens (projects, settings, team, activity and sign in), each installable as one item that brings the components it uses. The app screens are a page's content, to render inside your app's shell. A block lands in `components/litt-blocks/` with its sample data at the top of the file, and unlike a component it is yours to change: it is a starting point, so edit it in place and never reinstall it over your edits.
