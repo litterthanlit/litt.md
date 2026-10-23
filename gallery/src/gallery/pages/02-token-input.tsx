@@ -130,9 +130,25 @@ function TagsDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function SendersTile() {
+  return (
+    <div className="w-full max-w-sm">
+      <TokenInput
+        label="Mail from"
+        defaultValue={["@stripe.com", "ramp.com", "brex.com"]}
+        collapseAfter={1}
+        placeholder="Add a sender"
+        hint="Press Enter or a comma to add one."
+      />
+    </div>
+  );
+}
+
 export default function TokenInputPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<SendersTile />}>
       <Stage
         title="Senders"
         tier="responsive"

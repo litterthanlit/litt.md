@@ -147,9 +147,27 @@ function NarrowDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+const TILE_DEPLOYS = [5, 7, 4, 9, 6, 1, 0, 6, 8, 5, 9, 7, 2, 1];
+
+function StatTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <Stat
+        label="Deploys this week"
+        value={38}
+        delta="Up 12% on last week"
+        tone="good"
+        trend={<Sparkline label="Deploys per day, last 14 days" values={TILE_DEPLOYS} hue="blue" />}
+      />
+    </div>
+  );
+}
+
 export default function StatPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<StatTile />}>
       <Stage
         title="The studio this week"
         code="StudioStatsDemo"

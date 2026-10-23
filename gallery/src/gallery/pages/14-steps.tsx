@@ -112,9 +112,33 @@ function ChecklistDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function SetupTile() {
+  const [step, setStep] = useState(1);
+  const finished = step >= SETUP.length;
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <Steps label="Set up your studio" steps={SETUP} current={step} onStepSelect={setStep} />
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">{finished ? "The studio is ready" : SETUP[step]!.label}</p>
+        <p className="text-small text-fg-muted">{finished ? "Everything is set." : SAYS[step]}</p>
+      </div>
+      <div className="flex gap-3">
+        <Button size="sm" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          Back
+        </Button>
+        <Button size="sm" onClick={() => setStep((s) => (s >= SETUP.length ? 0 : s + 1))}>
+          {finished ? "Start again" : "Continue"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function StepsPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<SetupTile />}>
       <Stage
         title="Set up a studio"
         align="start"

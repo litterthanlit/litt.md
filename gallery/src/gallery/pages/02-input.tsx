@@ -189,9 +189,19 @@ function BriefDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function ProjectNameTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <TextField label="Project name" defaultValue="Halo site" help="Shown in the dashboard and the browser tab." />
+    </div>
+  );
+}
+
 export default function InputPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<ProjectNameTile />}>
       <Stage
         title="Fields"
         tier="instant"

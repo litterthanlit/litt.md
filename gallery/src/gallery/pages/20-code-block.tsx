@@ -201,9 +201,28 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+const TILE_CODE = `export function DeployButton({ site }: { site: Site }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <Button variant="primary" disabled={busy} onClick={() => setBusy(true)}>
+      Deploy {site.name}
+    </Button>
+  );
+}`;
+
+function CodeBlockTile() {
+  return (
+    <div className="w-full max-w-md">
+      <CodeBlock filename="deploy-button.tsx" lang="tsx" lineNumbers code={TILE_CODE} />
+    </div>
+  );
+}
+
 export default function CodeBlockPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<CodeBlockTile />}>
       <Stage
         title="A file and a shell session"
         align="start"

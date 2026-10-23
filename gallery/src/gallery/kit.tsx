@@ -109,11 +109,11 @@ const DocsSections = lazy(() => loadDocs().then((m) => ({ default: m.DocsSection
 const BlockActions = lazy(() => import("./docs/block-actions"));
 
 /**
- * Set by the sidebar's hover preview (nav-preview.tsx). A page then draws only its first
- * stage's demo, with no title, caption or docs, so every page has a preview without a
- * line of its own.
+ * Set by the sidebar's hover preview (nav-preview.tsx) and the overview's blocks. A page then draws only its first
+ * stage's demo, with no title, caption or docs, so every page has a preview without a line of its own. The overview's
+ * wall sets "tile": a page that has a `tile` draws that instead, and any other page its first demo.
  */
-export const PreviewContext = createContext(false);
+export const PreviewContext = createContext<boolean | "tile">(false);
 
 /**
  * The first <Stage>'s demo among a page's children, for preview mode. It looks through fragments and through any
@@ -149,8 +149,25 @@ function FunHint({ text }: { text?: string }) {
   );
 }
 
-export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs; children: ReactNode }) {
-  if (useContext(PreviewContext)) return <>{firstDemo(children)}</>;
+export function Page({
+  meta,
+  docs,
+  tile,
+  children,
+}: {
+  meta: PageMeta;
+  docs?: PageDocs;
+  /**
+   * The component as one object, for its tile on the overview's wall: what to draw when the first demo is more than
+   * a tile should hold (a form around the field, a set of states, a page's worth). Real size, live, one thing to
+   * touch, and no accent fill: the Button tile carries the wall's one. Leave it out and the tile is the first demo.
+   */
+  tile?: ReactNode;
+  children: ReactNode;
+}) {
+  const preview = useContext(PreviewContext);
+  if (preview === "tile" && tile !== undefined) return <>{tile}</>;
+  if (preview) return <>{firstDemo(children)}</>;
   return (
     <PageIdContext.Provider value={meta.id}>
       <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">

@@ -113,7 +113,7 @@ function SizesDemo() {
 
 export default function GaugePage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<Gauge label="Credits left" value={20830} max={30000} valueText="20,830 credits" figure="20,830" caption="2k a day on average" hue="teal" size={200} />}>
       <Stage
         title="Credits left"
         code="CreditsDemo"

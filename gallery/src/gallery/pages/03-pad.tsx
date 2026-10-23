@@ -163,9 +163,29 @@ function DisabledDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function VoiceTile() {
+  const [voice, setVoice] = useState<PadValue>({ x: 10, y: 65 });
+  return (
+    <div className="w-full max-w-sm">
+      <Pad
+        label="Your voice"
+        help={formatVoice(voice)}
+        x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }}
+        y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }}
+        value={voice}
+        onValueChange={setVoice}
+        defaultMark={VOICE_DEFAULT}
+        formatValue={formatVoice}
+      />
+    </div>
+  );
+}
+
 export default function PadPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<VoiceTile />}>
       <Stage
         title="Your voice"
         tier="responsive"

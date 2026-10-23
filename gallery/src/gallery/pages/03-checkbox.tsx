@@ -188,9 +188,21 @@ function AppearanceDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function DeliverablesTile() {
+  return (
+    <CheckboxGroup legend="Deliverables">
+      <Checkbox name="deliverables" value="motion" label="Include motion study" defaultChecked />
+      <Checkbox name="deliverables" value="template" label="Send me the template" />
+      <Checkbox name="deliverables" value="deploy-email" label="Email me when it deploys" description="A note when a build finishes or fails." defaultChecked />
+    </CheckboxGroup>
+  );
+}
+
 export default function CheckboxPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<DeliverablesTile />}>
       <Stage
         title="Checkbox"
         tier="instant"
