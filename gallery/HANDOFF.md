@@ -114,7 +114,7 @@ Also still open from steps 6 and 7: move focus to the page heading on a route ch
 - **From the forms build, for his tests:** should a pointer-opened Select light its current option (now nothing is lit, as in the Menu)? Is 48px of air on both sides of a settings-section hairline right, and do the two close lines under the Notifications switch list read well? Should the ErrorSummary stay live while fields are fixed (now it does, without re-announcing) or freeze at submit? On phones the Slider's 44px hit area adds about 24px of air around the rail; keep it?
 
 - **From the 2026-10-21 round (#26 to #31), saved for his tests:**
-  - The overview's cards lay the demo out at full stage width and scale it down, so text in a card is small on a desktop. Keep three columns, or two with bigger previews?
+  - ~~The overview's cards lay the demo out at full stage width and scale it down, so text in a card is small on a desktop. Keep three columns, or two with bigger previews?~~ 2026-10-23: two columns at real size. The overview is a wall of live tiles, after bencho.dev and transitions.dev (journal).
   - The overview's filter tags (`meta.verbs`), Watch and Open especially: do they say what Nick would expect?
   - Does a rolling digit belong in the language, given "motion confirms actions and never performs"? It only rolls on a change the person caused, never on first render, and Stat stays still unless a caller opts in.
   - Slide to confirm is a phone pattern; its page points desktop forms to a Dialog. Keep it phone-first?

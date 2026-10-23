@@ -217,8 +217,9 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         ]}
       />
 
-      <div inert={menu} className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
-        <nav aria-label="Components" className="hidden lg:block">
+      {/* A wall page (the overview) is its own way in, so it takes the sidebar's column too. */}
+      <div inert={menu} className={"relative mx-auto grid max-w-wide gap-x-12 px-gutter " + (page?.wall ? "" : "lg:grid-cols-[176px_minmax(0,1fr)]")}>
+        <nav aria-label="Components" className={page?.wall ? "hidden" : "hidden lg:block"}>
           <NavPreview className="h-full">
             {/* Its own scroller, so a short window still reaches the last group. It reaches 12px past the
                 column on each side, so the selected fill and the focus ring are never clipped. */}

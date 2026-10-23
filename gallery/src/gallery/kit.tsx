@@ -56,6 +56,11 @@ export type PageMeta = {
    */
   block?: string;
   /**
+   * The page runs the whole width with no sidebar, because it is its own way in: the overview, whose tiles are the
+   * components and link to their pages. It links the site's own pages (the ones with no group) itself.
+   */
+  wall?: boolean;
+  /**
    * The page may override the locked tokens with the motion dial. Every page
    * leaves this off except the Playground; the dial's CSS variables exist only
    * while a page with `tune` is open.
