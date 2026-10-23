@@ -6,7 +6,7 @@ Use this to review a screenshot, a URL, a Framer page or code against litt.md. I
 
 - **Screenshot or image:** look at it directly.
 - **URL:** if Bash is available, run the extract script (the command is in SKILL.md) to get measured fonts, sizes, colors, radii, shadows and transitions plus a screenshot. Read the screenshot. Measured values beat guesses.
-- **Code:** read the CSS and markup. Grep for hex values, `rounded-`, `shadow`, `transition`, `duration`, `backdrop-filter`, `animation`.
+- **Code:** read the CSS and markup. For a whole app, run the check first (`workflows/check.md`): it finds every off-system color, radius, shadow, size, weight and timing mechanically, so the critique can spend its time on what a script cannot judge. For a file or two, grep for hex values, `rounded-`, `shadow`, `transition`, `duration`, `backdrop-filter`, `animation`.
 - **Your own fresh output:** the same as code, plus screenshots if possible.
 
 Critique what is there. When something can't be judged from the input (motion in a static screenshot), mark it `n/a`, not pass.

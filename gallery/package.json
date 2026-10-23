@@ -25,7 +25,8 @@
     "test:agents": "node scripts/test-agents.mjs",
     "test:a11y": "node scripts/a11y.mjs",
     "test:motion": "node scripts/reduced-motion.mjs",
-    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s gen:llms && npm run -s typecheck && npm run -s lint:litt && npm run -s test:lint"
+    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s gen:llms && npm run -s typecheck && npm run -s lint:litt && npm run -s test:lint && npm run -s test:check",
+    "test:check": "node ../skills/litt-md/scripts/litt-check.mjs --self-test"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "1.2.21",
