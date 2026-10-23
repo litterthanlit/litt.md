@@ -10,7 +10,7 @@ Open [`skills/litt-md/assets/specimen.html`](skills/litt-md/assets/specimen.html
 
 ```
 skills/litt-md/
-├── SKILL.md            router: which files to read for build / critique / interview / audit / log / distill
+├── SKILL.md            router: which files to read for build / critique / check / interview / audit / log / distill
 ├── taste/              YOURS: changes as your taste develops
 │   ├── profile.md      P# rules with checks, dos and don'ts, open questions, changelog
 │   ├── journal.md      append-only log of reactions
@@ -23,6 +23,7 @@ skills/litt-md/
 ├── workflows/          how Claude works with it
 │   ├── build.md        plan → check against generic defaults → install from the registry → build → self-critique
 │   ├── critique.md     scored checklist
+│   ├── check.md        score an app's code against litt, then fix what you approve
 │   ├── interview.md    "this or that, and why?" taste sessions
 │   ├── audit.md        break down sites, moodboards and your own work
 │   └── evolve.md       the one write-back protocol: log, distill, propagate
@@ -32,7 +33,9 @@ skills/litt-md/
 │   └── specimen.html   living specimen
 └── scripts/
     ├── extract-styles.mjs  measure a site's real tokens / capture a moodboard (Playwright)
-    └── check.mjs           links, hex drift, dark parity, contrast, weight, radius, shadows, motion
+    ├── check.mjs           links, hex drift, dark parity, contrast, weight, radius, shadows, motion
+    ├── lint-litt.mjs       litt's rules as a lint, for the gallery and (with --host) any app
+    └── litt-check.mjs      an app's score out of 100 against litt, with every finding and its fix
 
 gallery/                the components gallery: React, Tailwind v4 and Motion, built on the locked tokens
 └── README.md           run, check and deploy notes (tokens sync one way from skills/litt-md/assets)
@@ -88,6 +91,7 @@ Claude loads the skill on its own when you build, restyle or review UI. You can 
 |---|---|
 | "Build a pricing section for the studio site" | build: token plan, check against generic defaults, build, self-critique |
 | "Critique this screenshot" / "critique cursor.com" | critique: scored checklist and the top three fixes |
+| "How litt is my app?" / "check my app" | check: a score out of 100 by motion, color, shape, type and reduced motion, the bulk fixes first, then fixes you approve |
 | "Interview me about motion" | interview: this-or-that rounds that ask why; answers become rules |
 | "Audit vercel.com" / "audit my Pinterest board" | audit: measured tokens or a moodboard read, Steal/Reject, rule candidates |
 | "I hate that hover lift, log it" | log: one journal entry |
