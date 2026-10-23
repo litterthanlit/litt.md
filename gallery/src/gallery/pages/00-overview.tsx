@@ -9,11 +9,12 @@
  * the tile then shows one finished state.
  *
  * Under it, every component as a live card, filtered by what you do with it (Press, Type, Drag…, each page's
- * meta.verbs). A card is the page's first demo in miniature, held still (StillMotion), so fifty cards never play
+ * meta.verbs). With fun mode on, a Fun filter comes first and is picked, so the grid opens on the components fun
+ * mode changes (each page's meta.fun); turning fun mode off goes back to All. A card is the page's first demo in miniature, held still (StillMotion), so fifty cards never play
  * fifty entrances and the bento above keeps the page's one expressive moment.
  */
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { useMotionDial } from "@/motion";
+import { useFun, useMotionDial } from "@/motion";
 import { Avatar, AvatarGroup } from "@/components/avatar";
 import { BarList } from "@/components/bar-list";
 import { Button } from "@/components/button";
@@ -166,9 +167,10 @@ function Card({ page }: { page: PageEntry }) {
 }
 
 /** A chip in the filter: a native radio, the selected one in the raised segment's look (P12). */
-function Chip({ name, value, label, count, checked, onPick }: { name: string; value: string; label: string; count: number; checked: boolean; onPick: () => void }) {
+function Chip({ name, value, label, count, checked, onPick, cue = false }: { name: string; value: string; label: string; count: number; checked: boolean; onPick: () => void; cue?: boolean }) {
   return (
     <label
+      data-fun-cue={cue ? "" : undefined}
       className={
         "relative flex h-control-sm cursor-pointer items-center gap-2 rounded-control px-3 text-small font-title select-none [-webkit-tap-highlight-color:transparent] " +
         "transition-colors duration-(--dur-instant) ease-litt pointer-coarse:h-control-md " +
@@ -187,9 +189,17 @@ function Chip({ name, value, label, count, checked, onPick }: { name: string; va
 
 /** Every component as a live card, filtered by what you do with it. */
 function EveryComponent({ list }: { list: PageEntry[] }) {
-  const [verb, setVerb] = useState<Verb | "all">("all");
+  const fun = !!useFun();
+  const [verb, setVerb] = useState<Verb | "all" | "fun">(fun ? "fun" : "all");
+  /* Fun mode turned on or off here: lead with its components, or go back to all of them. */
+  const [wasFun, setWasFun] = useState(fun);
+  if (wasFun !== fun) {
+    setWasFun(fun);
+    setVerb(fun ? "fun" : "all");
+  }
   const name = useId();
-  const shown = verb === "all" ? list : list.filter((p) => p.verbs?.includes(verb));
+  const funList = list.filter((p) => p.fun);
+  const shown = verb === "all" ? list : verb === "fun" ? funList : list.filter((p) => p.verbs?.includes(verb));
   const verbs = VERBS.filter((v) => list.some((p) => p.verbs?.includes(v)));
   return (
     <section aria-labelledby="all-title" className="grid gap-6">
@@ -199,6 +209,7 @@ function EveryComponent({ list }: { list: PageEntry[] }) {
       <fieldset className="m-0 min-w-0 border-0 p-0">
         <legend className="sr-only">Show the components you</legend>
         <div className="flex flex-wrap gap-1">
+          {fun && funList.length > 0 && <Chip cue name={name} value="fun" label="Fun" count={funList.length} checked={verb === "fun"} onPick={() => setVerb("fun")} />}
           <Chip name={name} value="all" label="All" count={list.length} checked={verb === "all"} onPick={() => setVerb("all")} />
           {verbs.map((v) => (
             <Chip key={v} name={name} value={v} label={VERB_LABEL[v]} count={list.filter((p) => p.verbs?.includes(v)).length} checked={verb === v} onPick={() => setVerb(v)} />

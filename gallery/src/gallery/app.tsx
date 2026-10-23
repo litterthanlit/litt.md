@@ -3,8 +3,8 @@
  * tunes motion; the header's Customize panel tunes type and shape on every page.
  */
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { MotionDialProvider } from "@/motion";
-import { pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
+import { MotionDialProvider, useFun } from "@/motion";
+import { funPages, pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
@@ -98,6 +98,11 @@ const iconLink =
 
 function Shell({ page }: { page: PageEntry | undefined }) {
   const mainRef = useRef<HTMLElement>(null);
+  /* With fun mode on, the pages it changes come first: a Fun group after the site's own pages. They stay in their
+     own groups too, so the nav never reshuffles under you. */
+  const fun = useFun();
+  const runs: { group?: string; pages: PageEntry[] }[] = pageRuns();
+  if (fun && funPages.length) runs.splice(runs[0]?.group ? 0 : 1, 0, { group: "Fun", pages: funPages });
   const [theme, setTheme] = useTheme();
   const [menu, setMenu] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -219,7 +224,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                 column on each side, so the selected fill and the focus ring are never clipped. */}
             {/* Each group is its own segment: a hairline above it, its name and count, then its pages. */}
             <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start overflow-y-auto px-3 pt-24 pb-12 [scrollbar-width:none]">
-              {pageRuns().map((run) =>
+              {runs.map((run) =>
                 run.group ? (
                   <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4">
                     <p className="flex items-baseline justify-between pb-2 text-caption">

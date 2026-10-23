@@ -14,6 +14,7 @@ export const meta: PageMeta = {
   verbs: ["type", "select"],
   summary:
     "Type to find one value, or several, in a long list. The Input's field with the Menu's glass list under it: the list grows from the field as you type, filters at once with the first match lit, and keeps one gliding highlight. Several picks sit in the field as tokens that fade in and out.",
+  fun: "Move through the list: the highlight reaches for the next row, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
 

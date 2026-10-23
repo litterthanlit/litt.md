@@ -13,6 +13,7 @@ export const meta: PageMeta = {
   verbs: ["press"],
   summary:
     "An on or off setting. A pill track with a round thumb, filled with the foreground color when on and never the accent. The thumb slides and the fills fade on the instant tier, and the box never moves. The label sits beside it, or the switch sits at the end of a settings row.",
+  fun: "Press and hold a switch: the thumb leans toward where it will go, then springs across.",
   tiers: ["instant"],
 };
 

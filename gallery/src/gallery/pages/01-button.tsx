@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   order: 1, group: "Controls",
   verbs: ["press"],
   summary: "Roomy and slightly rounded, with the label at the title weight. Hover changes the fill and press scales to 0.98, both on the instant tier, so the button answers without ever moving its box.",
+  fun: "Press and let go: the button goes deeper and springs back with a little life.",
   tiers: ["instant"],
 };
 

@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   verbs: ["drag", "press"],
   summary:
     "A ruler of time that slides under a fixed needle, with what happened along the run marked on it in its status color. Drag it and it follows one to one; let go and it settles on the nearest step, or on an event let go near, on the responsive tier. In fun mode it can be thrown, and coasts to the event its speed reaches. Page Up and Page Down go from event to event.",
+  fun: "Throw the ruler: it coasts as far as your speed carries it and lands on the event nearest there.",
   tiers: ["responsive"],
 };
 
