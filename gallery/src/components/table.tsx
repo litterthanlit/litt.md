@@ -77,6 +77,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import { flushSync } from "react-dom";
 import { AnimatePresence, motion, type HTMLMotionProps } from "motion/react";
 import { useExit, useStagger, useTransition, useTravel } from "@/motion";
 import { Button } from "@/components/button";
@@ -102,6 +103,8 @@ type TableState = {
   freezeColumns: () => void;
   /** A virtual body says it is loading more rows, so the table's status says so. */
   setLoadingMore: (loading: boolean) => void;
+  /** Checks whether the region has something to scroll, so it is focusable from the commit that makes it scroll. */
+  measureScroll: () => void;
 };
 const TableContext = createContext<TableState>({
   entrance: false,
@@ -114,6 +117,7 @@ const TableContext = createContext<TableState>({
   settleColumns: () => {},
   freezeColumns: () => {},
   setLoadingMore: () => {},
+  measureScroll: () => {},
 });
 /* Inside a TableVirtualBody: the row's place in the whole table, for aria-rowindex. Null elsewhere. */
 const VirtualIndexContext = createContext<number | null>(null);
@@ -276,21 +280,24 @@ export function Table({
   // Rows that mount with the table are its first wave. Rows that mount later are insertions.
   useEffect(() => setReady(true), []);
 
-  // The region is focusable only while there is something to scroll.
-  useEffect(() => {
+  /* The region is focusable only while there is something to scroll. It is measured after every commit, in the same
+     frame, so rows that land never make it scroll a frame before it can take focus (a virtual body measures after its
+     own commits too). The observer catches what React does not draw: a resize, a font that loads. */
+  const measureScroll = useCallback(() => {
     const el = region.current;
-    if (!el) return;
-    const measure = () => setScrolls(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(el);
+    if (el) setScrolls(el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1);
+  }, []);
+  useLayoutEffect(measureScroll);
+  useEffect(() => {
+    const observer = new ResizeObserver(() => flushSync(measureScroll));
+    if (region.current) observer.observe(region.current);
     if (table.current) observer.observe(table.current);
     return () => observer.disconnect();
-  }, []);
+  }, [measureScroll]);
 
   return (
     <TableContext.Provider
-      value={{ entrance, animateChanges, ready, region, table, widths, resizeColumn, settleColumns, freezeColumns, setLoadingMore }}
+      value={{ entrance, animateChanges, ready, region, table, widths, resizeColumn, settleColumns, freezeColumns, setLoadingMore, measureScroll }}
     >
       <motion.div
         ref={region}
@@ -434,7 +441,7 @@ export function TableVirtualBody({
   total,
   skeleton,
 }: TableVirtualBodyProps) {
-  const { region, table, freezeColumns, setLoadingMore } = useContext(TableContext);
+  const { region, table, freezeColumns, setLoadingMore, measureScroll } = useContext(TableContext);
   const body = useRef<HTMLTableSectionElement>(null);
 
   const [height, setHeight] = useState(ROW_HEIGHT);
@@ -484,6 +491,8 @@ export function TableVirtualBody({
     const real = row?.getBoundingClientRect().height;
     if (real && Math.abs(real - height) > 0.5) setHeight(real);
   });
+  /* Its own commits change the spacers' height, so the region's: the table rechecks whether it scrolls. */
+  useLayoutEffect(measureScroll);
 
   /* The whole table's size, for screen readers: the header row plus every row. -1 says it is not known yet. */
   useEffect(() => {
