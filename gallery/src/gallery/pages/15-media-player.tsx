@@ -11,8 +11,8 @@ export const meta: PageMeta = {
   group: "Layout",
   verbs: ["press", "drag"],
   summary:
-    "A video in a Media frame, or a sound under its title, with the controls in a bar under the picture, never over it. Nothing plays until someone presses Play. The playhead follows the media one to one with no easing, and steps under reduced motion; the time under the pointer fades in on the responsive tier and colors change on the instant tier. Captions show under the picture, and starting one player pauses the other.",
-  tiers: ["instant", "responsive"],
+    "A video in a Media frame, or a sound under its title, with one quiet row of controls under the picture, never over it. Nothing plays until someone presses Play. The playhead follows the media one to one with no easing, and steps under reduced motion; colors change on the instant tier and nothing else moves. Captions show under the picture, and starting one player pauses the other.",
+  tiers: ["instant"],
 };
 
 export const docs: PageDocs = {
@@ -62,6 +62,7 @@ export const docs: PageDocs = {
   ],
   a11y: [
     "The player is a group named by the label (a video) or the title (a sound). Every control is a real button with a name: Play, Pause or Play again, Captions, Speed, Mute and Full screen.",
+    "The rail has no thumb, so keyboard focus draws the focus ring around the whole rail, and a finger gets a 44px target.",
     "Captions, Mute and Full screen are toggles, read as pressed or not pressed, and their marks change too, so the state never rests on color.",
     "The rail is a slider named Seek. Its value says the time in words, such as \"1 minute 12 seconds of 3 minutes\", and it changes once a second, never on every frame.",
     "Give a video captions for what is heard: speech, and the sounds that matter. They show under the picture, at the small size in the foreground color, so they never sit on it.",
@@ -144,7 +145,7 @@ export default function MediaPlayerPage() {
         title="A video"
         tier="instant"
         code="ReelDemo"
-        caption="Press the picture or Play. The controls sit in a bar under the picture, never over it, so they need no scrim, never hide and never cover the work. The playhead follows the video with no easing, and the time under the pointer fades in above the rail. Turn the captions on and they show under the picture too, with room for two lines so the bar does not move between them."
+        caption="Press the picture or Play. The controls are one quiet row under the picture, never over it, so they need no scrim, never hide and never cover the work. The rail has no thumb: the end of what has played is the playhead, and it follows the video with no easing. Turn the captions on and they show under the picture too, with room for two lines so the row does not move between them."
       >
         <ReelDemo />
       </Stage>
@@ -153,7 +154,7 @@ export default function MediaPlayerPage() {
         title="A sound"
         tier="instant"
         code="SoundDemo"
-        caption="The same bar under a title, on the same raised card. The first one steps through three speeds; the second loads nothing until you press Play, and says the length it was given until then. Start one while the other plays and the other one pauses."
+        caption="The same row under a title. The first one steps through three speeds; the second loads nothing until you press Play, and says the length it was given until then. Start one while the other plays and the other one pauses."
       >
         <SoundDemo />
       </Stage>
@@ -163,7 +164,7 @@ export default function MediaPlayerPage() {
         tier="instant"
         align="start"
         code="StatesDemo"
-        caption="A file that doesn't load keeps the frame's size and says so beside a mark, and the controls go quiet. In a box under 28rem the rail takes a row of its own above the buttons, and the volume rail goes, as it does on any touch screen, which has the device's own."
+        caption="A file that doesn't load keeps the frame's size and says so beside a mark, and the row goes, because there is nothing left to play. In a narrow box the row stays one row; under 20rem the time shows only how far in it is."
       >
         <StatesDemo />
       </Stage>

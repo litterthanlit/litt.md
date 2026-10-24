@@ -1,40 +1,38 @@
 /**
  * Media player (components.md, "Media player"): sound or moving pictures that someone plays, such as a case study's
- * walkthrough, a launch film or a sound study. VideoPlayer is a Media frame with its controls in a bar under the
- * picture; AudioPlayer is the same bar under a title. Both sit on a raised card and run the native <video> and <audio>.
+ * walkthrough, a launch film or a sound study. VideoPlayer is a Media frame with one quiet row of controls under the
+ * picture; AudioPlayer is the same row under a title. They run the native <video> and <audio>, and sit in the page
+ * with no card of their own.
  *
  * - Never on its own: nothing autoplays, loops or plays muted in the background (foundations.md, Motion). It loads the
  *   file's metadata only, so the length shows before anyone presses play; preload="none" waits for the press, and
  *   `duration` gives the length until then. Starting one player pauses any other that is playing.
- * - Frame: Media's look inside the card's 4px: a fixed shape (16/9 by default), the control radius, still surface-2
- *   while it loads and an inset --line hairline over the picture. The poster is an image of its own, lazy, fading in
- *   on the instant tier as Media's does, with a round disc on it until the first play: a solid surface-1 with the
- *   secondary button's edge, so it reads on any picture, and the only thing that ever sits on one. A press anywhere on
- *   the picture plays and pauses.
- * - Controls under the picture, never over it: over it they would need a scrim and still fail contrast somewhere in
- *   the picture. So they never hide either. Play is a round secondary button and the rest are round ghosts, each only
- *   where it applies: Captions, Speed, Mute and Full screen. 32px on a fine pointer, 44px on a coarse one.
- * - Rail: the Slider's, 4px at the control radius on fg 12%, with what has loaded at fg 24% and what has played in
- *   --fg, never the accent (P1), under the Slider's 20px thumb. The elapsed time sits at its start and the length at
- *   its end, in the mono at the caption size in --fg-subtle, each as wide as the length, so the rail never shifts as
- *   the digits change. On a fine pointer the time under the pointer shows above it in the chart tooltip's look, and
- *   while dragging on any pointer. In a box under 28rem the rail takes a row of its own above the buttons.
+ * - Frame: Media's: a fixed shape (16/9 by default), the surface radius, still surface-2 while it loads and an inset
+ *   --line hairline over the picture. The poster is an image of its own, lazy, fading in on the instant tier as
+ *   Media's does. Nothing sits on the picture, ever; a press anywhere on it plays and pauses.
+ * - The row, 8px under the picture and never over it: over it, controls would need a scrim and still fail contrast
+ *   somewhere in the picture, so they never hide either. Every button is a round ghost: Play, then the rail, the time,
+ *   and only the ones that apply: Captions, Speed, Mute and Full screen. The first and last sit 8px outside the row so
+ *   their marks line up with the picture's edges. 32px on a fine pointer, 44px on a coarse one.
+ * - Rail: the Slider's 4px rail at the control radius on fg 12%, with what has played in --fg, never the accent (P1).
+ *   No thumb and no buffered band: the end of the played part is the playhead. The whole 20px row (44px on a coarse
+ *   pointer) is the target, and keyboard focus draws the 2px ring around it.
+ * - Time: "0:12 / 0:42" after the rail at the small size in --fg-subtle, in the sans with even digits, the elapsed
+ *   part as wide as the length so nothing shifts as it counts. In a box under 20rem only the elapsed time shows.
  * - Motion: the playhead follows the media one to one, with no easing, painted on every frame while it plays and
- *   without a render (two CSS variables on the rail). Under reduced motion it steps as the time does, a few times a
- *   second. The time above the rail fades on the responsive tier and colors on the instant tier. Nothing else moves.
+ *   without a render (a CSS variable on the rail). Under reduced motion it steps as the time does, a few times a
+ *   second. Colors change on the instant tier. Nothing else moves.
  * - Buffering: while the media waits for data, Play shows the Button's spinner in place of its mark and stays Pause,
  *   so it can still be pressed. The spinner is the one loop, because it is the loading signal.
  * - Ended: Play becomes Play again, with the retry mark, over the last frame. Failed: the frame keeps its size and says
- *   "Video didn't load" beside a mark in --fg-subtle, as Media's; Play and the rail are disabled, and the times and the
- *   other controls hidden.
- * - Captions: one WebVTT track. On, its cues show in a line under the picture at the small size in --fg, never on it,
- *   with two lines kept so the bar does not move between cues. The browser's own drawing over the picture stays off.
- *   The button is a toggle (aria-pressed) whose mark fills while they are on.
+ *   "Video didn't load" beside a mark in --fg-subtle, as Media's, and the row goes; a sound says it under its title.
+ * - Captions: one WebVTT track. On, its cues show in a line between the picture and the row, at the small size in
+ *   --fg, never on the picture, with two lines kept so the row does not move between cues. The browser's own drawing
+ *   over the picture stays off. The button is a toggle (aria-pressed) whose mark fills while they are on.
  * - Speed: with `rates`, a ghost button that says the speed ("1.5×") and steps to the next one on each press. A menu
  *   would open outside a full-screen player, where nobody could see it.
- * - Volume: Mute is a toggle whose mark is crossed while it is on. On a fine pointer in a wide box a 64px volume rail
- *   sits beside it; a touch screen has the device's own volume, which a page cannot set on iOS.
- * - Full screen (video only): the card fills the screen on --canvas, with the picture letterboxed and the bar under
+ * - Volume: Mute, a toggle whose mark is crossed while it is on. The level is the device's.
+ * - Full screen (video only): the player fills the screen on --canvas, with the picture letterboxed and the row under
  *   it. On an iPhone, which gives a page no full screen, the system's own player takes over.
  * - Keys, anywhere in the player: Space (when not on a button) and K play and pause, ← and → move 5 seconds, J and L
  *   10, Home and End go to the ends, M mutes, C turns the captions on and off, F is full screen, < and > change the
@@ -44,7 +42,6 @@
  *   button with a name; the picture's own press is a shortcut for Play, not a second tab stop.
  */
 import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject, type SVGProps } from "react";
-import * as RadixSlider from "@radix-ui/react-slider";
 import { Button, Spinner } from "@/components/button";
 import { ExpandIcon, PauseIcon, PlayIcon, RetryIcon, ShrinkIcon } from "@/components/icons";
 import { useDevice, useMotionDial } from "@/motion";
@@ -150,11 +147,11 @@ const VolumeIcon = () => <Glyph><path d={SPEAKER} /><path d="M10.5 6.1a2.5 2.5 0
 const MutedIcon = () => <Glyph><path d={SPEAKER} /><path d="m10.75 6.25 3.5 3.5M14.25 6.25l-3.5 3.5" /></Glyph>;
 const CC = "M7.25 6.25h-1.5a1 1 0 0 0-1 1v1.5a1 1 0 0 0 1 1h1.5M11.75 6.25h-1.5a1 1 0 0 0-1 1v1.5a1 1 0 0 0 1 1h1.5";
 const CaptionsIcon = () => <Glyph><rect x="1.75" y="3.25" width="12.5" height="9.5" /><path d={CC} /></Glyph>;
-/** Captions on: the same box filled, with the letters in the surface's color, as if cut out of it. */
+/** Captions on: the same box filled, with the letters in the page's color, as if cut out of it. */
 const CaptionsOnIcon = () => (
   <Glyph>
     <rect x="1.75" y="3.25" width="12.5" height="9.5" fill="currentColor" />
-    <path d={CC} stroke="var(--surface-1)" />
+    <path d={CC} stroke="var(--canvas)" />
   </Glyph>
 );
 const VideoIcon = () => <Glyph><rect x="1.75" y="3.75" width="8.5" height="8.5" /><path d="m10.25 6.75 4-2.25v7l-4-2.25" /></Glyph>;
@@ -206,7 +203,6 @@ type Playback = {
   /** The length in seconds, or NaN until it is known. */
   duration: number;
   muted: boolean;
-  volume: number;
   rate: number;
   captionsOn: boolean;
   /** The words of the cues showing now, or "" between them. */
@@ -215,7 +211,6 @@ type Playback = {
   seek: (seconds: number) => void;
   skip: (seconds: number) => void;
   setMuted: (muted: boolean) => void;
-  setVolume: (volume: number) => void;
   setRate: (rate: number) => void;
   setCaptionsOn: (on: boolean) => void;
 };
@@ -240,7 +235,6 @@ function usePlayback(media: RefObject<HTMLMediaElement | null>, track: RefObject
   const [failed, setFailed] = useState(false);
   const [known, setKnown] = useState(NaN);
   const [muted, setMutedState] = useState(false);
-  const [volume, setVolumeState] = useState(1);
   const [rate, setRateState] = useState(1);
   const [captionsOn, setCaptionsOn] = useState(o.defaultCaptions);
   const [cue, setCue] = useState("");
@@ -255,7 +249,6 @@ function usePlayback(media: RefObject<HTMLMediaElement | null>, track: RefObject
     const sync = () => {
       setPlaying(!el.paused && !el.ended);
       setMutedState(el.muted);
-      setVolumeState(el.volume);
       setKnown(Number.isFinite(el.duration) && el.duration > 0 ? el.duration : NaN);
       if (el.error) setFailed(true);
     };
@@ -296,10 +289,7 @@ function usePlayback(media: RefObject<HTMLMediaElement | null>, track: RefObject
       setEnded(true);
       latest.current.onEnded?.();
     };
-    const onVolume = () => {
-      setMutedState(el.muted);
-      setVolumeState(el.volume);
-    };
+    const onVolume = () => setMutedState(el.muted);
     const onLength = () => setKnown(Number.isFinite(el.duration) && el.duration > 0 ? el.duration : NaN);
     /* A <source> that fails fires its error on itself, and it does not bubble: listen in the capture phase. The player
        has failed when the video does, or when the last source does. */
@@ -391,7 +381,6 @@ function usePlayback(media: RefObject<HTMLMediaElement | null>, track: RefObject
     failed,
     duration,
     muted,
-    volume,
     rate,
     captionsOn,
     cue,
@@ -407,12 +396,6 @@ function usePlayback(media: RefObject<HTMLMediaElement | null>, track: RefObject
     setMuted: (next: boolean) => {
       if (media.current) media.current.muted = next;
     },
-    setVolume: (next: number) => {
-      const el = media.current;
-      if (!el) return;
-      el.volume = Math.min(1, Math.max(0, next));
-      if (next > 0 && el.muted) el.muted = false;
-    },
     setRate: (next: number) => {
       const el = media.current;
       setRateState(next);
@@ -425,30 +408,9 @@ function usePlayback(media: RefObject<HTMLMediaElement | null>, track: RefObject
   };
 }
 
-/* ---------------------------------------------------------------- the rail */
+/* ---------------------------------------------------------------- the row */
 
-const RAIL_TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
-
-/* The Slider's thumb (slider.tsx), on a rail it does not own. */
-const THUMB =
-  "absolute top-1/2 left-0 -mt-2.5 block size-5 rounded-pill bg-surface-1 " +
-  "shadow-[inset_0_0_0_1px_var(--line-control),var(--highlight)] " +
-  "transition-[background-color,box-shadow] duration-(--dur-instant) ease-litt " +
-  "hover:bg-surface-2 pointer-coarse:active:bg-surface-2 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-  "aria-disabled:bg-surface-2 aria-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  "forced-colors:border";
-
-/* The volume rail: the Slider's look at 64px, on Radix Slider for its keys. */
-const VOLUME_ROOT = "relative flex h-5 w-16 shrink-0 touch-pan-y select-none items-center cursor-pointer";
-const VOLUME_RAIL = "relative h-1 grow overflow-hidden rounded-control forced-colors:border " + RAIL_TRACK;
-const VOLUME_RANGE = "absolute h-full rounded-control bg-fg forced-colors:bg-[Highlight]";
-const VOLUME_THUMB =
-  "block size-3 rounded-pill bg-surface-1 shadow-[inset_0_0_0_1px_var(--line-control),var(--highlight)] " +
-  "transition-[background-color] duration-(--dur-instant) ease-litt hover:bg-surface-2 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border";
-
-type BarProps = {
+type RowProps = {
   playback: Playback;
   /** Full screen, for a video: whether it is on and how to change it, or undefined for none. */
   fullscreen?: { on: boolean; toggle: () => void };
@@ -456,38 +418,31 @@ type BarProps = {
   hasCaptions: boolean;
 };
 
-/** The controls: Play, the elapsed time, the rail, the length, then Captions, Speed, Mute, the volume and Full screen. */
-function Bar({ playback: p, fullscreen, rates, hasCaptions }: BarProps) {
+/** The controls: Play, the rail, the time, then Captions, Speed, Mute and Full screen where they apply. */
+function Row({ playback: p, fullscreen, rates, hasCaptions }: RowProps) {
   const { coarse } = useDevice();
   const { reduced } = useMotionDial();
   const size = coarse ? "md" : "sm";
   const hintId = useId();
 
-  const seekRoot = useRef<HTMLDivElement>(null);
-  const thumb = useRef<HTMLDivElement>(null);
+  const rail = useRef<HTMLDivElement>(null);
   const elapsed = useRef<HTMLSpanElement>(null);
-  const tip = useRef<HTMLDivElement>(null);
-  const tipText = useRef<HTMLSpanElement>(null);
   /** The time a drag has put the playhead at, painted instead of the media's until the drag ends. */
   const scrub = useRef<number | null>(null);
   const dragging = useRef(false);
-  const [tipShown, setTipShown] = useState(false);
   const paintRef = useRef<() => void>(() => {});
 
   const known = Number.isFinite(p.duration);
   const length = known ? p.duration : 0;
-  const total = known ? clock(length, length) : "";
-  /* Both times are as wide as the length, in the mono's even digits, so the rail never moves as they count. */
+  /* The elapsed part is as wide as the length, in even digits, so the time never shifts as it counts. */
   const width = { minWidth: `${Math.max(4, clock(length, length).length)}ch` };
-  const off = p.failed;
-  const seekable = known && !off;
 
-  /* The playhead and the buffered band are two CSS variables on the rail, painted on every frame while it plays (or on
-     each timeupdate under reduced motion), so the page never renders for it. The elapsed text and the value text
-     change only when the second does. */
+  /* The playhead is a CSS variable on the rail, painted on every frame while it plays (or on each timeupdate under
+     reduced motion), so the page never renders for it. The elapsed time and the value text change only when the
+     second does. */
   useLayoutEffect(() => {
     const el = p.media.current;
-    const root = seekRoot.current;
+    const root = rail.current;
     if (!el || !root) return;
     let frame = 0;
     let second = -1;
@@ -495,20 +450,14 @@ function Bar({ playback: p, fullscreen, rates, hasCaptions }: BarProps) {
     const paint = () => {
       const d = Number.isFinite(el.duration) && el.duration > 0 ? el.duration : length;
       const t = scrub.current ?? el.currentTime;
-      const played = d > 0 ? Math.min(1, Math.max(0, t / d)) : 0;
-      let loaded = 0;
-      for (let i = 0; i < el.buffered.length; i++) {
-        if (el.buffered.start(i) <= t + 0.5 && el.buffered.end(i) >= t) loaded = d > 0 ? Math.min(1, el.buffered.end(i) / d) : 0;
-      }
-      root.style.setProperty("--played", String(played));
-      root.style.setProperty("--loaded", String(Math.max(loaded, played)));
+      root.style.setProperty("--played", String(d > 0 ? Math.min(1, Math.max(0, t / d)) : 0));
       const s = Math.floor(t);
       if (s !== second || d !== format) {
         second = s;
         format = d;
         if (elapsed.current) elapsed.current.textContent = clock(t, d);
-        thumb.current?.setAttribute("aria-valuenow", String(Math.min(s, Math.floor(d))));
-        thumb.current?.setAttribute("aria-valuetext", d > 0 ? `${spoken(t)} of ${spoken(d)}` : spoken(t));
+        root.setAttribute("aria-valuenow", String(Math.min(s, Math.floor(d))));
+        root.setAttribute("aria-valuetext", d > 0 ? `${spoken(t)} of ${spoken(d)}` : spoken(t));
       }
     };
     paintRef.current = paint;
@@ -533,7 +482,6 @@ function Bar({ playback: p, fullscreen, rates, hasCaptions }: BarProps) {
       ["timeupdate", paint],
       ["seeking", paint],
       ["seeked", paint],
-      ["progress", paint],
       ["durationchange", paint],
       ["loadedmetadata", paint],
       ["emptied", paint],
@@ -549,46 +497,27 @@ function Bar({ playback: p, fullscreen, rates, hasCaptions }: BarProps) {
 
   /** The time under a pointer at x, on the rail. */
   const timeAt = (x: number) => {
-    const r = seekRoot.current?.getBoundingClientRect();
+    const r = rail.current?.getBoundingClientRect();
     if (!r || r.width === 0) return 0;
     return Math.min(1, Math.max(0, (x - r.left) / r.width)) * length;
-  };
-  /** Puts the time readout above the pointer, kept inside the rail. */
-  const placeTip = (x: number, seconds: number) => {
-    const r = seekRoot.current?.getBoundingClientRect();
-    const box = tip.current;
-    if (!r || !box || !tipText.current) return;
-    tipText.current.textContent = clock(seconds, length);
-    const w = box.offsetWidth;
-    const left = Math.min(r.width - w, Math.max(0, x - r.left - w / 2));
-    box.style.transform = `translateX(${left}px)`;
   };
   const scrubTo = (x: number) => {
     const t = timeAt(x);
     scrub.current = t;
     paintRef.current();
-    placeTip(x, t);
     /* fastSeek lands on a nearby keyframe at once where the browser has it; the release seeks exactly. */
     const el = p.media.current;
     if (el && typeof el.fastSeek === "function") el.fastSeek(t);
     else p.seek(t);
   };
-
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (!seekable || (event.pointerType === "mouse" && event.button !== 0)) return;
+    if (!known || (event.pointerType === "mouse" && event.button !== 0)) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     dragging.current = true;
-    thumb.current?.focus({ preventScroll: true });
-    setTipShown(true);
     scrubTo(event.clientX);
   };
   const onPointerMove = (event: PointerEvent<HTMLDivElement>) => {
-    if (!seekable) return;
     if (dragging.current) scrubTo(event.clientX);
-    else if (event.pointerType === "mouse") {
-      placeTip(event.clientX, timeAt(event.clientX));
-      setTipShown(true);
-    }
   };
   const release = () => {
     if (!dragging.current) return;
@@ -596,14 +525,10 @@ function Bar({ playback: p, fullscreen, rates, hasCaptions }: BarProps) {
     const t = scrub.current;
     scrub.current = null;
     if (t !== null) p.seek(t);
-    setTipShown(false);
-  };
-  const onPointerLeave = () => {
-    if (!dragging.current) setTipShown(false);
   };
 
-  const onThumbKey = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (!seekable) return;
+  const onRailKey = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!known) return;
     const now = p.media.current?.currentTime ?? 0;
     const page = Math.max(SKIP, length / 10);
     let to: number;
@@ -621,136 +546,74 @@ function Bar({ playback: p, fullscreen, rates, hasCaptions }: BarProps) {
   const icon = p.waiting ? <Spinner /> : p.playing ? <PauseIcon /> : p.ended ? <RetryIcon /> : <PlayIcon />;
   const playLabel = p.playing ? "Pause" : p.ended ? "Play again" : "Play";
   const nextRate = rates && rates.length > 1 ? rates[(rates.indexOf(p.rate) + 1) % rates.length] ?? rates[0] ?? 1 : undefined;
+  /* The first and last buttons sit outside the row by the air around their marks, so the marks line up with the edges. */
+  const outside = coarse ? "-mx-3.5" : "-mx-2";
 
   return (
-    <div className="@container/bar p-1">
-      <div className="flex flex-wrap items-center gap-x-1 @md/bar:flex-nowrap">
-        <Button variant="secondary" size={size} iconOnly aria-label={playLabel} disabled={off} onClick={p.toggle}>
+    <div className="@container/bar">
+      <div className={"flex min-w-0 items-center " + outside}>
+        <Button variant="ghost" size={size} iconOnly aria-label={playLabel} onClick={p.toggle}>
           {icon}
         </Button>
-
-        {/* The timeline: on its own row above the buttons in a narrow box, between them in a wide one. */}
-        <div className="order-first flex min-w-0 basis-full items-center gap-3 px-2 @md/bar:order-none @md/bar:flex-1 @md/bar:basis-auto">
-          <span
-            ref={elapsed}
-            aria-hidden="true"
-            className={"shrink-0 text-right font-mono text-caption font-normal text-fg-subtle tabular-nums " + (off ? "invisible" : "")}
-            style={width}
-          />
-          <div
-            ref={seekRoot}
-            data-no-drag=""
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={release}
-            onPointerCancel={release}
-            onLostPointerCapture={release}
-            onPointerLeave={onPointerLeave}
-            /* The two variables the effect above paints. React sets them once and, as they never change here, never again. */
-            style={{ "--played": 0, "--loaded": 0 } as CSSProperties}
-            className={
-              "@container relative flex h-5 min-w-0 flex-1 touch-pan-y select-none items-center pointer-coarse:h-control-md " +
-              (seekable ? "cursor-pointer" : "cursor-not-allowed")
-            }
-          >
-            <div className={"relative h-1 w-full overflow-hidden rounded-control forced-colors:border " + RAIL_TRACK}>
-              <div
-                className="absolute inset-0 origin-left bg-[color-mix(in_oklab,var(--fg)_24%,transparent)] forced-colors:bg-[GrayText]"
-                style={{ transform: "scaleX(var(--loaded, 0))" }}
-              />
-              <div
-                className={"absolute inset-0 origin-left forced-colors:bg-[Highlight] " + (off ? "bg-fg-disabled" : "bg-fg")}
-                style={{ transform: "scaleX(var(--played, 0))" }}
-              />
-            </div>
-            {/* Kept inside the rail, as the Slider's thumb is: its left edge runs from 0 to the rail less its own width. */}
-            <div
-              ref={thumb}
-              role="slider"
-              tabIndex={seekable ? 0 : -1}
-              aria-label="Seek"
-              aria-describedby={hintId}
-              aria-valuemin={0}
-              aria-valuemax={Math.floor(length)}
-              /* Painted from here on, once a second, by the effect above. React never sets them again, so it never
-                 writes over the painted time. */
-              aria-valuenow={0}
-              aria-valuetext="0 seconds"
-              aria-disabled={seekable ? undefined : true}
-              onKeyDown={onThumbKey}
-              className={THUMB}
-              style={{ transform: "translateX(calc(var(--played, 0) * (100cqw - 100%)))" }}
+        <div
+          ref={rail}
+          role="slider"
+          tabIndex={known ? 0 : -1}
+          aria-label="Seek"
+          aria-describedby={hintId}
+          aria-valuemin={0}
+          aria-valuemax={Math.floor(length)}
+          /* Painted from here on, once a second, by the effect above. React never sets them again, so it never writes
+             over the painted time. The same goes for --played. */
+          aria-valuenow={0}
+          aria-valuetext="0 seconds"
+          aria-disabled={known ? undefined : true}
+          data-no-drag=""
+          onKeyDown={onRailKey}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={release}
+          onPointerCancel={release}
+          onLostPointerCapture={release}
+          style={{ "--played": 0 } as CSSProperties}
+          className={
+            "relative mx-2 flex h-5 min-w-0 flex-1 touch-pan-y select-none items-center rounded-control pointer-coarse:h-control-md " +
+            "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+            (known ? "cursor-pointer" : "")
+          }
+        >
+          <span className="relative block h-1 w-full overflow-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] forced-colors:border">
+            <span
+              className="absolute inset-0 origin-left bg-fg forced-colors:bg-[Highlight]"
+              style={{ transform: "scaleX(var(--played, 0))" }}
             />
-            <div
-              ref={tip}
-              aria-hidden="true"
-              className={
-                "pointer-events-none absolute bottom-full left-0 mb-2 transition-opacity duration-(--dur-responsive) ease-responsive " +
-                (tipShown && seekable ? "opacity-100" : "opacity-0")
-              }
-            >
-              <span
-                ref={tipText}
-                className="block rounded-control bg-surface-3 px-2 py-1.5 font-mono text-caption font-normal whitespace-nowrap text-fg tabular-nums shadow-tooltip inset-shadow-highlight"
-              />
-            </div>
-          </div>
-          <span
-            aria-hidden="true"
-            className={"shrink-0 font-mono text-caption font-normal text-fg-subtle tabular-nums " + (off ? "invisible" : "")}
-            style={width}
-          >
-            {total}
-          </span>
-          <span id={hintId} className="sr-only">
-            Arrow keys move {SKIP} seconds.
           </span>
         </div>
-
-        {/* A file that failed has nothing to mute, caption or enlarge: only the disabled Play and rail stay, to keep the shape. */}
-        <div className={"ml-auto flex shrink-0 items-center gap-1 " + (off ? "hidden" : "")}>
-          {hasCaptions && (
-            <Button variant="ghost" size={size} iconOnly aria-label="Captions" aria-pressed={p.captionsOn} disabled={off} onClick={() => p.setCaptionsOn(!p.captionsOn)}>
-              {p.captionsOn ? <CaptionsOnIcon /> : <CaptionsIcon />}
-            </Button>
-          )}
-          {nextRate !== undefined && (
-            <Button
-              variant="ghost"
-              size={size}
-              aria-label={`Speed, ${rateSpoken(p.rate)}`}
-              disabled={off}
-              onClick={() => p.setRate(nextRate)}
-              className="tabular-nums"
-            >
-              {rateText(p.rate)}
-            </Button>
-          )}
-          <Button variant="ghost" size={size} iconOnly aria-label="Mute" aria-pressed={p.muted} disabled={off} onClick={() => p.setMuted(!p.muted)}>
-            {p.muted ? <MutedIcon /> : <VolumeIcon />}
+        <span aria-hidden="true" className="me-2 shrink-0 text-small whitespace-nowrap text-fg-subtle tabular-nums">
+          <span ref={elapsed} className="inline-block text-right" style={width} />
+          {known && <span className="@max-xs/bar:hidden"> / {clock(length, length)}</span>}
+        </span>
+        <span id={hintId} className="sr-only">
+          Arrow keys move {SKIP} seconds.
+        </span>
+        {hasCaptions && (
+          <Button variant="ghost" size={size} iconOnly aria-label="Captions" aria-pressed={p.captionsOn} onClick={() => p.setCaptionsOn(!p.captionsOn)}>
+            {p.captionsOn ? <CaptionsOnIcon /> : <CaptionsIcon />}
           </Button>
-          {/* A touch screen has the device's volume, and iOS lets no page set it: the rail is for a fine pointer in a wide box. */}
-          <RadixSlider.Root
-            min={0}
-            max={1}
-            step={0.05}
-            value={[p.muted ? 0 : p.volume]}
-            onValueChange={(v) => v[0] !== undefined && p.setVolume(v[0])}
-            disabled={off}
-            data-no-drag=""
-            className={"me-2 ms-1 hidden pointer-fine:@md/bar:flex " + VOLUME_ROOT}
-          >
-            <RadixSlider.Track className={VOLUME_RAIL}>
-              <RadixSlider.Range className={VOLUME_RANGE} />
-            </RadixSlider.Track>
-            <RadixSlider.Thumb aria-label="Volume" aria-valuetext={`${Math.round((p.muted ? 0 : p.volume) * 100)}%`} className={VOLUME_THUMB} />
-          </RadixSlider.Root>
-          {fullscreen && (
-            <Button variant="ghost" size={size} iconOnly aria-label="Full screen" aria-pressed={fullscreen.on} disabled={off} onClick={fullscreen.toggle}>
-              {fullscreen.on ? <ShrinkIcon /> : <ExpandIcon />}
-            </Button>
-          )}
-        </div>
+        )}
+        {nextRate !== undefined && (
+          <Button variant="ghost" size={size} aria-label={`Speed, ${rateSpoken(p.rate)}`} onClick={() => p.setRate(nextRate)} className="tabular-nums">
+            {rateText(p.rate)}
+          </Button>
+        )}
+        <Button variant="ghost" size={size} iconOnly aria-label="Mute" aria-pressed={p.muted} onClick={() => p.setMuted(!p.muted)}>
+          {p.muted ? <MutedIcon /> : <VolumeIcon />}
+        </Button>
+        {fullscreen && (
+          <Button variant="ghost" size={size} iconOnly aria-label="Full screen" aria-pressed={fullscreen.on} onClick={fullscreen.toggle}>
+            {fullscreen.on ? <ShrinkIcon /> : <ExpandIcon />}
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -839,16 +702,16 @@ function Sources({ src, captions, track }: { src: string | MediaFile[]; captions
 
 const sourceKey = (src: string | MediaFile[]) => (typeof src === "string" ? src : src.map((f) => f.src).join(" "));
 
-/** The cue line, kept two lines tall while the captions are on so the bar never moves between cues. */
+/** The cue line, kept two lines tall while the captions are on so the row never moves between cues. */
 function CueLine({ cue }: { cue: string }) {
-  return <p className="min-h-[2lh] px-3 pt-3 text-small whitespace-pre-line text-fg">{cue}</p>;
+  return <p className="min-h-[2lh] text-small whitespace-pre-line text-fg">{cue}</p>;
 }
 
 /* ---------------------------------------------------------------- VideoPlayer */
 
 type WebkitVideo = HTMLVideoElement & { webkitEnterFullscreen?: () => void };
 
-/** Moving pictures in a frame that keeps its shape, with the controls in a bar under the picture. Nothing plays until someone presses Play. */
+/** Moving pictures in a frame that keeps its shape, with one quiet row of controls under the picture. Nothing plays until someone presses Play. */
 export function VideoPlayer({
   src,
   label,
@@ -910,13 +773,10 @@ export function VideoPlayer({
       role="group"
       aria-label={label}
       onKeyDown={onKeyDown}
-      className={[
-        full ? "flex h-full flex-col bg-canvas p-4" : "litt-raised grid min-w-0 p-1",
-        caption ? "" : className,
-      ].join(" ")}
+      className={[full ? "flex h-full flex-col gap-2 bg-canvas p-6" : "grid min-w-0 gap-2", caption ? "" : className].join(" ")}
     >
       <div
-        className={"group/frame @container relative overflow-hidden rounded-control bg-surface-2 " + shape}
+        className={"@container relative overflow-hidden rounded-surface bg-surface-2 " + shape}
         style={!full && typeof ratio === "number" ? { aspectRatio: ratio } : undefined}
       >
         <video
@@ -950,34 +810,21 @@ export function VideoPlayer({
             }
           />
         )}
-        {/* Until the first play: the disc says it is a video, and a press anywhere on the picture plays it. */}
-        {!p.started && !p.failed && (
-          <span aria-hidden="true" className="pointer-events-none absolute inset-0 grid place-items-center">
-            <span
-              className={
-                "grid size-control-lg place-items-center rounded-pill bg-surface-1 text-fg " +
-                "shadow-[inset_0_0_0_1px_var(--line-strong),var(--highlight)] " +
-                "transition-[background-color] duration-(--dur-instant) ease-litt group-hover/frame:bg-surface-2"
-              }
-            >
-              {p.waiting ? <Spinner /> : <PlayIcon />}
-            </span>
-          </span>
-        )}
         {p.failed && (
           <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center gap-2 p-4 text-fg-subtle">
             <VideoIcon />
             <span className="truncate text-small @max-[10rem]:hidden">Video didn&apos;t load</span>
           </span>
         )}
-        <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_var(--line)]" />
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-surface shadow-[inset_0_0_0_1px_var(--line)]" />
       </div>
-      {p.captionsOn && <CueLine cue={p.cue} />}
-      <Bar playback={p} fullscreen={fullscreen} rates={rates} hasCaptions={captions !== undefined} />
-      {p.failed && (
+      {p.captionsOn && !p.failed && <CueLine cue={p.cue} />}
+      {p.failed ? (
         <span role="status" className="sr-only">
           {label}: the video didn&apos;t load.
         </span>
+      ) : (
+        <Row playback={p} fullscreen={fullscreen} rates={rates} hasCaptions={captions !== undefined} />
       )}
     </div>
   );
@@ -993,7 +840,7 @@ export function VideoPlayer({
 
 /* ---------------------------------------------------------------- AudioPlayer */
 
-/** A sound with a title, on a raised card, with the same bar as a video's. Nothing plays until someone presses Play. */
+/** A sound under its title, with the same quiet row as a video's. Nothing plays until someone presses Play. */
 export function AudioPlayer({
   src,
   title,
@@ -1026,7 +873,7 @@ export function AudioPlayer({
   const onKeyDown = useShortcuts(p, rates, captions !== undefined);
 
   return (
-    <div role="group" aria-labelledby={titleId} onKeyDown={onKeyDown} className={"litt-raised grid min-w-0 p-1 " + className}>
+    <div role="group" aria-labelledby={titleId} onKeyDown={onKeyDown} className={"grid min-w-0 gap-2 " + className}>
       <audio
         ref={(el) => {
           audio.current = el;
@@ -1037,9 +884,9 @@ export function AudioPlayer({
       >
         <Sources src={src} captions={captions} track={track} />
       </audio>
-      <div className="flex min-w-0 items-center gap-3 px-3 pt-3 pb-2">
+      <div className="flex min-w-0 items-center gap-3">
         {cover && (
-          <span className="relative size-12 shrink-0 overflow-hidden rounded-control bg-surface-2">
+          <span className="relative size-10 shrink-0 overflow-hidden rounded-control bg-surface-2">
             <img src={cover} alt="" loading="lazy" decoding="async" draggable={false} className="size-full object-cover" />
             <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_var(--line)]" />
           </span>
@@ -1049,14 +896,16 @@ export function AudioPlayer({
             {title}
           </p>
           {p.failed ? (
-            <p className="truncate text-small text-fg-subtle">Sound didn&apos;t load</p>
+            <p role="status" className="truncate text-small text-fg-subtle">
+              Sound didn&apos;t load
+            </p>
           ) : (
             byline && <p className="truncate text-small text-fg-subtle">{byline}</p>
           )}
         </div>
       </div>
-      {p.captionsOn && <CueLine cue={p.cue} />}
-      <Bar playback={p} rates={rates} hasCaptions={captions !== undefined} />
+      {p.captionsOn && !p.failed && <CueLine cue={p.cue} />}
+      {!p.failed && <Row playback={p} rates={rates} hasCaptions={captions !== undefined} />}
     </div>
   );
 }
