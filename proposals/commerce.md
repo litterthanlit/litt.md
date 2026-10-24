@@ -2,7 +2,7 @@
 
 Written 2026-10-23 for Nick. Nick asked: "what if we could integrate with shopify, I dont think bencho has ecom components no?", then "yes please" to a proposal before any build.
 
-Status: **proposed, nothing built.** The forms, dashboards and agents steps were built first and tested after. This one asks first, because four of its decisions lean on taste rules (P1, P7, P11 and the 18px ceiling) and one adds the registry's first outside service.
+Status: **decided on 2026-10-24.** Nick: "all as recommended", for all 13 decisions below. The forms, dashboards and agents steps were built first and tested after; this one asked first, because four of its decisions lean on taste rules (P1, P7, P11 and the 18px ceiling) and one adds the registry's first outside service. No taste rule changed.
 
 ## Why litt, not why bencho
 
@@ -51,7 +51,7 @@ The public Storefront token is made for the browser and reaches only what a shop
 
 When Shopify ships a new quarterly API version, one constant and the fragments change. Nothing visual moves.
 
-## Decisions for Nick
+## Decisions (Nick: "all as recommended")
 
 | # | Question | Recommendation | Why |
 |---|---|---|---|
@@ -84,6 +84,10 @@ A `product-page` task in `evals/agents/`: "Build the product page and cart for a
 
 Each step adds its changelog lines, runs `verify` and `test:registry`, and commits the lock with the change.
 
-## What I need from you
+## Questions for Nick's tests
 
-A yes on the scope (1), and your calls on 2, 5, 6, 7 and 12. The rest can be built as recommended and tested after, as with the earlier steps.
+The decisions are made; these are the places where the build should be looked at hard.
+
+1. **Decision 5:** does a 14px price under the 18px title hold its own next to a large picture?
+2. **Decision 7:** does the toast after Add to cart feel like enough, or should the cart open?
+3. **Decision 4:** does a sold-out value in the disabled ink read as sold out before it is picked?
