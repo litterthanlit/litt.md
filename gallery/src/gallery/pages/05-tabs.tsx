@@ -3,7 +3,7 @@ import { Kbd } from "@/components/kbd";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
-import { useLoop, usePlaysOnItsOwn } from "../tile";
+import { useLoop } from "../tile";
 
 export const meta: PageMeta = {
   id: "tabs",
@@ -280,9 +280,9 @@ function KeyboardDemo() {
 const TILE_TABS = ["Overview", "Activity", "Deploys"];
 const TILE_TEXT = ["12,480 visits in the last 7 days.", "Published to production 4 minutes ago.", "Build 5f2e9c1 finished in 42 seconds."];
 
-/** The underline glides from tab to tab on the responsive tier, until someone picks one. */
+/** While the pointer rests on the tile, the underline glides from tab to tab on the responsive tier, until someone
+    picks one. */
 function TabsTile() {
-  usePlaysOnItsOwn();
   const [ref, step] = useLoop<HTMLDivElement>(TILE_TABS.length, 2200, 0);
   const [own, setOwn] = useState<string | null>(null);
   const value = own ?? TILE_TABS[step]!;

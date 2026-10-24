@@ -4,7 +4,7 @@ import { Plan, type PlanStep } from "@/components/plan";
 import { DeviceProvider } from "@/motion";
 import { ToolCall } from "@/components/tool-call";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
-import { useLoop, usePlaysOnItsOwn } from "../tile";
+import { useLoop } from "../tile";
 
 export const meta: PageMeta = {
   id: "plan",
@@ -224,9 +224,9 @@ const RUN: (Omit<PlanStep, "status"> & { doing: string; did: string; target: str
   { id: "preview", label: "Publish a preview", doing: "Publishing", did: "Published", target: "northwind-git-grid.vercel.app", seconds: 4 },
 ];
 
-/** The plan works through its steps with a tool call for each, holds the finished turn, then starts again. */
+/** While the pointer rests on the tile, the plan works through its steps with a tool call for each, holds the finished
+    turn, then starts again. At rest it shows the finished plan. */
 function PlanTile() {
-  usePlaysOnItsOwn();
   const total = RUN.length + 2; // each step, then two beats on the finished plan
   const [ref, step] = useLoop<HTMLDivElement>(total, 1400, RUN.length);
   const steps: PlanStep[] = RUN.map(({ id, label }, i) => ({ id, label, status: i < step ? "done" : i === step ? "running" : "pending" }));

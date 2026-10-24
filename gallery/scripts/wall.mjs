@@ -57,8 +57,8 @@ function inspect() {
   document.body.append(probe);
   const accent = getComputedStyle(probe).backgroundColor;
   probe.remove();
-  const tiles = [...document.querySelectorAll('section[aria-labelledby^="tile-"]')];
-  const name = (el) => el.closest('section[aria-labelledby^="tile-"]').getAttribute("aria-labelledby").slice(5);
+  const tiles = [...document.querySelectorAll("[data-tile]")];
+  const name = (el) => el.closest("[data-tile]").dataset.tile;
   const fills = [];
   for (const tile of tiles) {
     for (const el of tile.querySelectorAll("*")) {
