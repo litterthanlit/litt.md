@@ -206,6 +206,10 @@
       "version": "2026.10.22",
       "hash": "6bc2611a9862421a"
     },
+    "media-player": {
+      "version": "2026.10.24",
+      "hash": "398998b021cb8368"
+    },
     "menu": {
       "version": "2026.10.19",
       "hash": "2903acc17f85cf79"

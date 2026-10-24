@@ -4,9 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-24 · Focus you can see
+## 2026-10-24 · Focus you can see, and a media player
 
 Three focus rings that keyboard users could not rely on, found by an accessibility audit of the gallery's overview. Nothing in your code has to change; reinstall to pick them up.
+
+And a media player, for a video or a sound that someone plays: the controls sit in a bar under the picture, never over it, and nothing plays until someone presses Play.
+
+- **added** `media-player`: VideoPlayer, a video in a Media frame with its controls in a bar under the picture, and AudioPlayer, the same bar under a title on a raised card. Play, a rail that shows what has loaded and the time under the pointer, the elapsed time and the length, and Captions, Speed, Mute, a volume rail and Full screen where they apply. Captions show under the picture, never on it. The playhead follows the media one to one and steps under reduced motion, a stall shows the Button's spinner, a file that fails keeps the frame's size and says so, and starting one player pauses any other. Keys work anywhere in it: Space and K, the arrows, J and L, Home and End, M, C, F, and < and >.
 
 - **fixed** `resizable`: the handle between two panels shows its focus ring when you reach it with the keyboard. Its `outline-none` set the outline style to none, so the ring had a width and a color but never drew.
 - **fixed** `table`: the edge that resizes a column shows its focus ring when you reach it with the keyboard, for the same reason.

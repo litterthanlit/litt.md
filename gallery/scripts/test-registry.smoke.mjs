@@ -622,6 +622,10 @@ const RECIPES = {
     top: [`const SMOKE_MEDIA_SRC = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Crect width='16' height='10' fill='gray'/%3E%3C/svg%3E";`],
     jsx: `<div className="grid w-full max-w-md gap-4" data-testid="litt-media"><Media src={SMOKE_MEDIA_SRC} alt="A grey rectangle" ratio="16/9" caption="Smoke image" /><Media src="data:image/png;base64,AAAA" alt="A broken image" ratio="4/3" /></div>`,
   },
+  "media-player": {
+    needs: ["VideoPlayer", "AudioPlayer"],
+    jsx: `<div className="grid w-full max-w-md gap-4" data-testid="litt-media-player"><VideoPlayer label="Smoke video" src="/smoke-video.mp4" preload="none" duration={94} caption="Smoke video" /><AudioPlayer title="Smoke sound" byline="A smoke byline" src="/smoke-sound.mp3" preload="none" duration={42} rates={[1, 1.5, 2]} /></div>`,
+  },
   carousel: {
     needs: ["Carousel", "CarouselContent", "CarouselItem", "CarouselControls"],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-carousel"><Carousel label="Smoke slides" perView="two"><CarouselContent><CarouselItem><div className="h-32">Slide one</div></CarouselItem><CarouselItem><div className="h-32">Slide two</div></CarouselItem><CarouselItem><div className="h-32">Slide three</div></CarouselItem><CarouselItem><div className="h-32">Slide four</div></CarouselItem></CarouselContent><CarouselControls /></Carousel></div>`,
