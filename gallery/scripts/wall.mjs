@@ -10,6 +10,8 @@
  *   accent fill, and the Button tile carries the one. A page whose first demo ends in a primary button needs a tile.
  * - the page or a tile scrolls sideways,
  * - a tile draws nothing,
+ * - the page has more than one main or h1, two landmarks share a name, or a tile's name is not its h2 (so the headings
+ *   inside a component sit under it),
  * - the page throws.
  *
  * Needs Playwright, which is not a dependency of the gallery: it looks in A11Y_TOOLS (as CI sets up), then here, then
@@ -69,7 +71,16 @@ function inspect() {
   }
   const sideways = tiles.filter((t) => t.firstElementChild.scrollWidth > t.firstElementChild.clientWidth + 1).map((t) => name(t));
   const empty = tiles.filter((t) => t.firstElementChild.getBoundingClientRect().height < 8 || !t.firstElementChild.textContent && !t.firstElementChild.querySelector("svg,img,canvas,[role=img]")).map((t) => name(t));
-  return { count: tiles.length, fills, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth };
+  /* What a screen reader lists: one main and one h1, landmarks with names of their own, and each tile's name one
+     level under the page title, so a component's own headings sit under its name. */
+  const shown = (el) => !el.closest("[aria-hidden=true],[inert]") && el.getClientRects().length > 0;
+  const named = (el) => el.getAttribute("aria-label") || (el.getAttribute("aria-labelledby") && document.getElementById(el.getAttribute("aria-labelledby"))?.textContent?.trim()) || "";
+  const landmarks = [...document.querySelectorAll("nav, section, form, aside, [role=region], [role=navigation]")].filter(shown).map(named).filter(Boolean);
+  const twice = [...new Set(landmarks.filter((n, i) => landmarks.indexOf(n) !== i))];
+  const mains = [...document.querySelectorAll("main, [role=main]")].filter(shown).length;
+  const h1s = [...document.querySelectorAll("h1")].filter(shown).length;
+  const names = tiles.filter((t) => t.querySelector(":scope > h2") === null).map((t) => name(t));
+  return { count: tiles.length, fills, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
 }
 
 const browser = await chromium.launch();
@@ -97,6 +108,10 @@ for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"
     const where = `${theme} · ${label}`;
     if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, the wall allows one: ${r.fills.join(", ")}`);
     if (r.pageWide) problems.push(`${where}: the page scrolls sideways`);
+    if (r.mains !== 1) problems.push(`${where}: ${r.mains} main landmarks; the page has one (AppShell's mainLandmark={false} in a tile)`);
+    if (r.h1s !== 1) problems.push(`${where}: ${r.h1s} h1s; the page title is the one`);
+    if (r.twice.length) problems.push(`${where}: landmarks share a name: ${r.twice.join(", ")}`);
+    if (r.names.length) problems.push(`${where}: tiles without their name as an h2: ${r.names.join(", ")}`);
     if (r.sideways.length) problems.push(`${where}: tiles scroll sideways: ${r.sideways.join(", ")}`);
     if (r.empty.length) problems.push(`${where}: tiles draw nothing: ${r.empty.join(", ")}`);
     for (const e of errors) problems.push(`${where}: ${e}`);
@@ -111,4 +126,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, light and dark, desktop and phone: one accent fill, nothing sideways, nothing empty.`);
+console.log(`wall: ${count} tiles, light and dark, desktop and phone: one accent fill, nothing sideways or empty, one main and one h1, landmarks named apart.`);

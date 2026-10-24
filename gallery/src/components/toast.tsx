@@ -134,7 +134,8 @@ const subscribeNever = () => () => {};
 
 /**
  * Holds the toasts and draws them in a corner of the screen, above everything else. Mount it once, around
- * the part of the app that fires toasts.
+ * the part of the app that fires toasts. A Toaster inside another one adds nothing: its toasts go to the outer one,
+ * so a page that nests them (a section that brings its own) still has one stack and one Notifications region.
  */
 export function Toaster({
   children,
@@ -142,6 +143,11 @@ export function Toaster({
   /** The part of the app that fires toasts. It renders as it is; the toasts themselves are drawn in a portal on the page body. */
   children?: ReactNode;
 }) {
+  const outer = useContext(ToastContext);
+  return outer ? <>{children}</> : <ToasterRoot>{children}</ToasterRoot>;
+}
+
+function ToasterRoot({ children }: { children?: ReactNode }) {
   const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
   const [items, setItems] = useState<ToastItem[]>([]);
   const counter = useRef(0);

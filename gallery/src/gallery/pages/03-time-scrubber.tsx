@@ -87,7 +87,7 @@ function ReplayDemo() {
   return (
     <div className="grid w-full max-w-xl gap-4">
       <TimeScrubber label="Replay" max={48} value={at} onValueChange={setAt} formatValue={(s) => `+${s}s`} marks={RUN_MARKS} />
-      <LogView label="Build log" height="14rem" lines={lines} />
+      <LogView label="Build log, replayed" height="14rem" lines={lines} />
     </div>
   );
 }

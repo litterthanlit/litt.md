@@ -8,7 +8,7 @@ To update an item, read the entries since your version, then reinstall it with `
 
 The first store parts: a price, a product's options, a product card and a cart, for a store on Shopify or anywhere else. They take plain data (an amount and a currency code, a product, a cart line), so the same parts work with any backend. A price ranks by weight under the page's one title and a sale is never red; a grid of products has no buy buttons, so Add to cart stays the page's one accent fill; and the cart is a sheet, with Check out its one accent fill and Remove undone from a toast.
 
-And three focus rings that keyboard users could not rely on, found by an accessibility audit of the gallery's overview. Nothing in your code has to change; reinstall to pick them up.
+And three focus rings that keyboard users could not rely on, found by an accessibility audit of the gallery's overview. From the same audit, a Toaster inside another one hands its toasts to the outer one, and AppShell and FormSection take options that keep a page to one main landmark and its headings in order. Nothing in your code has to change; reinstall to pick them up.
 
 - **added** `price`: Price, one amount at the title weight with tabular figures, from Shopify's MoneyV2 shape, with a struck-through compare-at price, From, a unit price and an optional neutral saving tag; and formatMoney, multiplyMoney, sumMoney and savingOf.
 - **added** `option-picker`: OptionPicker, one option of a product as native radios with a legend that names the pick: a segmented track for words, chips for colors and images, and sold-out values that stay pickable and say so.
@@ -23,6 +23,9 @@ And three focus rings that keyboard users could not rely on, found by an accessi
 - **fixed** `resizable`: the handle between two panels shows its focus ring when you reach it with the keyboard. Its `outline-none` set the outline style to none, so the ring had a width and a color but never drew.
 - **fixed** `table`: the edge that resizes a column shows its focus ring when you reach it with the keyboard, for the same reason.
 - **fixed** `tree`: only the focused item's row shows the focus ring. Items nest, and focusing an open folder lit the ring on every row inside it too, so you could not tell which item had focus.
+- **changed** `toast`: a Toaster inside another one adds nothing: its toasts go to the outer one, so a page that nests them (a section that brings its own Toaster) still has one stack and one Notifications region for a screen reader. Nothing in your code has to change.
+- **changed** `app-shell`: AppShell takes `mainLandmark`. Set it to `false` when the shell is shown inside another page that has its own main landmark, such as a preview in a docs site, and the page area is a div, so the page keeps one main. It defaults to `true`, so nothing in your code has to change.
+- **changed** `form`: FormSection takes `headingLevel` (2, 3 or 4) for its title, so a form under a heading of its own, in a card or a dialog, keeps the page's outline in order. It looks the same at every level and defaults to 2, so nothing in your code has to change.
 
 ## 2026-10-23 · Fun mode, more to touch, and a time scrubber
 

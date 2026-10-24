@@ -19,8 +19,8 @@
       "hash": "e94b6101eb8424b0"
     },
     "app-shell": {
-      "version": "2026.10.20",
-      "hash": "57c53a09fda8bdec"
+      "version": "2026.10.24",
+      "hash": "5c4766f964fc7dce"
     },
     "avatar": {
       "version": "2026.10.22",
@@ -139,8 +139,8 @@
       "hash": "df2f86e8b8851f25"
     },
     "form": {
-      "version": "2026.10.20",
-      "hash": "dba03b98d2e0f865"
+      "version": "2026.10.24",
+      "hash": "80da2c02b8d1f4c8"
     },
     "funnel": {
       "version": "2026.10.20",
@@ -371,8 +371,8 @@
       "hash": "bca33598c63304cd"
     },
     "toast": {
-      "version": "2026.10.23",
-      "hash": "0bebdbd535b5fb66"
+      "version": "2026.10.24",
+      "hash": "817d1bb3df9a3c2b"
     },
     "token-input": {
       "version": "2026.10.19",

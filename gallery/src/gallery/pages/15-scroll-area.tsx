@@ -114,7 +114,7 @@ function DeployLogDemo() {
         </div>
         <Tag status="success">Ready</Tag>
       </header>
-      <ScrollArea label="Build log" className="h-64 rounded-b-surface" viewportRef={viewport}>
+      <ScrollArea label="Deploy log" className="h-64 rounded-b-surface" viewportRef={viewport}>
         <ol className="grid gap-1 px-4 pt-3 pb-4 font-mono text-caption font-normal">
           {LOG.map(([at, line], i) => (
             <li key={i} className="grid grid-cols-[auto_1fr] gap-x-4 pr-2">

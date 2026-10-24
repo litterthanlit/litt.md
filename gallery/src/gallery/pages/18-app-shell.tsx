@@ -83,16 +83,18 @@ const PROJECTS = [
   ["Case study template", "The template behind the studio's case studies."],
 ];
 
-function DemoPage({ page }: { page: PageName }) {
+/* `title` is the page title's level: h1 in a page of its own, h3 inside a tile, where the tile's name is the h2. The
+   card titles sit one level under it. */
+function DemoPage({ page, title: Title = "h1" }: { page: PageName; title?: "h1" | "h3" }) {
   return (
     <div className="grid gap-6">
-      <h1 className="text-h3 text-fg">{page}</h1>
+      <Title className="text-h3 text-fg">{page}</Title>
       <ul className="grid gap-4">
         {PROJECTS.map(([name, text]) => (
           <li key={name}>
             <Card as="div">
               <CardBody>
-                <CardTitle>{name}</CardTitle>
+                <CardTitle as={Title === "h1" ? "h2" : "h4"}>{name}</CardTitle>
                 <CardDescription>{text}</CardDescription>
               </CardBody>
             </Card>
@@ -199,9 +201,29 @@ function IconsDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/** The desktop shell, with its page area a div: the gallery's page already has its main landmark, and keeps the one. */
+function ShellTile() {
+  const [page, setPage] = useState<PageName>("Overview");
+  return (
+    <Frame label="Studio dashboard, desktop" className="[--gutter:var(--space-8)]">
+      <AppShell
+        viewportHeight="34rem"
+        mainLandmark={false}
+        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>litt.design</a>}
+        nav={<StudioNav page={page} onPage={setPage} />}
+        footer={<p className="px-3 py-2 text-caption text-fg-subtle">Nick, Litt Studio</p>}
+      >
+        <DemoPage page={page} title="h3" />
+      </AppShell>
+    </Frame>
+  );
+}
+
 export default function AppShellPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<ShellTile />}>
       <Stage
         title="Desktop"
         tier="instant"
