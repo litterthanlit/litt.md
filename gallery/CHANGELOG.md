@@ -4,6 +4,17 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-24 · Commerce
+
+The first store parts: a price, a product's options, a product card and a cart, for a store on Shopify or anywhere else. They take plain data (an amount and a currency code, a product, a cart line), so the same parts work with any backend. A price ranks by weight under the page's one title and a sale is never red; a grid of products has no buy buttons, so Add to cart stays the page's one accent fill; and the cart is a sheet, with Check out its one accent fill and Remove undone from a toast.
+
+- **added** `price`: Price, one amount at the title weight with tabular figures, from Shopify's MoneyV2 shape, with a struck-through compare-at price, From, a unit price and an optional neutral saving tag; and formatMoney, multiplyMoney, sumMoney and savingOf.
+- **added** `option-picker`: OptionPicker, one option of a product as native radios with a legend that names the pick: a segmented track for words, chips for colors and images, and sold-out values that stay pickable and say so.
+- **added** `product-card`: ProductCard and ProductGrid, one product in a grid as one link to its page, with no buy button; and the Product type with priceRange, findVariant, defaultPicks, optionsFor and isSoldOut.
+- **added** `cart`: Cart, the cart as a sheet with its lines, a free-shipping meter, a rolling subtotal and Check out; CartLine and CartSummary for a cart page; CartButton for the header; AddToCart with its Added state; and useCartState, a cart in memory.
+- **changed** `icons`: BagIcon, for a cart. Nothing in your code has to change.
+- **changed** `number-field`: `hideLabel` keeps the label for screen readers only, where the row already says what the number counts, such as a cart line's quantity. Nothing in your code has to change.
+
 ## 2026-10-23 · Fun mode, more to touch
 
 More of fun mode's touch, still a trial and still only with a `FunMode` on: highlights that reach for where they are going, numbers you can scrub, and toasts you can throw. Each comes to rest on exactly the frame it draws without fun mode, and reduced motion turns it all off. Off by default, so nothing changes until you turn it on.

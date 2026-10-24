@@ -788,7 +788,7 @@ const COPY = {
   },
   icons: {
     title: "Icons",
-    description: "98 icons and a status mark, drawn on one 16-unit grid with a 1.5px stroke and four keylines, in the text color.",
+    description: "99 icons and a status mark, drawn on one 16-unit grid with a 1.5px stroke and four keylines, in the text color.",
     docs: "Import the icons you need from components/litt/icons. They are decorative unless you label them. Draw a missing one on the same grid, never from another set.",
   },
   tooltip: {
@@ -1203,6 +1203,26 @@ const COPY = {
     title: "Sign in block",
     description: "The page before the app: the wordmark, one left-aligned column with email, password, Sign in and a second way in, and a quiet column of what is new on a wide screen. Wrong fields say so under themselves and take focus, and a refusal shows in a callout.",
     docs: "Import SignIn from components/litt-blocks/sign-in and render it as a whole page. signIn at the top of the file stands in for your auth call; return your server's message the same way, and point the links at your routes.",
+  },
+  price: {
+    title: "Price",
+    description: "One amount at the title weight with tabular figures, formatted from Shopify's MoneyV2 shape (an amount and a currency code) in the page's locale. A sale strikes the old price through with hidden words, and can add a neutral tag with the saving. Never red, never the accent.",
+    docs: "Import Price and formatMoney from components/litt/price. Pass price as { amount, currencyCode }; compareAt shows only when it is higher. multiplyMoney and sumMoney do a line's and a cart's sums.",
+  },
+  "option-picker": {
+    title: "Option picker",
+    description: "One option of a product (a size, a frame, a color) as native radios with a visible legend that names the pick. Words take the segmented track, colors and images take chips with a check in black or white. A sold-out value stays pickable and says so in words.",
+    docs: "Import OptionPicker from components/litt/option-picker. Pass the option's name and values; give values a swatch ({ color } or { image }) to show chips. optionsFor from product-card marks which values are sold out among the other picks.",
+  },
+  "product-card": {
+    title: "Product card",
+    description: "One product in a grid: an inset 4/5 cover, the name and its price (From when the variants differ), as one link to its page. No buy button and no accent. Also the Product type and priceRange, findVariant, defaultPicks and optionsFor for a product page.",
+    docs: "Import ProductCard and ProductGrid from components/litt/product-card. A Product is plain data: the shopify item's toProduct makes one from the Storefront API, or write your own. Give every card in a grid one ratio.",
+  },
+  cart: {
+    title: "Cart",
+    description: "The cart as a sheet from the right (a bottom sheet on a phone): lines with a quantity and Remove undone from a toast, and a summary with a free-shipping meter, a rolling subtotal and Check out. Plus the header's cart button, Add to cart with its Added state, and useCartState, a cart in memory.",
+    docs: "Import Cart, CartButton, AddToCart and useCartState from components/litt/cart. Mount the Toaster once near your root for Remove's Undo. useShopifyCart from the shopify item returns the same CartState, so the parts work with either.",
   },
   "case-study": {
     title: "Case study block",

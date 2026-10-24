@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.10.23",
+  "latest": "2026.10.24",
   "items": {
     "accordion": {
       "version": "2026.10.19",
@@ -57,6 +57,10 @@
     "carousel": {
       "version": "2026.10.22",
       "hash": "eb0fb1efbc838cbc"
+    },
+    "cart": {
+      "version": "2026.10.24",
+      "hash": "499e15450483ba64"
     },
     "case-study": {
       "version": "2026.10.22",
@@ -163,8 +167,8 @@
       "hash": "cf7cb7720636e458"
     },
     "icons": {
-      "version": "2026.10.22",
-      "hash": "61fb5f62e882d94f"
+      "version": "2026.10.24",
+      "hash": "b2cf6cf8428f939a"
     },
     "input": {
       "version": "2026.10.19",
@@ -219,8 +223,12 @@
       "hash": "c2214725755a0f6b"
     },
     "number-field": {
-      "version": "2026.10.23",
-      "hash": "102a1fc03f619c22"
+      "version": "2026.10.24",
+      "hash": "d58b721b2c4a705e"
+    },
+    "option-picker": {
+      "version": "2026.10.24",
+      "hash": "8dc5e0262bff37ab"
     },
     "pad": {
       "version": "2026.10.19",
@@ -237,6 +245,14 @@
     "popover": {
       "version": "2026.10.15",
       "hash": "2cb4d20598f1de38"
+    },
+    "price": {
+      "version": "2026.10.24",
+      "hash": "07931a630f63729d"
+    },
+    "product-card": {
+      "version": "2026.10.24",
+      "hash": "3bd1564ac61f0586"
     },
     "progress": {
       "version": "2026.10.22",
