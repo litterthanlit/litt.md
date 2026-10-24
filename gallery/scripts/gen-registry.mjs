@@ -23,6 +23,8 @@
  *   base-styles   registry:style  OPT-IN: fonts, the role weights, control radius, focus ring
  *   motion        registry:lib    src/motion/* (spring tiers, the hooks)
  *   glide         registry:lib    components/glide.tsx (the gliding highlight)
+ *   shopify       registry:lib    components/shopify.tsx, shipped as lib/litt/shopify.ts (the Storefront API client and the mapping)
+ *   shopify-cart  registry:lib    components/shopify-cart.tsx (the cart kept in Shopify)
  *   <stem>        registry:ui     one per src/components/*.tsx that has a page
  *   <block>       registry:block  one per src/blocks/*.tsx: a whole screen built from the components, named after its page
  *   <stem>-demo   registry:example  the first demo on the component's page, as a working component (see EXAMPLES)
@@ -51,7 +53,7 @@
  *
  * WHERE FILES LAND IN A HOST (shadcn puts a target without "~/" under src/ when the host has one)
  *   components/litt/<stem>.tsx       the components
- *   lib/litt/motion/{index,spring,tokens,device,drag,fun}.ts(x), lib/litt/glide.tsx     the engines
+ *   lib/litt/motion/{index,spring,tokens,device,drag,fun}.ts(x), lib/litt/glide.tsx, lib/litt/shopify.ts, lib/litt/shopify-cart.tsx     the engines
  *   components/litt-blocks/<block>.tsx   the blocks: outside components/litt/, because a block is a starting point the host edits
  *   Every import between shipped files is relative, so no alias in the host matters, and none of
  *   it collides with the host's own components/ui/button.tsx. registryDependencies are absolute
@@ -61,7 +63,7 @@
  *   motion/tokens.ts   readLocked works on the server (Next.js renders client components once there), with
  *                      the values tokens.css ships, so no value is written twice.
  *   motion/index.tsx   __LITT_MD_VERSION__ inlined (vite.config.ts defines it in the gallery).
- *   every .tsx         "use client" on the first line.
+ *   every .tsx         "use client" on the first line (a file that ships as .ts, such as lib/litt/shopify.ts, has none).
  *   Fixes that are right in the gallery too live in the source, not here: useMotionDial works without
  *   a provider (motion/index.tsx), and the Toaster draws its portal after hydration (toast.tsx).
  *   asChild            a written asChild becomes {...asChildProps}: shadcn's CLI rewrites the attribute to Base UI's
@@ -552,6 +554,9 @@ const blockNames = fs.existsSync(blocksDir) ? fs.readdirSync(blocksDir).filter((
 function targetOf(file) {
   const r = norm(path.relative(srcDir, file));
   if (r === "components/glide.tsx") return "lib/litt/glide.tsx";
+  // No React in it, so it ships as .ts without "use client": a Next.js server component can fetch with it.
+  if (r === "components/shopify.tsx") return "lib/litt/shopify.ts";
+  if (r === "components/shopify-cart.tsx") return "lib/litt/shopify-cart.tsx";
   if (r.startsWith("blocks/")) return `components/litt-blocks/${r.slice("blocks/".length)}`;
   if (r.startsWith("components/")) return `components/litt/${r.slice("components/".length)}`;
   if (r.startsWith("motion/")) return `lib/litt/motion/${r.slice("motion/".length)}`;
@@ -740,7 +745,7 @@ function transformFile(file, targets, source) {
   const sorted = [...edits].sort((a, b) => a[0] - b[0]);
   for (let i = 1; i < sorted.length; i++) if (sorted[i][0] < sorted[i - 1][1]) fail(`${rel(file)}: two edits overlap at offset ${sorted[i][0]}`);
   text = applyEdits(text, edits);
-  if (file.endsWith(".tsx")) text = `"use client";\n\n${text}`;
+  if ((targets.get(file) ?? file).endsWith(".tsx")) text = `"use client";\n\n${text}`;
   // The shipped copy must still parse: a bad edit here once shipped a chart that no host could compile.
   const reparsed = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, false, file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
   for (const d of reparsed.parseDiagnostics ?? []) fail(`${rel(file)}: the shipped copy does not parse at ${d.start}: ${ts.flattenDiagnosticMessageText(d.messageText, " ")}`);
@@ -788,7 +793,7 @@ const COPY = {
   },
   icons: {
     title: "Icons",
-    description: "98 icons and a status mark, drawn on one 16-unit grid with a 1.5px stroke and four keylines, in the text color.",
+    description: "99 icons and a status mark, drawn on one 16-unit grid with a 1.5px stroke and four keylines, in the text color.",
     docs: "Import the icons you need from components/litt/icons. They are decorative unless you label them. Draw a missing one on the same grid, never from another set.",
   },
   tooltip: {
@@ -1209,6 +1214,46 @@ const COPY = {
     description: "The page before the app: the wordmark, one left-aligned column with email, password, Sign in and a second way in, and a quiet column of what is new on a wide screen. Wrong fields say so under themselves and take focus, and a refusal shows in a callout.",
     docs: "Import SignIn from components/litt-blocks/sign-in and render it as a whole page. signIn at the top of the file stands in for your auth call; return your server's message the same way, and point the links at your routes.",
   },
+  price: {
+    title: "Price",
+    description: "One amount at the title weight with tabular figures, formatted from Shopify's MoneyV2 shape (an amount and a currency code) in the page's locale. A sale strikes the old price through with hidden words, and can add a neutral tag with the saving. Never red, never the accent.",
+    docs: "Import Price and formatMoney from components/litt/price. Pass price as { amount, currencyCode }; compareAt shows only when it is higher. multiplyMoney and sumMoney do a line's and a cart's sums.",
+  },
+  "option-picker": {
+    title: "Option picker",
+    description: "One option of a product (a size, a frame, a color) as native radios with a visible legend that names the pick. Words take the segmented track, colors and images take chips with a check in black or white. A sold-out value stays pickable and says so in words.",
+    docs: "Import OptionPicker from components/litt/option-picker. Pass the option's name and values; give values a swatch ({ color } or { image }) to show chips. optionsFor from product-card marks which values are sold out among the other picks.",
+  },
+  "product-card": {
+    title: "Product card",
+    description: "One product in a grid: an inset 4/5 cover, the name and its price (From when the variants differ), as one link to its page. No buy button and no accent. Also the Product type and priceRange, findVariant, defaultPicks and optionsFor for a product page.",
+    docs: "Import ProductCard and ProductGrid from components/litt/product-card. A Product is plain data: the shopify item's toProduct makes one from the Storefront API, or write your own. Give every card in a grid one ratio.",
+  },
+  cart: {
+    title: "Cart",
+    description: "The cart as a sheet from the right (a bottom sheet on a phone): lines with a quantity and Remove undone from a toast, and a summary with a free-shipping meter, a rolling subtotal and Check out. Plus the header's cart button, Add to cart with its Added state, and useCartState, a cart in memory.",
+    docs: "Import Cart, CartButton, AddToCart and useCartState from components/litt/cart. Mount the Toaster once near your root for Remove's Undo. useShopifyCart from the shopify item returns the same CartState, so the parts work with either.",
+  },
+  shopify: {
+    title: "Shopify",
+    description: "litt's commerce parts on a Shopify store: a small Storefront API client pinned to one version, getProduct, getProducts and getCollection that return litt's Product, and toProduct for your own queries. No React in it, so it runs in a server component too.",
+    docs: "Installed in lib/litt/shopify.ts. Make a client with createStorefront({ domain, token }) using the store's public Storefront token, and pass what getProduct returns to ProductCard, OptionPicker or the product block. For the cart, add shopify-cart.",
+  },
+  "shopify-cart": {
+    title: "Shopify cart",
+    description: "A cart kept in Shopify: ShopifyCart near the root and useShopifyCart() anywhere under it, with the same CartState as useCartState, so Cart, CartButton and AddToCart work unchanged. The cart's id survives a reload, and Check out goes to Shopify's hosted checkout.",
+    docs: "Installed in lib/litt/shopify-cart.tsx. Wrap your app in <ShopifyCart storefront={storefront}> with a client from createStorefront, then pass useShopifyCart() to Cart as its cart.",
+  },
+  product: {
+    title: "Product block",
+    description: "One product's page for a store: the pictures beside the details (a carousel on a phone), the title, the price, the options with sold-out picks said in words, the quantity and Add to cart as the one accent fill, the rest in an accordion, and the cart as a sheet. Every picture opens a lightbox.",
+    docs: "Import ProductPage from components/litt-blocks/product and render it as a page's content. The product sits at the top of the file: replace it with yours, or with one the shopify item's toProduct maps from your store. Mount the Toaster once near your root.",
+  },
+  collection: {
+    title: "Collection block",
+    description: "A store's products as a grid: the title and the count, a filter row with what to show and the order, product cards with no buy buttons (two across on a phone), an empty state for a filter with nothing in it, and the cart as a sheet.",
+    docs: "Import Collection from components/litt-blocks/collection and render it as a page's content. The products sit at the top of the file: replace them with yours, or with the ones the shopify item's toProduct maps from a collection.",
+  },
   "case-study": {
     title: "Case study block",
     description: "One project told as a page: a wide hero image, the facts in a row, the story with its labels in a narrow left column, the series in a carousel, the details in a grid and the next project as a card. Every image opens one lightbox that runs through them all, and the carousel follows it.",
@@ -1295,7 +1340,7 @@ const VARIANTS_THEN = (rest) => new RegExp(String.raw`^(?:(?:[\w-]+|\[(?:[^\s\[\
 
 const SCHEMA_URL = "https://ui.shadcn.com/schema/registry-item.json";
 const urlOf = (name) => `${origin}/r/${name}.json`;
-const ITEM_TYPE = { motion: "registry:lib", glide: "registry:lib" };
+const ITEM_TYPE = { motion: "registry:lib", glide: "registry:lib", shopify: "registry:lib", "shopify-cart": "registry:lib" };
 
 function build(demos = []) {
   // 1. Which files ship, and where.

@@ -15,7 +15,7 @@ import { Tag } from "@/components/tag";
 
 /** The sidebar's groups, in the order they appear. */
 /** Blocks come last: whole screens built from the components in the groups above them. */
-export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents", "Blocks"] as const;
+export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents", "Commerce", "Blocks"] as const;
 export type PageGroup = (typeof PAGE_GROUPS)[number];
 
 /**

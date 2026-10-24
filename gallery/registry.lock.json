@@ -58,6 +58,10 @@
       "version": "2026.10.22",
       "hash": "eb0fb1efbc838cbc"
     },
+    "cart": {
+      "version": "2026.10.24",
+      "hash": "ddb02810aaea0967"
+    },
     "case-study": {
       "version": "2026.10.22",
       "hash": "c63b2c9312bb3ebf"
@@ -81,6 +85,10 @@
     "cohort-grid": {
       "version": "2026.10.20",
       "hash": "03fc3f36ed7d77a9"
+    },
+    "collection": {
+      "version": "2026.10.24",
+      "hash": "a37ad8ef6000a194"
     },
     "color-picker": {
       "version": "2026.10.23",
@@ -163,8 +171,8 @@
       "hash": "cf7cb7720636e458"
     },
     "icons": {
-      "version": "2026.10.22",
-      "hash": "61fb5f62e882d94f"
+      "version": "2026.10.24",
+      "hash": "b2cf6cf8428f939a"
     },
     "input": {
       "version": "2026.10.19",
@@ -219,8 +227,12 @@
       "hash": "c1ef1814bd59f4c4"
     },
     "number-field": {
-      "version": "2026.10.23",
-      "hash": "102a1fc03f619c22"
+      "version": "2026.10.24",
+      "hash": "d58b721b2c4a705e"
+    },
+    "option-picker": {
+      "version": "2026.10.24",
+      "hash": "e4c89c609e6a118e"
     },
     "pad": {
       "version": "2026.10.19",
@@ -237,6 +249,18 @@
     "popover": {
       "version": "2026.10.15",
       "hash": "2cb4d20598f1de38"
+    },
+    "price": {
+      "version": "2026.10.24",
+      "hash": "07931a630f63729d"
+    },
+    "product": {
+      "version": "2026.10.24",
+      "hash": "b0918f3ae0dd46e0"
+    },
+    "product-card": {
+      "version": "2026.10.24",
+      "hash": "3bd1564ac61f0586"
     },
     "progress": {
       "version": "2026.10.22",
@@ -269,6 +293,14 @@
     "settings": {
       "version": "2026.10.22",
       "hash": "e259c1eecba4d39d"
+    },
+    "shopify": {
+      "version": "2026.10.24",
+      "hash": "18bfba74da1d4e27"
+    },
+    "shopify-cart": {
+      "version": "2026.10.24",
+      "hash": "737cb6f880409b60"
     },
     "sign-in": {
       "version": "2026.10.22",

@@ -129,6 +129,7 @@ export const ChartPieIcon = (p: IconProps) => <Icon {...p}><path d="M7.25 3.25a5
 export const TrendUpIcon = (p: IconProps) => <Icon {...p}><path d="m1.75 11.5 4.5-4.5 2.5 2.5 5.5-5.5M10.5 4h3.75v3.75" /></Icon>;
 export const TrendDownIcon = (p: IconProps) => <Icon {...p}><path d="m1.75 4.5 4.5 4.5 2.5-2.5 5.5 5.5M10.5 12h3.75V8.25" /></Icon>;
 export const CreditCardIcon = (p: IconProps) => <Icon {...p}><rect x="1.75" y="3.25" width="12.5" height="9.5" /><path d="M1.75 6.5h12.5M4.5 9.75h2" /></Icon>;
+export const BagIcon = (p: IconProps) => <Icon {...p}><rect x="3.25" y="5.25" width="9.5" height="9" /><path d="M5.75 5.25V4a2.25 2.25 0 0 1 4.5 0v1.25" /></Icon>;
 
 /** Where a step, a tool call or a task stands. The Timeline draws the same five marks. */
 export type StepStatus = "pending" | "running" | "done" | "failed" | "skipped";
