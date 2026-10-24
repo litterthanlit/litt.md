@@ -47,6 +47,11 @@ export type AppShellProps = {
   sheetTitle?: string;
   /** How tall the window is, for the sticky sidebar. 100svh is right for a page. Set a fixed height such as "34rem" when the shell sits in a scrolling frame. */
   viewportHeight?: string;
+  /**
+   * The page goes in the main landmark. Set false when the shell is shown inside another page that has its own main
+   * landmark, such as a preview in a docs site: the page area is then a div, so the page keeps one main.
+   */
+  mainLandmark?: boolean;
   /** Extra classes for the shell, such as a background. */
   className?: string;
   /** The page. It goes in the main landmark, which sets the gutter and the vertical space. */
@@ -61,9 +66,11 @@ export function AppShell({
   menuLabel = "Open navigation",
   sheetTitle = "Navigation",
   viewportHeight = "100svh",
+  mainLandmark = true,
   className = "",
   children,
 }: AppShellProps) {
+  const PageArea = mainLandmark ? "main" : "div";
   const { compact } = useDevice();
   const [open, setOpen] = useState(false);
   /* A window that grows past the compact width has no sheet to leave open. */
@@ -102,7 +109,7 @@ export function AppShell({
           </header>
         </div>
 
-        <main className="min-w-0 flex-1 px-gutter py-8">{children}</main>
+        <PageArea className="min-w-0 flex-1 px-gutter py-8">{children}</PageArea>
       </div>
 
       {compact && (

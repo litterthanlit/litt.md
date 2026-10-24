@@ -80,6 +80,11 @@ export type FormSectionProps = {
   title: ReactNode;
   /** One line under the title, in the subtle color, that says what the section holds. */
   description?: ReactNode;
+  /**
+   * The title's heading level. 2 for a form that is the page; 3 or 4 when the form sits under a heading of its own,
+   * such as a card's or a dialog's, so the page's outline stays in order. It looks the same at every level.
+   */
+  headingLevel?: 2 | 3 | 4;
   /** The section's fields. They sit 24px apart in one column. */
   children: ReactNode;
   /** Extra classes for the section. */
@@ -91,8 +96,9 @@ export type FormSectionProps = {
  * rest. Below that they stack in one column. Every section after the first starts with a hairline and 48px of air,
  * so put sections one after another in the same parent.
  */
-export function FormSection({ title, description, children, className = "" }: FormSectionProps) {
+export function FormSection({ title, description, headingLevel = 2, children, className = "" }: FormSectionProps) {
   const titleId = useId();
+  const Heading = `h${headingLevel}` as const;
   return (
     <section
       aria-labelledby={titleId}
@@ -105,9 +111,9 @@ export function FormSection({ title, description, children, className = "" }: Fo
       }
     >
       <div className="grid content-start gap-1">
-        <h2 id={titleId} className="text-body font-title text-fg">
+        <Heading id={titleId} className="text-body font-title text-fg">
           {title}
-        </h2>
+        </Heading>
         {description && <p className="text-pretty text-small text-fg-subtle">{description}</p>}
       </div>
       <div className="grid min-w-0 content-start gap-6">{children}</div>
