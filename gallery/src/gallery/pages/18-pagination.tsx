@@ -86,7 +86,7 @@ function DeploysDemo() {
   const size = 5;
   const rows = DEPLOYS.slice((page - 1) * size, page * size);
   return (
-    <div className="w-full max-w-3xl">
+    <div className="w-full min-w-0 max-w-3xl">
       <Table label="Recent deploys">
         <TableHeader>
           <TableRow>
