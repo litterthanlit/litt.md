@@ -79,8 +79,8 @@ These change only when Nick changes them.
 - An arrow suffix on every link
 - The same uppercase mono eyebrow over every section
 - An accent-colored headline word
-- A radius off the scale (anything but 4px controls, 8px surfaces or a pill)
-- Drop shadows with an offset, or shadows on cards in the flow
+- A radius off the scale (anything but 4px controls, 8px surfaces or a pill; a block set 2px into a control takes the control radius less 2px)
+- Drop shadows with an offset, or shadows on cards in the flow (the press material on a switch or a slider is the one exception, `system/material.md` 6)
 - Bounce above 0.12, bounce on exits or the responsive tier, a second expressive moment per view, scroll reveals, parallax, marquee
 - A second typeface
 - A weight outside the three roles (bold, 700 and up, below 400, or 600 above 12px)
@@ -96,6 +96,7 @@ These change only when Nick changes them.
 - **Data hues (P11):** `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` (words in the hue) and `-tint` (the fill behind them); marks take the plain name
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
+- **Press** (a control a hand moves, the one exception to P4): `--tray`, `--tray-shade`, `--block`, `--block-lift`, `--block-press`, `--block-round`, `--block-roll`
 - **Type:** `--font-sans` (Geist), `--font-mono` (Geist Mono), `--weight` (400), `--weight-title` (500), `--weight-label` (600), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
 - **Shape:** `--radius-control` (4), `--radius-surface` (8), `--radius-pill`

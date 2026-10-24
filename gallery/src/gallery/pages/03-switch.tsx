@@ -7,14 +7,14 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "switch",
   title: "Switch",
-  lede: "On or off, in a pill that slides.",
+  lede: "A block in a tray that says On or Off.",
   order: 3.3,
   group: "Controls",
   verbs: ["press"],
   summary:
-    "An on or off setting. A pill track with a round thumb, filled with the foreground color when on and never the accent. The thumb slides and the fills fade on the instant tier, and the box never moves. The label sits beside it, or the switch sits at the end of a settings row.",
-  fun: "Press and hold a switch: the thumb leans toward where it will go, then springs across.",
-  tiers: ["instant"],
+    "An on or off setting you can feel. A raised block sits in a sunken tray and says its state, Off at the start and On at the end. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",
+  fun: "Flip a switch: the block springs across and meets the far wall with a little life.",
+  tiers: ["responsive", "instant"],
 };
 
 export const docs: PageDocs = {
@@ -23,6 +23,9 @@ export const docs: PageDocs = {
   usage: `import { Switch } from "@/components/switch";
 
 <Switch label="Email me when a build finishes" defaultChecked />
+
+// The accent fills the block when on. One per view (P1): the switch that is the view's main choice.
+<Switch tone="accent" label="Site is live" checked={live} onCheckedChange={setLive} />
 
 // A settings list: align="end" puts the switch at the row's end, so they line up.
 <Switch
@@ -42,6 +45,7 @@ export const docs: PageDocs = {
     "A settings list. Set align=\"end\" so the label and description come first and the switches line up in one column.",
     "A short form, beside checkboxes. The default alignment puts the switch first, like a checkbox.",
     "A form field that is either sent or not. A form gets the value (\"on\" unless you set value) while the switch is on, and nothing while it is off.",
+    "tone=\"accent\" for the one switch that is the view's main choice, such as whether a site is live. It is an accent fill, so keep it to one per view (P1), and leave every switch in a list neutral.",
   ],
   skip: [
     "A choice that can be wrong, such as accepting terms or confirming a launch. Use Checkbox. A switch has no error state.",
@@ -53,16 +57,18 @@ export const docs: PageDocs = {
     [["Tab"], "Moves focus to the switch. A disabled switch is skipped."],
     [["Space"], "Toggles the focused switch."],
     [["Enter"], "Also toggles it, because the switch is a button. In a form it does not submit."],
+    [["Drag"], "Takes the block across. It follows the finger, says the side it is over, and lands on the nearer side when let go."],
   ],
   a11y: [
     "The switch is a <button> with role=\"switch\" and aria-checked, from Radix. A screen reader says the label, then switch, then on or off.",
     "The label is a real <label for> stretched over the whole row, so a click or tap anywhere in it toggles the switch. The accessible name is only the label text, and the description is linked with aria-describedby.",
-    "On and off differ in the thumb's position, the track's fill and the thumb's color, so color is never the only signal.",
+    "On and off differ in the block's position and its word, so color is never the only signal. The word is hidden from screen readers, which hear on or off from aria-checked instead, and it reaches 4.5:1 in both themes and both tones.",
     "In a form, Radix adds a hidden checkbox that carries the name and value. It is hidden from screen readers, so the setting is not read twice.",
     "A switch changes at once, and nothing tells a screen reader that it saved. If the change is saved, confirm it somewhere, such as a status line or a toast.",
-    "The row is 36px tall and 44px on touch screens. A settings row (align=\"end\") is 44px tall at least.",
-    "Keyboard focus draws a 2px outline at a 2px offset around the track. Mouse and touch presses do not show it.",
-    "In forced colors mode the track gets a real border and the on state uses the system highlight.",
+    "Every row is 44px tall at least. A sideways drag that starts on the tray moves the block; a vertical one still scrolls the page.",
+    "Dragging is never the only way: a click, a tap, Space or Enter does the same, and a screen reader's activate flips it.",
+    "Keyboard focus draws a 2px outline at a 2px offset around the tray. Mouse and touch presses do not show it.",
+    "In forced colors mode the tray and the block get real borders and the on state uses the system highlight.",
     "A disabled switch is muted, skipped by Tab, left out of a form, and exempt from contrast rules. If the reason is not obvious, say it in the description.",
   ],
 };
@@ -126,6 +132,23 @@ function DigestFormDemo() {
   );
 }
 
+function LiveDemo() {
+  const [live, setLive] = useState(true);
+
+  return (
+    <div className="grid w-full max-w-sm gap-3">
+      <Switch
+        tone="accent"
+        align="end"
+        label="Kiln is live"
+        description={live ? "Anyone with the link can see kiln.studio." : "Only the team can see kiln.studio."}
+        checked={live}
+        onCheckedChange={setLive}
+      />
+    </div>
+  );
+}
+
 function DisabledDemo() {
   return (
     <div className="grid w-full max-w-xl gap-x-12 gap-y-6 sm:grid-cols-2">
@@ -146,8 +169,8 @@ export default function SwitchPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Settings list"
-        tier="instant"
-        caption="Click anywhere on a row, or press Space on the switch. The thumb slides and the fills fade together on the instant tier. Hover and press wash the track. The switches sit at the row's end, so they line up in one column."
+        tier="responsive"
+        caption="Click anywhere on a row, press Space on the switch, or take a block and drag it across. Pressing presses the block down, and it crosses on the responsive tier. The switches sit at the row's end, so they line up in one column, and every one is neutral: a list never takes the accent."
         code="SettingsListDemo"
       >
         <SettingsListDemo />
@@ -155,7 +178,7 @@ export default function SwitchPage() {
 
       <Stage
         title="In a short form"
-        tier="instant"
+        tier="responsive"
         caption="The default alignment puts the switch first, like the checkbox, so the two stack in one column. Press Save: a form sends the switch as digest=on while it is on and sends nothing while it is off. The checkbox is for the consent, because that choice can be wrong."
         code="DigestFormDemo"
       >
@@ -163,9 +186,18 @@ export default function SwitchPage() {
       </Stage>
 
       <Stage
+        title="Accent when on"
+        tier="responsive"
+        caption="The accent tone fills the block with the accent when it is on. It is the view's one accent fill, so it belongs to the one switch that is the view's main choice, such as whether a site is live."
+        code="LiveDemo"
+      >
+        <LiveDemo />
+      </Stage>
+
+      <Stage
         title="Disabled"
         tier="instant"
-        caption="A disabled switch is muted, skipped by Tab and left out of a form. Off keeps a surface-2 track with a hairline. On steps to surface-3, and the thumb stays at the end, so the state still reads."
+        caption="A disabled switch is muted, skipped by Tab and left out of a form. The tray goes flat to surface-2 with a hairline, and the block lies flat in it with no cast. The block stays on its side and keeps its word, so the state still reads."
         code="DisabledDemo"
       >
         <DisabledDemo />

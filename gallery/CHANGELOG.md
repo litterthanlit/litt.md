@@ -4,11 +4,13 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-24 · Commerce, and focus you can see
+## 2026-10-24 · Commerce, focus you can see, and controls you can feel
 
 The first store parts: a price, a product's options, a product card and a cart, for a store on Shopify or anywhere else. They take plain data (an amount and a currency code, a product, a cart line), so the same parts work with any backend. A price ranks by weight under the page's one title and a sale is never red; a grid of products has no buy buttons, so Add to cart stays the page's one accent fill; and the cart is a sheet, with Check out its one accent fill and Remove undone from a toast.
 
 And three focus rings that keyboard users could not rely on, found by an accessibility audit of the gallery's overview. From the same audit, a Toaster inside another one hands its toasts to the outer one, and AppShell and FormSection take options that keep a page to one main landmark and its headings in order. Nothing in your code has to change; reinstall to pick them up.
+
+And the switch and the slider, rebuilt as things a hand moves: a raised block in a sunken tray, lit from the top. The switch's block says On or Off and can be dragged across; the slider is a slab you push, and it says its value. They bring the press material to the `litt` item, the one place litt allows a shadow with an offset.
 
 - **added** `price`: Price, one amount at the title weight with tabular figures, from Shopify's MoneyV2 shape, with a struck-through compare-at price, From, a unit price and an optional neutral saving tag; and formatMoney, multiplyMoney, sumMoney and savingOf.
 - **added** `option-picker`: OptionPicker, one option of a product as native radios with a legend that names the pick: a segmented track for words, chips for colors and images, and sold-out values that stay pickable and say so.
@@ -25,6 +27,9 @@ And three focus rings that keyboard users could not rely on, found by an accessi
 - **fixed** `tree`: only the focused item's row shows the focus ring. Items nest, and focusing an open folder lit the ring on every row inside it too, so you could not tell which item had focus.
 - **changed** `toast`: a Toaster inside another one adds nothing: its toasts go to the outer one, so a page that nests them (a section that brings its own Toaster) still has one stack and one Notifications region for a screen reader. Nothing in your code has to change.
 - **changed** `app-shell`: AppShell takes `mainLandmark`. Set it to `false` when the shell is shown inside another page that has its own main landmark, such as a preview in a docs site, and the page area is a div, so the page keeps one main. It defaults to `true`, so nothing in your code has to change.
+- **changed** `litt`: the press material, for a control a hand moves: `--litt-tray` and `--litt-tray-shade` (a sunken tray: a hairline and its top wall's shade), `--litt-block`, `--litt-block-lift` and `--litt-block-press` (a raised block: a contact line and a soft cast, which tightens while pressed), `--litt-block-round` and `--litt-block-roll` (a slab's soft top and bottom, and its leading end in shade), tuned for each theme; and `bg-litt-tray` and `bg-litt-block`. Nothing in your code has to change.
+- **changed** `switch`: a raised block in a sunken tray, 92 by 32, that says Off or On, instead of a pill with a round thumb. It can be dragged across as well as clicked, and it presses down under a finger. `tone="accent"` fills the block with the accent when on, for the one switch that is a view's main choice; `words` changes its two words. It is wider and its rows are 44px tall, so check a tight row; nothing in your code has to change.
+- **changed** `slider`: a raised slab in a sunken tray, the control's height, that grows to the value and says it at its leading end, instead of a thin rail and a round thumb. A press on the slab holds it where it was taken. The value now shows in the slab by default and no longer at the end of the label row: pass `showValue={false}` for a plain slab. `RangeSlider` is one slab between two ends, and still shows its span in the label row with `showValue`. In fun mode a held thumb no longer lifts and stretches, since there is no thumb to lift.
 - **changed** `form`: FormSection takes `headingLevel` (2, 3 or 4) for its title, so a form under a heading of its own, in a card or a dialog, keeps the page's outline in order. It looks the same at every level and defaults to 2, so nothing in your code has to change.
 
 ## 2026-10-23 · Fun mode, more to touch, and a time scrubber

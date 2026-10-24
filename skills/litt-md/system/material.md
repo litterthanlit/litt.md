@@ -2,7 +2,7 @@
 
 Light and material are where litt.md spends its boldness. Everything else stays quiet so these few moves carry. The primitives live in `assets/tokens.css` as `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain` and `.litt-grain-fade`. Use them rather than rebuilding the effects.
 
-## The five materials
+## The six materials
 
 ### 1. Light source: `--light`, `.litt-lit` (P1, P2)
 An elliptical radial gradient anchored above the top edge, tinted with the accent at `--light-strength` (12% light, 22% dark), fading to transparent by about 65%.
@@ -44,7 +44,16 @@ A static SVG fractal-noise tile at `--grain-opacity` (2% light, 4% dark). It als
   - `--shadow-modal` (dialogs, command menu): 40px and 72px glows and the ring.
 - **Light:** the warm ink at 6–10% for the glows and 6% for the ring.
 - **Dark:** black at 30–50%. The glows darken the content around the panel, and the ring separates it.
-- **Never:** a shadow with an x or y offset, or any outer shadow on a card in the flow (see the P4 check).
+- **Never:** a shadow with an x or y offset, or any outer shadow on a card in the flow (see the P4 check). The press material (6) is the one exception, and it is bounded.
+
+### 6. Press: `--tray`, `--block` (an exception to P4)
+A control a hand moves is a block in a sunken tray, lit from the top (P2), after Nick's frames for the switch and the slider (journal, 2026-10-24: "it needs to feel physical"). It is the one place litt draws a shadow with an offset, and the offset is never sideways or more than 1px down.
+
+- **The tray** (`--tray`, `--tray-shade`): a floor one step below what it sits on, a hairline, and its top wall's shade on the floor (an inset 1px down, blurred 2px). In dark the floor is darker than the canvas and the hairline is light.
+- **The block** (`--block`, `--block-lift`): raised, set 2px into the tray, with corners the control radius less those 2px, so they stay concentric with the tray's. A contact line under its edge and a soft cast, heavier below. While it is pressed or held, the cast tightens (`--block-press`). In dark it is a lighter warm grey with the top highlight.
+- **A slab** is a block that grows to a value: it adds a soft top and bottom (`--block-round`) and its leading end rolls away into shade (`--block-roll`), a little deeper the further it is pushed.
+- **Where:** the switch and the slider, nothing else. Cards, buttons, inputs and the segmented control keep the hairline and the top highlight (P4).
+- **Never:** a block that casts sideways, a shade that comes from below, or the press material on something a hand does not move.
 
 ## Glow: `--glow` (P1)
 A 1px accent ring plus a soft, zero-offset accent light around the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (P5).
@@ -58,6 +67,8 @@ A 1px accent ring plus a soft, zero-offset accent light around the element. It i
 | `--glow-strength` | 28% | 40% | The glow needs more energy to read against dark |
 | `--glass-border` | dark ink at 7% | white at 8% | The edge is defined by ink in light and by light in dark |
 | `--shadow-float`, `--shadow-modal` | ink glows at 6–10%, ink ring | black glows at 30–50%, black ring | Glows vanish on dark at low strength, so dark needs more energy and leans on the ring |
+| `--tray`, `--tray-shade` | a floor one step below the surfaces, ink hairline at 18%, ink shade at 20% | a floor below the canvas, white hairline at 7%, black shade at 80% | A sunken floor reads by its wall's shade on light, and by being the darkest thing on dark |
+| `--block`, `--block-lift` | white, ink contact at 22% and cast at 16% | a warm grey above the surfaces, the top highlight, black contact and cast at 55–70% | On light the cast lifts the block; on dark the block's own lightness does, and the cast only seats it |
 
 When tuning, change both columns deliberately. Never derive one from the other.
 

@@ -19,7 +19,9 @@
  *               utilities), no 600 above the caption size, Google Fonts loads only
  *               400, 500 and 600, and the mono only 400.
  * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill.
- * 8. Shadows:   no outer shadow has an x or y offset (P4).
+ * 8. Shadows:   no outer shadow has an x or y offset (P4). The press tokens (material.md, 6: the tray and block of
+ *               a control a hand moves) are P4's one exception, bounded: no layer moves sideways or more than 1px
+ *               down, and an inset shade blurs at most 2px, so the light still comes from the top.
  * 9. Motion:    three tiers (instant tween at most 240ms; springs with visual time at most
  *               350ms, bounce at most 0.12 and 0 on responsive; settle at most 600ms; exits
  *               at visual time x --exit with --ease-out); reduced motion zeroes every --dur-*,
@@ -123,9 +125,9 @@ const lum = (h) => { const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 const pairs = [
   // [foreground, backgrounds, minimum, note]
-  ["--fg", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "text"],
-  ["--fg-muted", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "body text"],
-  ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "supporting text"],
+  ["--fg", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
+  ["--fg-muted", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "body text"],
+  ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "supporting text"],
   ["--line-control", ["--canvas", "--surface-1", "--surface-2"], 3, "control outline"],
   ["--focus", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring"],
   ["--accent-fg", ["--accent", "--accent-hover"], 4.5, "text on accent"],
@@ -292,9 +294,11 @@ radiusFails.length ? radiusFails.forEach(fail) : ok(`corners are 0, ${rc}px, ${r
 // 8. Zero-offset shadows (P4) ---------------------------------------------
 console.log("Shadows (zero offset)");
 const shadowFails = [];
+const press = /^--(?:tray-shade|block-(?:lift|press|round))$/;
 for (const f of assetFiles) {
   const text = strip(read(f));
-  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--highlight)\s*:\s*([^;}]+)/g)) {
+  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--highlight|--tray-shade|--block-(?:lift|press|round))\s*:\s*([^;}]+)/g)) {
+    const isPress = press.test(m[1]);
     for (const layer of splitLayers(m[2])) {
       if (/^var\(/.test(layer) || layer === "none") continue;
       // Strip colors so only lengths remain, then read the first two lengths as x/y offsets.
@@ -303,7 +307,9 @@ for (const f of assetFiles) {
       const inset = lengths[0] === "inset";
       const nums = (inset ? lengths.slice(1) : lengths).map((n) => parseFloat(n));
       const [x = 0, y = 0, blur = 0, spread = 0] = nums;
-      if (inset) {
+      if (isPress) {
+        if (x !== 0 || Math.abs(y) > 1 || (inset && blur > 2)) shadowFails.push(`${f}: press layer "${layer}" in ${m[1]} (no sideways offset, at most 1px down, an inset shade blurs at most 2px)`);
+      } else if (inset) {
         const highlight = x === 0 && y === 1 && blur === 0;
         const hairline = x === 0 && y === 0 && blur === 0;
         if (!highlight && !hairline) shadowFails.push(`${f}: inset layer "${layer}" (only the top highlight or a hairline)`);
@@ -313,7 +319,7 @@ for (const f of assetFiles) {
     }
   }
 }
-shadowFails.length ? shadowFails.forEach(fail) : ok("no shadow has an offset");
+shadowFails.length ? shadowFails.forEach(fail) : ok("no shadow has an offset, but the press tokens' bounded 1px (P4's one exception)");
 
 // 9. Motion ---------------------------------------------------------------
 console.log("Motion (three tiers)");

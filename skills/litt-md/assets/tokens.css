@@ -241,6 +241,17 @@
   --light-strength: 12%;
   --glow-strength: 28%;
   --grain-opacity: 0.02;
+  /* Press (material.md, 6): a control a hand moves is a block in a sunken tray, lit from the top (P2). The tray
+     has a hairline and its top wall's shade on the floor; the block sits raised, with a contact line under its edge
+     and a soft cast, heavier below, which tightens while it is pressed. An exception to P4 for the switch and the
+     slider (journal, 2026-10-24); nothing else takes these. */
+  --tray: #ece9e6;
+  --tray-shade: inset 0 0 0 1px rgba(17, 15, 13, 0.18), inset 0 1px 2px rgba(17, 15, 13, 0.2);
+  --block: #ffffff;
+  --block-lift: 0 0.5px 1px rgba(17, 15, 13, 0.22), 0 0.5px 3px rgba(17, 15, 13, 0.16);
+  --block-press: 0 0.5px 1px rgba(17, 15, 13, 0.22), 0 0 1.5px rgba(17, 15, 13, 0.12);
+  --block-round: inset 0 1px 1.5px rgba(17, 15, 13, 0.06), inset 0 -1px 1.5px rgba(17, 15, 13, 0.07); /* a slab's soft top and bottom */
+  --block-roll: rgba(17, 15, 13, 0.6); /* a slab's leading end, rolling away from the light */
 }
 
 /* --------------------------------------------------------------------------
@@ -296,6 +307,13 @@
   --light-strength: 22%;
   --glow-strength: 40%;
   --grain-opacity: 0.04;
+  --tray: #070606;
+  --tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 1px 2px rgba(0, 0, 0, 0.8);
+  --block: #2a2725;
+  --block-lift: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0.5px 3px rgba(0, 0, 0, 0.55);
+  --block-press: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0 1.5px rgba(0, 0, 0, 0.5);
+  --block-round: inset 0 1px 1.5px rgba(0, 0, 0, 0.2), inset 0 -1px 1.5px rgba(0, 0, 0, 0.3);
+  --block-roll: rgba(0, 0, 0, 0.7);
 }
 
 /* --------------------------------------------------------------------------
@@ -352,6 +370,13 @@
     --light-strength: 22%;
     --glow-strength: 40%;
     --grain-opacity: 0.04;
+    --tray: #070606;
+    --tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 1px 2px rgba(0, 0, 0, 0.8);
+    --block: #2a2725;
+    --block-lift: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0.5px 3px rgba(0, 0, 0, 0.55);
+    --block-press: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0 1.5px rgba(0, 0, 0, 0.5);
+    --block-round: inset 0 1px 1.5px rgba(0, 0, 0, 0.2), inset 0 -1px 1.5px rgba(0, 0, 0, 0.3);
+    --block-roll: rgba(0, 0, 0, 0.7);
   }
 }
 

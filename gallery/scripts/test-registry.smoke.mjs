@@ -1480,28 +1480,35 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
         });
       }
       if (has("switch")) {
-        await attempt("switch toggles and fills with the foreground color", async () => {
+        await attempt("switch toggles: its block crosses the tray and says On or Off", async () => {
           const sw = item("switch").getByRole("switch", { name: "Email me when a build finishes" });
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("the switch did not start on");
-          const fill = () => sw.evaluate((el) => getComputedStyle(el).backgroundColor);
-          const fg = await page.evaluate(() => {
+          const look = () =>
+            sw.evaluate((el) => {
+              const block = el.firstElementChild;
+              return { word: (block?.textContent ?? "").trim(), x: Math.round((block?.getBoundingClientRect().left ?? 0) - el.getBoundingClientRect().left), tray: getComputedStyle(el).backgroundColor };
+            });
+          const tray = await page.evaluate(() => {
             const probe = document.createElement("span");
-            probe.style.color = "var(--litt-fg)";
+            probe.style.backgroundColor = "var(--litt-tray)";
             document.body.append(probe);
-            const c = getComputedStyle(probe).color;
+            const c = getComputedStyle(probe).backgroundColor;
             probe.remove();
             return c;
           });
-          const on = await fill();
-          if (on !== fg) throw new Error(`an on switch is ${on}, not --litt-fg (${fg})`);
+          const on = await look();
+          if (on.word !== "On") throw new Error(`an on switch's block says "${on.word}", not On`);
+          if (on.tray !== tray) throw new Error(`the tray is ${on.tray}, not --litt-tray (${tray})`);
           await sw.click();
-          await page.waitForTimeout(300);
+          await page.waitForTimeout(600);
           if ((await sw.getAttribute("aria-checked")) !== "false") throw new Error("a click did not turn it off");
+          const off = await look();
+          if (off.word !== "Off" || off.x >= on.x) throw new Error(`off, the block says "${off.word}" at ${off.x}px; on it was at ${on.x}px`);
           await sw.focus();
           await page.keyboard.press("Space");
-          await page.waitForTimeout(300);
+          await page.waitForTimeout(600);
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("Space did not turn it back on");
-          return `on is ${on}`;
+          return `On at ${on.x}px, Off at ${off.x}px, on --litt-tray`;
         });
       }
       if (has("accordion")) {
