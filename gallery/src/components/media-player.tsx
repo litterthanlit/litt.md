@@ -11,9 +11,11 @@
  *   --line hairline over the picture. The poster is an image of its own, lazy, fading in on the instant tier as
  *   Media's does. Nothing sits on the picture, ever; a press anywhere on it plays and pauses.
  * - The row, 8px under the picture and never over it: over it, controls would need a scrim and still fail contrast
- *   somewhere in the picture, so they never hide either. Every button is a round ghost: Play, then the rail, the time,
- *   and only the ones that apply: Captions, Speed, Mute and Full screen. The first and last sit 8px outside the row so
- *   their marks line up with the picture's edges. 32px on a fine pointer, 44px on a coarse one.
+ *   somewhere in the picture, so they never hide either. Each control is its mark and nothing else, in --fg-muted, with
+ *   no fill, edge or disc; hover darkens it to --fg. Play, then the rail, the time, and only the ones that apply:
+ *   Captions, Speed, Mute and Full screen. Play and Pause are solid marks, the rest the set's strokes. The first and
+ *   last sit 8px outside the row so their marks line up with the picture's edges. 32px targets on a fine pointer, 44px
+ *   on a coarse one.
  * - Rail: the Slider's 4px rail at the control radius on fg 12%, with what has played in --fg, never the accent (P1).
  *   No thumb and no buffered band: the end of the played part is the playhead. The whole 20px row (44px on a coarse
  *   pointer) is the target, and keyboard focus draws the 2px ring around it.
@@ -42,8 +44,8 @@
  *   button with a name; the picture's own press is a shortcut for Play, not a second tab stop.
  */
 import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject, type SVGProps } from "react";
-import { Button, Spinner } from "@/components/button";
-import { ExpandIcon, PauseIcon, PlayIcon, RetryIcon, ShrinkIcon } from "@/components/icons";
+import { Spinner } from "@/components/button";
+import { ExpandIcon, RetryIcon, ShrinkIcon } from "@/components/icons";
 import { useDevice, useMotionDial } from "@/motion";
 
 /** One file of the same recording. List the same video or sound in several formats and the browser plays the first it can. */
@@ -154,6 +156,9 @@ const CaptionsOnIcon = () => (
     <path d={CC} stroke="var(--canvas)" />
   </Glyph>
 );
+/* Play and Pause are solid, as every player draws them and as the set's Stop is: a mark this small reads as a shape. */
+const PlayGlyph = () => <Glyph fill="currentColor" strokeWidth={1}><path d="M5.25 3.5v9l7.25-4.5z" /></Glyph>;
+const PauseGlyph = () => <Glyph fill="currentColor" strokeWidth={1}><rect x="4.5" y="3.5" width="2.25" height="9" /><rect x="9.25" y="3.5" width="2.25" height="9" /></Glyph>;
 const VideoIcon = () => <Glyph><rect x="1.75" y="3.75" width="8.5" height="8.5" /><path d="m10.25 6.75 4-2.25v7l-4-2.25" /></Glyph>;
 
 /* ---------------------------------------------------------------- time */
@@ -410,6 +415,15 @@ function usePlayback(media: RefObject<HTMLMediaElement | null>, track: RefObject
 
 /* ---------------------------------------------------------------- the row */
 
+/* A control in the row is its mark and nothing else: no fill, no edge, no disc on hover. Hover and a press darken it
+   on the instant tier; a press on a touch screen also fills it at fg 6%, so it shows under a finger and under
+   reduced motion. */
+const CONTROL =
+  "inline-grid shrink-0 cursor-pointer place-items-center rounded-control text-fg-muted select-none " +
+  "transition-[color,background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+  "hover:text-fg pointer-coarse:active:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+
 type RowProps = {
   playback: Playback;
   /** Full screen, for a video: whether it is on and how to change it, or undefined for none. */
@@ -422,7 +436,9 @@ type RowProps = {
 function Row({ playback: p, fullscreen, rates, hasCaptions }: RowProps) {
   const { coarse } = useDevice();
   const { reduced } = useMotionDial();
-  const size = coarse ? "md" : "sm";
+  /* 32px targets on a fine pointer, 44px on a coarse one; the marks stay 16px. */
+  const square = coarse ? "size-control-md" : "size-control-sm";
+  const tall = coarse ? "h-control-md" : "h-control-sm";
   const hintId = useId();
 
   const rail = useRef<HTMLDivElement>(null);
@@ -543,7 +559,7 @@ function Row({ playback: p, fullscreen, rates, hasCaptions }: RowProps) {
     p.seek(to);
   };
 
-  const icon = p.waiting ? <Spinner /> : p.playing ? <PauseIcon /> : p.ended ? <RetryIcon /> : <PlayIcon />;
+  const icon = p.waiting ? <Spinner /> : p.playing ? <PauseGlyph /> : p.ended ? <RetryIcon /> : <PlayGlyph />;
   const playLabel = p.playing ? "Pause" : p.ended ? "Play again" : "Play";
   const nextRate = rates && rates.length > 1 ? rates[(rates.indexOf(p.rate) + 1) % rates.length] ?? rates[0] ?? 1 : undefined;
   /* The first and last buttons sit outside the row by the air around their marks, so the marks line up with the edges. */
@@ -552,9 +568,9 @@ function Row({ playback: p, fullscreen, rates, hasCaptions }: RowProps) {
   return (
     <div className="@container/bar">
       <div className={"flex min-w-0 items-center " + outside}>
-        <Button variant="ghost" size={size} iconOnly aria-label={playLabel} onClick={p.toggle}>
+        <button type="button" aria-label={playLabel} onClick={p.toggle} className={CONTROL + " " + square}>
           {icon}
-        </Button>
+        </button>
         <div
           ref={rail}
           role="slider"
@@ -597,22 +613,22 @@ function Row({ playback: p, fullscreen, rates, hasCaptions }: RowProps) {
           Arrow keys move {SKIP} seconds.
         </span>
         {hasCaptions && (
-          <Button variant="ghost" size={size} iconOnly aria-label="Captions" aria-pressed={p.captionsOn} onClick={() => p.setCaptionsOn(!p.captionsOn)}>
+          <button type="button" aria-label="Captions" aria-pressed={p.captionsOn} onClick={() => p.setCaptionsOn(!p.captionsOn)} className={CONTROL + " " + square}>
             {p.captionsOn ? <CaptionsOnIcon /> : <CaptionsIcon />}
-          </Button>
+          </button>
         )}
         {nextRate !== undefined && (
-          <Button variant="ghost" size={size} aria-label={`Speed, ${rateSpoken(p.rate)}`} onClick={() => p.setRate(nextRate)} className="tabular-nums">
+          <button type="button" aria-label={`Speed, ${rateSpoken(p.rate)}`} onClick={() => p.setRate(nextRate)} className={CONTROL + " " + tall + " px-2 text-small tabular-nums"}>
             {rateText(p.rate)}
-          </Button>
+          </button>
         )}
-        <Button variant="ghost" size={size} iconOnly aria-label="Mute" aria-pressed={p.muted} onClick={() => p.setMuted(!p.muted)}>
+        <button type="button" aria-label="Mute" aria-pressed={p.muted} onClick={() => p.setMuted(!p.muted)} className={CONTROL + " " + square}>
           {p.muted ? <MutedIcon /> : <VolumeIcon />}
-        </Button>
+        </button>
         {fullscreen && (
-          <Button variant="ghost" size={size} iconOnly aria-label="Full screen" aria-pressed={fullscreen.on} onClick={fullscreen.toggle}>
+          <button type="button" aria-label="Full screen" aria-pressed={fullscreen.on} onClick={fullscreen.toggle} className={CONTROL + " " + square}>
             {fullscreen.on ? <ShrinkIcon /> : <ExpandIcon />}
-          </Button>
+          </button>
         )}
       </div>
     </div>

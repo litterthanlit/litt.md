@@ -1105,7 +1105,7 @@ const COPY = {
   },
   "media-player": {
     title: "Media player",
-    description: "A video in a Media frame, or a sound under its title, with one quiet row of controls under the picture, never over it: ghost buttons, a thin rail with no thumb, and the time. Nothing plays until someone presses Play. The playhead follows the media one to one and steps under reduced motion, captions show under the picture, a stall shows the spinner, a failed file keeps the frame, and starting one player pauses any other.",
+    description: "A video in a Media frame, or a sound under its title, with one quiet row of controls under the picture, never over it: bare marks with a solid Play, a thin rail with no thumb, and the time. Nothing plays until someone presses Play. The playhead follows the media one to one and steps under reduced motion, captions show under the picture, a stall shows the spinner, a failed file keeps the frame, and starting one player pauses any other.",
     docs: "Import VideoPlayer and AudioPlayer from components/litt/media-player. Give a video a label, src (one address, or the same video as [{ src, type }] in several formats, best first), a poster and captions ({ src, lang, label }) for what is heard. Give a sound a title and a byline. rates adds a Speed button; preload=\"none\" with duration keeps a long page light. Never autoplay or loop one.",
   },
   carousel: {

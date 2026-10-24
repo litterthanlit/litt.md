@@ -9,6 +9,7 @@ Media already held a `<video controls>` as children, which kept the frame but ha
 | # | Question | Decision |
 |---|---|---|
 | 1 | The first build: a raised card, a play disc on the poster, a bordered Play, a thumb, a buffered band, a volume rail, a hover tooltip and mono times | **Too much.** "Needs to be simpler and quieter, get rid of that mono." The second build below takes each of them out. |
+| 1b | The second build's Play, a round ghost with the outlined triangle | **"I hate the play button."** The row's controls lose their discs, and Play and Pause become solid marks. |
 
 ## Built as recommended (Nick reviews after the tests)
 
@@ -17,7 +18,7 @@ Media already held a `<video controls>` as children, which kept the frame but ha
 | 2 | Controls over the picture or under it? | **Under it**, one row 8px below, and they never hide. | Over the picture they need a scrim (a gradient, which is material) and still fail contrast somewhere in it, the same reason Media bans text on a photograph. |
 | 3 | What sits on the picture? | **Nothing, ever.** A press on the picture plays and pauses. | The row under it already says it is a video; a disc on the poster was a second Play. |
 | 4 | Card | **None.** The frame and the row sit in the page; a page that wants one puts it in a Card. | Quieter, and the frame's hairline already holds the picture. |
-| 5 | Buttons | **Every one a round ghost**, the first and last 8px outside the row so their marks line up with the picture's edges. | One weight for the whole row; Play is found by being first. |
+| 5 | Buttons | **Each is its mark and nothing else**: no fill, edge or disc, `--fg-muted` darkening to `--fg` on hover. Play and Pause are small solid marks. The first and last sit 8px outside the row so their marks line up with the picture's edges. | Nick hated the round Play (a bordered disc, then a ghost). A solid triangle is what every player draws, and the set's Stop is solid too. |
 | 6 | The rail | **4px at fg 12%, played in `--fg`, no thumb, no buffered band.** The whole row height is the target and keyboard focus rings the rail. | The end of the played part is the playhead. A thumb and a second grey were two more things to read. |
 | 7 | Time | **"0:12 / 0:42" in the sans with tabular figures**, small, `--fg-subtle`. Only the elapsed part under 20rem. | No mono. Tabular figures keep the digits still. |
 | 8 | Captions | **Between the picture and the row**, small, `--fg`, two lines kept. | Captions are text, and text never sits on a picture in litt. |
