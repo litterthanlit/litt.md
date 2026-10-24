@@ -19,8 +19,9 @@
  * - Rail: the Slider's 4px rail at the control radius on fg 12%, with what has played in --fg, never the accent (P1).
  *   No thumb and no buffered band: the end of the played part is the playhead. The whole 20px row (44px on a coarse
  *   pointer) is the target, and keyboard focus draws the 2px ring around it.
- * - Time: "0:12 / 0:42" after the rail at the small size in --fg-subtle, in the sans with even digits, the elapsed
- *   part as wide as the length so nothing shifts as it counts. In a box under 20rem only the elapsed time shows.
+ * - Time: "0:12 of 0:42" after the rail at the small size in --fg-subtle, in words as litt writes a range ("3 of 12"),
+ *   in the sans with its own figures, not the even-width set, which pads a 1 into "0:1 4". The elapsed part keeps the
+ *   width of the length's widest digits, so the row never shifts as it counts. Under 20rem only the elapsed shows.
  * - Motion: the playhead follows the media one to one, with no easing, painted on every frame while it plays and
  *   without a render (a CSS variable on the rail). Under reduced motion it steps as the time does, a few times a
  *   second. Colors change on the instant tier. Nothing else moves.
@@ -450,7 +451,8 @@ function Row({ playback: p, fullscreen, rates, hasCaptions }: RowProps) {
 
   const known = Number.isFinite(p.duration);
   const length = known ? p.duration : 0;
-  /* The elapsed part is as wide as the length, in even digits, so the time never shifts as it counts. */
+  /* The elapsed part keeps the width of the length's widest digits, so the row never shifts as it counts. The figures
+     are the font's own: its even-width set pads the 1 into "0:1 4". */
   const width = { minWidth: `${Math.max(4, clock(length, length).length)}ch` };
 
   /* The playhead is a CSS variable on the rail, painted on every frame while it plays (or on each timeupdate under
@@ -605,9 +607,9 @@ function Row({ playback: p, fullscreen, rates, hasCaptions }: RowProps) {
             />
           </span>
         </div>
-        <span aria-hidden="true" className="me-2 shrink-0 text-small whitespace-nowrap text-fg-subtle tabular-nums">
+        <span aria-hidden="true" className="me-2 shrink-0 text-small whitespace-nowrap text-fg-subtle">
           <span ref={elapsed} className="inline-block text-right" style={width} />
-          {known && <span className="@max-xs/bar:hidden"> / {clock(length, length)}</span>}
+          {known && <span className="@max-xs/bar:hidden"> of {clock(length, length)}</span>}
         </span>
         <span id={hintId} className="sr-only">
           Arrow keys move {SKIP} seconds.
@@ -618,7 +620,7 @@ function Row({ playback: p, fullscreen, rates, hasCaptions }: RowProps) {
           </button>
         )}
         {nextRate !== undefined && (
-          <button type="button" aria-label={`Speed, ${rateSpoken(p.rate)}`} onClick={() => p.setRate(nextRate)} className={CONTROL + " " + tall + " px-2 text-small tabular-nums"}>
+          <button type="button" aria-label={`Speed, ${rateSpoken(p.rate)}`} onClick={() => p.setRate(nextRate)} className={CONTROL + " " + tall + " px-2 text-small"}>
             {rateText(p.rate)}
           </button>
         )}
