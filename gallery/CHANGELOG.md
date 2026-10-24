@@ -12,6 +12,8 @@ The first store parts: a price, a product's options, a product card and a cart, 
 - **added** `option-picker`: OptionPicker, one option of a product as native radios with a legend that names the pick: a segmented track for words, chips for colors and images, and sold-out values that stay pickable and say so.
 - **added** `product-card`: ProductCard and ProductGrid, one product in a grid as one link to its page, with no buy button; and the Product type with priceRange, findVariant, defaultPicks, optionsFor and isSoldOut.
 - **added** `cart`: Cart, the cart as a sheet with its lines, a free-shipping meter, a rolling subtotal and Check out; CartLine and CartSummary for a cart page; CartButton for the header; AddToCart with its Added state; and useCartState, a cart in memory.
+- **added** `product`: ProductPage, one product's page as one screen: pictures beside the details (a carousel on a phone), options with sold-out picks said in words, the quantity, Add to cart, an accordion and the cart.
+- **added** `collection`: Collection, a store's products as one screen: the title and the count, a filter row, a grid of product cards with no buy buttons, an empty state and the cart.
 - **changed** `icons`: BagIcon, for a cart. Nothing in your code has to change.
 - **changed** `number-field`: `hideLabel` keeps the label for screen readers only, where the row already says what the number counts, such as a cart line's quantity. Nothing in your code has to change.
 

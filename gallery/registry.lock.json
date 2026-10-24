@@ -60,7 +60,7 @@
     },
     "cart": {
       "version": "2026.10.24",
-      "hash": "499e15450483ba64"
+      "hash": "ddb02810aaea0967"
     },
     "case-study": {
       "version": "2026.10.22",
@@ -85,6 +85,10 @@
     "cohort-grid": {
       "version": "2026.10.20",
       "hash": "03fc3f36ed7d77a9"
+    },
+    "collection": {
+      "version": "2026.10.24",
+      "hash": "1b9a86ad66e0049a"
     },
     "color-picker": {
       "version": "2026.10.21",
@@ -249,6 +253,10 @@
     "price": {
       "version": "2026.10.24",
       "hash": "07931a630f63729d"
+    },
+    "product": {
+      "version": "2026.10.24",
+      "hash": "0d4697c99e6f28d1"
     },
     "product-card": {
       "version": "2026.10.24",

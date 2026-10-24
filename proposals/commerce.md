@@ -35,7 +35,7 @@ About half of a store is parts litt already ships, composed.
 | Cart summary | The subtotal as a `bare` Details row with a Rolling number, an optional free-shipping Meter with its words ("€12 to free shipping"), the "Taxes and shipping at checkout" note, and Check out. |
 | Cart | The sheet that holds them: the Dialog at `side="right"`, a list of Cart lines, the summary pinned at the foot, and an empty state that says the cart is empty and offers to keep browsing. |
 
-Two blocks compose them, named after the Store page that shows them: `product` (pictures, title, price, options, quantity, Add to cart, details in an Accordion) and `collection` (a filter row, a grid of Product cards, Pagination). Both open the same Cart.
+Two blocks compose them, each named after the page that shows it: `product` (pictures, title, price, options, quantity, Add to cart, details in an Accordion) and `collection` (a filter row, a grid of Product cards, Pagination). Both open the same Cart.
 
 **Not built: checkout.** Shopify's checkout is hosted (the cart's `checkoutUrl`) and is styled in Shopify's own checkout editor, not in the storefront. A litt checkout page could never run on a Shopify store, so litt's part ends at the Check out button. If a non-Shopify store needs a checkout later, it is a Forms pattern, not a commerce part.
 
@@ -78,7 +78,7 @@ A `product-page` task in `evals/agents/`: "Build the product page and cart for a
 1. Contract: the spec's new Commerce part in `components.md` (after Agents), the Commerce group in the sidebar, fixtures, `Money` and `Product` types.
 2. Price, Option picker, Product card, each with a page.
 3. Cart line, Cart summary, Cart.
-4. The Store page and the `product` and `collection` blocks.
+4. The `product` and `collection` blocks, each on its own page.
 5. The `shopify` item, its docs page and `test:shopify`.
 6. The `product-page` agent task.
 
@@ -90,4 +90,4 @@ The decisions are made; these are the places where the build should be looked at
 
 1. **Decision 5:** does a 14px price under the 18px title hold its own next to a large picture?
 2. **Decision 7:** does the toast after Add to cart feel like enough, or should the cart open?
-3. **Decision 4:** does a sold-out value in the disabled ink read as sold out before it is picked?
+3. **Decision 4:** does a sold-out value in the disabled ink read as sold out before it is picked? A near-white swatch (the White frame) barely changes when it fades, so only the legend says it once picked.

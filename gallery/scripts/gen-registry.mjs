@@ -1224,6 +1224,16 @@ const COPY = {
     description: "The cart as a sheet from the right (a bottom sheet on a phone): lines with a quantity and Remove undone from a toast, and a summary with a free-shipping meter, a rolling subtotal and Check out. Plus the header's cart button, Add to cart with its Added state, and useCartState, a cart in memory.",
     docs: "Import Cart, CartButton, AddToCart and useCartState from components/litt/cart. Mount the Toaster once near your root for Remove's Undo. useShopifyCart from the shopify item returns the same CartState, so the parts work with either.",
   },
+  product: {
+    title: "Product block",
+    description: "One product's page for a store: the pictures beside the details (a carousel on a phone), the title, the price, the options with sold-out picks said in words, the quantity and Add to cart as the one accent fill, the rest in an accordion, and the cart as a sheet. Every picture opens a lightbox.",
+    docs: "Import ProductPage from components/litt-blocks/product and render it as a page's content. The product sits at the top of the file: replace it with yours, or with one the shopify item's toProduct maps from your store. Mount the Toaster once near your root.",
+  },
+  collection: {
+    title: "Collection block",
+    description: "A store's products as a grid: the title and the count, a filter row with what to show and the order, product cards with no buy buttons (two across on a phone), an empty state for a filter with nothing in it, and the cart as a sheet.",
+    docs: "Import Collection from components/litt-blocks/collection and render it as a page's content. The products sit at the top of the file: replace them with yours, or with the ones the shopify item's toProduct maps from a collection.",
+  },
   "case-study": {
     title: "Case study block",
     description: "One project told as a page: a wide hero image, the facts in a row, the story with its labels in a narrow left column, the series in a carousel, the details in a grid and the next project as a card. Every image opens one lightbox that runs through them all, and the carousel follows it.",
