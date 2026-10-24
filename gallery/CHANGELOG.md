@@ -4,6 +4,14 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-24 · Focus you can see
+
+Three focus rings that keyboard users could not rely on, found by an accessibility audit of the gallery's overview. Nothing in your code has to change; reinstall to pick them up.
+
+- **fixed** `resizable`: the handle between two panels shows its focus ring when you reach it with the keyboard. Its `outline-none` set the outline style to none, so the ring had a width and a color but never drew.
+- **fixed** `table`: the edge that resizes a column shows its focus ring when you reach it with the keyboard, for the same reason.
+- **fixed** `tree`: only the focused item's row shows the focus ring. Items nest, and focusing an open folder lit the ring on every row inside it too, so you could not tell which item had focus.
+
 ## 2026-10-23 · Fun mode, more to touch, and a time scrubber
 
 More of fun mode's touch, still a trial and still only with a `FunMode` on: highlights that reach for where they are going, numbers you can scrub, and toasts you can throw. And a time scrubber, for going back through a run. Each comes to rest on exactly the frame it draws without fun mode, and reduced motion turns it all off. Off by default, so nothing changes until you turn it on.
