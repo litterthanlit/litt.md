@@ -189,6 +189,7 @@ const FAMILIES: [family: string, icons: [name: string, meaning: string, words: s
     ["TrendUp", "A value rising.", "trending growth increase"],
     ["TrendDown", "A value falling.", "trending decline decrease"],
     ["CreditCard", "Billing, payment and plans.", "billing payment card plan"],
+    ["Bag", "A store's cart, and buying.", "cart shop store basket buy checkout"],
   ]],
 ];
 

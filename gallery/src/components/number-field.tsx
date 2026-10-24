@@ -21,6 +21,8 @@
  *   label can be dragged sideways to scrub the value, a step every 8px, and past min or max the number gives like a
  *   rubber band and springs back when let go. The steppers and keys still do everything a scrub does. Transform only,
  *   and the field rests exactly as it does without fun mode. Reduced motion turns it off.
+ * - hideLabel keeps the label for screen readers only, where the row around the field already says what it counts (a
+ *   cart line's quantity). A hidden label is not a scrub handle.
  * - Accessibility: the input is a spinbutton named by the label, with aria-valuenow, -valuemin, -valuemax and the
  *   formatted value and unit as aria-valuetext. The steppers are named "Decrease seats" and "Increase seats".
  */
@@ -73,6 +75,8 @@ const decimalsOf = (n: number) => {
 export type NumberFieldProps = {
   /** The label above the field. Required: it names the field and its steppers ("Increase seats"). */
   label: ReactNode;
+  /** Hides the label from sight and keeps it for screen readers, where the row already says what the number is, such as a cart line's quantity. */
+  hideLabel?: boolean;
   /** The value, or null when the field is empty. Pair it with onValueChange. Leave it out and the field keeps its own. */
   value?: number | null;
   /** The value to start with when you do not control it. */
@@ -109,6 +113,7 @@ export type NumberFieldProps = {
 /** A labelled number with − and + in the field: steps by key, by press or by hold, and reads what is typed in the page's locale. */
 export function NumberField({
   label,
+  hideLabel = false,
   value: valueProp,
   defaultValue = null,
   onValueChange,
@@ -349,8 +354,8 @@ export function NumberField({
     <div className={"grid gap-2 " + className}>
       <label
         htmlFor={id}
-        onPointerDown={fun ? scrub : undefined}
-        className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg") + (fun && !disabled ? " w-fit cursor-ew-resize touch-pan-y select-none" : "")}
+        onPointerDown={fun && !hideLabel ? scrub : undefined}
+        className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg") + (hideLabel ? " sr-only" : fun && !disabled ? " w-fit cursor-ew-resize touch-pan-y select-none" : "")}
       >
         {label}
       </label>
