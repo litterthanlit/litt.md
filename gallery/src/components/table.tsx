@@ -861,7 +861,7 @@ function ColumnHandle({ name, minWidth }: { name: string; minWidth: number }) {
       onDoubleClick={fit}
       onClick={(e) => e.stopPropagation()}
       className={
-        "group/edge absolute inset-y-0 end-0 z-1 w-3 cursor-col-resize touch-none outline-none pointer-coarse:w-5 " +
+        "group/edge absolute inset-y-0 end-0 z-1 w-3 cursor-col-resize touch-none pointer-coarse:w-5 " +
         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
       }
     >

@@ -245,9 +245,32 @@ function PhotosDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+const TILE_TEAM = ["Ines Duarte", "Tomas Berg", "Ava Okafor", "Rui Matos", "Lena Voss"];
+
+function AvatarTile() {
+  return (
+    <div className="grid justify-items-center gap-4">
+      <AvatarGroup label="Project team, 26 people" total={26} ring="surface-1" size="lg">
+        {TILE_TEAM.map((n) => (
+          <Avatar key={n} name={n} />
+        ))}
+      </AvatarGroup>
+      <div className="flex items-center gap-3">
+        <Avatar name="Ines Duarte" decorative />
+        <span className="grid">
+          <span className="text-small font-title text-fg">Ines Duarte</span>
+          <span className="text-caption font-normal text-fg-subtle">Design lead</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function AvatarPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<AvatarTile />}>
       <Stage
         title="Senders in an inbox"
         align="start"

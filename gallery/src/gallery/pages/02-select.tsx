@@ -15,6 +15,7 @@ export const meta: PageMeta = {
   verbs: ["select", "open"],
   summary:
     "One value from a short list. The trigger is the Input's field, and the list is the Menu's glass panel: 44px rows, one gliding highlight and a check on the current option. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
+  fun: "Move through the options: the highlight reaches for the next row, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
 
@@ -310,9 +311,19 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function RoleTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <SelectField label="Role" name="role" options={ROLES} defaultValue="designer" help="Sets what you see in the studio." />
+    </div>
+  );
+}
+
 export default function SelectPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<RoleTile />}>
       <Stage
         title="A role in an account form"
         tier="responsive"

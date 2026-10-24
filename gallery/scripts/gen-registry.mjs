@@ -1043,6 +1043,11 @@ const COPY = {
     description: "One color as a hex string: a saturation and brightness area, a hue rail, the hex in mono, an eyedropper where the browser has one, and optional swatches as radios. A field in the Select trigger's look opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once, and every input says the color in words.",
     docs: "Import ColorPicker and ColorPanel from components/litt/color-picker, plus parseHex, describeColor, getContrastInk, hexToHsv and hsvToHex. Values are six-digit lowercase hex strings with the hash. ColorPicker needs a label; hold the value in state with value and onValueChange (null for none), pass name for a form, and swatches as { label, value }. Save with onValueCommit, which fires on release. Use getContrastInk for text drawn on the picked color.",
   },
+  "time-scrubber": {
+    title: "Time scrubber",
+    description: "A moment in a run that already happened, found by dragging a ruler of its time under a fixed needle: ticks every step, labelled times, and what happened along the run marked in its status color. The ruler follows the pointer one to one and settles on the nearest step or an event, Page Up and Page Down go from event to event, and in fun mode it can be thrown.",
+    docs: "Import TimeScrubber from components/litt/time-scrubber. Give it a label, max (and min), the run's events as marks ({ at, label, tone }) and a formatValue for the units (\"+12s\", \"09:30\"). Hold the value in state and show what it replays beside it, such as a LogView with the lines up to the needle. A setting that stays is a Slider.",
+  },
   "slide-confirm": {
     title: "Slide to confirm",
     description: "A deliberate yes to something that cannot be undone: the segmented control's track and a raised thumb to slide to the end. The thumb follows the finger one to one, springs back on the responsive tier if let go early, and confirms at the end with a check. The thumb is also a button: Enter, Space or a screen reader confirms, a mouse click alone does not.",

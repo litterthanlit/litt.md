@@ -46,8 +46,11 @@ function visibleRows(items: TreeNode[], open: Set<string>, level = 1, parent: st
 
 const ROW =
   "relative flex h-8 min-w-0 cursor-pointer items-center gap-2 rounded-control pr-2 text-small select-none [-webkit-tap-highlight-color:transparent] " +
-  "transition-[background-color,color] duration-(--dur-instant) ease-litt pointer-coarse:h-11 " +
-  "group-focus-visible/item:outline-2 group-focus-visible/item:-outline-offset-2 group-focus-visible/item:outline-focus";
+  "transition-[background-color,color] duration-(--dur-instant) ease-litt pointer-coarse:h-11";
+
+/* The focus ring sits on the focused item's own row only: items nest, so a group-focus-visible ring would also light
+   every row inside an open branch. The row is the item's one direct div; its children are in a ul. */
+const ITEM_FOCUS = "[&:focus-visible>div]:outline-2 [&:focus-visible>div]:-outline-offset-2 [&:focus-visible>div]:outline-focus";
 
 const IDLE =
   "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
@@ -187,7 +190,7 @@ export function Tree({
           onFocus={(e) => {
             if (e.target === e.currentTarget) setFocusId(node.id);
           }}
-          className="group/item outline-none"
+          className={"outline-none " + ITEM_FOCUS}
         >
           <div
             className={ROW + " " + (isSelected ? SELECTED[on] : IDLE)}

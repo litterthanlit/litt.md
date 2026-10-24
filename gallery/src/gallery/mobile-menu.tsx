@@ -25,10 +25,10 @@
  */
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
-import { ArrowUpRightIcon, ChevronLeftIcon, ChevronRightIcon, SlidersIcon } from "@/components/icons";
+import { useExit, useFun, useTransition, useTravel } from "@/motion";
+import { ArrowUpRightIcon, ChevronLeftIcon, ChevronRightIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { PAGE_GROUPS, type PageGroup } from "./kit";
-import { pages, type PageEntry } from "./registry";
+import { funPages, pages, type PageEntry } from "./registry";
 
 /** Two lines, the menu glyph. */
 const MenuGlyph = ({ className = "" }: { className?: string }) => (
@@ -74,7 +74,11 @@ const Glyph = ({ d }: { d: string }) => (
     <path d={d} />
   </svg>
 );
-const GROUP_ICON: Record<PageGroup, ReactNode> = {
+/** A group of the menu: a page group, or, with fun mode on, the pages it changes. */
+type MenuGroup = PageGroup | "Fun";
+
+const GROUP_ICON: Record<MenuGroup, ReactNode> = {
+  Fun: <SparkleIcon />,
   Controls: <SlidersIcon />,
   Overlays: <Glyph d="M5.75 5.75h7.5v7.5h-7.5zM3.25 10.25v-7h7" />, // a surface over a surface
   Layout: <Glyph d="M2.75 2.75h10.5v10.5H2.75zM2.75 6.25h10.5M6.25 6.25v7" />, // a header and a sidebar
@@ -185,10 +189,10 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
   const enter = useTransition("responsive");
   const exit = useExit("responsive");
   const travel = useTravel();
-  const [group, setGroup] = useState<PageGroup | null>(null); // it opens on the groups; the current one names this page
+  const [group, setGroup] = useState<MenuGroup | null>(null); // it opens on the groups; the current one names this page
   const [dir, setDir] = useState<1 | -1>(1);
   const back = useRef<HTMLButtonElement>(null);
-  const opener = useRef<PageGroup | null>(null);
+  const opener = useRef<MenuGroup | null>(null);
   const first = useRef<HTMLDivElement>(null);
 
   /* Focus lands on the first row when the menu opens, so Tab starts inside it. */
@@ -197,10 +201,15 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
   }, []);
 
   const site = pages.filter((p) => !p.group);
-  const groups = PAGE_GROUPS.map((g) => ({ group: g, pages: pages.filter((p) => p.group === g) })).filter((g) => g.pages.length);
+  /* With fun mode on, its pages lead as a group of their own; they stay in their own groups too. */
+  const fun = useFun();
+  const groups: { group: MenuGroup; pages: PageEntry[] }[] = [
+    ...(fun && funPages.length ? [{ group: "Fun" as const, pages: funPages }] : []),
+    ...PAGE_GROUPS.map((g) => ({ group: g, pages: pages.filter((p) => p.group === g) })).filter((g) => g.pages.length),
+  ];
   const shown = groups.find((g) => g.group === group);
 
-  const drillIn = (g: PageGroup) => {
+  const drillIn = (g: MenuGroup) => {
     setDir(1);
     opener.current = g;
     setGroup(g);

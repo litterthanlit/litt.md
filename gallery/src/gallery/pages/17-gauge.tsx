@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   group: "Data",
   summary:
     "One value against a range, drawn as a semicircle of fine ticks with the figure in the opening. The ticks up to the value take the foreground or one data hue, and the last one is longer to mark the value. It is static, like the meter.",
+  fun: "The ticks sweep to the value with a needle's weight, and the figure counts with them.",
   tiers: [],
 };
 
@@ -112,7 +113,7 @@ function SizesDemo() {
 
 export default function GaugePage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<Gauge label="Credits left" value={20830} max={30000} valueText="20,830 credits" figure="20,830" caption="2k a day on average" hue="teal" size={200} />}>
       <Stage
         title="Credits left"
         code="CreditsDemo"

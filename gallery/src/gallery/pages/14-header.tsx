@@ -350,9 +350,36 @@ function CurrentDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/** The glass bar over a page that scrolls under it. Its action is a plain button here: the wall's one accent fill is the Button tile's. */
+function HeaderTile() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useDemoRouter("/work");
+  useStartUnderBar(frame);
+  return (
+    <Frame ref={frame} label="Litt Studio home page" className="h-80">
+      <Header
+        wordmark={<a href="/work" onClick={router.home}>Litt Studio</a>}
+        navLabel="Studio site"
+        navFrom="sm"
+        links={router.links}
+        renderLink={router.renderLink}
+        onNavigate={router.onNavigate}
+        actions={
+          <Button size="sm" className="pointer-coarse:h-control-md pointer-coarse:px-control-pad-md">
+            Contact
+          </Button>
+        }
+      />
+      <StudioPage />
+    </Frame>
+  );
+}
+
 export default function HeaderPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<HeaderTile />}>
       <Stage
         title="Desktop"
         tier="instant"

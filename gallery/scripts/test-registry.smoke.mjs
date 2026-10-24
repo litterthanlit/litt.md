@@ -316,6 +316,10 @@ const RECIPES = {
           <ColorPanel label="Cover color" defaultValue="#1d5c5a" />
         </form>`,
   },
+  "time-scrubber": {
+    needs: ["TimeScrubber"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-time-scrubber"><TimeScrubber label="Replay" max={48} defaultValue={31} marks={[{ at: 12.1, label: "Image is 2.4 MB", tone: "warning" }, { at: 31, label: "Module not found", tone: "danger" }]} /></div>`,
+  },
   "slide-confirm": {
     needs: ["SlideConfirm"],
     jsx: `<div className="w-full max-w-sm" data-testid="litt-slide-confirm"><SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" /></div>`,
@@ -962,6 +966,14 @@ const COLOR_TO_RGB = `(value) => {
   return Array.from(c.getImageData(0, 0, 1, 1).data);
 }`;
 
+/**
+ * Where an item's recipe renders: its own `data-item` wrapper on the smoke page. A check starts here, never from the
+ * whole page, because the `all` page draws every item at once and the blocks reuse the components' labels (the
+ * settings block has its own "Role" select, build-email switch and "Animation speed" slider). What a component
+ * portals out of it (a menu, a listbox, a dialog, a toast) is still looked up on the page.
+ */
+const itemOn = (page, name) => page.locator(`[data-item="${name}"]`);
+
 const near = (a, b, tol = 1) => a.length >= 3 && b.length >= 3 && [0, 1, 2].every((i) => Math.abs(a[i] - b[i]) <= tol);
 
 /** Open the page, wait for it to settle, and record console errors for the whole visit. */
@@ -1055,6 +1067,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
   for (const theme of ["light", "dark"]) {
     const { context, page, errors } = await openPage(browser, url, theme);
     const t = (name) => `${theme}: ${name}`;
+    const item = (name) => itemOn(page, name);
     const attempt = async (name, fn) => {
       try {
         // A failed step may have left a menu or dialog open; start each one from a clean page.
@@ -1098,7 +1111,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       if (litt && has("button")) {
         await attempt("primary button = litt accent", async () => {
           const got = await page.evaluate(
-            `(${COLOR_TO_RGB})(getComputedStyle(document.querySelector("[data-testid=litt-primary]")).backgroundColor)`,
+            `(${COLOR_TO_RGB})(getComputedStyle(document.querySelector("[data-item=button] [data-testid=litt-primary]")).backgroundColor)`,
           );
           const want = accent[theme];
           if (!near(got, want)) throw new Error(`background is rgb(${got.slice(0, 3)}), litt accent is rgb(${want})`);
@@ -1108,30 +1121,30 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
 
       if (has("tooltip")) {
         await attempt("tooltip opens", async () => {
-          await page.hover("[data-testid=tooltip-trigger]");
+          await item("tooltip").locator("[data-testid=tooltip-trigger]").hover();
           await page.getByText("Litt tooltip").last().waitFor({ state: "visible", timeout: 5000 });
           await page.mouse.move(5, 5);
         });
       }
       if (has("tabs")) {
         await attempt("tabs switch", async () => {
-          await page.getByRole("tab", { name: "Two" }).click();
-          await page.getByText("Panel two").waitFor({ state: "visible", timeout: 4000 });
+          await item("tabs").getByRole("tab", { name: "Two" }).click();
+          await item("tabs").getByText("Panel two").waitFor({ state: "visible", timeout: 4000 });
         });
       }
       if (has("list")) {
         await attempt("project list rows", async () => {
-          await page.getByText("Northwind site").first().waitFor({ state: "visible", timeout: 4000 });
-          const n = await page.locator("ul[aria-label=Projects] li").count();
+          await item("list").getByText("Northwind site").first().waitFor({ state: "visible", timeout: 4000 });
+          const n = await item("list").locator("ul[aria-label=Projects] li").count();
           if (n < 3) throw new Error(`expected 3 rows, found ${n}`);
           // The third project has only the required fields, and a year where a date would be.
-          await page.getByText("Archive").first().waitFor({ state: "visible", timeout: 4000 });
+          await item("list").getByText("Archive").first().waitFor({ state: "visible", timeout: 4000 });
           return `${n} rows`;
         });
       }
       if (has("menu")) {
         await attempt("menu opens with glass panel", async () => {
-          await page.click("[data-testid=menu-trigger]");
+          await item("menu").locator("[data-testid=menu-trigger]").click();
           const menu = page.getByRole("menu");
           await menu.waitFor({ state: "visible", timeout: 5000 });
           await page.waitForTimeout(700);
@@ -1155,7 +1168,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("breadcrumb")) {
         await attempt("breadcrumb marks the current page and folds its middle into a menu of links", async () => {
-          const nav = page.getByRole("navigation", { name: "Smoke docs" });
+          const nav = item("breadcrumb").getByRole("navigation", { name: "Smoke docs" });
           await nav.waitFor({ state: "visible", timeout: 5000 });
           // A level's words, without the aria-hidden slash before it.
           const read = (el) => ({
@@ -1194,7 +1207,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             try {
               const p2 = await phone.newPage();
               await p2.goto(url, { waitUntil: "load", timeout: 30000 });
-              const n2 = p2.getByRole("navigation", { name: "Smoke docs" });
+              const n2 = p2.locator("[data-item=breadcrumb]").getByRole("navigation", { name: "Smoke docs" });
               await n2.waitFor({ state: "visible", timeout: 10000 });
               await p2.waitForTimeout(400);
               const small = await n2.evaluate((el) => ({
@@ -1220,7 +1233,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("context-menu")) {
         await attempt("context menu opens at the pointer, from Shift+F10 and on a 500ms hold, with the Menu's glass and rows", async () => {
-          const target = page.locator("[data-testid=ctx-target]");
+          const target = item("context-menu").locator("[data-testid=ctx-target]");
           await target.scrollIntoViewIfNeeded();
           const box = await target.boundingBox();
           const at = { x: Math.round(box.x + 24), y: Math.round(box.y + 12) };
@@ -1261,7 +1274,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (p.focused) throw new Error(`a right-click lit ${p.focused}; a pointer open lights nothing`);
 
           // Shift+F10 on something focused inside the target: at its bottom-left corner, first row focused, focus back on Esc.
-          const focusable = page.locator("[data-testid=ctx-focus]");
+          const focusable = item("context-menu").locator("[data-testid=ctx-focus]");
           await focusable.focus();
           const fb = await focusable.boundingBox();
           await page.keyboard.press("Shift+F10");
@@ -1297,18 +1310,27 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             try {
               const p2 = await phone.newPage();
               await p2.goto(url, { waitUntil: "load", timeout: 30000 });
-              const button = p2.locator("[data-testid=ctx-focus]");
+              const button = p2.locator("[data-item=context-menu] [data-testid=ctx-focus]");
               await button.waitFor({ state: "visible", timeout: 10000 });
               await button.scrollIntoViewIfNeeded();
               await p2.waitForTimeout(400);
               await button.tap();
               await p2.waitForTimeout(800);
               if (await p2.getByRole("menu").count()) throw new Error("a tap opened the menu");
-              if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("a tap did not run the target's own action");
+              if ((await p2.locator("[data-item=context-menu] [data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("a tap did not run the target's own action");
               const b2 = await button.boundingBox();
+              /* Two times from the touch: `open`, when the hold asks for the menu (the contextmenu event it sends at the
+                 target, or the browser's own long press), and `menu`, when Radix has drawn it. The bound is on `open`,
+                 the hold's own 500ms. Drawing comes after it and grows with the page: on the `all` page, with every item
+                 mounted, Radix's popper reads computed styles and its focus scope focuses the first row, which forces a
+                 style and layout pass over thousands of elements (about 200ms in Chromium), so `menu` is reported, and
+                 only has to come before the finger lifts. */
               await p2.evaluate(() => {
-                window.__ctxAt = { touch: 0, menu: 0 };
+                window.__ctxAt = { touch: 0, open: 0, menu: 0 };
                 document.addEventListener("pointerdown", () => (window.__ctxAt.touch = performance.now()), { capture: true, once: true });
+                document
+                  .querySelector("[data-item=context-menu] [data-testid=ctx-target]")
+                  .addEventListener("contextmenu", () => (window.__ctxAt.open ||= performance.now()), { capture: true });
                 new MutationObserver((_, obs) => {
                   if (!document.querySelector("[role=menu]")) return;
                   window.__ctxAt.menu = performance.now();
@@ -1322,13 +1344,14 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
               await p2.waitForTimeout(500);
               const t = await p2.evaluate(() => window.__ctxAt);
-              if (!t.menu) throw new Error("a press and hold did not open the menu");
-              const after = Math.round(t.menu - t.touch);
-              if (after > 650) throw new Error(`the menu opened ${after}ms into the hold, not at 500ms`);
-              if ((await p2.locator("[data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("the hold also ran the target's own action");
+              if (!t.open) throw new Error("a press and hold did not ask for the menu");
+              const after = Math.round(t.open - t.touch);
+              if (after > 650) throw new Error(`the hold asked for the menu ${after}ms into the hold, not at 500ms`);
+              if (!t.menu || t.menu > t.touch + 900) throw new Error(`a press and hold did not draw the menu before the finger lifted at 900ms${t.menu ? ` (drawn at ${Math.round(t.menu - t.touch)}ms)` : ""}`);
+              if ((await p2.locator("[data-item=context-menu] [data-testid=ctx-target]").getAttribute("data-opened")) !== "1") throw new Error("the hold also ran the target's own action");
               const still = await p2.getByRole("menu", { name: "Founder landing actions" }).isVisible();
               if (!still) throw new Error("the menu closed when the finger lifted");
-              held = `; a hold opened it after ${after}ms`;
+              held = `; a hold opened it after ${after}ms, drawn after ${Math.round(t.menu - t.touch)}ms`;
             } finally {
               await phone.close();
             }
@@ -1338,7 +1361,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("select")) {
         await attempt("select opens as glass and picks with the keyboard", async () => {
-          const trigger = page.getByRole("combobox", { name: "Role" });
+          const trigger = item("select").getByRole("combobox", { name: "Role" });
           await trigger.click();
           const list = page.getByRole("listbox");
           await list.waitFor({ state: "visible", timeout: 5000 });
@@ -1359,19 +1382,19 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await list.waitFor({ state: "hidden", timeout: 4000 });
           const text = (await trigger.textContent())?.trim();
           if (text !== "Developer") throw new Error(`the trigger reads "${text}" after picking Developer`);
-          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-select]")).get("role"));
+          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-item=select] [data-testid=litt-select]")).get("role"));
           if (sent !== "developer") throw new Error(`the form sends role=${sent}`);
           return `rows ${info.rows.join("/")}, picked ${text}`;
         });
       }
       if (has("combobox")) {
         await attempt("combobox filters past accents, wraps past a disabled option, picks by key and keeps tokens with multiple", async () => {
-          const form = page.locator("[data-testid=litt-combobox]");
+          const form = item("combobox").locator("[data-testid=litt-combobox]");
           const input = form.getByRole("combobox", { name: "Client" });
           await input.waitFor({ state: "visible", timeout: 5000 });
           const field = input.locator("xpath=ancestor::div[contains(@class,'cursor-text')][1]");
           const lit = (el) => el.evaluate((n) => document.getElementById(n.getAttribute("aria-activedescendant") ?? "")?.textContent?.trim() ?? null);
-          const posted = (key) => page.evaluate((k) => new FormData(document.querySelector("[data-testid=litt-combobox]")).getAll(k).join("|"), key);
+          const posted = (key) => page.evaluate((k) => new FormData(document.querySelector("[data-item=combobox] [data-testid=litt-combobox]")).getAll(k).join("|"), key);
           // Mid-screen, so the list has room to open under the field.
           await input.evaluate((el) => el.scrollIntoView({ block: "center" }));
           const before = await field.boundingBox();
@@ -1444,12 +1467,12 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           // The summary takes focus once, when it mounts, and earlier steps have moved focus since: start from a fresh page.
           await page.reload({ waitUntil: "networkidle" });
           await page.waitForTimeout(600);
-          const summary = page.getByRole("region", { name: "Fix 1 field to save" });
+          const summary = item("form").getByRole("region", { name: "Fix 1 field to save" });
           await summary.waitFor({ state: "visible", timeout: 5000 });
           const focused = await summary.evaluate((el) => el === document.activeElement);
           if (!focused) throw new Error("the error summary did not take focus");
           const hash = await page.evaluate(() => location.hash);
-          await page.getByRole("link", { name: "Enter an email." }).click();
+          await item("form").getByRole("link", { name: "Enter an email." }).click();
           const onField = await page.evaluate(() => document.activeElement?.id);
           if (onField !== "smoke-email") throw new Error(`the summary link focused ${onField}, not the field`);
           if ((await page.evaluate(() => location.hash)) !== hash) throw new Error("the summary link changed the URL hash");
@@ -1458,7 +1481,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("switch")) {
         await attempt("switch toggles and fills with the foreground color", async () => {
-          const sw = page.getByRole("switch", { name: "Email me when a build finishes" });
+          const sw = item("switch").getByRole("switch", { name: "Email me when a build finishes" });
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("the switch did not start on");
           const fill = () => sw.evaluate((el) => getComputedStyle(el).backgroundColor);
           const fg = await page.evaluate(() => {
@@ -1483,7 +1506,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("accordion")) {
         await attempt("accordion: triggers in headings, one section open at a time, the keys move between them, and rows move by transform while heights snap", async () => {
-          const box = page.locator("[data-testid=litt-accordion]");
+          const box = item("accordion").locator("[data-testid=litt-accordion]");
           const first = box.getByRole("button", { name: "How does a project start?" });
           const second = box.getByRole("button", { name: "How long does a site take?" });
           const third = box.getByRole("button", { name: "Do you write the copy?" });
@@ -1570,7 +1593,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("scroll-area")) {
         await attempt("scroll area: a labelled Tab stop that scrolls natively, a hairline on each edge with more beyond it, and a thumb only once it scrolls", async () => {
-          const box = page.locator("[data-testid=litt-scroll-area]");
+          const box = item("scroll-area").locator("[data-testid=litt-scroll-area]");
           const log = box.getByRole("region", { name: "Smoke log" });
           await page.mouse.move(1, 1); // a mouse over the area would show the thumb before any scroll
           await log.waitFor({ state: "visible", timeout: 8000 });
@@ -1633,7 +1656,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("slider")) {
         await attempt("slider steps with the arrow keys", async () => {
-          const thumb = page.getByRole("slider", { name: "Animation speed" });
+          const thumb = item("slider").getByRole("slider", { name: "Animation speed" });
           const before = await thumb.getAttribute("aria-valuetext");
           await thumb.focus();
           await page.keyboard.press("ArrowRight");
@@ -1643,8 +1666,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           return `${before} to ${after}`;
         });
         await attempt("range slider: two named thumbs, the keys act on the focused one, the thumbs never cross, a form sends both values under one name", async () => {
-          const from = page.getByRole("slider", { name: "Smoke window, from" });
-          const to = page.getByRole("slider", { name: "Smoke window, to" });
+          const from = item("slider").getByRole("slider", { name: "Smoke window, from" });
+          const to = item("slider").getByRole("slider", { name: "Smoke window, to" });
           const read = async () => `${await from.getAttribute("aria-valuetext")}|${await to.getAttribute("aria-valuetext")}`;
           const start = await read();
           if (start !== "20s|80s") throw new Error(`the thumbs read ${start}, expected 20s|80s`);
@@ -1667,9 +1690,9 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.waitForTimeout(100);
           const apart = await read();
           if (apart !== "79s|100s") throw new Error(`End on the to thumb gave ${apart}, expected 79s|100s`);
-          const shown = (await page.locator("[data-testid=litt-range]").innerText()).replace(/\s+/g, " ");
+          const shown = (await item("slider").locator("[data-testid=litt-range]").innerText()).replace(/\s+/g, " ");
           if (!shown.includes("79s to 100s")) throw new Error(`the shown value is not "79s to 100s": "${shown}"`);
-          const root = page.locator("[data-testid=litt-range] span[data-no-drag]");
+          const root = item("slider").locator("[data-testid=litt-range] span[data-no-drag]");
           await root.scrollIntoViewIfNeeded();
           const rail = await root.boundingBox();
           const grip = await from.boundingBox();
@@ -1680,14 +1703,14 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.waitForTimeout(100);
           const dragged = await read();
           if (dragged !== "99s|100s") throw new Error(`dragging the from thumb past the end gave ${dragged}, expected 99s|100s: it never crosses`);
-          const sent = await page.locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
+          const sent = await item("slider").locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
           if (sent.join("|") !== "99|100") throw new Error(`the form sent window=${sent.join(",")}, expected 99 and 100 under one name`);
           return `${dragged}, sent ${sent.join(" and ")}`;
         });
       }
       if (has("color-picker")) {
         await attempt("color picker opens on the area, the keys and the hex change it, the form sends the hex", async () => {
-          const field = page.getByRole("button", { name: /^Brand color/ });
+          const field = item("color-picker").getByRole("button", { name: /^Brand color/ });
           const before = (await field.textContent())?.trim() ?? "";
           if (!before.startsWith("#2f5bd3")) throw new Error(`the field reads "${before}"`);
           await field.click();
@@ -1698,14 +1721,14 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const first = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
           if (first !== "Saturation") throw new Error(`focus opened on "${first}", not the area`);
           await page.keyboard.press("Home");
-          const grey = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-color-picker]")).get("brand"));
+          const grey = await page.evaluate(() => new FormData(document.querySelector("[data-item=color-picker] [data-testid=litt-color-picker]")).get("brand"));
           if (grey !== "#d3d3d3") throw new Error(`Home on the area made ${grey}, not #d3d3d3`);
           const hex = dialog.getByRole("textbox", { name: "Hex" });
           await hex.fill("c2643f");
           await hex.press("Enter");
           await page.keyboard.press("Escape");
           await dialog.waitFor({ state: "hidden", timeout: 4000 });
-          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-color-picker]")).get("brand"));
+          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-item=color-picker] [data-testid=litt-color-picker]")).get("brand"));
           if (sent !== "#c2643f") throw new Error(`the form sends brand=${sent}`);
           return `${before.slice(0, 7)} to ${sent}`;
         });
@@ -1713,7 +1736,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       if (has("date-picker")) {
         const active = () => page.evaluate(() => document.activeElement?.getAttribute("aria-label") ?? "");
         await attempt("date picker opens on the picked day, the keys move, Enter picks and returns focus", async () => {
-          const field = page.getByRole("button", { name: /^Launch date/ });
+          const field = item("date-picker").getByRole("button", { name: /^Launch date/ });
           const before = (await field.textContent())?.trim();
           if (before !== "17 Oct 2026") throw new Error(`the field reads "${before}", not "17 Oct 2026"`);
           if ((await field.getAttribute("aria-haspopup")) !== "dialog") throw new Error("the field has no aria-haspopup=dialog");
@@ -1732,12 +1755,12 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const after = (await field.textContent())?.trim();
           if (after !== "18 Oct 2026") throw new Error(`the field reads "${after}" after picking 18 October`);
           if (!(await field.evaluate((el) => el === document.activeElement))) throw new Error("focus did not return to the field");
-          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-date-picker]")).get("launch"));
+          const sent = await page.evaluate(() => new FormData(document.querySelector("[data-item=date-picker] [data-testid=litt-date-picker]")).get("launch"));
           if (sent !== "2026-10-18") throw new Error(`the form sends launch=${sent}`);
           return `${before} to ${after}, sends ${sent}`;
         });
         await attempt("date range: a preset picks and closes, two days pick a range, the form sends start and end", async () => {
-          const field = page.getByRole("button", { name: /^Report period/ });
+          const field = item("date-picker").getByRole("button", { name: /^Report period/ });
           const before = (await field.textContent())?.trim();
           if (before !== "3 Oct to 17 Oct 2026") throw new Error(`the field reads "${before}"`);
           const dialog = page.getByRole("dialog", { name: "Report period" });
@@ -1760,14 +1783,14 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const picked = (await field.textContent())?.trim();
           if (picked !== "12 Oct to 14 Oct 2026") throw new Error(`two picks left the field at "${picked}"`);
           const sent = await page.evaluate(() => {
-            const data = new FormData(document.querySelector("[data-testid=litt-date-picker]"));
+            const data = new FormData(document.querySelector("[data-item=date-picker] [data-testid=litt-date-picker]"));
             return `${data.get("period-start")} ${data.get("period-end")}`;
           });
           if (sent !== "2026-10-12 2026-10-14") throw new Error(`the form sends ${sent}`);
           return `${preset}, then ${picked}`;
         });
         await attempt("calendar: six weeks always, the picked day is the foreground, PageDown slides a month, disabled days stay reachable", async () => {
-          const cal = page.getByRole("group", { name: "Studio schedule" });
+          const cal = item("date-picker").getByRole("group", { name: "Studio schedule" });
           const grid = cal.getByRole("grid", { name: "October 2026" });
           await grid.waitFor({ state: "visible", timeout: 4000 });
           const measure = () =>
@@ -1816,9 +1839,9 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("stat")) {
         await attempt("stat reads label, figure and a delta in the good color", async () => {
-          const terms = await page.locator("[data-testid=litt-stats] dt").allTextContents();
+          const terms = await item("stat").locator("[data-testid=litt-stats] dt").allTextContents();
           if (terms.join("|") !== "Active projects|Median build") throw new Error(`the labels read ${terms.join("|")}`);
-          const dd = page.locator("[data-testid=litt-stats] dd").nth(1);
+          const dd = item("stat").locator("[data-testid=litt-stats] dd").nth(1);
           const text = (await dd.innerText()).replace(/\s+/g, " ").trim();
           if (!text.startsWith("41s") || !text.includes("Down 6 s on last week")) throw new Error(`the tile reads "${text}"`);
           const delta = await dd.locator(":scope > span").nth(1).evaluate((el) => getComputedStyle(el).color);
@@ -1836,7 +1859,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("chart")) {
         await attempt("charts draw in the foreground, never the accent, and the keys move the tooltip", async () => {
-          const box = page.locator("[data-testid=litt-charts]");
+          const box = item("chart").locator("[data-testid=litt-charts]");
           const svg = box.locator("svg[role=img]").first();
           await svg.waitFor({ state: "visible", timeout: 8000 });
           await page.waitForTimeout(600);
@@ -1888,7 +1911,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("sparkline")) {
         await attempt("sparkline reads its summary, draws a 2px line and a dot in the data hue, a dashed baseline, and a Stat's trend slot", async () => {
-          const box = page.locator("[data-testid=litt-sparklines]");
+          const box = item("sparkline").locator("[data-testid=litt-sparklines]");
           const quiet = box.locator("[data-testid=spark-quiet] svg[role=img]");
           await quiet.waitFor({ state: "visible", timeout: 8000 });
           const want = "Median build time: from 44 s to 41 s, low 37 s, high 46 s, baseline 45 s";
@@ -1951,8 +1974,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (emptyShape.label !== "Visits per day: no data" || emptyShape.marks) throw new Error(`an empty sparkline reads ${JSON.stringify(emptyShape)}`);
           let detail = `line ${h.line}, dot ${h.dot}`;
           if (has("stat")) {
-            const dd = page.locator("[data-testid=litt-stats] dd").nth(1);
-            const term = await page.locator("[data-testid=litt-stats] dt").nth(1).innerText();
+            const dd = item("stat").locator("[data-testid=litt-stats] dd").nth(1);
+            const term = await item("stat").locator("[data-testid=litt-stats] dt").nth(1).innerText();
             const text = (await dd.innerText()).replace(/\s+/g, " ").trim();
             if (term !== "Median build" || !text.startsWith("41s") || !text.includes("Down 6 s on last week") || !text.endsWith("Last 14 days")) throw new Error(`a Stat with a trend reads "${term}: ${text}"`);
             const place = await dd.evaluate((el) => {
@@ -1970,7 +1993,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("spread")) {
         await attempt("spread reads each row in words, lines the rails up on one scale, draws the middle half in the data hue and runs the goal through every rail", async () => {
-          const box = page.locator("[data-testid=litt-spread]");
+          const box = item("spread").locator("[data-testid=litt-spread]");
           const list = box.getByRole("list", { name: "Smoke build times" });
           await list.waitFor({ state: "visible", timeout: 8000 });
           const rows = list.getByRole("listitem");
@@ -2050,7 +2073,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("breakdown")) {
         await attempt("breakdown: the split rail reads its parts, segments take the hues in order, rows meter their share, a sixth part folds into Other", async () => {
-          const box = page.locator("[data-testid=litt-breakdown]");
+          const box = item("breakdown").locator("[data-testid=litt-breakdown]");
           const rail = box.getByRole("img", { name: /^Smoke storage/ });
           await rail.waitFor({ state: "visible", timeout: 8000 });
           const said = await rail.getAttribute("aria-label");
@@ -2108,7 +2131,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("funnel")) {
         await attempt("funnel: one list of meters against the first step in one hue, the step lines in words, a step that went up held at 100%", async () => {
-          const box = page.locator("[data-testid=litt-funnel]");
+          const box = item("funnel").locator("[data-testid=litt-funnel]");
           const list = box.getByRole("list", { name: "Smoke funnel" });
           await list.waitFor({ state: "visible", timeout: 8000 });
           const colorOf = (v) => page.evaluate((value) => { const p = document.createElement("span"); p.style.color = value; document.body.append(p); const c = getComputedStyle(p).color; p.remove(); return c; }, v);
@@ -2129,7 +2152,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("cohort-grid")) {
         await attempt("cohort-grid: a native table with caption and headers, a number in every reached cell, dots in the hue's steps, an All cohorts row weighted by size, a narrow box that scrolls as one tab stop", async () => {
-          const box = page.locator("[data-testid=litt-cohort-grid]");
+          const box = item("cohort-grid").locator("[data-testid=litt-cohort-grid]");
           const table = box.getByRole("table", { name: "Smoke retention" });
           await table.waitFor({ state: "visible", timeout: 8000 });
           const heads = (await table.getByRole("columnheader").allTextContents()).map((t) => t.trim());
@@ -2175,7 +2198,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("legend")) {
         await attempt("legend: a press flips aria-pressed, the last shown item stays and says why", async () => {
-          const box = page.locator("[data-testid=litt-legend]");
+          const box = item("legend").locator("[data-testid=litt-legend]");
           const builds = box.getByRole("group", { name: "Smoke series" }).getByRole("button", { name: /^Builds/ });
           await builds.waitFor({ state: "visible", timeout: 8000 });
           if ((await builds.getAttribute("aria-pressed")) !== "true") throw new Error("Builds does not start pressed");
@@ -2196,7 +2219,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("pad")) {
         await attempt("pad: two sliders, one tab stop, the keys and a press move the thumb, the tooltip follows", async () => {
-          const group = page.getByRole("group", { name: "Your voice" });
+          const group = item("pad").getByRole("group", { name: "Your voice" });
           await group.waitFor({ state: "visible", timeout: 8000 });
           const lengthIn = group.getByRole("slider", { name: "Length", exact: true });
           const toneIn = group.getByRole("slider", { name: "Tone", exact: true });
@@ -2243,7 +2266,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("gauge")) {
         await attempt("gauge is a meter, draws teal ticks with a longer marker in the text tone, and fits a small box", async () => {
-          const box = page.locator("[data-testid=litt-gauges]");
+          const box = item("gauge").locator("[data-testid=litt-gauges]");
           const meter = box.getByRole("meter", { name: "Credits left" });
           await meter.waitFor({ state: "visible", timeout: 8000 });
           const got = await meter.evaluate((el) => ({
@@ -2286,7 +2309,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           return `${rest.ticks}/${body.ticks}/${marker.ticks} ticks, a ${fit.svg.toFixed(0)}px drawing in a ${fit.box.toFixed(0)}px box`;
         });
         await attempt("gauge in fun mode comes to rest on the calm gauge's ticks and figure", async () => {
-          const meter = page.locator("[data-testid=litt-gauge-fun]").getByRole("meter", { name: "Credits in fun mode" });
+          const meter = item("gauge").locator("[data-testid=litt-gauge-fun]").getByRole("meter", { name: "Credits in fun mode" });
           await meter.waitFor({ state: "visible", timeout: 8000 });
           /* By now the arrival has played; what fun mode promises is that it rests on the calm gauge's frame. */
           await page.waitForTimeout(2500);
@@ -2297,7 +2320,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("bar-list")) {
         await attempt("bar list reads each row, lines the bars up, fills in the data hue, and its rows press", async () => {
-          const box = page.locator("[data-testid=litt-bar-list]");
+          const box = item("bar-list").locator("[data-testid=litt-bar-list]");
           const list = box.getByRole("list", { name: "Smoke shortcuts" });
           await list.waitFor({ state: "visible", timeout: 8000 });
           const rows = list.getByRole("listitem");
@@ -2355,7 +2378,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("timeline")) {
         await attempt("timeline reads in order, draws long steps as bars in the phase hue, and its strip shows a tooltip", async () => {
-          const box = page.locator("[data-testid=litt-timeline]");
+          const box = item("timeline").locator("[data-testid=litt-timeline]");
           const list = box.getByRole("list", { name: "Smoke run steps" });
           await list.waitFor({ state: "visible", timeout: 8000 });
           await page.waitForTimeout(600);
@@ -2438,7 +2461,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("token-input")) {
         await attempt("token input folds to +2, validates, adds on a comma, removes by key and posts its values", async () => {
-          const form = page.locator("[data-testid=litt-token-input]");
+          const form = item("token-input").locator("[data-testid=litt-token-input]");
           const input = form.getByRole("textbox", { name: "Mail from" });
           await input.waitFor({ state: "visible", timeout: 5000 });
           const field = input.locator("xpath=ancestor::div[contains(@class,'cursor-text')][1]");
@@ -2451,7 +2474,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               probe.remove();
               return c;
             }, name);
-          const posted = () => page.evaluate(() => new FormData(document.querySelector("[data-testid=litt-token-input]")).getAll("from").join("|"));
+          const posted = () => page.evaluate(() => new FormData(document.querySelector("[data-item=token-input] [data-testid=litt-token-input]")).getAll("from").join("|"));
           const note = () => input.evaluate((el) => document.getElementById(el.getAttribute("aria-describedby") ?? "")?.textContent ?? "");
           await page.waitForTimeout(500);
           const more = field.locator("li[aria-label='2 more']");
@@ -2498,7 +2521,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("heatmap")) {
         await attempt("heatmap: a labelled grid of named dots in one hue, one tab stop, arrows and Esc", async () => {
-          const box = page.locator("[data-testid=litt-heatmap]");
+          const box = item("heatmap").locator("[data-testid=litt-heatmap]");
           const grid = box.getByRole("grid", { name: "Deploys per day" });
           await grid.waitFor({ state: "visible", timeout: 8000 });
           const rows = await grid.getByRole("row").count();
@@ -2568,7 +2591,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("dot-plot")) {
         await attempt("dot plot splits the dots at the goal, reads right and moves with the keys", async () => {
-          const box = page.locator("[data-testid=litt-dotplot]");
+          const box = item("dot-plot").locator("[data-testid=litt-dotplot]");
           const svg = box.locator("svg[role=img]").first();
           await svg.waitFor({ state: "visible", timeout: 8000 });
           await page.waitForTimeout(700);
@@ -2624,7 +2647,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("avatar")) {
         await attempt("avatars: initials named for a screen reader, a hue from the name, a group that overlaps and counts", async () => {
-          const box = page.locator("[data-testid=litt-avatars]");
+          const box = item("avatar").locator("[data-testid=litt-avatars]");
           const one = box.getByTestId("avatar-stripe");
           await one.waitFor({ state: "visible", timeout: 5000 });
           if ((await one.getAttribute("role")) !== "img" || (await one.getAttribute("aria-label")) !== "Stripe") throw new Error("initials are not a role=img named Stripe");
@@ -2692,7 +2715,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("callout")) {
         await attempt("callout: a note with its tone in the icon only, the action below the text when narrow, and a close that unmounts", async () => {
-          const box = page.locator("[data-testid=litt-callout]");
+          const box = item("callout").locator("[data-testid=litt-callout]");
           const note = box.getByRole("note");
           await note.waitFor({ state: "visible", timeout: 5000 });
           const said = ((await note.textContent()) ?? "").replace(/\s+/g, " ").trim();
@@ -2728,7 +2751,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("plan")) {
         await attempt("plan: an ordered list named by its label, the count over the rail, the running step current, failed and skipped said in words, done labels not struck through, a live region that follows the run", async () => {
-          const box = page.locator("[data-testid=litt-plan]");
+          const box = item("plan").locator("[data-testid=litt-plan]");
           const running = box.locator("[data-testid=plan-running]");
           const list = running.getByRole("list", { name: "Smoke plan" });
           await list.waitFor({ state: "visible", timeout: 5000 });
@@ -2797,7 +2820,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("tool-call")) {
         await attempt("tool call: a failed row says Failed and opens its output, a group folds its calls, Allow is the accent, calls back and becomes a row", async () => {
-          const box = page.locator("[data-testid=litt-tool-call]");
+          const box = item("tool-call").locator("[data-testid=litt-tool-call]");
           const colorOf = (v) =>
             page.evaluate((value) => {
               const probe = document.createElement("span");
@@ -2830,7 +2853,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const panel = box.getByRole("group", { name: "Run a command?" });
           await panel.waitFor({ state: "visible", timeout: 3000 });
           const said = box.getByRole("status");
-          await page.waitForFunction(() => document.querySelector("[data-testid=litt-tool-call] [role=status]")?.textContent?.trim() === "Waiting for your approval: npm run deploy", null, { timeout: 3000 });
+          await page.waitForFunction(() => document.querySelector("[data-item=tool-call] [data-testid=litt-tool-call] [role=status]")?.textContent?.trim() === "Waiting for your approval: npm run deploy", null, { timeout: 3000 });
           if ((await said.count()) !== 1) throw new Error("the approval has no live region");
           if (await panel.evaluate((el) => el.parentElement.contains(document.activeElement))) throw new Error("the approval took focus");
           const allow = box.getByRole("button", { name: "Allow", exact: true });
@@ -2848,7 +2871,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("composer")) {
         await attempt("composer: Send is off when empty and the accent when not, Enter sends, Shift+Enter adds a line, Stop and Esc, chips remove", async () => {
-          const box = page.locator("[data-testid=litt-composer]");
+          const box = item("composer").locator("[data-testid=litt-composer]");
           const field = box.getByRole("textbox", { name: "Message" });
           await field.waitFor({ state: "visible", timeout: 5000 });
           const probe = (prop, name) =>
@@ -2914,7 +2937,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("code-block")) {
         await attempt("code block: a focusable labelled scroller, keywords in fg and comments the one grey, a diff's + is success on a band, Copy says Copied", async () => {
-          const box = page.locator("[data-testid=litt-code-block]");
+          const box = item("code-block").locator("[data-testid=litt-code-block]");
           const ts = box.getByRole("group", { name: "Smoke badge", exact: true });
           await ts.waitFor({ state: "visible", timeout: 8000 });
           if ((await ts.getAttribute("tabindex")) !== "0") throw new Error("the scroller is not focusable");
@@ -2979,7 +3002,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("message")) {
         await attempt("message: two articles named by hidden headings, the person's bubble on the right, the agent's words bare, Copy says Copied politely", async () => {
-          const box = page.locator("[data-testid=litt-message]");
+          const box = item("message").locator("[data-testid=litt-message]");
           const region = box.getByRole("region", { name: "Smoke conversation" });
           await region.waitFor({ state: "visible", timeout: 5000 });
           if ((await region.getAttribute("tabindex")) !== "0") throw new Error("the scrolling region is not focusable");
@@ -3051,7 +3074,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("thinking")) {
         await attempt("thinking: a finished thought reads Thought for 12s, is closed and opens on click with its body; a live one counts seconds and never loops", async () => {
-          const box = page.locator("[data-testid=litt-thinking]");
+          const box = item("thinking").locator("[data-testid=litt-thinking]");
           const done = box.getByRole("button", { name: "Thought for 12 seconds" });
           await done.waitFor({ state: "visible", timeout: 5000 });
           if ((await done.getAttribute("aria-expanded")) !== "false") throw new Error("a finished thought starts open");
@@ -3111,7 +3134,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("app-shell")) {
         await attempt("app shell: a 240px sidebar as tall as the page, 36px rows, the current page marked", async () => {
-          const shell = page.locator("[data-testid=litt-shell]");
+          const shell = item("app-shell").locator("[data-testid=litt-shell]");
           const nav = shell.getByRole("navigation", { name: "Smoke" });
           await nav.waitFor({ state: "visible", timeout: 5000 });
           const current = await nav.getByRole("link", { name: "Overview" }).getAttribute("aria-current");
@@ -3133,7 +3156,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("pagination")) {
         await attempt("pagination reports the range and disables its ends", async () => {
-          const nav = page.getByRole("navigation", { name: "Smoke pages" });
+          const nav = item("pagination").getByRole("navigation", { name: "Smoke pages" });
           const range = async () => (await nav.locator("p").innerText()).trim();
           if ((await range()) !== "21 to 40 of 143") throw new Error(`the range reads "${await range()}"`);
           await nav.getByRole("button", { name: "Next" }).click();
@@ -3147,7 +3170,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("popover")) {
         await attempt("popover opens, is glass, and closes", async () => {
-          await page.click("[data-testid=popover-trigger]");
+          await item("popover").locator("[data-testid=popover-trigger]").click();
           const pop = page.getByRole("dialog", { name: "Litt popover" });
           await pop.waitFor({ state: "visible", timeout: 5000 });
           await page.getByText("Popover body").waitFor({ state: "visible", timeout: 3000 });
@@ -3170,7 +3193,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
 
       if (has("dialog")) {
         await attempt("dialog opens", async () => {
-          await page.click("[data-testid=dialog-trigger]");
+          await item("dialog").locator("[data-testid=dialog-trigger]").click();
           const dlg = page.getByRole("dialog");
           await dlg.waitFor({ state: "visible", timeout: 5000 });
           await page.getByText("Dialog body").waitFor({ state: "visible", timeout: 3000 });
@@ -3182,7 +3205,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("command-menu")) {
         await attempt("command menu opens", async () => {
-          await page.click("[data-testid=cmd-trigger]");
+          await item("command-menu").locator("[data-testid=cmd-trigger]").click();
           await page.getByRole("dialog").waitFor({ state: "visible", timeout: 5000 });
           await page.getByText("Settings page").first().waitFor({ state: "visible", timeout: 3000 });
           await page.waitForTimeout(500);
@@ -3196,7 +3219,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       }
       if (has("toast")) {
         await attempt("toast shows", async () => {
-          await page.click("[data-testid=toast-trigger]");
+          await item("toast").locator("[data-testid=toast-trigger]").click();
           await page.getByText("Saved from the smoke page").waitFor({ state: "visible", timeout: 5000 });
           await page.waitForTimeout(500);
           await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-toast.png`) });
@@ -3223,7 +3246,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
 async function darkModeContract(browser, url, accent, record) {
   const { context, page } = await openPage(browser, url, "light");
   try {
-    const fill = () => page.evaluate(`(${COLOR_TO_RGB})(getComputedStyle(document.querySelector("[data-testid=litt-primary]")).backgroundColor)`);
+    const fill = () => page.evaluate(`(${COLOR_TO_RGB})(getComputedStyle(document.querySelector("[data-item=button] [data-testid=litt-primary]")).backgroundColor)`);
     const cases = [
       { name: "nothing set, system light", scheme: "light", want: "light" },
       { name: "nothing set, system dark", scheme: "dark", want: "dark" },
@@ -3271,7 +3294,7 @@ async function shellOnAPhone(browser, url, record) {
   const { context, page } = await openPage(browser, url, "light", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const name = "app shell on a phone: no sidebar, a menu button, a sheet that closes on a link";
   try {
-    const shell = page.locator("[data-testid=litt-shell]");
+    const shell = itemOn(page, "app-shell").locator("[data-testid=litt-shell]");
     await shell.scrollIntoViewIfNeeded();
     if (await shell.getByRole("navigation", { name: "Smoke" }).count()) throw new Error("the sidebar is still on the page");
     // Radix hides the page from the accessibility tree while the sheet is open, so find the button by its label.

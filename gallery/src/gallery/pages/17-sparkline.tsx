@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   group: "Data",
   summary:
     "A trend in one thin line, with no axes, gridlines or labels: a 2px line in the foreground or a data hue, a dot on the latest value and an optional dashed baseline. It sits beside a figure or in a table row. It is static, and it shows shape, not values.",
+  fun: "The line draws itself and its dot lands as the pen reaches it.",
   tiers: [],
 };
 

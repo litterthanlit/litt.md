@@ -55,6 +55,11 @@ jobs:
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
+      - name: Wall (the overview with every tile mounted, one accent fill, nothing sideways or empty)
+        run: npm run test:wall --prefix gallery
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
       # The self-test runs with motion allowed and must see motion, so a check that has gone blind fails too.
       - name: Reduced motion (nothing moves on any page or overlay, desktop and phone)
         run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test

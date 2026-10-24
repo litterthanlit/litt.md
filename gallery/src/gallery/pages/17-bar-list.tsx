@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   verbs: ["press"],
   summary:
     "A ranked list where each row carries a thin bar for its share: a label, a bar, a mono value and a change in words. The bars and values line up across rows, the list measures itself, and nothing about it moves.",
+  fun: "Bars grow in rank order and their values count; change the data and rows slide past each other.",
   tiers: ["instant"],
 };
 
@@ -180,9 +181,28 @@ function KindsDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function BarListTile() {
+  return (
+    <div className="w-full max-w-sm">
+      <BarList
+        label="Most-used shortcuts"
+        unit={["time", "times"]}
+        hue="blue"
+        items={[
+          { label: "Archive", value: 412, lead: <Kbd>E</Kbd> },
+          { label: "Reply", value: 164, lead: <Kbd>R</Kbd> },
+          { label: "Snooze", value: 31, lead: <Kbd>H</Kbd> },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function BarListPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<BarListTile />}>
       <Stage
         title="Most-used shortcuts"
         align="start"

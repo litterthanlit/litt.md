@@ -232,9 +232,27 @@ function WeekdaysDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function LaunchTile() {
+  const [launch, setLaunch] = useState<string | null>(null);
+  return (
+    <div className="w-full max-w-xs">
+      <DatePicker
+        label="Launch date"
+        name="launch"
+        min={getToday()}
+        value={launch}
+        onValueChange={setLaunch}
+        hint="The Marlow Labs site goes live at 09:00 on this day."
+      />
+    </div>
+  );
+}
+
 export default function DatePickerPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<LaunchTile />}>
       <Stage
         title="A launch date for a Framer site"
         tier="responsive"

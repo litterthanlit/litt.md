@@ -21,6 +21,9 @@ export const pages: PageEntry[] = Object.entries(metas)
   })
   .sort((a, b) => a.order - b.order);
 
+/** The pages whose component moves differently in fun mode (meta.fun), in sidebar order. */
+export const funPages = pages.filter((p) => p.fun);
+
 /** After first paint, fetch the other pages' chunks while the browser is idle, so navigating stays instant. */
 export function prefetchPages(): () => void {
   const run = () => pages.forEach((p) => p.preload().catch(() => {})); // best effort: a miss just loads on open

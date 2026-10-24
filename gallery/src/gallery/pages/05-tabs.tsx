@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Kbd } from "@/components/kbd";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { useLoop } from "../tile";
 
 export const meta: PageMeta = {
   id: "tabs",
@@ -12,6 +13,7 @@ export const meta: PageMeta = {
   verbs: ["select"],
   summary:
     "Underline or segmented. The indicator slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked.",
+  fun: "Pick a tab far away: the underline stretches over, leading edge first, and gathers under it.",
   tiers: ["instant", "responsive"],
 };
 
@@ -273,9 +275,40 @@ function KeyboardDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+const TILE_TABS = ["Overview", "Activity", "Deploys"];
+const TILE_TEXT = ["12,480 visits in the last 7 days.", "Published to production 4 minutes ago.", "Build 5f2e9c1 finished in 42 seconds."];
+
+/** While the pointer rests on the tile, the underline glides from tab to tab on the responsive tier, until someone
+    picks one. */
+function TabsTile() {
+  const [ref, step] = useLoop<HTMLDivElement>(TILE_TABS.length, 2200, 0);
+  const [own, setOwn] = useState<string | null>(null);
+  const value = own ?? TILE_TABS[step]!;
+  return (
+    <div ref={ref} className="w-full max-w-sm">
+      <Tabs value={value} onValueChange={setOwn}>
+        <TabsList aria-label="Atelier Nord">
+          {TILE_TABS.map((t) => (
+            <TabsTrigger key={t} value={t}>{t}</TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsPanels className="min-h-16 px-control-pad-md pt-4">
+          {TILE_TABS.map((t, i) => (
+            <TabsPanel key={t} value={t}>
+              <p className="text-small text-fg-muted">{TILE_TEXT[i]}</p>
+            </TabsPanel>
+          ))}
+        </TabsPanels>
+      </Tabs>
+    </div>
+  );
+}
+
 export default function TabsPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<TabsTile />}>
       <Stage
         title="Project tabs"
         tier="responsive"

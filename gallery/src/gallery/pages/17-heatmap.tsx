@@ -10,6 +10,7 @@ export const meta: PageMeta = {
   verbs: ["hover"],
   summary:
     "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, mono labels, a tooltip on hover, touch and focus, and a legend from less to more.",
+  fun: "The grid arrives in two waves, the peaks last; move over it and a lens follows the pointer.",
   tiers: ["instant", "responsive"],
 };
 
@@ -200,9 +201,34 @@ function MailDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/* A month of page views, deterministic so the build and the tests see the same dots. */
+const TILE_DAYS = Array.from({ length: 31 }, (_, i) => i);
+const tileRow = (seed: number) => TILE_DAYS.map((d) => Math.round(400 + 600 * Math.abs(Math.sin((d + 1) * seed)) + (d % 7 > 4 ? -300 : 0)));
+
+function HeatmapTile() {
+  return (
+    <div className="w-full overflow-x-auto">
+      <Heatmap
+        label="Page views per day"
+        hue="teal"
+        cell={12}
+        columns={TILE_DAYS.map((d) => `day ${d + 1}`)}
+        unit={["view", "views"]}
+        rows={[
+          { label: "August", values: tileRow(1.7), total: "25,998" },
+          { label: "September", values: tileRow(2.3), total: "24,310" },
+          { label: "October", values: tileRow(3.1).map((v, d) => (d > 19 ? null : v)), total: "16,402" },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function HeatmapPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<HeatmapTile />}>
       <Stage
         title="Usage by month"
         tier="responsive"

@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   verbs: ["select"],
   summary:
     "A short choice in one track. The selected surface glides to your pick on the responsive tier, and color changes are instant, so the control answers without ever resizing.",
+  fun: "Pick another option: the surface springs to it and settles a hair past its mark.",
   tiers: ["instant", "responsive"],
 };
 

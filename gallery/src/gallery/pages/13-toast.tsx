@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   verbs: ["press", "watch"],
   summary:
     "Toasts arrive from just below the corner and settle, and they leave sideways by the same small distance. Older ones stack behind the newest and open into a list when you hover or tab into them. On a phone they drop away on a timeout, and a swipe sends them off sideways.",
+  fun: "Fire a toast, then throw it away with the mouse; let one go short and it springs home.",
   tiers: ["instant", "responsive", "expressive"],
 };
 

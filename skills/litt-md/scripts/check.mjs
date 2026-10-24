@@ -11,7 +11,8 @@
  * 3. Parity:    the two dark blocks in tokens.css are identical.
  * 4. Coverage:  every themed token is defined in both light and dark (P8).
  * 5. Contrast:  text, control lines, focus, accent, status and data-hue pairs meet WCAG
- *               (each data hue's -text tone is also checked on its own tint).
+ *               (each data hue's -text tone is also checked on its own tint), and the text inks
+ *               reach APCA Lc 60 on every surface, which WCAG 2 overrates for grey on dark.
  * 6. Weight:    weight by role (P9): --weight 400 (text), --weight-title 500 (titles),
  *               --weight-label 600 (12px labels). Nothing at 700 or more or below 400, no
  *               font-medium, -semibold or -bold (font-title and font-label are the role
@@ -177,6 +178,29 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
   }
 }
 if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes`);
+
+/* APCA 0.0.98G lightness contrast. WCAG 2 passed the dark theme's grey at 5.5:1 while it read too dark (Lc 41), so
+   the text inks must also reach Lc 60, the floor for reading text, on every surface. */
+const screenY = (h) => { const [r, g, b] = rgb(h).map((c) => c ** 2.4); return 0.2126729 * r + 0.7151522 * g + 0.072175 * b; };
+const apca = (text, bg) => {
+  const soft = (y) => (y > 0.022 ? y : y + (0.022 - y) ** 1.414);
+  const t = soft(screenY(text)), b = soft(screenY(bg));
+  const s = b > t ? (b ** 0.56 - t ** 0.57) * 1.14 : (t ** 0.62 - b ** 0.65) * 1.14;
+  return s < 0.1 ? 0 : (s - 0.027) * 100;
+};
+let apcaChecks = 0, apcaFails = 0;
+for (const [theme, map] of [["light", light], ["dark", dark]]) {
+  for (const fgName of ["--fg", "--fg-muted", "--fg-subtle"]) {
+    for (const bgName of ["--canvas", "--surface-1", "--surface-2", "--surface-3"]) {
+      const f = map.get(fgName), b = map.get(bgName);
+      if (!/^#[0-9a-f]{6}$/i.test(f || "") || !/^#[0-9a-f]{6}$/i.test(b || "")) continue;
+      apcaChecks++;
+      const lc = apca(f, b);
+      if (lc < 60) { apcaFails++; fail(`${theme}: ${fgName} on ${bgName} is APCA Lc ${lc.toFixed(0)}, needs Lc 60 (text you read)`); }
+    }
+  }
+}
+if (!apcaFails) ok(`${apcaChecks} text pairs reach APCA Lc 60 in both themes`);
 
 // 6. Weight by role (P9) -------------------------------------------------
 console.log("Weight by role (P9)");

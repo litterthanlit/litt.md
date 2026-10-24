@@ -306,7 +306,7 @@ export default function StatesPage() {
   const [cardsKey, resetCards] = useReplay();
   const [errorKey, resetError] = useReplay();
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<div className="grid w-full max-w-xs"><DeploysCard /></div>}>
       <Stage
         title="Empty"
         size="lg"

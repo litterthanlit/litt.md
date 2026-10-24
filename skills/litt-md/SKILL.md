@@ -23,6 +23,7 @@ Skill directory: `${CLAUDE_SKILL_DIR}`. Every path below is relative to it.
 |---|---|---|
 | Build or restyle a page, component or prototype | **build** | `workflows/build.md`, `system/material.md`, `assets/tokens.css`. Add `system/components.md` for components and `system/framer.md` for Framer. In a React + Tailwind v4 project you can write to, install the components from the litt registry first (`workflows/build.md` §3). |
 | Review a screenshot, URL, Framer page or code | **critique** | `workflows/critique.md`, `taste/profile.md` |
+| Measure an app's code against litt ("how litt is my app", "check my app") | **check** | `workflows/check.md`. It runs `scripts/litt-check.mjs`: a score out of 100 with every finding and its fix. |
 | Work on taste ("interview me", "refine my rules") | **interview** | `workflows/interview.md`, `taste/profile.md` |
 | Break down a reference, moodboard or own work | **audit** | `workflows/audit.md` |
 | React to something ("love this", "too much glow") | **log** | Nothing extra. Use the template below, plus `workflows/evolve.md` §1 if unsure where to write. |
@@ -114,6 +115,9 @@ node ${CLAUDE_SKILL_DIR}/scripts/extract-styles.mjs board <url> --out captures/<
 
 # After any change to tokens or docs: links, hex drift, dark parity, contrast, weights by role, radius, shadows, motion
 node ${CLAUDE_SKILL_DIR}/scripts/check.mjs
+
+# Score an app's code against litt, out of 100, with every finding and its fix (workflows/check.md)
+node ${CLAUDE_SKILL_DIR}/scripts/litt-check.mjs <app folder>
 ```
 
-The extract script needs Node 18+ and Playwright. Without them (for example on claude.ai), audit from screenshots Nick provides.
+The extract script needs Node 18+ and Playwright. Without them (for example on claude.ai), audit from screenshots Nick provides. The app check needs only Node 18+.

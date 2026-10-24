@@ -110,20 +110,30 @@ export function hexToHsv(hex: string): Hsv {
   return { h, s: max ? d / max : 0, v: max };
 }
 
-/** WCAG relative luminance, 0 for black to 1 for white. */
-function luminance(hex: string) {
-  const [r, g, b] = toRgb(hex).map((c) => {
-    const x = c / 255;
-    return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
-  }) as [number, number, number];
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
 const WHITE = hsvToHex({ h: 0, s: 0, v: 1 });
 const BLACK = hsvToHex({ h: 0, s: 0, v: 0 });
 
-/** Black or white as hex, whichever reads better on this color: for text or a mark drawn on the user's color, where no token is sure to read. */
-export const getContrastInk = (hex: string) => (luminance(hex) > 0.179 ? BLACK : WHITE);
+/** APCA's screen luminance (0.0.98G): sRGB to the 2.4 power, without the WCAG 2 linear toe. */
+function screenY(hex: string) {
+  const [r, g, b] = toRgb(hex).map((c) => (c / 255) ** 2.4) as [number, number, number];
+  return 0.2126729 * r + 0.7151522 * g + 0.072175 * b;
+}
+
+/** APCA lightness contrast (Lc) of text on a background, as a magnitude: 75 suits body text, 60 content, 45 large text. */
+function apca(text: string, bg: string) {
+  const soft = (y: number) => (y > 0.022 ? y : y + (0.022 - y) ** 1.414);
+  const t = soft(screenY(text));
+  const b = soft(screenY(bg));
+  const s = b > t ? (b ** 0.56 - t ** 0.57) * 1.14 : (t ** 0.62 - b ** 0.65) * 1.14;
+  return s < 0.1 ? 0 : (s - 0.027) * 100;
+}
+
+/**
+ * Black or white as hex, whichever reads better on this color: for text or a mark drawn on the user's color, where no
+ * token is sure to read. Chosen by APCA, not the WCAG 2 ratio: on mid tones such as a rust (#b3613c) the WCAG 2 ratio
+ * calls black and white even (4.7 and 4.5) and picks black, where white reads twice as well (Lc 76 against 33).
+ */
+export const getContrastInk = (hex: string) => (apca(WHITE, hex) >= apca(BLACK, hex) ? WHITE : BLACK);
 
 const HUES: [number, string][] = [
   [15, "red"],

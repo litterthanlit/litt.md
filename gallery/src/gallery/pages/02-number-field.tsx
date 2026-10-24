@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   verbs: ["type", "press"],
   summary:
     "A labelled number with − and + inside the field's end. It steps by the arrow keys, by a press, or by holding a stepper down; what is typed is read in the page's locale when the field is left, kept between its bounds, put on the step and shown formatted. Nothing moves: the edge fades on the instant tier, as an Input's does.",
+  fun: "Drag the label sideways to scrub the value, past either end too; press + or \u2212 and the number kicks.",
   tiers: ["instant"],
 };
 

@@ -4,9 +4,11 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-10-24 · Commerce
+## 2026-10-24 · Commerce, and focus you can see
 
 The first store parts: a price, a product's options, a product card and a cart, for a store on Shopify or anywhere else. They take plain data (an amount and a currency code, a product, a cart line), so the same parts work with any backend. A price ranks by weight under the page's one title and a sale is never red; a grid of products has no buy buttons, so Add to cart stays the page's one accent fill; and the cart is a sheet, with Check out its one accent fill and Remove undone from a toast.
+
+And three focus rings that keyboard users could not rely on, found by an accessibility audit of the gallery's overview. Nothing in your code has to change; reinstall to pick them up.
 
 - **added** `price`: Price, one amount at the title weight with tabular figures, from Shopify's MoneyV2 shape, with a struck-through compare-at price, From, a unit price and an optional neutral saving tag; and formatMoney, multiplyMoney, sumMoney and savingOf.
 - **added** `option-picker`: OptionPicker, one option of a product as native radios with a legend that names the pick: a segmented track for words, chips for colors and images, and sold-out values that stay pickable and say so.
@@ -18,12 +20,20 @@ The first store parts: a price, a product's options, a product card and a cart, 
 - **added** `collection`: Collection, a store's products as one screen: the title and the count, a filter row, a grid of product cards with no buy buttons, an empty state and the cart.
 - **changed** `icons`: BagIcon, for a cart. Nothing in your code has to change.
 - **changed** `number-field`: `hideLabel` keeps the label for screen readers only, where the row already says what the number counts, such as a cart line's quantity. Nothing in your code has to change.
+- **fixed** `resizable`: the handle between two panels shows its focus ring when you reach it with the keyboard. Its `outline-none` set the outline style to none, so the ring had a width and a color but never drew.
+- **fixed** `table`: the edge that resizes a column shows its focus ring when you reach it with the keyboard, for the same reason.
+- **fixed** `tree`: only the focused item's row shows the focus ring. Items nest, and focusing an open folder lit the ring on every row inside it too, so you could not tell which item had focus.
 
-## 2026-10-23 · Fun mode, more to touch
+## 2026-10-23 · Fun mode, more to touch, and a time scrubber
 
-More of fun mode's touch, still a trial and still only with a `FunMode` on: highlights that reach for where they are going, numbers you can scrub, and toasts you can throw. Each comes to rest on exactly the frame it draws without fun mode, and reduced motion turns it all off. Off by default, so nothing changes until you turn it on.
+More of fun mode's touch, still a trial and still only with a `FunMode` on: highlights that reach for where they are going, numbers you can scrub, and toasts you can throw. And a time scrubber, for going back through a run. Each comes to rest on exactly the frame it draws without fun mode, and reduced motion turns it all off. Off by default, so nothing changes until you turn it on.
 
+- **added** `time-scrubber`: TimeScrubber, a moment in a run that already happened, found by dragging a ruler of its time under a fixed needle, with the run's events marked in their status color. It settles on the nearest step or an event, Page Up and Page Down go from event to event, and in fun mode it can be thrown and coasts to the event its speed reaches. Pair it with what it replays, such as a LogView.
+- **changed** `litt`: the dark theme's grey, `--litt-fg-muted` and `--litt-fg-subtle`, is lighter on the same warm hue, so body and supporting text in dark mode read as clearly as in light (APCA Lc 41 before, 71 now). Only dark mode changes. Reinstall to pick it up; nothing in your code changes.
+- **changed** `log-view`: the times share one right-aligned column as wide as the longest, so the text stays in line when a time grows a digit ("+9.6s", then "+10.2s"). Nothing in your code has to change.
+- **changed** `color-picker`: `getContrastInk` picks black or white by APCA instead of the WCAG 2 ratio, so a mid tone such as a rust gets white ink, which reads twice as well, where it used to get black. Text you draw on a user's color with it may turn from black to white on mid tones; nothing else has to change.
 - **changed** `motion`: in fun mode, anything dragged and let go short of leaving (a toast, a sheet) springs home on fun mode's throw spring, with a little life, instead of without a bounce. Nothing in your code has to change.
+- **changed** `motion`: `StillMotion` takes `active`, and `active={false}` lets what it holds move again without remounting it, so a preview held still on arrival can come alive when someone reaches for it, with its state kept and its entrance never replayed. It defaults to `true`, so nothing in your code has to change.
 - **changed** `glide`: in fun mode the highlight stretches toward the row it is going to and gathers itself there, in every menu, context menu, select, combobox and command menu. Nothing in your code has to change.
 - **changed** `tabs`: in fun mode the underline stretches to the new tab, its leading edge first, and the segmented fill springs to its tab. Nothing in your code has to change.
 - **changed** `number-field`: in fun mode a step kicks the number the way it went, and dragging the label sideways scrubs the value, giving like a rubber band past min and max. Nothing in your code has to change.

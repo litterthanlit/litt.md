@@ -12,7 +12,7 @@
  * - Swatch values (every value has a color or an image): 24px chips (32 on a touch screen) at the control radius with
  *   an fg-12% hairline, 8px apart, as the Color picker's swatches. The color is the product's, not litt's: content,
  *   like a photograph, never a data hue and never chrome. It fills only the chip. The picked chip carries a 16px
- *   check in black or white, whichever reads better on that color.
+ *   check in black or white, whichever reads better on that color by APCA, as the Color picker's ink.
  * - Sold out: a value with `available: false` stays pickable, so picking it tells the person why they cannot buy it.
  *   Its label steps to --fg-disabled (a chip to 40% opacity under its hairline), it says "sold out" in hidden text,
  *   and while it is picked the legend says "Sold out" after its name. No slash and no strike: the words carry it.
@@ -81,15 +81,27 @@ function rgbOf(color: string): [number, number, number] | null {
   return /^#/.test(ctx.fillStyle) ? rgbOf(ctx.fillStyle) : null;
 }
 
-/** Black or white, whichever reads better on the color, by WCAG relative luminance. */
+/** APCA's screen luminance (0.0.98G) of 0-255 channels: sRGB to the 2.4 power, without the WCAG 2 linear toe. */
+const screenY = ([r, g, b]: [number, number, number]) => 0.2126729 * (r / 255) ** 2.4 + 0.7151522 * (g / 255) ** 2.4 + 0.072175 * (b / 255) ** 2.4;
+
+/** APCA lightness contrast (Lc) of text on a background, as a magnitude. */
+function apca(text: number, bg: number) {
+  const soft = (y: number) => (y > 0.022 ? y : y + (0.022 - y) ** 1.414);
+  const t = soft(text);
+  const b = soft(bg);
+  const s = b > t ? (b ** 0.56 - t ** 0.57) * 1.14 : (t ** 0.62 - b ** 0.65) * 1.14;
+  return s < 0.1 ? 0 : (s - 0.027) * 100;
+}
+
+/**
+ * Black or white, whichever reads better on the color, chosen by APCA as the Color picker's getContrastInk is: on a mid
+ * tone such as a rust, white reads twice as well as black, where the WCAG 2 ratio would call them even and pick black.
+ */
 function inkOn(color: string | undefined): "black" | "white" | undefined {
   const rgb = color ? rgbOf(color) : null;
   if (!rgb) return undefined;
-  const [r, g, b] = rgb.map((v) => {
-    const x = v / 255;
-    return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
-  }) as [number, number, number];
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.179 ? "black" : "white";
+  const bg = screenY(rgb);
+  return apca(1, bg) >= apca(0, bg) ? "white" : "black";
 }
 
 /* ----------------------------------------------------------------- the picker */

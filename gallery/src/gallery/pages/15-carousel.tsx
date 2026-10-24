@@ -16,6 +16,7 @@ export const meta: PageMeta = {
   verbs: ["drag", "press"],
   summary:
     "A row of slides that scrolls sideways with the browser's own scrolling and snaps each slide to the start edge. The next slide peeks at the end; the range is said in words and Previous and Next move a page. It never moves on its own: no autoplay, no loop. Buttons, keys and a mouse drag's release scroll smoothly, and under reduced motion they jump.",
+  fun: "Fling the strip with the mouse, or pull it past the first slide.",
   tiers: [],
 };
 
