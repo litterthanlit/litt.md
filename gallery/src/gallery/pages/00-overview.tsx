@@ -9,7 +9,9 @@
  *   in it read as objects, as a selected segment does on its track. It is a surface token, not a tint, because a
  *   component's own quiet track (fg 5%, as in Slide to confirm) then lands on a ground whose contrast is checked:
  *   a 5% tile under a 5% track took the grey under 4.5:1. The tile carries no chrome: the component, then its name
- *   in the grey, which links to its page and turns --fg while the pointer is on the tile.
+ *   in the grey, which links to its page and turns --fg while the pointer is on the tile. A tile is a plain div with
+ *   its name as an h3, not a named section: 72 region landmarks would bury the page's own for a screen reader, while
+ *   the headings still take you from tile to tile.
  * - The component is the real one at its real size, as one object: the page's `tile` (Page in kit.tsx), drawn through
  *   PreviewContext's "tile" mode, or the page's first demo when it has none. Each page owns its tile; this file only
  *   lays the wall out.
@@ -17,20 +19,21 @@
  *   and filtering never play fifty entrances at once. The pointer coming onto it, a press or focus wakes it in place
  *   (StillMotion active={false}): nothing remounts and nothing replays, and from then on it moves as it does on its
  *   own page, fun mode included. The wall moves where your hand is and nowhere else.
- * - A few tiles play on their own, as the bento before the wall did (a plan that works through its steps, tabs that
- *   glide): they wake themselves (usePlaysOnItsOwn in tile.tsx), and their loop only runs while the tile is on screen,
- *   stops for good once you reach into it, and never runs under reduced motion, where the tile shows one finished state.
+ * - Nothing on the wall moves by itself (WCAG 2.2.2). A tile that shows a process (a plan working through its steps,
+ *   tabs taking turns) plays it only while the pointer rests on it, pauses when the pointer leaves, and stops for good
+ *   once you press or focus inside (useLoop in tile.tsx). At rest and under reduced motion it shows one finished state.
+ * - The wall is a couple of hundred Tab stops, so a "Skip to blocks" link comes before it, as "Skip to content" comes
+ *   before the page.
  * - With fun mode on, a Fun filter comes first and is picked, so the wall opens on the components fun mode changes
  *   (each page's meta.fun); turning fun mode off goes back to All.
  * - Blocks are screens, not parts, so they come after the wall in a section of their own: a still picture of each
  *   screen's top (Miniature), which opens its page.
  */
-import { Suspense, useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { Suspense, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { StillMotion, useFun } from "@/motion";
 import { pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
 import { PageTitle, PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
-import { WakeContext } from "../tile";
 
 export const meta: PageMeta = {
   id: "overview",
@@ -69,10 +72,10 @@ function useNear<T extends HTMLElement>(ref: React.RefObject<T | null>): boolean
 /**
  * One component on the wall: the real one, live, on its tile, with its name under it. It mounts as it nears
  * the screen and stays out of reach for two frames, so a demo that moves focus as it mounts cannot pull the page.
- * It is held still until the pointer, a press or focus reaches it, or until a tile that plays on its own wakes it.
+ * It is held still until the pointer, a press or focus reaches it.
  */
 function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const near = useNear(ref);
   const [settled, setSettled] = useState(false);
   const [awake, setAwake] = useState(false);
@@ -85,11 +88,11 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
       cancelAnimationFrame(next);
     };
   }, [near]);
-  const wake = useCallback(() => setAwake(true), []);
+  const wake = () => setAwake(true);
   return (
-    <section
+    <div
       ref={ref}
-      aria-labelledby={`tile-${page.id}`}
+      data-tile={page.id}
       onPointerEnter={wake}
       onPointerDown={wake}
       onFocus={wake}
@@ -99,14 +102,12 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
     >
       <div inert={!settled} className="grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
         {near && (
-          <WakeContext.Provider value={wake}>
-            <StillMotion active={!awake}>
-              <div className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">{children}</div>
-            </StillMotion>
-          </WakeContext.Provider>
+          <StillMotion active={!awake}>
+            <div className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">{children}</div>
+          </StillMotion>
         )}
       </div>
-      <h3 id={`tile-${page.id}`} className="flex px-4 pb-3 text-small font-normal">
+      <h3 className="flex px-4 pb-3 text-small font-normal">
         <a
           href={`#${page.id}`}
           className={
@@ -118,7 +119,7 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
           {page.title}
         </a>
       </h3>
-    </section>
+    </div>
   );
 }
 
@@ -257,7 +258,8 @@ function Blocks({ list }: { list: PageEntry[] }) {
   const count = WORDS[list.length] ?? String(list.length);
   return (
     <section aria-labelledby="blocks-title" className="grid gap-6">
-      <h2 id="blocks-title" className="max-w-[64ch] text-h2 text-balance">
+      {/* Focusable from code only, for the skip link before the wall. */}
+      <h2 id="blocks-title" tabIndex={-1} className="max-w-[64ch] text-h2 text-balance outline-none">
         <span className="text-fg">{count} blocks.</span> <span className="font-normal text-fg-subtle">Whole screens made of them, each one installed with one command.</span>
       </h2>
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -304,6 +306,16 @@ export default function Overview() {
           ))}
         </nav>
       </header>
+      {blocks.length > 0 && (
+        /* As the shell's "Skip to content": out of sight until it has focus, then at the top left. */
+        <button
+          type="button"
+          onClick={() => document.getElementById("blocks-title")?.focus()}
+          className="sr-only z-50 bg-accent px-4 py-2 font-title text-accent-fg focus:not-sr-only focus:fixed focus:top-4 focus:left-4"
+        >
+          Skip to blocks
+        </button>
+      )}
       <Wall list={wall} />
       {blocks.length > 0 && <Blocks list={blocks} />}
     </article>
