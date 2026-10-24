@@ -53,29 +53,29 @@ const [lines, setLines] = useState<LogLine[]>([]);
 };
 
 const BUILD: LogLine[] = [
-  { text: "Cloning github.com/halo-studio/site (branch main, commit 8f2ka1c)" },
-  { text: "Cloning completed: 412ms", level: "debug" },
-  { text: "Restored build cache from the last deploy" },
-  { text: "Running \"npm ci\"" },
-  { text: "added 418 packages in 6s", level: "debug" },
-  { text: "Running \"npm run build\"" },
-  { text: "▲ Next.js 16.3.6" },
-  { text: "Creating an optimized production build ..." },
-  { text: "Image /public/og.png is 2.4 MB; it will be served as is.", level: "warn" },
-  { text: "✓ Compiled successfully in 14.2s" },
-  { text: "Linting and checking validity of types ..." },
-  { text: "Collecting page data ..." },
-  { text: "Generating static pages (0/12) ..." },
-  { text: "Generating static pages (6/12) ..." },
-  { text: "Generating static pages (12/12)" },
-  { text: "Finalizing page optimization ..." },
-  { text: "Route (app)                Size     First Load JS" },
-  { text: "┌ ○ /                       4.1 kB   102 kB" },
-  { text: "├ ○ /work                   2.8 kB   101 kB" },
-  { text: "└ ● /work/[slug]            3.6 kB   102 kB" },
-  { text: "Uploading build output: 38 files, 2.1 MB" },
-  { text: "Assigning domains: halo.studio, www.halo.studio" },
-  { text: "Build completed in 31s. halo.studio is live.", level: "success" },
+  { id: "clone", text: "Cloning github.com/halo-studio/site (branch main, commit 8f2ka1c)" },
+  { id: "clone-done", text: "Cloning completed: 412ms", level: "debug" },
+  { id: "cache", text: "Restored build cache from the last deploy" },
+  { id: "install", text: "Running \"npm ci\"" },
+  { id: "installed", text: "added 418 packages in 6s", level: "debug" },
+  { id: "build", text: "Running \"npm run build\"" },
+  { id: "next", text: "▲ Next.js 16.3.6" },
+  { id: "optimize", text: "Creating an optimized production build ..." },
+  { id: "og-image", text: "Image /public/og.png is 2.4 MB; it will be served as is.", level: "warn" },
+  { id: "compiled", text: "✓ Compiled successfully in 14.2s" },
+  { id: "types", text: "Linting and checking validity of types ..." },
+  { id: "page-data", text: "Collecting page data ..." },
+  { id: "static-0", text: "Generating static pages (0/12) ..." },
+  { id: "static-6", text: "Generating static pages (6/12) ..." },
+  { id: "static-12", text: "Generating static pages (12/12)" },
+  { id: "finalize", text: "Finalizing page optimization ..." },
+  { id: "routes", text: "Route (app)                Size     First Load JS" },
+  { id: "route-home", text: "┌ ○ /                       4.1 kB   102 kB" },
+  { id: "route-work", text: "├ ○ /work                   2.8 kB   101 kB" },
+  { id: "route-slug", text: "└ ● /work/[slug]            3.6 kB   102 kB" },
+  { id: "upload", text: "Uploading build output: 38 files, 2.1 MB" },
+  { id: "domains", text: "Assigning domains: halo.studio, www.halo.studio" },
+  { id: "live", text: "Build completed in 31s. halo.studio is live.", level: "success" },
 ];
 
 const clock = (s: number) => `12:04:${String(Math.floor(s) % 60).padStart(2, "0")}`;
@@ -91,7 +91,9 @@ function BuildDemo() {
       const line = BUILD[i];
       if (!line) return;
       at += 0.4 + (i % 4) * 0.6;
-      setLines((all) => [...all, { ...line, id: i, time: clock(at) }]);
+      /* Made before the update: React may run the updater later, after i and at have moved on. */
+      const written = { ...line, time: clock(at) };
+      setLines((all) => [...all, written]);
       i++;
       timer = window.setTimeout(next, 180 + (i % 3) * 140);
     };

@@ -77,21 +77,21 @@ const DIFFS: Record<string, string> = {
      "next": "16.3.6",`,
 };
 
-/** The build's output, in order. useBuild plays it; replace it with your build's stream. */
+/** The build's output, in order, each line with its own id. useBuild plays it; replace it with your build's stream. */
 const SCRIPT: LogLine[] = [
-  { text: "Cloning github.com/halo-studio/site (branch main, commit 8f2ka1c)" },
-  { text: "Restored build cache from the last deploy" },
-  { text: 'Running "npm ci"' },
-  { text: "added 412 packages in 6s", level: "debug" },
-  { text: 'Running "npm run build"' },
-  { text: "▲ Next.js 16.3.6" },
-  { text: "Creating an optimized production build ..." },
-  { text: "Image /public/og.png is 2.4 MB; it will be served as is.", level: "warn" },
-  { text: "✓ Compiled successfully in 13.8s" },
-  { text: "Generating static pages (12/12)" },
-  { text: "Uploading build output: 38 files, 2.1 MB" },
-  { text: "Assigning domains: halo.studio, www.halo.studio" },
-  { text: "Build completed in 29s. halo.studio is live.", level: "success" },
+  { id: "clone", text: "Cloning github.com/halo-studio/site (branch main, commit 8f2ka1c)" },
+  { id: "cache", text: "Restored build cache from the last deploy" },
+  { id: "install", text: 'Running "npm ci"' },
+  { id: "installed", text: "added 412 packages in 6s", level: "debug" },
+  { id: "build", text: 'Running "npm run build"' },
+  { id: "next", text: "▲ Next.js 16.3.6" },
+  { id: "optimize", text: "Creating an optimized production build ..." },
+  { id: "og-image", text: "Image /public/og.png is 2.4 MB; it will be served as is.", level: "warn" },
+  { id: "compiled", text: "✓ Compiled successfully in 13.8s" },
+  { id: "static", text: "Generating static pages (12/12)" },
+  { id: "upload", text: "Uploading build output: 38 files, 2.1 MB" },
+  { id: "domains", text: "Assigning domains: halo.studio, www.halo.studio" },
+  { id: "live", text: "Build completed in 29s. halo.studio is live.", level: "success" },
 ];
 
 /* ----------------------------------------------------------------- the run */
@@ -108,7 +108,9 @@ function useBuild(run: number) {
       const line = SCRIPT[i];
       if (!line) return;
       at += 0.8 + (i % 3) * 1.4;
-      setLines((all) => [...all, { ...line, id: i, time: `+${at.toFixed(1)}s` }]);
+      /* Made before the update: React may run the updater later, after i and at have moved on. */
+      const written = { ...line, time: `+${at.toFixed(1)}s` };
+      setLines((all) => [...all, written]);
       i++;
       timer = window.setTimeout(next, 260 + (i % 4) * 160);
     };

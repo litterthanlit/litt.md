@@ -10,6 +10,8 @@ The first store parts: a price, a product's options, a product card and a cart, 
 
 And three focus rings that keyboard users could not rely on, found by an accessibility audit of the gallery's overview. Nothing in your code has to change; reinstall to pick them up.
 
+And the deployment screen's build log, which could give two of its lines the same key on a busy page.
+
 - **added** `price`: Price, one amount at the title weight with tabular figures, from Shopify's MoneyV2 shape, with a struck-through compare-at price, From, a unit price and an optional neutral saving tag; and formatMoney, multiplyMoney, sumMoney and savingOf.
 - **added** `option-picker`: OptionPicker, one option of a product as native radios with a legend that names the pick: a segmented track for words, chips for colors and images, and sold-out values that stay pickable and say so.
 - **added** `product-card`: ProductCard and ProductGrid, one product in a grid as one link to its page, with no buy button; and the Product type with priceRange, findVariant, defaultPicks, optionsFor and isSoldOut.
@@ -23,6 +25,7 @@ And three focus rings that keyboard users could not rely on, found by an accessi
 - **fixed** `resizable`: the handle between two panels shows its focus ring when you reach it with the keyboard. Its `outline-none` set the outline style to none, so the ring had a width and a color but never drew.
 - **fixed** `table`: the edge that resizes a column shows its focus ring when you reach it with the keyboard, for the same reason.
 - **fixed** `tree`: only the focused item's row shows the focus ring. Items nest, and focusing an open folder lit the ring on every row inside it too, so you could not tell which item had focus.
+- **fixed** `deployment`: no two lines of the build log share a key. `useBuild` read its counter inside the state update, so when React ran the update late a line took the next line's number and two lines ended up with one. Each line of the script carries its own `id` now, and `useBuild` makes the line before the update. A block is yours, so if you edited your copy, make the same two changes in it rather than reinstalling.
 
 ## 2026-10-23 · Fun mode, more to touch, and a time scrubber
 
