@@ -33,6 +33,8 @@ import { toast } from "@/components/toast";
    page fetches nothing; named colors for the art, because it is a picture, not the interface. Replace every picture
    below with your product's. */
 type Scene = { sky: string; glow: string; ground: string; core: string; rim: string };
+/** The frame's edge in the drawing, so a white frame keeps its shape on a pale ground. */
+const EDGE = "black";
 
 function scene(s: Scene) {
   return (
@@ -49,7 +51,7 @@ const svg = (body: string, w: number, h: number, box: string) =>
 /** The print in a frame on a mat, centred on a clear ground, so the picture's own frame shows through. */
 const framed = (s: Scene, wood: string) =>
   svg(
-    `<rect x='130' y='130' width='540' height='675' fill='${wood}' stroke='black' stroke-opacity='.12'/>` +
+    `<rect x='130' y='130' width='540' height='675' fill='${wood}' stroke='${EDGE}' stroke-opacity='.12'/>` +
       `<rect x='154' y='154' width='492' height='627' fill='whitesmoke'/>` +
       `<g transform='translate(194 194) scale(1.03)'>${scene(s)}</g>`,
     1200, 1500, "0 0 800 1000",

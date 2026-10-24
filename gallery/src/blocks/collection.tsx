@@ -25,13 +25,15 @@ import { Empty } from "@/components/states";
    the page fetches nothing; named colors for the art, because it is a picture, not the interface. Replace each
    product's images with yours. */
 type Scene = { sky: string; glow: string; ground: string; core: string; rim: string };
+/** The frame's edge in the drawing, so a white frame keeps its shape on a pale ground. */
+const EDGE = "black";
 
 function framed(s: Scene, wood: string) {
   const body =
     `<defs><linearGradient id='s' x2='0' y2='1'><stop offset='0' stop-color='${s.sky}'/><stop offset='.68' stop-color='${s.glow}'/></linearGradient>` +
     `<radialGradient id='o' cx='.42' cy='.38' r='.7'><stop offset='0' stop-color='${s.core}'/><stop offset='1' stop-color='${s.rim}'/></radialGradient>` +
     `<filter id='g' x='0' y='0' width='1' height='1'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .14 0'/></filter></defs>` +
-    `<rect x='130' y='130' width='540' height='675' fill='${wood}' stroke='black' stroke-opacity='.12'/>` +
+    `<rect x='130' y='130' width='540' height='675' fill='${wood}' stroke='${EDGE}' stroke-opacity='.12'/>` +
     `<rect x='154' y='154' width='492' height='627' fill='whitesmoke'/>` +
     `<g transform='translate(194 194) scale(1.03)'><rect width='400' height='500' fill='url(#s)'/><rect y='340' width='400' height='160' fill='${s.ground}'/>` +
     `<circle cx='200' cy='300' r='92' fill='url(#o)'/><rect width='400' height='500' filter='url(#g)'/></g>`;
