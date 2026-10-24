@@ -10,8 +10,11 @@
  *   component's own quiet track (fg 5%, as in Slide to confirm) then lands on a ground whose contrast is checked:
  *   a 5% tile under a 5% track took the grey under 4.5:1. The tile carries no chrome: the component, then its name
  *   in the grey, which links to its page and turns --fg while the pointer is on the tile. A tile is a plain div with
- *   its name as an h3, not a named section: 72 region landmarks would bury the page's own for a screen reader, while
- *   the headings still take you from tile to tile.
+ *   its name as an h2, not a named section: 72 region landmarks would bury the page's own for a screen reader, while
+ *   the headings still take you from tile to tile, and the headings inside a component (a card's title, an accordion's
+ *   questions) sit one level under its name.
+ * - One Toaster holds the wall, so the tiles and blocks that bring their own (Toast, Cart, the settings screen) hand
+ *   their toasts to it, and the page has one Notifications region rather than one per tile.
  * - The component is the real one at its real size, as one object: the page's `tile` (Page in kit.tsx), drawn through
  *   PreviewContext's "tile" mode, or the page's first demo when it has none. Each page owns its tile; this file only
  *   lays the wall out.
@@ -31,6 +34,7 @@
  */
 import { Suspense, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { StillMotion, useFun } from "@/motion";
+import { Toaster } from "@/components/toast";
 import { pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
 import { PageTitle, PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
@@ -107,7 +111,7 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
           </StillMotion>
         )}
       </div>
-      <h3 className="flex px-4 pb-3 text-small font-normal">
+      <h2 className="flex px-4 pb-3 text-small font-normal">
         <a
           href={`#${page.id}`}
           className={
@@ -118,7 +122,7 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
         >
           {page.title}
         </a>
-      </h3>
+      </h2>
     </div>
   );
 }
@@ -175,10 +179,7 @@ function Wall({ list }: { list: PageEntry[] }) {
   const shown = verb === "all" ? list : verb === "fun" ? funList : list.filter((p) => p.verbs?.includes(verb));
   const verbs = VERBS.filter((v) => list.some((p) => p.verbs?.includes(v)));
   return (
-    <section aria-labelledby="all-title" className="grid gap-6">
-      <h2 id="all-title" className="sr-only">
-        Every component
-      </h2>
+    <section aria-label="Every component" className="grid gap-6">
       <fieldset className="m-0 min-w-0 border-0 p-0">
         <legend className="sr-only">Show the components you</legend>
         <div className="flex flex-wrap gap-1">
@@ -316,8 +317,10 @@ export default function Overview() {
           Skip to blocks
         </button>
       )}
-      <Wall list={wall} />
-      {blocks.length > 0 && <Blocks list={blocks} />}
+      <Toaster>
+        <Wall list={wall} />
+        {blocks.length > 0 && <Blocks list={blocks} />}
+      </Toaster>
     </article>
   );
 }
