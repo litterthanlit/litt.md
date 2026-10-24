@@ -126,7 +126,7 @@ const pairs = [
   ["--fg", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "text"],
   ["--fg-muted", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "body text"],
   ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "supporting text"],
-  ["--line-control", ["--canvas", "--surface-1"], 3, "control outline"],
+  ["--line-control", ["--canvas", "--surface-1", "--surface-2"], 3, "control outline"],
   ["--focus", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring"],
   ["--accent-fg", ["--accent", "--accent-hover"], 4.5, "text on accent"],
   ["--accent-text", ["--canvas", "--surface-1"], 4.5, "accent as link text"],
