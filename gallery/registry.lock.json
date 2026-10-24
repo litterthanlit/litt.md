@@ -294,6 +294,14 @@
       "version": "2026.10.22",
       "hash": "e259c1eecba4d39d"
     },
+    "shopify": {
+      "version": "2026.10.24",
+      "hash": "18bfba74da1d4e27"
+    },
+    "shopify-cart": {
+      "version": "2026.10.24",
+      "hash": "737cb6f880409b60"
+    },
     "sign-in": {
       "version": "2026.10.22",
       "hash": "64e123df8ac6d468"

@@ -44,8 +44,8 @@ Two blocks compose them, each named after the page that shows it: `product` (pic
 Three layers, each changeable on its own:
 
 1. **Components** know nothing about Shopify. They take plain props: `Money` (`{ amount, currencyCode }`), a `Product` (title, handle, images, options, variants, price range) and a `CartLine`. A store on Stripe, Medusa or a JSON file uses the same parts.
-2. **The `shopify` registry item** is a library, not a component: `lib/shopify/client.ts` (a small `fetch` to the Storefront GraphQL API with one pinned version, `2026-04`, the store domain and the public token from the app's env), `queries.ts` (the product, collection and cart fragments), `map.ts` (Storefront shapes to litt props: images to Media, option values with their `swatch` to the Option picker, `firstSelectableVariant` for the default pick), and `use-cart.ts` (the cart: create, add, update, remove; its id kept in the browser; quantities change at once and settle when Shopify answers).
-3. **Blocks** wire the two: `product` and `collection` take a `Product` or a list, and the Shopify item's own docs page shows the five lines that feed them from a live store.
+2. **The `shopify` and `shopify-cart` registry items** are libraries, not components. `shopify` ships as `lib/litt/shopify.ts` with no React in it, so it runs in a server component too: `createStorefront` (a small `fetch` to the Storefront GraphQL API with one pinned version, `2026-04`, the store's domain and its public token), `getProduct`, `getProducts` and `getCollection` (which return litt's Product), `toProduct` and `PRODUCT_FIELDS` for a query of your own (images to ProductImages with a CDN srcSet, option values with their `swatch`, Shopify's "Default Title" to no options), and the cart's calls (`createCart`, `addCartLines`, `updateCartLines`, `removeCartLines`, `getCart`). `shopify-cart` is `ShopifyCart` and `useShopifyCart`: the cart kept in Shopify, its id kept in the browser, the same CartState as `useCartState`, quantities that change at once and settle when Shopify answers.
+3. **Blocks** wire the two: `product` and `collection` hold their sample data at the top of the file, a `Product` or a list, which is exactly what `getProduct` and `getCollection` return. The Shopify page shows the mapping and a live store (mock.shop, fetched only on a press).
 
 The public Storefront token is made for the browser and reaches only what a shopper can see. The Admin API never appears.
 
@@ -79,7 +79,7 @@ A `product-page` task in `evals/agents/`: "Build the product page and cart for a
 2. Price, Option picker, Product card, each with a page.
 3. Cart line, Cart summary, Cart.
 4. The `product` and `collection` blocks, each on its own page.
-5. The `shopify` item, its docs page and `test:shopify`.
+5. The `shopify` and `shopify-cart` items, their docs page and `test:shopify`.
 6. The `product-page` agent task.
 
 Each step adds its changelog lines, runs `verify` and `test:registry`, and commits the lock with the change.
