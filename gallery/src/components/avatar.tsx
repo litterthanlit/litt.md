@@ -504,7 +504,7 @@ export function AvatarGroup({ label, children, size = "md", max = 4, total, ring
             <span
               role="img"
               aria-label={`${more} more`}
-              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
+              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 text-caption tabular-nums font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
             >
               <span className={`litt-trim ${UNCOVER}`}>+{more}</span>
             </span>

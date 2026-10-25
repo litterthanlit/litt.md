@@ -17,7 +17,7 @@
  *   turns to the hue's text tone (--fg past the goal). The goal is a 1px dashed --line-strong line with its
  *   label at its foot, the median a 2px line in the hue's text tone with its label above, and a marker a 10px
  *   dot with a 2px --fg ring on the center line and an always-visible label in the tooltip's look.
- * - Anatomy: no gridlines, no area, no glow. Tick labels sit under the plot in caption mono, --fg-subtle, tabular.
+ * - Anatomy: no gridlines, no area, no glow. Tick labels sit under the plot at the caption size, --fg-subtle, tabular.
  *   A label that would touch the one before it is left out, and the first and last are kept inside the width.
  * - Drawn at the container's width, measured with a ResizeObserver, so text and hairlines stay crisp. The SVG is
  *   absolutely placed in a box of the final height, so it never holds its container wide: when the container
@@ -96,7 +96,7 @@ const RING_OUTER = 9;
 const TOP = 20; // room above the plot for the median's label
 const AXIS = 24; // room under the plot for the tick labels
 const FOOT = 20; // room under the plot for the goal's label
-const MONO = 7.2; // advance of a 12px mono character
+const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const TICK_GAP = 12; // the least air between two tick labels
 const NEAR = 4; // a focus ring sits this far from its stack
 
@@ -359,7 +359,7 @@ export function DotPlot({
     /* Tick labels left to right; one that would touch the one before it is left out. */
     const list = (ticks ?? (scale === "log" ? logTicks(min, max) : niceTicks(min, max)).map((value) => ({ value, label: fmt(value) })))
       .filter((t) => t.value >= min && t.value <= max)
-      .map((t) => ({ ...t, w: t.label.length * MONO, x: g.x0 + g.axis.x(t.value) }))
+      .map((t) => ({ ...t, w: t.label.length * FIGURE, x: g.x0 + g.axis.x(t.value) }))
       .sort((a, b) => a.x - b.x);
     const out: { key: number; label: string; left: number }[] = [];
     let right = -Infinity;
@@ -430,10 +430,10 @@ export function DotPlot({
                     <circle cx={px(m.value)} cy={g.cy} r={RING_R} fill="none" strokeWidth={2} className="stroke-fg" />
                   </g>
                 ))}
-                <g className="font-mono text-caption font-normal tabular-nums">
+                <g className="text-caption font-normal tabular-nums">
                   {showMedian && (
                     <text
-                      x={startFor(px(med), "Median".length * MONO, width)}
+                      x={startFor(px(med), "Median".length * FIGURE, width)}
                       y={g.top - 10}
                       dominantBaseline="central"
                       className={tones.text}
@@ -443,7 +443,7 @@ export function DotPlot({
                   )}
                   {g.goalDrawn && goalText && (
                     <text
-                      x={startFor(g.x0 + (g.axis.gk ?? 0) * PITCH, goalText.length * MONO, width)}
+                      x={startFor(g.x0 + (g.axis.gk ?? 0) * PITCH, goalText.length * FIGURE, width)}
                       y={g.bottom + g.foot / 2}
                       dominantBaseline="central"
                       className="fill-fg-subtle"
@@ -528,7 +528,7 @@ export function DotPlot({
               {active !== null && (
                 <Tip key="tip" cx={g.x0 + active * PITCH + PITCH / 2} markTop={g.cy - stackHalf(active) - NEAR} height={height} width={width}>
                   <span className="text-fg-muted">{rangeOf(active)}</span>
-                  <span className="font-mono text-caption font-normal tabular-nums">{countOf(active)}</span>
+                  <span className="text-caption font-normal tabular-nums">{countOf(active)}</span>
                 </Tip>
               )}
             </AnimatePresence>
@@ -581,7 +581,7 @@ export function DotPlot({
 
 /* ----------------------------------------------------------------- legend */
 
-/** A key, never a status: a 6px dot in the colour it names, the name, and the share in mono. */
+/** A key, never a status: a 6px dot in the colour it names, the name, and the share in tabular figures. */
 function LegendItem({ swatch, name, share }: { swatch: string; name: string; share: number }) {
   return (
     <li className="flex items-center gap-2">
@@ -589,7 +589,7 @@ function LegendItem({ swatch, name, share }: { swatch: string; name: string; sha
         <circle cx={3} cy={3} r={3} className={swatch} />
       </svg>
       {name}
-      <span className="font-mono text-caption font-normal tabular-nums text-fg">{share}%</span>
+      <span className="text-caption font-normal tabular-nums text-fg">{share}%</span>
     </li>
   );
 }

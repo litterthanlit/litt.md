@@ -205,7 +205,7 @@ const BUILDS: Build[] = [
 ];
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-/** "2026-10-16" becomes "16 Oct": always six characters, so mono dates align. */
+/** "2026-10-16" becomes "16 Oct": always six characters, so the slab's grip fits every date. */
 function shortDate(iso: string) {
   const [, month, day] = iso.split("-");
   return `${day} ${MONTHS[Number(month) - 1]}`;

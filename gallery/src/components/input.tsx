@@ -52,7 +52,7 @@ export type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
   size?: InputSize;
   /** Draws the error edge and sets aria-invalid. The bare Input shows no message, so link yours with aria-describedby. */
   invalid?: boolean;
-  /** Geist Mono, for slugs, domains and other data. */
+  /** Geist Mono, for code a person types: a slug, a path, a command. A domain or a number stays in the sans. */
   mono?: boolean;
   /** The underlying <input>, for focus or a form library. */
   ref?: Ref<HTMLInputElement>;
@@ -152,7 +152,7 @@ export type TextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "i
   error?: ReactNode;
   /** Sets the air around the text and its size, like Input: sm is 13px, md is 14px, lg is 16px. The height comes from rows. */
   size?: InputSize;
-  /** Geist Mono, for code and data. */
+  /** Geist Mono, for code. */
   mono?: boolean;
   /** The id of the textarea, when you need your own. */
   id?: string;

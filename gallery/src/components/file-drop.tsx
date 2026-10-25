@@ -11,7 +11,7 @@
  * - Choosing: Choose files opens the file picker; so does a click anywhere on the area. Only the button is a tab stop.
  * - Checking: files whose type is not in accept or whose size is over maxSize are turned away, each with a sentence
  *   under the area that says which file and why. The rest go to onFiles. The sentences go when the next files come.
- * - FileList and FileRow show what was added: one row per file, its name in the mono, its size, and while it uploads a
+ * - FileList and FileRow show what was added: one row per file, its name, its size, and while it uploads a
  *   Progress rail under the name. A failed file says why in --danger and offers Retry. Remove is an icon button.
  * - Disabled: the panel at fg 3% with a --line edge, no drop and no tab stop. The words stay --fg-subtle, because they
  *   still say something (when it opens again), as a disabled Slide to confirm's do.
@@ -201,8 +201,8 @@ export function FileRow({ name, size, progress, error, onRetry, onRemove }: File
       <FileIcon className="mt-0.5 shrink-0 text-fg-muted" />
       <div className="grid min-w-0 flex-1 gap-2">
         <p className="flex items-baseline justify-between gap-4">
-          <span className="min-w-0 truncate font-mono text-caption font-normal text-fg">{name}</span>
-          {size !== undefined && <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{formatSize(size)}</span>}
+          <span className="min-w-0 truncate text-caption font-normal text-fg">{name}</span>
+          {size !== undefined && <span className="shrink-0 text-caption tabular-nums font-normal text-fg-subtle">{formatSize(size)}</span>}
         </p>
         {(uploading || error) && (
           <Progress

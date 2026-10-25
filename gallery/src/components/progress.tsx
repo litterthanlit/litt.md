@@ -3,7 +3,7 @@
  * (components.md, "Progress"). A Meter shows a quantity against a limit and stands still; Progress moves while the
  * work goes on, then ends done or failed.
  *
- * - Anatomy: the Meter's lockup. The label at the small size in --fg, the reading at the end in the mono at the caption
+ * - Anatomy: the Meter's lockup. The label at the small size in --fg, the reading at the end in tabular figures at the caption
  *   size in --fg-subtle ("3.2 of 8 MB", or the percent), and under them a 4px rail at the control radius: the track at
  *   fg 12%, the done part in --fg. Never the accent and never a data hue: it is one quantity.
  * - Ending: done fills the rail and the reading says "Done"; failed keeps the rail where it stopped, in --danger, and the
@@ -55,7 +55,7 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
         <span id={labelId} className="min-w-0 truncate text-small text-fg">
           {label}
         </span>
-        <span className={"shrink-0 font-mono text-caption font-normal tabular-nums " + tone}>{reading}</span>
+        <span className={"shrink-0 text-caption font-normal tabular-nums " + tone}>{reading}</span>
       </div>
       <div
         role="progressbar"

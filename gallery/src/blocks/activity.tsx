@@ -4,7 +4,7 @@
  * words stay.
  *
  * A title, a filter by kind, then the events grouped by day. Each event is one sentence: who, in the foreground, did
- * what, in the grey, to which thing, in the foreground again, with the time in the mono at the end. A deploy says how
+ * what, in the grey, to which thing, in the foreground again, with the time in tabular figures at the end. A deploy says how
  * it ended in a tag, in words. Show earlier adds the next day below without moving what you were reading, and a kind
  * with nothing in it says so. Nothing in the view is accent filled, and nothing moves on its own. Render it inside
  * your app's shell (the dashboard block's AppShell, for one).
@@ -87,12 +87,12 @@ function EventRow({ event }: { event: Event }) {
           <span className="text-body text-fg-muted">
             <span className="text-fg">{event.who}</span> {event.did} <span className="text-fg">{event.what}</span>
           </span>
-          <span className="font-mono text-caption font-normal text-fg-subtle">{event.time}</span>
+          <span className="text-caption tabular-nums font-normal text-fg-subtle">{event.time}</span>
         </p>
         {(event.detail || event.outcome) && (
           <p className="flex flex-wrap items-center gap-3">
             {event.outcome && <Tag status={event.outcome.status}>{event.outcome.label}</Tag>}
-            {/* A deploy's detail is a branch and a commit, so it is set in the mono. */}
+            {/* A deploy's detail is a branch and a commit, code identifiers, so it is set in the mono. */}
             {event.detail && <span className={"min-w-0 text-fg-subtle " + (event.kind === "deploy" ? "font-mono text-caption font-normal" : "text-small")}>{event.detail}</span>}
           </p>
         )}

@@ -4,11 +4,11 @@
  * are the empty and loading rows.
  *
  * - Look: rows are separated by a 1px line; cells pad space-3 and space-4 and use the small size. The primary
- *   cell is fg and the rest are fg-subtle. Numbers and dates are mono caption size, right-aligned, with tabular
+ *   cell is fg and the rest are fg-subtle. Numbers and dates are caption size, right-aligned, with tabular
  *   figures. Hover is an fg-4% fill on the instant tier and never moves anything. On a coarse pointer
  *   there is no hover, so a row held down fills instead (fg 6%, same tier, color only), and so does a
  *   sortable header; the OS tap flash is off so the two do not double. The header row is sticky,
- *   caption size at the label weight (P9), fg-subtle, sentence case; mono figures stay at 400. The box is a
+ *   caption size at the label weight (P9), fg-subtle, sentence case; figures stay at 400. The box is a
  *   hairline at the surface radius, filled surface-1 so the sticky header can cover the rows that scroll under it.
  * - Semantics: a <table> with a hidden <caption>, <th scope="col"> headers and a <th scope="row"> for each primary
  *   cell, so a screen reader announces the row's name with every value. A sortable header holds a real button and
@@ -996,12 +996,12 @@ export type TableCellProps = Omit<ComponentProps<"td">, "ref" | "scope"> & {
   className?: string;
 };
 
-/** A body cell. fg-subtle by default; `primary` makes it the row's name, and `numeric` sets figures in mono. */
+/** A body cell. fg-subtle by default; `primary` makes it the row's name, and `numeric` sets tabular figures. */
 export function TableCell({ numeric = false, primary = false, className = "", children, ...rest }: TableCellProps) {
   const cls = [
     // font-normal because a <th> is bold by default, and a host app may not reset it.
     "h-control-md border-b border-line px-4 py-3 align-middle font-normal whitespace-nowrap",
-    numeric ? "text-right font-mono text-caption font-normal tabular-nums" : "text-left text-small",
+    numeric ? "text-right text-caption font-normal tabular-nums" : "text-left text-small",
     primary ? "text-fg" : "text-fg-subtle",
     className,
   ].join(" ");

@@ -2,10 +2,10 @@
  * Time scrubber: a point in a run's time, set by dragging a ruler under a fixed needle, such as a moment in a deploy to
  * replay its log up to there (components.md, "Time scrubber"). The ruler moves; the needle stays in the middle.
  *
- * - Anatomy: the Slider's label row (the label at the small size in --fg, the reading at its end in the mono, with the
+ * - Anatomy: the Slider's label row (the label at the small size in --fg, the reading at its end in tabular figures, with the
  *   label of the event under the needle before it, in --fg-subtle), then a 56px track: the Segmented control's well
  *   (fg 5%, the inset --line, the surface radius). On it a ruler: a minor tick every step (8px, --line-strong), a major
- *   tick every `majorEvery` steps (14px, --fg-disabled) with its time under it in the mono at the caption size, and
+ *   tick every `majorEvery` steps (14px, --fg-disabled) with its time under it at the caption size, tabular, and
  *   the events as 2px marks, 20px tall, in their status color (neutral is --fg-muted). The ticks are lighter than any
  *   mark in light mode and dimmer in dark, so a mark stands out by lightness, height and width, not by hue alone (in
  *   light mode the status colors are as dark as --fg-subtle, so --fg-subtle ticks would hide them). The needle is
@@ -290,7 +290,7 @@ export function TimeScrubber({
         </span>
         <span aria-hidden="true" className="flex min-w-0 items-baseline gap-2 text-small">
           {mark && <span className="truncate text-fg-subtle">{mark.label}</span>}
-          <span className={"shrink-0 font-mono tabular-nums " + (disabled ? "text-fg-subtle" : "text-fg-muted")}>{reading}</span>
+          <span className={"shrink-0 tabular-nums " + (disabled ? "text-fg-subtle" : "text-fg-muted")}>{reading}</span>
         </span>
       </div>
       <div
@@ -324,7 +324,7 @@ export function TimeScrubber({
           {majors.map((t) => (
             <div key={t} className="absolute top-2 flex -translate-x-1/2 flex-col items-center gap-1.5" style={{ left: (t - min) * perUnit }}>
               <span className="h-3.5 w-px bg-fg-disabled" />
-              <span className="font-mono text-caption font-normal whitespace-nowrap text-fg-subtle tabular-nums">{formatValue(t)}</span>
+              <span className="text-caption font-normal whitespace-nowrap text-fg-subtle tabular-nums">{formatValue(t)}</span>
             </div>
           ))}
           {sorted.map((m) => (

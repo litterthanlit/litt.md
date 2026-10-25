@@ -253,7 +253,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
                 </button>
                 <p className="flex items-baseline justify-between px-3 pt-3 pb-1 text-caption">
                   <span className="text-fg">{shown.group}</span>
-                  <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">
+                  <span aria-hidden="true" className="font-normal text-fg-subtle tabular-nums">
                     {shown.pages.length}
                   </span>
                 </p>
@@ -272,7 +272,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
                       <span className="shrink-0 text-fg-subtle">{GROUP_ICON[g]}</span>
                       <span className="flex-1 truncate">{g}</span>
                       {here && <span className="truncate text-small text-fg-subtle">{here.title}</span>}
-                      <span aria-hidden="true" className="font-mono text-caption font-normal text-fg-subtle tabular-nums">
+                      <span aria-hidden="true" className="text-caption font-normal text-fg-subtle tabular-nums">
                         {list.length}
                       </span>
                       <ChevronRightIcon className="shrink-0 text-fg-subtle" />

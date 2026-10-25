@@ -127,7 +127,7 @@ function Chevron({ show, open }: { show: boolean; open: boolean }) {
 function Time({ value }: { value: number | string }) {
   const t = readTime(value);
   return (
-    <span className="font-mono text-caption font-normal tabular-nums whitespace-nowrap text-fg-subtle">
+    <span className="text-caption font-normal tabular-nums whitespace-nowrap text-fg-subtle">
       <span aria-hidden="true">{t.visual}</span>
       <span className="sr-only"> {t.spoken}</span>
     </span>

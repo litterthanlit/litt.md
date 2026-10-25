@@ -4,6 +4,55 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-25 · Geist for numbers, the mono for code
+
+Geist Mono is now only for code and terminal output: code blocks, commands, logs, and the identifiers inside them (a hash, a path, a token name). Everything else that was in the mono, such as a number, a date, a key cap, a count, a file name or a hex value, is set in Geist with tabular figures (`tabular-nums`), so digits still line up by place. At the caption size a tabular figure in Geist is as wide as one in the mono (7.2px at 12px) and its letters run narrower, so nothing grows. Nothing in your code has to change; reinstall to pick it up. In your own code, set a figure as `tabular-nums` rather than `font-mono`.
+
+- **changed** `litt`: the type notes in the tokens and the theme say the mono is for code and terminal output only, and a caption that is a value (a reading, a count, a key) adds `font-normal`. Only comments change.
+- **changed** `kbd`: the key cap is Geist at 400. A `<kbd>` is mono by default, so the chip sets `font-sans`.
+- **changed** `tooltip`: its shortcut is the new Kbd.
+- **changed** `command-menu`: a row's shortcut is in Geist.
+- **changed** `menu`: an item's shortcut hint is in Geist.
+- **changed** `input`: `mono` is for code a person types, such as a slug, a path or a command. A domain, a link or a number stays in the sans. The prop is unchanged.
+- **changed** `details`: `mono` is for a hash, an ID or a path. A version, a region or a number stays in the sans. The prop is unchanged.
+- **changed** `slider`: the slab's value, the thumb's and RangeSlider's span are Geist in tabular figures, and the grip is measured in Geist.
+- **changed** `time-scrubber`: the reading and the ruler's times are Geist in tabular figures.
+- **changed** `code-input`: the cells are Geist in tabular figures at the body size.
+- **changed** `date-picker`: the days are Geist in tabular figures.
+- **changed** `color-picker`: the hex in the field and the panel is Geist, in tabular figures in the field.
+- **changed** `avatar`: the initials are Geist.
+- **changed** `chart`: axis labels and the meter's reading are Geist in tabular figures, and the room kept for a label is measured in Geist.
+- **changed** `dot-plot`: tick labels, the median and the goal are Geist in tabular figures.
+- **changed** `spread`: the medians and the scale are Geist in tabular figures.
+- **changed** `heatmap`: the labels, totals and the tooltip's value are Geist in tabular figures.
+- **changed** `cohort-grid`: the cohort sizes and each cell's share are Geist in tabular figures.
+- **changed** `bar-list`: the values are Geist in tabular figures.
+- **changed** `breakdown`: the reading and each part's value are Geist in tabular figures.
+- **changed** `funnel`: the overall conversion and each step's figures are Geist in tabular figures.
+- **changed** `legend`: a series' reading is Geist in tabular figures.
+- **changed** `timeline`: the starts, durations and totals are Geist in tabular figures.
+- **changed** `pad`: the axis words are Geist.
+- **changed** `progress`: the reading is Geist in tabular figures.
+- **changed** `steps`: the count is Geist in tabular figures.
+- **changed** `plan`: the count is Geist in tabular figures.
+- **changed** `thinking`: the clock is Geist in tabular figures.
+- **changed** `tool-call`: the time at the end of a row is Geist in tabular figures. The target, the input and the output stay in the mono.
+- **changed** `log-view`: the label is Geist. The lines and their gutter stay in the mono.
+- **changed** `composer`: a file chip's name is Geist, and its size and the character count are in tabular figures.
+- **changed** `file-drop`: a file's name is Geist, and its size is in tabular figures.
+- **changed** `list`: the dates are Geist in tabular figures.
+- **changed** `table`: a numeric cell is Geist in tabular figures, still right-aligned at the caption size.
+- **changed** `cart`: CartButton's count is Geist in tabular figures.
+- **changed** `table-filter`: the counts are Geist in tabular figures.
+- **changed** `pagination`: the range and the page numbers are Geist in tabular figures.
+- **changed** `carousel`: the range, "3 of 12", is Geist in tabular figures.
+- **changed** `lightbox`: "3 of 12" is Geist in tabular figures.
+- **changed** `tree`: an item's detail at the end, a size or a change mark, is Geist in tabular figures.
+- **changed** `activity`: an event's time is Geist in tabular figures. A deploy's branch and commit stay in the mono.
+- **changed** `deployment`: the domain is Geist. The branch and the commit stay in the mono.
+- **changed** `insights`: the figures and the word count are Geist. A commit stays in the mono.
+- **changed** `sign-in`: the versions are Geist in tabular figures.
+
 ## 2026-10-24 · Commerce, focus you can see, and controls you can feel
 
 The first store parts: a price, a product's options, a product card and a cart, for a store on Shopify or anywhere else. They take plain data (an amount and a currency code, a product, a cart line), so the same parts work with any backend. A price ranks by weight under the page's one title and a sale is never red; a grid of products has no buy buttons, so Add to cart stays the page's one accent fill; and the cart is a sheet, with Check out its one accent fill and Remove undone from a toast.

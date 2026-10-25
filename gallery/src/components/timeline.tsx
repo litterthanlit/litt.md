@@ -3,9 +3,9 @@
  * took and how it ended. Compose it from children: Timeline > TimelinePhase > TimelineStep, then a
  * TimelineResult. TimelineBar draws the whole run as one strip and sits beside it.
  *
- * - Layout (components.md, Timeline): an ordered list in four columns. The start (`at`) is the mono caption in
+ * - Layout (components.md, Timeline): an ordered list in four columns. The start (`at`) is the tabular caption in
  *   fg-subtle with tabular numbers, then the rail, then the label in the small size and fg, then the duration at
- *   the end in the mono caption. A skipped or pending step's label is fg-subtle, and a skipped step's duration is
+ *   the end in the tabular caption. A skipped or pending step's label is fg-subtle, and a skipped step's duration is
  *   the word "skipped". Rows are airy, 32px at least. The list measures itself (a container query), not the
  *   window: the start column shrinks on a narrow container and the labels wrap.
  * - Rail: a 1px line in line-strong that runs between the 16px status icons and stops at a phase's first and last
@@ -14,7 +14,7 @@
  *   half-filled circle in fg and does not spin or pulse; pending is an empty circle in fg-subtle; skipped is a
  *   dashed circle in fg-subtle; failed is an x in a circle in danger. No dots. Every status is also said in hidden
  *   text, so color and shape are never the only signal.
- * - Phase: a heading row (the label small in fg-subtle, the total in the mono caption) over a nested, labelled
+ * - Phase: a heading row (the label small in fg-subtle, the total in the tabular caption) over a nested, labelled
  *   list. Its `hue` says which phase (P11): it colors the phase's rail bars here and its segments in TimelineBar.
  *   With no hue those marks are fg at 55%.
  * - Proportional: with `proportional`, a step with `seconds` gets a row at least `seconds * secondHeight` tall, and
@@ -23,11 +23,11 @@
  *   "was 31s" at its foot. A step whose bar would be shorter than a row keeps the thin line. A failed step's bar is
  *   danger, the one status color a mark takes.
  * - Result: the closing row under a hairline. The label is body size in success, danger or fg by `tone`, the total
- *   is mono in fg at the end, and the tone is said in hidden text.
+ *   is tabular in fg at the end, and the tone is said in hidden text.
  * - Bar: a strip of the whole run from data, not children. 32px tall at the control radius with overflow hidden,
  *   segments sized by seconds, square, 2px apart. A skipped or zero-second step takes no width. Phase labels sit
- *   above each phase's span and the times at the phase boundaries sit below, in the mono caption. Hovering a
- *   segment, or touching it, shows the Tooltip's look (solid surface-3, shadow-tooltip: the label, then the mono
+ *   above each phase's span and the times at the phase boundaries sit below, in the tabular caption. Hovering a
+ *   segment, or touching it, shows the Tooltip's look (solid surface-3, shadow-tooltip: the label, then the tabular
  *   duration), the way the Chart does. A touch pins it until the next touch elsewhere.
  * - Semantics: each step reads in order, "00:02, Run build commands, done, 19 seconds". The bar is role="img" with a
  *   summary, and its segments are not focusable: it always sits beside a Timeline or a table that lists the same
@@ -246,7 +246,7 @@ export function TimelinePhase({ label, duration, hue, children, className = "" }
           {label}
         </span>
         {total && (
-          <span ref={totalRef} className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+          <span ref={totalRef} className="text-caption font-normal tabular-nums text-fg-subtle">
             <span aria-hidden="true">{total.visual}</span>
             <span className="sr-only">{total.spoken}</span>
           </span>
@@ -329,7 +329,7 @@ export function TimelineStep({ at, label, status, seconds: took, previousSeconds
         className
       }
     >
-      <span className="flex h-8 items-center whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
+      <span className="flex h-8 items-center whitespace-nowrap text-caption font-normal tabular-nums text-fg-subtle">
         {at}
         {at && <span className="sr-only">,</span>}
       </span>
@@ -347,13 +347,13 @@ export function TimelineStep({ at, label, status, seconds: took, previousSeconds
         {label}
         <span className="sr-only">{`, ${status}`}</span>
         {ghost > 0 && (
-          <span aria-hidden="true" className="absolute left-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle" style={{ top: captionTop }}>
+          <span aria-hidden="true" className="absolute left-0 whitespace-nowrap text-caption font-normal tabular-nums text-fg-subtle" style={{ top: captionTop }}>
             was {formatSeconds(previousSeconds!)}
           </span>
         )}
       </span>
 
-      <span className="flex h-8 items-center justify-end whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
+      <span className="flex h-8 items-center justify-end whitespace-nowrap text-caption font-normal tabular-nums text-fg-subtle">
         {shown && <span aria-hidden="true">{shown}</span>}
         {spoken && <span className="sr-only">{`, ${spoken}`}</span>}
       </span>
@@ -374,7 +374,7 @@ export type TimelineResultProps = {
   className?: string;
 };
 
-/** The closing row of a run, under a hairline: the outcome in words, colored by its tone, and the total in mono. */
+/** The closing row of a run, under a hairline: the outcome in words, colored by its tone, and the total in tabular figures. */
 export function TimelineResult({ label, total, tone = "neutral", className = "" }: TimelineResultProps) {
   const t = readTime(total);
   /* Fun mode: a result that arrives after the timeline mounted (the run just ended) rises in, and a run that went live
@@ -398,7 +398,7 @@ export function TimelineResult({ label, total, tone = "neutral", className = "" 
         <span className="sr-only">{RESULT_WORD[tone]}</span>
         {fun && burst && <Burst hues={burst} transition={fun.burst} onDone={() => setBurst(null)} />}
       </span>
-      <span className="font-mono text-small tabular-nums whitespace-nowrap text-fg">
+      <span className="text-small tabular-nums whitespace-nowrap text-fg">
         <span aria-hidden="true">{t.visual}</span>
         <span className="sr-only">{`, ${t.spoken}`}</span>
       </span>
@@ -462,7 +462,7 @@ export type TimelineBarProps = {
   className?: string;
 };
 
-const MONO = 7.2; // advance of a 12px mono character
+const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 
 type Segment = TimelineBarStep & { start: number; hue?: TimelineHue };
 type Span = { label: string; start: number; seconds: number };
@@ -558,7 +558,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
     if (total <= 0) return [];
     const marks = [0, ...spans.slice(1).map((s) => s.start), total];
     const items = marks.map((t, i) => {
-      const w = clock(t).length * MONO;
+      const w = clock(t).length * FIGURE;
       const x = (t / total) * width;
       const edge = i === 0 ? "start" : i === marks.length - 1 ? "end" : "middle";
       const left = edge === "start" ? 0 : edge === "end" ? width - w : x - w / 2;
@@ -586,7 +586,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
           spans.map((s) => (
             <span
               key={s.start}
-              className="absolute top-0 truncate pr-2 font-mono text-caption font-normal tabular-nums text-fg-subtle"
+              className="absolute top-0 truncate pr-2 text-caption font-normal tabular-nums text-fg-subtle"
               style={{ left: `${(s.start / total) * 100}%`, width: `${(s.seconds / total) * 100}%` }}
             >
               {s.label} · {formatSeconds(s.seconds)}
@@ -643,7 +643,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
           {seg && (
             <Tip key="tip" cx={tipCx} width={width}>
               <span className="text-fg-muted">{seg.label}</span>
-              <span className="font-mono text-caption font-normal tabular-nums">{formatSeconds(seg.seconds)}</span>
+              <span className="text-caption font-normal tabular-nums">{formatSeconds(seg.seconds)}</span>
             </Tip>
           )}
         </AnimatePresence>
@@ -655,7 +655,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
           <span
             key={it.t}
             className={
-              "absolute top-0 font-mono text-caption font-normal tabular-nums text-fg-subtle " + (it.edge === "middle" ? "-translate-x-1/2" : "")
+              "absolute top-0 text-caption font-normal tabular-nums text-fg-subtle " + (it.edge === "middle" ? "-translate-x-1/2" : "")
             }
             style={it.edge === "end" ? { right: 0 } : { left: `${it.pct}%` }}
           >
@@ -669,7 +669,7 @@ export function TimelineBar({ label, phases, height = 32, summary, className = "
 
 /* ----------------------------------------------------------------- tooltip */
 
-/** The Tooltip's look, as the Chart draws it: solid surface-3, shadow-tooltip, the label then the mono value. Above the strip, kept inside it. */
+/** The Tooltip's look, as the Chart draws it: solid surface-3, shadow-tooltip, the label then the value in tabular figures. Above the strip, kept inside it. */
 function Tip({ cx, width, children }: { cx: number; width: number; children: ReactNode }) {
   const enter = useTransition("responsive");
   const exit = useExit("responsive");

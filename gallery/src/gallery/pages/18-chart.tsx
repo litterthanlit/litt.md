@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   order: 17.3, group: "Data",
   verbs: ["hover"],
   summary:
-    "Bar and line charts in plain SVG, and a meter. Marks are never the accent: by default the foreground, one series at 55% with the current mark full, or up to three stepping down; or the data hues, when color says which series is which. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+    "Bar and line charts in plain SVG, and a meter. Marks are never the accent: by default the foreground, one series at 55% with the current mark full, or up to three stepping down; or the data hues, when color says which series is which. Hairline gridlines, labels in tabular figures, a tooltip on hover and focus, and one entrance on the responsive tier.",
   fun: "A meter's fill grows in, its reading counts with it, and the target tick pops as the fill passes.",
   tiers: ["instant", "responsive"],
 };
@@ -297,7 +297,7 @@ export default function ChartPage() {
         size="lg"
         code="DeploysDemo"
         onReplay={replayDeploys}
-        caption="Bars are the foreground at 55%, and the last day is full, so the eye lands on today. Hover or arrow to a bar and it takes full color on the instant tier, and a tooltip shows its day and value. Gridlines are hairlines, horizontal only, and the labels are mono. The bars grow up from the baseline once, on the responsive tier. Replay it to watch."
+        caption="Bars are the foreground at 55%, and the last day is full, so the eye lands on today. Hover or arrow to a bar and it takes full color on the instant tier, and a tooltip shows its day and value. Gridlines are hairlines, horizontal only, and the labels are in tabular figures. The bars grow up from the baseline once, on the responsive tier. Replay it to watch."
       >
         <DeploysDemo key={deploys} />
       </Stage>
@@ -337,7 +337,7 @@ export default function ChartPage() {
         title="Meter"
         tier="instant"
         code="QuotasDemo"
-        caption="One value against a limit: a 4px rail at the control radius, the foreground filling it at 12%, and the reading in mono at the end. The fill is the foreground, never the accent, and it does not animate. A quota that is nearly spent says so in its words."
+        caption="One value against a limit: a 4px rail at the control radius, the foreground filling it at 12%, and the reading in tabular figures at the end. The fill is the foreground, never the accent, and it does not animate. A quota that is nearly spent says so in its words."
       >
         <QuotasDemo />
       </Stage>

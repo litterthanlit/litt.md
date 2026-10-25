@@ -100,7 +100,7 @@ export default function ProgressPage() {
         tier="instant"
         align="start"
         code="UploadDemo"
-        caption="Press Upload. For a moment nothing is known, so the rail is empty and the reading says Waiting; then it fills as the bytes go, a transform on the instant tier, and the reading counts in the mono. At the end the rail is full, the reading says Done, and a screen reader hears it once."
+        caption="Press Upload. For a moment nothing is known, so the rail is empty and the reading says Waiting; then it fills as the bytes go, a transform on the instant tier, and the reading counts in tabular figures. At the end the rail is full, the reading says Done, and a screen reader hears it once."
       >
         <UploadDemo />
       </Stage>

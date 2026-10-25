@@ -14,7 +14,7 @@
  *   surface) and its emphasised mark takes the hue's text tone, a step stronger, so no mark falls under 3:1 and
  *   none needs an edge or a dash. Up to five hue series.
  * - Anatomy: horizontal gridlines only (line), the zero baseline in line-strong, three to five lines in all. Axis
- *   labels are caption-size mono in fg-subtle with tabular numbers. When categories are too close for their
+ *   labels are caption-size in fg-subtle with tabular numbers. When categories are too close for their
  *   labels, every nth label shows, counted back from the last mark so the current one keeps its label. Bars are at
  *   most 32px thick and 60% of their slot, with square tops: 2px is off the radius scale and 4px would turn a
  *   phone-sized bar into a bullet. Lines are 2px with round joins and a 4px marker. Values are zero or more.
@@ -102,7 +102,7 @@ export type StackedBarChartProps = Omit<ChartBaseProps, "highlight" | "hues">;
 const TOP = 8; // room above the plot
 const AXIS = 28; // room under the plot for the category labels
 const LABEL_GAP = 6; // between a value label and the plot
-const MONO = 7.2; // advance of a 12px mono character
+const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const MAX_BAR = 32;
 const MAX_RAIL = 8; // a stacked column: a rail, not a block
 const RAIL_GAP = 2; // air between the segments of a stacked column, the Breakdown's
@@ -186,14 +186,14 @@ function layout(width: number, height: number, labels: string[], series: ChartSe
   const ticks = niceTicks(max);
   const top = ticks[ticks.length - 1]!;
   const valueChars = Math.max(...ticks.map((t) => fmt(t).length));
-  const left = Math.ceil(valueChars * MONO) + LABEL_GAP;
+  const left = Math.ceil(valueChars * FIGURE) + LABEL_GAP;
   const plotW = Math.max(0, width - left);
   const plotH = Math.max(0, height - TOP - AXIS);
   const slotW = n > 0 ? plotW / n : 0;
   const labelChars = Math.max(1, ...labels.map((l) => l.length));
   /* The last label may be pushed in from the right edge, which shortens its gap to the one before it. Allow for that. */
-  const hang = Math.max(0, (labelChars * MONO) / 2 - slotW / 2);
-  const step = slotW > 0 ? Math.max(1, Math.ceil((labelChars * MONO + 12 + hang) / slotW)) : 1;
+  const hang = Math.max(0, (labelChars * FIGURE) / 2 - slotW / 2);
+  const step = slotW > 0 ? Math.max(1, Math.ceil((labelChars * FIGURE + 12 + hang) / slotW)) : 1;
   const base = TOP + plotH;
   return {
     width,
@@ -476,7 +476,7 @@ function Grid({ g, labels, fmt }: { g: Geometry; labels: string[]; fmt: (v: numb
           className={i === 0 ? "stroke-line-strong" : "stroke-line"}
         />
       ))}
-      <g shapeRendering="auto" className="fill-fg-subtle font-mono text-caption font-normal tabular-nums">
+      <g shapeRendering="auto" className="fill-fg-subtle text-caption font-normal tabular-nums">
         {g.ticks.map((t) => (
           <text key={t} x={g.left - LABEL_GAP} y={g.y(t)} textAnchor="end" dominantBaseline="central">
             {fmt(t)}
@@ -485,7 +485,7 @@ function Grid({ g, labels, fmt }: { g: Geometry; labels: string[]; fmt: (v: numb
         {labels.map((l, i) => {
           if ((n - 1 - i) % g.step !== 0) return null;
           /* The last label would hang past the right edge: right-align it to the edge instead. */
-          const half = (l.length * MONO) / 2;
+          const half = (l.length * FIGURE) / 2;
           const last = i === n - 1 && g.cx(i) + half > g.width;
           return (
             <text key={i} x={last ? g.width : g.cx(i)} y={g.base + 20} textAnchor={last ? "end" : "middle"}>
@@ -739,7 +739,7 @@ function TipContent({
     return (
       <div className="flex items-center gap-3">
         <span className="text-fg-muted">{label}</span>
-        <span className="font-mono text-caption font-normal tabular-nums">{value(series[0]!)}</span>
+        <span className="text-caption font-normal tabular-nums">{value(series[0]!)}</span>
       </div>
     );
   }
@@ -749,13 +749,13 @@ function TipContent({
       {series.map((s) => (
         <div key={s.name} className="flex items-center justify-between gap-4">
           <span className="text-fg-muted">{s.name}</span>
-          <span className="font-mono text-caption font-normal tabular-nums">{value(s)}</span>
+          <span className="text-caption font-normal tabular-nums">{value(s)}</span>
         </div>
       ))}
       {total !== undefined && (
         <div className="flex items-center justify-between gap-4 border-t border-line pt-1">
           <span className="text-fg-muted">Total</span>
-          <span className="font-mono text-caption font-normal tabular-nums">{total}</span>
+          <span className="text-caption font-normal tabular-nums">{total}</span>
         </div>
       )}
     </div>
@@ -788,7 +788,7 @@ export type MeterProps = {
   value: number;
   /** The value that fills the rail. */
   max?: number;
-  /** The reading at the end of the row, in mono: "42 of 100 GB". Defaults to the percentage. */
+  /** The reading at the end of the row, in tabular figures: "42 of 100 GB". Defaults to the percentage. */
   valueText?: string;
   /** Fills the rail with one of the five data hues instead of the foreground, when the color says which thing this is (P11). */
   hue?: ChartHue;
@@ -859,7 +859,7 @@ export function Meter({ label, value, max = 100, valueText, hue, target, targetT
         <span id={id} className="text-small text-fg">
           {label}
         </span>
-        <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">{shownReading}</span>
+        <span className="text-caption font-normal tabular-nums text-fg-subtle">{shownReading}</span>
       </div>
       <div className="relative">
         <div

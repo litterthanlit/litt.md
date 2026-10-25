@@ -27,7 +27,7 @@ export const docs: PageDocs = {
     <DetailsLink href="https://halo.studio">halo.studio</DetailsLink>
   </DetailsItem>
   <DetailsItem label="Commit" mono copy="4c6d204">4c6d204</DetailsItem>
-  <DetailsItem label="Region" mono>fra1</DetailsItem>
+  <DetailsItem label="Region">fra1</DetailsItem>
 </Details>
 
 // Grid: each label above its value, up to four across once the card is wide.
@@ -89,7 +89,7 @@ function DeploymentDemo() {
       <DetailsItem label="Commit" mono copy={DEPLOY.commit}>
         {DEPLOY.commit}
       </DetailsItem>
-      <DetailsItem label="Region" mono>
+      <DetailsItem label="Region">
         fra1
       </DetailsItem>
       <DetailsItem label="Build time">41 s</DetailsItem>
@@ -151,7 +151,7 @@ function NarrowDemo() {
   return (
     <div className="grid w-full max-w-3xl items-start gap-8 sm:grid-cols-[18rem_minmax(0,1fr)]">
       <div className="grid gap-2">
-        <p className="font-mono text-caption font-normal text-fg-subtle">A card 18rem wide</p>
+        <p className="text-caption font-normal text-fg-subtle">A card 18rem wide</p>
         <Details title="Build">
           <DetailsItem label="Status">
             <Tag status="danger">Failed</Tag>
@@ -163,7 +163,7 @@ function NarrowDemo() {
         </Details>
       </div>
       <div className="grid gap-2">
-        <p className="font-mono text-caption font-normal text-fg-subtle">Bare, on a panel that is already a surface</p>
+        <p className="text-caption font-normal text-fg-subtle">Bare, on a panel that is already a surface</p>
         <div className="rounded-surface bg-surface-2 px-4 py-1 shadow-[inset_0_0_0_1px_var(--line)]">
           <Details bare>
             <DetailsItem label="Framework">Framer</DetailsItem>
@@ -228,7 +228,7 @@ export default function DetailsPage() {
             <DetailsItem key="d" label="Domain" copy="halo.studio">
               halo.studio
             </DetailsItem>,
-            <DetailsItem key="r" label="Region" mono>
+            <DetailsItem key="r" label="Region">
               fra1
             </DetailsItem>,
             <DetailsItem key="b" label="Build time">

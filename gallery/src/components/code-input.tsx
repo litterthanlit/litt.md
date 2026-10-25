@@ -7,7 +7,7 @@
  *   one field with its label. The cells are drawn from its value and hidden from assistive tech.
  * - Anatomy: the Input's field per cell (--surface-1, the inset --line-control edge, the control radius), square on
  *   the control scale (md 44, lg 56), narrowing to no less than 32px in a box too small for them, each character in the
- *   mono at the body size. Six cells split three and three
+ *   sans at the body size, in tabular figures. Six cells split three and three
  *   with a wider gap, so the code reads in halves. The label sits above at the title weight and a hint or an error
  *   below, as on a TextField.
  * - Focus: the cell the next character goes into takes the focus edge and ring, and an empty one shows a still 1px
@@ -118,7 +118,7 @@ export function CodeInput({
               <span
                 key={i}
                 className={
-                  "grid min-w-8 flex-1 basis-0 place-items-center rounded-control font-mono text-body font-normal " +
+                  "grid min-w-8 flex-1 basis-0 place-items-center rounded-control text-body tabular-nums font-normal " +
                   "transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border " +
                   cellHeights[size] +
                   /* six cells read as two halves of three */

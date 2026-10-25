@@ -2,13 +2,13 @@
  * Pagination: previous and next for a table or list that shows one page of many. The range is the main
  * information, so it comes first, in words.
  *
- * - Range (components.md, Pagination): "21 to 40 of 143" in mono at the caption size, fg-subtle, with tabular
+ * - Range (components.md, Pagination): "21 to 40 of 143" at the caption size, fg-subtle, with tabular
  *   figures, at the start of the row. No dashes. With no rows it says "No results". It is a polite live region, so
  *   a screen reader hears the new range after a page change.
  * - Buttons: Previous and Next are sm secondary Buttons (44px on a coarse pointer), text only, 12px apart at the end of the row. The first page
  *   disables Previous and the last disables Next. If the button you just pressed becomes disabled, focus moves to
  *   the other one, so it never drops to the page.
- * - Page buttons: numbered ghost buttons in mono between the two, the current one secondary with
+ * - Page buttons: numbered ghost buttons in tabular figures between the two, the current one secondary with
  *   aria-current="page". A long run folds: the first, the last, and one either side of the current page, with an
  *   ellipsis between. They only show when the row is 36rem wide (the row measures itself, not the window); below
  *   that the range and the two buttons are enough.
@@ -72,7 +72,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
   return (
     <nav aria-label={label} className={"@container " + className}>
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-        <p aria-live="polite" aria-atomic="true" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+        <p aria-live="polite" aria-atomic="true" className="text-caption font-normal tabular-nums text-fg-subtle">
           {total === 0 ? "No results" : `${GROUP(first)} to ${GROUP(last)} of ${GROUP(total)}`}
         </p>
         <ul className="flex items-center gap-3">
@@ -86,7 +86,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
               <ul className="flex items-center gap-1">
                 {pageItems(current, count).map((n, i) =>
                   n === null ? (
-                    <li key={`gap-${i}`} aria-hidden="true" className="grid min-w-control-sm place-items-center font-mono text-caption font-normal text-fg-subtle">
+                    <li key={`gap-${i}`} aria-hidden="true" className="grid min-w-control-sm place-items-center text-caption font-normal text-fg-subtle">
                       …
                     </li>
                   ) : (
@@ -96,7 +96,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
                         variant={n === current ? "secondary" : "ghost"}
                         aria-current={n === current ? "page" : undefined}
                         aria-label={`Page ${n}`}
-                        className={TOUCH + " min-w-control-sm pointer-coarse:min-w-control-md font-mono tabular-nums [&_.litt-trim]:font-normal"}
+                        className={TOUCH + " min-w-control-sm pointer-coarse:min-w-control-md tabular-nums [&_.litt-trim]:font-normal"}
                         onClick={() => go(n)}
                       >
                         {n}

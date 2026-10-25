@@ -122,8 +122,8 @@
 
   /* Weight by role (P9): font-title (500) for titles, buttons and tab labels,
      font-label (600) for 12px labels. Display to h4 carry the title weight and the
-     caption carries the label weight on their own; a mono caption (kbd, numbers)
-     adds font-normal. */
+     caption carries the label weight on their own; a caption that is a value, not a
+     label (a reading, a count, a key), adds font-normal. */
   --font-weight-title: var(--weight-title);
   --font-weight-label: var(--weight-label);
 

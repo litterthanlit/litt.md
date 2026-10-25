@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   group: "Blocks",
   verbs: ["select", "press"],
   summary:
-    "A studio's activity as one screen: a filter by kind, then the events grouped by day, each one sentence in two inks with its time in the mono. A deploy says how it ended in a tag, in words. Show earlier adds the next day below, and a kind with nothing in it says so. Nothing is accent filled, and nothing moves on its own.",
+    "A studio's activity as one screen: a filter by kind, then the events grouped by day, each one sentence in two inks with its time in tabular figures. A deploy says how it ended in a tag, in words. Show earlier adds the next day below, and a kind with nothing in it says so. Nothing is accent filled, and nothing moves on its own.",
   tiers: ["instant"],
   block: "activity",
 };

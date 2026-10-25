@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["drag", "type", "select"],
   summary:
-    "One color, kept as a hex string. A saturation and brightness area, a hue rail, the hex in mono, an eyedropper where the browser has one, and optional swatches. The field opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once; only the popover moves, on the responsive tier.",
+    "One color, kept as a hex string. A saturation and brightness area, a hue rail, the hex as text, an eyedropper where the browser has one, and optional swatches. The field opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once; only the popover moves, on the responsive tier.",
   tiers: ["responsive"],
 };
 
@@ -85,7 +85,7 @@ const PALETTE: ColorSwatch[] = [
 /** A quiet status line beside a field, so each stage shows what it did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+    <p role="status" className="min-h-5 text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -213,7 +213,7 @@ export default function ColorPickerPage() {
         size="lg"
         align="start"
         code="BrandColorDemo"
-        caption="The field is the Select trigger with a chip of the color and its hex in mono. Click it and the panel grows out of it in a popover, on the responsive tier. Drag the area or the hue and the header under the field changes at once, with no easing. A swatch picks in one click. The text on the header is black or white, whichever reads."
+        caption="The field is the Select trigger with a chip of the color and its hex. Click it and the panel grows out of it in a popover, on the responsive tier. Drag the area or the hue and the header under the field changes at once, with no easing. A swatch picks in one click. The text on the header is black or white, whichever reads."
       >
         <BrandColorDemo />
       </Stage>

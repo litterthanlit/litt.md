@@ -3,7 +3,7 @@
  * busiest repos. A sibling of the Meter and the Stat delta in chart.tsx and stat.tsx.
  *
  * - Anatomy: an optional lead (a key cap, an icon or a small avatar, up to 48px wide so two key caps fit), the
- *   label (small, fg, truncates), the bar, the value (mono, small, fg, tabular, end-aligned) and an optional delta
+ *   label (small, fg, truncates), the bar, the value (small, fg, tabular, end-aligned) and an optional delta
  *   (caption). A row is at least 44px tall (airy) and rows are split by `--line` hairlines.
  * - Bar: the Meter's rail, a 4px rail at the control radius. The track is fg at 12% (the Meter's), the fill is `--fg` (the quiet
  *   default) or the hue's mark tone, and its width is value / max, where max defaults to the largest value. One
@@ -157,7 +157,7 @@ function Row({
           )}
         </span>
       </span>
-      <span className="col-start-[value] row-start-1 text-right @max-[28rem]:pl-3 font-mono text-small tabular-nums text-fg">
+      <span className="col-start-[value] row-start-1 text-right @max-[28rem]:pl-3 text-small tabular-nums text-fg">
         {value}
         {said && <span className="sr-only">{said}</span>}
       </span>

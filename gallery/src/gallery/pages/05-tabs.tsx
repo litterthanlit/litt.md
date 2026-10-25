@@ -149,7 +149,7 @@ function ProjectTabs() {
                 <Result tone={d.tone} />
                 <span className="font-mono text-caption font-normal text-fg-subtle">{d.hash}</span>
                 <span className="min-w-0 flex-1 truncate text-fg">{d.message}</span>
-                <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{d.time}</span>
+                <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{d.time}</span>
               </li>
             ))}
           </Rows>
@@ -212,7 +212,7 @@ function ViewSwitch() {
             {PROJECTS.map((p) => (
               <li key={p.name} className="relative flex items-center gap-4 text-small">
                 <span aria-hidden="true" className="relative h-px w-2 shrink-0 bg-fg-subtle" />
-                <span className="font-mono text-caption font-normal text-fg-subtle">{p.time}</span>
+                <span className="tabular-nums text-caption font-normal text-fg-subtle">{p.time}</span>
                 <span className="text-fg">{p.name}</span>
                 <span className="text-fg-subtle">{p.when}</span>
               </li>

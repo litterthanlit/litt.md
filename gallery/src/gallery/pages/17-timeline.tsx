@@ -74,7 +74,7 @@ export const docs: PageDocs = {
     "TimelineBar is a picture. It is role=\"img\" with a summary, such as \"Update pricing page: Build 24 seconds, Deploy 18 seconds, 42 seconds in all\", and a failed run adds where it failed. Its segments are not focusable, because it always sits beside a Timeline or a table that lists the same steps, and those are where a keyboard and a screen reader get each one. Do not use the strip on its own.",
     "Hovering a segment shows its label and time in the tooltip, Esc hides it, and a touch pins it until the next touch elsewhere. The tooltip repeats the list, so it is hidden from screen readers.",
     "A failed segment is danger and the other segments take their phase's hue. Neither is the only signal: the list beside the strip shows the failed icon and says \"failed\".",
-    "Text is the small size or the mono caption in fg, fg-muted or fg-subtle, which pass 4.5:1 on a card in both themes. Nothing here moves, so there is nothing to reduce under reduced motion.",
+    "Text is the small size or the caption in fg, fg-muted or fg-subtle, which pass 4.5:1 on a card in both themes. Nothing here moves, so there is nothing to reduce under reduced motion.",
     "The columns measure the list, not the window. On a narrow container the start column shrinks and the labels wrap, so nothing scrolls sideways.",
   ],
 };

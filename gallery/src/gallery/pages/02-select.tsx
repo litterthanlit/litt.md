@@ -122,7 +122,7 @@ const PAGES: SelectOption[] = [
 /** A quiet status line beside a trigger, so each stage shows what the select did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+    <p role="status" className="min-h-5 text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );

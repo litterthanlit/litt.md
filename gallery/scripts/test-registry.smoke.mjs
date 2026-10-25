@@ -659,7 +659,7 @@ const RECIPES = {
   },
   details: {
     needs: ["Details", "DetailsItem", "DetailsLink"],
-    jsx: `<div className="w-full max-w-lg" data-testid="litt-details"><Details title="Deployment"><DetailsItem label="Domain" copy="halo.studio"><DetailsLink href="https://halo.studio">halo.studio</DetailsLink></DetailsItem><DetailsItem label="Region" mono>fra1</DetailsItem><DetailsItem label="PO number" /></Details></div>`,
+    jsx: `<div className="w-full max-w-lg" data-testid="litt-details"><Details title="Deployment"><DetailsItem label="Domain" copy="halo.studio"><DetailsLink href="https://halo.studio">halo.studio</DetailsLink></DetailsItem><DetailsItem label="Commit" mono>4c6d204</DetailsItem><DetailsItem label="PO number" /></Details></div>`,
   },
   "table-filter": {
     needs: ["TableFilter", "useUrlFilter", "useUrlParam"],
@@ -2054,8 +2054,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
                   dash: line?.getAttribute("stroke-dasharray") ?? null,
                   stroke: line ? getComputedStyle(line).stroke : null,
                   lineX: line ? line.getBoundingClientRect().left - r.left : null,
-                  /* By "mono" in the class, not the class itself: a host has font-litt-mono. */
-                  medRight: [...li.querySelectorAll("span")].find((el) => /\bfont-(?:litt-)?mono\b/.test(el.className)).getBoundingClientRect().right,
+                  /* The median is the span in the row's median column. */
+                  medRight: [...li.querySelectorAll("span")].find((el) => el.className.includes("col-start-[median]")).getBoundingClientRect().right,
                 };
               }),
             };
@@ -2357,7 +2357,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
               const rail = fill.parentElement;
               const r = rail.getBoundingClientRect();
               const f = fill.getBoundingClientRect();
-              return { x: r.left, w: r.width, h: r.height, share: f.width / r.width, fill: getComputedStyle(fill).backgroundColor, radius: getComputedStyle(rail).borderRadius, value: li.querySelector("[class*='mono']").getBoundingClientRect().right };
+              return { x: r.left, w: r.width, h: r.height, share: f.width / r.width, fill: getComputedStyle(fill).backgroundColor, radius: getComputedStyle(rail).borderRadius, value: li.querySelector("[class*='col-start-[value]']").getBoundingClientRect().right };
             }),
           );
           const shares = [1, 164 / 412, 31 / 412];

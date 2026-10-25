@@ -2,7 +2,7 @@
  * Breakdown: one whole split into its parts. Storage by file type, credits by feature, time by project. The
  * Meter's thin rail (chart.tsx) grown into a component: a hue is a thread through neutral space, never an area.
  *
- * - Header: the Meter's row. The label at the start (small, `--fg`), the reading at the end (mono, caption,
+ * - Header: the Meter's row. The label at the start (small, `--fg`), the reading at the end (tabular, caption,
  *   `--fg-subtle`, tabular). A long label truncates; the reading never does.
  * - Split rail: a 4px rail under the header, one segment per part, each as wide as its share of the whole, in its
  *   hue's mark tone, at the control radius (so each segment has the Meter fill's rounded ends), with 2px of air
@@ -13,7 +13,7 @@
  *   (the value, then its share of the whole), and a 4px rail on fg at 12% filled to the share in the part's hue. The
  *   rows line up with a plain Meter beside them. No dividers and no boxes.
  * - Legend: for a tile or a narrow panel. Under the split rail, a wrapping row of entries: a 12px by 4px swatch rail
- *   in the hue at the control radius, the label (small, fg) and the value (mono, caption, fg-subtle).
+ *   in the hue at the control radius, the label (small, fg) and the value (tabular, caption, fg-subtle).
  * - Hues (P11): a part without a hue takes the next free one in the fixed order (blue, amber, teal, violet, rose).
  *   Parts past the fifth fold into one "Other" part in fg at 55% (their values summed), so the hues are never cycled
  *   and a sixth never gets one. A hue the caller sets is never reused for another part in the same Breakdown: if it
@@ -72,7 +72,7 @@ export type BreakdownProps = {
   items: BreakdownItem[];
   /** The whole, such as the plan's 100 GB. When it is more than the sum of the parts, the rest shows as free space. Defaults to the sum, and is never less than it. */
   total?: number;
-  /** The reading at the end of the header, in mono: "91 of 100 GB". Defaults to the sum, or "91 of 100" when there is a total, written by `formatValue`. */
+  /** The reading at the end of the header, in tabular figures: "91 of 100 GB". Defaults to the sum, or "91 of 100" when there is a total, written by `formatValue`. */
   totalText?: string;
   /** Turns a value into the text shown and read: `(v) => \`${v} GB\``. The default groups thousands. */
   formatValue?: (value: number) => string;
@@ -170,7 +170,7 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
       <div className="grid grid-cols-1 gap-2">
         <div aria-hidden="true" className="flex items-baseline justify-between gap-4">
           <span className="min-w-0 truncate text-small text-fg">{label}</span>
-          <span className="shrink-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">{reading}</span>
+          <span className="shrink-0 whitespace-nowrap text-caption font-normal tabular-nums text-fg-subtle">{reading}</span>
         </div>
         <div role="img" aria-label={summary} className="flex h-1 gap-0.5 overflow-hidden">
           {segments.map((s, i) =>
@@ -196,7 +196,7 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
                 {p.label}
                 <span className="sr-only">, </span>
               </span>
-              <span className="shrink-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
+              <span className="shrink-0 whitespace-nowrap text-caption font-normal tabular-nums text-fg-subtle">
                 {fmt(p.value)}
                 {unit && <span className="sr-only"> {unitFor(p.value)}</span>}
               </span>
@@ -214,7 +214,7 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
                   <span id={nameId} className="min-w-0 truncate text-small text-fg">
                     {p.label}
                   </span>
-                  <span className="shrink-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
+                  <span className="shrink-0 whitespace-nowrap text-caption font-normal tabular-nums text-fg-subtle">
                     {fmt(p.value)}
                     <span className="ml-2 inline-block min-w-[4ch] text-right">{percent(share)}</span>
                   </span>

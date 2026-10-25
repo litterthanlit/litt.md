@@ -5,7 +5,7 @@
  *
  * - Surface: a well. --surface-2 at the surface radius with an inset --line hairline, and a static dot grid (fg at
  *   about 14%, 1.5px dots on a 16px pitch, an SVG pattern). The grid is a coordinate system, so it never moves. The
- *   four axis words sit inside the edges in the mono caption at --fg-subtle, in sentence case: y's maxLabel at the
+ *   four axis words sit inside the edges at the caption size in --fg-subtle, in sentence case: y's maxLabel at the
  *   top, its minLabel at the bottom, x's minLabel at the left and maxLabel at the right. y grows upward. Each word
  *   sits on a plate in the well's own color, so the grid and the crosshairs break around it instead of running
  *   through the letters.
@@ -15,7 +15,7 @@
  *   2px focus ring and the 2px offset), so the ring never crosses the edge, and the pointer maths uses the same
  *   range, so the thumb sits under the pointer.
  * - Default mark: pass defaultMark and a 20px dashed circle in --fg-subtle sits there, with "Default" beside it in
- *   the mono caption. It is where Reset would take the thumb.
+ *   the caption. It is where Reset would take the thumb.
  * - Tooltip: the chart's tooltip look (solid --surface-3, --shadow-tooltip, the control radius) shows formatValue
  *   beside the thumb while you drag, while the pointer is over the pad, and while the keyboard has focus. It tries the
  *   right, then the left, then above, then below (above first for a finger), so it stays inside the pad and clear of
@@ -96,7 +96,7 @@ const EDGE = 4; // the air the tooltip keeps from the pad's edge
 const DOT = 16; // pitch of the dot grid
 const GAP = 8; // between the thumb's edge and the tooltip
 const GAP_TOUCH = 24; // a fingertip covers more than the thumb, so the tooltip stands further off
-const MONO = 7.2; // advance of a 12px mono character
+const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const DEFAULT_WORD = "Default";
 
 const places = (n: number) => (String(n).split(".")[1] ?? "").length;
@@ -166,7 +166,7 @@ const thumbOn = "bg-surface-1 shadow-[inset_0_0_0_1px_var(--line-control),var(--
 const thumbOff = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 
 /* An axis word sits on a plate in the well's color, so the dots and the crosshairs do not run through the letters. */
-const word = "pointer-events-none absolute bg-surface-2 px-1 font-mono text-caption font-normal whitespace-nowrap";
+const word = "pointer-events-none absolute bg-surface-2 px-1 text-caption font-normal whitespace-nowrap";
 
 /* ----------------------------------------------------------------- the tooltip */
 
@@ -351,7 +351,7 @@ export function Pad({
   /* The default mark's word stands to the right of its circle, or to the left when there is no room. */
   const markFraction = defaultMark ? fraction(defaultMark.x, x) : 0;
   const markX = INSET + markFraction * Math.max(0, width - 2 * INSET);
-  const wordLeft = width > 0 && markX + R + 4 + DEFAULT_WORD.length * MONO + 8 > width;
+  const wordLeft = width > 0 && markX + R + 4 + DEFAULT_WORD.length * FIGURE + 8 > width;
 
   const describedBy = (range?: string) => [labelId, helpId, defaultId, range].filter(Boolean).join(" ");
   const edge = disabled ? "text-fg-disabled" : "text-fg-subtle";

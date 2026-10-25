@@ -9,7 +9,7 @@
  * - Calendar: a header with the month and year at the body size in --fg and previous and next as icon-only
  *   ghost sm Buttons (44px on a coarse pointer). Weekday names in caption --fg-subtle, from Intl. Always six
  *   weeks, so the height never changes. Days are 40px cells (44 on a coarse pointer) at the control radius,
- *   numbers in mono at the small size with tabular figures. Days of the last and next month are
+ *   numbers at the small size with tabular figures. Days of the last and next month are
  *   --fg-disabled and inert: they carry no state and take no pointer, and the keys page to them. Disabled
  *   days (min, max, isDisabled) are --fg-disabled too, take no hover and stay reachable by the keys, as
  *   aria-disabled buttons.
@@ -262,7 +262,7 @@ const CELL = "h-10 w-10 max-w-full pointer-coarse:h-11 pointer-coarse:w-11";
 const ROW = "grid grid-cols-7";
 
 const dayBase =
-  "relative grid size-full place-items-center rounded-control font-mono text-small tabular-nums select-none " +
+  "relative grid size-full place-items-center rounded-control text-small tabular-nums select-none " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
@@ -604,7 +604,7 @@ function DayCell({
   if (!day.inMonth) {
     /* Another month's day: inactive here (aria-disabled), so its dimmed number is exempt from contrast, as a disabled control's is. */
     return (
-      <div role="gridcell" aria-disabled="true" className={"grid place-items-center font-mono text-small tabular-nums text-fg-disabled select-none " + CELL}>
+      <div role="gridcell" aria-disabled="true" className={"grid place-items-center text-small tabular-nums text-fg-disabled select-none " + CELL}>
         <span aria-hidden="true">{number}</span>
       </div>
     );

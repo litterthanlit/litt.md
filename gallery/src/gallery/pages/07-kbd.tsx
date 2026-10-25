@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   lede: "The key cap for a real shortcut.",
   order: 7, group: "Controls",
   summary:
-    "The key cap for a real shortcut: a 20px chip in Geist Mono. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",
+    "The key cap for a real shortcut: a 20px chip in Geist. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",
   tiers: [],
 };
 
@@ -41,7 +41,7 @@ import { Kbd } from "@/components/kbd";
   ],
   skip: [
     "It is decoration. A key cap that does nothing teaches people to ignore the real ones.",
-    "It is code, a file name or a version. Use the mono text style, not a chip.",
+    "It is code, a file name or a version. Write it as text, not a chip: code in the mono, the rest in the sans.",
     "It is something to press with a mouse. Use Button.",
     "The action has no shortcut. Leave the hint out.",
     "Tooltip already has a shortcut prop. Pass it there and the tooltip renders the same chip for you.",
@@ -138,7 +138,7 @@ export default function KbdPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Keys"
-        caption="A key cap is 20px tall at the control radius, with a surface-2 fill and a hairline. Geist Mono at weight 400 in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
+        caption="A key cap is 20px tall at the control radius, with a surface-2 fill and a hairline. Geist at weight 400 in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
         code="KeysDemo"
       >
         <KeysDemo />

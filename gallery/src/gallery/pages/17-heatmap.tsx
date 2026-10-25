@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   group: "Data",
   verbs: ["hover"],
   summary:
-    "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, mono labels, a tooltip on hover, touch and focus, and a legend from less to more.",
+    "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, labels in tabular figures, a tooltip on hover, touch and focus, and a legend from less to more.",
   fun: "The grid arrives in two waves, the peaks last; move over it and a lens follows the pointer.",
   tiers: ["instant", "responsive"],
 };
@@ -233,7 +233,7 @@ export default function HeatmapPage() {
         title="Usage by month"
         tier="responsive"
         code="UsageDemo"
-        caption="One row of dots per month, with the month's total at the end in mono. The dots are teal in four steps over an empty dot, and the days still to come draw nothing. Hover a dot, or arrow to it, and a ring and a tooltip name the day and the count. The tooltip is the Chart's, and it fades in on the responsive tier."
+        caption="One row of dots per month, with the month's total at the end in tabular figures. The dots are teal in four steps over an empty dot, and the days still to come draw nothing. Hover a dot, or arrow to it, and a ring and a tooltip name the day and the count. The tooltip is the Chart's, and it fades in on the responsive tier."
       >
         <UsageDemo />
       </Stage>

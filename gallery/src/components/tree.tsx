@@ -4,7 +4,7 @@
  *
  * - Rows: 32px (44px on a touch screen) at the control radius, indented 16px a level. A 16px chevron for a branch, an
  *   icon (a folder or a file unless the item brings its own), the label at the small size, truncated, and an optional
- *   detail at the end in the mono at the caption size in --fg-subtle (a size, a change mark). A 1px --line guide runs
+ *   detail at the end in tabular figures at the caption size in --fg-subtle (a size, a change mark). A 1px --line guide runs
  *   down each level, under the chevrons, so the nesting reads without color.
  * - Hover fills fg 6% on the instant tier. The selected row wears the selected segment (P12): one surface up from what
  *   the tree sits on, with the hairline and the top highlight, and its label in --fg at the title weight. Never the
@@ -224,7 +224,7 @@ export function Tree({
             </span>
             <span className="min-w-0 flex-1 truncate">{node.label}</span>
             {node.detail !== undefined && (
-              <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle tabular-nums">{node.detail}</span>
+              <span className="shrink-0 text-caption font-normal text-fg-subtle tabular-nums">{node.detail}</span>
             )}
           </div>
           {isOpen && node.children!.length > 0 && (

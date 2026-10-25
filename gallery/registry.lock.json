@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.10.24",
+  "latest": "2026.10.25",
   "items": {
     "accordion": {
       "version": "2026.10.19",
@@ -11,8 +11,8 @@
       "hash": "07d26dbd704e3902"
     },
     "activity": {
-      "version": "2026.10.22",
-      "hash": "ef846c5e05e0c1f7"
+      "version": "2026.10.25",
+      "hash": "920e36954b29ebcf"
     },
     "agent": {
       "version": "2026.10.22",
@@ -23,12 +23,12 @@
       "hash": "5c4766f964fc7dce"
     },
     "avatar": {
-      "version": "2026.10.22",
-      "hash": "c4230dfb67f8b2d4"
+      "version": "2026.10.25",
+      "hash": "58666c403cc7931e"
     },
     "bar-list": {
-      "version": "2026.10.22",
-      "hash": "7bfb1169d98092da"
+      "version": "2026.10.25",
+      "hash": "3577797f2725c294"
     },
     "base-styles": {
       "version": "2026.10.20",
@@ -39,8 +39,8 @@
       "hash": "0915e137e1c245e8"
     },
     "breakdown": {
-      "version": "2026.10.19",
-      "hash": "fd59fabd7faa5f82"
+      "version": "2026.10.25",
+      "hash": "eb168ded9562a2ff"
     },
     "button": {
       "version": "2026.10.22",
@@ -55,20 +55,20 @@
       "hash": "d53924bb78d36f31"
     },
     "carousel": {
-      "version": "2026.10.22",
-      "hash": "eb0fb1efbc838cbc"
+      "version": "2026.10.25",
+      "hash": "ca4160fb8887e18f"
     },
     "cart": {
-      "version": "2026.10.24",
-      "hash": "ddb02810aaea0967"
+      "version": "2026.10.25",
+      "hash": "2631d4c0027e9440"
     },
     "case-study": {
       "version": "2026.10.22",
       "hash": "c63b2c9312bb3ebf"
     },
     "chart": {
-      "version": "2026.10.22",
-      "hash": "84d669d9c88a4407"
+      "version": "2026.10.25",
+      "hash": "0dccf6767a52efdc"
     },
     "checkbox": {
       "version": "2026.10.22",
@@ -79,32 +79,32 @@
       "hash": "137fc3cbe5d88eda"
     },
     "code-input": {
-      "version": "2026.10.22",
-      "hash": "d2aaa4156a3965a5"
+      "version": "2026.10.25",
+      "hash": "997cd875923bca34"
     },
     "cohort-grid": {
-      "version": "2026.10.20",
-      "hash": "03fc3f36ed7d77a9"
+      "version": "2026.10.25",
+      "hash": "5ddab03dcb47d980"
     },
     "collection": {
       "version": "2026.10.24",
       "hash": "a37ad8ef6000a194"
     },
     "color-picker": {
-      "version": "2026.10.23",
-      "hash": "269e47660824573b"
+      "version": "2026.10.25",
+      "hash": "7cd5d585078a50df"
     },
     "combobox": {
       "version": "2026.10.19",
       "hash": "58d821cd8cb895ba"
     },
     "command-menu": {
-      "version": "2026.10.19",
-      "hash": "99855c9cbbd65409"
+      "version": "2026.10.25",
+      "hash": "05bc42de8b4b92bd"
     },
     "composer": {
-      "version": "2026.10.19",
-      "hash": "60748821451bcbfa"
+      "version": "2026.10.25",
+      "hash": "ea14ebc84d0f20e1"
     },
     "context-menu": {
       "version": "2026.10.19",
@@ -115,36 +115,36 @@
       "hash": "d702ebd49b3b9866"
     },
     "date-picker": {
-      "version": "2026.10.19",
-      "hash": "e23f7927e03efec0"
+      "version": "2026.10.25",
+      "hash": "14844eff69128ff8"
     },
     "deployment": {
-      "version": "2026.10.22",
-      "hash": "4eae3469fb539581"
+      "version": "2026.10.25",
+      "hash": "0f1ca6b275d874ab"
     },
     "details": {
-      "version": "2026.10.22",
-      "hash": "6083f0ca92040a15"
+      "version": "2026.10.25",
+      "hash": "d5de9ed9df61fadc"
     },
     "dialog": {
       "version": "2026.10.19",
       "hash": "b00dcd792929bd73"
     },
     "dot-plot": {
-      "version": "2026.10.19",
-      "hash": "1f226565599d4dbb"
+      "version": "2026.10.25",
+      "hash": "264f08b39a7e8ef2"
     },
     "file-drop": {
-      "version": "2026.10.22",
-      "hash": "df2f86e8b8851f25"
+      "version": "2026.10.25",
+      "hash": "e784ba2d8a391322"
     },
     "form": {
       "version": "2026.10.24",
       "hash": "80da2c02b8d1f4c8"
     },
     "funnel": {
-      "version": "2026.10.20",
-      "hash": "67247e72e33b0301"
+      "version": "2026.10.25",
+      "hash": "1390bd072e18283f"
     },
     "gauge": {
       "version": "2026.10.22",
@@ -163,8 +163,8 @@
       "hash": "f0efc61b1576305f"
     },
     "heatmap": {
-      "version": "2026.10.22",
-      "hash": "33cfc1e24e34f9b3"
+      "version": "2026.10.25",
+      "hash": "48825fdab4b129a2"
     },
     "hover-card": {
       "version": "2026.10.22",
@@ -175,48 +175,48 @@
       "hash": "b2cf6cf8428f939a"
     },
     "input": {
-      "version": "2026.10.19",
-      "hash": "2c91fd9e5b17d054"
+      "version": "2026.10.25",
+      "hash": "470aedecd77209f9"
     },
     "insights": {
-      "version": "2026.10.22",
-      "hash": "320325337d926ec6"
+      "version": "2026.10.25",
+      "hash": "f31f0691aecadf37"
     },
     "kbd": {
-      "version": "2026.10.15",
-      "hash": "a847c9a52490c6e1"
+      "version": "2026.10.25",
+      "hash": "ae62dcf818d96017"
     },
     "legend": {
-      "version": "2026.10.20",
-      "hash": "1e874a4348b61265"
+      "version": "2026.10.25",
+      "hash": "99126e8c5c94f165"
     },
     "lightbox": {
-      "version": "2026.10.22",
-      "hash": "b238e864b82fcc40"
+      "version": "2026.10.25",
+      "hash": "ea133c769cea11c7"
     },
     "list": {
-      "version": "2026.10.19",
-      "hash": "ea5003aa8279ca51"
+      "version": "2026.10.25",
+      "hash": "2702385041560c13"
     },
     "list-cover": {
       "version": "2026.10.12",
       "hash": "339c4497d7123128"
     },
     "litt": {
-      "version": "2026.10.24",
+      "version": "2026.10.25",
       "hash": "a820c4c64ae2e7b4"
     },
     "log-view": {
-      "version": "2026.10.23",
-      "hash": "4c9bab99662cd712"
+      "version": "2026.10.25",
+      "hash": "e98dff57fff888d6"
     },
     "media": {
       "version": "2026.10.22",
       "hash": "6bc2611a9862421a"
     },
     "menu": {
-      "version": "2026.10.19",
-      "hash": "2903acc17f85cf79"
+      "version": "2026.10.25",
+      "hash": "379bd44f7f47cd23"
     },
     "message": {
       "version": "2026.10.19",
@@ -235,16 +235,16 @@
       "hash": "e4c89c609e6a118e"
     },
     "pad": {
-      "version": "2026.10.19",
-      "hash": "5fa90f57c09ed567"
+      "version": "2026.10.25",
+      "hash": "9f6509e068958e17"
     },
     "pagination": {
-      "version": "2026.10.19",
-      "hash": "b90674f8d7d389f8"
+      "version": "2026.10.25",
+      "hash": "8bea2b5d9d5a66b8"
     },
     "plan": {
-      "version": "2026.10.19",
-      "hash": "fd940652bab6c7ed"
+      "version": "2026.10.25",
+      "hash": "f5aa3c5033842674"
     },
     "popover": {
       "version": "2026.10.15",
@@ -263,8 +263,8 @@
       "hash": "3bd1564ac61f0586"
     },
     "progress": {
-      "version": "2026.10.22",
-      "hash": "cb3d38c19c1c882a"
+      "version": "2026.10.25",
+      "hash": "bb38652e8bbdc7d9"
     },
     "projects": {
       "version": "2026.10.22",
@@ -303,24 +303,24 @@
       "hash": "737cb6f880409b60"
     },
     "sign-in": {
-      "version": "2026.10.22",
-      "hash": "64e123df8ac6d468"
+      "version": "2026.10.25",
+      "hash": "05400760bf4040a6"
     },
     "slide-confirm": {
       "version": "2026.10.22",
       "hash": "ebd8b25621d1cfe0"
     },
     "slider": {
-      "version": "2026.10.24",
-      "hash": "a92129a7705f09f2"
+      "version": "2026.10.25",
+      "hash": "6ca314977815f99e"
     },
     "sparkline": {
       "version": "2026.10.22",
       "hash": "66c8c6effea367eb"
     },
     "spread": {
-      "version": "2026.10.19",
-      "hash": "85417b4a1a0e508f"
+      "version": "2026.10.25",
+      "hash": "a53f175e206f78d3"
     },
     "stat": {
       "version": "2026.10.22",
@@ -331,20 +331,20 @@
       "hash": "6fea99e54da1c2d6"
     },
     "steps": {
-      "version": "2026.10.22",
-      "hash": "0936ddf6531deee4"
+      "version": "2026.10.25",
+      "hash": "bb97617ca1e10121"
     },
     "switch": {
       "version": "2026.10.24",
       "hash": "a620439cb236b02f"
     },
     "table": {
-      "version": "2026.10.24",
-      "hash": "c82d89910e907548"
+      "version": "2026.10.25",
+      "hash": "89d133b20ef7c4af"
     },
     "table-filter": {
-      "version": "2026.10.22",
-      "hash": "7d0af029a2a5c080"
+      "version": "2026.10.25",
+      "hash": "7f589a45825d6a0a"
     },
     "tabs": {
       "version": "2026.10.23",
@@ -359,16 +359,16 @@
       "hash": "ecde187ad981bef5"
     },
     "thinking": {
-      "version": "2026.10.19",
-      "hash": "9b874d6a0a1ed61c"
+      "version": "2026.10.25",
+      "hash": "ace9e52dd214e70f"
     },
     "time-scrubber": {
-      "version": "2026.10.23",
-      "hash": "e59c82c792c16a19"
+      "version": "2026.10.25",
+      "hash": "b06bb982681a78ca"
     },
     "timeline": {
-      "version": "2026.10.22",
-      "hash": "bca33598c63304cd"
+      "version": "2026.10.25",
+      "hash": "073d0857dfee1bce"
     },
     "toast": {
       "version": "2026.10.24",
@@ -379,16 +379,16 @@
       "hash": "1448ee5fadf8fe75"
     },
     "tool-call": {
-      "version": "2026.10.19",
-      "hash": "1913f01a0323a1d5"
+      "version": "2026.10.25",
+      "hash": "03da1f2c20affffc"
     },
     "tooltip": {
-      "version": "2026.10.15",
-      "hash": "bca14735046dd898"
+      "version": "2026.10.25",
+      "hash": "0acfedc16142e1e0"
     },
     "tree": {
-      "version": "2026.10.24",
-      "hash": "50ce7f9b0b028bb8"
+      "version": "2026.10.25",
+      "hash": "5f8523acab1bed21"
     },
     "usage": {
       "version": "2026.10.22",

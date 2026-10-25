@@ -158,10 +158,10 @@ function PublishDemo() {
           <dl className="grid gap-3">
             <Row label="Pages changed">3</Row>
             <Row label="Build size">
-              <span className="font-mono text-caption font-normal">418 kB</span>
+              <span className="tabular-nums text-caption font-normal">418 kB</span>
             </Row>
             <Row label="Domain">
-              <span className="font-mono text-caption font-normal">litt.design</span>
+              <span className="text-caption font-normal">litt.design</span>
             </Row>
           </dl>
         </DialogContent>
@@ -357,7 +357,7 @@ function SheetDemo() {
             }}
           >
             <TextField label="Project name" spellCheck={false} value={name} onChange={(e) => setName(e.target.value)} />
-            <TextField label="Custom domain" mono spellCheck={false} defaultValue="litt.design" help="Point a CNAME record at framer.app." />
+            <TextField label="Custom domain" spellCheck={false} defaultValue="litt.design" help="Point a CNAME record at framer.app." />
             <Segmented
               legend="Visibility"
               showLegend

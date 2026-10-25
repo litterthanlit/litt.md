@@ -339,7 +339,7 @@ function SettingsDemo() {
       </FormSection>
 
       <FormSection title="Studio" description="What clients see on your public page and on every invoice.">
-        <TextField label="Website" type="url" inputMode="url" mono spellCheck={false} autoComplete="url" {...text("website")} />
+        <TextField label="Website" type="url" inputMode="url" spellCheck={false} autoComplete="url" {...text("website")} />
         <Textarea label="Bio" rows={4} help="Shown under your studio name. Keep it to a sentence or two." {...text("bio")} />
         <Fieldset legend="Invoice address" description="Printed on every invoice.">
           <TextField label="Street" autoComplete="address-line1" {...text("street")} />

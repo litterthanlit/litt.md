@@ -12,7 +12,7 @@ function Ratio({ label, value }: { label: string; value: number }) {
   return (
     <>
       <dt className="text-fg-subtle">{label}</dt>
-      <dd className={"font-mono tabular-nums " + (pass ? "text-fg" : "text-danger")}>
+      <dd className={"tabular-nums " + (pass ? "text-fg" : "text-danger")}>
         {value.toFixed(2)}:1 {pass ? "" : "fails"}
       </dd>
     </>
@@ -49,8 +49,8 @@ export function AccentBlues() {
           <div aria-hidden="true" className="h-14 rounded-control bg-accent" />
           <div className="grid gap-0.5">
             <span className="text-small font-title text-fg">{a.n === "Today" ? "Today" : a.name}</span>
-            <span className="font-mono text-caption text-fg-subtle">{a.hex}</span>
-            <span className="font-mono text-caption text-fg-subtle">{a.oklch}</span>
+            <span className="text-caption font-normal text-fg-subtle">{a.hex}</span>
+            <span className="tabular-nums text-caption font-normal text-fg-subtle">{a.oklch}</span>
           </div>
           <div>
             <Button variant="primary" size="sm">

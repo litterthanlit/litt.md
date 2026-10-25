@@ -31,7 +31,7 @@
  * - Suggestions: up to four prompts above the box as secondary sm Buttons. A click puts the text in the field and
  *   focuses it with the caret at the end. It never sends (decision 8). The caller drops them after the first turn.
  * - Hint and limit: `hint` is a caption line under the box in --fg-subtle, linked to the field. With `maxLength`
- *   the field stops at the limit, and a mono count shows in the toolbar once 80% is used, in --danger at the
+ *   the field stops at the limit, and a tabular count shows in the toolbar once 80% is used, in --danger at the
  *   limit. A polite message says it once at 80% and once at the limit, never on every key.
  * - Disabled: --surface-2 with a --line edge, the text --fg-disabled. Say the reason in the hint.
  * - Compact screens: the toolbar's buttons grow to 44px, and a bottom safe-area inset sits under the composer. The
@@ -62,7 +62,7 @@ import { useDevice, useExit, useTransition } from "@/motion";
 export type ComposerFile = {
   /** A stable id: the chip's key, and how a removal says which file it means. */
   id: string;
-  /** The file name, in mono. A long name is cut at the end with an ellipsis. */
+  /** The file name. A long name is cut at the end with an ellipsis. */
   name: string;
   /** The size: a number is bytes and reads "2.4 MB", a string is shown as it is. */
   size?: number | string;
@@ -87,7 +87,7 @@ const group = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 /* ------------------------------------------------------------------ FileChip */
 
 export type FileChipProps = {
-  /** The file name, in mono. A long name is cut at the end with an ellipsis. */
+  /** The file name. A long name is cut at the end with an ellipsis. */
   name: string;
   /** The size: a number is bytes and reads "2.4 MB", a string is shown as it is. */
   size?: number | string;
@@ -107,7 +107,7 @@ const REMOVE =
   "pointer-coarse:before:absolute pointer-coarse:before:-inset-2.5";
 
 /**
- * A file as a chip: an icon, the name in mono, the size or the upload percent, and a remove button named
+ * A file as a chip: an icon, the name, the size or the upload percent, and a remove button named
  * "Remove brief.pdf". With no onRemove it is a plain label, for the files of a message already sent.
  */
 export function FileChip({ name, size, progress, onRemove, className = "" }: FileChipProps) {
@@ -124,11 +124,11 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
       ].join(" ")}
     >
       <FileIcon className="shrink-0 text-fg-muted" />
-      <span className="min-w-0 truncate font-mono text-caption font-normal text-fg">{name}</span>
+      <span className="min-w-0 truncate text-caption font-normal text-fg">{name}</span>
       {uploading ? (
         <>
           <span className="sr-only">, uploading {percent} percent</span>
-          <span aria-hidden="true" className="min-w-[4ch] shrink-0 text-right font-mono text-caption font-normal tabular-nums text-fg-subtle">
+          <span aria-hidden="true" className="min-w-[4ch] shrink-0 text-right text-caption font-normal tabular-nums text-fg-subtle">
             {percent}%
           </span>
         </>
@@ -136,7 +136,7 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
         size !== undefined && (
           <>
             <span className="sr-only">, </span>
-            <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{formatSize(size)}</span>
+            <span className="shrink-0 text-caption tabular-nums font-normal text-fg-subtle">{formatSize(size)}</span>
           </>
         )
       )}
@@ -573,7 +573,7 @@ export function Composer({
             <span
               id={countId}
               className={
-                "shrink-0 px-1 font-mono text-caption font-normal tabular-nums transition-colors duration-(--dur-instant) ease-litt " +
+                "shrink-0 px-1 text-caption font-normal tabular-nums transition-colors duration-(--dur-instant) ease-litt " +
                 (full ? "text-danger" : "text-fg-subtle")
               }
             >

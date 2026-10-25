@@ -232,7 +232,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                   <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4">
                     <p className="flex items-baseline justify-between pb-2 text-caption">
                       <span id={`nav-${run.group}`} className="text-fg-muted">{run.group}</span>
-                      <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
+                      <span aria-hidden="true" className="font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
                     </p>
                     {run.pages.map((p) => navLink(p))}
                   </div>

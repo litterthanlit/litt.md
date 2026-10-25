@@ -429,7 +429,7 @@ export default function LanguageCanvas() {
 function ZoomReadout({ cam }: { cam: CameraStore }) {
   const z = useSyncExternalStore(cam.subscribe, () => Math.round(cam.get().z * 100));
   return (
-    <output aria-live="off" className="w-12 text-center max-sm:w-10 max-[359px]:hidden font-mono text-small tabular-nums text-fg-muted">
+    <output aria-live="off" className="w-12 text-center max-sm:w-10 max-[359px]:hidden text-small tabular-nums text-fg-muted">
       {z}%
     </output>
   );

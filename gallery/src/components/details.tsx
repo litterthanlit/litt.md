@@ -15,7 +15,8 @@
  * - Grid: the label sits above the value, in columns that measure the card: one under 20rem, two from there, and up
  *   to `columns` once it is wide. `wide` lets an item, such as a note, take the whole row.
  * - Type (P9): the label is small in fg-subtle, the value is body in fg. `mono` sets a value in Geist Mono at the
- *   small size, for data a person reads character by character: a hash, an ID, a version, a region code.
+ *   small size, for an identifier a person reads character by character: a hash, an ID, a path. A version, a
+ *   region or a number stays in the sans.
  *   A long value wraps anywhere rather than truncating, so nothing is ever hidden.
  * - Empty: an item with no value says "Not set" in fg-subtle (or its own `empty` words), never a dash.
  * - Loading: `loading` swaps every value for a still surface-2 bar one line tall, so the card keeps its height when
@@ -200,7 +201,7 @@ export type DetailsItemProps = {
   label: string;
   /** The value: text, a Tag, an Avatar with a name, or a DetailsLink. Leave it out and the item says it is not set. */
   children?: ReactNode;
-  /** Sets the value in Geist Mono at the small size, for a hash, an ID, a version or a region code. */
+  /** Sets the value in Geist Mono at the small size, for a hash, an ID or a path. */
   mono?: boolean;
   /** Adds a copy button at the end of the row that puts exactly this text on the clipboard. */
   copy?: string;

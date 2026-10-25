@@ -19,8 +19,8 @@
    Theme-independent tokens
    -------------------------------------------------------------------------- */
 :root {
-  /* Type: Geist carries every role, headings included, as on litt.design. Geist Mono
-     only for code, keys, numbers in tables and data, version strings and token names.
+  /* Type: Geist carries every role, headings and numbers included (numbers in tabular
+     figures), as on litt.design. Geist Mono only for code and terminal output (v0.19).
      "Geist" is Google Fonts' name for the face, "Geist Sans" Fontsource's. */
   --font-sans: "Geist", "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;

@@ -12,7 +12,7 @@
  * - Slides per view: one, two or three, with the next slide peeking 48px at the end edge (96px for one slide in a wide
  *   box), or auto for slides that set their own width. The box decides by a container query, not the screen: in a
  *   narrow box every carousel is one slide and a peek.
- * - Controls (CarouselControls): the range in words at the start, "3 of 12" or "4 to 6 of 12", in the mono at the
+ * - Controls (CarouselControls): the range in words at the start, "3 of 12" or "4 to 6 of 12", in tabular figures at the
  *   caption size in --fg-subtle, as Pagination's; and round secondary Previous and Next buttons at the end, 44px on a
  *   touch screen. Next moves a page (the first slide not wholly in view comes to the start), Previous a page back. At
  *   an end the button is disabled and hands its focus to the other one.
@@ -562,7 +562,7 @@ export function CarouselControls({ className = "" }: CarouselControlsProps) {
 
   return (
     <div className={"flex items-center justify-between gap-4 " + className}>
-      <p aria-hidden="true" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+      <p aria-hidden="true" className="text-caption font-normal tabular-nums text-fg-subtle">
         {view.total > 0 ? rangeText(view) : ""}
       </p>
       <div className="flex items-center gap-2">

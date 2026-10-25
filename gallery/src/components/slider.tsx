@@ -10,7 +10,7 @@
  *   are the control radius less those 2px, so the two stay concentric at every shape. Its leading end rolls away
  *   into shade (--block-roll), a little deeper the further it is pushed, as in the frames. Never the accent (P1): a
  *   form can hold many sliders, and the accent stays on the one primary action.
- * - The slab says its value: at its leading end, in the mono at the small size, --fg, tabular. The slab is never
+ * - The slab says its value: at its leading end, at the small size, --fg, in tabular figures. The slab is never
  *   shorter than that word (the widest of min and max) with its air, so the word always fits. showValue={false}
  *   leaves the slab plain and 32px at its shortest.
  * - Label: above, like the Input's. Words for the two ends sit under the tray ("Slower", "Faster").
@@ -72,7 +72,7 @@ export type SliderProps = {
   minLabel?: ReactNode;
   /** A word under the end of the tray, such as "Faster". */
   maxLabel?: ReactNode;
-  /** The slab says its value at its leading end, in the mono. On by default; false leaves the slab plain. */
+  /** The slab says its value at its leading end. On by default; false leaves the slab plain. */
   showValue?: boolean;
   /** Turns a value into text, such as 1 into "1.0x". It feeds the shown value and aria-valuetext. Without it, the number is shown as it is. */
   formatValue?: (value: number) => string;
@@ -115,7 +115,7 @@ export type RangeSliderProps = {
   minLabel?: ReactNode;
   /** A word under the end of the tray, such as "Slower". */
   maxLabel?: ReactNode;
-  /** Shows the span at the end of the label row, in the mono: "20s to 80s". Off by default. */
+  /** Shows the span at the end of the label row, in tabular figures: "20s to 80s". Off by default. */
   showValue?: boolean;
   /** Turns one value into text, such as 20 into "20s". It feeds the shown span ("20s to 80s") and each thumb's aria-valuetext. Without it, the number is shown as it is. */
   formatValue?: (value: number) => string;
@@ -144,9 +144,9 @@ const trayRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-of
 const room = "absolute inset-0.5";
 
 /* The slab, raised. Its corners are the control radius less the 2px it is set in. It reads the grip's width in the
-   mono at the small size, as the thumb does, so the two agree to the pixel. */
+   sans at the small size, as the thumb does, so the two agree to the pixel. */
 const slabBase =
-  "pointer-events-none absolute inset-y-0 rounded-[calc(var(--radius-control)-2px)] font-mono text-small " +
+  "pointer-events-none absolute inset-y-0 rounded-[calc(var(--radius-control)-2px)] text-small " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "forced-colors:border forced-colors:bg-[Highlight]";
 const slabLook = (held: boolean, disabled: boolean) =>
@@ -158,7 +158,7 @@ const slabLook = (held: boolean, disabled: boolean) =>
 
 /* A single slider's thumb: the grip at the slab's leading end, which says the value. The ring is the tray's. */
 const gripOne =
-  "flex h-10 w-(--grip) items-center justify-end pr-3 font-mono text-small tabular-nums text-fg focus-visible:outline-none " +
+  "flex h-10 w-(--grip) items-center justify-end pr-3 text-small tabular-nums text-fg focus-visible:outline-none " +
   "data-disabled:text-fg-subtle forced-colors:text-[HighlightText]";
 
 /* A range's thumb: a 20px grip at one end of the slab. The focused one rings itself, so you can tell which end the keys move. */
@@ -231,7 +231,7 @@ function Field({ labelId, label, shown, helpId, help, minLabel, maxLabel, disabl
         </span>
         {shown !== undefined && (
           /* Disabled, the value steps down to --fg-subtle, not --fg-disabled: it is still information, and it must stay readable. */
-          <span aria-hidden="true" className={"font-mono text-small tabular-nums " + (disabled ? "text-fg-subtle" : "text-fg-muted")}>
+          <span aria-hidden="true" className={"text-small tabular-nums " + (disabled ? "text-fg-subtle" : "text-fg-muted")}>
             {shown}
           </span>
         )}
@@ -286,9 +286,9 @@ export function Slider({
   const fmt = (v: number) => (formatValue ? formatValue(v) : String(v));
   const text = fmt(value);
   const p = (value - min) / (max - min || 1);
-  /* The grip holds the widest word the slider can say, in the mono, so the slab's shortest never changes as it moves. */
+  /* The grip holds the widest word the slider can say (a figure is 1ch; the slack covers a wider sign such as %), so the slab's shortest never changes as it moves. */
   const chars = Math.max(fmt(min).length, fmt(max).length, fmt(snapToStep(min + step, min, max, step)).length);
-  const grip = showValue ? `calc(${chars}ch + 1.5rem)` : "2rem";
+  const grip = showValue ? `calc(${chars}ch + 1.75rem)` : "2rem";
 
   const latest = useRef(value);
   latest.current = value;

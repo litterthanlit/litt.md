@@ -2,7 +2,7 @@
  * Plan: an agent's steps for a task, ticked off as it works, such as "Move the Northwind site to the new grid".
  * It sits bare in a turn beside the turn's other parts, or in a raised panel the caller draws beside the chat.
  *
- * - Header (components.md, Plan): the label at the small size in fg and the count in the mono caption in fg-subtle
+ * - Header (components.md, Plan): the label at the small size in fg and the count in a tabular caption in fg-subtle
  *   with tabular numbers ("3 of 7"), over a 4px rail drawn exactly as the Meter's: a track at fg 12% and the done
  *   share in fg, both at the control radius. Progress is one quantity, not a category, so the rail takes no hue
  *   (P11), and its fill moves at once, as the Slider's range does. The Meter itself is not imported: it is a
@@ -157,7 +157,7 @@ export function Plan({ label, steps, className = "" }: PlanProps) {
           <span id={id} className="text-small font-title text-fg">
             {label}
           </span>
-          <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+          <span className="text-caption font-normal tabular-nums text-fg-subtle">
             {done} of {total}
             <span className="sr-only"> steps done</span>
           </span>

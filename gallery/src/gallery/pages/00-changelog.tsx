@@ -70,7 +70,7 @@ function ReleaseSection({ release }: { release: Release }) {
         <h2 id={id} className="text-h3 text-fg text-balance">
           {release.title}
         </h2>
-        <p className="font-mono text-caption font-normal text-fg-subtle">
+        <p className="tabular-nums text-caption font-normal text-fg-subtle">
           <time dateTime={release.date}>{when}</time> · {release.version}
         </p>
       </header>

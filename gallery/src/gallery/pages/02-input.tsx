@@ -36,7 +36,7 @@ import { Button } from "@/components/button";
     "A field beside its submit button, such as an email signup. Use Input at size lg next to a size lg primary Button.",
     "A filter or search in a table or toolbar. Use Input at size sm.",
     "Longer text, such as a brief or a note. Use Textarea.",
-    "Data like a slug or a domain. Add mono for Geist Mono.",
+    "Code a person types, like a slug or a path. Add mono for Geist Mono. A domain, a link or a number stays in the sans.",
   ],
   skip: [
     "A choice from a few fixed options. Use Segmented for two to five, or radios for more.",
@@ -68,7 +68,6 @@ function StatesDemo() {
       <TextField label="Project name" defaultValue="Halo site" help="Shown in the dashboard and the browser tab." />
       <TextField
         label="Custom domain"
-        mono
         defaultValue="halo studio"
         spellCheck={false}
         error="Use letters, numbers and dots only, like halo.studio."

@@ -195,7 +195,7 @@ function ProjectRowsDemo() {
           </ContextMenu>
         ))}
       </ul>
-      <p role="status" className="font-mono text-caption font-normal text-fg-subtle">
+      <p role="status" className="text-caption font-normal text-fg-subtle">
         {last}
       </p>
     </div>
@@ -319,7 +319,7 @@ function FileGridDemo() {
                     </span>
                     <span className="grid min-w-0 gap-1">
                       <span className="truncate text-small font-title text-fg">{fileName(f)}</span>
-                      <span className="font-mono text-caption font-normal text-fg-subtle">{size(f.kb)}</span>
+                      <span className="tabular-nums text-caption font-normal text-fg-subtle">{size(f.kb)}</span>
                     </span>
                   </button>
                 </li>
@@ -330,7 +330,7 @@ function FileGridDemo() {
       >
         {options}
       </ContextMenu>
-      <p role="status" className="font-mono text-caption font-normal text-fg-subtle">
+      <p role="status" className="text-caption font-normal text-fg-subtle">
         {last} · {hidden ? "hidden files shown" : "hidden files hidden"} · by {sort === "edited" ? "last edited" : sort}
       </p>
     </div>

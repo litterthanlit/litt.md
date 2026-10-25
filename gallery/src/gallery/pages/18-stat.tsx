@@ -128,7 +128,7 @@ function NarrowDemo() {
   return (
     <div className="grid w-full max-w-3xl items-start gap-8 sm:grid-cols-[22rem_16rem]">
       <div className="grid gap-2">
-        <p className="font-mono text-caption font-normal text-fg-subtle">A group 22rem wide</p>
+        <p className="text-caption font-normal text-fg-subtle">A group 22rem wide</p>
         <StatGroup>
           <Stat label="Active projects" value={12} />
           <Stat label="Deploys this week" value={38} delta="Up 12% on last week" tone="good" />
@@ -137,7 +137,7 @@ function NarrowDemo() {
         </StatGroup>
       </div>
       <div className="grid gap-2">
-        <p className="font-mono text-caption font-normal text-fg-subtle">A group 16rem wide</p>
+        <p className="text-caption font-normal text-fg-subtle">A group 16rem wide</p>
         <StatGroup>
           <Stat label="Active projects" value={12} />
           <Stat label="Median build" value={41} unit="s" delta="Down 6 s on last week" tone="good" />

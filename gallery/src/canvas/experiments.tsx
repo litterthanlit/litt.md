@@ -255,7 +255,7 @@ export function NumberTray({ label, defaultValue = 3, min = 1, max = 12, unit }:
             const n = Number.parseInt(e.target.value, 10);
             if (!Number.isNaN(n)) set(n);
           }}
-          className="w-16 bg-transparent text-center font-mono text-body tabular-nums text-fg focus-visible:outline-none"
+          className="w-16 bg-transparent text-center text-body tabular-nums text-fg focus-visible:outline-none"
         />
         <button type="button" aria-label={`More ${unit ?? ""}`.trim()} disabled={value >= max} onClick={() => set(value + 1)} className={end}>
           <PlusIcon />
@@ -275,7 +275,7 @@ export function ProgressSlab({ label, value }: { label: string; value: number })
       <span className="text-small font-title text-fg">{label}</span>
       <div role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={value} className={"relative h-8 rounded-control " + tray}>
         <span
-          className={"absolute inset-y-0.5 left-0.5 flex items-center justify-end pr-2.5 font-mono text-caption tabular-nums text-fg " + blockRadius + " " + lift}
+          className={"absolute inset-y-0.5 left-0.5 flex items-center justify-end pr-2.5 text-caption font-normal tabular-nums text-fg " + blockRadius + " " + lift}
           style={{ width: `calc(3.5rem + (100% - 4px - 3.5rem) * ${p})` } as CSSProperties}
         >
           <span aria-hidden="true">{value}%</span>

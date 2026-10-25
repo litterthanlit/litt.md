@@ -5,7 +5,7 @@
  *
  * - Anatomy: a wrapping row of toggle buttons in a `role="group"` named by `label`. Each is a swatch (a 12 by 4px
  *   rail at the control radius, the Breakdown legend's swatch) in the hue's mark tone, the name (small, `--fg`), and
- *   an optional reading after it (mono, caption, `--fg-subtle`, tabular), such as a total.
+ *   an optional reading after it (caption, `--fg-subtle`, tabular), such as a total.
  * - Hues: assigned exactly as the Chart's `paints(series, true)` does with `hues` on, so a Legend and a BarChart or
  *   LineChart given the same list always agree: an item with `hue` keeps it, and every item without one takes the
  *   next hue in the fixed order (blue, amber, teal, violet, rose), counting only items without one. The order comes
@@ -50,7 +50,7 @@ export type LegendItem = {
   name: string;
   /** Pins the series to one of the five data hues. Give the chart's series the same hue, or use `legendHues` to read them. */
   hue?: LegendHue;
-  /** A reading shown after the name in mono, such as the series' total: "1,240". Leave it out when the name is enough. */
+  /** A reading shown after the name in tabular figures, such as the series' total: "1,240". Leave it out when the name is enough. */
   value?: string;
 };
 
@@ -151,7 +151,7 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
               {item.name}
             </span>
             {item.value !== undefined && (
-              <span className="litt-trim font-mono text-caption font-normal tabular-nums text-fg-subtle">{item.value}</span>
+              <span className="litt-trim text-caption font-normal tabular-nums text-fg-subtle">{item.value}</span>
             )}
           </button>
         );

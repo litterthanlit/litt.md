@@ -21,7 +21,7 @@
  *   color in words ("Dark blue, #1f3a8a").
  * - Pointer: pressing anywhere moves the thumb there and starts a drag; the area captures the pointer, so a drag may
  *   leave it. Both surfaces are data-no-drag and touch-action none.
- * - Hex: the Input at sm, in mono. It commits on Enter or when it loses focus, takes three or six digits with or
+ * - Hex: the Input at sm. It commits on Enter or when it loses focus, takes three or six digits with or
  *   without the hash, and puts the last good value back when what was typed is not a color. While it is not a color it
  *   is aria-invalid.
  * - Eyedropper: an icon-only ghost Button beside the hex, only where the browser has the EyeDropper API (Chromium on a
@@ -33,7 +33,7 @@
  *   lag the hand. The ColorPicker's popover carries the only motion, on the responsive tier.
  *
  * ColorPicker:
- * - Field: the Select trigger's look and sizes, as the Date picker's, with a 16px chip of the color, the hex in mono
+ * - Field: the Select trigger's look and sizes, as the Date picker's, with a 16px chip of the color, the hex
  *   and a 16px chevron at the end, or a placeholder in --fg-subtle. A button with aria-haspopup="dialog", named by its
  *   label and the color in words. Label above, hint or error below.
  * - It opens the ColorPanel in a PopoverContent (md, 320px, so eight swatches fit a row), which is a bottom sheet on compact screens. Focus lands on
@@ -461,7 +461,6 @@ export function ColorPanel({
         </span>
         <Input
           size="sm"
-          mono
           className="min-w-0 flex-1"
           aria-label="Hex"
           invalid={draft !== null && !typed}
@@ -635,7 +634,7 @@ export function ColorPicker({
                 <span aria-hidden="true" className="relative size-4 shrink-0 rounded-control" style={{ backgroundColor: value }}>
                   <span className={hairline} />
                 </span>
-                <span className="min-w-0 flex-1 truncate font-mono tabular-nums">{value}</span>
+                <span className="min-w-0 flex-1 truncate tabular-nums">{value}</span>
                 <span id={valueId} className="sr-only">
                   {describeColor(value)}, {value}
                 </span>
