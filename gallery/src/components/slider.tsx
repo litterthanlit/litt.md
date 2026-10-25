@@ -1,50 +1,53 @@
 /**
  * Slider (components.md, "Slider"): one value on a continuous range, such as the default
  * animation speed. Built on Radix Slider (one thumb), which gives the role, the keys and the
- * pointer maths. litt owns the look, the label row and the end words. RangeSlider, in the same
- * file, is the same control with two thumbs for a span (see "Range" below).
+ * form value. litt owns the look, the hand, the label row and the end words. RangeSlider, in the
+ * same file, is the same control with two ends for a span (see "Range" below).
  *
- * - Rail: 4px, the control radius, filled at fg 12%. The range from the start to the thumb is
- *   --fg, never the accent (P1): a form can hold many sliders, and the accent stays on the one
- *   primary action. The thumb is a 20px circle (a slider thumb is a circle, v0.9) in --surface-1
- *   with an inset --line-control edge and the top highlight, --surface-2 on hover.
- * - Label: above, like the Input's. The value can sit at the end of the label row in the mono
- *   at the small size. Words for the two ends sit under the rail ("Slower", "Faster").
+ * - A slab in a tray (material.md, 6, "Press"; Nick's frames 116 to 118, v0.x). The tray is the control's height
+ *   (44, md), sunken: --tray with --tray-shade, at the control radius. The slab is the value: a raised block
+ *   (--block, --block-round, --block-lift) set 2px in, that grows from the start to where the value is. Its corners
+ *   are the control radius less those 2px, so the two stay concentric at every shape. Its leading end rolls away
+ *   into shade (--block-roll), a little deeper the further it is pushed, as in the frames. Never the accent (P1): a
+ *   form can hold many sliders, and the accent stays on the one primary action.
+ * - The slab says its value: at its leading end, in the mono at the small size, --fg, tabular. The slab is never
+ *   shorter than that word (the widest of min and max) with its air, so the word always fits. showValue={false}
+ *   leaves the slab plain and 32px at its shortest.
+ * - Label: above, like the Input's. Words for the two ends sit under the tray ("Slower", "Faster").
  * - The label names the thumb (aria-labelledby), the help text describes it, and formatValue
  *   feeds both the visible value and aria-valuetext.
- * - Motion: none on the position. The thumb and the range follow the pointer and the keys at
- *   once, because position is a layout value and an eased jump would lag the input. Only colors
- *   fade, on the instant tier. The thumb never changes size on hover, focus or drag.
- * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a thumb a finger holds lifts, stretches along
- *   the rail with the finger's speed (and thins across it), and wobbles back to its own size when let go
- *   (useFunGrab). Only its scale moves: it still sits exactly where the value puts it, and keys move it as before.
- *   Reduced motion turns it off.
+ * - Hand: press on the slab and it is held where it was taken, so it moves with the finger from there; press past
+ *   its end and the end jumps to the finger. While held, its cast tightens (--block-press). The hand is this file's,
+ *   not Radix's (Radix maps the pointer across the whole width, which would jump the slab's end under the finger).
+ * - Motion: none on the value. The slab follows the pointer and the keys at once, because its length is the value
+ *   and an eased jump would lag the input. Only its cast changes, on the instant tier.
  * - Keys: arrows step, Home and End go to the ends, Page Up and Page Down move about a tenth of
- *   the range (whole steps, never fewer than one). The focus ring is :focus-visible only.
- * - Touch: the hit area is 44px tall on coarse pointers. The row grows, the rail does not. The
- *   slider owns horizontal drags: it is marked data-no-drag, so a sheet never moves under it,
- *   and its touch-action leaves vertical scrolling to the page.
- * - Disabled: the rail at fg 6%, the range --fg-disabled, the thumb --surface-2 with a --line edge. The
+ *   the range (whole steps, never fewer than one). The focus ring is on the tray, for :focus-visible only.
+ * - Touch: the tray is 44px tall. The slider owns horizontal drags: it is marked data-no-drag, so a sheet never
+ *   moves under it, and its touch-action leaves vertical scrolling to the page.
+ * - Disabled: the tray at --surface-2 with a hairline, the slab --surface-2 and flat, its word --fg-subtle. The
  *   label dims to --fg-disabled; the value and the end words stay at --fg-subtle, because they are still read.
- * - Forced colors drops box-shadow, so the rail and the thumb get real borders.
+ * - Forced colors drops box-shadow and background colors, so the tray and the slab get real borders and the slab
+ *   takes the system highlight.
  *
- * Range (components.md, "Slider", the Range bullet): RangeSlider is two thumbs on one rail, such as
- * builds that took between 20s and 80s in a table filter. It reuses every class string, the label row,
- * the help text, the end words and the disabled look above. The part of the rail between the thumbs
- * is the range (--fg); outside it the rail stays at fg 12%.
+ * Range (components.md, "Slider", the Range bullet): RangeSlider is one slab that spans [from, to], such as builds
+ * that took between 20s and 80s in a table filter. Each end of it is a thumb, a 20px grip that rolls into shade, and
+ * the span shows at the end of the label row ("20s to 80s") when showValue is on. It reuses the tray, the label row,
+ * the help text, the end words and the disabled look above.
  * - Names: each thumb is named by the label and its end ("Build time, from", "Build time, to"), and
  *   gets its own aria-valuetext from formatValue. The shown value reads "20s to 80s": words, never a dash.
  *   The two thumbs sit in a group named by the label (and marked aria-disabled when it is), so a screen
  *   reader says they belong together, and the dimmed label of a disabled range is known to be inactive.
+ * - Hand: a press takes the nearer end of the slab, held where it was taken, or jumps it to the finger when the press
+ *   is past it. The focused end draws the focus ring inside itself, so you can tell which one the keys move.
  * - The thumbs never cross and stay minStepsBetweenThumbs steps apart. Radix would swap them (or
  *   mis-round a decimal step), so Radix keeps their order (preserveThumbOrder) and this file holds the gap.
  * - Keys act on the focused thumb. The arrows are Radix's. Home, End, Page Up and Page Down are
  *   handled here, because Radix sends Home to the first thumb and End to the last, whichever has focus.
  * - A form sends both values under name (FormData.getAll(name) is [from, to]), not under name[].
  */
-import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
+import { useId, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
 import * as RadixSlider from "@radix-ui/react-slider";
-import { useFunGrab, type FunGrab } from "@/motion";
 
 export type SliderProps = {
   /** The label above the slider. Required, because it names the thumb for screen readers. */
@@ -55,21 +58,21 @@ export type SliderProps = {
   value?: number;
   /** The value it starts at when you do not control it. Without one, it starts at min. */
   defaultValue?: number;
-  /** Called with the new value on every move of the thumb, by pointer or key. */
+  /** Called with the new value on every move of the slab, by pointer or key. */
   onValueChange?: (value: number) => void;
-  /** Called with the final value when a drag is released, or right after a key moves the thumb. Use it to save. */
+  /** Called with the final value when a drag is released, or right after a key moves the slab. Use it to save. */
   onValueCommit?: (value: number) => void;
-  /** The lowest value, at the start of the rail. */
+  /** The lowest value, with the slab at its shortest. */
   min?: number;
-  /** The highest value, at the end of the rail. */
+  /** The highest value, with the slab filling the tray. */
   max?: number;
-  /** The gap between values. The thumb snaps to it, and an arrow key moves one step. */
+  /** The gap between values. The slab snaps to it, and an arrow key moves one step. */
   step?: number;
-  /** A word under the start of the rail, such as "Slower". Say which way is which. */
+  /** A word under the start of the tray, such as "Slower". Say which way is which. */
   minLabel?: ReactNode;
-  /** A word under the end of the rail, such as "Faster". */
+  /** A word under the end of the tray, such as "Faster". */
   maxLabel?: ReactNode;
-  /** Shows the value at the end of the label row, in the mono. Off by default. */
+  /** The slab says its value at its leading end, in the mono. On by default; false leaves the slab plain. */
   showValue?: boolean;
   /** Turns a value into text, such as 1 into "1.0x". It feeds the shown value and aria-valuetext. Without it, the number is shown as it is. */
   formatValue?: (value: number) => string;
@@ -94,23 +97,23 @@ export type RangeSliderProps = {
   value?: [number, number];
   /** The values it starts at when you do not control them. Without them, it starts open, at [min, max]. */
   defaultValue?: [number, number];
-  /** Called with [from, to] on every move of either thumb, by pointer or key. */
+  /** Called with [from, to] on every move of either end, by pointer or key. */
   onValueChange?: (value: [number, number]) => void;
-  /** Called with [from, to] when a drag is released, or right after a key moves a thumb. Use it to save or to run the filter. */
+  /** Called with [from, to] when a drag is released, or right after a key moves an end. Use it to save or to run the filter. */
   onValueCommit?: (value: [number, number]) => void;
-  /** The lowest value, at the start of the rail. */
+  /** The lowest value, at the start of the tray. */
   min?: number;
-  /** The highest value, at the end of the rail. */
+  /** The highest value, at the end of the tray. */
   max?: number;
-  /** The gap between values. Both thumbs snap to it, and an arrow key moves the focused thumb one step. */
+  /** The gap between values. Both ends snap to it, and an arrow key moves the focused end one step. */
   step?: number;
-  /** How many steps the thumbs stay apart. They never cross, and never meet unless you pass 0. */
+  /** How many steps the ends stay apart. They never cross, and never meet unless you pass 0. */
   minStepsBetweenThumbs?: number;
   /** The words that finish each thumb's name, "<label>, from" and "<label>, to". Change them for another language or another meaning. */
   thumbLabels?: [string, string];
-  /** A word under the start of the rail, such as "Faster". Say which way is which. */
+  /** A word under the start of the tray, such as "Faster". Say which way is which. */
   minLabel?: ReactNode;
-  /** A word under the end of the rail, such as "Slower". */
+  /** A word under the end of the tray, such as "Slower". */
   maxLabel?: ReactNode;
   /** Shows the span at the end of the label row, in the mono: "20s to 80s". Off by default. */
   showValue?: boolean;
@@ -128,33 +131,40 @@ export type RangeSliderProps = {
   ref?: Ref<HTMLSpanElement>;
 };
 
-/* The hit area: the thumb's own height on a fine pointer, 44px on a coarse one. The rail stays centered and 4px. */
-const root =
-  "relative flex h-5 w-full touch-pan-y select-none items-center pointer-coarse:h-control-md " +
-  "cursor-pointer data-disabled:cursor-not-allowed";
-
-const rail =
-  "relative h-1 grow rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] " +
-  "transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "data-disabled:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
-  /* Forced colors drops background colors and box-shadow, so the rail is outlined and the range takes a system color. */
+/* The tray: sunken, the control's height, at the control radius. It clips what moves, so a cast never spills past its
+   walls. A single slider's focus ring sits on it; a range draws its ring on the focused end instead. */
+const trayBase =
+  "relative flex h-control-md w-full cursor-pointer touch-pan-y select-none overflow-hidden rounded-control " +
+  "bg-tray shadow-(--tray-shade) " +
+  "data-disabled:cursor-not-allowed data-disabled:bg-surface-2 data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border";
+const trayRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
 
-const range =
-  "absolute h-full rounded-control bg-fg " +
-  "transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "data-disabled:bg-fg-disabled " +
-  "forced-colors:bg-[Highlight]";
+/* Inside the tray, 2px in: where the slab and the thumbs live. Radix positions the thumbs against it. */
+const room = "absolute inset-0.5";
 
-const thumb =
-  "block size-5 rounded-pill bg-surface-1 " +
-  "shadow-[inset_0_0_0_1px_var(--line-control),var(--highlight)] " +
-  "transition-[background-color,box-shadow] duration-(--dur-instant) ease-litt " +
-  "hover:bg-surface-2 pointer-coarse:active:bg-surface-2 " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-  "data-disabled:bg-surface-2 data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  "forced-colors:border";
+/* The slab, raised. Its corners are the control radius less the 2px it is set in. It reads the grip's width in the
+   mono at the small size, as the thumb does, so the two agree to the pixel. */
+const slabBase =
+  "pointer-events-none absolute inset-y-0 rounded-[calc(var(--radius-control)-2px)] font-mono text-small " +
+  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
+  "forced-colors:border forced-colors:bg-[Highlight]";
+const slabLook = (held: boolean, disabled: boolean) =>
+  disabled
+    ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
+    : held
+      ? "bg-block shadow-[var(--block-round),var(--block-press)]"
+      : "bg-block shadow-[var(--block-round),var(--block-lift)]";
 
+/* A single slider's thumb: the grip at the slab's leading end, which says the value. The ring is the tray's. */
+const gripOne =
+  "flex h-10 w-(--grip) items-center justify-end pr-3 font-mono text-small tabular-nums text-fg focus-visible:outline-none " +
+  "data-disabled:text-fg-subtle forced-colors:text-[HighlightText]";
+
+/* A range's thumb: a 20px grip at one end of the slab. The focused one rings itself, so you can tell which end the keys move. */
+const gripEnd =
+  "block h-10 w-(--grip) rounded-[calc(var(--radius-control)-2px)] " +
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 /** How many digits a number needs after the point, so snapping to a step of 0.1 never leaves 0.30000000000000004. */
 function places(n: number) {
@@ -178,33 +188,15 @@ function setRef<T>(ref: Ref<T> | undefined, el: T | null) {
   else if (ref) (ref as RefObject<T | null>).current = el;
 }
 
-/**
- * Fun mode's held thumb (useFunGrab): the pointer handler for the root, which takes hold of the thumb nearest the
- * finger, the refs for the root and the thumbs, and `moved`, which tells the grab where the value has gone.
- */
-function useHeldThumb(grab: FunGrab | null, min: number, max: number, ref: Ref<HTMLSpanElement> | undefined) {
-  const root = useRef<HTMLSpanElement>(null);
-  const thumbs = useRef<(HTMLSpanElement | null)[]>([]);
-  return {
-    root,
-    thumbRef: (i: number) => (el: HTMLSpanElement | null) => {
-      thumbs.current[i] = el;
-      if (i === 0) setRef(ref, el);
-    },
-    onPointerDown: (event: PointerEvent<HTMLSpanElement>) => {
-      if (!grab || (event.pointerType === "mouse" && event.button !== 0)) return;
-      let near: HTMLSpanElement | null = null;
-      let best = Infinity;
-      for (const el of thumbs.current) {
-        if (!el) continue;
-        const r = el.getBoundingClientRect();
-        const d = Math.abs(event.clientX - (r.left + r.width / 2));
-        if (d < best) [near, best] = [el, d];
-      }
-      grab.grab(near);
-    },
-    moved: (value: number) => grab?.move(((value - min) / (max - min || 1)) * (root.current?.offsetWidth ?? 0)),
-  };
+/** Where `p` (0 to 1) of the way along is, as a CSS length inside the room, for something whose start sits there. */
+const along = (p: number) => `calc((100% - var(--grip)) * ${p})`;
+
+/** The pointer inside the room, undoing any scale above it: its x, the room's width and the grip's. */
+function measure(roomEl: HTMLElement, grip: HTMLElement | null | undefined, clientX: number) {
+  const r = roomEl.getBoundingClientRect();
+  const w = roomEl.offsetWidth || r.width;
+  const scale = r.width / w || 1;
+  return { x: (clientX - r.left) / scale, w, g: grip?.offsetWidth ?? 0 };
 }
 
 type FieldProps = {
@@ -220,11 +212,11 @@ type FieldProps = {
   className: string;
   /** Marks the field as a group named by its label, for a control with more than one thumb. */
   group?: boolean;
-  /** The rail, and anything that must sit inside the field. */
+  /** The tray, and anything that must sit inside the field. */
   children: ReactNode;
 };
 
-/** What the Slider and the RangeSlider share around the rail: the label row, the end words and the help text. */
+/** What the Slider and the RangeSlider share around the tray: the label row, the end words and the help text. */
 function Field({ labelId, label, shown, helpId, help, minLabel, maxLabel, disabled, className, group = false, children }: FieldProps) {
   return (
     <div
@@ -262,7 +254,7 @@ function Field({ labelId, label, shown, helpId, help, minLabel, maxLabel, disabl
   );
 }
 
-/** One slider: a label above, a rail with one thumb, and optional words under its ends. Every value is a number, and a form sends it under name. */
+/** One slider: a label above, a slab in a tray that says its value, and optional words under its ends. Every value is a number, and a form sends it under name. */
 export function Slider({
   label,
   help,
@@ -275,7 +267,7 @@ export function Slider({
   step = 1,
   minLabel,
   maxLabel,
-  showValue = false,
+  showValue = true,
   formatValue,
   disabled = false,
   name,
@@ -288,19 +280,23 @@ export function Slider({
   const labelId = `${id}-label`;
   const helpId = help ? `${id}-help` : undefined;
 
-  /* The slider keeps its own value when you do not control it, because Page Up needs to read it. */
+  /* The slider keeps its own value when you do not control it, because Page Up and the hand need to read it. */
   const [inner, setInner] = useState(defaultValue ?? min);
   const value = valueProp ?? inner;
-  const text = formatValue ? formatValue(value) : String(value);
-  /* Fun mode: the held thumb. With it off, the root and the thumb get exactly what they always got. */
-  const grab = useFunGrab();
-  const held = useHeldThumb(grab, min, max, ref);
+  const fmt = (v: number) => (formatValue ? formatValue(v) : String(v));
+  const text = fmt(value);
+  const p = (value - min) / (max - min || 1);
+  /* The grip holds the widest word the slider can say, in the mono, so the slab's shortest never changes as it moves. */
+  const chars = Math.max(fmt(min).length, fmt(max).length, fmt(snapToStep(min + step, min, max, step)).length);
+  const grip = showValue ? `calc(${chars}ch + 1.5rem)` : "2rem";
 
+  const latest = useRef(value);
+  latest.current = value;
   const change = (next: number | undefined) => {
-    if (next === undefined) return;
+    if (next === undefined || next === latest.current) return;
+    latest.current = next;
     if (valueProp === undefined) setInner(next);
     onValueChange?.(next);
-    held.moved(next);
   };
 
   /* Radix moves ten steps on Page Up and Page Down. The spec says about a tenth of the range, in whole steps. */
@@ -314,11 +310,55 @@ export function Slider({
     onValueCommit?.(next);
   };
 
+  /* The hand. A press on the slab holds it where it was taken (offset); a press past its end jumps the end there.
+     Each handler calls preventDefault, so Radix's own pointer handling stays out. */
+  const roomRef = useRef<HTMLSpanElement>(null);
+  const thumbRef = useRef<HTMLSpanElement | null>(null);
+  const hand = useRef<{ id: number; offset: number } | null>(null);
+  const [held, setHeld] = useState(false);
+  const to = (clientX: number, offset: number) => {
+    const m = measure(roomRef.current!, thumbRef.current, clientX);
+    const at = (m.x + offset - m.g) / (m.w - m.g || 1);
+    change(snapToStep(min + Math.min(1, Math.max(0, at)) * (max - min), min, max, step));
+  };
+  const onPointerDown = (e: PointerEvent<HTMLSpanElement>) => {
+    if (disabled || (e.pointerType === "mouse" && e.button !== 0) || !roomRef.current) return;
+    e.preventDefault();
+    const m = measure(roomRef.current, thumbRef.current, e.clientX);
+    const end = m.g + p * (m.w - m.g);
+    const offset = m.x <= end + 8 ? end - m.x : 0;
+    hand.current = { id: e.pointerId, offset };
+    e.currentTarget.setPointerCapture(e.pointerId);
+    thumbRef.current?.focus({ preventScroll: true });
+    setHeld(true);
+    to(e.clientX, offset);
+  };
+  const onPointerMove = (e: PointerEvent<HTMLSpanElement>) => {
+    const h = hand.current;
+    if (!h || h.id !== e.pointerId) return;
+    e.preventDefault();
+    to(e.clientX, h.offset);
+  };
+  const onPointerEnd = (e: PointerEvent<HTMLSpanElement>) => {
+    const h = hand.current;
+    if (!h || h.id !== e.pointerId) return;
+    e.preventDefault();
+    hand.current = null;
+    setHeld(false);
+    if (e.type === "pointerup") onValueCommit?.(latest.current);
+  };
+
+  /* The leading end rolls away into shade, a little deeper the further the slab is pushed (Nick's 116 to 118). */
+  const roll: CSSProperties = disabled
+    ? {}
+    : {
+        backgroundImage: `linear-gradient(to right, transparent calc(100% - ${(1.5 + 3 * p).toFixed(2)}px), color-mix(in oklab, var(--block-roll) ${Math.round(25 + 60 * p)}%, transparent))`,
+      };
+
   return (
     <Field
       labelId={labelId}
       label={label}
-      shown={showValue ? text : undefined}
       helpId={helpId}
       help={help}
       minLabel={minLabel}
@@ -327,6 +367,8 @@ export function Slider({
       className={className}
     >
       <RadixSlider.Root
+        /* The slab grows from the left and the hand is measured from the left, so Radix places the thumb from the left too, under any DirectionProvider. */
+        dir="ltr"
         name={disabled ? undefined : name}
         min={min}
         max={max}
@@ -336,28 +378,35 @@ export function Slider({
         onValueChange={(v) => change(v[0])}
         onValueCommit={(v) => v[0] !== undefined && onValueCommit?.(v[0])}
         onKeyDown={pageKeys}
-        ref={grab ? held.root : undefined}
-        onPointerDown={grab ? held.onPointerDown : undefined}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerEnd}
         data-no-drag=""
-        className={root}
+        className={trayBase + " " + trayRing}
       >
-        <RadixSlider.Track className={rail}>
-          <RadixSlider.Range className={range} />
+        <RadixSlider.Track ref={roomRef} className={room} style={{ "--grip": grip } as CSSProperties}>
+          <span aria-hidden="true" className={slabBase + " left-0 " + slabLook(held, disabled)} style={{ width: `calc(var(--grip) + ${along(p)})`, ...roll }} />
+          <RadixSlider.Thumb
+            ref={(el: HTMLSpanElement | null) => {
+              thumbRef.current = el;
+              setRef(ref, el);
+            }}
+            id={id}
+            aria-labelledby={labelId}
+            aria-describedby={helpId}
+            aria-valuetext={formatValue ? text : undefined}
+            className={gripOne}
+          >
+            {showValue && <span aria-hidden="true">{text}</span>}
+          </RadixSlider.Thumb>
         </RadixSlider.Track>
-        <RadixSlider.Thumb
-          ref={grab ? held.thumbRef(0) : ref}
-          id={id}
-          aria-labelledby={labelId}
-          aria-describedby={helpId}
-          aria-valuetext={formatValue ? text : undefined}
-          className={thumb}
-        />
       </RadixSlider.Root>
     </Field>
   );
 }
 
-/** Two values on one rail, [from, to]. The thumbs never cross, each is named by the label and its end, and a form sends both under name. */
+/** Two values on one tray, [from, to]: one slab that spans them. The ends never cross, each is named by the label and its end, and a form sends both under name. */
 export function RangeSlider({
   label,
   help,
@@ -387,8 +436,8 @@ export function RangeSlider({
   const thumbId = (i: 0 | 1) => (i === 0 ? id : `${id}-to`);
   const nameId = (i: 0 | 1) => `${id}-${i === 0 ? "from" : "to"}-name`;
 
-  /* The slider keeps its own values when you do not control them, because Page Up needs to read them. They are
-     sorted and kept on the rail, so a stray default can never draw the thumbs outside it or crossed. */
+  /* The slider keeps its own values when you do not control them, because Page Up and the hand need to read them. They
+     are sorted and kept on the tray, so a stray default can never draw the ends outside it or crossed. */
   const [inner, setInner] = useState<[number, number]>(defaultValue ?? [min, max]);
   const given = valueProp ?? inner;
   const from = Math.min(max, Math.max(min, Math.min(given[0], given[1])));
@@ -396,6 +445,9 @@ export function RangeSlider({
   const values: [number, number] = [from, to];
   const fmt = (v: number) => (formatValue ? formatValue(v) : String(v));
   const text = `${fmt(from)} to ${fmt(to)}`;
+  const span = max - min || 1;
+  const pf = (from - min) / span;
+  const pt = (to - min) / span;
 
   /* Radix keeps the thumbs in order (preserveThumbOrder) and could hold the gap too, but it rounds a decimal step badly
      (0.2 plus 0.1 is 0.30000000000000004). So Radix gets no gap, and the thumb that moved is held here, on the step grid.
@@ -412,16 +464,14 @@ export function RangeSlider({
   };
   const same = (a: number[], b: number[]) => a[0] === b[0] && a[1] === b[1];
 
-  /* Fun mode: the held thumb. With it off, the root and the thumbs get exactly what they always got. */
-  const grab = useFunGrab();
-  const grip = useHeldThumb(grab, min, max, ref);
-
+  const latest = useRef(values);
+  latest.current = values;
   const change = (next: number[]) => {
     const held = hold(next);
-    if (same(held, values)) return;
+    if (same(held, latest.current)) return;
+    latest.current = held;
     if (valueProp === undefined) setInner(held);
     onValueChange?.(held);
-    grip.moved(held[0] !== from ? held[0] : held[1]);
   };
 
   /* Radix commits a key press with the move it wanted. When the other thumb held it back, nothing moved, so nothing is saved.
@@ -433,7 +483,7 @@ export function RangeSlider({
   };
 
   /* The keys act on the focused thumb. Radix sends Home to the first thumb and End to the last, whichever has focus, and
-     moves ten steps on Page Up and Page Down. The spec says Home and End go to the end of the rail (the other thumb stops
+     moves ten steps on Page Up and Page Down. The spec says Home and End go to the end of the tray (the other thumb stops
      them) and the pages are about a tenth of the range, in whole steps. */
   const thumbKeys = (i: 0 | 1) => (event: KeyboardEvent<HTMLSpanElement>) => {
     if (disabled) return;
@@ -452,6 +502,58 @@ export function RangeSlider({
     onValueCommit?.(held);
   };
 
+  /* The hand: a press takes the nearer end of the slab, held where it was taken when the press is on the slab, or
+     jumped to the finger when it is past it. Each handler calls preventDefault, so Radix's pointer handling stays out. */
+  const roomRef = useRef<HTMLSpanElement>(null);
+  const thumbs = useRef<(HTMLSpanElement | null)[]>([]);
+  const hand = useRef<{ id: number; end: 0 | 1; offset: number } | null>(null);
+  const [held, setHeld] = useState(false);
+  const moveEnd = (end: 0 | 1, clientX: number, offset: number) => {
+    const m = measure(roomRef.current!, thumbs.current[0], clientX);
+    const at = (m.x + offset - (end === 1 ? m.g : 0)) / (m.w - m.g || 1);
+    const v = snapToStep(min + Math.min(1, Math.max(0, at)) * span, min, max, step);
+    const [a, b] = latest.current;
+    change(end === 0 ? [v, b] : [a, v]);
+  };
+  const onPointerDown = (e: PointerEvent<HTMLSpanElement>) => {
+    if (disabled || (e.pointerType === "mouse" && e.button !== 0) || !roomRef.current) return;
+    e.preventDefault();
+    const m = measure(roomRef.current, thumbs.current[0], e.clientX);
+    const left = pf * (m.w - m.g);
+    const right = m.g + pt * (m.w - m.g);
+    const end: 0 | 1 = m.x < (left + right) / 2 ? 0 : 1;
+    const edge = end === 0 ? left : right;
+    const on = m.x >= left - 8 && m.x <= right + 8;
+    const offset = on ? edge - m.x : 0;
+    hand.current = { id: e.pointerId, end, offset };
+    e.currentTarget.setPointerCapture(e.pointerId);
+    thumbs.current[end]?.focus({ preventScroll: true });
+    setHeld(true);
+    moveEnd(end, e.clientX, offset);
+  };
+  const onPointerMove = (e: PointerEvent<HTMLSpanElement>) => {
+    const h = hand.current;
+    if (!h || h.id !== e.pointerId) return;
+    e.preventDefault();
+    moveEnd(h.end, e.clientX, h.offset);
+  };
+  const onPointerEnd = (e: PointerEvent<HTMLSpanElement>) => {
+    const h = hand.current;
+    if (!h || h.id !== e.pointerId) return;
+    e.preventDefault();
+    hand.current = null;
+    setHeld(false);
+    if (e.type === "pointerup") onValueCommit?.(latest.current);
+  };
+
+  /* Both ends roll away into shade. A range's span is not one push from the start, so the roll stays as it is. */
+  const roll: CSSProperties = disabled
+    ? {}
+    : {
+        backgroundImage:
+          "linear-gradient(to right, color-mix(in oklab, var(--block-roll) 45%, transparent), transparent 3px, transparent calc(100% - 3px), color-mix(in oklab, var(--block-roll) 45%, transparent))",
+      };
+
   return (
     <Field
       labelId={labelId}
@@ -466,6 +568,7 @@ export function RangeSlider({
       group
     >
       <RadixSlider.Root
+        dir="ltr" // as the Slider's: the slab and the hand run from the left
         min={min}
         max={max}
         step={step}
@@ -474,28 +577,37 @@ export function RangeSlider({
         preserveThumbOrder
         onValueChange={change}
         onValueCommit={commit}
-        ref={grab ? grip.root : undefined}
-        onPointerDown={grab ? grip.onPointerDown : undefined}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerEnd}
+        onPointerCancel={onPointerEnd}
         data-no-drag=""
-        className={root}
+        className={trayBase}
       >
-        <RadixSlider.Track className={rail}>
-          <RadixSlider.Range className={range} />
-        </RadixSlider.Track>
-        {([0, 1] as const).map((i) => (
-          <RadixSlider.Thumb
-            key={i}
-            ref={grab ? grip.thumbRef(i) : i === 0 ? ref : undefined}
-            id={thumbId(i)}
-            /* A form sends both values under the same name (Radix would add [] to it). */
-            name={disabled ? undefined : name}
-            aria-labelledby={nameId(i)}
-            aria-describedby={helpId}
-            aria-valuetext={formatValue ? fmt(values[i]) : undefined}
-            onKeyDown={thumbKeys(i)}
-            className={thumb}
+        <RadixSlider.Track ref={roomRef} className={room} style={{ "--grip": "1.25rem" } as CSSProperties}>
+          <span
+            aria-hidden="true"
+            className={slabBase + " " + slabLook(held, disabled)}
+            style={{ left: along(pf), width: `calc(var(--grip) + ${along(pt - pf)})`, ...roll }}
           />
-        ))}
+          {([0, 1] as const).map((i) => (
+            <RadixSlider.Thumb
+              key={i}
+              ref={(el: HTMLSpanElement | null) => {
+                thumbs.current[i] = el;
+                if (i === 0) setRef(ref, el);
+              }}
+              id={thumbId(i)}
+              /* A form sends both values under the same name (Radix would add [] to it). */
+              name={disabled ? undefined : name}
+              aria-labelledby={nameId(i)}
+              aria-describedby={helpId}
+              aria-valuetext={formatValue ? fmt(values[i]) : undefined}
+              onKeyDown={thumbKeys(i)}
+              className={gripEnd}
+            />
+          ))}
+        </RadixSlider.Track>
       </RadixSlider.Root>
       {/* The names: the label and the end, as one string, so a screen reader says "Build time, from". Hidden text still names a thumb. */}
       {([0, 1] as const).map((i) => (

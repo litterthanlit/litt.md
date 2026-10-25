@@ -36,6 +36,8 @@
   --color-surface-1: var(--surface-1);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
+  --color-tray: var(--tray);           /* a control's sunken tray, and the block raised in it (material.md, 6) */
+  --color-block: var(--block);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-line-control: var(--line-control);

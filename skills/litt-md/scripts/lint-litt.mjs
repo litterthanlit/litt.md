@@ -124,6 +124,7 @@ function lintGallery(files, root) {
       for (const m of line.matchAll(/\brounded(-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
+        if (v === "rounded-[calc(var(--radius-control)-2px)]") continue; // a block set 2px into a control (the switch, the slider): concentric with it
         if (!/^rounded(-(t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(pill|none|control|surface)$/.test(v)) fail("radius", `${v}: use rounded-control (controls, rows, inputs), rounded-surface (cards, menus, dialogs, toasts) or rounded-pill (avatars, icon-only buttons)`);
       }
       if (/borderRadius\s*:\s*['"]?(?!0\b|999|9999|var\(--radius-(pill|control|surface)\))[\d.]/.test(line)) fail("radius", "borderRadius: use the radius tokens");
@@ -529,7 +530,7 @@ function checkToken(t, scope, add, isClassContext) {
   // radius
   if ((m = RADIUS_RE.exec(b))) {
     const rest = m[2];
-    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
+    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || rest === "[calc(var(--litt-radius-control)-2px)]" || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
     if (!ok && (rest !== undefined || isClassContext())) {
       add("radius", `${b}: ${HOST_ADVICE.radius}${rest === "full" ? ". rounded-full is rounded-litt-pill" : ""}`);
     }

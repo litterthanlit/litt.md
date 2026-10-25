@@ -10,13 +10,12 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "slider",
   title: "Slider",
-  lede: "One value, or a span, on a range.",
+  lede: "A slab you push along a tray. It says its value.",
   order: 3.6,
   group: "Controls",
   verbs: ["drag"],
   summary:
-    "One value on a range, such as the default animation speed, or a span with two thumbs, such as the builds that took between 20s and 80s. A thin rail, a range filled with the foreground color (never the accent) and round thumbs. The thumbs and the range follow the pointer and the keys at once, with no easing. Only colors fade, on the instant tier.",
-  fun: "Grab a thumb and drag fast, then slow: it lifts, stretches with your speed and wobbles back when you let go.",
+    "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. A raised slab sits in a sunken tray and grows from the start to the value, and its leading end says the value. Take hold of it anywhere and push. A range is one slab between two ends. The slab follows the pointer and the keys at once, with no easing, and is never the accent.",
   tiers: ["instant"],
 };
 
@@ -34,15 +33,17 @@ export const docs: PageDocs = {
   defaultValue={1}
   minLabel="Slower"
   maxLabel="Faster"
-  showValue
   formatValue={(v) => \`\${v.toFixed(1)}x\`}
   onValueCommit={(v) => saveSpeed(v)}
 />
 
 // In a form, pass a name. The number is sent as text, like a native field.
-<Slider name="quality" label="Image quality" min={60} max={100} step={5} defaultValue={85} showValue formatValue={(v) => \`\${v}%\`} />
+<Slider name="quality" label="Image quality" min={60} max={100} step={5} defaultValue={85} formatValue={(v) => \`\${v}%\`} />
 
-// Two thumbs for a span. The value is [from, to], and the thumbs never cross.
+// The slab says its value. showValue={false} leaves it plain.
+<Slider label="Volume" defaultValue={40} showValue={false} />
+
+// Two ends for a span: one slab between them. The value is [from, to], and the ends never cross.
 // Filter on every move in onValueChange. Announce and save in onValueCommit.
 <RangeSlider
   label="Build time"
@@ -62,7 +63,7 @@ export const docs: PageDocs = {
   use: [
     "A value on a range, where the position matters more than the exact number: animation speed, image quality, a volume. A span with two ends, such as the builds that took between 20s and 80s or a price window, is a RangeSlider.",
     "Say which way is which. Pass minLabel and maxLabel (\"Slower\", \"Faster\") so nobody has to guess.",
-    "Show the value with showValue when people want to compare settings, and give it units with formatValue. A range reads \"20s to 80s\".",
+    "The slab says its value, so give it units with formatValue (\"1.0x\", \"85%\"). Pass showValue={false} for a plain slab, where the position is all that matters. A range shows its span at the end of the label row with showValue, and reads \"20s to 80s\".",
     "A setting that saves when the thumb is let go. Save in onValueCommit, not in onValueChange, which fires on every move. A table filter can follow every move, and say how many rows match on commit.",
     "A form field. Pass name and the value is sent with the form, and a range sends both values under the one name. A disabled slider sends nothing.",
   ],
@@ -70,27 +71,27 @@ export const docs: PageDocs = {
     "The exact number matters, such as a width of 1280. Use Input.",
     "A few named steps, such as Small, Medium and Large. Use Segmented.",
     "A yes or no. Use Checkbox.",
-    "A span with two ends, such as a price or a build time filter. Slider has one thumb. Use RangeSlider.",
+    "A span with two ends, such as a price or a build time filter. Slider has one value. Use RangeSlider.",
     "The two ends are exact numbers people know and type, such as an invoice from 1,200 to 1,800 euros. Use two Inputs.",
     "The value is a date, a color or a position on a canvas. Build the control for that thing.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus to the thumb. A range has two, the from thumb first and then the to thumb. A disabled slider is skipped."],
-    [["←", "↓"], "Moves the thumb back one step. On a range it moves the focused thumb only, and the to thumb stops one gap away from the from thumb."],
-    [["→", "↑"], "Moves the thumb forward one step. On a range the from thumb stops one gap away from the to thumb."],
-    [["Page Down", "Page Up"], "Moves the thumb about a tenth of the range, in whole steps and at least one."],
-    [["Home", "End"], "Moves the thumb to the start or the end of the rail. On a range the focused thumb goes as far as it can, and the other thumb stops it."],
+    [["Tab"], "Moves focus to the slider. A range has two ends, the from end first and then the to end. A disabled slider is skipped."],
+    [["←", "↓"], "Shortens the slab one step. On a range it moves the focused end only, and the to end stops one gap away from the from end."],
+    [["→", "↑"], "Lengthens the slab one step. On a range the from end stops one gap away from the to end."],
+    [["Page Down", "Page Up"], "Moves about a tenth of the range, in whole steps and at least one."],
+    [["Home", "End"], "Moves to the start or the end of the tray. On a range the focused end goes as far as it can, and the other end stops it."],
   ],
   a11y: [
     "Radix Slider puts role=\"slider\" on the thumb, with aria-valuemin, aria-valuemax and aria-valuenow. The label names the thumb with aria-labelledby, and the help text is linked with aria-describedby. The label is required.",
     "formatValue feeds aria-valuetext, so a screen reader says \"1.4x\" and not \"1.4\". Without it, the number is read as it is.",
-    "The shown value is hidden from screen readers, because the thumb already says it. The words under the ends are plain text and are not part of the name, so give the label enough context on its own.",
-    "The thumb is 20px, but the hit area is 44px tall on touch screens. Tapping the rail anywhere moves the thumb there. The visible rail stays 4px.",
-    "The position of the thumb shows the value, not color. The focus ring is a 2px outline at a 2px offset, drawn on the thumb for keyboard focus only. A click or a tap does not show it.",
-    "A drag on a slider never moves a sheet: the slider is marked data-no-drag. A vertical swipe that starts on it still scrolls the page or the sheet's body. If it starts on the rail and not on the thumb, the thumb first jumps to the finger, as a tap there would.",
-    "Under forced colors the rail and the thumb get real borders, and the range takes the system highlight color.",
+    "The value the slab says is hidden from screen readers, because the thumb's aria-valuetext already says it. It is --fg on the block, 4.5:1 and more in both themes. The words under the ends are plain text and are not part of the name, so give the label enough context on its own.",
+    "The tray is 44px tall, so the whole of it is the hit area. A press on the slab holds it where it was taken; a press past its end moves the end there.",
+    "The slab's length shows the value, not color. The focus ring is a 2px outline at a 2px offset around the tray, for keyboard focus only. A click or a tap does not show it. On a range the focused end draws the ring inside itself, so you can tell which end the keys move.",
+    "A drag on a slider never moves a sheet: the slider is marked data-no-drag. A vertical swipe that starts on it still scrolls the page or the sheet's body.",
+    "Under forced colors the tray and the slab get real borders, and the slab takes the system highlight color.",
     "A disabled slider is muted, skipped by Tab, marked aria-disabled and left out of a form. Say why it is locked in the help text.",
-    "RangeSlider puts role=\"slider\" on both thumbs, inside a group named by the label. Each thumb is named by the label and its end (\"Build time, from\" and \"Build time, to\") through a hidden name, and gets its own aria-valuetext from formatValue (\"20s\", then \"80s\"). Both are described by the help text. Pass thumbLabels to change the two end words.",
+    "RangeSlider puts role=\"slider\" on both ends of its slab, inside a group named by the label. Each thumb is named by the label and its end (\"Build time, from\" and \"Build time, to\") through a hidden name, and gets its own aria-valuetext from formatValue (\"20s\", then \"80s\"). Both are described by the help text. Pass thumbLabels to change the two end words.",
     "The shown span (\"20s to 80s\") is hidden from screen readers like the Slider's value, because each thumb already says its own. If the range filters something, say what it did in a polite live region and update it in onValueCommit, not on every move, so a screen reader hears one answer per key press or per released drag.",
     "The keys act on the focused thumb. The thumbs never cross and stay minStepsBetweenThumbs steps apart (one by default), so one can never sit on the other. A key that cannot move a thumb does nothing and saves nothing. Both thumbs report the whole rail as aria-valuemin and aria-valuemax.",
   ],
@@ -117,7 +118,6 @@ function SpeedDemo() {
         onValueCommit={(v) => setSaved(`Saved ${formatSpeed(v)} for litt.design.`)}
         minLabel="Slower"
         maxLabel="Faster"
-        showValue
         formatValue={formatSpeed}
       />
       <div className="flex flex-wrap items-center gap-4">
@@ -160,7 +160,6 @@ function QualityDemo() {
         defaultValue={85}
         minLabel="Smaller files"
         maxLabel="Sharper images"
-        showValue
         formatValue={formatQuality}
       />
       <div className="grid gap-3">
@@ -321,14 +320,13 @@ function PriceDemo() {
 function DisabledDemo() {
   return (
     <div className="grid w-full max-w-xl gap-x-12 gap-y-8 sm:grid-cols-2">
-      <Slider label="Image quality" min={60} max={100} step={5} defaultValue={70} showValue formatValue={formatQuality} help="Applies to the next export." />
+      <Slider label="Image quality" min={60} max={100} step={5} defaultValue={70} formatValue={formatQuality} help="Applies to the next export." />
       <Slider
         label="Image quality"
         min={60}
         max={100}
         step={5}
         defaultValue={80}
-        showValue
         formatValue={formatQuality}
         disabled
         help="Locked while the export runs."
@@ -390,7 +388,6 @@ function MotionSheetDemo() {
               onValueChange={setSpeed}
               minLabel="Slower"
               maxLabel="Faster"
-              showValue
               formatValue={formatSpeed}
             />
             <Slider
@@ -402,7 +399,6 @@ function MotionSheetDemo() {
               onValueChange={setQuality}
               minLabel="Smaller files"
               maxLabel="Sharper images"
-              showValue
               formatValue={formatQuality}
             />
           </div>
@@ -431,7 +427,7 @@ export default function SliderPage() {
         title="Animation speed"
         tier="instant"
         code="SpeedDemo"
-        caption="Drag the thumb, click the rail, or use the arrow keys. The thumb and the range follow at once, with no easing, because an eased jump would lag the key. The value reads 1.0x, and a screen reader says the same. The save note appears on release, from onValueCommit. Only colors fade, on the instant tier."
+        caption="Take hold of the slab anywhere and push, press past its end, or use the arrow keys. It follows at once, with no easing, because its length is the value and an eased jump would lag the key. Held, its cast tightens. Its leading end says 1.0x, and a screen reader says the same. The save note appears on release, from onValueCommit."
       >
         <SpeedDemo />
       </Stage>
@@ -450,7 +446,7 @@ export default function SliderPage() {
         tier="instant"
         size="lg"
         code="BuildsDemo"
-        caption="Two thumbs on one rail, and the span between them is the foreground color. Drag either thumb, or focus one and use the arrow keys. The count and the table follow at once, with no easing. The thumbs never cross and stay one step apart. The value reads 20s to 80s, in words, and each thumb tells a screen reader its own value. A screen reader hears how many builds match once per key press or released drag, not on every move."
+        caption="One slab between two ends. Take either end, or focus one and use the arrow keys. The count and the table follow at once, with no easing. The ends never cross and stay one step apart. The value reads 20s to 80s, in words, and each end tells a screen reader its own value. A screen reader hears how many builds match once per key press or released drag, not on every move."
       >
         <BuildsDemo />
       </Stage>
@@ -459,7 +455,7 @@ export default function SliderPage() {
         title="A price in a form"
         tier="instant"
         code="PriceDemo"
-        caption="In a form, both thumbs send their value under one name, so the form holds price twice, from first. This one stays two steps apart, and the help text says so. Press Show templates to see what was sent."
+        caption="In a form, both ends send their value under one name, so the form holds price twice, from first. This one stays two steps apart, and the help text says so. Press Show templates to see what was sent."
       >
         <PriceDemo />
       </Stage>
@@ -468,7 +464,7 @@ export default function SliderPage() {
         title="Disabled"
         tier="instant"
         code="DisabledDemo"
-        caption="The disabled slider is muted all the way through: a fainter rail, a muted range and a flat thumb. A range does the same with both thumbs. Tab skips it, and the help text says why it is locked."
+        caption="The disabled slider lies flat: the tray and the slab go to surface-2 with hairlines and no shade, and the word stays readable. A range does the same. Tab skips it, and the help text says why it is locked."
       >
         <DisabledDemo />
       </Stage>
@@ -478,7 +474,7 @@ export default function SliderPage() {
         tier="instant"
         code="PhoneDemo"
         size="lg"
-        caption="Open the sheet and drag a thumb sideways: only the thumb moves. A drag that starts on a slider never moves the sheet, and a vertical swipe on it still scrolls the sheet's body. On a phone the hit area is 44px tall, while the rail stays thin."
+        caption="Open the sheet and push a slab sideways: only the slab moves. A drag that starts on a slider never moves the sheet, and a vertical swipe on it still scrolls the sheet's body. The tray is 44px tall, so a finger finds it."
       >
         <PhoneDemo />
       </Stage>

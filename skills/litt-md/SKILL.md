@@ -43,10 +43,10 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 
 ## The eleven signature rules
 
-1. **P1 Light, not paint.** The accent appears as light (`--light`, `--glow`, `--focus`). At most one accent fill per view, on the primary action. Checkboxes, radios and switches fill with `--fg`.
+1. **P1 Light, not paint.** The accent appears as light (`--light`, `--glow`, `--focus`). At most one accent fill per view, on the primary action (or the one switch that is the view's main choice). Checkboxes, radios and every other switch stay neutral.
 2. **P2 One light source.** Light comes from the top. Highlights sit on top edges only.
 3. **P3 Glass is earned.** Glass only for floating surfaces: header, command menu, popovers, modals, toasts.
-4. **P4 Depth without drop shadows.** Cards stay flat (hairline plus highlight). Floating surfaces get a zero-offset glow plus a 1px ring.
+4. **P4 Depth without drop shadows.** Cards stay flat (hairline plus highlight). Floating surfaces get a zero-offset glow plus a 1px ring. The one exception: a control a hand moves (switch, slider) is a raised block in a sunken tray, its shadow never sideways or more than 1px down.
 5. **P5 Material is static.** Glow, grain, gradients and light never animate.
 6. **P6 Precision.** 8px grid (4px inside components), 1px hairlines, tracking tightens as size grows.
 7. **P7 Airy rhythm.** One idea per section, 128 / 96 / 64px between sections, asymmetric and left-aligned by default.
@@ -66,7 +66,7 @@ These change only when Nick changes them.
 - **Type:** Geist + Geist Mono only, in three weights by role (P9). Nothing is set above 18px: display and h1 are 18, the rest 14, 13 and 12. Mono is for code, keys, data, versions and token names, never tags.
 - **Color:** warm stone neutrals at one OKLCH hue (about 60), monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
 - **Density:** airy.
-- **Shape:** slight radius. Controls 4px (tags and chips too), surfaces 8px, pills only for avatars, icon-only buttons and switches.
+- **Shape:** slight radius. Controls 4px (tags and chips too), surfaces 8px, pills only for avatars and icon-only buttons. A block set into a control takes the control radius less its 2px inset.
 - **Motion:** three tiers. Instant 100ms ease-out; responsive spring 200ms, bounce 0; expressive spring 350ms, bounce 0.12, one per view. Exits run at 0.75× and never bounce. Transform and opacity only, plus color fades at instant. On phones the modal is a bottom sheet that drags down to dismiss (`system/foundations.md` section 6).
 
 ## Never, unless Nick asks
@@ -79,8 +79,8 @@ These change only when Nick changes them.
 - An arrow suffix on every link
 - The same uppercase mono eyebrow over every section
 - An accent-colored headline word
-- A radius off the scale (anything but 4px controls, 8px surfaces or a pill)
-- Drop shadows with an offset, or shadows on cards in the flow
+- A radius off the scale (anything but 4px controls, 8px surfaces or a pill; a block set 2px into a control takes the control radius less 2px)
+- Drop shadows with an offset, or shadows on cards in the flow (the press material on a switch or a slider is the one exception, `system/material.md` 6)
 - Bounce above 0.12, bounce on exits or the responsive tier, a second expressive moment per view, scroll reveals, parallax, marquee
 - A second typeface
 - A weight outside the three roles (bold, 700 and up, below 400, or 600 above 12px)
@@ -96,6 +96,7 @@ These change only when Nick changes them.
 - **Data hues (P11):** `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` (words in the hue) and `-tint` (the fill behind them); marks take the plain name
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
+- **Press** (a control a hand moves, the one exception to P4): `--tray`, `--tray-shade`, `--block`, `--block-lift`, `--block-press`, `--block-round`, `--block-roll`
 - **Type:** `--font-sans` (Geist), `--font-mono` (Geist Mono), `--weight` (400), `--weight-title` (500), `--weight-label` (600), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
 - **Shape:** `--radius-control` (4), `--radius-surface` (8), `--radius-pill`

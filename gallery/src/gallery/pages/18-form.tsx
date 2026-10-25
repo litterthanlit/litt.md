@@ -391,7 +391,6 @@ function SettingsDemo() {
           onValueChange={set("speed")}
           minLabel="Slower"
           maxLabel="Faster"
-          showValue
           formatValue={(v) => `${v.toFixed(1)}x`}
         />
       </FormSection>

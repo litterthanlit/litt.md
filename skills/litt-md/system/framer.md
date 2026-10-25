@@ -81,7 +81,7 @@ To use the exact tokens in code components or embeds, paste `assets/tokens.css` 
 - [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Only Regular 400, Medium 500 on titles and Semibold 600 on 12px labels.
 - [ ] Gaps and paddings are on the scale.
 - [ ] Glass only on floating frames (header, menus, modals, toasts).
-- [ ] Corners: 4 on controls, 8 on surfaces, pills only on avatars, icon-only buttons and switches. Buttons and inputs use the 32/44/56 sizes.
+- [ ] Corners: 4 on controls, 8 on surfaces, pills only on avatars and icon-only buttons; a switch's or a slider's block 2 inside its 4. Buttons and inputs use the 32/44/56 sizes.
 - [ ] No drop shadow with an x or y offset.
 - [ ] One accent fill and one glow per page.
 - [ ] Every transition uses one of the three saved presets. Bounce only on expressive, never on exits. No scroll Appear effects.
