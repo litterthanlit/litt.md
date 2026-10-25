@@ -16,6 +16,8 @@ import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons"
 
 /* The panel and the popover load on their own; until then the button holds its place. */
 const Customize = lazy(() => import("./customize"));
+/* The language canvas (#canvas) is not a page: it takes the whole window, and only loads when asked for. */
+const LanguageCanvas = lazy(() => import("../canvas/canvas"));
 
 function CustomizeFallback() {
   return (
@@ -33,8 +35,8 @@ const THEMES = [
   { id: "dark", label: "Dark", Icon: MoonIcon },
 ] satisfies { id: ThemeChoice; label: string; Icon: typeof SunIcon }[];
 
-/** The theme, read from the attribute the pre-paint script set, and written back with the choice. */
-function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
+/** The theme, read from the attribute the pre-paint script set, and written back with the choice. The canvas uses it too. */
+export function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
   const [theme, setTheme] = useState<ThemeChoice>(() => {
     const t = document.documentElement.getAttribute("data-theme");
     return t === "light" || t === "dark" ? t : "system";
@@ -55,7 +57,7 @@ function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
 /* litt's own Segmented: a quiet track with the chosen segment raised in it, and native radios underneath.
    In the header, icons on a phone, where three words would crowd the wordmark; the word stays for screen readers.
    In the menu (`full`), the whole width with icons and words. */
-function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
+export function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
   return (
     <Segmented
       legend="Theme"
@@ -283,7 +285,13 @@ export function App() {
     <MotionDialProvider tuning={page?.tune === true}>
       <CustomizeProvider>
         <TooltipProvider>
-          <Shell page={page} />
+          {route === "canvas" ? (
+            <Suspense fallback={null}>
+              <LanguageCanvas />
+            </Suspense>
+          ) : (
+            <Shell page={page} />
+          )}
         </TooltipProvider>
       </CustomizeProvider>
     </MotionDialProvider>
