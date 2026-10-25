@@ -16,16 +16,16 @@ Critique what is there. When something can't be judged from the input (motion in
 Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason that points at a specific element.
 
 **A. Signature (light and material)**
-- [ ] **P1** At most one accent fill in the view, on the primary action. Checkboxes, radios and switches are `--fg`, not accent. The accent otherwise appears as light (`--light`, glow, focus).
+- [ ] **P1** At most one accent fill in the view, on the primary action or the one switch that is the view's main choice. Checkboxes, radios and every other switch are neutral, not accent. The accent otherwise appears as light (`--light`, glow, focus).
 - [ ] **P2** One light source, from the top. Highlights only on top edges.
 - [ ] **P3** Glass only on floating surfaces, with content behind it. No glass on glass.
-- [ ] **P4** No drop shadow with an offset. Cards in the flow have no shadow; floating surfaces use a zero-offset glow plus a 1px ring.
+- [ ] **P4** No drop shadow with an offset, except a switch's or a slider's block (the press material: never sideways or more than 1px down). Cards in the flow have no shadow; floating surfaces use a zero-offset glow plus a 1px ring.
 - [ ] **P5** Nothing material animates (glow, grain, gradients, light).
 
 **B. Structure**
 - [ ] **P6** Spacing on the 8px grid (4px inside components). 1px hairlines. Tracking tightens on large type.
 - [ ] **P7** One idea per section. Section spacing near 128 / 96 / 64. Left-aligned and asymmetric by default.
-- [ ] Radius is on the scale: 4px controls, 8px surfaces (a surface is a control plus the 4px inset), pills only on avatars, icon-only buttons and switches (tags and chips are 4px). No `rounded-lg`-style classes.
+- [ ] Radius is on the scale: 4px controls, 8px surfaces (a surface is a control plus the 4px inset), pills only on avatars and icon-only buttons (tags and chips are 4px), and a block set into a control at the control radius less its inset. No `rounded-lg`-style classes.
 - [ ] **P10** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero CTAs are lg; a page form's buttons and a dialog's fields and actions are md.
 - [ ] Cards used only for independent objects, not as the default layout.
 

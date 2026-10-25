@@ -83,7 +83,7 @@ Nothing goes to 700 or above or below 400, running text never takes 500 or 600, 
 
 Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: a cool light against the warm stone grays, so it reads clearly without a large fill. In both themes the primary action is a deep cobalt with white text, as in the reference it came from. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
 
-**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
+**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes and radios fill with `--fg` when on, never the accent, and a slider's slab is never the accent either: a form can hold many of them, and the accent stays on its submit. A switch stays neutral, unless it is the one switch that is the view's main choice; then its block is the view's one accent fill.
 
 **Data hues (P11).** Five hues carry data, in a fixed order: blue, amber, teal, violet, rose. The first series or category takes blue, the second amber, and so on; a hue is never cycled, and a sixth series folds into "Other" or a second chart. Each hue has three tones:
 - the mark tone (`--data-blue`) for bars, dots, lines, heat cells and gauge ticks: at least 3:1 on canvas and every surface;
@@ -127,7 +127,7 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 |---|---|---|
 | `--radius-control` | 4px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
 | `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
-| `--radius-pill` | 999px | Avatars, icon-only buttons and switches. Radio marks and slider thumbs are circles |
+| `--radius-pill` | 999px | Avatars and icon-only buttons. Radio marks are circles. (A block set into a control takes `--radius-control` less its 2px inset.) |
 
 **Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
 
