@@ -25,7 +25,7 @@ Font: **Geist** (Google Fonts, available in Framer) and **Geist Mono**. Create t
 Display  → H1 tag on the hero only (18 on every breakpoint; nothing is larger)
 H1, H2, H3, H4 → their tags
 Reading, Body, Small, Caption → P tag
-Mono     → for kbd, data, versions
+Mono     → for code and terminal output only (numbers and data stay in Geist, with tabular figures)
 ```
 
 Weight by role (P9): Regular 400 for text (Reading, Body, Small), Medium 500 for titles (Display, H1 to H4, a title over its description, buttons, tabs), Semibold 600 for 12px labels only (Caption, tags, meta rows, table headers). Never Bold. Below the page title, hierarchy comes from weight, the two ink colors and space, not size. Add Geist Regular, Medium and Semibold and Geist Mono Regular to the project.

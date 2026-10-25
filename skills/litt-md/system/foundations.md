@@ -15,7 +15,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 ## 1. Type
 
-**Families.** `--font-sans` (Geist) for everything, headings included. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. Tags are set in the sans. No third family, ever.
+**Families.** `--font-sans` (Geist) for everything, headings and numbers included: numbers, readings, dates and counts take tabular figures (`tabular-nums`), so a changing value never wobbles. `--font-mono` (Geist Mono) only for code and terminal output: code blocks, commands, logs, and identifiers in code (token names, hashes, paths). Keyboard keys (`⌘K`), version strings and tags are set in the sans. No third family, ever.
 
 **Loading.** Geist comes from Google Fonts in the three weights: `family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap`. In Next.js the `geist` package (`GeistSans`, `GeistMono`) is the same face, as on litt.design; in an app that installs the registry, `base-styles` loads it from `@fontsource/geist-sans`. The fallback is Helvetica Neue, Helvetica and Arial, as on litt.design. Declare no `cv` or `ss` features. Geist Mono loads at 400 only.
 
@@ -27,7 +27,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 | `--weight-title` | 500 | Titles: display, h1 to h4, the title in a title-and-description lockup, buttons, tab and segmented triggers, `b` and `strong` |
 | `--weight-label` | 600 | 12px labels only: the caption step, tags, meta rows, table headers |
 
-Nothing goes to 700 or above or below 400, running text never takes 500 or 600, and 600 never appears above the caption size. Geist Mono stays at 400, at the caption size too. `tokens.css` sets `h1`–`h6`, `b` and `strong` to the title weight and `th` to the label weight, and turns off faux bold. In Tailwind, display to h4 carry the title weight and the caption carries the label weight on their own; `font-title` and `font-label` set the role on anything else, and a mono caption adds `font-normal`.
+Nothing goes to 700 or above or below 400, running text never takes 500 or 600, and 600 never appears above the caption size. Geist Mono stays at 400, at the caption size too. `tokens.css` sets `h1`–`h6`, `b` and `strong` to the title weight and `th` to the label weight, and turns off faux bold. In Tailwind, display to h4 carry the title weight and the caption carries the label weight on their own; `font-title` and `font-label` set the role on anything else, and a reading or a count at the caption size (a value, not a label) adds `font-normal`, as a mono caption does.
 
 **Scale.** Each step bundles size, a whole-pixel line height and tracking (`--type-<step>-size`, `-leading`, `-tracking`).
 

@@ -63,7 +63,7 @@ Each rule's Check line, the dos and don'ts, and the open questions are in `taste
 These change only when Nick changes them.
 - **Character:** technical precision.
 - **Themes:** light and dark both first-class.
-- **Type:** Geist + Geist Mono only, in three weights by role (P9). Nothing is set above 18px: display and h1 are 18, the rest 14, 13 and 12. Mono is for code, keys, data, versions and token names, never tags.
+- **Type:** Geist, with Geist Mono for code and terminal output only, in three weights by role (P9). Nothing is set above 18px: display and h1 are 18, the rest 14, 13 and 12. Numbers, keys, data and versions are Geist with tabular figures; mono is for code blocks, commands, logs and identifiers in code, never tags.
 - **Color:** warm stone neutrals at one OKLCH hue (about 60), monochrome chrome, one accent per project. Five data hues carry data, never chrome (P11).
 - **Density:** airy.
 - **Shape:** slight radius. Controls 4px (tags and chips too), surfaces 8px, pills only for avatars and icon-only buttons. A block set into a control takes the control radius less its 2px inset.
