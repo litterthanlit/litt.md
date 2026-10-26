@@ -1,6 +1,6 @@
 /**
  * Pad: two values set at once on one surface, like a reply's tone against its length. It is the Slider in two
- * dimensions: the same round thumb, the same foreground (a control fills with --fg, never the accent, P1), and the
+ * dimensions: the same round thumb, the same foreground (a control fills with --fg, never the accent, R6), and the
  * same rule that position never eases.
  *
  * - Surface: a well. --surface-2 at the surface radius with an inset --line hairline, and a static dot grid (fg at

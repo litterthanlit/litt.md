@@ -8,7 +8,7 @@
  *   at the small size in fg-muted and the clock in the caption in fg-subtle with tabular numbers. Hover steps
  *   the label to fg, and a press on a finger does the same. The text sits on a shared baseline, so the clock never
  *   rides high or low beside the label.
- * - No shimmer, no pulse, no spinner, no dots, no caret (P5, and "no motion that is not a response to the person").
+ * - No shimmer, no pulse, no spinner, no dots, no caret (R2, and "no motion that is not a response to the person").
  *   The only live signal is the clock, which counts whole seconds from when `active` turned true. It is a number
  *   changing, not an animation.
  * - Clock words: under a minute "12s", then "1m 5s", a whole minute "2m", and past an hour "1h 5m". Seconds

@@ -4,9 +4,9 @@
  * item's toProduct maps from a collection); the layout stays.
  *
  * The title and the count as one line in two inks, the cart at the end. A filter row: what to show as a Segmented
- * control and the order as a Select, left-aligned (P7). Then the grid: two across on a phone, then as many 14rem
+ * control and the order as a Select, left-aligned (R9). Then the grid: two across on a phone, then as many 14rem
  * columns as fit, every cover one shape. Each card is one link to its product, with no buy button, so the page has no
- * accent fill until the cart is open (P1). A sale strikes the old price through; a print with nothing in stock keeps
+ * accent fill until the cart is open (R6). A sale strikes the old price through; a print with nothing in stock keeps
  * its card and says Sold out. A filter with nothing in it says so and offers the way back. Nothing moves until
  * someone moves it; opening the cart is the page's one expressive moment.
  */

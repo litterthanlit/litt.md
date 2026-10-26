@@ -6,7 +6,7 @@
  *   the caption size in `--fg-subtle`, and the Copy button. The header is its own row, so the button can never
  *   cover code. The code is mono at the small size in `--fg`, padded `--space-4`, with a tab size of 2.
  * - Highlighting: tsx, ts, jsx and js go through sugar-high, and every other language is plain. Code is not
- *   data, so the colors are the foreground's tones and the accent text for strings (no data hues, P11).
+ *   data, so the colors are the foreground's tones and the accent text for strings (no data hues, R7).
  *   sugar-high paints each token with a syntax variable, so this file declares all of them on the block
  *   itself with arbitrary properties. It needs no stylesheet from the gallery and ships alone.
  * - Diff: with lang "diff" each line's first character is its sign, read into its own column: `+` in

@@ -15,7 +15,7 @@
  *   dashed circle in fg-subtle; failed is an x in a circle in danger. No dots. Every status is also said in hidden
  *   text, so color and shape are never the only signal.
  * - Phase: a heading row (the label small in fg-subtle, the total in the tabular caption) over a nested, labelled
- *   list. Its `hue` says which phase (P11): it colors the phase's rail bars here and its segments in TimelineBar.
+ *   list. Its `hue` says which phase (R7): it colors the phase's rail bars here and its segments in TimelineBar.
  *   With no hue those marks are fg at 55%.
  * - Proportional: with `proportional`, a step with `seconds` gets a row at least `seconds * secondHeight` tall, and
  *   the rail below its icon becomes a 4px bar at the control radius (the Meter's rail) of that length, in the
@@ -49,7 +49,7 @@ import { useExit, useFun, useTransition, useTravel } from "@/motion";
 /** How a step stands. Running is a half-filled circle that stays still. */
 export type TimelineStatus = "done" | "running" | "pending" | "skipped" | "failed";
 
-/** The five data hues, in their fixed order (P11). A phase takes one, and it means that phase everywhere in the view. */
+/** The five data hues, in their fixed order (R7). A phase takes one, and it means that phase everywhere in the view. */
 export type TimelineHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** How a run ended: success, danger, or neither. It sets the result's color and a hidden word. */
@@ -211,7 +211,7 @@ export type TimelinePhaseProps = {
   label: string;
   /** The phase's total at the end of its heading. A number is seconds ("24s", read as "24 seconds"); a string is shown as given. Leave it out while the phase has not run. */
   duration?: number | string;
-  /** The phase's data hue (P11). It colors this phase's rail bars and its segments in a TimelineBar. Without one they are the foreground at 55%. */
+  /** The phase's data hue (R7). It colors this phase's rail bars and its segments in a TimelineBar. Without one they are the foreground at 55%. */
   hue?: TimelineHue;
   /** The phase's TimelineSteps. */
   children: ReactNode;

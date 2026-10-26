@@ -2,15 +2,15 @@
  * Tag: a small label that names something (Framer, Site), files it under a category (Finance),
  * or reports its status (Live, Review).
  *
- * - The look is the selected segment's (components.md, Tag): 24px tall at the control radius,
+ * - The look is a flat chip (components.md, Tag; R3's flat step): 24px tall at the control radius,
  *   a surface-1 fill with an inset line hairline and the top highlight, and the sans at the
- *   caption size and the label weight (P9, v0.12), in sentence case. A plain tag is fg-muted.
+ *   caption size and the label weight (R8, v0.12), in sentence case. A plain tag is fg-muted.
  * - A status tag colors its text with the status color, never the fill, and there is no dot.
  *   The label says the status in words, so color never carries it alone.
  * - The status set is the tokens' own: success, warning and danger, plus neutral (fg-subtle).
  *   There is no accent status: the accent is chosen per project, and it does not promise
  *   4.5:1 for caption text.
- * - A hue tag (P11, v0.11) files the thing under a category, so its color carries data: the
+ * - A hue tag (R7, v0.11) files the thing under a category, so its color carries data: the
  *   hue's tint as the fill, its -text tone for the label (4.5:1 on the tint, checked by
  *   check.mjs), and a hairline of the hue under the top highlight. One hue means one category
  *   in a view. A hue is never a status: a tag that says how something stands takes `status`.
@@ -21,7 +21,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 
 export type TagStatus = "success" | "warning" | "danger" | "neutral";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type TagHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 const STATUS: Record<TagStatus, string> = {

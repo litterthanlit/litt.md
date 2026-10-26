@@ -1,10 +1,10 @@
 /**
- * Heatmap: a dot matrix whose depth says how much. One data hue (P11) in four steps over an empty dot, so
+ * Heatmap: a dot matrix whose depth says how much. One data hue (R7) in four steps over an empty dot, so
  * the eye reads where the weight sits: usage per day in a month, deploys per day over a year, mail per hour
  * of the week. Plain DOM and CSS, no chart library.
  *
  * - Color (components.md, Heatmap): zero is an empty dot at fg 8%. The four steps are the hue's mark tone over
- *   transparent at 30, 55, 80 and 100%, so one hue carries one quantity (P11) and the dots fit any surface.
+ *   transparent at 30, 55, 80 and 100%, so one hue carries one quantity (R7) and the dots fit any surface.
  *   `null` (no data: a day still to come, a day the month does not have) draws nothing. The default steps are
  *   the quartiles of the non-zero values, so the four levels hold about the same number of dots. The legend
  *   under the grid is "Less", the five levels as dots, "More".
@@ -51,7 +51,7 @@ import { countText, FUN_SPRINGS, useExit, useFun, useTransition, useTravel } fro
 
 /* ----------------------------------------------------------------- types */
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type HeatmapHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** One row of dots: a label, one value per column, and an optional total. */

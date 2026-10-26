@@ -152,7 +152,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
         (compact ? "h-control-sm shrink-0 " : "-mx-3 h-8 ") +
         (p.id === page?.id
-          ? "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]"
+          ? "bg-block text-fg shadow-(--block-lift) forced-colors:border"
           : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg")
       }
     >

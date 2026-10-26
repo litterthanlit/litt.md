@@ -10,7 +10,7 @@
  *   dividers and no boxes.
  * - Between two steps: one quiet line at the caption size in `--fg-subtle` that says in words how many went on
  *   ("38% continued"). Never red, never an arrow or a dash doing the talking. `formatStep` rewrites it.
- * - Hue (P11): one data hue for the whole funnel, blue unless `hue` says otherwise. It is one quantity, so one hue.
+ * - Hue (R7): one data hue for the whole funnel, blue unless `hue` says otherwise. It is one quantity, so one hue.
  * - Shares: whole percentages, with one decimal under 10% ("4.1%") so the small end of a funnel still reads, and
  *   "<0.1%" for a step that is there but tiny.
  * - Bad data still draws: a step larger than the one before it fills to its share, held at 100% of the first, and
@@ -24,7 +24,7 @@
  */
 import { useId } from "react";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type FunnelHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** A hue's mark tone fills every rail. */

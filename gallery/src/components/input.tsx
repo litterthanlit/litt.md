@@ -6,12 +6,12 @@
  * - Textarea is the same field for longer text (a spec extension: same edge, focus,
  *   error and label as Input, but taller).
  *
- * - Sizes sit on the shared control scale (P10): sm 32, md 44, lg 56, with the control
+ * - Sizes sit on the shared control scale (R9): sm 32, md 44, lg 56, with the control
  *   radius. Text is 13, 15 and 16px, and 16px on coarse pointers so iOS never zooms.
  *   On a touch screen the sm input grows to 44px, like the small targets in Header and List.
  * - Edge: inset 1px --line-control. Focus turns the edge --focus and adds --focus-ring
  *   (:focus-visible only). Error turns the edge --danger and keeps the ring on focus.
- * - Typed text at the text weight and the label at the title weight (P9). The edge fades on the
+ * - Typed text at the text weight and the label at the title weight (R8). The edge fades on the
  *   instant tier, the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
  *   its fill under the cursor reads as pressed.

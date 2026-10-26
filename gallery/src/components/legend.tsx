@@ -12,7 +12,7 @@
  *   from the full list, never the shown one, so hiding a series never repaints the others. A chart counts only the
  *   series it is given, so pass it the shown series with their hues pinned: `legendHues(items)` gives each name its
  *   hue. Five items at most, as in the Chart: past five the order would start again.
- * - States (P9, state without shift): shown is the hue's swatch and the name in `--fg`, and `aria-pressed="true"`.
+ * - States (R8, state without shift): shown is the hue's swatch and the name in `--fg`, and `aria-pressed="true"`.
  *   Hidden is the swatch as the Meter's track (fg at 12%) and the name in `--fg-subtle`. Only color changes, on the
  *   instant tier: nothing moves, the box never changes size, and the weight stays 400.
  * - Size: `h-control-sm` (32) with 8px of side padding at the control radius, and 44px tall on a coarse pointer.
@@ -28,7 +28,7 @@
  */
 import { useId, useState, type KeyboardEvent, type MouseEvent } from "react";
 
-/** The five data hues, in their fixed order (P11). The same names as the Chart's and the Breakdown's. */
+/** The five data hues, in their fixed order (R7). The same names as the Chart's and the Breakdown's. */
 export type LegendHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** The order an item without a hue takes them in: the Chart's `HUE_ORDER`. */

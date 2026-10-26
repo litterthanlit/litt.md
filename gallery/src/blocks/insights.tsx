@@ -3,7 +3,7 @@
  * to copy and make your own. Swap the sample data at the top for yours; the panels and their words stay.
  *
  * Seven raised panels, one idea each: a dot plot of reply times, a bar list of shortcuts, a mail rule, a voice pad, a
- * deploy timeline, a credits gauge and a heatmap of the credits by day. Each hue means one thing in its panel (P11), the
+ * deploy timeline, a credits gauge and a heatmap of the credits by day. Each hue means one thing in its panel (R7), the
  * deploy stays in the quiet foreground, and Create rule is the one accent fill. Two columns when the box is wide, one
  * on a phone.
  */

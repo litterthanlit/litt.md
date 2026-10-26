@@ -10,7 +10,7 @@
  *   4px above the title at the body size and the title weight in --fg, and the Price under it (From when the
  *   variants differ in price, the compare-at price struck through when the lowest is on sale).
  * - One link: the title is the card's CardLink, stretched over the card, so the card is one tab stop named by the
- *   product. No buy button and no accent: a grid of cards would be a dozen accent fills (P1), and the card's job is to
+ *   product. No buy button and no accent: a grid of cards would be a dozen accent fills (R6), and the card's job is to
  *   open the product. Hover is the Card's: the fill steps once, nothing lifts.
  * - Sold out: a product with nothing in stock keeps its card and adds a neutral "Sold out" Tag after the price.
  * - ProductGrid: a ul that measures itself, two across on a phone, then as many 14rem columns as fit, 16px apart.

@@ -14,7 +14,7 @@
  * - MessageText styles what a markdown renderer puts inside a turn, with no markdown library: paragraphs --space-3
  *   apart, headings at the body size and the title weight in --fg, lists with the marker in --fg-subtle, links in --accent-text, inline
  *   code in the mono on fg 6% at the control radius, a `pre` as a quiet mono block on --surface-2, a blockquote
- *   with no rail, and strong text in --fg at the title weight (P9). It never bolds and never italicises.
+ *   with no rail, and strong text in --fg at the title weight (R8). It never bolds and never italicises.
  * - MessageActions: sm ghost icon-only buttons with tooltips (Copy swaps to a check and a polite live region says
  *   "Copied", Retry, and the caller's own). They always show under the latest turn, on hover and focus-within under
  *   older ones, and always on a coarse pointer, where they grow to 44px. A streaming turn has none.
@@ -390,16 +390,16 @@ export function Message({
 /* ----------------------------------------------------------------- message text */
 
 /* What a markdown renderer puts inside an answer. Every rule is a descendant selector, so any renderer works, and each
-   color, size and radius is a litt token. Weights are set here by role (P9), so an app without the base styles gets them too. */
+   color, size and radius is a litt token. Weights are set here by role (R8), so an app without the base styles gets them too. */
 const PROSE = [
   "flex min-w-0 max-w-[68ch] flex-col gap-3 text-body [&>*]:min-w-0 [&_p]:text-pretty",
-  /* Headings: the body size at the title weight in --fg. Weight and ink are the hierarchy, as everywhere (P9). */
+  /* Headings: the body size at the title weight in --fg. Weight and ink are the hierarchy, as everywhere (R8). */
   "[&_:is(h1,h2,h3,h4)]:text-body [&_:is(h1,h2,h3,h4)]:font-title [&_:is(h1,h2,h3,h4)]:text-fg [&>:is(h1,h2,h3,h4):not(:first-child)]:mt-2",
   /* Lists: the marker steps back to --fg-subtle. A nested list tucks under its item. */
   "[&_ul]:list-disc [&_ol]:list-decimal [&_:is(ul,ol)]:ps-6 [&_li+li]:mt-1 [&_li::marker]:text-fg-subtle [&_li_:is(ul,ol)]:mt-1",
   /* Links: accent text, always underlined, so color is never the only mark. */
   "[&_a]:text-accent-text [&_a]:underline [&_a]:decoration-[color-mix(in_oklab,var(--accent-text)_40%,transparent)] [&_a]:underline-offset-2 [&_a:hover]:decoration-accent-text",
-  /* Strong steps to the title weight in --fg, never bold, and emphasis steps to --fg. No italic (P9). */
+  /* Strong steps to the title weight in --fg, never bold, and emphasis steps to --fg. No italic (R8). */
   "[&_:is(strong,b)]:font-title [&_:is(strong,b)]:text-fg [&_:is(em,i)]:not-italic [&_:is(em,i)]:text-fg",
   /* Inline code: the mono on fg 6% at the control radius. A pre resets it below. */
   "[&_code]:rounded-control [&_code]:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:font-normal [&_code]:text-small [&_code]:text-fg [&_code]:box-decoration-clone [&_code]:[overflow-wrap:anywhere]",

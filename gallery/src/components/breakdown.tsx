@@ -14,7 +14,7 @@
  *   rows line up with a plain Meter beside them. No dividers and no boxes.
  * - Legend: for a tile or a narrow panel. Under the split rail, a wrapping row of entries: a 12px by 4px swatch rail
  *   in the hue at the control radius, the label (small, fg) and the value (tabular, caption, fg-subtle).
- * - Hues (P11): a part without a hue takes the next free one in the fixed order (blue, amber, teal, violet, rose).
+ * - Hues (R7): a part without a hue takes the next free one in the fixed order (blue, amber, teal, violet, rose).
  *   Parts past the fifth fold into one "Other" part in fg at 55% (their values summed), so the hues are never cycled
  *   and a sixth never gets one. A hue the caller sets is never reused for another part in the same Breakdown: if it
  *   would be, development logs a console error and the part takes the next free hue.
@@ -26,7 +26,7 @@
  */
 import { useEffect, useId } from "react";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type BreakdownHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** The hues in the order a part without one takes them. */

@@ -205,7 +205,7 @@ const SIZES = [
   { value: "32", label: "32" },
 ];
 
-/* The selected segment (P12), one surface up from the raised stage. */
+/* The selected segment (R3), one surface up from the raised stage. */
 const CELL =
   "group/cell grid h-20 min-w-0 content-center justify-items-center gap-3 rounded-control px-1 select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt " +

@@ -1,5 +1,5 @@
 /**
- * Chart: BarChart and LineChart in plain SVG, and Meter. No chart library. A chart is quiet on purpose (P1: the
+ * Chart: BarChart and LineChart in plain SVG, and Meter. No chart library. A chart is quiet on purpose (R6: the
  * accent belongs to the one primary action, and a chart is made of many marks).
  *
  * - Color (components.md, Chart): a mark is never the accent. By default (the quiet foreground) one series is fg
@@ -8,7 +8,7 @@
  *   step down the foreground, 100%, 55% and 30%, with a legend. At 30% a mark is under 3:1 against a card, so the
  *   third series' bars carry a 1px edge at 55% and its line is dashed. Colors come from CSS variables, so both
  *   themes work.
- * - Data hues (P11, v0.11): a series may carry one of the five data hues (`hue` on the series), and `hues` gives
+ * - Data hues (R7, v0.11): a series may carry one of the five data hues (`hue` on the series), and `hues` gives
  *   every series without one the next hue in the fixed order. Color follows the series, never its place, so a
  *   filter that drops a series never repaints the others. A hue series rests in the hue's mark tone (3:1 on every
  *   surface) and its emphasised mark takes the hue's text tone, a step stronger, so no mark falls under 3:1 and
@@ -51,7 +51,7 @@ import { countText, useExit, useFun, useFunValue, useTransition, useTravel } fro
 
 /* ----------------------------------------------------------------- types */
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type ChartHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** One named run of values, one per category. Values are zero or more. */
@@ -790,7 +790,7 @@ export type MeterProps = {
   max?: number;
   /** The reading at the end of the row, in tabular figures: "42 of 100 GB". Defaults to the percentage. */
   valueText?: string;
-  /** Fills the rail with one of the five data hues instead of the foreground, when the color says which thing this is (P11). */
+  /** Fills the rail with one of the five data hues instead of the foreground, when the color says which thing this is (R7). */
   hue?: ChartHue;
   /** A value to aim for or stay under, such as a budget. A 2px tick crosses the rail there, in fg-subtle, and screen readers hear it after the reading. */
   target?: number;

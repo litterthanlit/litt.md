@@ -17,7 +17,7 @@
  *   ("Output of npm test"). Output stays fg when the call failed: the status says it.
  * - Group: ToolCallGroup folds a run of calls under one row (the caller's summary, or "4 tool calls"). It is open while
  *   `running`, and closes itself when `running` goes false unless the reader toggled it. Its calls are a list.
- * - Approval: ToolApproval is a litt-raised panel in the flow (never glass, P3): a title (body, the title weight, fg), the command in mono on
+ * - Approval: ToolApproval is a litt-raised panel in the flow (never glass, R3): a title (body, the title weight, fg), the command in mono on
  *   surface-2 at the control radius, one line in fg-subtle, an optional "always allow" Checkbox, then md actions, Allow
  *   (primary, the view's one accent fill because the Composer's Send is disabled while it waits) and Deny (ghost). It does
  *   not take focus when it appears: the person may be reading. A polite live region says "Waiting for your approval:

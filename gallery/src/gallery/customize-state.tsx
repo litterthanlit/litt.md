@@ -1,9 +1,12 @@
 /**
- * Customize, the state: type, shape and motion's feel for the whole gallery,
+ * Customize, the state: type, shape, the accent and motion's feel for the whole gallery,
  * chosen in the header's panel (customize.tsx, loaded on first use), on every
  * page. The motion dial stays in the Playground; the feel is fun mode's trial
  * (motion/fun.tsx), Calm (the locked motion) or Fun, and needs no CSS: it is a
  * <FunMode> around the gallery.
+ *
+ * The accent is Blue 4, or monochrome (R6): data-accent="mono" on <body>, which tokens.css answers with the ink for the
+ * primary action, the links and the focus ring, and a block's lift for the glow.
  *
  * The choices are saved in this browser and written on <body>, not <html>:
  * - the locked values stay readable on <html> (useTypefaces, readLocked), so
@@ -21,7 +24,8 @@ import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
-type Saved = { face?: Pick<Typeface, "id" | "stack" | "href">; radius?: number; fun?: boolean };
+export type Accent = "blue4" | "mono";
+type Saved = { face?: Pick<Typeface, "id" | "stack" | "href">; radius?: number; accent?: Accent; fun?: boolean };
 
 type Ctx = {
   typefaces: Typeface[];
@@ -31,6 +35,9 @@ type Ctx = {
   radius: number;
   lockedRadius: number;
   setRadius: (r: number) => void;
+  /** Blue 4, the locked accent, or monochrome: the primary action in the ink. */
+  accent: Accent;
+  setAccent: (a: Accent) => void;
   /** Fun mode's trial: Calm is the locked motion, Fun turns on <FunMode>. */
   fun: boolean;
   setFun: (on: boolean) => void;
@@ -59,10 +66,11 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   );
 
   const [fun, setFun] = useState(saved.fun === true);
+  const [accent, setAccent] = useState<Accent>(saved.accent === "mono" ? "mono" : "blue4");
 
   const typeface = typefaces.find((f) => f.id === faceId) ?? typefaces[0];
   const radius = radiusTuned ?? locked.radius;
-  const modified = typeface.id !== "locked" || radiusTuned !== null || fun;
+  const modified = typeface.id !== "locked" || radiusTuned !== null || accent !== "blue4" || fun;
 
   /* Write the choices on <body>, and remove what is back to locked. A layout effect, so a change never paints stale. */
   useLayoutEffect(() => {
@@ -79,7 +87,9 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       s.setProperty("--radius-control", `${radiusTuned}px`);
       s.setProperty("--radius-surface", `${shapeSurface(radiusTuned)}px`);
     }
-  }, [typeface, radiusTuned]);
+    if (accent === "mono") document.body.dataset.accent = "mono";
+    else delete document.body.dataset.accent;
+  }, [typeface, radiusTuned, accent]);
 
   /* Remember a change, and only a change, so a later change to tokens.css is never shadowed. */
   useEffect(() => {
@@ -88,12 +98,13 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       const next: Saved = {};
       if (typeface.id !== "locked") next.face = { id: typeface.id, stack: typeface.stack, href: typeface.href };
       if (radiusTuned !== null) next.radius = radiusTuned;
+      if (accent !== "blue4") next.accent = accent;
       if (fun) next.fun = true;
       localStorage.setItem(KEY, JSON.stringify(next));
     } catch {
       /* storage can be unavailable; the choice still applies until the page reloads */
     }
-  }, [modified, typeface, radiusTuned, fun]);
+  }, [modified, typeface, radiusTuned, accent, fun]);
 
   const value = useMemo<Ctx>(
     () => ({
@@ -103,16 +114,19 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       radius,
       lockedRadius: locked.radius,
       setRadius: (r) => setRadiusTuned(r === locked.radius ? null : r),
+      accent,
+      setAccent,
       fun,
       setFun,
       modified,
       reset: () => {
         setFaceId("locked");
         setRadiusTuned(null);
+        setAccent("blue4");
         setFun(false);
       },
     }),
-    [typefaces, typeface, radius, locked.radius, fun, modified],
+    [typefaces, typeface, radius, locked.radius, accent, fun, modified],
   );
 
   return (

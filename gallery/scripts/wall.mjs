@@ -6,7 +6,7 @@
  *   node scripts/wall.mjs --dist dist
  *
  * It fails when:
- * - the wall shows more than one accent fill (P1: one per view). Each tile is its page's `tile`, one object with no
+ * - the wall shows more than one accent fill (R6: one per view). Each tile is its page's `tile`, one object with no
  *   accent fill, and the Button tile carries the one. A page whose first demo ends in a primary button needs a tile.
  * - the page or a tile scrolls sideways,
  * - a tile draws nothing,

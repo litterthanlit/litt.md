@@ -5,7 +5,7 @@
  *   the indeterminate state come from the browser. Nothing is faked with ARIA.
  * - Two looks, one structure. "drawn" (the default) restyles the input into the spec's 20px
  *   chip at the control radius, with the --line-control edge and an --fg fill when on (not
- *   the accent: P1 keeps the one accent fill for the primary action, and a form can hold many
+ *   the accent: R6 keeps the one accent fill for the primary action, and a form can hold many
  *   checked boxes). A radio is a circle, because a rounded square would read as a checkbox.
  *   "native" is the spec's other option: the browser's own 16px box, with accent-color set
  *   to --fg. Drawn is the default because only a drawn box can take the --line-control edge

@@ -10,7 +10,7 @@
  *   mark in light mode and dimmer in dark, so a mark stands out by lightness, height and width, not by hue alone (in
  *   light mode the status colors are as dark as --fg-subtle, so --fg-subtle ticks would hide them). The needle is
  *   a 2px --fg line in the middle, over the ticks and pins and ending above the times so it never cuts one, and never
- *   the accent (P1). Steps sit 12px apart.
+ *   the accent (R6). Steps sit 12px apart.
  * - Drag: the ruler follows the pointer one to one, as the Slider's thumb does. Let go and it settles on the nearest
  *   step, or on an event within half a step of the needle, on the responsive tier and from rest, so it never passes
  *   either end. A press without a drag goes to the time under the pointer.

@@ -1,6 +1,6 @@
 /**
  * Cohort grid: retention by signup week as a real table. One row per cohort, one column per period since signup,
- * and in every cell the number itself, with a dot in front of it in one data hue's four steps (P11), so the eye
+ * and in every cell the number itself, with a dot in front of it in one data hue's four steps (R7), so the eye
  * still finds where retention holds. The numbers are the point; the dots are the Heatmap's scale beside them.
  *
  * - Columns: the cohort's name (small, `--fg`, at the start), its size (caption, `--fg-subtle`, tabular, at the end,
@@ -33,7 +33,7 @@
  */
 import { useEffect, useId, useRef, useState } from "react";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type CohortHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** One cohort: the people who signed up in one period, and how many of them were still active in each period after. */

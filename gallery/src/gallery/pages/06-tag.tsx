@@ -44,7 +44,7 @@ export const docs: PageDocs = {
     "It tells someone what just happened, such as saved or failed. Use Toast.",
     "It names a keyboard shortcut. Use Kbd.",
     "You want the accent. There is no accent tag, because the accent changes per project and its text is not promised 4.5:1 for caption text. A category takes a data hue instead.",
-    "Every item gets its own hue, or the hue is only there to brighten the row. A hue carries a category (P11): with more than five categories, leave them plain.",
+    "Every item gets its own hue, or the hue is only there to brighten the row. A hue carries a category (R7): with more than five categories, leave them plain.",
   ],
   keyboard: [[["Tab"], "Skips it. A tag is a label, so it never takes focus and has no key of its own."]],
   a11y: [

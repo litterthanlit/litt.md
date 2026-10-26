@@ -12,7 +12,7 @@
  *   about the line. A dot stands for `perDot` items, the smallest whole number that makes the tallest stack fit
  *   the height; a non-empty bin always keeps at least one dot, and the legend says what a dot is when perDot
  *   is above 1. The tooltip and the table always give the true count.
- * - Color (P11): with a goal, dots in bins at or under it take the hue's mark tone and dots past it take
+ * - Color (R7): with a goal, dots in bins at or under it take the hue's mark tone and dots past it take
  *   --fg-subtle (a mark at 3:1 or more in both themes). Without a goal every dot takes the hue. The active bin
  *   turns to the hue's text tone (--fg past the goal). The goal is a 1px dashed --line-strong line with its
  *   label at its foot, the median a 2px line in the hue's text tone with its label above, and a marker a 10px
@@ -44,7 +44,7 @@ import { useExit, useTransition, useTravel } from "@/motion";
 
 /* ----------------------------------------------------------------- types */
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type DotPlotHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 export type DotPlotProps = {

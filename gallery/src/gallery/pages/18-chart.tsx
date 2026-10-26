@@ -45,7 +45,7 @@ const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
   { name: "Preview", values: [/* … */] },
 ]} />
 
-// Data hues (P11): give each series the next hue in the fixed order, or name one per series.
+// Data hues (R7): give each series the next hue in the fixed order, or name one per series.
 // Color follows the series, so "Sites" stays blue wherever it appears.
 <BarChart label="Deploys by kind" labels={days} hues series={[
   { name: "Sites", values: [/* … */] },
@@ -82,7 +82,7 @@ const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
     "The exact numbers are the point. Use a Table, which lines the values up so the eye can run down a column.",
     "One number and its change. Use a Stat.",
     "You need more than five series, stacked bars, areas, pies or two scales on one chart. Litt has none of these: the foreground has three steps, the data hues five, and a second scale misleads. Fold the rest into \"Other\" or draw a second chart.",
-    "The color would only brighten the chart. One quantity reads best in the foreground; a hue is for telling things apart (P11).",
+    "The color would only brighten the chart. One quantity reads best in the foreground; a hue is for telling things apart (R7).",
     "Thousands of points or a chart that zooms and pans. This one draws a mark per category and has no zoom.",
     "The values go below zero. The baseline is zero and negative values are not drawn.",
   ],

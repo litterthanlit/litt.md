@@ -8,7 +8,7 @@
  *   figures. Hover is an fg-4% fill on the instant tier and never moves anything. On a coarse pointer
  *   there is no hover, so a row held down fills instead (fg 6%, same tier, color only), and so does a
  *   sortable header; the OS tap flash is off so the two do not double. The header row is sticky,
- *   caption size at the label weight (P9), fg-subtle, sentence case; figures stay at 400. The box is a
+ *   caption size at the label weight (R8), fg-subtle, sentence case; figures stay at 400. The box is a
  *   hairline at the surface radius, filled surface-1 so the sticky header can cover the rows that scroll under it.
  * - Semantics: a <table> with a hidden <caption>, <th scope="col"> headers and a <th scope="row"> for each primary
  *   cell, so a screen reader announces the row's name with every value. A sortable header holds a real button and
@@ -46,7 +46,7 @@
  *   aria-rowcount true; without it, while more can come, it is -1, which says the size is not known yet.
  * - Sticky columns: `stickyColumns` keeps the first one or two columns (a box and the row's name) in view while the table
  *   scrolls sideways. They take an opaque fill that follows the row's hover and selection, and a 1px --line hairline
- *   appears at their edge once anything is scrolled under them. No shadow: depth comes from the hairline (P4).
+ *   appears at their edge once anything is scrolled under them. No shadow: depth comes from the hairline (R3).
  * - Resizable columns: `resizable` on a TableHead puts a handle at its end edge. The first drag freezes the widths the
  *   columns have, so nothing jumps, and the table becomes fixed-layout: each column then keeps the width it is given,
  *   and what no longer fits ends in an ellipsis. The handle follows the pointer one to one, ← and → move it 16px (Shift

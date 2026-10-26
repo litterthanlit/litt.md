@@ -3,7 +3,7 @@
  * client: Status, Domain, Branch, Region, Created. Compose it from Details, DetailsItem and DetailsLink.
  *
  * - Surface (components.md, Details): `.litt-raised`, so the surface radius, surface-1, an inset hairline and the
- *   top highlight, and no outer shadow (P4). Never glass (P3), never an accent rail. `bare` drops the surface for
+ *   top highlight, and no outer shadow (R3). Never glass (R3), never an accent rail. `bare` drops the surface for
  *   a list that already sits on one, such as a dialog or a side panel.
  * - Header: an optional title (body size, title weight, fg), a description (small, fg-subtle) and an action at the
  *   end, such as an sm secondary Button. The action sits in a one-line-tall cell (`1lh`) on the title's line, so a
@@ -14,7 +14,7 @@
  *   value still reads on one line. Under 20rem wide (a container query) the label moves above the value.
  * - Grid: the label sits above the value, in columns that measure the card: one under 20rem, two from there, and up
  *   to `columns` once it is wide. `wide` lets an item, such as a note, take the whole row.
- * - Type (P9): the label is small in fg-subtle, the value is body in fg. `mono` sets a value in Geist Mono at the
+ * - Type (R8): the label is small in fg-subtle, the value is body in fg. `mono` sets a value in Geist Mono at the
  *   small size, for an identifier a person reads character by character: a hash, an ID, a path. A version, a
  *   region or a number stays in the sans.
  *   A long value wraps anywhere rather than truncating, so nothing is ever hidden.

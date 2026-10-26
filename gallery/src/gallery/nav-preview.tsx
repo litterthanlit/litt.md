@@ -11,7 +11,7 @@
  *   glides from name to name at once while it is open, on the responsive tier. Keyboard
  *   focus opens it at once. Leaving the sidebar, a click, Escape or a scroll closes it.
  * - Mouse only. A finger has no hover, and the phone's strip has no room beside it.
- * - Surface: solid surface-1 at the surface radius with --shadow-float (P4). Not glass:
+ * - Surface: solid surface-1 at the surface radius with --shadow-float (R3). Not glass:
  *   a demo inside it can carry glass of its own.
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";

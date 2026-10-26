@@ -2,51 +2,57 @@
  * Slider (components.md, "Slider"): one value on a continuous range, such as the default
  * animation speed. Built on Radix Slider (one thumb), which gives the role, the keys and the
  * form value. litt owns the look, the hand, the label row and the end words. RangeSlider, in the
- * same file, is the same control with two ends for a span (see "Range" below).
+ * same file, is the same control with two caps for a span (see "Range" below).
  *
- * - A slab in a tray (material.md, 6, "Press"; Nick's frames 116 to 118, v0.x). The tray is the control's height
- *   (44, md), sunken: --tray with --tray-shade, at the control radius. The slab is the value: a raised block
- *   (--block, --block-round, --block-lift) set 2px in, that grows from the start to where the value is. Its corners
- *   are the control radius less those 2px, so the two stay concentric at every shape. Its leading end rolls away
- *   into shade (--block-roll), a little deeper the further it is pushed, as in the frames. Never the accent (P1): a
- *   form can hold many sliders, and the accent stays on the one primary action.
- * - The slab says its value: at its leading end, at the small size, --fg, in tabular figures. The slab is never
- *   shorter than that word (the widest of min and max) with its air, so the word always fits. showValue={false}
- *   leaves the slab plain and 32px at its shortest.
- * - Label: above, like the Input's. Words for the two ends sit under the tray ("Slower", "Faster").
- * - The label names the thumb (aria-labelledby), the help text describes it, and formatValue
- *   feeds both the visible value and aria-valuetext.
- * - Hand: press on the slab and it is held where it was taken, so it moves with the finger from there; press past
- *   its end and the end jumps to the finger. While held, its cast tightens (--block-press). The hand is this file's,
- *   not Radix's (Radix maps the pointer across the whole width, which would jump the slab's end under the finger).
- * - Motion: none on the value. The slab follows the pointer and the keys at once, because its length is the value
- *   and an eased jump would lag the input. Only its cast changes, on the instant tier.
- * - Keys: arrows step, Home and End go to the ends, Page Up and Page Down move about a tenth of
- *   the range (whole steps, never fewer than one). The focus ring is on the tray, for :focus-visible only.
- * - Touch: the tray is 44px tall. The slider owns horizontal drags: it is marked data-no-drag, so a sheet never
- *   moves under it, and its touch-action leaves vertical scrolling to the page.
- * - Disabled: the tray at --surface-2 with a hairline, the slab --surface-2 and flat, its word --fg-subtle. The
- *   label dims to --fg-disabled; the value and the end words stay at --fg-subtle, because they are still read.
- * - Forced colors drops box-shadow and background colors, so the tray and the slab get real borders and the slab
- *   takes the system highlight.
+ * - The post (material.md, 6; Nick's frames 119 and 121, made physical on the controls canvas, v1.0): a raised plate
+ *   the control's height (44, md) at the control radius (--block, --plate-lift); a slot cut into it (--slot,
+ *   --slot-shade: its top wall shades the floor and its lower wall catches the light); the part of the slot the cap has
+ *   pulled out, a step darker (--slot-fill); and a cap riding in the slot, 8px wide, standing taller than the plate
+ *   (--cap, --cap-lift), with a grip line down its face. Only raised things cast, straight down (R3). Never the
+ *   accent (R6): a form can hold many sliders.
+ * - Notches: marks under the slot at the values you pass (marks), and a longer, darker one at home, the value the cap
+ *   comes back to (by default the defaultValue). Home holds the cap a little: within about a step of it, the hand
+ *   lets go there.
+ * - Says its value (R5): at the end of the label row, at the small size in tabular figures, --fg-muted, and --fg
+ *   while the cap is held. showValue={false} leaves it out. Words for the two ends sit under the plate ("Slower",
+ *   "Faster").
+ * - The label names the thumb (aria-labelledby), the help text describes it, and formatValue feeds both the shown
+ *   value and aria-valuetext. The thumb Radix keeps is invisible; the cap you see is this file's, so it can glide.
+ * - Hand (R4): press on the cap and it is held where it was taken, so it moves with the finger 1:1, with no easing;
+ *   press on the slot and the cap goes there on the responsive spring, then follows. While held it sinks
+ *   --press-depth and its cast tightens (--cap-press), at once. Pushed fast it leans into the move, at most 4°, and
+ *   rights itself on the spring when the hand slows. The hand is this file's, not Radix's (Radix maps the pointer
+ *   across the whole width, which would jump the cap under the finger).
+ * - Keys: arrows step, Home and End go to the ends, Page Up and Page Down move about a tenth of the range (whole
+ *   steps, never fewer than one); the cap glides there on the responsive spring. The focus ring is on the plate, for
+ *   :focus-visible only.
+ * - Motion moves only transforms: the cap and the fill slide by translate (the fill's rail is as wide as the cap's
+ *   travel), and the lean and the sink are the cap's own transform. Reduced motion stills the glide and the lean.
+ * - Touch: the plate is 44px tall. The slider owns horizontal drags: it is marked data-no-drag, so a sheet never moves
+ *   under it, and its touch-action leaves vertical scrolling to the page.
+ * - Disabled: everything lies flat (nothing to push): the plate --surface-2 with a hairline, the slot --surface-3,
+ *   the cap --surface-2 with a hairline. The label dims to --fg-disabled; the value and the end words stay at
+ *   --fg-subtle, because they are still read.
+ * - Forced colors drops box-shadow and background colors, so the plate, the slot and the cap get real borders and
+ *   the cap takes the system highlight.
  *
- * Range (components.md, "Slider", the Range bullet): RangeSlider is one slab that spans [from, to], such as builds
- * that took between 20s and 80s in a table filter. Each end of it is a thumb, a 20px grip that rolls into shade, and
- * the span shows at the end of the label row ("20s to 80s") when showValue is on. It reuses the tray, the label row,
- * the help text, the end words and the disabled look above.
- * - Names: each thumb is named by the label and its end ("Build time, from", "Build time, to"), and
- *   gets its own aria-valuetext from formatValue. The shown value reads "20s to 80s": words, never a dash.
- *   The two thumbs sit in a group named by the label (and marked aria-disabled when it is), so a screen
- *   reader says they belong together, and the dimmed label of a disabled range is known to be inactive.
- * - Hand: a press takes the nearer end of the slab, held where it was taken, or jumps it to the finger when the press
- *   is past it. The focused end draws the focus ring inside itself, so you can tell which one the keys move.
- * - The thumbs never cross and stay minStepsBetweenThumbs steps apart. Radix would swap them (or
- *   mis-round a decimal step), so Radix keeps their order (preserveThumbOrder) and this file holds the gap.
- * - Keys act on the focused thumb. The arrows are Radix's. Home, End, Page Up and Page Down are
- *   handled here, because Radix sends Home to the first thumb and End to the last, whichever has focus.
+ * Range (components.md, "Slider", the Range bullet): RangeSlider is two caps in one slot with the fill between them,
+ * such as builds that took between 20s and 80s in a table filter. The span shows at the end of the label row ("20s
+ * to 80s") when showValue is on. It reuses the plate, the label row, the help text, the end words and the disabled
+ * look above.
+ * - Names: each thumb is named by the label and its end ("Build time, from", "Build time, to"), and gets its own
+ *   aria-valuetext from formatValue. The shown value reads "20s to 80s": words, never a dash. The two thumbs sit in a
+ *   group named by the label (and marked aria-disabled when it is), so a screen reader says they belong together,
+ *   and the dimmed label of a disabled range is known to be inactive.
+ * - Hand: a press takes the nearer cap, held where it was taken when the press is on it, or sent to the finger when
+ *   it is not. The focused cap draws the focus ring around itself, so you can tell which one the keys move.
+ * - The caps never cross and stay minStepsBetweenThumbs steps apart. Radix would swap them (or mis-round a decimal
+ *   step), so Radix keeps their order (preserveThumbOrder) and this file holds the gap.
+ * - Keys act on the focused thumb. The arrows are Radix's. Home, End, Page Up and Page Down are handled here,
+ *   because Radix sends Home to the first thumb and End to the last, whichever has focus.
  * - A form sends both values under name (FormData.getAll(name) is [from, to]), not under name[].
  */
-import { useId, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
 import * as RadixSlider from "@radix-ui/react-slider";
 
 export type SliderProps = {
@@ -58,21 +64,25 @@ export type SliderProps = {
   value?: number;
   /** The value it starts at when you do not control it. Without one, it starts at min. */
   defaultValue?: number;
-  /** Called with the new value on every move of the slab, by pointer or key. */
+  /** Called with the new value on every move of the cap, by pointer or key. */
   onValueChange?: (value: number) => void;
-  /** Called with the final value when a drag is released, or right after a key moves the slab. Use it to save. */
+  /** Called with the final value when a drag is released, or right after a key moves the cap. Use it to save. */
   onValueCommit?: (value: number) => void;
-  /** The lowest value, with the slab at its shortest. */
+  /** The lowest value, with the cap at the start of the slot. */
   min?: number;
-  /** The highest value, with the slab filling the tray. */
+  /** The highest value, with the cap at the end of the slot. */
   max?: number;
-  /** The gap between values. The slab snaps to it, and an arrow key moves one step. */
+  /** The gap between values. The cap snaps to it, and an arrow key moves one step. */
   step?: number;
-  /** A word under the start of the tray, such as "Slower". Say which way is which. */
+  /** Values to mark with a notch under the slot, such as each whole step. Leave it out for a plain slot. */
+  marks?: number[];
+  /** The value the cap comes home to, marked with a longer notch: within about a step of it, the hand lets go there. Defaults to defaultValue; pass null for none. */
+  home?: number | null;
+  /** A word under the start of the plate, such as "Slower". Say which way is which. */
   minLabel?: ReactNode;
-  /** A word under the end of the tray, such as "Faster". */
+  /** A word under the end of the plate, such as "Faster". */
   maxLabel?: ReactNode;
-  /** The slab says its value at its leading end. On by default; false leaves the slab plain. */
+  /** Says the value at the end of the label row (R5). On by default; false leaves it out. */
   showValue?: boolean;
   /** Turns a value into text, such as 1 into "1.0x". It feeds the shown value and aria-valuetext. Without it, the number is shown as it is. */
   formatValue?: (value: number) => string;
@@ -101,9 +111,9 @@ export type RangeSliderProps = {
   onValueChange?: (value: [number, number]) => void;
   /** Called with [from, to] when a drag is released, or right after a key moves an end. Use it to save or to run the filter. */
   onValueCommit?: (value: [number, number]) => void;
-  /** The lowest value, at the start of the tray. */
+  /** The lowest value, at the start of the slot. */
   min?: number;
-  /** The highest value, at the end of the tray. */
+  /** The highest value, at the end of the slot. */
   max?: number;
   /** The gap between values. Both ends snap to it, and an arrow key moves the focused end one step. */
   step?: number;
@@ -111,9 +121,9 @@ export type RangeSliderProps = {
   minStepsBetweenThumbs?: number;
   /** The words that finish each thumb's name, "<label>, from" and "<label>, to". Change them for another language or another meaning. */
   thumbLabels?: [string, string];
-  /** A word under the start of the tray, such as "Faster". Say which way is which. */
+  /** A word under the start of the plate, such as "Faster". Say which way is which. */
   minLabel?: ReactNode;
-  /** A word under the end of the tray, such as "Slower". */
+  /** A word under the end of the plate, such as "Slower". */
   maxLabel?: ReactNode;
   /** Shows the span at the end of the label row, in tabular figures: "20s to 80s". Off by default. */
   showValue?: boolean;
@@ -131,40 +141,44 @@ export type RangeSliderProps = {
   ref?: Ref<HTMLSpanElement>;
 };
 
-/* The tray: sunken, the control's height, at the control radius. It clips what moves, so a cast never spills past its
-   walls. A single slider's focus ring sits on it; a range draws its ring on the focused end instead. */
-const trayBase =
-  "relative flex h-control-md w-full cursor-pointer touch-pan-y select-none overflow-hidden rounded-control " +
-  "bg-tray shadow-(--tray-shade) " +
+/* The plate: raised, the control's height, at the control radius (R3: --block, --plate-lift). It is the hit area and,
+   for a single slider, carries the focus ring. Disabled, it lies flat. */
+const plateBase =
+  "group relative block h-control-md w-full cursor-grab touch-pan-y select-none rounded-control bg-block shadow-(--plate-lift) " +
+  "data-held:cursor-grabbing " +
   "data-disabled:cursor-not-allowed data-disabled:bg-surface-2 data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border";
-const trayRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
+const plateRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
 
-/* Inside the tray, 2px in: where the slab and the thumbs live. Radix positions the thumbs against it. */
-const room = "absolute inset-0.5";
+/* The slot: 6px in from each end of the plate, 16px down and 12px tall, its corners the control radius less 2px. It
+   clips the fill. Disabled, it is a flat --surface-3. */
+const slot =
+  "pointer-events-none absolute inset-x-1.5 top-4 h-3 overflow-hidden rounded-[calc(var(--radius-control)-2px)] bg-slot shadow-(--slot-shade) " +
+  "group-data-disabled:bg-surface-3 group-data-disabled:shadow-none forced-colors:border";
 
-/* The slab, raised. Its corners are the control radius less the 2px it is set in. It reads the grip's width in the
-   sans at the small size, as the thumb does, so the two agree to the pixel. */
-const slabBase =
-  "pointer-events-none absolute inset-y-0 rounded-[calc(var(--radius-control)-2px)] text-small " +
-  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "forced-colors:border forced-colors:bg-[Highlight]";
-const slabLook = (held: boolean, disabled: boolean) =>
-  disabled
-    ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
-    : held
-      ? "bg-block shadow-[var(--block-round),var(--block-press)]"
-      : "bg-block shadow-[var(--block-round),var(--block-lift)]";
+/* The cap's travel: 14px in from each end of the plate (PAD), which is 8px in from the slot's ends. A rail as wide as
+   the travel moves by translate, with the cap on its right edge, so the cap and the fill move by transform only. */
+const capTravel = "pointer-events-none absolute inset-y-0 left-3.5 right-3.5";
+const fillTravel = "absolute inset-y-0 left-2 right-2";
+const fillLook =
+  "bg-slot-fill shadow-(--slot-fill-shade) " +
+  "group-data-disabled:bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] group-data-disabled:shadow-none forced-colors:bg-[Highlight]";
+/* The glide: a jump of the cap (a key, or a press on the slot) settles on the responsive spring. A drag follows 1:1. */
+const glides = " transition-transform duration-(--dur-responsive) ease-responsive";
 
-/* A single slider's thumb: the grip at the slab's leading end, which says the value. The ring is the tray's. */
-const gripOne =
-  "flex h-10 w-(--grip) items-center justify-end pr-3 text-small tabular-nums text-fg focus-visible:outline-none " +
-  "data-disabled:text-fg-subtle forced-colors:text-[HighlightText]";
+/* The cap: 8px wide and 36px tall, 4px from the plate's top, centered on its rail's right edge. It leans from its foot
+   and sinks while held, on the responsive spring. */
+const capBox = "absolute top-1 -right-1 h-9 w-2 origin-bottom transition-transform duration-(--dur-responsive) ease-responsive";
+const capFace = (held: boolean) =>
+  "absolute inset-0 rounded-[calc(var(--radius-control)-2px)] forced-colors:border forced-colors:bg-[Highlight] " +
+  (held ? "bg-cap-held shadow-(--cap-press) " : "bg-cap shadow-(--cap-lift) ") +
+  "group-data-disabled:bg-surface-2 group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)]";
+const capGrip = "absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-cap-grip group-data-disabled:bg-line";
 
-/* A range's thumb: a 20px grip at one end of the slab. The focused one rings itself, so you can tell which end the keys move. */
-const gripEnd =
-  "block h-10 w-(--grip) rounded-[calc(var(--radius-control)-2px)] " +
-  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
+/* Radix's thumb holds the role, the keys and the value. The cap you see is drawn above it, so the thumb is invisible
+   and as wide as the cap, which keeps it on the same travel. */
+const thumbTrack = "absolute inset-y-0 left-2.5 right-2.5";
+const thumbHidden = "block h-full w-2 opacity-0 focus-visible:outline-none";
 
 /** How many digits a number needs after the point, so snapping to a step of 0.1 never leaves 0.30000000000000004. */
 function places(n: number) {
@@ -188,15 +202,84 @@ function setRef<T>(ref: Ref<T> | undefined, el: T | null) {
   else if (ref) (ref as RefObject<T | null>).current = el;
 }
 
-/** Where `p` (0 to 1) of the way along is, as a CSS length inside the room, for something whose start sits there. */
-const along = (p: number) => `calc((100% - var(--grip)) * ${p})`;
+/** How far in from each end of the plate the cap's center can go, in px. The travel is the plate less twice this. */
+const PAD = 14;
 
-/** The pointer inside the room, undoing any scale above it: its x, the room's width and the grip's. */
-function measure(roomEl: HTMLElement, grip: HTMLElement | null | undefined, clientX: number) {
-  const r = roomEl.getBoundingClientRect();
-  const w = roomEl.offsetWidth || r.width;
+/** The pointer on the plate, undoing any scale above it: its x and the plate's width, in the plate's own px. */
+function measure(plate: HTMLElement, clientX: number) {
+  const r = plate.getBoundingClientRect();
+  const w = plate.offsetWidth || r.width;
   const scale = r.width / w || 1;
-  return { x: (clientX - r.left) / scale, w, g: grip?.offsetWidth ?? 0 };
+  return { x: (clientX - r.left) / scale, w };
+}
+
+/** Where x, on a plate w wide, is along the travel, from 0 to 1. */
+const along = (x: number, w: number) => Math.min(1, Math.max(0, (x - PAD) / (w - 2 * PAD || 1)));
+
+/** A rail as wide as the travel, moved so its right edge sits p of the way along. */
+const railAt = (p: number): CSSProperties => ({ transform: `translateX(${((p - 1) * 100).toFixed(3)}%)` });
+
+/** A notch under the slot, p of the way along. Home's is longer and darker. */
+function Notch({ p, home }: { p: number; home: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={
+        "pointer-events-none absolute w-px -translate-x-1/2 group-data-disabled:hidden forced-colors:bg-[CanvasText] " +
+        (home ? "top-7 h-2 bg-notch-home" : "top-8 h-1 bg-notch")
+      }
+      style={{ left: `calc(${PAD}px + (100% - ${2 * PAD}px) * ${p.toFixed(4)})` }}
+    />
+  );
+}
+
+/** The value under the hand: home holds it within about a step, then the step grid. */
+function valueAt(at: number, min: number, max: number, step: number, home: number | null) {
+  const raw = min + at * (max - min);
+  if (home !== null && Math.abs(raw - home) < step * 0.9) return home;
+  return snapToStep(raw, min, max, step);
+}
+
+/** The lean (R4): a cap pushed fast tips into the move, at most 4°, eased toward the hand's speed, and rights itself
+    when the hand slows or lets go. Reduced motion keeps it upright. */
+function useLean() {
+  const [lean, setLean] = useState(0);
+  const last = useRef<{ x: number; t: number; still: boolean } | null>(null);
+  const settle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(settle.current), []);
+  return {
+    lean,
+    start(x: number, t: number) {
+      last.current = { x, t, still: window.matchMedia("(prefers-reduced-motion: reduce)").matches };
+    },
+    move(x: number, t: number) {
+      const l = last.current;
+      if (!l) return;
+      last.current = { x, t, still: l.still };
+      if (l.still) return;
+      const target = Math.max(-4, Math.min(4, ((x - l.x) / Math.max(1, t - l.t)) * 5));
+      setLean((now) => Math.round((now * 0.5 + target * 0.5) * 100) / 100);
+      clearTimeout(settle.current);
+      settle.current = setTimeout(() => setLean(0), 90);
+    },
+    end() {
+      last.current = null;
+      clearTimeout(settle.current);
+      setLean(0);
+    },
+  };
+}
+
+/** One cap on its rail: the face, the grip line, the sink while held and the lean. The ring is drawn when `ring` is on. */
+function Cap({ p, held, lean, glide, ring = false }: { p: number; held: boolean; lean: number; glide: boolean; ring?: boolean }) {
+  return (
+    <span aria-hidden="true" className={capTravel + (glide ? glides : "")} style={railAt(p)}>
+      <span className={capBox} style={{ transform: `translateY(${held ? "var(--press-depth)" : "0px"}) rotate(${lean}deg)` }}>
+        <span className={capFace(held) + (ring ? " outline-2 outline-offset-2 outline-focus" : "")} />
+        <span className={capGrip} />
+      </span>
+    </span>
+  );
 }
 
 type FieldProps = {
@@ -204,6 +287,8 @@ type FieldProps = {
   label: ReactNode;
   /** The value as it is shown at the end of the label row. Leave it out to show none. */
   shown?: string;
+  /** Whether a hand holds a cap: the shown value steps up to --fg. */
+  held?: boolean;
   helpId?: string;
   help?: ReactNode;
   minLabel?: ReactNode;
@@ -212,12 +297,12 @@ type FieldProps = {
   className: string;
   /** Marks the field as a group named by its label, for a control with more than one thumb. */
   group?: boolean;
-  /** The tray, and anything that must sit inside the field. */
+  /** The plate, and anything that must sit inside the field. */
   children: ReactNode;
 };
 
-/** What the Slider and the RangeSlider share around the tray: the label row, the end words and the help text. */
-function Field({ labelId, label, shown, helpId, help, minLabel, maxLabel, disabled, className, group = false, children }: FieldProps) {
+/** What the Slider and the RangeSlider share around the plate: the label row, the end words and the help text. */
+function Field({ labelId, label, shown, held = false, helpId, help, minLabel, maxLabel, disabled, className, group = false, children }: FieldProps) {
   return (
     <div
       role={group ? "group" : undefined}
@@ -231,7 +316,7 @@ function Field({ labelId, label, shown, helpId, help, minLabel, maxLabel, disabl
         </span>
         {shown !== undefined && (
           /* Disabled, the value steps down to --fg-subtle, not --fg-disabled: it is still information, and it must stay readable. */
-          <span aria-hidden="true" className={"text-small tabular-nums " + (disabled ? "text-fg-subtle" : "text-fg-muted")}>
+          <span aria-hidden="true" className={"text-small tabular-nums transition-colors duration-(--dur-instant) ease-litt " + (disabled ? "text-fg-subtle" : held ? "text-fg" : "text-fg-muted")}>
             {shown}
           </span>
         )}
@@ -254,7 +339,7 @@ function Field({ labelId, label, shown, helpId, help, minLabel, maxLabel, disabl
   );
 }
 
-/** One slider: a label above, a slab in a tray that says its value, and optional words under its ends. Every value is a number, and a form sends it under name. */
+/** One slider: a label above that says the value, a cap riding in a slot on a raised plate, and optional words under its ends. Every value is a number, and a form sends it under name. */
 export function Slider({
   label,
   help,
@@ -265,6 +350,8 @@ export function Slider({
   min = 0,
   max = 100,
   step = 1,
+  marks,
+  home: homeProp,
   minLabel,
   maxLabel,
   showValue = true,
@@ -285,10 +372,9 @@ export function Slider({
   const value = valueProp ?? inner;
   const fmt = (v: number) => (formatValue ? formatValue(v) : String(v));
   const text = fmt(value);
-  const p = (value - min) / (max - min || 1);
-  /* The grip holds the widest word the slider can say (a figure is 1ch; the slack covers a wider sign such as %), so the slab's shortest never changes as it moves. */
-  const chars = Math.max(fmt(min).length, fmt(max).length, fmt(snapToStep(min + step, min, max, step)).length);
-  const grip = showValue ? `calc(${chars}ch + 1.75rem)` : "2rem";
+  const span = max - min || 1;
+  const p = (value - min) / span;
+  const home = homeProp === null ? null : (homeProp ?? defaultValue ?? null);
 
   const latest = useRef(value);
   latest.current = value;
@@ -310,34 +396,37 @@ export function Slider({
     onValueCommit?.(next);
   };
 
-  /* The hand. A press on the slab holds it where it was taken (offset); a press past its end jumps the end there.
-     Each handler calls preventDefault, so Radix's own pointer handling stays out. */
-  const roomRef = useRef<HTMLSpanElement>(null);
+  /* The hand. A press on the cap holds it where it was taken (offset); a press on the slot sends the cap there on the
+     spring, then it follows. Each handler calls preventDefault, so Radix's own pointer handling stays out. */
+  const plateRef = useRef<HTMLSpanElement>(null);
   const thumbRef = useRef<HTMLSpanElement | null>(null);
   const hand = useRef<{ id: number; offset: number } | null>(null);
   const [held, setHeld] = useState(false);
-  const to = (clientX: number, offset: number) => {
-    const m = measure(roomRef.current!, thumbRef.current, clientX);
-    const at = (m.x + offset - m.g) / (m.w - m.g || 1);
-    change(snapToStep(min + Math.min(1, Math.max(0, at)) * (max - min), min, max, step));
-  };
+  const [glide, setGlide] = useState(true);
+  const lean = useLean();
+  const to = (x: number, w: number) => change(valueAt(along(x, w), min, max, step, home));
   const onPointerDown = (e: PointerEvent<HTMLSpanElement>) => {
-    if (disabled || (e.pointerType === "mouse" && e.button !== 0) || !roomRef.current) return;
+    if (disabled || (e.pointerType === "mouse" && e.button !== 0) || !plateRef.current) return;
     e.preventDefault();
-    const m = measure(roomRef.current, thumbRef.current, e.clientX);
-    const end = m.g + p * (m.w - m.g);
-    const offset = m.x <= end + 8 ? end - m.x : 0;
-    hand.current = { id: e.pointerId, offset };
+    const m = measure(plateRef.current, e.clientX);
+    const cap = PAD + p * (m.w - 2 * PAD);
+    const onCap = Math.abs(m.x - cap) <= 10;
+    hand.current = { id: e.pointerId, offset: onCap ? cap - m.x : 0 };
     e.currentTarget.setPointerCapture(e.pointerId);
     thumbRef.current?.focus({ preventScroll: true });
     setHeld(true);
-    to(e.clientX, offset);
+    setGlide(!onCap);
+    lean.start(m.x, e.timeStamp);
+    if (!onCap) to(m.x, m.w);
   };
   const onPointerMove = (e: PointerEvent<HTMLSpanElement>) => {
     const h = hand.current;
-    if (!h || h.id !== e.pointerId) return;
+    if (!h || h.id !== e.pointerId || !plateRef.current) return;
     e.preventDefault();
-    to(e.clientX, h.offset);
+    const m = measure(plateRef.current, e.clientX);
+    setGlide(false);
+    lean.move(m.x, e.timeStamp);
+    to(m.x + h.offset, m.w);
   };
   const onPointerEnd = (e: PointerEvent<HTMLSpanElement>) => {
     const h = hand.current;
@@ -345,20 +434,19 @@ export function Slider({
     e.preventDefault();
     hand.current = null;
     setHeld(false);
+    setGlide(true);
+    lean.end();
     if (e.type === "pointerup") onValueCommit?.(latest.current);
   };
 
-  /* The leading end rolls away into shade, a little deeper the further the slab is pushed (Nick's 116 to 118). */
-  const roll: CSSProperties = disabled
-    ? {}
-    : {
-        backgroundImage: `linear-gradient(to right, transparent calc(100% - ${(1.5 + 3 * p).toFixed(2)}px), color-mix(in oklab, var(--block-roll) ${Math.round(25 + 60 * p)}%, transparent))`,
-      };
+  const notched = (marks ?? []).filter((v) => v !== home && v >= min && v <= max);
 
   return (
     <Field
       labelId={labelId}
       label={label}
+      shown={showValue ? text : undefined}
+      held={held}
       helpId={helpId}
       help={help}
       minLabel={minLabel}
@@ -367,7 +455,8 @@ export function Slider({
       className={className}
     >
       <RadixSlider.Root
-        /* The slab grows from the left and the hand is measured from the left, so Radix places the thumb from the left too, under any DirectionProvider. */
+        ref={plateRef}
+        /* The cap runs from the left and the hand is measured from the left, so Radix places the thumb from the left too, under any DirectionProvider. */
         dir="ltr"
         name={disabled ? undefined : name}
         min={min}
@@ -383,10 +472,20 @@ export function Slider({
         onPointerUp={onPointerEnd}
         onPointerCancel={onPointerEnd}
         data-no-drag=""
-        className={trayBase + " " + trayRing}
+        data-held={held ? "" : undefined}
+        className={plateBase + " " + plateRing}
       >
-        <RadixSlider.Track ref={roomRef} className={room} style={{ "--grip": grip } as CSSProperties}>
-          <span aria-hidden="true" className={slabBase + " left-0 " + slabLook(held, disabled)} style={{ width: `calc(var(--grip) + ${along(p)})`, ...roll }} />
+        <span aria-hidden="true" className={slot}>
+          <span className={fillTravel + (glide ? glides : "")} style={railAt(p)}>
+            <span className={"absolute inset-y-0 right-0 w-[calc(100%+0.5rem)] " + fillLook} />
+          </span>
+        </span>
+        {notched.map((v) => (
+          <Notch key={v} p={(v - min) / span} home={false} />
+        ))}
+        {home !== null && home >= min && home <= max && <Notch p={(home - min) / span} home />}
+        <Cap p={p} held={held} lean={lean.lean} glide={glide} />
+        <RadixSlider.Track className={thumbTrack}>
           <RadixSlider.Thumb
             ref={(el: HTMLSpanElement | null) => {
               thumbRef.current = el;
@@ -396,17 +495,15 @@ export function Slider({
             aria-labelledby={labelId}
             aria-describedby={helpId}
             aria-valuetext={formatValue ? text : undefined}
-            className={gripOne}
-          >
-            {showValue && <span aria-hidden="true">{text}</span>}
-          </RadixSlider.Thumb>
+            className={thumbHidden}
+          />
         </RadixSlider.Track>
       </RadixSlider.Root>
     </Field>
   );
 }
 
-/** Two values on one tray, [from, to]: one slab that spans them. The ends never cross, each is named by the label and its end, and a form sends both under name. */
+/** Two values in one slot, [from, to]: two caps with the fill between them. The caps never cross, each is named by the label and its end, and a form sends both under name. */
 export function RangeSlider({
   label,
   help,
@@ -437,7 +534,7 @@ export function RangeSlider({
   const nameId = (i: 0 | 1) => `${id}-${i === 0 ? "from" : "to"}-name`;
 
   /* The slider keeps its own values when you do not control them, because Page Up and the hand need to read them. They
-     are sorted and kept on the tray, so a stray default can never draw the ends outside it or crossed. */
+     are sorted and kept in the slot, so a stray default can never draw the caps outside it or crossed. */
   const [inner, setInner] = useState<[number, number]>(defaultValue ?? [min, max]);
   const given = valueProp ?? inner;
   const from = Math.min(max, Math.max(min, Math.min(given[0], given[1])));
@@ -483,7 +580,7 @@ export function RangeSlider({
   };
 
   /* The keys act on the focused thumb. Radix sends Home to the first thumb and End to the last, whichever has focus, and
-     moves ten steps on Page Up and Page Down. The spec says Home and End go to the end of the tray (the other thumb stops
+     moves ten steps on Page Up and Page Down. The spec says Home and End go to the end of the slot (the other thumb stops
      them) and the pages are about a tenth of the range, in whole steps. */
   const thumbKeys = (i: 0 | 1) => (event: KeyboardEvent<HTMLSpanElement>) => {
     if (disabled) return;
@@ -502,63 +599,61 @@ export function RangeSlider({
     onValueCommit?.(held);
   };
 
-  /* The hand: a press takes the nearer end of the slab, held where it was taken when the press is on the slab, or
-     jumped to the finger when it is past it. Each handler calls preventDefault, so Radix's pointer handling stays out. */
-  const roomRef = useRef<HTMLSpanElement>(null);
+  /* The hand: a press takes the nearer cap, held where it was taken when the press is on it, or sent to the finger on
+     the spring when it is not. Each handler calls preventDefault, so Radix's pointer handling stays out. */
+  const plateRef = useRef<HTMLSpanElement>(null);
   const thumbs = useRef<(HTMLSpanElement | null)[]>([]);
   const hand = useRef<{ id: number; end: 0 | 1; offset: number } | null>(null);
-  const [held, setHeld] = useState(false);
-  const moveEnd = (end: 0 | 1, clientX: number, offset: number) => {
-    const m = measure(roomRef.current!, thumbs.current[0], clientX);
-    const at = (m.x + offset - (end === 1 ? m.g : 0)) / (m.w - m.g || 1);
-    const v = snapToStep(min + Math.min(1, Math.max(0, at)) * span, min, max, step);
+  const [held, setHeld] = useState<0 | 1 | null>(null);
+  const [glide, setGlide] = useState(true);
+  const [ringed, setRinged] = useState<0 | 1 | null>(null);
+  const lean = useLean();
+  const moveEnd = (end: 0 | 1, x: number, w: number) => {
+    const v = valueAt(along(x, w), min, max, step, null);
     const [a, b] = latest.current;
     change(end === 0 ? [v, b] : [a, v]);
   };
   const onPointerDown = (e: PointerEvent<HTMLSpanElement>) => {
-    if (disabled || (e.pointerType === "mouse" && e.button !== 0) || !roomRef.current) return;
+    if (disabled || (e.pointerType === "mouse" && e.button !== 0) || !plateRef.current) return;
     e.preventDefault();
-    const m = measure(roomRef.current, thumbs.current[0], e.clientX);
-    const left = pf * (m.w - m.g);
-    const right = m.g + pt * (m.w - m.g);
-    const end: 0 | 1 = m.x < (left + right) / 2 ? 0 : 1;
-    const edge = end === 0 ? left : right;
-    const on = m.x >= left - 8 && m.x <= right + 8;
-    const offset = on ? edge - m.x : 0;
-    hand.current = { id: e.pointerId, end, offset };
+    const m = measure(plateRef.current, e.clientX);
+    const caps = [PAD + pf * (m.w - 2 * PAD), PAD + pt * (m.w - 2 * PAD)] as const;
+    const end: 0 | 1 = caps[0] === caps[1] ? (m.x < caps[0] ? 0 : 1) : m.x < (caps[0] + caps[1]) / 2 ? 0 : 1;
+    const onCap = Math.abs(m.x - caps[end]) <= 10;
+    hand.current = { id: e.pointerId, end, offset: onCap ? caps[end] - m.x : 0 };
     e.currentTarget.setPointerCapture(e.pointerId);
     thumbs.current[end]?.focus({ preventScroll: true });
-    setHeld(true);
-    moveEnd(end, e.clientX, offset);
+    setHeld(end);
+    setGlide(!onCap);
+    lean.start(m.x, e.timeStamp);
+    if (!onCap) moveEnd(end, m.x, m.w);
   };
   const onPointerMove = (e: PointerEvent<HTMLSpanElement>) => {
     const h = hand.current;
-    if (!h || h.id !== e.pointerId) return;
+    if (!h || h.id !== e.pointerId || !plateRef.current) return;
     e.preventDefault();
-    moveEnd(h.end, e.clientX, h.offset);
+    const m = measure(plateRef.current, e.clientX);
+    setGlide(false);
+    lean.move(m.x, e.timeStamp);
+    moveEnd(h.end, m.x + h.offset, m.w);
   };
   const onPointerEnd = (e: PointerEvent<HTMLSpanElement>) => {
     const h = hand.current;
     if (!h || h.id !== e.pointerId) return;
     e.preventDefault();
     hand.current = null;
-    setHeld(false);
+    setHeld(null);
+    setGlide(true);
+    lean.end();
     if (e.type === "pointerup") onValueCommit?.(latest.current);
   };
-
-  /* Both ends roll away into shade. A range's span is not one push from the start, so the roll stays as it is. */
-  const roll: CSSProperties = disabled
-    ? {}
-    : {
-        backgroundImage:
-          "linear-gradient(to right, color-mix(in oklab, var(--block-roll) 45%, transparent), transparent 3px, transparent calc(100% - 3px), color-mix(in oklab, var(--block-roll) 45%, transparent))",
-      };
 
   return (
     <Field
       labelId={labelId}
       label={label}
       shown={showValue ? text : undefined}
+      held={held !== null}
       helpId={helpId}
       help={help}
       minLabel={minLabel}
@@ -568,7 +663,8 @@ export function RangeSlider({
       group
     >
       <RadixSlider.Root
-        dir="ltr" // as the Slider's: the slab and the hand run from the left
+        ref={plateRef}
+        dir="ltr" // as the Slider's: the caps and the hand run from the left
         min={min}
         max={max}
         step={step}
@@ -582,14 +678,22 @@ export function RangeSlider({
         onPointerUp={onPointerEnd}
         onPointerCancel={onPointerEnd}
         data-no-drag=""
-        className={trayBase}
+        data-held={held !== null ? "" : undefined}
+        className={plateBase}
       >
-        <RadixSlider.Track ref={roomRef} className={room} style={{ "--grip": "1.25rem" } as CSSProperties}>
+        <span aria-hidden="true" className={slot}>
+          {/* The fill between the caps: a rail-wide band moved to the first cap and scaled to the second, transform only. */}
           <span
-            aria-hidden="true"
-            className={slabBase + " " + slabLook(held, disabled)}
-            style={{ left: along(pf), width: `calc(var(--grip) + ${along(pt - pf)})`, ...roll }}
-          />
+            className={fillTravel + " origin-left" + (glide ? glides : "")}
+            style={{ transform: `translateX(${(pf * 100).toFixed(3)}%) scaleX(${Math.max(0, pt - pf).toFixed(4)})` }}
+          >
+            <span className={"absolute inset-0 " + fillLook} />
+          </span>
+        </span>
+        {([0, 1] as const).map((i) => (
+          <Cap key={i} p={i === 0 ? pf : pt} held={held === i} lean={held === i ? lean.lean : 0} glide={glide} ring={ringed === i} />
+        ))}
+        <RadixSlider.Track className={thumbTrack}>
           {([0, 1] as const).map((i) => (
             <RadixSlider.Thumb
               key={i}
@@ -604,7 +708,10 @@ export function RangeSlider({
               aria-describedby={helpId}
               aria-valuetext={formatValue ? fmt(values[i]) : undefined}
               onKeyDown={thumbKeys(i)}
-              className={gripEnd}
+              /* The focused cap rings itself, for keyboard focus only, so you can tell which one the keys move. */
+              onFocus={(e) => setRinged(e.currentTarget.matches(":focus-visible") ? i : null)}
+              onBlur={() => setRinged(null)}
+              className={thumbHidden}
             />
           ))}
         </RadixSlider.Track>

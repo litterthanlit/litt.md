@@ -3,10 +3,11 @@
  * options, in one track. Built from a fieldset and native radio inputs, so the role, the
  * arrow keys and the form value come from the browser.
  *
- * - Track: --radius-surface (8), fill at fg 5%, inset --line edge, 4px padding. The
- *   segments inside sit at --radius-control (4), so the corners stay concentric.
- * - Segment: --fg-subtle, and --fg on hover. The selected one gets --surface-1, --fg, an
- *   inset --line and --highlight. Labels at the title weight (P9), and no segment changes size when selected.
+ * - Track: a sunken tray (R3: --tray, --tray-shade) at the control radius, 2px padding, as the Switch's. The segments
+ *   inside sit at the control radius less that inset, so the corners stay concentric.
+ * - Segment: --fg-subtle, and --fg on hover. The selected one is the raised block (--block, --block-lift), in --fg:
+ *   selected is raised, the same block as a switch's. Labels at the title weight (R8), and no segment changes size
+ *   when selected.
  * - Sizes are on the control scale: sm is a 32px track with caption text (the spec), md is a
  *   44px track with small text, for forms beside 44px inputs. On touch screens sm grows to 44px.
  * - Segments share one width (the widest label), so the selected surface keeps its shape as
@@ -97,8 +98,7 @@ export function Segmented<T extends string>({
       <LayoutGroup id={auto}>
         <div
           className={
-            "relative grid-flow-col auto-cols-fr rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-1 " +
-            "shadow-[inset_0_0_0_1px_var(--line)] forced-colors:border " +
+            "relative grid-flow-col auto-cols-fr rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " +
             (block ? "grid w-full " : "inline-grid ") +
             look.track
           }
@@ -110,7 +110,7 @@ export function Segmented<T extends string>({
               <label
                 key={o.value}
                 className={
-                  "relative grid h-full select-none place-items-center rounded-control font-title " +
+                  "relative grid h-full select-none place-items-center rounded-[calc(var(--radius-control)-2px)] font-title " +
                   "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
                   look.segment +
                   (off
@@ -135,14 +135,14 @@ export function Segmented<T extends string>({
                     layoutId="segmented-surface"
                     transition={enter}
                     aria-hidden="true"
-                    className="absolute inset-0 rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] forced-colors:border-2"
+                    className="absolute inset-0 rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border-2"
                   />
                 )}
                 <span className="litt-trim relative z-1">{o.label}</span>
                 {/* The label and the ring sit above the selected surface (z-1), so the surface never covers them while it glides. */}
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-1 rounded-control peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
+                  className="pointer-events-none absolute inset-0 z-1 rounded-[calc(var(--radius-control)-2px)] peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
                 />
               </label>
             );

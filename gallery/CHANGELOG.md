@@ -4,6 +4,66 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-26 · litt 1.0: nine rules, the depth ladder and Blue 4
+
+litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry follows them. The accent is Blue 4, a brighter cobalt that still carries white text past 5.5:1, or a project runs monochrome. Depth is one ladder: sunken, flat, raised and floating, one recipe each, lit from the top. Selected is raised: the selected segment, a segmented tab, the current page, a tree's selected row and an active table filter are the same block a switch moves. The secondary button is that block too, and it sinks half a pixel when pressed. The slider is the post: a cap you hold, riding in a slot on a raised plate. Comments across the registry cite the new rule IDs, R1 to R9 (the profile maps the old P1 to P12).
+
+- **breaking** `litt`: the accent is Blue 4 in both themes (`--litt-accent`, `--litt-accent-hover`, `--litt-accent-text`, `--litt-accent-tint`, `--litt-focus`), and the accent stays 0.12 (OKLab) from every data hue. `data-accent="mono"` on `<html>` or `<body>` runs a project monochrome: the primary action, links and the focus ring in the ink, the glow a block's lift. New: the slider's post, `--litt-slot`, `--litt-slot-shade`, `--litt-slot-fill`, `--litt-slot-fill-shade`, `--litt-plate-lift`, `--litt-cap`, `--litt-cap-held`, `--litt-cap-lift`, `--litt-cap-press`, `--litt-cap-grip`, `--litt-notch` and `--litt-notch-home`, with their colors (`bg-litt-slot`, `bg-litt-cap` and the rest); and `--litt-press-depth`, how far a pressed block sinks (0 under reduced motion). Gone: `--litt-block-round` and `--litt-block-roll`, the old slab slider's. Migrate: nothing in litt uses them any more; if your own code does, use `--litt-block-lift` for a raised block, or the post's tokens for a slider.
+- **changed** `button`: a secondary button is the raised block (`--litt-block`, `--litt-block-lift`), and its cast tightens while pressed. A press sinks a button half a pixel (`--litt-press-depth`) instead of shrinking it. The primary keeps its glow. Nothing in your code has to change.
+- **changed** `segmented`: the track is a sunken tray and the selected segment the raised block in it, as the Switch's, 2px in, its corners the control radius less 2px. Nothing in your code has to change.
+- **changed** `tabs`: the segmented variant's track is the tray and its fill the raised block. The underline variant is unchanged. Nothing in your code has to change.
+- **changed** `option-picker`: words sit in the Segmented control's tray, the picked one the raised block. Nothing in your code has to change.
+- **changed** `slide-confirm`: the track is the tray and the thumb the raised block, as the Switch's; a disabled thumb lies flat. Nothing in your code has to change.
+- **changed** `header`: the current page is the raised block. Nothing in your code has to change.
+- **changed** `app-shell`: the current page in the sidebar is the raised block. Nothing in your code has to change.
+- **changed** `tree`: the selected row is the raised block. Nothing in your code has to change.
+- **changed** `table-filter`: a filtering column's funnel is the raised block. Nothing in your code has to change.
+- **changed** `slider`: the post. A raised plate the control's height, a slot cut into it, the fill a step darker, and a cap riding in the slot that casts down. Take the cap and it follows your hand 1:1, sinks and leans when pushed fast; press the slot, or use a key, and it glides there on the responsive spring. New `marks` draws notches under the slot, and `home` (by default the `defaultValue`) is a longer notch the cap holds a little. The value now shows at the end of the label row, not inside the control; `showValue={false}` still leaves it out. `RangeSlider` is two caps in one slot with the fill between them. Nothing in your code has to change.
+- **changed** `action-bar`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `avatar`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `bar-list`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `breakdown`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `callout`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `card`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `carousel`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `cart`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `case-study`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `chart`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `checkbox`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `code-block`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `cohort-grid`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `collection`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `composer`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `date-picker`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `details`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `dot-plot`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `form`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `funnel`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `gauge`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `growth`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `heatmap`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `input`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes; the field keeps its look while its press-material version is still open.
+- **changed** `insights`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `legend`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `list-cover`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `message`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `pad`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `plan`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `product`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `product-card`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `scroll-area`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `sparkline`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `spread`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `stat`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `switch`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `table`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `tag`: its comments call its look a flat chip (R3's flat step) and cite the v1.0 rules. Nothing else changes.
+- **changed** `thinking`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `time-scrubber`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `timeline`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `tool-call`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `usage`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+
 ## 2026-10-25 · Geist for numbers, the mono for code
 
 Geist Mono is now only for code and terminal output: code blocks, commands, logs, and the identifiers inside them (a hash, a path, a token name). Everything else that was in the mono, such as a number, a date, a key cap, a count, a file name or a hex value, is set in Geist with tabular figures (`tabular-nums`), so digits still line up by place. At the caption size a tabular figure in Geist is as wide as one in the mono (7.2px at 12px) and its letters run narrower, so nothing grows. Nothing in your code has to change; reinstall to pick it up. In your own code, set a figure as `tabular-nums` rather than `font-mono`.

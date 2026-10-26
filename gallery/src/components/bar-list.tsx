@@ -7,7 +7,7 @@
  *   (caption). A row is at least 44px tall (airy) and rows are split by `--line` hairlines.
  * - Bar: the Meter's rail, a 4px rail at the control radius. The track is fg at 12% (the Meter's), the fill is `--fg` (the quiet
  *   default) or the hue's mark tone, and its width is value / max, where max defaults to the largest value. One
- *   hue means one thing in a list (P11): the quantity the bars measure, or, with a hue per row, each row's kind. A bar never takes the accent.
+ *   hue means one thing in a list (R7): the quantity the bars measure, or, with a hue per row, each row's kind. A bar never takes the accent.
  * - Alignment: one grid for the whole list. Every row is a subgrid of it, so the bars start at the same x and end
  *   at the same x, and the values and deltas line up as columns. The list measures itself with a container query,
  *   not the window: under 28rem the bar moves under the label at the full width of the row, and the lead, the
@@ -33,7 +33,7 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { animate, motion, useTransform } from "motion/react";
 import { useFun, useFunValue } from "@/motion";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type BarListHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** Whether a change is good news, bad news or neither. It sets the delta's color, and a hidden word for screen readers. */

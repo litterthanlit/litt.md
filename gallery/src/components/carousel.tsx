@@ -18,7 +18,7 @@
  *   an end the button is disabled and hands its focus to the other one.
  * - Keys: the track is a tab stop. ← and → move one slide, Home and End go to the first and the last.
  * - Motion: a button, a key or a drag's release scrolls smoothly, the browser's own scroll; under reduced motion it
- *   jumps. Nothing else moves, and nothing fades at the edges (material is static, P5).
+ *   jumps. Nothing else moves, and nothing fades at the edges (material is static, R2).
  * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a mouse drag can be thrown. Let go and the track
  *   keeps the speed it had, coasts to the slide that speed would reach (a hard throw goes further than the next one)
  *   and lands on it with fun mode's throw spring. Buttons and keys land on the same spring. Dragged past either end

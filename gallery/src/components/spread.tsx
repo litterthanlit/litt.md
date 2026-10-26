@@ -9,7 +9,7 @@
  * - Rail: a 4px track at the control radius in fg 12% across the whole scale. Over it the full range (min to
  *   max) is a 4px segment in fg 24%, over that the middle half (p25 to p75) is a 4px segment in the hue's mark
  *   tone, and the median is a 2px wide, 12px tall tick in the hue's text tone, centered on the rail. A hue is
- *   drawn thin, a thread through neutral space (P11). The hue means the measure (build time, reply time), so a
+ *   drawn thin, a thread through neutral space (R7). The hue means the measure (build time, reply time), so a
  *   row past the goal keeps it.
  * - Data: a row is `{ label, values }` (the component computes the quartiles, by linear interpolation) or
  *   `{ label, min, p25, median, p75, max }` when an API has already done it. Rows may mix.
@@ -32,7 +32,7 @@
  */
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type SpreadHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 type SpreadFromValues = {

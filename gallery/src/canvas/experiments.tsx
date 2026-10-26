@@ -17,14 +17,14 @@ const ring = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visib
 
 /* ---------------------------------------------------------------- material */
 
-/** The three depths side by side: a card in the flow (P4), a block a hand takes, and the tray it sits in. */
+/** The three depths side by side: a card in the flow (R3), a block a hand takes, and the tray it sits in. */
 export function MaterialDepths() {
   const swatch = "grid h-28 place-items-center text-small font-title text-fg";
   return (
     <div className="grid grid-cols-3 gap-6">
       <figure className="grid gap-2">
         <div className={swatch + " rounded-surface bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]"}>Flat</div>
-        <figcaption className="text-small text-fg-subtle">A card in the flow. A hairline and the top highlight, no shadow (P4).</figcaption>
+        <figcaption className="text-small text-fg-subtle">A card in the flow. A hairline and the top highlight, no shadow (R3).</figcaption>
       </figure>
       <figure className="grid gap-2">
         <div className={"grid h-28 place-items-center rounded-control p-0.5 " + tray}>

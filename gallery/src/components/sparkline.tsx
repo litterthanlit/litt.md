@@ -1,14 +1,14 @@
 /**
  * Sparkline: a trend in one thin line, with no axes, no gridlines and no labels. It sits beside a figure (a Stat's
  * `trend` slot) or in a table row, and shows shape, not values: put the exact figure next to it. A sibling of the
- * LineChart and the Meter, drawn the way the Meter is (P11: a hue is a thread through neutral space).
+ * LineChart and the Meter, drawn the way the Meter is (R7: a hue is a thread through neutral space).
  *
  * - Marks: a 2px line with round joins and caps, and a dot on the latest point so today is the strongest mark, as in
  *   the Chart. The dot is 4px in radius (8px across) on a 2px ring in the surface color, so it reads on a busy row and
- *   the line does not run into it. No area fill, no gradient, no glow (P5).
+ *   the line does not run into it. No area fill, no gradient, no glow (R2).
  * - Color: the line is the quiet foreground by default (`--fg` at 55%) and the dot is `--fg`. With a `hue` the line is
  *   the hue's mark tone (3:1 on every surface) and the dot its `-text` tone, a step stronger. One hue means one
- *   quantity (P11); keep it the same wherever that quantity is drawn.
+ *   quantity (R7); keep it the same wherever that quantity is drawn.
  * - Scale: by default each sparkline fits its own values, with 2px of air above and below the line. Pass `min` and
  *   `max` to fix the scale, so the sparklines in a column compare. A value outside a fixed scale is held at its edge.
  *   A flat series (or a single value) sits in the middle. `baseline` is a reference value (a goal, last month's
@@ -31,7 +31,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { useFun } from "@/motion";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type SparklineHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** The surface the sparkline sits on, which the dot's ring matches. */

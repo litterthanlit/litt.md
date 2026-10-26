@@ -25,13 +25,13 @@
   --font-sans: "Geist", "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  /* Weight by role (P9). Three weights and nothing else: no 700 and up, nothing
+  /* Weight by role (R8). Three weights and nothing else: no 700 and up, nothing
      below 400, no 500 or 600 on running text, no 600 above the caption size. */
   --weight: 400;               /* text: reading, body, small, nav, descriptions */
   --weight-title: 500;         /* titles: display, h1 to h4, a lockup's title, buttons, tabs, b and strong */
   --weight-label: 600;         /* 12px labels only: the caption step, tags, meta rows, table headers */
 
-  /* Type scale (P6): each step carries its size, a whole-pixel line height and its
+  /* Type scale (R9): each step carries its size, a whole-pixel line height and its
      tracking, tightest at the top. Display and h1 are the ceiling at 18: nothing is set larger. h2 to h4 share one
      style on purpose; below the page title, rank comes from weight, ink and space. */
   --type-display-size: 1.125rem;  /* 18 */
@@ -86,7 +86,7 @@
   --space-40: 160px;
 
   /* Layout: 12 columns; breakpoints 640 / 1024 / 1280. */
-  --section-y: 64px;           /* airy rhythm (P7): 64 mobile, 96 tablet, 128 desktop */
+  --section-y: 64px;           /* airy rhythm (R9): 64 mobile, 96 tablet, 128 desktop */
   --gutter: 16px;              /* page side padding */
   --grid-gap: 16px;
   --container-reading: 40rem;  /* 640 */
@@ -101,7 +101,7 @@
   --radius-pill: 999px;        /* avatars and icon-only buttons */
   --hairline: 1px;
 
-  /* Controls (P10): buttons and inputs share one height scale. Labels are set at
+  /* Controls (R9): buttons and inputs share one height scale. Labels are set at
      --weight-title and trimmed to the cap height (.litt-trim), so at sm and md the side padding
      roughly equals the vertical air. An lg button runs wider than its air
      (--button-pad-lg), because a near-square lg reads as a block. */
@@ -129,6 +129,7 @@
   --dur-instant: 100ms;
   --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);   /* instant tier and every exit */
   --press-scale: 0.98;
+  --press-depth: 0.5px;              /* how far a pressed block sinks (R4) */
 
   /* Responsive: bounce 0. Menus, tabs, tooltips, the gliding highlight. */
   --spring-responsive: 200ms 0;      /* visual time, bounce */
@@ -200,19 +201,22 @@
   --fg-subtle: #6d6661;        /* supporting, metadata */
   --fg-disabled: #a49c96;      /* disabled only, exempt from contrast */
 
-  /* Accent: cobalt, Litt's own (v0.9), a cool light on the warm stone neutrals (v0.15). Swap per project. */
-  --accent: #264bd1;
-  --accent-hover: #1c3cb2;
+  /* Accent: Blue 4, Litt's own (v1.0), a bright cobalt that still carries white past 5.5:1, a cool light on the
+     warm stone neutrals. Nick's swatch is P3 #2656f4, the same color as this sRGB value. Swap per project, or run
+     monochrome ([data-accent="mono"], below). The hover is a step darker here and lighter in dark. The text tone
+     sits a hair toward indigo so a link stays 0.12 (OKLab) from every data hue's text (R6); the check measures it. */
+  --accent: #0957fd;
+  --accent-hover: #0e4ada;
   --accent-fg: #ffffff;        /* text on accent, at least 4.5:1 */
-  --accent-text: #264bd1;      /* the accent as text (links), at least 4.5:1 on canvas */
-  --accent-tint: #e8eeff;
-  --focus: #264bd1;            /* focus ring, at least 3:1 on canvas and surfaces */
+  --accent-text: #104dfd;      /* the accent as text (links), at least 4.5:1 on canvas and on its tint */
+  --accent-tint: #e7f0ff;
+  --focus: #0957fd;            /* focus ring, at least 3:1 on canvas and surfaces */
 
   --success: #007c3b;
   --warning: #9c5a00;
   --danger: #be2e31;
 
-  /* Data hues (P11, v0.11): color that carries data, never chrome. Five hues in a fixed
+  /* Data hues (R7, v0.11): color that carries data, never chrome. Five hues in a fixed
      order (blue, amber, teal, violet, rose), assigned in that order and never cycled.
      Each mark tone reaches 3:1 on canvas and surfaces; each -text tone reaches 4.5:1 on
      canvas, surfaces and its own tint. Fitted to these surfaces and checked for
@@ -229,29 +233,40 @@
   --data-rose-text: #bb3c72;
   --tint-strength: 12%;        /* how much of a hue its tint carries (tags, avatars) */
 
-  /* Material, tuned for light (P8) */
+  /* Material, tuned for light (R2) */
   --glass-bg: rgba(255, 255, 255, 0.72);
   --glass-bg-solid: rgba(255, 255, 255, 0.94);
   --glass-border: rgba(17, 15, 13, 0.07);
   --highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  /* Depth (P4): zero-offset glow plus a 1px ring, on floating surfaces only. */
+  /* Depth (R3): zero-offset glow plus a 1px ring, on floating surfaces only. */
   --shadow-tooltip: 0 0 2px rgba(17, 15, 13, 0.08), 0 0 0 1px rgba(17, 15, 13, 0.06);
   --shadow-float: 0 0 8px rgba(17, 15, 13, 0.08), 0 0 24px rgba(17, 15, 13, 0.06), 0 0 0 1px rgba(17, 15, 13, 0.06);
   --shadow-modal: 0 0 40px rgba(17, 15, 13, 0.10), 0 0 72px rgba(17, 15, 13, 0.06), 0 0 0 1px rgba(17, 15, 13, 0.06);
   --light-strength: 12%;
   --glow-strength: 28%;
   --grain-opacity: 0.02;
-  /* Press (material.md, 6): a control a hand moves is a block in a sunken tray, lit from the top (P2). The tray
-     has a hairline and its top wall's shade on the floor; the block sits raised, with a contact line under its edge
-     and a soft cast, heavier below, which tightens while it is pressed. An exception to P4 for the switch and the
-     slider (journal, 2026-10-24); nothing else takes these. */
+  /* The press material (material.md, 6): the depth ladder's sunken and raised steps (R3), lit from the top (R2).
+     Sunken: a tray has a hairline and its top wall's shade on the floor; a slot cut into a plate adds the light its
+     lower wall catches, and the part of it that is pulled out (the fill) is a step darker. Raised: a block sits low
+     in its tray, with a contact line under its edge and a soft cast, which tightens while it is pressed; a cap and
+     the plate it rides on stand taller and cast up to 3px down. Only raised things cast, never sideways. */
   --tray: #ece9e6;
   --tray-shade: inset 0 0 0 1px rgba(17, 15, 13, 0.18), inset 0 1px 2px rgba(17, 15, 13, 0.2);
   --block: #ffffff;
   --block-lift: 0 0.5px 1px rgba(17, 15, 13, 0.22), 0 0.5px 3px rgba(17, 15, 13, 0.16);
   --block-press: 0 0.5px 1px rgba(17, 15, 13, 0.22), 0 0 1.5px rgba(17, 15, 13, 0.12);
-  --block-round: inset 0 1px 1.5px rgba(17, 15, 13, 0.06), inset 0 -1px 1.5px rgba(17, 15, 13, 0.07); /* a slab's soft top and bottom */
-  --block-roll: rgba(17, 15, 13, 0.6); /* a slab's leading end, rolling away from the light */
+  --slot: #e6e2de;
+  --slot-shade: inset 0 1px 2px rgba(17, 15, 13, 0.28), inset 0 0 0 1px rgba(17, 15, 13, 0.1), inset 0 -1px 0 rgba(255, 255, 255, 0.8);
+  --slot-fill: #cdc7c2;
+  --slot-fill-shade: inset 0 1px 1.5px rgba(17, 15, 13, 0.22);
+  --plate-lift: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 0 1px rgba(17, 15, 13, 0.07), 0 1px 1px rgba(17, 15, 13, 0.08), 0 3px 6px -2px rgba(17, 15, 13, 0.16);
+  --cap: #ffffff;
+  --cap-held: #f4f2f0;
+  --cap-lift: inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(17, 15, 13, 0.08), 0 0 0 0.5px rgba(17, 15, 13, 0.24), 0 1px 1px rgba(17, 15, 13, 0.2), 0 3px 5px -1px rgba(17, 15, 13, 0.24);
+  --cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(17, 15, 13, 0.06), 0 0 0 0.5px rgba(17, 15, 13, 0.28), 0 0.5px 1px rgba(17, 15, 13, 0.24), 0 1px 2px rgba(17, 15, 13, 0.14);
+  --cap-grip: rgba(17, 15, 13, 0.24); /* the line down a cap's face */
+  --notch: rgba(17, 15, 13, 0.28);    /* a step mark under a slot */
+  --notch-home: rgba(17, 15, 13, 0.6); /* the default's mark, longer and darker */
 }
 
 /* --------------------------------------------------------------------------
@@ -274,12 +289,12 @@
   --fg-subtle: #cec4bd;
   --fg-disabled: #6b645f;
 
-  --accent: #2d57e5;
-  --accent-hover: #3864eb;
+  --accent: #0957fd;
+  --accent-hover: #1e64fe;     /* a step lighter in dark */
   --accent-fg: #ffffff;
-  --accent-text: #507afd;      /* lighter than the fill: a deep cobalt reads too dark as text on this canvas */
-  --accent-tint: #13234f;
-  --focus: #507afd;
+  --accent-text: #5e78fe;      /* lifted to pass 4.5:1 on the canvas and on its tint, and toward indigo, apart from the chart blue */
+  --accent-tint: #0e1a31;
+  --focus: #5e78fe;
 
   --success: #4bc680;
   --warning: #e19b1b;
@@ -312,8 +327,18 @@
   --block: #2a2725;
   --block-lift: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0.5px 3px rgba(0, 0, 0, 0.55);
   --block-press: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0 1.5px rgba(0, 0, 0, 0.5);
-  --block-round: inset 0 1px 1.5px rgba(0, 0, 0, 0.2), inset 0 -1px 1.5px rgba(0, 0, 0, 0.3);
-  --block-roll: rgba(0, 0, 0, 0.7);
+  --slot: #0b0a09;
+  --slot-shade: inset 0 1px 2px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(255, 255, 255, 0.07);
+  --slot-fill: #3a3633;
+  --slot-fill-shade: inset 0 1px 1.5px rgba(0, 0, 0, 0.55);
+  --plate-lift: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.55), 0 1px 1px rgba(0, 0, 0, 0.6), 0 3px 6px -2px rgba(0, 0, 0, 0.7);
+  --cap: #45403c;
+  --cap-held: #3b3734;
+  --cap-lift: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.7), 0 1px 1px rgba(0, 0, 0, 0.7), 0 3px 5px -1px rgba(0, 0, 0, 0.7);
+  --cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.75), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 1px 2px rgba(0, 0, 0, 0.5);
+  --cap-grip: rgba(0, 0, 0, 0.5);
+  --notch: rgba(255, 255, 255, 0.2);
+  --notch-home: rgba(255, 255, 255, 0.5);
 }
 
 /* --------------------------------------------------------------------------
@@ -337,12 +362,12 @@
     --fg-subtle: #cec4bd;
     --fg-disabled: #6b645f;
 
-    --accent: #2d57e5;
-    --accent-hover: #3864eb;
+    --accent: #0957fd;
+    --accent-hover: #1e64fe;
     --accent-fg: #ffffff;
-    --accent-text: #507afd;
-    --accent-tint: #13234f;
-    --focus: #507afd;
+    --accent-text: #5e78fe;
+    --accent-tint: #0e1a31;
+    --focus: #5e78fe;
 
     --success: #4bc680;
     --warning: #e19b1b;
@@ -375,8 +400,18 @@
     --block: #2a2725;
     --block-lift: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0.5px 3px rgba(0, 0, 0, 0.55);
     --block-press: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0 1.5px rgba(0, 0, 0, 0.5);
-    --block-round: inset 0 1px 1.5px rgba(0, 0, 0, 0.2), inset 0 -1px 1.5px rgba(0, 0, 0, 0.3);
-    --block-roll: rgba(0, 0, 0, 0.7);
+    --slot: #0b0a09;
+    --slot-shade: inset 0 1px 2px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(255, 255, 255, 0.07);
+    --slot-fill: #3a3633;
+    --slot-fill-shade: inset 0 1px 1.5px rgba(0, 0, 0, 0.55);
+    --plate-lift: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.55), 0 1px 1px rgba(0, 0, 0, 0.6), 0 3px 6px -2px rgba(0, 0, 0, 0.7);
+    --cap: #45403c;
+    --cap-held: #3b3734;
+    --cap-lift: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.7), 0 1px 1px rgba(0, 0, 0, 0.7), 0 3px 5px -1px rgba(0, 0, 0, 0.7);
+    --cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.75), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 1px 2px rgba(0, 0, 0, 0.5);
+    --cap-grip: rgba(0, 0, 0, 0.5);
+    --notch: rgba(255, 255, 255, 0.2);
+    --notch-home: rgba(255, 255, 255, 0.5);
   }
 }
 
@@ -387,11 +422,11 @@
    -------------------------------------------------------------------------- */
 :root,
 [data-theme] {
-  /* One light source, from the top (P2), tinted by the accent (P1). */
+  /* One light source, from the top (R2), tinted by the accent (R6). */
   --light: radial-gradient(120% 70% at 50% -10%,
              color-mix(in oklab, var(--accent) var(--light-strength), transparent) 0%,
              transparent 65%);
-  /* The glow reserved for the one primary action (P1). */
+  /* The glow reserved for the one primary action (R6). */
   --glow: 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent),
           0 0 24px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
@@ -417,6 +452,26 @@
   }
 }
 
+/* --------------------------------------------------------------------------
+   Monochrome (R6): a project without an accent sets data-accent="mono" on
+   <html> or <body>. The primary action takes the ink with the canvas as its
+   text, a link is the ink with its underline, the focus ring is the ink, and
+   the glow becomes a block's lift. The derived tokens resolve where they are
+   declared, so they are restated here.
+   -------------------------------------------------------------------------- */
+:root[data-accent="mono"],
+[data-accent="mono"] {
+  --accent: var(--fg);
+  --accent-hover: color-mix(in oklab, var(--fg), var(--canvas) 18%);
+  --accent-fg: var(--canvas);
+  --accent-text: var(--fg);
+  --accent-tint: color-mix(in oklab, var(--fg) 7%, var(--canvas));
+  --focus: var(--fg);
+  --light: none;
+  --glow: var(--block-lift);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --dur-instant: 0ms;
@@ -427,6 +482,7 @@
     --stagger: 0ms;
     --travel: 0px;
     --press-scale: 1;
+    --press-depth: 0px;
     /* --spring-* stay as they are. They feed JS springs, and the library honors
        reduced motion (MotionConfig reducedMotion="user", Framer useReducedMotion).
        A zero visual time can break a spring solver. */
@@ -439,7 +495,7 @@
    still override them.
    ========================================================================== */
 @layer base {
-  /* Weight by role (P9): headings and bold take the title weight, table headers the
+  /* Weight by role (R8): headings and bold take the title weight, table headers the
      label weight, never the browser's bold. Faux bold stays off. */
   html { font-synthesis-weight: none; }
   h1, h2, h3, h4, h5, h6, b, strong { font-weight: var(--weight-title); }
@@ -454,7 +510,7 @@
 }
 
 @layer components {
-  /* Glass, only for surfaces floating over content (P3). Set --glass-shadow
+  /* Glass, only for surfaces floating over content (R3). Set --glass-shadow
      to var(--shadow-modal) on dialogs.
      The blur lives on ::before so fixed or absolute children aren't trapped
      by the containing block that backdrop-filter creates. */
@@ -477,27 +533,27 @@
   }
 
   /* A solid raised surface: cards in the page flow. Surface radius, no shadow
-     (P4): a hairline and the top highlight carry the depth. */
+     (R3): a hairline and the top highlight carry the depth. */
   .litt-raised {
     background: var(--surface-1);
     border-radius: var(--radius-surface);
     box-shadow: inset 0 0 0 1px var(--line), var(--highlight);
   }
 
-  /* Trim a label to its cap height so padding equals visible air (P10).
+  /* Trim a label to its cap height so padding equals visible air (R9).
      Browsers without text-box still center the label through flex. */
   .litt-trim {
     line-height: 1;
     text-box: trim-both cap alphabetic;
   }
 
-  /* The light source: put it on a hero or section, once per view (P2). */
+  /* The light source: put it on a hero or section, once per view (R2). */
   .litt-lit {
     background-image: var(--light);
     background-repeat: no-repeat;
   }
 
-  /* Grain: static (P5) and non-interactive; it also dithers gradient banding. */
+  /* Grain: static (R2) and non-interactive; it also dithers gradient banding. */
   .litt-grain {
     position: relative;
   }

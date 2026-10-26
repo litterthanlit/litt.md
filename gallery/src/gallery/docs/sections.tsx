@@ -4,7 +4,7 @@
  * linked. (The gallery routes by hash, so a bare #props would open a page called
  * "props". The ids are there for in-page use until the router learns sections.)
  *
- * Weight by role (P9): section titles at 500, text at 400, table headers at the label weight.
+ * Weight by role (R8): section titles at 500, text at 400, table headers at the label weight.
  * Hierarchy comes from weight and ink, and spacing follows foundations.md (Text spacing):
  * sections 48px apart, blocks 16px apart, and a section's title 4px above its first content.
  */

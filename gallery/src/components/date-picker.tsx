@@ -14,7 +14,7 @@
  *   days (min, max, isDisabled) are --fg-disabled too, take no hover and stay reachable by the keys, as
  *   aria-disabled buttons.
  * - Day states: hover fills with fg 6% on the instant tier (a finger's press too). Today has an inset 1px
- *   --line-strong ring. A picked day is an --fg fill with --canvas text, never the accent (P1). In a range the
+ *   --line-strong ring. A picked day is an --fg fill with --canvas text, never the accent (R6). In a range the
  *   two ends are filled and the days between sit on an fg 8% band that runs square across each row; the band
  *   covers the end cells too, rounded on their outer side, so it only shows its round end under a preview.
  *   While the second end is chosen, the pointer (or the focused day) previews the band. Picking the second

@@ -16,7 +16,7 @@
  *   Cmd+Enter or Ctrl+Enter sends and Enter is a new line. Esc stops a streaming answer while the field has focus.
  *   While streaming, Enter sends nothing: the person can draft the next message, and Send is Stop.
  * - Send: one icon-only round Button at sm (44px on a coarse pointer or a compact screen), named "Send", primary,
- *   with an ArrowUp icon: the view's one accent fill (P1). It is disabled while the trimmed text is empty or while
+ *   with an ArrowUp icon: the view's one accent fill (R6). It is disabled while the trimmed text is empty or while
  *   `sendDisabled` or `disabled` is set. While `streaming` the same button becomes Stop: secondary, a filled
  *   square, named "Stop". It is one element, so the swap is at once and focus stays on it. After a send or a stop
  *   focus goes back to the field, and if the answer ends while Stop has focus it goes to the field too, so it

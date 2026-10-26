@@ -1,6 +1,6 @@
 /**
- * Customize, the panel: the header's button and the popover with the typeface
- * and the radius. It loads on its own, so the shell stays small; the state and
+ * Customize, the panel: the header's button and the popover with the typeface,
+ * the radius, the accent and motion's feel. It loads on its own, so the shell stays small; the state and
  * the writes on <body> live in customize-state.tsx.
  */
 import { useState } from "react";
@@ -14,12 +14,13 @@ import { Tag } from "@/components/tag";
 import { useCustomize } from "./customize-state";
 
 function CustomizePanel() {
-  const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, fun, setFun, modified, reset } = useCustomize();
+  const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, accent, setAccent, fun, setFun, modified, reset } = useCustomize();
   const [copied, setCopied] = useState(false);
   const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
   const rows = [
     typeRule(type),
     shapeRule(radius),
+    ...(accent === "mono" ? [{ ok: true, text: "Monochrome fits R6: the primary action takes the ink. Set data-accent=\"mono\" on <html> or <body>; there are no tokens to paste." }] : []),
     ...(fun ? [{ ok: false, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Nothing to paste yet; if it wins, it goes into tokens.css and the rules." }] : []),
   ];
   const snippet = customizeSnippet(radius, lockedRadius, type);
@@ -36,7 +37,7 @@ function CustomizePanel() {
 
   return (
     <div className="grid gap-6">
-      <p className="text-small text-fg-subtle">Type, shape and how motion feels, for every page, saved in this browser. The motion dial lives in the Playground.</p>
+      <p className="text-small text-fg-subtle">Type, shape, the accent and how motion feels, for every page, saved in this browser. The motion dial lives in the Playground.</p>
       <Segmented
         legend="Typeface"
         showLegend
@@ -54,6 +55,18 @@ function CustomizePanel() {
         value={String(radius)}
         onValueChange={(v) => setRadius(Number(v))}
         options={SHAPES.map((r) => ({ value: String(r), label: shapeName(r) }))}
+      />
+      <Segmented
+        legend="Accent"
+        showLegend
+        block
+        size="sm"
+        value={accent}
+        onValueChange={setAccent}
+        options={[
+          { value: "blue4", label: "Blue 4" },
+          { value: "mono", label: "Monochrome" },
+        ]}
       />
       <Segmented
         legend="Motion"
@@ -96,7 +109,7 @@ function CustomizePanel() {
           </>
         ) : (
           <p className="text-caption font-normal text-fg-subtle">
-            Locked: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, calm motion.
+            Locked: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, Blue 4, calm motion.
           </p>
         )}
       </div>
