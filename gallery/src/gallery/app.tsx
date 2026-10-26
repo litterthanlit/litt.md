@@ -9,9 +9,10 @@ import { useRoute } from "./route";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
 import { Segmented } from "@/components/segmented";
-import { CustomizeProvider } from "./customize-state";
+import { CustomizeProvider, useCustomize, type ThemeChoice } from "./customize-state";
 import { NavPreview } from "./nav-preview";
 import { MenuButton, MobileMenu } from "./mobile-menu";
+import { SearchButton, SearchProvider } from "./search";
 import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons";
 
 /* The panel and the popover load on their own; until then the button holds its place. */
@@ -28,30 +29,16 @@ function CustomizeFallback() {
   );
 }
 
-type ThemeChoice = "system" | "light" | "dark";
 const THEMES = [
   { id: "system", label: "System", Icon: MonitorIcon },
   { id: "light", label: "Light", Icon: SunIcon },
   { id: "dark", label: "Dark", Icon: MoonIcon },
 ] satisfies { id: ThemeChoice; label: string; Icon: typeof SunIcon }[];
 
-/** The theme, read from the attribute the pre-paint script set, and written back with the choice. The canvas uses it too. */
+/** The theme, one choice for the header, the overview's deck and the canvas (customize-state.tsx owns it). */
 export function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
-  const [theme, setTheme] = useState<ThemeChoice>(() => {
-    const t = document.documentElement.getAttribute("data-theme");
-    return t === "light" || t === "dark" ? t : "system";
-  });
-  const choose = (t: ThemeChoice) => {
-    setTheme(t);
-    if (t === "system") document.documentElement.removeAttribute("data-theme");
-    else document.documentElement.setAttribute("data-theme", t);
-    try {
-      localStorage.setItem("litt-gallery:theme", t);
-    } catch {
-      /* ignore */
-    }
-  };
-  return [theme, choose];
+  const { theme, setTheme } = useCustomize();
+  return [theme, setTheme];
 }
 
 /* litt's own Segmented: a quiet track with the chosen segment raised in it, and native radios underneath.
@@ -185,6 +172,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
             </span>
           </a>
           <div className="flex items-center gap-1 sm:gap-2">
+            <SearchButton place="header" />
             <Suspense fallback={<CustomizeFallback />}>
               <Customize />
             </Suspense>
@@ -290,7 +278,9 @@ export function App() {
               <LanguageCanvas />
             </Suspense>
           ) : (
-            <Shell page={page} />
+            <SearchProvider pageId={page?.id}>
+              <Shell page={page} />
+            </SearchProvider>
           )}
         </TooltipProvider>
       </CustomizeProvider>

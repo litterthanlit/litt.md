@@ -16,6 +16,9 @@
  *   gallery draws sits inside <body>, portals included, so <body> wins.
  * index.html applies the saved choices before first paint; this provider owns
  * them after that.
+ *
+ * The theme lives here too, so the header's switch and the overview's deck are one choice. It is the exception to
+ * <body>: data-theme goes on <html>, under its own key, as the pre-paint script reads it.
  */
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { FunMode, useMotionDial } from "@/motion";
@@ -25,9 +28,14 @@ import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
 export type Accent = "blue4" | "mono";
+export type ThemeChoice = "system" | "light" | "dark";
+const THEME_KEY = "litt-gallery:theme";
 type Saved = { face?: Pick<Typeface, "id" | "stack" | "href">; radius?: number; accent?: Accent; fun?: boolean };
 
 type Ctx = {
+  /** Light, dark or the system's, on <html> as data-theme. */
+  theme: ThemeChoice;
+  setTheme: (t: ThemeChoice) => void;
   typefaces: Typeface[];
   typeface: Typeface;
   setTypeface: (id: string) => void;
@@ -65,6 +73,20 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
     (SHAPES as readonly number[]).includes(saved.radius as number) ? (saved.radius as number) : null,
   );
 
+  const [theme, setThemeState] = useState<ThemeChoice>(() => {
+    const t = document.documentElement.getAttribute("data-theme");
+    return t === "light" || t === "dark" ? t : "system";
+  });
+  const setTheme = (t: ThemeChoice) => {
+    setThemeState(t);
+    if (t === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", t);
+    try {
+      localStorage.setItem(THEME_KEY, t);
+    } catch {
+      /* ignore */
+    }
+  };
   const [fun, setFun] = useState(saved.fun === true);
   const [accent, setAccent] = useState<Accent>(saved.accent === "mono" ? "mono" : "blue4");
 
@@ -108,6 +130,8 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<Ctx>(
     () => ({
+      theme,
+      setTheme,
       typefaces,
       typeface,
       setTypeface: setFaceId,
@@ -126,7 +150,8 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
         setFun(false);
       },
     }),
-    [typefaces, typeface, radius, locked.radius, accent, fun, modified],
+    /* setTheme only writes state, <html> and storage, so the first one stays good. */
+    [theme, typefaces, typeface, radius, locked.radius, accent, fun, modified],
   );
 
   return (
