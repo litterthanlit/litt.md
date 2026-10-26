@@ -8,6 +8,8 @@
  * It fails when:
  * - the wall shows more than one accent fill (R6: one per view). Each tile is its page's `tile`, one object with no
  *   accent fill, and the Button tile carries the one. A page whose first demo ends in a primary button needs a tile.
+ * - two accent fills anywhere on the page sit within one screen of each other, so a screen could show both. The hero's
+ *   Get started is the first screen's one, and the Button tile has to sit at least a screen below it.
  * - the page or a tile scrolls sideways,
  * - a tile draws nothing,
  * - the page has more than one main or h1, two landmarks share a name, or a tile's name is not its h2 (so the headings
@@ -60,15 +62,21 @@ function inspect() {
   const accent = getComputedStyle(probe).backgroundColor;
   probe.remove();
   const tiles = [...document.querySelectorAll("[data-tile]")];
-  const name = (el) => el.closest("[data-tile]").dataset.tile;
+  const name = (el) => el.closest("[data-tile]")?.dataset.tile ?? "the page";
   const fills = [];
-  for (const tile of tiles) {
-    for (const el of tile.querySelectorAll("*")) {
-      if (getComputedStyle(el).backgroundColor !== accent) continue;
-      const box = el.getBoundingClientRect();
-      if (box.width >= 24 && box.height >= 16) fills.push(`${name(el)} ("${(el.textContent || "").trim().slice(0, 32)}")`);
-    }
+  const marks = [];
+  for (const el of document.querySelectorAll("main *")) {
+    /* A block's picture (Miniature) is a whole screen drawn small and out of reach: its fills are part of the picture.
+       A skip link is out of sight until it has focus. */
+    if (el.closest("[aria-hidden=true], .sr-only") || getComputedStyle(el).backgroundColor !== accent) continue;
+    const box = el.getBoundingClientRect();
+    if (box.width < 24 || box.height < 16) continue;
+    const what = `${name(el)} ("${(el.textContent || "").trim().slice(0, 32)}")`;
+    if (el.closest("[data-tile]")) fills.push(what);
+    marks.push({ what, y: box.top + scrollY });
   }
+  marks.sort((a, b) => a.y - b.y);
+  const close = marks.slice(1).flatMap((m, i) => (m.y - marks[i].y < innerHeight ? [`${marks[i].what} and ${m.what}, ${Math.round(m.y - marks[i].y)}px apart`] : []));
   const sideways = tiles.filter((t) => t.firstElementChild.scrollWidth > t.firstElementChild.clientWidth + 1).map((t) => name(t));
   const empty = tiles.filter((t) => t.firstElementChild.getBoundingClientRect().height < 8 || !t.firstElementChild.textContent && !t.firstElementChild.querySelector("svg,img,canvas,[role=img]")).map((t) => name(t));
   /* What a screen reader lists: one main and one h1, landmarks with names of their own, and each tile's name one
@@ -80,7 +88,7 @@ function inspect() {
   const mains = [...document.querySelectorAll("main, [role=main]")].filter(shown).length;
   const h1s = [...document.querySelectorAll("h1")].filter(shown).length;
   const names = tiles.filter((t) => t.querySelector(":scope > h2") === null).map((t) => name(t));
-  return { count: tiles.length, fills, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
+  return { count: tiles.length, fills, close, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
 }
 
 const browser = await chromium.launch();
@@ -107,6 +115,7 @@ for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"
     count = r.count;
     const where = `${theme} · ${label}`;
     if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, the wall allows one: ${r.fills.join(", ")}`);
+    for (const c of r.close) problems.push(`${where}: two accent fills within one screen (R6): ${c}`);
     if (r.pageWide) problems.push(`${where}: the page scrolls sideways`);
     if (r.mains !== 1) problems.push(`${where}: ${r.mains} main landmarks; the page has one (AppShell's mainLandmark={false} in a tile)`);
     if (r.h1s !== 1) problems.push(`${where}: ${r.h1s} h1s; the page title is the one`);
@@ -126,4 +135,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, light and dark, desktop and phone: one accent fill, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall: ${count} tiles, light and dark, desktop and phone: one accent fill on the wall and none within a screen of another, nothing sideways or empty, one main and one h1, landmarks named apart.`);

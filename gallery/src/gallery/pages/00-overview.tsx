@@ -1,9 +1,14 @@
 /**
- * The overview: a wall of the components themselves, live, and nothing else.
+ * The overview: a hero you can play, a wall of the components themselves, live, then the steps to build with them.
  *
- * After bencho.dev and transitions.dev (2026-10-23, "I like their simplicity"), taken in litt's own terms: the page
- * is its title, the site's own pages, a filter by what you do (Press, Type, Drag…, each page's meta.verbs) and every
- * component as a tile you can use right here. No sidebar (meta.wall): the tiles are the way in.
+ * After bencho.dev and transitions.dev (2026-10-23, "I like their simplicity"), taken in litt's own terms: a filter by
+ * what you do (Press, Type, Drag…, each page's meta.verbs) and every component as a tile you can use right here. No
+ * sidebar (meta.wall): the tiles are the way in.
+ *
+ * Above the wall, after three more references and Nick's "make it intuitive, captivating, fun and easy to use"
+ * (2026-10-26, proposals/gallery-wow.md): what litt is in one large line, Get started and search, and the deck
+ * (deck.tsx), litt's own controls wired to the whole gallery, so the first thing a hand reaches changes every tile.
+ * After the blocks, three steps for building with Claude, which Get started takes focus to.
  *
  * - A tile is one step down from a stage: --surface-2 with the hairline at the surface radius, so the raised surfaces
  *   in it read as objects, as a selected segment does on its track. It is a surface token, not a tint, because a
@@ -37,12 +42,17 @@ import { StillMotion, useFun } from "@/motion";
 import { Toaster } from "@/components/toast";
 import { pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
-import { PageTitle, PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
+import { Button } from "@/components/button";
+import { CheckIcon, CopyIcon } from "@/components/icons";
+import { CopyStatus, useCopy } from "../docs/copy";
+import { Deck } from "../deck";
+import { SearchButton } from "../search";
+import { PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
 
 export const meta: PageMeta = {
   id: "overview",
   title: "Overview",
-  lede: "Real ones, on locked tokens. Try any of them.",
+  lede: "The real components on locked tokens, at their real size. Try any of them.",
   order: 0,
   summary: "Every tile is the real component on the locked tokens, and works where it is. Open one to see all of it.",
   tiers: ["instant", "responsive", "expressive"],
@@ -277,8 +287,150 @@ function Blocks({ list }: { list: PageEntry[] }) {
 /** Pages whose tile is two rows tall beside two short ones: their component needs the height. */
 const TALL = new Set(["plan", "app-shell", "list", "action-bar", "timeline", "message"]);
 
-/** The tiles that open the wall, in this order; every other component follows in the sidebar's order. */
-const LEAD = ["plan", "gauge", "slider", "button", "heatmap", "slide-confirm", "switch", "tabs", "pad", "segmented", "stat", "number-field"];
+/**
+ * The tiles that open the wall, in this order; every other component follows in the sidebar's order. The deck above
+ * already holds the Switch, the Slider and the Segmented control, so the wall opens on what it cannot show: data and
+ * the hand-held pieces. The Button tile carries the wall's one accent fill, so it sits at least a screen below the
+ * hero's Get started (wall.mjs checks it).
+ */
+const LEAD = ["gauge", "heatmap", "plan", "slide-confirm", "pad", "time-scrubber", "stat", "tabs", "button", "number-field", "color-picker", "switch", "slider", "segmented"];
+
+/* ---------- the hero ---------- */
+
+/**
+ * What litt is, then Get started, search and the site's own pages, beside the deck that tunes the wall. The statement
+ * is the gallery's one line above 18px, as its mobile menu's 28px links are: built as an exception for the gallery's
+ * hero and asked of Nick (proposals/gallery-wow.md, 2), not a change to R8. Everything under it keeps the scale.
+ */
+function Hero({ count, site }: { count: string; site: PageEntry[] }) {
+  return (
+    <header className="grid items-center gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+      <div className="grid content-center gap-8">
+        <div className="grid gap-4">
+          <h1
+            id="page-overview"
+            className="max-w-[16ch] text-[36px] leading-[40px] tracking-[-0.02em] text-balance text-fg sm:text-[56px] sm:leading-[60px]" // litt-allow: the gallery's hero, an exception to the 18px cap asked of Nick (proposals/gallery-wow.md, 2)
+          >
+            A design language you can hold.
+          </h1>
+          <p className="max-w-[44ch] text-h1 font-normal text-balance text-fg-subtle">
+            {count} components on warm stone, lit from above. Free to install, and written down so your agent builds the same way.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variant="primary" size="lg" onClick={toStart}>
+            Get started
+          </Button>
+          <SearchButton place="hero" />
+        </div>
+        <nav aria-label="Pages" className="-mx-3 -mt-4 flex flex-wrap gap-1">
+            {site.map((p) => (
+              <a
+                key={p.id}
+                href={`#${p.id}`}
+                className={
+                  "flex h-control-sm items-center rounded-control px-3 text-small text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
+                  "transition-colors duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:h-control-md " +
+                  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+                }
+              >
+                {p.title}
+              </a>
+            ))}
+        </nav>
+      </div>
+      <Deck />
+    </header>
+  );
+}
+
+/* ---------- getting started ---------- */
+
+const ORIGIN = "https://littmd.vercel.app";
+
+/** The hash is the page's route, so the hero reaches the steps by focus, as "Skip to blocks" does, not by a link. */
+function toStart() {
+  document.getElementById("start-title")?.focus();
+}
+
+/** A line to paste: the text in the mono, scrolling sideways if it must, and a copy button beside it, never over it. */
+function Paste({ text, label }: { text: string; label: string }) {
+  const [state, copy] = useCopy();
+  return (
+    <div className="flex min-w-0 items-center gap-2 rounded-surface bg-surface-2 py-2 pr-2 pl-4 shadow-[inset_0_0_0_1px_var(--line)]">
+      <pre tabIndex={0} role="group" aria-label={label} className="min-w-0 flex-1 overflow-x-auto py-1 font-mono text-small text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+        <code>{text}</code>
+      </pre>
+      <Button iconOnly variant="ghost" size="sm" aria-label={`Copy: ${label}`} onClick={() => copy(text)}>
+        {state === "copied" ? <CheckIcon /> : <CopyIcon />}
+      </Button>
+      <CopyStatus state={state} />
+    </div>
+  );
+}
+
+/** One step, as a row: what you do in a few words, then the one thing to paste. */
+function Step({ n, title, text, paste, label }: { n: number; title: string; text: string; paste: string; label: string }) {
+  return (
+    <li className="grid min-w-0 gap-4 py-6 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-12">
+      <div className="grid content-start gap-1">
+        <p className="text-caption text-fg-subtle tabular-nums">Step {n}</p>
+        <h3 className="text-body font-title text-fg">{title}</h3>
+        <p className="max-w-[48ch] text-small text-fg-muted">{text}</p>
+      </div>
+      <Paste text={paste} label={label} />
+    </li>
+  );
+}
+
+/**
+ * The three things to do with litt, each with its paste: the language for Claude, a part for the app, and the score.
+ * The AI tools page has the MCP setup for each tool.
+ */
+function Start() {
+  return (
+    <section aria-labelledby="start-title" className="grid gap-6">
+      {/* Focusable from code only, for the hero's Get started. */}
+      <h2 id="start-title" tabIndex={-1} className="max-w-[64ch] scroll-mt-24 text-h2 text-balance outline-none">
+        <span className="text-fg">Build with your agent.</span>{" "}
+        <span className="font-normal text-fg-subtle">The taste comes with the parts: Claude reads the rules, installs the components and checks its own work.</span>
+      </h2>
+      <ol className="grid divide-y divide-line border-y border-line">
+        <Step
+          n={1}
+          title="Give Claude the language"
+          text="The litt.md plugin: the rules, the specs and the workflows to build, critique and check."
+          paste={"claude plugin marketplace add litterthanlit/litt.md\nclaude plugin install litt-md@litt"}
+          label="Install the plugin"
+        />
+        <Step
+          n={2}
+          title="Add any part"
+          text="Every component installs with shadcn, on litt's own tokens, so your theme stays untouched."
+          paste={`npx shadcn@latest add ${ORIGIN}/r/button.json`}
+          label="Add a component"
+        />
+        <Step
+          n={3}
+          title="Score your app"
+          text="Ask Claude, and it measures your code against litt out of 100, with every fix."
+          paste="how litt is this app?"
+          label="Ask Claude"
+        />
+      </ol>
+      <p className="text-small text-fg-subtle">
+        Cursor, VS Code and Codex:{" "}
+        <a
+          href="#ai"
+          className="rounded-control text-accent-text underline decoration-[color-mix(in_oklab,var(--accent-text)_40%,transparent)] underline-offset-2 transition-colors duration-(--dur-instant) ease-litt hover:decoration-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          AI tools
+        </a>{" "}
+        has the setup, through shadcn's MCP server.
+      </p>
+    </section>
+  );
+}
 
 export default function Overview() {
   /* The components and patterns; Overview, Changelog, AI tools and the Playground have no group, and blocks are screens. */
@@ -289,24 +441,10 @@ export default function Overview() {
   const count = WORDS[list.length] ?? String(list.length);
   return (
     <article aria-labelledby="page-overview" className="grid gap-12 pb-24">
-      <header className="flex flex-wrap items-baseline justify-between gap-x-12 gap-y-4">
-        <PageTitle id="page-overview" title={`${count} components.`} lede={meta.lede} />
-        <nav aria-label="Pages" className="-mx-3 flex flex-wrap gap-1">
-          {site.map((p) => (
-            <a
-              key={p.id}
-              href={`#${p.id}`}
-              className={
-                "flex h-control-sm items-center rounded-control px-3 text-small text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
-                "transition-colors duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:h-control-md " +
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-              }
-            >
-              {p.title}
-            </a>
-          ))}
-        </nav>
-      </header>
+      <Hero count={count} site={site} />
+      <h2 className="mt-12 max-w-[64ch] text-h2 text-balance">
+        <span className="text-fg">Every one, live.</span> <span className="font-normal text-fg-subtle">{meta.lede}</span>
+      </h2>
       {blocks.length > 0 && (
         /* As the shell's "Skip to content": out of sight until it has focus, then at the top left. */
         <button
@@ -321,6 +459,9 @@ export default function Overview() {
         <Wall list={wall} />
         {blocks.length > 0 && <Blocks list={blocks} />}
       </Toaster>
+      <div className="mt-12">
+        <Start />
+      </div>
     </article>
   );
 }
