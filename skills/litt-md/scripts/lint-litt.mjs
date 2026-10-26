@@ -118,9 +118,9 @@ function lintGallery(files, root) {
       const fail = (rule, message) => fails.push({ file: rel(f), line: i + 1, rule, message });
       const warn = (rule, message) => warns.push({ file: rel(f), line: i + 1, rule, message });
 
-      if (/\bfont-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "weight by role (P9): use font-normal (text), font-title (titles, buttons, tabs) or font-label (12px labels)");
-      if (/\bfont-\[\d+\]/.test(line)) fail("weight", "arbitrary weight (P9): use font-normal, font-title or font-label");
-      if (/fontWeight\s*:\s*['"]?(?!(?:400|500|600)\b)(?:\d|bold|bolder|lighter)/.test(line)) fail("weight", "fontWeight other than 400, 500 or 600 (P9): use font-normal, font-title or font-label");
+      if (/\bfont-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "weight by role (R8): use font-normal (text), font-title (titles, buttons, tabs) or font-label (12px labels)");
+      if (/\bfont-\[\d+\]/.test(line)) fail("weight", "arbitrary weight (R8): use font-normal, font-title or font-label");
+      if (/fontWeight\s*:\s*['"]?(?!(?:400|500|600)\b)(?:\d|bold|bolder|lighter)/.test(line)) fail("weight", "fontWeight other than 400, 500 or 600 (R8): use font-normal, font-title or font-label");
       for (const m of line.matchAll(/\brounded(-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
@@ -130,11 +130,11 @@ function lintGallery(files, root) {
       if (/borderRadius\s*:\s*['"]?(?!0\b|999|9999|var\(--radius-(pill|control|surface)\))[\d.]/.test(line)) fail("radius", "borderRadius: use the radius tokens");
       for (const m of line.matchAll(/\binset-shadow-\[([^\]]+)\]/g)) {
         const bad = badShadow(m[1].split(",").map((l) => "inset " + l).join(","));
-        if (bad) fail("shadow", `inset layer "${bad}" (P4): only the top highlight (0 1px 0) or a hairline (0 0 0 1px)`);
+        if (bad) fail("shadow", `inset layer "${bad}" (R3): only the top highlight (0 1px 0) or a hairline (0 0 0 1px)`);
       }
       for (const m of line.matchAll(/(?<![\w-])shadow-([\w-]+|\[[^\]]+\])/g)) {
         const v = m[1];
-        if (v.startsWith("[")) { const bad = badShadow(v.slice(1, -1)); if (bad) fail("shadow", `offset shadow "${bad}" (P4): zero-offset glow + ring only`); }
+        if (v.startsWith("[")) { const bad = badShadow(v.slice(1, -1)); if (bad) fail("shadow", `offset shadow "${bad}" (R3): zero-offset glow + ring only`); }
         else if (!["glow", "float", "modal", "tooltip", "none"].includes(v) && !/^\(/.test(v)) fail("shadow", `shadow-${v}: use shadow-float, shadow-modal, shadow-tooltip or shadow-glow`);
       }
       if (/\btransition-all\b|transition:\s*['"]?all\b|transitionProperty:\s*['"]all/.test(line)) fail("motion", "transition-all: name the properties (transform, opacity, color, background-color)");
@@ -176,8 +176,8 @@ function lintGallery(files, root) {
           if (fades) for (const d of classes.matchAll(/(?<![\w-])duration-\((--dur-[\w-]+)\)/g)) if (d[1] !== "--dur-instant") fail("motion", `color fades run at --dur-instant only, not ${d[1]}`);
           // The accent is a fill. As text it can fall under 4.5:1 in dark, so text takes --accent-text.
           if (/(?<![\w-])(?:text|decoration)-accent(?![\w-])/.test(classes)) fail("color", "text-accent: the accent is a fill; accent text and links use text-accent-text");
-          // A data hue's mark tone reaches 3:1, not 4.5:1, and its tint is a fill. Text in a hue takes its -text tone (P11).
-          for (const m of classes.matchAll(/(?<![\w-])(?:text|decoration)-data-(blue|amber|teal|violet|rose)(-tint)?(?![\w-])/g)) fail("color", `${m[0]}: a data hue's ${m[2] ? "tint is a fill" : "mark tone is for marks"}; text in a hue uses text-data-${m[1]}-text (P11)`);
+          // A data hue's mark tone reaches 3:1, not 4.5:1, and its tint is a fill. Text in a hue takes its -text tone (R7).
+          for (const m of classes.matchAll(/(?<![\w-])(?:text|decoration)-data-(blue|amber|teal|violet|rose)(-tint)?(?![\w-])/g)) fail("color", `${m[0]}: a data hue's ${m[2] ? "tint is a fill" : "mark tone is for marks"}; text in a hue uses text-data-${m[1]}-text (R7)`);
         }
       }
       // Raw colors: any quoted hex, and color functions Tailwind's token utilities replace.
@@ -262,9 +262,9 @@ function checkDecl(prop, value) {
   if (!v) return out;
   const bare = stripVars(v);
   if (prop === "font-weight") {
-    if (!/^(?:400|500|600|normal|inherit|initial|unset|revert)$/i.test(v) && !/^var\(/.test(v)) out.push(["weight", `font-weight: ${v}: weight by role (P9), use var(--litt-weight) (400), var(--litt-weight-title) (500) or var(--litt-weight-label) (600)`]);
+    if (!/^(?:400|500|600|normal|inherit|initial|unset|revert)$/i.test(v) && !/^var\(/.test(v)) out.push(["weight", `font-weight: ${v}: weight by role (R8), use var(--litt-weight) (400), var(--litt-weight-title) (500) or var(--litt-weight-label) (600)`]);
   } else if (prop === "font") {
-    if (/(?:^|\s)(?:bold|bolder|lighter|[1-37-9]00)(?:\s|$)/i.test(v)) out.push(["weight", `font: ${v}: weight by role (P9), only 400, 500 or 600`]);
+    if (/(?:^|\s)(?:bold|bolder|lighter|[1-37-9]00)(?:\s|$)/i.test(v)) out.push(["weight", `font: ${v}: weight by role (R8), only 400, 500 or 600`]);
   } else if (prop === "font-size") {
     const use = "use var(--litt-type-body-size) (or display, h1..h4, reading, small, caption)";
     if (/^[-+]?[\d.]/.test(v) && !/^0(?:px|rem|em)?$/.test(v) && !/^100%$/.test(v) && v !== "1em") out.push(["type", `font-size: ${v}: ${use}`]);
@@ -277,11 +277,11 @@ function checkDecl(prop, value) {
     }
   } else if (prop === "box-shadow" || prop === "text-shadow") {
     const bad = badShadow(v.replace(/#[0-9a-fA-F]{3,8}\b/g, "").replace(new RegExp(`(?<![\\w-])(?:${NAMED_COLORS})(?![\\w-])`, "gi"), ""));
-    if (bad) out.push(["shadow", `offset shadow "${bad}" (P4): zero-offset glow + ring only`]);
+    if (bad) out.push(["shadow", `offset shadow "${bad}" (R3): zero-offset glow + ring only`]);
   } else if (prop === "filter" || prop === "backdrop-filter") {
     for (const m of v.matchAll(/drop-shadow\(((?:[^()]|\([^()]*\))*)\)/g)) {
       const bad = badShadow(m[1].replace(/#[0-9a-fA-F]{3,8}\b/g, ""));
-      if (bad) out.push(["shadow", `drop-shadow "${bad}" (P4): zero-offset glow + ring only`]);
+      if (bad) out.push(["shadow", `drop-shadow "${bad}" (R3): zero-offset glow + ring only`]);
     }
   } else if (/^(?:transition|animation)-(?:duration|delay)$/.test(prop)) {
     if (!/--litt-/.test(v) && !/^(?:0|0s|0ms|none|inherit|initial|unset)$/.test(v)) out.push(["motion", `${prop}: ${v}: literal timing, use var(--litt-dur-instant) (or --litt-stagger) or the motion hooks`]);
@@ -523,8 +523,8 @@ function checkToken(t, scope, add, isClassContext) {
   let m;
 
   // weight
-  if (/^font-(thin|extralight|light|medium|semibold|bold|extrabold|black)$/.test(b)) add("weight", `${b}: weight by role (P9), use font-normal (text), font-litt-title (titles, buttons, tabs) or font-litt-label (12px labels)`);
-  else if ((m = /^font-\[(\d+)\]$/.exec(b)) && m[1] !== "400") add("weight", `${b}: weight by role (P9), use font-litt-title (500) or font-litt-label (600)`);
+  if (/^font-(thin|extralight|light|medium|semibold|bold|extrabold|black)$/.test(b)) add("weight", `${b}: weight by role (R8), use font-normal (text), font-litt-title (titles, buttons, tabs) or font-litt-label (12px labels)`);
+  else if ((m = /^font-\[(\d+)\]$/.exec(b)) && m[1] !== "400") add("weight", `${b}: weight by role (R8), use font-litt-title (500) or font-litt-label (600)`);
   else if ((m = /^font-(title|label)$/.exec(b))) add("weight", `${b}: not a utility in this host, the litt name is font-litt-${m[1]}`);
 
   // radius
@@ -537,26 +537,26 @@ function checkToken(t, scope, add, isClassContext) {
   }
 
   // shadow
-  if ((b === "shadow" || b === "drop-shadow") && isClassContext()) add("shadow", `${b}: Tailwind's default shadow is offset (P4), ${HOST_ADVICE.shadow}`);
+  if ((b === "shadow" || b === "drop-shadow") && isClassContext()) add("shadow", `${b}: Tailwind's default shadow is offset (R3), ${HOST_ADVICE.shadow}`);
   else if ((m = /^shadow-(.+)$/.exec(b))) {
     const v = m[1];
     if (/^litt-(?:glow|float|modal|tooltip)$/.test(v) || LITT_COLOR.test(v) || v === "none" || v.startsWith("(")) { /* ok */ }
     else if (v.startsWith("[")) {
       const inner = v.slice(1, -1);
-      if (!/^(?:#|color:|rgb|hsl|oklch)/.test(inner)) { const bad = badShadow(inner); if (bad) add("shadow", `offset shadow "${bad}" (P4): zero-offset glow + ring only`); }
-    } else if (/^(?:2xs|xs|sm|md|lg|xl|2xl|inner)$/.test(v)) add("shadow", `${b}: Tailwind's shadows are offset (P4), ${HOST_ADVICE.shadow}`);
+      if (!/^(?:#|color:|rgb|hsl|oklch)/.test(inner)) { const bad = badShadow(inner); if (bad) add("shadow", `offset shadow "${bad}" (R3): zero-offset glow + ring only`); }
+    } else if (/^(?:2xs|xs|sm|md|lg|xl|2xl|inner)$/.test(v)) add("shadow", `${b}: Tailwind's shadows are offset (R3), ${HOST_ADVICE.shadow}`);
     else if (!PALETTE_RE.test(b) && !SHADCN_RE.test(b) && !/^(?:current|transparent|inherit)$/.test(v)) add("shadow", `${b}: ${HOST_ADVICE.shadow}`);
   } else if ((m = /^inset-shadow-(.+)$/.exec(b))) {
     const v = m[1];
     if (v.startsWith("[")) {
       const bad = badShadow(v.slice(1, -1).split(",").map((l) => "inset " + l).join(","));
-      if (bad) add("shadow", `inset layer "${bad}" (P4): only the top highlight (0 1px 0) or a hairline (0 0 0 1px)`);
+      if (bad) add("shadow", `inset layer "${bad}" (R3): only the top highlight (0 1px 0) or a hairline (0 0 0 1px)`);
     } else if (/^(?:2xs|xs|sm)$/.test(v)) add("shadow", `${b}: use inset-shadow-litt-highlight`);
   } else if ((m = /^(drop-shadow|text-shadow)-(.+)$/.exec(b))) {
     const v = m[2];
     if (v === "none" || v.startsWith("litt-") || v.startsWith("(")) { /* ok */ }
-    else if (v.startsWith("[")) { const bad = badShadow(v.slice(1, -1)); if (bad) add("shadow", `offset shadow "${bad}" (P4): zero-offset glow + ring only`); }
-    else if (/^(?:2xs|xs|sm|md|lg|xl|2xl)$/.test(v)) add("shadow", `${b}: ${m[1]} is an offset shadow (P4), ${HOST_ADVICE.shadow}`);
+    else if (v.startsWith("[")) { const bad = badShadow(v.slice(1, -1)); if (bad) add("shadow", `offset shadow "${bad}" (R3): zero-offset glow + ring only`); }
+    else if (/^(?:2xs|xs|sm|md|lg|xl|2xl)$/.test(v)) add("shadow", `${b}: ${m[1]} is an offset shadow (R3), ${HOST_ADVICE.shadow}`);
   }
 
   // color
@@ -576,8 +576,8 @@ function checkToken(t, scope, add, isClassContext) {
   if (new RegExp(`^(?:${COLOR_PREFIX})-\\[(?:${NAMED_COLORS})\\]$`).test(b)) add("color", `${b}: named color, ${HOST_ADVICE.color}`);
   // The accent is a fill. As text it can fall under 4.5:1 in dark, so text takes --litt-accent-text.
   if (/^(?:text|decoration)-litt-accent(?:\/[\w.[\]%-]+)?$/.test(b)) add("color", `${b}: the accent is a fill; accent text and links use text-litt-accent-text`);
-  // A data hue's mark tone reaches 3:1, not 4.5:1, and its tint is a fill. Text in a hue takes its -text tone (P11).
-  if ((m = /^(?:text|decoration)-litt-data-(blue|amber|teal|violet|rose)(-tint)?(?:\/[\w.[\]%-]+)?$/.exec(b))) add("color", `${b}: a data hue's ${m[2] ? "tint is a fill" : "mark tone is for marks"}; text in a hue uses text-litt-data-${m[1]}-text (P11)`);
+  // A data hue's mark tone reaches 3:1, not 4.5:1, and its tint is a fill. Text in a hue takes its -text tone (R7).
+  if ((m = /^(?:text|decoration)-litt-data-(blue|amber|teal|violet|rose)(-tint)?(?:\/[\w.[\]%-]+)?$/.exec(b))) add("color", `${b}: a data hue's ${m[2] ? "tint is a fill" : "mark tone is for marks"}; text in a hue uses text-litt-data-${m[1]}-text (R7)`);
 
   // type
   if (/^text-(?:xs|sm|base|lg|xl|[2-9]xl)(?:\/[\w.[\]-]+)?$/.test(b)) add("type", `${b}: Tailwind's text sizes are off-system, ${HOST_ADVICE.type}`);

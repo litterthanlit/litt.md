@@ -1,21 +1,23 @@
 /**
  * Pad: two values set at once on one surface, like a reply's tone against its length. It is the Slider in two
- * dimensions: the same round thumb, the same foreground (a control fills with --fg, never the accent, P1), and the
- * same rule that position never eases.
+ * dimensions: its cap, seen from above, never the accent (R6), and the same rule that position never eases.
  *
- * - Surface: a well. --surface-2 at the surface radius with an inset --line hairline, and a static dot grid (fg at
+ * - Surface: a well you reach into, so it is the cut (R3, material.md 6): the --cut floor inside the --line-control
+ *   line, with its top wall's shade (--cut-shade), at the surface radius, and a static dot grid on the floor (fg at
  *   about 14%, 1.5px dots on a 16px pitch, an SVG pattern). The grid is a coordinate system, so it never moves. The
- *   four axis words sit inside the edges in the mono caption at --fg-subtle, in sentence case: y's maxLabel at the
+ *   four axis words sit inside the edges at the caption size in --fg-subtle, in sentence case: y's maxLabel at the
  *   top, its minLabel at the bottom, x's minLabel at the left and maxLabel at the right. y grows upward. Each word
- *   sits on a plate in the well's own color, so the grid and the crosshairs break around it instead of running
- *   through the letters.
- * - Thumb: the Slider's thumb, a 20px circle in --surface-1 with an inset --line-control edge and the top highlight.
- *   It never changes size. A 1px dashed --line-strong line runs through it, once across and once down the whole pad.
+ *   sits on a plate of the well's floor, so the grid and the crosshairs break around it instead of running through
+ *   the letters.
+ * - Thumb: a round cap, the Slider's cap seen from above: a 20px circle (--cap, --cap-lift), lit on its top edge and
+ *   casting straight down (R2). Held, its cast tightens (--cap-press, --cap-held) and it sinks --press-depth, at once
+ *   (R4); a key moves it without a hand, so it stays up. It never changes size. A 1px dashed --line-strong line runs
+ *   through it, once across and once down the whole pad.
  *   The thumb stays inside the pad: its centre travels from 14px in to 14px short of the far edge (its radius, the
  *   2px focus ring and the 2px offset), so the ring never crosses the edge, and the pointer maths uses the same
  *   range, so the thumb sits under the pointer.
  * - Default mark: pass defaultMark and a 20px dashed circle in --fg-subtle sits there, with "Default" beside it in
- *   the mono caption. It is where Reset would take the thumb.
+ *   the caption. It is where Reset would take the thumb.
  * - Tooltip: the chart's tooltip look (solid --surface-3, --shadow-tooltip, the control radius) shows formatValue
  *   beside the thumb while you drag, while the pointer is over the pad, and while the keyboard has focus. It tries the
  *   right, then the left, then above, then below (above first for a finger), so it stays inside the pad and clear of
@@ -30,11 +32,14 @@
  *   aria-valuetext. Native adjustments (a screen reader's swipe) go through onChange.
  * - Focus: when an input is focus-visible, the thumb gets the 2px focus ring, 2px away. A press focuses the x input
  *   without the ring.
- * - Disabled: the thumb in --surface-2 with a --line edge, the crosshairs at --line, every word in --fg-disabled, no
- *   pointer and no tab stop.
+ * - Disabled: everything lies flat (nothing to reach into or push): the well and the word plates --surface-2 with the
+ *   plain --line hairline, the thumb --surface-2 with a --line edge, the crosshairs at --line, every word in
+ *   --fg-disabled, no pointer and no tab stop.
  * - Motion: the thumb, the crosshairs and the tooltip follow the pointer and the keys at once. Position is a layout
- *   value, and an eased jump would lag the input. The only motion is the tooltip fading on the responsive tier.
- * - Forced colors drops box-shadow, so the well and the thumb get real borders.
+ *   value, and an eased jump would lag the input. The only motion is the tooltip fading on the responsive tier; the
+ *   sink is at once, and reduced motion sets its depth to 0.
+ * - Forced colors drops box-shadow, so the well and the thumb get real borders, and the thumb takes the system
+ *   highlight, as the Slider's cap does.
  */
 import { useId, useLayoutEffect, useRef, useState, type ChangeEvent, type FocusEvent, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -96,7 +101,7 @@ const EDGE = 4; // the air the tooltip keeps from the pad's edge
 const DOT = 16; // pitch of the dot grid
 const GAP = 8; // between the thumb's edge and the tooltip
 const GAP_TOUCH = 24; // a fingertip covers more than the thumb, so the tooltip stands further off
-const MONO = 7.2; // advance of a 12px mono character
+const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const DEFAULT_WORD = "Default";
 
 const places = (n: number) => (String(n).split(".")[1] ?? "").length;
@@ -154,19 +159,20 @@ function placeTip(cx: number, cy: number, w: number, h: number, width: number, h
 
 /* ----------------------------------------------------------------- styles */
 
-/* The well. Forced colors drops box-shadow, so the edge becomes a real border. */
-const well =
-  "relative w-full touch-none select-none rounded-surface bg-surface-2 " +
-  "shadow-[inset_0_0_0_1px_var(--line)] forced-colors:border";
+/* The well: the cut, or flat when disabled. Forced colors drops box-shadow, so the edge becomes a real border. */
+const well = "relative w-full touch-none select-none rounded-surface forced-colors:border ";
+const wellOn = "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]";
+const wellOff = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 
-/* The Slider's thumb. The pad never has a hover fill: the well is already --surface-2, so the tooltip is the hover cue. */
-const thumb =
-  "pointer-events-none absolute block size-5 -translate-x-1/2 -translate-y-1/2 rounded-pill forced-colors:border ";
-const thumbOn = "bg-surface-1 shadow-[inset_0_0_0_1px_var(--line-control),var(--highlight)]";
-const thumbOff = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
+/* The round cap. The pad never has a hover fill: the tooltip is the hover cue. Held, it sinks: the translate that
+   centres it on the value takes --press-depth too. */
+const thumb = "pointer-events-none absolute block size-5 -translate-x-1/2 rounded-pill forced-colors:border ";
+const thumbUp = "-translate-y-1/2 bg-cap shadow-(--cap-lift) forced-colors:bg-[Highlight]";
+const thumbHeld = "translate-y-[calc(var(--press-depth)-50%)] bg-cap-held shadow-(--cap-press) forced-colors:bg-[Highlight]";
+const thumbOff = "-translate-y-1/2 bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 
-/* An axis word sits on a plate in the well's color, so the dots and the crosshairs do not run through the letters. */
-const word = "pointer-events-none absolute bg-surface-2 px-1 font-mono text-caption font-normal whitespace-nowrap";
+/* An axis word sits on a plate of the well's floor, so the dots and the crosshairs do not run through the letters. */
+const word = "pointer-events-none absolute px-1 text-caption font-normal whitespace-nowrap";
 
 /* ----------------------------------------------------------------- the tooltip */
 
@@ -351,10 +357,10 @@ export function Pad({
   /* The default mark's word stands to the right of its circle, or to the left when there is no room. */
   const markFraction = defaultMark ? fraction(defaultMark.x, x) : 0;
   const markX = INSET + markFraction * Math.max(0, width - 2 * INSET);
-  const wordLeft = width > 0 && markX + R + 4 + DEFAULT_WORD.length * MONO + 8 > width;
+  const wordLeft = width > 0 && markX + R + 4 + DEFAULT_WORD.length * FIGURE + 8 > width;
 
   const describedBy = (range?: string) => [labelId, helpId, defaultId, range].filter(Boolean).join(" ");
-  const edge = disabled ? "text-fg-disabled" : "text-fg-subtle";
+  const plate = disabled ? "bg-surface-2 text-fg-disabled" : "bg-cut text-fg-subtle";
   const cross = disabled ? "border-line" : "border-line-strong";
 
   const inputs = (axis: "x" | "y") => {
@@ -385,7 +391,7 @@ export function Pad({
         <div
           ref={boxRef}
           data-no-drag=""
-          className={well + (disabled ? " cursor-not-allowed" : " cursor-pointer")}
+          className={well + (disabled ? wellOff + " cursor-not-allowed" : wellOn + " cursor-pointer")}
           style={{ height }}
           onMouseDown={(e) => {
             /* Without this the press would blur the input we are about to focus. */
@@ -449,7 +455,7 @@ export function Pad({
               </svg>
               <span
                 className={
-                  word + " top-1/2 -translate-y-1/2 " + (wordLeft ? "right-full mr-1 " : "left-full ml-1 ") + edge
+                  word + " top-1/2 -translate-y-1/2 " + (wordLeft ? "right-full mr-1 " : "left-full ml-1 ") + plate
                 }
               >
                 {DEFAULT_WORD}
@@ -459,22 +465,22 @@ export function Pad({
 
           {/* The four axis words, inside the edges. */}
           {y.maxLabel && (
-            <span aria-hidden="true" className={word + " top-1 left-1/2 -translate-x-1/2 " + edge}>
+            <span aria-hidden="true" className={word + " top-1 left-1/2 -translate-x-1/2 " + plate}>
               {y.maxLabel}
             </span>
           )}
           {y.minLabel && (
-            <span aria-hidden="true" className={word + " bottom-1 left-1/2 -translate-x-1/2 " + edge}>
+            <span aria-hidden="true" className={word + " bottom-1 left-1/2 -translate-x-1/2 " + plate}>
               {y.minLabel}
             </span>
           )}
           {x.minLabel && (
-            <span aria-hidden="true" className={word + " left-1 top-1/2 -translate-y-1/2 " + edge}>
+            <span aria-hidden="true" className={word + " left-1 top-1/2 -translate-y-1/2 " + plate}>
               {x.minLabel}
             </span>
           )}
           {x.maxLabel && (
-            <span aria-hidden="true" className={word + " right-1 top-1/2 -translate-y-1/2 " + edge}>
+            <span aria-hidden="true" className={word + " right-1 top-1/2 -translate-y-1/2 " + plate}>
               {x.maxLabel}
             </span>
           )}
@@ -502,7 +508,7 @@ export function Pad({
             aria-hidden="true"
             className={
               thumb +
-              (disabled ? thumbOff : thumbOn) +
+              (disabled ? thumbOff : dragging ? thumbHeld : thumbUp) +
               (keys ? " outline-2 outline-offset-2 outline-focus" : "")
             }
             style={{ left: px, top: py }}

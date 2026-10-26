@@ -16,6 +16,8 @@ import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons"
 
 /* The panel and the popover load on their own; until then the button holds its place. */
 const Customize = lazy(() => import("./customize"));
+/* The language canvas (#canvas) is not a page: it takes the whole window, and only loads when asked for. */
+const LanguageCanvas = lazy(() => import("../canvas/canvas"));
 
 function CustomizeFallback() {
   return (
@@ -33,8 +35,8 @@ const THEMES = [
   { id: "dark", label: "Dark", Icon: MoonIcon },
 ] satisfies { id: ThemeChoice; label: string; Icon: typeof SunIcon }[];
 
-/** The theme, read from the attribute the pre-paint script set, and written back with the choice. */
-function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
+/** The theme, read from the attribute the pre-paint script set, and written back with the choice. The canvas uses it too. */
+export function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
   const [theme, setTheme] = useState<ThemeChoice>(() => {
     const t = document.documentElement.getAttribute("data-theme");
     return t === "light" || t === "dark" ? t : "system";
@@ -55,7 +57,7 @@ function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
 /* litt's own Segmented: a quiet track with the chosen segment raised in it, and native radios underneath.
    In the header, icons on a phone, where three words would crowd the wordmark; the word stays for screen readers.
    In the menu (`full`), the whole width with icons and words. */
-function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
+export function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
   return (
     <Segmented
       legend="Theme"
@@ -150,7 +152,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
         (compact ? "h-control-sm shrink-0 " : "-mx-3 h-8 ") +
         (p.id === page?.id
-          ? "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]"
+          ? "bg-block text-fg shadow-(--block-lift) forced-colors:border"
           : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg")
       }
     >
@@ -230,7 +232,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                   <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4">
                     <p className="flex items-baseline justify-between pb-2 text-caption">
                       <span id={`nav-${run.group}`} className="text-fg-muted">{run.group}</span>
-                      <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
+                      <span aria-hidden="true" className="font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
                     </p>
                     {run.pages.map((p) => navLink(p))}
                   </div>
@@ -283,7 +285,13 @@ export function App() {
     <MotionDialProvider tuning={page?.tune === true}>
       <CustomizeProvider>
         <TooltipProvider>
-          <Shell page={page} />
+          {route === "canvas" ? (
+            <Suspense fallback={null}>
+              <LanguageCanvas />
+            </Suspense>
+          ) : (
+            <Shell page={page} />
+          )}
         </TooltipProvider>
       </CustomizeProvider>
     </MotionDialProvider>

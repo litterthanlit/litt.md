@@ -65,7 +65,7 @@ const [name, setName] = useState("litt.design");
 // On a phone (a screen narrower than 640px) every dialog is a bottom sheet, and side="right" is the same sheet.`,
   use: [
     "A decision or a short task needs the person's full attention before anything else: confirm a publish, invite someone, rename a project.",
-    "A step that cannot be undone. Make the confirm button secondary with danger text, so the red word is the only loud thing, and ask the person to type the project name.",
+    "A step that cannot be undone. Open it from a danger Button, a block with red words, and make the confirm a danger Button too: in the footer it is the one red fill. Keep it disabled until the person types the project name, so it lies flat until then.",
     "A short form that is the whole task. Put the buttons in the footer and link the submit to the form with form=\"…\", because the footer sits outside the form.",
     "Settings for the thing on the page. Use side=\"right\" for a sheet: the footer stays pinned while the body scrolls.",
     "A phone, with no change from you. Below 640px the dialog becomes a bottom sheet that can be dragged away, and side=\"right\" becomes the same sheet.",
@@ -158,10 +158,10 @@ function PublishDemo() {
           <dl className="grid gap-3">
             <Row label="Pages changed">3</Row>
             <Row label="Build size">
-              <span className="font-mono text-caption font-normal">418 kB</span>
+              <span className="tabular-nums text-caption font-normal">418 kB</span>
             </Row>
             <Row label="Domain">
-              <span className="font-mono text-caption font-normal">litt.design</span>
+              <span className="text-caption font-normal">litt.design</span>
             </Row>
           </dl>
         </DialogContent>
@@ -276,7 +276,7 @@ function DeleteDemo() {
         }}
       >
         <DialogTrigger asChild>
-          <Button>Delete project</Button>
+          <Button variant="danger">Delete project</Button>
         </DialogTrigger>
         <DialogContent
           title="Delete Halo site?"
@@ -287,13 +287,14 @@ function DeleteDemo() {
                 <Button>Cancel</Button>
               </DialogClose>
               <Button
+                variant="danger"
                 disabled={!ready}
                 onClick={() => {
                   setOpen(false);
                   setStatus("Halo site was deleted.");
                 }}
               >
-                <span className={ready ? "text-danger" : ""}>Delete project</span>
+                Delete project
               </Button>
             </>
           }
@@ -357,7 +358,7 @@ function SheetDemo() {
             }}
           >
             <TextField label="Project name" spellCheck={false} value={name} onChange={(e) => setName(e.target.value)} />
-            <TextField label="Custom domain" mono spellCheck={false} defaultValue="litt.design" help="Point a CNAME record at framer.app." />
+            <TextField label="Custom domain" spellCheck={false} defaultValue="litt.design" help="Point a CNAME record at framer.app." />
             <Segmented
               legend="Visibility"
               showLegend
@@ -424,7 +425,7 @@ export default function DialogPage() {
         title="Destructive"
         tier="expressive"
         code="DeleteDemo"
-        caption="There is no danger fill. Delete is a secondary button with danger text, and it stays disabled until you type the project slug. Nothing in the dialog is filled, so the only loud thing is the red word."
+        caption="On the page, Delete project is a block with red words. In the dialog that asks, the same danger Button is the confirm, and the footer makes it the one red fill. It stays disabled and lies flat until you type the project slug, then it lights. It has no glow: that is the primary's."
       >
         <DeleteDemo />
       </Stage>

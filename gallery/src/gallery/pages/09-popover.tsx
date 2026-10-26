@@ -86,7 +86,7 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/compone
 /** A quiet status line beside a trigger, so each stage shows what the popover did. */
 function Status({ children }: { children: ReactNode }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+    <p role="status" className="min-h-5 text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -170,7 +170,6 @@ function ShareDemo() {
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
             <TextField
               label="Preview link"
-              mono
               readOnly
               spellCheck={false}
               value={PREVIEW_LINK}
@@ -231,7 +230,7 @@ function ClientCardDemo() {
               </div>
               <div className="flex items-baseline justify-between gap-4">
                 <dt className="text-small text-fg-subtle">Email</dt>
-                <dd className="min-w-0 truncate font-mono text-caption font-normal text-fg">nina@northwind.co</dd>
+                <dd className="min-w-0 truncate text-caption font-normal text-fg">nina@northwind.co</dd>
               </div>
             </dl>
             <PopoverClose asChild>

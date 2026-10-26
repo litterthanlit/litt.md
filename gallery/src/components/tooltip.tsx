@@ -67,7 +67,7 @@ export function TooltipProvider({
 export type TooltipProps = {
   /** The label. Keep it short; long text wraps at 240px. On touch it only shows on a press and hold, so the label that matters must also be the trigger's aria-label or visible text. */
   content: ReactNode;
-  /** A real keyboard shortcut, shown as a mono kbd chip. It is not shown on touch screens. */
+  /** A real keyboard shortcut, shown as a kbd chip. It is not shown on touch screens. */
   shortcut?: string;
   /** Which side of the trigger it opens on. With no room there it flips to the other side, and the entrance follows. */
   side?: TooltipSide;

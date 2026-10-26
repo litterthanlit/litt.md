@@ -5,7 +5,7 @@
  *
  * Where the page sits, then the title and its line as one sentence in two inks. A wide hero image, the facts in a row
  * of labels and values, and the story in sections with their label in a narrow left column and the text at a reading
- * measure beside it (P7, asymmetric and left-aligned). The series runs in a carousel, one image and the next peeking;
+ * measure beside it (R9, asymmetric and left-aligned). The series runs in a carousel, one image and the next peeking;
  * the details sit in a grid; the next project is one linked card at the end. Every image opens the lightbox on itself,
  * and the lightbox runs through them all in page order. The carousel follows it, so closing lands on the slide of the
  * image it closed on, with focus there. Nothing moves until someone moves it; opening the lightbox is the page's one

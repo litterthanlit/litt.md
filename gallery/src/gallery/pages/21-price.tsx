@@ -36,7 +36,7 @@ formatMoney({ amount: 12.5, currencyCode: "EUR" });`,
   ],
   skip: [
     "A total that changes while someone watches, such as a cart's subtotal after a quantity changes. Use Rolling number with a currency format.",
-    "A number in a table of figures people compare. Set it in the mono with tabular figures, as Table does.",
+    "A number in a table of figures people compare. Set it at the text weight in tabular figures, as Table does.",
     "A plan's price on a pricing page, which is a heading-sized moment. It is still the title weight and never above 18px; write it with formatMoney inside your own layout.",
   ],
   a11y: [

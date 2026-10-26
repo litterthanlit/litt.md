@@ -143,7 +143,7 @@ function PageTile({ page }: { page: PageEntry }) {
 
 const VERB_LABEL: Record<Verb, string> = { press: "Press", type: "Type", select: "Select", drag: "Drag", hover: "Hover", open: "Open", watch: "Watch" };
 
-/** A chip in the filter: a native radio, the selected one in the raised segment's look (P12). */
+/** A chip in the filter: a native radio, the selected one in the raised segment's look (R3). */
 function Chip({ name, value, label, count, checked, onPick, cue = false }: { name: string; value: string; label: string; count: number; checked: boolean; onPick: () => void; cue?: boolean }) {
   return (
     <label
@@ -158,7 +158,7 @@ function Chip({ name, value, label, count, checked, onPick, cue = false }: { nam
     >
       <input type="radio" name={name} value={value} checked={checked} onChange={onPick} className="peer sr-only" />
       <span className="litt-trim">{label}</span>
-      <span className="font-mono text-caption font-normal text-fg-subtle tabular-nums">{count}</span>
+      <span className="text-caption font-normal text-fg-subtle tabular-nums">{count}</span>
       <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus" />
     </label>
   );

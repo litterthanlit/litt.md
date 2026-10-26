@@ -28,7 +28,7 @@ export const meta: PageMeta = {
   order: 16, group: "Data",
   verbs: ["press"],
   summary:
-    "Real table semantics with hairline rows, mono figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything. A virtual body draws only the rows in view, so ten thousand rows scroll as lightly as forty, loads the next page from a server as you near the end, and rows can be selected with a box, Shift for a range. Filters can live in the page address, so a filtered view can be bookmarked or shared.",
+    "Real table semantics with hairline rows, tabular figures and a sticky header. Its rows can arrive in one staggered cascade, this page's single expressive moment; sorting, filtering and inserting stay responsive, and hover never moves anything. A virtual body draws only the rows in view, so ten thousand rows scroll as lightly as forty, loads the next page from a server as you near the end, and rows can be selected with a box, Shift for a range. Filters can live in the page address, so a filtered view can be bookmarked or shared.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -138,7 +138,7 @@ const [search, setSearch] = useUrlParam("q");
 </TableHead>`,
   use: [
     "People compare rows across the same few fields: deploys, invoices, clients, builds. A table lines the values up so the eye can run down a column.",
-    "The numbers and dates matter. They are set in mono, right-aligned, so figures line up by place.",
+    "The numbers and dates matter. They are set in tabular figures, right-aligned, so figures line up by place.",
     "The list is long enough to scroll. The header stays in view once you give the Table a max height.",
     "Thousands of rows, such as a deploy history or an audit log. Use TableVirtualBody, so only the rows in view are drawn.",
     "People act on several rows at once. Add TableSelectHead and TableSelectCell with useRowSelection, and an ActionBar after the table.",
@@ -188,7 +188,7 @@ const [search, setSearch] = useUrlParam("q");
 };
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-/** "2026-10-24" becomes "24 Oct": always six characters, so mono dates align. */
+/** "2026-10-24" becomes "24 Oct": always six characters, so the dates line up in their column. */
 function shortDate(iso: string) {
   const [, month, day] = iso.split("-");
   return `${day} ${MONTHS[Number(month) - 1]}`;
@@ -360,7 +360,7 @@ function ManyDeploysDemo() {
           className="w-full sm:w-64"
         />
         <div className="flex items-center gap-3">
-          <p aria-live="polite" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+          <p aria-live="polite" className="text-caption font-normal tabular-nums text-fg-subtle">
             {shown.length === MANY.length ? `${COUNT.format(MANY.length)} deploys` : `${COUNT.format(shown.length)} of ${COUNT.format(MANY.length)} deploys`}
           </p>
           {(filtering || search) && (
@@ -525,7 +525,7 @@ function ServerDeploysDemo() {
         <Button size="sm" variant={failNext ? "secondary" : "ghost"} aria-pressed={failNext} onClick={() => setFailNext((v) => !v)}>
           Fail the next page
         </Button>
-        <p aria-live="polite" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+        <p aria-live="polite" className="text-caption font-normal tabular-nums text-fg-subtle">
           {total === undefined ? "Loading deploys" : `${COUNT.format(rows.length)} of ${COUNT.format(total)} loaded`}
         </p>
       </div>

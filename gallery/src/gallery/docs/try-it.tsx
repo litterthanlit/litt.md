@@ -179,8 +179,8 @@ function Row({ control, value, onChange }: { control: Control; value: unknown; o
           <span className={rowLabel}>{name}</span>
           <Input
             size="sm"
-            mono
             type="number"
+            className="tabular-nums"
             min={control.min}
             max={control.max}
             step={control.step}

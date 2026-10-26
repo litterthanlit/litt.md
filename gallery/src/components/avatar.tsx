@@ -16,10 +16,10 @@
  *   the hot ones. A seeded hash of the name places everything, so the same name draws the same mark
  *   every time and needs no state. The colors are litt's tokens, read from the light theme in both
  *   themes, so the picture is the same on a light and a dark page, as a photo is. It is drawn once per
- *   device pixel into a canvas (the grain is one screen pixel) and never moves (P5). Until it draws,
+ *   device pixel into a canvas (the grain is one screen pixel) and never moves (R2). Until it draws,
  *   the hue's tint shows. The initials stay in the box, invisible and hidden from assistive tech, so
  *   the avatar keeps the same text baseline either way.
- * - Color (P11, identity is data): the hue's tint as the fill, the initials in the hue's text
+ * - Color (R7, identity is data): the hue's tint as the fill, the initials in the hue's text
  *   tone, and an inset hairline of the hue at 24% under the top highlight. That is Tag's hue look
  *   exactly. `hue` sets it. Without one, a stable hash of the name picks one of the five in
  *   order, so the same name gets the same hue everywhere, with no state to keep. The hue is a
@@ -38,7 +38,7 @@
  */
 import { Children, createContext, isValidElement, useContext, useLayoutEffect, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
 
-/** The five data hues in their fixed order (P11), and neutral for a mark with no identity color. */
+/** The five data hues in their fixed order (R7), and neutral for a mark with no identity color. */
 export type AvatarHue = "blue" | "amber" | "teal" | "violet" | "rose" | "neutral";
 
 /** What shows with no photo: the initials, or a picture drawn from the name. */
@@ -504,7 +504,7 @@ export function AvatarGroup({ label, children, size = "md", max = 4, total, ring
             <span
               role="img"
               aria-label={`${more} more`}
-              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
+              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 text-caption tabular-nums font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
             >
               <span className={`litt-trim ${UNCOVER}`}>+{more}</span>
             </span>

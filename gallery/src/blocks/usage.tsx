@@ -3,7 +3,7 @@
  * own. Swap the sample data at the top for yours; the layout, the hues and the words around them stay.
  *
  * Trends sit in thin lines at the foot of the figures, storage and bandwidth split by kind of file, the plan's limits
- * carry their budgets, and build times spread by site. Each hue names one kind of file across the whole screen (P11),
+ * carry their budgets, and build times spread by site. Each hue names one kind of file across the whole screen (R7),
  * everything else stays in the foreground, and nothing moves. The grid measures itself, so it stacks in a narrow box.
  */
 import { useId, type ReactNode } from "react";
@@ -43,7 +43,7 @@ function builds(seed: number, median: number, spread: number, count = 40) {
   });
 }
 
-/* Each kind of file keeps one hue everywhere on the page (P11). */
+/* Each kind of file keeps one hue everywhere on the page (R7). */
 const STORAGE: BreakdownItem[] = [
   { label: "Video", value: 58, hue: "violet" },
   { label: "Images", value: 24, hue: "teal" },

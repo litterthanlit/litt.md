@@ -3,7 +3,7 @@
  * to copy and make your own. Swap the sample data at the top for yours; the panels and their words stay.
  *
  * Seven raised panels, one idea each: a dot plot of reply times, a bar list of shortcuts, a mail rule, a voice pad, a
- * deploy timeline, a credits gauge and a heatmap of the credits by day. Each hue means one thing in its panel (P11), the
+ * deploy timeline, a credits gauge and a heatmap of the credits by day. Each hue means one thing in its panel (R7), the
  * deploy stays in the quiet foreground, and Create rule is the one accent fill. Two columns when the box is wide, one
  * on a phone.
  */
@@ -210,7 +210,7 @@ function NewRule() {
       </div>
       <div className="grid gap-2">
         <p className="flex justify-between gap-4 text-small text-fg-subtle">
-          Would catch <span className="font-mono text-caption font-normal tabular-nums text-fg">12 of the last 50</span>
+          Would catch <span className="text-caption font-normal tabular-nums text-fg">12 of the last 50</span>
         </p>
         <ul aria-label="Mail the rule would catch">
           {CAUGHT.map((m) => (
@@ -256,7 +256,7 @@ function YourVoice() {
           {greeting} Friday works. I will send the forecast by the end of the day. {signoff}
         </p>
         <div className="flex items-center justify-between gap-4">
-          <span className="font-mono text-caption font-normal text-fg-subtle">About {words(voice.x)} words</span>
+          <span className="text-caption font-normal text-fg-subtle">About {words(voice.x)} words</span>
           <Button variant="secondary" size="sm" onClick={() => setVoice(VOICE_DEFAULT)}>
             Reset
           </Button>

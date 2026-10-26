@@ -124,10 +124,10 @@ function PublishDialog() {
         <dl className="grid gap-3">
           <Fact label="Pages changed">3</Fact>
           <Fact label="Build size">
-            <span className="font-mono text-caption font-normal">418 kB</span>
+            <span className="tabular-nums text-caption font-normal">418 kB</span>
           </Fact>
           <Fact label="Domain">
-            <span className="font-mono text-caption font-normal">litt.design</span>
+            <span className="text-caption font-normal">litt.design</span>
           </Fact>
         </dl>
       </DialogContent>

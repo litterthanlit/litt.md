@@ -231,7 +231,7 @@ function StudioPage() {
           {JOURNAL.map(([title, date]) => (
             <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
               <span className="text-body font-title text-fg">{title}</span>
-              <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{date}</span>
+              <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{date}</span>
             </li>
           ))}
         </ul>
@@ -242,7 +242,7 @@ function StudioPage() {
         <p className="text-reading text-fg-muted">
           A few lines are enough: what it is, who it is for and when you would like it live.
         </p>
-        <p className="font-mono text-small text-fg-subtle">hello@litt.design</p>
+        <p className="text-small text-fg-subtle">hello@litt.design</p>
       </div>
     </div>
   );
@@ -343,7 +343,7 @@ function CurrentDemo() {
         />
         <StudioPage />
       </Frame>
-      <p role="status" className="font-mono text-caption font-normal text-fg-subtle">
+      <p role="status" className="text-caption font-normal text-fg-subtle">
         {path ? `aria-current="page" on ${NAV.find((l) => l.href === path)?.label}` : "No link is current at the top of the page"}
       </p>
     </div>

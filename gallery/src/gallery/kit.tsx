@@ -214,7 +214,7 @@ export function Page({
 
 /**
  * A page's title and lede as one sentence in two inks, at the title size: the name in
- * --fg at the title weight, then the lede in the grey at the text weight (P9). The h1
+ * --fg at the title weight, then the lede in the grey at the text weight (R8). The h1
  * stays the name alone, so the page's landmark is still called "Button".
  */
 export function PageTitle({ id, title, lede, className = "" }: { id: string; title: string; lede: string; className?: string }) {

@@ -24,7 +24,7 @@ export const docs: PageDocs = {
 
 <Switch label="Email me when a build finishes" defaultChecked />
 
-// The accent fills the block when on. One per view (P1): the switch that is the view's main choice.
+// The accent fills the block when on. One per view (R6): the switch that is the view's main choice.
 <Switch tone="accent" label="Site is live" checked={live} onCheckedChange={setLive} />
 
 // A settings list: align="end" puts the switch at the row's end, so they line up.
@@ -45,7 +45,7 @@ export const docs: PageDocs = {
     "A settings list. Set align=\"end\" so the label and description come first and the switches line up in one column.",
     "A short form, beside checkboxes. The default alignment puts the switch first, like a checkbox.",
     "A form field that is either sent or not. A form gets the value (\"on\" unless you set value) while the switch is on, and nothing while it is off.",
-    "tone=\"accent\" for the one switch that is the view's main choice, such as whether a site is live. It is an accent fill, so keep it to one per view (P1), and leave every switch in a list neutral.",
+    "tone=\"accent\" for the one switch that is the view's main choice, such as whether a site is live. It is an accent fill, so keep it to one per view (R6), and leave every switch in a list neutral.",
   ],
   skip: [
     "A choice that can be wrong, such as accepting terms or confirming a launch. Use Checkbox. A switch has no error state.",

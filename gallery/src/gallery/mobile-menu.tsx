@@ -7,7 +7,7 @@
  *
  * - The site's own pages are 28px at the title weight, the current one in --fg and the rest in --fg-subtle: Nick's
  *   call after seeing 18px, 24px and 28px side by side (2026-10-21). It is a gallery exception to the 18px cap and to
- *   P12, for this menu only (journal); the rows in the cards keep P12's selected segment.
+ *   R3, for this menu only (journal); the rows in the cards keep R3's selected segment.
  * - Each group row leads with a 16px icon in --fg-subtle and ends with its count and a chevron; the outside links lead
  *   with their mark and end with an arrow. Every other link that is not current is --fg-muted, --fg on hover.
  * - Everything sits on the page gutter, so the cards' edges line up with the header's wordmark.
@@ -95,7 +95,7 @@ const rowBase =
   "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus ";
 const rowIdle = "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
-const rowCurrent = "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]";
+const rowCurrent = "bg-block text-fg shadow-(--block-lift) forced-colors:border";
 
 function PageRow({ page, current, size }: { page: PageEntry; current: boolean; size: "lg" | "md" }) {
   if (size === "md") {
@@ -107,7 +107,7 @@ function PageRow({ page, current, size }: { page: PageEntry; current: boolean; s
   }
   /* Nick's call (2026-10-21): the site's own pages are 28px at the title weight, and the
      current one is marked by ink alone, full --fg against --fg-subtle. A gallery exception to the 18px cap and to
-     P12's raised segment, for this menu only; the language keeps both. */
+     R3's raised segment, for this menu only; the language keeps both. */
   return (
     <a
       href={`#${page.id}`}
@@ -253,7 +253,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
                 </button>
                 <p className="flex items-baseline justify-between px-3 pt-3 pb-1 text-caption">
                   <span className="text-fg">{shown.group}</span>
-                  <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">
+                  <span aria-hidden="true" className="font-normal text-fg-subtle tabular-nums">
                     {shown.pages.length}
                   </span>
                 </p>
@@ -272,7 +272,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
                       <span className="shrink-0 text-fg-subtle">{GROUP_ICON[g]}</span>
                       <span className="flex-1 truncate">{g}</span>
                       {here && <span className="truncate text-small text-fg-subtle">{here.title}</span>}
-                      <span aria-hidden="true" className="font-mono text-caption font-normal text-fg-subtle tabular-nums">
+                      <span aria-hidden="true" className="text-caption font-normal text-fg-subtle tabular-nums">
                         {list.length}
                       </span>
                       <ChevronRightIcon className="shrink-0 text-fg-subtle" />

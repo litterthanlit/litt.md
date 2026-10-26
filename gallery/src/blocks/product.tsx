@@ -3,7 +3,7 @@
  * own. Swap the product at the top for yours (or for one the shopify item's toProduct maps from your store); the
  * layout stays.
  *
- * Where the page sits and the cart, then the pictures and the details side by side when the page is wide (P7,
+ * Where the page sits and the cart, then the pictures and the details side by side when the page is wide (R9,
  * asymmetric: the pictures take the wider column and scroll, the details stay beside them), one above the other on a
  * phone, where the pictures are a carousel of one and a peek. The details: the title, the page's one 18px line, the
  * price under it at the body size (a sale is the old price struck through and a neutral tag, never red), the options,

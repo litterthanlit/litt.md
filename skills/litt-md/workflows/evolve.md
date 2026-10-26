@@ -52,7 +52,7 @@ Run this when Nick asks ("distill the journal", "update my rules"), or offer it 
    `> v0.2 · built from N interviews, M audits, K journal entries · <Month YYYY>`
 6. Add a Changelog line: version, date, what changed.
 7. **Propagate** (section 4) if any rule touches values.
-8. Run the checks, then commit: `taste: distill v0.2 (P9 hover feedback, Q7 opened)`.
+8. Run the checks, then commit: `taste: distill v0.2 (R8 hover feedback, Q7 opened)`.
 
 Show Nick the diff of `profile.md` before committing a distill. Rules are Nick's, so confirm them first.
 
@@ -65,7 +65,7 @@ Whenever a value changes (a color, a duration, a radius, a material strength), u
 3. **`assets/specimen.html`**: if new tokens should be visible, add them. Values are read live, so changed values need no edit.
 4. **SKILL.md**: the token quick view, if a name changed.
 5. **`system/*.md`**: the rationale and any mention of the changed variable. Never paste hex values into Markdown.
-6. **`taste/profile.md`**: any percentages or numbers quoted in rules (for example P8's per-theme strengths).
+6. **`taste/profile.md`**: any percentages or numbers quoted in rules (for example R2's per-theme strengths).
 7. **The gallery** (`gallery/` in this repo). Tokens reach it automatically, because its sync step copies `assets/tokens.css` and `assets/tailwind.css` on every dev, build and verify. If a bound in `scripts/check.mjs` changes (a motion limit or the radius rule), update `gallery/src/motion/rules.ts` in the same commit. Then run the gallery check.
 8. **The registry changelog.** A changed token changes what the `litt` item installs, and every component that ships a changed value. Add a `changed` line for each under today's release in `gallery/CHANGELOG.md` (a `breaking` one, with a `Migrate:` line, when a name went away), run `npm run verify --prefix gallery`, and commit the rewritten `gallery/registry.lock.json` with the taste change. Verify names any item that changed without a line.
 

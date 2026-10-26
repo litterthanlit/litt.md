@@ -95,7 +95,7 @@ function FilesDemo() {
   return (
     <div className="grid w-full max-w-xs gap-4">
       <Tree label="Files" items={FILES} defaultExpanded={["src", "src/app"]} selected={selected} onSelect={(id, node) => !node.children && setSelected(id)} />
-      <p className="font-mono text-caption font-normal text-fg-subtle">{selected ?? "No file open"}</p>
+      <p className="text-caption font-normal text-fg-subtle">{selected ?? "No file open"}</p>
     </div>
   );
 }
@@ -122,7 +122,7 @@ export default function TreePage() {
         tier="responsive"
         align="start"
         code="FilesDemo"
-        caption="Press a folder to open it: the chevron turns a quarter on the responsive tier and the files appear in place. Press a file to open it. Tab in and try the arrows: right opens and goes in, left closes and goes out. Type a letter to jump to a name. M and + at the ends are change marks, in the mono."
+        caption="Press a folder to open it: the chevron turns a quarter on the responsive tier and the files appear in place. Press a file to open it. Tab in and try the arrows: right opens and goes in, left closes and goes out. Type a letter to jump to a name. M and + at the ends are change marks."
       >
         <FilesDemo />
       </Stage>

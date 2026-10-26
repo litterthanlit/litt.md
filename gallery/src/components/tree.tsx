@@ -4,10 +4,10 @@
  *
  * - Rows: 32px (44px on a touch screen) at the control radius, indented 16px a level. A 16px chevron for a branch, an
  *   icon (a folder or a file unless the item brings its own), the label at the small size, truncated, and an optional
- *   detail at the end in the mono at the caption size in --fg-subtle (a size, a change mark). A 1px --line guide runs
+ *   detail at the end in tabular figures at the caption size in --fg-subtle (a size, a change mark). A 1px --line guide runs
  *   down each level, under the chevrons, so the nesting reads without color.
- * - Hover fills fg 6% on the instant tier. The selected row wears the selected segment (P12): one surface up from what
- *   the tree sits on, with the hairline and the top highlight, and its label in --fg at the title weight. Never the
+ * - Hover fills fg 6% on the instant tier. The selected row is raised (R3, selected is raised): the press material's
+ *   block (--block, --block-lift) on whatever the tree sits on, and its label in --fg at the title weight. Never the
  *   accent. A pressed row on a touch screen takes the hover fill.
  * - Opening: the chevron turns a quarter on the responsive tier. The children appear in place, at once; no height
  *   animates, as in the Accordion. A closed branch does not render its children.
@@ -55,10 +55,10 @@ const ITEM_FOCUS = "[&:focus-visible>div]:outline-2 [&:focus-visible>div]:-outli
 const IDLE =
   "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
 
-/* The selected segment (P12), one surface up from what the tree sits on. */
+/* Selected is raised (R3): the press material's block, the same on the canvas and on a surface. */
 const SELECTED = {
-  canvas: "bg-surface-1 font-title text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]",
-  "surface-1": "bg-surface-2 font-title text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]",
+  canvas: "bg-block font-title text-fg shadow-(--block-lift) forced-colors:border",
+  "surface-1": "bg-block font-title text-fg shadow-(--block-lift) forced-colors:border",
 } as const;
 
 const INDENT = 16; // px per level
@@ -224,7 +224,7 @@ export function Tree({
             </span>
             <span className="min-w-0 flex-1 truncate">{node.label}</span>
             {node.detail !== undefined && (
-              <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle tabular-nums">{node.detail}</span>
+              <span className="shrink-0 text-caption font-normal text-fg-subtle tabular-nums">{node.detail}</span>
             )}
           </div>
           {isOpen && node.children!.length > 0 && (

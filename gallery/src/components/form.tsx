@@ -1,6 +1,6 @@
 /**
  * Form patterns (components.md, "Forms"): how the fields, groups and buttons make a page.
- * One left-aligned column, never centered (P7).
+ * One left-aligned column, never centered (R9).
  *
  * - FormSection is a settings-page section: a title and one line of description on the left
  *   third from 1024 up, the fields on the rest, and one column below that. Sections are
@@ -12,7 +12,7 @@
  *   GOV.UK error summary: a focusable panel named by its heading, and one link per error. It
  *   takes focus when a submit fails, which is what reads it out. It is not a live region: it
  *   updates as fields are fixed, and an alert would re-announce it on every keystroke.
- * - FormActions is the action row of a page form: submit first, then Cancel, both md (P10).
+ * - FormActions is the action row of a page form: submit first, then Cancel, both md (R9).
  *   They stack full width below 640, submit on top. align="fields" lines the row up with the
  *   fields column of a FormSection from 1024 up.
  * - Spacing: fields sit --space-6 (24) apart and groups --space-12 (48) apart. A Fieldset adds

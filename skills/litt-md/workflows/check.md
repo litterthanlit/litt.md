@@ -20,7 +20,7 @@ It reads the app's own `.ts`, `.tsx`, `.js`, `.jsx` and `.css` files and skips `
 | motion | Transitions on the tiers and their eases, no literal timings, no `transition-all`, no layout animation, nothing that loops but a spinner |
 | color | litt tokens instead of hex, color functions, Tailwind's palette or shadcn's tokens |
 | shape | Radii on the scale (control, surface, pill), shadows with no offset |
-| type | Sizes on litt's scale, weight by role (P9) |
+| type | Sizes on litt's scale, weight by role (R8) |
 | reduced motion | 0 or 100: the app moves, and nothing stops it under `prefers-reduced-motion` |
 
 A category reads as how much of the app follows that rule: each styled file loses 20% per finding in it, and the category is the mean over the styled files. The total is the mean of the five. 90 and up reads as litt, 75 as close, 50 as needs work, under 50 as far from litt. An app that never installed litt scores low on color and shape on purpose: that is the distance to cover.

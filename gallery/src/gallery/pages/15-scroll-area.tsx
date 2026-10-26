@@ -207,7 +207,7 @@ function ClientPanelDemo() {
           <h3 id="clients-title" className="text-small text-fg">
             Clients
           </h3>
-          <span className="font-mono text-caption font-normal text-fg-subtle tabular-nums">{CLIENTS.length}</span>
+          <span className="text-caption font-normal text-fg-subtle tabular-nums">{CLIENTS.length}</span>
         </div>
         {/* A height that cuts the eighth row in half, so the list looks like it goes on. */}
         <ScrollArea label="Clients" className="h-84">

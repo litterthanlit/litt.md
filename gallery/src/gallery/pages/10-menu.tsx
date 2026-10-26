@@ -150,7 +150,7 @@ function ProjectMenu() {
           <MenuItem icon={<TrashIcon />} destructive onSelect={pick("Deleted Northwind site")}>Delete</MenuItem>
         </Menu>
       </div>
-      <p className="font-mono text-caption font-normal text-fg-subtle" role="status">{last}</p>
+      <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
     </div>
   );
 }
@@ -182,7 +182,7 @@ function ViewMenu() {
         <MenuCheckboxItem checked={status} onCheckedChange={setStatus}>Publish status</MenuCheckboxItem>
         <MenuCheckboxItem checked={archived} onCheckedChange={setArchived}>Archived projects</MenuCheckboxItem>
       </Menu>
-      <p className="font-mono text-caption font-normal text-fg-subtle" role="status">
+      <p className="text-caption font-normal text-fg-subtle" role="status">
         {density} · {shown}
       </p>
     </div>

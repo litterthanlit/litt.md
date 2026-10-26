@@ -5,10 +5,10 @@
  *
  * - Row (components.md, Thinking): a button 32px tall (44px on a coarse pointer, or inside a phone
  *   DeviceProvider) with no fill and no padding, so the chevron sits on the column's edge. A 16px chevron, the label
- *   at the small size in fg-muted and the clock in the mono caption in fg-subtle with tabular numbers. Hover steps
+ *   at the small size in fg-muted and the clock in the caption in fg-subtle with tabular numbers. Hover steps
  *   the label to fg, and a press on a finger does the same. The text sits on a shared baseline, so the clock never
  *   rides high or low beside the label.
- * - No shimmer, no pulse, no spinner, no dots, no caret (P5, and "no motion that is not a response to the person").
+ * - No shimmer, no pulse, no spinner, no dots, no caret (R2, and "no motion that is not a response to the person").
  *   The only live signal is the clock, which counts whole seconds from when `active` turned true. It is a number
  *   changing, not an animation.
  * - Clock words: under a minute "12s", then "1m 5s", a whole minute "2m", and past an hour "1h 5m". Seconds
@@ -207,7 +207,7 @@ export function Thinking({
         <span className="flex min-w-0 items-baseline gap-2">
           <span className="min-w-0 truncate">{words}</span>
           {showClock && (
-            <span aria-hidden="true" className="shrink-0 font-mono text-caption font-normal tabular-nums text-fg-subtle">
+            <span aria-hidden="true" className="shrink-0 text-caption font-normal tabular-nums text-fg-subtle">
               {formatClock(seconds)}
             </span>
           )}

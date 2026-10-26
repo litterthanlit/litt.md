@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["type", "select"],
   summary:
-    "Type to find one value, or several, in a long list. The Input's field with the Menu's glass list under it: the list grows from the field as you type, filters at once with the first match lit, and keeps one gliding highlight. Several picks sit in the field as tokens that fade in and out.",
+    "Type to find one value, or several, in a long list. The Input's cut field with the Menu's glass list under it: the list grows from the field as you type, filters at once with the first match lit, and keeps one gliding highlight. Several picks stand up in the field as raised tokens that fade in and out.",
   fun: "Move through the list: the highlight reaches for the next row, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
@@ -188,7 +188,7 @@ const labelIn = (groups: ComboboxGroup[], value: string) =>
 /** A quiet status line under a demo, so each stage shows what the combobox did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+    <p role="status" className="min-h-5 text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -385,7 +385,7 @@ export default function ComboboxPage() {
         size="lg"
         align="start"
         code="SiteStackDemo"
-        caption="With multiple, each pick becomes a token before the text and the list stays open for the next one. A new token fades in while its neighbors slide, and a removed one fades out, on the responsive tier. Pick a checked framework again, press its x, or press Backspace in an empty field to remove one."
+        caption="With multiple, each pick becomes a raised token before the text, a block you can lift back out of the field, and the list stays open for the next one. A new token fades in while its neighbors slide, and a removed one fades out, on the responsive tier. Pick a checked framework again, press its x, or press Backspace in an empty field to remove one."
       >
         <SiteStackDemo />
       </Stage>
@@ -394,7 +394,7 @@ export default function ComboboxPage() {
         title="Error and disabled"
         tier="instant"
         code="StatesDemo"
-        caption="The edge turns to danger on an error, and to the focus color with a ring on focus, both on the instant tier, and the box never moves. The message says how to fix it and clears on a pick. The disabled field is muted and skipped by Tab, and its tokens stay readable."
+        caption="The line turns to danger on an error, and to the focus color with a ring on focus, both on the instant tier, and the box never moves. The message says how to fix it and clears on a pick. The disabled field lies flat, muted and skipped by Tab, and its tokens lie flat with it and stay readable."
       >
         <StatesDemo />
       </Stage>

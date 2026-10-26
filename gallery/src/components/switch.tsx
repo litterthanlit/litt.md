@@ -12,7 +12,7 @@
  * - The block says its state: "Off" in --fg-muted at the start, "On" in --fg at the end, at the caption size and
  *   the title weight, in sentence case. Position and word both change, so color is never the signal.
  * - Two tones. neutral (the default) keeps the block white when on. accent fills it with the accent and its word
- *   with --accent-fg. The accent is one fill per view (P1), so accent is for a lone switch that is the view's
+ *   with --accent-fg. The accent is one fill per view (R6), so accent is for a lone switch that is the view's
  *   main choice; a list of settings stays neutral.
  * - No invalid state. A choice that can be wrong, such as accepting terms, is a Checkbox.
  * - The label is a real <label for> stretched over the whole row, so a click anywhere in it toggles the switch. Its
@@ -50,7 +50,7 @@ export type SwitchProps = {
   defaultChecked?: boolean;
   /** Called with the new state each time the switch is toggled, by click, tap, drag, label or Space. */
   onCheckedChange?: (checked: boolean) => void;
-  /** "neutral" keeps the block white when on. "accent" fills it with the accent: one per view (P1), for a lone switch that is the view's main choice. */
+  /** "neutral" keeps the block white when on. "accent" fills it with the accent: one per view (R6), for a lone switch that is the view's main choice. */
   tone?: SwitchTone;
   /** The block's two words, [off, on]. Keep them to three letters or so, such as ["Aus", "An"]. The state itself is read from aria-checked. */
   words?: [string, string];

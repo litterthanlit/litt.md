@@ -2,7 +2,7 @@
  * Funnel: how many went on at each step. Visited, signed up, activated, paid. Rows, not a trapezoid: the Meter's
  * thin rail (chart.tsx) once per step, every rail measured against the first step.
  *
- * - Header: the Breakdown's row. The label at the start (small, `--fg`), the overall conversion at the end (mono,
+ * - Header: the Breakdown's row. The label at the start (small, `--fg`), the overall conversion at the end (tabular,
  *   caption, `--fg-subtle`, tabular): "4.1% overall", the last step as a share of the first. A long label truncates;
  *   the reading never does.
  * - Steps: one row per step, in order, in exactly the Meter's anatomy: the label, the reading (the value, then its
@@ -10,7 +10,7 @@
  *   dividers and no boxes.
  * - Between two steps: one quiet line at the caption size in `--fg-subtle` that says in words how many went on
  *   ("38% continued"). Never red, never an arrow or a dash doing the talking. `formatStep` rewrites it.
- * - Hue (P11): one data hue for the whole funnel, blue unless `hue` says otherwise. It is one quantity, so one hue.
+ * - Hue (R7): one data hue for the whole funnel, blue unless `hue` says otherwise. It is one quantity, so one hue.
  * - Shares: whole percentages, with one decimal under 10% ("4.1%") so the small end of a funnel still reads, and
  *   "<0.1%" for a step that is there but tiny.
  * - Bad data still draws: a step larger than the one before it fills to its share, held at 100% of the first, and
@@ -24,7 +24,7 @@
  */
 import { useId } from "react";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type FunnelHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** A hue's mark tone fills every rail. */
@@ -70,7 +70,7 @@ export type FunnelProps = {
   steps: FunnelStep[];
   /** The one data hue every rail fills with. A funnel is one quantity, so it takes one hue. */
   hue?: FunnelHue;
-  /** The reading at the end of the header, in mono. Defaults to the last step as a share of the first: "4.1% overall". */
+  /** The reading at the end of the header, in tabular figures. Defaults to the last step as a share of the first: "4.1% overall". */
   overallText?: string;
   /** Turns a value into the text shown and read: `(v) => \`${v} builds\``. The default groups thousands. */
   formatValue?: (value: number) => string;
@@ -109,7 +109,7 @@ export function Funnel({ label, steps, hue = "blue", overallText, formatValue, u
     <div className={"grid grid-cols-1 content-start gap-6 " + className}>
       <div aria-hidden="true" className="flex items-baseline justify-between gap-4">
         <span className="min-w-0 truncate text-small text-fg">{label}</span>
-        {reading && <span className="shrink-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">{reading}</span>}
+        {reading && <span className="shrink-0 whitespace-nowrap text-caption font-normal tabular-nums text-fg-subtle">{reading}</span>}
       </div>
       {spoken && <p className="sr-only">{spoken}</p>}
 
@@ -125,7 +125,7 @@ export function Funnel({ label, steps, hue = "blue", overallText, formatValue, u
                 <span id={nameId} className="min-w-0 truncate text-small text-fg">
                   {step.label}
                 </span>
-                <span className="shrink-0 whitespace-nowrap font-mono text-caption font-normal tabular-nums text-fg-subtle">
+                <span className="shrink-0 whitespace-nowrap text-caption font-normal tabular-nums text-fg-subtle">
                   {fmt(step.value)}
                   {measured && <span className="ml-2 inline-block min-w-[4ch] text-right">{percent(share)}</span>}
                 </span>

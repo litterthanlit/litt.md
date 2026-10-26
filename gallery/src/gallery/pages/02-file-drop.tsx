@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["drag", "press"],
   summary:
-    "An area to drop files on or choose them from, as a row: an up arrow, what it takes and a Choose files button. While files are over it the dashed edge turns solid and the words say what a drop will do. It turns away files of the wrong type or size and says which and why, and the rows below show each file uploading on a Progress rail, with Retry for one that failed.",
+    "An area to drop files on or choose them from, cut into the page like a field, as a row: an up arrow, what it takes and a Choose files button. While files are over it the line turns to the focus color and the words say what a drop will do. It turns away files of the wrong type or size and says which and why, and the rows below show each file uploading on a Progress rail, with Retry for one that failed.",
   tiers: ["instant"],
 };
 
@@ -120,7 +120,7 @@ export default function FileDropPage() {
         tier="instant"
         align="start"
         code="UploadDemo"
-        caption="Drag files from your desktop over the area: the edge turns solid, the fill steps up and the words say what a drop will do. Drop them, or press Choose files. A file of another type or over 10 MB is turned away with a sentence under the area. Each file that gets in uploads on its own Progress rail; the fourth one stops partway and offers Retry. Remove cancels an upload or takes a file away."
+        caption="Drag files from your desktop over the area: the line turns to the focus color and the words say what a drop will do. Drop them, or press Choose files. A file of another type or over 10 MB is turned away with a sentence under the area. Each file that gets in uploads on its own Progress rail; the fourth one stops partway and offers Retry. Remove cancels an upload or takes a file away."
       >
         <UploadDemo />
       </Stage>
@@ -130,7 +130,7 @@ export default function FileDropPage() {
         tier="instant"
         align="start"
         code="StatesDemo"
-        caption="multiple={false} takes one file and says so on its button. Disabled is flat with a plain edge, muted words, no drop and no tab stop; its hint says when it opens again."
+        caption="multiple={false} takes one file and says so on its button. Disabled lies flat on surface-2 with a plain hairline, muted words, no drop and no tab stop; its hint says when it opens again."
       >
         <StatesDemo />
       </Stage>

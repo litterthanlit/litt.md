@@ -12,7 +12,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["type"],
   summary:
-    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's field with the Tag's look inside: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
+    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's cut field with raised tags inside, blocks you can lift back out: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
   tiers: ["instant", "responsive"],
 };
 
@@ -152,7 +152,7 @@ export default function TokenInputPage() {
       <Stage
         title="Senders"
         tier="responsive"
-        caption="A mail rule. The field shows the first sender and a +N token for the rest, and opens to all of them when you focus it. The tokens that appear fade in and slide, and they fold back when focus leaves."
+        caption="A mail rule. The field shows the first sender and a flat +N chip for the rest, and opens to all of them when you focus it. Each sender is a raised tag standing up out of the field. The tokens that appear fade in and slide, and they fold back when focus leaves."
         code="SendersDemo"
       >
         <SendersDemo />
@@ -161,7 +161,7 @@ export default function TokenInputPage() {
       <Stage
         title="Recipients"
         tier="responsive"
-        caption="Type an address and press Enter or a comma, or paste a list. An address that is not whole stays in the input, the edge turns to danger and the message says how to fix it, until you change the text. A new token fades in, and a removed one fades out while its neighbors close the gap."
+        caption="Type an address and press Enter or a comma, or paste a list. An address that is not whole stays in the input, the line turns to danger and the message says how to fix it, until you change the text. A new token fades in, and a removed one fades out while its neighbors close the gap."
         code="RecipientsDemo"
       >
         <RecipientsDemo />

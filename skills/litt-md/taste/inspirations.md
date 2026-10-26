@@ -23,10 +23,10 @@ Each entry is an audited reference: what to take from it and what to leave. Entr
 **What it is:** an issue tracker; the reference point for "technical precision".
 **Measured:** unmeasured. Notes say Inter Variable at 510/590, display tracking −0.022em, surfaces stepped from `#08090a`, and an indigo accent.
 **Steal:**
-- Surface-based elevation in dark mode (→ P4).
+- Surface-based elevation in dark mode (→ R3).
 - A four-level text hierarchy (→ `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled`).
-- Tracking that tightens on display sizes (→ P6).
-- A glass header with a 1px light border (→ P3).
+- Tracking that tightens on display sizes (→ R9).
+- A glass header with a 1px light border (→ R3).
 **Reject:**
 - Indigo as the default accent. It is Linear's signature, and borrowing it makes litt.md read as a Linear clone.
 - The 510/590 weights, which are tuned for Inter. Geist uses 400/500/600.
@@ -40,7 +40,7 @@ Each entry is an audited reference: what to take from it and what to leave. Entr
 - A 1px light border on glass (→ `--glass-border`).
 - Scale 0.98 on press, within the 120ms budget.
 **Reject:**
-- Selected rows filled with the accent (breaks P1). Use a surface step plus accent light instead.
+- Selected rows filled with the accent (breaks R6). Use a surface step plus accent light instead.
 **Rule candidate:** -
 
 ### Paper · paper.design · secondhand · 2026-10-09
@@ -48,7 +48,7 @@ Each entry is an audited reference: what to take from it and what to leave. Entr
 **Measured:** unmeasured. Notes say a `#080808` background, cream text `#f0efe4`, a 796px content width, and a 24px dot grid at 7% opacity.
 **Steal:**
 - A narrow measure for long-form text (→ `--measure` at 65ch, `--container-reading`).
-- Texture as a quiet material layer. The dot grid is a cousin of grain, so it may be a P5-compatible alternative and is worth testing.
+- Texture as a quiet material layer. The dot grid is a cousin of grain, so it may be a R2-compatible alternative and is worth testing.
 **Reject:**
 - Warm cream text, because the neutrals are cool.
 - Arrow-suffix links (a generic-AI tell).
@@ -59,7 +59,7 @@ Each entry is an audited reference: what to take from it and what to leave. Entr
 **What it is:** a browser with a playful editorial site.
 **Measured:** unmeasured. Notes say a serif display (Marlin Soft) with Inter, an off-white `#FFFCEC` background, and a `#3139FB` accent.
 **Steal:**
-- Restraint on button styling: one strong button, everything else quiet (→ P1).
+- Restraint on button styling: one strong button, everything else quiet (→ R6).
 **Reject:**
 - The serif display face and the warm off-white (they break the type and neutrals decisions).
 **Rule candidate:** -
@@ -91,17 +91,17 @@ Entries from `workflows/audit.md` go below this line, newest first.
 - Tooling: a headless audit that flags off-scale durations, `transition: all`, per-row hover blink and selection shift, tested against a known-bad page and a known-good page.
 
 **Steal:**
-- A state change never moves the box: the label and icon keep the same width in every state (→ P9, new).
+- A state change never moves the box: the label and icon keep the same width in every state (→ R8, new).
 - Touch parity: hover fills only where hover exists, hover-revealed controls always visible on touch, 16px fields on coarse pointers (new).
 - Focus by modality: a click never draws a ring, and a keyboard-highlighted row needs more than a faint fill (new).
-- A floating surface opened inside another floating surface steps up one surface and stays solid (→ P3).
+- A floating surface opened inside another floating surface steps up one surface and stays solid (→ R3).
 - Exits quicker than enters, entry offset from the side the popover actually opens on, and a 200ms tooltip delay (→ motion).
 - Motion values audited mechanically, not just written down (→ check.mjs).
 
 **Reject:**
-- Weight as a state (400 → 550 on hover and selection). It breaks P9.
+- Weight as a state (400 → 550 on hover and selection). It breaks R8.
 - Rounded radii and the Rounded/Pill switch. They break the binary radius.
-- Offset drop shadows in light. They break P4.
+- Offset drop shadows in light. They break R3.
 - Bounce on the slow tier, looping shimmer and morphs, and blur on icon swaps. They break "invisible and fast".
 
 **Question:**
@@ -149,8 +149,8 @@ Entries from `workflows/audit.md` go below this line, newest first.
 - Button and input heights from one shared scale (new).
 - Text-box trim so spacing values equal visible space (new).
 - Concentric radii, where the inner radius equals the outer radius minus the inset (→ components).
-- Two-tone headlines: the first clause in ink, the second in the 60% "hushed" color. This is hierarchy by color, which fits P9.
-- Shadows as zero-offset glows plus a 1px ring (→ P4).
+- Two-tone headlines: the first clause in ink, the second in the 60% "hushed" color. This is hierarchy by color, which fits R8.
+- Shadows as zero-offset glows plus a 1px ring (→ R3).
 - Status pills built from paired fg/bg tokens.
 - The table recipe.
 - Taste written as checkable criteria, with agents as a third user of the system. This confirms litt.md's own approach.
@@ -176,11 +176,11 @@ Entries from `workflows/audit.md` go below this line, newest first.
 - A burst of fine lines on black, a blue line-wave, pixel glyph sets, kinetic type ("SPATIAL"), a retro media-player UI, and a network graph.
 **Steal:**
 - Dot-matrix as texture *and* as data visualization (new; see Q7).
-- Fine hairline drawings on a dark ground (→ P6).
+- Fine hairline drawings on a dark ground (→ R9).
 - Large numerals as a structural device.
 **Reject:**
 - Retro skeuomorphic player chrome (breaks the technical-precision character).
-**Rule candidate:** "Texture is a dot grid or dot matrix, never photographic noise." This conflicts with the grain in P5, so it is a question first (Q7).
+**Rule candidate:** "Texture is a dot grid or dot matrix, never photographic noise." This conflicts with the grain in R2, so it is a question first (Q7).
 
 ### Pinterest "web" board · pinterest.com/litterthanli7/web · moodboard · 2026-10-10
 **What it is:** 97 pins of web and layout references.
@@ -193,8 +193,8 @@ Entries from `workflows/audit.md` go below this line, newest first.
 - Blurred blue glass shapes ("smarter trading"), and an orange sun glowing on a dark ground.
 - A dot-matrix data dashboard, and an orange "72 Campaign Success" stat card.
 **Steal:**
-- Monochrome layouts with one saturated pop (red, orange, blue) (→ color decision, P1).
-- Blurred light shapes behind content (→ P1, P2).
+- Monochrome layouts with one saturated pop (red, orange, blue) (→ color decision, R6).
+- Blurred light shapes behind content (→ R6, R2).
 - Big numerals and stats as the hero of a card.
 **Reject:**
 - Poster-style distorted kinetic type for UI (more brand/editorial than product UI, which is out of scope).
@@ -213,10 +213,10 @@ Entries from `workflows/audit.md` go below this line, newest first.
 - Big single-letter type in 3.
 - Phones and laptops with gradient screens in about 5.
 **Steal:**
-- Glass panels over rich, blurred backdrops: this is exactly where glass earns its blur (→ P3).
+- Glass panels over rich, blurred backdrops: this is exactly where glass earns its blur (→ R3).
 - Atmospheric blurred photography as the backdrop for product shots (evidence for Q5).
 - Thin 1.5px line icons (evidence for Q3).
-- Warm light fields as the "light", rather than violet gradients (→ P1; see Q8).
+- Warm light fields as the "light", rather than violet gradients (→ R6; see Q8).
 **Reject:**
 - Fully saturated rainbow gradient posters (break the monochrome color decision).
 - Logo walls as a design element.
@@ -245,8 +245,8 @@ Entries from `workflows/audit.md` go below this line, newest first.
 **Steal (what Nick already does, which is strong evidence):**
 - Geist only (→ decision ✓).
 - Fast 100ms transitions (→ motion ✓).
-- Airy, left-aligned, asymmetric layout (→ P7 ✓).
-- Monochrome with one accent used as a tiny signal (→ P1 ✓).
+- Airy, left-aligned, asymmetric layout (→ R9 ✓).
+- Monochrome with one accent used as a tiny signal (→ R6 ✓).
 - Light as ambient atmosphere (→ the signature ✓).
 - Dot-grid texture (→ Q7).
 **Gaps against the profile (raised as questions, not changed):**
@@ -276,12 +276,12 @@ Entries from `workflows/audit.md` go below this line, newest first.
 **Steal:**
 - Geist (→ decision).
 - 0.1s as the default duration (→ `--dur-instant`).
-- A single lit object as the hero, where light *is* the visual (→ P1, P2).
+- A single lit object as the hero, where light *is* the visual (→ R6, R2).
 - Discipline about contrast.
 **Reject:**
 - Pure `#000` and `#fff`, because litt.md's neutrals are cool.
 - Pills on every button (litt.md uses 6px controls).
-- Tinted drop shadows on colored cards (breaks P4).
+- Tinted drop shadows on colored cards (breaks R3).
 **Rule candidate:** "Display tracking can go tighter than −0.03em: Vercel uses −0.06em at 56px." Test this in the next interview.
 
 ### Cursor · cursor.com · reference · 2026-10-10
@@ -302,10 +302,10 @@ Entries from `workflows/audit.md` go below this line, newest first.
 **Steal:**
 - Product UI framed by an atmospheric art backdrop, the same pattern as the Cosmos board (evidence for Q5).
 - A restrained headline size: the product is the hero, not the type.
-- One warm accent used sparingly (→ P1).
+- One warm accent used sparingly (→ R6).
 **Reject:**
 - Warm neutrals (they break the cool-neutral decision).
-- Big soft drop shadows (break P4).
+- Big soft drop shadows (break R3).
 - 0.6s transitions (break the motion ceiling).
 - An arrow suffix on the secondary button.
 **Rule candidate:** "The product shot sits on an atmospheric image, not a flat canvas," which matches the Cosmos candidate.

@@ -5,14 +5,14 @@
  *
  * - Anatomy: a wrapping row of toggle buttons in a `role="group"` named by `label`. Each is a swatch (a 12 by 4px
  *   rail at the control radius, the Breakdown legend's swatch) in the hue's mark tone, the name (small, `--fg`), and
- *   an optional reading after it (mono, caption, `--fg-subtle`, tabular), such as a total.
+ *   an optional reading after it (caption, `--fg-subtle`, tabular), such as a total.
  * - Hues: assigned exactly as the Chart's `paints(series, true)` does with `hues` on, so a Legend and a BarChart or
  *   LineChart given the same list always agree: an item with `hue` keeps it, and every item without one takes the
  *   next hue in the fixed order (blue, amber, teal, violet, rose), counting only items without one. The order comes
  *   from the full list, never the shown one, so hiding a series never repaints the others. A chart counts only the
  *   series it is given, so pass it the shown series with their hues pinned: `legendHues(items)` gives each name its
  *   hue. Five items at most, as in the Chart: past five the order would start again.
- * - States (P9, state without shift): shown is the hue's swatch and the name in `--fg`, and `aria-pressed="true"`.
+ * - States (R8, state without shift): shown is the hue's swatch and the name in `--fg`, and `aria-pressed="true"`.
  *   Hidden is the swatch as the Meter's track (fg at 12%) and the name in `--fg-subtle`. Only color changes, on the
  *   instant tier: nothing moves, the box never changes size, and the weight stays 400.
  * - Size: `h-control-sm` (32) with 8px of side padding at the control radius, and 44px tall on a coarse pointer.
@@ -28,7 +28,7 @@
  */
 import { useId, useState, type KeyboardEvent, type MouseEvent } from "react";
 
-/** The five data hues, in their fixed order (P11). The same names as the Chart's and the Breakdown's. */
+/** The five data hues, in their fixed order (R7). The same names as the Chart's and the Breakdown's. */
 export type LegendHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** The order an item without a hue takes them in: the Chart's `HUE_ORDER`. */
@@ -50,7 +50,7 @@ export type LegendItem = {
   name: string;
   /** Pins the series to one of the five data hues. Give the chart's series the same hue, or use `legendHues` to read them. */
   hue?: LegendHue;
-  /** A reading shown after the name in mono, such as the series' total: "1,240". Leave it out when the name is enough. */
+  /** A reading shown after the name in tabular figures, such as the series' total: "1,240". Leave it out when the name is enough. */
   value?: string;
 };
 
@@ -151,7 +151,7 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
               {item.name}
             </span>
             {item.value !== undefined && (
-              <span className="litt-trim font-mono text-caption font-normal tabular-nums text-fg-subtle">{item.value}</span>
+              <span className="litt-trim text-caption font-normal tabular-nums text-fg-subtle">{item.value}</span>
             )}
           </button>
         );

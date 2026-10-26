@@ -2,8 +2,9 @@
  * Combobox: type to find one value, or several, in a long list (components.md, "Combobox"): a client, a
  * framework, a teammate. Select is for a short fixed list, and Command menu is for actions.
  *
- * - Field: the Input's look and sizes (sm 32, md 44, lg 56; 16px text on coarse pointers, where sm grows to 44),
- *   with the same edge, focus ring, error and disabled states. The text is the query. A 16px chevron button in
+ * - Field: the Input's cut (R3: the --cut floor, the control line and the top wall's shade) and sizes (sm 32, md 44,
+ *   lg 56; 16px text on coarse pointers, where sm grows to 44), with the same focus line and ring, error line and
+ *   flat disabled look. The text is the query. A 16px chevron button in
  *   --fg-subtle sits at the end, --control-gap from the text, and opens and closes the list; it never turns.
  *   The label sits above and the hint or error under it, wired as TextField's are.
  * - List: anchored under the field and flipped above it when there is no room, as wide as the field. It is the
@@ -20,8 +21,9 @@
  *   puts back the picked option's label. Leaving the field closes the list and puts the label back, so the field
  *   never holds text that is not a value; a field left empty clears the pick. Every key handler returns early
  *   while an IME is composing.
- * - multiple: the picks sit inside the field before the query as Token input's tokens (the Tag's look, a 24px
- *   remove button that grows to 44px on coarse pointers). A pick clears the query and keeps the list open, and
+ * - multiple: the picks sit inside the field before the query as Token input's tokens (raised Tags, R3: blocks you can
+ *   lift out of the cut, flat while the field is disabled; a 24px remove button that grows to 44px on coarse
+ *   pointers). A pick clears the query and keeps the list open, and
  *   picking a picked option again removes it. Backspace in an empty query removes the last token. ArrowLeft at the
  *   start of the query walks into the remove buttons, which are not Tab stops, so the field stays one Tab stop.
  * - Positioning is Radix Popover with the field as its anchor (role, focus and the trigger are ours): it places
@@ -160,15 +162,15 @@ const toList = (value: string | string[] | undefined): string[] | undefined =>
 
 /* ---------------------------------------------------------------- the field */
 
-/* The Input's fill, edge, focus, error and disabled looks, on a wrapper that holds the text field (and the tokens).
-   The ring follows the text field only: the remove buttons draw their own. */
+/* The Input's cut (floor, line, shade) and its focus, error and disabled looks, on a wrapper that holds the text
+   field (and the tokens). The ring follows the text field only: the remove buttons draw their own. */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 font-normal text-fg " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
+  "relative flex w-full min-w-0 cursor-text rounded-control bg-cut font-normal text-fg " +
+  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger)] " +
-  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
@@ -542,7 +544,7 @@ export function Combobox<Multiple extends boolean = false>({
                         exit={{ opacity: 0, transition: exit }}
                         transition={enter}
                       >
-                        <Tag className="max-w-full min-w-0 pr-0">
+                        <Tag raised={!disabled} className="max-w-full min-w-0 pr-0">
                           <span className={"min-w-0 truncate " + (disabled ? "text-fg-subtle" : "")}>{labelOf(v)}</span>
                           <button
                             type="button"

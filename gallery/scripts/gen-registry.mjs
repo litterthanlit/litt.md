@@ -382,7 +382,7 @@ const UTILITY_PREFIXES = {
   "inset-shadow": ["inset-shadow"],
   ease: ["ease"],
   font: ["font"],
-  "font-weight": ["font"], // font-title, font-label: the role weights (P9)
+  "font-weight": ["font"], // font-title, font-label: the role weights (R8)
 };
 /** prefix -> namespaces */
 const prefixNs = new Map();

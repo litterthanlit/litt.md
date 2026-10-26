@@ -2,8 +2,8 @@
  * Callout: an inline note in the page flow. A tip, a heads-up, or a result to act on, such as
  * "Try H to snooze" or "Your Framer plan renews in 3 days".
  *
- * - Surface (components.md, Callout): `.litt-raised`, because it sits in the flow. Never glass (P3),
- *   no shadow (P4), and never a left rail, a tinted background or a colored border. A status that
+ * - Surface (components.md, Callout): `.litt-raised`, because it sits in the flow. Never glass (R3),
+ *   no shadow (R3), and never a left rail, a tinted background or a colored border. A status that
  *   colored the whole box would turn a note into an alarm, and a rail is the one thing litt bans.
  * - Anatomy: a 16px icon at the start, aligned with the title's first line; the title (body, fg);
  *   an optional description (small, fg-subtle); an optional `action` at the end (an sm secondary

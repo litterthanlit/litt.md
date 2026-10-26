@@ -205,7 +205,7 @@ const SIZES = [
   { value: "32", label: "32" },
 ];
 
-/* The selected segment (P12), one surface up from the raised stage. */
+/* The selected segment (R3), one surface up from the raised stage. */
 const CELL =
   "group/cell grid h-20 min-w-0 content-center justify-items-center gap-3 rounded-control px-1 select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt " +
@@ -293,14 +293,14 @@ function Inspector({ entry, ref }: { entry: Entry; ref: Ref<HTMLDivElement> }) {
         {[16, 24, 32].map((s) => (
           <figure key={s} className="grid justify-items-center gap-2">
             <Icon size={s} />
-            <figcaption className="font-mono text-caption text-fg-subtle">{s}</figcaption>
+            <figcaption className="tabular-nums text-caption font-normal text-fg-subtle">{s}</figcaption>
           </figure>
         ))}
       </div>
       <div className="grid gap-1">
         <h3 className="font-mono text-small text-fg">{entry.name}</h3>
         <p className="text-small text-fg-muted">{entry.meaning}</p>
-        <p className="font-mono text-caption text-fg-subtle">
+        <p className="text-caption font-normal text-fg-subtle">
           {entry.family} · {entry.words.split(" ").join(", ")}
         </p>
       </div>
@@ -390,7 +390,7 @@ function SetDemo() {
               <div key={g.family} role="group" aria-labelledby={`${id}-${g.family}`} className="grid gap-3">
                 <div id={`${id}-${g.family}`} className="flex items-baseline gap-3 text-small text-fg">
                   {g.family}
-                  <span className="font-mono text-caption text-fg-subtle">{g.icons.length}</span>
+                  <span className="tabular-nums text-caption font-normal text-fg-subtle">{g.icons.length}</span>
                 </div>
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(5.25rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-1">
                   {g.icons.map((e) => {
@@ -452,7 +452,7 @@ function KeylinesDemo() {
           <Board name={k.name} keyline={k.keyline} />
           <figcaption className="grid gap-0.5">
             <span className="text-small text-fg">{k.label}</span>
-            <span className="font-mono text-caption text-fg-subtle">{k.size}</span>
+            <span className="tabular-nums text-caption font-normal text-fg-subtle">{k.size}</span>
           </figcaption>
         </figure>
       ))}

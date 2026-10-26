@@ -37,7 +37,9 @@
   h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
   ul, ol { padding: 0; list-style: none; }
   a { color: inherit; text-decoration: none; }
-  code, kbd, .mono { font-family: var(--font-mono); }
+  code, .mono { font-family: var(--font-mono); }
+  kbd, .date { font-variant-numeric: tabular-nums; }
+  kbd { font-family: var(--font-sans); }
 
   .skip {
     position: absolute; left: var(--space-4); top: -100px; z-index: 100;
@@ -52,7 +54,7 @@
 
   .wrap { width: 100%; max-width: var(--container-wide); margin-inline: auto; padding-inline: var(--gutter); }
 
-  /* Header: glass, because it floats over content (P3) */
+  /* Header: glass, because it floats over content (R3) */
   .site-header { position: sticky; top: 0; z-index: 20; border-radius: 0; } /* full-bleed: no surface radius */
   .site-header .wrap { height: var(--header-h); display: flex; align-items: center; gap: var(--space-6); }
   .mark { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg); font-weight: var(--weight-title); letter-spacing: -0.01em; }
@@ -63,8 +65,8 @@
   .nav { display: none; gap: var(--space-1); margin-left: var(--space-4); }
   .nav a { padding: var(--space-1) var(--space-3); border-radius: var(--radius-control); color: var(--fg-subtle); font-size: var(--type-small-size); transition: color var(--dur-instant) var(--ease-out), background-color var(--dur-instant) var(--ease-out); }
   .nav a:hover { color: var(--fg); background: color-mix(in oklab, var(--fg) 6%, transparent); }
-  /* The current page wears the selected segment (P12), and keeps it under the pointer. */
-  .nav a[aria-current] { color: var(--fg); background: var(--surface-1); box-shadow: inset 0 0 0 1px var(--line), var(--highlight); }
+  /* The current page is raised (R3: selected is raised), and keeps it under the pointer. */
+  .nav a[aria-current] { color: var(--fg); background: var(--block); box-shadow: var(--block-lift); }
   .header-actions { margin-left: auto; display: flex; align-items: center; gap: var(--space-3); }
   @media (min-width: 64rem) { .nav { display: flex; } }
 
@@ -80,21 +82,22 @@
   @media (min-width: 40rem) { .k-trigger span { display: inline; } }
 
   /* Segmented control: theme */
-  .segmented { display: inline-flex; padding: var(--space-1); border: 0; margin: 0; border-radius: var(--radius-surface); background: color-mix(in oklab, var(--fg) 5%, transparent); box-shadow: inset 0 0 0 1px var(--line); }
+  /* A sunken tray, the selected segment the raised block in it (R3), as the Switch's. */
+  .segmented { display: inline-flex; padding: 2px; border: 0; margin: 0; border-radius: var(--radius-control); background: var(--tray); box-shadow: var(--tray-shade); }
   .segmented label { position: relative; }
   .segmented input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-  .segmented span { display: block; padding: 4px var(--space-2); border-radius: var(--radius-control); font-size: var(--type-caption-size); font-weight: var(--weight-title); color: var(--fg-subtle); transition: color var(--dur-instant) var(--ease-out), background-color var(--dur-instant) var(--ease-out); }
-  .segmented input:checked + span { background: var(--surface-1); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line), var(--highlight); }
+  .segmented span { display: block; padding: 6px var(--space-2); border-radius: calc(var(--radius-control) - 2px); font-size: var(--type-caption-size); font-weight: var(--weight-title); color: var(--fg-subtle); transition: color var(--dur-instant) var(--ease-out), background-color var(--dur-instant) var(--ease-out); }
+  .segmented input:checked + span { background: var(--block); color: var(--fg); box-shadow: var(--block-lift); }
   .segmented input:focus-visible + span { outline: 2px solid var(--focus); outline-offset: 1px; }
 
   kbd {
     display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px;
-    border-radius: var(--radius-control); background: var(--surface-2); color: var(--fg-subtle);
+    border-radius: var(--radius-control); background: var(--block); color: var(--fg-subtle);
     font-size: 11px; font-weight: var(--weight); line-height: 1;
-    box-shadow: inset 0 0 0 1px var(--line);
+    box-shadow: var(--key-lift);
   }
 
-  /* Hero: the one light source of the page (P2) */
+  /* Hero: the one light source of the page (R2) */
   .hero { overflow: clip; }
   .hero .wrap {
     display: grid; gap: var(--space-16); align-items: center;
@@ -114,22 +117,24 @@
   .actions { display: flex; flex-wrap: wrap; gap: var(--control-group-gap); margin-top: var(--space-8); }
 
   /* Buttons */
-  /* Buttons (P10): one height scale shared with inputs; labels trimmed to the
+  /* Buttons (R9): one height scale shared with inputs; labels trimmed to the
      cap height, so side padding is about equal to the vertical air. */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: var(--control-gap);
     height: var(--control-md); padding: 0 var(--control-pad-md); border: 0; border-radius: var(--radius-control);
     font: inherit; font-size: var(--control-text-md); font-weight: var(--weight-title); white-space: nowrap; cursor: pointer;
     transition: background-color var(--dur-instant) var(--ease-out), color var(--dur-instant) var(--ease-out), transform var(--dur-instant) var(--ease-out);
+    /* A press sinks the block half a pixel (R4); a raised button's cast tightens at once (R2). */
   }
   .btn-sm { height: var(--control-sm); padding: 0 var(--control-pad-sm); font-size: var(--control-text-sm); }
   .btn-lg { height: var(--control-lg); padding: 0 var(--button-pad-lg); font-size: var(--control-text-lg); }
   .btn-block { width: 100%; }
-  .btn:active:not(:disabled) { transform: scale(var(--press-scale)); }
+  .btn:active:not(:disabled) { transform: translateY(var(--press-depth)); }
   .btn-primary { background: var(--accent); color: var(--accent-fg); box-shadow: var(--glow), inset 0 1px 0 color-mix(in oklab, white 22%, transparent); }
   .btn-primary:hover { background: var(--accent-hover); }
-  .btn-secondary { background: var(--surface-1); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line-strong), var(--highlight); }
-  .btn-secondary:hover { background: var(--surface-2); }
+  .btn-secondary { background: var(--block); color: var(--fg); box-shadow: var(--block-lift); }
+  .btn-secondary:hover { background: color-mix(in oklab, var(--block), var(--fg) 4%); }
+  .btn-secondary:active:not(:disabled) { box-shadow: var(--block-press); }
   .btn-ghost { background: transparent; color: var(--fg-muted); }
   .btn-ghost:hover { background: color-mix(in oklab, var(--fg) 6%, transparent); color: var(--fg); }
   .btn:disabled { background: var(--surface-2); color: var(--fg-disabled); box-shadow: none; cursor: not-allowed; }
@@ -152,7 +157,7 @@
   .rows li:last-child { border-bottom: 0; }
   .rows .name { color: var(--fg); }
   .rows .meta { display: flex; align-items: center; gap: var(--space-3); color: var(--fg-subtle); }
-  .rows .date { font-family: var(--font-mono); font-size: var(--type-caption-size); }
+  .rows .date { font-size: var(--type-caption-size); font-weight: var(--weight); }
   @media (max-width: 39.99rem) { .rows .date { display: none; } }
 
   .menu { position: absolute; right: calc(var(--space-4) * -1); bottom: 0; width: min(340px, 88%); border-radius: var(--radius-surface); }
@@ -164,7 +169,7 @@
   .menu-list li[aria-selected="true"] { background: color-mix(in oklab, var(--fg) 7%, transparent); color: var(--fg); }
   .menu-list .keys { display: inline-flex; gap: 4px; }
 
-  /* Sections: asymmetric 3/9 split, label column left (P7) */
+  /* Sections: asymmetric 3/9 split, label column left (R9) */
   /* --section-y is the distance BETWEEN sections: padding-top on each, bottom on the last. */
   .section { padding-top: var(--section-y); }
   .section:last-child { padding-bottom: var(--section-y); }
@@ -192,7 +197,7 @@
   .t-caption { font-size: var(--type-caption-size); line-height: var(--type-caption-leading); letter-spacing: var(--type-caption-tracking); font-weight: var(--weight-label); color: var(--fg-subtle); }
   .t-mono { font-family: var(--font-mono); font-size: var(--type-small-size); color: var(--fg-muted); }
 
-  /* Color: both themes side by side, each a nested [data-theme] (P8) */
+  /* Color: both themes side by side, each a nested [data-theme] (R2) */
   .themes { display: grid; gap: var(--grid-gap); }
   @media (min-width: 48rem) { .themes { grid-template-columns: 1fr 1fr; } }
   .theme-panel { padding: var(--space-6); border-radius: var(--radius-surface); background: var(--canvas); color: var(--fg-muted); box-shadow: inset 0 0 0 1px var(--line); }
@@ -246,14 +251,14 @@
   .input {
     width: 100%; height: var(--control-md); padding: 0 var(--control-pad-md); border: 0; border-radius: var(--radius-control);
     font-size: var(--control-text-md);
-    background: var(--surface-1); color: var(--fg); font: inherit;
-    box-shadow: inset 0 0 0 1px var(--line-control);
+    background: var(--cut); color: var(--fg); font: inherit;
+    box-shadow: inset 0 0 0 1px var(--line-control), var(--cut-shade);
     transition: box-shadow var(--dur-instant) var(--ease-out);
   }
   .input-lg { height: var(--control-lg); padding: 0 var(--control-pad-lg); font-size: var(--control-text-lg); }
   .input::placeholder { color: var(--fg-subtle); }
-  .input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--focus), var(--focus-ring); }
-  .input[aria-invalid="true"] { box-shadow: inset 0 0 0 1px var(--danger); }
+  .input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--focus), var(--cut-shade), var(--focus-ring); }
+  .input[aria-invalid="true"] { box-shadow: inset 0 0 0 1px var(--danger), var(--cut-shade); }
   .help { margin-top: var(--space-2); color: var(--fg-subtle); font-size: var(--type-small-size); }
   .help.error { color: var(--danger); }
   .check { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg-muted); font-size: var(--type-small-size); cursor: pointer; }
@@ -396,7 +401,7 @@
     <div class="wrap">
       <div class="section-head">
         <h2 id="type-title">Type</h2>
-        <p>Geist for everything, Geist Mono for code, keys and data. Nearly everything is 14px, and titles stop at 18. Rank comes from weight, two inks and space.</p>
+        <p>Geist for everything, numbers in tabular figures; Geist Mono for code and terminal output only. Nearly everything is 14px, and titles stop at 18. Rank comes from weight, two inks and space.</p>
       </div>
       <div class="section-body">
         <div class="type-row"><p class="t-display">Inevitable.</p><p class="spec"><b>Display</b>18 · 28 · −0.015em · 500</p></div>
@@ -406,7 +411,7 @@
         <div class="type-row"><p class="t-body">UI body is the same fourteen pixels. It is the workhorse for interfaces: settings, lists, descriptions and dialogs.</p><p class="spec"><b>Body</b>14 · 22 · 400</p></div>
         <div class="type-row"><p class="t-small">Small text for supporting detail, table cells and helper copy.</p><p class="spec"><b>Small</b>13 · 20 · 400</p></div>
         <div class="type-row"><p class="t-caption">Labels, meta rows and table headers</p><p class="spec"><b>Caption</b>12 · 16 · −0.005em · 600</p></div>
-        <div class="type-row"><p class="t-mono">⌘K &nbsp; v0.1.0 &nbsp; 128px &nbsp; --surface-2</p><p class="spec"><b>Mono</b>Geist Mono 13 · 400</p></div>
+        <div class="type-row"><p class="t-mono">npm run build &nbsp; src/app.tsx &nbsp; --surface-2</p><p class="spec"><b>Mono</b>Geist Mono 13 · 400</p></div>
       </div>
     </div>
   </section>
@@ -436,25 +441,25 @@
         <div class="materials">
           <div class="tile tile-lit litt-lit">
             <h3>Light source</h3>
-            <p><span class="rule">P1 P2</span> &nbsp;The accent appears as light falling from the top, tinted 12% in light and 22% in dark.</p>
+            <p><span class="rule">R2 R6</span> &nbsp;The accent appears as light falling from the top, tinted 12% in light and 22% in dark.</p>
           </div>
           <div class="tile">
             <div class="busy" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
             <div class="glass-card litt-glass">Glass blurs what it floats over.</div>
             <h3>Glass</h3>
-            <p><span class="rule">P3</span> &nbsp;Only for header, menus, popovers, modals, toasts. Never for cards in flow.</p>
+            <p><span class="rule">R3</span> &nbsp;Only for header, menus, popovers, modals, toasts. Never for cards in flow.</p>
           </div>
           <div class="tile">
             <div class="edge-demo litt-raised" aria-hidden="true"></div>
             <h3>Edge highlight</h3>
-            <p><span class="rule">P4</span> &nbsp;Depth from stepped surfaces and a top highlight, not drop shadows.</p>
+            <p><span class="rule">R3</span> &nbsp;Depth from stepped surfaces and a top highlight, not drop shadows.</p>
           </div>
           <div class="tile tile-grain">
             <div class="grain-demo" aria-hidden="true"></div>
             <div class="grain-demo actual" aria-hidden="true"></div>
             <div class="grain-labels" aria-hidden="true"><span>6× for visibility</span><span>actual</span></div>
             <h3>Grain</h3>
-            <p><span class="rule">P5 P8</span> &nbsp;Static noise at 2% in light, 4% in dark. It dithers gradient banding.</p>
+            <p><span class="rule">R2</span> &nbsp;Static noise at 2% in light, 4% in dark. It dithers gradient banding.</p>
           </div>
         </div>
       </div>
@@ -563,21 +568,19 @@
     <div class="wrap">
       <div class="section-head">
         <h2 id="rules-title">Rules</h2>
-        <p>The eleven signature rules. Each one is checkable; the critique workflow scores against them.</p>
+        <p>The nine rules of litt v1.0. Each one is checkable; the critique workflow scores against them.</p>
       </div>
       <div class="section-body">
         <ol class="rules">
-          <li><span class="id">P1</span><div><b>Light, not paint</b><p>The accent shows up as light. At most one flat accent fill per view.</p></div></li>
-          <li><span class="id">P2</span><div><b>One light source</b><p>Light comes from the top. Highlights on top edges, glows never contradict.</p></div></li>
-          <li><span class="id">P3</span><div><b>Glass is earned</b><p>Only floating surfaces are glass. Cards in flow are solid.</p></div></li>
-          <li><span class="id">P4</span><div><b>Depth without drop shadows</b><p>Cards stay flat. Floating surfaces get a zero-offset glow and a 1px ring.</p></div></li>
-          <li><span class="id">P5</span><div><b>Material is static</b><p>Glow, grain and gradients never animate.</p></div></li>
-          <li><span class="id">P6</span><div><b>Precision</b><p>8px grid, 1px hairlines, tracking tightens with size.</p></div></li>
-          <li><span class="id">P7</span><div><b>Airy rhythm</b><p>One idea per section, 128/96/64 spacing, asymmetric by default.</p></div></li>
-          <li><span class="id">P8</span><div><b>Designed, not inverted</b><p>Each theme has its own material values.</p></div></li>
-          <li><span class="id">P9</span><div><b>Weight by role</b><p>Text at 400, titles and buttons at 500, 12px labels at 600. Nothing else.</p></div></li>
-          <li><span class="id">P10</span><div><b>Roomy controls</b><p>Buttons and inputs share 32 / 44 / 56. Padding equals the air around the label.</p></div></li>
-          <li><span class="id">P11</span><div><b>Color carries data</b><p>Five data hues mark series, categories and heat steps. Never chrome.</p></div></li>
+          <li><span class="id">R1</span><div><b>Precise instruments</b><p>Screens exact and quiet; the controls are objects you can hold. Nothing decorated.</p></div></li>
+          <li><span class="id">R2</span><div><b>Light from the top</b><p>Raised things lit on their top edge, cut things on their lower wall. Material never animates.</p></div></li>
+          <li><span class="id">R3</span><div><b>The depth ladder</b><p>Sunken, flat, raised, floating: one recipe each. Only raised things cast, straight down.</p></div></li>
+          <li><span class="id">R4</span><div><b>Motion answers a hand</b><p>Three tiers for a click; under a hand, a part follows 1:1 and settles on the spring.</p></div></li>
+          <li><span class="id">R5</span><div><b>Say it in words</b><p>A state, a status and a value in words. Never color, a dot or position alone.</p></div></li>
+          <li><span class="id">R6</span><div><b>One accent, as light</b><p>One accent fill per view; elsewhere the accent is the focus ring and links.</p></div></li>
+          <li><span class="id">R7</span><div><b>Color carries data</b><p>Five data hues mark series, categories and heat steps. Never chrome.</p></div></li>
+          <li><span class="id">R8</span><div><b>Weight, ink and space rank</b><p>400, 500 and 600 by role, two inks, nothing above 18px, tabular figures.</p></div></li>
+          <li><span class="id">R9</span><div><b>Exact, with room</b><p>8px grid, hairlines, 32 / 44 / 56 controls, airy pages and compact tools.</p></div></li>
         </ol>
       </div>
     </div>
@@ -621,7 +624,7 @@
     ["Lines", ["line", "line-strong", "line-control", "focus"]],
     ["Text", ["fg", "fg-muted", "fg-subtle", "fg-disabled"]],
     ["Accent and status", ["accent", "accent-text", "accent-tint", "success", "danger"]],
-    ["Data hues (P11)", ["data-blue", "data-amber", "data-teal", "data-violet", "data-rose"]]
+    ["Data hues (R7)", ["data-blue", "data-amber", "data-teal", "data-violet", "data-rose"]]
   ];
   function rgb(hex) {
     hex = hex.replace("#", "");

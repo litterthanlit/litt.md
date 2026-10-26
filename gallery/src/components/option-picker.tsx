@@ -5,8 +5,8 @@
  * - Legend: visible. The option's name at the small size and the title weight in --fg, then the picked value's name in
  *   --fg-subtle ("Frame · Natural oak"), so a swatch's name is always written somewhere. The picked part is hidden from
  *   screen readers, which hear it on the checked radio instead.
- * - Text values take the Segmented control's look and motion: one track at fg 5% with an inset --line, equal
- *   segments, the picked one the raised segment (P12), gliding to the pick on the responsive tier (fun mode's glide
+ * - Text values take the Segmented control's look and motion: one sunken tray (--tray, --tray-shade), equal
+ *   segments, the picked one the raised block (R3: --block, --block-lift), gliding to the pick on the responsive tier (fun mode's glide
  *   spring in fun mode). The track fills its column, so the options of one product line up. Keep labels short; a long
  *   list of values is a Select.
  * - Swatch values (every value has a color or an image): 24px chips (32 on a touch screen) at the control radius with
@@ -194,7 +194,7 @@ export function OptionPicker({
         </div>
       ) : (
         <LayoutGroup id={auto}>
-          <div className="relative grid h-control-md w-full grid-flow-col auto-cols-fr rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-1 shadow-[inset_0_0_0_1px_var(--line)] forced-colors:border">
+          <div className="relative grid h-control-md w-full grid-flow-col auto-cols-fr rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
             {values.map((v) => {
               const on = v.value === value;
               const out = v.available === false;
@@ -202,7 +202,7 @@ export function OptionPicker({
                 <label
                   key={v.value}
                   className={
-                    "relative grid h-full min-w-0 cursor-pointer select-none place-items-center rounded-control px-2 text-small font-title " +
+                    "relative grid h-full min-w-0 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] px-2 text-small font-title " +
                     "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
                     (out ? "text-fg-disabled" : on ? "text-fg" : "text-fg-subtle hover:text-fg " + PRESS)
                   }
@@ -220,7 +220,7 @@ export function OptionPicker({
                       layoutId="option-surface"
                       transition={glide}
                       aria-hidden="true"
-                      className="absolute inset-0 rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] forced-colors:border-2"
+                      className="absolute inset-0 rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border-2"
                     />
                   )}
                   <span className="litt-trim relative z-1 truncate">
@@ -229,7 +229,7 @@ export function OptionPicker({
                   </span>
                   <span
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 z-1 rounded-control peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
+                    className="pointer-events-none absolute inset-0 z-1 rounded-[calc(var(--radius-control)-2px)] peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
                   />
                 </label>
               );

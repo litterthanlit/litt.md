@@ -2,7 +2,7 @@
  * Tabs: underline or segmented, built on Radix Tabs (roles, arrow keys, Home
  * and End come from Radix; everything visual is ours).
  *
- * - Labels sit at the title weight (P9) and never change weight or size. Only the color
+ * - Labels sit at the title weight (R8) and never change weight or size. Only the color
  *   changes (fg-subtle to fg), on the instant tier.
  * - The indicator (a 2px underline, or the segmented fill block) slides
  *   between tabs with Motion layoutId on the responsive tier. It moves through
@@ -20,9 +20,9 @@
  *   (x and a scale from its start, transform only); at rest the tab's own indicator is back, so it rests exactly as
  *   it does without fun mode. The segmented fill glides on the glide spring, as Segmented's surface does. Reduced
  *   motion turns it off.
- * - Corners: rounded-control on tabs. The segmented track is rounded-control
- *   too, clipped with overflow-hidden, and its fill sits concentric inside the
- *   2px inset.
+ * - Corners: rounded-control on tabs. The segmented track is a sunken tray (R3: --tray, --tray-shade) at the
+ *   control radius, clipped with overflow-hidden, and its fill is the raised block (--block, --block-lift), concentric
+ *   inside the 2px inset: selected is raised, as in Segmented and the Switch.
  * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
  *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
  *   is off so the two do not double. Small tabs grow to the control-md height on a coarse
@@ -230,7 +230,7 @@ export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<t
   return (
     <TabsPrimitive.List
       className={
-        "inline-flex w-fit max-w-full overflow-x-auto overflow-y-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-0.5 shadow-[inset_0_0_0_1px_var(--line)] [scrollbar-width:none] " +
+        "inline-flex w-fit max-w-full overflow-x-auto overflow-y-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) [scrollbar-width:none] " +
         (size === "sm" ? "h-control-sm pointer-coarse:h-control-md " : "h-control-md ") +
         className
       }
@@ -304,7 +304,7 @@ export function TabsTrigger({
           className={
             variant === "underline"
               ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg"
-              : "absolute inset-0 -z-10 bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] " + FILL_RADIUS
+              : "absolute inset-0 -z-10 bg-block shadow-(--block-lift) forced-colors:border " + FILL_RADIUS
           }
         />
       )}

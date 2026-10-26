@@ -7,7 +7,7 @@
  *   its end, so it never covers the last row.
  * - Two or three actions fit a phone. With more, keep the usual ones and put the rest behind a "More" Menu.
  * - Surface: floating glass at the surface radius with the float shadow (it floats over content, so glass is earned,
- *   P3), padded 4px so sm buttons sit concentric in it. The count in words at the start ("3 selected", small, --fg),
+ *   R3), padded 4px so sm buttons sit concentric in it. The count in words at the start ("3 selected", small, --fg),
  *   a hairline, the actions as sm buttons, then a round ghost Clear. Never an accent fill: a selection can be large
  *   and the view's one primary action is elsewhere. A destructive action keeps its word ("Delete"), not a red fill.
  * - Motion: it rises by --travel and fades in on the responsive tier, and drops by half that on the exit token. The

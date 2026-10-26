@@ -174,7 +174,7 @@ export function SignIn() {
           <ul className="grid gap-4">
             {NEWS.map((n) => (
               <li key={n.version} className="flex items-baseline gap-3">
-                <span className="w-10 shrink-0 font-mono text-caption font-normal text-fg-subtle">{n.version}</span>
+                <span className="w-10 shrink-0 text-caption tabular-nums font-normal text-fg-subtle">{n.version}</span>
                 <span className="text-small text-fg-muted">{n.text}</span>
               </li>
             ))}

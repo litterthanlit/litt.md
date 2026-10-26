@@ -17,9 +17,9 @@
  * - CartSummary: an optional free-shipping Meter in --fg, never a hue ("€12 to free shipping", then "Free shipping"),
  *   the subtotal as a labelled figure at the end of its row, its figure a Rolling number, "Taxes and shipping at
  *   checkout." at the small size in --fg-subtle, and Check out: a primary md button the width of the sheet, the open
- *   cart's one accent fill (P1). It goes to checkoutUrl (Shopify's hosted checkout), or runs onCheckout.
+ *   cart's one accent fill (R6). It goes to checkoutUrl (Shopify's hosted checkout), or runs onCheckout.
  * - Empty: the Empty state, "Your cart is empty", and one secondary action back to the products. No Check out.
- * - CartButton: the header's way in, a ghost button with the bag icon and the count in the mono, named "Cart, 3 items".
+ * - CartButton: the header's way in, a ghost button with the bag icon and the count in tabular figures, named "Cart, 3 items".
  *   The count is a Rolling number, so an add is seen where the cart lives.
  * - AddToCart: the product's primary action. While the add is in flight it shows the Button's spinner; then it says
  *   "Added" with a check for 2s, colors and the label only (the box never changes size, both labels share one cell).
@@ -346,7 +346,7 @@ export function CartButton({ count, onClick, size = "sm", className = "" }: Cart
       onClick={onClick}
       className={"pointer-coarse:h-control-md " + className}
     >
-      <RollingNumber value={count} className="font-mono font-normal" />
+      <RollingNumber value={count} className="font-normal" />
     </Button>
   );
 }

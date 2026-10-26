@@ -44,6 +44,8 @@
         s.setProperty("--radius-control", c.radius + "px");
         s.setProperty("--radius-surface", (c.radius === 28 ? 16 : c.radius === 0 ? 0 : c.radius + 4) + "px");
       }
+      /* The accent: monochrome puts the primary action in the ink (tokens.css, [data-accent="mono"]). */
+      if (c.accent === "mono") document.body.dataset.accent = "mono";
     } catch (e) {}
   })();
 </script>

@@ -53,7 +53,7 @@ export const docs: PageDocs = {
 /** A quiet status line beside a control, so each stage shows what it did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+    <p role="status" className="min-h-5 text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );

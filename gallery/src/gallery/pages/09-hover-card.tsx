@@ -76,7 +76,7 @@ function PersonDemo() {
               </div>
             </div>
             <p className="text-small text-fg-muted">Lisbon. Owns the studio site and the Atlas portfolio.</p>
-            <p className="font-mono text-caption font-normal text-fg-subtle">Joined March 2024 · 312 deploys</p>
+            <p className="tabular-nums text-caption font-normal text-fg-subtle">Joined March 2024 · 312 deploys</p>
           </div>
         </HoverCardContent>
       </HoverCard>{" "}
@@ -109,7 +109,7 @@ function ProjectsDemo() {
                   <Tag status={p.tone}>{p.status}</Tag>
                 </div>
                 <p className="text-small text-fg-muted">{p.note}</p>
-                <p className="truncate font-mono text-caption font-normal text-fg-subtle">{p.domain}</p>
+                <p className="truncate text-caption font-normal text-fg-subtle">{p.domain}</p>
               </div>
             </HoverCardContent>
           </HoverCard>
