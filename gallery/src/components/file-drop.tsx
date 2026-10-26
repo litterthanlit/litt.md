@@ -2,19 +2,21 @@
  * File drop: where someone adds files, by dropping them or choosing them, and where they watch them upload
  * (components.md, "File drop").
  *
- * - FileDrop is the area. It is a quiet panel at the surface radius with a dashed --line-strong edge, because a dashed
- *   edge is what says "drop here", and fg 3% inside. A row, not a centered stack: a raised square with an up arrow,
- *   the words ("Drop files here", and a hint with the types and the size limit in --fg-subtle), and Choose files, a
- *   secondary button at the end. While files are dragged over it, the edge turns solid --fg, the fill goes to fg 6%
- *   and the words say what a drop will do. Nothing else moves; the fill and the edge change on the instant tier.
+ * - FileDrop is the area. It is the Input's cut (R3) at the surface radius: the --cut floor, the --line-control line
+ *   and the top wall's shade, because it is something you put files into, as a field is something you type into. A
+ *   row, not a centered stack: a square with an up arrow, the words ("Drop files here", and a hint with the types and
+ *   the size limit in --fg-subtle), and Choose files, a secondary button at the end. While files are dragged over it,
+ *   the line turns --focus, as a field's does on focus, and the words say what a drop will do. Nothing
+ *   else moves; the line changes on the instant tier.
  * - On a touch screen nothing is dragged in, so the words say "Add files" and the button does the work.
  * - Choosing: Choose files opens the file picker; so does a click anywhere on the area. Only the button is a tab stop.
  * - Checking: files whose type is not in accept or whose size is over maxSize are turned away, each with a sentence
  *   under the area that says which file and why. The rest go to onFiles. The sentences go when the next files come.
  * - FileList and FileRow show what was added: one row per file, its name, its size, and while it uploads a
  *   Progress rail under the name. A failed file says why in --danger and offers Retry. Remove is an icon button.
- * - Disabled: the panel at fg 3% with a --line edge, no drop and no tab stop. The words stay --fg-subtle, because they
- *   still say something (when it opens again), as a disabled Slide to confirm's do.
+ * - Disabled lies flat: surface-2 with the plain --line hairline and no shade, no drop and no tab stop. The words stay
+ *   --fg-subtle, because they still say something (when it opens again), as a disabled Slide to confirm's do.
+ * - Forced colors drops box-shadow, so the line becomes a real border.
  */
 import { useId, useRef, useState, type DragEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
@@ -113,12 +115,12 @@ export function FileDrop({ label, accept, maxSize, multiple = true, onFiles, onR
           if (!disabled && !(e.target as Element).closest("button")) input.current?.click();
         }}
         className={
-          "flex flex-wrap items-center gap-4 rounded-surface border border-dashed p-4 transition-colors duration-(--dur-instant) ease-litt sm:flex-nowrap sm:p-6 " +
+          "flex flex-wrap items-center gap-4 rounded-surface p-4 transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border sm:flex-nowrap sm:p-6 " +
           (disabled
-            ? "cursor-not-allowed border-line bg-[color-mix(in_oklab,var(--fg)_3%,transparent)]"
+            ? "cursor-not-allowed bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
             : dragging
-              ? "border-solid border-fg bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]"
-              : "cursor-pointer border-line-strong bg-[color-mix(in_oklab,var(--fg)_3%,transparent)]")
+              ? "bg-cut shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade)]"
+              : "cursor-pointer bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]")
         }
       >
         <span

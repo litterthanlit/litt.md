@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["type"],
   summary:
-    "A roomy, slightly rounded field on the same 32, 44 and 56 scale as Button. Focus turns the edge to the focus color and adds a ring, and an error turns it to danger, both on the instant tier, so the field answers without ever moving its box.",
+    "A roomy, slightly rounded field cut a hair into the page, on the same 32, 44 and 56 scale as Button: a white floor in light, a step below the surfaces in dark, the control line and the top wall's shade. Focus turns the line to the focus color and adds a ring, and an error turns it to danger, both on the instant tier, so the field answers without ever moving its box.",
   tiers: ["instant"],
 };
 
@@ -204,7 +204,7 @@ export default function InputPage() {
       <Stage
         title="Fields"
         tier="instant"
-        caption="Label above, hint below. Click into a field and the edge turns to the focus color with a ring. The error turns the edge to danger and says how to fix it. The disabled field is muted and skipped by Tab. Each change fades on the instant tier, and the box never moves."
+        caption="Label above, hint below. Each field is the cut: a floor a hair below the page, the control line around it and the shade of its top wall, never a grey floor. Click into a field and the line turns to the focus color with a ring. The error turns the line to danger and says how to fix it. The disabled field lies flat on surface-2, muted and skipped by Tab. Each change fades on the instant tier, and the box never moves."
         code="StatesDemo"
       >
         <StatesDemo />
@@ -222,7 +222,7 @@ export default function InputPage() {
       <Stage
         title="Inline form"
         tier="instant"
-        caption="A large input and a large primary button, side by side from 640px and stacked full width below it. The label is an aria-label, because the button says what the field is for. Try sending an invalid address: the edge turns to danger, the message is linked to the field and focus returns to it."
+        caption="A large input and a large primary button, side by side from 640px and stacked full width below it. The label is an aria-label, because the button says what the field is for. Try sending an invalid address: the line turns to danger, the message is linked to the field and focus returns to it."
         code="InlineFormDemo"
       >
         <InlineFormDemo />
@@ -231,7 +231,7 @@ export default function InputPage() {
       <Stage
         title="Textarea"
         tier="instant"
-        caption="For longer text. The spec has no textarea, so this one reuses the Input rules exactly: the same edge, focus ring, error and label. The height comes from rows, and you can drag the corner to make it taller."
+        caption="For longer text. The spec has no textarea, so this one reuses the Input rules exactly: the same cut, focus ring, error and label. The height comes from rows, and you can drag the corner to make it taller."
         code="BriefDemo"
       >
         <BriefDemo />

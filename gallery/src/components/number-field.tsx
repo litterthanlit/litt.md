@@ -2,20 +2,24 @@
  * NumberField: a number someone sets, such as seats on a plan, a limit or a price (components.md, "Number field").
  * The Input's field with − and + inside its end, a label above and a hint or an error below, like TextField.
  *
- * - Field: the Input's look and sizes (sm 32, md 44, lg 56; sm grows to 44 on a touch screen): surface-1, the inset
- *   --line-control edge, the focus edge and ring while the text is focus-visible, the danger edge with an error,
- *   surface-2 when disabled. The number at the text weight with tabular figures, so it does not shift as it changes,
- *   and an optional unit after it in --fg-subtle ("seats", "GB").
- * - Steppers: round ghost icon buttons inside the field's end, − then +, 24, 32 or 40px with the field's own air
- *   around them. Each is disabled at its bound. A press steps once; held, it repeats after 400ms, every 70ms, until
- *   it lets go or reaches the bound. They are not Tab stops (the arrow keys do the same in the field), and pressing
- *   one leaves focus where it was.
+ * - Field: the Input's cut and sizes (sm 32, md 44, lg 56; sm grows to 44 on a touch screen): the --cut floor, the
+ *   --line-control line and the top wall's shade (R3), the focus line and ring while the text is focus-visible, the
+ *   danger line with an error, flat on surface-2 when disabled. The number at the text weight with tabular figures,
+ *   so it does not shift as it changes, and an optional unit after it in --fg-subtle ("seats", "GB").
+ * - Steppers: − then +, raised blocks (R3: --block, --block-lift) set 4px inside the field's end, 4px apart, square at
+ *   the field's height less 8px (24, 36 or 48px), with corners the control radius less 2px so they stay concentric.
+ *   You press them, so they stand up out of the cut; pressed, the cast tightens (--block-press) at once and the block
+ *   sinks --press-depth, as a secondary Button does. At its bound a stepper is disabled and lies flat (no fill, no
+ *   lift, --fg-disabled): nothing to push. A press steps once; held, it repeats after 400ms, every 70ms, until it
+ *   lets go or reaches the bound. They are not Tab stops (the arrow keys do the same in the field), and pressing one
+ *   leaves focus where it was.
  * - Typing is free: what is typed is read when the field is left or Enter is pressed, in the page's locale (group
  *   separators, a comma decimal). Then it is kept between min and max, put on the step, and shown formatted
  *   (Intl.NumberFormat, with `format` for a currency or a percent). Text that is not a number goes back to the last
  *   value. Empty is allowed unless `required`, and gives null.
  * - Keys: ↑ and ↓ step, Shift with them or Page Up and Page Down step ten times, Home and End go to min and max.
- * - Motion: none of its own. The edge fades on the instant tier, as the Input's does; the value changes at once.
+ * - Motion: none of its own. The line fades on the instant tier, as the Input's does; a stepper's sink and hover fill
+ *   run on the instant tier; the value changes at once.
  * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a step by a stepper or a key kicks the number
  *   the way it went (up from below for more, down from above for less) and it lands on fun mode's pop spring. The
  *   label can be dragged sideways to scrub the value, a step every 8px, and past min or max the number gives like a
@@ -33,30 +37,33 @@ import { MinusIcon, PlusIcon } from "@/components/icons";
 
 export type NumberFieldSize = "sm" | "md" | "lg";
 
-/* The Input's field, on a wrapper that holds the text and the steppers. The ring follows the text only. */
+/* The Input's cut (floor, line, shade), on a wrapper that holds the text and the steppers. The ring follows the text only. */
 const FIELD =
-  "relative flex w-full min-w-0 items-center rounded-control bg-surface-1 font-normal text-fg " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
+  "relative flex w-full min-w-0 items-center rounded-control bg-cut font-normal text-fg " +
+  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger)] " +
-  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
 
-/* Height, the text's size, the air before it, the air at the end around the steppers (the field's height less theirs,
-   halved) and the steppers' size. */
-const SIZE: Record<NumberFieldSize, { field: string; type: string; pad: string; end: string; step: string }> = {
-  sm: { field: "h-control-sm pointer-coarse:h-control-md", type: "text-small", pad: "pl-control-pad-sm", end: "pr-1", step: "size-6 pointer-coarse:size-8" },
-  md: { field: "h-control-md", type: "text-body", pad: "pl-control-pad-md", end: "pr-1.5", step: "size-8" },
-  lg: { field: "h-control-lg", type: "text-(length:--control-text-lg)", pad: "pl-control-pad-lg", end: "pr-2", step: "size-10" },
+/* Height, the text's size and the air before it, and the steppers' size: the field's height less 8px, so each block
+   sits 4px inside the field. */
+const SIZE: Record<NumberFieldSize, { field: string; type: string; pad: string; step: string }> = {
+  sm: { field: "h-control-sm pointer-coarse:h-control-md", type: "text-small", pad: "pl-control-pad-sm", step: "size-6 pointer-coarse:size-9" },
+  md: { field: "h-control-md", type: "text-body", pad: "pl-control-pad-md", step: "size-9" },
+  lg: { field: "h-control-lg", type: "text-(length:--control-text-lg)", pad: "pl-control-pad-lg", step: "size-12" },
 };
 
+/* Secondary Button's block, nested 4px in the field. The sink is transitioned as `translate`, which Tailwind's
+   translate-y-* sets; the cast swaps at once (R2). */
 const STEPPER =
-  "grid shrink-0 place-items-center rounded-pill text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
-  "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
-  "enabled:cursor-pointer enabled:hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] enabled:hover:text-fg " +
-  "enabled:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] enabled:active:text-fg " +
+  "grid shrink-0 place-items-center rounded-[calc(var(--radius-control)-2px)] select-none [-webkit-tap-highlight-color:transparent] " +
+  "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
+  "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--block-lift) enabled:forced-colors:border " +
+  "enabled:hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+  "enabled:active:shadow-(--block-press) enabled:active:translate-y-(--press-depth) " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled";
 
 const HOLD_DELAY = 400; // ms before a held stepper starts repeating
@@ -362,7 +369,7 @@ export function NumberField({
       <div
         data-invalid={error ? "" : undefined}
         data-disabled={disabled ? "" : undefined}
-        className={FIELD + " " + SIZE[size].field + " " + SIZE[size].end}
+        className={FIELD + " pr-1 " + SIZE[size].field}
         onClick={(e) => {
           /* A press on the field's air focuses the text; a press on a stepper leaves focus where it was, so a phone's
              keyboard does not open under a thumb that is only stepping. */
@@ -402,7 +409,7 @@ export function NumberField({
             {unit}
           </span>
         )}
-        <span className="flex shrink-0 items-center gap-0.5">
+        <span className="flex shrink-0 items-center gap-1">
           {stepper(-1)}
           {stepper(1)}
         </span>

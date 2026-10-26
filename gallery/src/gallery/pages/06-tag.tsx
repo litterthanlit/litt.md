@@ -1,4 +1,5 @@
 import { Tag, type TagHue, type TagStatus } from "@/components/tag";
+import { TokenInput } from "@/components/token-input";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -7,7 +8,7 @@ export const meta: PageMeta = {
   lede: "A small label that names, files or reports.",
   order: 6, group: "Controls",
   summary:
-    "A small label at the control radius, with the look of a selected segment, that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. Nothing about it moves.",
+    "A small flat label at the control radius that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, is a raised tag. Nothing about it moves.",
   tiers: [],
 };
 
@@ -30,13 +31,17 @@ export const docs: PageDocs = {
 
 // A category, filed under one of the five data hues: a tint and the hue's text tone.
 <Tag hue="amber">Finance</Tag>
-<Tag hue="blue">Clients</Tag>`,
+<Tag hue="blue">Clients</Tag>
+
+// A value in a field that you can lift back out: a raised block. Token input and Combobox draw theirs this way.
+<Tag raised>Identity</Tag>`,
   use: [
     "A short word names what something is: a kind (Framer, Landing), a client or a platform.",
     "A state is worth scanning for in a list: Live, In review, Failed. Put the tag next to the thing it describes.",
     "The label is one or two words. A tag never wraps, so a longer one runs out of room.",
     "Several tags sit on one item, such as a project card. Keep one status tag and let the rest be plain.",
     "Items fall into a few categories that people sort by eye, such as mail labels. Give each category one hue and keep it everywhere in the view.",
+    "A value sits in a field and can be taken out again, as in a token field of your own. Set raised, so it stands up out of the field.",
   ],
   skip: [
     "People press it to filter or select. Use the filter chips in List and cards, or a Button, because a tag is not a control and takes no focus.",
@@ -140,6 +145,19 @@ const LABELS: { name: string; hue: TagHue; mail: string; from: string }[] = [
   { name: "Finance", hue: "amber", mail: "March statement", from: "Ramp" },
 ];
 
+function RaisedDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <div className="flex flex-wrap gap-2">
+        <Tag raised>Identity</Tag>
+        <Tag raised>Framer</Tag>
+        <Tag raised>Type</Tag>
+      </div>
+      <TokenInput label="Project tags" defaultValue={["Identity", "Framer", "Type"]} placeholder="Add a tag" />
+    </div>
+  );
+}
+
 function CategoriesDemo() {
   return (
     <ul aria-label="Inbox" className="w-full max-w-2xl">
@@ -159,7 +177,7 @@ export default function TagPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Labels"
-        caption="A plain tag is 24px tall at the control radius: a surface-1 fill with an inset hairline and the top highlight, like a selected segment, and the sans at the caption size and the label weight in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
+        caption="A plain tag is 24px tall at the control radius: flat, a surface-1 fill with an inset hairline and the top highlight, and the sans at the caption size and the label weight in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
         align="start"
         code="LabelsDemo"
       >
@@ -181,6 +199,15 @@ export default function TagPage() {
         code="CategoriesDemo"
       >
         <CategoriesDemo />
+      </Stage>
+
+      <Stage
+        title="Raised, in a field"
+        caption="A value someone put in a field and can lift back out is the raised block: the block's fill and its lift, the label in fg, and corners 2px tighter than the field's so they sit concentric inside it. Token input and Combobox draw their values this way, standing up out of the cut. A disabled field lays them flat again."
+        align="start"
+        code="RaisedDemo"
+      >
+        <RaisedDemo />
       </Stage>
 
       <Stage

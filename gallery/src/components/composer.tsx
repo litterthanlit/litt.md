@@ -2,10 +2,10 @@
  * Composer: where the person writes to an agent (components.md, "Composer"). A text field that grows, file
  * chips, a toolbar and Send. FileChip is the chip on its own, for a message that was already sent.
  *
- * - Box: one surface at the surface radius on surface-1, with the Input's inset --line-control edge. While the
- *   text area has focus the edge is --focus plus --focus-ring, as the Input's. Inside it, top to bottom: the
- *   file chips, the text area, and a toolbar row of sm controls padded --space-2. The edge fades on the instant
- *   tier and nothing else about the box moves.
+ * - Box: the Input's cut (R3) at the surface radius: the --cut floor, the --line-control line and the top wall's
+ *   shade, because it is what you type into. While the text area has focus the line is --focus plus --focus-ring,
+ *   as the Input's. Inside it, top to bottom: the file chips, the text area, and a toolbar row of sm controls
+ *   padded --space-2. The line fades on the instant tier and nothing else about the box moves.
  * - Text: the body size (16px on coarse pointers, so iOS never zooms) in --fg, the placeholder in --fg-subtle,
  *   side padding as the Input's md. It starts one line tall and grows a line at a time up to `maxRows` (8), then
  *   scrolls inside. The height is set in a layout effect, so it snaps with the text and is never animated. A
@@ -24,8 +24,10 @@
  * - Files: chips above the text (FileChip), added by `files`. The Attach button, a paste and a drop all call
  *   `onFiles` with the files, and the caller owns the list. A hidden file input sits behind the Attach button,
  *   which shows only when `onFiles` is set. A paste attaches only when the clipboard holds files and no text of
- *   its own, so copying cells from a sheet still pastes text. Files dragged over the box turn its edge --focus and
- *   show "Drop to attach" in place of the text, on the instant tier. A chip enters on the responsive tier
+ *   its own, so copying cells from a sheet still pastes text. Files dragged over the box turn its line --focus and
+ *   show "Drop to attach" in place of the text, on the instant tier. A chip you can remove is a raised block (R3:
+ *   --block, --block-lift), a file you can lift back out of the box; with no remove button (a sent message's file,
+ *   or a disabled composer) it lies flat, a plain label. A chip enters on the responsive tier
  *   (opacity and a 0.98 scale) and leaves on the exit token, as a token in the TokenInput does. Removing one
  *   moves focus to the next chip, or to the field.
  * - Suggestions: up to four prompts above the box as secondary sm Buttons. A click puts the text in the field and
@@ -33,7 +35,8 @@
  * - Hint and limit: `hint` is a caption line under the box in --fg-subtle, linked to the field. With `maxLength`
  *   the field stops at the limit, and a tabular count shows in the toolbar once 80% is used, in --danger at the
  *   limit. A polite message says it once at 80% and once at the limit, never on every key.
- * - Disabled: --surface-2 with a --line edge, the text --fg-disabled. Say the reason in the hint.
+ * - Disabled lies flat: --surface-2 with the plain --line hairline and no shade, the text --fg-disabled. Say the
+ *   reason in the hint.
  * - Compact screens: the toolbar's buttons grow to 44px, and a bottom safe-area inset sits under the composer. The
  *   caller keeps it above the on-screen keyboard (useVisibleScreen from @/motion sizes the chat frame).
  * - Motion: only instant color and edge fades, and the chips' responsive entrance and exit. Send and Stop swap at
@@ -108,7 +111,8 @@ const REMOVE =
 
 /**
  * A file as a chip: an icon, the name, the size or the upload percent, and a remove button named
- * "Remove brief.pdf". With no onRemove it is a plain label, for the files of a message already sent.
+ * "Remove brief.pdf". With onRemove it is a raised block, a file you can lift out of the composer. With no
+ * onRemove it lies flat, a plain label for the files of a message already sent.
  */
 export function FileChip({ name, size, progress, onRemove, className = "" }: FileChipProps) {
   const { coarse } = useDevice();
@@ -117,9 +121,8 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
   return (
     <span
       className={[
-        "inline-flex h-8 max-w-full min-w-0 items-center gap-2 rounded-control bg-surface-1 pl-2 font-normal text-fg",
-        "shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]",
-        onRemove ? "pr-1" : "pr-2",
+        "inline-flex h-8 max-w-full min-w-0 items-center gap-2 rounded-control pl-2 font-normal text-fg",
+        onRemove ? "bg-block pr-1 shadow-(--block-lift) forced-colors:border" : "bg-surface-1 pr-2 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]",
         className,
       ].join(" ")}
     >
@@ -203,13 +206,14 @@ export type ComposerProps = {
   ref?: Ref<HTMLTextAreaElement>;
 };
 
-/* The box: the Input's fill, edge, focus and disabled looks on the surface radius. The ring follows the text area. */
+/* The box: the Input's cut (floor, line, shade) and its focus and disabled looks, on the surface radius. The ring
+   follows the text area. */
 const BOX =
-  "group/box relative flex flex-col overflow-hidden rounded-surface bg-surface-1 font-normal text-fg " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
+  "group/box relative flex flex-col overflow-hidden rounded-surface bg-cut font-normal text-fg " +
+  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[textarea:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "data-[dragging]:shadow-[inset_0_0_0_1px_var(--focus)] " +
+  "has-[textarea:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
+  "data-[dragging]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade)] " +
   "data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:has-[textarea:focus-visible]:outline-2 forced-colors:has-[textarea:focus-visible]:outline-solid forced-colors:has-[textarea:focus-visible]:outline-offset-2";
@@ -221,7 +225,7 @@ const AREA =
 
 /* Shown over the text while files are dragged over the box: the same place and size as the placeholder. */
 const DROP =
-  "pointer-events-none absolute inset-px bg-surface-1 px-[calc(var(--control-pad-md)-1px)] py-[calc(var(--space-3)-1px)] text-body text-fg-subtle " +
+  "pointer-events-none absolute inset-px bg-cut px-[calc(var(--control-pad-md)-1px)] py-[calc(var(--space-3)-1px)] text-body text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) opacity-0 transition-opacity duration-(--dur-instant) ease-litt " +
   "group-data-[dragging]/box:opacity-100";
 

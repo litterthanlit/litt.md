@@ -3,15 +3,16 @@
  * domains of a mail rule, the recipients of an invoice or the tags of a project. It is the
  * Input's sibling (components.md, "Token input"): same field, same label and hint.
  *
- * - Field: the Input's. Heights are minimums on the shared scale (sm 32, md 44, lg 56), the
- *   edge is an inset 1px --line-control at the control radius, and the 2px focus ring wraps
- *   the whole field while its text input is focus-visible. An invalid field turns the edge to
- *   --danger. Like the Input it has no hover. Padding sits on the 4px grid, so the field grows
- *   by whole token rows (24px tokens, 4px apart) as they wrap.
- * - Token: the Tag's look (24px, the sans at the caption size and the label weight, surface-1,
- *   hairline and top highlight), with a 24px remove button that grows to a 44px hit
- *   area on coarse pointers through an invisible ::before. The "+N" token is a surface-2 chip
- *   with no button. The placeholder shows only while there are no tokens.
+ * - Field: the Input's cut (R3: the --cut floor, the --line-control line and the top wall's
+ *   shade) at the control radius. Heights are minimums on the shared scale (sm 32, md 44, lg 56),
+ *   and the 2px focus ring wraps the whole field while its text input is focus-visible. An
+ *   invalid field turns the line to --danger. Like the Input it has no hover. Padding sits on the
+ *   4px grid, so the field grows by whole token rows (24px tokens, 4px apart) as they wrap.
+ * - Token: a raised Tag (R3: a block you can lift out of the cut, --block and --block-lift, its
+ *   corners the control radius less 2px; 24px, the sans at the caption size and the label weight),
+ *   with a 24px remove button that grows to a 44px hit area on coarse pointers through an
+ *   invisible ::before. The "+N" token is a flat surface-2 chip with no button: it stands for
+ *   tokens, it is not one. The placeholder shows only while there are no tokens.
  * - Adding: Enter, a comma and blur commit the typed text, and a paste is split on commas,
  *   semicolons and line breaks. Values are trimmed, and empty ones and case-insensitive
  *   duplicates are ignored. A value that `validate` rejects stays in the input with its message
@@ -20,8 +21,9 @@
  * - Removing: the x, Backspace in an empty input, and Backspace or Delete on a remove button.
  *   The remove buttons are one roving tab stop, and the arrow keys move between them and the
  *   input. A polite live region says what was added and removed.
- * - Disabled: the Input's (surface-2 fill, --line edge). The labels stay at --fg-subtle because they are still read,
- *   and the remove buttons are disabled and left out of Tab.
+ * - Disabled: the Input's, flat (surface-2 fill, --line hairline, no shade), and the tokens lie flat too, as plain
+ *   Tags. The labels stay at --fg-subtle because they are still read, and the remove buttons are disabled and left
+ *   out of Tab.
  * - Collapse: while the field is not focused and holds more tokens than `collapseAfter`, it
  *   shows that many and a "+N" token, and it opens when it takes focus.
  * - Motion (responsive tier, hooks only): a new token fades in with a 0.98 scale, its neighbors
@@ -67,15 +69,15 @@ export type TokenInputProps = {
   className?: string;
 };
 
-/* The field: the Input's fill, edge, focus, error and disabled looks, on a wrapper that holds
-   the tokens. The ring follows the text input only (the remove buttons draw their own). */
+/* The field: the Input's cut (floor, line, shade) and its focus, error and disabled looks, on a
+   wrapper that holds the tokens. The ring follows the text input only (the remove buttons draw their own). */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text rounded-control bg-surface-1 font-normal text-fg " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
+  "relative flex w-full min-w-0 cursor-text rounded-control bg-cut font-normal text-fg " +
+  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger)] " +
-  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
@@ -323,7 +325,7 @@ export function TokenInput({
                   exit={{ opacity: 0, transition: exit }}
                   transition={enter}
                 >
-                  <Tag className="max-w-full min-w-0 pr-0">
+                  <Tag raised={!disabled} className="max-w-full min-w-0 pr-0">
                     <span className={"min-w-0 truncate " + (disabled ? "text-fg-subtle" : "")}>{token}</span>
                     <button
                       type="button"

@@ -291,7 +291,7 @@ export default function ComposerPage() {
         tier="instant"
         size="lg"
         code="StudioDemo"
-        caption="A message to Litt in the studio. The toolbar holds Attach and a model picker, and one file is still uploading at 64%. Send stays off while the field is empty. Send a message and it becomes Stop for a few seconds, or press Esc in the field to stop it. The two swap at once. Drop or paste a file to add a chip: it fades in with a slight scale on the responsive tier and leaves on the exit token. The field grows a line at a time and snaps, never eases."
+        caption="A message to Litt in the studio. The box is cut into the page like a field, and each file chip is a raised block you can lift back out. The toolbar holds Attach and a model picker, and one file is still uploading at 64%. Send stays off while the field is empty. Send a message and it becomes Stop for a few seconds, or press Esc in the field to stop it. The two swap at once. Drop or paste a file to add a chip: it fades in with a slight scale on the responsive tier and leaves on the exit token. The field grows a line at a time and snaps, never eases."
       >
         <StudioDemo />
       </Stage>
@@ -312,7 +312,7 @@ export default function ComposerPage() {
         tier="instant"
         size="lg"
         code="StatesDemo"
-        caption="With maxLength, the count shows once 80% is used and turns to the danger color at the limit; keep typing to reach it. While an approval waits, Send is off in the Button's disabled look so the approval's Allow can hold the view's one accent fill, and the hint says why. A disabled composer is surface-2 with a line edge, and its hint gives the reason."
+        caption="With maxLength, the count shows once 80% is used and turns to the danger color at the limit; keep typing to reach it. While an approval waits, Send is off in the Button's disabled look so the approval's Allow can hold the view's one accent fill, and the hint says why. A disabled composer lies flat on surface-2 with a plain hairline, and its hint gives the reason."
       >
         <StatesDemo />
       </Stage>

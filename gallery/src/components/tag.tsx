@@ -14,6 +14,10 @@
  *   hue's tint as the fill, its -text tone for the label (4.5:1 on the tint, checked by
  *   check.mjs), and a hairline of the hue under the top highlight. One hue means one category
  *   in a view. A hue is never a status: a tag that says how something stands takes `status`.
+ * - Raised (R3): a value you can lift out of a field (Token input's tokens, Combobox's picks) is
+ *   the press material's block, --block with --block-lift, in --fg like the text typed beside it.
+ *   It sits inside the field's control radius, so its corners are that radius less 2px. Forced
+ *   colors drops the lift, so it keeps a 1px border. A hue tag files a category and never rises.
  * - Static: no motion and no states. A tag is a label, not a control, so it never takes
  *   focus. If you need something to press, use Button or a chip.
  */
@@ -39,26 +43,30 @@ const HUE: Record<TagHue, string> = {
   rose: "bg-data-rose-tint text-data-rose-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-rose)_24%,transparent),var(--highlight)]",
 };
 
-const PLAIN = "bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] ";
+const PLAIN = "rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] ";
+const RAISED = "rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border ";
 
 export type TagProps = HTMLAttributes<HTMLSpanElement> & {
   /** Leave it out for a plain label. Set it for a status: the text takes that color, and the fill never does. */
   status?: TagStatus;
   /** Files the thing under a category with one of the five data hues: a tinted fill and the hue's text tone. Use one hue per category in a view, and never for a status. */
   hue?: TagHue;
+  /** Draws a plain tag as a raised block, for a tag you can lift out of a field: Token input and Combobox use it for their values. Ignored with a hue. */
+  raised?: boolean;
   /** The label. Keep it to a word or two, because a tag never wraps. */
   children: ReactNode;
   /** Extra classes for the tag. */
   className?: string;
 };
 
-/** A 24px label at the control radius, in the sans at the label weight. Add `status` to color its text, or `hue` to file it under a category. */
-export function Tag({ status, hue, children, className = "", ...rest }: TagProps) {
+/** A 24px label at the control radius, in the sans at the label weight. Add `status` to color its text, `hue` to file it under a category, or `raised` for a value in a field. */
+export function Tag({ status, hue, raised = false, children, className = "", ...rest }: TagProps) {
+  const ink = status ? STATUS[status] : raised ? "text-fg" : "text-fg-muted";
   return (
     <span
       className={
-        "inline-flex h-6 shrink-0 items-center whitespace-nowrap rounded-control px-2 text-caption " +
-        (hue ? HUE[hue] : PLAIN + (status ? STATUS[status] : "text-fg-muted")) +
+        "inline-flex h-6 shrink-0 items-center whitespace-nowrap px-2 text-caption " +
+        (hue ? "rounded-control " + HUE[hue] : (raised ? RAISED : PLAIN) + ink) +
         " " +
         className
       }

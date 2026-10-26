@@ -9,8 +9,12 @@
  * - Sizes sit on the shared control scale (R9): sm 32, md 44, lg 56, with the control
  *   radius. Text is 13, 15 and 16px, and 16px on coarse pointers so iOS never zooms.
  *   On a touch screen the sm input grows to 44px, like the small targets in Header and List.
- * - Edge: inset 1px --line-control. Focus turns the edge --focus and adds --focus-ring
- *   (:focus-visible only). Error turns the edge --danger and keeps the ring on focus.
+ * - Material (R3): the cut, the shallowest sunken step, because a field is what you type into. Its floor
+ *   (--cut: white in light, a step below the surfaces in dark), the control line inside it (--line-control, at
+ *   3:1, so a field reads as a field) and the top wall's shade on the floor (--cut-shade). Never a grey floor,
+ *   which reads as disabled. The line is its own layer, so focus and an error swap only its color: focus turns
+ *   it --focus and adds --focus-ring (:focus-visible only), an error turns it --danger and keeps the ring on
+ *   focus. Disabled lies flat on surface-2 with the plain --line hairline and no shade: nothing to type.
  * - Typed text at the text weight and the label at the title weight (R8). The edge fades on the
  *   instant tier, the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
@@ -20,15 +24,15 @@ import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type Textare
 
 export type InputSize = "sm" | "md" | "lg";
 
-/* The look every field shares: fill, edge, focus, error, disabled. */
+/* The cut every field shares: floor, line, shade, focus, error, disabled. */
 const field =
-  "w-full min-w-0 rounded-control bg-surface-1 font-normal text-fg placeholder:text-fg-subtle " +
+  "w-full min-w-0 rounded-control bg-cut font-normal text-fg placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
+  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
+  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border and focus gets an outline. */
