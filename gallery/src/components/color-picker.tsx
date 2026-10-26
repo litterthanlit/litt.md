@@ -8,12 +8,14 @@
  * - The color is the user's data, never chrome. It only ever fills the area, the rails, the thumbs and the chips. No
  *   color is written in this file: the gradient stops are computed from the hue, so the lint's rule on raw colors
  *   holds.
- * - Area: saturation left to right, brightness bottom to top, at the control radius with an inset --line hairline so
- *   a white corner still has an edge. The thumb is a 20px circle filled with the color, a 2px --surface-1 ring inside
- *   and a 1px --line-strong edge outside, so it reads on any color in both themes. Its centre reaches the corners,
- *   because the corners are real colors (white, black, the pure hue). Focus swaps the outer edge for a 2px --focus
- *   ring, which stays inside the popover's 12px padding.
- * - Hue: a 12px rail at the control radius with the six hue stops, and the same thumb filled with the pure hue.
+ * - Area: saturation left to right, brightness bottom to top, at the control radius, cut into the panel (R3): an
+ *   fg-14% edge, so a white corner still has one on any surface, and the cut's top-wall shade (--cut-shade). The thumb
+ *   is a cap seen from above (material.md 6): a 20px circle of the color inside a 3px ring of --cap, with the cap's
+ *   lift (--cap-lift), so it stands over any color in both themes. Its centre reaches the corners, because the
+ *   corners are real colors (white, black, the pure hue). Keyboard focus adds a 2px --focus ring around the cap,
+ *   which stays inside the popover's 12px padding.
+ * - Hue: a 12px rail at the control radius with the six hue stops, cut like the area, and the same thumb filled with
+ *   the pure hue.
  * - Keyboard (the React Aria ColorArea pattern, as the Pad): two visually hidden range inputs for the area, Saturation
  *   in the tab order and Brightness at tabindex -1, still reachable by a screen reader. ← → change saturation, ↑ ↓
  *   brightness, Shift makes it 10 steps, Page Up and Page Down move brightness by 10, Home and End take saturation to
@@ -33,7 +35,8 @@
  *   lag the hand. The ColorPicker's popover carries the only motion, on the responsive tier.
  *
  * ColorPicker:
- * - Field: the Select trigger's look and sizes, as the Date picker's, with a 16px chip of the color, the hex
+ * - Field: the Select's raised trigger, its look and sizes, as the Date picker's: a block you press (R3), held pressed
+ *   while the panel is open, with a 16px chip of the color, the hex
  *   and a 16px chevron at the end, or a placeholder in --fg-subtle. A button with aria-haspopup="dialog", named by its
  *   label and the color in words. Label above, hint or error below.
  * - It opens the ColorPanel in a PopoverContent (md, 320px, so eight swatches fit a row), which is a bottom sheet on compact screens. Focus lands on
@@ -166,30 +169,38 @@ const say = (hex: string) => `${describeColor(hex)}, ${hex}`;
 
 /* ----------------------------------------------------------------- styles */
 
-/* The thumb on the area and the hue: the color inside, a --surface-1 ring, a --line-strong edge. Focus makes the edge a 2px --focus ring. */
+/* The thumb on the area and the hue, a cap seen from above: the color inside a ring of --cap, lit on top by the
+   cap's lift, which comes first so its highlight sits over the ring. Focus adds a 2px --focus ring around it. */
 const thumb =
   "pointer-events-none absolute block size-5 -translate-x-1/2 -translate-y-1/2 rounded-pill " +
   "forced-colors:border ";
-const thumbEdge = "shadow-[inset_0_0_0_2px_var(--surface-1),0_0_0_1px_var(--line-strong)]";
-const thumbFocus = "shadow-[inset_0_0_0_2px_var(--surface-1),0_0_0_2px_var(--focus)]";
+const thumbEdge = "shadow-[var(--cap-lift),inset_0_0_0_3px_var(--cap)]";
+const thumbFocus = "shadow-[0_0_0_2px_var(--focus),var(--cap-lift),inset_0_0_0_3px_var(--cap)]";
 
 /* A hairline over the user's color, so white still has an edge on a light surface and black on a dark one. */
 const hairline = "pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_var(--line)]";
 
+/* The area and the hue are cut into the panel: a translucent edge, which reads over any color, and the cut's shade. */
+const cutEdge =
+  "pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--fg)_14%,transparent),var(--cut-shade)]";
+
 /* The Select trigger's look and sizes (select.tsx), as the Date picker copies them. */
 const field =
-  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left font-normal text-fg " +
+  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-block text-left font-normal text-fg " +
   "data-placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
-  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "shadow-(--block-lift) enabled:active:shadow-(--block-press) data-[state=open]:shadow-(--block-press) " +
+  "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+  "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
+  "active:translate-y-(--press-depth) disabled:active:translate-y-0 data-[state=open]:translate-y-(--press-depth) " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--block-lift)] " +
+  "aria-invalid:enabled:active:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
+  "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:data-placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  "forced-colors:border forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid forced-colors:focus-visible:outline-offset-2";
+  "forced-colors:border";
 
 export type ColorPickerSize = "sm" | "md" | "lg";
 
@@ -413,7 +424,7 @@ export function ColorPanel({
         onPointerCancel={release}
         onLostPointerCapture={release}
       >
-        <span aria-hidden="true" className={hairline} />
+        <span aria-hidden="true" className={cutEdge} />
         <input ref={sInput} className="sr-only" {...areaInput("s")} />
         <input className="sr-only" tabIndex={-1} aria-orientation="vertical" {...areaInput("v")} />
         <span
@@ -435,7 +446,7 @@ export function ColorPanel({
         onPointerCancel={release}
         onLostPointerCapture={release}
       >
-        <span aria-hidden="true" className={hairline} />
+        <span aria-hidden="true" className={cutEdge} />
         {/* A finger needs more than 12px: the target reaches 16px above and below the rail. */}
         <span aria-hidden="true" className="absolute inset-x-0 -inset-y-4 hidden pointer-coarse:block" />
         <input

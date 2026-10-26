@@ -5,16 +5,22 @@
  * - Range (components.md, Pagination): "21 to 40 of 143" at the caption size, fg-subtle, with tabular
  *   figures, at the start of the row. No dashes. With no rows it says "No results". It is a polite live region, so
  *   a screen reader hears the new range after a page change.
- * - Buttons: Previous and Next are sm secondary Buttons (44px on a coarse pointer), text only, 12px apart at the end of the row. The first page
- *   disables Previous and the last disables Next. If the button you just pressed becomes disabled, focus moves to
- *   the other one, so it never drops to the page.
- * - Page buttons: numbered ghost buttons in tabular figures between the two, the current one secondary with
- *   aria-current="page". A long run folds: the first, the last, and one either side of the current page, with an
- *   ellipsis between. They only show when the row is 36rem wide (the row measures itself, not the window); below
- *   that the range and the two buttons are enough.
+ * - Buttons: Previous and Next are sm secondary Buttons (44px on a coarse pointer), raised blocks outside the tray,
+ *   text only, 12px apart at the end of the row. The first page disables Previous and the last disables Next, and a
+ *   disabled one lies flat. If the button you just pressed becomes disabled, focus moves to the other one, so it
+ *   never drops to the page.
+ * - Page buttons: the numbers sit in one sunken tray between the two (R3: --tray, --tray-shade, 2px in, as the
+ *   Segmented control's), in tabular figures at the text weight, --fg-subtle and --fg on hover. The current page is
+ *   the raised block in the tray (--block, --block-lift) in --fg, with aria-current="page": selected is raised, so
+ *   the page is said by its shape, not by color. Its corners are the control radius less the tray's 2px, so they
+ *   stay concentric. The tray is 32px (44 on a coarse pointer), as the sm buttons beside it, and a finger's press
+ *   on another page fills it (fg 6%), as on a segment. A long run folds: the first, the last, and one either side
+ *   of the current page, with an ellipsis between. They only show when the row is 36rem wide (the row measures
+ *   itself, not the window); below that the range and the two buttons are enough.
  * - Semantics: a nav with its own name, and a list inside it.
- * - Motion: none of its own. The rows it pages are the table's job (Table, animateChanges). The buttons' own
- *   hover and press are Button's: instant, and the box never moves.
+ * - Motion: none of its own. The current block jumps to its page rather than gliding, because the run of numbers
+ *   reshapes around it. A press on it tightens its cast (--block-press) and sinks it --press-depth, at once (R2,
+ *   R4); Previous and Next press as Button does. The rows it pages are the table's job (Table, animateChanges).
  */
 import { useRef } from "react";
 import { Button } from "@/components/button";
@@ -37,6 +43,20 @@ export type PaginationProps = {
 const GROUP = (n: number) => n.toLocaleString("en-GB");
 /** An sm button is 32px; on a finger it is 44px. */
 const TOUCH = "pointer-coarse:h-control-md";
+
+/** The tray the numbers sit in, as the Segmented control's: 2px in, so a page is the tray's height less 4px. */
+const TRAY = "flex h-control-sm items-stretch rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " + TOUCH;
+
+const PAGE =
+  "grid h-full min-w-7 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] px-2 " +
+  "text-small font-normal tabular-nums [-webkit-tap-highlight-color:transparent] pointer-coarse:min-w-10 " +
+  "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
+const CURRENT =
+  "bg-block text-fg shadow-(--block-lift) active:shadow-(--block-press) active:translate-y-(--press-depth) forced-colors:border-2";
+/** Another page: quiet until hovered, and a finger's press fills it, as on a segment. */
+const OTHER =
+  "text-fg-subtle hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
 
 /** The page numbers to show: all of them when there are few, otherwise the ends and the current page's neighbours. `null` is a gap. */
 function pageItems(page: number, count: number): (number | null)[] {
@@ -83,24 +103,23 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
           </li>
           {count > 1 && (
             <li className="hidden @min-[36rem]:block">
-              <ul className="flex items-center gap-1">
+              <ul className={TRAY}>
                 {pageItems(current, count).map((n, i) =>
                   n === null ? (
-                    <li key={`gap-${i}`} aria-hidden="true" className="grid min-w-control-sm place-items-center text-caption font-normal text-fg-subtle">
+                    <li key={`gap-${i}`} aria-hidden="true" className="grid min-w-7 place-items-center text-caption font-normal text-fg-subtle">
                       …
                     </li>
                   ) : (
-                    <li key={n}>
-                      <Button
-                        size="sm"
-                        variant={n === current ? "secondary" : "ghost"}
+                    <li key={n} className="flex">
+                      <button
+                        type="button"
                         aria-current={n === current ? "page" : undefined}
                         aria-label={`Page ${n}`}
-                        className={TOUCH + " min-w-control-sm pointer-coarse:min-w-control-md tabular-nums [&_.litt-trim]:font-normal"}
+                        className={PAGE + " " + (n === current ? CURRENT : OTHER)}
                         onClick={() => go(n)}
                       >
-                        {n}
-                      </Button>
+                        <span className="litt-trim">{n}</span>
+                      </button>
                     </li>
                   ),
                 )}

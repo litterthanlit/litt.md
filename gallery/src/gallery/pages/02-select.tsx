@@ -14,7 +14,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["select", "open"],
   summary:
-    "One value from a short list. The trigger is the Input's field, and the list is the Menu's glass panel: 44px rows, one gliding highlight and a check on the current option. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
+    "One value from a short list. You press the trigger, so it is a raised block, the secondary Button's, and it stays pressed while its list is open. The list is the Menu's glass panel: 44px rows, one gliding highlight and a check on the current option. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
   fun: "Move through the options: the highlight reaches for the next row, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
@@ -330,7 +330,7 @@ export default function SelectPage() {
         size="lg"
         align="start"
         code="AccountFormDemo"
-        caption="The role field sits in the form like any other: label above, help below, and the same field as the inputs around it. Click it, or press Space, and the list grows out of the trigger and slides a quarter of the travel token from the side it opens on, on the responsive tier. The check marks Designer. Save sends the value through the field's name."
+        caption="The role field sits in the form like any other: label above, help below, at the inputs' height. You type into an input, so it is cut into the page; you press the select, so it is raised, like a button. Click it, or press Space, and the list grows out of the trigger and slides a quarter of the travel token from the side it opens on, on the responsive tier. The check marks Designer. Save sends the value through the field's name."
       >
         <AccountFormDemo />
       </Stage>
@@ -347,7 +347,7 @@ export default function SelectPage() {
       <Stage
         title="Help, error, disabled and long values"
         tier="instant"
-        caption="The edge turns to the focus color with a ring on focus, and to danger on an error, both on the instant tier, and the box never moves. The error replaces the help text and says how to fix it. Pick a region and it clears. The disabled field is muted and skipped by Tab, and a long value ends in an ellipsis. The chevron never turns."
+        caption="Focus draws the 2px focus ring around the block, as on a button. An error draws a danger edge inside it and the block keeps its cast. The error replaces the help text and says how to fix it. Pick a region and it clears. The disabled select lies flat, muted and skipped by Tab, and a long value ends in an ellipsis. The chevron never turns."
         code="StatesDemo"
       >
         <StatesDemo />

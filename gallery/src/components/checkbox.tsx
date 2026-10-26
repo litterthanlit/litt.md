@@ -4,12 +4,18 @@
  * - Both are real <input> elements, so the role, Space, the arrow keys, form values and
  *   the indeterminate state come from the browser. Nothing is faked with ARIA.
  * - Two looks, one structure. "drawn" (the default) restyles the input into the spec's 20px
- *   chip at the control radius, with the --line-control edge and an --fg fill when on (not
- *   the accent: R6 keeps the one accent fill for the primary action, and a form can hold many
- *   checked boxes). A radio is a circle, because a rounded square would read as a checkbox.
- *   "native" is the spec's other option: the browser's own 16px box, with accent-color set
- *   to --fg. Drawn is the default because only a drawn box can take the --line-control edge
- *   and the control radius, and it looks the same in every browser. See the Checkbox page.
+ *   chip at the control radius. A radio is a circle, because a rounded square would read as a
+ *   checkbox. "native" is the spec's other option: the browser's own 16px box, with accent-color
+ *   set to --fg. Drawn is the default because only a drawn box can be a cut and take the control
+ *   radius, and it looks the same in every browser. See the Checkbox page.
+ * - Material (R3, material.md 6): the drawn box and ring are the cut, what you put a mark into:
+ *   --cut inside the --line-control edge, with the top wall's shade (--cut-shade). An error swaps
+ *   the edge for --danger and keeps the shade. On, the mark stands flush in its cut: the box fills
+ *   with the ink (--fg), lit only on its top edge and casting nothing, with the tick or dash in
+ *   --canvas; a chosen radio fills the same way and holds a bead, a small raised block (--block,
+ *   --block-lift). Never the accent (R6): the one accent fill is the primary action's, and a form
+ *   can hold many checked boxes. Disabled, it lies flat on --surface-2 with the hairline, and so
+ *   does the bead.
  * - The label sits on the right, --space-2 away, at the small size, and the whole row is
  *   clickable. The label is a real <label for>, stretched over the row, so its accessible
  *   name is only its text and the description is linked with aria-describedby.
@@ -53,17 +59,19 @@ const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-
    the label's stretched click area (z-1), so a click on the chip itself still lands on the input, as test tools expect. */
 const drawnInput =
   "peer relative z-1 col-start-1 row-start-1 m-0 size-5 shrink-0 cursor-pointer appearance-none self-start " +
-  "bg-surface-1 shadow-[inset_0_0_0_1px_var(--line-control)] " +
+  "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
   "transition-[background-color,box-shadow] duration-(--dur-instant) ease-litt " +
-  "checked:bg-fg checked:shadow-none " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger)] " +
+  "checked:bg-fg checked:shadow-none enabled:checked:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] aria-invalid:checked:shadow-[inset_0_0_0_1px_var(--danger)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "disabled:checked:bg-surface-3 " +
   "forced-colors:border " + // forced colors drops box-shadow, so the edge becomes a real border
   focusRing;
 
 /* Only a checkbox has a mixed state. A radio matches :indeterminate whenever nothing in its group is picked, so it must not use it. */
-const mixed = " indeterminate:bg-fg indeterminate:shadow-none disabled:indeterminate:bg-surface-3";
+const mixed =
+  " indeterminate:bg-fg indeterminate:shadow-none enabled:indeterminate:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
+  "aria-invalid:indeterminate:shadow-[inset_0_0_0_1px_var(--danger)] disabled:indeterminate:bg-surface-3";
 
 const nativeInput =
   "peer relative z-1 col-start-1 row-start-1 m-0 mt-0.5 size-4 shrink-0 cursor-pointer self-start justify-self-center accent-fg " +
@@ -87,6 +95,14 @@ const mixedWash =
 const mark =
   "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start text-canvas opacity-0 " +
   "transition-opacity duration-(--dur-instant) ease-litt peer-disabled:text-fg-disabled";
+
+/* A chosen radio's bead: a small raised block standing in the ink, drawn as the cell's ::after so peer-disabled can lay
+   it flat. It fades with the fill. */
+const bead =
+  "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start opacity-0 " +
+  "transition-opacity duration-(--dur-instant) ease-litt peer-checked:opacity-100 " +
+  "after:size-2 after:rounded-pill after:bg-block after:shadow-(--block-lift) " +
+  "peer-disabled:after:bg-fg-disabled peer-disabled:after:shadow-none forced-colors:after:bg-[CanvasText]";
 
 /** The dash for the mixed state: 16px, 1.5px stroke, like the other icons. */
 function DashGlyph() {
@@ -181,11 +197,7 @@ function Choice({
         <>
           <span aria-hidden="true" className={wash + (radio ? " rounded-pill" : " rounded-control" + mixedWash)} />
           {radio ? (
-            <span aria-hidden="true" className={mark + " peer-checked:opacity-100"}>
-              <svg width={8} height={8} viewBox="0 0 8 8" fill="currentColor" aria-hidden="true" focusable="false">
-                <circle cx={4} cy={4} r={4} />
-              </svg>
-            </span>
+            <span aria-hidden="true" className={bead} />
           ) : (
             <>
               <span ref={tick} aria-hidden="true" className={mark + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>

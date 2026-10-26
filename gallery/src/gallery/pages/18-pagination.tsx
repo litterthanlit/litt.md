@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   order: 17.1, group: "Data",
   verbs: ["press"],
   summary:
-    "Previous and next for a table that shows one page of many. The range comes first, in words and tabular figures. Page numbers show only when the row is wide enough, and the buttons at either end disable. Nothing about it moves; the rows it pages are the table's job.",
+    "Previous and next for a table that shows one page of many. The range comes first, in words and tabular figures. Page numbers sit in a tray when the row is wide enough, and the current page is the raised block in it. The button at either end disables and lies flat. Nothing about it moves; the rows it pages are the table's job.",
   tiers: ["instant"],
 };
 
@@ -53,9 +53,9 @@ const rows = deploys.slice((page - 1) * 20, page * 20);
   a11y: [
     "It is a nav with its own name, so a page with two tables can have two paginations and a screen reader tells them apart.",
     "The range is a polite live region: after a page change a screen reader hears \"21 to 40 of 143\" without moving focus.",
-    "The current page number has aria-current=\"page\" and a filled button, so it does not rely on color. Each number is named \"Page 3\".",
+    "The current page number has aria-current=\"page\" and stands raised in its tray, so it does not rely on color. In forced colors the tray and the block each keep a border. Each number is named \"Page 3\".",
     "An end button that is pressed and becomes disabled hands its focus to the other one, so focus never drops to the page.",
-    "Buttons are 32px, and 44px on a touch screen. The numbered pages are hidden under 36rem, which is a width and not a device, so a narrow frame on a desktop gets the same bar as a phone.",
+    "Previous, Next and the tray are 32px, and 44px on a touch screen, where a page number is 40px square inside the tray. The numbered pages are hidden under 36rem, which is a width and not a device, so a narrow frame on a desktop gets the same bar as a phone.",
     "Under reduced motion nothing changes: pagination has no motion of its own.",
   ],
 };
@@ -156,7 +156,7 @@ export default function PaginationPage() {
         code="DeploysDemo"
         onReplay={reset}
         replayLabel="Reset"
-        caption="Five rows to a page, 23 deploys in all. The range says where you are, and Previous is disabled on the first page. Press Next to the end and Next is disabled while focus moves to Previous, so a keyboard user is never dropped. The page numbers show because the row is wide enough. Buttons change color on the instant tier and the box never moves."
+        caption="Five rows to a page, 23 deploys in all. The range says where you are, and Previous is disabled on the first page. Press Next to the end and Next is disabled while focus moves to Previous, so a keyboard user is never dropped. The page numbers show because the row is wide enough. The page numbers sit in a sunken tray, and the current page stands up in it as a raised block, the same as a selected segment. Previous and Next are blocks of their own; at either end one lies flat."
       >
         <DeploysDemo key={key} />
       </Stage>
@@ -165,7 +165,7 @@ export default function PaginationPage() {
         title="A long run"
         tier="instant"
         code="LongRunDemo"
-        caption="62 pages fold to the first, the last and the neighbours of the current page, with an ellipsis for the gaps. The current page is filled and carries aria-current. Move to page 3 or page 60 and the run reshapes at the end."
+        caption="62 pages fold to the first, the last and the neighbours of the current page, with an ellipsis for the gaps. The current page is the raised block and carries aria-current. Move to page 3 or page 60 and the run reshapes at the end."
       >
         <LongRunDemo />
       </Stage>

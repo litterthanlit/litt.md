@@ -259,7 +259,7 @@ export default function DatePickerPage() {
         size="lg"
         align="start"
         code="LaunchDateDemo"
-        caption="The field is the Select trigger with the date in words. Click it and the calendar grows out of it in a popover, on the responsive tier, with focus on today. Days before today are dimmed, because a launch cannot be in the past. A pick closes it and focus returns to the field. Submit with no date and the error says what to do."
+        caption="The field is the Select's raised trigger with the date in words: you press it, so it is a block, and it stays pressed while the calendar is open. Click it and the calendar grows out of it in a popover, on the responsive tier, with focus on today. Days before today are dimmed, because a launch cannot be in the past. A pick closes it and focus returns to the field. Submit with no date and the error says what to do."
       >
         <LaunchDateDemo />
       </Stage>

@@ -213,7 +213,7 @@ export default function ColorPickerPage() {
         size="lg"
         align="start"
         code="BrandColorDemo"
-        caption="The field is the Select trigger with a chip of the color and its hex. Click it and the panel grows out of it in a popover, on the responsive tier. Drag the area or the hue and the header under the field changes at once, with no easing. A swatch picks in one click. The text on the header is black or white, whichever reads."
+        caption="The field is the Select's raised trigger with a chip of the color and its hex, held pressed while the panel is open. Click it and the panel grows out of it in a popover, on the responsive tier. Drag the area or the hue and the header under the field changes at once, with no easing. A swatch picks in one click. The text on the header is black or white, whichever reads."
       >
         <BrandColorDemo />
       </Stage>
@@ -223,7 +223,7 @@ export default function ColorPickerPage() {
         tier="responsive"
         align="start"
         code="CoverColorDemo"
-        caption="The panel on its own, beside what it colors. Tab once to reach the area, then the arrows move the thumb and Shift makes them ten steps. Type a hex and press Enter, or paste one with three digits. The line under the cover is written on release, from onValueCommit. Nothing here moves on its own."
+        caption="The panel on its own, beside what it colors. The area and the hue are cut into the panel, and their thumbs are caps seen from above, a ring that stands over any color. Tab once to reach the area, then the arrows move the thumb and Shift makes them ten steps. Type a hex and press Enter, or paste one with three digits. The line under the cover is written on release, from onValueCommit. Nothing here moves on its own."
       >
         <CoverColorDemo />
       </Stage>

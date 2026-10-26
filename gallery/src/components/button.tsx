@@ -9,6 +9,11 @@
  * - Material (R3): a secondary button is the press material's raised block (--block, --block-lift), and its cast
  *   tightens while it is pressed (--block-press), at once, never faded (R2). The primary is the accent with its glow
  *   and a top highlight. Ghost lies flat, and so does a disabled button: nothing to push.
+ * - Danger (R7): a destructive action is the same raised block with its words in --danger. Inside a dialog's footer
+ *   ([data-dialog-footer], matched structurally with Tailwind's in-* variant) it is the confirm of the dialog that
+ *   asks, the one red fill: --danger with --danger-fg words and the primary's lit top edge, with no cast and no glow
+ *   (the glow is the primary's, R6). Until the dialog's condition is met it is disabled, so it lies flat like any
+ *   disabled button.
  * - Motion: the instant tier. Hover is a CSS transition on --dur-instant, which tokens.css owns. A press sinks the
  *   block --press-depth (half a pixel, R4) rather than shrinking it. Tailwind's active:translate-y-* sets the CSS
  *   `translate` property, not `transform`, so the transition names `translate`; naming `transform` instead would
@@ -29,11 +34,11 @@
 import { Children, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from "react";
 import { useFun } from "@/motion";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  /** Primary is the one accent fill in a view. Secondary is the default. Ghost is for quiet actions like Cancel. */
+  /** Primary is the one accent fill in a view. Secondary is the default. Ghost is for quiet actions like Cancel. Danger is a destructive action, a block with red words; in a dialog's footer it is the confirm, filled red once it is enabled. */
   variant?: ButtonVariant;
   /** Height on the shared control scale: sm is 32, md is 44, lg is 56. Use lg for hero actions only, md in a page form and a dialog. */
   size?: ButtonSize;
@@ -74,6 +79,15 @@ const variants: Record<ButtonVariant, string> = {
   ghost:
     "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
+  danger:
+    "bg-block text-danger shadow-(--block-lift) enabled:active:shadow-(--block-press) forced-colors:border " +
+    "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+    /* A dialog's confirm. These rules sort after the block's, so they win its ties (active, a finger's press). */
+    "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
+    "in-[[data-dialog-footer]]:enabled:shadow-none in-[[data-dialog-footer]]:enabled:active:shadow-none " +
+    "in-[[data-dialog-footer]]:enabled:inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] " +
+    "in-[[data-dialog-footer]]:enabled:hover:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)] " +
+    "in-[[data-dialog-footer]]:enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)]",
 };
 const disabledLook =
   "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none";

@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   lede: "The key cap for a real shortcut.",
   order: 7, group: "Controls",
   summary:
-    "The key cap for a real shortcut: a 20px chip in Geist. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",
+    "The key cap for a real shortcut: the smallest raised block, 20px tall, in Geist. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",
   tiers: [],
 };
 
@@ -52,7 +52,8 @@ import { Kbd } from "@/components/kbd";
     "Glyphs such as ⌘ and ⇧ are read unevenly by screen readers. When a control already announces its shortcut, put the shortcut in aria-keyshortcuts and wrap the Kbd in a span with aria-hidden, so it is not read twice. Kbd takes only its children, so the wrapper is how you hide one.",
     "A shortcut is an extra, never the only way. The action it runs must also be reachable with a plain Tab and Enter.",
     "Hints are for people with a keyboard. On a phone they take room and teach nothing, so hide them there when space is tight.",
-    "Fg-subtle on surface-2 reaches 4.5:1 in light and dark, at the 12px caption size.",
+    "Fg-subtle on the block reaches 4.5:1 in light and dark, at the 12px caption size.",
+    "In forced colors the cap keeps a real border, so it is still a key without its cast.",
     "Nothing moves, so there is nothing to reduce under reduced motion.",
   ],
 };
@@ -138,7 +139,7 @@ export default function KbdPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Keys"
-        caption="A key cap is 20px tall at the control radius, with a surface-2 fill and a hairline. Geist at weight 400 in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
+        caption="A key cap is the smallest raised block: 20px tall at the control radius, casting a little straight down, with a darker lower edge, so it reads as a key and not a tag. Geist at weight 400 in fg-subtle. A glyph fills a square, and a word such as esc grows to fit. Nothing moves."
         code="KeysDemo"
       >
         <KeysDemo />
