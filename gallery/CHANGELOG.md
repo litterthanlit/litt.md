@@ -4,6 +4,14 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-10-27 · Hands: a range to brush, a run to fold, rules to build
+
+Three components from Nick's moodboard that answer a hand, and the one file of the motion engine they share. The hand's rules are the ones the Time scrubber and Slide to confirm already follow: the part follows the pointer one to one and holds where it was taken, a release settles on the responsive spring and commits once it has arrived, and nothing coasts unless fun mode is on. No token changed.
+
+- **changed** `motion`: new `hand.ts`, imported as `@/motion/hand`: `useHand` (a pointer gesture: slop, capture, the release speed, the page's scroll given back, Escape, and the click swallowed after a drag), `useSettle` (settle on the responsive spring and commit once; fun mode's coast, throw and rubber live here and nowhere else) and `snap` (a step grid with anchors that pull). Nothing in your code has to change; the other components keep their own copies for now.
+- **changed** `plan`: new `bare`, only the list with no label row, count, rail or live region, for a parent that says them itself. Nothing in your code has to change.
+- **changed** `combobox`: new `hideLabel`, the label for screen readers only, as Number field's. Nothing in your code has to change.
+
 ## 2026-10-26 · litt 1.0: nine rules, the depth ladder and Blue 4
 
 litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry follows them. The accent is Blue 4, a brighter cobalt that still carries white text past 5.5:1, or a project runs monochrome. Depth is one ladder: sunken, flat, raised and floating, one recipe each, lit from the top. Selected is raised: the selected segment, a segmented tab, the current page, a tree's selected row and an active table filter are the same block a switch moves. The secondary button is that block too, and it sinks half a pixel when pressed. The slider is the post: a cap you hold, riding in a slot on a raised plate. Every other control takes its place on the ladder (litt.md profile v1.1): what you type or put a mark into is a cut (every field, a checkbox's box, a radio's ring, a color well), what you press is raised (a select's trigger, a stepper's − and +, a key cap, a tag in a field), what fills is a slot (progress), and a destructive action is a block with red words, lit red only as a dialog's confirm. Comments across the registry cite the new rule IDs, R1 to R9 (the profile maps the old P1 to P12).

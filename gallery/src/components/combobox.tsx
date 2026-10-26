@@ -40,6 +40,8 @@
  *   visual viewport (useVisibleScreen), so no option hides behind the keyboard.
  * - Coarse pointers: a tap on the chevron opens the list without focusing the field, so the keyboard stays shut
  *   while a person browses.
+ * - hideLabel keeps the label for screen readers only, where the row around the field already says what it holds (the
+ *   value of a rule in a Rule builder).
  * - Accessibility: a real label; aria-expanded, aria-controls and aria-autocomplete="list" on the field; a polite
  *   live region says how many options match a moment after typing stops, and with multiple what was added or
  *   removed. A form gets one hidden field per value under `name`.
@@ -91,6 +93,8 @@ export type ComboboxValue<Multiple extends boolean> = Multiple extends true ? st
 export type ComboboxProps<Multiple extends boolean = false> = {
   /** The label above the field. Required, because a placeholder is not a label. Clicking it focuses the field. */
   label: ReactNode;
+  /** Hides the label from sight and keeps it for screen readers, where the row already says what the field holds, such as the value of a rule. */
+  hideLabel?: boolean;
   /** A hint under the field. An error replaces it. */
   hint?: ReactNode;
   /** Shown in danger color under the field and linked with aria-describedby. Also draws the danger edge and sets aria-invalid. Say how to fix it. */
@@ -243,6 +247,7 @@ function RemoveIcon() {
  */
 export function Combobox<Multiple extends boolean = false>({
   label,
+  hideLabel = false,
   hint,
   error,
   options,
@@ -502,7 +507,7 @@ export function Combobox<Multiple extends boolean = false>({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label id={labelId} htmlFor={inputId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg") + (hideLabel ? " sr-only" : "")}>
         {label}
       </label>
 
