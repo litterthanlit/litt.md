@@ -7,7 +7,7 @@ Use this when Nick wants to work on their taste ("interview me", "let's refine t
 - **Rounds.** 3–4 questions per round, 1–3 rounds per session. Stop when the answers start to repeat.
 - **This versus that.** Every question offers 2–4 concrete options. If the AskUserQuestion tool is available, use it with **previews** (ASCII mockups or CSS snippets) so Nick compares real things. Otherwise, number the options in text with a 2–4 line preview each.
 - **Always ask why.** After each round, ask one free-text follow-up on the most surprising answer: "Why that one?" The *why* is what generalizes. Record it verbatim in the journal.
-- **Never lead.** Don't mark options "Recommended" in a taste question. Do point out evidence ("your journal leans X") and tensions ("this contradicts P3").
+- **Never lead.** Don't mark options "Recommended" in a taste question. Do point out evidence ("your journal leans X") and tensions ("this contradicts R3").
 - **Start where it matters.** Pick questions in this order:
   1. Open questions `Q#` in `taste/profile.md`.
   2. Journal entries whose `why` is `?` (ask for the reason).
@@ -19,7 +19,7 @@ Use this when Nick wants to work on their taste ("interview me", "let's refine t
 Follow `workflows/evolve.md` (the write-back protocol). In short:
 1. Every answer becomes one journal entry: `verdict: chose X over Y`, `why` in Nick's words, `source: interview`.
 2. An answer that **settles an open question** moves into the profile right away, as a new rule `P#` with a **Check** line or as a row in Fixed decisions. Then delete the `Q#` and set the entry's status to `→ P#` or `→ decision`.
-3. An answer that **contradicts an existing rule** doesn't overwrite it silently. Ask: "This conflicts with P3 (glass is earned). Update the rule, or is this an exception?" Then record what Nick decides.
+3. An answer that **contradicts an existing rule** doesn't overwrite it silently. Ask: "This conflicts with R3 (glass is earned). Update the rule, or is this an exception?" Then record what Nick decides.
 4. Answers that are **preferences, not yet rules**, stay `open` in the journal until distill finds three consistent entries.
 
 ## Rule-writing standard
@@ -39,7 +39,7 @@ Use these as starting points. Adapt the previews to Nick's current work.
 4. Numbers in UI: answered in v0.19 (Geist with tabular figures; mono for code and terminal only). Skip unless Nick wants to revisit it
 
 **Color**
-5. Litt's own default accent: answered in v0.9 (cobalt). Skip unless Nick wants to revisit it
+5. Litt's own default accent: answered in v0.9 (cobalt), revisited in v1.0 (Blue 4, or monochrome). Skip unless Nick wants to revisit it
 6. Accent in dark mode: the same hue, lighter / a different hue tuned per theme / desaturated
 7. Status colors: full color / desaturated to fit the neutrals / dot only, text stays neutral
 
