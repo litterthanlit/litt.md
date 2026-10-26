@@ -23,6 +23,7 @@ The label is at `--weight-title` at every size, with no extra tracking. Hover ch
 | Primary | `--accent` (hover `--accent-hover`) | `--accent-fg` | `--glow` plus a soft top highlight | The one main action per view (R6) |
 | Secondary | `--block` (hover the block a step toward `--fg`) | `--fg` | The raised block (R3): `--block-lift`, tighter `--block-press` while pressed | Everything else important |
 | Ghost | Transparent (hover: fg at 6%) | `--fg-muted` → `--fg` | None | Tertiary actions, toolbars, cancel |
+| Danger | `--block`, as Secondary; in a dialog's footer `--danger` (hover a step toward `--fg`) | `--danger`; in a dialog's footer `--danger-fg` | The raised block; in a dialog's footer the primary's top highlight and no glow | A destructive action (R7). The red fill is only the confirm of the dialog that asks, scoped to `[data-dialog-footer]`, and it lies flat while disabled, until the dialog's condition is met |
 | Disabled | `--surface-2` | `--fg-disabled` | Inset 1px `--line`, so it keeps its shape on a surface-2 area | `cursor: not-allowed`; keep it in the tab order only if it explains itself |
 
 - **Loading:** keep the width, swap the label for a 16px spinner (stroke `currentColor`, 1.5), and set `aria-busy="true"`.
@@ -74,7 +75,7 @@ Where someone adds files, by dropping or choosing them, and watches them upload.
 
 ## Select
 One value from a short list (a role, a region, a plan). It replaces the native `<select>`, whose list cannot be styled on the desktop and whose rows are 28 to 30px on a phone.
-- **Trigger:** the Input's look and sizes: sm 32, md 44 (the default, in dialogs and stacked forms), lg 56; `--radius-control`, `--surface-1`, the inset `--line-control` edge, the same focus, error and disabled states, 16px text on coarse pointers. The value is `--fg`, the placeholder `--fg-subtle`, and a 16px chevron in `--fg-subtle` sits at the end, `--control-gap` from the text. The chevron never turns. No hover fill, like the Input.
+- **Trigger:** a raised block, the secondary Button's look, since you press it (R3): `--block` with `--block-lift`, a hover a step toward `--fg`, and while pressed `--block-press` and the `--press-depth` sink; it stays pressed while its list is open. Sizes sm 32, md 44 (the default, in dialogs and stacked forms), lg 56, at `--radius-control`, 16px text on coarse pointers. Focus is the 2px `--focus` outline at a 2px offset. An error draws a `--danger` line under the lift, kept while pressed or open. Disabled lies flat (`--surface-2`, a `--line` hairline, `--fg-disabled`). The value is `--fg`, the placeholder `--fg-subtle`, and a 16px chevron in `--fg-subtle` sits at the end, `--control-gap` from the text. The chevron never turns.
 - **List:** anchored below the trigger and flipped above it when there is no room, at least as wide as the trigger. It is the Menu's panel: glass at `--radius-surface` with the 4px inset, 44px rows at `--radius-control` with 12px side padding, and one gliding highlight. The current option carries a 16px check at the row's end in `--fg`: never bold, never a dot, never the accent. A long list scrolls inside the panel, which never grows past the room on screen.
 - **Motion:** the responsive tier, as the Menu: the list grows from the trigger and travels a quarter of `--travel` from the side it opens on, and leaves on the exit token.
 - **Keyboard:** Space, Enter or ↓ opens it on the current option; ↑↓ move, typing jumps to a match, Enter picks, Esc closes and keeps the value. Focus returns to the trigger.
@@ -104,7 +105,7 @@ A day, or a range of days, from a month calendar: a launch date, a report's peri
 - **Accessibility:** the grid is labelled by the month; each day reads in full ("Friday 17 October 2026, today, selected"). The field is a button with `aria-haspopup="dialog"` and a real label. A form gets the value (or `start` and `end`) through hidden fields with `name`.
 
 ## Checkbox and radio
-Native inputs at 16px with `accent-color: var(--fg)`. A drawn checkbox is a 20px chip at `--radius-control`, filled with `--fg` and a `--canvas` mark when on. Not the accent (R6): a form can hold many checked boxes, and the accent stays on the one primary action. The label is on the right, `--space-2` gap, `--type-small-size`. The whole label is clickable.
+Native inputs at 16px with `accent-color: var(--fg)`. A drawn checkbox is a 20px cut at `--radius-control` (`--cut` inside the `--line-control` line, with `--cut-shade`), a place you put a mark into. Checked or mixed, it fills with `--fg`, flush, its top edge catching the light, with a `--canvas` mark. A drawn radio is the round cut; chosen, it fills with `--fg` and holds a bead, an 8px raised block (`--block`, `--block-lift`). Disabled, both lie flat, the bead too. An error turns the line `--danger`. Not the accent (R6): a form can hold many checked boxes, and the accent stays on the one primary action. The label is on the right, `--space-2` gap, `--type-small-size`. The whole label is clickable.
 
 ## Switch
 An on or off setting that takes effect as a setting, such as an email when a build finishes. A choice that can be wrong, such as accepting terms, is a checkbox, so a switch has no error state.
@@ -146,14 +147,14 @@ Two values set at once on one surface, such as a reply's tone against its length
 One color that belongs to the person's content, not to the interface: a brand color for a Framer site, a project's cover. litt's own colors live in `tokens.css` and are never picked. `ColorPanel` is the picker on its own; `ColorPicker` is a field that opens it.
 - **Value:** a six-digit lowercase hex string with the hash. No alpha. The panel keeps hue, saturation and brightness of its own, so dragging to black or grey never loses the hue.
 - **The color is data.** It fills only the area, the rails, the thumbs and the chips, never chrome. Text or a mark drawn on it is black or white, whichever has more contrast by APCA (`getContrastInk`), because no token is sure to read on every color. Not by the WCAG 2 ratio: on mid tones such as a rust it calls the two even and picks black, where white reads twice as well.
-- **Area:** saturation left to right, brightness bottom to top, at `--radius-control` with an inset `--line` hairline so white still has an edge. 160px tall by default.
-- **Thumbs:** a 20px circle filled with the color, a 2px `--surface-1` ring inside and a 1px `--line-strong` edge outside, so it reads on any color in both themes. Its centre reaches the corners, which are real colors. Keyboard focus swaps the edge for a 2px `--focus` ring; a press shows no ring. It never changes size.
-- **Hue:** a 12px rail at `--radius-control` with the six hue stops and the same thumb, filled with the pure hue. On coarse pointers the target reaches 16px above and below it.
+- **Area:** saturation left to right, brightness bottom to top, at `--radius-control`, cut into the panel: an fg-14% hairline, so white still has an edge, and the cut's top wall shade (`--cut-shade`). 160px tall by default.
+- **Thumbs:** caps seen from above: a 20px circle filled with the color inside a 3px `--cap` ring, with the cap's lift (`--cap-lift`: a lit top edge and a cast straight down), so it reads on any color in both themes. Its centre reaches the corners, which are real colors. Keyboard focus swaps the edge for a 2px `--focus` ring; a press shows no ring. It never changes size.
+- **Hue:** a 12px rail at `--radius-control` with the six hue stops, cut in as the area is, and the same thumb, filled with the pure hue. On coarse pointers the target reaches 16px above and below it.
 - **Hex:** the Input at sm, beside a 32px chip of the color. It commits on Enter or blur, takes three or six digits with or without the hash, is `aria-invalid` while what was typed is not a color, and puts the last good color back.
 - **Eyedropper:** an icon-only ghost sm Button beside the hex, only where the browser has the EyeDropper API, read after hydration.
 - **Swatches:** optional, native radios in a fieldset with a hidden legend, 24px chips (32 on coarse pointers) at `--radius-control` with an fg-12% hairline, `--space-2` apart. The picked chip carries a 16px check in the contrast ink.
 - **Keyboard:** the Pad's: two hidden range inputs for the area, one tab stop. ← → saturation, ↑ ↓ brightness, Shift for 10 steps, Page Up and Page Down brightness by 10, Home and End saturation's ends. The hue is a native range input. Every input's value text says the color in words and hex ("Dark blue, #…").
-- **Field:** the Select trigger's look and sizes with a 16px chip, the hex and a chevron, or "Choose a color" in `--fg-subtle`. It opens the panel in a Popover at md (320px, so eight swatches fit a row), a bottom sheet on compact screens, with focus on the area. The color changes live while it is open. A form gets the hex through a hidden field with `name`.
+- **Field:** the Select trigger's raised look and sizes with a 16px chip, the hex and a chevron, or "Choose a color" in `--fg-subtle`. It opens the panel in a Popover at md (320px, so eight swatches fit a row), a bottom sheet on compact screens, with focus on the area. The color changes live while it is open. A form gets the hex through a hidden field with `name`.
 - **Motion:** none on the picker. Thumbs and colors follow the pointer and the keys at once, because an eased color lags the hand. The popover carries the only motion, on the responsive tier.
 
 ## Slide to confirm
@@ -190,7 +191,7 @@ A flat chip (R3's flat step), in the sans: 24px tall, `--radius-control`, a `--s
 - **Category (a hue tag, R7):** a tag that files a thing under a category (Finance, Clients, Hiring) may take one of the five data hues: the hue's `-tint` as the fill, its `-text` tone for the label (4.5:1 on the tint, checked), and an inset hairline of the hue at 24% under `--highlight`. One hue means one category in a view, and the word still says it. A hue is never a status: how something stands takes `status`. With more than five categories, leave them plain.
 
 ## Kbd
-The sans at the caption size (12px) and weight 400, a 20px chip at `--radius-control`, `--surface-2`, inset `--line`. Use it for real shortcuts only.
+The sans at the caption size (12px) and weight 400 in `--fg-subtle`, a 20px key cap at `--radius-control`: the smallest raised block, `--block` with `--key-lift` (the block's lift and a darker lower edge), so it reads as a key and not a tag. A border in forced colors. Use it for real shortcuts only.
 
 ## Icons
 One set, drawn for litt on one grid. Use it before reaching for another set, so a view never mixes two drawings.
@@ -349,7 +350,7 @@ Actions on the thing under the pointer: right-click a row, a file, a card.
 - **On compact screens** it stays anchored at the finger, like the Menu, and a submenu replaces the list in place with a Back row first.
 
 ## Modal
-Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, padding `--space-8`, max width 480px (forms) or 640px. The title is `--type-h4` (14px at `--weight-title`) in `--fg`, 4px above its description. Actions sit bottom right at md, primary last, secondary or ghost before it. Fields in a dialog are md too. The backdrop tint is `color-mix(in oklab, var(--canvas) 55%, transparent)`.
+Glass panel at `--radius-surface` with `--glass-shadow: var(--shadow-modal)`, padding `--space-8`, max width 480px (forms) or 640px. The title is `--type-h4` (14px at `--weight-title`) in `--fg`, 4px above its description. Actions sit bottom right at md, primary last, secondary or ghost before it. The footer carries `data-dialog-footer`, so a danger Button in it is the view's one red fill: the confirm of a destructive step, flat while disabled until its condition is met (typing the project's name), never with a glow. Fields in a dialog are md too. The backdrop tint is `color-mix(in oklab, var(--canvas) 55%, transparent)`.
 - **Motion:** the view's expressive moment: placed, not thrown. It rises by `--travel` and settles from `--press-scale` (0.98), and may bounce slightly (`--dur-expressive`, `--ease-expressive`). If the view has already used its expressive moment, the dialog uses the responsive tier (a `tier` choice on the component).
 - **Exit:** `--dur-exit-expressive` with `--ease-out`. It never bounces.
 - **On compact screens** it is a bottom sheet. `side="right"` becomes the same sheet, so no strip of page is left at the edge. It is glass, flush with the bottom, with `--radius-surface` on the top corners only, and it pads its footer by the safe-area inset. A 32px by 4px grabber in `--line-strong` sits at the top centre. The body scrolls inside, with `overscroll-behavior: contain`.
@@ -400,10 +401,10 @@ What can be done to the rows or cards someone selected, while the selection last
 Previous and next for a table or list that shows one page of many. The range is the main information, so it comes first, in words.
 - **Range:** "21 to 40 of 143" at the caption size, `--fg-subtle`, tabular, at the start of the row. No dashes and no en dashes. With no rows it says "No results". It is a polite live region, so a screen reader hears the new range after a page change.
 - **Buttons:** Previous and Next are `sm` secondary buttons, text only, no arrows, sitting `--control-group-gap` (12) apart at the end of the row. The first page disables Previous and the last disables Next. If the button that was just pressed becomes disabled, focus moves to the other one, so it never falls to the page.
-- **Page buttons:** numbered ghost buttons (`sm`, tabular figures) between the two, with the current page as a secondary button and `aria-current="page"`. Long runs fold into an ellipsis: first, last, and one either side of the current page. They only show when the row is at least 36rem wide (the row measures itself, not the window). Below that the range and the two buttons are enough.
+- **Page buttons:** the numbers sit in one tray (`--tray`, `--tray-shade`, 2px in) between the two, 28px square (40px on coarse pointers), tabular, at weight 400; the current page is the raised block in it (`--block`, `--block-lift`, the control radius less 2px) with `aria-current="page"`, as the Segmented control's pick. Long runs fold into an ellipsis: first, last, and one either side of the current page. They only show when the row is at least 36rem wide (the row measures itself, not the window). Below that the range and the two buttons are enough.
 - **Semantics:** a `nav` with its own `aria-label` ("Deploys pages"), and a list inside it. It sits `--space-4` under the table it pages.
 - **Motion:** none of its own. The rows it pages are the table's job (Table, `animateChanges`).
-- **On coarse pointers** the buttons are 44px tall, page numbers included.
+- **On coarse pointers** Previous and Next are 44px tall and the page numbers 40px in their tray.
 
 ## Stat
 A number tile for one figure that tells you how things stand: active projects, deploys this week, median build time.

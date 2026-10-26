@@ -92,9 +92,9 @@
 
   kbd {
     display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px;
-    border-radius: var(--radius-control); background: var(--surface-2); color: var(--fg-subtle);
+    border-radius: var(--radius-control); background: var(--block); color: var(--fg-subtle);
     font-size: 11px; font-weight: var(--weight); line-height: 1;
-    box-shadow: inset 0 0 0 1px var(--line);
+    box-shadow: var(--key-lift);
   }
 
   /* Hero: the one light source of the page (R2) */
@@ -251,14 +251,14 @@
   .input {
     width: 100%; height: var(--control-md); padding: 0 var(--control-pad-md); border: 0; border-radius: var(--radius-control);
     font-size: var(--control-text-md);
-    background: var(--surface-1); color: var(--fg); font: inherit;
-    box-shadow: inset 0 0 0 1px var(--line-control);
+    background: var(--cut); color: var(--fg); font: inherit;
+    box-shadow: inset 0 0 0 1px var(--line-control), var(--cut-shade);
     transition: box-shadow var(--dur-instant) var(--ease-out);
   }
   .input-lg { height: var(--control-lg); padding: 0 var(--control-pad-lg); font-size: var(--control-text-lg); }
   .input::placeholder { color: var(--fg-subtle); }
-  .input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--focus), var(--focus-ring); }
-  .input[aria-invalid="true"] { box-shadow: inset 0 0 0 1px var(--danger); }
+  .input:focus { outline: none; box-shadow: inset 0 0 0 1px var(--focus), var(--cut-shade), var(--focus-ring); }
+  .input[aria-invalid="true"] { box-shadow: inset 0 0 0 1px var(--danger), var(--cut-shade); }
   .help { margin-top: var(--space-2); color: var(--fg-subtle); font-size: var(--type-small-size); }
   .help.error { color: var(--danger); }
   .check { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--fg-muted); font-size: var(--type-small-size); cursor: pointer; }

@@ -6,8 +6,8 @@
  *   tooltip, the command menu footer, the button hint and the tabs legend all
  *   render this component and nothing else.
  * - Material (R3, material.md 6): a key cap is the smallest raised block
- *   (--block, --block-lift) with a darker lower edge, the cap grip's shade, so
- *   it reads as a key and not a tag. That edge is a shade, never light, so it
+ *   (--block, --key-lift: the block's lift with a darker lower edge), so it
+ *   reads as a key and not a tag. That edge is a shade, never light, so it
  *   stays dark in both themes (R2). It keeps a border in forced colors.
  * - The size is the caption step (12px), on the type scale like every other label.
  * - shrink-0 so it never squashes in a flex row; min-w-5 keeps a lone glyph square.
@@ -18,8 +18,7 @@ import type { ReactNode } from "react";
 
 const chip =
   "inline-grid h-5 min-w-5 shrink-0 place-items-center rounded-control bg-block px-1 " +
-  "font-sans font-normal text-caption text-fg-subtle shadow-(--block-lift) forced-colors:border " +
-  "inset-shadow-[0_-1px_0_color-mix(in_oklab,var(--cap-grip)_50%,transparent)]"; // litt-allow: a key cap's darker lower edge (R3), as --cap-lift's
+  "font-sans font-normal text-caption text-fg-subtle shadow-(--key-lift) forced-colors:border";
 
 /** One key cap, or one chord written in glyphs, such as ⇧⌘C. Keys pressed one after another each get their own Kbd, 4px apart. */
 export function Kbd({

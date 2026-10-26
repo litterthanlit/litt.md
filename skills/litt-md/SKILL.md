@@ -94,7 +94,7 @@ These change only when Nick changes them.
 - **Data hues (R7):** `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` (words in the hue) and `-tint` (the fill behind them); marks take the plain name
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
-- **Press** (the depth ladder's sunken and raised steps, R3): sunken `--tray`, `--tray-shade`, `--cut`, `--cut-shade`, `--slot`, `--slot-shade`, `--slot-fill`, `--slot-fill-shade`; raised `--block`, `--block-lift`, `--block-press`, `--cap`, `--cap-held`, `--cap-lift`, `--cap-press`, `--plate-lift`; marks `--cap-grip`, `--notch`, `--notch-home`. Monochrome: `[data-accent="mono"]`.
+- **Press** (the depth ladder's sunken and raised steps, R3): sunken `--tray`, `--tray-shade`, `--cut`, `--cut-shade`, `--slot`, `--slot-shade`, `--slot-fill`, `--slot-fill-shade`; raised `--block`, `--block-lift`, `--block-press`, `--key-lift`, `--cap`, `--cap-held`, `--cap-lift`, `--cap-press`, `--plate-lift`; marks `--cap-grip`, `--notch`, `--notch-home`. Monochrome: `[data-accent="mono"]`.
 - **Type:** `--font-sans` (Geist), `--font-mono` (Geist Mono), `--weight` (400), `--weight-title` (500), `--weight-label` (600), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
 - **Shape:** `--radius-control` (4), `--radius-surface` (8), `--radius-pill`

@@ -318,7 +318,7 @@ radiusFails.length ? radiusFails.forEach(fail) : ok(`corners are 0, ${rc}px, ${r
 console.log("Shadows (the depth ladder)");
 const shadowFails = [];
 const cut = /^--(?:tray-shade|cut-shade|slot-shade|slot-fill-shade)$/;
-const raised = /^--(?:block-(?:lift|press)|cap-(?:lift|press)|plate-lift)$/;
+const raised = /^--(?:block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift)$/;
 const lit = (layer) => /rgba?\(\s*255\s*,\s*255\s*,\s*255\b/.test(layer) || /\bwhite\b/i.test(layer);
 for (const f of assetFiles) {
   const text = strip(read(f));
