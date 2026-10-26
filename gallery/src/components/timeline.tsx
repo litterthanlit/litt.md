@@ -10,10 +10,10 @@
  *   window: the start column shrinks on a narrow container and the labels wrap.
  * - Rail: a 1px line in line-strong that runs between the 16px status icons and stops at a phase's first and last
  *   step. It is drawn in two short pieces around each icon, so the icon never needs a background of its own.
- * - Status icons (16px, 1.5px stroke, currentColor): done is a check in a circle in fg-muted; running is a
- *   half-filled circle in fg and does not spin or pulse; pending is an empty circle in fg-subtle; skipped is a
- *   dashed circle in fg-subtle; failed is an x in a circle in danger. No dots. Every status is also said in hidden
- *   text, so color and shape are never the only signal.
+ * - Status icons (16px, currentColor, the icon set's marks): done is a filled disc with the check cut out, in
+ *   fg-muted; running is a ring half filled, in fg, and does not spin or pulse; pending is an empty ring in fg-subtle;
+ *   skipped is a dashed ring in fg-subtle; failed is a filled disc with the x cut out, in danger. No dots. Every
+ *   status is also said in hidden text, so color and shape are never the only signal.
  * - Phase: a heading row (the label small in fg-subtle, the total in the tabular caption) over a nested, labelled
  *   list. Its `hue` says which phase (R7): it colors the phase's rail bars here and its segments in TimelineBar.
  *   With no hue those marks are fg at 55%.
@@ -147,8 +147,14 @@ const PhaseContext = createContext<{ hue?: TimelineHue }>({});
 
 /* ----------------------------------------------------------------- the icons */
 
+/* Done and failed are a filled disc with the mark cut out through a mask, the icon set's own drawing, so the cut shows
+   whatever is behind it and the icon still needs no background. */
+const CUT: Partial<Record<TimelineStatus, string>> = { done: "m5.25 8.25 2 2 3.5-4.25", failed: "m6 6 4 4m0-4-4 4" };
+
 function StatusIcon({ status, ref }: { status: TimelineStatus; ref?: Ref<SVGSVGElement> }) {
   const skipped = status === "skipped";
+  const cut = CUT[status];
+  const mask = useId().replace(/[^\w-]/g, "");
   return (
     <svg
       ref={ref}
@@ -164,10 +170,18 @@ function StatusIcon({ status, ref }: { status: TimelineStatus; ref?: Ref<SVGSVGE
       focusable="false"
       className={"absolute top-2 left-0 " + ICON_TONE[status]}
     >
-      <circle cx="8" cy="8" r="6.25" strokeDasharray={skipped ? "2.45" : undefined} strokeLinecap={skipped ? "butt" : undefined} />
-      {status === "done" && <path d="m5.25 8.25 2 2 3.5-4.25" />}
+      {cut ? (
+        <>
+          <mask id={mask} maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="16">
+            <rect width="16" height="16" fill="white" stroke="none" /* litt-allow: mask luminance, white keeps */ />
+            <path d={cut} stroke="black" /* litt-allow: mask luminance, black cuts */ />
+          </mask>
+          <circle cx="8" cy="8" r="6.25" fill="currentColor" strokeWidth={1} mask={`url(#${mask})`} />
+        </>
+      ) : (
+        <circle cx="8" cy="8" r="6.25" strokeDasharray={skipped ? "2.45" : undefined} strokeLinecap={skipped ? "butt" : undefined} />
+      )}
       {status === "running" && <path d="M8 1.75a6.25 6.25 0 0 1 0 12.5z" fill="currentColor" />}
-      {status === "failed" && <path d="m6 6 4 4m0-4-4 4" />}
     </svg>
   );
 }

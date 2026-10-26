@@ -26,7 +26,19 @@
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useExit, useFun, useTransition, useTravel } from "@/motion";
-import { ArrowUpRightIcon, ChevronLeftIcon, ChevronRightIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
+import {
+  ArrowUpRightIcon,
+  BagIcon,
+  ChartBarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  GridIcon,
+  LayersIcon,
+  MessageIcon,
+  SidebarIcon,
+  SlidersIcon,
+  SparkleIcon,
+} from "@/components/icons";
 import { PAGE_GROUPS, type PageGroup } from "./kit";
 import { funPages, pages, type PageEntry } from "./registry";
 
@@ -68,24 +80,18 @@ export function MenuButton({ open, onToggle, ref }: { open: boolean; onToggle: (
   );
 }
 
-/* One 16px icon per group, in the icon set's pattern (1.5px stroke, round caps). Sliders comes from the set. */
-const Glyph = ({ d }: { d: string }) => (
-  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-    <path d={d} />
-  </svg>
-);
 /** A group of the menu: a page group, or, with fun mode on, the pages it changes. */
 type MenuGroup = PageGroup | "Fun";
 
 const GROUP_ICON: Record<MenuGroup, ReactNode> = {
   Fun: <SparkleIcon />,
   Controls: <SlidersIcon />,
-  Overlays: <Glyph d="M5.75 5.75h7.5v7.5h-7.5zM3.25 10.25v-7h7" />, // a surface over a surface
-  Layout: <Glyph d="M2.75 2.75h10.5v10.5H2.75zM2.75 6.25h10.5M6.25 6.25v7" />, // a header and a sidebar
-  Data: <Glyph d="M3.25 13.25v-4M8 13.25v-10M12.75 13.25v-6.5" />, // three rails
-  Agents: <Glyph d="M8 2.5v3M8 10.5v3M2.5 8h3M10.5 8h3M4.4 4.4l1.6 1.6M10 10l1.6 1.6M4.4 11.6 6 10M10 6l1.6-1.6" />, // a spark
-  Commerce: <Glyph d="M3.25 5.25h9.5v9h-9.5zM5.75 5.25V4a2.25 2.25 0 0 1 4.5 0v1.25" />, // a bag, the BagIcon's drawing
-  Blocks: <Glyph d="M2.75 2.75h4.5v4.5h-4.5zM8.75 2.75h4.5v4.5h-4.5zM2.75 8.75h4.5v4.5h-4.5zM8.75 8.75h4.5v4.5h-4.5z" />, // four parts, one screen
+  Overlays: <LayersIcon />,
+  Layout: <SidebarIcon />,
+  Data: <ChartBarIcon />,
+  Agents: <MessageIcon />,
+  Commerce: <BagIcon />,
+  Blocks: <GridIcon />,
 };
 
 /* ---------------------------------------------------------------- rows */

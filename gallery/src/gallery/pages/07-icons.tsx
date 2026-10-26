@@ -27,7 +27,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["select"],
   summary:
-    "Ninety-eight icons and the status mark, drawn by hand on a 16-unit grid with a 1.5 stroke, round caps and joins, in the text color. Each one fits one of four keylines, so a circle, a square and a box read the same size in a row. They are still: an icon never spins, pulses or draws itself in.",
+    "Ninety-nine icons and the status mark, solid, drawn by hand on a 16-unit grid in the text color. A shape that encloses something is filled and its details are cut out of it, and a mark that is only a line is a 1.5 stroke with round caps and joins, so an icon weighs what a 14px word weighs. Each one fits one of four keylines, so a circle, a square and a box read the same size in a row. They are still: an icon never spins, pulses or draws itself in.",
   tiers: [],
 };
 
@@ -49,7 +49,7 @@ import { AlertIcon, SettingsIcon, ShareIcon } from "@/components/icons";
   The deploy failed.
 </p>
 
-// Larger, for an empty state. The stroke grows with it.
+// Larger, for an empty state. The drawing grows with it.
 <SearchIcon size={24} className="text-fg-subtle" />`,
   use: [
     "A control needs a mark people already know: close, search, more, copy, settings.",
@@ -245,18 +245,15 @@ function GridLines({ keyline }: { keyline?: "circle" | "square" | "landscape" | 
   );
 }
 
-/* Marks with a solid part, which a hairline skeleton in the canvas color would cover. */
-const FILLED = new Set(["StopIcon", "GripIcon"]);
-
-/** An icon drawn at the size of its box, over the grid, with its centre line traced in the canvas color. */
+/** An icon drawn at the size of its box, over the grid, with its paths traced in the canvas color. */
 function Board({ name, keyline }: { name: string; keyline?: "circle" | "square" | "landscape" | "portrait" }) {
   const Icon = SET[name]!;
   return (
     <div className="relative aspect-square w-full overflow-hidden rounded-control bg-canvas shadow-[inset_0_0_0_1px_var(--line)]">
       <GridLines keyline={keyline} />
       <Icon className="absolute inset-0 size-full text-fg" />
-      {/* The skeleton: the same paths at a hairline, so you can see where each stroke is centred. A filled mark has none. */}
-      {!FILLED.has(name) && <Icon className="absolute inset-0 size-full text-canvas" strokeWidth={0.06} />}
+      {/* The skeleton: the same paths unfilled at a hairline, so you can see each shape's edge and where each line is centred. */}
+      <Icon className="absolute inset-0 size-full text-canvas [&>path]:fill-none [&>path]:[stroke-width:0.06]" />
     </div>
   );
 }
@@ -520,7 +517,7 @@ export default function IconsPage() {
         title="The set"
         size="lg"
         align="start"
-        caption="Search by name, meaning or what people call it. Pick one, or move with the arrow keys, to see it on its 16-unit grid with the stroke's centre line traced, and at 16, 24 and 32. Copy puts the JSX on the clipboard."
+        caption="Search by name, meaning or what people call it. Pick one, or move with the arrow keys, to see it on its 16-unit grid with its paths traced, and at 16, 24 and 32. Copy puts the JSX on the clipboard."
       >
         <SetDemo />
       </Stage>

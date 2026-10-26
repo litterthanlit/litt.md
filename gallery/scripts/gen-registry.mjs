@@ -793,7 +793,7 @@ const COPY = {
   },
   icons: {
     title: "Icons",
-    description: "99 icons and a status mark, drawn on one 16-unit grid with a 1.5px stroke and four keylines, in the text color.",
+    description: "99 solid icons and a status mark on one 16-unit grid: filled shapes with their details cut out, lines at 1.5, four keylines, in the text color.",
     docs: "Import the icons you need from components/litt/icons. They are decorative unless you label them. Draw a missing one on the same grid, never from another set.",
   },
   tooltip: {

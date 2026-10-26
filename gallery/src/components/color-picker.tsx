@@ -226,7 +226,8 @@ function useEyeDropper(): EyeDropperCtor | null {
 
 const DropperIcon = () => (
   <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-    <path d="m9.25 4.25 2.5 2.5M10.5 5.5 4.25 11.75 2.75 13.25M3.5 12.5l.75-.75M8.75 3.75l1.4-1.4a1.77 1.77 0 0 1 2.5 2.5l-1.4 1.4" />
+    <path d="M8.75 3.75l1.4-1.4a1.77 1.77 0 0 1 2.5 2.5l-1.4 1.4z" fill="currentColor" strokeWidth={1} />
+    <path d="m8.25 3.25 4.5 4.5M10.5 5.5 2.75 13.25" />
   </svg>
 );
 

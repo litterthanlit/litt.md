@@ -10,6 +10,7 @@ litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry
 
 - **breaking** `litt`: the accent is Blue 4 in both themes (`--litt-accent`, `--litt-accent-hover`, `--litt-accent-text`, `--litt-accent-tint`, `--litt-focus`), and the accent stays 0.12 (OKLab) from every data hue. `data-accent="mono"` on `<html>` or `<body>` runs a project monochrome: the primary action, links and the focus ring in the ink, the glow a block's lift. New: the slider's post, `--litt-slot`, `--litt-slot-shade`, `--litt-slot-fill`, `--litt-slot-fill-shade`, `--litt-plate-lift`, `--litt-cap`, `--litt-cap-held`, `--litt-cap-lift`, `--litt-cap-press`, `--litt-cap-grip`, `--litt-notch` and `--litt-notch-home`, with their colors (`bg-litt-slot`, `bg-litt-cap` and the rest); and `--litt-press-depth`, how far a pressed block sinks (0 under reduced motion). New: the cut, `--litt-cut` and `--litt-cut-shade` (`bg-litt-cut`), a field's floor and its top wall's shade inside the control line; `--litt-key-lift`, a key cap's lift with its darker lower edge; and `--litt-danger-fg` (`text-litt-danger-fg`), the words on a dialog's danger confirm. Gone: `--litt-block-round` and `--litt-block-roll`, the old slab slider's. Migrate: nothing in litt uses them any more; if your own code does, use `--litt-block-lift` for a raised block, or the post's tokens for a slider.
 - **changed** `button`: a secondary button is the raised block (`--litt-block`, `--litt-block-lift`), and its cast tightens while pressed. A press sinks a button half a pixel (`--litt-press-depth`) instead of shrinking it. The primary keeps its glow. New `variant="danger"`: a raised block with words in `--litt-danger`, for a destructive action; in a dialog's footer it is the one red fill (words in `--litt-danger-fg`), and it lies flat while disabled. Nothing else in your code has to change.
+- **changed** `icons`: the set is solid (litt.md profile v1.2, R8). A shape that encloses something is filled with its details cut out, and a mark that is only a line (chevrons, arrows, plus, x, check) stays a 1.5 stroke. Every name and prop is unchanged; `StatusIcon` fills its done and failed marks. Nothing in your code has to change.
 - **changed** `select`: the trigger is a raised block, like a secondary button, since you press it: it sinks while pressed and stays down while its list is open. An invalid trigger keeps the danger line. Nothing in your code has to change.
 - **changed** `combobox`: the field is the cut, as Input's, and a picked value inside it is a raised tag. Nothing in your code has to change.
 - **changed** `number-field`: the field is the cut, and − and + are raised blocks inside it that sink when pressed and lie flat at either end of the range. Nothing in your code has to change.
@@ -34,7 +35,7 @@ litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry
 - **changed** `avatar`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `bar-list`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `breakdown`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
-- **changed** `callout`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `callout`: its four icons are the set's solid Info, Check circle, Warning and X circle, a filled shape with the mark cut out. Nothing in your code has to change.
 - **changed** `card`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `carousel`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `cart`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
@@ -71,7 +72,7 @@ litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry
 - **changed** `tag`: new `raised`, a plain tag drawn as a raised block, for a tag you can lift out of a field (Token input and Combobox use it). Without it a tag is the flat chip it was.
 - **changed** `thinking`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `time-scrubber`: the track is the Pad's well, the cut, with the ruler sliding under its edge, and the needle is the Slider's cap riding over it, its grip line on the exact time. Disabled, the well and the cap lie flat. Nothing in your code has to change.
-- **changed** `timeline`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `timeline`: a done or failed step is a filled disc with its check or x cut out; pending, running and skipped keep their rings. Nothing in your code has to change.
 - **changed** `tool-call`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `usage`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 
