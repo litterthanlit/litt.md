@@ -79,7 +79,7 @@
       "hash": "ceaafb65f3ba39c9"
     },
     "code-input": {
-      "version": "2026.10.25",
+      "version": "2026.10.26",
       "hash": "997cd875923bca34"
     },
     "cohort-grid": {
@@ -91,11 +91,11 @@
       "hash": "c319f934949174de"
     },
     "color-picker": {
-      "version": "2026.10.25",
+      "version": "2026.10.26",
       "hash": "7cd5d585078a50df"
     },
     "combobox": {
-      "version": "2026.10.19",
+      "version": "2026.10.26",
       "hash": "58d821cd8cb895ba"
     },
     "command-menu": {
@@ -127,7 +127,7 @@
       "hash": "e9170257cc68133b"
     },
     "dialog": {
-      "version": "2026.10.19",
+      "version": "2026.10.26",
       "hash": "b00dcd792929bd73"
     },
     "dot-plot": {
@@ -135,7 +135,7 @@
       "hash": "2ae24d455a7e0a58"
     },
     "file-drop": {
-      "version": "2026.10.25",
+      "version": "2026.10.26",
       "hash": "e784ba2d8a391322"
     },
     "form": {
@@ -183,7 +183,7 @@
       "hash": "9653011af1dede93"
     },
     "kbd": {
-      "version": "2026.10.25",
+      "version": "2026.10.26",
       "hash": "ae62dcf818d96017"
     },
     "legend": {
@@ -204,7 +204,7 @@
     },
     "litt": {
       "version": "2026.10.26",
-      "hash": "02c7470772db1b3e"
+      "hash": "f0dfcde75f39bcc4"
     },
     "log-view": {
       "version": "2026.10.25",
@@ -227,7 +227,7 @@
       "hash": "c1ef1814bd59f4c4"
     },
     "number-field": {
-      "version": "2026.10.24",
+      "version": "2026.10.26",
       "hash": "d58b721b2c4a705e"
     },
     "option-picker": {
@@ -239,7 +239,7 @@
       "hash": "62b49c7f22a29cc6"
     },
     "pagination": {
-      "version": "2026.10.25",
+      "version": "2026.10.26",
       "hash": "8bea2b5d9d5a66b8"
     },
     "plan": {
@@ -263,7 +263,7 @@
       "hash": "b9d18712f86c168d"
     },
     "progress": {
-      "version": "2026.10.25",
+      "version": "2026.10.26",
       "hash": "bb38652e8bbdc7d9"
     },
     "projects": {
@@ -287,7 +287,7 @@
       "hash": "04b99fc49c4adf98"
     },
     "select": {
-      "version": "2026.10.19",
+      "version": "2026.10.26",
       "hash": "1721ea292dd0cef6"
     },
     "settings": {
@@ -375,7 +375,7 @@
       "hash": "817d1bb3df9a3c2b"
     },
     "token-input": {
-      "version": "2026.10.19",
+      "version": "2026.10.26",
       "hash": "1448ee5fadf8fe75"
     },
     "tool-call": {

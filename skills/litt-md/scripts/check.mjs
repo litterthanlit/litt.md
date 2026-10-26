@@ -133,9 +133,10 @@ const pairs = [
   ["--fg", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
   ["--fg-muted", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "body text"],
   ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "supporting text"],
-  ["--line-control", ["--canvas", "--surface-1", "--surface-2"], 3, "control outline"],
+  ["--line-control", ["--canvas", "--surface-1", "--surface-2", "--cut"], 3, "control outline"],
   ["--focus", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring"],
   ["--accent-fg", ["--accent", "--accent-hover"], 4.5, "text on accent"],
+  ["--danger-fg", ["--danger"], 4.5, "text on the danger fill"],
   ["--accent-text", ["--canvas", "--surface-1", "--accent-tint"], 4.5, "accent as link text"],
   ["--accent", ["--canvas", "--surface-1"], 3, "the accent fill against the page"],
   ["--success", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
@@ -316,7 +317,7 @@ radiusFails.length ? radiusFails.forEach(fail) : ok(`corners are 0, ${rc}px, ${r
 // 8. Shadows: the depth ladder (R3) -----------------------------------------
 console.log("Shadows (the depth ladder)");
 const shadowFails = [];
-const cut = /^--(?:tray-shade|slot-shade|slot-fill-shade)$/;
+const cut = /^--(?:tray-shade|cut-shade|slot-shade|slot-fill-shade)$/;
 const raised = /^--(?:block-(?:lift|press)|cap-(?:lift|press)|plate-lift)$/;
 const lit = (layer) => /rgba?\(\s*255\s*,\s*255\s*,\s*255\b/.test(layer) || /\bwhite\b/i.test(layer);
 for (const f of assetFiles) {

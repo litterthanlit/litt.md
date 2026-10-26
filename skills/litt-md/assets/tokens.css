@@ -215,6 +215,7 @@
   --success: #007c3b;
   --warning: #9c5a00;
   --danger: #be2e31;
+  --danger-fg: #ffffff; /* words on the one danger fill, a destructive dialog's confirm (R7) */
 
   /* Data hues (R7, v0.11): color that carries data, never chrome. Five hues in a fixed
      order (blue, amber, teal, violet, rose), assigned in that order and never cycled.
@@ -246,12 +247,16 @@
   --glow-strength: 28%;
   --grain-opacity: 0.02;
   /* The press material (material.md, 6): the depth ladder's sunken and raised steps (R3), lit from the top (R2).
-     Sunken: a tray has a hairline and its top wall's shade on the floor; a slot cut into a plate adds the light its
-     lower wall catches, and the part of it that is pulled out (the fill) is a step darker. Raised: a block sits low
+     Sunken: a tray has a hairline and its top wall's shade on the floor; a cut (a field, a checkbox: anything you
+     type or put a mark into) is the shallowest step, its floor and its top wall's shade inside the control line; a
+     slot cut into a plate adds the light its lower wall catches, and the part of it that is pulled out (the fill) is
+     a step darker. Raised: a block sits low
      in its tray, with a contact line under its edge and a soft cast, which tightens while it is pressed; a cap and
      the plate it rides on stand taller and cast up to 3px down. Only raised things cast, never sideways. */
   --tray: #ece9e6;
   --tray-shade: inset 0 0 0 1px rgba(17, 15, 13, 0.18), inset 0 1px 2px rgba(17, 15, 13, 0.2);
+  --cut: #ffffff;
+  --cut-shade: inset 0 1px 2px rgba(17, 15, 13, 0.12);
   --block: #ffffff;
   --block-lift: 0 0.5px 1px rgba(17, 15, 13, 0.22), 0 0.5px 3px rgba(17, 15, 13, 0.16);
   --block-press: 0 0.5px 1px rgba(17, 15, 13, 0.22), 0 0 1.5px rgba(17, 15, 13, 0.12);
@@ -299,6 +304,7 @@
   --success: #4bc680;
   --warning: #e19b1b;
   --danger: #ff756f;
+  --danger-fg: #0a0908; /* words on the one danger fill, a destructive dialog's confirm (R7) */
 
   --data-blue: #2c90e8;
   --data-blue-text: #5aa8f4;
@@ -324,6 +330,8 @@
   --grain-opacity: 0.04;
   --tray: #070606;
   --tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 1px 2px rgba(0, 0, 0, 0.8);
+  --cut: #0d0c0b;
+  --cut-shade: inset 0 1px 2px rgba(0, 0, 0, 0.8);
   --block: #2a2725;
   --block-lift: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0.5px 3px rgba(0, 0, 0, 0.55);
   --block-press: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0 1.5px rgba(0, 0, 0, 0.5);
@@ -372,6 +380,7 @@
     --success: #4bc680;
     --warning: #e19b1b;
     --danger: #ff756f;
+    --danger-fg: #0a0908; /* words on the one danger fill, a destructive dialog's confirm (R7) */
 
     --data-blue: #2c90e8;
     --data-blue-text: #5aa8f4;
@@ -397,6 +406,8 @@
     --grain-opacity: 0.04;
     --tray: #070606;
     --tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 1px 2px rgba(0, 0, 0, 0.8);
+    --cut: #0d0c0b;
+    --cut-shade: inset 0 1px 2px rgba(0, 0, 0, 0.8);
     --block: #2a2725;
     --block-lift: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0.5px 3px rgba(0, 0, 0, 0.55);
     --block-press: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0.5px 1px rgba(0, 0, 0, 0.7), 0 0 1.5px rgba(0, 0, 0, 0.5);

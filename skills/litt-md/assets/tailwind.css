@@ -37,6 +37,7 @@
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
   --color-tray: var(--tray);           /* a control's sunken tray, and the block raised in it (material.md, 6) */
+  --color-cut: var(--cut);             /* a field's floor, cut a hair into the page (material.md, 6) */
   --color-block: var(--block);
   /* The slider's post (R3): a slot cut into a plate, its pulled-out fill, the cap and its grip, and the notches. */
   --color-slot: var(--slot);
@@ -62,6 +63,7 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
+  --color-danger-fg: var(--danger-fg);
   /* Data hues (R7): marks (fill-data-blue), text (text-data-blue-text) and tints
      (bg-data-blue-tint). Never on chrome. */
   --color-data-blue: var(--data-blue);

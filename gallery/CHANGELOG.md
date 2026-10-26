@@ -6,10 +6,21 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-10-26 · litt 1.0: nine rules, the depth ladder and Blue 4
 
-litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry follows them. The accent is Blue 4, a brighter cobalt that still carries white text past 5.5:1, or a project runs monochrome. Depth is one ladder: sunken, flat, raised and floating, one recipe each, lit from the top. Selected is raised: the selected segment, a segmented tab, the current page, a tree's selected row and an active table filter are the same block a switch moves. The secondary button is that block too, and it sinks half a pixel when pressed. The slider is the post: a cap you hold, riding in a slot on a raised plate. Comments across the registry cite the new rule IDs, R1 to R9 (the profile maps the old P1 to P12).
+litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry follows them. The accent is Blue 4, a brighter cobalt that still carries white text past 5.5:1, or a project runs monochrome. Depth is one ladder: sunken, flat, raised and floating, one recipe each, lit from the top. Selected is raised: the selected segment, a segmented tab, the current page, a tree's selected row and an active table filter are the same block a switch moves. The secondary button is that block too, and it sinks half a pixel when pressed. The slider is the post: a cap you hold, riding in a slot on a raised plate. Every other control takes its place on the ladder (litt.md profile v1.1): what you type or put a mark into is a cut (every field, a checkbox's box, a radio's ring, a color well), what you press is raised (a select's trigger, a stepper's − and +, a key cap, a tag in a field), what fills is a slot (progress), and a destructive action is a block with red words, lit red only as a dialog's confirm. Comments across the registry cite the new rule IDs, R1 to R9 (the profile maps the old P1 to P12).
 
-- **breaking** `litt`: the accent is Blue 4 in both themes (`--litt-accent`, `--litt-accent-hover`, `--litt-accent-text`, `--litt-accent-tint`, `--litt-focus`), and the accent stays 0.12 (OKLab) from every data hue. `data-accent="mono"` on `<html>` or `<body>` runs a project monochrome: the primary action, links and the focus ring in the ink, the glow a block's lift. New: the slider's post, `--litt-slot`, `--litt-slot-shade`, `--litt-slot-fill`, `--litt-slot-fill-shade`, `--litt-plate-lift`, `--litt-cap`, `--litt-cap-held`, `--litt-cap-lift`, `--litt-cap-press`, `--litt-cap-grip`, `--litt-notch` and `--litt-notch-home`, with their colors (`bg-litt-slot`, `bg-litt-cap` and the rest); and `--litt-press-depth`, how far a pressed block sinks (0 under reduced motion). Gone: `--litt-block-round` and `--litt-block-roll`, the old slab slider's. Migrate: nothing in litt uses them any more; if your own code does, use `--litt-block-lift` for a raised block, or the post's tokens for a slider.
-- **changed** `button`: a secondary button is the raised block (`--litt-block`, `--litt-block-lift`), and its cast tightens while pressed. A press sinks a button half a pixel (`--litt-press-depth`) instead of shrinking it. The primary keeps its glow. Nothing in your code has to change.
+- **breaking** `litt`: the accent is Blue 4 in both themes (`--litt-accent`, `--litt-accent-hover`, `--litt-accent-text`, `--litt-accent-tint`, `--litt-focus`), and the accent stays 0.12 (OKLab) from every data hue. `data-accent="mono"` on `<html>` or `<body>` runs a project monochrome: the primary action, links and the focus ring in the ink, the glow a block's lift. New: the slider's post, `--litt-slot`, `--litt-slot-shade`, `--litt-slot-fill`, `--litt-slot-fill-shade`, `--litt-plate-lift`, `--litt-cap`, `--litt-cap-held`, `--litt-cap-lift`, `--litt-cap-press`, `--litt-cap-grip`, `--litt-notch` and `--litt-notch-home`, with their colors (`bg-litt-slot`, `bg-litt-cap` and the rest); and `--litt-press-depth`, how far a pressed block sinks (0 under reduced motion). New: the cut, `--litt-cut` and `--litt-cut-shade` (`bg-litt-cut`), a field's floor and its top wall's shade inside the control line; and `--litt-danger-fg` (`text-litt-danger-fg`), the words on a dialog's danger confirm. Gone: `--litt-block-round` and `--litt-block-roll`, the old slab slider's. Migrate: nothing in litt uses them any more; if your own code does, use `--litt-block-lift` for a raised block, or the post's tokens for a slider.
+- **changed** `button`: a secondary button is the raised block (`--litt-block`, `--litt-block-lift`), and its cast tightens while pressed. A press sinks a button half a pixel (`--litt-press-depth`) instead of shrinking it. The primary keeps its glow. New `variant="danger"`: a raised block with words in `--litt-danger`, for a destructive action; in a dialog's footer it is the one red fill (words in `--litt-danger-fg`), and it lies flat while disabled. Nothing else in your code has to change.
+- **changed** `select`: the trigger is a raised block, like a secondary button, since you press it: it sinks while pressed and stays down while its list is open. An invalid trigger keeps the danger line. Nothing in your code has to change.
+- **changed** `combobox`: the field is the cut, as Input's, and a picked value inside it is a raised tag. Nothing in your code has to change.
+- **changed** `number-field`: the field is the cut, and − and + are raised blocks inside it that sink when pressed and lie flat at either end of the range. Nothing in your code has to change.
+- **changed** `code-input`: every cell is the cut, as Input's. Nothing in your code has to change.
+- **changed** `token-input`: the field is the cut, and each token a raised tag you can lift out. Nothing in your code has to change.
+- **changed** `file-drop`: the zone is the cut, as Input's, in place of the dashed border, and a file dragged over it turns its line to the focus color. Nothing in your code has to change.
+- **changed** `color-picker`: the trigger is a raised block, as Select's; the color area and the hue track are cut into the popover, and their thumbs are caps that cast down. Nothing in your code has to change.
+- **changed** `kbd`: a key cap is a raised block, with a darker lower edge. Nothing in your code has to change.
+- **changed** `pagination`: the pages sit in a tray and the current one is the raised block in it; Previous and Next are blocks, and at either end one lies flat. Nothing in your code has to change.
+- **changed** `dialog`: the footer marks itself (`data-dialog-footer`), so a `danger` button in it is the one red fill. Nothing in your code has to change.
+- **changed** `progress`: the rail is a slot cut into the page (`--litt-slot`, `--litt-slot-shade`), and the fill sits in it. Nothing in your code has to change.
 - **changed** `segmented`: the track is a sunken tray and the selected segment the raised block in it, as the Switch's, 2px in, its corners the control radius less 2px. Nothing in your code has to change.
 - **changed** `tabs`: the segmented variant's track is the tray and its fill the raised block. The underline variant is unchanged. Nothing in your code has to change.
 - **changed** `option-picker`: words sit in the Segmented control's tray, the picked one the raised block. Nothing in your code has to change.
@@ -29,12 +40,12 @@ litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry
 - **changed** `cart`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `case-study`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `chart`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
-- **changed** `checkbox`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `checkbox`: the box is the cut, as a field's; checked, it fills with the ink and its top edge catches the light. A chosen radio fills with the ink and holds a raised bead in place of the dot. Nothing in your code has to change.
 - **changed** `code-block`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `cohort-grid`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `collection`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
-- **changed** `composer`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
-- **changed** `date-picker`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `composer`: the box is the cut, as Input's, and an attached file is a raised chip. Nothing in your code has to change.
+- **changed** `date-picker`: the trigger is a raised block, as Select's, since you press it. Nothing in your code has to change.
 - **changed** `details`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `dot-plot`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `form`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
@@ -42,12 +53,12 @@ litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry
 - **changed** `gauge`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `growth`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `heatmap`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
-- **changed** `input`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes; the field keeps its look while its press-material version is still open.
+- **changed** `input`: the field is a cut: a white floor (`--litt-cut`) a hair into the page, the control line around it, and its top wall's shade (`--litt-cut-shade`). Focus and an error still turn the line, and a disabled field still lies flat. Nothing in your code has to change.
 - **changed** `insights`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `legend`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `list-cover`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `message`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
-- **changed** `pad`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `pad`: the well is a cut you reach into, and the thumb a cap (`--litt-cap`, `--litt-cap-lift`) that sinks while held. Nothing in your code has to change.
 - **changed** `plan`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `product`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `product-card`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
@@ -57,9 +68,9 @@ litt's rules are rewritten as nine (the litt.md profile, v1.0), and the registry
 - **changed** `stat`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `switch`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `table`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
-- **changed** `tag`: its comments call its look a flat chip (R3's flat step) and cite the v1.0 rules. Nothing else changes.
+- **changed** `tag`: new `raised`, a plain tag drawn as a raised block, for a tag you can lift out of a field (Token input and Combobox use it). Without it a tag is the flat chip it was.
 - **changed** `thinking`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
-- **changed** `time-scrubber`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
+- **changed** `time-scrubber`: the track is a slot cut into the page and the needle a cap riding over it. Nothing in your code has to change.
 - **changed** `timeline`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `tool-call`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
 - **changed** `usage`: its comments cite the v1.0 rules (R1 to R9). Nothing else changes.
