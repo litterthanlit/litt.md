@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Layout",
   verbs: ["watch"],
   summary:
-    "A thin rail for work that is happening now, such as an upload or an import: the label and a reading above it, the done part in the foreground, filling on the instant tier. It ends done or failed, said in words and announced once. With no value yet the rail stays empty: nothing sweeps, pulses or shimmers.",
+    "A slot cut into the page for work that is happening now, such as an upload or an import: the label and a reading above it, the done part in the foreground, filling the channel under its walls on the instant tier. It ends done or failed, said in words and announced once. With no value yet the slot stays empty: nothing sweeps, pulses or shimmers.",
   tiers: ["instant"],
 };
 
@@ -22,7 +22,7 @@ export const docs: PageDocs = {
 
 <Progress label="Uploading brief.pdf" value={3.2} max={8} valueText="3.2 of 8 MB" />
 
-// It ends in words: done fills the rail, failed keeps it where it stopped.
+// It ends in words: done fills the slot, failed keeps the fill where it stopped.
 <Progress label="Importing pages" status="failed" value={412} max={1204} message="The export file ends early. Export it again." />`,
   use: [
     "Work the person started and is waiting on, with a known end: an upload, an import, a build with counted steps.",
@@ -36,9 +36,9 @@ export const docs: PageDocs = {
   a11y: [
     "role=\"progressbar\", named by the label, with aria-valuenow while the value is known and the reading as aria-valuetext.",
     "Done and failed are announced once in a polite status, so a long wait need not be watched.",
-    "The message under the rail describes it (aria-describedby), so a failure's reason is read with the bar.",
-    "Status is said in words, never by the rail's color alone: failed is red and says Failed.",
-    "Under reduced motion the rail jumps to each new value.",
+    "The message under the slot describes it (aria-describedby), so a failure's reason is read with the bar.",
+    "Status is said in words, never by the fill's color alone: failed is red and says Failed.",
+    "Under reduced motion the fill jumps to each new value.",
   ],
 };
 
@@ -100,7 +100,7 @@ export default function ProgressPage() {
         tier="instant"
         align="start"
         code="UploadDemo"
-        caption="Press Upload. For a moment nothing is known, so the rail is empty and the reading says Waiting; then it fills as the bytes go, a transform on the instant tier, and the reading counts in tabular figures. At the end the rail is full, the reading says Done, and a screen reader hears it once."
+        caption="Press Upload. For a moment nothing is known, so the slot is empty and the reading says Waiting; then it fills as the bytes go, a transform on the instant tier, and the reading counts in tabular figures. The fill sits down in the channel: the top wall's shade and the lit lower wall are drawn over it. At the end the slot is full, the reading says Done, and a screen reader hears it once."
       >
         <UploadDemo />
       </Stage>
@@ -110,7 +110,7 @@ export default function ProgressPage() {
         tier="instant"
         align="start"
         code="StatesDemo"
-        caption="Waiting, running, done and failed. Waiting is an empty rail and a word, with nothing moving. Failed keeps the rail where it stopped, in the danger color, says Failed, and the message says what to do."
+        caption="Waiting, running, done and failed. Waiting is an empty slot and a word, with nothing moving. Failed keeps the fill where it stopped, in the danger color, says Failed, and the message says what to do."
       >
         <StatesDemo />
       </Stage>

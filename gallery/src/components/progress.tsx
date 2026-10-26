@@ -4,14 +4,19 @@
  * work goes on, then ends done or failed.
  *
  * - Anatomy: the Meter's lockup. The label at the small size in --fg, the reading at the end in tabular figures at the caption
- *   size in --fg-subtle ("3.2 of 8 MB", or the percent), and under them a 4px rail at the control radius: the track at
- *   fg 12%, the done part in --fg. Never the accent and never a data hue: it is one quantity.
- * - Ending: done fills the rail and the reading says "Done"; failed keeps the rail where it stopped, in --danger, and the
- *   reading says "Failed". A message under the rail says the rest (what failed and what to do, or the time left).
- * - Not known yet: with no value the rail stays empty and the reading says so in words ("Waiting"). Nothing moves on its
- *   own: no stripes, no shimmer, no sweep. A wait that has no end in sight is a spinner in a button, not a rail.
+ *   size in --fg-subtle ("3.2 of 8 MB", or the percent), and under them a slot cut into the page (R3, material.md 6: a
+ *   slot is what fills), 8px tall at the control radius: the floor --slot, the done part in it in --fg. The walls
+ *   (--slot-shade: the top one's shade, the lit lower one) are drawn on a layer above the fill, so the fill sits down in
+ *   the channel instead of covering its walls. Never the accent and never a data hue: it is one quantity.
+ * - Ending: done fills the slot and the reading says "Done"; failed keeps the fill where it stopped, in --danger (a status
+ *   mark, which R7 allows), and the reading says "Failed". A message under the slot says the rest (what failed and what
+ *   to do, or the time left).
+ * - Not known yet: with no value the slot stays empty and the reading says so in words ("Waiting"). Nothing moves on its
+ *   own: no stripes, no shimmer, no sweep. A wait that has no end in sight is a spinner in a button, not a slot.
  * - Motion: the done part is a full-width band scaled from the left, so only a transform changes, on the instant tier,
- *   which keeps up with a value that updates often. Under reduced motion it jumps.
+ *   which keeps up with a value that updates often. Its end is square: a radius would squash with the scale. Under
+ *   reduced motion it jumps.
+ * - Forced colors drops the walls and the floor, so the slot gets a real border and the fill takes CanvasText.
  * - Accessibility: role="progressbar", named by the label, with aria-valuenow while the value is known and the reading
  *   as aria-valuetext. Ending done or failed is said once in a polite status, so a long wait need not be watched.
  */
@@ -22,24 +27,22 @@ export type ProgressStatus = "active" | "done" | "failed";
 export type ProgressProps = {
   /** What is in progress: "Uploading brief.pdf", "Importing 1,204 pages". */
   label: ReactNode;
-  /** How far along it is, from 0 to max. Leave it out while that is not known yet: the rail stays empty and nothing moves. */
+  /** How far along it is, from 0 to max. Leave it out while that is not known yet: the slot stays empty and nothing moves. */
   value?: number;
   /** The value that means finished. */
   max?: number;
   /** The reading at the end of the label row, and what a screen reader hears: "3.2 of 8 MB". Default: the percent. */
   valueText?: string;
-  /** active while it runs; done fills the rail and says Done; failed keeps the rail where it stopped and says Failed. */
+  /** active while it runs; done fills the slot and says Done; failed keeps the fill where it stopped and says Failed. */
   status?: ProgressStatus;
-  /** A line under the rail: the time left, or what failed and what to do about it. */
+  /** A line under the slot: the time left, or what failed and what to do about it. */
   message?: ReactNode;
   /** Hides the label row but keeps it as the name, for a row that already shows the name, such as a file in a list. */
   hideLabel?: boolean;
   className?: string;
 };
 
-const TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
-
-/** A rail for work that is happening now: it fills as the value grows, then ends done or failed, said in words. */
+/** A slot for work that is happening now: it fills as the value grows, then ends done or failed, said in words. */
 export function Progress({ label, value, max = 100, valueText, status = "active", message, hideLabel = false, className = "" }: ProgressProps) {
   const labelId = useId();
   const messageId = useId();
@@ -65,23 +68,24 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
         aria-valuemax={max}
         aria-valuenow={known ? Math.round(share * max) : undefined}
         aria-valuetext={reading}
-        className={"h-1 overflow-hidden rounded-control forced-colors:border " + TRACK}
+        className="relative h-2 overflow-hidden rounded-control bg-slot forced-colors:border"
       >
         {/* A full-width band scaled from the left: only a transform changes as the value grows. */}
         <div
           className={
-            "h-full w-full origin-left rounded-control transition-transform duration-(--dur-instant) ease-litt " +
+            "h-full w-full origin-left transition-transform duration-(--dur-instant) ease-litt forced-colors:bg-[CanvasText] " +
             (status === "failed" ? "bg-danger" : "bg-fg")
           }
           style={{ transform: `scaleX(${share})` }}
         />
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-(--slot-shade)" />
       </div>
       {message && (
         <p id={messageId} className={"text-small " + (status === "failed" ? "text-danger" : "text-fg-subtle")}>
           {message}
         </p>
       )}
-      {/* The end is said once, so nobody has to watch the rail. Kept mounted, so the change is announced. */}
+      {/* The end is said once, so nobody has to watch the slot. Kept mounted, so the change is announced. */}
       <span role="status" className="sr-only">
         {status === "active" ? "" : `${typeof label === "string" ? `${label}: ` : ""}${status === "done" ? "done" : "failed"}.`}
       </span>

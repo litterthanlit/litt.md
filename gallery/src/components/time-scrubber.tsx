@@ -3,14 +3,20 @@
  * replay its log up to there (components.md, "Time scrubber"). The ruler moves; the needle stays in the middle.
  *
  * - Anatomy: the Slider's label row (the label at the small size in --fg, the reading at its end in tabular figures, with the
- *   label of the event under the needle before it, in --fg-subtle), then a 56px track: the Segmented control's well
- *   (fg 5%, the inset --line, the surface radius). On it a ruler: a minor tick every step (8px, --line-strong), a major
- *   tick every `majorEvery` steps (14px, --fg-disabled) with its time under it at the caption size, tabular, and
- *   the events as 2px marks, 20px tall, in their status color (neutral is --fg-muted). The ticks are lighter than any
- *   mark in light mode and dimmer in dark, so a mark stands out by lightness, height and width, not by hue alone (in
- *   light mode the status colors are as dark as --fg-subtle, so --fg-subtle ticks would hide them). The needle is
- *   a 2px --fg line in the middle, over the ticks and pins and ending above the times so it never cuts one, and never
- *   the accent (R6). Steps sit 12px apart.
+ *   label of the event under the needle before it, in --fg-subtle), then a 56px track: the Pad's well, because a
+ *   scrubber is a one-axis pad, a ruler you reach into (R3, material.md 6: the cut). The --cut floor inside the
+ *   --line-control line, with its top wall's shade (--cut-shade), at the surface radius; the line and the shade are
+ *   drawn on a layer above the ruler, so the ruler passes under the edge. On the floor a ruler: a minor tick every step
+ *   (8px, --notch, the step mark), a major tick every `majorEvery` steps (14px, --fg-disabled) with its time under it
+ *   at the caption size in --fg-subtle, tabular, and the events as 2px marks, 20px tall, in their status color
+ *   (neutral is --fg-muted). The ticks are lighter than any mark in light mode and dimmer in dark, so a mark stands
+ *   out by lightness, height and width, not by hue alone (in light mode the status colors are as dark as
+ *   --fg-subtle, so --fg-subtle ticks would hide them). Steps sit 12px apart.
+ * - The needle is the Slider's cap, fixed in the middle and riding over the ruler: 8px wide, at the control radius less
+ *   2px, with a grip line down its face (--cap, --cap-lift: lit on its top edge, casting straight down, R2). It stands
+ *   from 4px under the top wall to above the times, so it never cuts one, and the grip line is the exact time. An event
+ *   it lands on slides under it; the label row names that event (R5). Never the accent (R6). The hand holds the ruler,
+ *   not the cap, so the cap never sinks.
  * - Drag: the ruler follows the pointer one to one, as the Slider's thumb does. Let go and it settles on the nearest
  *   step, or on an event within half a step of the needle, on the responsive tier and from rest, so it never passes
  *   either end. A press without a drag goes to the time under the pointer.
@@ -25,7 +31,10 @@
  *   exactly where it does without fun mode. Reduced motion turns it off.
  * - Motion: the ruler moves by transform only. Under reduced motion it jumps to where it settles.
  * - Touch: the track owns sideways drags (data-no-drag, touch-action pan-y), so the page still scrolls up and down.
- * - Disabled: the well at fg 3%, the needle --fg-disabled, no pointer and no tab stop.
+ * - Disabled: everything lies flat: the well --surface-3 with the plain --line hairline (a step below the cap, so the
+ *   flat cap still shows), the cap --surface-2 with a --line edge and a --line grip. No pointer and no tab stop.
+ * - Forced colors drops box-shadow and the floors, so the track gets a real border and the cap a border and the
+ *   system highlight.
  * - Long runs: the minor ticks are one repeating background, and only the major ticks near the needle are drawn.
  */
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
@@ -310,15 +319,13 @@ export function TimeScrubber({
         className={
           "relative h-control-lg touch-pan-y overflow-hidden rounded-surface select-none forced-colors:border " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-          (disabled
-            ? "cursor-not-allowed bg-[color-mix(in_oklab,var(--fg)_3%,transparent)] shadow-[inset_0_0_0_1px_var(--line)]"
-            : "cursor-grab bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] shadow-[inset_0_0_0_1px_var(--line)] active:cursor-grabbing")
+          (disabled ? "cursor-not-allowed bg-surface-3" : "cursor-grab bg-cut active:cursor-grabbing")
         }
       >
         {/* The ruler: its start (min) sits under the needle when x is 0, and it slides left as time goes on. */}
         <motion.div aria-hidden="true" className="absolute inset-y-0 left-1/2" style={{ x }}>
           <div
-            className="absolute top-2 left-0 h-2 bg-[repeating-linear-gradient(to_right,var(--line-strong)_0_1px,transparent_1px_12px)]"
+            className="absolute top-2 left-0 h-2 bg-[repeating-linear-gradient(to_right,var(--notch)_0_1px,transparent_1px_12px)]"
             style={{ width: span + 1 }}
           />
           {majors.map((t) => (
@@ -335,13 +342,25 @@ export function TimeScrubber({
             />
           ))}
         </motion.div>
+        {/* The well's edge and its top wall's shade, over the ruler, so it slides under them. */}
         <span
           aria-hidden="true"
           className={
-            "pointer-events-none absolute top-1 left-1/2 h-6.5 w-0.5 -translate-x-1/2 rounded-pill forced-colors:bg-[Highlight] " +
-            (disabled ? "bg-fg-disabled" : "bg-fg")
+            "pointer-events-none absolute inset-0 rounded-surface " +
+            (disabled ? "shadow-[inset_0_0_0_1px_var(--line)]" : "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]")
           }
         />
+        {/* The cap: its grip line marks the exact time. */}
+        <span
+          aria-hidden="true"
+          className={
+            "pointer-events-none absolute top-1 left-1/2 h-6 w-2 -translate-x-1/2 rounded-[calc(var(--radius-control)-2px)] " +
+            "forced-colors:border forced-colors:bg-[Highlight] " +
+            (disabled ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]" : "bg-cap shadow-(--cap-lift)")
+          }
+        >
+          <span className={"absolute inset-y-2 left-1/2 w-px -translate-x-1/2 " + (disabled ? "bg-line" : "bg-cap-grip")} />
+        </span>
       </div>
       <span id={hintId} className="sr-only">
         {sorted.length ? "Arrow keys move a step. Page Up and Page Down go to the next and previous event." : "Arrow keys move a step."}

@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["drag"],
   summary:
-    "Two values set at once on one surface, like tone against length. A dark well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. The thumb follows the pointer and the keys at once, with no easing. Only the tooltip fades, on the responsive tier.",
+    "Two values set at once on one surface, like tone against length. A well cut into the page with a static dot grid on its floor, a round cap with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. The cap follows the pointer and the keys at once, with no easing, and sinks while held. Only the tooltip fades, on the responsive tier.",
   tiers: ["responsive"],
 };
 
@@ -191,7 +191,7 @@ export default function PadPage() {
         tier="responsive"
         code="VoiceDemo"
         size="lg"
-        caption="Press anywhere, drag, or use the arrow keys. The thumb and its crosshairs follow at once, with no easing, and the tooltip says the value in words. The dashed circle is the default, and Reset takes the thumb back to it. The words beside Reset say the same thing, and the reply under the pad changes with the tone and shows its length. Only the tooltip fades, on the responsive tier."
+        caption="Press anywhere, drag, or use the arrow keys. The thumb, a round cap, and its crosshairs follow at once, with no easing; while you hold it, the cap sinks half a pixel and its cast tightens. The tooltip says the value in words. The dashed circle is the default, and Reset takes the thumb back to it. The words beside Reset say the same thing, and the reply under the pad changes with the tone and shows its length. Only the tooltip fades, on the responsive tier."
       >
         <VoiceDemo />
       </Stage>
@@ -209,7 +209,7 @@ export default function PadPage() {
         title="Disabled"
         tier="responsive"
         code="DisabledDemo"
-        caption="The disabled pad is muted all the way through: a flat thumb with a hairline edge, fainter dots and crosshairs, and every word dimmed. Tab skips it and the pointer does nothing. The help text says why it is locked."
+        caption="The disabled pad lies flat all the way through: the well and the thumb on the flat surface with hairline edges, fainter dots and crosshairs, and every word dimmed. Tab skips it and the pointer does nothing. The help text says why it is locked."
       >
         <DisabledDemo />
       </Stage>

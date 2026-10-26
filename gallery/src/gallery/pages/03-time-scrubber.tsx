@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["drag", "press"],
   summary:
-    "A ruler of time that slides under a fixed needle, with what happened along the run marked on it in its status color. Drag it and it follows one to one; let go and it settles on the nearest step, or on an event let go near, on the responsive tier. In fun mode it can be thrown, and coasts to the event its speed reaches. Page Up and Page Down go from event to event.",
+    "A ruler of time in a well you reach into, sliding under a fixed cap, with what happened along the run marked on it in its status color. Drag it and it follows one to one; let go and it settles on the nearest step, or on an event let go near, on the responsive tier. In fun mode it can be thrown, and coasts to the event its speed reaches. Page Up and Page Down go from event to event.",
   fun: "Throw the ruler: it coasts as far as your speed carries it and lands on the event nearest there.",
   tiers: ["responsive"],
 };
@@ -130,7 +130,7 @@ export default function TimeScrubberPage() {
         tier="responsive"
         align="start"
         code="DayDemo"
-        caption="Any units: here hours, in quarter-hour steps with a labelled tick every hour, formatted as a clock. Events are marked in their status color, neutral in fg-muted, and the needle is always fg. Disabled is flat, skipped by Tab and ignores the pointer."
+        caption="Any units: here hours, in quarter-hour steps with a labelled tick every hour, formatted as a clock. Events are marked in their status color, neutral in fg-muted; the needle is the slider's cap, never a color, and an event it lands on slides under it while the label row names it. Disabled lies flat, the well and the cap alike, is skipped by Tab and ignores the pointer."
       >
         <DayDemo />
       </Stage>
