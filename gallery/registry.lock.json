@@ -110,6 +110,10 @@
       "version": "2026.10.19",
       "hash": "0e0950f318d38a8d"
     },
+    "curve-editor": {
+      "version": "2026.10.27",
+      "hash": "bb2b40e9c5cad2cd"
+    },
     "dashboard": {
       "version": "2026.10.22",
       "hash": "d702ebd49b3b9866"
@@ -186,6 +190,10 @@
       "version": "2026.10.26",
       "hash": "9653011af1dede93"
     },
+    "inspector": {
+      "version": "2026.10.27",
+      "hash": "17b1c571481f44cc"
+    },
     "kbd": {
       "version": "2026.10.26",
       "hash": "ea575e1562a67b6b"
@@ -228,7 +236,7 @@
     },
     "motion": {
       "version": "2026.10.27",
-      "hash": "240710e73cc99a20"
+      "hash": "d9433fb1a2b8fbdc"
     },
     "number-field": {
       "version": "2026.10.26",
@@ -345,6 +353,10 @@
     "spread": {
       "version": "2026.10.26",
       "hash": "520a17ad30ad6dbd"
+    },
+    "spring-editor": {
+      "version": "2026.10.27",
+      "hash": "7e37983458b10bd7"
     },
     "stat": {
       "version": "2026.10.26",
