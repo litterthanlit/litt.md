@@ -1820,6 +1820,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (keyed !== "trigger,spend,seniority") throw new Error(`Space, ArrowUp, ArrowDown, Space gave ${keyed}, not trigger,spend,seniority`);
           const said = await builder.locator(":scope > [role=status]").innerText();
           if (!said.includes("Moved Seniority is Manager to position 3 of 3")) throw new Error(`the status says "${said}"`);
+          await builder.scrollIntoViewIfNeeded(); // with other items on the page, the moved row can sit under the fold, where the mouse cannot reach it
           const grip = await handle.boundingBox();
           const first = await builder.getByRole("group", { name: "Condition 1 of 3", exact: true }).boundingBox();
           await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
