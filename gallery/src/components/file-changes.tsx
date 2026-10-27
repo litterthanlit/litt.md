@@ -42,8 +42,9 @@
  *   aria-controls while open, named in one run by the path, the kind, the lines in words and the decision: "src/app.tsx,
  *   added, 12 lines added, kept"; the drawn parts are hidden from it), then its verbs; Enter or Space opens the diff,
  *   whose scroller is the next stop. No single-letter keys: every verb is a Tab stop. One polite
- *   status, filled from the difference between renders so a caller's own change speaks too, says "Kept
- *   src/app/layout.tsx", "Undid 3 files" and "All reviewed: 3 kept, 1 undone", never on the first render. When a
+ *   status says the decisions made with this list's own buttons once the caller has set them: "Kept
+ *   src/app/layout.tsx", "Undid 3 files" and "All reviewed: 3 kept, 1 undone", never on the first render. A second
+ *   copy of the same changes (an edit call's beside the review) shows a decision made in the other without saying it. When a
  *   pressed verb had focus and is replaced, focus moves to the verb that replaces it; when Keep all leaves, focus
  *   moves to the header, which reads the receipt (Tool approval's pattern).
  * - Motion: only transform and opacity move, plus color on the instant tier. The chevron turns a quarter on the
@@ -312,11 +313,15 @@ export function FileChanges({
   const handoff = useRef<Handoff | null>(null);
   /* The files a press here asked to keep. Only those pop in fun mode: a state the caller changes alone settles as in Calm. */
   const byHand = useRef(new Set<string>());
+  /* The files a press here decided, for the live region. A second copy of the same changes (an edit call's beside the
+     review) shows the decision without saying it again. */
+  const pressed = useRef(new Set<string>());
 
   const press = (ids: string[], decision: FileDecision, bulk: boolean, e: MouseEvent<HTMLButtonElement>) => {
     if (!ids.length) return;
     handoff.current = e.currentTarget === document.activeElement ? { ids, decision, bulk } : null;
     if (decision === "kept") ids.forEach((i) => byHand.current.add(i));
+    ids.forEach((i) => pressed.current.add(i));
     onDecide?.(ids, decision);
   };
   const pendingIds = rows.filter((r) => r.state === "pending").map((r) => r.change.id);
@@ -343,20 +348,22 @@ export function FileChanges({
     }
   });
 
-  /* One voice for every change, the caller's own included. Quiet on the first render. */
+  /* One voice for the decisions made here. Quiet on the first render, and for a change only the caller made. */
   const [said, setSaid] = useState("");
   useEffect(() => {
     const before = last.current;
     last.current = new Map(rows.map((r) => [r.change.id, r.state]));
     if (!before) return;
-    const became = (s: FileDecision) => rows.filter((r) => r.state === s && before.has(r.change.id) && before.get(r.change.id) !== s);
+    const became = (s: FileDecision) =>
+      rows.filter((r) => r.state === s && before.has(r.change.id) && before.get(r.change.id) !== s && pressed.current.has(r.change.id));
     const kept = became("kept");
     const undone = became("undone");
+    for (const r of [...kept, ...undone]) pressed.current.delete(r.change.id);
     const words: string[] = [];
     if (kept.length) words.push(decided("Kept", kept));
     if (undone.length) words.push(decided("Undid", undone));
     const wasPending = rows.some((r) => (before.get(r.change.id) ?? "pending") === "pending");
-    if (rows.length && review.pending === 0 && wasPending) words.push(receipt(review));
+    if (words.length && review.pending === 0 && wasPending) words.push(receipt(review));
     if (words.length) setSaid(words.join(". "));
   });
 

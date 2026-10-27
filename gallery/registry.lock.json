@@ -15,8 +15,8 @@
       "hash": "920e36954b29ebcf"
     },
     "agent": {
-      "version": "2026.10.22",
-      "hash": "e94b6101eb8424b0"
+      "version": "2026.10.27",
+      "hash": "f38a044d7cac951c"
     },
     "app-shell": {
       "version": "2026.10.26",
@@ -136,7 +136,7 @@
     },
     "file-changes": {
       "version": "2026.10.27",
-      "hash": "16c29e0efb7fe23a"
+      "hash": "b3954bdda02922da"
     },
     "file-drop": {
       "version": "2026.10.26",
