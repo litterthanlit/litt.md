@@ -27,7 +27,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["select"],
   summary:
-    "Ninety-eight icons and the status mark, drawn by hand on a 16-unit grid with a 1.5 stroke, round caps and joins, in the text color. Each one fits one of four keylines, so a circle, a square and a box read the same size in a row. They are still: an icon never spins, pulses or draws itself in.",
+    "Ninety-nine icons and the status mark, solid, drawn by hand on a 16-unit grid in the text color. A shape that encloses something is filled and its details are cut out of it, and a mark that is only a line is a 1.5 stroke with round caps and joins, so an icon weighs what a 14px word weighs. Each one fits one of four keylines, so a circle, a square and a box read the same size in a row. They are still: an icon never spins, pulses or draws itself in.",
   tiers: [],
 };
 
@@ -49,7 +49,7 @@ import { AlertIcon, SettingsIcon, ShareIcon } from "@/components/icons";
   The deploy failed.
 </p>
 
-// Larger, for an empty state. The stroke grows with it.
+// Larger, for an empty state. The drawing grows with it.
 <SearchIcon size={24} className="text-fg-subtle" />`,
   use: [
     "A control needs a mark people already know: close, search, more, copy, settings.",
@@ -189,6 +189,7 @@ const FAMILIES: [family: string, icons: [name: string, meaning: string, words: s
     ["TrendUp", "A value rising.", "trending growth increase"],
     ["TrendDown", "A value falling.", "trending decline decrease"],
     ["CreditCard", "Billing, payment and plans.", "billing payment card plan"],
+    ["Bag", "A store's cart, and buying.", "cart shop store basket buy checkout"],
   ]],
 ];
 
@@ -204,7 +205,7 @@ const SIZES = [
   { value: "32", label: "32" },
 ];
 
-/* The selected segment (P12), one surface up from the raised stage. */
+/* The selected segment (R3), one surface up from the raised stage. */
 const CELL =
   "group/cell grid h-20 min-w-0 content-center justify-items-center gap-3 rounded-control px-1 select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt " +
@@ -244,18 +245,15 @@ function GridLines({ keyline }: { keyline?: "circle" | "square" | "landscape" | 
   );
 }
 
-/* Marks with a solid part, which a hairline skeleton in the canvas color would cover. */
-const FILLED = new Set(["StopIcon", "GripIcon"]);
-
-/** An icon drawn at the size of its box, over the grid, with its centre line traced in the canvas color. */
+/** An icon drawn at the size of its box, over the grid, with its paths traced in the canvas color. */
 function Board({ name, keyline }: { name: string; keyline?: "circle" | "square" | "landscape" | "portrait" }) {
   const Icon = SET[name]!;
   return (
     <div className="relative aspect-square w-full overflow-hidden rounded-control bg-canvas shadow-[inset_0_0_0_1px_var(--line)]">
       <GridLines keyline={keyline} />
       <Icon className="absolute inset-0 size-full text-fg" />
-      {/* The skeleton: the same paths at a hairline, so you can see where each stroke is centred. A filled mark has none. */}
-      {!FILLED.has(name) && <Icon className="absolute inset-0 size-full text-canvas" strokeWidth={0.06} />}
+      {/* The skeleton: the same paths unfilled at a hairline, so you can see each shape's edge and where each line is centred. */}
+      <Icon className="absolute inset-0 size-full text-canvas [&>path]:fill-none [&>path]:[stroke-width:0.06]" />
     </div>
   );
 }
@@ -292,14 +290,14 @@ function Inspector({ entry, ref }: { entry: Entry; ref: Ref<HTMLDivElement> }) {
         {[16, 24, 32].map((s) => (
           <figure key={s} className="grid justify-items-center gap-2">
             <Icon size={s} />
-            <figcaption className="font-mono text-caption text-fg-subtle">{s}</figcaption>
+            <figcaption className="tabular-nums text-caption font-normal text-fg-subtle">{s}</figcaption>
           </figure>
         ))}
       </div>
       <div className="grid gap-1">
         <h3 className="font-mono text-small text-fg">{entry.name}</h3>
         <p className="text-small text-fg-muted">{entry.meaning}</p>
-        <p className="font-mono text-caption text-fg-subtle">
+        <p className="text-caption font-normal text-fg-subtle">
           {entry.family} · {entry.words.split(" ").join(", ")}
         </p>
       </div>
@@ -389,7 +387,7 @@ function SetDemo() {
               <div key={g.family} role="group" aria-labelledby={`${id}-${g.family}`} className="grid gap-3">
                 <div id={`${id}-${g.family}`} className="flex items-baseline gap-3 text-small text-fg">
                   {g.family}
-                  <span className="font-mono text-caption text-fg-subtle">{g.icons.length}</span>
+                  <span className="tabular-nums text-caption font-normal text-fg-subtle">{g.icons.length}</span>
                 </div>
                 <div className="grid grid-cols-[repeat(auto-fill,minmax(5.25rem,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(6.75rem,1fr))] gap-1">
                   {g.icons.map((e) => {
@@ -451,7 +449,7 @@ function KeylinesDemo() {
           <Board name={k.name} keyline={k.keyline} />
           <figcaption className="grid gap-0.5">
             <span className="text-small text-fg">{k.label}</span>
-            <span className="font-mono text-caption text-fg-subtle">{k.size}</span>
+            <span className="tabular-nums text-caption font-normal text-fg-subtle">{k.size}</span>
           </figcaption>
         </figure>
       ))}
@@ -491,14 +489,35 @@ function ContextDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/* Eighteen of the set, a row each of things, actions and places. */
+const TILE_ICONS = [
+  ["Search", Icons.SearchIcon], ["Copy", Icons.CopyIcon], ["Send", Icons.SendIcon], ["Archive", Icons.ArchiveIcon], ["Settings", Icons.SettingsIcon], ["Command", Icons.CommandIcon],
+  ["Folder", Icons.FolderIcon], ["Code", Icons.CodeIcon], ["Terminal", Icons.TerminalIcon], ["Branch", Icons.GitBranchIcon], ["Layers", Icons.LayersIcon], ["Globe", Icons.GlobeIcon],
+  ["Mail", Icons.MailIcon], ["Bell", Icons.BellIcon], ["Calendar", Icons.CalendarIcon], ["Lock", Icons.LockIcon], ["Zap", Icons.ZapIcon], ["Sparkle", Icons.SparkleIcon],
+] as const;
+
+function IconsTile() {
+  return (
+    <div role="img" aria-label={`Icons: ${TILE_ICONS.map(([name]) => name).join(", ")}`} className="grid grid-cols-6 gap-1 text-fg-muted">
+      {TILE_ICONS.map(([name, Glyph]) => (
+        <span key={name} className="grid size-control-md place-items-center">
+          <Glyph />
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export default function IconsPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<IconsTile />}>
       <Stage
         title="The set"
         size="lg"
         align="start"
-        caption="Search by name, meaning or what people call it. Pick one, or move with the arrow keys, to see it on its 16-unit grid with the stroke's centre line traced, and at 16, 24 and 32. Copy puts the JSX on the clipboard."
+        caption="Search by name, meaning or what people call it. Pick one, or move with the arrow keys, to see it on its 16-unit grid with its paths traced, and at 16, 24 and 32. Copy puts the JSX on the clipboard."
       >
         <SetDemo />
       </Stage>

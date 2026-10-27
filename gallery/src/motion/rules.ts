@@ -13,7 +13,9 @@
  * - bounce is at most 0.12, and exactly 0 on responsive      -> bounce
  * - an exit lasts round(visual time x --exit)                -> exit, and tokensSnippet
  * - corners are 0, --radius-control (4), --radius-surface
- *   (control + 4) or the pill                                -> control
+ *   (control + 4) or the pill, and a block set 2px into a
+ *   control the control radius less 2px (it follows the
+ *   control, so nothing here changes for it)                -> control
  * - the last linear() stop is 1 and responsive never passes
  *   1                                                        -> spring.ts toCss
  *

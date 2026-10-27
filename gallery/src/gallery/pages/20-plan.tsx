@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import type { StepStatus } from "@/components/icons";
 import { Plan, type PlanStep } from "@/components/plan";
 import { DeviceProvider } from "@/motion";
+import { ToolCall } from "@/components/tool-call";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
+import { useLoop } from "../tile";
 
 export const meta: PageMeta = {
   id: "plan",
@@ -213,12 +215,43 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+const RUN: (Omit<PlanStep, "status"> & { doing: string; did: string; target: string; seconds: number })[] = [
+  { id: "read", label: "Read the layout of the Northwind site", doing: "Reading", did: "Read", target: "src/app/layout.tsx", seconds: 0.2 },
+  { id: "grid", label: "Move the case studies to the new grid", doing: "Editing", did: "Edited", target: "src/pages/work.tsx", seconds: 1.4 },
+  { id: "build", label: "Run the build", doing: "Running", did: "Ran", target: "npm run build", seconds: 31 },
+  { id: "preview", label: "Publish a preview", doing: "Publishing", did: "Published", target: "northwind-git-grid.vercel.app", seconds: 4 },
+];
+
+/** While the pointer rests on the tile, the plan works through its steps with a tool call for each, holds the finished
+    turn, then starts again. At rest it shows the finished plan. */
+function PlanTile() {
+  const total = RUN.length + 2; // each step, then two beats on the finished plan
+  const [ref, step] = useLoop<HTMLDivElement>(total, 1400, RUN.length);
+  const steps: PlanStep[] = RUN.map(({ id, label }, i) => ({ id, label, status: i < step ? "done" : i === step ? "running" : "pending" }));
+  return (
+    <div ref={ref} className="grid w-full max-w-md gap-6">
+      <Plan label="Move the Northwind site to the new grid" steps={steps} />
+      <div className="grid min-h-44 content-start gap-1 border-t border-line pt-4">
+        {RUN.slice(0, step + 1).map((s, i) =>
+          i < step ? (
+            <ToolCall key={s.id} status="done" action={s.did} target={s.target} duration={s.seconds} />
+          ) : (
+            <ToolCall key={s.id} status="running" action={s.doing} target={s.target} />
+          ),
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function PlanPage() {
   const [moveKey, replayMove] = useReplay();
   const [failedKey, replayFailed] = useReplay();
   const [panelKey, replayPanel] = useReplay();
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<PlanTile />}>
       <Stage
         title="Moving a site, step by step"
         tier="instant"

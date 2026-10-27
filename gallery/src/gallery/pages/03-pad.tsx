@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["drag"],
   summary:
-    "Two values set at once on one surface, like tone against length. A dark well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. The thumb follows the pointer and the keys at once, with no easing. Only the tooltip fades, on the responsive tier.",
+    "Two values set at once on one surface, like tone against length. A well cut into the page with a static dot grid on its floor, a round cap with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. The cap follows the pointer and the keys at once, with no easing, and sinks while held. Only the tooltip fades, on the responsive tier.",
   tiers: ["responsive"],
 };
 
@@ -112,7 +112,7 @@ function VoiceDemo() {
       <div className="grid gap-1 border-t border-line pt-4">
         <p className="text-small text-fg-subtle">Reply to Mira Halden</p>
         <p className="text-small text-fg-muted">{REPLIES[toneOf(voice.y)]}</p>
-        <p className="font-mono text-caption font-normal tabular-nums text-fg-subtle">About {wordsOf(voice.x)} words</p>
+        <p className="text-caption font-normal tabular-nums text-fg-subtle">About {wordsOf(voice.x)} words</p>
       </div>
     </div>
   );
@@ -163,15 +163,35 @@ function DisabledDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function VoiceTile() {
+  const [voice, setVoice] = useState<PadValue>({ x: 10, y: 65 });
+  return (
+    <div className="w-full max-w-sm">
+      <Pad
+        label="Your voice"
+        help={formatVoice(voice)}
+        x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }}
+        y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }}
+        value={voice}
+        onValueChange={setVoice}
+        defaultMark={VOICE_DEFAULT}
+        formatValue={formatVoice}
+      />
+    </div>
+  );
+}
+
 export default function PadPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<VoiceTile />}>
       <Stage
         title="Your voice"
         tier="responsive"
         code="VoiceDemo"
         size="lg"
-        caption="Press anywhere, drag, or use the arrow keys. The thumb and its crosshairs follow at once, with no easing, and the tooltip says the value in words. The dashed circle is the default, and Reset takes the thumb back to it. The words beside Reset say the same thing, and the reply under the pad changes with the tone and shows its length. Only the tooltip fades, on the responsive tier."
+        caption="Press anywhere, drag, or use the arrow keys. The thumb, a round cap, and its crosshairs follow at once, with no easing; while you hold it, the cap sinks half a pixel and its cast tightens. The tooltip says the value in words. The dashed circle is the default, and Reset takes the thumb back to it. The words beside Reset say the same thing, and the reply under the pad changes with the tone and shows its length. Only the tooltip fades, on the responsive tier."
       >
         <VoiceDemo />
       </Stage>
@@ -189,7 +209,7 @@ export default function PadPage() {
         title="Disabled"
         tier="responsive"
         code="DisabledDemo"
-        caption="The disabled pad is muted all the way through: a flat thumb with a hairline edge, fainter dots and crosshairs, and every word dimmed. Tab skips it and the pointer does nothing. The help text says why it is locked."
+        caption="The disabled pad lies flat all the way through: the well and the thumb on the flat surface with hairline edges, fainter dots and crosshairs, and every word dimmed. Tab skips it and the pointer does nothing. The help text says why it is locked."
       >
         <DisabledDemo />
       </Stage>

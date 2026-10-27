@@ -2,8 +2,8 @@
  * Callout: an inline note in the page flow. A tip, a heads-up, or a result to act on, such as
  * "Try H to snooze" or "Your Framer plan renews in 3 days".
  *
- * - Surface (components.md, Callout): `.litt-raised`, because it sits in the flow. Never glass (P3),
- *   no shadow (P4), and never a left rail, a tinted background or a colored border. A status that
+ * - Surface (components.md, Callout): `.litt-raised`, because it sits in the flow. Never glass (R3),
+ *   no shadow (R3), and never a left rail, a tinted background or a colored border. A status that
  *   colored the whole box would turn a note into an alarm, and a rail is the one thing litt bans.
  * - Anatomy: a 16px icon at the start, aligned with the title's first line; the title (body, fg);
  *   an optional description (small, fg-subtle); an optional `action` at the end (an sm secondary
@@ -23,56 +23,16 @@
  */
 import type { HTMLAttributes, ReactNode } from "react";
 import { Button } from "@/components/button";
-import { XIcon } from "@/components/icons";
+import { CheckCircleIcon, InfoIcon, WarningIcon, XCircleIcon, XIcon } from "@/components/icons";
 
 /** Neutral for a tip or a note. Success, warning and danger color the icon and add a hidden word before the title. */
 export type CalloutTone = "neutral" | "success" | "warning" | "danger";
 
-/* The four default icons are drawn here: 16px, 1.5px stroke, currentColor, like every litt icon. */
-function Glyph({ children }: { children: ReactNode }) {
-  return (
-    <svg
-      width={16}
-      height={16}
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-    >
-      {children}
-    </svg>
-  );
-}
-
 const ICON: Record<CalloutTone, ReactNode> = {
-  neutral: (
-    <Glyph>
-      <circle cx="8" cy="8" r="6.25" />
-      <path d="M8 7.25v4M8 4.75v.01" />
-    </Glyph>
-  ),
-  success: (
-    <Glyph>
-      <circle cx="8" cy="8" r="6.25" />
-      <path d="m5.25 8.25 2 2 3.5-4" />
-    </Glyph>
-  ),
-  warning: (
-    <Glyph>
-      <path d="M8 2.25 14.25 13.25H1.75z" />
-      <path d="M8 6.5v3M8 11.5v.01" />
-    </Glyph>
-  ),
-  danger: (
-    <Glyph>
-      <circle cx="8" cy="8" r="6.25" />
-      <path d="m6 6 4 4M10 6l-4 4" />
-    </Glyph>
-  ),
+  neutral: <InfoIcon />,
+  success: <CheckCircleIcon />,
+  warning: <WarningIcon />,
+  danger: <XCircleIcon />,
 };
 
 const COLOR: Record<CalloutTone, string> = {

@@ -1,10 +1,10 @@
 /**
  * Cohort grid: retention by signup week as a real table. One row per cohort, one column per period since signup,
- * and in every cell the number itself, with a dot in front of it in one data hue's four steps (P11), so the eye
+ * and in every cell the number itself, with a dot in front of it in one data hue's four steps (R7), so the eye
  * still finds where retention holds. The numbers are the point; the dots are the Heatmap's scale beside them.
  *
- * - Columns: the cohort's name (small, `--fg`, at the start), its size (mono caption, `--fg-subtle`, at the end,
- *   headed "Users"), then a cell per period: an 8px dot just before the value (mono caption at 400, `--fg`,
+ * - Columns: the cohort's name (small, `--fg`, at the start), its size (caption, `--fg-subtle`, tabular, at the end,
+ *   headed "Users"), then a cell per period: an 8px dot just before the value (caption at 400, `--fg`,
  *   tabular, end-aligned). Every number keeps the width of the grid's longest, so the dots line up in a column
  *   and the figures do too. Both inks pass 4.5:1, and no value is set quieter for being low: color is never the
  *   only signal.
@@ -33,7 +33,7 @@
  */
 import { useEffect, useId, useRef, useState } from "react";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type CohortHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** One cohort: the people who signed up in one period, and how many of them were still active in each period after. */
@@ -163,7 +163,7 @@ const bodyCell = "h-control-md px-3 py-3 align-middle whitespace-nowrap";
 /** The sticky cohort column: the box's own surface under it, and a hairline at its end once the periods scroll under it. */
 const sticky =
   "sticky left-0 z-10 bg-surface-1 pl-4 text-left after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:w-px after:bg-line after:opacity-0 group-data-[scrolled=true]:after:opacity-100";
-const mono = "font-mono text-caption font-normal tabular-nums";
+const figures = "text-caption font-normal tabular-nums";
 
 function ValueCell({ value, fill, text, line, chars }: { value: number | null | undefined; fill: string; text: string; line: string; chars: number }) {
   if (!isValue(value)) {
@@ -178,7 +178,7 @@ function ValueCell({ value, fill, text, line, chars }: { value: number | null | 
       {/* The dot sits just before its number, and the number keeps the width of the grid's longest, so the dots line up too. */}
       <span className="flex items-center justify-end gap-2">
         <span aria-hidden="true" className={"size-2 shrink-0 rounded-pill " + fill} />
-        <span className={mono + " text-right text-fg"} style={{ minWidth: `${chars}ch` }}>
+        <span className={figures + " text-right text-fg"} style={{ minWidth: `${chars}ch` }}>
           {text}
         </span>
       </span>
@@ -217,7 +217,7 @@ export function CohortGrid({
     return level === 0 ? EMPTY : HUE[hue][level - 1]!;
   };
   const summary = average && cohorts.length > 0 ? averageRow(cohorts, count, valueType) : null;
-  /* The longest value as written, in mono characters, so every number takes the same width and the dots form columns. */
+  /* The longest value as written, in tabular figures, so every number takes the same width and the dots form columns. */
   const chars = Math.max(
     1,
     ...[...cohorts, ...(summary ? [summary] : [])].flatMap((c) => c.values.filter(isValue).map((v) => fmt(v).length)),
@@ -244,7 +244,7 @@ export function CohortGrid({
       <th scope="row" className={bodyCell + " " + sticky + " " + line + " text-small font-normal text-fg"}>
         {cohort.label}
       </th>
-      <td className={bodyCell + " " + line + " text-right " + mono + " text-fg-subtle"}>{groupDigits(cohort.size)}</td>
+      <td className={bodyCell + " " + line + " text-right " + figures + " text-fg-subtle"}>{groupDigits(cohort.size)}</td>
       {headers.map((_, p) => {
         const v = cohort.values[p];
         const end = p === headers.length - 1 ? " pr-4" : "";
@@ -301,7 +301,7 @@ export function CohortGrid({
 /** "Less", the five levels, "More", under the table at its end. Hidden from screen readers: the numbers carry it. */
 function Legend({ hue }: { hue: CohortHue }) {
   return (
-    <div aria-hidden="true" className={"flex items-center gap-2 justify-self-end whitespace-nowrap text-fg-subtle " + mono}>
+    <div aria-hidden="true" className={"flex items-center gap-2 justify-self-end whitespace-nowrap text-fg-subtle " + figures}>
       <span>Less</span>
       <span className="flex items-center gap-1">
         {[EMPTY, ...HUE[hue]].map((fill, i) => (

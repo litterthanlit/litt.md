@@ -88,7 +88,7 @@ const today = getToday();
 /** A quiet status line beside a field, so each stage shows what it did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+    <p role="status" className="min-h-5 text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -204,7 +204,7 @@ function ScheduleDemo() {
           <ul className="grid gap-3">
             {list.map((b) => (
               <li key={b.time} className="grid grid-cols-[3.5rem_1fr] gap-3 text-small">
-                <span className="font-mono tabular-nums text-fg-subtle">{b.time}</span>
+                <span className="tabular-nums text-fg-subtle">{b.time}</span>
                 <span className="text-fg-muted">{b.title}</span>
               </li>
             ))}
@@ -232,16 +232,34 @@ function WeekdaysDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function LaunchTile() {
+  const [launch, setLaunch] = useState<string | null>(null);
+  return (
+    <div className="w-full max-w-xs">
+      <DatePicker
+        label="Launch date"
+        name="launch"
+        min={getToday()}
+        value={launch}
+        onValueChange={setLaunch}
+        hint="The Marlow Labs site goes live at 09:00 on this day."
+      />
+    </div>
+  );
+}
+
 export default function DatePickerPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<LaunchTile />}>
       <Stage
         title="A launch date for a Framer site"
         tier="responsive"
         size="lg"
         align="start"
         code="LaunchDateDemo"
-        caption="The field is the Select trigger with the date in words. Click it and the calendar grows out of it in a popover, on the responsive tier, with focus on today. Days before today are dimmed, because a launch cannot be in the past. A pick closes it and focus returns to the field. Submit with no date and the error says what to do."
+        caption="The field is the Select's raised trigger with the date in words: you press it, so it is a block, and it stays pressed while the calendar is open. Click it and the calendar grows out of it in a popover, on the responsive tier, with focus on today. Days before today are dimmed, because a launch cannot be in the past. A pick closes it and focus returns to the field. Submit with no date and the error says what to do."
       >
         <LaunchDateDemo />
       </Stage>

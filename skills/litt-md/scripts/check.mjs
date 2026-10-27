@@ -9,16 +9,24 @@
  * 2. Drift:     every hex value in the rule and spec Markdown exists in tokens.css.
  *               (journal.md and inspirations.md record outside values and are exempt.)
  * 3. Parity:    the two dark blocks in tokens.css are identical.
- * 4. Coverage:  every themed token is defined in both light and dark (P8).
+ * 4. Coverage:  every themed token is defined in both light and dark (R2).
  * 5. Contrast:  text, control lines, focus, accent, status and data-hue pairs meet WCAG
- *               (each data hue's -text tone is also checked on its own tint).
- * 6. Weight:    weight by role (P9): --weight 400 (text), --weight-title 500 (titles),
+ *               (each data hue's -text tone is also checked on its own tint, and the accent's text
+ *               on its tint), the text inks reach APCA Lc 60 on every surface, which WCAG 2
+ *               overrates for grey on dark, and both accents (Blue 4 and pink) stand apart from the data hues (R6):
+ *               its fill at least 0.12 from each hue's mark and its text from each hue's text, in OKLab.
+ * 6. Weight:    weight by role (R8): --weight 400 (text), --weight-title 500 (titles),
  *               --weight-label 600 (12px labels). Nothing at 700 or more or below 400, no
  *               font-medium, -semibold or -bold (font-title and font-label are the role
  *               utilities), no 600 above the caption size, Google Fonts loads only
  *               400, 500 and 600, and the mono only 400.
- * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill.
- * 8. Shadows:   no outer shadow has an x or y offset (P4).
+ * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill, and a block set
+ *               2px into a control takes the control radius less 2px.
+ * 8. Shadows:   the depth ladder (R3). Flat and floating things have no offset: an outer shadow is a zero-offset
+ *               glow or ring, and an inset is the top highlight or a hairline. The press tokens (material.md, 6)
+ *               are the sunken and raised steps, bounded: nothing moves sideways, a raised cast goes at most 3px
+ *               down and blurs at most 6px, and an inset shade moves at most 1px and blurs at most 2px. The light
+ *               comes from the top (R2): a cut thing never lights its top edge, a raised thing never its lower one.
  * 9. Motion:    three tiers (instant tween at most 240ms; springs with visual time at most
  *               350ms, bounce at most 0.12 and 0 on responsive; settle at most 600ms; exits
  *               at visual time x --exit with --ease-out); reduced motion zeroes every --dur-*,
@@ -111,7 +119,7 @@ for (const k of new Set([...dark.keys(), ...darkMedia.keys()])) {
 diff.length ? diff.forEach((d) => fail(`dark blocks differ: ${d}`)) : ok(`${dark.size} dark declarations match in both blocks`);
 
 // 4. Coverage -------------------------------------------------------------
-console.log("Theme coverage (P8)");
+console.log("Theme coverage (R2)");
 const missing = [...light.keys()].filter((k) => !dark.has(k)).concat([...dark.keys()].filter((k) => !light.has(k)));
 missing.length ? missing.forEach((k) => fail(`${k} is defined in only one theme`)) : ok(`${light.size} tokens defined in both themes`);
 
@@ -122,20 +130,25 @@ const lum = (h) => { const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 const pairs = [
   // [foreground, backgrounds, minimum, note]
-  ["--fg", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "text"],
-  ["--fg-muted", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "body text"],
-  ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3"], 4.5, "supporting text"],
-  ["--line-control", ["--canvas", "--surface-1"], 3, "control outline"],
+  ["--fg", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
+  ["--fg-muted", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "body text"],
+  ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "supporting text"],
+  ["--line-control", ["--canvas", "--surface-1", "--surface-2", "--cut"], 3, "control outline"],
   ["--focus", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring"],
   ["--accent-fg", ["--accent", "--accent-hover"], 4.5, "text on accent"],
-  ["--accent-text", ["--canvas", "--surface-1"], 4.5, "accent as link text"],
+  ["--danger-fg", ["--danger"], 4.5, "text on the danger fill"],
+  ["--accent-text", ["--canvas", "--surface-1", "--accent-tint"], 4.5, "accent as link text"],
   ["--accent", ["--canvas", "--surface-1"], 3, "the accent fill against the page"],
+  ["--focus-pink", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring, pink"],
+  ["--accent-fg", ["--accent-pink", "--accent-pink-hover"], 4.5, "text on the pink accent"],
+  ["--accent-pink-text", ["--canvas", "--surface-1", "--accent-pink-tint"], 4.5, "the pink accent as link text"],
+  ["--accent-pink", ["--canvas", "--surface-1"], 3, "the pink fill against the page"],
   ["--success", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--warning", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--danger", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ...["blue", "amber", "teal", "violet", "rose"].flatMap((h) => [
-    [`--data-${h}`, ["--canvas", "--surface-1", "--surface-2"], 3, "a data mark (P11)"],
-    [`--data-${h}-text`, ["--canvas", "--surface-1", "--surface-2"], 4.5, "a data hue as text (P11)"],
+    [`--data-${h}`, ["--canvas", "--surface-1", "--surface-2"], 3, "a data mark (R7)"],
+    [`--data-${h}-text`, ["--canvas", "--surface-1", "--surface-2"], 4.5, "a data hue as text (R7)"],
   ]),
 ];
 let contrastChecks = 0;
@@ -173,13 +186,51 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
     const tint = fromLab(A.map((v, i) => v * t + B[i] * (1 - t)));
     contrastChecks++;
     const r = ratio(text, tint);
-    if (r < 4.5) fail(`${theme}: --data-${h}-text on its tint is ${r.toFixed(2)}:1, needs 4.5:1 (a tag or an avatar, P11)`);
+    if (r < 4.5) fail(`${theme}: --data-${h}-text on its tint is ${r.toFixed(2)}:1, needs 4.5:1 (a tag or an avatar, R7)`);
   }
 }
+// The accent stands apart from the data hues (R6), so a button never reads as a bar and a link never as a series.
+const apart = (a, b) => { const [A, B] = [toLab(a), toLab(b)]; return Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]); };
+let apartChecks = 0, apartFails = 0;
+for (const [theme, map] of [["light", light], ["dark", dark]]) {
+  for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
+    for (const [ours, theirs] of [["--accent", `--data-${h}`], ["--accent-text", `--data-${h}-text`], ["--accent-pink", `--data-${h}`], ["--accent-pink-text", `--data-${h}-text`]]) {
+      const a = map.get(ours), b = map.get(theirs);
+      if (![a, b].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { fail(`${theme}: ${ours} or ${theirs} is not a six-digit hex`); continue; }
+      apartChecks++;
+      const d = apart(a, b);
+      if (d < 0.12) { apartFails++; fail(`${theme}: ${ours} is ${d.toFixed(3)} from ${theirs} in OKLab, needs 0.12 (R6)`); }
+    }
+  }
+}
+if (!apartFails) ok(`the accent stands at least 0.12 from every data hue (${apartChecks} pairs, both themes)`);
 if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes`);
 
-// 6. Weight by role (P9) -------------------------------------------------
-console.log("Weight by role (P9)");
+/* APCA 0.0.98G lightness contrast. WCAG 2 passed the dark theme's grey at 5.5:1 while it read too dark (Lc 41), so
+   the text inks must also reach Lc 60, the floor for reading text, on every surface. */
+const screenY = (h) => { const [r, g, b] = rgb(h).map((c) => c ** 2.4); return 0.2126729 * r + 0.7151522 * g + 0.072175 * b; };
+const apca = (text, bg) => {
+  const soft = (y) => (y > 0.022 ? y : y + (0.022 - y) ** 1.414);
+  const t = soft(screenY(text)), b = soft(screenY(bg));
+  const s = b > t ? (b ** 0.56 - t ** 0.57) * 1.14 : (t ** 0.62 - b ** 0.65) * 1.14;
+  return s < 0.1 ? 0 : (s - 0.027) * 100;
+};
+let apcaChecks = 0, apcaFails = 0;
+for (const [theme, map] of [["light", light], ["dark", dark]]) {
+  for (const fgName of ["--fg", "--fg-muted", "--fg-subtle"]) {
+    for (const bgName of ["--canvas", "--surface-1", "--surface-2", "--surface-3"]) {
+      const f = map.get(fgName), b = map.get(bgName);
+      if (!/^#[0-9a-f]{6}$/i.test(f || "") || !/^#[0-9a-f]{6}$/i.test(b || "")) continue;
+      apcaChecks++;
+      const lc = apca(f, b);
+      if (lc < 60) { apcaFails++; fail(`${theme}: ${fgName} on ${bgName} is APCA Lc ${lc.toFixed(0)}, needs Lc 60 (text you read)`); }
+    }
+  }
+}
+if (!apcaFails) ok(`${apcaChecks} text pairs reach APCA Lc 60 in both themes`);
+
+// 6. Weight by role (R8) -------------------------------------------------
+console.log("Weight by role (R8)");
 const weightFails = [];
 const assetFiles = fs.readdirSync(path.join(skillDir, "assets")).filter((f) => /\.(css|html)$/.test(f)).map((f) => `assets/${f}`);
 // Three weights, one per role: text 400, titles 500, 12px labels 600. Nothing else exists.
@@ -252,6 +303,8 @@ const okRounded = /^!?rounded(?:-(?:t|r|b|l|s|e|tl|tr|bl|br|ss|se|es|ee))?-(?:co
 for (const f of assetFiles) {
   const text = strip(read(f));
   for (const m of text.matchAll(/border(?:-[a-z]+)*-radius\s*:\s*([^;}"]+)/g)) {
+    /* A block set 2px into a control takes the control radius less that inset (the Shape decision). */
+    if (m[1].replace(/!important/, "").trim() === "calc(var(--radius-control) - 2px)") continue;
     const bad = m[1].replace(/!important/, "").trim().split(/\s+/).filter((v) => !allowedRadius.has(v));
     if (bad.length) radiusFails.push(`${f}: border-radius ${m[1].trim()}`);
   }
@@ -265,12 +318,16 @@ for (const f of assetFiles) {
 }
 radiusFails.length ? radiusFails.forEach(fail) : ok(`corners are 0, ${rc}px, ${rs}px or pill`);
 
-// 8. Zero-offset shadows (P4) ---------------------------------------------
-console.log("Shadows (zero offset)");
+// 8. Shadows: the depth ladder (R3) -----------------------------------------
+console.log("Shadows (the depth ladder)");
 const shadowFails = [];
+const cut = /^--(?:tray-shade|cut-shade|slot-shade|slot-fill-shade)$/;
+const raised = /^--(?:block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift)$/;
+const lit = (layer) => /rgba?\(\s*255\s*,\s*255\s*,\s*255\b/.test(layer) || /\bwhite\b/i.test(layer);
 for (const f of assetFiles) {
   const text = strip(read(f));
-  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--highlight)\s*:\s*([^;}]+)/g)) {
+  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--highlight|--tray-shade|--slot(?:-fill)?-shade|--block-(?:lift|press)|--cap-(?:lift|press)|--plate-lift)\s*:\s*([^;}]+)/g)) {
+    const isCut = cut.test(m[1]), isRaised = raised.test(m[1]), isPress = isCut || isRaised;
     for (const layer of splitLayers(m[2])) {
       if (/^var\(/.test(layer) || layer === "none") continue;
       // Strip colors so only lengths remain, then read the first two lengths as x/y offsets.
@@ -279,7 +336,11 @@ for (const f of assetFiles) {
       const inset = lengths[0] === "inset";
       const nums = (inset ? lengths.slice(1) : lengths).map((n) => parseFloat(n));
       const [x = 0, y = 0, blur = 0, spread = 0] = nums;
-      if (inset) {
+      if (isPress) {
+        const bounded = x === 0 && (inset ? Math.abs(y) <= 1 && blur <= 2 : y >= 0 && y <= 3 && blur <= 6);
+        if (!bounded) shadowFails.push(`${f}: ${isCut ? "sunken" : "raised"} layer "${layer}" in ${m[1]} (never sideways; a cast at most 3px down and 6px soft; an inset at most 1px and 2px soft)`);
+        if (inset && lit(layer) && (isCut ? y > 0 : y < 0)) shadowFails.push(`${f}: "${layer}" in ${m[1]} lights the ${isCut ? "top edge of something cut" : "lower edge of something raised"} (R2)`);
+      } else if (inset) {
         const highlight = x === 0 && y === 1 && blur === 0;
         const hairline = x === 0 && y === 0 && blur === 0;
         if (!highlight && !hairline) shadowFails.push(`${f}: inset layer "${layer}" (only the top highlight or a hairline)`);
@@ -289,7 +350,7 @@ for (const f of assetFiles) {
     }
   }
 }
-shadowFails.length ? shadowFails.forEach(fail) : ok("no shadow has an offset");
+shadowFails.length ? shadowFails.forEach(fail) : ok("every shadow is a step of the depth ladder, lit from the top");
 
 // 9. Motion ---------------------------------------------------------------
 console.log("Motion (three tiers)");
@@ -348,7 +409,7 @@ if (!/(?<![\w-])--press-scale\s*:\s*1\s*;/.test(reducedBlock)) motionFails.push(
 // 9c. transitions and animations in the assets
 const layoutProps = /\b(width|height|min-width|max-width|min-height|max-height|top|right|bottom|left|inset|margin(-[a-z]+)?|padding(-[a-z]+)?)\b/;
 const movement = new Set(["transform", "opacity", "translate", "scale", "rotate"]);
-const fades = new Set(["color", "background-color", "border-color", "fill", "box-shadow"]); // Q17; box-shadow is the focus ring, never --glow (P5)
+const fades = new Set(["color", "background-color", "border-color", "fill", "box-shadow"]); // Q17; box-shadow is the focus ring, never --glow (R2)
 const passthru = new Set(["none", "inherit", "initial", "unset"]);
 const easeWords = new Set(["ease", "ease-in", "ease-out", "ease-in-out", "linear", "step-start", "step-end", "allow-discrete", "normal"]);
 const tierEase = { "--dur-instant": "--ease-out", "--dur-responsive": "--ease-responsive", "--dur-expressive": "--ease-expressive",

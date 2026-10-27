@@ -2,10 +2,10 @@
  * Plan: an agent's steps for a task, ticked off as it works, such as "Move the Northwind site to the new grid".
  * It sits bare in a turn beside the turn's other parts, or in a raised panel the caller draws beside the chat.
  *
- * - Header (components.md, Plan): the label at the small size in fg and the count in the mono caption in fg-subtle
+ * - Header (components.md, Plan): the label at the small size in fg and the count in a tabular caption in fg-subtle
  *   with tabular numbers ("3 of 7"), over a 4px rail drawn exactly as the Meter's: a track at fg 12% and the done
  *   share in fg, both at the control radius. Progress is one quantity, not a category, so the rail takes no hue
- *   (P11), and its fill moves at once, as the Slider's range does. The Meter itself is not imported: it is a
+ *   (R7), and its fill moves at once, as the Slider's range does. The Meter itself is not imported: it is a
  *   role="meter" and the list is already named by the label, so the rail is decoration here, and a plan should not
  *   pull in the whole chart file.
  * - What counts as done: the count is the steps whose status is done, over all the steps, and the rail is the same
@@ -19,6 +19,8 @@
  * - Detail: a step can carry one line under it at the caption size in fg-subtle, in the label's column.
  * - Words: every status is also said in hidden text after the label ("Run the build, running"), and the visible
  *   "Failed" and "Skipped" are hidden from assistive tech so the status is said once.
+ * - Bare (`bare`): only the list, for a parent that draws its own header, count and live region (the Run card). The
+ *   label still names the list, out of sight.
  * - Live region: a polite status says "Step 4 of 7: Run the build" when the running step changes, "Plan done" when
  *   every step is done or skipped (nothing is left to run), and "Step 4 of 7 failed: Run the build" when a step
  *   fails, so a stalled plan is never silent. It never speaks on the first render, so a plan loaded from history
@@ -50,6 +52,8 @@ export type PlanProps = {
   label: string;
   /** The steps in order. Give each a stable id when steps can be added later, and update a step's status in place as the agent works. */
   steps: PlanStep[];
+  /** Draws only the list, with no label row, count, rail or live region, for a parent that says all of them itself (a Run card). The label still names the list. */
+  bare?: boolean;
   /** Extra classes for the plan, such as a width. It fills its container. */
   className?: string;
 };
@@ -111,7 +115,7 @@ function read(steps: PlanStep[], keys: string[]): Reading {
 /* ----------------------------------------------------------------- Plan */
 
 /** An agent's steps as an ordered list under a count and a thin rail. A polite live region says when the running step changes, when a step fails and when the plan is done. */
-export function Plan({ label, steps, className = "" }: PlanProps) {
+export function Plan({ label, steps, bare = false, className = "" }: PlanProps) {
   const id = useId();
   const enter = useTransition("responsive");
   const travel = useTravel();
@@ -152,22 +156,28 @@ export function Plan({ label, steps, className = "" }: PlanProps) {
 
   return (
     <div className={className}>
-      <div className="grid gap-2">
-        <div className="flex items-baseline justify-between gap-4">
-          <span id={id} className="text-small font-title text-fg">
-            {label}
-          </span>
-          <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
-            {done} of {total}
-            <span className="sr-only"> steps done</span>
-          </span>
+      {bare ? (
+        <span id={id} className="sr-only">
+          {label}
+        </span>
+      ) : (
+        <div className="grid gap-2">
+          <div className="flex items-baseline justify-between gap-4">
+            <span id={id} className="text-small font-title text-fg">
+              {label}
+            </span>
+            <span className="text-caption font-normal tabular-nums text-fg-subtle">
+              {done} of {total}
+              <span className="sr-only"> steps done</span>
+            </span>
+          </div>
+          <div aria-hidden="true" className={"h-1 overflow-hidden rounded-control " + TRACK}>
+            <div className="h-full rounded-control bg-fg" style={{ width: `${share}%` }} />
+          </div>
         </div>
-        <div aria-hidden="true" className={"h-1 overflow-hidden rounded-control " + TRACK}>
-          <div className="h-full rounded-control bg-fg" style={{ width: `${share}%` }} />
-        </div>
-      </div>
+      )}
 
-      <ol role="list" aria-labelledby={id} className="m-0 mt-2 list-none p-0">
+      <ol role="list" aria-labelledby={id} className={"m-0 list-none p-0 " + (bare ? "" : "mt-2")}>
         {steps.map((step, i) => {
           const key = keys[i];
           const word = SHOWN[step.status];
@@ -199,9 +209,11 @@ export function Plan({ label, steps, className = "" }: PlanProps) {
         })}
       </ol>
 
-      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
-        {said}
-      </div>
+      {!bare && (
+        <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+          {said}
+        </div>
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ export const meta: PageMeta = {
   group: "Data",
   summary:
     "One value against a range, drawn as a semicircle of fine ticks with the figure in the opening. The ticks up to the value take the foreground or one data hue, and the last one is longer to mark the value. It is static, like the meter.",
+  fun: "The ticks sweep to the value with a needle's weight, and the figure counts with them.",
   tiers: [],
 };
 
@@ -78,7 +79,7 @@ function SizesDemo() {
     <div className="flex w-full flex-wrap items-end justify-center gap-x-16 gap-y-12">
       <div className="grid w-full max-w-40 gap-2">
         <Gauge label="Minutes" value={1380} max={3000} valueText="1,380 of 3,000 minutes" figure="1,380" size={160} hue="teal" />
-        <p className="font-mono text-caption font-normal text-fg-subtle">160 wide</p>
+        <p className="tabular-nums text-caption font-normal text-fg-subtle">160 wide</p>
       </div>
       <div className="grid w-full max-w-80 gap-2">
         <Gauge
@@ -91,7 +92,7 @@ function SizesDemo() {
           size={320}
           hue="teal"
         />
-        <p className="font-mono text-caption font-normal text-fg-subtle">320 wide</p>
+        <p className="tabular-nums text-caption font-normal text-fg-subtle">320 wide</p>
       </div>
       <div className="grid w-full max-w-[17.5rem] gap-2">
         <Gauge
@@ -104,7 +105,7 @@ function SizesDemo() {
           size={320}
           hue="teal"
         />
-        <p className="font-mono text-caption font-normal text-fg-subtle">A 320 gauge in a box 17.5rem wide</p>
+        <p className="tabular-nums text-caption font-normal text-fg-subtle">A 320 gauge in a box 17.5rem wide</p>
       </div>
     </div>
   );
@@ -112,7 +113,7 @@ function SizesDemo() {
 
 export default function GaugePage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<Gauge label="Credits left" value={20830} max={30000} valueText="20,830 credits" figure="20,830" caption="2k a day on average" hue="teal" size={200} />}>
       <Stage
         title="Credits left"
         code="CreditsDemo"

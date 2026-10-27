@@ -7,15 +7,15 @@
  * the page title 16px above its summary, and a stage's title 4px above its caption.
  */
 import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
-import { DeviceProvider, type Tier } from "@/motion";
+import { DeviceProvider, useFun, type Tier } from "@/motion";
 import { Button } from "@/components/button";
-import { ChevronDownIcon } from "@/components/icons";
+import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 
 /** The sidebar's groups, in the order they appear. */
 /** Blocks come last: whole screens built from the components in the groups above them. */
-export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents", "Blocks"] as const;
+export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents", "Commerce", "Blocks"] as const;
 export type PageGroup = (typeof PAGE_GROUPS)[number];
 
 /**
@@ -43,12 +43,23 @@ export type PageMeta = {
   verbs?: Verb[];
   /** One sentence: what the component is and what its motion does. */
   summary: string;
+  /**
+   * What fun mode changes here, as something to try: "Throw the thumb: it coasts to the end and confirms." Set it on
+   * every page whose component moves differently in fun mode. With fun mode on, the gallery leads with these pages:
+   * a Fun group at the top of the nav, a Fun filter first on the overview, and this line under the page's title.
+   */
+  fun?: string;
   tiers: Tier[];
   /**
    * The registry block this page shows: the name of a file in src/blocks, which is also this page's id. The header
    * then offers the block's install command and its source, and a Code tab whose demo imports it shows the block too.
    */
   block?: string;
+  /**
+   * The page runs the whole width with no sidebar, because it is its own way in: the overview, whose tiles are the
+   * components and link to their pages. It links the site's own pages (the ones with no group) itself.
+   */
+  wall?: boolean;
   /**
    * The page may override the locked tokens with the motion dial. Every page
    * leaves this off except the Playground; the dial's CSS variables exist only
@@ -98,11 +109,11 @@ const DocsSections = lazy(() => loadDocs().then((m) => ({ default: m.DocsSection
 const BlockActions = lazy(() => import("./docs/block-actions"));
 
 /**
- * Set by the sidebar's hover preview (nav-preview.tsx). A page then draws only its first
- * stage's demo, with no title, caption or docs, so every page has a preview without a
- * line of its own.
+ * Set by the sidebar's hover preview (nav-preview.tsx) and the overview's blocks. A page then draws only its first
+ * stage's demo, with no title, caption or docs, so every page has a preview without a line of its own. The overview's
+ * wall sets "tile": a page that has a `tile` draws that instead, and any other page its first demo.
  */
-export const PreviewContext = createContext(false);
+export const PreviewContext = createContext<boolean | "tile">(false);
 
 /**
  * The first <Stage>'s demo among a page's children, for preview mode. It looks through fragments and through any
@@ -124,13 +135,45 @@ function firstDemo(children: ReactNode): ReactNode | null {
 /** Which page a Stage sits in, so its Code tab can find the page file. */
 const PageIdContext = createContext<string | null>(null);
 
-export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs; children: ReactNode }) {
-  if (useContext(PreviewContext)) return <>{firstDemo(children)}</>;
+/** With fun mode on (and only then, so never under reduced motion), what to try on this page. */
+function FunHint({ text }: { text?: string }) {
+  const fun = useFun();
+  if (!fun || !text) return null;
+  return (
+    <p data-fun-cue="" className="-mt-3 flex max-w-[60ch] items-start gap-2 text-small text-fg-muted">
+      <SparkleIcon className="mt-0.5 shrink-0 text-fg-subtle" />
+      <span>
+        <span className="font-title text-fg">Fun mode.</span> {text}
+      </span>
+    </p>
+  );
+}
+
+export function Page({
+  meta,
+  docs,
+  tile,
+  children,
+}: {
+  meta: PageMeta;
+  docs?: PageDocs;
+  /**
+   * The component as one object, for its tile on the overview's wall: what to draw when the first demo is more than
+   * a tile should hold (a form around the field, a set of states, a page's worth). Real size, live, one thing to
+   * touch, and no accent fill: the Button tile carries the wall's one. Leave it out and the tile is the first demo.
+   */
+  tile?: ReactNode;
+  children: ReactNode;
+}) {
+  const preview = useContext(PreviewContext);
+  if (preview === "tile" && tile !== undefined) return <>{tile}</>;
+  if (preview) return <>{firstDemo(children)}</>;
   return (
     <PageIdContext.Provider value={meta.id}>
       <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">
         <header className="grid gap-6">
           <PageTitle id={`page-${meta.id}`} title={meta.title} lede={meta.lede} />
+          <FunHint text={meta.fun} />
           {/* The tiers and the docs actions share one row, so the first demo comes up sooner. */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
             {/* A page with no tiers (nothing moves) leaves no empty group, so the actions start at the edge. */}
@@ -171,7 +214,7 @@ export function Page({ meta, docs, children }: { meta: PageMeta; docs?: PageDocs
 
 /**
  * A page's title and lede as one sentence in two inks, at the title size: the name in
- * --fg at the title weight, then the lede in the grey at the text weight (P9). The h1
+ * --fg at the title weight, then the lede in the grey at the text weight (R8). The h1
  * stays the name alone, so the page's landmark is still called "Button".
  */
 export function PageTitle({ id, title, lede, className = "" }: { id: string; title: string; lede: string; className?: string }) {

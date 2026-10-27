@@ -15,7 +15,7 @@ Accent/Default, /Hover, /On, /Text, /Tint → --accent, --accent-hover, --accent
 Status/Success, /Warning, /Danger
 ```
 
-Set the project to follow the system theme. Preview both modes before publishing (P8).
+Set the project to follow the system theme. Preview both modes before publishing (R2).
 
 ## 2. Text styles
 
@@ -25,10 +25,10 @@ Font: **Geist** (Google Fonts, available in Framer) and **Geist Mono**. Create t
 Display  → H1 tag on the hero only (18 on every breakpoint; nothing is larger)
 H1, H2, H3, H4 → their tags
 Reading, Body, Small, Caption → P tag
-Mono     → for kbd, data, versions
+Mono     → for code and terminal output only (numbers and data stay in Geist, with tabular figures)
 ```
 
-Weight by role (P9): Regular 400 for text (Reading, Body, Small), Medium 500 for titles (Display, H1 to H4, a title over its description, buttons, tabs), Semibold 600 for 12px labels only (Caption, tags, meta rows, table headers). Never Bold. Below the page title, hierarchy comes from weight, the two ink colors and space, not size. Add Geist Regular, Medium and Semibold and Geist Mono Regular to the project.
+Weight by role (R8): Regular 400 for text (Reading, Body, Small), Medium 500 for titles (Display, H1 to H4, a title over its description, buttons, tabs), Semibold 600 for 12px labels only (Caption, tags, meta rows, table headers). Never Bold. Below the page title, hierarchy comes from weight, the two ink colors and space, not size. Add Geist Regular, Medium and Semibold and Geist Mono Regular to the project.
 
 ## 3. Layout
 
@@ -58,7 +58,7 @@ Weight by role (P9): Regular 400 for text (Reading, Body, Small), Medium 500 for
 | **Grain** | Add a top layer: an image fill using a 160px fractal-noise PNG tile at 2% light / 4% dark opacity, set to not capture pointer events. Export the tile once from `--grain` and reuse it. |
 | **Glow (primary button)** | Border 1px accent at 55%, plus a drop shadow of x 0, y 0, blur 24, accent at 28% light / 40% dark. One per page. |
 
-Never animate these layers (P5).
+Never animate these layers (R2).
 
 ## 5. Motion
 
@@ -81,7 +81,7 @@ To use the exact tokens in code components or embeds, paste `assets/tokens.css` 
 - [ ] Every text layer uses a text style. No local overrides of size, tracking or weight. Only Regular 400, Medium 500 on titles and Semibold 600 on 12px labels.
 - [ ] Gaps and paddings are on the scale.
 - [ ] Glass only on floating frames (header, menus, modals, toasts).
-- [ ] Corners: 4 on controls, 8 on surfaces, pills only on avatars, icon-only buttons and switches. Buttons and inputs use the 32/44/56 sizes.
+- [ ] Corners: 4 on controls, 8 on surfaces, pills only on avatars and icon-only buttons; a switch's or a slider's block 2 inside its 4. Buttons and inputs use the 32/44/56 sizes.
 - [ ] No drop shadow with an x or y offset.
 - [ ] One accent fill and one glow per page.
 - [ ] Every transition uses one of the three saved presets. Bounce only on expressive, never on exits. No scroll Appear effects.

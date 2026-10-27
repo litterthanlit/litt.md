@@ -188,7 +188,7 @@ function CoverStylesDemo() {
             <CardLink href="#card">INV-0412</CardLink>
           </CardTitle>
           <CardDescription>Halden Gallery, due 24 Oct</CardDescription>
-          <p className="mt-6 font-mono text-h4 font-normal tabular-nums text-fg">€4,800.00</p>
+          <p className="mt-6 text-h4 font-normal tabular-nums text-fg">€4,800.00</p>
           <div className="mt-auto pt-4">
             <Status tone="warning">Sent</Status>
           </div>
@@ -207,7 +207,7 @@ function LightDemo() {
         <CardBody>
           <CardTitle>Next invoice</CardTitle>
           <CardDescription>Marlow Labs, sends on 1 Nov.</CardDescription>
-          <p className="mt-6 font-mono text-h4 font-normal tabular-nums text-fg">€1,200.00</p>
+          <p className="mt-6 text-h4 font-normal tabular-nums text-fg">€1,200.00</p>
           {/* No CardLink, so this card is a surface: it has no hover, and the button inside is its own target. */}
           <div className="pt-6">
             <Button size="sm">Edit invoice</Button>
@@ -228,9 +228,40 @@ function LightDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function CardTile() {
+  const site = SITES[0]!;
+  return (
+    <ul className="grid w-full max-w-xs">
+      <Card as="li" cover="inset">
+        <CardCover>
+          <ProjectCover name={site.cover} />
+        </CardCover>
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">{site.name}</CardLink>
+          </CardTitle>
+          <CardDescription>{site.note}</CardDescription>
+          <div className="mt-auto flex items-center justify-between pt-4">
+            <Status tone={site.tone}>{site.status}</Status>
+            <a
+              href={site.url}
+              className="relative inline-flex h-control-sm items-center gap-1 text-caption text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
+            >
+              Visit site
+              <ArrowUpRightIcon />
+            </a>
+          </div>
+        </CardBody>
+      </Card>
+    </ul>
+  );
+}
+
 export default function CardPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<CardTile />}>
       <Stage
         title="Linked cards"
         tier="instant"

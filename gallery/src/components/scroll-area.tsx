@@ -10,7 +10,7 @@
  *   or fades before a person has touched, scrolled, hovered or focused the area: a log that starts at its end
  *   does not flash a thumb on load.
  * - Edges: a 1px --line hairline appears on any edge with more content beyond it, and goes when that edge is
- *   reached (instant tier, color only). No gradient fades, because material is static (P5).
+ *   reached (instant tier, color only). No gradient fades, because material is static (R2).
  * - Focus: when it scrolls, the viewport is a labelled region and a Tab stop, so the arrow keys, Page Up and Down,
  *   Home and End scroll it. Keyboard focus draws an inset 2px focus ring, inside its edges.
  * - Axes: vertical by default, horizontal or both on request. Vertical content is a block, so text wraps; sideways

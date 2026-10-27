@@ -2,7 +2,7 @@
  * Tabs: underline or segmented, built on Radix Tabs (roles, arrow keys, Home
  * and End come from Radix; everything visual is ours).
  *
- * - Labels sit at the title weight (P9) and never change weight or size. Only the color
+ * - Labels sit at the title weight (R8) and never change weight or size. Only the color
  *   changes (fg-subtle to fg), on the instant tier.
  * - The indicator (a 2px underline, or the segmented fill block) slides
  *   between tabs with Motion layoutId on the responsive tier. It moves through
@@ -14,9 +14,15 @@
  *   the flow while it leaves (popLayout), so the two never stack and the page
  *   below does not jump. Give panels a shared min-height to keep it still when
  *   their content differs.
- * - Corners: rounded-control on tabs. The segmented track is rounded-control
- *   too, clipped with overflow-hidden, and its fill sits concentric inside the
- *   2px inset.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the underline stretches to the new tab. Its
+ *   leading edge goes on fun mode's glide spring and its trailing edge follows on the slower swap spring, so it
+ *   reaches out and gathers itself under the tab. While it travels, one line drawn across the list does the moving
+ *   (x and a scale from its start, transform only); at rest the tab's own indicator is back, so it rests exactly as
+ *   it does without fun mode. The segmented fill glides on the glide spring, as Segmented's surface does. Reduced
+ *   motion turns it off.
+ * - Corners: rounded-control on tabs. The segmented track is a sunken tray (R3: --tray, --tray-shade) at the
+ *   control radius, clipped with overflow-hidden, and its fill is the raised block (--block, --block-lift), concentric
+ *   inside the 2px inset: selected is raised, as in Segmented and the Switch.
  * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
  *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
  *   is off so the two do not double. Small tabs grow to the control-md height on a coarse
@@ -29,14 +35,16 @@ import {
   useContext,
   useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type ComponentPropsWithoutRef,
   type ReactNode,
+  type RefObject,
 } from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-import { AnimatePresence, LayoutGroup, motion, type Variants } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { animate, AnimatePresence, LayoutGroup, motion, useMotionValue, useTransform, type Variants } from "motion/react";
+import { useExit, useFun, useTransition, useTravel } from "@/motion";
 
 export type TabsVariant = "underline" | "segmented";
 export type TabsSize = "sm" | "md";
@@ -48,6 +56,11 @@ type Ctx = {
   /** +1 when the newest tab sits after the previous one, -1 before it. */
   dir: 1 | -1;
   register: (value: string, el: HTMLElement | null) => void;
+  /** Fun mode: the tab the underline is leaving, while it travels, and where it is going. Null at rest. */
+  travel: { from: string; to: string } | null;
+  /** Fun mode: the underline has arrived. */
+  arrived: () => void;
+  triggers: RefObject<Map<string, HTMLElement>>;
 };
 const TabsContext = createContext<Ctx | null>(null);
 function useTabs() {
@@ -98,15 +111,22 @@ export function Tabs({
      the new value, whether the value is controlled or not. */
   const [seen, setSeen] = useState(value);
   const [dir, setDir] = useState<1 | -1>(1);
+  /* Fun mode's underline: set in the same pass as the new value, so the tab's own indicator never shows at the new tab
+     before the travelling line has started from the old one. */
+  const fun = useFun();
+  const [travel, setTravel] = useState<{ from: string; to: string } | null>(null);
+  const arrived = useCallback(() => setTravel(null), []);
+  if (travel && !fun) setTravel(null); // fun mode turned off mid-travel: nothing is travelling any more
   if (seen !== value) {
     setSeen(value);
     const from = triggers.current.get(seen);
     const to = triggers.current.get(value);
     if (from && to) setDir(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING ? 1 : -1);
+    if (fun && variant === "underline" && from && to) setTravel({ from: travel?.from ?? seen, to: value });
   }
 
   return (
-    <TabsContext.Provider value={{ value, variant, size, dir, register }}>
+    <TabsContext.Provider value={{ value, variant, size, dir, register, travel, arrived, triggers }}>
       <LayoutGroup id={group}>
         <TabsPrimitive.Root
           value={value}
@@ -123,25 +143,94 @@ export function Tabs({
   );
 }
 
+/**
+ * Fun mode's travelling underline: one line across the list, from the tab it leaves to the tab it goes to. The edge on
+ * the side it is going leads on the glide spring and the other trails on the swap spring. It is drawn only while it
+ * travels; when both edges arrive it hands back to the tab's own indicator.
+ */
+function TravellingLine({ list }: { list: RefObject<HTMLDivElement | null> }) {
+  const { travel, arrived, triggers } = useTabs();
+  const fun = useFun();
+  const start = useMotionValue(0);
+  const end = useMotionValue(0);
+  const scaleX = useTransform(() => end.get() - start.get());
+  const from = useRef<{ start: number; end: number } | null>(null);
+
+  /* Where a tab's indicator sits, in the list's own coordinates (it scrolls with the tabs). */
+  const span = (el: HTMLElement) => {
+    const box = list.current!.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    const left = r.left - box.left - list.current!.clientLeft + list.current!.scrollLeft;
+    return { start: left, end: left + r.width };
+  };
+
+  useLayoutEffect(() => {
+    if (!travel || !fun || !list.current) return;
+    const a = triggers.current.get(travel.from);
+    const b = triggers.current.get(travel.to);
+    if (!a || !b) return arrived();
+    /* Caught mid-travel: carry on from where the line is now. */
+    const was = from.current ?? span(a);
+    if (!from.current) {
+      start.jump(was.start);
+      end.jump(was.end);
+    }
+    const to = span(b);
+    from.current = to;
+    const forward = to.start > start.get();
+    const s = animate(start, to.start, forward ? fun.swap : fun.glide);
+    const e = animate(end, to.end, forward ? fun.glide : fun.swap);
+    let live = true;
+    void Promise.all([s, e]).then(() => {
+      if (!live) return;
+      from.current = null;
+      arrived();
+    });
+    return () => {
+      live = false;
+      s.stop();
+      e.stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs for each new destination
+  }, [travel?.to]);
+
+  if (!travel || !fun) return null;
+  return <motion.span aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 z-10 h-0.5 w-px origin-left bg-fg" style={{ x: start, scaleX }} />;
+}
+
 /** The row of tabs. It is a named group, so give it an aria-label. */
 export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
   const { variant, size } = useTabs();
+  const fun = useFun();
+  const list = useRef<HTMLDivElement>(null);
   if (variant === "underline") {
     /* The hairline lives on the wrapper. The list overlaps it by 1px, so the
        2px indicator covers the hairline and nothing is clipped by the scroll. */
     return (
       <div className="border-b border-line">
-        <TabsPrimitive.List
-          className={"-mb-px flex w-full overflow-x-auto pb-px [scrollbar-width:none] " + className}
-          {...rest}
-        />
+        {fun ? (
+          /* Fun mode: the list is the travelling line's box, and holds it after the tabs. */
+          <TabsPrimitive.List
+            ref={list}
+            className={"relative -mb-px flex w-full overflow-x-auto pb-px [scrollbar-width:none] " + className}
+            {...rest}
+          >
+            {rest.children}
+            <TravellingLine list={list} />
+          </TabsPrimitive.List>
+        ) : (
+          <TabsPrimitive.List
+            className={"-mb-px flex w-full overflow-x-auto pb-px [scrollbar-width:none] " + className}
+            {...rest}
+          />
+        )}
       </div>
     );
   }
   return (
     <TabsPrimitive.List
       className={
-        "inline-flex w-fit max-w-full overflow-x-auto overflow-y-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-0.5 shadow-[inset_0_0_0_1px_var(--line)] [scrollbar-width:none] " +
+        "inline-flex w-fit max-w-full overflow-x-auto overflow-y-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) [scrollbar-width:none] " +
         (size === "sm" ? "h-control-sm pointer-coarse:h-control-md " : "h-control-md ") +
         className
       }
@@ -190,9 +279,14 @@ export function TabsTrigger({
   children,
   ...rest
 }: TabsTriggerProps) {
-  const { value: current, variant, size, register } = useTabs();
-  const enter = useTransition("responsive");
-  const active = current === value;
+  const { value: current, variant, size, register, travel } = useTabs();
+  const responsive = useTransition("responsive");
+  /* Fun mode: the segmented fill glides on the glide spring; the underline is drawn by the travelling line until it
+     arrives, and has no layoutId, so it never animates on its own when it comes back. */
+  const fun = useFun();
+  const enter = fun ? fun.glide : responsive;
+  const line = fun && variant === "underline";
+  const active = current === value && !(line && travel);
   const ref = useCallback((el: HTMLButtonElement | null) => register(value, el), [register, value]);
 
   return (
@@ -204,13 +298,13 @@ export function TabsTrigger({
     >
       {active && (
         <motion.span
-          layoutId="tabs-indicator"
+          layoutId={line ? undefined : "tabs-indicator"}
           transition={enter}
           aria-hidden="true"
           className={
             variant === "underline"
               ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg"
-              : "absolute inset-0 -z-10 bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] " + FILL_RADIUS
+              : "absolute inset-0 -z-10 bg-block shadow-(--block-lift) forced-colors:border " + FILL_RADIUS
           }
         />
       )}

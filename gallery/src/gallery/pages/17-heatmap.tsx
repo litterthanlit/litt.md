@@ -9,7 +9,8 @@ export const meta: PageMeta = {
   group: "Data",
   verbs: ["hover"],
   summary:
-    "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, mono labels, a tooltip on hover, touch and focus, and a legend from less to more.",
+    "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, labels in tabular figures, a tooltip on hover, touch and focus, and a legend from less to more.",
+  fun: "The grid arrives in two waves, the peaks last; move over it and a lens follows the pointer.",
   tiers: ["instant", "responsive"],
 };
 
@@ -66,7 +67,7 @@ export const docs: PageDocs = {
     "Each dot is named by its row, its column and its value (\"Wed, week of 12 Oct, 31 deploys\", or \"no data\"), so color is never the only signal. The tooltip repeats that name, so it is hidden from screen readers.",
     "The visible row labels and totals sit in their own columns and are hidden from screen readers. The same words are in each row as a hidden row header and a hidden cell, so the grid still reads row by row.",
     "One tab stop (a roving tabindex), arrow keys in two dimensions, and a 2px focus ring two pixels from the dot, drawn only for the keyboard. The ring uses the focus color, so it passes 3:1 in both themes.",
-    "A 12px dot is far smaller than a finger, so one layer takes the pointer. When the grid fits, a finger scrubs across it and the dot under it shows its tooltip, which stays until the next touch elsewhere. When the grid scrolls, a drag scrolls it and a tap picks a dot. The lightest step is under 3:1 against a card, which is why the names and the tooltip carry every number.",
+    "A 12px dot is far smaller than a finger, so one layer takes the pointer. When the grid fits, a finger scrubs across it and the dot under it shows its tooltip, which stays until the next touch elsewhere. When the grid scrolls, a drag scrolls it and a tap picks a dot. So the pointer's target is that one layer, never a 12px dot on its own, which is how the grid meets WCAG's target size (2.5.8). The lightest step is under 3:1 against a card, which is why the names and the tooltip carry every number.",
     "The caller must give the grid a `label` that says what the dots count, and `columns` that say what each column is. Without columns, dots are named by number.",
     "Under reduced motion the tooltip appears at once. Hover adds a ring and nothing moves.",
   ],
@@ -200,14 +201,39 @@ function MailDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/* A month of page views, deterministic so the build and the tests see the same dots. */
+const TILE_DAYS = Array.from({ length: 31 }, (_, i) => i);
+const tileRow = (seed: number) => TILE_DAYS.map((d) => Math.round(400 + 600 * Math.abs(Math.sin((d + 1) * seed)) + (d % 7 > 4 ? -300 : 0)));
+
+function HeatmapTile() {
+  return (
+    <div className="w-full overflow-x-auto">
+      <Heatmap
+        label="Page views per day"
+        hue="teal"
+        cell={12}
+        columns={TILE_DAYS.map((d) => `day ${d + 1}`)}
+        unit={["view", "views"]}
+        rows={[
+          { label: "August", values: tileRow(1.7), total: "25,998" },
+          { label: "September", values: tileRow(2.3), total: "24,310" },
+          { label: "October", values: tileRow(3.1).map((v, d) => (d > 19 ? null : v)), total: "16,402" },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function HeatmapPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<HeatmapTile />}>
       <Stage
         title="Usage by month"
         tier="responsive"
         code="UsageDemo"
-        caption="One row of dots per month, with the month's total at the end in mono. The dots are teal in four steps over an empty dot, and the days still to come draw nothing. Hover a dot, or arrow to it, and a ring and a tooltip name the day and the count. The tooltip is the Chart's, and it fades in on the responsive tier."
+        caption="One row of dots per month, with the month's total at the end in tabular figures. The dots are teal in four steps over an empty dot, and the days still to come draw nothing. Hover a dot, or arrow to it, and a ring and a tooltip name the day and the count. The tooltip is the Chart's, and it fades in on the responsive tier."
       >
         <UsageDemo />
       </Stage>

@@ -3,7 +3,7 @@
  * and make your own. Swap the sample data at the top for yours; the layout, the hues and the words around them stay.
  *
  * Sign-ups by source stack into thin columns you can filter by source (the Legend) and by week (the RangeSlider), then
- * the funnel from visit to paid and retention by signup week. Each source keeps one hue (P11), everything else stays in
+ * the funnel from visit to paid and retention by signup week. Each source keeps one hue (R7), everything else stays in
  * the foreground, and only the chart's entrance moves. The grid measures itself, so it stacks in a narrow box.
  */
 import { useId, useState, type ReactNode } from "react";
@@ -38,7 +38,7 @@ function weekly(seed: number, level: number, growth: number) {
   return WEEKS.map((_, i) => Math.max(0, Math.round(level * (1 + growth * i) * (0.85 + next() * 0.3))));
 }
 
-/* Each source keeps one hue everywhere on the page (P11): the legend, the chart and the tooltip agree. */
+/* Each source keeps one hue everywhere on the page (R7): the legend, the chart and the tooltip agree. */
 const SOURCES: ChartSeries[] = [
   { name: "Search", values: weekly(11, 120, 0.06), hue: "blue" },
   { name: "Social", values: weekly(12, 70, 0.11), hue: "amber" },

@@ -11,7 +11,8 @@ export const meta: PageMeta = {
   group: "Data",
   verbs: ["press"],
   summary:
-    "A ranked list where each row carries a thin bar for its share: a label, a bar, a mono value and a change in words. The bars and values line up across rows, the list measures itself, and nothing about it moves.",
+    "A ranked list where each row carries a thin bar for its share: a label, a bar, a value in tabular figures and a change in words. The bars and values line up across rows, the list measures itself, and nothing about it moves.",
+  fun: "Bars grow in rank order and their values count; change the data and rows slide past each other.",
   tiers: ["instant"],
 };
 
@@ -158,7 +159,7 @@ function NarrowDemo() {
   return (
     <div className="grid w-full max-w-[22.375rem] gap-4">
       <BarList label="Top repos by commits" unit={["commit", "commits"]} items={REPOS} onSelect={(item) => setOpened(item.label)} />
-      <p aria-live="polite" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+      <p aria-live="polite" className="min-h-5 text-caption font-normal text-fg-subtle">
         {opened ? `Opened ${opened}` : ""}
       </p>
     </div>
@@ -180,9 +181,28 @@ function KindsDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function BarListTile() {
+  return (
+    <div className="w-full max-w-sm">
+      <BarList
+        label="Most-used shortcuts"
+        unit={["time", "times"]}
+        hue="blue"
+        items={[
+          { label: "Archive", value: 412, lead: <Kbd>E</Kbd> },
+          { label: "Reply", value: 164, lead: <Kbd>R</Kbd> },
+          { label: "Snooze", value: 31, lead: <Kbd>H</Kbd> },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function BarListPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<BarListTile />}>
       <Stage
         title="Most-used shortcuts"
         align="start"

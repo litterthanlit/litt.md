@@ -3,19 +3,22 @@
  * tunes motion; the header's Customize panel tunes type and shape on every page.
  */
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { MotionDialProvider } from "@/motion";
-import { pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
+import { MotionDialProvider, useFun } from "@/motion";
+import { funPages, pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
 import { Segmented } from "@/components/segmented";
-import { CustomizeProvider } from "./customize-state";
+import { CustomizeProvider, useCustomize, type ThemeChoice } from "./customize-state";
 import { NavPreview } from "./nav-preview";
 import { MenuButton, MobileMenu } from "./mobile-menu";
+import { SearchButton, SearchProvider } from "./search";
 import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons";
 
 /* The panel and the popover load on their own; until then the button holds its place. */
 const Customize = lazy(() => import("./customize"));
+/* The language canvas (#canvas) is not a page: it takes the whole window, and only loads when asked for. */
+const LanguageCanvas = lazy(() => import("../canvas/canvas"));
 
 function CustomizeFallback() {
   return (
@@ -26,36 +29,22 @@ function CustomizeFallback() {
   );
 }
 
-type ThemeChoice = "system" | "light" | "dark";
 const THEMES = [
   { id: "system", label: "System", Icon: MonitorIcon },
   { id: "light", label: "Light", Icon: SunIcon },
   { id: "dark", label: "Dark", Icon: MoonIcon },
 ] satisfies { id: ThemeChoice; label: string; Icon: typeof SunIcon }[];
 
-/** The theme, read from the attribute the pre-paint script set, and written back with the choice. */
-function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
-  const [theme, setTheme] = useState<ThemeChoice>(() => {
-    const t = document.documentElement.getAttribute("data-theme");
-    return t === "light" || t === "dark" ? t : "system";
-  });
-  const choose = (t: ThemeChoice) => {
-    setTheme(t);
-    if (t === "system") document.documentElement.removeAttribute("data-theme");
-    else document.documentElement.setAttribute("data-theme", t);
-    try {
-      localStorage.setItem("litt-gallery:theme", t);
-    } catch {
-      /* ignore */
-    }
-  };
-  return [theme, choose];
+/** The theme, one choice for the header, the overview's deck and the canvas (customize-state.tsx owns it). */
+export function useTheme(): [ThemeChoice, (t: ThemeChoice) => void] {
+  const { theme, setTheme } = useCustomize();
+  return [theme, setTheme];
 }
 
 /* litt's own Segmented: a quiet track with the chosen segment raised in it, and native radios underneath.
    In the header, icons on a phone, where three words would crowd the wordmark; the word stays for screen readers.
    In the menu (`full`), the whole width with icons and words. */
-function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
+export function ThemeSwitch({ theme, onChange, full = false }: { theme: ThemeChoice; onChange: (t: ThemeChoice) => void; full?: boolean }) {
   return (
     <Segmented
       legend="Theme"
@@ -98,6 +87,11 @@ const iconLink =
 
 function Shell({ page }: { page: PageEntry | undefined }) {
   const mainRef = useRef<HTMLElement>(null);
+  /* With fun mode on, the pages it changes come first: a Fun group after the site's own pages. They stay in their
+     own groups too, so the nav never reshuffles under you. */
+  const fun = useFun();
+  const runs: { group?: string; pages: PageEntry[] }[] = pageRuns();
+  if (fun && funPages.length) runs.splice(runs[0]?.group ? 0 : 1, 0, { group: "Fun", pages: funPages });
   const [theme, setTheme] = useTheme();
   const [menu, setMenu] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
@@ -145,7 +139,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
         (compact ? "h-control-sm shrink-0 " : "-mx-3 h-8 ") +
         (p.id === page?.id
-          ? "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]"
+          ? "bg-block text-fg shadow-(--block-lift) forced-colors:border"
           : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg")
       }
     >
@@ -178,6 +172,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
             </span>
           </a>
           <div className="flex items-center gap-1 sm:gap-2">
+            <SearchButton place="header" />
             <Suspense fallback={<CustomizeFallback />}>
               <Customize />
             </Suspense>
@@ -212,19 +207,20 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         ]}
       />
 
-      <div inert={menu} className="relative mx-auto grid max-w-wide gap-x-12 px-gutter lg:grid-cols-[176px_minmax(0,1fr)]">
-        <nav aria-label="Components" className="hidden lg:block">
+      {/* A wall page (the overview) is its own way in, so it takes the sidebar's column too. */}
+      <div inert={menu} className={"relative mx-auto grid max-w-wide gap-x-12 px-gutter " + (page?.wall ? "" : "lg:grid-cols-[176px_minmax(0,1fr)]")}>
+        <nav aria-label="Components" className={page?.wall ? "hidden" : "hidden lg:block"}>
           <NavPreview className="h-full">
             {/* Its own scroller, so a short window still reaches the last group. It reaches 12px past the
                 column on each side, so the selected fill and the focus ring are never clipped. */}
             {/* Each group is its own segment: a hairline above it, its name and count, then its pages. */}
             <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start overflow-y-auto px-3 pt-24 pb-12 [scrollbar-width:none]">
-              {pageRuns().map((run) =>
+              {runs.map((run) =>
                 run.group ? (
                   <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4">
                     <p className="flex items-baseline justify-between pb-2 text-caption">
                       <span id={`nav-${run.group}`} className="text-fg-muted">{run.group}</span>
-                      <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
+                      <span aria-hidden="true" className="font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
                     </p>
                     {run.pages.map((p) => navLink(p))}
                   </div>
@@ -277,7 +273,15 @@ export function App() {
     <MotionDialProvider tuning={page?.tune === true}>
       <CustomizeProvider>
         <TooltipProvider>
-          <Shell page={page} />
+          {route === "canvas" ? (
+            <Suspense fallback={null}>
+              <LanguageCanvas />
+            </Suspense>
+          ) : (
+            <SearchProvider pageId={page?.id}>
+              <Shell page={page} />
+            </SearchProvider>
+          )}
         </TooltipProvider>
       </CustomizeProvider>
     </MotionDialProvider>

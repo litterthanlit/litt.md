@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["drag", "type", "select"],
   summary:
-    "One color, kept as a hex string. A saturation and brightness area, a hue rail, the hex in mono, an eyedropper where the browser has one, and optional swatches. The field opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once; only the popover moves, on the responsive tier.",
+    "One color, kept as a hex string. A saturation and brightness area, a hue rail, the hex as text, an eyedropper where the browser has one, and optional swatches. The field opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once; only the popover moves, on the responsive tier.",
   tiers: ["responsive"],
 };
 
@@ -85,7 +85,7 @@ const PALETTE: ColorSwatch[] = [
 /** A quiet status line beside a field, so each stage shows what it did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+    <p role="status" className="min-h-5 text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );
@@ -183,16 +183,37 @@ function StatesDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/** The picker and what it paints: the site's header in the chosen color, with ink picked to read on it. It starts on
+    Nord teal, so the wall's one cobalt stays the Button tile's. */
+function BrandTile() {
+  const [brand, setBrand] = useState<string | null>(PALETTE[1]!.value);
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <ColorPicker label="Brand color" name="brand" value={brand} onValueChange={setBrand} swatches={PALETTE} />
+      {brand && (
+        <div className="overflow-hidden rounded-surface shadow-[inset_0_0_0_1px_var(--line)]" aria-label="Preview of the site header" role="img">
+          <div className="flex h-12 items-center justify-between px-4 text-small" style={{ backgroundColor: brand, color: getContrastInk(brand) }}>
+            <span className="font-title">Atelier Nord</span>
+            <span>Work · Studio · Contact</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ColorPickerPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<BrandTile />}>
       <Stage
         title="A brand color for a Framer site"
         tier="responsive"
         size="lg"
         align="start"
         code="BrandColorDemo"
-        caption="The field is the Select trigger with a chip of the color and its hex in mono. Click it and the panel grows out of it in a popover, on the responsive tier. Drag the area or the hue and the header under the field changes at once, with no easing. A swatch picks in one click. The text on the header is black or white, whichever reads."
+        caption="The field is the Select's raised trigger with a chip of the color and its hex, held pressed while the panel is open. Click it and the panel grows out of it in a popover, on the responsive tier. Drag the area or the hue and the header under the field changes at once, with no easing. A swatch picks in one click. The text on the header is black or white, whichever reads."
       >
         <BrandColorDemo />
       </Stage>
@@ -202,7 +223,7 @@ export default function ColorPickerPage() {
         tier="responsive"
         align="start"
         code="CoverColorDemo"
-        caption="The panel on its own, beside what it colors. Tab once to reach the area, then the arrows move the thumb and Shift makes them ten steps. Type a hex and press Enter, or paste one with three digits. The line under the cover is written on release, from onValueCommit. Nothing here moves on its own."
+        caption="The panel on its own, beside what it colors. The area and the hue are cut into the panel, and their thumbs are caps seen from above, a ring that stands over any color. Tab once to reach the area, then the arrows move the thumb and Shift makes them ten steps. Type a hex and press Enter, or paste one with three digits. The line under the cover is written on release, from onValueCommit. Nothing here moves on its own."
       >
         <CoverColorDemo />
       </Stage>

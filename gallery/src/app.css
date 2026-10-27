@@ -4,6 +4,9 @@
   /* font-family again on body: the Customize panel writes --font-sans on <body> (customize-state.tsx),
      and html's font-family has already resolved the locked face by then. */
   body { min-height: 100vh; background: var(--canvas); font-family: var(--font-sans); }
+  /* The glass header is sticky, so whatever the browser scrolls to (a Tab or Shift+Tab, a skip link) lands below it
+     with the 16px of a lockup gap to spare, never under it (WCAG 2.4.11). */
+  html { scroll-padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px) + var(--space-4)); }
   ::selection { background: color-mix(in oklab, var(--accent) 22%, transparent); }
 }
 

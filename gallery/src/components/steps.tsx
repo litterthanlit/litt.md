@@ -119,7 +119,7 @@ export function Steps({ label, steps, current, onStepSelect, orientation = "hori
       <div className="grid gap-2 @min-[40rem]:hidden">
         <p className="flex items-baseline justify-between gap-4">
           <span className="text-small font-title text-fg">{finished ? "All steps done" : now?.label}</span>
-          <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+          <span className="text-caption font-normal tabular-nums text-fg-subtle">
             {finished ? `${steps.length} of ${steps.length}` : `Step ${current + 1} of ${steps.length}`}
           </span>
         </p>

@@ -1,16 +1,16 @@
 /**
- * Heatmap: a dot matrix whose depth says how much. One data hue (P11) in four steps over an empty dot, so
+ * Heatmap: a dot matrix whose depth says how much. One data hue (R7) in four steps over an empty dot, so
  * the eye reads where the weight sits: usage per day in a month, deploys per day over a year, mail per hour
  * of the week. Plain DOM and CSS, no chart library.
  *
  * - Color (components.md, Heatmap): zero is an empty dot at fg 8%. The four steps are the hue's mark tone over
- *   transparent at 30, 55, 80 and 100%, so one hue carries one quantity (P11) and the dots fit any surface.
+ *   transparent at 30, 55, 80 and 100%, so one hue carries one quantity (R7) and the dots fit any surface.
  *   `null` (no data: a day still to come, a day the month does not have) draws nothing. The default steps are
  *   the quartiles of the non-zero values, so the four levels hold about the same number of dots. The legend
  *   under the grid is "Less", the five levels as dots, "More".
  * - Anatomy: circles on a pitch of the dot plus 4px of air (12px for the default 8px dot). Each row has a label
- *   at the start (mono caption, fg-subtle, in a column as wide as the longest label) and an optional total at
- *   the end (mono small, fg, tabular, end-aligned). Optional ticks over chosen columns name them (month names
+ *   at the start (caption, fg-subtle, in a column as wide as the longest label) and an optional total at
+ *   the end (small, fg, tabular, end-aligned). Optional ticks over chosen columns name them (month names
  *   over a year of weeks). A label needs 16px of height, so when rows are closer than that (the default pitch)
  *   every second row shows its label and its total, counted from the first, like the chart's every nth axis
  *   label; every row keeps its name and its total for a screen reader.
@@ -21,7 +21,7 @@
  *   to scroll, so a clipped dot is not left half drawn.
  * - Interaction: one pointer layer covers the dots, as in the chart, because a 12px dot is far smaller than a
  *   finger. The dot under a mouse is ringed with a 1px fg outline and shows the Tooltip's look above it (solid
- *   surface-3, shadow-tooltip): the name in fg-muted and the value in mono, kept inside the heatmap and
+ *   surface-3, shadow-tooltip): the name in fg-muted and the value in tabular figures, kept inside the heatmap and
  *   following the pointer from dot to dot with no re-entry. A dot with no data does not react to a pointer.
  *   Touch: when the grid fits, a finger scrubs across the dots (touch-action pan-y), and the dot under it is
  *   active and shows its tooltip, which stays until the next touch elsewhere. When the grid scrolls, a drag
@@ -51,7 +51,7 @@ import { countText, FUN_SPRINGS, useExit, useFun, useTransition, useTravel } fro
 
 /* ----------------------------------------------------------------- types */
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type HeatmapHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** One row of dots: a label, one value per column, and an optional total. */
@@ -95,7 +95,7 @@ const GAP = 4; // air between dots
 const LABEL_H = 16; // a row label needs this much height
 const TICK_H = 16; // the row of column ticks
 const TICK_GAP = 8; // between the ticks and the first row
-const MONO = 7.2; // advance of a 12px mono character
+const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const FADE = 8; // the soft edge where more dots lie beyond the scroll box
 
 /* Fun mode's lens: how far it reaches, in dots, how much the centre swells and how far neighbours step aside, in px. */
@@ -530,7 +530,7 @@ export function Heatmap({
 
   const tickLeft = (index: number, text: string) => {
     const x = index * pitch;
-    return x + text.length * MONO > gridW ? { right: 0 } : { left: x };
+    return x + text.length * FIGURE > gridW ? { right: 0 } : { left: x };
   };
 
   return (
@@ -539,7 +539,7 @@ export function Heatmap({
       className={"relative grid w-fit max-w-full grid-cols-[auto_minmax(0,max-content)_auto] " + className}
     >
       {/* Row labels: their own column, so they stay put while the dots scroll. The same words sit in each row as a hidden header. */}
-      <div aria-hidden="true" className="pt-1 pr-4 font-mono text-caption font-normal whitespace-nowrap text-fg-subtle">
+      <div aria-hidden="true" className="pt-1 pr-4 text-caption font-normal whitespace-nowrap text-fg-subtle">
         {lead > 0 && <div style={{ height: lead }} />}
         <div className="flex flex-col" style={{ gap: GAP }}>
           {rows.map((row, r) => (
@@ -566,7 +566,7 @@ export function Heatmap({
           {hasTicks && (
             <div
               aria-hidden="true"
-              className="relative font-mono text-caption font-normal whitespace-nowrap text-fg-subtle"
+              className="relative text-caption font-normal whitespace-nowrap text-fg-subtle"
               style={{ height: TICK_H, marginBottom: TICK_GAP }}
             >
               {columnTicks!.map((t) => (
@@ -649,7 +649,7 @@ export function Heatmap({
 
       {/* Totals: their own column at the end of the rows. */}
       {hasTotals && (
-        <div aria-hidden="true" className="pt-1 pl-4 text-right font-mono text-small whitespace-nowrap text-fg tabular-nums">
+        <div aria-hidden="true" className="pt-1 pl-4 text-right text-small whitespace-nowrap text-fg tabular-nums">
           {lead > 0 && <div style={{ height: lead }} />}
           <div className="flex flex-col" style={{ gap: GAP }}>
             {rows.map((row, r) => (
@@ -671,7 +671,7 @@ export function Heatmap({
           <Tip key="tip" cx={tip.x} markTop={tip.top} width={tip.width}>
             <div className="flex items-center gap-3">
               <span className="text-fg-muted">{cellName(active.r, active.c)}</span>
-              <span className="font-mono text-caption font-normal tabular-nums">{valueText(active.r, active.c)}</span>
+              <span className="text-caption font-normal tabular-nums">{valueText(active.r, active.c)}</span>
             </div>
           </Tip>
         )}
@@ -701,7 +701,7 @@ function CountingTotal({ text }: { text: string }) {
 
 function Legend({ hue, cell }: { hue: HeatmapHue; cell: number }) {
   return (
-    <div aria-hidden="true" className="col-start-2 col-end-3 mt-3 flex items-center gap-2 justify-self-end font-mono text-caption font-normal whitespace-nowrap text-fg-subtle">
+    <div aria-hidden="true" className="col-start-2 col-end-3 mt-3 flex items-center gap-2 justify-self-end text-caption font-normal whitespace-nowrap text-fg-subtle">
       <span>Less</span>
       <span className="flex items-center" style={{ gap: GAP }}>
         {[EMPTY, ...HUE[hue]].map((fill, i) => (

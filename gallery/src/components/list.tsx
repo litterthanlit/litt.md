@@ -67,7 +67,7 @@ const ISO_DATE = /^\d{4}-(\d{2})-(\d{2})$/;
 /** A machine-readable year, month or day ("2024", "2024-10", "2024-10-09"), which a <time> can carry. */
 const DATETIME = /^\d{4}(-\d{2}(-\d{2})?)?$/;
 
-/** "2026-10-09" becomes "09 Oct": always six characters, so mono dates align. Anything that is not an ISO date ("2024", "Q3") stays as written. */
+/** "2026-10-09" becomes "09 Oct": always six characters, so tabular dates align. Anything that is not an ISO date ("2024", "Q3") stays as written. */
 export function formatDate(value: string) {
   const m = ISO_DATE.exec(value);
   const month = m ? MONTHS[Number(m[1]) - 1] : undefined;
@@ -158,7 +158,7 @@ function RowContent({ project }: { project: Project }) {
       </span>
       <When
         value={project.updated}
-        className="hidden min-w-14 shrink-0 text-right font-mono text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle sm:block"
+        className="hidden min-w-14 shrink-0 text-right text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle sm:block"
       />
     </>
   );

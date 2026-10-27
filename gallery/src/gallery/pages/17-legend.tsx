@@ -162,7 +162,7 @@ export default function LegendPage() {
         title="With totals"
         tier="instant"
         code="TotalsDemo"
-        caption="A reading after each name, in mono, helps you pick: here each site's visits over the eight weeks. Shop starts hidden. The reading keeps its ink either way, and only the name and the swatch change color, so the box never changes size."
+        caption="A reading after each name, in tabular figures, helps you pick: here each site's visits over the eight weeks. Shop starts hidden. The reading keeps its ink either way, and only the name and the swatch change color, so the box never changes size."
       >
         <TotalsDemo />
       </Stage>

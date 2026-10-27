@@ -15,11 +15,11 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 ## 1. Type
 
-**Families.** `--font-sans` (Geist) for everything, headings included. `--font-mono` (Geist Mono) only for code, keyboard keys (`⌘K`), numbers in tables and data, version strings and token names. Tags are set in the sans. No third family, ever.
+**Families.** `--font-sans` (Geist) for everything, headings and numbers included: numbers, readings, dates and counts take tabular figures (`tabular-nums`), so a changing value never wobbles. `--font-mono` (Geist Mono) only for code and terminal output: code blocks, commands, logs, and identifiers in code (token names, hashes, paths). Keyboard keys (`⌘K`), version strings and tags are set in the sans. No third family, ever.
 
 **Loading.** Geist comes from Google Fonts in the three weights: `family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap`. In Next.js the `geist` package (`GeistSans`, `GeistMono`) is the same face, as on litt.design; in an app that installs the registry, `base-styles` loads it from `@fontsource/geist-sans`. The fallback is Helvetica Neue, Helvetica and Arial, as on litt.design. Declare no `cv` or `ss` features. Geist Mono loads at 400 only.
 
-**Weight (P9).** Three weights, one per role, and nothing else.
+**Weight (R8).** Three weights, one per role, and nothing else.
 
 | Token | Weight | Role |
 |---|---|---|
@@ -27,7 +27,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 | `--weight-title` | 500 | Titles: display, h1 to h4, the title in a title-and-description lockup, buttons, tab and segmented triggers, `b` and `strong` |
 | `--weight-label` | 600 | 12px labels only: the caption step, tags, meta rows, table headers |
 
-Nothing goes to 700 or above or below 400, running text never takes 500 or 600, and 600 never appears above the caption size. Geist Mono stays at 400, at the caption size too. `tokens.css` sets `h1`–`h6`, `b` and `strong` to the title weight and `th` to the label weight, and turns off faux bold. In Tailwind, display to h4 carry the title weight and the caption carries the label weight on their own; `font-title` and `font-label` set the role on anything else, and a mono caption adds `font-normal`.
+Nothing goes to 700 or above or below 400, running text never takes 500 or 600, and 600 never appears above the caption size. Geist Mono stays at 400, at the caption size too. `tokens.css` sets `h1`–`h6`, `b` and `strong` to the title weight and `th` to the label weight, and turns off faux bold. In Tailwind, display to h4 carry the title weight and the caption carries the label weight on their own; `font-title` and `font-label` set the role on anything else, and a reading or a count at the caption size (a value, not a label) adds `font-normal`, as a mono caption does.
 
 **Scale.** Each step bundles size, a whole-pixel line height and tracking (`--type-<step>-size`, `-leading`, `-tracking`).
 
@@ -51,7 +51,7 @@ Nothing goes to 700 or above or below 400, running text never takes 500 or 600, 
 - A label sits 4px (`--space-1`) above its title, and a title 4px above its text, so a lockup reads as one unit.
 - Blocks within a section sit 16px (`--space-4`) apart.
 - A section heading sits 4px above its first content.
-- The sections of a page sit 48px (`--space-12`) apart. A marketing page's full-width sections keep `--section-y` (P7, section 3).
+- The sections of a page sit 48px (`--space-12`) apart. A marketing page's full-width sections keep `--section-y` (R9, section 3).
 - A page title sits 16px above its summary.
 
 **Rules.**
@@ -69,38 +69,38 @@ Nothing goes to 700 or above or below 400, running text never takes 500 or 600, 
 | Ground | `--canvas` | Page background |
 | Surfaces | `--surface-1`, `--surface-2`, `--surface-3` | Raised cards, then nested or hover fills, then pressed fills or wells |
 | Lines | `--line`, `--line-strong` | Decorative hairlines; dividers that need to be seen |
-| Control line | `--line-control` | Outline of inputs, checkboxes, selects and switches (at least 3:1) |
-| Text | `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled` | Two inks: `--fg` for titles and key values, one grey for body (`--fg-muted`) and supporting text (`--fg-subtle`). Disabled only |
+| Control line | `--line-control` | Outline of inputs, checkboxes and selects (at least 3:1) |
+| Text | `--fg`, `--fg-muted`, `--fg-subtle`, `--fg-disabled` | Two inks: `--fg` for titles and key values, one grey for body (`--fg-muted`) and supporting text (`--fg-subtle`), at about APCA Lc 70 in both themes and never under 60 on any surface (the checks hold it). Disabled only |
 | Accent | `--accent`, `--accent-hover`, `--accent-fg`, `--accent-text`, `--accent-tint` | The one primary action (a fill with `--accent-fg` on it), links (`--accent-text`), focus, the light source |
 | Focus | `--focus`, `--focus-ring` | Keyboard focus indicator |
 | Status | `--success`, `--warning`, `--danger` | State only: never decoration, never brand |
-| Data hues | `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` and `-tint` | Color that carries data (P11): series, categories, heat steps, identity. Never chrome |
+| Data hues | `--data-blue`, `--data-amber`, `--data-teal`, `--data-violet`, `--data-rose`, each with `-text` and `-tint` | Color that carries data (R7): series, categories, heat steps, identity. Never chrome |
 
 **Accent per project.** Pick the accent at project start from the subject: the client's mark, the product's domain, or the material it sells. Set it in both themes so that:
 - `--accent`, the fill, reaches at least 3:1 on `--canvas`, so the primary action stands out;
 - `--accent-fg` reaches at least 4.5:1 on `--accent`;
 - `--accent-text`, the accent as text (links), reaches at least 4.5:1 on `--canvas`. In light it is usually the accent itself. In dark it is usually lighter than the fill, because a fill dark enough for white text is too dark to read as text on a dark canvas. Never use `--accent` as a text color.
 
-Run `node scripts/check.mjs` to confirm. Litt's own accent is cobalt: a cool light against the warm stone grays, so it reads clearly without a large fill. In both themes the primary action is a deep cobalt with white text, as in the reference it came from. Dark mode's links use a lighter cobalt (`--accent-text`), because the fill's cobalt is too dark to read as text there.
+Run `node scripts/check.mjs` to confirm. Litt's own accent is Blue 4 (v1.0, Nick's fourth of six blues): a bright cobalt that is still a cool light against the warm stone grays, and still carries white text past 5.5:1. In both themes the primary action is Blue 4 with white text; its hover is a step darker in light and a step lighter in dark. Links use `--accent-text`: a hair toward indigo in light, so a link stays apart from the chart blue's text, and lifted in dark until it passes 4.5:1 on the canvas and on its tint. The accent keeps 0.12 (OKLab) from every data hue, fill against mark and text against text, and the check measures it (R6). A project may run monochrome instead (`[data-accent="mono"]` on `<html>` or `<body>`): the primary action, links and the focus ring take the ink, and the glow becomes a block's lift. Or it may run pink (`[data-accent="pink"]`): each theme declares `--accent-pink` and its hover, text, tint and focus tones, and the attribute points the accent at them. Pink's fill is a hot raspberry at Blue 4's weight, so white text still reads past 5.9:1. A pink link at the rose data hue's lightness would read as a series, so the text tone moves away from it: a deep berry in light, a pale pink in dark. The check holds pink to every pair it holds Blue 4 to.
 
-**Accent budget (P1).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes, radios and switches fill with `--fg` when on, never the accent, and so does a slider's range: a form can hold many of them, and the accent stays on its submit.
+**Accent budget (R6).** At most one accent fill per view, on the primary action. The rest of the accent's presence is light: `--light`, `--glow`, `--focus`. Checkboxes and radios fill with `--fg` when on, never the accent, and a slider's cap and fill are never the accent either: a form can hold many of them, and the accent stays on its submit. A switch stays neutral, unless it is the one switch that is the view's main choice; then its block is the view's one accent fill.
 
-**Data hues (P11).** Five hues carry data, in a fixed order: blue, amber, teal, violet, rose. The first series or category takes blue, the second amber, and so on; a hue is never cycled, and a sixth series folds into "Other" or a second chart. Each hue has three tones:
+**Data hues (R7).** Five hues carry data, in a fixed order: blue, amber, teal, violet, rose. The first series or category takes blue, the second amber, and so on; a hue is never cycled, and a sixth series folds into "Other" or a second chart. Each hue has three tones:
 - the mark tone (`--data-blue`) for bars, dots, lines, heat cells and gauge ticks: at least 3:1 on canvas and every surface;
 - the text tone (`--data-blue-text`) for a word in the hue, such as a category tag or a label that names a mark: at least 4.5:1 on canvas, surfaces and the hue's own tint;
 - the tint (`--data-blue-tint`), the mark tone mixed into surface-1 by `--tint-strength` (12% light, 18% dark), as the fill behind the text tone.
 
-They were fitted to litt's surfaces in each theme and checked for color-blind separation between neighbors in that order, and blue sits apart from the cobalt accent, so a chart never reads as a button. Teal keeps clear of the success green. A heat scale steps one hue's mark tone over transparent (30, 55, 80 and 100%) above an empty fg-8% cell. Chrome stays neutral: buttons, controls, surfaces, borders, nav, rails, gridlines and running text never take a hue, and a status keeps its own color and a word. A single quantity may stay in the foreground, which is the quiet default.
+They were fitted to litt's surfaces in each theme and checked for color-blind separation between neighbors in that order, and blue sits apart from the accent (R6 measures it), so a chart never reads as a button. Teal keeps clear of the success green. A heat scale steps one hue's mark tone over transparent (30, 55, 80 and 100%) above an empty fg-8% cell. Chrome stays neutral: buttons, controls, surfaces, borders, nav, rails, gridlines and running text never take a hue, and a status keeps its own color and a word. A single quantity may stay in the foreground, which is the quiet default.
 
 **Translucent tones.** For hover fills on neutral ground, mix from the foreground: `color-mix(in oklab, var(--fg) 6%, transparent)` for hover and 7–8% for selected. Never use rgba of a hard-coded color.
 
 ## 3. Space and layout
 
-**Scale.** `--space-1` to `--space-40`: 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160. The names match Tailwind's multiplier, so `--space-6` is `p-6`. Off-scale values (20, 28, 36, 40 as spacing) fail P6. 4px and 12px are for inside components only.
+**Scale.** `--space-1` to `--space-40`: 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 160. The names match Tailwind's multiplier, so `--space-6` is `p-6`. Off-scale values (20, 28, 36, 40 as spacing) fail R9. 4px and 12px are for inside components only.
 
-**Control heights (P10).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero CTAs only). A page form's submit and Cancel are md, like its fields, and so are a dialog's fields and actions. A field is lg only when it shares a row with an lg button (the inline form). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 14 / 16), at the title weight. Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
+**Control heights (R9).** Buttons and inputs share one scale: `--control-sm` 32 (dense UI: table rows, toolbars), `--control-md` 44 (default), `--control-lg` 56 (hero CTAs only). A page form's submit and Cancel are md, like its fields, and so are a dialog's fields and actions. A field is lg only when it shares a row with an lg button (the inline form). Side padding is `--control-pad-sm/md/lg` (12 / 16 / 24) and label size `--control-text-sm/md/lg` (13 / 14 / 16), at the title weight. Labels are trimmed to the cap height with `.litt-trim`, so side padding roughly equals the visible air above and below the label: every size reads as evenly roomy. Grouped buttons sit `--control-group-gap` (12) apart; an icon sits `--control-gap` (8) from its label.
 
-**Section rhythm (P7).** `--section-y` is the distance between sections: 64 mobile, 96 from 640px, 128 from 1024px. Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
+**Section rhythm (R9).** `--section-y` is the distance between sections: 64 mobile, 96 from 640px, 128 from 1024px. Apply it as padding-top on each section and padding-bottom on the last one. Never apply it to both sides, which doubles the gap.
 
 **Grid.** 12 columns, `--grid-gap` between them (16 mobile, 24 from 640px), and `--gutter` page padding (16 / 24 / 32).
 
@@ -127,7 +127,7 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 |---|---|---|
 | `--radius-control` | 4px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
 | `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
-| `--radius-pill` | 999px | Avatars, icon-only buttons and switches. Radio marks and slider thumbs are circles |
+| `--radius-pill` | 999px | Avatars and icon-only buttons. Radio marks are circles. (A block set into a control takes `--radius-control` less its 2px inset.) |
 
 **Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
 
@@ -149,13 +149,14 @@ Fast by default, with one signature moment per view. Motion confirms an action a
 - **Exits.** An element leaving runs at `--exit` (0.75×) of the spring's visual time, as an `--ease-out` tween, and never bounces: `--dur-exit-responsive` (150ms), `--dur-exit-expressive` (263ms). Un-hover and un-press are not exits; they stay instant.
 - **Stagger and travel.** `--stagger` (40ms) separates siblings in one cascade. `--travel` (16px) is the entrance offset. Menus and tooltips use a quarter of it.
 - **Dismissal.** `--dismiss-distance` (0.25, a fraction of the surface's height or width) and `--dismiss-velocity` (0.4, pixels per millisecond) decide whether a released drag leaves or springs back. They are thresholds, not durations, so reduced motion does not change them.
-- **Properties.** Transform and opacity animate. Color, background-color, border-color, fill and the focus ring may fade, at `--dur-instant` only. Never layout (width, height, top, left, margin, padding), never `transition: all`, never material (P5).
-- **Press.** `transform: scale(var(--press-scale))` (0.98) on `:active`, instant tier. A state change never moves the box otherwise.
+- **Properties.** Transform and opacity animate. Color, background-color, border-color, fill and the focus ring may fade, at `--dur-instant` only. Never layout (width, height, top, left, margin, padding), never `transition: all`, never material (R2).
+- **Press.** A pressed block sinks `--press-depth` (half a pixel) on `:active` (`translate`, instant tier), and a raised thing's cast tightens at once (R2, R3). Floating surfaces still grow from `--press-scale` (0.98) as they open. A state change never moves the box otherwise.
+- **Under a hand (R4).** A dragged part follows the pointer 1:1, with no easing, and holds where it was taken. A jump (a key, a press beside the part) and a release settle on the responsive spring. A default the part can come home to holds it within about a step. Pushed fast, a slider's cap leans into the move, at most 4°, and rights itself on the spring. Transform only, and reduced motion stills it all.
 - **One expressive moment per view.** A second one uses the responsive tier. A sheet on a compact screen does not count (section 6).
 - **Ceilings.** The instant tween stays at or under 240ms. Spring visual time stays at or under 350ms, and bounce at or under 0.12. `scripts/check.mjs` enforces both.
 - **Never.** Scroll-triggered reveals, parallax, looping autoplay, marquee, bounce on exits or on the responsive tier, a pulsing or shimmering skeleton, cursor-following effects.
-- **Reduced motion.** `tokens.css` sets every `--dur-*`, `--stagger` and `--travel` to 0 and the press scale to 1. In JS, let the library honor it (`MotionConfig reducedMotion="user"`, Framer `useReducedMotion()`).
-- **Fun mode (an exception, not yet a rule).** One switch, `FunMode` in the motion engine, off unless an app renders it (the gallery's Customize panel: Motion, Calm or Fun). It changes how things move, never how they look at rest: every part comes to rest on exactly the frame it draws without it, and a pixel test holds the gallery to that. Data parts arrive (marks grow, figures count with them), spring to new values, and answer touch; buttons squish, checkboxes draw their tick, the segmented surface springs. Figures count honestly: never past the data, never back while a mark settles. Only a real milestone celebrates, once. Reduced motion turns it off. Its springs live in `motion/fun.tsx`, not in tokens.css. It is an exception to three rules above, behind its switch, and only there (Nick, October 2026: "the rules might be changing"): bounce up to 0.55 (the ceiling is 0.12), visual time up to 750ms (the ceiling is 350ms), and the heatmap's lens follows the pointer (never cursor-following). If it wins, the evolve workflow moves its springs into tokens and rewrites these ceilings; if it loses, the switch comes out.
+- **Reduced motion.** `tokens.css` sets every `--dur-*`, `--stagger` and `--travel` to 0, the press scale to 1 and the press depth to 0. In JS, let the library honor it (`MotionConfig reducedMotion="user"`, Framer `useReducedMotion()`).
+- **Fun mode (an exception, not yet a rule).** One switch, `FunMode` in the motion engine, off unless an app renders it (the gallery's Customize panel: Motion, Calm or Fun). It changes how things move, never how they look at rest: every part comes to rest on exactly the frame it draws without it, and a pixel test holds the gallery to that. Data parts arrive (marks grow, figures count with them), spring to new values, and answer touch; buttons squish, checkboxes draw their tick, the segmented surface springs. What a hand holds is physical: a held switch leans toward where it will go, a pressed button sinks deeper on the press spring, and a thrown slide to confirm or carousel keeps the speed it was let go at, coasts to the step that speed reaches and lands there on a throw spring, squashing against an end or giving like a rubber band past it. A thrown toast leaves with its speed, and anything let go short of leaving springs home on that spring. Highlights reach for where they are going: a list's highlight and a tab's underline lead with the edge on the side they travel, and the other catches up. A number field's label scrubs its value. Figures count honestly: never past the data, never back while a mark settles. Only a real milestone celebrates, once. Reduced motion turns it off. Its springs live in `motion/fun.tsx`, not in tokens.css. It is an exception to three rules above, behind its switch, and only there (Nick, October 2026: "the rules might be changing"): bounce up to 0.55 (the ceiling is 0.12), visual time up to 750ms (the ceiling is 350ms), and the heatmap's lens follows the pointer (never cursor-following). If it wins, the evolve workflow moves its springs into tokens and rewrites these ceilings; if it loses, the switch comes out.
 - **Retired in v0.5.** `--dur-reveal` and `--dur-panel` became `--dur-responsive` (or `--dur-expressive` for a dialog). `--dur-max` has no replacement. The old `--dur-exit-reveal` and `--dur-exit-panel` became `--dur-exit-responsive` and `--dur-exit-expressive`.
 
 ## 6. Motion on touch and small screens

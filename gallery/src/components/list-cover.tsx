@@ -2,7 +2,7 @@
  * Project covers: simple abstract compositions of rectangles and hairlines.
  *
  * Token colors only, no gradients: the page already has its one light source
- * (P2), so a cover is drawn, not lit. The artwork is static. The cover's own
+ * (R2), so a cover is drawn, not lit. The artwork is static. The cover's own
  * fill (surface-2, stepping to surface-3 on hover) is set by the card.
  *
  * The viewBox is 320 x 200 and the card's cover is 8:5, so nothing crops.

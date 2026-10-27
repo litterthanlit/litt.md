@@ -84,7 +84,7 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
   return (
     <section aria-labelledby={`ai-step-${n}`} className="grid content-start gap-4">
       <div className="grid gap-1">
-        <p className="font-mono text-caption font-normal text-fg-subtle">Step {n}</p>
+        <p className="tabular-nums text-caption font-normal text-fg-subtle">Step {n}</p>
         <h2 id={`ai-step-${n}`} className="text-h4 text-fg">
           {title}
         </h2>

@@ -26,7 +26,7 @@ function Slider({ label, value, min, max, step, format, onChange }: {
   return (
     <div className="grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1">
       <label htmlFor={id} className="text-small text-fg-muted">{label}</label>
-      <output htmlFor={id} className="font-mono text-caption font-normal text-fg tabular-nums">{format(value)}</output>
+      <output htmlFor={id} className="text-caption font-normal text-fg tabular-nums">{format(value)}</output>
       <input
         id={id} type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
@@ -50,7 +50,7 @@ function Curve({ spring }: { spring: Spring }) {
         <path d={`M4 ${target.toFixed(1)}H116`} stroke="var(--line-strong)" strokeDasharray="2 3" fill="none" />
         <path d={d} stroke="var(--fg)" strokeWidth="1.5" fill="none" />
       </svg>
-      <p className="font-mono text-caption font-normal text-fg-subtle">
+      <p className="tabular-nums text-caption font-normal text-fg-subtle">
         settles {duration}ms
         <br />
         {over ? `overshoots ${over}%` : "no overshoot"}
@@ -197,7 +197,7 @@ export function MotionPanel({ device, onDeviceChange }: {
           <span className="text-small text-fg-muted" id="travel-label">Travel</span>
           <div className={segmented + " grid-cols-4"} role="group" aria-labelledby="travel-label">
             {TRAVELS.map((t) => (
-              <button key={t} type="button" aria-pressed={dial.travel === t} onClick={() => update({ travel: t })} className={segment + " font-mono text-caption font-normal"}>
+              <button key={t} type="button" aria-pressed={dial.travel === t} onClick={() => update({ travel: t })} className={segment + " tabular-nums text-caption font-normal"}>
                 {t}px
               </button>
             ))}
@@ -236,7 +236,7 @@ export function MotionPanel({ device, onDeviceChange }: {
         <div className="grid gap-2 pt-2">
           <h4 className="text-small text-fg-muted">Differs from locked</h4>
           {differs.length ? (
-            <ul className="grid gap-1 font-mono text-caption font-normal text-fg-subtle">
+            <ul className="grid gap-1 tabular-nums text-caption font-normal text-fg-subtle">
               {differs.map((d) => (
                 <li key={d}>{d}</li>
               ))}

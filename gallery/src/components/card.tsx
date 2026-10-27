@@ -4,7 +4,7 @@
  * CardDescription and CardLink.
  *
  * - Surface (components.md, Card): `.litt-raised`. The surface radius, surface-1, an inset hairline and the
- *   top highlight, and no outer shadow (P4). Never glass (P3), never an accent rail.
+ *   top highlight, and no outer shadow (R3). Never glass (R3), never an accent rail.
  * - Padding follows the cover. A plain card pads space-6. With an inset cover the card pads space-1 (4px),
  *   the cover takes the control radius (4 + 4 = 8, so the corners nest) and CardBody pads space-4 above and
  *   at the sides, space-3 below. With a bleed cover the card pads nothing, the cover runs to the edges and
@@ -17,8 +17,8 @@
  *   An unlinked card has no hover. Touch loses nothing, because hover reveals nothing.
  * - Focus by modality: :focus-visible on the link draws the 2px focus ring around the whole card, at a 2px
  *   offset, and the link's own outline is removed so the two never stack.
- * - Light: `lit` adds `.litt-lit .litt-grain` as the card's own top light. It is optional and static (P5).
- *   The page already has one light source (P2), so use it on one card, not on a set.
+ * - Light: `lit` adds `.litt-lit .litt-grain` as the card's own top light. It is optional and static (R2).
+ *   The page already has one light source (R2), so use it on one card, not on a set.
  * - Motion: none of its own. The entrance cascade for a set of cards belongs to the page (see List and cards).
  */
 import { createContext, useContext, type ComponentProps, type HTMLAttributes, type ReactNode } from "react";

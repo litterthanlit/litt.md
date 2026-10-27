@@ -9,12 +9,12 @@
  * - Calendar: a header with the month and year at the body size in --fg and previous and next as icon-only
  *   ghost sm Buttons (44px on a coarse pointer). Weekday names in caption --fg-subtle, from Intl. Always six
  *   weeks, so the height never changes. Days are 40px cells (44 on a coarse pointer) at the control radius,
- *   numbers in mono at the small size with tabular figures. Days of the last and next month are
+ *   numbers at the small size with tabular figures. Days of the last and next month are
  *   --fg-disabled and inert: they carry no state and take no pointer, and the keys page to them. Disabled
  *   days (min, max, isDisabled) are --fg-disabled too, take no hover and stay reachable by the keys, as
  *   aria-disabled buttons.
  * - Day states: hover fills with fg 6% on the instant tier (a finger's press too). Today has an inset 1px
- *   --line-strong ring. A picked day is an --fg fill with --canvas text, never the accent (P1). In a range the
+ *   --line-strong ring. A picked day is an --fg fill with --canvas text, never the accent (R6). In a range the
  *   two ends are filled and the days between sit on an fg 8% band that runs square across each row; the band
  *   covers the end cells too, rounded on their outer side, so it only shows its round end under a preview.
  *   While the second end is chosen, the pointer (or the focused day) previews the band. Picking the second
@@ -34,7 +34,8 @@
  *   hidden number. A leaving month is inert.
  *
  * DatePicker:
- * - Field: the Select trigger's look and sizes (copied: select.tsx does not export them), showing the date in
+ * - Field: the Select's raised trigger, its look and sizes (copied: select.tsx does not export them). You press
+ *   it, so it is a block, not a cut (R3), and it stays pressed while the calendar is open. It shows the date in
  *   words from Intl ("17 Oct 2026"; a range is "3 Oct to 17 Oct 2026") or a placeholder in --fg-subtle, with
  *   a 16px calendar icon at the end. It is a button with aria-haspopup="dialog", named by its label and its
  *   value. Label above, hint or error below, as SelectField's.
@@ -262,7 +263,7 @@ const CELL = "h-10 w-10 max-w-full pointer-coarse:h-11 pointer-coarse:w-11";
 const ROW = "grid grid-cols-7";
 
 const dayBase =
-  "relative grid size-full place-items-center rounded-control font-mono text-small tabular-nums select-none " +
+  "relative grid size-full place-items-center rounded-control text-small tabular-nums select-none " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
@@ -604,7 +605,7 @@ function DayCell({
   if (!day.inMonth) {
     /* Another month's day: inactive here (aria-disabled), so its dimmed number is exempt from contrast, as a disabled control's is. */
     return (
-      <div role="gridcell" aria-disabled="true" className={"grid place-items-center font-mono text-small tabular-nums text-fg-disabled select-none " + CELL}>
+      <div role="gridcell" aria-disabled="true" className={"grid place-items-center text-small tabular-nums text-fg-disabled select-none " + CELL}>
         <span aria-hidden="true">{number}</span>
       </div>
     );
@@ -645,18 +646,21 @@ function DayCell({
 
 /* The Select trigger's look and sizes (select.tsx), which do not ship as exports. */
 const field =
-  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left font-normal text-fg " +
+  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-block text-left font-normal text-fg " +
   "data-placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
-  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "shadow-(--block-lift) enabled:active:shadow-(--block-press) data-[state=open]:shadow-(--block-press) " +
+  "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+  "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
+  "active:translate-y-(--press-depth) disabled:active:translate-y-0 data-[state=open]:translate-y-(--press-depth) " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--block-lift)] " +
+  "aria-invalid:enabled:active:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
+  "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:data-placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  "forced-colors:border forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid forced-colors:focus-visible:outline-offset-2";
+  "forced-colors:border";
 
 const sizes: Record<DatePickerSize, string> = {
   sm: "h-control-sm px-control-pad-sm text-small pointer-coarse:h-control-md",

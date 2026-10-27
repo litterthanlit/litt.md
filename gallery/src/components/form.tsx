@@ -1,6 +1,6 @@
 /**
  * Form patterns (components.md, "Forms"): how the fields, groups and buttons make a page.
- * One left-aligned column, never centered (P7).
+ * One left-aligned column, never centered (R9).
  *
  * - FormSection is a settings-page section: a title and one line of description on the left
  *   third from 1024 up, the fields on the rest, and one column below that. Sections are
@@ -12,7 +12,7 @@
  *   GOV.UK error summary: a focusable panel named by its heading, and one link per error. It
  *   takes focus when a submit fails, which is what reads it out. It is not a live region: it
  *   updates as fields are fixed, and an alert would re-announce it on every keystroke.
- * - FormActions is the action row of a page form: submit first, then Cancel, both md (P10).
+ * - FormActions is the action row of a page form: submit first, then Cancel, both md (R9).
  *   They stack full width below 640, submit on top. align="fields" lines the row up with the
  *   fields column of a FormSection from 1024 up.
  * - Spacing: fields sit --space-6 (24) apart and groups --space-12 (48) apart. A Fieldset adds
@@ -80,6 +80,11 @@ export type FormSectionProps = {
   title: ReactNode;
   /** One line under the title, in the subtle color, that says what the section holds. */
   description?: ReactNode;
+  /**
+   * The title's heading level. 2 for a form that is the page; 3 or 4 when the form sits under a heading of its own,
+   * such as a card's or a dialog's, so the page's outline stays in order. It looks the same at every level.
+   */
+  headingLevel?: 2 | 3 | 4;
   /** The section's fields. They sit 24px apart in one column. */
   children: ReactNode;
   /** Extra classes for the section. */
@@ -91,8 +96,9 @@ export type FormSectionProps = {
  * rest. Below that they stack in one column. Every section after the first starts with a hairline and 48px of air,
  * so put sections one after another in the same parent.
  */
-export function FormSection({ title, description, children, className = "" }: FormSectionProps) {
+export function FormSection({ title, description, headingLevel = 2, children, className = "" }: FormSectionProps) {
   const titleId = useId();
+  const Heading = `h${headingLevel}` as const;
   return (
     <section
       aria-labelledby={titleId}
@@ -105,9 +111,9 @@ export function FormSection({ title, description, children, className = "" }: Fo
       }
     >
       <div className="grid content-start gap-1">
-        <h2 id={titleId} className="text-body font-title text-fg">
+        <Heading id={titleId} className="text-body font-title text-fg">
           {title}
-        </h2>
+        </Heading>
         {description && <p className="text-pretty text-small text-fg-subtle">{description}</p>}
       </div>
       <div className="grid min-w-0 content-start gap-6">{children}</div>

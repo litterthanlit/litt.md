@@ -15,7 +15,11 @@
  *   only its left corners are rounded. .litt-glass carries the surface radius,
  *   so the right corners are reset to square.
  * - Slots: title, description, body (children), footer. Footer buttons are
- *   right-aligned, 12px apart, primary last.
+ *   right-aligned, 12px apart, primary last. The footer is marked
+ *   data-dialog-footer in all three forms (the panel, the side sheet and the
+ *   phone sheet share one footer): focus looks for it, and Button's danger
+ *   variant reads it, so a destructive dialog's confirm is the one red fill
+ *   (R7). Keep the attribute on any footer you write by hand.
  *
  * On compact screens (useDevice().compact, narrower than 640) the dialog is a
  * bottom sheet, and side="right" is the same sheet (foundations.md section 6):

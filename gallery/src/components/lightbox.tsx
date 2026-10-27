@@ -9,7 +9,7 @@
  * - Image: as large as the screen allows less the bars, at its own shape, in a Media frame (the surface radius and the
  *   hairline, surface-2 while it loads, its words when it fails). Pass width and height so the frame has its shape
  *   before the image arrives; without them it takes the image's own once it loads.
- * - Bars: the label and "3 of 12" (the mono, caption size, --fg-subtle) at the top with a round Close at the end, and
+ * - Bars: the label and "3 of 12" (caption size, tabular, --fg-subtle) at the top with a round Close at the end, and
  *   the caption under the image, at the small size in --fg-muted, never wider than the measure. Previous and Next are
  *   round secondary buttons beside the image on a wide screen and at the end of the caption row on a phone; 44px on a
  *   touch screen. At an end the button is disabled. Nothing loops.
@@ -208,7 +208,7 @@ function Layer({ label, items, index, go, close, tier, returnFocus }: LayerProps
           <div className="flex min-w-0 items-center justify-between gap-4 px-4 sm:px-6">
             <div className="flex min-w-0 items-baseline gap-3">
               <RadixDialog.Title className="truncate text-small font-title text-fg">{label}</RadixDialog.Title>
-              <p aria-hidden="true" className="shrink-0 font-mono text-caption font-normal tabular-nums text-fg-subtle">
+              <p aria-hidden="true" className="shrink-0 text-caption font-normal tabular-nums text-fg-subtle">
                 {index + 1} of {total}
               </p>
             </div>

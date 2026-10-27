@@ -231,7 +231,7 @@ function StudioPage() {
           {JOURNAL.map(([title, date]) => (
             <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
               <span className="text-body font-title text-fg">{title}</span>
-              <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{date}</span>
+              <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{date}</span>
             </li>
           ))}
         </ul>
@@ -242,7 +242,7 @@ function StudioPage() {
         <p className="text-reading text-fg-muted">
           A few lines are enough: what it is, who it is for and when you would like it live.
         </p>
-        <p className="font-mono text-small text-fg-subtle">hello@litt.design</p>
+        <p className="text-small text-fg-subtle">hello@litt.design</p>
       </div>
     </div>
   );
@@ -343,16 +343,43 @@ function CurrentDemo() {
         />
         <StudioPage />
       </Frame>
-      <p role="status" className="font-mono text-caption font-normal text-fg-subtle">
+      <p role="status" className="text-caption font-normal text-fg-subtle">
         {path ? `aria-current="page" on ${NAV.find((l) => l.href === path)?.label}` : "No link is current at the top of the page"}
       </p>
     </div>
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+/** The glass bar over a page that scrolls under it. Its action is a plain button here: the wall's one accent fill is the Button tile's. */
+function HeaderTile() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useDemoRouter("/work");
+  useStartUnderBar(frame);
+  return (
+    <Frame ref={frame} label="Litt Studio home page" className="h-80">
+      <Header
+        wordmark={<a href="/work" onClick={router.home}>Litt Studio</a>}
+        navLabel="Studio site"
+        navFrom="sm"
+        links={router.links}
+        renderLink={router.renderLink}
+        onNavigate={router.onNavigate}
+        actions={
+          <Button size="sm" className="pointer-coarse:h-control-md pointer-coarse:px-control-pad-md">
+            Contact
+          </Button>
+        }
+      />
+      <StudioPage />
+    </Frame>
+  );
+}
+
 export default function HeaderPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<HeaderTile />}>
       <Stage
         title="Desktop"
         tier="instant"

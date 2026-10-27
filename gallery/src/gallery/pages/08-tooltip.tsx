@@ -117,7 +117,7 @@ function PhoneDemo() {
             </Tooltip>
           ))}
         </div>
-        <p className="font-mono text-caption font-normal text-fg-subtle" role="status">{last}</p>
+        <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
       </div>
     </DeviceProvider>
   );

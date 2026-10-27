@@ -82,7 +82,7 @@ function InboxDemo() {
             <span className="truncate text-small font-title text-fg sm:w-28 sm:shrink-0">{m.name}</span>
             <span className="truncate text-small text-fg-subtle sm:min-w-0 sm:flex-1">{m.subject}</span>
           </div>
-          <span className="shrink-0 font-mono text-caption font-normal text-fg-subtle">{m.when}</span>
+          <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{m.when}</span>
         </li>
       ))}
     </ul>
@@ -105,7 +105,7 @@ function SizesAndHuesDemo() {
         {(["sm", "md", "lg"] as const).map((size, i) => (
           <div key={size} className="grid justify-items-center gap-2">
             <Avatar name="Ines Duarte" size={size} />
-            <span className="font-mono text-caption font-normal text-fg-subtle">{["24", "32", "44"][i]}</span>
+            <span className="tabular-nums text-caption font-normal text-fg-subtle">{["24", "32", "44"][i]}</span>
           </div>
         ))}
       </div>
@@ -113,7 +113,7 @@ function SizesAndHuesDemo() {
         {HUES.map(({ hue, name }) => (
           <li key={hue} className="grid justify-items-center gap-2">
             <Avatar name={name} hue={hue} size="lg" />
-            <span className="font-mono text-caption font-normal text-fg-subtle">{hue}</span>
+            <span className="text-caption font-normal text-fg-subtle">{hue}</span>
           </li>
         ))}
       </ul>
@@ -223,15 +223,15 @@ function PhotosDemo() {
     <ul aria-label="Photos" className="flex flex-wrap items-start gap-8">
       <li className="grid justify-items-center gap-2">
         <Avatar name="Ines Duarte" src={INES} size="lg" />
-        <span className="font-mono text-caption font-normal text-fg-subtle">photo</span>
+        <span className="text-caption font-normal text-fg-subtle">photo</span>
       </li>
       <li className="grid justify-items-center gap-2">
         <Avatar name="Tomas Berg" src={TOMAS} size="lg" />
-        <span className="font-mono text-caption font-normal text-fg-subtle">white photo</span>
+        <span className="text-caption font-normal text-fg-subtle">white photo</span>
       </li>
       <li className="grid justify-items-center gap-2">
         <Avatar name="Ava Okafor" src={BROKEN} size="lg" />
-        <span className="font-mono text-caption font-normal text-fg-subtle">fails to load</span>
+        <span className="text-caption font-normal text-fg-subtle">fails to load</span>
       </li>
       <li className="grid justify-items-center gap-2">
         <AvatarGroup label="Photos and initials" size="lg" ring="surface-1">
@@ -239,15 +239,38 @@ function PhotosDemo() {
           <Avatar name="Tomas Berg" src={TOMAS} />
           <Avatar name="Priya Nair" />
         </AvatarGroup>
-        <span className="font-mono text-caption font-normal text-fg-subtle">mixed</span>
+        <span className="text-caption font-normal text-fg-subtle">mixed</span>
       </li>
     </ul>
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+const TILE_TEAM = ["Ines Duarte", "Tomas Berg", "Ava Okafor", "Rui Matos", "Lena Voss"];
+
+function AvatarTile() {
+  return (
+    <div className="grid justify-items-center gap-4">
+      <AvatarGroup label="Project team, 26 people" total={26} ring="surface-1" size="lg">
+        {TILE_TEAM.map((n) => (
+          <Avatar key={n} name={n} />
+        ))}
+      </AvatarGroup>
+      <div className="flex items-center gap-3">
+        <Avatar name="Ines Duarte" decorative />
+        <span className="grid">
+          <span className="text-small font-title text-fg">Ines Duarte</span>
+          <span className="text-caption font-normal text-fg-subtle">Design lead</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function AvatarPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<AvatarTile />}>
       <Stage
         title="Senders in an inbox"
         align="start"

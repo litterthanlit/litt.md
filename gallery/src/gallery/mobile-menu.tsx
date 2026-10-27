@@ -7,7 +7,7 @@
  *
  * - The site's own pages are 28px at the title weight, the current one in --fg and the rest in --fg-subtle: Nick's
  *   call after seeing 18px, 24px and 28px side by side (2026-10-21). It is a gallery exception to the 18px cap and to
- *   P12, for this menu only (journal); the rows in the cards keep P12's selected segment.
+ *   R3, for this menu only (journal); the rows in the cards keep R3's selected segment.
  * - Each group row leads with a 16px icon in --fg-subtle and ends with its count and a chevron; the outside links lead
  *   with their mark and end with an arrow. Every other link that is not current is --fg-muted, --fg on hover.
  * - Everything sits on the page gutter, so the cards' edges line up with the header's wordmark.
@@ -25,10 +25,22 @@
  */
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
-import { ArrowUpRightIcon, ChevronLeftIcon, ChevronRightIcon, SlidersIcon } from "@/components/icons";
+import { useExit, useFun, useTransition, useTravel } from "@/motion";
+import {
+  ArrowUpRightIcon,
+  BagIcon,
+  ChartBarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  GridIcon,
+  LayersIcon,
+  MessageIcon,
+  SidebarIcon,
+  SlidersIcon,
+  SparkleIcon,
+} from "@/components/icons";
 import { PAGE_GROUPS, type PageGroup } from "./kit";
-import { pages, type PageEntry } from "./registry";
+import { funPages, pages, type PageEntry } from "./registry";
 
 /** Two lines, the menu glyph. */
 const MenuGlyph = ({ className = "" }: { className?: string }) => (
@@ -68,19 +80,18 @@ export function MenuButton({ open, onToggle, ref }: { open: boolean; onToggle: (
   );
 }
 
-/* One 16px icon per group, in the icon set's pattern (1.5px stroke, round caps). Sliders comes from the set. */
-const Glyph = ({ d }: { d: string }) => (
-  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-    <path d={d} />
-  </svg>
-);
-const GROUP_ICON: Record<PageGroup, ReactNode> = {
+/** A group of the menu: a page group, or, with fun mode on, the pages it changes. */
+type MenuGroup = PageGroup | "Fun";
+
+const GROUP_ICON: Record<MenuGroup, ReactNode> = {
+  Fun: <SparkleIcon />,
   Controls: <SlidersIcon />,
-  Overlays: <Glyph d="M5.75 5.75h7.5v7.5h-7.5zM3.25 10.25v-7h7" />, // a surface over a surface
-  Layout: <Glyph d="M2.75 2.75h10.5v10.5H2.75zM2.75 6.25h10.5M6.25 6.25v7" />, // a header and a sidebar
-  Data: <Glyph d="M3.25 13.25v-4M8 13.25v-10M12.75 13.25v-6.5" />, // three rails
-  Agents: <Glyph d="M8 2.5v3M8 10.5v3M2.5 8h3M10.5 8h3M4.4 4.4l1.6 1.6M10 10l1.6 1.6M4.4 11.6 6 10M10 6l1.6-1.6" />, // a spark
-  Blocks: <Glyph d="M2.75 2.75h4.5v4.5h-4.5zM8.75 2.75h4.5v4.5h-4.5zM2.75 8.75h4.5v4.5h-4.5zM8.75 8.75h4.5v4.5h-4.5z" />, // four parts, one screen
+  Overlays: <LayersIcon />,
+  Layout: <SidebarIcon />,
+  Data: <ChartBarIcon />,
+  Agents: <MessageIcon />,
+  Commerce: <BagIcon />,
+  Blocks: <GridIcon />,
 };
 
 /* ---------------------------------------------------------------- rows */
@@ -90,7 +101,7 @@ const rowBase =
   "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus ";
 const rowIdle = "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
-const rowCurrent = "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]";
+const rowCurrent = "bg-block text-fg shadow-(--block-lift) forced-colors:border";
 
 function PageRow({ page, current, size }: { page: PageEntry; current: boolean; size: "lg" | "md" }) {
   if (size === "md") {
@@ -102,7 +113,7 @@ function PageRow({ page, current, size }: { page: PageEntry; current: boolean; s
   }
   /* Nick's call (2026-10-21): the site's own pages are 28px at the title weight, and the
      current one is marked by ink alone, full --fg against --fg-subtle. A gallery exception to the 18px cap and to
-     P12's raised segment, for this menu only; the language keeps both. */
+     R3's raised segment, for this menu only; the language keeps both. */
   return (
     <a
       href={`#${page.id}`}
@@ -184,10 +195,10 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
   const enter = useTransition("responsive");
   const exit = useExit("responsive");
   const travel = useTravel();
-  const [group, setGroup] = useState<PageGroup | null>(null); // it opens on the groups; the current one names this page
+  const [group, setGroup] = useState<MenuGroup | null>(null); // it opens on the groups; the current one names this page
   const [dir, setDir] = useState<1 | -1>(1);
   const back = useRef<HTMLButtonElement>(null);
-  const opener = useRef<PageGroup | null>(null);
+  const opener = useRef<MenuGroup | null>(null);
   const first = useRef<HTMLDivElement>(null);
 
   /* Focus lands on the first row when the menu opens, so Tab starts inside it. */
@@ -196,10 +207,15 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
   }, []);
 
   const site = pages.filter((p) => !p.group);
-  const groups = PAGE_GROUPS.map((g) => ({ group: g, pages: pages.filter((p) => p.group === g) })).filter((g) => g.pages.length);
+  /* With fun mode on, its pages lead as a group of their own; they stay in their own groups too. */
+  const fun = useFun();
+  const groups: { group: MenuGroup; pages: PageEntry[] }[] = [
+    ...(fun && funPages.length ? [{ group: "Fun" as const, pages: funPages }] : []),
+    ...PAGE_GROUPS.map((g) => ({ group: g, pages: pages.filter((p) => p.group === g) })).filter((g) => g.pages.length),
+  ];
   const shown = groups.find((g) => g.group === group);
 
-  const drillIn = (g: PageGroup) => {
+  const drillIn = (g: MenuGroup) => {
     setDir(1);
     opener.current = g;
     setGroup(g);
@@ -243,7 +259,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
                 </button>
                 <p className="flex items-baseline justify-between px-3 pt-3 pb-1 text-caption">
                   <span className="text-fg">{shown.group}</span>
-                  <span aria-hidden="true" className="font-mono font-normal text-fg-subtle tabular-nums">
+                  <span aria-hidden="true" className="font-normal text-fg-subtle tabular-nums">
                     {shown.pages.length}
                   </span>
                 </p>
@@ -262,7 +278,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
                       <span className="shrink-0 text-fg-subtle">{GROUP_ICON[g]}</span>
                       <span className="flex-1 truncate">{g}</span>
                       {here && <span className="truncate text-small text-fg-subtle">{here.title}</span>}
-                      <span aria-hidden="true" className="font-mono text-caption font-normal text-fg-subtle tabular-nums">
+                      <span aria-hidden="true" className="text-caption font-normal text-fg-subtle tabular-nums">
                         {list.length}
                       </span>
                       <ChevronRightIcon className="shrink-0 text-fg-subtle" />

@@ -4,12 +4,12 @@
  * numbers as a thread, so a dozen rows still read at a glance. A sibling of the Meter in chart.tsx and the Bar list.
  *
  * - Row: the label at the start (small, `--fg`, truncates), the rail across the shared scale, then the median at
- *   the end (mono caption, `--fg-subtle`, tabular, as the Meter's reading). Rows are `--space-6` apart with no
+ *   the end (caption, `--fg-subtle`, tabular, as the Meter's reading). Rows are `--space-6` apart with no
  *   dividers and no boxes. A row is a stat of its own, so nothing here is pressable and nothing takes focus.
  * - Rail: a 4px track at the control radius in fg 12% across the whole scale. Over it the full range (min to
  *   max) is a 4px segment in fg 24%, over that the middle half (p25 to p75) is a 4px segment in the hue's mark
  *   tone, and the median is a 2px wide, 12px tall tick in the hue's text tone, centered on the rail. A hue is
- *   drawn thin, a thread through neutral space (P11). The hue means the measure (build time, reply time), so a
+ *   drawn thin, a thread through neutral space (R7). The hue means the measure (build time, reply time), so a
  *   row past the goal keeps it.
  * - Data: a row is `{ label, values }` (the component computes the quartiles, by linear interpolation) or
  *   `{ label, min, p25, median, p75, max }` when an API has already done it. Rows may mix.
@@ -18,7 +18,7 @@
  *   not the window: under 28rem the label moves above its rail, which then spans the full width of the row.
  * - Scale: linear or log (durations from minutes to days read on a log scale). Left out, the domain runs from
  *   the smallest value to the largest (and the goal), rounded outward to round numbers. The tick labels sit once,
- *   under the last row, in caption mono, `--fg-subtle`, tabular; a label that would touch its neighbour is left
+ *   under the last row, at the caption size, `--fg-subtle`, tabular; a label that would touch its neighbour is left
  *   out, and the first and last stay inside the rail. They are measured from the rail's own width.
  * - Goal: a 1px dashed `--line-strong` line through every rail at the goal. In the wide layout the segments
  *   join into one line down the list. Its label sits once under the rows, where the line ends. A row whose
@@ -32,7 +32,7 @@
  */
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type SpreadHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 type SpreadFromValues = {
@@ -87,7 +87,7 @@ export type SpreadProps = {
 
 /* ----------------------------------------------------------------- constants and helpers */
 
-const MONO = 7.4; // the advance of a 12px mono character with its tracking, rounded up
+const FIGURE = 7.4; // the advance of a 12px tabular figure in Geist with its tracking, rounded up
 const TICK_GAP = 12; // the least air between two tick labels
 
 /** Mark tone for the middle half and text tone for the median, as fills, plus the hue's name for the legend. Literal strings, so Tailwind sees them. */
@@ -249,7 +249,7 @@ export function Spread({ label, items, scale = "linear", domain, ticks, formatVa
       .filter((t) => t.value >= min && t.value <= max)
       .map((t) => {
         const f = ((log ? Math.log(t.value) - Math.log(min) : t.value - min) / span) * width;
-        return { ...t, w: t.label.length * MONO, x: f };
+        return { ...t, w: t.label.length * FIGURE, x: f };
       })
       .sort((a, b) => a.x - b.x);
     const out: { key: number; label: string; at: { left: number } | { right: number } }[] = [];
@@ -263,7 +263,7 @@ export function Spread({ label, items, scale = "linear", domain, ticks, formatVa
     return out;
   }, [ticks, log, min, max, span, fmt, width]);
 
-  const goalAt = goalDrawn ? placeAt((at(goal) / 100) * width, goalText.length * MONO, width) : { left: 0 };
+  const goalAt = goalDrawn ? placeAt((at(goal) / 100) * width, goalText.length * FIGURE, width) : { left: 0 };
 
   return (
     <div className={"@container w-full " + className}>
@@ -309,7 +309,7 @@ export function Spread({ label, items, scale = "linear", domain, ticks, formatVa
                   {s && <span className={"absolute top-1/2 block h-3 w-0.5 -translate-x-1/2 -translate-y-1/2 " + tones.tick} style={{ left: `${at(s.median)}%` }} />}
                 </span>
 
-                <span className="col-start-[median] row-start-1 text-right font-mono text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle">
+                <span className="col-start-[median] row-start-1 text-right text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle">
                   {s ? (
                     <>
                       <span className="sr-only">median </span>
@@ -334,12 +334,12 @@ export function Spread({ label, items, scale = "linear", domain, ticks, formatVa
             {width > 0 && (
               <>
                 {goalDrawn && goalText && (
-                  <span className="absolute top-0 flex h-6 items-center font-mono text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle" style={goalAt}>
+                  <span className="absolute top-0 flex h-6 items-center text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle" style={goalAt}>
                     {goalText}
                   </span>
                 )}
                 {shown.map((t) => (
-                  <span key={t.key} className="absolute bottom-0 flex h-6 items-center font-mono text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle" style={t.at}>
+                  <span key={t.key} className="absolute bottom-0 flex h-6 items-center text-caption font-normal whitespace-nowrap tabular-nums text-fg-subtle" style={t.at}>
                     {t.label}
                   </span>
                 ))}

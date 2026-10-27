@@ -1,25 +1,32 @@
 /**
  * Button: the reference component. Read this before writing another one.
  *
- * - Slightly rounded, three sizes on the shared control scale (P10). Labels sit in
+ * - Slightly rounded, three sizes on the shared control scale (R9). Labels sit in
  *   .litt-trim, so side padding equals the visible air at sm and md. lg runs wider
  *   (--button-pad-lg), so a short label never makes a square block.
- * - The label is at the title weight (P9, font-title). State changes color and fill only; the
+ * - The label is at the title weight (R8, font-title). State changes color and fill only; the
  *   box never moves or resizes (loading keeps the label mounted at opacity 0).
- * - Motion: the instant tier. Hover and press are CSS transitions on
- *   --dur-instant, which tokens.css owns. Press is scale(--press-scale). Tailwind's
- *   active:scale-* sets the CSS `scale` property, not `transform`, so the transition
- *   names `scale`; naming `transform` instead would let the press snap.
- * - Touch: the button keeps the press scale, and a pressed button also takes its hover
- *   fill, so a press still shows under reduced motion (which sets the scale to 1). The OS
- *   tap flash is turned off so the two do not double. Rows and segments fill (see Tabs, List).
+ * - Material (R3): a secondary button is the press material's raised block (--block, --block-lift), and its cast
+ *   tightens while it is pressed (--block-press), at once, never faded (R2). The primary is the accent with its glow
+ *   and a top highlight. Ghost lies flat, and so does a disabled button: nothing to push.
+ * - Danger (R7): a destructive action is the same raised block with its words in --danger. Inside a dialog's footer
+ *   ([data-dialog-footer], matched structurally with Tailwind's in-* variant) it is the confirm of the dialog that
+ *   asks, the one red fill: --danger with --danger-fg words and the primary's lit top edge, with no cast and no glow
+ *   (the glow is the primary's, R6). Until the dialog's condition is met it is disabled, so it lies flat like any
+ *   disabled button.
+ * - Motion: the instant tier. Hover is a CSS transition on --dur-instant, which tokens.css owns. A press sinks the
+ *   block --press-depth (half a pixel, R4) rather than shrinking it. Tailwind's active:translate-y-* sets the CSS
+ *   `translate` property, not `transform`, so the transition names `translate`; naming `transform` instead would
+ *   let the press snap.
+ * - Touch: a pressed button also takes its hover fill, so a press still shows under reduced motion (which sets the
+ *   depth to 0). The OS tap flash is turned off so the two do not double. Rows and segments fill (see Tabs, List).
  * - Children: one child is the label, trimmed to its cap height. An icon and a word
  *   (`<Button><PlusIcon /> New</Button>`, as shadcn writes it) sit side by side: each
  *   run of text is a trimmed label, and each element sits in the row. A child SVG is
  *   16px, like every button icon. The icon prop is still the documented way.
- * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the press goes deeper (0.95) and the scale moves
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the press goes deeper (1px) and the sink moves
  *   on fun mode's press spring, as a CSS linear() easing, so the release springs back with a little life. Only the
- *   scale's timing changes; fills keep the instant tier. Still CSS, no script per press. Reduced motion turns it off.
+ *   sink's timing changes; fills keep the instant tier. Still CSS, no script per press. Reduced motion turns it off.
  * - Disabled keeps a hairline, so the button keeps its shape on a surface-2 area.
  * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
  *   round (pill) and need an aria-label.
@@ -27,11 +34,11 @@
 import { Children, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from "react";
 import { useFun } from "@/motion";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
-  /** Primary is the one accent fill in a view. Secondary is the default. Ghost is for quiet actions like Cancel. */
+  /** Primary is the one accent fill in a view. Secondary is the default. Ghost is for quiet actions like Cancel. Danger is a destructive action, a block with red words; in a dialog's footer it is the confirm, filled red once it is enabled. */
   variant?: ButtonVariant;
   /** Height on the shared control scale: sm is 32, md is 44, lg is 56. Use lg for hero actions only, md in a page form and a dialog. */
   size?: ButtonSize;
@@ -50,9 +57,9 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const base =
   "relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-title " +
-  "cursor-pointer transition-[background-color,color,scale] duration-(--dur-instant) ease-litt " +
+  "cursor-pointer transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "[-webkit-tap-highlight-color:transparent] " +
-  "active:scale-(--press-scale) disabled:cursor-not-allowed disabled:active:scale-100 " +
+  "active:translate-y-(--press-depth) disabled:cursor-not-allowed disabled:active:translate-y-0 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 const sizes: Record<ButtonSize, string> = {
@@ -67,11 +74,20 @@ const variants: Record<ButtonVariant, string> = {
     "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
     "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)]",
   secondary:
-    "bg-surface-1 text-fg hover:bg-surface-2 enabled:pointer-coarse:active:bg-surface-2 " +
-    "shadow-[inset_0_0_0_1px_var(--line-strong),var(--highlight)]",
+    "bg-block text-fg shadow-(--block-lift) enabled:active:shadow-(--block-press) forced-colors:border " +
+    "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)]",
   ghost:
     "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
+  danger:
+    "bg-block text-danger shadow-(--block-lift) enabled:active:shadow-(--block-press) forced-colors:border " +
+    "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+    /* A dialog's confirm. These rules sort after the block's, so they win its ties (active, a finger's press). */
+    "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
+    "in-[[data-dialog-footer]]:enabled:shadow-none in-[[data-dialog-footer]]:enabled:active:shadow-none " +
+    "in-[[data-dialog-footer]]:enabled:inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] " +
+    "in-[[data-dialog-footer]]:enabled:hover:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)] " +
+    "in-[[data-dialog-footer]]:enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)]",
 };
 const disabledLook =
   "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none";
@@ -112,10 +128,10 @@ export function Button({
 }: ButtonProps) {
   const fun = useFun();
   const shape = iconOnly ? `${iconSizes[size]} px-0 rounded-pill` : "rounded-control";
-  /* Fun mode: the scale (the third transitioned property) takes the press spring; the fills keep the instant tier. */
+  /* Fun mode: the sink (the third transitioned property) takes the press spring and goes deeper; the fills keep the instant tier. */
   const press: CSSProperties | undefined = fun
     ? ({
-        "--press-scale": fun.press.scale,
+        "--press-depth": "1px",
         transitionDuration: `var(--dur-instant), var(--dur-instant), ${fun.press.duration}ms`,
         transitionTimingFunction: `var(--ease-out), var(--ease-out), ${fun.press.easing}`,
       } as CSSProperties)

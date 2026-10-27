@@ -420,7 +420,7 @@ function EmptyDemo() {
           </Empty>
         </Conversation>
       </Frame>
-      <p className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+      <p className="min-h-5 text-caption font-normal text-fg-subtle">
         {picked ? `The Composer's field now holds "${picked}", ready to edit.` : "In the Composer a suggestion fills the field. It never sends."}
       </p>
     </div>

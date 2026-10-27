@@ -12,6 +12,7 @@ export const meta: PageMeta = {
   verbs: ["drag", "press"],
   summary:
     "A track and a thumb to slide to the end, for an action that cannot be undone, such as deleting a project on a phone. The thumb follows the finger one to one; let go early and it springs back on the responsive tier, reach the end and it confirms. The thumb is also a button, so Enter, Space or a screen reader confirms too.",
+  fun: "Throw the thumb: with enough speed it coasts to the end, squashes against it and confirms.",
   tiers: ["responsive"],
 };
 
@@ -52,7 +53,7 @@ export const docs: PageDocs = {
 /** A quiet status line beside a control, so each stage shows what it did. */
 function Status({ children }: { children: string }) {
   return (
-    <p role="status" className="min-h-5 font-mono text-caption font-normal text-fg-subtle">
+    <p role="status" className="min-h-5 text-caption font-normal text-fg-subtle">
       {children}
     </p>
   );

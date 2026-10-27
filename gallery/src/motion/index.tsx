@@ -17,12 +17,12 @@
  * springs. They ask these hooks, so they follow the dial and reduced motion.
  */
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
-import { MotionConfig, useReducedMotion, type Transition } from "motion/react";
+import { MotionConfig, MotionConfigContext, useReducedMotion, type Transition } from "motion/react";
 import { toCss, type Spring } from "./spring";
 import { readLocked, surfaceRadius, type Dial, type Locked } from "./tokens";
 
 export { surfaceRadius, type Dial };
-export { countText, FUN_SPRINGS, FunMode, honestCount, useFun, useFunValue, type FunMotion, type FunValue } from "./fun";
+export { countText, FUN_SPRINGS, FunMode, honestCount, useFun, useFunGrab, useFunValue, type FunGrab, type FunMotion, type FunValue } from "./fun";
 export {
   DeviceProvider,
   readDismiss,
@@ -278,14 +278,18 @@ const STILL_TOKENS = {
  * Motion skips its animations, and the CSS transitions read zeroed tier tokens from a display: contents wrapper,
  * which takes no part in layout. For a thumbnail or a preview of live components, where many entrances at once would
  * break the one expressive moment per view. Outside it, nothing changes.
+ *
+ * `active={false}` lets everything inside move again without remounting it, so a preview held still on arrival can
+ * come alive when someone reaches for it, keeping its state and never replaying its entrance.
  */
-export function StillMotion({ children }: { children: ReactNode }) {
+export function StillMotion({ active = true, children }: { active?: boolean; children: ReactNode }) {
   const ctx = useMotionDial();
-  const still = useMemo(() => ({ ...ctx, reduced: true }), [ctx]);
+  const parent = useContext(MotionConfigContext);
+  const still = useMemo(() => (active ? { ...ctx, reduced: true } : ctx), [ctx, active]);
   return (
     <DialContext.Provider value={still}>
-      <MotionConfig reducedMotion="always">
-        <div className="contents" style={STILL_TOKENS}>
+      <MotionConfig reducedMotion={active ? "always" : parent.reducedMotion}>
+        <div className="contents" style={active ? STILL_TOKENS : undefined}>
           {children}
         </div>
       </MotionConfig>

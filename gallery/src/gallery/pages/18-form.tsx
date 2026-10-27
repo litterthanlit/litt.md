@@ -339,7 +339,7 @@ function SettingsDemo() {
       </FormSection>
 
       <FormSection title="Studio" description="What clients see on your public page and on every invoice.">
-        <TextField label="Website" type="url" inputMode="url" mono spellCheck={false} autoComplete="url" {...text("website")} />
+        <TextField label="Website" type="url" inputMode="url" spellCheck={false} autoComplete="url" {...text("website")} />
         <Textarea label="Bio" rows={4} help="Shown under your studio name. Keep it to a sentence or two." {...text("bio")} />
         <Fieldset legend="Invoice address" description="Printed on every invoice.">
           <TextField label="Street" autoComplete="address-line1" {...text("street")} />
@@ -391,7 +391,6 @@ function SettingsDemo() {
           onValueChange={set("speed")}
           minLabel="Slower"
           maxLabel="Faster"
-          showValue
           formatValue={(v) => `${v.toFixed(1)}x`}
         />
       </FormSection>
@@ -484,9 +483,23 @@ function SignInDemo() {
 
 /* ------------------------------------------------------------------ page */
 
+/* ---------- the overview's tile ---------- */
+
+/** One section of a settings form: its title and line on one side, its fields on the other. */
+function ProfileTile() {
+  return (
+    <div className="w-full max-w-md">
+      <FormSection title="Profile" description="Shown to the clients you invite to a project." headingLevel={3}>
+        <TextField label="Name" autoComplete="name" defaultValue="Ines Ortega" />
+        <TextField label="Email" type="email" inputMode="email" autoComplete="email" defaultValue="ines@halo.studio" />
+      </FormSection>
+    </div>
+  );
+}
+
 export default function FormPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<ProfileTile />}>
       <Toaster>
         <Stage
           title="Start a project"

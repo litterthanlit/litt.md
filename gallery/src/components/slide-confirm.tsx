@@ -3,10 +3,11 @@
  * sliding a thumb to the end of its track (components.md, "Slide to confirm"). It asks for more than a tap, so a
  * stray press on a phone does nothing.
  *
- * - Anatomy: the Segmented control's track (fg 5%, an inset --line, 4px of padding, the surface radius) and one
- *   raised segment as the thumb (--surface-1, the hairline, the top highlight, the control radius), so the two radii
- *   stay concentric. The thumb carries a 16px chevron. The track says what will happen ("Slide to delete Atelier
- *   Nord") at the small size in --fg-subtle, and the part of the track the thumb has passed fills at fg 6%.
+ * - Anatomy: the press material (R3), as the Switch's: a sunken tray (--tray, --tray-shade, the control radius, 2px of
+ *   padding) and a raised block as the thumb (--block, --block-lift, tighter --block-press while it is held), its
+ *   corners the control radius less the inset, so the two stay concentric. The thumb carries a 16px chevron. The tray
+ *   says what will happen ("Slide to delete Atelier Nord") at the small size in --fg-subtle, and the part of the
+ *   tray the thumb has passed fills at fg 6%. A disabled thumb lies flat (surface-2 and a hairline): nothing to push.
  * - Sizes: md is 44 tall, lg 56; on a coarse pointer md grows to 56, because a finger does the sliding.
  * - Drag: the thumb follows the pointer one to one, with no easing, as the Slider's does. The words fade as it
  *   goes, by its position, not by a timer. Let go before the end and it springs back to the start on the
@@ -22,10 +23,16 @@
  *   --fg-subtle, because they still say what it would do, as a disabled Slider's end words do.
  * - Motion: position follows the pointer and never animates, except the spring back. Only transform and opacity
  *   change: the passed part is a full-width band scaled from the left. Under reduced motion it snaps back.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the thumb can be thrown. Let go and it keeps
+ *   the speed it had: if that would carry it to the end, it coasts there and confirms when it lands; if not, it
+ *   springs back with it. Both landings use fun mode's throw spring, and the ends of the track are walls: a thumb
+ *   that arrives with speed squashes against one and springs back to its shape, instead of passing it. The check
+ *   pops in. Still only transform and opacity, and the thumb rests exactly where it does without fun mode. A key
+ *   or a screen reader still confirms at once. Reduced motion turns it off.
  */
 import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { animate, motion, useMotionValue, useTransform } from "motion/react";
-import { useTransition } from "@/motion";
+import { animate, motion, useMotionValue, useTransform, type AnimationPlaybackControls } from "motion/react";
+import { useFun, useTransition } from "@/motion";
 import { CheckIcon, ChevronRightIcon } from "@/components/icons";
 
 export type SlideConfirmSize = "md" | "lg";
@@ -64,6 +71,18 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
   const [inner, setInner] = useState(0); // the track's width inside its padding
   const [done, setDone] = useState(false);
   const drag = useRef<{ from: number; id: number } | null>(null);
+  /* Fun mode: the throw. The last moves, to read the speed the thumb is let go at, and the flight it is on. */
+  const fun = useFun();
+  const trail = useRef<{ t: number; x: number }[]>([]);
+  const flight = useRef<AnimationPlaybackControls | null>(null);
+  /* A thumb still in the air when the track goes away never lands, so it never confirms. */
+  useEffect(
+    () => () => {
+      flight.current?.stop();
+      flight.current = null;
+    },
+    [],
+  );
 
   /* Measured before paint and kept current, so the end is always the end. */
   useLayoutEffect(() => {
@@ -93,6 +112,15 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
   span.current = { max, inner };
   const words = useTransform(x, (v) => Math.max(0, 1 - v / Math.max(1, span.current.max * 0.6)));
   const band = useTransform(x, (v) => (span.current.inner > 0 && thumb.current ? (v + thumb.current.offsetWidth) / span.current.inner : 0));
+  /* Fun mode's walls: a throw's spring may carry x past an end, but the thumb stops there and squashes by how far it
+     went, against the wall it hit, then springs back to its shape as x comes back. */
+  const walled = useTransform(x, (v) => Math.min(span.current.max, Math.max(0, v)));
+  const squash = useTransform(x, (v) => {
+    const over = v > span.current.max ? v - span.current.max : v < 0 ? -v : 0;
+    const size = thumb.current?.offsetWidth || 1;
+    return 1 - Math.min(0.5, over / size);
+  });
+  const wall = useTransform(x, (v) => (v < 0 ? 0 : 1));
 
   const confirm = () => {
     if (done || disabled) return;
@@ -103,20 +131,55 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
   };
   const goBack = () => {
     drag.current = null;
+    if (fun) return fly(0, 0);
     void animate(x, 0, back);
+  };
+
+  /* Fun mode: a throw to `to`, carrying `velocity` (px/s). Landing at the end confirms, as reaching it by hand does. */
+  const fly = (to: number, velocity: number) => {
+    if (!fun) return;
+    flight.current?.stop();
+    const run = animate(x, to, { ...fun.throw, velocity });
+    flight.current = run;
+    void run.then(() => {
+      if (flight.current !== run) return;
+      flight.current = null;
+      if (to === max) confirm();
+    });
+  };
+  /* The speed over the last 100ms of moves, in px/s: zero if the finger rested before letting go. */
+  const releaseSpeed = () => {
+    const now = performance.now();
+    const recent = trail.current.filter((p) => now - p.t <= 100);
+    const first = recent[0];
+    const last = recent[recent.length - 1];
+    return first && last && last.t > first.t ? ((last.x - first.x) / (last.t - first.t)) * 1000 : 0;
   };
 
   const onPointerDown = (e: PointerEvent<HTMLButtonElement>) => {
     if (done || disabled || (e.pointerType === "mouse" && e.button !== 0)) return;
     e.currentTarget.setPointerCapture(e.pointerId);
+    if (fun) {
+      flight.current?.stop(); // caught mid-flight: it is in the hand again, wherever it was
+      flight.current = null;
+      x.set(Math.min(max, Math.max(0, x.get())));
+      trail.current = [];
+    }
     drag.current = { from: e.clientX - x.get(), id: e.pointerId };
   };
   const onPointerMove = (e: PointerEvent<HTMLButtonElement>) => {
     if (!drag.current || drag.current.id !== e.pointerId) return;
     x.set(Math.min(max, Math.max(0, e.clientX - drag.current.from)));
+    if (fun) trail.current.push({ t: performance.now(), x: x.get() });
   };
   const onPointerUp = () => {
     if (!drag.current) return;
+    if (fun) {
+      drag.current = null;
+      const velocity = releaseSpeed();
+      const at = x.get();
+      return fly(at + fun.coast(velocity) >= max - SLACK ? max : 0, velocity);
+    }
     if (x.get() >= max - SLACK) confirm();
     else goBack();
   };
@@ -134,10 +197,7 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
       ref={box}
       data-no-drag=""
       className={
-        "relative isolate flex w-full items-center overflow-hidden rounded-surface p-1 select-none forced-colors:border " +
-        (disabled
-          ? "bg-[color-mix(in_oklab,var(--fg)_3%,transparent)] shadow-[inset_0_0_0_1px_var(--line)] "
-          : "bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] shadow-[inset_0_0_0_1px_var(--line)] ") +
+        "relative isolate flex w-full items-center overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) select-none forced-colors:border " +
         track[size] +
         " " +
         className
@@ -146,7 +206,7 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
       {/* The part the thumb has passed: a full-width band scaled from the left, so only a transform changes. */}
       <motion.span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-1 left-1 -z-1 w-[calc(100%-0.5rem)] origin-left rounded-control bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]"
+        className="pointer-events-none absolute inset-y-0.5 left-0.5 -z-1 w-[calc(100%-0.25rem)] origin-left rounded-[calc(var(--radius-control)-2px)] bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]"
         style={{ scaleX: band }}
       />
       <motion.span
@@ -162,7 +222,7 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
         disabled={disabled || done}
         aria-label={label}
         aria-describedby={hintId}
-        style={{ x }}
+        style={fun ? { x: walled, scaleX: squash, originX: wall } : { x }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -171,15 +231,24 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
         /* detail is 0 for a click made by a key or by assistive tech, and 1 or more for a real press. */
         onClick={(e) => e.detail === 0 && confirm()}
         className={
-          "relative grid aspect-square h-full shrink-0 touch-none place-items-center rounded-control [-webkit-tap-highlight-color:transparent] " +
+          "relative grid aspect-square h-full shrink-0 touch-none place-items-center rounded-[calc(var(--radius-control)-2px)] [-webkit-tap-highlight-color:transparent] " +
           "transition-colors duration-(--dur-instant) ease-litt " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
           (disabled
             ? "cursor-not-allowed bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
-            : "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] " + (done ? "cursor-default" : "cursor-grab active:cursor-grabbing"))
+            : "bg-block text-fg shadow-(--block-lift) " + (done ? "cursor-default" : "cursor-grab active:cursor-grabbing active:shadow-(--block-press)"))
         }
       >
-        {done ? <CheckIcon /> : <ChevronRightIcon />}
+        {fun ? (
+          /* Fun mode: the check pops in where the chevron was. */
+          <motion.span key={done ? "done" : "slide"} className="grid place-items-center" initial={done ? { scale: 0.4, opacity: 0 } : false} animate={{ scale: 1, opacity: 1 }} transition={fun.pop}>
+            {done ? <CheckIcon /> : <ChevronRightIcon />}
+          </motion.span>
+        ) : done ? (
+          <CheckIcon />
+        ) : (
+          <ChevronRightIcon />
+        )}
       </motion.button>
       <span id={hintId} className="sr-only">
         Drag the thumb to the end, or press Enter.

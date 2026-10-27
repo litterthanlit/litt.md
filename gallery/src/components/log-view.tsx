@@ -5,7 +5,8 @@
  * - Surface: --surface-2 with an inset --line hairline at the surface radius, as the CodeBlock's. A 32px header holds
  *   the label in the mono at the caption size in --fg-subtle, your actions, and Copy. The lines are the mono at the
  *   small size, padded 16px, under the header.
- * - A line: its number in a gutter (mono caption, --fg-subtle, never selected or copied), its time when it has one,
+ * - A line: its number in a gutter (mono caption, --fg-subtle, never selected or copied), its time when it has one
+ *   (in one right-aligned column as wide as the longest time, so the text stays in line as "+9.6s" becomes "+10.2s"),
  *   then the text. Info is --fg-muted, debug --fg-subtle. A warning's text is --warning and an error's --danger, each
  *   with the alert mark in the gutter and a hidden "Warning:" or "Error:" before it, so color is never the only
  *   signal; success is --success and says so in its own words.
@@ -123,6 +124,8 @@ export function LogView({
 
   const fresh = Math.max(0, allLines.length - seen);
   const digits = String(firstNumber + lines.length).length;
+  /* The times share one column, as wide as the longest and right-aligned, so "+9.6s" and "+10.2s" keep the text in line. */
+  const timeWidth = lines.reduce((w, l) => Math.max(w, l.time?.length ?? 0), 0);
 
   const [copied, setCopied] = useState<"idle" | "copied" | "failed">("idle");
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -144,7 +147,7 @@ export function LogView({
   return (
     <div className={"relative grid min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)] rounded-surface bg-surface-2 " + className}>
       <div className="flex h-control-sm items-center justify-between gap-2 pr-1 pl-4 pointer-coarse:h-control-md">
-        <span className="min-w-0 truncate font-mono text-caption font-normal text-fg-subtle">{label}</span>
+        <span className="min-w-0 truncate text-caption font-normal text-fg-subtle">{label}</span>
         <div className="flex shrink-0 items-center gap-1">
           {actions}
           <Button
@@ -174,7 +177,7 @@ export function LogView({
           <p className="px-4 font-mono text-small font-normal text-fg-subtle">{empty}</p>
         ) : (
           <ol
-            style={{ "--log-gutter": `${digits}ch` } as CSSProperties}
+            style={{ "--log-gutter": `${digits}ch`, "--log-time": `${timeWidth}ch` } as CSSProperties}
             className={"m-0 list-none p-0 font-mono text-small font-normal " + (wrap ? "w-full" : "w-max min-w-full")}
           >
             {lines.map((line, i) => {
@@ -187,7 +190,7 @@ export function LogView({
                     {lineNumbers && <span className="w-(--log-gutter) text-right text-caption text-fg-subtle tabular-nums">{firstNumber + i}</span>}
                     <span className={"inline-grid w-3 translate-y-0.5 place-items-center " + TEXT[level]}>{marked && <AlertIcon size={12} />}</span>
                   </span>
-                  {line.time && <span className="shrink-0 text-caption text-fg-subtle tabular-nums">{line.time}</span>}
+                  {timeWidth > 0 && <span className="w-(--log-time) shrink-0 text-right text-caption text-fg-subtle tabular-nums">{line.time}</span>}
                   <span className={"min-w-0 grow " + TEXT[level] + " " + (wrap ? "whitespace-pre-wrap [overflow-wrap:anywhere]" : "whitespace-pre")}>
                     {SAID[level] && <span className="sr-only select-none">{SAID[level]}</span>}
                     {line.text}

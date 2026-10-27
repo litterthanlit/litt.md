@@ -23,6 +23,8 @@
  *   base-styles   registry:style  OPT-IN: fonts, the role weights, control radius, focus ring
  *   motion        registry:lib    src/motion/* (spring tiers, the hooks)
  *   glide         registry:lib    components/glide.tsx (the gliding highlight)
+ *   shopify       registry:lib    components/shopify.tsx, shipped as lib/litt/shopify.ts (the Storefront API client and the mapping)
+ *   shopify-cart  registry:lib    components/shopify-cart.tsx (the cart kept in Shopify)
  *   <stem>        registry:ui     one per src/components/*.tsx that has a page
  *   <block>       registry:block  one per src/blocks/*.tsx: a whole screen built from the components, named after its page
  *   <stem>-demo   registry:example  the first demo on the component's page, as a working component (see EXAMPLES)
@@ -51,7 +53,7 @@
  *
  * WHERE FILES LAND IN A HOST (shadcn puts a target without "~/" under src/ when the host has one)
  *   components/litt/<stem>.tsx       the components
- *   lib/litt/motion/{index,spring,tokens,device,drag,fun}.ts(x), lib/litt/glide.tsx     the engines
+ *   lib/litt/motion/{index,spring,tokens,device,drag,fun}.ts(x), lib/litt/glide.tsx, lib/litt/shopify.ts, lib/litt/shopify-cart.tsx     the engines
  *   components/litt-blocks/<block>.tsx   the blocks: outside components/litt/, because a block is a starting point the host edits
  *   Every import between shipped files is relative, so no alias in the host matters, and none of
  *   it collides with the host's own components/ui/button.tsx. registryDependencies are absolute
@@ -61,7 +63,7 @@
  *   motion/tokens.ts   readLocked works on the server (Next.js renders client components once there), with
  *                      the values tokens.css ships, so no value is written twice.
  *   motion/index.tsx   __LITT_MD_VERSION__ inlined (vite.config.ts defines it in the gallery).
- *   every .tsx         "use client" on the first line.
+ *   every .tsx         "use client" on the first line (a file that ships as .ts, such as lib/litt/shopify.ts, has none).
  *   Fixes that are right in the gallery too live in the source, not here: useMotionDial works without
  *   a provider (motion/index.tsx), and the Toaster draws its portal after hydration (toast.tsx).
  *   asChild            a written asChild becomes {...asChildProps}: shadcn's CLI rewrites the attribute to Base UI's
@@ -380,7 +382,7 @@ const UTILITY_PREFIXES = {
   "inset-shadow": ["inset-shadow"],
   ease: ["ease"],
   font: ["font"],
-  "font-weight": ["font"], // font-title, font-label: the role weights (P9)
+  "font-weight": ["font"], // font-title, font-label: the role weights (R8)
 };
 /** prefix -> namespaces */
 const prefixNs = new Map();
@@ -552,6 +554,9 @@ const blockNames = fs.existsSync(blocksDir) ? fs.readdirSync(blocksDir).filter((
 function targetOf(file) {
   const r = norm(path.relative(srcDir, file));
   if (r === "components/glide.tsx") return "lib/litt/glide.tsx";
+  // No React in it, so it ships as .ts without "use client": a Next.js server component can fetch with it.
+  if (r === "components/shopify.tsx") return "lib/litt/shopify.ts";
+  if (r === "components/shopify-cart.tsx") return "lib/litt/shopify-cart.tsx";
   if (r.startsWith("blocks/")) return `components/litt-blocks/${r.slice("blocks/".length)}`;
   if (r.startsWith("components/")) return `components/litt/${r.slice("components/".length)}`;
   if (r.startsWith("motion/")) return `lib/litt/motion/${r.slice("motion/".length)}`;
@@ -740,7 +745,7 @@ function transformFile(file, targets, source) {
   const sorted = [...edits].sort((a, b) => a[0] - b[0]);
   for (let i = 1; i < sorted.length; i++) if (sorted[i][0] < sorted[i - 1][1]) fail(`${rel(file)}: two edits overlap at offset ${sorted[i][0]}`);
   text = applyEdits(text, edits);
-  if (file.endsWith(".tsx")) text = `"use client";\n\n${text}`;
+  if ((targets.get(file) ?? file).endsWith(".tsx")) text = `"use client";\n\n${text}`;
   // The shipped copy must still parse: a bad edit here once shipped a chart that no host could compile.
   const reparsed = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, false, file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
   for (const d of reparsed.parseDiagnostics ?? []) fail(`${rel(file)}: the shipped copy does not parse at ${d.start}: ${ts.flattenDiagnosticMessageText(d.messageText, " ")}`);
@@ -788,7 +793,7 @@ const COPY = {
   },
   icons: {
     title: "Icons",
-    description: "98 icons and a status mark, drawn on one 16-unit grid with a 1.5px stroke and four keylines, in the text color.",
+    description: "99 solid icons and a status mark on one 16-unit grid: filled shapes with their details cut out, lines at 1.5, four keylines, in the text color.",
     docs: "Import the icons you need from components/litt/icons. They are decorative unless you label them. Draw a missing one on the same grid, never from another set.",
   },
   tooltip: {
@@ -1013,8 +1018,8 @@ const COPY = {
   },
   "tool-call": {
     title: "Tool call",
-    description: "What an agent did, one row per call: a status mark (a still half circle while it runs, never a spinner), the action in words, the target in mono cut at the end, and the time. A call with an input or an output opens them under it. A group folds a run of calls and closes itself when they finish, and an approval asks first on a raised panel with Allow as the accent fill and Deny beside it, then becomes a row that says what was chosen.",
-    docs: "Import ToolCall, ToolCallGroup and ToolApproval from components/litt/tool-call. Give a call a status, an action and a target, plus an input or an output to make it open. Pass running to a group, and hold decision in state for an approval, setting it in onAllow and onDeny. Keep an approval outside a group, and disable your Send while it waits so the view holds one accent fill.",
+    description: "What an agent did, one row per call: a status mark (a still half circle while it runs, never a spinner), the action in words, the target in mono cut at the end, what it found (\"5 sources\", \"+2 −2\") and the time. A call with an input or an output opens them under it, in a mono well; a part with its own surface (a log, a diff, a list of sources) opens as given in details. A group folds a run of calls and closes itself when they finish, and an approval asks first on a raised panel with Allow as the accent fill and Deny beside it, then becomes a row that says what was chosen.",
+    docs: "Import ToolCall, ToolCallGroup and ToolApproval from components/litt/tool-call. Give a call a status, an action and a target, plus an input or an output to make it open. Put a LogView, a SourceList or a FileChanges in details, never in output, and say what the call found in result. Pass running to a group, and hold decision in state for an approval, setting it in onAllow and onDeny. Keep an approval outside a group, and disable your Send while it waits so the view holds one accent fill.",
   },
   plan: {
     title: "Plan",
@@ -1038,10 +1043,45 @@ const COPY = {
     description: "One color as a hex string: a saturation and brightness area, a hue rail, the hex in mono, an eyedropper where the browser has one, and optional swatches as radios. A field in the Select trigger's look opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once, and every input says the color in words.",
     docs: "Import ColorPicker and ColorPanel from components/litt/color-picker, plus parseHex, describeColor, getContrastInk, hexToHsv and hsvToHex. Values are six-digit lowercase hex strings with the hash. ColorPicker needs a label; hold the value in state with value and onValueChange (null for none), pass name for a form, and swatches as { label, value }. Save with onValueCommit, which fires on release. Use getContrastInk for text drawn on the picked color.",
   },
+  "time-scrubber": {
+    title: "Time scrubber",
+    description: "A moment in a run that already happened, found by dragging a ruler of its time under a fixed needle: ticks every step, labelled times, and what happened along the run marked in its status color. The ruler follows the pointer one to one and settles on the nearest step or an event, Page Up and Page Down go from event to event, and in fun mode it can be thrown.",
+    docs: "Import TimeScrubber from components/litt/time-scrubber. Give it a label, max (and min), the run's events as marks ({ at, label, tone }) and a formatValue for the units (\"+12s\", \"09:30\"). Hold the value in state and show what it replays beside it, such as a LogView with the lines up to the needle. A setting that stays is a Slider.",
+  },
   "slide-confirm": {
     title: "Slide to confirm",
     description: "A deliberate yes to something that cannot be undone: the segmented control's track and a raised thumb to slide to the end. The thumb follows the finger one to one, springs back on the responsive tier if let go early, and confirms at the end with a check. The thumb is also a button: Enter, Space or a screen reader confirms, a mouse click alone does not.",
     docs: "Import SlideConfirm from components/litt/slide-confirm. Give it a label that says what happens (\"Slide to delete Atelier Nord\"), a confirmedLabel and onConfirm, which runs once. Remount it with a new key to ask again. Use it for what cannot be undone, on touch screens; anything that can be undone should just happen, with Undo in a toast.",
+  },
+  "range-chart": {
+    title: "Range chart",
+    description: "One quantity over time as a barcode of thin bars, with labelled segments and their shares in a tray above, and a range you brush by hand: drag across the bars, drag either edge, or drag the whole span. The edges follow the pointer one to one and settle on a bar or a segment start; the segment that matches the range is raised. The total of what is brushed rolls as you go, its last group of digits in the quiet ink. In fun mode the span can be thrown and the bars it sweeps rise and settle.",
+    docs: "Import RangeChart from components/litt/range-chart. Give it a label, bars as { label, value }, and optionally segments as { label, start }, axis ticks and a unit. Hold the range in state with value and onValueChange ([first, last], both inclusive), or load on onValueCommit, which fires once the edges have settled. The figure is a sum, so the values must add up. A single moment in a run is a TimeScrubber; a value that stays is a Slider.",
+  },
+  "run-card": {
+    title: "Run card",
+    description: "An agent's run as a card: what it is making, how far it has got in words (Step 2 of 3) and in a ring, and its steps. Hide folds it into a raised block you press to open again; the ring travels between the two while the words glide, and the height snaps. A polite status keeps saying the step while the card is folded.",
+    docs: "Import RunCard from components/litt/run-card. Give it a title and the run's steps as Plan takes them (label, status, an id), and optionally progress from 0 to 1, a preview, actions such as a Stop button, and open with onOpenChange. Update steps in place as the agent works. A plan with no run behind it is a Plan.",
+  },
+  "rule-builder": {
+    title: "Rule builder",
+    description: "Conditions built from rows: a field, an operator and a value, joined by And or Or, grouped and nested, added, removed and reordered by a handle. A row picked up by its handle rises into a raised block and the others make room; the new order is committed once it has settled. Space lifts a row for the arrow keys.",
+    docs: "Import RuleBuilder from components/litt/rule-builder. Give it a label and fields ({ id, label, type: text, number or choice, options, operators }) and hold the tree in state with value and onValueChange, or pass name and defaultValue in a form (it posts one JSON string). newCondition, newGroup and isGroup build and read the tree. errors by condition id says a problem under its row. A filter on one table column is a TableFilter.",
+  },
+  sources: {
+    title: "Sources",
+    description: "Where an answer came from: Sources holds a turn's sources and numbers them once, Citation is a quiet numbered chip in the running text that opens its source and previews it in a hover card (the site, the title, the passage, when it was read), and SourceList lists them under the answer or as what a search call found. Resting on a citation lights its row, and resting on a row lights its citations. A source the model gives a url that is not http or https shows as text.",
+    docs: "Import Sources, Citation and SourceList from components/litt/sources. Wrap the turn's parts in Sources with the sources ({ id, title, url, site?, passage?, readAt?, kind? }); a source's number is its place in that list. Have your markdown renderer turn a #cite-<id> link into <Citation source=\"<id>\" /> (citationId reads the href, unlinkCitations cleans text for Copy). Put a SourceList after the answer, and a SourceList with the search's own sources in a ToolCall's details.",
+  },
+  "file-changes": {
+    title: "File changes",
+    description: "What an agent changed in a codebase, to review before keeping it: the files added, modified, deleted and renamed, each with its lines added and removed said in words and figures, each opening to its diff, each kept or undone on its row, and Keep all and Undo all for the rest. Send keeps the view's accent fill: Keep all is a raised block unless accent is set on a screen with no composer.",
+    docs: "Import FileChanges from components/litt/file-changes. Pass changes ({ id, path, kind, diff?, added?, removed?, from? for a rename, state? }) and onDecide(ids, decision), and set each change's state from it: the component holds no decision of its own. Use one change in an edit call's details and every change at the end of the turn.",
+  },
+  "run-list": {
+    title: "Run list",
+    description: "An agent's runs for a sidebar or an inbox: each run's title, its status in words and a mark (running, needs you, done, failed, stopped), where it has got and when it last changed, the runs that need you first, the selected run as a raised block that glides from row to row, a filter by status with counts, and Stop or Archive on a row.",
+    docs: "Import RunList from components/litt/run-list. Pass runs ({ id, title, status, detail?, progress?, updated, href? }) in your order, selectedId and onSelect, and onStop and onArchive for the row actions. updated is words you give (\"2m ago\"): the list reads no clock.",
   },
   "rolling-number": {
     title: "Rolling number",
@@ -1204,6 +1244,46 @@ const COPY = {
     description: "The page before the app: the wordmark, one left-aligned column with email, password, Sign in and a second way in, and a quiet column of what is new on a wide screen. Wrong fields say so under themselves and take focus, and a refusal shows in a callout.",
     docs: "Import SignIn from components/litt-blocks/sign-in and render it as a whole page. signIn at the top of the file stands in for your auth call; return your server's message the same way, and point the links at your routes.",
   },
+  price: {
+    title: "Price",
+    description: "One amount at the title weight with tabular figures, formatted from Shopify's MoneyV2 shape (an amount and a currency code) in the page's locale. A sale strikes the old price through with hidden words, and can add a neutral tag with the saving. Never red, never the accent.",
+    docs: "Import Price and formatMoney from components/litt/price. Pass price as { amount, currencyCode }; compareAt shows only when it is higher. multiplyMoney and sumMoney do a line's and a cart's sums.",
+  },
+  "option-picker": {
+    title: "Option picker",
+    description: "One option of a product (a size, a frame, a color) as native radios with a visible legend that names the pick. Words take the segmented track, colors and images take chips with a check in black or white. A sold-out value stays pickable and says so in words.",
+    docs: "Import OptionPicker from components/litt/option-picker. Pass the option's name and values; give values a swatch ({ color } or { image }) to show chips. optionsFor from product-card marks which values are sold out among the other picks.",
+  },
+  "product-card": {
+    title: "Product card",
+    description: "One product in a grid: an inset 4/5 cover, the name and its price (From when the variants differ), as one link to its page. No buy button and no accent. Also the Product type and priceRange, findVariant, defaultPicks and optionsFor for a product page.",
+    docs: "Import ProductCard and ProductGrid from components/litt/product-card. A Product is plain data: the shopify item's toProduct makes one from the Storefront API, or write your own. Give every card in a grid one ratio.",
+  },
+  cart: {
+    title: "Cart",
+    description: "The cart as a sheet from the right (a bottom sheet on a phone): lines with a quantity and Remove undone from a toast, and a summary with a free-shipping meter, a rolling subtotal and Check out. Plus the header's cart button, Add to cart with its Added state, and useCartState, a cart in memory.",
+    docs: "Import Cart, CartButton, AddToCart and useCartState from components/litt/cart. Mount the Toaster once near your root for Remove's Undo. useShopifyCart from the shopify item returns the same CartState, so the parts work with either.",
+  },
+  shopify: {
+    title: "Shopify",
+    description: "litt's commerce parts on a Shopify store: a small Storefront API client pinned to one version, getProduct, getProducts and getCollection that return litt's Product, and toProduct for your own queries. No React in it, so it runs in a server component too.",
+    docs: "Installed in lib/litt/shopify.ts. Make a client with createStorefront({ domain, token }) using the store's public Storefront token, and pass what getProduct returns to ProductCard, OptionPicker or the product block. For the cart, add shopify-cart.",
+  },
+  "shopify-cart": {
+    title: "Shopify cart",
+    description: "A cart kept in Shopify: ShopifyCart near the root and useShopifyCart() anywhere under it, with the same CartState as useCartState, so Cart, CartButton and AddToCart work unchanged. The cart's id survives a reload, and Check out goes to Shopify's hosted checkout.",
+    docs: "Installed in lib/litt/shopify-cart.tsx. Wrap your app in <ShopifyCart storefront={storefront}> with a client from createStorefront, then pass useShopifyCart() to Cart as its cart.",
+  },
+  product: {
+    title: "Product block",
+    description: "One product's page for a store: the pictures beside the details (a carousel on a phone), the title, the price, the options with sold-out picks said in words, the quantity and Add to cart as the one accent fill, the rest in an accordion, and the cart as a sheet. Every picture opens a lightbox.",
+    docs: "Import ProductPage from components/litt-blocks/product and render it as a page's content. The product sits at the top of the file: replace it with yours, or with one the shopify item's toProduct maps from your store. Mount the Toaster once near your root.",
+  },
+  collection: {
+    title: "Collection block",
+    description: "A store's products as a grid: the title and the count, a filter row with what to show and the order, product cards with no buy buttons (two across on a phone), an empty state for a filter with nothing in it, and the cart as a sheet.",
+    docs: "Import Collection from components/litt-blocks/collection and render it as a page's content. The products sit at the top of the file: replace them with yours, or with the ones the shopify item's toProduct maps from a collection.",
+  },
   "case-study": {
     title: "Case study block",
     description: "One project told as a page: a wide hero image, the facts in a row, the story with its labels in a narrow left column, the series in a carousel, the details in a grid and the next project as a card. Every image opens one lightbox that runs through them all, and the carousel follows it.",
@@ -1290,7 +1370,7 @@ const VARIANTS_THEN = (rest) => new RegExp(String.raw`^(?:(?:[\w-]+|\[(?:[^\s\[\
 
 const SCHEMA_URL = "https://ui.shadcn.com/schema/registry-item.json";
 const urlOf = (name) => `${origin}/r/${name}.json`;
-const ITEM_TYPE = { motion: "registry:lib", glide: "registry:lib" };
+const ITEM_TYPE = { motion: "registry:lib", glide: "registry:lib", shopify: "registry:lib", "shopify-cart": "registry:lib" };
 
 function build(demos = []) {
   // 1. Which files ship, and where.
@@ -1298,7 +1378,7 @@ function build(demos = []) {
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
   const onDisk = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
-  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
+  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
   // A block is named after the page that shows it, so its name finds that page, and never after a component.
   const blockFiles = blockNames.map((b) => path.join(blocksDir, `${b}.tsx`));

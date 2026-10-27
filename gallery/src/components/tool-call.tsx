@@ -11,13 +11,17 @@
  *   Done is the check in fg-muted. Failed is the x in danger, with "Failed" in words. Waiting is the empty circle in
  *   fg-subtle with "Waiting for approval". Denied is the dashed circle with "Denied". Color is on the icon only, and every
  *   status is also said in hidden text: a done or running call has a hidden word, the others say it in the visible one.
- * - Details: with `input` or `output` the row is a disclosure button with a chevron that turns a quarter on the instant
- *   tier. The details are captioned blocks (the caption in fg-subtle) in mono at the caption size in fg on surface-2, with an
- *   inset line at the surface radius, padded space-3. Past 16rem a block scrolls inside, and it is focusable and labelled
- *   ("Output of npm test"). Output stays fg when the call failed: the status says it.
+ * - Details: with `input`, `output` or `details` the row is a disclosure button with a chevron that turns a quarter on the
+ *   instant tier. Input and output are captioned blocks (the caption in fg-subtle) in mono at the caption size in fg on
+ *   surface-2, with an inset line at the surface radius, padded space-3. Past 16rem a block scrolls inside, and it is
+ *   focusable and labelled ("Output of npm test"). Output stays fg when the call failed: the status says it. `details` is
+ *   drawn as given after them, for a part with its own surface and scroller (a LogView, a SourceList, a FileChanges), so it
+ *   is never a well inside a well.
+ * - Result: a few words on what the call found or changed ("5 sources", "+2 −2") sit after the target at the small size in
+ *   fg-subtle, and never shrink, so a folded group still reads what each call did. The target is cut first.
  * - Group: ToolCallGroup folds a run of calls under one row (the caller's summary, or "4 tool calls"). It is open while
  *   `running`, and closes itself when `running` goes false unless the reader toggled it. Its calls are a list.
- * - Approval: ToolApproval is a litt-raised panel in the flow (never glass, P3): a title (body, the title weight, fg), the command in mono on
+ * - Approval: ToolApproval is a litt-raised panel in the flow (never glass, R3): a title (body, the title weight, fg), the command in mono on
  *   surface-2 at the control radius, one line in fg-subtle, an optional "always allow" Checkbox, then md actions, Allow
  *   (primary, the view's one accent fill because the Composer's Send is disabled while it waits) and Deny (ghost). It does
  *   not take focus when it appears: the person may be reading. A polite live region says "Waiting for your approval:
@@ -127,7 +131,7 @@ function Chevron({ show, open }: { show: boolean; open: boolean }) {
 function Time({ value }: { value: number | string }) {
   const t = readTime(value);
   return (
-    <span className="font-mono text-caption font-normal tabular-nums whitespace-nowrap text-fg-subtle">
+    <span className="text-caption font-normal tabular-nums whitespace-nowrap text-fg-subtle">
       <span aria-hidden="true">{t.visual}</span>
       <span className="sr-only"> {t.spoken}</span>
     </span>
@@ -212,11 +216,15 @@ export type ToolCallProps = {
   input?: ReactNode;
   /** What the call returned, shown under an "Output" caption when the row is opened. Text or elements. It stays the foreground color when the call failed. */
   output?: ReactNode;
+  /** A part with its own surface, drawn as given under the row when it is opened, after the input and output: a LogView for a command, a SourceList for a search, a FileChanges for an edit. */
+  details?: ReactNode;
+  /** A few words on what the call found or changed, after the target: "5 sources", "+2 −2", "Exit 1". It stays when the target is cut. */
+  result?: ReactNode;
   /** Names the call in the details' labels ("Output of npm test"). Defaults to the target when that is text, then to the action when that is text. */
   label?: string;
   /** Replaces the status word after the target, and what a screen reader hears for the status: "Allowed" for an approved call. Failed, waiting and denied have their own words. */
   statusLabel?: string;
-  /** Whether the details are open, when you control it. Pair it with onOpenChange. A call with no input and no output has no details. */
+  /** Whether the details are open, when you control it. Pair it with onOpenChange. A call with no input, output or details does not open. */
   open?: boolean;
   /** Whether the details start open when you do not control them. */
   defaultOpen?: boolean;
@@ -227,8 +235,8 @@ export type ToolCallProps = {
 };
 
 /**
- * One tool call as a row: a status mark, the action in words, the target in mono and the time. With an input or an output the
- * row is a button that opens them under it. In a ToolCallGroup it is a list item.
+ * One tool call as a row: a status mark, the action in words, the target in mono, what it found and the time. With an input,
+ * an output or details the row is a button that opens them under it. In a ToolCallGroup it is a list item.
  */
 export function ToolCall({
   status = "done",
@@ -237,6 +245,8 @@ export function ToolCall({
   duration,
   input,
   output,
+  details,
+  result,
   label,
   statusLabel,
   open: openProp,
@@ -250,19 +260,21 @@ export function ToolCall({
 
   const hasInput = given(input);
   const hasOutput = given(output);
-  const details = hasInput || hasOutput;
+  const hasDetails = given(details);
+  const opens = hasInput || hasOutput || hasDetails;
   const name = label ?? (typeof target === "string" ? target : typeof action === "string" ? action : undefined);
   const word = statusLabel ?? WORD[status];
 
   const content = (
     <>
       <StatusIcon status={MARK[status]} className={"shrink-0 " + TONE[status]} />
-      <span className={"shrink-0 whitespace-nowrap text-small text-fg-muted " + (details ? BRIGHTEN : "")}>{action}</span>
+      <span className={"shrink-0 whitespace-nowrap text-small text-fg-muted " + (opens ? BRIGHTEN : "")}>{action}</span>
       {given(target) && (
         <span title={typeof target === "string" ? target : undefined} className="min-w-0 truncate font-mono text-small text-fg">
           {target}
         </span>
       )}
+      {given(result) && <span className="shrink-0 whitespace-nowrap text-small text-fg-subtle tabular-nums">{result}</span>}
       <span className="ml-auto flex shrink-0 items-center gap-2">
         {word ? (
           <span className="whitespace-nowrap text-small text-fg-muted">{word}</span>
@@ -270,14 +282,14 @@ export function ToolCall({
           HIDDEN_WORD[status] && <span className="sr-only">{HIDDEN_WORD[status]}</span>
         )}
         {duration !== undefined && <Time value={duration} />}
-        <Chevron show={details} open={open} />
+        <Chevron show={opens} open={open} />
       </span>
     </>
   );
 
   return (
     <div role={inGroup ? "listitem" : undefined} className={"min-w-0 " + className}>
-      {details ? (
+      {opens ? (
         <button
           type="button"
           aria-expanded={open}
@@ -290,7 +302,7 @@ export function ToolCall({
       ) : (
         <div className={ROW}>{content}</div>
       )}
-      {details && (
+      {opens && (
         <Reveal open={open} id={id} className="grid gap-3 pt-1 pb-2 pl-6">
           {hasInput && (
             <Block caption="Input" name={name}>
@@ -302,6 +314,7 @@ export function ToolCall({
               {output}
             </Block>
           )}
+          {hasDetails && <div className="min-w-0">{details}</div>}
         </Reveal>
       )}
     </div>

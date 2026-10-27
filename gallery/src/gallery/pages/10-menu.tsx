@@ -32,6 +32,7 @@ export const meta: PageMeta = {
   verbs: ["open", "select"],
   summary:
     "A glass dropdown with one highlight that glides from row to row. It grows from its trigger and travels from the side it really opens on. On a phone a submenu replaces the list in the same panel.",
+  fun: "Move down the rows: the highlight reaches for each one, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
 
@@ -149,7 +150,7 @@ function ProjectMenu() {
           <MenuItem icon={<TrashIcon />} destructive onSelect={pick("Deleted Northwind site")}>Delete</MenuItem>
         </Menu>
       </div>
-      <p className="font-mono text-caption font-normal text-fg-subtle" role="status">{last}</p>
+      <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
     </div>
   );
 }
@@ -181,7 +182,7 @@ function ViewMenu() {
         <MenuCheckboxItem checked={status} onCheckedChange={setStatus}>Publish status</MenuCheckboxItem>
         <MenuCheckboxItem checked={archived} onCheckedChange={setArchived}>Archived projects</MenuCheckboxItem>
       </Menu>
-      <p className="font-mono text-caption font-normal text-fg-subtle" role="status">
+      <p className="text-caption font-normal text-fg-subtle" role="status">
         {density} · {shown}
       </p>
     </div>

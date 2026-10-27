@@ -6,10 +6,13 @@
  * - Two parts, like Input. Select is the bare trigger and list, for a toolbar or inline use, and it
  *   needs an aria-label or aria-labelledby. SelectField adds the label above and the help or error
  *   below, all wired up, in the same layout as TextField.
- * - Trigger: the Input's field look and sizes (sm 32, md 44, lg 56, 16px text on coarse pointers),
- *   the value in --fg, the placeholder in --fg-subtle, and a 16px chevron that never turns. The
- *   edge fades on the instant tier, the box never moves. There is no hover fill. A long value
- *   truncates with an ellipsis.
+ * - Trigger: you press it, so it is raised, not cut (R3, material.md 6): the secondary Button's block
+ *   (--block, --block-lift), its hover fill and its press, which tightens the cast (--block-press) at once
+ *   and sinks it --press-depth. While its list is open it stays pressed. The Input's sizes (sm 32, md 44,
+ *   lg 56, 16px text on coarse pointers), the value in --fg at the text weight, the placeholder in
+ *   --fg-subtle, and a 16px chevron that never turns. Focus is the 2px --focus outline at a 2px offset,
+ *   as on every button. An error draws a 1px --danger edge inside the block and keeps its cast; disabled,
+ *   it lies flat on --surface-2 with the hairline. A long value truncates with an ellipsis.
  * - List: the Menu's panel. Glass at the surface radius with a 4px inset, 44px rows at the control
  *   radius with 12px side padding, one gliding highlight (glide.tsx), and a 16px check in a fixed
  *   cell at the end of the current option. It is at least as wide as the trigger and never taller
@@ -108,21 +111,24 @@ const FLOATING = ".litt-glass, [data-popover-surface]";
 
 /* ---------------------------------------------------------------- trigger */
 
-/* The look every field shares (the same as Input): fill, edge, focus, error, disabled. */
+/* The raised trigger, which the Date and Color pickers copy: block, press, open, focus, error, disabled. */
 const field =
-  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left font-normal text-fg " +
+  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-block text-left font-normal text-fg " +
   "data-placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
-  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "shadow-(--block-lift) enabled:active:shadow-(--block-press) data-[state=open]:shadow-(--block-press) " +
+  "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+  "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
+  "active:translate-y-(--press-depth) disabled:active:translate-y-0 data-[state=open]:translate-y-(--press-depth) " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--block-lift)] " +
+  "aria-invalid:enabled:active:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
+  "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:data-placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border and focus gets an outline. */
-  "forced-colors:border forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid forced-colors:focus-visible:outline-offset-2";
+  /* Forced colors (Windows high contrast) drops box-shadow, so the block keeps its shape with a real border. */
+  "forced-colors:border";
 
 const sizes: Record<SelectSize, string> = {
   sm: "h-control-sm px-control-pad-sm text-small pointer-coarse:h-control-md",

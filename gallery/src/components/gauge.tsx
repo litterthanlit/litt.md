@@ -5,14 +5,14 @@
  * - Marks: `ticks` radial ticks (48 by default) spread over 180 degrees, each 2px wide with square ends. The ticks
  *   up to the value are the hue's mark tone, or `--fg` without a hue (the quiet default); the rest are `--fg` at
  *   12%. The last filled tick marks the value: it reaches 4px further out and takes the hue's -text tone (or
- *   `--fg`), which is what a needle would have done. No needle, no glow, no gradient (P5, P11).
+ *   `--fg`), which is what a needle would have done. No needle, no glow, no gradient (R2, R7).
  * - Opening: the label above (caption size, fg-subtle, sentence case), the figure (the sans at the h2 size, fg,
  *   tabular numbers) and an optional caption below, centered at the foot of the arc. It is HTML over the SVG, so
  *   the text stays crisp whatever the SVG scales to.
  * - Size: `size` is the width in px. The SVG keeps a viewBox of that width, so ticks keep their 2px at the
  *   natural size and the whole drawing scales down to fit a narrower container. It never exceeds its container.
  *   The tick length follows the size. Under about 200px there is room for a short label and the figure, not a caption.
- * - Color: a hue is one meaning (P11): here, the quantity itself. Without one the gauge is foreground only.
+ * - Color: a hue is one meaning (R7): here, the quantity itself. Without one the gauge is foreground only.
  * - Semantics: role="meter" with the label as its name, a min, a max, a now and the value text; the caption is its
  *   description. The ticks and the text over them are hidden from assistive tech, so nothing is read twice.
  * - Motion: none. Static, like the Meter: no entrance, no hover, no focus stop. A value that changes just changes.
@@ -25,7 +25,7 @@ import { useId, useState } from "react";
 import { useMotionValueEvent } from "motion/react";
 import { countText, useFun, useFunValue } from "@/motion";
 
-/** The five data hues, in their fixed order (P11). */
+/** The five data hues, in their fixed order (R7). */
 export type GaugeHue = "blue" | "amber" | "teal" | "violet" | "rose";
 
 /** The mark tone fills the ticks up to the value. The -text tone is the stronger one that marks the value itself. */

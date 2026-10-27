@@ -8,7 +8,8 @@ export const meta: PageMeta = {
   order: 17.3, group: "Data",
   verbs: ["hover"],
   summary:
-    "Bar and line charts in plain SVG, and a meter. Marks are never the accent: by default the foreground, one series at 55% with the current mark full, or up to three stepping down; or the data hues, when color says which series is which. Hairline gridlines, mono labels, a tooltip on hover and focus, and one entrance on the responsive tier.",
+    "Bar and line charts in plain SVG, and a meter. Marks are never the accent: by default the foreground, one series at 55% with the current mark full, or up to three stepping down; or the data hues, when color says which series is which. Hairline gridlines, labels in tabular figures, a tooltip on hover and focus, and one entrance on the responsive tier.",
+  fun: "A meter's fill grows in, its reading counts with it, and the target tick pops as the fill passes.",
   tiers: ["instant", "responsive"],
 };
 
@@ -44,7 +45,7 @@ const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
   { name: "Preview", values: [/* … */] },
 ]} />
 
-// Data hues (P11): give each series the next hue in the fixed order, or name one per series.
+// Data hues (R7): give each series the next hue in the fixed order, or name one per series.
 // Color follows the series, so "Sites" stays blue wherever it appears.
 <BarChart label="Deploys by kind" labels={days} hues series={[
   { name: "Sites", values: [/* … */] },
@@ -81,7 +82,7 @@ const days = ["3 Oct", "4 Oct", "5 Oct", /* … */ "16 Oct"];
     "The exact numbers are the point. Use a Table, which lines the values up so the eye can run down a column.",
     "One number and its change. Use a Stat.",
     "You need more than five series, stacked bars, areas, pies or two scales on one chart. Litt has none of these: the foreground has three steps, the data hues five, and a second scale misleads. Fold the rest into \"Other\" or draw a second chart.",
-    "The color would only brighten the chart. One quantity reads best in the foreground; a hue is for telling things apart (P11).",
+    "The color would only brighten the chart. One quantity reads best in the foreground; a hue is for telling things apart (R7).",
     "Thousands of points or a chart that zooms and pans. This one draws a mark per category and has no zoom.",
     "The values go below zero. The baseline is zero and negative values are not drawn.",
   ],
@@ -296,7 +297,7 @@ export default function ChartPage() {
         size="lg"
         code="DeploysDemo"
         onReplay={replayDeploys}
-        caption="Bars are the foreground at 55%, and the last day is full, so the eye lands on today. Hover or arrow to a bar and it takes full color on the instant tier, and a tooltip shows its day and value. Gridlines are hairlines, horizontal only, and the labels are mono. The bars grow up from the baseline once, on the responsive tier. Replay it to watch."
+        caption="Bars are the foreground at 55%, and the last day is full, so the eye lands on today. Hover or arrow to a bar and it takes full color on the instant tier, and a tooltip shows its day and value. Gridlines are hairlines, horizontal only, and the labels are in tabular figures. The bars grow up from the baseline once, on the responsive tier. Replay it to watch."
       >
         <DeploysDemo key={deploys} />
       </Stage>
@@ -336,7 +337,7 @@ export default function ChartPage() {
         title="Meter"
         tier="instant"
         code="QuotasDemo"
-        caption="One value against a limit: a 4px rail at the control radius, the foreground filling it at 12%, and the reading in mono at the end. The fill is the foreground, never the accent, and it does not animate. A quota that is nearly spent says so in its words."
+        caption="One value against a limit: a 4px rail at the control radius, the foreground filling it at 12%, and the reading in tabular figures at the end. The fill is the foreground, never the accent, and it does not animate. A quota that is nearly spent says so in its words."
       >
         <QuotasDemo />
       </Stage>

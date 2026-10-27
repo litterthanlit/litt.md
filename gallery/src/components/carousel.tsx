@@ -12,13 +12,19 @@
  * - Slides per view: one, two or three, with the next slide peeking 48px at the end edge (96px for one slide in a wide
  *   box), or auto for slides that set their own width. The box decides by a container query, not the screen: in a
  *   narrow box every carousel is one slide and a peek.
- * - Controls (CarouselControls): the range in words at the start, "3 of 12" or "4 to 6 of 12", in the mono at the
+ * - Controls (CarouselControls): the range in words at the start, "3 of 12" or "4 to 6 of 12", in tabular figures at the
  *   caption size in --fg-subtle, as Pagination's; and round secondary Previous and Next buttons at the end, 44px on a
  *   touch screen. Next moves a page (the first slide not wholly in view comes to the start), Previous a page back. At
  *   an end the button is disabled and hands its focus to the other one.
  * - Keys: the track is a tab stop. ← and → move one slide, Home and End go to the first and the last.
  * - Motion: a button, a key or a drag's release scrolls smoothly, the browser's own scroll; under reduced motion it
- *   jumps. Nothing else moves, and nothing fades at the edges (material is static, P5).
+ *   jumps. Nothing else moves, and nothing fades at the edges (material is static, R2).
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): a mouse drag can be thrown. Let go and the track
+ *   keeps the speed it had, coasts to the slide that speed would reach (a hard throw goes further than the next one)
+ *   and lands on it with fun mode's throw spring. Buttons and keys land on the same spring. Dragged past either end
+ *   the track gives like a rubber band and springs back when let go. Touch and trackpads keep the browser's own
+ *   momentum. Every landing rests where the snap would put it, so the slides rest exactly where they do without fun
+ *   mode. Reduced motion turns it off.
  * - Accessibility: a region named by `label`, with aria-roledescription="carousel"; each slide a group with
  *   aria-roledescription="slide" named "3 of 12". Slides out of view stay readable, because scrolling reaches them.
  *   After a button or a key the new range is said once in a polite status; a swipe says nothing.
@@ -39,7 +45,8 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { useMotionDial } from "@/motion";
+import { animate, type AnimationPlaybackControls } from "motion/react";
+import { useFun, useMotionDial } from "@/motion";
 import { Button } from "@/components/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
 
@@ -62,8 +69,10 @@ type Ctx = {
   trackId: string;
   track: RefObject<HTMLDivElement | null>;
   view: CarouselView;
-  /** Scrolls slide `index` to the start edge. `announce` says the new range once it rests; `instant` skips the smooth scroll. */
-  goTo: (index: number, announce?: boolean, instant?: boolean) => void;
+  /** Scrolls slide `index` to the start edge. `announce` says the new range once it rests; `instant` skips the smooth scroll. In fun mode, `velocity` (scroll px/s) is the speed a throw carries into the landing. */
+  goTo: (index: number, announce?: boolean, instant?: boolean, velocity?: number) => void;
+  /** Fun mode: stops a landing in flight, because a hand or a wheel has taken the track. */
+  stop: () => void;
   /** A page forward: the first slide not wholly in view comes to the start. */
   next: () => void;
   /** A page back. */
@@ -159,6 +168,15 @@ export function Carousel({ label, perView = "one", index, onIndexChange, childre
   const [status, setStatus] = useState("");
   const announce = useRef(false);
   const settle = useRef(0);
+  /* Fun mode: the landing in flight. Snapping is off while it runs, so the spring can pass the slide and come back. */
+  const fun = useFun();
+  const flight = useRef<AnimationPlaybackControls | null>(null);
+  const stop = useCallback(() => {
+    flight.current?.stop();
+    flight.current = null;
+    if (track.current) track.current.style.scrollSnapType = "";
+  }, []);
+  useEffect(() => stop, [stop]);
 
   const measure = useCallback(() => {
     const el = track.current;
@@ -181,18 +199,30 @@ export function Carousel({ label, perView = "one", index, onIndexChange, childre
   useEffect(() => () => window.clearTimeout(settle.current), []);
 
   const goTo = useCallback(
-    (to: number, say = true, instant = false) => {
+    (to: number, say = true, instant = false, velocity = 0) => {
       const el = track.current;
       if (!el) return;
-      const { rtl, spans } = geometry(el);
+      const { rtl, spans, max } = geometry(el);
       const target = spans[Math.max(0, Math.min(spans.length - 1, to))];
       if (!target) return;
       announce.current = say;
+      if (fun && !instant) {
+        /* Fun mode: land on the throw spring, at the scroll the snap would choose (kept inside the track's range). */
+        stop();
+        const from = el.scrollLeft;
+        const end = Math.max(rtl ? -max : 0, Math.min(rtl ? 0 : max, from + (rtl ? -target.from : target.from)));
+        el.style.scrollSnapType = "none";
+        const run = animate(from, end, { ...fun.throw, velocity, onUpdate: (v) => (el.scrollLeft = v) });
+        flight.current = run;
+        void run.then(() => flight.current === run && stop());
+        requestAnimationFrame(measure);
+        return;
+      }
       el.scrollBy({ left: rtl ? -target.from : target.from, behavior: reduced || instant ? "auto" : "smooth" });
       /* Nothing to scroll (already there): still say where it is. */
       requestAnimationFrame(measure);
     },
-    [reduced, measure],
+    [reduced, measure, fun, stop],
   );
 
   const next = useCallback(() => {
@@ -238,7 +268,7 @@ export function Carousel({ label, perView = "one", index, onIndexChange, childre
   }, [view.first, view.total, onIndexChange]);
 
   return (
-    <CarouselContext value={{ label, perView, trackId, track, view, goTo, next, previous, measure }}>
+    <CarouselContext value={{ label, perView, trackId, track, view, goTo, next, previous, measure, stop }}>
       <section aria-roledescription="carousel" aria-label={label} className={"@container grid min-w-0 gap-4 " + className}>
         {children}
         <p role="status" className="sr-only">
@@ -268,13 +298,28 @@ export type CarouselContentProps = {
 export function CarouselContent({ children, className = "" }: CarouselContentProps) {
   const ctx = useContext(CarouselContext);
   if (!ctx) throw new Error("CarouselContent must sit inside a Carousel.");
-  const { track, trackId, measure, goTo, view } = ctx;
+  const { track, trackId, measure, goTo, view, stop } = ctx;
+  const fun = useFun();
   const items = Children.toArray(children).filter(isValidElement);
   const [dragging, setDragging] = useState(false);
   const frame = useRef(0);
+  /* Fun mode: the rubber band springing back, stopped when a hand takes the track again. */
+  const band = useRef<AnimationPlaybackControls | null>(null);
 
   /* Measure after every render (slides added or removed), on resize, and on every scroll frame. */
   useLayoutEffect(() => measure());
+  /* Fun mode: a wheel or a finger takes the track from a landing in flight. */
+  useEffect(() => {
+    const el = track.current;
+    if (!el || !fun) return;
+    el.addEventListener("wheel", stop, { passive: true });
+    el.addEventListener("touchstart", stop, { passive: true });
+    return () => {
+      el.removeEventListener("wheel", stop);
+      el.removeEventListener("touchstart", stop);
+    };
+  }, [track, fun, stop]);
+
   useEffect(() => {
     const el = track.current;
     if (!el) return;
@@ -310,6 +355,7 @@ export function CarouselContent({ children, className = "" }: CarouselContentPro
     const el = track.current;
     if (!el || e.pointerType !== "mouse" || e.button !== 0) return;
     if ((e.target as Element).closest(NO_DRAG)) return;
+    if (fun) return throwDrag(el, e);
     const x0 = e.clientX;
     const left0 = el.scrollLeft;
     let moved = false;
@@ -354,6 +400,71 @@ export function CarouselContent({ children, className = "" }: CarouselContentPro
       };
       if ("onscrollend" in el) el.addEventListener("scrollend", restore, { once: true });
       setTimeout(restore, 700); // a browser without scrollend, or a scroll that never started
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  };
+
+  /* Fun mode's mouse drag: the track follows the hand, gives like a rubber band past either end, and is thrown on
+     release: the speed it had picks the slide it coasts to, and the landing carries that speed. */
+  const throwDrag = (el: HTMLDivElement, e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!fun) return;
+    stop();
+    band.current?.stop();
+    el.style.translate = "";
+    const x0 = e.clientX;
+    const left0 = el.scrollLeft;
+    const { rtl, max } = geometry(el);
+    const [lo, hi] = rtl ? [-max, 0] : [0, max];
+    let moved = false;
+    let trail: { t: number; left: number }[] = [];
+
+    const move = (ev: PointerEvent) => {
+      const dx = ev.clientX - x0;
+      if (!moved) {
+        if (Math.abs(dx) < SLOP) return;
+        moved = true;
+        el.style.scrollSnapType = "none";
+        setDragging(true);
+        window.getSelection()?.removeAllRanges();
+      }
+      const want = left0 - dx;
+      const left = Math.max(lo, Math.min(hi, want));
+      el.scrollLeft = left;
+      el.style.translate = want === left ? "" : `${-fun.rubber(want - left)}px`;
+      trail.push({ t: ev.timeStamp, left: want });
+      trail = trail.filter((p) => ev.timeStamp - p.t <= 100);
+    };
+    const up = (ev: PointerEvent) => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+      if (!moved) return;
+      setDragging(false);
+      const swallow = (c: Event) => {
+        c.stopPropagation();
+        c.preventDefault();
+      };
+      window.addEventListener("click", swallow, { capture: true, once: true });
+      setTimeout(() => window.removeEventListener("click", swallow, true), 0);
+
+      /* Past an end: the band springs back. */
+      const pulled = parseFloat(el.style.translate) || 0;
+      if (pulled) band.current = animate(pulled, 0, { ...fun.throw, onUpdate: (v) => (el.style.translate = v ? `${v}px` : "") });
+
+      /* The release speed in scroll px/s (zero if the hand rested), then the slide nearest where it would coast to. */
+      const first = trail[0];
+      const last = trail[trail.length - 1];
+      const fresh = last && ev.timeStamp - last.t <= 100;
+      const velocity = fresh && last.t > first!.t ? ((last.left - first!.left) / (last.t - first!.t)) * 1000 : 0;
+      const ahead = (rtl ? -1 : 1) * fun.coast(velocity);
+      const { spans } = geometry(el);
+      let to = 0;
+      spans.forEach((s, i) => {
+        if (Math.abs(s.from - ahead) < Math.abs(spans[to]!.from - ahead)) to = i;
+      });
+      goTo(to, false, false, pulled ? 0 : velocity);
     };
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
@@ -451,7 +562,7 @@ export function CarouselControls({ className = "" }: CarouselControlsProps) {
 
   return (
     <div className={"flex items-center justify-between gap-4 " + className}>
-      <p aria-hidden="true" className="font-mono text-caption font-normal tabular-nums text-fg-subtle">
+      <p aria-hidden="true" className="text-caption font-normal tabular-nums text-fg-subtle">
         {view.total > 0 ? rangeText(view) : ""}
       </p>
       <div className="flex items-center gap-2">

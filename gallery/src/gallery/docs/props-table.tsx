@@ -7,7 +7,7 @@
  * - Below 640px the same rows become a stacked list. A four-column table cannot fit
  *   a phone, and stacking beats a sideways scroll. Each layout is hidden with
  *   display: none when it is not in use, so a screen reader meets only one.
- * - Type and default are Geist Mono at caption size, at 400. The header row is the label weight (P9).
+ * - Type and default are Geist Mono at caption size, at 400. The header row is the label weight (R8).
  */
 import type { ExportDoc, PropDoc } from "../docs-data";
 

@@ -30,6 +30,7 @@ export const meta: PageMeta = {
   verbs: ["type", "open"],
   summary:
     "Search every page, project and action from the keyboard. The panel drops in over a dimmed canvas, and one highlight glides between rows as you arrow through them. On a phone it sits at the top edge and follows the keyboard.",
+  fun: "Move through the results: the highlight reaches for each row, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
 
@@ -171,7 +172,7 @@ function OpenDemo() {
       >
         Search
       </Button>
-      <p className="font-mono text-caption font-normal text-fg-subtle" role="status">{last}</p>
+      <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
       <CommandMenu
         open={open}
         onOpenChange={setOpen}
@@ -208,7 +209,7 @@ function PhoneDemo() {
         <Button icon={<SearchIcon />} onClick={() => setOpen(true)}>
           Search
         </Button>
-        <p className="font-mono text-caption font-normal text-fg-subtle" role="status">{last}</p>
+        <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
         <div className="w-full min-w-0 max-w-sm rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]">
           <CommandPanel
             groups={GROUPS}

@@ -36,6 +36,17 @@
   --color-surface-1: var(--surface-1);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
+  --color-tray: var(--tray);           /* a control's sunken tray, and the block raised in it (material.md, 6) */
+  --color-cut: var(--cut);             /* a field's floor, cut a hair into the page (material.md, 6) */
+  --color-block: var(--block);
+  /* The slider's post (R3): a slot cut into a plate, its pulled-out fill, the cap and its grip, and the notches. */
+  --color-slot: var(--slot);
+  --color-slot-fill: var(--slot-fill);
+  --color-cap: var(--cap);
+  --color-cap-held: var(--cap-held);
+  --color-cap-grip: var(--cap-grip);
+  --color-notch: var(--notch);
+  --color-notch-home: var(--notch-home);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
   --color-line-control: var(--line-control);
@@ -52,7 +63,8 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
-  /* Data hues (P11): marks (fill-data-blue), text (text-data-blue-text) and tints
+  --color-danger-fg: var(--danger-fg);
+  /* Data hues (R7): marks (fill-data-blue), text (text-data-blue-text) and tints
      (bg-data-blue-tint). Never on chrome. */
   --color-data-blue: var(--data-blue);
   --color-data-blue-text: var(--data-blue-text);
@@ -70,8 +82,8 @@
   --color-data-rose-text: var(--data-rose-text);
   --color-data-rose-tint: var(--data-rose-tint);
 
-  /* Type: each size carries its own leading and tracking (P6), and the title and
-     caption steps their role's weight (P9).
+  /* Type: each size carries its own leading and tracking (R9), and the title and
+     caption steps their role's weight (R8).
      font-sans / font-mono need no mapping here. tokens.css declares
      --font-sans and --font-mono unlayered, so it wins over Tailwind's defaults.
      The same rule makes the control, radius, shadow, container and ease keys below safe: Tailwind's
@@ -118,17 +130,17 @@
   --text-caption--letter-spacing: var(--type-caption-tracking);
   --text-caption--font-weight: var(--weight-label);
 
-  /* Weight by role (P9): font-title (500) for titles, buttons and tab labels,
+  /* Weight by role (R8): font-title (500) for titles, buttons and tab labels,
      font-label (600) for 12px labels. Display to h4 carry the title weight and the
-     caption carries the label weight on their own; a mono caption (kbd, numbers)
-     adds font-normal. */
+     caption carries the label weight on their own; a caption that is a value, not a
+     label (a reading, a count, a key), adds font-normal. */
   --font-weight-title: var(--weight-title);
   --font-weight-label: var(--weight-label);
 
   /* Layout: py-section, max-w-content, etc. */
   --spacing-section: var(--section-y);
   --spacing-gutter: var(--gutter);
-  /* Controls (P10): h-control-md, px-control-md, gap-control */
+  /* Controls (R9): h-control-md, px-control-md, gap-control */
   --spacing-control-sm: var(--control-sm);
   --spacing-control-md: var(--control-md);
   --spacing-control-lg: var(--control-lg);
@@ -148,8 +160,8 @@
   --radius-surface: var(--radius-surface);
   --radius-pill: var(--radius-pill);
 
-  /* Depth (P4): zero-offset glow + 1px ring, floating surfaces only.
-     shadow-glow is the accent glow, one per view (P1). */
+  /* Depth (R3): zero-offset glow + 1px ring, floating surfaces only.
+     shadow-glow is the accent glow, one per view (R6). */
   --shadow-tooltip: var(--shadow-tooltip);
   --shadow-float: var(--shadow-float);
   --shadow-modal: var(--shadow-modal);

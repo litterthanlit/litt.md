@@ -5,19 +5,20 @@
  * - One real <input> lies over the cells, invisible, so everything a text field does still works: paste, the
  *   browser's one-time-code autofill from a text message, the password manager, undo, and a screen reader that hears
  *   one field with its label. The cells are drawn from its value and hidden from assistive tech.
- * - Anatomy: the Input's field per cell (--surface-1, the inset --line-control edge, the control radius), square on
+ * - Anatomy: the Input's cut per cell (R3: the --cut floor, the --line-control line and the top wall's shade, at the
+ *   control radius), square on
  *   the control scale (md 44, lg 56), narrowing to no less than 32px in a box too small for them, each character in the
- *   mono at the body size. Six cells split three and three
+ *   sans at the body size, in tabular figures. Six cells split three and three
  *   with a wider gap, so the code reads in halves. The label sits above at the title weight and a hint or an error
  *   below, as on a TextField.
- * - Focus: the cell the next character goes into takes the focus edge and ring, and an empty one shows a still 1px
+ * - Focus: the cell the next character goes into takes the focus line and ring, and an empty one shows a still 1px
  *   caret. Nothing blinks.
  * - Typing: only what the code can hold gets in (digits, or letters and digits in capitals); the rest is dropped, so a
  *   pasted "123 456" or "123-456" lands as 123456. When the last cell fills, onComplete runs once with the code.
  *   Backspace clears from the end.
- * - Error: every cell takes the --danger edge, and the message under them says what to do. Disabled: --surface-2 and
- *   --fg-disabled, as the Input.
- * - Motion: the edges fade on the instant tier, and the box never moves.
+ * - Error: every cell takes the --danger line, and the message under them says what to do. Disabled lies flat:
+ *   --surface-2, the plain --line hairline, no shade and --fg-disabled, as the Input.
+ * - Motion: the lines fade on the instant tier, and the box never moves.
  */
 import { useId, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 
@@ -118,21 +119,21 @@ export function CodeInput({
               <span
                 key={i}
                 className={
-                  "grid min-w-8 flex-1 basis-0 place-items-center rounded-control font-mono text-body font-normal " +
+                  "grid min-w-8 flex-1 basis-0 place-items-center rounded-control text-body tabular-nums font-normal " +
                   "transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border " +
                   cellHeights[size] +
                   /* six cells read as two halves of three */
                   (length === 6 && i === 3 ? " ml-2" : "") +
                   (disabled
                     ? " bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
-                    : " bg-surface-1 text-fg " +
+                    : " bg-cut text-fg " +
                       (current
                         ? error
-                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)]"
-                          : "shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)]"
+                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)]"
+                          : "shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)]"
                         : error
-                          ? "shadow-[inset_0_0_0_1px_var(--danger)]"
-                          : "shadow-[inset_0_0_0_1px_var(--line-control)]"))
+                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)]"
+                          : "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]"))
                 }
               >
                 {char || (current ? <span className="h-5 w-px bg-fg" /> : null)}

@@ -40,7 +40,7 @@ export default function DashboardPage() {
         size="lg"
         code="DesktopDemo"
         onReplay={replayDesktop}
-        caption="Four parts and nothing else. The sidebar fills the window's height and its links stay put while the page scrolls. The tiles are quiet, the bars are the foreground at 55% with today in full, and the table's status is a mono tag whose text carries the color. The one entrance is the chart's, on the responsive tier. Scroll the frame, hover a bar, and press Next under the table."
+        caption="Four parts and nothing else. The sidebar fills the window's height and its links stay put while the page scrolls. The tiles are quiet, the bars are the foreground at 55% with today in full, and the table's status is a tag whose text carries the color. The one entrance is the chart's, on the responsive tier. Scroll the frame, hover a bar, and press Next under the table."
       >
         <DesktopDemo key={desktop} />
       </Stage>

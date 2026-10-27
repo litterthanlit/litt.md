@@ -11,7 +11,8 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["press"],
   summary:
-    "Real checkboxes and radios, drawn in the litt look: a 20px chip at the control radius, or a circle for a radio, filled with the foreground color when on. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
+    "Real checkboxes and radios, drawn as a small cut, like a field: a 20px box at the control radius, or a ring for a radio. On, the mark stands flush in it: the box fills with the ink around its tick, and a chosen radio fills with the ink and holds a small raised bead. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
+  fun: "Check a box: it pops and draws its tick.",
   tiers: ["instant"],
 };
 
@@ -56,7 +57,7 @@ export const docs: PageDocs = {
     "The label is a real <label for> stretched over the whole row, so a click or tap anywhere in it toggles the input. The accessible name is only the label text, and the description is linked with aria-describedby.",
     "A group is a fieldset with a legend, so a screen reader says the group's name when focus enters it. A group error is linked to the fieldset with aria-describedby and marks every input invalid. It is not announced by itself, so after a failed submit move focus to the first input.",
     "The chip is 20px, but the whole row is the target: 36px tall, and 44px on touch screens.",
-    "On is shown by a mark inside the chip (a check, a dash or a dot), not by color alone.",
+    "On is shown by a mark inside the chip (a check, a dash or a bead), not by color alone. In forced colors the box keeps a real border and the mark takes the system text color.",
     "Keyboard focus draws a 2px outline at a 2px offset around the chip. Mouse and touch presses do not show it.",
     "A disabled input is muted, skipped by Tab and exempt from contrast rules. In a group, disable the fieldset and every input follows.",
   ],
@@ -187,9 +188,21 @@ function AppearanceDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function DeliverablesTile() {
+  return (
+    <CheckboxGroup legend="Deliverables">
+      <Checkbox name="deliverables" value="motion" label="Include motion study" defaultChecked />
+      <Checkbox name="deliverables" value="template" label="Send me the template" />
+      <Checkbox name="deliverables" value="deploy-email" label="Email me when it deploys" description="A note when a build finishes or fails." defaultChecked />
+    </CheckboxGroup>
+  );
+}
+
 export default function CheckboxPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<DeliverablesTile />}>
       <Stage
         title="Checkbox"
         tier="instant"
@@ -220,7 +233,7 @@ export default function CheckboxPage() {
       <Stage
         title="Drawn and native"
         tier="instant"
-        caption="Drawn is the default: the 20px chip takes the control line, the control radius and the foreground fill the same way in every browser. Native is the spec's other option, the browser's own 16px box in the foreground color. Both are real inputs with the same label."
+        caption="Drawn is the default: the 20px chip is a cut, with the control line, the control radius and the ink fill, the same in every browser. Native is the spec's other option, the browser's own 16px box in the foreground color. Both are real inputs with the same label."
         code="AppearanceDemo"
       >
         <AppearanceDemo />

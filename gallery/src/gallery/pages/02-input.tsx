@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["type"],
   summary:
-    "A roomy, slightly rounded field on the same 32, 44 and 56 scale as Button. Focus turns the edge to the focus color and adds a ring, and an error turns it to danger, both on the instant tier, so the field answers without ever moving its box.",
+    "A roomy, slightly rounded field cut a hair into the page, on the same 32, 44 and 56 scale as Button: a white floor in light, a step below the surfaces in dark, the control line and the top wall's shade. Focus turns the line to the focus color and adds a ring, and an error turns it to danger, both on the instant tier, so the field answers without ever moving its box.",
   tiers: ["instant"],
 };
 
@@ -36,7 +36,7 @@ import { Button } from "@/components/button";
     "A field beside its submit button, such as an email signup. Use Input at size lg next to a size lg primary Button.",
     "A filter or search in a table or toolbar. Use Input at size sm.",
     "Longer text, such as a brief or a note. Use Textarea.",
-    "Data like a slug or a domain. Add mono for Geist Mono.",
+    "Code a person types, like a slug or a path. Add mono for Geist Mono. A domain, a link or a number stays in the sans.",
   ],
   skip: [
     "A choice from a few fixed options. Use Segmented for two to five, or radios for more.",
@@ -68,7 +68,6 @@ function StatesDemo() {
       <TextField label="Project name" defaultValue="Halo site" help="Shown in the dashboard and the browser tab." />
       <TextField
         label="Custom domain"
-        mono
         defaultValue="halo studio"
         spellCheck={false}
         error="Use letters, numbers and dots only, like halo.studio."
@@ -189,13 +188,23 @@ function BriefDemo() {
   );
 }
 
+/* ---------- the overview's tile ---------- */
+
+function ProjectNameTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <TextField label="Project name" defaultValue="Halo site" help="Shown in the dashboard and the browser tab." />
+    </div>
+  );
+}
+
 export default function InputPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} tile={<ProjectNameTile />}>
       <Stage
         title="Fields"
         tier="instant"
-        caption="Label above, hint below. Click into a field and the edge turns to the focus color with a ring. The error turns the edge to danger and says how to fix it. The disabled field is muted and skipped by Tab. Each change fades on the instant tier, and the box never moves."
+        caption="Label above, hint below. Each field is the cut: a floor a hair below the page, the control line around it and the shade of its top wall, never a grey floor. Click into a field and the line turns to the focus color with a ring. The error turns the line to danger and says how to fix it. The disabled field lies flat on surface-2, muted and skipped by Tab. Each change fades on the instant tier, and the box never moves."
         code="StatesDemo"
       >
         <StatesDemo />
@@ -213,7 +222,7 @@ export default function InputPage() {
       <Stage
         title="Inline form"
         tier="instant"
-        caption="A large input and a large primary button, side by side from 640px and stacked full width below it. The label is an aria-label, because the button says what the field is for. Try sending an invalid address: the edge turns to danger, the message is linked to the field and focus returns to it."
+        caption="A large input and a large primary button, side by side from 640px and stacked full width below it. The label is an aria-label, because the button says what the field is for. Try sending an invalid address: the line turns to danger, the message is linked to the field and focus returns to it."
         code="InlineFormDemo"
       >
         <InlineFormDemo />
@@ -222,7 +231,7 @@ export default function InputPage() {
       <Stage
         title="Textarea"
         tier="instant"
-        caption="For longer text. The spec has no textarea, so this one reuses the Input rules exactly: the same edge, focus ring, error and label. The height comes from rows, and you can drag the corner to make it taller."
+        caption="For longer text. The spec has no textarea, so this one reuses the Input rules exactly: the same cut, focus ring, error and label. The height comes from rows, and you can drag the corner to make it taller."
         code="BriefDemo"
       >
         <BriefDemo />

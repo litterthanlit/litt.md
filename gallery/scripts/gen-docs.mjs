@@ -62,7 +62,11 @@ const parsed = ts.getParsedCommandLineOfConfigFile(path.join(root, "tsconfig.jso
 });
 const options = { ...parsed.options, noEmit: true };
 const stems = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
-const program = ts.createProgram({ rootNames: stems.map((s) => path.join(componentsDir, `${s}.tsx`)), options });
+/* The motion engine installs as one registry item (gen-registry.mjs, motionFiles), so a component that uses any of
+   it needs all of it, even a file its imports never reach (drag.ts imports index.tsx, not the other way round). The
+   engine's files are roots of the program too, so one that no component imports yet is still read. */
+const MOTION_ENGINE = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts", "hand.ts"].map((f) => path.join(srcDir, "motion", f));
+const program = ts.createProgram({ rootNames: [...stems.map((s) => path.join(componentsDir, `${s}.tsx`)), ...MOTION_ENGINE], options });
 const checker = program.getTypeChecker();
 const resolveCache = ts.createModuleResolutionCache(root, (f) => f, options);
 
@@ -417,10 +421,6 @@ function importsOf(file) {
   importCache.set(file, result);
   return result;
 }
-
-/* The motion engine installs as one registry item (gen-registry.mjs, motionFiles), so a component that uses any of
-   it needs all of it, even a file its imports never reach (drag.ts imports index.tsx, not the other way round). */
-const MOTION_ENGINE = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts"].map((f) => path.join(srcDir, "motion", f));
 
 function closure(entry) {
   const files = new Set(), pkgs = new Set();

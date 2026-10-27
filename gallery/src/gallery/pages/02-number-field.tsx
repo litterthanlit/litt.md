@@ -10,7 +10,8 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["type", "press"],
   summary:
-    "A labelled number with − and + inside the field's end. It steps by the arrow keys, by a press, or by holding a stepper down; what is typed is read in the page's locale when the field is left, kept between its bounds, put on the step and shown formatted. Nothing moves: the edge fades on the instant tier, as an Input's does.",
+    "A labelled number in the Input's cut, with − and + as raised blocks inside the field's end. It steps by the arrow keys, by a press, or by holding a stepper down; what is typed is read in the page's locale when the field is left, kept between its bounds, put on the step and shown formatted. A pressed stepper sinks half a pixel and the line fades on the instant tier, as an Input's does.",
+  fun: "Drag the label sideways to scrub the value, past either end too; press + or \u2212 and the number kicks.",
   tiers: ["instant"],
 };
 
@@ -112,7 +113,7 @@ export default function NumberFieldPage() {
         tier="instant"
         align="start"
         code="SeatsDemo"
-        caption="Press + or −, hold one down to run, or use the arrow keys in the field. At 1 and at 50 the stepper that would go past is disabled. Type a number and leave the field: it is kept between the bounds, put on a whole seat and shown with its unit. The total under it follows."
+        caption="Press + or −, hold one down to run, or use the arrow keys in the field. Each stepper is a block standing up out of the field, and it sinks while you press it. At 1 and at 50 the stepper that would go past is disabled and lies flat. Type a number and leave the field: it is kept between the bounds, put on a whole seat and shown with its unit. The total under it follows."
       >
         <SeatsDemo />
       </Stage>
@@ -122,7 +123,7 @@ export default function NumberFieldPage() {
         tier="instant"
         align="start"
         code="FormatsDemo"
-        caption="A price in euros steps by 0.50 and shows the currency while you are not typing in it. A percent holds 0.15 and shows 15%; type 20 and it reads 20%. The storage limit starts past its bound, so it says so in the danger color; one step down brings it back. A disabled field keeps its value and its hint."
+        caption="A price in euros steps by 0.50 and shows the currency while you are not typing in it. A percent holds 0.15 and shows 15%; type 20 and it reads 20%. The storage limit starts past its bound, so it says so in the danger color; one step down brings it back. A disabled field lies flat with its steppers and keeps its value and its hint."
       >
         <FormatsDemo />
       </Stage>
@@ -131,7 +132,7 @@ export default function NumberFieldPage() {
         title="Sizes"
         align="start"
         code="SizesDemo"
-        caption="The Input's three heights: 32, 44 and 56. The steppers are 24, 32 and 40, with the field's own air around them. On a touch screen the small field grows to 44."
+        caption="The Input's three heights: 32, 44 and 56. The steppers are square blocks 4px inside the field, so they are 24, 36 and 48. On a touch screen the small field grows to 44, and its steppers to 36."
       >
         <SizesDemo />
       </Stage>

@@ -8,12 +8,14 @@
  * - The color is the user's data, never chrome. It only ever fills the area, the rails, the thumbs and the chips. No
  *   color is written in this file: the gradient stops are computed from the hue, so the lint's rule on raw colors
  *   holds.
- * - Area: saturation left to right, brightness bottom to top, at the control radius with an inset --line hairline so
- *   a white corner still has an edge. The thumb is a 20px circle filled with the color, a 2px --surface-1 ring inside
- *   and a 1px --line-strong edge outside, so it reads on any color in both themes. Its centre reaches the corners,
- *   because the corners are real colors (white, black, the pure hue). Focus swaps the outer edge for a 2px --focus
- *   ring, which stays inside the popover's 12px padding.
- * - Hue: a 12px rail at the control radius with the six hue stops, and the same thumb filled with the pure hue.
+ * - Area: saturation left to right, brightness bottom to top, at the control radius, cut into the panel (R3): an
+ *   fg-14% edge, so a white corner still has one on any surface, and the cut's top-wall shade (--cut-shade). The thumb
+ *   is a cap seen from above (material.md 6): a 20px circle of the color inside a 3px ring of --cap, with the cap's
+ *   lift (--cap-lift), so it stands over any color in both themes. Its centre reaches the corners, because the
+ *   corners are real colors (white, black, the pure hue). Keyboard focus adds a 2px --focus ring around the cap,
+ *   which stays inside the popover's 12px padding.
+ * - Hue: a 12px rail at the control radius with the six hue stops, cut like the area, and the same thumb filled with
+ *   the pure hue.
  * - Keyboard (the React Aria ColorArea pattern, as the Pad): two visually hidden range inputs for the area, Saturation
  *   in the tab order and Brightness at tabindex -1, still reachable by a screen reader. ← → change saturation, ↑ ↓
  *   brightness, Shift makes it 10 steps, Page Up and Page Down move brightness by 10, Home and End take saturation to
@@ -21,7 +23,7 @@
  *   color in words ("Dark blue, #1f3a8a").
  * - Pointer: pressing anywhere moves the thumb there and starts a drag; the area captures the pointer, so a drag may
  *   leave it. Both surfaces are data-no-drag and touch-action none.
- * - Hex: the Input at sm, in mono. It commits on Enter or when it loses focus, takes three or six digits with or
+ * - Hex: the Input at sm. It commits on Enter or when it loses focus, takes three or six digits with or
  *   without the hash, and puts the last good value back when what was typed is not a color. While it is not a color it
  *   is aria-invalid.
  * - Eyedropper: an icon-only ghost Button beside the hex, only where the browser has the EyeDropper API (Chromium on a
@@ -33,7 +35,8 @@
  *   lag the hand. The ColorPicker's popover carries the only motion, on the responsive tier.
  *
  * ColorPicker:
- * - Field: the Select trigger's look and sizes, as the Date picker's, with a 16px chip of the color, the hex in mono
+ * - Field: the Select's raised trigger, its look and sizes, as the Date picker's: a block you press (R3), held pressed
+ *   while the panel is open, with a 16px chip of the color, the hex
  *   and a 16px chevron at the end, or a placeholder in --fg-subtle. A button with aria-haspopup="dialog", named by its
  *   label and the color in words. Label above, hint or error below.
  * - It opens the ColorPanel in a PopoverContent (md, 320px, so eight swatches fit a row), which is a bottom sheet on compact screens. Focus lands on
@@ -110,20 +113,30 @@ export function hexToHsv(hex: string): Hsv {
   return { h, s: max ? d / max : 0, v: max };
 }
 
-/** WCAG relative luminance, 0 for black to 1 for white. */
-function luminance(hex: string) {
-  const [r, g, b] = toRgb(hex).map((c) => {
-    const x = c / 255;
-    return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
-  }) as [number, number, number];
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
 const WHITE = hsvToHex({ h: 0, s: 0, v: 1 });
 const BLACK = hsvToHex({ h: 0, s: 0, v: 0 });
 
-/** Black or white as hex, whichever reads better on this color: for text or a mark drawn on the user's color, where no token is sure to read. */
-export const getContrastInk = (hex: string) => (luminance(hex) > 0.179 ? BLACK : WHITE);
+/** APCA's screen luminance (0.0.98G): sRGB to the 2.4 power, without the WCAG 2 linear toe. */
+function screenY(hex: string) {
+  const [r, g, b] = toRgb(hex).map((c) => (c / 255) ** 2.4) as [number, number, number];
+  return 0.2126729 * r + 0.7151522 * g + 0.072175 * b;
+}
+
+/** APCA lightness contrast (Lc) of text on a background, as a magnitude: 75 suits body text, 60 content, 45 large text. */
+function apca(text: string, bg: string) {
+  const soft = (y: number) => (y > 0.022 ? y : y + (0.022 - y) ** 1.414);
+  const t = soft(screenY(text));
+  const b = soft(screenY(bg));
+  const s = b > t ? (b ** 0.56 - t ** 0.57) * 1.14 : (t ** 0.62 - b ** 0.65) * 1.14;
+  return s < 0.1 ? 0 : (s - 0.027) * 100;
+}
+
+/**
+ * Black or white as hex, whichever reads better on this color: for text or a mark drawn on the user's color, where no
+ * token is sure to read. Chosen by APCA, not the WCAG 2 ratio: on mid tones such as a rust (#b3613c) the WCAG 2 ratio
+ * calls black and white even (4.7 and 4.5) and picks black, where white reads twice as well (Lc 76 against 33).
+ */
+export const getContrastInk = (hex: string) => (apca(WHITE, hex) >= apca(BLACK, hex) ? WHITE : BLACK);
 
 const HUES: [number, string][] = [
   [15, "red"],
@@ -156,30 +169,38 @@ const say = (hex: string) => `${describeColor(hex)}, ${hex}`;
 
 /* ----------------------------------------------------------------- styles */
 
-/* The thumb on the area and the hue: the color inside, a --surface-1 ring, a --line-strong edge. Focus makes the edge a 2px --focus ring. */
+/* The thumb on the area and the hue, a cap seen from above: the color inside a ring of --cap, lit on top by the
+   cap's lift, which comes first so its highlight sits over the ring. Focus adds a 2px --focus ring around it. */
 const thumb =
   "pointer-events-none absolute block size-5 -translate-x-1/2 -translate-y-1/2 rounded-pill " +
   "forced-colors:border ";
-const thumbEdge = "shadow-[inset_0_0_0_2px_var(--surface-1),0_0_0_1px_var(--line-strong)]";
-const thumbFocus = "shadow-[inset_0_0_0_2px_var(--surface-1),0_0_0_2px_var(--focus)]";
+const thumbEdge = "shadow-[var(--cap-lift),inset_0_0_0_3px_var(--cap)]";
+const thumbFocus = "shadow-[0_0_0_2px_var(--focus),var(--cap-lift),inset_0_0_0_3px_var(--cap)]";
 
 /* A hairline over the user's color, so white still has an edge on a light surface and black on a dark one. */
 const hairline = "pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_var(--line)]";
 
+/* The area and the hue are cut into the panel: a translucent edge, which reads over any color, and the cut's shade. */
+const cutEdge =
+  "pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--fg)_14%,transparent),var(--cut-shade)]";
+
 /* The Select trigger's look and sizes (select.tsx), as the Date picker copies them. */
 const field =
-  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-surface-1 text-left font-normal text-fg " +
+  "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-block text-left font-normal text-fg " +
   "data-placeholder:text-fg-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +
-  "shadow-[inset_0_0_0_1px_var(--line-control)] " +
-  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)] " +
+  "shadow-(--block-lift) enabled:active:shadow-(--block-press) data-[state=open]:shadow-(--block-press) " +
+  "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+  "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
+  "active:translate-y-(--press-depth) disabled:active:translate-y-0 data-[state=open]:translate-y-(--press-depth) " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--block-lift)] " +
+  "aria-invalid:enabled:active:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
+  "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:data-placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  "forced-colors:border forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid forced-colors:focus-visible:outline-offset-2";
+  "forced-colors:border";
 
 export type ColorPickerSize = "sm" | "md" | "lg";
 
@@ -205,7 +226,8 @@ function useEyeDropper(): EyeDropperCtor | null {
 
 const DropperIcon = () => (
   <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-    <path d="m9.25 4.25 2.5 2.5M10.5 5.5 4.25 11.75 2.75 13.25M3.5 12.5l.75-.75M8.75 3.75l1.4-1.4a1.77 1.77 0 0 1 2.5 2.5l-1.4 1.4" />
+    <path d="M8.75 3.75l1.4-1.4a1.77 1.77 0 0 1 2.5 2.5l-1.4 1.4z" fill="currentColor" strokeWidth={1} />
+    <path d="m8.25 3.25 4.5 4.5M10.5 5.5 2.75 13.25" />
   </svg>
 );
 
@@ -403,7 +425,7 @@ export function ColorPanel({
         onPointerCancel={release}
         onLostPointerCapture={release}
       >
-        <span aria-hidden="true" className={hairline} />
+        <span aria-hidden="true" className={cutEdge} />
         <input ref={sInput} className="sr-only" {...areaInput("s")} />
         <input className="sr-only" tabIndex={-1} aria-orientation="vertical" {...areaInput("v")} />
         <span
@@ -425,7 +447,7 @@ export function ColorPanel({
         onPointerCancel={release}
         onLostPointerCapture={release}
       >
-        <span aria-hidden="true" className={hairline} />
+        <span aria-hidden="true" className={cutEdge} />
         {/* A finger needs more than 12px: the target reaches 16px above and below the rail. */}
         <span aria-hidden="true" className="absolute inset-x-0 -inset-y-4 hidden pointer-coarse:block" />
         <input
@@ -451,7 +473,6 @@ export function ColorPanel({
         </span>
         <Input
           size="sm"
-          mono
           className="min-w-0 flex-1"
           aria-label="Hex"
           invalid={draft !== null && !typed}
@@ -625,7 +646,7 @@ export function ColorPicker({
                 <span aria-hidden="true" className="relative size-4 shrink-0 rounded-control" style={{ backgroundColor: value }}>
                   <span className={hairline} />
                 </span>
-                <span className="min-w-0 flex-1 truncate font-mono tabular-nums">{value}</span>
+                <span className="min-w-0 flex-1 truncate tabular-nums">{value}</span>
                 <span id={valueId} className="sr-only">
                   {describeColor(value)}, {value}
                 </span>

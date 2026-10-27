@@ -11,6 +11,7 @@ export const meta: PageMeta = {
   group: "Data",
   summary:
     "A trend in one thin line, with no axes, gridlines or labels: a 2px line in the foreground or a data hue, a dot on the latest value and an optional dashed baseline. It sits beside a figure or in a table row. It is static, and it shows shape, not values.",
+  fun: "The line draws itself and its dot lands as the pen reaches it.",
   tiers: [],
 };
 
@@ -167,7 +168,7 @@ function GoalLineDemo() {
     <div className="grid w-full max-w-xl gap-2">
       <div className="flex items-baseline justify-between gap-4">
         <span className="text-small text-fg">Median reply time</span>
-        <span className="font-mono text-caption font-normal tabular-nums text-fg-subtle">2.9 h today, goal 4 h</span>
+        <span className="text-caption font-normal tabular-nums text-fg-subtle">2.9 h today, goal 4 h</span>
       </div>
       <Sparkline label="Median reply time, last 30 days" values={REPLY} formatValue={hours} baseline={4} height={64} />
     </div>
@@ -178,11 +179,11 @@ function QuietAndHueDemo() {
   return (
     <div className="grid w-full max-w-xl gap-x-12 gap-y-8 sm:grid-cols-2">
       <div className="grid gap-2">
-        <p className="font-mono text-caption font-normal text-fg-subtle">Quiet, the default</p>
+        <p className="text-caption font-normal text-fg-subtle">Quiet, the default</p>
         <Sparkline label="Page views per day, last 14 days" values={VIEWS} height={48} />
       </div>
       <div className="grid gap-2">
-        <p className="font-mono text-caption font-normal text-fg-subtle">In a hue</p>
+        <p className="text-caption font-normal text-fg-subtle">In a hue</p>
         <Sparkline label="Page views per day, last 14 days" values={VIEWS} hue="blue" height={48} />
       </div>
     </div>
@@ -203,7 +204,7 @@ export default function SparklinePage() {
       <Stage
         title="In a table"
         code="InATableDemo"
-        caption="Visits per day for each Framer site, one sparkline per row. Every row shares one scale, from 0 to 2,400, so a quiet site reads as quiet. Without a fixed scale each line would fill its own box and Sidebar Weekly would look as lively as Grotta Type. The column measures one thing, so it is one hue. The total sits in its own column in mono, for the exact figure."
+        caption="Visits per day for each Framer site, one sparkline per row. Every row shares one scale, from 0 to 2,400, so a quiet site reads as quiet. Without a fixed scale each line would fill its own box and Sidebar Weekly would look as lively as Grotta Type. The column measures one thing, so it is one hue. The total sits in its own column in tabular figures, for the exact figure."
       >
         <InATableDemo />
       </Stage>

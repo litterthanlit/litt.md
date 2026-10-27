@@ -279,7 +279,7 @@ export function ResizableHandle({ label = "Resize", className = "" }: ResizableH
       onKeyDown={onKeyDown}
       onDoubleClick={() => reset(before)}
       className={[
-        "relative z-10 shrink-0 touch-none bg-line outline-none [-webkit-tap-highlight-color:transparent]",
+        "relative z-10 shrink-0 touch-none bg-line [-webkit-tap-highlight-color:transparent]",
         "transition-[background-color] duration-(--dur-instant) ease-litt hover:bg-line-strong data-[dragging]:bg-fg-subtle",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
         /* The hit area: 12px, or 44px under a finger, centered on the hairline. */

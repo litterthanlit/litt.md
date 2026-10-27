@@ -3,12 +3,12 @@
  * Pass it as a TableHead's `filter`. It is a small button that opens the Menu with the column's values as rows.
  *
  * - Values: `multiple` (the default) is checkbox rows, any number on; none on means no filter, so every row shows.
- *   A checkbox row can say how many rows it would show, in the Menu's mono hint at the end ("1,204"); count them
+ *   A checkbox row can say how many rows it would show, in the Menu's tabular hint at the end ("1,204"); count them
  *   against the other filters, so the numbers are what picking it would give. A Show all row under a hairline clears
  *   the column. Single is radio rows with All first, for buckets of a number such as "Over 60 s".
  * - The button: a 16px funnel in --fg-subtle at rest, 28px, the control radius (44px under a finger, the header's
- *   height). While the column filters, it wears the selected segment (P12): --surface-2 with the hairline and the top
- *   highlight, the funnel in --fg and, with several values, how many are on in the mono. Never the accent: a table can
+ *   height). While the column filters, it is raised (R3, selected is raised): the press material's block (--block,
+ *   --block-lift), the funnel in --fg and, with several values, how many are on, in tabular figures. Never the accent: a table can
  *   filter on several columns at once.
  * - The Menu does the rest: glass, 44px rows, the gliding highlight, typeahead, and rows that stay open as they toggle,
  *   so several values change in one visit. The rows filter as they toggle; nothing waits for an Apply.
@@ -71,8 +71,8 @@ const button =
 const idle =
   "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
-/* The selected segment (P12), one surface up from the header's surface-1. */
-const on = "bg-surface-2 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]";
+/* Selected is raised (R3): the press material's block, as a switch's block and the current page are. */
+const on = "bg-block text-fg shadow-(--block-lift) forced-colors:border";
 
 /** A column's filter: a funnel button in its header that opens the column's values as checkbox (or radio) rows. */
 export function TableFilter({ column, options, value, onValueChange, multiple = true, allLabel = "All", align = "start" }: TableFilterProps) {
@@ -86,7 +86,7 @@ export function TableFilter({ column, options, value, onValueChange, multiple = 
     <button type="button" aria-label={`Filter ${name}${said}`} className={button + " " + (active ? on : idle)}>
       <FilterIcon />
       {active && multiple && (
-        <span aria-hidden="true" className="font-mono text-caption font-normal tabular-nums">
+        <span aria-hidden="true" className="text-caption font-normal tabular-nums">
           {value.length}
         </span>
       )}

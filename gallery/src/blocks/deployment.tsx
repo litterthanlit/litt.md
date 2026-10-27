@@ -136,7 +136,7 @@ export function Deployment() {
       { label: "Branch", value: DEPLOY.branch, mono: true },
       { label: "Commit", value: DEPLOY.id, mono: true },
       { label: "Duration", value: done ? "29s" : "Building", mono: false },
-      { label: "Domain", value: DEPLOY.domain, mono: true },
+      { label: "Domain", value: DEPLOY.domain, mono: false },
     ],
     [done],
   );

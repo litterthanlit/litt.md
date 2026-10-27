@@ -129,7 +129,7 @@ export default function CohortGridPage() {
       <Stage
         title="Weekly retention"
         code="WeeklyDemo"
-        caption="A row per signup week, oldest first, and a column per week since signup. Each cell has its share in mono and a dot in front of it in teal's four steps, so the eye finds where people stay without losing the numbers. Younger cohorts have fewer weeks, so the grid is a triangle and the empty cells draw nothing. Nothing moves."
+        caption="A row per signup week, oldest first, and a column per week since signup. Each cell has its share in tabular figures and a dot in front of it in teal's four steps, so the eye finds where people stay without losing the numbers. Younger cohorts have fewer weeks, so the grid is a triangle and the empty cells draw nothing. Nothing moves."
       >
         <WeeklyDemo />
       </Stage>
