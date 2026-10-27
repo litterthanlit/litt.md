@@ -53,6 +53,16 @@ export function RollingNumber({ value, format, locale = "en-GB", className = "" 
     leave: (d: number) => ({ y: (-d * travel) / 2, opacity: 0, transition: exit }),
   };
 
+  /* Which change each place's character arrived in, by place from the right. It keys the character, so one that comes
+     back while its last copy is still leaving is a new element: AnimatePresence would hand it the leaving copy, which
+     then rests at its enter pose, unseen (a range's total that changes every frame did this). */
+  const [arrived, setArrived] = useState({ text, at: [...text].map(() => 0), changes: 0 });
+  if (arrived.text !== text) {
+    const changes = arrived.changes + 1;
+    const before = [...arrived.text].reverse();
+    setArrived({ text, changes, at: [...text].reverse().map((ch, place) => (before[place] === ch ? arrived.at[place]! : changes)) });
+  }
+
   /* Keyed by place from the right, so a new leading column never shifts the others' keys. */
   const chars = [...text].map((ch, i, all) => ({ ch, place: all.length - 1 - i }));
 
@@ -63,7 +73,7 @@ export function RollingNumber({ value, format, locale = "en-GB", className = "" 
         {chars.map(({ ch, place }) => (
           <span key={place} className="relative inline-flex overflow-hidden">
             <AnimatePresence initial={false} mode="popLayout" custom={dir}>
-              <motion.span key={ch} custom={dir} variants={roll} initial="enter" animate="center" exit="leave" className="inline-block whitespace-pre">
+              <motion.span key={arrived.at[place]} custom={dir} variants={roll} initial="enter" animate="center" exit="leave" className="inline-block whitespace-pre">
                 {ch}
               </motion.span>
             </AnimatePresence>
