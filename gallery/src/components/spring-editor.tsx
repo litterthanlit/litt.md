@@ -29,7 +29,8 @@
  *   reachable by a screen reader). ← → change the time, ↑ ↓ the bounce, Shift makes it 10 steps, Page Up and Page Down
  *   move the bounce by 10 steps, Home and End take the time to its ends.
  * - Disabled: everything lies flat, as the Pad's: the well and its plates --surface-2 with the --line hairline, the
- *   cap --surface-2 with a --line edge, the curve and the words --fg-disabled, no pointer and no tab stop.
+ *   cap --surface-2 with a --line edge, the curve --fg-disabled, no pointer and no tab stop. The value and the words
+ *   step down to --fg-subtle, as the Slider's value does, because they are still read.
  * - Motion: the cap, its line and the curve follow the pointer and the keys at once, with no easing (R4): a curve
  *   that eased would lag the hand that draws it. The sink is at once, and reduced motion sets its depth to 0.
  */
@@ -417,7 +418,7 @@ export function SpringEditor({
         </div>
       </div>
 
-      <p id={effectId} className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg-muted")}>
+      <p id={effectId} className={"text-small " + (disabled ? "text-fg-subtle" : "text-fg-muted")}>
         {effect}.
       </p>
 

@@ -23,7 +23,8 @@
  * - Keyboard: each handle is one tab stop with two visually hidden range inputs (time in the tab order, progress
  *   tabindex -1), as on the Pad. ← → move the handle in time, ↑ ↓ in progress, Shift makes it 10 steps, Page Up and
  *   Page Down move progress by 10 steps, Home and End take time to its ends.
- * - Disabled: everything lies flat, as the Pad's, with the curve and the words in --fg-disabled.
+ * - Disabled: everything lies flat, as the Pad's, with the curve in --fg-disabled. The CSS and the words step down to
+ *   --fg-subtle, as the Slider's value does, because they are still read.
  * - Motion: the handles, the arms and the curve follow the pointer and the keys at once, with no easing (R4).
  */
 import { useId, useRef, useState, type ChangeEvent, type FocusEvent, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
@@ -390,10 +391,10 @@ export function CurveEditor({
       </div>
 
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <code id={cssId} className={"font-mono text-caption font-normal tabular-nums " + (disabled ? "text-fg-disabled" : "text-fg")}>
+        <code id={cssId} className={"font-mono text-caption font-normal tabular-nums " + (disabled ? "text-fg-subtle" : "text-fg")}>
           {css}
         </code>
-        <span className={"text-small " + (disabled ? "text-fg-disabled" : "text-fg-muted")}>{feel}</span>
+        <span className={"text-small " + (disabled ? "text-fg-subtle" : "text-fg-muted")}>{feel}</span>
       </div>
 
       {preview && (

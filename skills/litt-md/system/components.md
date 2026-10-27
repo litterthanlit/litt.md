@@ -165,7 +165,7 @@ A spring someone shapes by hand for their own work, as time and bounce: Motion's
 - **Tier:** `tier="expressive"` or `"responsive"` washes the floor beyond litt's limits for that tier with fg at 5% (past 350ms, and above 0.12 bounce, or above none on the responsive tier), with a plate naming each limit, and lists a row per rule under the readout with the Tag's Fits or Change. The limits come from `motion/rules.ts`, which mirrors `check.mjs`.
 - **Preview:** a rail under the well with a 12px `--fg` dot and a ghost Play button. The dot crosses on the spring being edited each time a change is committed, and crosses back the next time, so it never jumps to a start. It is the editor's only motion, on the person's own spring, because feeling it is the point; reduced motion lands it at once.
 - **Pointer, keyboard and touch:** the Pad's. A press anywhere moves the cap there and drags; values snap to 10ms and 0.01; a double-click goes back to `defaultMark` (a dashed circle). Two hidden range inputs, Time and Bounce, one tab stop, both with the words as their value text. The whole well is the target (`touch-action: none`, `data-no-drag`).
-- **Disabled:** everything lies flat, as the Pad's, the curve and the words in `--fg-disabled`.
+- **Disabled:** everything lies flat, as the Pad's, the label and the curve in `--fg-disabled`. The value and the line under the well step to `--fg-subtle`, as the Slider's do, because they are still read.
 
 ## Curve editor
 An easing someone shapes by hand for their own work, as a cubic Bézier (`[x1, y1, x2, y2]`). A spring is the Spring editor; litt's own easings are tokens.
@@ -175,7 +175,7 @@ An easing someone shapes by hand for their own work, as a cubic Bézier (`[x1, y
 - **It says its value (R5):** the curve as CSS under the well, in mono since it is code (`cubic-bezier(0.2, 0.7, 0.3, 1)`), and what it feels like in words beside it ("Starts quick and eases into place", "Pulls back, then goes").
 - **Preview:** the Spring editor's rail, the dot crossing on the curve for `duration` (600ms by default, litt's settle limit).
 - **Keyboard:** one tab stop per handle, each with two hidden range inputs (time in the tab order, progress tabindex -1) named "Start handle, time" and so on, with the handle and the words as their value text. The arrows move the focused handle, Shift ten steps.
-- **Disabled:** everything lies flat, as the Pad's.
+- **Disabled:** everything lies flat, as the Pad's, the label and the curve in `--fg-disabled`. The CSS and the words step to `--fg-subtle`, as the Slider's value does, because they are still read.
 
 ## Slide to confirm
 A deliberate yes to something that cannot be undone, such as deleting a project on a phone. It asks for more than a tap, so a stray press does nothing. Anything that can be undone just happens, with Undo in a toast.
