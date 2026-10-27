@@ -150,7 +150,7 @@ export default function ButtonPage() {
         <LoadingDemo />
       </Stage>
 
-      <Stage title="Icons" tier="instant" caption="16px icons at 1.5px stroke, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo">
+      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo">
         <IconsDemo />
       </Stage>
 
