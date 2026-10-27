@@ -107,6 +107,7 @@ const accentNow = (pg) => pg.evaluate(() => {
   const start = pg.getByRole("button", { name: "Get started" });
   const fill = () => start.evaluate((el) => getComputedStyle(el).backgroundColor);
   check((await pg.evaluate(() => document.body.dataset.accent)) === "mono", "the gallery opens in monochrome (data-accent=mono on <body>)");
+  await pg.waitForTimeout(300); // the ink changed with the theme above, and the fill fades to it on the instant tier
   const ink = await accentNow(pg);
   check((await fill()) === ink, "Get started is filled with the accent, the ink");
   await pick(d, "Blue 4");
@@ -149,7 +150,7 @@ const accentNow = (pg) => pg.evaluate(() => {
   await panel.waitFor();
   const accentTiles = panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) });
   check(await accentTiles.getByRole("radio", { name: "Mono" }).isChecked(), "the panel opens with Mono picked");
-  await pick(accentTiles, "Pink");
+  await accentTiles.locator("label", { has: pg.getByRole("radio", { name: "Pink" }) }).click();
   check((await pg.evaluate(() => document.body.dataset.accent)) === "pink", "the panel's Pink tile sets data-accent=pink on <body>");
   const look = () => pg.evaluate(() => [document.body.dataset.accent, document.body.style.getPropertyValue("--radius-control"), document.body.style.getPropertyValue("--font-sans")].join("|"));
   const before = await look();
