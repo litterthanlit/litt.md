@@ -265,8 +265,9 @@ export function useSettle(values: MotionValue<number>[]): Settle {
     };
     const to: Settle["to"] = (targets, options) => {
       hold();
-      const { values: vs, spring } = latest.current;
-      const mine = vs.map((v, i) => animate(v, targets[i] ?? v.get(), { ...spring, velocity: options?.velocities?.[i] ?? 0 }));
+      const { values: vs, spring, fun: f } = latest.current;
+      /* Calm settles from rest whatever the caller passes, so a velocity can never carry a part past its target. */
+      const mine = vs.map((v, i) => animate(v, targets[i] ?? v.get(), { ...spring, velocity: f ? (options?.velocities?.[i] ?? 0) : 0 }));
       run.current = mine;
       void Promise.all(mine).then(() => {
         if (run.current !== mine) return;
@@ -282,7 +283,7 @@ export function useSettle(values: MotionValue<number>[]): Settle {
         const carry = at.map((_, i) => (f ? f.coast(speeds[i] ?? 0) : 0));
         const thrown = !!f && carry.some((c) => Math.abs(c) > THROWN_PX);
         const targets = land({ points: at.map((p, i) => p + (carry[i] ?? 0)), thrown });
-        to(targets, { velocities: f ? speeds : [], commit });
+        to(targets, { velocities: speeds, commit });
       },
       limit: (want, lo, hi) => {
         const kept = Math.min(hi, Math.max(lo, want));

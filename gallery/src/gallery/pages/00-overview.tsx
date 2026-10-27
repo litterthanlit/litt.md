@@ -285,7 +285,7 @@ function Blocks({ list }: { list: PageEntry[] }) {
 }
 
 /** Pages whose tile is two rows tall beside two short ones: their component needs the height. */
-const TALL = new Set(["plan", "app-shell", "list", "action-bar", "timeline", "message"]);
+const TALL = new Set(["plan", "app-shell", "list", "action-bar", "timeline", "message", "rule-builder"]);
 
 /**
  * The tiles that open the wall, in this order; every other component follows in the sidebar's order. The deck above

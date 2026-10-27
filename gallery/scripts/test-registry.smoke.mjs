@@ -324,6 +324,15 @@ const RECIPES = {
     needs: ["SlideConfirm"],
     jsx: `<div className="w-full max-w-sm" data-testid="litt-slide-confirm"><SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" /></div>`,
   },
+  "rule-builder": {
+    needs: ["RuleBuilder"],
+    types: ["RuleBuilderField", "RuleBuilderGroup"],
+    top: [
+      `const SMOKE_FIELDS: RuleBuilderField[] = [{ id: "status", label: "Expense status", type: "choice", options: [{ value: "submitted", label: "Submitted" }, { value: "paid", label: "Paid" }] }, { id: "seniority", label: "Seniority", type: "choice", options: [{ value: "designer", label: "Designer" }, { value: "manager", label: "Manager" }] }, { id: "type", label: "Expense type", type: "choice", options: [{ value: "food", label: "Food & drink" }, { value: "travel", label: "Travel" }] }, { id: "merchant", label: "Merchant", type: "text" }];`,
+      `const SMOKE_RULE: RuleBuilderGroup = { kind: "group", id: "policy", join: "and", children: [{ kind: "condition", id: "trigger", field: "status", operator: "is", value: "submitted", locked: true }, { kind: "condition", id: "seniority", field: "seniority", operator: "is", value: "manager" }, { kind: "group", id: "spend", join: "or", children: [{ kind: "condition", id: "type", field: "type", operator: "any-of", value: ["food", "travel"] }, { kind: "condition", id: "merchant", field: "merchant", operator: "is", value: "Uber" }] }] };`,
+    ],
+    jsx: `<form className="w-full max-w-2xl" data-testid="litt-rule-builder" onSubmit={(e) => e.preventDefault()}><RuleBuilder label="Expense approval" name="rule" fields={SMOKE_FIELDS} defaultValue={SMOKE_RULE} /></form>`,
+  },
   "rolling-number": {
     needs: ["RollingNumber"],
     jsx: `<p className="text-xl" data-testid="litt-rolling-number"><RollingNumber value={12480} /> <RollingNumber value={0.64} format={{ style: "percent" }} /></p>`,
@@ -1735,6 +1744,45 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const sent = await item("slider").locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
           if (sent.join("|") !== "99|100") throw new Error(`the form sent window=${sent.join(",")}, expected 99 and 100 under one name`);
           return `${dragged}, sent ${sent.join(" and ")}`;
+        });
+      }
+      if (has("rule-builder")) {
+        await attempt("rule builder: a group named by its label, the locked row has no handle, Space lifts a row and the arrows move it with no commit until the drop, a drag by the handle stops below the locked row, Add condition focuses the new field, the form posts the rule as one JSON string", async () => {
+          const box = item("rule-builder").locator("[data-testid=litt-rule-builder]");
+          const builder = box.getByRole("group", { name: "Expense approval", exact: true });
+          await builder.waitFor({ state: "visible", timeout: 5000 });
+          const order = () => box.evaluate((form) => JSON.parse(new FormData(form).get("rule")).children.map((c) => c.id).join(","));
+          const start = await order();
+          if (start !== "trigger,seniority,spend") throw new Error(`the form posts ${start}, not trigger,seniority,spend`);
+          if ((await builder.getByRole("button", { name: /^Move Expense status/ }).count()) !== 0) throw new Error("the locked row has a handle");
+          const handle = builder.getByRole("button", { name: "Move Seniority is Manager", exact: true });
+          await handle.focus();
+          await page.keyboard.press("Space");
+          if ((await handle.getAttribute("aria-pressed")) !== "true") throw new Error("Space did not pick the row up (aria-pressed)");
+          await page.keyboard.press("ArrowUp");
+          await page.keyboard.press("ArrowDown");
+          await page.waitForTimeout(100);
+          if ((await order()) !== start) throw new Error("the rule changed before the drop");
+          await page.keyboard.press("Space");
+          await page.waitForTimeout(900);
+          const keyed = await order();
+          if (keyed !== "trigger,spend,seniority") throw new Error(`Space, ArrowUp, ArrowDown, Space gave ${keyed}, not trigger,spend,seniority`);
+          const said = await builder.locator(":scope > [role=status]").innerText();
+          if (!said.includes("Moved Seniority is Manager to position 3 of 3")) throw new Error(`the status says "${said}"`);
+          const grip = await handle.boundingBox();
+          const first = await builder.getByRole("group", { name: "Condition 1 of 3", exact: true }).boundingBox();
+          await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+          await page.mouse.down();
+          await page.mouse.move(grip.x + grip.width / 2, first.y - 40, { steps: 10 });
+          await page.mouse.up();
+          await page.waitForTimeout(900);
+          const dragged = await order();
+          if (dragged !== "trigger,seniority,spend") throw new Error(`dragging it up past everything gave ${dragged}: it must stop below the locked row`);
+          await builder.getByRole("button", { name: "Add condition", exact: true }).last().click();
+          await page.waitForTimeout(300);
+          const focused = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (focused !== "Field, condition 4") throw new Error(`Add condition focused "${focused}", not the new row's field`);
+          return `keys ${keyed}, drag ${dragged}, then ${(await order()).split(",").length} children`;
         });
       }
       if (has("color-picker")) {

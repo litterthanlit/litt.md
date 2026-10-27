@@ -224,7 +224,7 @@
     },
     "motion": {
       "version": "2026.10.27",
-      "hash": "c5de3015700c309d"
+      "hash": "240710e73cc99a20"
     },
     "number-field": {
       "version": "2026.10.26",
@@ -277,6 +277,10 @@
     "rolling-number": {
       "version": "2026.10.21",
       "hash": "b586cbb15698859e"
+    },
+    "rule-builder": {
+      "version": "2026.10.27",
+      "hash": "43d5a7dd35beb64e"
     },
     "run-card": {
       "version": "2026.10.27",
