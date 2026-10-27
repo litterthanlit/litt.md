@@ -522,11 +522,17 @@ export function TableVirtualBody({
 
   /* The browser sizes a table's columns from the rows it has, and a virtual body has different rows at every scroll
      position, so the columns would shift as it scrolls. Fix them at the widths the first rows drawn give: not before,
-     or a first page from a server would fix them to the header's words alone. A passive effect, because React attaches
-     the <table>'s ref after this body's layout effects run. */
+     or a first page from a server would fix them to the header's words alone, and not before the fonts arrive, or a
+     table drawn in the fallback font would keep its widths. A passive effect, because React attaches the <table>'s ref
+     after this body's layout effects run. */
   const drawn = end > start;
   useEffect(() => {
-    if (drawn) freezeColumns();
+    if (!drawn) return;
+    let live = true;
+    document.fonts.ready.then(() => live && freezeColumns());
+    return () => {
+      live = false;
+    };
   }, [drawn, freezeColumns]);
   const rows: ReactNode[] = [];
   for (let i = start; i < end; i++) {
