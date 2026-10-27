@@ -141,6 +141,27 @@ const accentNow = (pg) => pg.evaluate(() => {
   await ctx.close();
 }
 
+/* ---------- the header's Customize panel ---------- */
+{
+  const { ctx, pg, errors } = await open("button");
+  await pg.locator("header").getByRole("button", { name: "Customize" }).click();
+  const panel = pg.getByRole("dialog", { name: "Customize" });
+  await panel.waitFor();
+  const accentTiles = panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) });
+  check(await accentTiles.getByRole("radio", { name: "Mono" }).isChecked(), "the panel opens with Mono picked");
+  await pick(accentTiles, "Pink");
+  check((await pg.evaluate(() => document.body.dataset.accent)) === "pink", "the panel's Pink tile sets data-accent=pink on <body>");
+  const look = () => pg.evaluate(() => [document.body.dataset.accent, document.body.style.getPropertyValue("--radius-control"), document.body.style.getPropertyValue("--font-sans")].join("|"));
+  const before = await look();
+  await panel.getByRole("button", { name: "Surprise me" }).click();
+  const said = (await panel.locator("[aria-live=polite]").first().textContent())?.trim() ?? "";
+  check((await look()) !== before && said.endsWith("motion."), `Surprise me changes the accent, the shape and the face, and says so ("${said}")`);
+  await panel.getByRole("button", { name: "Reset to defaults" }).click();
+  check((await look()) === "mono||", "the panel's Reset goes back to monochrome, the locked shape and the locked face");
+  for (const e of errors) problems.push(`customize: ${e}`);
+  await ctx.close();
+}
+
 /* ---------- search ---------- */
 {
   const { ctx, pg, errors } = await open("overview");
