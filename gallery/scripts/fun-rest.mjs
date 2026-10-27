@@ -48,6 +48,10 @@ const SETTLE_MS = 60_000;
 /* Thinking's clock reads real time, which no two loads share, so it is hidden in both. The self-test fails when this
    stops matching it on the Thinking page. */
 const CLOCK = 'div[data-state] > button[aria-expanded] > span > span[aria-hidden="true"].tabular-nums';
+/* How far a channel may differ inside a photograph. Chromium resamples a scaled photo from whichever decode it has at
+   hand when it rasters, so after different motion a photo can come out a few levels apart (10 at most, seen in CI). A
+   photo that moved or was cut differently still fails: its edges against the page change by far more. */
+const PHOTO_LEVELS = 12;
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
 function resolveTool(id) {
@@ -202,22 +206,27 @@ async function fit(a, b, width) {
   for (const pg of [a, b]) if (pg.viewportSize().height !== height) await pg.setViewportSize({ width, height });
 }
 
-/** The box the two screenshots differ in, and how many pixels. */
-async function diff(a, b) {
-  return differ.evaluate(async ([a, b]) => {
+/** The box the two screenshots differ in, and how many pixels, letting photos differ by up to PHOTO_LEVELS. */
+async function diff(a, b, photos) {
+  return differ.evaluate(async ([a, b, photos, levels]) => {
     const load = (s) => new Promise((done) => { const i = new Image(); i.onload = () => done(i); i.src = `data:image/png;base64,${s}`; });
     const [ia, ib] = await Promise.all([load(a), load(b)]);
     const w = Math.max(ia.width, ib.width), h = Math.max(ia.height, ib.height);
     const pixels = (i) => { const c = new OffscreenCanvas(w, h); const x = c.getContext("2d"); x.drawImage(i, 0, 0); return x.getImageData(0, 0, w, h).data; };
     const pa = pixels(ia), pb = pixels(ib);
+    const photo = new Uint8Array(w * h);
+    for (const [left, top, right, bottom] of photos) {
+      for (let y = Math.max(0, top); y < Math.min(h, bottom); y++) photo.fill(1, y * w + Math.max(0, left), y * w + Math.min(w, right));
+    }
     let n = 0, x0 = w, y0 = h, x1 = -1, y1 = -1;
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
       const k = (y * w + x) * 4;
-      if (pa[k] === pb[k] && pa[k + 1] === pb[k + 1] && pa[k + 2] === pb[k + 2] && pa[k + 3] === pb[k + 3]) continue;
+      const most = Math.max(Math.abs(pa[k] - pb[k]), Math.abs(pa[k + 1] - pb[k + 1]), Math.abs(pa[k + 2] - pb[k + 2]), Math.abs(pa[k + 3] - pb[k + 3]));
+      if (most === 0 || (most <= levels && photo[y * w + x])) continue;
       n++; x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
     }
     return { n, box: [x0, y0, x1 - x0 + 1, y1 - y0 + 1], sizes: `${ia.width}×${ia.height} and ${ib.width}×${ib.height}` };
-  }, [a.toString("base64"), b.toString("base64")]);
+  }, [a.toString("base64"), b.toString("base64"), photos, PHOTO_LEVELS]);
 }
 
 async function checkPage(contexts, id, v, plant) {
@@ -237,7 +246,11 @@ async function checkPage(contexts, id, v, plant) {
     compared++;
     if (!a || !b) return report(when, `${!a ? "Calm" : OTHER.name} never settled in ${SETTLE_MS / 1000}s`);
     if (a.equals(b)) return;
-    const d = await diff(a, b);
+    const photos = await calm.evaluate(() => [...document.querySelectorAll("img, video")].map((e) => {
+      const r = e.getBoundingClientRect();
+      return [Math.floor(r.left), Math.floor(r.top), Math.ceil(r.right), Math.ceil(r.bottom)];
+    }));
+    const d = await diff(a, b, photos);
     if (!d.n) return;
     const stages = await calm.evaluate(stageBoxes);
     const [x, y, w, h] = d.box;
