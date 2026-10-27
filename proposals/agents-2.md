@@ -159,6 +159,33 @@ The judge (blind) scored A 26, B 27 and C 19, and recommended A as the base. A's
 - We accept that no component reads a clock, so `readAt` and `updated` are the caller's words.
 - We accept that a run the agent moves jumps rather than glides, in exchange for R4 holding in a list that mostly changes by itself.
 
+## Built
+
+Three builders, one per item, each in its own worktree on this contract, then a fourth for the Agent block. The lead reviewed each against its screenshots, merged it and spliced its notes into the spec, the install table and the install test. Where the build moved off the contract, and why:
+
+- **Sources.** The marks of a row pop `fun.wave × 6` apart, the spacing chart.tsx uses, because one wave between marks a clause apart reads as all at once. The card says "Read" before the caller's `readAt` words. The light drops when the pointer moves from a mark onto its card.
+- **File changes.**
+  - Each row is named by one hidden phrase ("src/app.tsx, added, 12 lines added, kept"), because Chrome read the drawn path with spaces in it.
+  - The verbs sit in fixed slots, so nothing shifts when one swaps, and the decision word follows the counts.
+  - The header is 36px tall, since its caption sits under the title.
+  - Each check keeps its own paint layer in Calm too, so fun mode's pop rests on Calm's pixels.
+  - `onOpenChange` gets the change and whether it opened.
+  - Changed in review: the live region says only the decisions made with the list's own buttons. The Agent block shows the layout in the edit call and in the review, and every decision was being said twice.
+- **Run list.** Every row keeps a 40px column for Stop or Archive, so nothing shifts when one appears; the cost is room for the status line at rest. The header counts all runs, not the filtered ones. `onStop` and `onArchive` get the run. A link row also takes `aria-current="true"`. The wall tile shows three runs.
+- **Agent block.**
+  - The runs rail is 20rem, not 18, and shows from a 3xl container: at 18rem the Halo row's "Approve npm run deploy" was cut.
+  - The run gained an `npm install geist` call, the step that changes package.json and its lockfile.
+  - The review lists the lockfile with counts and no diff.
+  - Copy appends the cited sources as reference links.
+
+Verified on the merged branch:
+- check, verify and build pass.
+- The wall passes with 83 tiles, and home's 21 claims hold.
+- Each item's install test passes in Vite and Next.js.
+- The Agent block's own check makes 40-odd assertions. They cover the search's "4 sources" with two "Not cited", two citation links, Keep all keeping three files, the Halo row going from "Needs you" to "Done", one accent fill at the approval, and axe in both themes.
+- One Keep press with both copies on screen is said once.
+- At rest, Calm and fun mode match to the byte, section by section, on every new page and on the Agent block.
+
 ## Questions for Nick
 
 1. A citation is a quiet chip in the ink, not accent text with an underline. Is that the mark you want?
@@ -168,3 +195,6 @@ The judge (blind) scored A 26, B 27 and C 19, and recommended A as the base. A's
 5. "Keep" and "Undo", or "Accept" and "Reject"?
 6. Swipe to archive a finished run, on the hand engine, next round?
 7. Open question 2 of the first agents step (sign-only diffs or tinted rows) now decides how every changed file reads. This keeps sign-only. Final?
+8. Pressing a citation opens its source (built, Opus's). Or should it raise its row in the list with a way back to the text (Sonnet's)?
+9. Should a run row's Stop or Archive show only on hover, laid over the end of the row, instead of keeping a column that shortens the status line?
+10. The status says "Undid 3 files" and the row says "Undone". Is that pairing right?
