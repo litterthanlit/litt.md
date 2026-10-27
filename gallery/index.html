@@ -21,8 +21,10 @@
 </head>
 <body>
 <script>
-  /* Apply the saved Customize choices (type and shape) before first paint. They live on <body>:
-     src/gallery/customize.tsx says why, and owns them once the app runs. */
+  /* Apply the saved Customize choices (type, shape and the accent) before first paint. They live on <body>:
+     src/gallery/customize-state.tsx says why, and owns them once the app runs. The gallery opens in monochrome
+     (DEFAULT_ACCENT there), so it is set first and a saved accent replaces it. */
+  document.body.dataset.accent = "mono";
   (function () {
     try {
       var c = JSON.parse(localStorage.getItem("litt-gallery:customize") || "null");
@@ -44,8 +46,9 @@
         s.setProperty("--radius-control", c.radius + "px");
         s.setProperty("--radius-surface", (c.radius === 28 ? 16 : c.radius === 0 ? 0 : c.radius + 4) + "px");
       }
-      /* The accent: monochrome puts the primary action in the ink (tokens.css, [data-accent="mono"]). */
-      if (c.accent === "mono") document.body.dataset.accent = "mono";
+      /* The accent: Blue 4 is tokens.css with no attribute, pink is [data-accent="pink"]. */
+      if (c.accent === "blue4") delete document.body.dataset.accent;
+      else if (c.accent === "pink") document.body.dataset.accent = "pink";
     } catch (e) {}
   })();
 </script>

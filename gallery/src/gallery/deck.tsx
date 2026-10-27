@@ -7,7 +7,8 @@
  *   theme switch and the Customize panel are one set of choices and can never disagree.
  * - A plate in the page flow (R3, flat: surface-1, the hairline and the top highlight), with the controls on it.
  *   Nothing here takes the accent: the hero's Get started is the first screen's one fill (R6), and the deck's Accent
- *   shows on it.
+ *   shows on it. Each accent's segment carries a small chip in its color (swatch.tsx), aria-hidden, a sample and not a
+ *   fill.
  * - Each value is said in words (R5): On or Off, the shape's name, the theme and the accent by name.
  * - The fun row and the footer are fun cues (data-fun-cue): they say On and Tuned in fun mode, so a Calm and Fun
  *   comparison hides them.
@@ -18,7 +19,8 @@ import { Segmented } from "@/components/segmented";
 import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { shapeName, SHAPES } from "@/motion/rules";
-import { useCustomize, type Accent, type ThemeChoice } from "./customize-state";
+import { ACCENTS, useCustomize, type ThemeChoice } from "./customize-state";
+import { AccentChip } from "./swatch";
 
 const THEMES: { value: ThemeChoice; label: string }[] = [
   { value: "system", label: "System" },
@@ -26,10 +28,6 @@ const THEMES: { value: ThemeChoice; label: string }[] = [
   { value: "dark", label: "Dark" },
 ];
 
-const ACCENTS: { value: Accent; label: string }[] = [
-  { value: "blue4", label: "Blue 4" },
-  { value: "mono", label: "Monochrome" },
-];
 
 const STOPS = SHAPES.map((_, i) => i);
 
@@ -77,13 +75,26 @@ export function Deck() {
         <Segmented legend="Theme" value={theme} onValueChange={setTheme} options={THEMES} />
       </Row>
       <Row label="Accent">
-        <Segmented legend="Accent" value={accent} onValueChange={setAccent} options={ACCENTS} />
+        <Segmented
+          legend="Accent"
+          value={accent}
+          onValueChange={setAccent}
+          options={ACCENTS.map((a) => ({
+            value: a.id,
+            label: (
+              <span className="flex items-center gap-1.5">
+                <AccentChip accent={a.id} size="sm" />
+                {a.short ?? a.name}
+              </span>
+            ),
+          }))}
+        />
       </Row>
       {/* As tall with Reset as without, so the deck never grows under the hand that changed it. */}
       <footer data-fun-cue="" className="-mt-2 border-t border-line pt-4">
         <div className="flex h-control-sm items-center justify-between gap-4 pointer-coarse:h-control-md">
           <p className="text-caption font-normal text-fg-subtle" aria-live="polite">
-            {modified ? "Tuned in this browser." : "Locked: the tokens as litt ships them."}
+            {modified ? "Tuned in this browser." : "The gallery's defaults: monochrome, calm, the locked shape."}
           </p>
           {modified && (
             <Button size="sm" variant="ghost" onClick={reset}>
