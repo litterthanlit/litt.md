@@ -211,6 +211,14 @@
   --accent-text: #104dfd;      /* the accent as text (links), at least 4.5:1 on canvas and on its tint */
   --accent-tint: #e7f0ff;
   --focus: #0957fd;            /* focus ring, at least 3:1 on canvas and surfaces */
+  /* Pink, the other accent ([data-accent="pink"], below): a hot raspberry at Blue 4's weight, so white still reads
+     past 5.5:1. Its fill and text keep 0.12 (OKLab) from the rose data hue like Blue 4's do, which is why the text
+     tone is a deep berry in light and a pale pink in dark: a pink link at the rose's own lightness would read as a series. */
+  --accent-pink: #c0007e;
+  --accent-pink-hover: #a8006e;
+  --accent-pink-text: #90005d;
+  --accent-pink-tint: #feeaf2;
+  --focus-pink: #c0007e;
 
   --success: #007c3b;
   --warning: #9c5a00;
@@ -301,6 +309,11 @@
   --accent-text: #5e78fe;      /* lifted to pass 4.5:1 on the canvas and on its tint, and toward indigo, apart from the chart blue */
   --accent-tint: #0e1a31;
   --focus: #5e78fe;
+  --accent-pink: #c0007e;
+  --accent-pink-hover: #cd1c89; /* a step lighter in dark */
+  --accent-pink-text: #feb9db;
+  --accent-pink-tint: #2b0d1d;
+  --focus-pink: #feb9db;
 
   --success: #4bc680;
   --warning: #e19b1b;
@@ -378,6 +391,11 @@
     --accent-text: #5e78fe;
     --accent-tint: #0e1a31;
     --focus: #5e78fe;
+    --accent-pink: #c0007e;
+    --accent-pink-hover: #cd1c89;
+    --accent-pink-text: #feb9db;
+    --accent-pink-tint: #2b0d1d;
+    --focus-pink: #feb9db;
 
     --success: #4bc680;
     --warning: #e19b1b;
@@ -453,6 +471,26 @@
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
 }
 
+/* --------------------------------------------------------------------------
+   Pink (R6): data-accent="pink" on <html> or <body> swaps Blue 4 for the pink
+   tones each theme declares above. The derived tokens resolve where they are
+   declared, so they are restated here.
+   -------------------------------------------------------------------------- */
+:root[data-accent="pink"],
+[data-accent="pink"] {
+  --accent: var(--accent-pink);
+  --accent-hover: var(--accent-pink-hover);
+  --accent-text: var(--accent-pink-text);
+  --accent-tint: var(--accent-pink-tint);
+  --focus: var(--focus-pink);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-pink) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-pink) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-pink) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-pink);
+}
+
 @supports not (color: color-mix(in oklab, red, blue)) {
   :root,
   [data-theme] {
@@ -463,6 +501,11 @@
     --data-teal-tint: var(--surface-2);
     --data-violet-tint: var(--surface-2);
     --data-rose-tint: var(--surface-2);
+  }
+  :root[data-accent="pink"],
+  [data-accent="pink"] {
+    --light: none;
+    --glow: 0 0 0 1px var(--accent-pink);
   }
 }
 

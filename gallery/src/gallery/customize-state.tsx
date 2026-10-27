@@ -5,8 +5,10 @@
  * (motion/fun.tsx), Calm (the locked motion) or Fun, and needs no CSS: it is a
  * <FunMode> around the gallery.
  *
- * The accent is Blue 4, or monochrome (R6): data-accent="mono" on <body>, which tokens.css answers with the ink for the
- * primary action, the links and the focus ring, and a block's lift for the glow.
+ * The accent is monochrome by default, Blue 4 or pink (R6). Monochrome is data-accent="mono" on <body>, which tokens.css
+ * answers with the ink for the primary action, the links and the focus ring, and a block's lift for the glow; pink is
+ * data-accent="pink"; Blue 4 is what tokens.css ships with no attribute. The gallery opens in monochrome, so a visitor
+ * meets the material before the color; the registry still ships Blue 4 as :root.
  *
  * The choices are saved in this browser and written on <body>, not <html>:
  * - the locked values stay readable on <html> (useTypefaces, readLocked), so
@@ -27,7 +29,16 @@ import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
-export type Accent = "blue4" | "mono";
+export type Accent = "mono" | "blue4" | "pink";
+/** What the gallery opens in, and what Reset goes back to. */
+export const DEFAULT_ACCENT: Accent = "mono";
+/** The accents in the order every picker shows them, each said in words (R5). */
+export const ACCENTS: { id: Accent; name: string; short?: string; note: string }[] = [
+  { id: "mono", name: "Monochrome", short: "Mono", note: "The primary action in the ink" },
+  { id: "blue4", name: "Blue 4", note: "Litt's cobalt, as the registry ships it" },
+  { id: "pink", name: "Pink", note: "A hot raspberry at Blue 4's weight" },
+];
+const ACCENT_IDS = ACCENTS.map((a) => a.id);
 export type ThemeChoice = "system" | "light" | "dark";
 const THEME_KEY = "litt-gallery:theme";
 type Saved = { face?: Pick<Typeface, "id" | "stack" | "href">; radius?: number; accent?: Accent; fun?: boolean };
@@ -43,7 +54,7 @@ type Ctx = {
   radius: number;
   lockedRadius: number;
   setRadius: (r: number) => void;
-  /** Blue 4, the locked accent, or monochrome: the primary action in the ink. */
+  /** Monochrome (the gallery's default: the primary action in the ink), Blue 4 (what tokens.css ships) or pink. */
   accent: Accent;
   setAccent: (a: Accent) => void;
   /** Fun mode's trial: Calm is the locked motion, Fun turns on <FunMode>. */
@@ -88,11 +99,11 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
     }
   };
   const [fun, setFun] = useState(saved.fun === true);
-  const [accent, setAccent] = useState<Accent>(saved.accent === "mono" ? "mono" : "blue4");
+  const [accent, setAccent] = useState<Accent>(() => (ACCENT_IDS.includes(saved.accent as Accent) ? (saved.accent as Accent) : DEFAULT_ACCENT));
 
   const typeface = typefaces.find((f) => f.id === faceId) ?? typefaces[0];
   const radius = radiusTuned ?? locked.radius;
-  const modified = typeface.id !== "locked" || radiusTuned !== null || accent !== "blue4" || fun;
+  const modified = typeface.id !== "locked" || radiusTuned !== null || accent !== DEFAULT_ACCENT || fun;
 
   /* Write the choices on <body>, and remove what is back to locked. A layout effect, so a change never paints stale. */
   useLayoutEffect(() => {
@@ -109,8 +120,8 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       s.setProperty("--radius-control", `${radiusTuned}px`);
       s.setProperty("--radius-surface", `${shapeSurface(radiusTuned)}px`);
     }
-    if (accent === "mono") document.body.dataset.accent = "mono";
-    else delete document.body.dataset.accent;
+    if (accent === "blue4") delete document.body.dataset.accent;
+    else document.body.dataset.accent = accent;
   }, [typeface, radiusTuned, accent]);
 
   /* Remember a change, and only a change, so a later change to tokens.css is never shadowed. */
@@ -120,7 +131,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       const next: Saved = {};
       if (typeface.id !== "locked") next.face = { id: typeface.id, stack: typeface.stack, href: typeface.href };
       if (radiusTuned !== null) next.radius = radiusTuned;
-      if (accent !== "blue4") next.accent = accent;
+      if (accent !== DEFAULT_ACCENT) next.accent = accent;
       if (fun) next.fun = true;
       localStorage.setItem(KEY, JSON.stringify(next));
     } catch {
@@ -146,7 +157,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       reset: () => {
         setFaceId("locked");
         setRadiusTuned(null);
-        setAccent("blue4");
+        setAccent(DEFAULT_ACCENT);
         setFun(false);
       },
     }),
@@ -165,4 +176,25 @@ export function useCustomize(): Ctx {
   const ctx = useContext(CustomizeContext);
   if (!ctx) throw new Error("useCustomize needs a <CustomizeProvider>");
   return ctx;
+}
+
+/** Whether the page is dark right now: the theme choice, or the system's when the choice is System. */
+export function useDark(): boolean {
+  const { theme } = useCustomize();
+  const [systemDark, setSystemDark] = useState(() => matchMedia("(prefers-color-scheme: dark)").matches);
+  useEffect(() => {
+    const media = matchMedia("(prefers-color-scheme: dark)");
+    const on = () => setSystemDark(media.matches);
+    media.addEventListener("change", on);
+    return () => media.removeEventListener("change", on);
+  }, []);
+  return theme === "system" ? systemDark : theme === "dark";
+}
+
+/**
+ * The attributes that draw a part of the page in one accent, whatever <body> runs: the theme the page is in (a
+ * [data-theme] root declares Blue 4 again) and the accent's own data-accent, which tokens.css puts after the themes.
+ */
+export function accentScope(accent: Accent, dark: boolean) {
+  return { "data-theme": dark ? "dark" : "light", "data-accent": accent === "blue4" ? undefined : accent } as const;
 }

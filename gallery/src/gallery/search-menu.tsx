@@ -10,7 +10,7 @@ import { CommandMenu, type CommandGroup, type CommandItem } from "@/components/c
 import { MonitorIcon, MoonIcon, SparkleIcon, SunIcon } from "@/components/icons";
 import { PAGE_GROUPS } from "./kit";
 import { pages } from "./registry";
-import { useCustomize, type ThemeChoice } from "./customize-state";
+import { ACCENTS, useCustomize, type ThemeChoice } from "./customize-state";
 
 type Action = { id: string; label: string; icon?: CommandItem["icon"]; run: () => void };
 
@@ -25,10 +25,8 @@ export default function SearchMenu({ open, onOpenChange, openedBy }: { open: boo
   const actions: Action[] = [
     { id: "do:fun", label: fun ? "Turn fun mode off" : "Turn fun mode on", icon: <SparkleIcon />, run: () => setFun(!fun) },
     ...themes.filter(([t]) => t !== theme).map(([t, label, icon]) => ({ id: `do:theme-${t}`, label, icon, run: () => setTheme(t) })),
-    accent === "mono"
-      ? { id: "do:accent", label: "Blue 4 accent", run: () => setAccent("blue4") }
-      : { id: "do:accent", label: "Monochrome accent", run: () => setAccent("mono") },
-    ...(modified ? [{ id: "do:reset", label: "Reset to locked", run: reset }] : []),
+    ...ACCENTS.filter((a) => a.id !== accent).map((a) => ({ id: `do:accent-${a.id}`, label: `${a.name} accent`, run: () => setAccent(a.id) })),
+    ...(modified ? [{ id: "do:reset", label: "Reset to defaults", run: reset }] : []),
   ];
 
   const toItem = (p: (typeof pages)[number]): CommandItem => ({ id: p.id, label: p.title });

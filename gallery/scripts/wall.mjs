@@ -6,6 +6,9 @@
  *   node scripts/wall.mjs --dist dist
  *
  * It fails when:
+ * It runs in Blue 4 and in pink, set before the page loads: the gallery opens in monochrome, where the accent is the
+ * ink that checkboxes and switches fill with too, so only a colored accent can tell an accent fill apart.
+ *
  * - the wall shows more than one accent fill (R6: one per view). Each tile is its page's `tile`, one object with no
  *   accent fill, and the Button tile carries the one. A page whose first demo ends in a primary button needs a tile.
  * - two accent fills anywhere on the page sit within one screen of each other, so a screen could show both. The hero's
@@ -94,9 +97,10 @@ function inspect() {
 const browser = await chromium.launch();
 const problems = [];
 let count = 0;
-for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
+for (const accent of ["blue4", "pink"]) for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
   for (const theme of ["light", "dark"]) {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
+    await ctx.addInitScript((a) => localStorage.setItem("litt-gallery:customize", JSON.stringify({ accent: a })), accent);
     const pg = await ctx.newPage();
     const errors = [];
     pg.on("pageerror", (e) => errors.push(String(e)));
@@ -113,7 +117,7 @@ for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"
     await pg.waitForTimeout(800);
     const r = await pg.evaluate(inspect);
     count = r.count;
-    const where = `${theme} · ${label}`;
+    const where = `${accent} · ${theme} · ${label}`;
     if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, the wall allows one: ${r.fills.join(", ")}`);
     for (const c of r.close) problems.push(`${where}: two accent fills within one screen (R6): ${c}`);
     if (r.pageWide) problems.push(`${where}: the page scrolls sideways`);
@@ -135,4 +139,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, light and dark, desktop and phone: one accent fill on the wall and none within a screen of another, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall: ${count} tiles, Blue 4 and pink, light and dark, desktop and phone: one accent fill on the wall and none within a screen of another, nothing sideways or empty, one main and one h1, landmarks named apart.`);

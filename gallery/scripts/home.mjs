@@ -7,8 +7,9 @@
  *
  * It fails when:
  * - a control on the deck does not change the gallery: Fun mode (the wall then offers its Fun filter), the theme (and
- *   the header's switch says the same), the accent (Get started loses Blue 4) or the shape (the control radius on <body>),
- * - Reset does not put the locked tokens back,
+ *   the header's switch says the same), the accent (the gallery opens in monochrome, and Blue 4 and pink each fill Get
+ *   started in their color) or the shape (the control radius on <body>),
+ * - Reset does not put the gallery's defaults back (the locked shape, monochrome),
  * - Get started does not take focus to the steps,
  * - ⌘K or Ctrl+K does not open one search menu, or picking a page there does not open it, or a Customize action
  *   there does nothing,
@@ -104,12 +105,21 @@ const accentNow = (pg) => pg.evaluate(() => {
   check(await d.getByRole("radio", { name: "Light" }).isChecked(), "the header's Light moves the deck to Light");
 
   const start = pg.getByRole("button", { name: "Get started" });
-  const blue = await accentNow(pg);
-  check((await start.evaluate((el) => getComputedStyle(el).backgroundColor)) === blue, "Get started is filled with the accent");
-  await pick(d, "Monochrome");
-  check((await pg.evaluate(() => document.body.dataset.accent)) === "mono", "Monochrome sets data-accent=mono on <body>");
+  const fill = () => start.evaluate((el) => getComputedStyle(el).backgroundColor);
+  check((await pg.evaluate(() => document.body.dataset.accent)) === "mono", "the gallery opens in monochrome (data-accent=mono on <body>)");
+  await pg.waitForTimeout(300); // the ink changed with the theme above, and the fill fades to it on the instant tier
+  const ink = await accentNow(pg);
+  check((await fill()) === ink, "Get started is filled with the accent, the ink");
+  await pick(d, "Blue 4");
+  check((await pg.evaluate(() => document.body.dataset.accent)) === undefined, "Blue 4 takes data-accent off <body>, the tokens as litt ships them");
   await pg.waitForTimeout(300); // the fill fades on the instant tier
-  check((await start.evaluate((el) => getComputedStyle(el).backgroundColor)) !== blue, "in Monochrome, Get started is no longer Blue 4");
+  const blue = await accentNow(pg);
+  check(blue !== ink && (await fill()) === blue, "in Blue 4, Get started is Blue 4");
+  await pick(d, "Pink");
+  check((await pg.evaluate(() => document.body.dataset.accent)) === "pink", "Pink sets data-accent=pink on <body>");
+  await pg.waitForTimeout(300);
+  const pink = await accentNow(pg);
+  check(pink !== blue && pink !== ink && (await fill()) === pink, "in Pink, Get started is pink");
 
   const radius = () => pg.evaluate(() => document.body.style.getPropertyValue("--radius-control"));
   const before = await radius();
@@ -120,8 +130,8 @@ const accentNow = (pg) => pg.evaluate(() => {
 
   await d.getByRole("button", { name: "Reset" }).click();
   check(
-    (await radius()) === "" && (await pg.evaluate(() => document.body.dataset.accent)) === undefined,
-    "Reset takes the shape and the accent back to the locked tokens",
+    (await radius()) === "" && (await pg.evaluate(() => document.body.dataset.accent)) === "mono",
+    "Reset takes the shape back to the locked tokens and the accent back to monochrome",
   );
 
   await start.click();
@@ -129,6 +139,27 @@ const accentNow = (pg) => pg.evaluate(() => {
   check(await pg.locator("#start-title").isVisible(), "the steps are on screen after Get started");
 
   for (const e of errors) problems.push(`deck: ${e}`);
+  await ctx.close();
+}
+
+/* ---------- the header's Customize panel ---------- */
+{
+  const { ctx, pg, errors } = await open("button");
+  await pg.locator("header").getByRole("button", { name: "Customize" }).click();
+  const panel = pg.getByRole("dialog", { name: "Customize" });
+  await panel.waitFor();
+  const accentTiles = panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) });
+  check(await accentTiles.getByRole("radio", { name: "Mono" }).isChecked(), "the panel opens with Mono picked");
+  await accentTiles.locator("label", { has: pg.getByRole("radio", { name: "Pink" }) }).click();
+  check((await pg.evaluate(() => document.body.dataset.accent)) === "pink", "the panel's Pink tile sets data-accent=pink on <body>");
+  const look = () => pg.evaluate(() => [document.body.dataset.accent, document.body.style.getPropertyValue("--radius-control"), document.body.style.getPropertyValue("--font-sans")].join("|"));
+  const before = await look();
+  await panel.getByRole("button", { name: "Surprise me" }).click();
+  const said = (await panel.locator("[aria-live=polite]").first().textContent())?.trim() ?? "";
+  check((await look()) !== before && said.endsWith("motion."), `Surprise me changes the accent, the shape and the face, and says so ("${said}")`);
+  await panel.getByRole("button", { name: "Reset to defaults" }).click();
+  check((await look()) === "mono||", "the panel's Reset goes back to monochrome, the locked shape and the locked face");
+  for (const e of errors) problems.push(`customize: ${e}`);
   await ctx.close();
 }
 
