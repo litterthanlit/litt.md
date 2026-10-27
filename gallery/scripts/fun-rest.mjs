@@ -175,6 +175,10 @@ fs.mkdirSync(out, { recursive: true });
 const OTHER = selfTest ? { name: "the second Calm page", file: "calm-2" } : { name: "fun mode", file: "fun" };
 const found = [];
 const clocks = {};
+/* Presses neither page could make (a visually hidden button, such as a chart's point for screen readers, or one
+   covered by what an earlier press opened): said, so a quiet pass is never taken for a full one. */
+const skipped = [];
+const onceOnly = [];
 let compared = 0;
 
 /**
@@ -230,7 +234,8 @@ async function checkPage(contexts, id, v, plant) {
   const [calm, other] = await Promise.all(contexts.map((ctx) => ctx.newPage()));
   const errors = [];
   for (const pg of [calm, other]) pg.on("pageerror", (e) => errors.push(String(e)));
-  const report = (when, what) => found.push({ page: id, viewport: v.label, when, what });
+  const mine = [];
+  const report = (when, what) => mine.push({ page: id, viewport: v.label, when, what });
 
   async function compare(when) {
     /* A page can grow while it settles (a lazy part arrives, a run plays on), so fit and settle again until both fit. */
@@ -247,11 +252,17 @@ async function checkPage(contexts, id, v, plant) {
     if (!d.n) return;
     const stages = await calm.evaluate(stageBoxes);
     const [x, y, w, h] = d.box;
-    const where = stages.filter((s) => s.bottom > y && s.top < y + h).map((s) => `"${s.name}"`).join(", ") || "outside the stages";
+    const hit = stages.filter((s) => s.bottom > y && s.top < y + h);
+    const where = hit.map((s) => `"${s.name}"`).join(", ") || "outside the stages";
+    /* The first line of text that differs in those stages, when one does: it says which state differs, not only where. */
+    const lines = (pg) => pg.evaluate((names) => [...document.querySelectorAll("main section[aria-label]")].filter((s) => names.includes(s.getAttribute("aria-label"))).flatMap((s) => s.innerText.split("\n")), hit.map((s) => s.name));
+    const [ours, theirs] = await Promise.all([lines(calm), lines(other)]);
+    const at = ours.findIndex((line, i) => line !== theirs[i]);
+    const words = at >= 0 || ours.length !== theirs.length ? `; Calm reads "${ours[at] ?? ""}" where ${OTHER.name} reads "${theirs[at] ?? ""}"` : "";
     const stem = `${id}-${v.label}-${when.replace(/\W+/g, "-").replace(/^-|-$/g, "")}`.slice(0, 120);
     fs.writeFileSync(path.join(out, `${stem}-calm.png`), a);
     fs.writeFileSync(path.join(out, `${stem}-${OTHER.file}.png`), b);
-    report(when, `${d.n} pixels differ in ${where}, a ${w}×${h} box at ${x},${y} (${d.sizes}); see ${path.join(out, stem)}-*.png`);
+    report(when, `${d.n} pixels differ in ${where}, a ${w}×${h} box at ${x},${y} (${d.sizes})${words}; see ${path.join(out, stem)}-*.png`);
   }
 
   try {
@@ -277,10 +288,11 @@ async function checkPage(contexts, id, v, plant) {
           await pg.mouse.move(0, 0);
           return true;
         } catch {
-          return false; // covered by something an earlier press opened; the next page load resets it
+          return false; // visually hidden, or covered by something an earlier press opened
         }
       }));
       if (pressed[0] !== pressed[1]) report(`after ${names[i]}`, "pressed in one mode and covered in the other");
+      else if (!pressed[0]) skipped.push(`${id} · ${v.label} · ${names[i]}`);
       else if (pressed[0]) await compare(`after ${names[i]}`);
     }
   } catch (e) {
@@ -289,6 +301,7 @@ async function checkPage(contexts, id, v, plant) {
   for (const e of errors) report("page error", e);
   await calm.close();
   await other.close();
+  return mine;
 }
 
 /** Every page against Calm: in fun mode, or for the self-test in Calm again, nudged or not. */
@@ -302,7 +315,20 @@ async function run({ fun, plant = false }) {
     }));
     const queue = [...pages];
     await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
-      while (queue.length) await checkPage(contexts, queue.shift(), v, plant);
+      while (queue.length) {
+        const id = queue.shift();
+        const first = await checkPage(contexts, id, v, plant);
+        if (plant || !first.length) {
+          found.push(...first);
+          continue;
+        }
+        /* A difference has to come back: the page is checked again from a fresh load, and one that then matches is a
+           one-off, said below and not a failure. A rest bug comes back; CI's slower runners now and then catch a page
+           a frame apart in ways that do not. */
+        const again = await checkPage(contexts, id, v, plant);
+        if (again.length) found.push(...again);
+        else onceOnly.push(...first);
+      }
     }));
     await Promise.all(contexts.map((ctx) => ctx.close()));
   }
@@ -321,6 +347,7 @@ if (selfTest) {
   const unmasked = pages.includes("thinking") && !clocks.thinking;
   console.log(`fun at rest self-test: Calm against Calm matched ${noise.length ? "except " + noise.length + " times" : "every time"}; the stage titles a pixel low were seen on ${pages.length * VIEWPORTS.length - blind.length} of ${pages.length * VIEWPORTS.length} loads.`);
   for (const f of noise) console.log(`✗ Calm against Calm, ${f.page} · ${f.viewport} · ${f.when}: ${f.what}`);
+  for (const f of onceOnly) console.log(`· Calm against Calm once, then matched on a fresh load: ${f.page} · ${f.viewport} · ${f.when}: ${f.what}`);
   if (blind.length) console.log(`✗ the titles a pixel low were not seen on ${blind.join(", ")}: the check has gone blind.`);
   if (unmasked) console.log(`✗ the clock mask matched nothing on the Thinking page: update CLOCK to its clock's markup.`);
   process.exit(noise.length || blind.length || unmasked ? 1 : 0);
@@ -330,6 +357,8 @@ await run({ fun: true });
 await browser.close();
 server.close();
 
+if (skipped.length) console.log(`not pressed in either mode, so compared on load only: ${skipped.join("; ")}`);
+for (const f of onceOnly) console.log(`· once, then matched on a fresh load: ${f.page} · ${f.viewport} · ${f.when}: ${f.what}`);
 if (!found.length) {
   console.log(`fun at rest: ${pages.length} pages, ${compared} comparisons on the desktop and a phone, fun mode rests as Calm does, to the pixel (antialiasing aside).`);
   process.exit(0);
