@@ -28,6 +28,7 @@
     "test:shopify": "node scripts/test-shopify.mjs",
     "test:wall": "node scripts/wall.mjs",
     "test:home": "node scripts/home.mjs",
+    "test:fun": "node scripts/fun-rest.mjs",
     "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s gen:llms && npm run -s typecheck && npm run -s lint:litt && npm run -s test:lint && npm run -s test:check",
     "test:check": "node ../skills/litt-md/scripts/litt-check.mjs --self-test"
   },
