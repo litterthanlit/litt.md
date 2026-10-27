@@ -627,6 +627,23 @@ const RECIPES = {
           <CodeBlock lang="diff" label="Smoke diff" code={SMOKE_DIFF} />
         </div>`,
   },
+  "file-changes": {
+    needs: ["FileChanges"],
+    types: ["FileChange", "FileDecision"],
+    top: [
+      `const FILE_DIFF = ["@@ -1,2 +1,2 @@", " @import './sans.css';", "-@import './mono.css';", "+@import './mono-variable.css';"].join("\\n");`,
+      `const FILE_CHANGES: FileChange[] = [`,
+      `  { id: "fonts", path: "src/styles/fonts.css", kind: "modified", diff: FILE_DIFF },`,
+      `  { id: "test", path: "src/styles/fonts.test.ts", kind: "added", added: 12, removed: 0 },`,
+      `  { id: "type", path: "src/styles/type.css", kind: "renamed", from: "src/styles/typography.css", added: 1, removed: 1 },`,
+      `];`,
+    ],
+    state: [`const [fileChanges, setFileChanges] = useState<FileChange[]>(FILE_CHANGES);`, `const [fileDecided, setFileDecided] = useState<string[]>([]);`],
+    jsx: `<div className="grid w-full max-w-xl gap-4" data-testid="litt-file-changes">
+          <FileChanges changes={fileChanges} onDecide={(ids: string[], decision: FileDecision) => { setFileDecided((all) => [...all, ids.join(",") + " " + decision]); setFileChanges((all) => all.map((c) => (ids.includes(c.id) ? { ...c, state: decision } : c))); }} />
+          <p data-testid="file-changes-decided">{fileDecided.join(" | ")}</p>
+        </div>`,
+  },
   message: {
     needs: ["Conversation", "Message", "MessageText", "MessageActions"],
     jsx: `<div className="h-72 w-full max-w-xl" data-testid="litt-message">
@@ -3280,6 +3297,73 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const want = ["// halo", "const label = 'live';", "export default label;", "// a long comment that runs past the edge of a block twenty rem wide"].join("\n");
           if (clip !== want) throw new Error(`the clipboard holds ${JSON.stringify(clip)}`);
           return "tones from tokens, + in success, bands, scrolls inside the block, Copy copied the text as given";
+        });
+      }
+      if (has("file-changes")) {
+        await attempt("file changes: the header counts files and lines, Keep all is the raised block, a row opens its diff, Keep calls onDecide with its id and the row says kept, Undo by keyboard hands focus to Keep, Keep the rest acts on pending files only and the header becomes a receipt", async () => {
+          const box = item("file-changes").locator("[data-testid=litt-file-changes]");
+          await box.scrollIntoViewIfNeeded();
+          const list = box.getByRole("list", { name: "Files changed" });
+          await list.waitFor({ state: "visible", timeout: 5000 });
+          const text = async (loc) => ((await loc.textContent()) ?? "").replace(/\s+/g, " ");
+          if ((await list.getByRole("listitem").count()) !== 3) throw new Error(`the list holds ${await list.getByRole("listitem").count()} files, not 3`);
+          const head = await text(box);
+          if (!/3 files changed/.test(head) || !/14 lines added, 2 removed/.test(head) || !/3 left to review/.test(head)) throw new Error(`the header reads "${head}"`);
+          const status = box.locator("ul ~ [role=status]");
+          if ((await status.textContent())?.trim()) throw new Error("the live region spoke on the first render");
+          const said = async (want) => {
+            const deadline = Date.now() + 3000;
+            while (Date.now() < deadline) {
+              if ((await status.textContent())?.trim() === want) return;
+              await page.waitForTimeout(100);
+            }
+            throw new Error(`the live region says "${(await status.textContent())?.trim()}", not "${want}"`);
+          };
+          const decided = async () => (await box.getByTestId("file-changes-decided").innerText()).trim();
+          const keepAll = box.getByRole("button", { name: "Keep all", exact: true });
+          const look = await keepAll.evaluate((el) => {
+            const probe = document.createElement("span");
+            document.body.append(probe);
+            probe.style.backgroundColor = "var(--litt-block)";
+            const block = getComputedStyle(probe).backgroundColor;
+            probe.style.backgroundColor = "var(--litt-accent)";
+            const accent = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            return { bg: getComputedStyle(el).backgroundColor, block, accent };
+          });
+          if (look.bg !== look.block || look.bg === look.accent) throw new Error(`Keep all is ${look.bg}, not the raised block --litt-block (${look.block})`);
+
+          const row = box.getByRole("button", { name: "src/styles/fonts.css, modified, 1 line added, 1 removed", exact: true });
+          if ((await row.getAttribute("aria-expanded")) !== "false") throw new Error("with three files a diff starts open");
+          await row.scrollIntoViewIfNeeded();
+          await row.click();
+          if ((await row.getAttribute("aria-expanded")) !== "true") throw new Error("a click did not open the diff");
+          await box.getByRole("group", { name: "Diff of src/styles/fonts.css" }).waitFor({ state: "visible", timeout: 3000 });
+
+          const keep = box.getByRole("button", { name: "Keep src/styles/fonts.css", exact: true });
+          await keep.scrollIntoViewIfNeeded();
+          await keep.click();
+          await said("Kept src/styles/fonts.css");
+          if ((await decided()) !== "fonts kept") throw new Error(`onDecide got "${await decided()}", not "fonts kept"`);
+          if (await keep.count()) throw new Error("a kept row still shows Keep");
+          await box.getByRole("button", { name: "src/styles/fonts.css, modified, 1 line added, 1 removed, kept", exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          if (!/2 left to review/.test(await text(box))) throw new Error("the count of what is left did not go down to 2");
+
+          const undo = box.getByRole("button", { name: "Undo src/styles/fonts.test.ts", exact: true });
+          await undo.focus();
+          await page.keyboard.press("Enter");
+          await said("Undid src/styles/fonts.test.ts");
+          const focused = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (focused !== "Keep src/styles/fonts.test.ts") throw new Error(`focus went to "${focused}", not the Keep that replaced Undo`);
+
+          const rest = box.getByRole("button", { name: "Keep the rest", exact: true });
+          await rest.focus();
+          await page.keyboard.press("Enter");
+          await said("Kept src/styles/type.css. All reviewed: 2 kept, 1 undone");
+          if ((await decided()) !== "fonts kept | test undone | type kept") throw new Error(`Keep the rest decided "${await decided()}", not only the pending file`);
+          if (!/All reviewed: 2 kept, 1 undone/.test(await text(box))) throw new Error(`the header is not a receipt: "${await text(box)}"`);
+          if (await box.getByRole("button", { name: /^(Keep|Undo) (all|the rest)$/ }).count()) throw new Error("the header's buttons stayed with nothing pending");
+          return "3 files changed, 14 lines added, 2 removed; Keep all is --litt-block; the diff opens; Keep, Undo by Enter with focus handed to Keep, Keep the rest on pending only; All reviewed: 2 kept, 1 undone";
         });
       }
       if (has("message")) {

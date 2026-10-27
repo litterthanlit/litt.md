@@ -134,6 +134,10 @@
       "version": "2026.10.26",
       "hash": "2ae24d455a7e0a58"
     },
+    "file-changes": {
+      "version": "2026.10.27",
+      "hash": "16c29e0efb7fe23a"
+    },
     "file-drop": {
       "version": "2026.10.26",
       "hash": "1204daea238a24ff"
