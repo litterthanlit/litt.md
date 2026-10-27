@@ -142,6 +142,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `thinking` | The agent's reasoning above its answer (`Thinking`): "Thinking 4s" with a clock while `active`, then "Thought for 12s". Never a shimmer, a pulse or animated dots. |
 | `tool-call` | What an agent did (`ToolCall` rows with a status, the action, the target and the time; `ToolCallGroup` to fold a run; `ToolApproval` to ask before a call runs, with Allow as the accent). |
 | `plan` | An agent's steps for a task, ticked off as it works (`Plan` with `steps` of `{ id, label, status }`). |
+| `run-card` | An agent run that takes a while, as a card the person can fold out of the way (`RunCard` with a `title`, `steps` as Plan takes them, `progress` from 0 to 1, a `preview` and `actions` such as a ghost Stop; `open` with `onOpenChange` to fold it while the person writes). It says the step in words and keeps one polite status, open or folded. Steps with no card are a `plan`. |
 | `code-block` | Code in an answer, a tool's output or a diff (`CodeBlock` with `code`, `lang` and `filename`). Quiet colors, a Copy button, and `lang="diff"` for a change. |
 | `log-view` | A build's or a deploy's output as it arrives (`LogView` with `lines` as `{ time, level, text }` and a `height`). It follows the newest line. Code is a `code-block`. |
 | `litt` | The tokens, the Tailwind names and the material classes. Every component brings it. Install it alone when you write all the markup yourself. |

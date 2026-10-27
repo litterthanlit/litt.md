@@ -533,6 +533,28 @@ const RECIPES = {
           <div data-testid="plan-failed"><Plan label="Smoke failed plan" steps={FAILED_STEPS} /></div>
         </div>`,
   },
+  "run-card": {
+    needs: ["RunCard"],
+    types: ["PlanStep"],
+    top: [
+      `const RUN_LABELS = ["Shaping the terrain", "Populating your world", "Writing its history"];`,
+      `const RUN_PROGRESS = [0.12, 0.45, 0.78, 1];`,
+      `// The steps before "at" are done, step "at" runs and the rest wait.`,
+      `const runSteps = (at: number): PlanStep[] => RUN_LABELS.map((label, i): PlanStep => ({ id: "r" + i, label, status: i < at ? "done" : i === at ? "running" : "pending" }));`,
+      `const RUN_FAILED: PlanStep[] = [`,
+      `  { id: "read", label: "Read the layout", status: "done" },`,
+      `  { id: "build", label: "Run the build", status: "failed", detail: "Build failed: font file missing" },`,
+      `  { id: "preview", label: "Publish a preview", status: "pending" },`,
+      `];`,
+    ],
+    state: [`const [runAt, setRunAt] = useState(0);`, `const [runOpen, setRunOpen] = useState(true);`],
+    jsx: `<div className="grid w-full max-w-xl gap-4" data-testid="litt-run-card">
+          <RunCard title="Creating your world" steps={runSteps(runAt)} progress={RUN_PROGRESS[runAt]} open={runOpen} onOpenChange={setRunOpen} actions={<@Btn type="button">Stop</@Btn>} />
+          <p data-testid="run-open">{String(runOpen)}</p>
+          <div><@Btn type="button" data-testid="run-next" onClick={() => setRunAt((n) => Math.min(n + 1, 3))}>Next step</@Btn></div>
+          <RunCard title="Moving the Northwind site" steps={RUN_FAILED} progress={0.4} defaultOpen={false} />
+        </div>`,
+  },
   "tool-call": {
     needs: ["ToolCall", "ToolCallGroup", "ToolApproval"],
     state: [`const [toolDecision, setToolDecision] = useState<"pending" | "allowed" | "denied">("pending");`, `const [toolAllowed, setToolAllowed] = useState(0);`],
@@ -2823,6 +2845,73 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (skip.text !== "Compress the videos, skippedSkipped" || skip.icon !== subtle) throw new Error(`the skipped step reads "${skip.text}" in ${skip.icon}`);
           if (!/1 of 4 steps done/.test(((await failed.textContent()) ?? "").replace(/\s+/g, " "))) throw new Error("a failed and a skipped step counted as done");
           return "ol, aria-current, fg tones, danger x, 40% rail, Step 4 of 5 then Plan done";
+        });
+      }
+      if (has("run-card")) {
+        await attempt("run card: Step 1 of 3 at 12% with 4 of 32 ticks lit, Hide folds it into one raised 44px block named by its words and focus follows, the status speaks a new step while folded, Space and Enter fold and open it, a failed run says Step 2 failed", async () => {
+          const box = item("run-card").locator("[data-testid=litt-run-card]");
+          const card = box.getByRole("group", { name: "Creating your world" });
+          await card.waitFor({ state: "visible", timeout: 5000 });
+          const text = async (loc) => ((await loc.textContent()) ?? "").replace(/\s+/g, " ");
+          if (!/Step 1 of 3/.test(await text(card)) || !/12%/.test(await text(card))) throw new Error(`the card reads "${await text(card)}"`);
+          const hide = box.getByRole("button", { name: "Hide Creating your world" });
+          if ((await hide.getAttribute("aria-expanded")) !== "true") throw new Error("Hide is not aria-expanded=true");
+          if ((await card.getByRole("list", { name: "Activity" }).getByRole("listitem").count()) !== 3) throw new Error("the steps are not a list of 3 named Activity");
+          const ring = card.locator('svg[viewBox="0 0 32 32"] path');
+          if ((await ring.count()) !== 2) throw new Error(`the ring has ${await ring.count()} paths, not the rest and the lit`);
+          const lit = ((await ring.last().getAttribute("d")) ?? "").split("M").length - 1;
+          const rest = ((await ring.first().getAttribute("d")) ?? "").split("M").length - 1;
+          if (lit !== 4 || lit + rest !== 32) throw new Error(`12% lights ${lit} of ${lit + rest} ticks, not 4 of 32`);
+          const status = box.locator("[role=status]").first();
+          if ((await status.textContent())?.trim()) throw new Error("the live region spoke on the first render");
+          const said = async (want) => {
+            const deadline = Date.now() + 3000;
+            while (Date.now() < deadline) {
+              if ((await status.textContent())?.trim() === want) return;
+              await page.waitForTimeout(100);
+            }
+            throw new Error(`the live region says "${(await status.textContent())?.trim()}", not "${want}"`);
+          };
+          await box.getByTestId("run-next").click();
+          await said("Step 2 of 3: Populating your world");
+          if (!/Step 2 of 3/.test(await text(card)) || !/45%/.test(await text(card))) throw new Error(`after Next step the card reads "${await text(card)}"`);
+
+          await hide.focus();
+          await page.keyboard.press("Enter");
+          const block = box.getByRole("button", { name: /^Creating your world Step 2 of 3 45% Expand$/ });
+          await block.waitFor({ state: "visible", timeout: 3000 });
+          await page.waitForTimeout(300);
+          if ((await block.getAttribute("aria-expanded")) !== "false") throw new Error("the block is not aria-expanded=false");
+          if ((await box.getByTestId("run-open").innerText()).trim() !== "false") throw new Error("onOpenChange was not called with false");
+          if (await box.getByRole("list", { name: "Activity" }).count()) throw new Error("the steps are still on screen while folded");
+          if (!(await block.evaluate((el) => el === document.activeElement))) throw new Error("focus did not move from Hide to the block");
+          const look = await block.evaluate((el) => {
+            const probe = document.createElement("span");
+            document.body.append(probe);
+            probe.style.backgroundColor = "var(--litt-block)";
+            const want = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            const cs = getComputedStyle(el);
+            return { bg: cs.backgroundColor, want, shadow: cs.boxShadow, height: el.getBoundingClientRect().height };
+          });
+          if (look.bg !== look.want) throw new Error(`the block is ${look.bg}, not --litt-block (${look.want})`);
+          if (!look.shadow || look.shadow === "none") throw new Error("the block casts no lift");
+          if (Math.round(look.height) !== 44) throw new Error(`the block is ${look.height}px tall, not 44`);
+
+          await box.getByTestId("run-next").click();
+          await said("Step 3 of 3: Writing its history");
+          const later = box.getByRole("button", { name: /^Creating your world Step 3 of 3 78% Expand$/ });
+          await later.waitFor({ state: "visible", timeout: 3000 });
+          await later.focus();
+          await page.keyboard.press("Space");
+          await hide.waitFor({ state: "visible", timeout: 3000 });
+          await page.waitForTimeout(300);
+          if (!(await hide.evaluate((el) => el === document.activeElement))) throw new Error("focus did not move from the block to Hide");
+          if ((await box.getByTestId("run-open").innerText()).trim() !== "true") throw new Error("onOpenChange was not called with true");
+
+          const failed = box.getByRole("button", { name: /^Moving the Northwind site Step 2 failed 40% Expand$/ });
+          await failed.waitFor({ state: "visible", timeout: 3000 });
+          return "Step 1 of 3 at 12% (4 of 32 ticks), folded to a 44px --litt-block named by its words with focus on it, Step 3 of 3 said while folded, Space reopens with focus on Hide, Step 2 failed";
         });
       }
       if (has("tool-call")) {
