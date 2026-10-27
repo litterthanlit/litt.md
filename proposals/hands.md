@@ -64,6 +64,19 @@ The cross-judge scored the blind candidates 25 (Fable), 21 (Opus) and 26 (Sonnet
 - #35's pill becomes a block at the control radius; its ring is the Gauge's ticks, a mark like the Meter and the Plan rail, not a slot.
 - Rows move only within their own group.
 
+## Built
+
+Three builders, one per item, each in its own worktree on this contract; the lead reviewed and merged them. Where the build moved off the contract, and why:
+
+- **Engine.** `useSettle.to` passed a caller's velocities through in Calm. The rule builder's builder caught it; Calm now always settles from rest, and only `release` hands fun mode the speed it measured.
+- **Run card.** The ring travels on fun mode's swap spring, not its glide: the glide overshot about 22px inside the folded block. The box glides by its corner, so the card and the block share one origin.
+- **Rule builder.** Under 352px a row stacks its field, operator and value. A group of one row still shows its join, so the word is always said. `maxDepth` is 1 by default (a group inside the rule, no deeper). A number value is a NumberField.
+- **Range chart.** The hand's grid is whole bars: an edge snaps to a bar, never between two. In review, the lead found fun mode popping the lit bars on load and on every resize: seating one edge before the other read as a new range, which also told `onValueChange` a half-seated one. A new width now seats both edges before the picture reads them.
+
+At rest, the Range chart and Rule builder pages match Calm in fun mode to the pixel, section by section, desktop and phone. The Run card's runs tick, so its page was compared under a frozen clock: everything matches but one glyph, below.
+
+Left for later: in a rule row, Combobox's query wraps under two tags; and a RollingNumber that has rolled can rest a glyph on a sub-pixel offset (the run card's "100%" in Calm, against the count fun mode ends on).
+
 ## Questions for Nick
 
 1. The figure's grey tail is "the part that churns". Is that the two-tone you meant, or the selected total in ink with "of 2,406,880" in the grey?
