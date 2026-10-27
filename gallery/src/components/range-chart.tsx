@@ -677,7 +677,7 @@ export function RangeChart({
                     aria-label={`${s.label}, ${percent(s.share)}`}
                     onClick={() => settleTo([s.start, s.end - 1], true)}
                     className={
-                      "@container relative flex h-full min-w-0 items-center justify-center gap-1.5 rounded-[calc(var(--radius-control)-2px)] px-2 text-caption font-title select-none " +
+                      "@container relative flex h-full min-w-0 items-center justify-center rounded-[calc(var(--radius-control)-2px)] text-caption font-title select-none " +
                       "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
                       "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
                       (disabled ? "cursor-not-allowed text-fg-disabled" : pressed ? "cursor-pointer text-fg" : "cursor-pointer text-fg-subtle hover:text-fg " + PRESS)
@@ -691,8 +691,12 @@ export function RangeChart({
                         className="absolute inset-0 rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border-2"
                       />
                     )}
-                    <span className="relative z-1 truncate @max-[6rem]:hidden">{s.label}</span>
-                    <span className={"relative z-1 shrink-0 font-normal tabular-nums @max-[2rem]:hidden " + (disabled ? "" : "text-fg-subtle")}>{percent(s.share)}</span>
+                    {/* The padding is inside the container, so the queries measure the whole segment and a narrow one
+                        gives up its padding before its share: a phone's selected block still says "23%". */}
+                    <span className="relative z-1 flex min-w-0 items-center gap-1.5 px-2 @max-[3rem]:px-0.5">
+                      <span className="truncate @max-[7rem]:hidden">{s.label}</span>
+                      <span className={"shrink-0 font-normal tabular-nums @max-[2rem]:hidden " + (disabled ? "" : "text-fg-subtle")}>{percent(s.share)}</span>
+                    </span>
                   </button>
                 );
               })}
