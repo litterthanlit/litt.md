@@ -1053,6 +1053,21 @@ const COPY = {
     description: "A deliberate yes to something that cannot be undone: the segmented control's track and a raised thumb to slide to the end. The thumb follows the finger one to one, springs back on the responsive tier if let go early, and confirms at the end with a check. The thumb is also a button: Enter, Space or a screen reader confirms, a mouse click alone does not.",
     docs: "Import SlideConfirm from components/litt/slide-confirm. Give it a label that says what happens (\"Slide to delete Atelier Nord\"), a confirmedLabel and onConfirm, which runs once. Remount it with a new key to ask again. Use it for what cannot be undone, on touch screens; anything that can be undone should just happen, with Undo in a toast.",
   },
+  "range-chart": {
+    title: "Range chart",
+    description: "One quantity over time as a barcode of thin bars, with labelled segments and their shares in a tray above, and a range you brush by hand: drag across the bars, drag either edge, or drag the whole span. The edges follow the pointer one to one and settle on a bar or a segment start; the segment that matches the range is raised. The total of what is brushed rolls as you go, its last group of digits in the quiet ink. In fun mode the span can be thrown and the bars it sweeps rise and settle.",
+    docs: "Import RangeChart from components/litt/range-chart. Give it a label, bars as { label, value }, and optionally segments as { label, start }, axis ticks and a unit. Hold the range in state with value and onValueChange ([first, last], both inclusive), or load on onValueCommit, which fires once the edges have settled. The figure is a sum, so the values must add up. A single moment in a run is a TimeScrubber; a value that stays is a Slider.",
+  },
+  "run-card": {
+    title: "Run card",
+    description: "An agent's run as a card: what it is making, how far it has got in words (Step 2 of 3) and in a ring, and its steps. Hide folds it into a raised block you press to open again; the ring travels between the two while the words glide, and the height snaps. A polite status keeps saying the step while the card is folded.",
+    docs: "Import RunCard from components/litt/run-card. Give it a title and the run's steps as Plan takes them (label, status, an id), and optionally progress from 0 to 1, a preview, actions such as a Stop button, and open with onOpenChange. Update steps in place as the agent works. A plan with no run behind it is a Plan.",
+  },
+  "rule-builder": {
+    title: "Rule builder",
+    description: "Conditions built from rows: a field, an operator and a value, joined by And or Or, grouped and nested, added, removed and reordered by a handle. A row picked up by its handle rises into a raised block and the others make room; the new order is committed once it has settled. Space lifts a row for the arrow keys.",
+    docs: "Import RuleBuilder from components/litt/rule-builder. Give it a label and fields ({ id, label, type: text, number or choice, options, operators }) and hold the tree in state with value and onValueChange, or pass name and defaultValue in a form (it posts one JSON string). newCondition, newGroup and isGroup build and read the tree. errors by condition id says a problem under its row. A filter on one table column is a TableFilter.",
+  },
   "rolling-number": {
     title: "Rolling number",
     description: "A figure whose changed digits roll to the new value: each leaves half of the travel token and fades as the new one comes in from the other side, on the responsive tier, up when the value rises and down when it falls. Any Intl.NumberFormat format, tabular figures, the whole figure as text for screen readers. The first render and reduced motion just show the number.",
@@ -1348,7 +1363,7 @@ function build(demos = []) {
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
   const onDisk = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
-  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
+  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
   // A block is named after the page that shows it, so its name finds that page, and never after a component.
   const blockFiles = blockNames.map((b) => path.join(blocksDir, `${b}.tsx`));

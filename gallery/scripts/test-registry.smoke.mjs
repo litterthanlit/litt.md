@@ -320,9 +320,22 @@ const RECIPES = {
     needs: ["TimeScrubber"],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-time-scrubber"><TimeScrubber label="Replay" max={48} defaultValue={31} marks={[{ at: 12.1, label: "Image is 2.4 MB", tone: "warning" }, { at: 31, label: "Module not found", tone: "danger" }]} /></div>`,
   },
+  "range-chart": {
+    needs: ["RangeChart"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-range-chart"><RangeChart label="Smoke visitors" unit="visitors" bars={Array.from({ length: 60 }, (_, i) => ({ label: \`Day \${i + 1}\`, value: 100 + (i % 7) * 10 }))} segments={[{ label: "Before", start: 0 }, { label: "Launch", start: 20 }, { label: "Since", start: 40 }]} defaultValue={[20, 39]} /></div>`,
+  },
   "slide-confirm": {
     needs: ["SlideConfirm"],
     jsx: `<div className="w-full max-w-sm" data-testid="litt-slide-confirm"><SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" /></div>`,
+  },
+  "rule-builder": {
+    needs: ["RuleBuilder"],
+    types: ["RuleBuilderField", "RuleBuilderGroup"],
+    top: [
+      `const SMOKE_FIELDS: RuleBuilderField[] = [{ id: "status", label: "Expense status", type: "choice", options: [{ value: "submitted", label: "Submitted" }, { value: "paid", label: "Paid" }] }, { id: "seniority", label: "Seniority", type: "choice", options: [{ value: "designer", label: "Designer" }, { value: "manager", label: "Manager" }] }, { id: "type", label: "Expense type", type: "choice", options: [{ value: "food", label: "Food & drink" }, { value: "travel", label: "Travel" }] }, { id: "merchant", label: "Merchant", type: "text" }];`,
+      `const SMOKE_RULE: RuleBuilderGroup = { kind: "group", id: "policy", join: "and", children: [{ kind: "condition", id: "trigger", field: "status", operator: "is", value: "submitted", locked: true }, { kind: "condition", id: "seniority", field: "seniority", operator: "is", value: "manager" }, { kind: "group", id: "spend", join: "or", children: [{ kind: "condition", id: "type", field: "type", operator: "any-of", value: ["food", "travel"] }, { kind: "condition", id: "merchant", field: "merchant", operator: "is", value: "Uber" }] }] };`,
+    ],
+    jsx: `<form className="w-full max-w-2xl" data-testid="litt-rule-builder" onSubmit={(e) => e.preventDefault()}><RuleBuilder label="Expense approval" name="rule" fields={SMOKE_FIELDS} defaultValue={SMOKE_RULE} /></form>`,
   },
   "rolling-number": {
     needs: ["RollingNumber"],
@@ -531,6 +544,28 @@ const RECIPES = {
             <div><@Btn type="button" data-testid="plan-next" onClick={() => setPlanAt((n) => n + 1)}>Next step</@Btn></div>
           </div>
           <div data-testid="plan-failed"><Plan label="Smoke failed plan" steps={FAILED_STEPS} /></div>
+        </div>`,
+  },
+  "run-card": {
+    needs: ["RunCard"],
+    types: ["PlanStep"],
+    top: [
+      `const RUN_LABELS = ["Shaping the terrain", "Populating your world", "Writing its history"];`,
+      `const RUN_PROGRESS = [0.12, 0.45, 0.78, 1];`,
+      `// The steps before "at" are done, step "at" runs and the rest wait.`,
+      `const runSteps = (at: number): PlanStep[] => RUN_LABELS.map((label, i): PlanStep => ({ id: "r" + i, label, status: i < at ? "done" : i === at ? "running" : "pending" }));`,
+      `const RUN_FAILED: PlanStep[] = [`,
+      `  { id: "read", label: "Read the layout", status: "done" },`,
+      `  { id: "build", label: "Run the build", status: "failed", detail: "Build failed: font file missing" },`,
+      `  { id: "preview", label: "Publish a preview", status: "pending" },`,
+      `];`,
+    ],
+    state: [`const [runAt, setRunAt] = useState(0);`, `const [runOpen, setRunOpen] = useState(true);`],
+    jsx: `<div className="grid w-full max-w-xl gap-4" data-testid="litt-run-card">
+          <RunCard title="Creating your world" steps={runSteps(runAt)} progress={RUN_PROGRESS[runAt]} open={runOpen} onOpenChange={setRunOpen} actions={<@Btn type="button">Stop</@Btn>} />
+          <p data-testid="run-open">{String(runOpen)}</p>
+          <div><@Btn type="button" data-testid="run-next" onClick={() => setRunAt((n) => Math.min(n + 1, 3))}>Next step</@Btn></div>
+          <RunCard title="Moving the Northwind site" steps={RUN_FAILED} progress={0.4} defaultOpen={false} />
         </div>`,
   },
   "tool-call": {
@@ -1715,6 +1750,93 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           return `${dragged}, sent ${sent.join(" and ")}`;
         });
       }
+      if (has("range-chart")) {
+        await attempt("range chart: three named sliders, the keys move an edge and the span, a segment press settles the range, a drag brushes it, Whole range lets go", async () => {
+          const root = item("range-chart").locator("[data-testid=litt-range-chart]");
+          const from = root.getByRole("slider", { name: "Smoke visitors, from" });
+          const to = root.getByRole("slider", { name: "Smoke visitors, to" });
+          const move = root.getByRole("slider", { name: "Smoke visitors, move range" });
+          const read = async () => `${await from.getAttribute("aria-valuetext")}|${await to.getAttribute("aria-valuetext")}`;
+          const start = await read();
+          if (start !== "Day 21|Day 40") throw new Error(`the sliders read ${start}, expected Day 21|Day 40`);
+          const launch = root.getByRole("button", { name: /^Launch, / });
+          if ((await launch.getAttribute("aria-pressed")) !== "true") throw new Error("the Launch segment is not aria-pressed while the range is the launch");
+          await from.focus();
+          await page.keyboard.press("ArrowRight");
+          await page.waitForTimeout(400);
+          const stepped = await read();
+          if (stepped !== "Day 22|Day 40") throw new Error(`ArrowRight on from gave ${stepped}, expected Day 22|Day 40`);
+          if ((await launch.getAttribute("aria-pressed")) !== "false") throw new Error("the Launch segment stayed pressed after the range moved off it");
+          await move.focus();
+          await page.keyboard.press("PageUp");
+          await page.waitForTimeout(400);
+          const paged = await read();
+          if (paged !== "Day 41|Day 59") throw new Error(`Page Up on move range gave ${paged}, expected Day 41|Day 59: the span moves to the next segment start and keeps its width`);
+          await root.getByRole("button", { name: /^Since, / }).click();
+          await page.waitForTimeout(500);
+          const since = await read();
+          if (since !== "Day 41|Day 60") throw new Error(`pressing Since gave ${since}, expected Day 41|Day 60`);
+          const status = await root.getByRole("status").textContent();
+          if (!status.includes("Day 41 to Day 60")) throw new Error(`the status says "${status}", expected the settled range in words`);
+          const rail = await move.boundingBox();
+          const cap = await from.boundingBox();
+          await page.mouse.move(cap.x + cap.width / 2, rail.y + rail.height / 2);
+          await page.mouse.down();
+          await page.mouse.move(cap.x + cap.width / 2 - rail.width / 2, rail.y + rail.height / 2, { steps: 8 });
+          await page.waitForTimeout(150);
+          await page.mouse.up();
+          await page.waitForTimeout(600);
+          const dragged = await read();
+          if (dragged === since || !dragged.endsWith("|Day 60")) throw new Error(`dragging the from cap left gave ${dragged}, expected an earlier start and the same end`);
+          const whole = root.getByRole("button", { name: "Whole range" });
+          await whole.click();
+          await page.waitForTimeout(500);
+          const all = await read();
+          if (all !== "Day 1|Day 60") throw new Error(`Whole range gave ${all}, expected Day 1|Day 60`);
+          if (!(await whole.isDisabled())) throw new Error("Whole range is not disabled once nothing is narrowed");
+          return `${start} -> ${stepped} -> ${paged} -> ${since} -> dragged ${dragged} -> ${all}`;
+        });
+      }
+      if (has("rule-builder")) {
+        await attempt("rule builder: a group named by its label, the locked row has no handle, Space lifts a row and the arrows move it with no commit until the drop, a drag by the handle stops below the locked row, Add condition focuses the new field, the form posts the rule as one JSON string", async () => {
+          const box = item("rule-builder").locator("[data-testid=litt-rule-builder]");
+          const builder = box.getByRole("group", { name: "Expense approval", exact: true });
+          await builder.waitFor({ state: "visible", timeout: 5000 });
+          const order = () => box.evaluate((form) => JSON.parse(new FormData(form).get("rule")).children.map((c) => c.id).join(","));
+          const start = await order();
+          if (start !== "trigger,seniority,spend") throw new Error(`the form posts ${start}, not trigger,seniority,spend`);
+          if ((await builder.getByRole("button", { name: /^Move Expense status/ }).count()) !== 0) throw new Error("the locked row has a handle");
+          const handle = builder.getByRole("button", { name: "Move Seniority is Manager", exact: true });
+          await handle.focus();
+          await page.keyboard.press("Space");
+          if ((await handle.getAttribute("aria-pressed")) !== "true") throw new Error("Space did not pick the row up (aria-pressed)");
+          await page.keyboard.press("ArrowUp");
+          await page.keyboard.press("ArrowDown");
+          await page.waitForTimeout(100);
+          if ((await order()) !== start) throw new Error("the rule changed before the drop");
+          await page.keyboard.press("Space");
+          await page.waitForTimeout(900);
+          const keyed = await order();
+          if (keyed !== "trigger,spend,seniority") throw new Error(`Space, ArrowUp, ArrowDown, Space gave ${keyed}, not trigger,spend,seniority`);
+          const said = await builder.locator(":scope > [role=status]").innerText();
+          if (!said.includes("Moved Seniority is Manager to position 3 of 3")) throw new Error(`the status says "${said}"`);
+          await builder.scrollIntoViewIfNeeded(); // with other items on the page, the moved row can sit under the fold, where the mouse cannot reach it
+          const grip = await handle.boundingBox();
+          const first = await builder.getByRole("group", { name: "Condition 1 of 3", exact: true }).boundingBox();
+          await page.mouse.move(grip.x + grip.width / 2, grip.y + grip.height / 2);
+          await page.mouse.down();
+          await page.mouse.move(grip.x + grip.width / 2, first.y - 40, { steps: 10 });
+          await page.mouse.up();
+          await page.waitForTimeout(900);
+          const dragged = await order();
+          if (dragged !== "trigger,seniority,spend") throw new Error(`dragging it up past everything gave ${dragged}: it must stop below the locked row`);
+          await builder.getByRole("button", { name: "Add condition", exact: true }).last().click();
+          await page.waitForTimeout(300);
+          const focused = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (focused !== "Field, condition 4") throw new Error(`Add condition focused "${focused}", not the new row's field`);
+          return `keys ${keyed}, drag ${dragged}, then ${(await order()).split(",").length} children`;
+        });
+      }
       if (has("color-picker")) {
         await attempt("color picker opens on the area, the keys and the hex change it, the form sends the hex", async () => {
           const field = item("color-picker").getByRole("button", { name: /^Brand color/ });
@@ -2823,6 +2945,73 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (skip.text !== "Compress the videos, skippedSkipped" || skip.icon !== subtle) throw new Error(`the skipped step reads "${skip.text}" in ${skip.icon}`);
           if (!/1 of 4 steps done/.test(((await failed.textContent()) ?? "").replace(/\s+/g, " "))) throw new Error("a failed and a skipped step counted as done");
           return "ol, aria-current, fg tones, danger x, 40% rail, Step 4 of 5 then Plan done";
+        });
+      }
+      if (has("run-card")) {
+        await attempt("run card: Step 1 of 3 at 12% with 4 of 32 ticks lit, Hide folds it into one raised 44px block named by its words and focus follows, the status speaks a new step while folded, Space and Enter fold and open it, a failed run says Step 2 failed", async () => {
+          const box = item("run-card").locator("[data-testid=litt-run-card]");
+          const card = box.getByRole("group", { name: "Creating your world" });
+          await card.waitFor({ state: "visible", timeout: 5000 });
+          const text = async (loc) => ((await loc.textContent()) ?? "").replace(/\s+/g, " ");
+          if (!/Step 1 of 3/.test(await text(card)) || !/12%/.test(await text(card))) throw new Error(`the card reads "${await text(card)}"`);
+          const hide = box.getByRole("button", { name: "Hide Creating your world" });
+          if ((await hide.getAttribute("aria-expanded")) !== "true") throw new Error("Hide is not aria-expanded=true");
+          if ((await card.getByRole("list", { name: "Activity" }).getByRole("listitem").count()) !== 3) throw new Error("the steps are not a list of 3 named Activity");
+          const ring = card.locator('svg[viewBox="0 0 32 32"] path');
+          if ((await ring.count()) !== 2) throw new Error(`the ring has ${await ring.count()} paths, not the rest and the lit`);
+          const lit = ((await ring.last().getAttribute("d")) ?? "").split("M").length - 1;
+          const rest = ((await ring.first().getAttribute("d")) ?? "").split("M").length - 1;
+          if (lit !== 4 || lit + rest !== 32) throw new Error(`12% lights ${lit} of ${lit + rest} ticks, not 4 of 32`);
+          const status = box.locator("[role=status]").first();
+          if ((await status.textContent())?.trim()) throw new Error("the live region spoke on the first render");
+          const said = async (want) => {
+            const deadline = Date.now() + 3000;
+            while (Date.now() < deadline) {
+              if ((await status.textContent())?.trim() === want) return;
+              await page.waitForTimeout(100);
+            }
+            throw new Error(`the live region says "${(await status.textContent())?.trim()}", not "${want}"`);
+          };
+          await box.getByTestId("run-next").click();
+          await said("Step 2 of 3: Populating your world");
+          if (!/Step 2 of 3/.test(await text(card)) || !/45%/.test(await text(card))) throw new Error(`after Next step the card reads "${await text(card)}"`);
+
+          await hide.focus();
+          await page.keyboard.press("Enter");
+          const block = box.getByRole("button", { name: /^Creating your world Step 2 of 3 45% Expand$/ });
+          await block.waitFor({ state: "visible", timeout: 3000 });
+          await page.waitForTimeout(300);
+          if ((await block.getAttribute("aria-expanded")) !== "false") throw new Error("the block is not aria-expanded=false");
+          if ((await box.getByTestId("run-open").innerText()).trim() !== "false") throw new Error("onOpenChange was not called with false");
+          if (await box.getByRole("list", { name: "Activity" }).count()) throw new Error("the steps are still on screen while folded");
+          if (!(await block.evaluate((el) => el === document.activeElement))) throw new Error("focus did not move from Hide to the block");
+          const look = await block.evaluate((el) => {
+            const probe = document.createElement("span");
+            document.body.append(probe);
+            probe.style.backgroundColor = "var(--litt-block)";
+            const want = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            const cs = getComputedStyle(el);
+            return { bg: cs.backgroundColor, want, shadow: cs.boxShadow, height: el.getBoundingClientRect().height };
+          });
+          if (look.bg !== look.want) throw new Error(`the block is ${look.bg}, not --litt-block (${look.want})`);
+          if (!look.shadow || look.shadow === "none") throw new Error("the block casts no lift");
+          if (Math.round(look.height) !== 44) throw new Error(`the block is ${look.height}px tall, not 44`);
+
+          await box.getByTestId("run-next").click();
+          await said("Step 3 of 3: Writing its history");
+          const later = box.getByRole("button", { name: /^Creating your world Step 3 of 3 78% Expand$/ });
+          await later.waitFor({ state: "visible", timeout: 3000 });
+          await later.focus();
+          await page.keyboard.press("Space");
+          await hide.waitFor({ state: "visible", timeout: 3000 });
+          await page.waitForTimeout(300);
+          if (!(await hide.evaluate((el) => el === document.activeElement))) throw new Error("focus did not move from the block to Hide");
+          if ((await box.getByTestId("run-open").innerText()).trim() !== "true") throw new Error("onOpenChange was not called with true");
+
+          const failed = box.getByRole("button", { name: /^Moving the Northwind site Step 2 failed 40% Expand$/ });
+          await failed.waitFor({ state: "visible", timeout: 3000 });
+          return "Step 1 of 3 at 12% (4 of 32 ticks), folded to a 44px --litt-block named by its words with focus on it, Step 3 of 3 said while folded, Space reopens with focus on Hide, Step 2 failed";
         });
       }
       if (has("tool-call")) {
