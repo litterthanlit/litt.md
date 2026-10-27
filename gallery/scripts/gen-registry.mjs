@@ -1018,8 +1018,8 @@ const COPY = {
   },
   "tool-call": {
     title: "Tool call",
-    description: "What an agent did, one row per call: a status mark (a still half circle while it runs, never a spinner), the action in words, the target in mono cut at the end, and the time. A call with an input or an output opens them under it. A group folds a run of calls and closes itself when they finish, and an approval asks first on a raised panel with Allow as the accent fill and Deny beside it, then becomes a row that says what was chosen.",
-    docs: "Import ToolCall, ToolCallGroup and ToolApproval from components/litt/tool-call. Give a call a status, an action and a target, plus an input or an output to make it open. Pass running to a group, and hold decision in state for an approval, setting it in onAllow and onDeny. Keep an approval outside a group, and disable your Send while it waits so the view holds one accent fill.",
+    description: "What an agent did, one row per call: a status mark (a still half circle while it runs, never a spinner), the action in words, the target in mono cut at the end, what it found (\"5 sources\", \"+2 −2\") and the time. A call with an input or an output opens them under it, in a mono well; a part with its own surface (a log, a diff, a list of sources) opens as given in details. A group folds a run of calls and closes itself when they finish, and an approval asks first on a raised panel with Allow as the accent fill and Deny beside it, then becomes a row that says what was chosen.",
+    docs: "Import ToolCall, ToolCallGroup and ToolApproval from components/litt/tool-call. Give a call a status, an action and a target, plus an input or an output to make it open. Put a LogView, a SourceList or a FileChanges in details, never in output, and say what the call found in result. Pass running to a group, and hold decision in state for an approval, setting it in onAllow and onDeny. Keep an approval outside a group, and disable your Send while it waits so the view holds one accent fill.",
   },
   plan: {
     title: "Plan",
@@ -1067,6 +1067,21 @@ const COPY = {
     title: "Rule builder",
     description: "Conditions built from rows: a field, an operator and a value, joined by And or Or, grouped and nested, added, removed and reordered by a handle. A row picked up by its handle rises into a raised block and the others make room; the new order is committed once it has settled. Space lifts a row for the arrow keys.",
     docs: "Import RuleBuilder from components/litt/rule-builder. Give it a label and fields ({ id, label, type: text, number or choice, options, operators }) and hold the tree in state with value and onValueChange, or pass name and defaultValue in a form (it posts one JSON string). newCondition, newGroup and isGroup build and read the tree. errors by condition id says a problem under its row. A filter on one table column is a TableFilter.",
+  },
+  sources: {
+    title: "Sources",
+    description: "Where an answer came from: Sources holds a turn's sources and numbers them once, Citation is a quiet numbered chip in the running text that opens its source and previews it in a hover card (the site, the title, the passage, when it was read), and SourceList lists them under the answer or as what a search call found. Resting on a citation lights its row, and resting on a row lights its citations. A source the model gives a url that is not http or https shows as text.",
+    docs: "Import Sources, Citation and SourceList from components/litt/sources. Wrap the turn's parts in Sources with the sources ({ id, title, url, site?, passage?, readAt?, kind? }); a source's number is its place in that list. Have your markdown renderer turn a #cite-<id> link into <Citation source=\"<id>\" /> (citationId reads the href, unlinkCitations cleans text for Copy). Put a SourceList after the answer, and a SourceList with the search's own sources in a ToolCall's details.",
+  },
+  "file-changes": {
+    title: "File changes",
+    description: "What an agent changed in a codebase, to review before keeping it: the files added, modified, deleted and renamed, each with its lines added and removed said in words and figures, each opening to its diff, each kept or undone on its row, and Keep all and Undo all for the rest. Send keeps the view's accent fill: Keep all is a raised block unless accent is set on a screen with no composer.",
+    docs: "Import FileChanges from components/litt/file-changes. Pass changes ({ id, path, kind, diff?, added?, removed?, from? for a rename, state? }) and onDecide(ids, decision), and set each change's state from it: the component holds no decision of its own. Use one change in an edit call's details and every change at the end of the turn.",
+  },
+  "run-list": {
+    title: "Run list",
+    description: "An agent's runs for a sidebar or an inbox: each run's title, its status in words and a mark (running, needs you, done, failed, stopped), where it has got and when it last changed, the runs that need you first, the selected run as a raised block that glides from row to row, a filter by status with counts, and Stop or Archive on a row.",
+    docs: "Import RunList from components/litt/run-list. Pass runs ({ id, title, status, detail?, progress?, updated, href? }) in your order, selectedId and onSelect, and onStop and onArchive for the row actions. updated is words you give (\"2m ago\"): the list reads no clock.",
   },
   "rolling-number": {
     title: "Rolling number",

@@ -15,8 +15,8 @@
       "hash": "920e36954b29ebcf"
     },
     "agent": {
-      "version": "2026.10.22",
-      "hash": "e94b6101eb8424b0"
+      "version": "2026.10.27",
+      "hash": "f38a044d7cac951c"
     },
     "app-shell": {
       "version": "2026.10.26",
@@ -133,6 +133,10 @@
     "dot-plot": {
       "version": "2026.10.26",
       "hash": "2ae24d455a7e0a58"
+    },
+    "file-changes": {
+      "version": "2026.10.27",
+      "hash": "b3954bdda02922da"
     },
     "file-drop": {
       "version": "2026.10.26",
@@ -290,6 +294,10 @@
       "version": "2026.10.27",
       "hash": "3f6f30de3f1ab2bc"
     },
+    "run-list": {
+      "version": "2026.10.27",
+      "hash": "daba4c9ad4d2d547"
+    },
     "scroll-area": {
       "version": "2026.10.26",
       "hash": "f95ea2c7156342b8"
@@ -325,6 +333,10 @@
     "slider": {
       "version": "2026.10.26",
       "hash": "9ba5e8e52d3ba085"
+    },
+    "sources": {
+      "version": "2026.10.27",
+      "hash": "4635aa120daf430b"
     },
     "sparkline": {
       "version": "2026.10.26",
@@ -391,8 +403,8 @@
       "hash": "15ea4d2e3602bbdb"
     },
     "tool-call": {
-      "version": "2026.10.26",
-      "hash": "bc1ca77b885dbe22"
+      "version": "2026.10.27",
+      "hash": "ae2a9e569f25f046"
     },
     "tooltip": {
       "version": "2026.10.25",

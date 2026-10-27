@@ -568,6 +568,24 @@ const RECIPES = {
           <RunCard title="Moving the Northwind site" steps={RUN_FAILED} progress={0.4} defaultOpen={false} />
         </div>`,
   },
+  "run-list": {
+    needs: ["RunList"],
+    types: ["AgentRun"],
+    top: [
+      `const SMOKE_RUNS: AgentRun[] = [`,
+      `  { id: "world", title: "Creating your world", status: "running", detail: "Step 2 of 3", progress: 0.45, updated: "Just now" },`,
+      `  { id: "halo", title: "Fix the Halo build", status: "needs-you", detail: "Approve npm run deploy", updated: "1m ago" },`,
+      `  { id: "northwind", title: "Move the Northwind site", status: "failed", detail: "Step 4: font file missing", updated: "12m ago" },`,
+      `  { id: "cosmos", title: "Import the Cosmos catalog", status: "done", detail: "1,240 products", updated: "1h ago" },`,
+      `];`,
+    ],
+    state: [`const [runListRuns, setRunListRuns] = useState<AgentRun[]>(SMOKE_RUNS);`, `const [runListId, setRunListId] = useState("world");`],
+    jsx: `<div className="grid w-full max-w-72 gap-4" data-testid="litt-run-list">
+          <RunList runs={runListRuns} selectedId={runListId} onSelect={(run) => setRunListId(run.id)} onStop={(run) => setRunListRuns((all) => all.map((r) => (r.id === run.id ? { ...r, status: "stopped" } : r)))} onArchive={(run) => setRunListRuns((all) => all.filter((r) => r.id !== run.id))} />
+          <p data-testid="run-list-selected">{runListId}</p>
+          <div><@Btn type="button" data-testid="run-list-agent" onClick={() => setRunListRuns((all) => all.map((r) => (r.id === "world" ? { ...r, status: "needs-you", detail: "Choose a climate", progress: undefined } : r)))}>Agent asks</@Btn></div>
+        </div>`,
+  },
   "tool-call": {
     needs: ["ToolCall", "ToolCallGroup", "ToolApproval"],
     state: [`const [toolDecision, setToolDecision] = useState<"pending" | "allowed" | "denied">("pending");`, `const [toolAllowed, setToolAllowed] = useState(0);`],
@@ -580,6 +598,28 @@ const RECIPES = {
           </ToolCallGroup>
           <ToolApproval command="npm run deploy" description="Publishes the smoke site." alwaysAllowLabel="Always allow npm run deploy" decision={toolDecision} onAllow={() => { setToolAllowed((n) => n + 1); setToolDecision("allowed"); }} onDeny={() => setToolDecision("denied")} />
           <p data-testid="tool-call-allowed">{toolAllowed}</p>
+        </div>`,
+  },
+  sources: {
+    needs: ["Sources", "Citation", "SourceList", "citationId", "unlinkCitations"],
+    types: ["Source"],
+    top: [
+      `const SMOKE_SOURCES: Source[] = [`,
+      `  { id: "fonts", title: "Font optimization in Next.js", url: "https://nextjs.org/docs/app/getting-started/fonts", passage: "next/font self-hosts any font file.", readAt: "2 minutes ago" },`,
+      `  { id: "geist", title: "geist on npm", url: "https://www.npmjs.com/package/geist", site: "npmjs.com", readAt: "2 minutes ago" },`,
+      `  { id: "unsafe", title: "A model's bad link", url: "javascript:alert(1)" },`,
+      `];`,
+      `const SMOKE_FOUND: Source[] = [SMOKE_SOURCES[0], SMOKE_SOURCES[1], { id: "blog", title: "Introducing Geist", url: "https://vercel.com/blog/introducing-geist", readAt: "a minute ago" }];`,
+      `const SMOKE_ANSWER = "Next.js loads fonts through next/font [1](#cite-fonts), and geist ships both faces [2](#cite-geist) as next/font modules [2](#cite-geist).";`,
+    ],
+    jsx: `<div className="grid w-full max-w-md gap-3" data-testid="litt-sources">
+          <Sources sources={SMOKE_SOURCES}>
+            <p data-testid="sources-answer">Next.js loads fonts through next/font<Citation source="fonts" />, and geist ships both faces<Citation source="geist" /> as next/font modules<Citation source="geist" quote="import { GeistMono } from 'geist/font/mono'" />. A bad link<Citation source="unsafe" />, and a missing one<Citation source="missing" />.</p>
+            <SourceList sources={SMOKE_FOUND} label="Search results" hideLabel />
+            <SourceList />
+          </Sources>
+          <p data-testid="sources-copy">{unlinkCitations(SMOKE_ANSWER)}</p>
+          <p data-testid="sources-id">{String(citationId("#cite-geist"))},{String(citationId("https://nextjs.org"))}</p>
         </div>`,
   },
   composer: {
@@ -603,6 +643,23 @@ const RECIPES = {
     jsx: `<div className="grid w-80 gap-4" data-testid="litt-code-block">
           <CodeBlock lang="ts" filename="badge.ts" label="Smoke badge" code={SMOKE_TS} />
           <CodeBlock lang="diff" label="Smoke diff" code={SMOKE_DIFF} />
+        </div>`,
+  },
+  "file-changes": {
+    needs: ["FileChanges"],
+    types: ["FileChange", "FileDecision"],
+    top: [
+      `const FILE_DIFF = ["@@ -1,2 +1,2 @@", " @import './sans.css';", "-@import './mono.css';", "+@import './mono-variable.css';"].join("\\n");`,
+      `const FILE_CHANGES: FileChange[] = [`,
+      `  { id: "fonts", path: "src/styles/fonts.css", kind: "modified", diff: FILE_DIFF },`,
+      `  { id: "test", path: "src/styles/fonts.test.ts", kind: "added", added: 12, removed: 0 },`,
+      `  { id: "type", path: "src/styles/type.css", kind: "renamed", from: "src/styles/typography.css", added: 1, removed: 1 },`,
+      `];`,
+    ],
+    state: [`const [fileChanges, setFileChanges] = useState<FileChange[]>(FILE_CHANGES);`, `const [fileDecided, setFileDecided] = useState<string[]>([]);`],
+    jsx: `<div className="grid w-full max-w-xl gap-4" data-testid="litt-file-changes">
+          <FileChanges changes={fileChanges} onDecide={(ids: string[], decision: FileDecision) => { setFileDecided((all) => [...all, ids.join(",") + " " + decision]); setFileChanges((all) => all.map((c) => (ids.includes(c.id) ? { ...c, state: decision } : c))); }} />
+          <p data-testid="file-changes-decided">{fileDecided.join(" | ")}</p>
         </div>`,
   },
   message: {
@@ -3014,6 +3071,82 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           return "Step 1 of 3 at 12% (4 of 32 ticks), folded to a 44px --litt-block named by its words with focus on it, Step 3 of 3 said while folded, Space reopens with focus on Hide, Step 2 failed";
         });
       }
+      if (has("run-list")) {
+        await attempt("run list: needs you lifted under its heading, the open run is one --litt-block with aria-current, a mouse press moves it, the arrows rove one Tab stop, → reaches Archive and Enter archives with focus kept in the list, a run the agent changes jumps to the top with no motion and the status says so", async () => {
+          const box = item("run-list").locator("[data-testid=litt-run-list]");
+          const rows = box.locator("li[data-glide-row] > :is(button,a)");
+          await rows.first().waitFor({ state: "visible", timeout: 5000 });
+          const titles = async () => (await rows.allTextContents()).map((t) => t.split(",")[0]).join(" / ");
+          if ((await titles()) !== "Fix the Halo build / Creating your world / Move the Northwind site / Import the Cosmos catalog") throw new Error(`the rows read "${await titles()}"`);
+          const named = await box.locator("ul").evaluateAll((uls) => uls.map((u) => document.getElementById(u.getAttribute("aria-labelledby"))?.textContent).join(","));
+          if (named !== "Needs you,Runs") throw new Error(`the lists are named "${named}", not "Needs you,Runs"`);
+          if ((await box.locator('[aria-current="true"]').count()) !== 1 || !/Creating your world/.test(await box.locator('[aria-current="true"]').textContent())) throw new Error("aria-current is not on Creating your world alone");
+          const block = box.locator("li > span[aria-hidden=true]");
+          if ((await block.count()) !== 1) throw new Error(`${await block.count()} blocks, not one`);
+          const look = await block.evaluate((el) => {
+            const probe = document.createElement("span");
+            document.body.append(probe);
+            probe.style.backgroundColor = "var(--litt-block)";
+            const want = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            return { bg: getComputedStyle(el).backgroundColor, want, shadow: getComputedStyle(el).boxShadow };
+          });
+          if (look.bg !== look.want || look.shadow === "none") throw new Error(`the block is ${look.bg} with ${look.shadow}, not --litt-block with its lift`);
+          if ((await box.locator("li[data-glide-row] > :is(button,a)[tabindex='0']").count()) !== 1) throw new Error("the rows are not one Tab stop");
+          if ((await box.getByRole("button", { name: /^(Stop|Archive) Fix the Halo build$/ }).count()) !== 0) throw new Error("the run that needs you has a verb");
+
+          await box.scrollIntoViewIfNeeded(); // with every item on the page, the list can sit under the fold, where the mouse cannot reach it
+          const northwind = rows.filter({ hasText: "Move the Northwind site" });
+          const at = await northwind.boundingBox();
+          await page.mouse.click(at.x + at.width / 2, at.y + at.height / 2);
+          await page.waitForTimeout(400);
+          if ((await box.getByTestId("run-list-selected").innerText()).trim() !== "northwind") throw new Error("a press did not call onSelect with the run");
+          if ((await northwind.getAttribute("aria-current")) !== "true") throw new Error("aria-current did not follow the press");
+
+          const focusedName = () => page.evaluate(() => document.activeElement?.getAttribute("aria-label") || document.activeElement?.textContent?.split(",")[0]);
+          await northwind.focus();
+          await page.keyboard.press("ArrowUp");
+          if ((await focusedName()) !== "Creating your world") throw new Error(`ArrowUp went to "${await focusedName()}"`);
+          await page.keyboard.press("End");
+          if ((await focusedName()) !== "Import the Cosmos catalog") throw new Error(`End went to "${await focusedName()}"`);
+          await page.keyboard.press("ArrowRight");
+          if ((await focusedName()) !== "Archive Import the Cosmos catalog") throw new Error(`ArrowRight went to "${await focusedName()}"`);
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(200);
+          if (/Import the Cosmos catalog/.test(await titles())) throw new Error("Archive did not remove the run");
+          if ((await focusedName()) !== "Move the Northwind site") throw new Error(`after Archive, focus is on "${await focusedName()}", not the row that took its place`);
+
+          const status = box.locator("[role=status]").last();
+          if ((await status.textContent()).trim()) throw new Error("the live region spoke before any run changed");
+          const watch = page.evaluate(() => new Promise((resolve) => {
+            const seen = new Map();
+            let worst = 0;
+            const start = performance.now();
+            const frame = () => {
+              for (const li of document.querySelectorAll("[data-item=run-list] [data-testid=litt-run-list] li[data-glide-row]")) {
+                const t = getComputedStyle(li).transform;
+                const moved = t !== "none" && t !== "matrix(1, 0, 0, 1, 0, 0)";
+                const run = moved ? (seen.get(li) ?? 0) + 1 : 0;
+                seen.set(li, run);
+                worst = Math.max(worst, run);
+              }
+              if (performance.now() - start < 700) requestAnimationFrame(frame);
+              else resolve(worst);
+            };
+            requestAnimationFrame(frame);
+          }));
+          await box.getByTestId("run-list-agent").click();
+          const worst = await watch;
+          if (worst >= 3) throw new Error(`a row moved for ${worst} frames when the agent changed a run`);
+          if ((await titles()).split(" / ")[0] !== "Creating your world") throw new Error(`after the agent's change the rows read "${await titles()}"`);
+          const deadline = Date.now() + 3000;
+          while ((await status.textContent()).trim() !== "Creating your world needs you") {
+            if (Date.now() > deadline) throw new Error(`the live region says "${(await status.textContent()).trim()}"`);
+            await page.waitForTimeout(100);
+          }
+          return "Needs you lifted and named, one --litt-block with aria-current, a press selects Northwind, ↑ End → Enter archive Cosmos with focus on Northwind, the agent's change lifts Creating your world with no row moving and says it needs you";
+        });
+      }
       if (has("tool-call")) {
         await attempt("tool call: a failed row says Failed and opens its output, a group folds its calls, Allow is the accent, calls back and becomes a row", async () => {
           const box = item("tool-call").locator("[data-testid=litt-tool-call]");
@@ -3063,6 +3196,70 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if ((await box.getByTestId("tool-call-allowed").innerText()).trim() !== "1") throw new Error("Allow did not call onAllow once");
           await box.getByText("Allowed", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
           return "Failed in words and --litt-danger, output opens, group folds two calls, Allow is --litt-accent and becomes an Allowed row";
+        });
+      }
+      if (has("sources")) {
+        await attempt("sources: numbered marks are links in fg-muted, resting on a mark lights its row and its sibling mark, resting on a row lights its marks, focus opens the card and Esc closes it, a search's uncited result says Not cited, an unsafe url is a plain chip, an unknown id draws nothing, citationId and unlinkCitations read and strip the scheme", async () => {
+          const box = item("sources").locator("[data-testid=litt-sources]");
+          const answer = box.getByTestId("sources-answer");
+          await answer.waitFor({ state: "visible", timeout: 5000 });
+          await box.scrollIntoViewIfNeeded(); // the all-items app puts it far down the page, out of the mouse's reach
+          const marks = answer.locator("a[data-citation]");
+          if ((await marks.count()) !== 3) throw new Error(`the answer has ${await marks.count()} linked marks, not 3 (the unsafe url is a chip, the unknown id nothing)`);
+          if ((await answer.locator("[data-citation]").count()) !== 4) throw new Error("the unsafe url did not become a plain chip");
+          if (!/A bad link\s*3/.test((await answer.innerText()).replace(/\n/g, " ")) || /missing/.test(await answer.locator("[data-citation]").allInnerTexts().then((t) => t.join()))) throw new Error("the unsafe chip or the missing mark is wrong");
+          const names = await marks.evaluateAll((els) => els.map((e) => [e.getAttribute("aria-label"), e.target, e.rel]));
+          if (names[0][0] !== "Source 1: Font optimization in Next.js" || names[1][0] !== "Source 2: geist on npm" || !names.every(([, t, r]) => t === "_blank" && r === "noreferrer")) throw new Error(`the marks are named ${JSON.stringify(names)}`);
+          const colorOf = (v) => page.evaluate((value) => { const probe = document.createElement("span"); probe.style.color = value; document.body.append(probe); const c = getComputedStyle(probe).color; probe.remove(); return c; }, v);
+          const [muted, fg] = [await colorOf("var(--litt-fg-muted)"), await colorOf("var(--litt-fg)")];
+          const look = await marks.first().evaluate((e) => { const cs = getComputedStyle(e); return { color: cs.color, deco: cs.textDecorationLine, h: Math.round(e.getBoundingClientRect().height) }; });
+          if (look.color !== muted || look.deco !== "none" || look.h !== 16) throw new Error(`a resting mark is ${JSON.stringify(look)}, not 16px in --litt-fg-muted with no underline`);
+          const lists = box.getByRole("list");
+          if ((await lists.count()) !== 2) throw new Error(`${await lists.count()} lists, not the search results and the turn's`);
+          const results = lists.first().getByRole("listitem");
+          if ((await results.count()) !== 3 || !(await results.nth(2).innerText()).includes("Not cited")) throw new Error("the search results are not 3 rows with the uncited one saying Not cited");
+          const rows = lists.nth(1).getByRole("link");
+          if ((await rows.count()) !== 2) throw new Error(`the turn's list has ${await rows.count()} linked rows, not 2 (the unsafe url has no link)`);
+          const rowH = await rows.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().height)));
+          if (!rowH.every((h) => h >= 44)) throw new Error(`rows are ${rowH.join(", ")}px tall, under 44`);
+          const litNow = () => box.locator("[data-lit]").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label") ?? e.textContent.trim().slice(0, 30)));
+          const geist = marks.nth(1);
+          const gb = await geist.boundingBox();
+          await page.mouse.move(gb.x + gb.width / 2, gb.y + gb.height / 2);
+          await page.waitForTimeout(120);
+          let lit = await litNow();
+          if (lit.filter((l) => l === "Source 2: geist on npm").length !== 2 || lit.filter((l) => l.includes("geist on npm")).length !== 4) throw new Error(`resting on the geist mark lit ${JSON.stringify(lit)}, not both geist marks and both geist rows`);
+          if ((await geist.evaluate((e) => getComputedStyle(e).color)) !== fg) throw new Error("a lit mark is not --litt-fg");
+          await page.waitForTimeout(700);
+          const card = page.locator("[data-popover-surface]");
+          if (!(await card.isVisible()) || !(await card.innerText()).includes("geist on npm")) throw new Error("the card did not open with the title after the pointer rested");
+          await page.mouse.move(gb.x, gb.y - 200);
+          await page.waitForTimeout(400);
+          if ((await litNow()).length) throw new Error("something stays lit after the pointer leaves");
+          const row = rows.first();
+          const rb = await row.boundingBox();
+          await page.mouse.move(rb.x + 80, rb.y + rb.height / 2);
+          await page.waitForTimeout(120);
+          lit = await litNow();
+          if (!lit.includes("Source 1: Font optimization in Next.js")) throw new Error(`resting on a row lit ${JSON.stringify(lit)}, not its mark`);
+          await page.mouse.move(rb.x, rb.y - 300);
+          await page.waitForTimeout(300);
+          await marks.first().focus();
+          await page.keyboard.press("Shift+Tab");
+          await page.keyboard.press("Tab");
+          await page.waitForTimeout(300);
+          if (!(await card.isVisible())) throw new Error("keyboard focus did not open the card");
+          if (!(await litNow()).includes("Source 1: Font optimization in Next.js")) throw new Error("focus did not light the mark's row");
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(300);
+          if (await card.isVisible()) throw new Error("Escape did not close the card");
+          await page.keyboard.press("Tab");
+          await page.keyboard.press("Tab");
+          await page.waitForTimeout(100);
+          const copy = (await box.getByTestId("sources-copy").innerText()).trim();
+          if (copy !== "Next.js loads fonts through next/font [1], and geist ships both faces [2] as next/font modules [2].") throw new Error(`unlinkCitations gives "${copy}"`);
+          if ((await box.getByTestId("sources-id").innerText()).trim() !== "geist,null") throw new Error("citationId did not read #cite-geist and refuse an ordinary link");
+          return "3 linked marks in --litt-fg-muted, the unsafe url a chip and the unknown id nothing, a mark lights its row and its sibling, a row lights its mark, focus opens the card and Esc closes it, Not cited on the uncited result, citationId and unlinkCitations agree";
         });
       }
       if (has("composer")) {
@@ -3194,6 +3391,73 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const want = ["// halo", "const label = 'live';", "export default label;", "// a long comment that runs past the edge of a block twenty rem wide"].join("\n");
           if (clip !== want) throw new Error(`the clipboard holds ${JSON.stringify(clip)}`);
           return "tones from tokens, + in success, bands, scrolls inside the block, Copy copied the text as given";
+        });
+      }
+      if (has("file-changes")) {
+        await attempt("file changes: the header counts files and lines, Keep all is the raised block, a row opens its diff, Keep calls onDecide with its id and the row says kept, Undo by keyboard hands focus to Keep, Keep the rest acts on pending files only and the header becomes a receipt", async () => {
+          const box = item("file-changes").locator("[data-testid=litt-file-changes]");
+          await box.scrollIntoViewIfNeeded();
+          const list = box.getByRole("list", { name: "Files changed" });
+          await list.waitFor({ state: "visible", timeout: 5000 });
+          const text = async (loc) => ((await loc.textContent()) ?? "").replace(/\s+/g, " ");
+          if ((await list.getByRole("listitem").count()) !== 3) throw new Error(`the list holds ${await list.getByRole("listitem").count()} files, not 3`);
+          const head = await text(box);
+          if (!/3 files changed/.test(head) || !/14 lines added, 2 removed/.test(head) || !/3 left to review/.test(head)) throw new Error(`the header reads "${head}"`);
+          const status = box.locator("ul ~ [role=status]");
+          if ((await status.textContent())?.trim()) throw new Error("the live region spoke on the first render");
+          const said = async (want) => {
+            const deadline = Date.now() + 3000;
+            while (Date.now() < deadline) {
+              if ((await status.textContent())?.trim() === want) return;
+              await page.waitForTimeout(100);
+            }
+            throw new Error(`the live region says "${(await status.textContent())?.trim()}", not "${want}"`);
+          };
+          const decided = async () => (await box.getByTestId("file-changes-decided").innerText()).trim();
+          const keepAll = box.getByRole("button", { name: "Keep all", exact: true });
+          const look = await keepAll.evaluate((el) => {
+            const probe = document.createElement("span");
+            document.body.append(probe);
+            probe.style.backgroundColor = "var(--litt-block)";
+            const block = getComputedStyle(probe).backgroundColor;
+            probe.style.backgroundColor = "var(--litt-accent)";
+            const accent = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            return { bg: getComputedStyle(el).backgroundColor, block, accent };
+          });
+          if (look.bg !== look.block || look.bg === look.accent) throw new Error(`Keep all is ${look.bg}, not the raised block --litt-block (${look.block})`);
+
+          const row = box.getByRole("button", { name: "src/styles/fonts.css, modified, 1 line added, 1 removed", exact: true });
+          if ((await row.getAttribute("aria-expanded")) !== "false") throw new Error("with three files a diff starts open");
+          await row.scrollIntoViewIfNeeded();
+          await row.click();
+          if ((await row.getAttribute("aria-expanded")) !== "true") throw new Error("a click did not open the diff");
+          await box.getByRole("group", { name: "Diff of src/styles/fonts.css" }).waitFor({ state: "visible", timeout: 3000 });
+
+          const keep = box.getByRole("button", { name: "Keep src/styles/fonts.css", exact: true });
+          await keep.scrollIntoViewIfNeeded();
+          await keep.click();
+          await said("Kept src/styles/fonts.css");
+          if ((await decided()) !== "fonts kept") throw new Error(`onDecide got "${await decided()}", not "fonts kept"`);
+          if (await keep.count()) throw new Error("a kept row still shows Keep");
+          await box.getByRole("button", { name: "src/styles/fonts.css, modified, 1 line added, 1 removed, kept", exact: true }).waitFor({ state: "visible", timeout: 3000 });
+          if (!/2 left to review/.test(await text(box))) throw new Error("the count of what is left did not go down to 2");
+
+          const undo = box.getByRole("button", { name: "Undo src/styles/fonts.test.ts", exact: true });
+          await undo.focus();
+          await page.keyboard.press("Enter");
+          await said("Undid src/styles/fonts.test.ts");
+          const focused = await page.evaluate(() => document.activeElement?.getAttribute("aria-label"));
+          if (focused !== "Keep src/styles/fonts.test.ts") throw new Error(`focus went to "${focused}", not the Keep that replaced Undo`);
+
+          const rest = box.getByRole("button", { name: "Keep the rest", exact: true });
+          await rest.focus();
+          await page.keyboard.press("Enter");
+          await said("Kept src/styles/type.css. All reviewed: 2 kept, 1 undone");
+          if ((await decided()) !== "fonts kept | test undone | type kept") throw new Error(`Keep the rest decided "${await decided()}", not only the pending file`);
+          if (!/All reviewed: 2 kept, 1 undone/.test(await text(box))) throw new Error(`the header is not a receipt: "${await text(box)}"`);
+          if (await box.getByRole("button", { name: /^(Keep|Undo) (all|the rest)$/ }).count()) throw new Error("the header's buttons stayed with nothing pending");
+          return "3 files changed, 14 lines added, 2 removed; Keep all is --litt-block; the diff opens; Keep, Undo by Enter with focus handed to Keep, Keep the rest on pending only; All reviewed: 2 kept, 1 undone";
         });
       }
       if (has("message")) {
