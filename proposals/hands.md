@@ -73,9 +73,11 @@ Three builders, one per item, each in its own worktree on this contract; the lea
 - **Rule builder.** Under 352px a row stacks its field, operator and value. A group of one row still shows its join, so the word is always said. `maxDepth` is 1 by default (a group inside the rule, no deeper). A number value is a NumberField.
 - **Range chart.** The hand's grid is whole bars: an edge snaps to a bar, never between two. In review, the lead found fun mode popping the lit bars on load and on every resize: seating one edge before the other read as a new range, which also told `onValueChange` a half-seated one. A new width now seats both edges before the picture reads them.
 
-At rest, the Range chart and Rule builder pages match Calm in fun mode to the pixel, section by section, desktop and phone. The Run card's runs tick, so its page was compared under a frozen clock: everything matches but one glyph, below.
+At rest, the Range chart and Rule builder pages match Calm in fun mode to the pixel, section by section, desktop and phone. The Run card's runs tick, so its page was compared under a frozen clock: everything matched but one glyph, below.
 
-Left for later: in a rule row, Combobox's query wraps under two tags; and a RollingNumber that has rolled can rest a glyph on a sub-pixel offset (the run card's "100%" in Calm, against the count fun mode ends on).
+Left for later: in a rule row, Combobox's query wraps under two tags.
+
+Corrected after the round: that glyph came from the comparison, not the component. Playwright's frozen clock strands motion's animations, so the rolled "100%" in Calm was caught mid-roll. `npm run test:fun` now compares every page with a real clock, and it found a real RollingNumber bug instead: a figure that changes every frame, as this round's Range chart total does, could rest with a digit missing. Fixed the same day.
 
 ## Questions for Nick
 
