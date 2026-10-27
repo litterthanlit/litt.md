@@ -53,7 +53,7 @@
  *
  * WHERE FILES LAND IN A HOST (shadcn puts a target without "~/" under src/ when the host has one)
  *   components/litt/<stem>.tsx       the components
- *   lib/litt/motion/{index,spring,tokens,device,drag,fun}.ts(x), lib/litt/glide.tsx, lib/litt/shopify.ts, lib/litt/shopify-cart.tsx     the engines
+ *   lib/litt/motion/{index,spring,tokens,rules,device,drag,hand,fun}.ts(x), lib/litt/glide.tsx, lib/litt/shopify.ts, lib/litt/shopify-cart.tsx     the engines
  *   components/litt-blocks/<block>.tsx   the blocks: outside components/litt/, because a block is a starting point the host edits
  *   Every import between shipped files is relative, so no alias in the host matters, and none of
  *   it collides with the host's own components/ui/button.tsx. registryDependencies are absolute
@@ -968,6 +968,21 @@ const COPY = {
     description: "Two values set at once on one surface, like a reply's tone against its length. A well with a static dot grid, a round thumb with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. It is the Slider in two dimensions, in the foreground and never the accent.",
     docs: "Import Pad from components/litt/pad. Give it a label, an x and a y axis ({ label, min, max, step, minLabel, maxLabel }), and hold the value in state with value and onValueChange. Pass defaultMark to show the default and formatValue to say the value in words. Each axis is a range input for the keyboard and screen readers, and the arrow keys move it.",
   },
+  "spring-editor": {
+    title: "Spring editor",
+    description: "A spring shaped by hand, as time and bounce (Motion's visualDuration and bounce, Framer's Time and Bounce). The Pad's well with the spring's curve on its floor: drag the cap right for a slower spring and up for more bounce. It says what the spring does in words, a dot crosses a rail on it when you let go, and tier draws litt's limits with a Fits or Change row per rule.",
+    docs: "Import SpringEditor from components/litt/spring-editor. Give it a label and hold the spring ({ time, bounce }) in state with value and onValueChange. Pass tier=\"expressive\" or \"responsive\" to check it against litt's motion rules, and defaultMark for the default. Time and Bounce are range inputs for the keyboard and screen readers.",
+  },
+  "curve-editor": {
+    title: "Curve editor",
+    description: "An easing shaped by hand, as a cubic Bézier: two round caps pull the curve from its start and its end, on a well that shows progress from -0.25 to 1.25. It writes the curve as CSS, says what it feels like in words, and a dot crosses a rail on it when you let go.",
+    docs: "Import CurveEditor from components/litt/curve-editor. Give it a label and hold the curve ([x1, y1, x2, y2]) in state with value and onValueChange; toCubicBezier writes it as CSS. Pass defaultMark to show the default and duration for the preview. Each handle is one tab stop with two range inputs.",
+  },
+  inspector: {
+    title: "Inspector",
+    description: "A floating glass panel for tuning one thing live, built from litt's own controls: groups that fold, versions you save and go back to, a check against your rules with a Fits or Change row each, and Copy tokens.",
+    docs: "Import Inspector and InspectorGroup from components/litt/inspector. Hold every value in one object and pass it as value with onValueChange, then put a Slider, a Switch, a Spring editor or a Curve editor in each InspectorGroup. Add defaultValue for Reset, presets and storageKey for versions, checks for the rules and tokens for Copy tokens.",
+  },
   /* The rails step: a data hue drawn as a thin line. Each entry is owned by the agent that builds the item. */
   breakdown: {
     title: "Breakdown",
@@ -1378,7 +1393,7 @@ function build(demos = []) {
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
   const onDisk = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
-  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "device.ts", "drag.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
+  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "rules.ts", "device.ts", "drag.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
   // A block is named after the page that shows it, so its name finds that page, and never after a component.
   const blockFiles = blockNames.map((b) => path.join(blocksDir, `${b}.tsx`));
