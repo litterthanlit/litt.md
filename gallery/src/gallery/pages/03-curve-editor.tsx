@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CurveEditor, describeCurve, toCubicBezier, type CubicBezier } from "@/components/curve-editor";
+import { CurveEditor, toCubicBezier, type CubicBezier } from "@/components/curve-editor";
 import { Segmented } from "@/components/segmented";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
@@ -17,7 +17,7 @@ export const meta: PageMeta = {
 
 export const docs: PageDocs = {
   components: ["curve-editor"],
-  exports: ["CurveEditor", "toCubicBezier", "describeCurve"],
+  exports: ["CurveEditor"],
   usage: `import { useState } from "react";
 import { CurveEditor, toCubicBezier, type CubicBezier } from "@/components/curve-editor";
 
@@ -94,12 +94,12 @@ function ExitDemo() {
 }
 
 function BackDemo() {
-  const [curve, setCurve] = useState<CubicBezier>([0.4, -0.3, 0.5, 1.35]);
+  const [curve, setCurve] = useState<CubicBezier>([0.4, -0.2, 0.5, 1.2]);
   return (
     <div className="grid w-full max-w-sm gap-3">
       <CurveEditor label="Logo bounce" value={curve} onValueChange={setCurve} height={240} preview />
       <p className="text-small text-fg-subtle">
-        {describeCurve(curve)}: paste <code className="font-mono text-caption text-fg-muted">{toCubicBezier(curve)}</code> into the transition.
+        In a CSS transition: <code className="font-mono text-caption text-fg-muted">transition: transform 480ms {toCubicBezier(curve)}</code>
       </p>
     </div>
   );

@@ -280,7 +280,7 @@ export function Inspector<T>({
                 aria-label="Version"
                 options={options.map(({ value: v, label }) => ({ value: v, label }))}
                 value={current?.value ?? ""}
-                placeholder="Unsaved changes"
+                placeholder={options.length ? "Unsaved changes" : "No versions yet"}
                 onValueChange={(v) => {
                   const hit = options.find((o) => o.value === v);
                   if (hit) onValueChange(structuredClone(hit.item.value));

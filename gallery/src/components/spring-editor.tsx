@@ -15,7 +15,7 @@
  * - Tier: pass tier and litt's limits for it are drawn (rules.ts): beyond the visual-time limit and above the bounce
  *   limit the floor is washed with fg at 5%, so the clear corner is where a spring fits. A short plate names each
  *   limit. Under the readout, one row per rule says Fits or Change (the Tag's success and warning words), as the
- *   Playground's rows do.
+ *   Playground's rows do; checks={false} leaves the rows to a panel that lists them itself.
  * - It says its value (R5): the label row ends with the time and the bounce, and a line under the well says what
  *   they do: "Settles in 420ms and overshoots 3%." The same words are both inputs' aria-valuetext.
  * - Preview: a rail under the well with a 12px dot in --fg and a ghost Play button. The dot crosses on the spring
@@ -63,6 +63,8 @@ export type SpringEditorProps = {
   maxBounce?: number;
   /** Checks the spring against one of litt's tiers: draws its limits on the floor and says Fits or Change for each rule under the readout. */
   tier?: SpringTier;
+  /** With a tier, lists a Fits or Change row per rule under the readout. On by default; turn it off when the panel around it lists the rules itself, as an Inspector's Rules group does. */
+  checks?: boolean;
   /** Draws a dashed circle marked "Default" at this spring. Double-click the well to go back to it. */
   defaultMark?: Spring;
   /** Shows the rail under the well where a dot crosses on the spring, with a Play button. On by default. */
@@ -148,6 +150,7 @@ export function SpringEditor({
   maxTime = 0.8,
   maxBounce = 0.5,
   tier,
+  checks = true,
   defaultMark,
   preview = true,
   height = 160,
@@ -261,17 +264,17 @@ export function SpringEditor({
   /* The curve's height leaves room for the most overshoot maxBounce allows. Overshoot follows the bounce alone. */
   const top = useMemo(() => 1 + overshoot({ time: 0.3, bounce: maxBounce }) + HEADROOM, [maxBounce]);
   const toY = (x: number) => (VIEW * (1 - x / top)).toFixed(1);
-  const d = pts
-    .filter(([t], i) => t <= maxTime || i === 0)
-    .map(([t, x], i) => `${i ? "L" : "M"}${((t / maxTime) * VIEW).toFixed(1)} ${toY(x)}`)
-    .join("");
+  const shown = pts.filter(([t], i) => t <= maxTime || i === 0);
+  /* The simulation stops once the spring has settled; from there it rests on the target to the edge. */
+  const rest = shown[shown.length - 1]![0] < maxTime ? `L${VIEW} ${toY(1)}` : "";
+  const d = shown.map(([t, x], i) => `${i ? "L" : "M"}${((t / maxTime) * VIEW).toFixed(1)} ${toY(x)}`).join("") + rest;
   const fx = value.time / maxTime;
   const fy = value.bounce / maxBounce;
 
   /* The tier's limits, as fractions of each axis. A limit past the edge is not drawn. */
   const limitX = tier ? LIMITS.springMs / 1000 / maxTime : 1;
   const limitY = tier ? (tier === "responsive" ? 0 : LIMITS.bounce / maxBounce) : 1;
-  const rules = tier ? springRules(value, tier) : [];
+  const rules = tier && checks ? springRules(value, tier) : [];
 
   const describedBy = [labelId, helpId, effectId, defaultId].filter(Boolean).join(" ");
   const plate = disabled ? "bg-surface-2 text-fg-disabled" : "bg-cut text-fg-subtle";

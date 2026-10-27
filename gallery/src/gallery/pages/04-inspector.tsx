@@ -96,7 +96,7 @@ function toastChecks(look: ToastLook, surface: number): InspectorCheck[] {
     { ok: look.padding % 4 === 0, text: `Padding on the 4px grid: ${look.padding}px` },
     { ok: look.float, text: `A toast floats, with the float shadow: ${look.float ? "on" : "off"}` },
     ...springRules(look.enter, "expressive"),
-    { ok: y1 >= x1 && y2 >= x2 && y1 >= 0 && y2 <= 1, text: `The exit eases out and never passes its end: ${toCubicBezier(look.exit)}` },
+    { ok: y1 >= x1 && y2 >= x2 && [y1, y2].every((y) => y >= 0 && y <= 1), text: `The exit eases out and never passes its end: ${toCubicBezier(look.exit)}` },
   ];
 }
 
@@ -193,7 +193,7 @@ function ToastInspectorDemo() {
             <Switch label="Float shadow" description="Lifts the toast off the page." align="end" checked={look.float} onCheckedChange={(float) => set({ float })} />
           </InspectorGroup>
           <InspectorGroup title="Entrance" summary={`${Math.round(look.enter.time * 1000)}ms, ${num(look.enter.bounce)}`}>
-            <SpringEditor label="Spring" value={look.enter} onValueChange={(enter) => set({ enter })} onValueCommit={replay} tier="expressive" defaultMark={litt.enter} height={128} preview={false} />
+            <SpringEditor label="Spring" value={look.enter} onValueChange={(enter) => set({ enter })} onValueCommit={replay} tier="expressive" checks={false} defaultMark={litt.enter} height={128} preview={false} />
           </InspectorGroup>
           <InspectorGroup title="Exit" defaultOpen={false}>
             <CurveEditor label="Easing" value={look.exit} onValueChange={(exit) => set({ exit })} onValueCommit={replay} defaultMark={litt.exit} height={160} preview={false} />
@@ -285,7 +285,7 @@ export default function InspectorPage() {
         code="ToastInspectorDemo"
         size="lg"
         align="start"
-        caption="Every value of the toast in one panel: its corners and padding on Sliders, its shadow on a Switch, its entrance on a Spring editor and its exit on a Curve editor, which starts folded. Let go of a spring or a curve and the toast leaves on the exit and enters on the spring. The Rules group checks every value against litt and says Fits or Change; Lively breaks four of them. Pick litt's toast from the version list and every row fits. Copy tokens hands over CSS custom properties, and the Tokens group shows them. The chevrons turn on the responsive tier; a group snaps open and fades in, and nothing animates its height."
+        caption="Every value of the toast in one panel: its corners and padding on Sliders, its shadow on a Switch, its entrance on a Spring editor and its exit on a Curve editor, which starts folded. Let go of a spring or a curve and the toast leaves on the exit and enters on the spring. The Rules group checks every value against litt and says Fits or Change; Lively breaks five of them. Pick litt's toast from the version list and every row fits. Copy tokens hands over CSS custom properties, and the Tokens group shows them. The chevrons turn on the responsive tier; a group snaps open and fades in, and nothing animates its height."
       >
         <ToastInspectorDemo />
       </Stage>

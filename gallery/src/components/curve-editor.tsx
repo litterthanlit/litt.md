@@ -383,7 +383,7 @@ export function CurveEditor({
               key={handle}
               aria-hidden="true"
               className={thumb + (disabled ? thumbOff : held === handle ? thumbHeld : thumbUp) + (keys === handle ? " outline-2 outline-offset-2 outline-focus" : "")}
-              style={{ left: along(value[handle * 2]), top: along(fromTop(value[handle * 2 + 1])) }}
+              style={{ left: along(clamp(value[handle * 2], 0, 1)), top: along(fromTop(clamp(value[handle * 2 + 1], Y_MIN, Y_MAX))) }}
             />
           ))}
         </div>
