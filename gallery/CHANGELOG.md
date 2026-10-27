@@ -14,6 +14,7 @@ Three components from Nick's moodboard that answer a hand, and the one file of t
 - **changed** `motion`: new `hand.ts`, imported as `@/motion/hand`: `useHand` (a pointer gesture: slop, capture, the release speed, the page's scroll given back, Escape, and the click swallowed after a drag), `useSettle` (settle on the responsive spring and commit once; fun mode's coast, throw and rubber live here and nowhere else) and `snap` (a step grid with anchors that pull). Nothing in your code has to change; the other components keep their own copies for now.
 - **changed** `plan`: new `bare`, only the list with no label row, count, rail or live region, for a parent that says them itself. Nothing in your code has to change.
 - **changed** `combobox`: new `hideLabel`, the label for screen readers only, as Number field's. Nothing in your code has to change.
+- **changed** `tool-call`: new `details`, a part with its own surface (a LogView, a SourceList, a FileChanges) drawn as given when the row opens, after the input and output wells, so it is never a well inside a well; and new `result`, a few words after the target on what the call found or changed ("5 sources", "+2 −2"), kept when the target is cut. Nothing in your code has to change.
 
 ## 2026-10-26 · litt 1.0: nine rules, the depth ladder and Blue 4
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
+import { CodeBlock } from "@/components/code-block";
 import { ArrowUpIcon } from "@/components/icons";
+import { LogView, type LogLine } from "@/components/log-view";
 import { ToolApproval, ToolCall, ToolCallGroup, type ToolApprovalDecision } from "@/components/tool-call";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
@@ -25,6 +27,10 @@ export const docs: PageDocs = {
 <ToolCall status="done" action="Read" target="src/pages/index.tsx" duration={0.2} />
 <ToolCall status="failed" action="Ran" target="npm run build" duration={14} output={buildLog} />
 
+// A part with its own surface opens as it is, with no well around it. result says what the call found or changed.
+<ToolCall status="failed" action="Ran" target="npm run build" result="Exit 1" details={<LogView label="npm run build" lines={lines} />} />
+<ToolCall action="Edited" target="src/styles/fonts.css" result="+1 −1" details={<CodeBlock lang="diff" code={diff} />} />
+
 // A run folded under one line: open while a call runs, closed when they are done.
 <ToolCallGroup running={busy} summary={busy ? "Working on the build" : "Read 2 files and ran the build"}>
   <ToolCall status="done" action="Read" target="package.json" duration={0.1} />
@@ -43,6 +49,7 @@ export const docs: PageDocs = {
   use: [
     "The agent did something and the person should see what: a file it read, a command it ran, a search. One row per call keeps the answer readable and the record complete.",
     "A call has details worth opening, such as a command's output or a search's matches. Pass `input` and `output`, and the row becomes a disclosure.",
+    "A call's result is a part of its own: a command's log, an edit's diff, a search's sources. Pass it as `details`, so it keeps its own surface, and say what it found in `result`.",
     "A run of calls would crowd the turn. ToolCallGroup folds them under one summary, stays open while any call runs and closes when they finish.",
     "The agent needs a yes before it acts. ToolApproval asks in the flow, without taking focus, and turns into a row that says what the person chose.",
     "A call failed. The row says Failed in words, and its output stays in the foreground color so the error can be read.",
@@ -111,6 +118,21 @@ const TEST_LOG = `> vitest run
  Test Files  2 passed (2)
       Tests  5 passed (5)`;
 
+const BUILD_LINES: LogLine[] = [
+  { time: "0.0s", text: "> halo-site@0.4.0 build" },
+  { time: "0.1s", text: "> vite build" },
+  { time: "0.4s", text: "vite v5.4.8 building for production..." },
+  { time: "1.2s", text: "transforming (38) src/styles/fonts.css" },
+  { time: "1.3s", level: "error", text: '[vite:css] Failed to resolve import "@fontsource/geist-mono/400.css" from "src/styles/fonts.css".' },
+  { time: "1.3s", level: "warn", text: 'Did you forget to install "@fontsource/geist-mono"?' },
+  { time: "1.4s", level: "error", text: "npm ERR! Lifecycle script `build` failed with error: exit code 1" },
+];
+
+const FONTS_DIFF = `@@ -1,2 +1,2 @@
+ @import "@fontsource/geist-sans/400.css";
+-@import "@fontsource/geist-mono/400.css";
++@import "geist/font/mono.css";`;
+
 /** The calls of the group demo, in order. Each runs for a moment, then is done. */
 const RUN = [
   { action: "Read", running: "Reading", target: "package.json", seconds: 0.1 },
@@ -140,6 +162,29 @@ function RunDemo() {
         <ToolCall status="denied" action="Run" target="git push --force origin main" />
         <ToolCall status="waiting" action="Run" target="git push origin fix/fontsource" />
       </div>
+    </div>
+  );
+}
+
+function FoundDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl">
+      <ToolCall
+        status="failed"
+        action="Ran"
+        target="npm run build"
+        result="Exit 1"
+        duration={1.4}
+        details={<LogView label="npm run build" lines={BUILD_LINES} height="12rem" />}
+      />
+      <ToolCall
+        action="Edited"
+        target="src/styles/fonts.css"
+        result="+1 −1"
+        duration={0.2}
+        details={<CodeBlock lang="diff" filename="src/styles/fonts.css" code={FONTS_DIFF} />}
+      />
+      <ToolCall action="Ran" target="npm run build" result="Exit 0" duration={6.1} />
     </div>
   );
 }
@@ -246,6 +291,16 @@ export default function ToolCallPage() {
         caption="Each call is one row: a mark, the action in words, the target in mono and the time. Failed, denied and waiting say so in words, and done and running say it in hidden text. Nothing spins, because running is a still half circle. Open the failed build: its output stays in the foreground color, since the mark already says it failed. The chevron turns on the instant tier. The output fades in and travels a quarter of the travel token on the responsive tier, and its height snaps."
       >
         <RunDemo />
+      </Stage>
+
+      <Stage
+        title="What a call found"
+        tier="responsive"
+        size="lg"
+        code="FoundDemo"
+        caption="A call says what it found after its target, and that stays when a long target is cut, so a folded run still reads Exit 1 and +1 −1. Open the build and its log opens as itself, with its own header, lines and Copy: details are drawn as given, never a well inside a well. The edit opens to its diff the same way. The chevron turns on the instant tier and the details travel a quarter of the travel token on the responsive tier."
+      >
+        <FoundDemo />
       </Stage>
 
       <Stage
