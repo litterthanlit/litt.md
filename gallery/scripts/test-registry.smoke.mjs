@@ -373,6 +373,25 @@ const RECIPES = {
     state: [`const [voice, setVoice] = useState({ x: 30, y: 40 });`],
     jsx: `<div className="w-full max-w-sm" data-testid="litt-pad"><Pad label="Your voice" help="How replies sound." x={{ label: "Length", min: 0, max: 100, step: 5, minLabel: "Brief", maxLabel: "Detailed" }} y={{ label: "Tone", min: 0, max: 100, step: 5, minLabel: "Formal", maxLabel: "Casual" }} value={voice} onValueChange={setVoice} defaultMark={{ x: 30, y: 40 }} formatValue={(v) => \`Tone \${v.y}, length \${v.x}\`} /></div>`,
   },
+  "spring-editor": {
+    needs: ["SpringEditor"],
+    state: [`const [spring, setSpring] = useState({ time: 0.3, bounce: 0.1 });`],
+    jsx: `<div className="w-full max-w-sm" data-testid="litt-spring-editor"><SpringEditor label="Smoke spring" value={spring} onValueChange={setSpring} tier="expressive" preview={false} /></div>`,
+  },
+  "curve-editor": {
+    needs: ["CurveEditor"],
+    state: [`const [curve, setCurve] = useState<[number, number, number, number]>([0.2, 0.7, 0.3, 1]);`],
+    jsx: `<div className="w-full max-w-sm" data-testid="litt-curve-editor"><CurveEditor label="Smoke curve" value={curve} onValueChange={setCurve} preview={false} /></div>`,
+  },
+  inspector: {
+    needs: ["Inspector", "InspectorGroup"],
+    state: [`const [card, setCard] = useState({ radius: 12 });`],
+    jsx: `<div className="w-full max-w-sm" data-testid="litt-inspector">
+          <Inspector title="Smoke card" value={card} onValueChange={setCard} defaultValue={{ radius: 8 }} checks={(v) => [{ ok: v.radius === 8, text: \`Corners on 8px: \${v.radius}px\` }]} tokens={(v) => \`:root {\\n  --card-radius: \${v.radius}px;\\n}\`}>
+            <InspectorGroup title="Shape" summary={\`\${card.radius}px\`}><button type="button" onClick={() => setCard({ radius: 8 })}>Round to 8px</button></InspectorGroup>
+          </Inspector>
+        </div>`,
+  },
   gauge: {
     needs: ["Gauge", "FunMode"],
     jsx: `<div className="grid w-full max-w-xs gap-6" data-testid="litt-gauges">
@@ -2448,6 +2467,85 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (fill === accentFill) throw new Error("the thumb is filled with the accent");
           await page.evaluate(() => document.activeElement?.blur());
           return `pressed in the middle gives "${pressed}"`;
+        });
+      }
+      if (has("spring-editor")) {
+        await attempt("spring-editor: time and bounce on one tab stop, the keys and a press move it, and it says what the spring does", async () => {
+          const group = item("spring-editor").getByRole("group", { name: "Smoke spring" });
+          await group.waitFor({ state: "visible", timeout: 8000 });
+          const timeIn = group.getByRole("slider", { name: "Time", exact: true });
+          const bounceIn = group.getByRole("slider", { name: "Bounce", exact: true });
+          const says = async () => (await timeIn.getAttribute("aria-valuetext")) ?? "";
+          if (!(await says()).startsWith("300ms, bounce 0.1. Settles in ")) throw new Error(`the inputs read "${await says()}"`);
+          if ((await timeIn.getAttribute("tabindex")) !== null || (await bounceIn.getAttribute("tabindex")) !== "-1") throw new Error("Time should be the one tab stop and Bounce tabindex -1");
+          const rows = item("spring-editor").getByRole("list", { name: "Against the expressive tier" }).getByRole("listitem");
+          if ((await rows.count()) !== 3) throw new Error(`the tier check has ${await rows.count()} rows, not 3`);
+          await timeIn.focus();
+          await page.keyboard.press("ArrowRight");
+          await page.keyboard.press("ArrowUp");
+          await page.waitForTimeout(100);
+          if (!(await says()).startsWith("310ms, bounce 0.11.")) throw new Error(`ArrowRight and ArrowUp gave "${await says()}"`);
+          await page.keyboard.press("Home");
+          if (!(await says()).startsWith("50ms, bounce 0.11.")) throw new Error(`Home gave "${await says()}"`);
+          const b = await group.locator("div[data-no-drag]").boundingBox();
+          await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+          await page.mouse.down();
+          await page.mouse.up();
+          await page.waitForTimeout(100);
+          if (!(await says()).startsWith("400ms, bounce 0.25.")) throw new Error(`a press in the middle gave "${await says()}", not 400ms and bounce 0.25`);
+          await page.evaluate(() => document.activeElement?.blur());
+          return `a press in the middle reads "${(await says()).split(".")[0]}"`;
+        });
+      }
+      if (has("curve-editor")) {
+        await attempt("curve-editor: each handle is one tab stop, the keys move it, and the CSS and its words follow", async () => {
+          const group = item("curve-editor").getByRole("group", { name: "Smoke curve" });
+          await group.waitFor({ state: "visible", timeout: 8000 });
+          const startX = group.getByRole("slider", { name: "Start handle, time", exact: true });
+          const startY = group.getByRole("slider", { name: "Start handle, progress", exact: true });
+          const endX = group.getByRole("slider", { name: "End handle, time", exact: true });
+          if ((await startX.getAttribute("tabindex")) !== null || (await endX.getAttribute("tabindex")) !== null || (await startY.getAttribute("tabindex")) !== "-1") throw new Error("each handle's time input should be its one tab stop");
+          const code = item("curve-editor").locator("code");
+          const css = async () => (await code.textContent())?.trim();
+          if ((await css()) !== "cubic-bezier(0.2, 0.7, 0.3, 1)") throw new Error(`the CSS reads "${await css()}"`);
+          const words = await startX.getAttribute("aria-valuetext");
+          if (!words?.includes("Starts quick and eases into place")) throw new Error(`the handle says "${words}"`);
+          await startX.focus();
+          await page.keyboard.press("ArrowUp");
+          await page.keyboard.press("Shift+ArrowRight");
+          await page.waitForTimeout(100);
+          if ((await css()) !== "cubic-bezier(0.3, 0.71, 0.3, 1)") throw new Error(`ArrowUp and Shift+ArrowRight gave "${await css()}"`);
+          await page.evaluate(() => document.activeElement?.blur());
+          return `the keys give "${await css()}"`;
+        });
+      }
+      if (has("inspector")) {
+        await attempt("inspector: checks against the rules, resets, saves a version, shows the tokens and folds", async () => {
+          const panel = item("inspector").getByRole("region", { name: "Smoke card" });
+          await panel.waitFor({ state: "visible", timeout: 8000 });
+          const rules = panel.getByRole("button", { name: /^Rules/ });
+          if (!/1 to change/.test((await rules.textContent()) ?? "")) throw new Error(`the Rules row reads "${await rules.textContent()}"`);
+          if ((await panel.getByRole("button", { name: "Reset" }).count()) !== 1) throw new Error("Reset is not shown while the value differs from its default");
+          await panel.getByRole("button", { name: "Round to 8px" }).click();
+          if (!/All fit/.test((await rules.textContent()) ?? "")) throw new Error(`after the fix the Rules row reads "${await rules.textContent()}"`);
+          if ((await panel.getByRole("button", { name: "Reset" }).count()) !== 0) throw new Error("Reset stays at the default");
+          await panel.getByRole("button", { name: "Save", exact: true }).click();
+          const version = panel.getByRole("combobox", { name: "Version" });
+          if (!/Version 1/.test((await version.textContent()) ?? "")) throw new Error(`after Save the version list reads "${await version.textContent()}"`);
+          if (!(await panel.getByRole("button", { name: "Save", exact: true }).isDisabled())) throw new Error("Save stays on for a value already saved");
+          if ((await panel.getByRole("status").textContent()) !== "Saved as Version 1.") throw new Error("Save is not announced");
+          const tokensRow = panel.getByRole("button", { name: /^Tokens/ });
+          if ((await tokensRow.getAttribute("aria-expanded")) !== "false") throw new Error("Tokens does not start folded");
+          await tokensRow.click();
+          const pre = await panel.getByLabel("Tokens to paste").textContent();
+          if (!pre?.includes("--card-radius: 8px;")) throw new Error(`the tokens read "${pre}"`);
+          const fold = panel.getByRole("button", { name: "Fold Smoke card" });
+          if ((await fold.getAttribute("aria-expanded")) !== "true") throw new Error("the fold button is not expanded");
+          await fold.click();
+          if ((await rules.count()) !== 0) throw new Error("the body is still there after folding");
+          await panel.getByRole("button", { name: "Open Smoke card" }).click();
+          await panel.getByRole("button", { name: /^Rules/ }).waitFor({ state: "visible", timeout: 2000 });
+          return "fits after the fix, saved as Version 1, folds and opens";
         });
       }
       if (has("gauge")) {

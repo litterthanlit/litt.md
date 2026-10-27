@@ -33,7 +33,7 @@
  * typeface is the Type decision in the taste profile, not a check.mjs bound:
  * the sans is the face tokens.css sets.
  */
-import { toCss } from "./spring";
+import { toCss, type Spring } from "./spring";
 import { surfaceRadius, type Dial, type Locked } from "./tokens";
 
 export const LIMITS = {
@@ -99,6 +99,27 @@ export function checkRules(dial: Dial): RuleRow[] {
       ok: dial.exit === LIMITS.exit,
       text: `Exits run at ${LIMITS.exit}x the spring time, as a tween that never bounces: ${num(dial.exit)}x`,
     },
+  ];
+}
+
+/** The two spring tiers. Instant is a tween, so it has no spring to check. */
+export type SpringTier = "responsive" | "expressive";
+
+/** One spring against its tier: the visual time, the settle and the bounce, the rows checkRules reads for that tier. */
+export function springRules(spring: Spring, tier: SpringTier): RuleRow[] {
+  const settle = toCss(spring).duration;
+  return [
+    {
+      ok: Math.round(spring.time * 1000) <= LIMITS.springMs,
+      text: `Visual time at most ${LIMITS.springMs}ms: ${sec(spring.time)}`,
+    },
+    {
+      ok: settle <= LIMITS.settleMs,
+      text: `Settles within ${LIMITS.settleMs}ms: ${ms(settle)}`,
+    },
+    tier === "responsive"
+      ? { ok: spring.bounce === 0, text: `No bounce on the responsive tier: ${num(spring.bounce)}` }
+      : { ok: spring.bounce <= LIMITS.bounce, text: `Bounce at most ${LIMITS.bounce}: ${num(spring.bounce)}` },
   ];
 }
 
