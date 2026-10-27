@@ -270,6 +270,10 @@
       "version": "2026.10.22",
       "hash": "cafeb35300a0ae42"
     },
+    "range-chart": {
+      "version": "2026.10.27",
+      "hash": "a279b9380ed00daa"
+    },
     "resizable": {
       "version": "2026.10.24",
       "hash": "b9abee67bea4af1f"

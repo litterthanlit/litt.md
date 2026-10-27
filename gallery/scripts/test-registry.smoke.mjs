@@ -320,6 +320,10 @@ const RECIPES = {
     needs: ["TimeScrubber"],
     jsx: `<div className="w-full max-w-xl" data-testid="litt-time-scrubber"><TimeScrubber label="Replay" max={48} defaultValue={31} marks={[{ at: 12.1, label: "Image is 2.4 MB", tone: "warning" }, { at: 31, label: "Module not found", tone: "danger" }]} /></div>`,
   },
+  "range-chart": {
+    needs: ["RangeChart"],
+    jsx: `<div className="w-full max-w-xl" data-testid="litt-range-chart"><RangeChart label="Smoke visitors" unit="visitors" bars={Array.from({ length: 60 }, (_, i) => ({ label: \`Day \${i + 1}\`, value: 100 + (i % 7) * 10 }))} segments={[{ label: "Before", start: 0 }, { label: "Launch", start: 20 }, { label: "Since", start: 40 }]} defaultValue={[20, 39]} /></div>`,
+  },
   "slide-confirm": {
     needs: ["SlideConfirm"],
     jsx: `<div className="w-full max-w-sm" data-testid="litt-slide-confirm"><SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" /></div>`,
@@ -1744,6 +1748,53 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const sent = await item("slider").locator("[data-testid=litt-range]").evaluate((form) => new FormData(form).getAll("window"));
           if (sent.join("|") !== "99|100") throw new Error(`the form sent window=${sent.join(",")}, expected 99 and 100 under one name`);
           return `${dragged}, sent ${sent.join(" and ")}`;
+        });
+      }
+      if (has("range-chart")) {
+        await attempt("range chart: three named sliders, the keys move an edge and the span, a segment press settles the range, a drag brushes it, Whole range lets go", async () => {
+          const root = item("range-chart").locator("[data-testid=litt-range-chart]");
+          const from = root.getByRole("slider", { name: "Smoke visitors, from" });
+          const to = root.getByRole("slider", { name: "Smoke visitors, to" });
+          const move = root.getByRole("slider", { name: "Smoke visitors, move range" });
+          const read = async () => `${await from.getAttribute("aria-valuetext")}|${await to.getAttribute("aria-valuetext")}`;
+          const start = await read();
+          if (start !== "Day 21|Day 40") throw new Error(`the sliders read ${start}, expected Day 21|Day 40`);
+          const launch = root.getByRole("button", { name: /^Launch, / });
+          if ((await launch.getAttribute("aria-pressed")) !== "true") throw new Error("the Launch segment is not aria-pressed while the range is the launch");
+          await from.focus();
+          await page.keyboard.press("ArrowRight");
+          await page.waitForTimeout(400);
+          const stepped = await read();
+          if (stepped !== "Day 22|Day 40") throw new Error(`ArrowRight on from gave ${stepped}, expected Day 22|Day 40`);
+          if ((await launch.getAttribute("aria-pressed")) !== "false") throw new Error("the Launch segment stayed pressed after the range moved off it");
+          await move.focus();
+          await page.keyboard.press("PageUp");
+          await page.waitForTimeout(400);
+          const paged = await read();
+          if (paged !== "Day 41|Day 59") throw new Error(`Page Up on move range gave ${paged}, expected Day 41|Day 59: the span moves to the next segment start and keeps its width`);
+          await root.getByRole("button", { name: /^Since, / }).click();
+          await page.waitForTimeout(500);
+          const since = await read();
+          if (since !== "Day 41|Day 60") throw new Error(`pressing Since gave ${since}, expected Day 41|Day 60`);
+          const status = await root.getByRole("status").textContent();
+          if (!status.includes("Day 41 to Day 60")) throw new Error(`the status says "${status}", expected the settled range in words`);
+          const rail = await move.boundingBox();
+          const cap = await from.boundingBox();
+          await page.mouse.move(cap.x + cap.width / 2, rail.y + rail.height / 2);
+          await page.mouse.down();
+          await page.mouse.move(cap.x + cap.width / 2 - rail.width / 2, rail.y + rail.height / 2, { steps: 8 });
+          await page.waitForTimeout(150);
+          await page.mouse.up();
+          await page.waitForTimeout(600);
+          const dragged = await read();
+          if (dragged === since || !dragged.endsWith("|Day 60")) throw new Error(`dragging the from cap left gave ${dragged}, expected an earlier start and the same end`);
+          const whole = root.getByRole("button", { name: "Whole range" });
+          await whole.click();
+          await page.waitForTimeout(500);
+          const all = await read();
+          if (all !== "Day 1|Day 60") throw new Error(`Whole range gave ${all}, expected Day 1|Day 60`);
+          if (!(await whole.isDisabled())) throw new Error("Whole range is not disabled once nothing is narrowed");
+          return `${start} -> ${stepped} -> ${paged} -> ${since} -> dragged ${dragged} -> ${all}`;
         });
       }
       if (has("rule-builder")) {
