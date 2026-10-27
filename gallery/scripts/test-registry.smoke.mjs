@@ -582,6 +582,28 @@ const RECIPES = {
           <p data-testid="tool-call-allowed">{toolAllowed}</p>
         </div>`,
   },
+  sources: {
+    needs: ["Sources", "Citation", "SourceList", "citationId", "unlinkCitations"],
+    types: ["Source"],
+    top: [
+      `const SMOKE_SOURCES: Source[] = [`,
+      `  { id: "fonts", title: "Font optimization in Next.js", url: "https://nextjs.org/docs/app/getting-started/fonts", passage: "next/font self-hosts any font file.", readAt: "2 minutes ago" },`,
+      `  { id: "geist", title: "geist on npm", url: "https://www.npmjs.com/package/geist", site: "npmjs.com", readAt: "2 minutes ago" },`,
+      `  { id: "unsafe", title: "A model's bad link", url: "javascript:alert(1)" },`,
+      `];`,
+      `const SMOKE_FOUND: Source[] = [SMOKE_SOURCES[0], SMOKE_SOURCES[1], { id: "blog", title: "Introducing Geist", url: "https://vercel.com/blog/introducing-geist", readAt: "a minute ago" }];`,
+      `const SMOKE_ANSWER = "Next.js loads fonts through next/font [1](#cite-fonts), and geist ships both faces [2](#cite-geist) as next/font modules [2](#cite-geist).";`,
+    ],
+    jsx: `<div className="grid w-full max-w-md gap-3" data-testid="litt-sources">
+          <Sources sources={SMOKE_SOURCES}>
+            <p data-testid="sources-answer">Next.js loads fonts through next/font<Citation source="fonts" />, and geist ships both faces<Citation source="geist" /> as next/font modules<Citation source="geist" quote="import { GeistMono } from 'geist/font/mono'" />. A bad link<Citation source="unsafe" />, and a missing one<Citation source="missing" />.</p>
+            <SourceList sources={SMOKE_FOUND} label="Search results" hideLabel />
+            <SourceList />
+          </Sources>
+          <p data-testid="sources-copy">{unlinkCitations(SMOKE_ANSWER)}</p>
+          <p data-testid="sources-id">{String(citationId("#cite-geist"))},{String(citationId("https://nextjs.org"))}</p>
+        </div>`,
+  },
   composer: {
     needs: ["Composer"],
     state: [
@@ -3063,6 +3085,70 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if ((await box.getByTestId("tool-call-allowed").innerText()).trim() !== "1") throw new Error("Allow did not call onAllow once");
           await box.getByText("Allowed", { exact: true }).waitFor({ state: "visible", timeout: 3000 });
           return "Failed in words and --litt-danger, output opens, group folds two calls, Allow is --litt-accent and becomes an Allowed row";
+        });
+      }
+      if (has("sources")) {
+        await attempt("sources: numbered marks are links in fg-muted, resting on a mark lights its row and its sibling mark, resting on a row lights its marks, focus opens the card and Esc closes it, a search's uncited result says Not cited, an unsafe url is a plain chip, an unknown id draws nothing, citationId and unlinkCitations read and strip the scheme", async () => {
+          const box = item("sources").locator("[data-testid=litt-sources]");
+          const answer = box.getByTestId("sources-answer");
+          await answer.waitFor({ state: "visible", timeout: 5000 });
+          await box.scrollIntoViewIfNeeded(); // the all-items app puts it far down the page, out of the mouse's reach
+          const marks = answer.locator("a[data-citation]");
+          if ((await marks.count()) !== 3) throw new Error(`the answer has ${await marks.count()} linked marks, not 3 (the unsafe url is a chip, the unknown id nothing)`);
+          if ((await answer.locator("[data-citation]").count()) !== 4) throw new Error("the unsafe url did not become a plain chip");
+          if (!/A bad link\s*3/.test((await answer.innerText()).replace(/\n/g, " ")) || /missing/.test(await answer.locator("[data-citation]").allInnerTexts().then((t) => t.join()))) throw new Error("the unsafe chip or the missing mark is wrong");
+          const names = await marks.evaluateAll((els) => els.map((e) => [e.getAttribute("aria-label"), e.target, e.rel]));
+          if (names[0][0] !== "Source 1: Font optimization in Next.js" || names[1][0] !== "Source 2: geist on npm" || !names.every(([, t, r]) => t === "_blank" && r === "noreferrer")) throw new Error(`the marks are named ${JSON.stringify(names)}`);
+          const colorOf = (v) => page.evaluate((value) => { const probe = document.createElement("span"); probe.style.color = value; document.body.append(probe); const c = getComputedStyle(probe).color; probe.remove(); return c; }, v);
+          const [muted, fg] = [await colorOf("var(--litt-fg-muted)"), await colorOf("var(--litt-fg)")];
+          const look = await marks.first().evaluate((e) => { const cs = getComputedStyle(e); return { color: cs.color, deco: cs.textDecorationLine, h: Math.round(e.getBoundingClientRect().height) }; });
+          if (look.color !== muted || look.deco !== "none" || look.h !== 16) throw new Error(`a resting mark is ${JSON.stringify(look)}, not 16px in --litt-fg-muted with no underline`);
+          const lists = box.getByRole("list");
+          if ((await lists.count()) !== 2) throw new Error(`${await lists.count()} lists, not the search results and the turn's`);
+          const results = lists.first().getByRole("listitem");
+          if ((await results.count()) !== 3 || !(await results.nth(2).innerText()).includes("Not cited")) throw new Error("the search results are not 3 rows with the uncited one saying Not cited");
+          const rows = lists.nth(1).getByRole("link");
+          if ((await rows.count()) !== 2) throw new Error(`the turn's list has ${await rows.count()} linked rows, not 2 (the unsafe url has no link)`);
+          const rowH = await rows.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().height)));
+          if (!rowH.every((h) => h >= 44)) throw new Error(`rows are ${rowH.join(", ")}px tall, under 44`);
+          const litNow = () => box.locator("[data-lit]").evaluateAll((els) => els.map((e) => e.getAttribute("aria-label") ?? e.textContent.trim().slice(0, 30)));
+          const geist = marks.nth(1);
+          const gb = await geist.boundingBox();
+          await page.mouse.move(gb.x + gb.width / 2, gb.y + gb.height / 2);
+          await page.waitForTimeout(120);
+          let lit = await litNow();
+          if (lit.filter((l) => l === "Source 2: geist on npm").length !== 2 || lit.filter((l) => l.includes("geist on npm")).length !== 4) throw new Error(`resting on the geist mark lit ${JSON.stringify(lit)}, not both geist marks and both geist rows`);
+          if ((await geist.evaluate((e) => getComputedStyle(e).color)) !== fg) throw new Error("a lit mark is not --litt-fg");
+          await page.waitForTimeout(700);
+          const card = page.locator("[data-popover-surface]");
+          if (!(await card.isVisible()) || !(await card.innerText()).includes("geist on npm")) throw new Error("the card did not open with the title after the pointer rested");
+          await page.mouse.move(gb.x, gb.y - 200);
+          await page.waitForTimeout(400);
+          if ((await litNow()).length) throw new Error("something stays lit after the pointer leaves");
+          const row = rows.first();
+          const rb = await row.boundingBox();
+          await page.mouse.move(rb.x + 80, rb.y + rb.height / 2);
+          await page.waitForTimeout(120);
+          lit = await litNow();
+          if (!lit.includes("Source 1: Font optimization in Next.js")) throw new Error(`resting on a row lit ${JSON.stringify(lit)}, not its mark`);
+          await page.mouse.move(rb.x, rb.y - 300);
+          await page.waitForTimeout(300);
+          await marks.first().focus();
+          await page.keyboard.press("Shift+Tab");
+          await page.keyboard.press("Tab");
+          await page.waitForTimeout(300);
+          if (!(await card.isVisible())) throw new Error("keyboard focus did not open the card");
+          if (!(await litNow()).includes("Source 1: Font optimization in Next.js")) throw new Error("focus did not light the mark's row");
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(300);
+          if (await card.isVisible()) throw new Error("Escape did not close the card");
+          await page.keyboard.press("Tab");
+          await page.keyboard.press("Tab");
+          await page.waitForTimeout(100);
+          const copy = (await box.getByTestId("sources-copy").innerText()).trim();
+          if (copy !== "Next.js loads fonts through next/font [1], and geist ships both faces [2] as next/font modules [2].") throw new Error(`unlinkCitations gives "${copy}"`);
+          if ((await box.getByTestId("sources-id").innerText()).trim() !== "geist,null") throw new Error("citationId did not read #cite-geist and refuse an ordinary link");
+          return "3 linked marks in --litt-fg-muted, the unsafe url a chip and the unknown id nothing, a mark lights its row and its sibling, a row lights its mark, focus opens the card and Esc closes it, Not cited on the uncited result, citationId and unlinkCitations agree";
         });
       }
       if (has("composer")) {

@@ -326,6 +326,10 @@
       "version": "2026.10.26",
       "hash": "9ba5e8e52d3ba085"
     },
+    "sources": {
+      "version": "2026.10.27",
+      "hash": "4635aa120daf430b"
+    },
     "sparkline": {
       "version": "2026.10.26",
       "hash": "89a039dcdb259fd5"
