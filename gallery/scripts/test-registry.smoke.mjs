@@ -568,6 +568,24 @@ const RECIPES = {
           <RunCard title="Moving the Northwind site" steps={RUN_FAILED} progress={0.4} defaultOpen={false} />
         </div>`,
   },
+  "run-list": {
+    needs: ["RunList"],
+    types: ["AgentRun"],
+    top: [
+      `const SMOKE_RUNS: AgentRun[] = [`,
+      `  { id: "world", title: "Creating your world", status: "running", detail: "Step 2 of 3", progress: 0.45, updated: "Just now" },`,
+      `  { id: "halo", title: "Fix the Halo build", status: "needs-you", detail: "Approve npm run deploy", updated: "1m ago" },`,
+      `  { id: "northwind", title: "Move the Northwind site", status: "failed", detail: "Step 4: font file missing", updated: "12m ago" },`,
+      `  { id: "cosmos", title: "Import the Cosmos catalog", status: "done", detail: "1,240 products", updated: "1h ago" },`,
+      `];`,
+    ],
+    state: [`const [runListRuns, setRunListRuns] = useState<AgentRun[]>(SMOKE_RUNS);`, `const [runListId, setRunListId] = useState("world");`],
+    jsx: `<div className="grid w-full max-w-72 gap-4" data-testid="litt-run-list">
+          <RunList runs={runListRuns} selectedId={runListId} onSelect={(run) => setRunListId(run.id)} onStop={(run) => setRunListRuns((all) => all.map((r) => (r.id === run.id ? { ...r, status: "stopped" } : r)))} onArchive={(run) => setRunListRuns((all) => all.filter((r) => r.id !== run.id))} />
+          <p data-testid="run-list-selected">{runListId}</p>
+          <div><@Btn type="button" data-testid="run-list-agent" onClick={() => setRunListRuns((all) => all.map((r) => (r.id === "world" ? { ...r, status: "needs-you", detail: "Choose a climate", progress: undefined } : r)))}>Agent asks</@Btn></div>
+        </div>`,
+  },
   "tool-call": {
     needs: ["ToolCall", "ToolCallGroup", "ToolApproval"],
     state: [`const [toolDecision, setToolDecision] = useState<"pending" | "allowed" | "denied">("pending");`, `const [toolAllowed, setToolAllowed] = useState(0);`],
@@ -3051,6 +3069,82 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const failed = box.getByRole("button", { name: /^Moving the Northwind site Step 2 failed 40% Expand$/ });
           await failed.waitFor({ state: "visible", timeout: 3000 });
           return "Step 1 of 3 at 12% (4 of 32 ticks), folded to a 44px --litt-block named by its words with focus on it, Step 3 of 3 said while folded, Space reopens with focus on Hide, Step 2 failed";
+        });
+      }
+      if (has("run-list")) {
+        await attempt("run list: needs you lifted under its heading, the open run is one --litt-block with aria-current, a mouse press moves it, the arrows rove one Tab stop, → reaches Archive and Enter archives with focus kept in the list, a run the agent changes jumps to the top with no motion and the status says so", async () => {
+          const box = item("run-list").locator("[data-testid=litt-run-list]");
+          const rows = box.locator("li[data-glide-row] > :is(button,a)");
+          await rows.first().waitFor({ state: "visible", timeout: 5000 });
+          const titles = async () => (await rows.allTextContents()).map((t) => t.split(",")[0]).join(" / ");
+          if ((await titles()) !== "Fix the Halo build / Creating your world / Move the Northwind site / Import the Cosmos catalog") throw new Error(`the rows read "${await titles()}"`);
+          const named = await box.locator("ul").evaluateAll((uls) => uls.map((u) => document.getElementById(u.getAttribute("aria-labelledby"))?.textContent).join(","));
+          if (named !== "Needs you,Runs") throw new Error(`the lists are named "${named}", not "Needs you,Runs"`);
+          if ((await box.locator('[aria-current="true"]').count()) !== 1 || !/Creating your world/.test(await box.locator('[aria-current="true"]').textContent())) throw new Error("aria-current is not on Creating your world alone");
+          const block = box.locator("li > span[aria-hidden=true]");
+          if ((await block.count()) !== 1) throw new Error(`${await block.count()} blocks, not one`);
+          const look = await block.evaluate((el) => {
+            const probe = document.createElement("span");
+            document.body.append(probe);
+            probe.style.backgroundColor = "var(--litt-block)";
+            const want = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            return { bg: getComputedStyle(el).backgroundColor, want, shadow: getComputedStyle(el).boxShadow };
+          });
+          if (look.bg !== look.want || look.shadow === "none") throw new Error(`the block is ${look.bg} with ${look.shadow}, not --litt-block with its lift`);
+          if ((await box.locator("li[data-glide-row] > :is(button,a)[tabindex='0']").count()) !== 1) throw new Error("the rows are not one Tab stop");
+          if ((await box.getByRole("button", { name: /^(Stop|Archive) Fix the Halo build$/ }).count()) !== 0) throw new Error("the run that needs you has a verb");
+
+          await box.scrollIntoViewIfNeeded(); // with every item on the page, the list can sit under the fold, where the mouse cannot reach it
+          const northwind = rows.filter({ hasText: "Move the Northwind site" });
+          const at = await northwind.boundingBox();
+          await page.mouse.click(at.x + at.width / 2, at.y + at.height / 2);
+          await page.waitForTimeout(400);
+          if ((await box.getByTestId("run-list-selected").innerText()).trim() !== "northwind") throw new Error("a press did not call onSelect with the run");
+          if ((await northwind.getAttribute("aria-current")) !== "true") throw new Error("aria-current did not follow the press");
+
+          const focusedName = () => page.evaluate(() => document.activeElement?.getAttribute("aria-label") || document.activeElement?.textContent?.split(",")[0]);
+          await northwind.focus();
+          await page.keyboard.press("ArrowUp");
+          if ((await focusedName()) !== "Creating your world") throw new Error(`ArrowUp went to "${await focusedName()}"`);
+          await page.keyboard.press("End");
+          if ((await focusedName()) !== "Import the Cosmos catalog") throw new Error(`End went to "${await focusedName()}"`);
+          await page.keyboard.press("ArrowRight");
+          if ((await focusedName()) !== "Archive Import the Cosmos catalog") throw new Error(`ArrowRight went to "${await focusedName()}"`);
+          await page.keyboard.press("Enter");
+          await page.waitForTimeout(200);
+          if (/Import the Cosmos catalog/.test(await titles())) throw new Error("Archive did not remove the run");
+          if ((await focusedName()) !== "Move the Northwind site") throw new Error(`after Archive, focus is on "${await focusedName()}", not the row that took its place`);
+
+          const status = box.locator("[role=status]").last();
+          if ((await status.textContent()).trim()) throw new Error("the live region spoke before any run changed");
+          const watch = page.evaluate(() => new Promise((resolve) => {
+            const seen = new Map();
+            let worst = 0;
+            const start = performance.now();
+            const frame = () => {
+              for (const li of document.querySelectorAll("[data-item=run-list] [data-testid=litt-run-list] li[data-glide-row]")) {
+                const t = getComputedStyle(li).transform;
+                const moved = t !== "none" && t !== "matrix(1, 0, 0, 1, 0, 0)";
+                const run = moved ? (seen.get(li) ?? 0) + 1 : 0;
+                seen.set(li, run);
+                worst = Math.max(worst, run);
+              }
+              if (performance.now() - start < 700) requestAnimationFrame(frame);
+              else resolve(worst);
+            };
+            requestAnimationFrame(frame);
+          }));
+          await box.getByTestId("run-list-agent").click();
+          const worst = await watch;
+          if (worst >= 3) throw new Error(`a row moved for ${worst} frames when the agent changed a run`);
+          if ((await titles()).split(" / ")[0] !== "Creating your world") throw new Error(`after the agent's change the rows read "${await titles()}"`);
+          const deadline = Date.now() + 3000;
+          while ((await status.textContent()).trim() !== "Creating your world needs you") {
+            if (Date.now() > deadline) throw new Error(`the live region says "${(await status.textContent()).trim()}"`);
+            await page.waitForTimeout(100);
+          }
+          return "Needs you lifted and named, one --litt-block with aria-current, a press selects Northwind, ↑ End → Enter archive Cosmos with focus on Northwind, the agent's change lifts Creating your world with no row moving and says it needs you";
         });
       }
       if (has("tool-call")) {
