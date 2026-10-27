@@ -13,7 +13,7 @@
  * 5. Contrast:  text, control lines, focus, accent, status and data-hue pairs meet WCAG
  *               (each data hue's -text tone is also checked on its own tint, and the accent's text
  *               on its tint), the text inks reach APCA Lc 60 on every surface, which WCAG 2
- *               overrates for grey on dark, and the accent stands apart from the data hues (R6):
+ *               overrates for grey on dark, and both accents (Blue 4 and pink) stand apart from the data hues (R6):
  *               its fill at least 0.12 from each hue's mark and its text from each hue's text, in OKLab.
  * 6. Weight:    weight by role (R8): --weight 400 (text), --weight-title 500 (titles),
  *               --weight-label 600 (12px labels). Nothing at 700 or more or below 400, no
@@ -139,6 +139,10 @@ const pairs = [
   ["--danger-fg", ["--danger"], 4.5, "text on the danger fill"],
   ["--accent-text", ["--canvas", "--surface-1", "--accent-tint"], 4.5, "accent as link text"],
   ["--accent", ["--canvas", "--surface-1"], 3, "the accent fill against the page"],
+  ["--focus-pink", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring, pink"],
+  ["--accent-fg", ["--accent-pink", "--accent-pink-hover"], 4.5, "text on the pink accent"],
+  ["--accent-pink-text", ["--canvas", "--surface-1", "--accent-pink-tint"], 4.5, "the pink accent as link text"],
+  ["--accent-pink", ["--canvas", "--surface-1"], 3, "the pink fill against the page"],
   ["--success", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--warning", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--danger", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
@@ -190,7 +194,7 @@ const apart = (a, b) => { const [A, B] = [toLab(a), toLab(b)]; return Math.hypot
 let apartChecks = 0, apartFails = 0;
 for (const [theme, map] of [["light", light], ["dark", dark]]) {
   for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
-    for (const [ours, theirs] of [["--accent", `--data-${h}`], ["--accent-text", `--data-${h}-text`]]) {
+    for (const [ours, theirs] of [["--accent", `--data-${h}`], ["--accent-text", `--data-${h}-text`], ["--accent-pink", `--data-${h}`], ["--accent-pink-text", `--data-${h}-text`]]) {
       const a = map.get(ours), b = map.get(theirs);
       if (![a, b].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { fail(`${theme}: ${ours} or ${theirs} is not a six-digit hex`); continue; }
       apartChecks++;
