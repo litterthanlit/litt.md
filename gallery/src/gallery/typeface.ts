@@ -4,9 +4,11 @@
  * The locked face is whatever tokens.css sets in --font-sans, read at runtime
  * from <html> (Customize writes its override on <body>, so this never sees it),
  * so the list never drifts from the tokens. The others are trials to compare
- * against it: faces litt.md has set before, and the system stack. A trial face
- * loads from Google Fonts the first time it is picked. Sizes, weights by role
- * and tracking stay locked; only the family changes.
+ * against it: faces litt.md has set before, Helvetica Neue (the tokens' own
+ * fallback, installed only on Apple's systems, so elsewhere it shows as
+ * Helvetica or Arial), and the system stack. A Google face loads the first
+ * time it is picked. Sizes, weights by role and tracking stay locked; only the
+ * family changes.
  */
 import { useMemo } from "react";
 
@@ -29,6 +31,7 @@ const GOOGLE = "https://fonts.googleapis.com/css2?display=swap&";
 const TRIALS: Typeface[] = [
   { id: "inter", name: "Inter", stack: `"Inter", ${FALLBACK}`, href: `${GOOGLE}family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600` },
   { id: "hanken", name: "Hanken Grotesk", short: "Hanken", stack: `"Hanken Grotesk", ${FALLBACK}`, href: `${GOOGLE}family=Hanken+Grotesk:wght@400;500;600` },
+  { id: "helvetica", name: "Helvetica Neue", short: "Helvetica", stack: FALLBACK },
   { id: "system", name: "System", stack: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif' },
 ];
 
