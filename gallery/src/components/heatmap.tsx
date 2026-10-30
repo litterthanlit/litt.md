@@ -386,6 +386,9 @@ export function Heatmap({
 
   /* Sideways scroll: start at the end, and stay there on resize until the person scrolls away. */
   const stick = useRef(true);
+  /* Where sync last put the scroll. Its scroll event can arrive after the width changed again (fun mode's totals widen
+     their column as they count), and must not read as the person scrolling away. */
+  const placed = useRef<number | null>(null);
   const [overflowing, setOverflowing] = useState(false);
   /* Which edges have more dots beyond them: those edges fade, so a half-clipped dot reads as "more this way". */
   const [edges, setEdges] = useState({ start: false, end: false });
@@ -399,7 +402,10 @@ export function Heatmap({
     const el = scrollRef.current;
     if (!el) return;
     const sync = () => {
-      if (stick.current) el.scrollLeft = el.scrollWidth;
+      if (stick.current) {
+        el.scrollLeft = el.scrollWidth;
+        placed.current = el.scrollLeft;
+      }
       setOverflowing(el.scrollWidth > el.clientWidth + 1);
       readEdges(el);
       setTick((t) => t + 1);
@@ -414,7 +420,9 @@ export function Heatmap({
   const onScroll = () => {
     const el = scrollRef.current;
     if (!el) return;
-    stick.current = el.scrollLeft + el.clientWidth >= el.scrollWidth - 2;
+    const echo = placed.current !== null && Math.abs(el.scrollLeft - placed.current) < 1;
+    placed.current = null;
+    if (!echo) stick.current = el.scrollLeft + el.clientWidth >= el.scrollWidth - 2;
     readEdges(el);
     if (active) setTick((t) => t + 1);
   };

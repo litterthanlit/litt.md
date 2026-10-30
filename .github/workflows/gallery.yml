@@ -70,3 +70,44 @@ jobs:
         run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+  # Its own job, beside the one above, because it takes about as long as everything there together.
+  fun:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: gallery/package-lock.json
+
+      - name: Install
+        run: npm ci --prefix gallery
+
+      - name: Build
+        run: npm run build --prefix gallery
+
+      - name: Install Playwright
+        run: |
+          npm install --prefix "$RUNNER_TEMP/a11y" --no-save --no-package-lock playwright@1.56.1
+          "$RUNNER_TEMP/a11y/node_modules/.bin/playwright" install --with-deps chromium
+
+      # Fun mode changes how things move, never how they look at rest. The self-test must find Calm against Calm
+      # identical and must see a stage title a pixel low, so a noisy or a blind check fails too.
+      - name: Fun mode at rest (every page matches Calm to the pixel once settled, on load and after each stage's first press)
+        run: |
+          npm run test:fun --prefix gallery -- --out "$RUNNER_TEMP/fun-rest"
+          npm run test:fun --prefix gallery -- --self-test --out "$RUNNER_TEMP/fun-rest-self-test"
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Keep the screenshots that differ
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fun-rest
+          path: ${{ runner.temp }}/fun-rest*
+          if-no-files-found: ignore
