@@ -20,7 +20,7 @@ import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { shapeName, SHAPES } from "@/motion/rules";
 import { useCustomize, type ThemeChoice } from "./customize-state";
-import { ACCENTS } from "./look";
+import { ACCENTS, lookWords } from "./look";
 import { AccentChip } from "./swatch";
 
 const THEMES: { value: ThemeChoice; label: string }[] = [
@@ -46,7 +46,7 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 }
 
 export function Deck() {
-  const { theme, setTheme, look, setLook, radius, lockedRadius, setRadius, modified, reset } = useCustomize();
+  const { theme, setTheme, look, setLook, radius, lockedRadius, setRadius, link, modified, reset } = useCustomize();
   const stop = (SHAPES as readonly number[]).indexOf(radius);
   return (
     <section aria-labelledby="deck-title" className="litt-raised grid gap-8 p-6 sm:p-8">
@@ -95,7 +95,7 @@ export function Deck() {
       <footer data-fun-cue="" className="-mt-2 border-t border-line pt-4">
         <div className="flex h-control-sm items-center justify-between gap-4 pointer-coarse:h-control-md">
           <p className="text-caption font-normal text-fg-subtle" aria-live="polite">
-            {modified ? "Tuned in this browser." : "The gallery's defaults: monochrome, calm, the locked shape."}
+            {link ? `From a link: ${lookWords(link.look)}.` : modified ? "Tuned in this browser." : "The gallery's defaults: monochrome, calm, the locked shape."}
           </p>
           {modified && (
             <Button size="sm" variant="ghost" onClick={reset}>
