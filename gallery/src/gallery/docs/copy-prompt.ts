@@ -82,20 +82,18 @@ export type PromptInput = {
   meta: { title: string; summary: string; id?: string };
   docs: PageDocs;
   components: ComponentDoc[];
+  /** The "Match the look" step's text (look.ts lookStep), for a page shown in a look the registry does not install. */
+  lookStep?: string | null;
 };
 
-export function buildPrompt({ meta, docs, components }: PromptInput): string {
+export function buildPrompt({ meta, docs, components, lookStep }: PromptInput): string {
   const files = filesToCopy(components);
   const packages = packagesToInstall(components);
   const names = documentedExports(docs, components).map((e) => e.name);
 
   const first = components[0]?.stem ?? "button";
-  const sections = [
-    `Add the litt.md ${meta.title} to this project.`,
-    `${meta.title}: ${meta.summary}\nExports: ${names.join(", ")}.\n\nRepo: ${REPO} (branch main). Every URL below is on main.` +
-      (meta.id ? `\nThe full docs as Markdown (props, keyboard, accessibility): ${markdownUrl(meta.id)}` : ""),
-
-    `1. Install with shadcn\n` +
+  const steps = [
+    `Install with shadcn\n` +
       `The project needs shadcn set up (a components.json) and Tailwind CSS v4. Run this in the project root:\n` +
       `${installCommands(components)}\n` +
       `It adds the files in components/litt and lib/litt, the npm packages they need, and litt's tokens in the global CSS. ` +
@@ -104,10 +102,12 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
       `For litt's fonts, heading weights and focus ring across the whole app, also run: npx shadcn@latest add ${registryUrl("base-styles")}\n` +
       `With ${REGISTRIES_ENTRY} in components.json, the same install is npx shadcn@latest add @litt/${first}.`,
 
-    `2. Usage\n\`\`\`tsx\n${usageSnippet(docs, components)}\n\`\`\`\n` +
+    ...(lookStep ? [`Match the look\n${lookStep}`] : []),
+
+    `Usage\n\`\`\`tsx\n${usageSnippet(docs, components)}\n\`\`\`\n` +
       `"@/" is the project's own alias. If it has none, import from components/litt with a relative path.`,
 
-    `3. Fallback: copy the files by hand\n` +
+    `Fallback: copy the files by hand\n` +
       `Use this only when shadcn is not an option. These are the gallery's own files, so they use the plain token names (bg-surface-1, --accent) and import each other with "@/". ` +
       `In the usage above, import from "@/components/${first}" instead of "@/components/litt/${first}".\n\n` +
       `Tokens. The files read litt.md's design tokens. If the project does not have them yet, copy these two files into its styles folder, and import tailwind.css from the global CSS. It imports tokens.css and Tailwind itself, so the project needs Tailwind CSS v4.\n` +
@@ -120,7 +120,12 @@ export function buildPrompt({ meta, docs, components }: PromptInput): string {
       `\n\nFiles. ` +
       `Copy each file below into the project and keep its path under src/, so "@/" maps to src/. For example, ${files[0] ?? "gallery/src/components/button.tsx"} becomes ${(files[0] ?? "gallery/src/components/button.tsx").replace(/^gallery\//, "")}. Set the "@/*" alias to "src/*" in tsconfig and the bundler if the project has no such alias.\n` +
       list(files.map(rawUrl)),
-
+  ];
+  const sections = [
+    `Add the litt.md ${meta.title} to this project.`,
+    `${meta.title}: ${meta.summary}\nExports: ${names.join(", ")}.\n\nRepo: ${REPO} (branch main). Every URL below is on main.` +
+      (meta.id ? `\nThe full docs as Markdown (props, keyboard, accessibility): ${markdownUrl(meta.id)}` : ""),
+    ...steps.map((s, i) => `${i + 1}. ${s}`),
     `Use it when:\n${list(docs.use)}`,
     `Skip it when:\n${list(docs.skip)}`,
   ];

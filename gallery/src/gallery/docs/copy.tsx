@@ -2,7 +2,9 @@
  * Copy to the clipboard, with feedback that needs no toast: the trigger swaps its
  * icon for a check, and a polite live region says "Copied" for two seconds.
  */
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { Button } from "@/components/button";
+import { CheckIcon, CopyIcon } from "@/components/icons";
 
 type CopyState = "idle" | "copied" | "failed";
 
@@ -67,5 +69,23 @@ export function CopyStatus({ state }: { state: CopyState }) {
     <span role="status" aria-live="polite" className="sr-only">
       {state === "copied" ? "Copied" : state === "failed" ? "Copy failed. Select the text and copy it by hand." : ""}
     </span>
+  );
+}
+
+/** An sm button that copies `text` and says Copied, in words, for two seconds, with its announcement beside it. */
+export function CopyButton({ text, children, variant = "secondary", icon = <CopyIcon /> }: { text: string; children: string; variant?: "secondary" | "ghost"; icon?: ReactNode }) {
+  const [state, copy] = useCopy();
+  const copied = state === "copied";
+  return (
+    <>
+      <Button size="sm" variant={variant} icon={copied ? <CheckIcon /> : icon} onClick={() => copy(text)}>
+        {/* Both labels share one cell, so the button keeps its width while it says Copied. */}
+        <span className="grid">
+          <span className={"col-start-1 row-start-1 " + (copied ? "opacity-0" : "")}>{children}</span>
+          <span aria-hidden="true" className={"col-start-1 row-start-1 justify-self-start " + (copied ? "" : "opacity-0")}>Copied</span>
+        </span>
+      </Button>
+      <CopyStatus state={state} />
+    </>
   );
 }

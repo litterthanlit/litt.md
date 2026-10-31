@@ -4,12 +4,13 @@
  * data, the highlighter and the prompt builder stay out of every other page.
  */
 import { Component, useMemo, type ErrorInfo, type ReactNode } from "react";
-import { Button } from "@/components/button";
-import { ArrowUpRightIcon, CheckIcon, CopyIcon } from "@/components/icons";
+import { ArrowUpRightIcon } from "@/components/icons";
 import type { PageDocs, PageMeta } from "../kit";
+import { useCustomize } from "../customize-state";
 import { componentDoc } from "../docs-data";
-import { CopyStatus, ghostSm, useCopy } from "./copy";
-import { buildPrompt, markdownUrl, sourceUrl } from "./copy-prompt";
+import { lookStep } from "../look";
+import { CopyButton, ghostSm } from "./copy";
+import { buildPrompt, markdownUrl, SITE, sourceUrl } from "./copy-prompt";
 import { DocsSections as Sections } from "./sections";
 
 /** A wrong stem in `docs.components` should say so on the page, not blank the whole gallery. */
@@ -34,20 +35,13 @@ export class DocsBoundary extends Component<{ children: ReactNode }, { error: Er
 
 function Actions({ meta, docs }: { meta: Pick<PageMeta, "id" | "title" | "summary">; docs: PageDocs }) {
   const components = useMemo(() => docs.components.map(componentDoc), [docs]);
+  const { look } = useCustomize();
   /* Built during render, so the click handler already holds the text. It must not await. */
-  const prompt = useMemo(() => buildPrompt({ meta, docs, components }), [meta, docs, components]);
-  const [state, copy] = useCopy();
-  const copied = state === "copied";
+  const prompt = useMemo(() => buildPrompt({ meta, docs, components, lookStep: lookStep(look, SITE) }), [meta, docs, components, look]);
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <Button size="sm" variant="secondary" icon={copied ? <CheckIcon /> : <CopyIcon />} onClick={() => copy(prompt)}>
-        {/* Both labels share one cell, so the button keeps its width while it says Copied. */}
-        <span className="grid">
-          <span className={"col-start-1 row-start-1 " + (copied ? "opacity-0" : "")}>Copy prompt</span>
-          <span aria-hidden="true" className={"col-start-1 row-start-1 justify-self-start " + (copied ? "" : "opacity-0")}>Copied</span>
-        </span>
-      </Button>
+      <CopyButton text={prompt}>Copy prompt</CopyButton>
       <a
         href={sourceUrl(components[0]!.file)}
         target="_blank"
@@ -62,7 +56,6 @@ function Actions({ meta, docs }: { meta: Pick<PageMeta, "id" | "title" | "summar
       <a href={markdownUrl(meta.id).replace(/^https:\/\/[^/]+/, "")} aria-label="This page as Markdown, for coding agents" className={ghostSm}>
         <span className="litt-trim">Markdown</span>
       </a>
-      <CopyStatus state={state} />
     </div>
   );
 }

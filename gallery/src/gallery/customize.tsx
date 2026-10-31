@@ -13,18 +13,22 @@ import { motion } from "motion/react";
 import { FUN_SPRINGS, useDevice, useTransition } from "@/motion";
 import { customizeSnippet, shapeName, shapeRule, shapeSurface, SHAPES, typeRule } from "@/motion/rules";
 import { Button } from "@/components/button";
-import { CheckIcon, CopyIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
+import { LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { Tag } from "@/components/tag";
-import { ACCENTS, accentScope, DEFAULT_ACCENT, useCustomize, type Accent, type ThemeChoice } from "./customize-state";
+import { accentScope, useCustomize, type ThemeChoice } from "./customize-state";
+import { CopyButton } from "./docs/copy";
+import { SITE } from "./docs/copy-prompt";
+import { accentOf, ACCENTS, GALLERY_LOOK, lookInApp, lookSetup, lookWords, withLook, type Accent } from "./look";
 import { AccentChip } from "./swatch";
 import { Tiles } from "./tiles";
 import { loadTypeface } from "./typeface";
 
+/* What to set for each accent is in Copy setup, under Your look. */
 const accentRule: Record<Accent, string> = {
-  mono: 'Monochrome fits R6: the primary action takes the ink. Set data-accent="mono" on <html> or <body>; there are no tokens to paste.',
+  mono: "Monochrome fits R6: the primary action takes the ink.",
   blue4: "Blue 4 is what tokens.css ships: nothing to set.",
-  pink: 'Pink fits R6: its tones ship in tokens.css, 0.12 from every data hue. Set data-accent="pink" on <html> or <body>.',
+  pink: "Pink fits R6: its tones ship in tokens.css, 0.12 from every data hue.",
 };
 
 /** A page in one theme, as a small window: a title line, a body line and the primary action in the current accent. */
@@ -81,45 +85,35 @@ function FeelPreview({ fun, on }: { fun: boolean; on: boolean }) {
 }
 
 function CustomizePanel() {
-  const { theme, setTheme, typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, accent, setAccent, fun, setFun, modified, reset } = useCustomize();
-  const [copied, setCopied] = useState(false);
+  const { theme, setTheme, typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
   const [said, setSaid] = useState("");
   const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
   const rows = [
     typeRule(type),
     shapeRule(radius),
-    { ok: true, text: accentRule[accent] },
-    ...(fun ? [{ ok: false, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Nothing to paste yet; if it wins, it goes into tokens.css and the rules." }] : []),
+    { ok: true, text: accentRule[look.accent] },
+    ...(look.fun
+      ? [{ ok: false, cue: true, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Copy setup says how to wrap your app in <FunMode>, and the changelog says if the trial ends." }]
+      : []),
   ];
   const snippet = customizeSnippet(radius, lockedRadius, type);
 
   /* Every face draws its own "Aa", so each loads once the panel opens. */
   useEffect(() => typefaces.forEach(loadTypeface), [typefaces]);
 
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(snippet);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* the snippet is on screen to select by hand */
-    }
-  };
-
   const surprise = () => {
     const other = <T,>(all: readonly T[], now: T) => {
       const rest = all.filter((x) => x !== now);
       return rest[Math.floor(Math.random() * rest.length)];
     };
-    const a = other(ACCENTS.map((x) => x.id), accent);
+    const a = other(ACCENTS.map((x) => x.id), look.accent);
     const r = other(SHAPES, radius);
     const f = other(typefaces, typeface);
     const feel = Math.random() < 0.5;
-    setAccent(a);
+    setLook({ accent: a, fun: feel });
     setRadius(r);
     setTypeface(f.id);
-    setFun(feel);
-    const accentName = ACCENTS.find((x) => x.id === a)!.name;
+    const accentName = accentOf(a).name;
     setSaid(`${accentName}, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
   };
 
@@ -138,8 +132,8 @@ function CustomizePanel() {
       </div>
       <Tiles
         legend="Accent"
-        value={accent}
-        onValueChange={setAccent}
+        value={look.accent}
+        onValueChange={(accent) => setLook({ accent })}
         tiles={ACCENTS.map((a) => ({ value: a.id, label: a.short ?? a.name, preview: <AccentChip accent={a.id} /> }))}
       />
       <Tiles
@@ -149,7 +143,7 @@ function CustomizePanel() {
         tiles={(["light", "dark", "system"] as const).map((t) => ({
           value: t,
           label: t === "light" ? "Light" : t === "dark" ? "Dark" : "System",
-          preview: <ThemePreview theme={t} accent={accent} />,
+          preview: <ThemePreview theme={t} accent={look.accent} />,
         }))}
       />
       <Tiles
@@ -174,11 +168,11 @@ function CustomizePanel() {
       />
       <Tiles
         legend="Motion"
-        value={fun ? "fun" : "calm"}
-        onValueChange={(v) => setFun(v === "fun")}
+        value={look.fun ? "fun" : "calm"}
+        onValueChange={(v) => setLook({ fun: v === "fun" })}
         tiles={[
-          { value: "calm", label: "Calm", preview: <FeelPreview fun={false} on={!fun} /> },
-          { value: "fun", label: "Fun", preview: <FeelPreview fun on={fun} /> },
+          { value: "calm", label: "Calm", preview: <FeelPreview fun={false} on={!look.fun} /> },
+          { value: "fun", label: "Fun", preview: <FeelPreview fun on={look.fun} /> },
         ]}
       />
       <div className="grid gap-3 border-t border-line pt-4">
@@ -186,7 +180,7 @@ function CustomizePanel() {
           <>
             <ul className="grid gap-2" aria-label="Against the litt.md rules">
               {rows.map((c) => (
-                <li key={c.text} className="flex items-start gap-2 text-small">
+                <li key={c.text} data-fun-cue={"cue" in c ? "" : undefined} className="flex items-start gap-2 text-small">
                   <Tag status={c.ok ? "success" : "warning"}>{c.ok ? "Fits" : "Change"}</Tag>
                   <span className={"pt-0.5 " + (c.ok ? "text-fg-subtle" : "text-fg-muted")}>{c.text}</span>
                 </li>
@@ -198,11 +192,7 @@ function CustomizePanel() {
               </pre>
             )}
             <div className="flex gap-2">
-              {snippet && (
-                <Button size="sm" icon={copied ? <CheckIcon /> : <CopyIcon />} onClick={copy}>
-                  {copied ? "Copied" : "Copy tokens"}
-                </Button>
-              )}
+              {snippet && <CopyButton text={snippet}>Copy tokens</CopyButton>}
               <Button
                 size="sm"
                 variant="ghost"
@@ -217,8 +207,33 @@ function CustomizePanel() {
           </>
         ) : (
           <p className="text-caption font-normal text-fg-subtle">
-            The gallery's defaults: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, {ACCENTS.find((a) => a.id === DEFAULT_ACCENT)!.name.toLowerCase()} and calm motion. The registry ships Blue 4.
+            The gallery's defaults: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, {accentOf(GALLERY_LOOK.accent).name.toLowerCase()} and calm motion. The registry ships Blue 4.
           </p>
+        )}
+      </div>
+      {/* The look is what leaves this browser: the edits for your app, and a link that shows it to someone else. */}
+      <div role="group" aria-labelledby="your-look" className="grid gap-3 border-t border-line pt-4">
+        <div className="grid gap-1">
+          <p className="flex flex-wrap items-baseline gap-x-2 text-small">
+            <span id="your-look" className="font-title text-fg">
+              Your look
+            </span>
+            <span data-fun-cue="" className="text-fg-muted">
+              {lookWords(look)}
+            </span>
+          </p>
+          <p data-fun-cue="" className="text-caption font-normal text-fg-subtle">
+            {lookInApp(look)}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <CopyButton text={lookSetup(look, SITE)}>Copy setup</CopyButton>
+          <CopyButton text={withLook(location.href, look)} variant="ghost" icon={<LinkIcon />}>
+            Copy link
+          </CopyButton>
+        </div>
+        {(typeface.id !== "locked" || radius !== lockedRadius) && (
+          <p className="text-caption font-normal text-fg-subtle">Type and shape stay in this browser. A look carries the accent and the motion.</p>
         )}
       </div>
     </div>
@@ -231,13 +246,14 @@ export default function Customize() {
   const label = "Customize";
   return (
     <Popover>
+      {/* The id lets the look notice (look-notice.tsx) hand focus here. */}
       <PopoverTrigger asChild>
         {compact ? (
-          <Button size="sm" variant="ghost" iconOnly aria-label={label}>
+          <Button id="customize-trigger" size="sm" variant="ghost" iconOnly aria-label={label}>
             <SlidersIcon />
           </Button>
         ) : (
-          <Button size="sm" variant="ghost" icon={<SlidersIcon />}>
+          <Button id="customize-trigger" size="sm" variant="ghost" icon={<SlidersIcon />}>
             {label}
           </Button>
         )}

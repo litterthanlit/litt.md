@@ -10,6 +10,12 @@
  *   the header's switch says the same), the accent (the gallery opens in monochrome, and Blue 4 and pink each fill Get
  *   started in their color) or the shape (the control radius on <body>),
  * - Reset does not put the gallery's defaults back (the locked shape, monochrome),
+ * - a look from a link (?look=pink-fun) does not paint before the app runs, writes storage, drops out of the address on
+ *   the next page, or loses the Table's filters; or an accent change during it does not keep the link's look and save,
+ * - the notice under the header does not offer the link's look (Keep this look saves it, Back to mine goes back to
+ *   yours, both take it out of the address), or shows for a link to the look you already have,
+ * - Your look in the Customize panel, the Install note or Copy prompt does not give the edits for the look on screen,
+ *   or Copy link does not give this page in it,
  * - Get started does not take focus to the steps,
  * - ⌘K or Ctrl+K does not open one search menu, or picking a page there does not open it, or a Customize action
  *   there does nothing,
@@ -61,12 +67,12 @@ const check = (ok, claim) => (ok ? passed : problems).push(claim);
 
 const browser = await chromium.launch();
 
-async function open(hash, { phone = false } = {}) {
+async function open(hash, { phone = false, query = "" } = {}) {
   const ctx = await browser.newContext(phone ? { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true } : { viewport: { width: 1440, height: 900 } });
   const pg = await ctx.newPage();
   const errors = [];
   pg.on("pageerror", (e) => errors.push(String(e)));
-  await pg.goto(`http://localhost:${port}/index.html#${hash}`, { waitUntil: "networkidle" });
+  await pg.goto(`http://localhost:${port}/index.html${query}#${hash}`, { waitUntil: "networkidle" });
   await pg.evaluate(() => document.fonts.ready);
   return { ctx, pg, errors };
 }
@@ -160,6 +166,123 @@ const accentNow = (pg) => pg.evaluate(() => {
   await panel.getByRole("button", { name: "Reset to defaults" }).click();
   check((await look()) === "mono||", "the panel's Reset goes back to monochrome, the locked shape and the locked face");
   for (const e of errors) problems.push(`customize: ${e}`);
+  await ctx.close();
+}
+
+/* ---------- a look from a link ---------- */
+const saved = (pg) => pg.evaluate(() => localStorage.getItem("litt-gallery:customize"));
+const bodyAccent = (pg) => pg.evaluate(() => document.body.dataset.accent);
+const says = async (scope, ...parts) => {
+  const text = (await scope.textContent()) ?? "";
+  return parts.every((p) => text.includes(p));
+};
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctx.route("**/*.js", (r) => r.abort());
+  const pg = await ctx.newPage();
+  await pg.goto(`http://localhost:${port}/index.html?look=pink-fun#overview`);
+  check((await bodyAccent(pg)) === "pink" && (await pg.locator("#root").innerHTML()) === "", "with the app's script blocked, ?look=pink-fun paints Pink before anything runs");
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("button", { query: "?look=pink-fun" });
+  check((await bodyAccent(pg)) === "pink" && (await saved(pg)) === null, "?look=pink-fun shows Pink and writes nothing to storage");
+  check((await pg.locator("nav[aria-label=Components] [aria-labelledby=nav-Fun]").count()) === 1, "?look=pink-fun turns fun mode on (the sidebar leads with its Fun group)");
+  await pg.locator('nav[aria-label=Components] a[href="#slider"]').first().click();
+  await pg.waitForFunction(() => location.hash === "#slider");
+  check((await pg.evaluate(() => location.search)) === "?look=pink-fun" && (await bodyAccent(pg)) === "pink", "a link to another page keeps ?look=pink-fun in the address, and Pink");
+  for (const e of errors) problems.push(`link: ${e}`);
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("overview", { query: "?look=pink-fun" });
+  await pick(deck(pg), "Blue 4");
+  await pg.waitForFunction(() => localStorage.getItem("litt-gallery:customize") !== null, null, { timeout: 2000 }).catch(() => {});
+  check(
+    (await saved(pg)) === JSON.stringify({ accent: "blue4", fun: true }) && (await pg.evaluate(() => location.search)) === "" && (await bodyAccent(pg)) === undefined,
+    "Blue 4 during the preview keeps the link's fun mode, saves Blue 4 with it, and takes the look out of the address",
+  );
+  for (const e of errors) problems.push(`link change: ${e}`);
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("table", { query: "?status=ready&look=pink" });
+  const count = (await pg.getByText(/^[\d,]+ of [\d,]+ deploys$/).first().textContent()) ?? "";
+  check(count !== "" && (await bodyAccent(pg)) === "pink", `?status=ready&look=pink filters the Table (${count}) and shows Pink`);
+  for (const e of errors) problems.push(`link table: ${e}`);
+  await ctx.close();
+}
+const notice = (pg) => pg.getByRole("region", { name: "Look from a link" });
+const funGroup = (pg) => pg.locator("nav[aria-label=Components] [aria-labelledby=nav-Fun]").count();
+const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem("litt-gallery:customize") === v, value, { timeout: 2000 }).catch(() => {});
+{
+  const { ctx, pg, errors } = await open("button", { query: "?look=pink-fun" });
+  check(await says(notice(pg), "From a link: Pink, fun motion."), "the notice under the header says From a link: Pink, fun motion.");
+  await notice(pg).getByRole("button", { name: "Keep this look" }).click();
+  const kept = JSON.stringify({ accent: "pink", fun: true });
+  await waitSaved(pg, kept);
+  check(
+    (await saved(pg)) === kept && (await pg.evaluate(() => location.search)) === "" && (await notice(pg).count()) === 0 && (await bodyAccent(pg)) === "pink",
+    "Keep this look saves Pink and fun mode, takes the look out of the address, and the notice goes",
+  );
+  check(
+    (await pg.evaluate(() => document.activeElement?.id)) === "customize-trigger" && (await pg.getByRole("status").filter({ hasText: "Kept Pink, fun motion." }).count()) === 1,
+    "after Keep, focus is on Customize and a status says Kept Pink, fun motion.",
+  );
+  await pg.reload({ waitUntil: "networkidle" });
+  check((await bodyAccent(pg)) === "pink" && (await funGroup(pg)) === 1 && (await notice(pg).count()) === 0, "after a reload the kept look is yours, with no notice");
+  for (const e of errors) problems.push(`keep: ${e}`);
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("button");
+  const mine = JSON.stringify({ accent: "blue4" });
+  await pg.evaluate((v) => localStorage.setItem("litt-gallery:customize", v), mine);
+  await pg.goto(`http://localhost:${port}/index.html?look=pink-fun#button`, { waitUntil: "networkidle" });
+  check((await bodyAccent(pg)) === "pink" && (await notice(pg).count()) === 1, "with Blue 4 saved, ?look=pink-fun still shows Pink and the notice");
+  await notice(pg).getByRole("button", { name: "Back to mine" }).click();
+  check(
+    (await bodyAccent(pg)) === undefined && (await funGroup(pg)) === 0 && (await pg.evaluate(() => location.search)) === "" && (await saved(pg)) === mine && (await notice(pg).count()) === 0,
+    "Back to mine shows your Blue 4 and calm motion again, takes the look out of the address and leaves what you saved",
+  );
+  await pg.goto(`http://localhost:${port}/index.html?look=blue4#button`, { waitUntil: "networkidle" });
+  check((await notice(pg).count()) === 0 && (await bodyAccent(pg)) === undefined, "a link to the look you already have shows no notice");
+  for (const e of errors) problems.push(`back: ${e}`);
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("button");
+  await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: `http://localhost:${port}` });
+  const clipboard = () => pg.evaluate(() => navigator.clipboard.readText());
+  /* The write lands after the click returns, so the read waits for the clipboard to change. */
+  const copied = async (scope, name) => {
+    const before = await clipboard();
+    await scope.getByRole("button", { name }).click();
+    await pg.waitForFunction((b) => navigator.clipboard.readText().then((t) => t !== b), before, { timeout: 2000 }).catch(() => {});
+    return clipboard();
+  };
+  const install = pg.locator("section[aria-labelledby=install]");
+  check(await says(install, "This page shows Monochrome, calm motion. The registry installs Blue 4."), "in Monochrome, the Install section says the registry installs Blue 4");
+  const prompt = await copied(pg.locator("main"), "Copy prompt");
+  check(prompt.includes("2. Match the look\n") && prompt.includes('data-accent="mono"') && prompt.includes("3. Usage\n"), "in Monochrome, Copy prompt adds Match the look as step 2, with data-accent=\"mono\"");
+
+  await pg.locator("header").getByRole("button", { name: "Customize" }).click();
+  const panel = pg.getByRole("dialog", { name: "Customize" });
+  const group = panel.getByRole("group", { name: "Your look" });
+  await group.waitFor();
+  check(await says(group, "Monochrome, calm motion", 'In your app: data-accent="mono" on <html>.'), "the panel's Your look says Monochrome, calm motion and the one edit for it");
+  const setup = await copied(group, "Copy setup");
+  check(setup.startsWith('Set up the litt.md look "Monochrome, calm motion"') && setup.includes('<html lang="en" data-accent="mono">') && !setup.includes("<FunMode>"), "Copy setup gives the Monochrome edits and no fun mode");
+  check((await group.getByRole("status").filter({ hasText: /^Copied$/ }).count()) >= 1, "Copy setup says Copied");
+  check((await copied(group, "Copy link")) === `http://localhost:${port}/index.html?look=mono#button`, "Copy link gives this page with ?look=mono");
+
+  await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
+  check(await says(group, "Blue 4, calm motion", "This is what the registry installs. Nothing to change."), "in Blue 4 and calm motion, Your look says there is nothing to change");
+  check((await install.getByText("This page shows").count()) === 0, "in Blue 4 and calm motion, the Install note goes");
+  await pg.keyboard.press("Escape");
+  const plain = await copied(pg.locator("main"), "Copy prompt");
+  check(!plain.includes("Match the look") && plain.includes("2. Usage\n"), "in Blue 4 and calm motion, Copy prompt has no Match the look step");
+  for (const e of errors) problems.push(`your look: ${e}`);
   await ctx.close();
 }
 

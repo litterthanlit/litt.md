@@ -10,7 +10,7 @@
  *   --registry   a built registry directory (default gallery/public/r); a deployed registry URL such as
  *                https://littmd.vercel.app/r (no local server, no snapshot: the post-deploy check); or
  *                "shadcn" to run the same steps against shadcn's own registry (badge, input, card), which proves the harness
- *   --scenarios  comma list of: each, seq, all, bare, ns, base   (default all)
+ *   --scenarios  comma list of: each, seq, all, bare, ns, base, look   (default all)
  *                  each  every item alone, in a fresh app: add, tsc, production build
  *                  seq   items added one command at a time into one app; CSS must not duplicate, and adding an
  *                        item that is already there must leave the global CSS byte for byte the same
@@ -20,6 +20,10 @@
  *                  ns    `@litt/<item>` through a `registries` entry in components.json
  *                  base  the opt-in base-styles item, if the registry has one: it builds, logs no error, and
  *                        (unlike every other item) does change the host's font, weights and focus ring
+ *                  look  the look install path the gallery's Copy setup gives: litt, motion and button, with the host's
+ *                        own markup putting data-accent="pink" on <html> and <FunMode> around the app. The Button and
+ *                        the accent tones are pink in light, .dark and system dark and in a node outside the app, follow
+ *                        a runtime flip to mono and back to Blue 4, and (next) are pink with JavaScript off
  *   --base       the component library `shadcn init` sets the host up with: base (default, what
  *                `init -d` picks: Base UI, where the CLI rewrites a written asChild into a render prop) or radix
  *   --keep       keep the temp apps (failed scenarios are always kept)
@@ -118,7 +122,7 @@ function parseArgs(argv) {
     fresh: false,
     serial: false,
     registry: path.join(galleryDir, "public", "r"),
-    scenarios: "each,seq,all,bare,ns,base",
+    scenarios: "each,seq,all,bare,ns,base,look",
     work: null,
     shots: null,
     report: null,
@@ -809,6 +813,29 @@ const skipRest = (sc, from) => {
 
 /* ------------------------------------------------------------------ scenarios */
 
+const LOOK_ITEMS = ["litt", "motion", "button"];
+const FUN_IMPORT = `import { FunMode } from "@/lib/litt/motion";\n`;
+const once = (text, from, to) => {
+  if (text.split(from).length !== 2) throw new Error(`the host template has ${text.split(from).length - 1} of ${JSON.stringify(from)}, not one`);
+  return text.replace(from, to);
+};
+/**
+ * The host edits the look's Copy setup asks for. Made before the snapshot, as ns edits components.json, so the files
+ * step still fails if `shadcn add` touches any existing host file, these included.
+ */
+const LOOK_EDITS = {
+  vite: [
+    ["index.html", (s, accent) => once(s, "<html", `<html data-accent="${accent}"`)],
+    ["src/main.tsx", (s) => FUN_IMPORT + once(s, "<App />", "<FunMode><App /></FunMode>")],
+  ],
+  next: [
+    [
+      "app/layout.tsx",
+      (s, accent) => FUN_IMPORT + once(once(s, "<html", `<html data-accent="${accent}"`), "{children}</body>", "<FunMode>{children}</FunMode></body>"),
+    ],
+  ],
+};
+
 /** Plan the scenarios for one app. Each has `adds`: groups of items, one `shadcn add` command per group. */
 function planScenarios(app, reg, opts) {
   const want = opts.scenarioSet;
@@ -828,6 +855,8 @@ function planScenarios(app, reg, opts) {
   }
   if (want.has("base") && reg.baseStyles)
     plan.push({ id: "base-styles", adds: [[reg.baseStyles]], items: [], baseStyles: true, browser: !opts.noBrowser });
+  if (want.has("look") && reg.kind === "litt" && LOOK_ITEMS.every((i) => reg.all.includes(i)))
+    plan.push({ id: "look", adds: [LOOK_ITEMS], items: LOOK_ITEMS, look: "pink", browser: !opts.noBrowser });
   return plan;
 }
 
@@ -845,6 +874,8 @@ async function runScenario(app, sc, plan, ctx) {
     cj.registries = { ...cj.registries, "@litt": `${ctx.registryBase}/{name}.json` };
     writeJson(path.join(dir, "components.json"), cj);
   }
+  if (plan.look)
+    for (const [file, edit] of LOOK_EDITS[app]) fs.writeFileSync(path.join(dir, file), edit(fs.readFileSync(path.join(dir, file), "utf8"), plan.look));
   const cssFile = readJson(path.join(dir, "components.json")).tailwind.css;
   const before = snapshot(dir);
   const depsBefore = depsOf(dir);
@@ -1021,6 +1052,8 @@ async function runScenario(app, sc, plan, ctx) {
           litt: reg.kind === "litt",
           accent: ctx.accent,
           baseline: tpl.baseline,
+          look: plan.look,
+          app,
         });
         const bad = res.checks.filter((c) => !c.ok);
         if (bad.length) throw new Error(bad.map((c) => `${c.name}: ${c.detail}`).join("\n"));

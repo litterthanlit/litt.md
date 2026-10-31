@@ -19,7 +19,8 @@ import { Segmented } from "@/components/segmented";
 import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { shapeName, SHAPES } from "@/motion/rules";
-import { ACCENTS, useCustomize, type ThemeChoice } from "./customize-state";
+import { useCustomize, type ThemeChoice } from "./customize-state";
+import { ACCENTS, lookWords } from "./look";
 import { AccentChip } from "./swatch";
 
 const THEMES: { value: ThemeChoice; label: string }[] = [
@@ -45,7 +46,7 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 }
 
 export function Deck() {
-  const { theme, setTheme, accent, setAccent, radius, lockedRadius, setRadius, fun, setFun, modified, reset } = useCustomize();
+  const { theme, setTheme, look, setLook, radius, lockedRadius, setRadius, link, modified, reset } = useCustomize();
   const stop = (SHAPES as readonly number[]).indexOf(radius);
   return (
     <section aria-labelledby="deck-title" className="litt-raised grid gap-8 p-6 sm:p-8">
@@ -56,7 +57,7 @@ export function Deck() {
         <p className="text-small text-fg-subtle">Every component on this page follows.</p>
       </header>
       <div data-fun-cue="" className="-my-2">
-        <Switch label="Fun mode" description="Springier motion, the same at rest." checked={fun} onCheckedChange={setFun} align="end" />
+        <Switch label="Fun mode" description="Springier motion, the same at rest." checked={look.fun} onCheckedChange={(fun) => setLook({ fun })} align="end" />
       </div>
       <Slider
         label="Shape"
@@ -77,8 +78,8 @@ export function Deck() {
       <Row label="Accent">
         <Segmented
           legend="Accent"
-          value={accent}
-          onValueChange={setAccent}
+          value={look.accent}
+          onValueChange={(accent) => setLook({ accent })}
           options={ACCENTS.map((a) => ({
             value: a.id,
             label: (
@@ -94,7 +95,7 @@ export function Deck() {
       <footer data-fun-cue="" className="-mt-2 border-t border-line pt-4">
         <div className="flex h-control-sm items-center justify-between gap-4 pointer-coarse:h-control-md">
           <p className="text-caption font-normal text-fg-subtle" aria-live="polite">
-            {modified ? "Tuned in this browser." : "The gallery's defaults: monochrome, calm, the locked shape."}
+            {link ? `From a link: ${lookWords(link.look)}.` : modified ? "Tuned in this browser." : "The gallery's defaults: monochrome, calm, the locked shape."}
           </p>
           {modified && (
             <Button size="sm" variant="ghost" onClick={reset}>
