@@ -25,19 +25,12 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { FunMode, useMotionDial } from "@/motion";
 import { SHAPES, shapeSurface } from "@/motion/rules";
+import { accentOf, ACCENTS, GALLERY_LOOK, type Accent } from "./look";
 import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
-export type Accent = "mono" | "blue4" | "pink";
-/** What the gallery opens in, and what Reset goes back to. */
-export const DEFAULT_ACCENT: Accent = "mono";
-/** The accents in the order every picker shows them, each said in words (R5). */
-export const ACCENTS: { id: Accent; name: string; short?: string; note: string }[] = [
-  { id: "mono", name: "Monochrome", short: "Mono", note: "The primary action in the ink" },
-  { id: "blue4", name: "Blue 4", note: "Litt's cobalt, as the registry ships it" },
-  { id: "pink", name: "Pink", note: "A hot raspberry at Blue 4's weight" },
-];
+const DEFAULT_ACCENT = GALLERY_LOOK.accent;
 const ACCENT_IDS = ACCENTS.map((a) => a.id);
 export type ThemeChoice = "system" | "light" | "dark";
 const THEME_KEY = "litt-gallery:theme";
@@ -120,8 +113,9 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       s.setProperty("--radius-control", `${radiusTuned}px`);
       s.setProperty("--radius-surface", `${shapeSurface(radiusTuned)}px`);
     }
-    if (accent === "blue4") delete document.body.dataset.accent;
-    else document.body.dataset.accent = accent;
+    const attribute = accentOf(accent).attribute;
+    if (attribute) document.body.dataset.accent = attribute;
+    else delete document.body.dataset.accent;
   }, [typeface, radiusTuned, accent]);
 
   /* Remember a change, and only a change, so a later change to tokens.css is never shadowed. */
@@ -196,5 +190,5 @@ export function useDark(): boolean {
  * [data-theme] root declares Blue 4 again) and the accent's own data-accent, which tokens.css puts after the themes.
  */
 export function accentScope(accent: Accent, dark: boolean) {
-  return { "data-theme": dark ? "dark" : "light", "data-accent": accent === "blue4" ? undefined : accent } as const;
+  return { "data-theme": dark ? "dark" : "light", "data-accent": accentOf(accent).attribute ?? undefined } as const;
 }

@@ -10,7 +10,8 @@ import { CommandMenu, type CommandGroup, type CommandItem } from "@/components/c
 import { MonitorIcon, MoonIcon, SparkleIcon, SunIcon } from "@/components/icons";
 import { PAGE_GROUPS } from "./kit";
 import { pages } from "./registry";
-import { ACCENTS, useCustomize, type ThemeChoice } from "./customize-state";
+import { useCustomize, type ThemeChoice } from "./customize-state";
+import { ACCENTS } from "./look";
 
 type Action = { id: string; label: string; icon?: CommandItem["icon"]; run: () => void };
 

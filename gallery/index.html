@@ -23,7 +23,7 @@
 <script>
   /* Apply the saved Customize choices (type, shape and the accent) before first paint. They live on <body>:
      src/gallery/customize-state.tsx says why, and owns them once the app runs. The gallery opens in monochrome
-     (DEFAULT_ACCENT there), so it is set first and a saved accent replaces it. */
+     (GALLERY_LOOK in src/gallery/look.ts), so it is set first and a saved accent replaces it. */
   document.body.dataset.accent = "mono";
   (function () {
     try {

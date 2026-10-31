@@ -19,7 +19,8 @@ import { Segmented } from "@/components/segmented";
 import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { shapeName, SHAPES } from "@/motion/rules";
-import { ACCENTS, useCustomize, type ThemeChoice } from "./customize-state";
+import { useCustomize, type ThemeChoice } from "./customize-state";
+import { ACCENTS } from "./look";
 import { AccentChip } from "./swatch";
 
 const THEMES: { value: ThemeChoice; label: string }[] = [

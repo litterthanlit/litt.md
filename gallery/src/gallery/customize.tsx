@@ -16,7 +16,8 @@ import { Button } from "@/components/button";
 import { CheckIcon, CopyIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { Tag } from "@/components/tag";
-import { ACCENTS, accentScope, DEFAULT_ACCENT, useCustomize, type Accent, type ThemeChoice } from "./customize-state";
+import { accentScope, useCustomize, type ThemeChoice } from "./customize-state";
+import { accentOf, ACCENTS, GALLERY_LOOK, type Accent } from "./look";
 import { AccentChip } from "./swatch";
 import { Tiles } from "./tiles";
 import { loadTypeface } from "./typeface";
@@ -119,7 +120,7 @@ function CustomizePanel() {
     setRadius(r);
     setTypeface(f.id);
     setFun(feel);
-    const accentName = ACCENTS.find((x) => x.id === a)!.name;
+    const accentName = accentOf(a).name;
     setSaid(`${accentName}, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
   };
 
@@ -217,7 +218,7 @@ function CustomizePanel() {
           </>
         ) : (
           <p className="text-caption font-normal text-fg-subtle">
-            The gallery's defaults: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, {ACCENTS.find((a) => a.id === DEFAULT_ACCENT)!.name.toLowerCase()} and calm motion. The registry ships Blue 4.
+            The gallery's defaults: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, {accentOf(GALLERY_LOOK.accent).name.toLowerCase()} and calm motion. The registry ships Blue 4.
           </p>
         )}
       </div>
