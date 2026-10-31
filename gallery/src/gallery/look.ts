@@ -78,7 +78,7 @@ function edits(look: Look): string[] {
         `The accent: ${attr} on <html>.`,
         `   Next.js, app/layout.tsx: <html lang="en" ${attr}>    Vite, index.html: <html lang="en" ${attr}>`,
         `   On <html> it reaches every portal and paints before any script, in light, dark and the system setting. Never set it from an effect, and never restate --litt-accent in CSS.`,
-        `   An element that sets its own theme (class="dark" on a section) needs ${attr} too.`,
+        `   An element that sets its own theme (class="dark", class="light" or data-theme) needs ${attr} too.`,
       ].join("\n"),
     );
   }
@@ -154,7 +154,7 @@ export function looksDoc(site: string): string {
           (a.attribute ? `\`data-accent="${a.attribute}"\` on \`<html>\`.` : "no attribute. It is what tokens.css ships."),
       ),
       `- \`-fun\`: wrap the app in \`<FunMode>\` from \`@/lib/litt/motion\` (the motion item). Fun mode is a trial: it changes how litt's parts move, never how they look at rest, and reduced motion turns it off.`,
-      `- Put the attribute on \`<html>\` (Next.js app/layout.tsx, Vite index.html), never on a wrapper and never from an effect: there it reaches every portal and paints before any script, in light, dark and the system setting. An element that sets its own theme (\`class="dark"\` on a section) needs it too. Never restate \`--litt-accent\` in CSS.`,
+      `- Put the attribute on \`<html>\` (Next.js app/layout.tsx, Vite index.html), never on a wrapper and never from an effect: there it reaches every portal and paints before any script, in light, dark and the system setting. An element that sets its own theme (\`class="dark"\`, \`class="light"\` or \`data-theme\`) needs it too. Never restate \`--litt-accent\` in CSS.`,
     ].join("\n"),
     `The six looks: ${LOOKS.map((l) => `\`${encodeLook(l)}\` (${lookWords(l)})`).join(", ")}.`,
   ].join("\n\n");

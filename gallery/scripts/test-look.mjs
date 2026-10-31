@@ -112,6 +112,8 @@ for (const look of L.LOOKS) {
   const [setupAttr, setupFun] = asks(setup);
   check(setupAttr === attribute && setupFun === look.fun, `${slug}: Copy setup asks for ${attribute ? `data-accent="${attribute}"` : "no attribute"} and ${look.fun ? "<FunMode>" : "no <FunMode>"}`);
   check(setup.includes(`${SITE}/r/litt.json`) && setup.includes(`${SITE}/r/motion.json`) === look.fun, `${slug}: Copy setup installs litt${look.fun ? " and motion" : ""}`);
+  /* Measured in built hosts: each of these on a nested element puts Blue 4 back under it. */
+  if (attribute) check(['class="dark"', 'class="light"', "data-theme"].every((root) => setup.includes(root)), `${slug}: Copy setup says a nested class="dark", class="light" or data-theme needs the attribute too`);
   check(setup.endsWith(`See it: ${SITE}/?look=${slug}`), `${slug}: Copy setup ends with the link to the look`);
   const step = L.lookStep(look, SITE);
   if (L.sameLook(look, L.REGISTRY_LOOK)) continue;
