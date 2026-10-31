@@ -19,18 +19,22 @@
  * index.html applies the saved choices before first paint; this provider owns
  * them after that.
  *
+ * A link can carry a look (?look=pink-fun, look.ts). Two stores, one per writer, merged where they are read: your own
+ * look lives in storage, and the link's lives in the address and is never saved. While the address names a look that
+ * differs from yours, every page shows it. Keep this look saves it, Back to mine takes it out of the address, and any
+ * accent or motion change keeps it first, then applies the change and saves.
+ *
  * The theme lives here too, so the header's switch and the overview's deck are one choice. It is the exception to
  * <body>: data-theme goes on <html>, under its own key, as the pre-paint script reads it.
  */
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { FunMode, useMotionDial } from "@/motion";
 import { SHAPES, shapeSurface } from "@/motion/rules";
-import { accentOf, ACCENTS, GALLERY_LOOK, type Accent } from "./look";
+import { accentOf, ACCENTS, GALLERY_LOOK, lookFromSearch, sameLook, withLook, type Accent, type Look } from "./look";
 import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
-const DEFAULT_ACCENT = GALLERY_LOOK.accent;
 const ACCENT_IDS = ACCENTS.map((a) => a.id);
 export type ThemeChoice = "system" | "light" | "dark";
 const THEME_KEY = "litt-gallery:theme";
@@ -47,15 +51,20 @@ type Ctx = {
   radius: number;
   lockedRadius: number;
   setRadius: (r: number) => void;
-  /** Monochrome (the gallery's default: the primary action in the ink), Blue 4 (what tokens.css ships) or pink. */
-  accent: Accent;
-  setAccent: (a: Accent) => void;
-  /** Fun mode's trial: Calm is the locked motion, Fun turns on <FunMode>. */
-  fun: boolean;
-  setFun: (on: boolean) => void;
+  /** The accent and motion every page shows: the link's while the address names one, else your own. */
+  look: Look;
+  /** The one write for the accent and motion. During a preview it keeps the link's look first, then applies the patch. */
+  setLook: (patch: Partial<Look>) => void;
+  /** Set only while the address names a look that differs from your own. */
+  link: LinkedLook | null;
+  /** Whether anything shown differs from the gallery's defaults. */
   modified: boolean;
+  /** Type, shape and your look back to the gallery's defaults, and the end of any preview. */
   reset: () => void;
 };
+
+/** A look from the address: keep it (it becomes yours, saved), or drop it (out of the address, back to yours). */
+export type LinkedLook = { look: Look; keep: () => void; drop: () => void };
 
 const CustomizeContext = createContext<Ctx | null>(null);
 
@@ -91,12 +100,26 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       /* ignore */
     }
   };
-  const [fun, setFun] = useState(saved.fun === true);
-  const [accent, setAccent] = useState<Accent>(() => (ACCENT_IDS.includes(saved.accent as Accent) ? (saved.accent as Accent) : DEFAULT_ACCENT));
+  const [own, setOwn] = useState<Look>(() => ({
+    accent: ACCENT_IDS.includes(saved.accent as Accent) ? (saved.accent as Accent) : GALLERY_LOOK.accent,
+    fun: saved.fun === true,
+  }));
+  const [linked, setLinked] = useState(() => lookFromSearch(location.search));
+  /* Back and Forward can bring a look into the address, or take it out. */
+  useEffect(() => {
+    const read = () =>
+      setLinked((was) => {
+        const now = lookFromSearch(location.search);
+        return was && now && sameLook(was, now) ? was : now;
+      });
+    window.addEventListener("popstate", read);
+    return () => window.removeEventListener("popstate", read);
+  }, []);
+  const look = linked ?? own;
 
   const typeface = typefaces.find((f) => f.id === faceId) ?? typefaces[0];
   const radius = radiusTuned ?? locked.radius;
-  const modified = typeface.id !== "locked" || radiusTuned !== null || accent !== DEFAULT_ACCENT || fun;
+  const modified = typeface.id !== "locked" || radiusTuned !== null || !sameLook(look, GALLERY_LOOK);
 
   /* Write the choices on <body>, and remove what is back to locked. A layout effect, so a change never paints stale. */
   useLayoutEffect(() => {
@@ -113,28 +136,39 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       s.setProperty("--radius-control", `${radiusTuned}px`);
       s.setProperty("--radius-surface", `${shapeSurface(radiusTuned)}px`);
     }
-    const attribute = accentOf(accent).attribute;
+    const attribute = accentOf(look.accent).attribute;
     if (attribute) document.body.dataset.accent = attribute;
     else delete document.body.dataset.accent;
-  }, [typeface, radiusTuned, accent]);
+  }, [typeface, radiusTuned, look.accent]);
 
-  /* Remember a change, and only a change, so a later change to tokens.css is never shadowed. */
+  /* Remember a change, and only a change, so a later change to tokens.css is never shadowed. Your own look only: a
+     link's is never saved. */
   useEffect(() => {
     try {
-      if (!modified) return localStorage.removeItem(KEY);
       const next: Saved = {};
       if (typeface.id !== "locked") next.face = { id: typeface.id, stack: typeface.stack, href: typeface.href };
       if (radiusTuned !== null) next.radius = radiusTuned;
-      if (accent !== DEFAULT_ACCENT) next.accent = accent;
-      if (fun) next.fun = true;
-      localStorage.setItem(KEY, JSON.stringify(next));
+      if (own.accent !== GALLERY_LOOK.accent) next.accent = own.accent;
+      if (own.fun) next.fun = true;
+      if (Object.keys(next).length) localStorage.setItem(KEY, JSON.stringify(next));
+      else localStorage.removeItem(KEY);
     } catch {
       /* storage can be unavailable; the choice still applies until the page reloads */
     }
-  }, [modified, typeface, radiusTuned, accent, fun]);
+  }, [typeface, radiusTuned, own]);
 
-  const value = useMemo<Ctx>(
-    () => ({
+  const value = useMemo<Ctx>(() => {
+    /* history.state carries route.ts's mark on the entry, so it stays. */
+    const drop = () => {
+      const href = withLook(location.href, null);
+      if (href !== location.href) history.replaceState(history.state, "", href);
+      setLinked(null);
+    };
+    const setLook = (patch: Partial<Look>) => {
+      setOwn({ ...(linked ?? own), ...patch });
+      if (linked) drop();
+    };
+    return {
       theme,
       setTheme,
       typefaces,
@@ -143,25 +177,23 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       radius,
       lockedRadius: locked.radius,
       setRadius: (r) => setRadiusTuned(r === locked.radius ? null : r),
-      accent,
-      setAccent,
-      fun,
-      setFun,
+      look,
+      setLook,
+      link: linked && !sameLook(linked, own) ? { look: linked, keep: () => setLook({}), drop } : null,
       modified,
       reset: () => {
         setFaceId("locked");
         setRadiusTuned(null);
-        setAccent(DEFAULT_ACCENT);
-        setFun(false);
+        setOwn(GALLERY_LOOK);
+        drop();
       },
-    }),
+    };
     /* setTheme only writes state, <html> and storage, so the first one stays good. */
-    [theme, typefaces, typeface, radius, locked.radius, accent, fun, modified],
-  );
+  }, [theme, typefaces, typeface, radius, locked.radius, own, linked, look, modified]);
 
   return (
     <CustomizeContext.Provider value={value}>
-      <FunMode on={fun}>{children}</FunMode>
+      <FunMode on={look.fun}>{children}</FunMode>
     </CustomizeContext.Provider>
   );
 }

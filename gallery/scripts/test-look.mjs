@@ -16,6 +16,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import vm from "node:vm";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
 
@@ -54,6 +55,44 @@ check(
 check(L.withLook("https://x.test/?look=pink&status=ready#table", null) === "https://x.test/?status=ready#table", "removing the look keeps the other parameters and the hash");
 check(L.withLook("https://x.test/?look=pink#button", null) === "https://x.test/#button", "removing the only parameter leaves no bare ?");
 check(L.withLook("https://x.test/?q=a%20b#table", null) === "https://x.test/?q=a%20b#table", "an address with no look comes back as it was");
+
+/* ---------- the first paint ---------- */
+const html = read("index.html");
+const body = html.slice(html.indexOf("<body>"), html.indexOf('<div id="root">'));
+const scripts = [...body.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+/** The data-accent on <body> after index.html's scripts run, as a browser would before the app: undefined is Blue 4. */
+function paint(search, saved) {
+  const dataset = {};
+  const document = {
+    body: { dataset, style: { setProperty() {} } },
+    head: { appendChild() {} },
+    createElement: () => ({ setAttribute() {} }),
+  };
+  const localStorage = { getItem: (k) => (k === "litt-gallery:customize" && saved ? JSON.stringify(saved) : null) };
+  const context = vm.createContext({ document, localStorage, location: { search }, URLSearchParams });
+  for (const s of scripts) vm.runInContext(s, context);
+  return dataset.accent;
+}
+const attributeOf = (accent) => L.ACCENTS.find((a) => a.id === accent).attribute ?? undefined;
+const firstPaint = [
+  ...L.LOOKS.map((l) => [`?look=${L.encodeLook(l)}`, null, attributeOf(l.accent)]),
+  ["?look=mono", { accent: "blue4" }, "mono"],
+  ["?status=ready&look=pink", { accent: "blue4" }, "pink"],
+  ["?look=blue4", { accent: "pink" }, undefined],
+  ["", { accent: "pink" }, "pink"],
+  ["", { accent: "blue4" }, undefined],
+  ["?look=PINK", { accent: "pink" }, "pink"],
+  ["?look=green", { accent: "pink" }, "pink"],
+  ["?look=pink-fun-x", null, "mono"],
+  ["", null, "mono"],
+];
+check(scripts.length >= 2, `index.html paints with ${scripts.length} scripts before #root`);
+for (const [search, saved, want] of firstPaint) {
+  const got = paint(search, saved);
+  const own = saved?.accent ?? L.GALLERY_LOOK.accent;
+  const model = attributeOf(L.lookFromSearch(search)?.accent ?? own);
+  check(got === want && model === want, `"${search}" with ${saved ? `${saved.accent} saved` : "nothing saved"} paints ${want ?? "Blue 4 (no attribute)"} (index.html: ${got ?? "none"}, look.ts: ${model ?? "none"})`);
+}
 
 /* ---------- the accents tokens.css answers ---------- */
 const answered = new Set([...read("../skills/litt-md/assets/tokens.css").matchAll(/\[data-accent="([^"]+)"\]/g)].map((m) => m[1]));

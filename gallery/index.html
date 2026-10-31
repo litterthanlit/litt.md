@@ -52,6 +52,19 @@
     } catch (e) {}
   })();
 </script>
+<script>
+  /* A link's look (?look=pink, ?look=pink-fun) paints over the saved accent, and is never saved. Its own script, since
+     the one above stops when nothing is saved. The grammar is LOOKS in src/gallery/look.ts, and scripts/test-look.mjs
+     runs this copy against it. Fun mode has nothing to paint. */
+  (function () {
+    try {
+      var m = /^(mono|blue4|pink)(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
+      if (!m) return;
+      if (m[1] === "blue4") delete document.body.dataset.accent;
+      else document.body.dataset.accent = m[1];
+    } catch (e) {}
+  })();
+</script>
 <div id="root"></div>
 <script type="module" src="/src/main.tsx"></script>
 </body>

@@ -10,6 +10,8 @@
  *   the header's switch says the same), the accent (the gallery opens in monochrome, and Blue 4 and pink each fill Get
  *   started in their color) or the shape (the control radius on <body>),
  * - Reset does not put the gallery's defaults back (the locked shape, monochrome),
+ * - a look from a link (?look=pink-fun) does not paint before the app runs, writes storage, drops out of the address on
+ *   the next page, or loses the Table's filters; or an accent change during it does not keep the link's look and save,
  * - Get started does not take focus to the steps,
  * - ⌘K or Ctrl+K does not open one search menu, or picking a page there does not open it, or a Customize action
  *   there does nothing,
@@ -61,12 +63,12 @@ const check = (ok, claim) => (ok ? passed : problems).push(claim);
 
 const browser = await chromium.launch();
 
-async function open(hash, { phone = false } = {}) {
+async function open(hash, { phone = false, query = "" } = {}) {
   const ctx = await browser.newContext(phone ? { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true } : { viewport: { width: 1440, height: 900 } });
   const pg = await ctx.newPage();
   const errors = [];
   pg.on("pageerror", (e) => errors.push(String(e)));
-  await pg.goto(`http://localhost:${port}/index.html#${hash}`, { waitUntil: "networkidle" });
+  await pg.goto(`http://localhost:${port}/index.html${query}#${hash}`, { waitUntil: "networkidle" });
   await pg.evaluate(() => document.fonts.ready);
   return { ctx, pg, errors };
 }
@@ -160,6 +162,46 @@ const accentNow = (pg) => pg.evaluate(() => {
   await panel.getByRole("button", { name: "Reset to defaults" }).click();
   check((await look()) === "mono||", "the panel's Reset goes back to monochrome, the locked shape and the locked face");
   for (const e of errors) problems.push(`customize: ${e}`);
+  await ctx.close();
+}
+
+/* ---------- a look from a link ---------- */
+const saved = (pg) => pg.evaluate(() => localStorage.getItem("litt-gallery:customize"));
+const bodyAccent = (pg) => pg.evaluate(() => document.body.dataset.accent);
+{
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctx.route("**/*.js", (r) => r.abort());
+  const pg = await ctx.newPage();
+  await pg.goto(`http://localhost:${port}/index.html?look=pink-fun#overview`);
+  check((await bodyAccent(pg)) === "pink" && (await pg.locator("#root").innerHTML()) === "", "with the app's script blocked, ?look=pink-fun paints Pink before anything runs");
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("button", { query: "?look=pink-fun" });
+  check((await bodyAccent(pg)) === "pink" && (await saved(pg)) === null, "?look=pink-fun shows Pink and writes nothing to storage");
+  check((await pg.locator("nav[aria-label=Components] [aria-labelledby=nav-Fun]").count()) === 1, "?look=pink-fun turns fun mode on (the sidebar leads with its Fun group)");
+  await pg.locator('nav[aria-label=Components] a[href="#slider"]').first().click();
+  await pg.waitForFunction(() => location.hash === "#slider");
+  check((await pg.evaluate(() => location.search)) === "?look=pink-fun" && (await bodyAccent(pg)) === "pink", "a link to another page keeps ?look=pink-fun in the address, and Pink");
+  for (const e of errors) problems.push(`link: ${e}`);
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("overview", { query: "?look=pink-fun" });
+  await pick(deck(pg), "Blue 4");
+  await pg.waitForFunction(() => localStorage.getItem("litt-gallery:customize") !== null, null, { timeout: 2000 }).catch(() => {});
+  check(
+    (await saved(pg)) === JSON.stringify({ accent: "blue4", fun: true }) && (await pg.evaluate(() => location.search)) === "" && (await bodyAccent(pg)) === undefined,
+    "Blue 4 during the preview keeps the link's fun mode, saves Blue 4 with it, and takes the look out of the address",
+  );
+  for (const e of errors) problems.push(`link change: ${e}`);
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("table", { query: "?status=ready&look=pink" });
+  const count = (await pg.getByText(/^[\d,]+ of [\d,]+ deploys$/).first().textContent()) ?? "";
+  check(count !== "" && (await bodyAccent(pg)) === "pink", `?status=ready&look=pink filters the Table (${count}) and shows Pink`);
+  for (const e of errors) problems.push(`link table: ${e}`);
   await ctx.close();
 }
 

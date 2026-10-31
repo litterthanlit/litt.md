@@ -82,15 +82,15 @@ function FeelPreview({ fun, on }: { fun: boolean; on: boolean }) {
 }
 
 function CustomizePanel() {
-  const { theme, setTheme, typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, accent, setAccent, fun, setFun, modified, reset } = useCustomize();
+  const { theme, setTheme, typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
   const [copied, setCopied] = useState(false);
   const [said, setSaid] = useState("");
   const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
   const rows = [
     typeRule(type),
     shapeRule(radius),
-    { ok: true, text: accentRule[accent] },
-    ...(fun ? [{ ok: false, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Nothing to paste yet; if it wins, it goes into tokens.css and the rules." }] : []),
+    { ok: true, text: accentRule[look.accent] },
+    ...(look.fun ? [{ ok: false, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Nothing to paste yet; if it wins, it goes into tokens.css and the rules." }] : []),
   ];
   const snippet = customizeSnippet(radius, lockedRadius, type);
 
@@ -112,14 +112,13 @@ function CustomizePanel() {
       const rest = all.filter((x) => x !== now);
       return rest[Math.floor(Math.random() * rest.length)];
     };
-    const a = other(ACCENTS.map((x) => x.id), accent);
+    const a = other(ACCENTS.map((x) => x.id), look.accent);
     const r = other(SHAPES, radius);
     const f = other(typefaces, typeface);
     const feel = Math.random() < 0.5;
-    setAccent(a);
+    setLook({ accent: a, fun: feel });
     setRadius(r);
     setTypeface(f.id);
-    setFun(feel);
     const accentName = accentOf(a).name;
     setSaid(`${accentName}, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
   };
@@ -139,8 +138,8 @@ function CustomizePanel() {
       </div>
       <Tiles
         legend="Accent"
-        value={accent}
-        onValueChange={setAccent}
+        value={look.accent}
+        onValueChange={(accent) => setLook({ accent })}
         tiles={ACCENTS.map((a) => ({ value: a.id, label: a.short ?? a.name, preview: <AccentChip accent={a.id} /> }))}
       />
       <Tiles
@@ -150,7 +149,7 @@ function CustomizePanel() {
         tiles={(["light", "dark", "system"] as const).map((t) => ({
           value: t,
           label: t === "light" ? "Light" : t === "dark" ? "Dark" : "System",
-          preview: <ThemePreview theme={t} accent={accent} />,
+          preview: <ThemePreview theme={t} accent={look.accent} />,
         }))}
       />
       <Tiles
@@ -175,11 +174,11 @@ function CustomizePanel() {
       />
       <Tiles
         legend="Motion"
-        value={fun ? "fun" : "calm"}
-        onValueChange={(v) => setFun(v === "fun")}
+        value={look.fun ? "fun" : "calm"}
+        onValueChange={(v) => setLook({ fun: v === "fun" })}
         tiles={[
-          { value: "calm", label: "Calm", preview: <FeelPreview fun={false} on={!fun} /> },
-          { value: "fun", label: "Fun", preview: <FeelPreview fun on={fun} /> },
+          { value: "calm", label: "Calm", preview: <FeelPreview fun={false} on={!look.fun} /> },
+          { value: "fun", label: "Fun", preview: <FeelPreview fun on={look.fun} /> },
         ]}
       />
       <div className="grid gap-3 border-t border-line pt-4">
