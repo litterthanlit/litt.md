@@ -3,7 +3,8 @@
  * this way, so a choice reads as "a primary action in this color" before its name. A sample, not an action: it is
  * aria-hidden, so it never counts as a view's accent fill (R6), and the name beside it says the accent in words (R5).
  */
-import { accentScope, useDark, type Accent } from "./customize-state";
+import { accentScope, useDark } from "./customize-state";
+import type { Accent } from "./look";
 
 export function AccentChip({ accent, size = "md" }: { accent: Accent; size?: "sm" | "md" }) {
   const dark = useDark();

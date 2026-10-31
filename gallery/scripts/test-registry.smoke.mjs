@@ -937,18 +937,42 @@ const hexToRgb = (hex) => {
   return [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
 };
 
-/** litt's accent in light and dark, read from the `--accent` declarations in tokens.css. Returns {light:[r,g,b], dark:[r,g,b]}. */
+/**
+ * litt's accent tones, read from tokens.css. `light` and `dark` are Blue 4's fill, what every scenario expects with no
+ * data-accent. `blue4`, `pink` and `mono` are {light, dark} of {fill, text}: the `--accent` and `--accent-text` that
+ * look resolves to, following its `[data-accent]` block's var() into each theme block.
+ */
 export function readExpectedAccent(tokensCssPath) {
   const nodes = parseCss(fs.readFileSync(tokensCssPath, "utf8"));
-  const pick = (test) => {
+  const declsOf = (test, what) => {
     const block = nodes.find((n) => n.kind === "block" && test(n.prelude) && n.children.some((c) => c.kind === "decl" && c.prop === "--accent"));
-    const hex = block?.children.find((c) => c.kind === "decl" && c.prop === "--accent")?.value;
-    if (!hex || !/^#[0-9a-f]{3,6}\b/i.test(hex)) throw new Error(`${tokensCssPath}: cannot read --accent for ${test}`);
-    return hexToRgb(hex.match(/^#[0-9a-f]{3,6}/i)[0]);
+    if (!block) throw new Error(`${tokensCssPath}: no ${what} block declares --accent`);
+    return Object.fromEntries(block.children.filter((c) => c.kind === "decl").map((c) => [c.prop, c.value]));
   };
+  const themes = {
+    light: declsOf((p) => p.includes(":root") && p.includes('[data-theme="light"]'), "light theme"),
+    dark: declsOf((p) => p === '[data-theme="dark"]', "dark theme"),
+  };
+  const rgbIn = (theme, prop, value) => {
+    const ref = /^var\((--[\w-]+)\)$/.exec(value ?? "");
+    if (ref) return rgbIn(theme, prop, themes[theme][ref[1]]);
+    if (!/^#[0-9a-f]{3,6}\b/i.test(value ?? "")) throw new Error(`${tokensCssPath}: cannot read ${prop} as a hex in the ${theme} theme`);
+    return hexToRgb(value.match(/^#[0-9a-f]{3,6}/i)[0]);
+  };
+  const tones = (decls) =>
+    Object.fromEntries(
+      Object.keys(themes).map((t) => {
+        const own = decls ?? themes[t];
+        return [t, { fill: rgbIn(t, "--accent", own["--accent"]), text: rgbIn(t, "--accent-text", own["--accent-text"]) }];
+      }),
+    );
+  const blue4 = tones(null);
   return {
-    light: pick((p) => p.includes(":root") && p.includes('[data-theme="light"]')),
-    dark: pick((p) => p === '[data-theme="dark"]'),
+    light: blue4.light.fill,
+    dark: blue4.dark.fill,
+    blue4,
+    pink: tones(declsOf((p) => p.includes('[data-accent="pink"]'), 'data-accent="pink"')),
+    mono: tones(declsOf((p) => p.includes('[data-accent="mono"]'), 'data-accent="mono"')),
   };
 }
 
@@ -1165,10 +1189,11 @@ export async function measureBaseStyles(browser, url, baseline) {
 
 /**
  * The full smoke run against a served production build.
- * opts: {browser, url, shotsDir, tag, rendered (item names), litt (bool), accent ({light,dark}), baseline}
+ * opts: {browser, url, shotsDir, tag, rendered (item names), litt (bool), accent (readExpectedAccent), baseline,
+ *        look ("pink" or "mono" when the host's markup puts data-accent on <html>), app ("vite" or "next")}
  * Returns {checks: [{name, ok, detail}], errors: string[]}.
  */
-export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, accent, baseline }) {
+export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, accent, baseline, look, app }) {
   fs.mkdirSync(shotsDir, { recursive: true });
   const checks = [];
   const record = (name, ok, detail = "") => checks.push({ name, ok, detail });
@@ -1224,7 +1249,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const got = await page.evaluate(
             `(${COLOR_TO_RGB})(getComputedStyle(document.querySelector("[data-item=button] [data-testid=litt-primary]")).backgroundColor)`,
           );
-          const want = accent[theme];
+          const want = look ? accent[look][theme].fill : accent[theme];
           if (!near(got, want)) throw new Error(`background is rgb(${got.slice(0, 3)}), litt accent is rgb(${want})`);
           return `rgb(${want})`;
         });
@@ -3792,7 +3817,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
     }
   }
 
-  if (litt && has("button")) await darkModeContract(browser, url, accent, record);
+  if (litt && has("button")) await (look ? accentContract(browser, url, { accent, look, app }, record) : darkModeContract(browser, url, accent, record));
   if (has("app-shell")) await shellOnAPhone(browser, url, record);
   return { checks, errors: allErrors };
 }
@@ -3841,6 +3866,96 @@ async function darkModeContract(browser, url, accent, record) {
     }
   } finally {
     await context.close();
+  }
+}
+
+/** What the accent contract reads: the primary Button's fill, the accent tones on <html>, and a node outside the app. */
+const READ_ACCENT = `(() => {
+  const rgb = ${COLOR_TO_RGB};
+  const html = document.documentElement;
+  const tone = (el, name) => rgb(getComputedStyle(el).getPropertyValue(name).trim());
+  const portal = document.body.appendChild(document.createElement("div"));
+  const out = {
+    attr: html.getAttribute("data-accent"),
+    button: rgb(getComputedStyle(document.querySelector("[data-item=button] [data-testid=litt-primary]")).backgroundColor),
+    accent: tone(html, "--litt-accent"),
+    text: tone(html, "--litt-accent-text"),
+    fg: tone(html, "--litt-fg"),
+    portal: tone(portal, "--litt-accent"),
+  };
+  portal.remove();
+  return out;
+})()`;
+
+/**
+ * The look a host sets in its markup, data-accent on <html>: it wins in light, under .dark and in the system's dark
+ * (read from --litt-accent-text too, since Blue 4 and Pink fill with one hex in both themes), reaches a node appended to
+ * <body> as a portal is, follows a runtime flip to mono, and gives Blue 4 back when removed. With JavaScript off the
+ * server's HTML already carries it, and on Next the server-rendered Button is already the look's fill: no flash.
+ */
+async function accentContract(browser, url, { accent, look, app }, record) {
+  const misses = (got, want, extra = []) =>
+    [
+      ["primary Button", got.button, want.fill],
+      ["--litt-accent on <html>", got.accent, want.fill],
+      ["--litt-accent-text on <html>", got.text, want.text],
+      ["--litt-accent on a <div> in <body>", got.portal, want.fill],
+      ...extra,
+    ]
+      .filter(([, g, w]) => !near(g, w))
+      .map(([what, g, w]) => `${what} is rgb(${g.slice(0, 3)}), expected rgb(${w.slice(0, 3)})`);
+  const { context, page } = await openPage(browser, url, "light");
+  try {
+    const cases = [
+      { name: `data-accent="${look}" on <html>, light`, scheme: "light", want: accent[look].light },
+      { name: `data-accent="${look}" on <html>, .dark`, scheme: "light", cls: "dark", want: accent[look].dark },
+      { name: `data-accent="${look}" on <html>, system dark`, scheme: "dark", want: accent[look].dark },
+      { name: 'data-accent flipped to "mono" at runtime', scheme: "light", flip: "mono", want: accent.mono.light },
+      { name: "data-accent removed at runtime: Blue 4", scheme: "light", flip: null, want: accent.blue4.light },
+    ];
+    for (const c of cases) {
+      try {
+        await page.emulateMedia({ colorScheme: c.scheme });
+        await page.evaluate(
+          ({ cls, flip }) => {
+            const el = document.documentElement;
+            el.classList.remove("dark", "light");
+            if (cls) el.classList.add(cls);
+            if (flip) el.setAttribute("data-accent", flip);
+            else if (flip === null) el.removeAttribute("data-accent");
+          },
+          { cls: c.cls ?? null, flip: c.flip },
+        );
+        await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
+        await page.waitForTimeout(250);
+        const got = await page.evaluate(READ_ACCENT);
+        const bad = misses(got, c.want, c.flip === "mono" ? [["--litt-accent against --litt-fg", got.accent, got.fg]] : []);
+        if (c.flip === undefined && got.attr !== look)
+          bad.unshift(`<html> carries ${got.attr === null ? "no data-accent" : `data-accent="${got.attr}"`} after hydration`);
+        record(`accent: ${c.name}`, !bad.length, bad.join("; ") || `fill rgb(${c.want.fill}), text rgb(${c.want.text})`);
+      } catch (e) {
+        record(`accent: ${c.name}`, false, String(e.message || e).split("\n")[0]);
+      }
+    }
+  } finally {
+    await context.close();
+  }
+
+  const name = `accent: data-accent="${look}" with JavaScript off${app === "next" ? ", server-rendered Button" : ""}`;
+  const noJs = await browser.newContext({ javaScriptEnabled: false, colorScheme: "light", viewport: { width: 1280, height: 1100 } });
+  try {
+    const page = await noJs.newPage();
+    const res = await page.goto(url, { waitUntil: "load", timeout: 30000 });
+    const tag = /<html\b[^>]*>/i.exec(await res.text())?.[0] ?? "no <html> tag";
+    if (!tag.includes(`data-accent="${look}"`)) throw new Error(`the server's HTML opens with ${tag}`);
+    // Vite renders in the browser, so with JavaScript off there is no Button yet; the markup is the whole first paint.
+    if (app !== "next") return record(name, true, `the built index.html opens with ${tag}`);
+    const bad = misses(await page.evaluate(READ_ACCENT), accent[look].light);
+    record(name, !bad.length, bad.join("; ") || `${tag}, Button rgb(${accent[look].light.fill}) before any script`);
+  } catch (e) {
+    record(name, false, String(e.message || e).split("\n")[0]);
+  } finally {
+    await noJs.close();
   }
 }
 

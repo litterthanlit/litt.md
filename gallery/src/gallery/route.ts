@@ -1,5 +1,6 @@
 /** Hash routing: #button, #playground. The hash is the page id. */
 import { startTransition, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { lookSearch } from "./look";
 import { pages } from "./registry";
 
 /** The page id in the URL hash, or the first page. A malformed hash falls back instead of throwing. */
@@ -14,13 +15,13 @@ export function readHash(): string {
 }
 
 /* A page's query string (the Table page keeps its filters there) belongs to that page's history entry. A link to
-   another page carries the query along, so a new entry drops it; an entry seen before is marked, and keeps its own, so
-   Back brings the filters back with the page. */
+   another page carries the query along, so a new entry drops it, all but a look from a link (look.ts), which belongs to
+   the visit; an entry seen before is marked, and keeps its own, so Back brings the filters back with the page. */
 const SEEN = "littSeen";
 function claimEntry(dropQuery: boolean) {
   const state: unknown = history.state;
   if (state && typeof state === "object" && SEEN in state) return;
-  const url = dropQuery ? location.pathname + location.hash : location.href;
+  const url = dropQuery ? location.pathname + lookSearch(location.search) + location.hash : location.href;
   history.replaceState({ ...(state && typeof state === "object" ? state : {}), [SEEN]: true }, "", url);
 }
 

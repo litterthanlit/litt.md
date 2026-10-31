@@ -16,8 +16,9 @@
  * Nothing is written twice. A page's words come from its own `export const meta` and `export const docs` (read as plain
  * object literals, as the page-meta plugin in vite.config.ts reads meta), the props from src/generated/docs.json
  * (gen-docs.mjs), the versions from registry.lock.json (gen-registry.mjs), and the install and usage lines from the same
- * functions the Copy prompt uses (src/gallery/docs/copy-prompt.ts, transpiled on the fly). So prebuild and verify run it
- * after gen-registry.
+ * functions the Copy prompt uses (src/gallery/docs/copy-prompt.ts, transpiled on the fly), and the Looks section from
+ * the one Customize's Copy setup uses (src/gallery/look.ts, the same way). So prebuild and verify run it after
+ * gen-registry.
  */
 import fs from "node:fs";
 import os from "node:os";
@@ -78,11 +79,11 @@ const lockFile = path.join(root, "registry.lock.json");
 if (!fs.existsSync(lockFile)) fail("registry.lock.json is missing. Run npm run gen:registry first.");
 const lock = JSON.parse(read(lockFile));
 
-/** copy-prompt.ts imports only types, so a plain transpile runs under Node. */
-async function loadCopyPrompt() {
-  const src = read(path.join(root, "src", "gallery", "docs", "copy-prompt.ts"));
+/** copy-prompt.ts imports only types and look.ts imports nothing, so a plain transpile runs each under Node. */
+async function loadModule(...file) {
+  const src = read(path.join(root, "src", "gallery", ...file));
   const js = ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
-  const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "litt-llms-")), "copy-prompt.mjs");
+  const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "litt-llms-")), path.basename(file.at(-1), ".ts") + ".mjs");
   fs.writeFileSync(tmp, js);
   try {
     return await import(pathToFileURL(tmp).href);
@@ -178,7 +179,7 @@ function pageMarkdown(page, cp) {
   return parts.join("\n\n") + "\n";
 }
 
-function llmsTxt(pages, cp) {
+function llmsTxt(pages, cp, look) {
   const withDocs = pages.filter((p) => p.docs);
   const patterns = pages.filter((p) => !p.docs && p.meta.group);
   const sections = [
@@ -198,6 +199,8 @@ function llmsTxt(pages, cp) {
         `For the whole design language (taste, tokens, build and critique workflows), install the Claude Code plugin: \`claude plugin marketplace add litterthanlit/litt.md\`, then \`claude plugin install litt-md@litt\`. Source: ${REPO}.`,
       ]),
     ].join("\n\n"),
+    "## Looks",
+    look.looksDoc(ORIGIN),
     "## House rules",
     bullets([
       "Weight by role: text at 400, titles, buttons and tabs at 500 (font-litt-title), 12px labels at 600 (font-litt-label, carried by text-litt-caption). Never font-medium, font-semibold or font-bold. Nothing is set above 18px.",
@@ -236,12 +239,13 @@ function llmsTxt(pages, cp) {
 /* ------------------------------------------------------------- write them */
 
 async function main() {
-  const cp = await loadCopyPrompt();
+  const cp = await loadModule("docs", "copy-prompt.ts");
+  const look = await loadModule("look.ts");
   const pages = readPages();
   const files = new Map();
   const docsPages = pages.filter((p) => p.docs);
   for (const p of docsPages) files.set(`docs/${p.meta.id}.md`, pageMarkdown(p, cp));
-  const llms = llmsTxt(pages, cp);
+  const llms = llmsTxt(pages, cp, look);
   files.set("llms.txt", llms);
   files.set("llms-full.txt", llms + "\n---\n\n" + docsPages.map((p) => files.get(`docs/${p.meta.id}.md`)).join("\n---\n\n"));
   files.set("changelog.md", read(path.join(root, "CHANGELOG.md")));

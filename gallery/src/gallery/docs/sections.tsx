@@ -11,9 +11,12 @@
 import type { ReactNode } from "react";
 import { Kbd } from "@/components/kbd";
 import type { PageDocs } from "../kit";
+import { useCustomize } from "../customize-state";
 import { componentDoc } from "../docs-data";
+import { lookNote, lookSetup } from "../look";
 import { CodeBlock } from "./code-block";
-import { documentedExports, installCommands, REGISTRIES_ENTRY, usageSnippet } from "./copy-prompt";
+import { CopyButton } from "./copy";
+import { documentedExports, installCommands, REGISTRIES_ENTRY, SITE, usageSnippet } from "./copy-prompt";
 import { PropsTable } from "./props-table";
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
@@ -75,11 +78,22 @@ const mono = "font-mono text-fg-muted";
 export function DocsSections({ docs }: { docs: PageDocs }) {
   const components = docs.components.map(componentDoc);
   const exportDocs = documentedExports(docs, components);
+  const { look } = useCustomize();
+  const note = lookNote(look);
 
   return (
     <div className="grid gap-12 border-t border-line pt-12">
       <Section id="install" title="Install">
         <CodeBlock code={installCommands(components)} lang="shell" label="Install command" />
+        {/* The gallery can show a look the registry does not install, so the command alone would not give you this page. */}
+        {note && (
+          <div data-fun-cue="" className="flex max-w-[65ch] flex-wrap items-center gap-x-3 gap-y-1">
+            <p className="text-small text-fg-subtle">{note}</p>
+            <CopyButton text={lookSetup(look, SITE)} variant="ghost">
+              Copy setup
+            </CopyButton>
+          </div>
+        )}
         <p className="max-w-[65ch] text-small text-fg-subtle [overflow-wrap:anywhere]">
           Prefer short names? Put <span className={mono}>{REGISTRIES_ENTRY}</span> in components.json, then run{" "}
           <span className={mono}>npx shadcn@latest add @litt/{components[0]!.stem}</span>. Installed tokens carry a litt prefix, like{" "}

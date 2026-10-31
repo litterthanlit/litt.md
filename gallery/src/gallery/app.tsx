@@ -10,6 +10,7 @@ import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
 import { Segmented } from "@/components/segmented";
 import { CustomizeProvider, useCustomize, type ThemeChoice } from "./customize-state";
+import { LookNotice } from "./look-notice";
 import { NavPreview } from "./nav-preview";
 import { MenuButton, MobileMenu } from "./mobile-menu";
 import { SearchButton, SearchProvider } from "./search";
@@ -195,6 +196,8 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           </div>
         </div>
       </header>
+
+      <LookNotice inert={menu} />
 
       <MobileMenu
         open={menu}

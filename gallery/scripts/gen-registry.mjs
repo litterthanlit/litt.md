@@ -764,7 +764,7 @@ const COPY = {
   litt: {
     title: "litt tokens",
     description: "litt.md's colors, type, space, shape, depth and motion as CSS variables, Tailwind names and the litt-glass, litt-raised, litt-trim, litt-lit and litt-grain classes. Every name starts with litt, so none of it touches your own.",
-    docs: "Added to your global CSS: --litt-* variables, Tailwind names such as bg-litt-surface-1 and rounded-litt-control, and the litt-glass class and its siblings. Nothing of yours is changed. Dark follows .dark, [data-theme=\"dark\"] or the system setting.",
+    docs: "Added to your global CSS: --litt-* variables, Tailwind names such as bg-litt-surface-1 and rounded-litt-control, and the litt-glass class and its siblings. Nothing of yours is changed. Dark follows .dark, [data-theme=\"dark\"] or the system setting. For Monochrome or Pink instead of Blue 4, set data-accent=\"mono\" or \"pink\" on <html>.",
   },
   "base-styles": {
     title: "litt base styles",
@@ -774,7 +774,7 @@ const COPY = {
   motion: {
     title: "Motion",
     description: "The motion engine the components share. Hooks for the instant, responsive and expressive tiers, exits, travel and stagger, and the compact and coarse device signals, all reading litt's tokens.",
-    docs: "Installed in lib/litt/motion. The components use it for you, and it needs no provider.",
+    docs: "Installed in lib/litt/motion. The components use it for you, and it needs no provider. Fun mode, a trial, is a <FunMode> around the app: springier motion, the same at rest.",
   },
   glide: {
     title: "Glide",
