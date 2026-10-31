@@ -150,7 +150,7 @@ export function looksDoc(site: string): string {
       `- The link: \`${LOOK_PARAM}=<accent>\` or \`${LOOK_PARAM}=<accent>-fun\`. Anything else is not a look.`,
       ...ACCENTS.map(
         (a) =>
-          `- \`${a.id}\`, ${a.name} (${a.note.toLowerCase()}): ` +
+          `- \`${a.id}\`, ${a.name} (${a.note[0]!.toLowerCase() + a.note.slice(1)}): ` +
           (a.attribute ? `\`data-accent="${a.attribute}"\` on \`<html>\`.` : "no attribute. It is what tokens.css ships."),
       ),
       `- \`-fun\`: wrap the app in \`<FunMode>\` from \`@/lib/litt/motion\` (the motion item). Fun mode is a trial: it changes how litt's parts move, never how they look at rest, and reduced motion turns it off.`,
