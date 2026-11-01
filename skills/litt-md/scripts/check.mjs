@@ -133,6 +133,7 @@ const pairs = [
   ["--fg", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
   ["--fg-muted", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "body text"],
   ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "supporting text"],
+  ["--fg-subtle", ["--tray"], 4.5, "a card picker's labels and lines on its tray"],
   ["--line-control", ["--canvas", "--surface-1", "--surface-2", "--cut"], 3, "control outline"],
   ["--focus", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring"],
   ["--accent-fg", ["--accent", "--accent-hover"], 4.5, "text on accent"],

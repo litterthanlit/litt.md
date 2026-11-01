@@ -871,6 +871,11 @@ const COPY = {
     description: "A short choice of two to five options in one track. The selected surface glides to your pick, and the control is built from native radios, so the arrow keys work.",
     docs: "Import Segmented from components/litt/segmented. Give it a legend, a value, onValueChange and options. In a form, pass showLegend and block.",
   },
+  "card-picker": {
+    title: "Card picker",
+    description: "One choice shown as cards: tiles of a picture over a word in one tray, or cards with a title, a line and a detail such as a price, in a row when they fit and stacked when they do not. Native radios; the picked card is the raised block, gliding to the pick.",
+    docs: "Import CardPicker from components/litt/card-picker. Give it a legend, options ({ value, label, description, detail, picture, disabled }), and value with onValueChange. size=\"sm\" draws tiles; name and required make it a form field.",
+  },
   tag: {
     title: "Tag",
     description: "A small label at the control radius that names a thing or reports its state. A status tag colors its text, never the fill, and always says the status in words.",

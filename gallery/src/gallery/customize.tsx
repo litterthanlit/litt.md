@@ -3,9 +3,9 @@
  * motion's feel. It loads on its own, so the shell stays small; the state and the writes on <body> live in
  * customize-state.tsx.
  *
- * Every choice is a tile that shows what it does before it says it (tiles.tsx): each accent as a small button in its
- * color, each theme as a small window, each shape as a card and a control at that radius, each face as "Aa", and
- * Calm and Fun as a dot that moves on that mode's spring when it is picked. Surprise me shuffles the accent, the shape,
+ * Every choice is a tile that shows what it does before it says it (the registry's CardPicker at sm): each accent as
+ * a small button in its color, each theme as a small window, each shape as a card and a control at that radius, each
+ * face as "Aa", and Calm and Fun as a dot that moves on that mode's spring when it is picked. Surprise me shuffles the accent, the shape,
  * the face and the feel at once, and says what it picked.
  */
 import { useEffect, useState, type CSSProperties } from "react";
@@ -13,6 +13,7 @@ import { motion } from "motion/react";
 import { FUN_SPRINGS, useDevice, useTransition } from "@/motion";
 import { customizeSnippet, shapeName, shapeRule, shapeSurface, SHAPES, typeRule } from "@/motion/rules";
 import { Button } from "@/components/button";
+import { CardPicker } from "@/components/card-picker";
 import { LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { Tag } from "@/components/tag";
@@ -21,7 +22,6 @@ import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
 import { accentOf, ACCENTS, GALLERY_LOOK, lookInApp, lookSetup, lookWords, withLook, type Accent } from "./look";
 import { AccentChip } from "./swatch";
-import { Tiles } from "./tiles";
 import { loadTypeface } from "./typeface";
 
 /* What to set for each accent is in Copy setup, under Your look. */
@@ -130,49 +130,54 @@ function CustomizePanel() {
           {said}
         </p>
       </div>
-      <Tiles
+      <CardPicker
+        size="sm"
         legend="Accent"
         value={look.accent}
         onValueChange={(accent) => setLook({ accent })}
-        tiles={ACCENTS.map((a) => ({ value: a.id, label: a.short ?? a.name, preview: <AccentChip accent={a.id} /> }))}
+        options={ACCENTS.map((a) => ({ value: a.id, label: a.short ?? a.name, picture: <AccentChip accent={a.id} /> }))}
       />
-      <Tiles
+      <CardPicker
+        size="sm"
         legend="Theme"
         value={theme}
         onValueChange={setTheme}
-        tiles={(["light", "dark", "system"] as const).map((t) => ({
+        options={(["light", "dark", "system"] as const).map((t) => ({
           value: t,
           label: t === "light" ? "Light" : t === "dark" ? "Dark" : "System",
-          preview: <ThemePreview theme={t} accent={look.accent} />,
+          picture: <ThemePreview theme={t} accent={look.accent} />,
         }))}
       />
-      <Tiles
+      <CardPicker
+        size="sm"
         legend="Shape"
         value={String(radius)}
         onValueChange={(v) => setRadius(Number(v))}
-        tiles={SHAPES.map((r) => ({ value: String(r), label: shapeName(r), preview: <ShapePreview radius={r} /> }))}
+        options={SHAPES.map((r) => ({ value: String(r), label: shapeName(r), picture: <ShapePreview radius={r} /> }))}
       />
-      <Tiles
+      <CardPicker
+        size="sm"
         legend="Typeface"
         value={typeface.id}
         onValueChange={setTypeface}
-        tiles={typefaces.map((f) => ({
+        options={typefaces.map((f) => ({
           value: f.id,
           label: f.short ?? f.name,
-          preview: (
+          picture: (
             <span className="text-display font-title" style={{ fontFamily: f.stack }}>
               Aa
             </span>
           ),
         }))}
       />
-      <Tiles
+      <CardPicker
+        size="sm"
         legend="Motion"
         value={look.fun ? "fun" : "calm"}
         onValueChange={(v) => setLook({ fun: v === "fun" })}
-        tiles={[
-          { value: "calm", label: "Calm", preview: <FeelPreview fun={false} on={!look.fun} /> },
-          { value: "fun", label: "Fun", preview: <FeelPreview fun on={look.fun} /> },
+        options={[
+          { value: "calm", label: "Calm", picture: <FeelPreview fun={false} on={!look.fun} /> },
+          { value: "fun", label: "Fun", picture: <FeelPreview fun on={look.fun} /> },
         ]}
       />
       <div className="grid gap-3 border-t border-line pt-4">

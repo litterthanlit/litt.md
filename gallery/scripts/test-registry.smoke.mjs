@@ -210,6 +210,23 @@ const RECIPES = {
     state: [`const [seg, setSeg] = useState("a");`],
     jsx: `<Segmented legend="Visibility" showLegend value={seg} onValueChange={setSeg} options={[{ value: "a", label: "Public" }, { value: "b", label: "Private" }]} />`,
   },
+  "card-picker": {
+    needs: ["CardPicker"],
+    top: [
+      `const CARD_PLANS = [{ value: "free", label: "Free", description: "Your trial has ended.", detail: "$0", disabled: true }, { value: "pro", label: "Pro", description: "Unlimited projects and previews.", detail: "$12 a month" }, { value: "team", label: "Team", description: "Roles, an audit log and SSO.", detail: "$40 a month" }];`,
+    ],
+    jsx: `<div className="grid gap-6" data-testid="litt-card-picker">
+          <form data-testid="card-picker-form" onSubmit={(e) => e.preventDefault()} style={{ width: 360 }}>
+            <CardPicker legend="Plan" name="plan" defaultValue="pro" options={CARD_PLANS} />
+          </form>
+          <div data-testid="card-picker-wide" style={{ width: 720 }}>
+            <CardPicker legend="Plan, wide" name="plan-wide" defaultValue="pro" options={CARD_PLANS} />
+          </div>
+          <div data-testid="card-picker-sm" style={{ width: 320 }}>
+            <CardPicker size="sm" legend="Layout" defaultValue="list" options={["List", "Grid", "Board"].map((l) => ({ value: l.toLowerCase(), label: l, picture: <span data-testid="card-picker-picture" style={{ display: "block", width: 16, height: 16, background: "currentColor" }} /> }))} />
+          </div>
+        </div>`,
+  },
   popover: {
     needs: ["Popover", "PopoverTrigger", "PopoverContent", "PopoverClose"],
     jsx: `<Popover>
@@ -1295,6 +1312,78 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
         await attempt("tabs switch", async () => {
           await item("tabs").getByRole("tab", { name: "Two" }).click();
           await item("tabs").getByText("Panel two").waitFor({ state: "visible", timeout: 4000 });
+        });
+      }
+      if (has("card-picker")) {
+        const narrow = item("card-picker").getByTestId("card-picker-form");
+        const wide = item("card-picker").getByTestId("card-picker-wide");
+        const small = item("card-picker").getByTestId("card-picker-sm");
+        /* The described-by text of a radio, as a screen reader reads it after the name. */
+        const description = (radio) => radio.evaluate((el) => (el.getAttribute("aria-describedby") ?? "").split(" ").map((id) => document.getElementById(id)?.textContent ?? "").join(" "));
+        const cards = (scope) => scope.locator("label").evaluateAll((ls) => ls.map((l) => { const r = l.getBoundingClientRect(); return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height) }; }));
+        await attempt("card picker: the radio is named by the title and described by the line and the price", async () => {
+          const pro = narrow.getByRole("radio", { name: "Pro", exact: true });
+          if (!(await pro.isChecked())) throw new Error("Pro is not checked from defaultValue");
+          const said = await description(pro);
+          if (!said.includes("Unlimited projects and previews.") || !said.includes("$12 a month")) throw new Error(`Pro's description is "${said}"`);
+          return said;
+        });
+        await attempt("card picker: one raised block per tray, filled --litt-block, never the accent", async () => {
+          await page.mouse.move(0, 0);
+          const fills = [];
+          for (const scope of [narrow, wide, small]) {
+            const filled = await scope.locator("label, label > span").evaluateAll((els) =>
+              els.map((el) => getComputedStyle(el).backgroundColor).filter((c) => c !== "rgba(0, 0, 0, 0)" && c !== "transparent"),
+            );
+            if (filled.length !== 1) throw new Error(`a picker has ${filled.length} filled parts (${filled.join(", ")}), expected the one block`);
+            fills.push(filled[0]);
+          }
+          const [block, accentFill] = await page.evaluate(() => {
+            const probe = document.createElement("div");
+            document.body.append(probe);
+            probe.style.background = "var(--litt-block)";
+            const b = getComputedStyle(probe).backgroundColor;
+            probe.style.background = "var(--litt-accent)";
+            const a = getComputedStyle(probe).backgroundColor;
+            probe.remove();
+            return [b, a];
+          });
+          if (fills.some((f) => f !== block)) throw new Error(`the block is ${fills.join(", ")}, --litt-block is ${block}`);
+          if (block === accentFill) throw new Error(`the block is the accent (${accentFill})`);
+          return block;
+        });
+        await attempt("card picker: a click picks, and the arrow keys skip a disabled card", async () => {
+          const team = narrow.getByRole("radio", { name: "Team", exact: true });
+          await narrow.locator("label", { has: page.getByRole("radio", { name: "Team", exact: true }) }).click();
+          if (!(await team.isChecked())) throw new Error("clicking Team's card did not check it");
+          await page.keyboard.press("ArrowDown");
+          const pro = narrow.getByRole("radio", { name: "Pro", exact: true });
+          if (!(await pro.isChecked())) throw new Error("ArrowDown from the last card did not wrap past the disabled Free to Pro");
+          await page.keyboard.press("ArrowUp");
+          if (!(await team.isChecked())) throw new Error("ArrowUp from Pro did not wrap past the disabled Free to Team");
+          return "Team, ArrowDown to Pro, ArrowUp to Team, Free skipped both ways";
+        });
+        await attempt("card picker: a form sends the pick by name", async () => {
+          const sent = await narrow.evaluate((form) => new FormData(form).get("plan"));
+          if (sent !== "team") throw new Error(`the form sends plan=${sent}`);
+          return "plan=team";
+        });
+        await attempt("card picker: stacked at 360px, one row at 720px, every card the same size", async () => {
+          const n = await cards(narrow), w = await cards(wide);
+          const same = (cs) => cs.every((c) => Math.abs(c.w - cs[0].w) <= 1 && Math.abs(c.h - cs[0].h) <= 1);
+          if (!(n.every((c) => c.x === n[0].x) && new Set(n.map((c) => c.y)).size === n.length)) throw new Error(`360px is not stacked: ${JSON.stringify(n)}`);
+          if (!(w.every((c) => c.y === w[0].y) && new Set(w.map((c) => c.x)).size === w.length)) throw new Error(`720px is not one row: ${JSON.stringify(w)}`);
+          if (!same(n) || !same(w)) throw new Error(`cards differ in size: ${JSON.stringify({ n, w })}`);
+          return `rows ${n[0].w}x${n[0].h}, columns ${w[0].w}x${w[0].h}`;
+        });
+        await attempt("card picker: sm draws tiles, the word under the picture, under 72px tall", async () => {
+          const tiles = await cards(small);
+          if (tiles.some((t) => t.h >= 72) || !tiles.every((t) => t.y === tiles[0].y)) throw new Error(`tiles: ${JSON.stringify(tiles)}`);
+          const tile = small.locator("label").first();
+          const pic = await tile.getByTestId("card-picker-picture").boundingBox();
+          const word = await tile.getByText("List", { exact: true }).boundingBox();
+          if (!pic || !word || word.y < pic.y + pic.height) throw new Error(`the word is not under the picture: ${JSON.stringify({ pic, word })}`);
+          return `${tiles.length} tiles, ${tiles[0].h}px tall`;
         });
       }
       if (has("list")) {
