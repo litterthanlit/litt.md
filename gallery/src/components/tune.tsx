@@ -98,7 +98,7 @@ type Bound = {
   read(motion: Still): unknown;
   rules(label: string): RuleRow[];
   copy(at: { readonly key: string; readonly token: string }): Copied;
-  summary(): string | undefined;
+  summary?(): string;
   control(label: string, onChange: (next: Json) => void): ReactNode;
 };
 
@@ -163,7 +163,6 @@ function makeKinds(locked: Locked): TuneKinds {
             read: () => css(r),
             rules: (label) => [cornerRule(r, label)],
             copy: ({ token }) => ({ css: [`${token}: ${css(r)};${cornerRule(r, "").ok ? "" : " /* off litt's corners */"}`] }),
-            summary: () => undefined,
             control: (label, onChange) => (
               <Slider
                 label={label}
@@ -198,7 +197,6 @@ function makeKinds(locked: Locked): TuneKinds {
             read: () => css(s),
             rules: (label) => [spaceRule(s, label)],
             copy: ({ token }) => ({ css: [`${token}: ${css(s)};${spaceRule(s, "").ok ? "" : " /* off the spacing scale */"}`] }),
-            summary: () => undefined,
             control: (label, onChange) => (
               <Slider
                 label={label}
@@ -293,7 +291,6 @@ function makeKinds(locked: Locked): TuneKinds {
             read: () => on,
             rules: () => [],
             copy: ({ key }) => ({ prop: `${key} ${on}` }),
-            summary: () => undefined,
             control: (label, onChange) => <Switch label={label} description={named?.description} align="end" checked={on} onCheckedChange={onChange} />,
           };
         }),
@@ -311,7 +308,6 @@ function makeKinds(locked: Locked): TuneKinds {
             read: () => picked,
             rules: () => [],
             copy: ({ key }) => ({ prop: `${key} ${JSON.stringify(picked)}` }),
-            summary: () => undefined,
             control: (label, onChange) =>
               options.length <= 3 ? (
                 <Segmented legend={label} showLegend block size="sm" options={items} value={picked} onValueChange={onChange} />
@@ -338,7 +334,6 @@ function makeKinds(locked: Locked): TuneKinds {
             read: () => n,
             rules: () => [],
             copy: ({ key, token }) => (unit ? { css: [`${token}: ${num(n)}${unit};`] } : { prop: `${key} ${num(n)}` }),
-            summary: () => undefined,
             control: (label, onChange) => (
               <Slider label={label} value={n} onValueChange={onChange} min={min} max={max} step={step} home={start} formatValue={(v) => `${num(v)}${unit}`} />
             ),
@@ -634,7 +629,7 @@ function Panel({ store, name, startFolded, className }: { store: TuneStore; name
         </div>
       )}
       {folded.map((f) => (
-        <InspectorGroup key={f.key} title={f.label} summary={bound(f).summary()} defaultOpen={f.spec.fold === "open"}>
+        <InspectorGroup key={f.key} title={f.label} summary={bound(f).summary?.()} defaultOpen={f.spec.fold === "open"}>
           {bound(f).control(f.label, write(f))}
         </InspectorGroup>
       ))}
