@@ -426,6 +426,10 @@
       "version": "2026.10.26",
       "hash": "aeb8202145fcc1a0"
     },
+    "tune": {
+      "version": "2026.11.01",
+      "hash": "09d60dda5bf460eb"
+    },
     "usage": {
       "version": "2026.10.26",
       "hash": "bda1d7576a9c59e5"

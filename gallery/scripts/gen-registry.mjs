@@ -983,6 +983,11 @@ const COPY = {
     description: "A floating glass panel for tuning one thing live, built from litt's own controls: groups that fold, versions you save and go back to, a check against your rules with a Fits or Change row each, and Copy tokens.",
     docs: "Import Inspector and InspectorGroup from components/litt/inspector. Hold every value in one object and pass it as value with onValueChange, then put a Slider, a Switch, a Spring editor or a Curve editor in each InspectorGroup. Add defaultValue for Reset, presets and storageKey for versions, checks for the rules and tokens for Copy tokens.",
   },
+  tune: {
+    title: "Tune",
+    description: "One line that tunes a component: useTune(name, (t) => ({ … })) returns typed live values and builds a litt Inspector for them. Every corner, space and spring is checked against litt's rules as you drag, values sit on litt's tokens once they fit, takes are saved as versions, and Copy tokens writes litt's own names. The panels show only in development unless you turn them on.",
+    docs: "Import useTune and TuneRoot from components/litt/tune. Wrap the app in TuneRoot once, then call useTune with a name and fields from t (radius, space, spring, easing, toggle, choice, number, action). Pass enabled to show the panels in a production build, and inline to draw them after the children instead of floating. The code ships wherever tune is imported, hidden or not, so paste the copied tokens and remove the call once the values fit.",
+  },
   /* The rails step: a data hue drawn as a thin line. Each entry is owned by the agent that builds the item. */
   breakdown: {
     title: "Breakdown",
