@@ -764,7 +764,7 @@ const COPY = {
   litt: {
     title: "litt tokens",
     description: "litt.md's colors, type, space, shape, depth and motion as CSS variables, Tailwind names and the litt-glass, litt-raised, litt-trim, litt-lit and litt-grain classes. Every name starts with litt, so none of it touches your own.",
-    docs: "Added to your global CSS: --litt-* variables, Tailwind names such as bg-litt-surface-1 and rounded-litt-control, and the litt-glass class and its siblings. Nothing of yours is changed. Dark follows .dark, [data-theme=\"dark\"] or the system setting. For Monochrome or Pink instead of Blue 4, set data-accent=\"mono\" or \"pink\" on <html>.",
+    docs: "Added to your global CSS: --litt-* variables, Tailwind names such as bg-litt-surface-1 and rounded-litt-control, and the litt-glass class and its siblings. Nothing of yours is changed. Dark follows .dark, [data-theme=\"dark\"] or the system setting. For Monochrome or Pink instead of Blue 4, set data-accent=\"mono\" or \"pink\" on <html>. For Flat instead of the press material, set data-material=\"flat\" on <html>.",
   },
   "base-styles": {
     title: "litt base styles",

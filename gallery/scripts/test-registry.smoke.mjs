@@ -1019,6 +1019,18 @@ export function readExpectedAccent(tokensCssPath) {
     blue4,
     pink: tones(declsOf((p) => p.includes('[data-accent="pink"]'), 'data-accent="pink"')),
     mono: tones(declsOf((p) => p.includes('[data-accent="mono"]'), 'data-accent="mono"')),
+    /* Flat's greys in each theme, from the --flat-* mirrors every theme block declares: what data-material="flat" maps
+       the canvas, a raised block (surface-3) and the ink onto. */
+    flat: Object.fromEntries(
+      Object.keys(themes).map((t) => [
+        t,
+        {
+          canvas: rgbIn(t, "--flat-canvas", themes[t]["--flat-canvas"]),
+          block: rgbIn(t, "--flat-surface-3", themes[t]["--flat-surface-3"]),
+          fg: rgbIn(t, "--flat-fg", themes[t]["--flat-fg"]),
+        },
+      ]),
+    ),
   };
 }
 
@@ -3999,6 +4011,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
   }
 
   if (litt && has("button")) await (look ? accentContract(browser, url, { accent, look, app }, record) : darkModeContract(browser, url, accent, record));
+  if (litt && has("button") && look) await materialContract(browser, url, { accent }, record);
   if (has("app-shell")) await shellOnAPhone(browser, url, record);
   return { checks, errors: allErrors };
 }
@@ -4091,7 +4104,8 @@ async function accentContract(browser, url, { accent, look, app }, record) {
       { name: `data-accent="${look}" on <html>, light`, scheme: "light", want: accent[look].light },
       { name: `data-accent="${look}" on <html>, .dark`, scheme: "light", cls: "dark", want: accent[look].dark },
       { name: `data-accent="${look}" on <html>, system dark`, scheme: "dark", want: accent[look].dark },
-      { name: 'data-accent flipped to "mono" at runtime', scheme: "light", flip: "mono", want: accent.mono.light },
+      /* The look's host also runs Flat, where mono's ink is Flat's grey ink. */
+      { name: 'data-accent flipped to "mono" at runtime', scheme: "light", flip: "mono", want: { fill: accent.flat.light.fg, text: accent.flat.light.fg } },
       { name: "data-accent removed at runtime: Blue 4", scheme: "light", flip: null, want: accent.blue4.light },
     ];
     for (const c of cases) {
@@ -4137,6 +4151,75 @@ async function accentContract(browser, url, { accent, look, app }, record) {
     record(name, false, String(e.message || e).split("\n")[0]);
   } finally {
     await noJs.close();
+  }
+}
+
+/** What the material contract reads: the canvas on <html> and a node outside the app, and the secondary Button. */
+const READ_MATERIAL = `(() => {
+  const rgb = ${COLOR_TO_RGB};
+  const html = document.documentElement;
+  const portal = document.body.appendChild(document.createElement("div"));
+  const button = getComputedStyle(document.querySelector("[data-item=button] [data-testid=litt-secondary]"));
+  /* A layer is seen when its color has alpha: rgba(…, 0) and transparent are not. */
+  const layers = button.boxShadow === "none" ? [] : button.boxShadow.split(/,(?![^(]*\\))/);
+  const out = {
+    attr: html.getAttribute("data-material"),
+    canvas: rgb(getComputedStyle(html).getPropertyValue("--litt-canvas").trim()),
+    portal: rgb(getComputedStyle(portal).getPropertyValue("--litt-canvas").trim()),
+    block: rgb(button.backgroundColor),
+    seen: layers.filter((l) => !/rgba\\([^)]*,\\s*0\\)|transparent/.test(l)).length,
+  };
+  portal.remove();
+  return out;
+})()`;
+
+/**
+ * The material a host sets in its markup, data-material="flat" on <html>: in light, under .dark and in the system's
+ * dark the canvas is Flat's grey (on <html> and on a node appended to <body>), the secondary Button is a surface-3 fill
+ * that casts nothing, and removing the attribute at runtime gives the press material back.
+ */
+async function materialContract(browser, url, { accent }, record) {
+  const { context, page } = await openPage(browser, url, "light");
+  try {
+    const cases = [
+      { name: 'data-material="flat" on <html>, light', scheme: "light", want: accent.flat.light },
+      { name: 'data-material="flat" on <html>, .dark', scheme: "light", cls: "dark", want: accent.flat.dark },
+      { name: 'data-material="flat" on <html>, system dark', scheme: "dark", want: accent.flat.dark },
+      { name: "data-material removed at runtime: Press", scheme: "light", drop: true, want: accent.flat.light },
+    ];
+    for (const c of cases) {
+      try {
+        await page.emulateMedia({ colorScheme: c.scheme });
+        await page.evaluate(
+          ({ cls, drop }) => {
+            const el = document.documentElement;
+            el.classList.remove("dark", "light");
+            if (cls) el.classList.add(cls);
+            if (drop) el.removeAttribute("data-material");
+          },
+          { cls: c.cls ?? null, drop: !!c.drop },
+        );
+        await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
+        await page.waitForTimeout(250);
+        const got = await page.evaluate(READ_MATERIAL);
+        const bad = [];
+        if (c.drop) {
+          /* Flat's canvas sits within a step of the stone one, so the block tells the two apart. */
+          if (near(got.block, c.want.block)) bad.push(`the secondary Button is still Flat's rgb(${got.block.slice(0, 3)})`);
+          if (!got.seen) bad.push("the secondary Button casts nothing in Press");
+        } else {
+          if (got.attr !== "flat") bad.push(`<html> carries ${got.attr === null ? "no data-material" : `data-material="${got.attr}"`}`);
+          for (const [what, g, w] of [["--litt-canvas on <html>", got.canvas, c.want.canvas], ["--litt-canvas on a <div> in <body>", got.portal, c.want.canvas], ["the secondary Button", got.block, c.want.block]])
+            if (!near(g, w)) bad.push(`${what} is rgb(${g.slice(0, 3)}), expected rgb(${w.slice(0, 3)})`);
+          if (got.seen) bad.push(`the secondary Button casts ${got.seen} visible shadow layer(s)`);
+        }
+        record(`material: ${c.name}`, !bad.length, bad.join("; ") || (c.drop ? "the press material is back" : `canvas rgb(${c.want.canvas}), block rgb(${c.want.block}), nothing cast`));
+      } catch (e) {
+        record(`material: ${c.name}`, false, String(e.message || e).split("\n")[0]);
+      }
+    }
+  } finally {
+    await context.close();
   }
 }
 
