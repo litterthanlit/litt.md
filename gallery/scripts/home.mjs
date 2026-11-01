@@ -79,6 +79,11 @@ async function open(hash, { phone = false, query = "" } = {}) {
 }
 
 const deck = (pg) => pg.locator("section[aria-labelledby=deck-title]");
+/* The inset layers an element shows: a top highlight is one; a transparent or zero-alpha layer is not. */
+const litInsets = (loc) =>
+  loc.evaluate((el) =>
+    getComputedStyle(el).boxShadow.split(/,(?![^(]*\))/).filter((l) => /inset/.test(l) && !/transparent|rgba\([^)]*,\s*0\)|\/\s*0\)/.test(l)).length,
+  );
 /* A segment is a native radio under its label, out of sight; a hand presses the label. */
 const pick = (scope, name) => scope.locator("label").filter({ hasText: new RegExp(`^${name}$`) }).click();
 const dialogs = (pg) => pg.locator("[role=dialog]").count();
@@ -136,7 +141,10 @@ const accentNow = (pg) => pg.evaluate(() => {
   check((await material()) === undefined && (await lift()) !== flatLift, "the deck's Press takes data-material off <html>, and the block casts again");
   await pick(d, "Flat");
   check((await material()) === "flat" && (await lift()) === flatLift, "the deck's Flat puts data-material=flat back");
+  const getStarted = pg.getByRole("button", { name: "Get started" });
+  check((await litInsets(getStarted)) === 0, "under Flat, Get started catches no top highlight (R2: Flat has no light)");
   await pick(d, "Press");
+  check((await litInsets(getStarted)) === 1, "under Press, Get started catches its top highlight");
 
   const radius = () => pg.evaluate(() => document.body.style.getPropertyValue("--radius-control"));
   const before = await radius();
@@ -295,6 +303,15 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
   const plain = await copied(pg.locator("main"), "Copy prompt");
   check(!plain.includes("Match the look") && plain.includes("2. Usage\n"), "in Blue 4 and calm motion, Copy prompt has no Match the look step");
   for (const e of errors) problems.push(`your look: ${e}`);
+  await ctx.close();
+}
+
+/* ---------- Flat has no light: a checked box's highlight ---------- */
+for (const [look, want] of [["mono", 1], ["mono-flat", 0]]) {
+  const { ctx, pg, errors } = await open("checkbox", { query: `?look=${look}` });
+  const box = pg.locator("main input[type=checkbox]:checked:not(:disabled)").first();
+  check((await litInsets(box)) === want, `?look=${look}: a checked checkbox ${want ? "catches its top highlight" : "catches no top highlight (Flat)"}`);
+  for (const e of errors) problems.push(`checkbox ${look}: ${e}`);
   await ctx.close();
 }
 

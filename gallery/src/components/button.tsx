@@ -72,7 +72,9 @@ const iconSizes: Record<ButtonSize, string> = { sm: "w-control-sm", md: "w-contr
 const variants: Record<ButtonVariant, string> = {
   primary:
     "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
-    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)]",
+    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] " +
+    /* Flat has no light (R2): under data-material="flat" the fill catches no top highlight. */
+    "in-[[data-material=flat]]:inset-shadow-none",
   secondary:
     "bg-block text-fg shadow-(--block-lift) enabled:active:shadow-(--block-press) forced-colors:border " +
     "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)]",
@@ -86,6 +88,7 @@ const variants: Record<ButtonVariant, string> = {
     "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
     "in-[[data-dialog-footer]]:enabled:shadow-none in-[[data-dialog-footer]]:enabled:active:shadow-none " +
     "in-[[data-dialog-footer]]:enabled:inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] " +
+    "in-[[data-material=flat]]:in-[[data-dialog-footer]]:enabled:inset-shadow-none " +
     "in-[[data-dialog-footer]]:enabled:hover:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)] " +
     "in-[[data-dialog-footer]]:enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)]",
 };

@@ -62,6 +62,7 @@ const drawnInput =
   "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
   "transition-[background-color,box-shadow] duration-(--dur-instant) ease-litt " +
   "checked:bg-fg checked:shadow-none enabled:checked:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
+  "in-[[data-material=flat]]:enabled:checked:inset-shadow-none " + // Flat has no light (R2)
   "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] aria-invalid:checked:shadow-[inset_0_0_0_1px_var(--danger)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "disabled:checked:bg-surface-3 " +
@@ -71,6 +72,7 @@ const drawnInput =
 /* Only a checkbox has a mixed state. A radio matches :indeterminate whenever nothing in its group is picked, so it must not use it. */
 const mixed =
   " indeterminate:bg-fg indeterminate:shadow-none enabled:indeterminate:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
+  "in-[[data-material=flat]]:enabled:indeterminate:inset-shadow-none " +
   "aria-invalid:indeterminate:shadow-[inset_0_0_0_1px_var(--danger)] disabled:indeterminate:bg-surface-3";
 
 const nativeInput =
