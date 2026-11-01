@@ -14,14 +14,17 @@
  *   visits, under the name and the fields.
  * - Copy tokens writes custom properties named after the component and the key, holding litt's own tokens wherever a
  *   value sits on one. Toggles, choices and plain numbers go in a Props comment, since they belong in the call.
- * - TuneRoot draws the panels: floating top right, or in place after its children with inline. It shows them in a
- *   development build only, unless enabled says otherwise. Hidden, it draws nothing and every useTune returns its
- *   defaults, but the code still ships wherever tune is imported: tune is scaffolding, and the copied tokens replace it.
+ * - TuneRoot draws the panels: floating top right (on a phone across the bottom, folded), or in place after its
+ *   children with inline. The floating column is drawn after hydration, above the page at z-50 and under litt's
+ *   toasts. It shows them in a development build only, unless enabled says otherwise. Hidden, it draws nothing and
+ *   every useTune returns its defaults, but the code still ships wherever tune is imported: tune is scaffolding, and
+ *   the copied tokens replace it.
  * - No accent fill (R6): actions are secondary buttons and toggles neutral switches.
  */
 import { createContext, Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import type { Transition } from "motion/react";
-import { surfaceRadius, useMotionDial, useTransition } from "@/motion";
+import { surfaceRadius, useDevice, useMotionDial, useTransition } from "@/motion";
 import { cornerRule, RADIUS_PILL, SPACE_SCALE, spaceRule, springRules, type RuleRow, type SpringTier } from "@/motion/rules";
 import { toCss, type Spring } from "@/motion/spring";
 import type { Locked } from "@/motion/tokens";
@@ -552,6 +555,7 @@ function warnOnce(key: string, message: string) {
 type Root = { readonly state: "none" } | { readonly state: "off" } | { readonly state: "on"; readonly store: TuneStore };
 const TuneContext = createContext<Root>({ state: "none" });
 
+/* Never changes, so a snapshot that differs between server and client reads as "after hydration". */
 const subscribeNever = () => () => {};
 const NO_NAMES: readonly string[] = [];
 
@@ -597,7 +601,7 @@ export function useTune<S extends TuneSchema>(name: string, schema: (t: TuneKind
 /* ---------- the panels ---------- */
 
 /** One name's Inspector: short controls stacked at the top, a fold per tall editor, then the actions. */
-function Panel({ store, name }: { store: TuneStore; name: string }) {
+function Panel({ store, name, startFolded, className }: { store: TuneStore; name: string; startFolded: boolean; className: string }) {
   const subscribe = useCallback((onChange: () => void) => store.subscribe(name, onChange), [store, name]);
   const snapshot = useSyncExternalStore(
     subscribe,
@@ -619,6 +623,8 @@ function Panel({ store, name }: { store: TuneStore; name: string }) {
       storageKey={`litt-tune:${name}:${hash(c.shape)}`}
       checks={(v) => c.fields.flatMap((f) => f.spec.bind(v[f.key]).rules(f.label))}
       tokens={(v) => tokensOf(name, c, v)}
+      defaultOpen={!startFolded}
+      className={className}
     >
       {stacked.length > 0 && (
         <div className="grid gap-5 border-t border-line px-3 pt-3 pb-4">
@@ -645,14 +651,22 @@ function Panel({ store, name }: { store: TuneStore; name: string }) {
   );
 }
 
-/** Every panel of one root, in the order their components arrived. */
-function Dock({ store, className }: { store: TuneStore; className: string }) {
+/* Above the page and its sticky headers, under litt's toasts (z-60); a Select opened inside comes later in the body, so it paints above. */
+const FLOATING = "fixed top-4 right-4 z-50 w-80 max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain";
+/* On a phone the column spans the gutters at the bottom, as toasts do, and every panel starts folded, so the component stays in view. */
+const FLOATING_COMPACT =
+  "fixed inset-x-gutter bottom-[calc(var(--space-4)+env(safe-area-inset-bottom,0px))] z-50 mx-auto max-w-[40rem] max-h-[50dvh] overflow-y-auto overscroll-contain";
+
+/** Every panel of one root, in the order their components arrived: in place, or floating over the page. */
+function Dock({ store, floating, className }: { store: TuneStore; floating: boolean; className: string }) {
   const names = useSyncExternalStore(store.subscribeList, store.list, () => NO_NAMES);
+  const { compact } = useDevice();
   if (names.length === 0) return null;
+  const place = !floating ? "w-full max-w-80" : compact ? FLOATING_COMPACT : FLOATING;
   return (
-    <div className={"grid w-full max-w-80 content-start gap-3 " + className}>
+    <div className={`grid content-start gap-3 ${place} ${className}`}>
       {names.map((name) => (
-        <Panel key={name} store={store} name={name} />
+        <Panel key={name} store={store} name={name} startFolded={floating && compact} className={floating && compact ? "max-w-none" : ""} />
       ))}
     </div>
   );
@@ -674,13 +688,15 @@ export function TuneRoot({ children, enabled, inline = false, className = "" }: 
   const [store] = useState(createTuneStore);
   const on = enabled ?? mode() === "development";
   const root = useMemo<Root>(() => (on ? { state: "on", store } : { state: "off" }), [on, store]);
+  const hydrated = useSyncExternalStore(subscribeNever, () => true, () => false);
   useEffect(() => {
     if (enabled === undefined && mode() === "unknown") warnOnce("mode", "TuneRoot can't tell a development build from production here, so it hides its panels. Pass enabled to show them.");
   }, [enabled]);
   return (
     <TuneContext value={root}>
       {children}
-      {on && inline && <Dock store={store} className={className} />}
+      {on && inline && <Dock store={store} floating={false} className={className} />}
+      {on && !inline && hydrated && createPortal(<Dock store={store} floating className={className} />, document.body)}
     </TuneContext>
   );
 }

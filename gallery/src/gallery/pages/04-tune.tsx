@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { useTravel } from "@/motion";
 import { Button } from "@/components/button";
+import { Switch } from "@/components/switch";
 import { Tag } from "@/components/tag";
 import { TuneRoot, useTune } from "@/components/tune";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
@@ -102,12 +103,14 @@ function PlanCard() {
 }
 
 function PlanCardDemo() {
+  const [float, setFloat] = useState(false);
   return (
     <div className="@container w-full">
       <div className="grid w-full items-start gap-6 @2xl:grid-cols-[1fr_auto]">
-        <TuneRoot inline enabled className="justify-self-center">
-          <div className="grid w-full justify-items-center pt-4">
+        <TuneRoot inline={!float} enabled className={float ? "" : "justify-self-center"}>
+          <div className="grid w-full justify-items-center gap-8 pt-4">
             <PlanCard />
+            <Switch label="Float it" description="Moves the panel over the page, where it sits in your app." checked={float} onCheckedChange={setFloat} className="w-full max-w-xs" />
           </div>
         </TuneRoot>
       </div>
@@ -146,7 +149,7 @@ export default function TunePage() {
         code="PlanCardDemo"
         size="lg"
         align="start"
-        caption="One useTune call gives the card its corner, its padding, its button size, its badge and its entrance, and builds the panel beside it. The corner starts at 12px and the padding at 20px, so Rules says 2 to change: drag the radius to 8px and the padding to 24px and every row fits, and the card now holds litt's own surface radius and spacing tokens. The size is a Segmented choice typed as the Button's size, the badge a Switch, and the entrance a Spring editor on the expressive tier; Replay runs it. Copy tokens writes it all with litt's names, and Save keeps a version."
+        caption="One useTune call gives the card its corner, its padding, its button size, its badge and its entrance, and builds the panel beside it. The corner starts at 12px and the padding at 20px, so Rules says 2 to change: drag the radius to 8px and the padding to 24px and every row fits, and the card now holds litt's own surface radius and spacing tokens. The size is a Segmented choice typed as the Button's size, the badge a Switch, and the entrance a Spring editor on the expressive tier; Replay runs it. Copy tokens writes it all with litt's names, and Save keeps a version. Float it moves the panel where TuneRoot puts it in your app: top right, or across the bottom on a phone, folded."
       >
         <PlanCardDemo />
       </Stage>
