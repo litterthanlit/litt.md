@@ -8,8 +8,9 @@
  * It fails when:
  * - a control on the deck does not change the gallery: Fun mode (the wall then offers its Fun filter), the theme (and
  *   the header's switch says the same), the accent (the gallery opens in monochrome, and Blue 4 and pink each fill Get
- *   started in their color) or the shape (the control radius on <body>),
- * - Reset does not put the gallery's defaults back (the locked shape, monochrome),
+ *   started in their color), the material (the gallery opens in Flat, data-material on <html>, and Press takes it
+ *   off) or the shape (the control radius on <body>),
+ * - Reset does not put the gallery's defaults back (the locked shape, monochrome, Flat),
  * - a look from a link (?look=pink-fun) does not paint before the app runs, writes storage, drops out of the address on
  *   the next page, or loses the Table's filters; or an accent change during it does not keep the link's look and save,
  * - the notice under the header does not offer the link's look (Keep this look saves it, Back to mine goes back to
@@ -127,6 +128,16 @@ const accentNow = (pg) => pg.evaluate(() => {
   const pink = await accentNow(pg);
   check(pink !== blue && pink !== ink && (await fill()) === pink, "in Pink, Get started is pink");
 
+  const material = () => pg.evaluate(() => document.documentElement.dataset.material);
+  const lift = () => pg.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--block-lift").trim());
+  check((await material()) === "flat", "the gallery opens in Flat (data-material=flat on <html>)");
+  const flatLift = await lift();
+  await pick(d, "Press");
+  check((await material()) === undefined && (await lift()) !== flatLift, "the deck's Press takes data-material off <html>, and the block casts again");
+  await pick(d, "Flat");
+  check((await material()) === "flat" && (await lift()) === flatLift, "the deck's Flat puts data-material=flat back");
+  await pick(d, "Press");
+
   const radius = () => pg.evaluate(() => document.body.style.getPropertyValue("--radius-control"));
   const before = await radius();
   await d.getByRole("slider", { name: "Shape" }).focus();
@@ -136,8 +147,8 @@ const accentNow = (pg) => pg.evaluate(() => {
 
   await d.getByRole("button", { name: "Reset" }).click();
   check(
-    (await radius()) === "" && (await pg.evaluate(() => document.body.dataset.accent)) === "mono",
-    "Reset takes the shape back to the locked tokens and the accent back to monochrome",
+    (await radius()) === "" && (await pg.evaluate(() => document.body.dataset.accent)) === "mono" && (await material()) === "flat",
+    "Reset takes the shape back to the locked tokens, the accent back to monochrome and the material back to Flat",
   );
 
   await start.click();
@@ -199,8 +210,8 @@ const says = async (scope, ...parts) => {
   await pick(deck(pg), "Blue 4");
   await pg.waitForFunction(() => localStorage.getItem("litt-gallery:customize") !== null, null, { timeout: 2000 }).catch(() => {});
   check(
-    (await saved(pg)) === JSON.stringify({ accent: "blue4", fun: true }) && (await pg.evaluate(() => location.search)) === "" && (await bodyAccent(pg)) === undefined,
-    "Blue 4 during the preview keeps the link's fun mode, saves Blue 4 with it, and takes the look out of the address",
+    (await saved(pg)) === JSON.stringify({ accent: "blue4", material: "press", fun: true }) && (await pg.evaluate(() => location.search)) === "" && (await bodyAccent(pg)) === undefined,
+    "Blue 4 during the preview keeps the link's press and fun mode, saves Blue 4 with them, and takes the look out of the address",
   );
   for (const e of errors) problems.push(`link change: ${e}`);
   await ctx.close();
@@ -217,17 +228,17 @@ const funGroup = (pg) => pg.locator("nav[aria-label=Components] [aria-labelledby
 const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem("litt-gallery:customize") === v, value, { timeout: 2000 }).catch(() => {});
 {
   const { ctx, pg, errors } = await open("button", { query: "?look=pink-fun" });
-  check(await says(notice(pg), "From a link: Pink, fun motion."), "the notice under the header says From a link: Pink, fun motion.");
+  check(await says(notice(pg), "From a link: Pink, press material, fun motion."), "the notice under the header says From a link: Pink, press material, fun motion.");
   await notice(pg).getByRole("button", { name: "Keep this look" }).click();
-  const kept = JSON.stringify({ accent: "pink", fun: true });
+  const kept = JSON.stringify({ accent: "pink", material: "press", fun: true });
   await waitSaved(pg, kept);
   check(
     (await saved(pg)) === kept && (await pg.evaluate(() => location.search)) === "" && (await notice(pg).count()) === 0 && (await bodyAccent(pg)) === "pink",
-    "Keep this look saves Pink and fun mode, takes the look out of the address, and the notice goes",
+    "Keep this look saves Pink, press and fun mode, takes the look out of the address, and the notice goes",
   );
   check(
-    (await pg.evaluate(() => document.activeElement?.id)) === "customize-trigger" && (await pg.getByRole("status").filter({ hasText: "Kept Pink, fun motion." }).count()) === 1,
-    "after Keep, focus is on Customize and a status says Kept Pink, fun motion.",
+    (await pg.evaluate(() => document.activeElement?.id)) === "customize-trigger" && (await pg.getByRole("status").filter({ hasText: "Kept Pink, press material, fun motion." }).count()) === 1,
+    "after Keep, focus is on Customize and a status says Kept Pink, press material, fun motion.",
   );
   await pg.reload({ waitUntil: "networkidle" });
   check((await bodyAccent(pg)) === "pink" && (await funGroup(pg)) === 1 && (await notice(pg).count()) === 0, "after a reload the kept look is yours, with no notice");
@@ -236,14 +247,14 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
 }
 {
   const { ctx, pg, errors } = await open("button");
-  const mine = JSON.stringify({ accent: "blue4" });
+  const mine = JSON.stringify({ accent: "blue4", material: "press" });
   await pg.evaluate((v) => localStorage.setItem("litt-gallery:customize", v), mine);
   await pg.goto(`http://localhost:${port}/index.html?look=pink-fun#button`, { waitUntil: "networkidle" });
   check((await bodyAccent(pg)) === "pink" && (await notice(pg).count()) === 1, "with Blue 4 saved, ?look=pink-fun still shows Pink and the notice");
   await notice(pg).getByRole("button", { name: "Back to mine" }).click();
   check(
     (await bodyAccent(pg)) === undefined && (await funGroup(pg)) === 0 && (await pg.evaluate(() => location.search)) === "" && (await saved(pg)) === mine && (await notice(pg).count()) === 0,
-    "Back to mine shows your Blue 4 and calm motion again, takes the look out of the address and leaves what you saved",
+    "Back to mine shows your Blue 4, press and calm motion again, takes the look out of the address and leaves what you saved",
   );
   await pg.goto(`http://localhost:${port}/index.html?look=blue4#button`, { waitUntil: "networkidle" });
   check((await notice(pg).count()) === 0 && (await bodyAccent(pg)) === undefined, "a link to the look you already have shows no notice");
@@ -262,7 +273,7 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
     return clipboard();
   };
   const install = pg.locator("section[aria-labelledby=install]");
-  check(await says(install, "This page shows Monochrome, calm motion. The registry installs Blue 4."), "in Monochrome, the Install section says the registry installs Blue 4");
+  check(await says(install, "This page shows Monochrome, flat material, calm motion. The registry installs Blue 4 and press material."), "in Monochrome and Flat, the Install section says the registry installs Blue 4 and press");
   const prompt = await copied(pg.locator("main"), "Copy prompt");
   check(prompt.includes("2. Match the look\n") && prompt.includes('data-accent="mono"') && prompt.includes("3. Usage\n"), "in Monochrome, Copy prompt adds Match the look as step 2, with data-accent=\"mono\"");
 
@@ -270,14 +281,15 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
   const panel = pg.getByRole("dialog", { name: "Customize" });
   const group = panel.getByRole("group", { name: "Your look" });
   await group.waitFor();
-  check(await says(group, "Monochrome, calm motion", 'In your app: data-accent="mono" on <html>.'), "the panel's Your look says Monochrome, calm motion and the one edit for it");
+  check(await says(group, "Monochrome, flat material, calm motion", 'In your app: data-accent="mono" and data-material="flat" on <html>.'), "the panel's Your look says Monochrome, flat material, calm motion and its two edits");
   const setup = await copied(group, "Copy setup");
-  check(setup.startsWith('Set up the litt.md look "Monochrome, calm motion"') && setup.includes('<html lang="en" data-accent="mono">') && !setup.includes("<FunMode>"), "Copy setup gives the Monochrome edits and no fun mode");
+  check(setup.startsWith('Set up the litt.md look "Monochrome, flat material, calm motion"') && setup.includes('<html lang="en" data-accent="mono">') && setup.includes('<html lang="en" data-material="flat">') && !setup.includes("<FunMode>"), "Copy setup gives the Monochrome and Flat edits and no fun mode");
   check((await group.getByRole("status").filter({ hasText: /^Copied$/ }).count()) >= 1, "Copy setup says Copied");
-  check((await copied(group, "Copy link")) === `http://localhost:${port}/index.html?look=mono#button`, "Copy link gives this page with ?look=mono");
+  check((await copied(group, "Copy link")) === `http://localhost:${port}/index.html?look=mono-flat#button`, "Copy link gives this page with ?look=mono-flat");
 
   await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
-  check(await says(group, "Blue 4, calm motion", "This is what the registry installs. Nothing to change."), "in Blue 4 and calm motion, Your look says there is nothing to change");
+  await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Material$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Press" }) }).click();
+  check(await says(group, "Blue 4, press material, calm motion", "This is what the registry installs. Nothing to change."), "in Blue 4, press and calm motion, Your look says there is nothing to change");
   check((await install.getByText("This page shows").count()) === 0, "in Blue 4 and calm motion, the Install note goes");
   await pg.keyboard.press("Escape");
   const plain = await copied(pg.locator("main"), "Copy prompt");

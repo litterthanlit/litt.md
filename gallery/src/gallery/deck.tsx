@@ -2,14 +2,14 @@
  * The deck: the overview's hero object. litt's own controls at their real size, wired to the whole gallery, so the
  * first thing a visitor touches is the material itself and the wall under it answers.
  *
- * - It is the header's Customize, made physical: fun mode on the Switch, the shape on the post Slider, the theme and
- *   the accent on Segmented controls. Every control reads and writes customize-state.tsx, so the deck, the header's
+ * - It is the header's Customize, made physical: fun mode on the Switch, the shape on the post Slider, the theme, the
+ *   material and the accent on Segmented controls. Every control reads and writes customize-state.tsx, so the deck, the header's
  *   theme switch and the Customize panel are one set of choices and can never disagree.
  * - A plate in the page flow (R3, flat: surface-1, the hairline and the top highlight), with the controls on it.
  *   Nothing here takes the accent: the hero's Get started is the first screen's one fill (R6), and the deck's Accent
  *   shows on it. Each accent's segment carries a small chip in its color (swatch.tsx), aria-hidden, a sample and not a
  *   fill.
- * - Each value is said in words (R5): On or Off, the shape's name, the theme and the accent by name.
+ * - Each value is said in words (R5): On or Off, the shape's name, the theme, the material and the accent by name.
  * - The fun row and the footer are fun cues (data-fun-cue): they say On and Tuned in fun mode, so a Calm and Fun
  *   comparison hides them.
  */
@@ -20,7 +20,7 @@ import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { shapeName, SHAPES } from "@/motion/rules";
 import { useCustomize, type ThemeChoice } from "./customize-state";
-import { ACCENTS, lookWords } from "./look";
+import { ACCENTS, lookWords, MATERIALS } from "./look";
 import { AccentChip } from "./swatch";
 
 const THEMES: { value: ThemeChoice; label: string }[] = [
@@ -75,6 +75,14 @@ export function Deck() {
       <Row label="Theme">
         <Segmented legend="Theme" value={theme} onValueChange={setTheme} options={THEMES} />
       </Row>
+      <Row label="Material">
+        <Segmented
+          legend="Material"
+          value={look.material}
+          onValueChange={(material) => setLook({ material })}
+          options={MATERIALS.map((m) => ({ value: m.id, label: m.name }))}
+        />
+      </Row>
       <Row label="Accent">
         <Segmented
           legend="Accent"
@@ -95,7 +103,7 @@ export function Deck() {
       <footer data-fun-cue="" className="-mt-2 border-t border-line pt-4">
         <div className="flex h-control-sm items-center justify-between gap-4 pointer-coarse:h-control-md">
           <p className="text-caption font-normal text-fg-subtle" aria-live="polite">
-            {link ? `From a link: ${lookWords(link.look)}.` : modified ? "Tuned in this browser." : "The gallery's defaults: monochrome, calm, the locked shape."}
+            {link ? `From a link: ${lookWords(link.look)}.` : modified ? "Tuned in this browser." : "The gallery's defaults: monochrome, flat, calm, the locked shape."}
           </p>
           {modified && (
             <Button size="sm" variant="ghost" onClick={reset}>
