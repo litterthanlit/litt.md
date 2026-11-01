@@ -104,6 +104,7 @@ The litt registry ships the components from the gallery at littmd.vercel.app, te
 | `tune` | Tuning a component you are building by dragging: `<TuneRoot>` once around the app, then `useTune("Plan card", (t) => ({ radius: t.radius("surface"), padding: t.space(24), enter: t.spring("expressive") }))` in the component. Corners, spaces and springs say Fits or Change against litt's rules and come back as litt's token `var()`s once they fit; Copy tokens hands over the result. The panels show in development only (`enabled` to show them anyway, `inline` to draw them in place). Scaffolding: paste the tokens and remove the call before you ship. |
 | `form` | The page patterns: `FormSection` for settings sections, `Fieldset` (`rows` for a list of switches), `ErrorSummary` above a long form, `FormActions` (`align="fields"` on a settings page). |
 | `segmented` | One choice from two to five short options: a view switch, a theme, a filter. |
+| `card-picker` | One choice that needs a picture or a line of detail: a plan, an onboarding question, a theme or a layout. |
 | `tabs` | Views of one thing (underline), or a compact switch (`variant="segmented"`). |
 | `tag` | A status or a label: the sans at the label weight, at the control radius. A status colors its text, never the fill, and has no dot. A category can take a data hue (`hue="amber"`): one hue per category in a view. |
 | `kbd` | The key cap for a real shortcut, such as ⌘K. |
