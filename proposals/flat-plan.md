@@ -213,6 +213,8 @@ git commit -m "gallery: a look carries the material, twelve looks and the flat l
 - Modify: `gallery/src/gallery/customize-state.tsx` (`Saved`, `own`, the layout effect, the storage effect, the header comment; delete `accentScope`)
 - Modify: `gallery/src/gallery/customize.tsx` (a Material `CardPicker`, `MaterialPreview`, `Window`, Surprise me, the rule list, the footer copy)
 - Modify: `gallery/src/gallery/swatch.tsx` (`AccentChip`)
+- Modify: `gallery/src/gallery/deck.tsx` (a Material row, added at Nick's ask: "yes add it to the deck")
+- Test: `gallery/scripts/home.mjs` (the deck's Material sets and clears `data-material` on `<html>`)
 - Modify: `.claude/CLAUDE.md` (the Gallery notes on looks and the Customize panel)
 
 **Interfaces:**
@@ -222,6 +224,8 @@ git commit -m "gallery: a look carries the material, twelve looks and the flat l
 - [ ] **Step 1: State.** `Saved` gains `material?: Material`. `own` reads a valid saved material, else `GALLERY_LOOK.material`. The layout effect writes `document.documentElement.dataset.material` from `materialOf(look.material).attribute`, deleting it for Press. The storage effect saves `material` only when it differs from `GALLERY_LOOK.material`. Delete `accentScope`; its callers use `lookAttributes`.
 
 - [ ] **Step 2: Panel.** Add a `CardPicker` with legend `"Material"` between Accent and Theme, valued `look.material`, with `onValueChange={(material) => setLook({ material })}`. Each option is `{ value, label: name, picture: <MaterialPreview material={id} /> }`. `MaterialPreview` is a block in a tray, drawn with the tray and block classes `CardPicker` itself uses, inside a span spread with `lookAttributes({ accent: look.accent, material }, dark)`. `Window` and `AccentChip` spread `lookAttributes({ accent, material: look.material }, dark)`. Surprise me also picks a material and says it: `"<Accent>, <material> material, <shape> corners, <face> and <calm|fun> motion."` Footer: "The gallery's defaults: …, monochrome, flat and calm motion. The registry ships Blue 4 and press." and "A look carries the accent, the material and the motion."
+
+- [ ] **Step 2b: The deck.** First, in `home.mjs`'s deck section, add checks that the deck has a Material control, that picking Press removes `data-material` from `<html>`, and that picking Flat sets it to `flat`. Run `npm run build --prefix gallery && npm run test:home --prefix gallery` and watch them fail. Then add a `Row label="Material"` with a `Segmented legend="Material"` between Theme and Accent, valued `look.material`, with options from `MATERIALS` (`label: name`). The default footer line becomes "The gallery's defaults: monochrome, flat, calm, the locked shape." The doc comment names the material among the deck's controls.
 
 - [ ] **Step 3: Repo notes.** In `.claude/CLAUDE.md`, in the Customize paragraph, add the material (Press or Flat, `data-material="flat"` on `<html>`, which tokens.css answers; the gallery opens in Flat, the registry ships Press, Q17). In the looks paragraph, say "the accent, the material and motion's feel", "twelve looks" and `pink-flat-fun`.
 
