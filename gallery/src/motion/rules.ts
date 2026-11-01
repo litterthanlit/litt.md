@@ -15,7 +15,7 @@
  * - corners are 0, --radius-control (4), --radius-surface
  *   (control + 4) or the pill, and a block set 2px into a
  *   control the control radius less 2px (it follows the
- *   control, so nothing here changes for it)                -> control
+ *   control, so nothing here changes for it)                -> control, RADIUS_PILL, cornerRule
  * - the last linear() stop is 1 and responsive never passes
  *   1                                                        -> spring.ts toCss
  *
@@ -26,6 +26,11 @@
  *
  * Stagger and travel are not hard rules in v0.5. They appear under
  * "Differs from locked" only.
+ *
+ * spaceRule is a profile rule that check.mjs does not bound: foundations.md
+ * (Scale, R9) puts spacing on --space-1 to --space-40. SPACE_SCALE copies that
+ * scale, and npm run test:rules fails when it, RADIUS_PILL or the corners
+ * cornerRule accepts drift from tokens.css.
  *
  * The Playground checks the motion rows (checkRules). The radius and the
  * typeface are tuned in the Customize panel on every page, which checks them
@@ -134,6 +139,43 @@ export const SHAPES = [0, 2, 4, 6, PILL] as const;
 export const shapeSurface = (control: number) => (control === PILL ? 16 : surfaceRadius(control));
 /** A control radius in words: "Square", "4px", "Pill". */
 export const shapeName = (control: number) => (control === 0 ? "Square" : control === PILL ? "Pill" : `${control}px`);
+
+/** --radius-pill in px: avatars and icon-only buttons. Not PILL, the Customize panel's pill for controls. */
+export const RADIUS_PILL = 999;
+
+/** One component corner (check 7): 0, the control radius, the surface radius or the pill. */
+export function cornerRule(px: number, subject: string): RuleRow {
+  const surface = surfaceRadius(LIMITS.control);
+  return {
+    ok: px === 0 || px === LIMITS.control || px === surface || px === RADIUS_PILL,
+    text: `${subject} on litt's corners, 0, ${LIMITS.control}px, ${surface}px or the pill: ${px === RADIUS_PILL ? "the pill" : `${px}px`}`,
+  };
+}
+
+/** The spacing scale (foundations.md, Scale): each step in px, with its token. */
+export const SPACE_SCALE = [
+  [4, "--space-1"],
+  [8, "--space-2"],
+  [12, "--space-3"],
+  [16, "--space-4"],
+  [24, "--space-6"],
+  [32, "--space-8"],
+  [48, "--space-12"],
+  [64, "--space-16"],
+  [96, "--space-24"],
+  [128, "--space-32"],
+  [160, "--space-40"],
+] as const;
+
+/** One space (R9): none, or a step on the scale. Off it, the row names the steps on either side. */
+export function spaceRule(px: number, subject: string): RuleRow {
+  const text = `${subject} on the spacing scale: ${px}px`;
+  if (px === 0 || SPACE_SCALE.some(([step]) => step === px)) return { ok: true, text };
+  const below = SPACE_SCALE.filter(([step]) => step < px).pop();
+  const above = SPACE_SCALE.find(([step]) => step > px);
+  const near = [below, above].flatMap((s) => (s ? [`${s[0]}px`] : [])).join(" or ");
+  return { ok: false, text: `${text}, use ${near}` };
+}
 
 /** The radius rule (check 7). */
 export function shapeRule(radius: number): RuleRow {

@@ -392,6 +392,35 @@ const RECIPES = {
           </Inspector>
         </div>`,
   },
+  /* Inline roots, so no fixed panel covers another item; the floating root draws nothing until the check gives it a component. */
+  tune: {
+    needs: ["useTune", "TuneRoot"],
+    state: [`const [tunePokes, setTunePokes] = useState(0);`, `const [tuneFloat, setTuneFloat] = useState(false);`],
+    top: [
+      `function SmokeTuned({ testId, onPoke }: { testId: string; onPoke?: () => void }) {`,
+      `  const n = useTune("Smoke tune", (t) => ({ radius: t.radius(12), padding: t.space(24), size: t.choice(["sm", "md"], "md"), enter: t.spring("expressive"), poke: t.action("Poke", () => onPoke?.()) }));`,
+      `  return <div data-testid={testId} data-size={n.size} data-enter={JSON.stringify(n.enter)} style={{ borderRadius: n.radius, padding: n.padding }}>Tuned</div>;`,
+      `}`,
+      `function SmokeUntuned() {`,
+      `  const n = useTune("Smoke tune hidden", (t) => ({ radius: t.radius("surface"), padding: t.space(16) }));`,
+      `  return <div data-testid="tune-hidden" style={{ borderRadius: n.radius, padding: n.padding }}>Untuned</div>;`,
+      `}`,
+      `function SmokeFloated() {`,
+      `  const n = useTune("Smoke float", (t) => ({ gap: t.space(8) }));`,
+      `  return <div data-testid="tune-floated" style={{ gap: n.gap }}>Floated</div>;`,
+      `}`,
+    ],
+    jsx: `<div className="grid w-full max-w-sm gap-4" data-testid="litt-tune">
+          <TuneRoot inline enabled>
+            <SmokeTuned testId="tune-card-1" onPoke={() => setTunePokes((p) => p + 1)} />
+            <SmokeTuned testId="tune-card-2" />
+          </TuneRoot>
+          <output data-testid="tune-pokes">{tunePokes}</output>
+          <TuneRoot inline><SmokeUntuned /></TuneRoot>
+          <TuneRoot enabled>{tuneFloat && <SmokeFloated />}</TuneRoot>
+          <@Btn type="button" data-testid="tune-float" onClick={() => setTuneFloat((f) => !f)}>Float the smoke tune</@Btn>
+        </div>`,
+  },
   gauge: {
     needs: ["Gauge", "FunMode"],
     jsx: `<div className="grid w-full max-w-xs gap-6" data-testid="litt-gauges">
@@ -2572,6 +2601,69 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await panel.getByRole("button", { name: /^Rules/ }).waitFor({ state: "visible", timeout: 2000 });
           return "fits after the fix, saved as Version 1, folds and opens";
         });
+      }
+      if (has("tune")) {
+        await attempt("tune: one panel for two copies, the rules, the keys, a choice, an action, the tokens and a version; hidden without enabled in production", async () => {
+          const box = item("tune").locator("[data-testid=litt-tune]");
+          const panel = box.getByRole("region", { name: "Smoke tune", exact: true });
+          await panel.waitFor({ state: "visible", timeout: 8000 });
+          if ((await page.getByRole("region", { name: "Smoke tune", exact: true }).count()) !== 1) throw new Error("two copies of one name draw more than one panel");
+          if (await page.getByRole("region", { name: "Smoke tune hidden", exact: true }).count()) throw new Error("a TuneRoot without enabled shows its panel in a production build");
+          const style = (id) => box.locator(`[data-testid=${id}]`).getAttribute("style");
+          const hidden = (await style("tune-hidden")) ?? "";
+          if (!hidden.includes("var(--litt-radius-surface)") || !hidden.includes("var(--litt-space-4)")) throw new Error(`the hidden root's defaults are not litt's tokens: "${hidden}"`);
+          const enter = JSON.parse((await box.locator("[data-testid=tune-card-1]").getAttribute("data-enter")) ?? "null");
+          if (enter?.type !== "spring" || enter.visualDuration !== 0.35 || enter.bounce !== 0.12) throw new Error(`the spring is not the host's expressive token: ${JSON.stringify(enter)}`);
+          const rules = panel.getByRole("button", { name: /^Rules/ });
+          if (!/1 to change/.test((await rules.textContent()) ?? "")) throw new Error(`the Rules row reads "${await rules.textContent()}" at 12px`);
+          await panel.getByRole("slider", { name: "Radius" }).focus();
+          await page.keyboard.press("ArrowLeft");
+          await page.keyboard.press("ArrowLeft");
+          await page.waitForTimeout(150);
+          if (!/All fit/.test((await rules.textContent()) ?? "")) throw new Error(`two steps down, the Rules row reads "${await rules.textContent()}"`);
+          for (const id of ["tune-card-1", "tune-card-2"]) {
+            const s = (await style(id)) ?? "";
+            if (!s.includes("border-radius: var(--litt-radius-surface)")) throw new Error(`${id} did not follow the slider to litt's surface radius: "${s}"`);
+          }
+          await panel.getByRole("radio", { name: "sm" }).check({ force: true });
+          for (const id of ["tune-card-1", "tune-card-2"])
+            if ((await box.locator(`[data-testid=${id}]`).getAttribute("data-size")) !== "sm") throw new Error(`${id} did not follow the choice to sm`);
+          await panel.getByRole("button", { name: "Poke", exact: true }).click();
+          if ((await box.locator("[data-testid=tune-pokes]").textContent()) !== "1") throw new Error(`one press ran the action ${await box.locator("[data-testid=tune-pokes]").textContent()} times`);
+          await panel.getByRole("button", { name: /^Tokens/ }).click();
+          const tokens = (await panel.getByLabel("Tokens to paste").textContent()) ?? "";
+          for (const want of ["--smoke-tune-radius: var(--litt-radius-surface);", "--smoke-tune-padding: var(--litt-space-6);", "--smoke-tune-enter-duration: var(--litt-dur-expressive);", 'Props: size "sm"'])
+            if (!tokens.includes(want)) throw new Error(`the tokens lack "${want}": ${JSON.stringify(tokens)}`);
+          await panel.getByRole("button", { name: "Save", exact: true }).click();
+          const version = panel.getByRole("combobox", { name: "Version" });
+          if (!/Version 1/.test((await version.textContent()) ?? "")) throw new Error(`after Save the version list reads "${await version.textContent()}"`);
+          const keys = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("litt-tune:Smoke tune:")));
+          if (keys.length !== 1) throw new Error(`versions are kept under ${JSON.stringify(keys)}`);
+          return `1 to change, then All fit and var(--litt-radius-surface) on both copies, sm, 1 poke, Version 1 under ${keys[0]}`;
+        });
+        await attempt("tune: a floating root draws its panel fixed over the page, in the body, and takes it away", async () => {
+          const float = item("tune").locator("[data-testid=tune-float]");
+          await float.click();
+          const panel = page.getByRole("region", { name: "Smoke float", exact: true });
+          await panel.waitFor({ state: "visible", timeout: 5000 });
+          const at = await panel.evaluate((el) => ({ position: getComputedStyle(el.parentElement).position, inItem: !!el.closest("[data-item]"), top: Math.round(el.getBoundingClientRect().top), right: Math.round(innerWidth - el.getBoundingClientRect().right) }));
+          if (at.position !== "fixed" || at.inItem) throw new Error(`the panel sits ${at.position}${at.inItem ? ", inside the page" : ""}`);
+          await float.click();
+          await panel.waitFor({ state: "detached", timeout: 4000 });
+          return `fixed ${at.top}px from the top and ${at.right}px from the right`;
+        });
+        if (app === "next") {
+          await attempt("tune: the server's HTML holds the defaults and no panel", async () => {
+            const html = await (await page.request.get(url)).text();
+            const tag = (id) => new RegExp(`<div[^>]*data-testid="${id}"[^>]*>`).exec(html)?.[0] ?? "";
+            const card = tag("tune-card-1");
+            const hidden = tag("tune-hidden");
+            if (!card.includes("border-radius:12px") || !card.includes("padding:var(--litt-space-6)")) throw new Error(`the server rendered ${card || "no tuned card"}`);
+            if (!hidden.includes("border-radius:var(--litt-radius-surface)")) throw new Error(`the server rendered ${hidden || "no hidden card"}`);
+            if (html.includes("Fold Smoke tune")) throw new Error("the server rendered a panel, which only registers after hydration");
+            return card;
+          });
+        }
       }
       if (has("gauge")) {
         await attempt("gauge is a meter, draws teal ticks with a longer marker in the text tone, and fits a small box", async () => {
