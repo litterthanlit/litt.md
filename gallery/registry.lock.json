@@ -54,6 +54,10 @@
       "version": "2026.10.26",
       "hash": "4b39a0a094446077"
     },
+    "card-picker": {
+      "version": "2026.11.01",
+      "hash": "159495e27a6207cf"
+    },
     "carousel": {
       "version": "2026.10.26",
       "hash": "6886fd042cf53b2d"
