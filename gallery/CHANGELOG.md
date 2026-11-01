@@ -4,6 +4,12 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-01 · Tune: one line that tunes a component against litt's rules
+
+One call gives a component typed live values and a panel to tune them in, with litt's rules saying Fits or Change as you drag, and the result copied as litt's own tokens. The rules it checks against now live in `motion` beside the spring rules.
+
+- **changed** `motion`: `rules.ts` adds the corner and spacing rules: `cornerRule(px, subject)` (0, `--litt-radius-control`, `--litt-radius-surface` or the pill, as litt's check reads them), `spaceRule(px, subject)` (a step of the spacing scale, and off it the steps on either side), `SPACE_SCALE` (each step in px with its token) and `RADIUS_PILL` (999, `--litt-radius-pill`). Nothing in your code has to change.
+
 ## 2026-10-27 · Hands and agents: a range to brush, a run to fold, rules to build, sources, file changes and runs
 
 Three components from Nick's moodboard that answer a hand, and the one file of the motion engine they share. The hand's rules are the ones the Time scrubber and Slide to confirm already follow: the part follows the pointer one to one and holds where it was taken, a release settles on the responsive spring and commits once it has arrived, and nothing coasts unless fun mode is on. Then the agents' second round: where an answer came from (`sources`), what an agent changed and whether you keep it (`file-changes`), the agent's other runs (`run-list`), and a tool call that shows what it found (`tool-call`'s `details` and `result`). The Agent block uses all of them. None of them changed a token. Then a second accent: pink, beside Blue 4 and monochrome (`litt`). Then the tuning kit: a spring and an easing curve you shape by hand, and an inspector that holds them with the other controls, checks them against litt's rules and copies them as tokens.
