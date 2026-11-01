@@ -201,6 +201,20 @@
   --fg-subtle: #6d6661;        /* supporting, metadata */
   --fg-disabled: #a49c96;      /* disabled only, exempt from contrast */
 
+  /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
+     chroma 0 (proposals/flat.md). Check 11 holds them there. */
+  --flat-canvas: #fbfbfb;
+  --flat-surface-1: #ffffff;
+  --flat-surface-2: #f5f5f5;
+  --flat-surface-3: #ededed;
+  --flat-line: #e5e5e5;
+  --flat-line-strong: #d2d2d2;
+  --flat-line-control: #868686;
+  --flat-fg: #0f0f0f;
+  --flat-fg-muted: #676767;
+  --flat-fg-subtle: #676767;
+  --flat-fg-disabled: #9e9e9e;
+
   /* Accent: Blue 4, Litt's own (v1.0), a bright cobalt that still carries white past 5.5:1, a cool light on the
      warm stone neutrals. Nick's swatch is P3 #2656f4, the same color as this sRGB value. Swap per project, or run
      monochrome ([data-accent="mono"], below). The hover is a step darker here and lighter in dark. The text tone
@@ -303,6 +317,20 @@
   --fg-subtle: #cec4bd;
   --fg-disabled: #6b645f;
 
+  /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
+     chroma 0 (proposals/flat.md). Check 11 holds them there. */
+  --flat-canvas: #090909;
+  --flat-surface-1: #101010;
+  --flat-surface-2: #171717;
+  --flat-surface-3: #1e1e1e;
+  --flat-line: #252525;
+  --flat-line-strong: #343434;
+  --flat-line-control: #686868;
+  --flat-fg: #f8f8f8;
+  --flat-fg-muted: #c6c6c6;
+  --flat-fg-subtle: #c6c6c6;
+  --flat-fg-disabled: #656565;
+
   --accent: #0957fd;
   --accent-hover: #1e64fe;     /* a step lighter in dark */
   --accent-fg: #ffffff;
@@ -384,6 +412,20 @@
     --fg-muted: #cec4bd;
     --fg-subtle: #cec4bd;
     --fg-disabled: #6b645f;
+
+    /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
+       chroma 0 (proposals/flat.md). Check 11 holds them there. */
+    --flat-canvas: #090909;
+    --flat-surface-1: #101010;
+    --flat-surface-2: #171717;
+    --flat-surface-3: #1e1e1e;
+    --flat-line: #252525;
+    --flat-line-strong: #343434;
+    --flat-line-control: #686868;
+    --flat-fg: #f8f8f8;
+    --flat-fg-muted: #c6c6c6;
+    --flat-fg-subtle: #c6c6c6;
+    --flat-fg-disabled: #656565;
 
     --accent: #0957fd;
     --accent-hover: #1e64fe;
@@ -527,6 +569,72 @@
   --light: none;
   --glow: var(--block-lift);
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
+}
+
+/* --------------------------------------------------------------------------
+   Flat (R3, proposals/flat.md): data-material="flat" on <html> says the depth
+   ladder by fill alone, on neutral greys. Grey is the object, a hairline is the
+   place: a tray is a hairline, a raised block a grey fill, and nothing casts,
+   catches the light or sinks. Glass and its glow stay. An empty shadow is
+   0 0 0 0 transparent, never none, since components put these in comma lists.
+   Last in the file, so on an element with both attributes it wins on order; the
+   derived tokens that read a neutral are restated, as pink's are.
+   -------------------------------------------------------------------------- */
+:root[data-material="flat"],
+[data-material="flat"] {
+  --canvas: var(--flat-canvas);
+  --surface-1: var(--flat-surface-1);
+  --surface-2: var(--flat-surface-2);
+  --surface-3: var(--flat-surface-3);
+  --line: var(--flat-line);
+  --line-strong: var(--flat-line-strong);
+  --line-control: var(--flat-line-control);
+  --fg: var(--flat-fg);
+  --fg-muted: var(--flat-fg-muted);
+  --fg-subtle: var(--flat-fg-subtle);
+  --fg-disabled: var(--flat-fg-disabled);
+
+  --highlight: inset 0 0 0 0 transparent;
+  --tray: transparent;
+  --tray-shade: inset 0 0 0 1px var(--line-strong);
+  --cut: var(--surface-1);
+  --cut-shade: inset 0 0 0 0 transparent;
+  --block: var(--surface-3);
+  --block-lift: 0 0 0 0 transparent;
+  --block-press: 0 0 0 0 transparent;
+  --key-lift: 0 0 0 0 transparent;
+  --slot: var(--surface-3);
+  --slot-shade: inset 0 0 0 0 transparent;
+  --slot-fill: color-mix(in oklab, var(--surface-3), var(--fg) 14%);
+  --slot-fill-shade: inset 0 0 0 0 transparent;
+  --plate-lift: 0 0 0 0 transparent;
+  --cap: color-mix(in oklab, var(--surface-3), var(--fg) 45%);
+  --cap-held: color-mix(in oklab, var(--surface-3), var(--fg) 55%);
+  --cap-lift: 0 0 0 0 transparent;
+  --cap-press: 0 0 0 0 transparent;
+  --cap-grip: var(--surface-3);
+  --press-depth: 0px;
+
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+  --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
+  --data-amber-tint: color-mix(in oklab, var(--data-amber) var(--tint-strength), var(--surface-1));
+  --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
+  --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
+  --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+}
+
+@supports not (color: color-mix(in oklab, red, blue)) {
+  :root[data-material="flat"],
+  [data-material="flat"] {
+    --slot-fill: var(--line-strong);
+    --cap: var(--line-control);
+    --cap-held: var(--fg-muted);
+    --data-blue-tint: var(--surface-2);
+    --data-amber-tint: var(--surface-2);
+    --data-teal-tint: var(--surface-2);
+    --data-violet-tint: var(--surface-2);
+    --data-rose-tint: var(--surface-2);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

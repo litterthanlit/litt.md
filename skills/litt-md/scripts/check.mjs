@@ -33,6 +33,10 @@
  *               --stagger and --travel; transitions use the tier tokens and animate only
  *               transform, opacity and color fades; no layout properties and no `all`.
  * 10. Frontmatter: SKILL.md name and description follow the skill rules.
+ * 11. Flat:    data-material="flat" (proposals/flat.md). Every --flat-* neutral is its stone twin at chroma 0 and the
+ *               same OKLCH lightness, in both themes; the flat block maps every neutral onto its mirror and comes
+ *               after monochrome; nothing in it casts, blurs, sinks or is "none"; it restates the focus ring and the
+ *               data tints. Check 5 runs every pair again under Flat.
  *
  * Exits 1 if anything fails.
  */
@@ -99,6 +103,23 @@ const light = decls(block(/:root,\s*\[data-theme="light"\]\s*\{/));
 const dark = decls(block(/\n\[data-theme="dark"\]\s*\{/));
 const darkMedia = decls(block(/:root:not\(\[data-theme="light"\]\)\s*\{/));
 
+/* Flat (proposals/flat.md): data-material="flat" maps each neutral onto its --flat-* mirror, which every theme block
+   declares. A theme under Flat is that theme's map with the mirrors swapped in, and the fills Flat gives the press
+   tokens: a block is surface-3, a cut surface-1, and a tray has no fill, so what shows through it is the canvas. */
+const FLAT_NEUTRALS = ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--line", "--line-strong", "--line-control", "--fg", "--fg-muted", "--fg-subtle", "--fg-disabled"];
+const flatName = (n) => `--flat-${n.slice(2)}`;
+const flatOf = (theme, map) => {
+  const out = new Map(map);
+  for (const n of FLAT_NEUTRALS) {
+    if (map.has(flatName(n))) out.set(n, map.get(flatName(n)));
+    else fail(`${theme}: ${flatName(n)} is missing`);
+  }
+  out.set("--block", out.get("--surface-3"));
+  out.set("--cut", out.get("--surface-1"));
+  out.set("--tray", out.get("--canvas"));
+  return out;
+};
+
 // 2. Drift ---------------------------------------------------------------
 console.log("Hex drift");
 const tokenHexes = new Set([...css.matchAll(/#[0-9a-f]{3,8}\b/gi)].map((m) => m[0].toLowerCase()));
@@ -125,6 +146,8 @@ missing.length ? missing.forEach((k) => fail(`${k} is defined in only one theme`
 
 // 5. Contrast -------------------------------------------------------------
 console.log("Contrast");
+// Every pair runs in each theme, then again under Flat (check 11 holds the mirrors themselves).
+const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)]];
 const rgb = (h) => { h = h.replace("#", ""); if (h.length === 3) h = [...h].map((c) => c + c).join(""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
 const lum = (h) => { const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
@@ -153,7 +176,7 @@ const pairs = [
   ]),
 ];
 let contrastChecks = 0;
-for (const [theme, map] of [["light", light], ["dark", dark]]) {
+for (const [theme, map] of THEMES) {
   for (const [fgName, bgs, min, note] of pairs) {
     for (const bgName of bgs) {
       const f = map.get(fgName), b = map.get(bgName);
@@ -177,7 +200,7 @@ const fromLab = ([L, a, bb]) => {
   const lin = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s];
   return "#" + lin.map((c) => Math.min(1, Math.max(0, c))).map((c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)).map((c) => Math.round(c * 255).toString(16).padStart(2, "0")).join("");
 };
-for (const [theme, map] of [["light", light], ["dark", dark]]) {
+for (const [theme, map] of THEMES) {
   const t = parseFloat(map.get("--tint-strength")) / 100;
   if (!(t > 0)) { fail(`${theme}: --tint-strength is missing or not a percentage`); continue; }
   for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
@@ -193,7 +216,7 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
 // The accent stands apart from the data hues (R6), so a button never reads as a bar and a link never as a series.
 const apart = (a, b) => { const [A, B] = [toLab(a), toLab(b)]; return Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]); };
 let apartChecks = 0, apartFails = 0;
-for (const [theme, map] of [["light", light], ["dark", dark]]) {
+for (const [theme, map] of THEMES) {
   for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
     for (const [ours, theirs] of [["--accent", `--data-${h}`], ["--accent-text", `--data-${h}-text`], ["--accent-pink", `--data-${h}`], ["--accent-pink-text", `--data-${h}-text`]]) {
       const a = map.get(ours), b = map.get(theirs);
@@ -204,8 +227,8 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
     }
   }
 }
-if (!apartFails) ok(`the accent stands at least 0.12 from every data hue (${apartChecks} pairs, both themes)`);
-if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes`);
+if (!apartFails) ok(`the accent stands at least 0.12 from every data hue (${apartChecks} pairs, both themes and Flat)`);
+if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes and under Flat`);
 
 /* APCA 0.0.98G lightness contrast. WCAG 2 passed the dark theme's grey at 5.5:1 while it read too dark (Lc 41), so
    the text inks must also reach Lc 60, the floor for reading text, on every surface. */
@@ -217,7 +240,7 @@ const apca = (text, bg) => {
   return s < 0.1 ? 0 : (s - 0.027) * 100;
 };
 let apcaChecks = 0, apcaFails = 0;
-for (const [theme, map] of [["light", light], ["dark", dark]]) {
+for (const [theme, map] of THEMES) {
   for (const fgName of ["--fg", "--fg-muted", "--fg-subtle"]) {
     for (const bgName of ["--canvas", "--surface-1", "--surface-2", "--surface-3"]) {
       const f = map.get(fgName), b = map.get(bgName);
@@ -228,7 +251,7 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
     }
   }
 }
-if (!apcaFails) ok(`${apcaChecks} text pairs reach APCA Lc 60 in both themes`);
+if (!apcaFails) ok(`${apcaChecks} text pairs reach APCA Lc 60 in both themes and under Flat`);
 
 // 6. Weight by role (R8) -------------------------------------------------
 console.log("Weight by role (R8)");
@@ -468,6 +491,43 @@ else {
   if (extra.length) fail(`frontmatter keys not allowed on claude.ai: ${extra.join(", ")}`);
   if (!failures.some((f) => f.startsWith("name") || f.startsWith("description") || f.startsWith("frontmatter"))) ok(`name "${name}", description ${desc.length}/1024 characters`);
 }
+
+// 11. Flat ----------------------------------------------------------------
+console.log('Flat (data-material="flat")');
+const flatFails = [];
+for (const [theme, map] of [["light", light], ["dark", dark]]) {
+  for (const n of FLAT_NEUTRALS) {
+    const f = map.get(flatName(n)), s = map.get(n);
+    if (![f, s].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { flatFails.push(`${theme}: ${flatName(n)} or ${n} is not a six-digit hex`); continue; }
+    const [Lf, af, bf] = toLab(f), [Ls] = toLab(s);
+    if (Math.hypot(af, bf) > 0.004) flatFails.push(`${theme}: ${flatName(n)} has chroma ${Math.hypot(af, bf).toFixed(4)}; Flat's greys are chroma 0`);
+    if (Math.abs(Lf - Ls) > 0.005) flatFails.push(`${theme}: ${flatName(n)} sits ${(Lf - Ls).toFixed(4)} from ${n} in lightness (at most 0.005)`);
+  }
+}
+const flatRe = /:root\[data-material="flat"\],\s*\[data-material="flat"\]\s*\{/;
+const flatAt = css.search(flatRe);
+if (flatAt < 0) flatFails.push('tokens.css has no :root[data-material="flat"], [data-material="flat"] block');
+else {
+  const flat = decls(block(flatRe));
+  if (flatAt < css.search(/:root\[data-accent="mono"\],\s*\[data-accent="mono"\]\s*\{/)) flatFails.push("the flat block comes before monochrome; it goes last, so it wins on order");
+  for (const n of FLAT_NEUTRALS) if (flat.get(n) !== `var(${flatName(n)})`) flatFails.push(`the flat block maps ${n} to ${flat.get(n) ?? "nothing"}, not var(${flatName(n)})`);
+  for (const [k, v] of flat) {
+    if (/(^|[\s,(])none($|[\s,)])/.test(v)) flatFails.push(`flat: ${k} is "${v}" (an empty shadow is 0 0 0 0 transparent; none voids a comma list)`);
+    if (!/^--(?:highlight|[\w-]+-(?:shade|lift|press))$/.test(k)) continue;
+    // Nothing casts and nothing is lit: every layer has no offset and no blur, so it is empty or a ring.
+    for (const layer of splitLayers(v)) {
+      const nums = layer.replace(/var\([^)]*\)|(?:rgba?|color-mix)\([^()]*(\([^()]*\)[^()]*)*\)|\b(?:inset|transparent)\b/g, "").trim().split(/\s+/).filter(Boolean).map(parseFloat);
+      const [x = 0, y = 0, blur = 0] = nums;
+      if (x || y || blur) flatFails.push(`flat: ${k} layer "${layer}" casts or blurs (only an empty shadow or a ring)`);
+    }
+  }
+  if (flat.get("--press-depth") !== "0px") flatFails.push(`flat: --press-depth is ${flat.get("--press-depth") ?? "unset"}, must be 0px (nothing sinks)`);
+  const ring = flat.get("--focus-ring") || "";
+  if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) flatFails.push(`flat: --focus-ring must restate the ring with var(--focus), never a literal (is "${ring}")`);
+  for (const h of ["blue", "amber", "teal", "violet", "rose"])
+    if (!/var\(--surface-1\)/.test(flat.get(`--data-${h}-tint`) || "")) flatFails.push(`flat: --data-${h}-tint is not restated over var(--surface-1)`);
+}
+flatFails.length ? flatFails.forEach(fail) : ok(`flat: ${FLAT_NEUTRALS.length} neutrals at chroma 0 in both themes, mapped last, nothing casts, lit or sinks`);
 
 console.log(failures.length ? `\n${failures.length} check(s) failed.` : `\nAll checks passed${warnings.length ? ` (${warnings.length} warning(s))` : ""}.`);
 process.exit(failures.length ? 1 : 0);
