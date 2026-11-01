@@ -4005,12 +4005,12 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
 
 /**
  * litt's dark mode model in a host: [data-theme] and the shadcn/next-themes classes (.dark, .light) beat the
- * system setting, and with none of them set the system setting decides. Read from the primary Button's fill.
+ * system setting, and with none of them set the system setting decides. Read from the primary Button's fill and from
+ * --litt-accent-text on <html>, since Blue 4 fills with one hex in both themes and only its text tone tells them apart.
  */
 async function darkModeContract(browser, url, accent, record) {
   const { context, page } = await openPage(browser, url, "light");
   try {
-    const fill = () => page.evaluate(`(${COLOR_TO_RGB})(getComputedStyle(document.querySelector("[data-item=button] [data-testid=litt-primary]")).backgroundColor)`);
     const cases = [
       { name: "nothing set, system light", scheme: "light", want: "light" },
       { name: "nothing set, system dark", scheme: "dark", want: "dark" },
@@ -4034,13 +4034,15 @@ async function darkModeContract(browser, url, accent, record) {
         );
         await page.evaluate(() => Promise.all(document.getAnimations().map((a) => a.finished.catch(() => {}))));
         await page.waitForTimeout(250);
-        const got = await fill();
-        const want = accent[c.want];
-        record(
-          `dark mode: ${c.name}`,
-          near(got, want),
-          near(got, want) ? `rgb(${want})` : `primary Button is rgb(${got.slice(0, 3)}), expected the ${c.want} accent rgb(${want})`,
-        );
+        const got = await page.evaluate(READ_ACCENT);
+        const want = accent.blue4[c.want];
+        const bad = [
+          ["primary Button", got.button, want.fill],
+          ["--litt-accent-text on <html>", got.text, want.text],
+        ]
+          .filter(([, g, w]) => !near(g, w))
+          .map(([what, g, w]) => `${what} is rgb(${g.slice(0, 3)}), expected the ${c.want} tone rgb(${w.slice(0, 3)})`);
+        record(`dark mode: ${c.name}`, !bad.length, bad.join("; ") || `fill rgb(${want.fill}), text rgb(${want.text})`);
       } catch (e) {
         record(`dark mode: ${c.name}`, false, String(e.message || e).split("\n")[0]);
       }
