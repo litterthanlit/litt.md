@@ -192,7 +192,7 @@ export function CardPicker<T extends string>({
             ) : (
               <>
                 {pictures && (
-                  <span aria-hidden="true" className="relative z-1 grid size-12 shrink-0 place-items-center">
+                  <span aria-hidden="true" className="relative z-1 grid min-h-6 min-w-6 shrink-0 items-center justify-items-start">
                     {o.picture}
                   </span>
                 )}
