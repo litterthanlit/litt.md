@@ -43,3 +43,22 @@ Tokens alone make every component flat but keep their shapes. The components the
 ## Opened
 
 - **Q17.** The registry's default material. The gallery opens in Flat; installs get Press until a project sets `data-material="flat"`. *Suggested:* decide after the components theme, when Flat has its own recipes and can be judged whole.
+
+## What the build showed
+
+Built on `claude/brave-mendel-t92xdv` (taste v1.4). Eleven pages were shot in Monochrome on Press and on Flat (`node gallery/scripts/shot.mjs --look mono` and `--look mono-flat`), in both themes, on desktop and phone, plus the Dialog and the Menu open. No console errors and no sideways scroll. R1's check holds: with the press material gone, every page still reads as finished, because each control says its state in words.
+
+| Page | What reads | What the components theme should change |
+|---|---|---|
+| Overview | The deck's Material row; picks and the slider in grey; the canvas a neutral grey | The hero says "warm stone, lit from above", which Flat is not: the line should follow the look. The deck is a white card with a hairline; litt.design would frame it in grey. |
+| Button | The secondary is a grey fill on the canvas, litt.design's round buttons' grey; the destructive keeps its red words | litt.design's round icon button (the Previous and Next pair) has no litt component yet. Under Flat a press could scale (litt.design's 0.96) now that nothing sinks. |
+| Switch | A grey block in a hairline tray that says On or Off | It reads, but On and Off weigh the same grey; the accent switch option carries the main choice. |
+| Segmented | The picked segment is a grey fill in a hairline track, as on litt.design | Nothing. |
+| Slider | A grey slot, the fill a step darker, a mid-grey cap with its grip | The plate around the slot is gone with its cast; a slider on a grey surface could lose its slot. Check it on `--surface-3`. |
+| Checkbox and radio | Unchanged: ink marks in white cuts inside the control line | Nothing. |
+| Input, Select | Fields unchanged but for the inner shade; the Select trigger is a grey block, as a raised thing should be | Nothing. |
+| Card picker | The pick is a grey fill inside a hairline | The litt.design frame (a grey card, the content inset 4px) is the natural pick here. |
+| Card | White with a hairline, as in Press | The litt.design card recipe: one grey frame, the cover inset 4px at the control radius, the label under it, hover one grey darker. |
+| Dialog, Menu | Glass, glow and ring as in Press, minus the highlight | Nothing. |
+
+Still to build in the components theme: `SoftSwap` (soft focus on a swap a hand causes, R4) and its first users (a carousel step and its caption, a tab's panel).
