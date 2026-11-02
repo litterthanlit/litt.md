@@ -31,43 +31,44 @@
   --weight-title: 500;         /* titles: display, h1 to h4, a lockup's title, buttons, tabs, b and strong */
   --weight-label: 600;         /* 12px labels only: the caption step, tags, meta rows, table headers */
 
-  /* Type scale (R9): each step carries its size, a whole-pixel line height and its
-     tracking, tightest at the top. Display and h1 are the ceiling at 18: nothing is set larger. h2 to h4 share one
-     style on purpose; below the page title, rank comes from weight, ink and space. */
+  /* Type scale (R9): each step carries its size, a line height in rem (whole pixels at the default 16px, and it
+     grows with the reader's text size) and its tracking, tightest at the top. Display and h1 are the ceiling at 18:
+     nothing is set larger. h2 to h4 share one style on purpose; below the page title, rank comes from weight, ink and
+     space. */
   --type-display-size: 1.125rem;  /* 18 */
-  --type-display-leading: 28px;
+  --type-display-leading: 1.75rem;  /* 28 */
   --type-display-tracking: -0.015em;
 
   --type-h1-size: 1.125rem;       /* 18 */
-  --type-h1-leading: 28px;
+  --type-h1-leading: 1.75rem;  /* 28 */
   --type-h1-tracking: -0.015em;
 
   --type-h2-size: 0.875rem;       /* 14 */
-  --type-h2-leading: 22px;
+  --type-h2-leading: 1.375rem;  /* 22 */
   --type-h2-tracking: -0.006em;
 
   --type-h3-size: 0.875rem;       /* 14 */
-  --type-h3-leading: 22px;
+  --type-h3-leading: 1.375rem;  /* 22 */
   --type-h3-tracking: -0.006em;
 
   --type-h4-size: 0.875rem;       /* 14 */
-  --type-h4-leading: 22px;
+  --type-h4-leading: 1.375rem;  /* 22 */
   --type-h4-tracking: -0.006em;
 
   --type-reading-size: 0.875rem;  /* 14: long-form text */
-  --type-reading-leading: 22px;
+  --type-reading-leading: 1.375rem;  /* 22 */
   --type-reading-tracking: -0.006em;
 
   --type-body-size: 0.875rem;     /* 14: UI body */
-  --type-body-leading: 22px;
+  --type-body-leading: 1.375rem;  /* 22 */
   --type-body-tracking: -0.006em;
 
   --type-small-size: 0.8125rem;   /* 13 */
-  --type-small-leading: 20px;
+  --type-small-leading: 1.25rem;  /* 20 */
   --type-small-tracking: -0.004em;
 
   --type-caption-size: 0.75rem;   /* 12: labels */
-  --type-caption-leading: 16px;
+  --type-caption-leading: 1rem;  /* 16 */
   --type-caption-tracking: -0.005em;
 
   --measure: 65ch;
@@ -87,7 +88,8 @@
 
   /* Layout: 12 columns; breakpoints 640 / 1024 / 1280. */
   --section-y: 64px;           /* airy rhythm (R9): 64 mobile, 96 tablet, 128 desktop */
-  --gutter: 16px;              /* page side padding */
+  /* Page side padding, never less than the safe area (a notch, a rounded corner in landscape). */
+  --gutter: max(16px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   --grid-gap: 16px;
   --container-reading: 40rem;  /* 640 */
   --container-content: 67.5rem;/* 1080 */
@@ -170,10 +172,10 @@
 }
 
 @media (min-width: 40rem) {
-  :root { --section-y: 96px; --gutter: 24px; --grid-gap: 24px; }
+  :root { --section-y: 96px; --gutter: max(24px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); --grid-gap: 24px; }
 }
 @media (min-width: 64rem) {
-  :root { --section-y: 128px; --gutter: 32px; }
+  :root { --section-y: 128px; --gutter: max(32px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); }
 }
 
 /* --------------------------------------------------------------------------
@@ -656,6 +658,23 @@
     /* --spring-* stay as they are. They feed JS springs, and the library honors
        reduced motion (MotionConfig reducedMotion="user", Framer useReducedMotion).
        A zero visual time can break a spring solver. */
+  }
+}
+
+/* More contrast, asked for by the reader's system: the grey ink becomes the full ink, both hairlines
+   take the control outline's 3:1, and glass turns solid. Every element that sets a theme or a material
+   restates these tokens, so they are restated on each, at the same specificity and later in the file. */
+@media (prefers-contrast: more) {
+  :root,
+  :root:not([data-theme="light"]),
+  [data-theme],
+  :root[data-material="flat"],
+  [data-material="flat"] {
+    --fg-muted: var(--fg);
+    --fg-subtle: var(--fg);
+    --line: var(--line-control);
+    --line-strong: var(--line-control);
+    --glass-bg: var(--glass-bg-solid);
   }
 }
 

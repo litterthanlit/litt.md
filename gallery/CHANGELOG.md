@@ -19,6 +19,7 @@ Flat says litt's depth ladder by fill alone, on neutral greys: one attribute on 
 - **changed** `run-list`: under forced colors the selected run's words show on its Highlight block (the browser's backplate hid them), and the hover highlight stays out of the way, so Highlight still means selected.
 - **changed** `tabs`: under forced colors the underline variant's line is Highlight; before, the system painted it away.
 - **changed** `code-input`: under forced colors the current cell takes a Highlight outline, since its focus ring is a shadow the system removes, and the caret shows in CanvasText.
+- **changed** `litt`: line heights are in rem (`--litt-type-*-leading`), the same 28, 22, 20 and 16px at the default size, so text a reader has set larger no longer runs into its own lines. Under `prefers-contrast: more` the grey ink is the full ink, both hairlines take the control outline's 3:1 and glass is its solid fill, in both themes and under Flat. `--litt-gutter` is never less than the safe area on either side, so a phone in landscape keeps the page clear of the notch (with `viewport-fit=cover`). Nothing in your code has to change.
 
 ## 2026-11-01 · Tune: one line that tunes a component against litt's rules
 
