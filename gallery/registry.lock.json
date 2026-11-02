@@ -83,8 +83,8 @@
       "hash": "ceaafb65f3ba39c9"
     },
     "code-input": {
-      "version": "2026.10.26",
-      "hash": "9ed110075599ce56"
+      "version": "2026.11.02",
+      "hash": "05f66b8a645dc5d7"
     },
     "cohort-grid": {
       "version": "2026.10.26",
@@ -99,12 +99,12 @@
       "hash": "18d9f0afbbcc553f"
     },
     "combobox": {
-      "version": "2026.10.27",
-      "hash": "266e72425f3db200"
+      "version": "2026.11.02",
+      "hash": "dbef27c386875b5c"
     },
     "command-menu": {
-      "version": "2026.10.25",
-      "hash": "05bc42de8b4b92bd"
+      "version": "2026.11.02",
+      "hash": "ed03de18af1ecbf9"
     },
     "composer": {
       "version": "2026.10.26",
@@ -163,8 +163,8 @@
       "hash": "bc7b1253ebe4338c"
     },
     "glide": {
-      "version": "2026.10.23",
-      "hash": "0c0d0188cc46ccd3"
+      "version": "2026.11.02",
+      "hash": "6ba8fd851952788c"
     },
     "growth": {
       "version": "2026.10.26",
@@ -231,8 +231,8 @@
       "hash": "6bc2611a9862421a"
     },
     "menu": {
-      "version": "2026.10.25",
-      "hash": "379bd44f7f47cd23"
+      "version": "2026.11.02",
+      "hash": "aab47ba531848d0f"
     },
     "message": {
       "version": "2026.10.26",
@@ -307,8 +307,8 @@
       "hash": "ea1cad6db1d777e1"
     },
     "run-list": {
-      "version": "2026.10.27",
-      "hash": "daba4c9ad4d2d547"
+      "version": "2026.11.02",
+      "hash": "3f80a00035294b25"
     },
     "scroll-area": {
       "version": "2026.10.26",
@@ -320,7 +320,7 @@
     },
     "select": {
       "version": "2026.11.02",
-      "hash": "9284b88d1dba66bb"
+      "hash": "8d999cdae698575a"
     },
     "settings": {
       "version": "2026.11.02",
@@ -387,8 +387,8 @@
       "hash": "7e368cf52615911d"
     },
     "tabs": {
-      "version": "2026.10.26",
-      "hash": "19d3d6468e1b829b"
+      "version": "2026.11.02",
+      "hash": "a749e3fa14118394"
     },
     "tag": {
       "version": "2026.10.26",

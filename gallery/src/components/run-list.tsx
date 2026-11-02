@@ -46,7 +46,7 @@
  *   runs".
  * - Disabled or read-only: nothing to disable. Without `onStop` and `onArchive` the rows have no verbs and keep no
  *   column for them; without `onSelect` a row still opens its `href`.
- * - Forced colors: the block keeps a border and takes Highlight, and the selected row's words and mark HighlightText.
+ * - Forced colors: the block keeps a border and takes Highlight, and the selected row's words and mark HighlightText. Those words opt out of forced colors, or the browser would paint its backplate under them.
  */
 import { Fragment, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { animate, LayoutGroup, motion, type AnimationPlaybackControls, type Transition } from "motion/react";
@@ -319,6 +319,7 @@ export function RunList({
   /* Hover: the Glide's one highlight, for a mouse only. A tap shows the row's own pressed fill and leaves nothing lit. */
   const glideRef = useRef<Glide | null>(null);
   const glide = useGlide({
+    forcedHighlight: false,
     onPointerRow: (index, _row, type) => {
       if (type === "mouse") glideRef.current?.setActive(index, "pointer");
     },
@@ -463,7 +464,7 @@ export function RunList({
                     const look = STATUS[run.status];
                     const selected = run.id === selectedId;
                     const verb = handlerFor(look.verb) ? look.verb : null;
-                    const lit = selected ? " forced-colors:text-[HighlightText]" : "";
+                    const lit = selected ? " forced-colors:[forced-color-adjust:none] forced-colors:text-[HighlightText] forced-colors:**:text-[HighlightText]" : "";
                     const shared = {
                       ref: keep(rows.current, run.id),
                       tabIndex: run.id === tabStop?.id ? 0 : -1,

@@ -303,7 +303,7 @@ export function TabsTrigger({
           aria-hidden="true"
           className={
             variant === "underline"
-              ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg"
+              ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg forced-colors:bg-[Highlight] forced-colors:[forced-color-adjust:none]"
               : "absolute inset-0 -z-10 bg-block shadow-(--block-lift) forced-colors:border " + FILL_RADIUS
           }
         />

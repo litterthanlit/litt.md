@@ -14,6 +14,11 @@ Flat says litt's depth ladder by fill alone, on neutral greys: one attribute on 
 - **changed** `select`, `date-picker`, `number-field`, `color-picker`, `run-card`: a raised trigger or step under a pointer reads `--litt-block-hover`. Under Press it is the same 4% as before; under Flat a placeholder on a hovered trigger keeps 4.5:1.
 - **changed** `button`: `loading` no longer disables the button. It keeps its look and its focus, sets `aria-disabled` beside `aria-busy`, ignores presses (a submit's too, so Enter in a field cannot send the form twice) and does not sink until loading ends. If you put focus back on a submit after a save, you can drop that code.
 - **changed** `settings`: Save no longer puts focus back on itself when a save ends, since a loading button now keeps its focus. Reinstall `button` with it.
+- **changed** `glide`: under forced colors (Windows contrast themes) the highlight is the system's Highlight fill; before, the system painted it away and a highlighted row looked like the rest. A row on it needs HighlightText: the menu, select, combobox and command menu rows here already do. New `forcedHighlight: false` keeps it off for a list where Highlight already means selected. Nothing in your code has to change.
+- **changed** `menu`, `select`, `combobox`, `command-menu`: under forced colors the highlighted row is Highlight with HighlightText, its icon and shortcut included, so the arrow keys show where you are. The context menu gets it through `menu`. Nothing in your code has to change.
+- **changed** `run-list`: under forced colors the selected run's words show on its Highlight block (the browser's backplate hid them), and the hover highlight stays out of the way, so Highlight still means selected.
+- **changed** `tabs`: under forced colors the underline variant's line is Highlight; before, the system painted it away.
+- **changed** `code-input`: under forced colors the current cell takes a Highlight outline, since its focus ring is a shadow the system removes, and the caret shows in CanvasText.
 
 ## 2026-11-01 · Tune: one line that tunes a component against litt's rules
 

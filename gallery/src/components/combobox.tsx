@@ -675,7 +675,8 @@ type PanelProps = {
 const ROW =
   "relative flex h-control-md w-full cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt " +
-  "text-fg-muted aria-selected:text-fg data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled";
+  "text-fg-muted aria-selected:text-fg data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled " +
+  "forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText]";
 /** The group label row: the Menu's. */
 const LABEL_ROW = "flex h-control-sm items-center px-3 text-caption text-fg-subtle";
 

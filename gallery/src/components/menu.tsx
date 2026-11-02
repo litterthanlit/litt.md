@@ -175,7 +175,7 @@ const row =
   "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
-  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)]";
+  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] forced-colors:data-[highlighted]:[forced-color-adjust:none] forced-colors:data-[highlighted]:text-[HighlightText] forced-colors:data-[highlighted]:**:text-[HighlightText]";
 const tone = "text-fg-muted data-[highlighted]:text-fg pointer-coarse:active:text-fg";
 const toneDanger = "text-danger";
 /** The group label row, and the caption that names a submenu's list. */

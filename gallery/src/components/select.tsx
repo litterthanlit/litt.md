@@ -153,6 +153,7 @@ const row =
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt " +
   "text-fg-muted data-[state=checked]:text-fg group-data-[quiet=false]/list:data-[highlighted]:text-fg " +
+  "forced-colors:group-data-[quiet=false]/list:data-[highlighted]:[forced-color-adjust:none] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:text-[HighlightText] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:**:text-[HighlightText] " +
   "data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] pointer-coarse:active:text-fg";
 

@@ -124,6 +124,8 @@ export function CodeInput({
                   cellHeights[size] +
                   /* six cells read as two halves of three */
                   (length === 6 && i === 3 ? " ml-2" : "") +
+                  /* Forced colors drop the ring (a box-shadow), so the current cell takes an outline there. */
+                  (current ? " forced-colors:outline-2 forced-colors:outline-offset-2 forced-colors:outline-[Highlight]" : "") +
                   (disabled
                     ? " bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
                     : " bg-cut text-fg " +
@@ -136,7 +138,7 @@ export function CodeInput({
                           : "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]"))
                 }
               >
-                {char || (current ? <span className="h-5 w-px bg-fg" /> : null)}
+                {char || (current ? <span className="h-5 w-px bg-fg forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" /> : null)}
               </span>
             );
           })}
