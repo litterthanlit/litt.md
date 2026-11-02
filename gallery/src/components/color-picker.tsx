@@ -448,8 +448,8 @@ export function ColorPanel({
         onLostPointerCapture={release}
       >
         <span aria-hidden="true" className={cutEdge} />
-        {/* A finger needs more than 12px: the target reaches 16px above and below the rail. */}
-        <span aria-hidden="true" className="absolute inset-x-0 -inset-y-4 hidden pointer-coarse:block" />
+        {/* The 12px rail is a 24px target, 6px above and below it, inside the 12px gaps; a finger's reaches 16px. */}
+        <span aria-hidden="true" className="absolute inset-x-0 -inset-y-1.5 pointer-coarse:-inset-y-4" />
         <input
           type="range"
           className="sr-only"

@@ -15,7 +15,7 @@
  * - Motion: entering is expressive (from below by useTravel(), scale 0.98 to 1).
  *   Restacking is responsive. Exiting is useExit("expressive"): x by travel
  *   toward the right edge, fading, never bouncing.
- * - Behavior: auto-dismiss after 5s (the spec), errors stay. Paused while hovered,
+ * - Behavior: auto-dismiss after 5s (the spec); errors and toasts with an action stay. Paused while hovered,
  *   focused, held by a finger or when the tab is hidden. Escape dismisses the
  *   focused toast. F8 moves focus to the newest toast. Each toast is its own live
  *   region: polite, or assertive for errors.
@@ -70,9 +70,9 @@ export type ToastOptions = {
   description?: ReactNode;
   /** "neutral" (the default), "success" or "error". An error's title is the danger color; errors are announced at once and stay until dismissed. */
   tone?: ToastTone;
-  /** A small button on the right, such as Undo or View. Pressing it runs onClick and then dismisses the toast. */
+  /** A small button on the right, such as Undo or View. Pressing it runs onClick and then dismisses the toast. A toast with an action stays until dismissed, so there is time to reach it. */
   action?: { label: string; onClick: () => void };
-  /** Milliseconds before it dismisses itself. The default is 5000, and errors stay unless you set it. 0 or Infinity stays until dismissed. */
+  /** Milliseconds before it dismisses itself. The default is 5000; errors and toasts with an action stay unless you set it. 0 or Infinity stays until dismissed. */
   duration?: number;
 };
 
@@ -247,7 +247,7 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
   return (
     <section
       ref={regionRef}
-      aria-label="Notifications"
+      aria-label="Notifications (F8)"
       className={
         "fixed z-60 " +
         (top
@@ -368,7 +368,7 @@ function ToastView({
     };
   }, [held]);
 
-  const wanted = item.duration ?? (tone === "error" ? Infinity : AUTO_DISMISS_MS);
+  const wanted = item.duration ?? (tone === "error" || item.action ? Infinity : AUTO_DISMISS_MS);
   const persistent = !Number.isFinite(wanted) || wanted <= 0;
   const remaining = useRef(persistent ? 0 : wanted);
   const idle = persistent || paused || away || held;

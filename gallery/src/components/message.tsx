@@ -392,7 +392,7 @@ export function Message({
 /* What a markdown renderer puts inside an answer. Every rule is a descendant selector, so any renderer works, and each
    color, size and radius is a litt token. Weights are set here by role (R8), so an app without the base styles gets them too. */
 const PROSE = [
-  "flex min-w-0 max-w-[68ch] flex-col gap-3 text-body [&>*]:min-w-0 [&_p]:text-pretty",
+  "flex min-w-0 max-w-(--measure) flex-col gap-3 text-body [&>*]:min-w-0 [&_p]:text-pretty",
   /* Headings: the body size at the title weight in --fg. Weight and ink are the hierarchy, as everywhere (R8). */
   "[&_:is(h1,h2,h3,h4)]:text-body [&_:is(h1,h2,h3,h4)]:font-title [&_:is(h1,h2,h3,h4)]:text-fg [&>:is(h1,h2,h3,h4):not(:first-child)]:mt-2",
   /* Lists: the marker steps back to --fg-subtle. A nested list tucks under its item. */

@@ -20,6 +20,14 @@ Flat says litt's depth ladder by fill alone, on neutral greys: one attribute on 
 - **changed** `tabs`: under forced colors the underline variant's line is Highlight; before, the system painted it away.
 - **changed** `code-input`: under forced colors the current cell takes a Highlight outline, since its focus ring is a shadow the system removes, and the caret shows in CanvasText.
 - **changed** `litt`: line heights are in rem (`--litt-type-*-leading`), the same 28, 22, 20 and 16px at the default size, so text a reader has set larger no longer runs into its own lines. Under `prefers-contrast: more` the grey ink is the full ink, both hairlines take the control outline's 3:1 and glass is its solid fill, in both themes and under Flat. `--litt-gutter` is never less than the safe area on either side, so a phone in landscape keeps the page clear of the notch (with `viewport-fit=cover`). Nothing in your code has to change.
+- **changed** `toast`: a toast with an `action` stays until it is dismissed, like an error, so there is time to reach its button; pass `duration` to time it out as before. The region is named "Notifications (F8)", so a screen reader says how to reach it.
+- **changed** `tag`: a tag is never wider than its container. A text label cuts at the end with an ellipsis instead of running out of the box; a tag still keeps its width beside other things in a row.
+- **changed** `hover-card`: a card taller than the room the screen leaves scrolls inside itself. Nothing changes for a card that fits.
+- **changed** `token-input`, `combobox`: a value's remove button shows the pointer cursor.
+- **changed** `color-picker`: the hue rail takes a press 6px above and below it with a mouse, a 24px target, as it already did 16px for a finger.
+- **changed** `checkbox`, `table-filter`, `header`: the shadow no longer fades with the fill, so the material steps at once (R2). The focus ring is unchanged.
+- **changed** `message`, `thinking`, `lightbox`: running text keeps to `--litt-measure` (65ch) instead of its own width; a message and the reasoning were 68ch.
+- **changed** `agent`, `case-study`, `product`: running text keeps to `--litt-measure` (65ch).
 
 ## 2026-11-01 · Tune: one line that tunes a component against litt's rules
 

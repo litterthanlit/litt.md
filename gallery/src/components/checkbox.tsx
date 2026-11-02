@@ -60,7 +60,7 @@ const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 const drawnInput =
   "peer relative z-1 col-start-1 row-start-1 m-0 size-5 shrink-0 cursor-pointer appearance-none self-start " +
   "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
-  "transition-[background-color,box-shadow] duration-(--dur-instant) ease-litt " +
+  "transition-[background-color] duration-(--dur-instant) ease-litt " +
   "checked:bg-fg checked:shadow-none enabled:checked:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
   "in-[[data-material=flat]]:enabled:checked:inset-shadow-none " + // Flat has no light (R2)
   "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] aria-invalid:checked:shadow-[inset_0_0_0_1px_var(--danger)] " +

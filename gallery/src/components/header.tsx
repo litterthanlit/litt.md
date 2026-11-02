@@ -85,7 +85,7 @@ const FROM = {
 
 const link =
   "relative flex h-control-sm items-center rounded-control px-control-pad-sm text-small whitespace-nowrap select-none " +
-  "[-webkit-tap-highlight-color:transparent] transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
+  "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "pointer-coarse:h-control-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 /* The current page is raised (R3); the others fill on hover, and on a press on touch. */
 const current = "bg-block text-fg shadow-(--block-lift) forced-colors:border";

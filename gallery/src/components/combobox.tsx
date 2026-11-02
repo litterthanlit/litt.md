@@ -222,7 +222,7 @@ const CHEVRON =
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled";
 
 const REMOVE =
-  "relative grid size-6 shrink-0 place-items-center rounded-control text-fg-subtle " +
+  "relative grid size-6 shrink-0 cursor-pointer place-items-center rounded-control text-fg-subtle " +
   "transition-[color] duration-(--dur-instant) ease-litt hover:text-fg " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled " +

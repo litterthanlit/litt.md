@@ -91,7 +91,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
       <h2 id={id} className="text-h4 text-fg">
         {title}
       </h2>
-      <div className="grid max-w-[65ch] gap-4 text-reading text-fg-muted">{children}</div>
+      <div className="grid max-w-(--measure) gap-4 text-reading text-fg-muted">{children}</div>
     </section>
   );
 }
@@ -142,7 +142,7 @@ export function CaseStudy() {
           <h2 id={seriesId} className="text-h4 text-fg">
             The series
           </h2>
-          <p className="max-w-[65ch] text-small text-fg-subtle">Each series opens on its first frame at full width, and the next one is always in view.</p>
+          <p className="max-w-(--measure) text-small text-fg-subtle">Each series opens on its first frame at full width, and the next one is always in view.</p>
         </div>
         <Carousel label="The series" index={slide} onIndexChange={setSlide}>
           <CarouselContent>

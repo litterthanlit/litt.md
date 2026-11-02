@@ -140,7 +140,7 @@ function FunHint({ text }: { text?: string }) {
   const fun = useFun();
   if (!fun || !text) return null;
   return (
-    <p data-fun-cue="" className="-mt-3 flex max-w-[60ch] items-start gap-2 text-small text-fg-muted">
+    <p data-fun-cue="" className="-mt-3 flex max-w-(--measure) items-start gap-2 text-small text-fg-muted">
       <SparkleIcon className="mt-0.5 shrink-0 text-fg-subtle" />
       <span>
         <span className="font-title text-fg">Fun mode.</span> {text}
@@ -200,7 +200,7 @@ export function Page({
         {children}
         <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4">
           <h2 id={`about-${meta.id}`} className="-mb-3 text-h3 text-fg">About</h2>
-          <p className="max-w-[60ch] text-reading text-fg-muted">{meta.summary}</p>
+          <p className="max-w-(--measure) text-reading text-fg-muted">{meta.summary}</p>
         </section>
         {docs && (
           <Suspense fallback={<div aria-hidden="true" className="min-h-[60svh]" />}>
@@ -219,7 +219,7 @@ export function Page({
  */
 export function PageTitle({ id, title, lede, className = "" }: { id: string; title: string; lede: string; className?: string }) {
   return (
-    <div className={"flex max-w-[64ch] flex-wrap items-baseline gap-x-2 text-h1 text-balance " + className}>
+    <div className={"flex max-w-(--measure) flex-wrap items-baseline gap-x-2 text-h1 text-balance " + className}>
       <h1 id={id} tabIndex={-1} className="text-fg outline-none">{title}</h1>
       <p className="text-fg-subtle">{lede}</p>
     </div>

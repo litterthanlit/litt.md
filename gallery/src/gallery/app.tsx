@@ -156,7 +156,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       data-preview={compact || !p.group ? undefined : p.id}
       className={
         "flex items-center gap-2 rounded-control px-3 text-small select-none [-webkit-tap-highlight-color:transparent] " +
-        "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
+        "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
         (compact ? "h-control-sm shrink-0 " : "-mx-3 h-8 ") +
         (p.id === page?.id
