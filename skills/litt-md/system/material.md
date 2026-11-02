@@ -70,6 +70,7 @@ The same depth ladder said by fill alone, on neutral greys, after the work slide
 | Sunken: a slot | `--slot`, both walls, the fill a step darker | `--surface-3`, no shade, the fill a step darker |
 | Flat: canvas and surfaces | a hairline and the top highlight | a hairline, no highlight |
 | Raised: a block | white or a warm grey, a contact line and a cast | a `--surface-3` fill, no cast; hover a step darker |
+| A block under a pointer | `--block-hover`: 4% ink mixed into the block | `--block-hover`: 2.5% ink, so a grey block's words keep 4.5:1 |
 | Raised: a cap and its plate | taller, a cast up to 3px | a mid grey cap, no cast |
 | Floating | glass, a zero-offset glow, a ring | unchanged, minus the top highlight |
 

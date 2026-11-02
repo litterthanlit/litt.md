@@ -48,7 +48,7 @@ const blockButton =
   ring;
 const blockButtons = {
   primary: "bg-accent text-accent-fg shadow-(--block-lift) hover:bg-accent-hover active:shadow-(--block-press)",
-  secondary: "bg-block text-fg shadow-(--block-lift) hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] active:shadow-(--block-press)",
+  secondary: "bg-block text-fg shadow-(--block-lift) hover:bg-(--block-hover) active:shadow-(--block-press)",
   ghost: "text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
 };
 

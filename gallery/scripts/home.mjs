@@ -306,6 +306,25 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
   await ctx.close();
 }
 
+/* ---------- a hovered Select's placeholder keeps 4.5:1 (R3, --block-hover) ---------- */
+for (const look of ["mono", "mono-flat"]) {
+  const { ctx, pg, errors } = await open("select", { query: `?look=${look}` });
+  const trigger = pg.locator("main").getByRole("combobox").filter({ hasText: "Choose a region" }).first();
+  await trigger.hover();
+  await pg.waitForTimeout(300); // the fill fades on the instant tier
+  const r = await trigger.evaluate((el) => {
+    const words = [...el.querySelectorAll("*")].find((n) => n.childElementCount === 0 && n.textContent.trim() === "Choose a region") ?? el;
+    const probe = document.createElement("canvas").getContext("2d");
+    const rgb = (c) => { probe.fillStyle = "#000"; probe.fillStyle = c; probe.fillRect(0, 0, 1, 1); return [...probe.getImageData(0, 0, 1, 1).data].slice(0, 3); };
+    const lum = (c) => { const [r, g, b] = rgb(c).map((v) => v / 255).map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4)); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+    const [a, b] = [lum(getComputedStyle(words).color), lum(getComputedStyle(el).backgroundColor)].sort((x, y) => y - x);
+    return (a + 0.05) / (b + 0.05);
+  });
+  check(r >= 4.5, `?look=${look}: a hovered Select's placeholder is ${r.toFixed(2)}:1 on its fill (needs 4.5:1)`);
+  for (const e of errors) problems.push(`select hover ${look}: ${e}`);
+  await ctx.close();
+}
+
 /* ---------- Flat has no light: a checked box's highlight ---------- */
 for (const [look, want] of [["mono", 1], ["mono-flat", 0]]) {
   const { ctx, pg, errors } = await open("checkbox", { query: `?look=${look}` });

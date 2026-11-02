@@ -22,7 +22,7 @@ Flat says the same depth ladder (R3) by fill alone: **grey is the object, a hair
 | Sunken: a cut (fields, boxes) | its floor and the top wall's shade inside the control line | `--surface-1` inside the control line, no shade |
 | Sunken: a slot | a floor, the top wall's shade, the lit lower wall | `--surface-3`, no shade; the fill a step darker (`--fg` 14% into `--surface-3`) |
 | Flat: the canvas and surfaces | a hairline and the top highlight | a hairline; no highlight |
-| Raised: a block | white, a contact line and a soft cast | `--surface-3`, no cast; hover one step darker (the components' own 4% ink mix) |
+| Raised: a block | white, a contact line and a soft cast | `--surface-3`, no cast; hover a lighter step than Press's (`--block-hover`, 2.5% ink against Press's 4%), so a placeholder on a hovered grey block keeps 4.5:1 |
 | Raised: a cap and its plate | taller, a cast up to 3px | a mid grey cap (`--fg` 45% into `--surface-3`, 55% held), no cast |
 | Floating | glass, a zero-offset glow and a ring | unchanged, minus the top highlight |
 

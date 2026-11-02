@@ -14,7 +14,8 @@
  *               (each data hue's -text tone is also checked on its own tint, and the accent's text
  *               on its tint), the text inks reach APCA Lc 60 on every surface, which WCAG 2
  *               overrates for grey on dark, and both accents (Blue 4 and pink) stand apart from the data hues (R6):
- *               its fill at least 0.12 from each hue's mark and its text from each hue's text, in OKLab.
+ *               its fill at least 0.12 from each hue's mark and its text from each hue's text, in OKLab. The inks keep
+ *               4.5:1 on a hovered block (--block-hover), under Press and under Flat.
  * 6. Weight:    weight by role (R8): --weight 400 (text), --weight-title 500 (titles),
  *               --weight-label 600 (12px labels). Nothing at 700 or more or below 400, no
  *               font-medium, -semibold or -bold (font-title and font-label are the role
@@ -227,6 +228,30 @@ for (const [theme, map] of THEMES) {
     }
   }
 }
+/* A hovered block (R3): --block-hover mixes the ink into the block, by its own share under Press and under Flat. The
+   inks on it are words a pointer is resting on (a Select's placeholder, a folded Run card), so they keep 4.5:1. */
+const hoverShare = (body) => {
+  const m = /color-mix\(in oklab, var\(--block\), var\(--fg\) ([\d.]+)%\)/.exec(decls(body).get("--block-hover") || "");
+  return m ? parseFloat(m[1]) / 100 : null;
+};
+const pressHover = hoverShare(block(/:root,\s*\[data-theme\]\s*\{/));
+const flatHover = hoverShare(block(/:root\[data-material="flat"\],\s*\[data-material="flat"\]\s*\{/));
+if (pressHover === null) fail("tokens.css: --block-hover is not color-mix(in oklab, var(--block), var(--fg) N%) on :root, [data-theme]");
+if (flatHover === null) fail('tokens.css: the flat block does not restate --block-hover as color-mix(in oklab, var(--block), var(--fg) N%)');
+let hoverChecks = 0, hoverFails = 0;
+for (const [theme, map] of THEMES) {
+  const share = theme.startsWith("flat") ? flatHover : pressHover;
+  const b = map.get("--block"), f = map.get("--fg");
+  if (share === null || ![b, f].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) continue;
+  const [B, F] = [toLab(b), toLab(f)];
+  const hover = fromLab(B.map((v, i) => v * (1 - share) + F[i] * share));
+  for (const ink of ["--fg", "--fg-muted", "--fg-subtle"]) {
+    hoverChecks++;
+    const r = ratio(map.get(ink), hover);
+    if (r < 4.5) { hoverFails++; fail(`${theme}: ${ink} on a hovered block (${hover}) is ${r.toFixed(2)}:1, needs 4.5:1`); }
+  }
+}
+if (!hoverFails && hoverChecks) ok(`${hoverChecks} ink pairs on a hovered block pass (Press ${pressHover * 100}%, Flat ${flatHover * 100}% ink)`);
 if (!apartFails) ok(`the accent stands at least 0.12 from every data hue (${apartChecks} pairs, both themes and Flat)`);
 if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes and under Flat`);
 

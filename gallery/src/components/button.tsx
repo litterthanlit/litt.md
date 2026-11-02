@@ -77,13 +77,13 @@ const variants: Record<ButtonVariant, string> = {
     "in-[[data-material=flat]]:inset-shadow-none",
   secondary:
     "bg-block text-fg shadow-(--block-lift) enabled:active:shadow-(--block-press) forced-colors:border " +
-    "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)]",
+    "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover)",
   ghost:
     "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
   danger:
     "bg-block text-danger shadow-(--block-lift) enabled:active:shadow-(--block-press) forced-colors:border " +
-    "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+    "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " +
     /* A dialog's confirm. These rules sort after the block's, so they win its ties (active, a finger's press). */
     "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
     "in-[[data-dialog-footer]]:enabled:shadow-none in-[[data-dialog-footer]]:enabled:active:shadow-none " +

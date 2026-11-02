@@ -191,7 +191,7 @@ const field =
   "pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +
   "shadow-(--block-lift) enabled:active:shadow-(--block-press) data-[state=open]:shadow-(--block-press) " +
-  "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+  "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " +
   "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "active:translate-y-(--press-depth) disabled:active:translate-y-0 data-[state=open]:translate-y-(--press-depth) " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +

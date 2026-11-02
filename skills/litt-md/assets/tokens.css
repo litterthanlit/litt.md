@@ -504,6 +504,8 @@
   --glow: 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent),
           0 0 24px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+  /* A raised block under a pointer: the ink mixed into the block. Flat sets its own share. */
+  --block-hover: color-mix(in oklab, var(--block), var(--fg) 4%);
   /* A hue's tint: the fill behind its -text tone in a tag or an avatar. Mixed into
      surface-1, so it is solid and its contrast is checkable. */
   --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
@@ -596,6 +598,8 @@
   --cap-press: 0 0 0 0 transparent;
   --cap-grip: var(--surface-3);
   --press-depth: 0px;
+  /* A grey block takes a lighter hover than a white one, so the words on it keep 4.5:1 (check 5). */
+  --block-hover: color-mix(in oklab, var(--block), var(--fg) 2.5%);
 
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
   --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
@@ -612,6 +616,7 @@
   [data-theme] {
     --light: none;
     --glow: 0 0 0 1px var(--accent);
+    --block-hover: var(--surface-2);
     --data-blue-tint: var(--surface-2);
     --data-amber-tint: var(--surface-2);
     --data-teal-tint: var(--surface-2);
@@ -626,6 +631,7 @@
   :root[data-material="flat"],
   [data-material="flat"] {
     --slot-fill: var(--line-strong);
+    --block-hover: var(--surface-2);
     --cap: var(--line-control);
     --cap-held: var(--fg-muted);
     --data-blue-tint: var(--surface-2);
