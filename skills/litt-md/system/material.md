@@ -60,6 +60,25 @@ What a hand presses or moves is an object: something raised, sitting in or on so
 - **Where not:** cards and anything a hand does not press, move, type into or mark. A disabled control lies flat: there is nothing to push.
 - **Never:** a block that casts sideways, a shade that comes from below, light on the top edge of something cut, or the press material on something a hand does not move.
 
+### 7. Flat: `[data-material="flat"]` (R3)
+The same depth ladder said by fill alone, on neutral greys, after the work slider on litt.design (journal, 2026-11-01). Grey is the object, a hairline is the place: nothing casts, nothing catches the light, nothing sinks. A project chooses it with the attribute on `<html>`; Press stays the default (Q17).
+
+| Depth | Press | Flat |
+|---|---|---|
+| Sunken: a tray | `--tray`, a hairline and the top wall's shade | no fill, a `--line-strong` hairline inside |
+| Sunken: a cut | `--cut` and its top wall's shade, inside the control line | `--surface-1` inside the control line, no shade |
+| Sunken: a slot | `--slot`, both walls, the fill a step darker | `--surface-3`, no shade, the fill a step darker |
+| Flat: canvas and surfaces | a hairline and the top highlight | a hairline, no highlight |
+| Raised: a block | white or a warm grey, a contact line and a cast | a `--surface-3` fill, no cast; hover a step darker |
+| A block under a pointer | `--block-hover`: 4% ink mixed into the block | `--block-hover`: 2.5% ink, so a grey block's words keep 4.5:1 |
+| Raised: a cap and its plate | taller, a cast up to 3px | a mid grey cap, no cast |
+| Floating | glass, a zero-offset glow, a ring | unchanged, minus the top highlight |
+
+- **The greys.** Each theme block declares `--flat-canvas` to `--flat-fg-disabled`, each the stone neutral at its OKLCH lightness and chroma 0, and the flat block maps the live names onto them. The check runs every contrast pair again under Flat.
+- **An empty shadow is `0 0 0 0 transparent`, never `none`.** Components put these tokens in comma lists (an error ring plus `--block-lift`), and `none` there voids the whole shadow.
+- **Nested themes.** An element that sets its own theme (`class="dark"`, `data-theme`) redeclares the stone neutrals and the press tokens, so it needs `data-material="flat"` too, as it needs `data-accent`.
+- **Never:** a cast, a highlight or a lit wall under Flat, or a grey with chroma.
+
 ## Glow: `--glow` (R6)
 A 1px accent ring plus a soft, zero-offset accent light around the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (R2).
 
@@ -76,6 +95,7 @@ A 1px accent ring plus a soft, zero-offset accent light around the element. It i
 | `--cut`, `--cut-shade` | white, ink shade at 12% under the top wall, inside the control line | a floor below the surfaces, black shade at 80%, inside the control line | The control line carries the edge at 3:1 in both themes; the shade only says the floor sits lower |
 | `--block`, `--block-lift` | white, ink contact at 22% and cast at 16% | a warm grey above the surfaces, the top highlight, black contact and cast at 55–70% | On light the cast lifts the block; on dark the block's own lightness does, and the cast only seats it |
 | `--plate-lift`, `--cap-lift` | the block's white, a contact line and a cast up to 3px down at 16–24% ink | the block's grey (a cap a step lighter), the top highlight, black contact and cast at 55–70% | A cap and its plate stand taller than a block in a tray, so they cast further; on dark their lightness carries the height |
+| `--flat-*` | the light stone neutrals at chroma 0 | the dark stone neutrals at chroma 0 | Flat changes only the hue, so each pair's contrast holds within a hair, and the check runs every pair again |
 | `--slot`, `--slot-shade`, `--slot-fill` | a floor a step below the tray, an ink shade at 28% under the top wall, white at 80% on the lower wall, the fill a step darker | near black, a black shade at 90%, white at 7% on the lower wall, the fill a lighter warm grey | A cut reads by its two walls: shade under the top one, light on the lower one |
 
 When tuning, change both columns deliberately. Never derive one from the other.
@@ -108,5 +128,6 @@ When tuning, change both columns deliberately. Never derive one from the other.
 - [ ] Raised things lit on their top edge, cut things on their lower wall, nothing lit from below.
 - [ ] Every shadow is a step of the depth ladder; only raised things cast, straight down, at most 3px.
 - [ ] Nothing material animates.
+- [ ] Under Flat, nothing casts and nothing is lit.
 - [ ] Glow on one element at most.
 - [ ] Both themes look intentional, not inverted.

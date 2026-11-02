@@ -1,12 +1,12 @@
 /**
- * Customize, the panel: the header's button and the popover with the accent, the theme, the shape, the typeface and
- * motion's feel. It loads on its own, so the shell stays small; the state and the writes on <body> live in
+ * Customize, the panel: the header's button and the popover with the accent, the material, the theme, the shape, the
+ * typeface and motion's feel. It loads on its own, so the shell stays small; the state and the writes on <body> live in
  * customize-state.tsx.
  *
  * Every choice is a tile that shows what it does before it says it (the registry's CardPicker at sm): each accent as
- * a small button in its color, each theme as a small window, each shape as a card and a control at that radius, each
- * face as "Aa", and Calm and Fun as a dot that moves on that mode's spring when it is picked. Surprise me shuffles the accent, the shape,
- * the face and the feel at once, and says what it picked.
+ * a small button in its color, each material as a block in its tray, each theme as a small window, each shape as a card and a control at that radius, each
+ * face as "Aa", and Calm and Fun as a dot that moves on that mode's spring when it is picked. Surprise me shuffles the accent, the material,
+ * the shape, the face and the feel at once, and says what it picked.
  */
 import { useEffect, useState, type CSSProperties } from "react";
 import { motion } from "motion/react";
@@ -17,10 +17,10 @@ import { CardPicker } from "@/components/card-picker";
 import { LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { Tag } from "@/components/tag";
-import { accentScope, useCustomize, type ThemeChoice } from "./customize-state";
+import { useCustomize, useDark, type ThemeChoice } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
-import { accentOf, ACCENTS, GALLERY_LOOK, lookInApp, lookSetup, lookWords, withLook, type Accent } from "./look";
+import { accentOf, ACCENTS, GALLERY_LOOK, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Accent, type Material } from "./look";
 import { AccentChip } from "./swatch";
 import { loadTypeface } from "./typeface";
 
@@ -33,9 +33,10 @@ const accentRule: Record<Accent, string> = {
 
 /** A page in one theme, as a small window: a title line, a body line and the primary action in the current accent. */
 function Window({ dark, accent, className = "" }: { dark: boolean; accent: Accent; className?: string }) {
+  const { look } = useCustomize();
   return (
     <span
-      {...accentScope(accent, dark)}
+      {...lookAttributes({ accent, material: look.material }, dark)}
       style={{ "--radius-control": "4px" } as CSSProperties}
       className={"grid h-8 w-12 grid-rows-[auto_auto_1fr] gap-1 rounded-control bg-canvas p-1.5 shadow-[inset_0_0_0_1px_var(--line-strong)] " + className}
     >
@@ -52,6 +53,17 @@ function ThemePreview({ theme, accent }: { theme: ThemeChoice; accent: Accent })
     <span className="relative h-8 w-12">
       <Window dark={false} accent={accent} className="absolute inset-0" />
       <Window dark accent={accent} className="absolute inset-0 [clip-path:inset(0_0_0_50%)]" />
+    </span>
+  );
+}
+
+/** A block in its tray, drawn in one material: raised and cast in Press, a grey fill in a hairline in Flat. */
+function MaterialPreview({ material }: { material: Material }) {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <span {...lookAttributes({ accent: look.accent, material }, dark)} className="grid h-6 w-10 grid-cols-2 rounded-control bg-tray p-0.5 shadow-(--tray-shade)">
+      <span className="rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift)" />
     </span>
   );
 }
@@ -92,6 +104,7 @@ function CustomizePanel() {
     typeRule(type),
     shapeRule(radius),
     { ok: true, text: accentRule[look.accent] },
+    ...(look.material === "flat" ? [{ ok: true, text: "Flat fits R3: the depth ladder by fill alone. Copy setup says how to set data-material." }] : []),
     ...(look.fun
       ? [{ ok: false, cue: true, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Copy setup says how to wrap your app in <FunMode>, and the changelog says if the trial ends." }]
       : []),
@@ -107,14 +120,15 @@ function CustomizePanel() {
       return rest[Math.floor(Math.random() * rest.length)];
     };
     const a = other(ACCENTS.map((x) => x.id), look.accent);
+    const m = other(MATERIALS.map((x) => x.id), look.material);
     const r = other(SHAPES, radius);
     const f = other(typefaces, typeface);
     const feel = Math.random() < 0.5;
-    setLook({ accent: a, fun: feel });
+    setLook({ accent: a, material: m, fun: feel });
     setRadius(r);
     setTypeface(f.id);
     const accentName = accentOf(a).name;
-    setSaid(`${accentName}, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
+    setSaid(`${accentName}, ${materialOf(m).name.toLowerCase()} material, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
   };
 
   return (
@@ -136,6 +150,13 @@ function CustomizePanel() {
         value={look.accent}
         onValueChange={(accent) => setLook({ accent })}
         options={ACCENTS.map((a) => ({ value: a.id, label: a.short ?? a.name, picture: <AccentChip accent={a.id} /> }))}
+      />
+      <CardPicker
+        size="sm"
+        legend="Material"
+        value={look.material}
+        onValueChange={(material) => setLook({ material })}
+        options={MATERIALS.map((m) => ({ value: m.id, label: m.name, picture: <MaterialPreview material={m.id} /> }))}
       />
       <CardPicker
         size="sm"
@@ -212,7 +233,7 @@ function CustomizePanel() {
           </>
         ) : (
           <p className="text-caption font-normal text-fg-subtle">
-            The gallery's defaults: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, {accentOf(GALLERY_LOOK.accent).name.toLowerCase()} and calm motion. The registry ships Blue 4.
+            The gallery's defaults: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, {accentOf(GALLERY_LOOK.accent).name.toLowerCase()}, {materialOf(GALLERY_LOOK.material).name.toLowerCase()} and calm motion. The registry ships Blue 4 and press.
           </p>
         )}
       </div>
@@ -238,7 +259,7 @@ function CustomizePanel() {
           </CopyButton>
         </div>
         {(typeface.id !== "locked" || radius !== lockedRadius) && (
-          <p className="text-caption font-normal text-fg-subtle">Type and shape stay in this browser. A look carries the accent and the motion.</p>
+          <p className="text-caption font-normal text-fg-subtle">Type and shape stay in this browser. A look carries the accent, the material and the motion.</p>
         )}
       </div>
     </div>

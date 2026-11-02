@@ -3,7 +3,9 @@
  * Screenshot a gallery page from a build, in light and dark, desktop and phone.
  *
  *   node scripts/shot.mjs --dist .agent-dist/me --page menu --out .agent-shots/me \
- *     [--click "button:has-text('Open')"]... [--keys ArrowDown,ArrowDown] [--hover "sel"] [--wait 600]
+ *     [--click "button:has-text('Open')"]... [--keys ArrowDown,ArrowDown] [--hover "sel"] [--wait 600] [--look mono-flat]
+ *
+ * --look shows the page in a look (src/gallery/look.ts: accent, then -flat, then -fun), as a ?look= link does.
  *
  * Prints console errors, horizontal overflow and the files written.
  */
@@ -19,6 +21,7 @@ const dist = path.resolve(get("dist", "dist"));
 const page = get("page", "overview");
 const out = path.resolve(get("out", ".agent-shots"));
 const wait = Number(get("wait", "500"));
+const look = get("look", "");
 const clicks = all("click"), hovers = all("hover");
 const keys = (get("keys", "") || "").split(",").filter(Boolean);
 
@@ -46,7 +49,7 @@ for (const [w, h, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
     const errors = [];
     pg.on("pageerror", (e) => errors.push(String(e)));
     pg.on("console", (m) => m.type() === "error" && errors.push(m.text()));
-    await pg.goto(`http://localhost:${port}/index.html#${page}`, { waitUntil: "networkidle" });
+    await pg.goto(`http://localhost:${port}/index.html${look ? `?look=${look}` : ""}#${page}`, { waitUntil: "networkidle" });
     await pg.evaluate(() => document.fonts.ready);
     for (const sel of hovers) await pg.hover(sel).catch((e) => errors.push(`hover ${sel}: ${e.message.split("\n")[0]}`));
     for (const sel of clicks) await pg.click(sel).catch((e) => errors.push(`click ${sel}: ${e.message.split("\n")[0]}`));

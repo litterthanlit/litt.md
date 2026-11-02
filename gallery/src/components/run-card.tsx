@@ -159,7 +159,7 @@ const BLOCK =
   "group/block flex h-control-md w-fit max-w-full cursor-pointer items-center gap-3 rounded-control bg-block pr-control-pad-sm pl-2 text-left " +
   "shadow-(--block-lift) select-none [-webkit-tap-highlight-color:transparent] forced-colors:border " +
   "transition-[background-color,translate] duration-(--dur-instant) ease-litt " +
-  "hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] pointer-coarse:active:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+  "hover:bg-(--block-hover) pointer-coarse:active:bg-(--block-hover) " +
   "active:translate-y-(--press-depth) active:shadow-(--block-press) " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 

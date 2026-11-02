@@ -62,7 +62,7 @@ const STEPPER =
   "grid shrink-0 place-items-center rounded-[calc(var(--radius-control)-2px)] select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--block-lift) enabled:forced-colors:border " +
-  "enabled:hover:bg-[color-mix(in_oklab,var(--block),var(--fg)_4%)] " +
+  "enabled:hover:bg-(--block-hover) " +
   "enabled:active:shadow-(--block-press) enabled:active:translate-y-(--press-depth) " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled";
 

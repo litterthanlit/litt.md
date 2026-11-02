@@ -4,6 +4,15 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-02 · Flat: a second material
+
+Flat says litt's depth ladder by fill alone, on neutral greys: one attribute on `<html>`, `data-material="flat"`, and the components follow. Press, the raised-and-sunken material, stays the default. A raised block under a pointer now reads one token, `--litt-block-hover`, so a material can set its own hover.
+
+- **changed** `litt`: a second material, Flat. `data-material="flat"` on `<html>` says the depth ladder by fill alone, on neutral greys (`--litt-flat-*`, the stone neutrals at chroma 0, in each theme): a tray is a hairline, a raised block a grey fill, and nothing casts or catches the light. Glass and its glow stay. An element that sets its own theme needs the attribute too. Nothing changes until you set it; Press stays the default. A block under a pointer reads `--litt-block-hover`: 4% ink under Press, as before, and 2.5% under Flat, so the words on a grey block keep 4.5:1.
+- **changed** `button`: a secondary or destructive button under a pointer reads `--litt-block-hover`, and under `data-material="flat"` the primary and a destructive dialog's confirm catch no top highlight. Nothing changes under Press.
+- **changed** `checkbox`: under `data-material="flat"` a checked or mixed box catches no top highlight. Nothing changes under Press.
+- **changed** `select`, `date-picker`, `number-field`, `color-picker`, `run-card`: a raised trigger or step under a pointer reads `--litt-block-hover`. Under Press it is the same 4% as before; under Flat a placeholder on a hovered trigger keeps 4.5:1.
+
 ## 2026-11-01 · Tune: one line that tunes a component against litt's rules
 
 One call gives a component typed live values and a panel to tune them in, with litt's rules saying Fits or Change as you drag, and the result copied as litt's own tokens. The rules it checks against now live in `motion` beside the spring rules. Then the card picker, the Customize panel's tiles grown into a registry item that also draws plans and onboarding questions.

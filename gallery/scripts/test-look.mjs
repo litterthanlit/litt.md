@@ -36,20 +36,23 @@ const check = (ok, claim) => (ok ? passed : problems).push(claim);
 const SITE = "https://littmd.vercel.app";
 
 /* ---------- the link ---------- */
-check(L.LOOKS.length === 6 && new Set(L.LOOKS.map(L.encodeLook)).size === 6, `six looks, six spellings (${L.LOOKS.map(L.encodeLook).join(", ")})`);
+check(L.LOOKS.length === 12 && new Set(L.LOOKS.map(L.encodeLook)).size === 12, `twelve looks, twelve spellings (${L.LOOKS.map(L.encodeLook).join(", ")})`);
+check(L.encodeLook(L.GALLERY_LOOK) === "mono-flat" && L.encodeLook(L.REGISTRY_LOOK) === "blue4", "the gallery opens in mono-flat, the registry installs blue4");
+check(L.sameLook(L.decodeLook("pink-fun"), { accent: "pink", material: "press", fun: true }), "a link from before Flat reads as press");
+check(L.decodeLook("pink-fun-flat") === null, "the material comes before the motion in a slug");
 for (const look of L.LOOKS) {
   const back = L.decodeLook(L.encodeLook(look));
   check(back !== null && L.sameLook(back, look), `${L.encodeLook(look)} reads back as ${L.lookWords(look)}`);
   check(encodeURIComponent(L.encodeLook(look)) === L.encodeLook(look), `${L.encodeLook(look)} needs no encoding in an address`);
 }
-for (const raw of ["green", "pink-fun-x", "PINK", "", "fun", "pink,fun", "pink fun", " pink", "blue", "-fun", null, undefined]) {
+for (const raw of ["green", "pink-fun-x", "flat", "pink-flat-flat", "mono-press", "PINK", "", "fun", "pink,fun", "pink fun", " pink", "blue", "-fun", null, undefined]) {
   check(L.decodeLook(raw) === null, `${JSON.stringify(raw)} is not a look`);
 }
-check(L.sameLook(L.lookFromSearch("?status=ready&look=pink-fun"), { accent: "pink", fun: true }), "the look reads from a query that holds other parameters");
+check(L.sameLook(L.lookFromSearch("?status=ready&look=pink-fun"), { accent: "pink", material: "press", fun: true }), "the look reads from a query that holds other parameters");
 check(L.lookSearch("?status=ready&look=mono-fun&q=x") === "?look=mono-fun", "a new page entry keeps the look and nothing else");
 check(L.lookSearch("?status=ready&look=green") === "" && L.lookSearch("") === "", "a new page entry keeps nothing when the address names no look");
 check(
-  L.withLook("https://x.test/?status=ready#table", { accent: "pink", fun: false }) === "https://x.test/?status=ready&look=pink#table",
+  L.withLook("https://x.test/?status=ready#table", { accent: "pink", material: "press", fun: false }) === "https://x.test/?status=ready&look=pink#table",
   "setting the look keeps the other parameters and the hash",
 );
 check(L.withLook("https://x.test/?look=pink&status=ready#table", null) === "https://x.test/?status=ready#table", "removing the look keeps the other parameters and the hash");
@@ -60,38 +63,49 @@ check(L.withLook("https://x.test/?q=a%20b#table", null) === "https://x.test/?q=a
 const html = read("index.html");
 const body = html.slice(html.indexOf("<body>"), html.indexOf('<div id="root">'));
 const scripts = [...body.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
-/** The data-accent on <body> after index.html's scripts run, as a browser would before the app: undefined is Blue 4. */
+/** What index.html's scripts paint before the app: the data-accent on <body> (undefined is Blue 4) and the
+    data-material on <html> (undefined is Press). */
 function paint(search, saved) {
-  const dataset = {};
+  const dataset = {}, rootDataset = {};
   const document = {
     body: { dataset, style: { setProperty() {} } },
+    documentElement: { dataset: rootDataset },
     head: { appendChild() {} },
     createElement: () => ({ setAttribute() {} }),
   };
   const localStorage = { getItem: (k) => (k === "litt-gallery:customize" && saved ? JSON.stringify(saved) : null) };
   const context = vm.createContext({ document, localStorage, location: { search }, URLSearchParams });
   for (const s of scripts) vm.runInContext(s, context);
-  return dataset.accent;
+  return `${dataset.accent ?? "blue4"}/${rootDataset.material ?? "press"}`;
 }
 const attributeOf = (accent) => L.ACCENTS.find((a) => a.id === accent).attribute ?? undefined;
+/** What look.ts says the page shows, in paint()'s spelling. */
+const modelOf = (search, saved) => {
+  const look = L.lookFromSearch(search) ?? {
+    accent: L.ACCENTS.some((a) => a.id === saved?.accent) ? saved.accent : L.GALLERY_LOOK.accent,
+    material: L.MATERIALS.some((m) => m.id === saved?.material) ? saved.material : L.GALLERY_LOOK.material,
+  };
+  return `${attributeOf(look.accent) ?? "blue4"}/${look.material}`;
+};
 const firstPaint = [
-  ...L.LOOKS.map((l) => [`?look=${L.encodeLook(l)}`, null, attributeOf(l.accent)]),
-  ["?look=mono", { accent: "blue4" }, "mono"],
-  ["?status=ready&look=pink", { accent: "blue4" }, "pink"],
-  ["?look=blue4", { accent: "pink" }, undefined],
-  ["", { accent: "pink" }, "pink"],
-  ["", { accent: "blue4" }, undefined],
-  ["?look=PINK", { accent: "pink" }, "pink"],
-  ["?look=green", { accent: "pink" }, "pink"],
-  ["?look=pink-fun-x", null, "mono"],
-  ["", null, "mono"],
+  ...L.LOOKS.map((l) => [`?look=${L.encodeLook(l)}`, null, `${attributeOf(l.accent) ?? "blue4"}/${l.material}`]),
+  ["?look=mono", { accent: "blue4" }, "mono/press"],
+  ["?status=ready&look=pink", { accent: "blue4" }, "pink/press"],
+  ["?look=blue4", { accent: "pink", material: "flat" }, "blue4/press"],
+  ["?look=pink-flat-fun", { material: "press" }, "pink/flat"],
+  ["", { accent: "pink" }, "pink/flat"],
+  ["", { material: "press" }, "mono/press"],
+  ["", { accent: "blue4" }, "blue4/flat"],
+  ["?look=PINK", { accent: "pink" }, "pink/flat"],
+  ["?look=green", { accent: "pink" }, "pink/flat"],
+  ["?look=pink-fun-x", null, "mono/flat"],
+  ["", null, "mono/flat"],
 ];
 check(scripts.length >= 2, `index.html paints with ${scripts.length} scripts before #root`);
 for (const [search, saved, want] of firstPaint) {
   const got = paint(search, saved);
-  const own = saved?.accent ?? L.GALLERY_LOOK.accent;
-  const model = attributeOf(L.lookFromSearch(search)?.accent ?? own);
-  check(got === want && model === want, `"${search}" with ${saved ? `${saved.accent} saved` : "nothing saved"} paints ${want ?? "Blue 4 (no attribute)"} (index.html: ${got ?? "none"}, look.ts: ${model ?? "none"})`);
+  const model = modelOf(search, saved);
+  check(got === want && model === want, `"${search}" with ${saved ? JSON.stringify(saved) : "nothing"} saved paints ${want} (index.html: ${got}, look.ts: ${model})`);
 }
 
 /* ---------- the accents tokens.css answers ---------- */
@@ -101,6 +115,12 @@ check(L.ACCENTS.filter((a) => a.attribute === null).length === 1, "exactly one a
 check([...answered].every((x) => named.includes(x)), `every data-accent tokens.css answers is an accent here (${[...answered].join(", ")})`);
 check(named.every((x) => answered.has(x)), `every accent's data-accent has its block in tokens.css (${named.join(", ")})`);
 check(L.ACCENTS.find((a) => a.id === L.REGISTRY_LOOK.accent)?.attribute === null, "the registry's look is the accent with no attribute");
+const materialsAnswered = new Set([...read("../skills/litt-md/assets/tokens.css").matchAll(/\[data-material="(\w+)"\]/g)].map((m) => m[1]));
+const materialsNamed = L.MATERIALS.map((m) => m.attribute).filter((a) => a !== null);
+check(materialsNamed.length === materialsAnswered.size && materialsNamed.every((x) => materialsAnswered.has(x)), `tokens.css answers exactly the materials here (${[...materialsAnswered].join(", ")})`);
+check(L.MATERIALS.find((m) => m.id === L.REGISTRY_LOOK.material)?.attribute === null, "the registry's look is the material with no attribute");
+check(JSON.stringify(L.lookAttributes({ accent: "mono", material: "flat" }, true)) === JSON.stringify({ "data-theme": "dark", "data-accent": "mono", "data-material": "flat" }), "a nested scope carries the material");
+check(JSON.stringify(L.lookAttributes({ accent: "blue4", material: "press" }, false)) === JSON.stringify({ "data-theme": "light" }), "Blue 4 on press is a theme and nothing else");
 
 /* ---------- what a look asks a project to change ---------- */
 check(L.lookStep(L.REGISTRY_LOOK, SITE) === null && L.lookNote(L.REGISTRY_LOOK) === null, "the registry's own look asks for no step and no note");
@@ -108,8 +128,10 @@ for (const look of L.LOOKS) {
   const slug = L.encodeLook(look);
   const attribute = L.ACCENTS.find((a) => a.id === look.accent).attribute;
   const setup = L.lookSetup(look, SITE);
-  const asks = (text) => [/data-accent="(\w+)"/.exec(text)?.[1] ?? null, text.includes("<FunMode>")];
-  const [setupAttr, setupFun] = asks(setup);
+  const asks = (text) => [/data-accent="(\w+)"/.exec(text)?.[1] ?? null, text.includes("<FunMode>"), text.includes('data-material="flat"')];
+  const [setupAttr, setupFun, setupFlat] = asks(setup);
+  check(setupFlat === (look.material === "flat"), `${slug}: Copy setup asks for data-material="flat" exactly when the look is flat`);
+  if (look.material === "flat") check(/needs data-material="flat" too/.test(setup), `${slug}: Copy setup says a nested theme needs data-material too`);
   check(setupAttr === attribute && setupFun === look.fun, `${slug}: Copy setup asks for ${attribute ? `data-accent="${attribute}"` : "no attribute"} and ${look.fun ? "<FunMode>" : "no <FunMode>"}`);
   check(setup.includes(`${SITE}/r/litt.json`) && setup.includes(`${SITE}/r/motion.json`) === look.fun, `${slug}: Copy setup installs litt${look.fun ? " and motion" : ""}`);
   /* Measured in built hosts: each of these on a nested element puts Blue 4 back under it. */
@@ -117,11 +139,12 @@ for (const look of L.LOOKS) {
   check(setup.endsWith(`See it: ${SITE}/?look=${slug}`), `${slug}: Copy setup ends with the link to the look`);
   const step = L.lookStep(look, SITE);
   if (L.sameLook(look, L.REGISTRY_LOOK)) continue;
-  const [stepAttr, stepFun] = asks(step);
-  check(stepAttr === attribute && stepFun === look.fun, `${slug}: the Copy prompt's step asks for the same edits`);
+  const [stepAttr, stepFun, stepFlat] = asks(step);
+  check(stepAttr === attribute && stepFun === look.fun && stepFlat === (look.material === "flat"), `${slug}: the Copy prompt's step asks for the same edits`);
 }
-check(L.lookInApp({ accent: "pink", fun: true }) === 'In your app: data-accent="pink" on <html>, and <FunMode> around the app.', "the panel says Pink and fun mode's edits in one line");
-check(L.lookNote(L.GALLERY_LOOK) === "This page shows Monochrome, calm motion. The registry installs Blue 4.", "the Install note says what the gallery shows and what the registry installs instead");
+check(L.lookInApp({ accent: "pink", material: "press", fun: true }) === 'In your app: data-accent="pink" on <html>, and <FunMode> around the app.', "the panel says Pink and fun mode's edits in one line");
+check(L.lookInApp({ accent: "pink", material: "flat", fun: true }) === 'In your app: data-accent="pink" and data-material="flat" on <html>, and <FunMode> around the app.', "the panel says all three edits in one line");
+check(L.lookNote(L.GALLERY_LOOK) === "This page shows Monochrome, flat material, calm motion. The registry installs Blue 4 and press material.", "the Install note names the material");
 
 for (const p of passed) console.log(`✓ ${p}`);
 if (problems.length) {

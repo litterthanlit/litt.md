@@ -21,10 +21,12 @@
 </head>
 <body>
 <script>
-  /* Apply the saved Customize choices (type, shape and the accent) before first paint. They live on <body>:
-     src/gallery/customize-state.tsx says why, and owns them once the app runs. The gallery opens in monochrome
-     (GALLERY_LOOK in src/gallery/look.ts), so it is set first and a saved accent replaces it. */
+  /* Apply the saved Customize choices (type, shape, the accent and the material) before first paint. They live on
+     <body>, except the material, which goes on <html> like data-theme, since it changes the canvas:
+     src/gallery/customize-state.tsx says why, and owns them once the app runs. The gallery opens in monochrome and
+     flat (GALLERY_LOOK in src/gallery/look.ts), so both are set first and a saved choice replaces them. */
   document.body.dataset.accent = "mono";
+  document.documentElement.dataset.material = "flat";
   (function () {
     try {
       var c = JSON.parse(localStorage.getItem("litt-gallery:customize") || "null");
@@ -49,19 +51,23 @@
       /* The accent: Blue 4 is tokens.css with no attribute, pink is [data-accent="pink"]. */
       if (c.accent === "blue4") delete document.body.dataset.accent;
       else if (c.accent === "pink") document.body.dataset.accent = "pink";
+      /* The material: Flat is [data-material="flat"] on <html>, Press is tokens.css with no attribute. */
+      if (c.material === "press") delete document.documentElement.dataset.material;
     } catch (e) {}
   })();
 </script>
 <script>
-  /* A link's look (?look=pink, ?look=pink-fun) paints over the saved accent, and is never saved. Its own script, since
-     the one above stops when nothing is saved. The grammar is LOOKS in src/gallery/look.ts, and scripts/test-look.mjs
-     runs this copy against it. Fun mode has nothing to paint. */
+  /* A link's look (?look=pink, ?look=pink-flat-fun) paints over the saved accent and material, and is never saved. Its
+     own script, since the one above stops when nothing is saved. The grammar is LOOKS in src/gallery/look.ts, and
+     scripts/test-look.mjs runs this copy against it. A link without -flat is press. Fun mode has nothing to paint. */
   (function () {
     try {
-      var m = /^(mono|blue4|pink)(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
+      var m = /^(mono|blue4|pink)(-flat)?(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
       if (!m) return;
       if (m[1] === "blue4") delete document.body.dataset.accent;
       else document.body.dataset.accent = m[1];
+      if (m[2]) document.documentElement.dataset.material = "flat";
+      else delete document.documentElement.dataset.material;
     } catch (e) {}
   })();
 </script>

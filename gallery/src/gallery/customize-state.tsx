@@ -26,19 +26,24 @@
  *
  * The theme lives here too, so the header's switch and the overview's deck are one choice. It is the exception to
  * <body>: data-theme goes on <html>, under its own key, as the pre-paint script reads it.
+ *
+ * The material is the other exception: Flat is data-material="flat" on <html> (Press is no attribute), since it
+ * changes the canvas as the theme does, and the Playground's dial never touches the neutrals. It is saved with the
+ * other choices and is part of the look. The gallery opens in Flat; the registry ships Press (Q17).
  */
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { FunMode, useMotionDial } from "@/motion";
 import { SHAPES, shapeSurface } from "@/motion/rules";
-import { accentOf, ACCENTS, GALLERY_LOOK, lookFromSearch, sameLook, withLook, type Accent, type Look } from "./look";
+import { accentOf, ACCENTS, GALLERY_LOOK, lookFromSearch, materialOf, MATERIALS, sameLook, withLook, type Accent, type Look, type Material } from "./look";
 import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
 const ACCENT_IDS = ACCENTS.map((a) => a.id);
+const MATERIAL_IDS = MATERIALS.map((m) => m.id);
 export type ThemeChoice = "system" | "light" | "dark";
 const THEME_KEY = "litt-gallery:theme";
-type Saved = { face?: Pick<Typeface, "id" | "stack" | "href">; radius?: number; accent?: Accent; fun?: boolean };
+type Saved = { face?: Pick<Typeface, "id" | "stack" | "href">; radius?: number; accent?: Accent; material?: Material; fun?: boolean };
 
 type Ctx = {
   /** Light, dark or the system's, on <html> as data-theme. */
@@ -102,6 +107,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   };
   const [own, setOwn] = useState<Look>(() => ({
     accent: ACCENT_IDS.includes(saved.accent as Accent) ? (saved.accent as Accent) : GALLERY_LOOK.accent,
+    material: MATERIAL_IDS.includes(saved.material as Material) ? (saved.material as Material) : GALLERY_LOOK.material,
     fun: saved.fun === true,
   }));
   const [linked, setLinked] = useState(() => lookFromSearch(location.search));
@@ -139,7 +145,10 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
     const attribute = accentOf(look.accent).attribute;
     if (attribute) document.body.dataset.accent = attribute;
     else delete document.body.dataset.accent;
-  }, [typeface, radiusTuned, look.accent]);
+    const material = materialOf(look.material).attribute;
+    if (material) document.documentElement.dataset.material = material;
+    else delete document.documentElement.dataset.material;
+  }, [typeface, radiusTuned, look.accent, look.material]);
 
   /* Remember a change, and only a change, so a later change to tokens.css is never shadowed. Your own look only: a
      link's is never saved. */
@@ -149,6 +158,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       if (typeface.id !== "locked") next.face = { id: typeface.id, stack: typeface.stack, href: typeface.href };
       if (radiusTuned !== null) next.radius = radiusTuned;
       if (own.accent !== GALLERY_LOOK.accent) next.accent = own.accent;
+      if (own.material !== GALLERY_LOOK.material) next.material = own.material;
       if (own.fun) next.fun = true;
       if (Object.keys(next).length) localStorage.setItem(KEY, JSON.stringify(next));
       else localStorage.removeItem(KEY);
@@ -217,10 +227,3 @@ export function useDark(): boolean {
   return theme === "system" ? systemDark : theme === "dark";
 }
 
-/**
- * The attributes that draw a part of the page in one accent, whatever <body> runs: the theme the page is in (a
- * [data-theme] root declares Blue 4 again) and the accent's own data-accent, which tokens.css puts after the themes.
- */
-export function accentScope(accent: Accent, dark: boolean) {
-  return { "data-theme": dark ? "dark" : "light", "data-accent": accentOf(accent).attribute ?? undefined } as const;
-}

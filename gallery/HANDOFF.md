@@ -98,6 +98,13 @@ Then the agents' second round, on the same branch after #59 merged (no taste cha
 
 The result that matters: in the #10 baseline, Sonnet wrote its own 200-line bottom sheet for `phone-settings`. After #11 it composes litt's `Dialog` in a 99-line page and gets the sheet for free.
 
+Then the Flat round, on `claude/brave-mendel-t92xdv` (taste profile v1.4). Nick asked whether litt was becoming a UI builder, agreed it is configure, export and check, then: "I want to implement flat design like the new litt.design page. gray, soft, animated thoughtfully. next will be components theme." Nick chose Flat as a choice beside Press, neutral grey under it, and soft focus only on a swap a hand causes. The contract and the plan are `proposals/flat.md` and `proposals/flat-plan.md`.
+
+- **Flat** is `data-material="flat"` on `<html>`: eleven `--flat-*` greys per theme (the stone neutrals at chroma 0) and one last block in `tokens.css` that maps the neutrals and the press tokens onto them. A tray is a hairline, a raised block a grey fill, and nothing casts, is lit or sinks. `check.mjs` runs every contrast pair again under Flat (check 5) and holds the greys and the block (check 11).
+- **Looks** carry the material: twelve, `?look=pink-flat-fun`, and a link without `-flat` is Press. `lookAttributes` replaces `accentScope`. Customize and the overview's deck pick Press or Flat; the gallery opens in Flat and the registry ships Press (Q17).
+- **The host test** (`test:registry`, the look scenario) sets the attribute in fresh Vite and Next.js apps and checks the canvas and the secondary Button in every theme. Next's `tsc` step fails in every scenario on `LayoutProps` from the current `create-next-app` template, before this round: the harness needs `next typegen` before `tsc`.
+- **What the screenshots showed**, and what the components theme should change, is at the end of `proposals/flat.md`.
+
 ## The roadmap
 
 | Step | Status | Where |
@@ -119,10 +126,12 @@ The result that matters: in the #10 baseline, Sonnet wrote its own 200-line bott
 | Warmer and friendlier: stone neutrals (v0.15), P12 (v0.16), demo-first gallery | Merged #24; the logo fix in #25 | `claude/adoring-fermat-r03tiz` |
 | First screen (hero, deck, search) and hands (range chart, run card, rule builder, the hand engine) | Merged #59; waits on Nick's look | `claude/tender-pasteur-xwxb2v` |
 | Agents round two (tool calls that show what they found, sources, file changes, run list) | Built; waits on Nick's look | #60 |
+| Flat, a second material (v1.4) | Built; waits on Nick's look | `claude/brave-mendel-t92xdv` |
 | shadcn directory listing (the last of the six competition gaps) | Open upstream | [shadcn-ui/ui#12404](https://github.com/shadcn-ui/ui/pull/12404) |
 
 ### Next, in order
 
+000. **Nick's look at Flat** (`proposals/flat.md`): the overview, Customize, the switch and the slider in Press and Flat, both themes, on a phone. Then the components theme: litt.design's card frame, a round icon button, `SoftSwap`, and Q17.
 00. **Nick's look at the first screen** (`proposals/gallery-wow.md`): the 56px statement as an exception or not, the deck as the first object, "a view is one screen" for R6, and which of the six proposals comes next (photography under glass, a live screens showcase, sounds in fun mode, search keywords, copy from the wall, New tags). Then the hands round: brush the Range chart, fold the Run card and build a rule, in both themes, on a phone and in fun mode, and answer the four questions at the end of `proposals/hands.md`. If the hand engine holds, move the Time scrubber onto it next (its own copy of the hand stays for one release). Then the agents' second round: the Agent page, the three new pages and the ten questions at the end of `proposals/agents-2.md`.
 0. **Nick's tests of the commerce step**: the five Commerce pages and the Product and Collection blocks in both themes and on a phone, the three questions at the end of `proposals/commerce.md`, then `npm run test:agents -- --tasks product-page --judge`.
 1. **See the directory listing through: [shadcn-ui/ui#12404](https://github.com/shadcn-ui/ui/pull/12404)**, opened 2026-10-21 from Nick's fork (`litterthanlit/ui`, branch `add-litt-registry`). It adds `@litt` to `apps/v4/registry/directory.json` between `@liquikit` and `@livedocs`, with the placeholder logo (Nick: "that's the logo for now") and the description "Technical precision, lit from above. Controls, overlays, data and agent components on warm stone neutrals, with glass only on what floats. Every token is prefixed litt-, so your app's theme stays untouched." Their `validate:registries` passes, the namespace is not reserved, and it needs no changeset. A session cannot open or update a pull request on shadcn-ui/ui (the API refuses an unattached upstream), so push follow-ups to the fork's branch and ask Nick to act on the PR page. After it merges, `npx shadcn@latest add @litt/button` works with no `registries` entry, so drop the `components.json` step from `build.md`, the Copy prompt and `llms.txt`. Their Registry Health monitor then dry-runs a sample of items from production, so keep `test:registry` green before every merge to `main`.

@@ -20,10 +20,12 @@
  *                  ns    `@litt/<item>` through a `registries` entry in components.json
  *                  base  the opt-in base-styles item, if the registry has one: it builds, logs no error, and
  *                        (unlike every other item) does change the host's font, weights and focus ring
- *                  look  the look install path the gallery's Copy setup gives: litt, motion and button, with the host's
- *                        own markup putting data-accent="pink" on <html> and <FunMode> around the app. The Button and
- *                        the accent tones are pink in light, .dark and system dark and in a node outside the app, follow
- *                        a runtime flip to mono and back to Blue 4, and (next) are pink with JavaScript off
+ *                  look  the look install path the gallery's Copy setup gives for pink-flat-fun: litt, motion and button,
+ *                        with the host's own markup putting data-accent="pink" and data-material="flat" on <html> and
+ *                        <FunMode> around the app. The Button and the accent tones are pink in light, .dark and system
+ *                        dark and in a node outside the app, follow a runtime flip to mono and back to Blue 4, and (next)
+ *                        are pink with JavaScript off; the canvas and the secondary Button are Flat's in all three
+ *                        themes, casting nothing, and Press comes back when the attribute goes
  *   --base       the component library `shadcn init` sets the host up with: base (default, what
  *                `init -d` picks: Base UI, where the CLI rewrites a written asChild into a render prop) or radix
  *   --keep       keep the temp apps (failed scenarios are always kept)
@@ -825,13 +827,14 @@ const once = (text, from, to) => {
  */
 const LOOK_EDITS = {
   vite: [
-    ["index.html", (s, accent) => once(s, "<html", `<html data-accent="${accent}"`)],
+    ["index.html", (s, accent) => once(s, "<html", `<html data-accent="${accent}" data-material="flat"`)],
     ["src/main.tsx", (s) => FUN_IMPORT + once(s, "<App />", "<FunMode><App /></FunMode>")],
   ],
   next: [
     [
       "app/layout.tsx",
-      (s, accent) => FUN_IMPORT + once(once(s, "<html", `<html data-accent="${accent}"`), "{children}</body>", "<FunMode>{children}</FunMode></body>"),
+      (s, accent) =>
+        FUN_IMPORT + once(once(s, "<html", `<html data-accent="${accent}" data-material="flat"`), "{children}</body>", "<FunMode>{children}</FunMode></body>"),
     ],
   ],
 };
