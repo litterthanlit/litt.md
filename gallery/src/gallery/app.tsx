@@ -2,7 +2,7 @@
  * The gallery shell: glass header, page list and the page. Only the Playground
  * tunes motion; the header's Customize panel tunes type and shape on every page.
  */
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { MotionDialProvider, useFun } from "@/motion";
 import { funPages, pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
@@ -86,6 +86,21 @@ function GitHubMark({ className = "" }: { className?: string }) {
 const iconLink =
   "grid size-control-sm shrink-0 place-items-center rounded-control text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:size-control-md";
 
+/**
+ * A route change that took the focused element with it (a tile on the overview, say) hands focus to the new page's
+ * title, so the keyboard and a screen reader start there, not at the top of the document. It mounts beside the page,
+ * inside its Suspense boundary, so it runs once the page's chunk has landed: a hash change can commit the fallback
+ * first. A sidebar link keeps its focus, and the menu places focus itself.
+ */
+function FocusOnArrival({ main }: { main: RefObject<HTMLElement | null> }) {
+  useEffect(() => {
+    const active = document.activeElement;
+    if (active && active !== document.body && active.isConnected) return;
+    (main.current?.querySelector<HTMLElement>("h1[tabindex]") ?? main.current)?.focus({ preventScroll: true });
+  }, [main]);
+  return null;
+}
+
 function Shell({ page }: { page: PageEntry | undefined }) {
   const mainRef = useRef<HTMLElement>(null);
   /* With fun mode on, the pages it changes come first: a Fun group after the site's own pages. They stay in their
@@ -120,6 +135,11 @@ function Shell({ page }: { page: PageEntry | undefined }) {
     };
   }, [menu]);
 
+  /* The page the gallery opened on keeps the document's focus; every page after it may take it (FocusOnArrival). */
+  const [firstPage] = useState(page?.id);
+  const [moved, setMoved] = useState(false);
+  if (!moved && page?.id !== firstPage) setMoved(true);
+
   /* Each page names itself in the tab, so history and screen readers can tell them apart. */
   useEffect(() => {
     document.title = !page || page.id === pages[0]?.id ? "litt.md Gallery" : `${page.title} · litt.md Gallery`;
@@ -149,7 +169,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
   );
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-svh">
       <button
         type="button"
         onClick={() => mainRef.current?.focus()}
@@ -239,8 +259,15 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
         <main id="main" ref={mainRef} tabIndex={-1} className="min-w-0 pt-16 outline-none lg:pt-24">
           {/* Holds the page's room while its chunk loads, so the footer does not jump. */}
-          <Suspense fallback={<div aria-hidden="true" className="min-h-[60svh]" />}>
-            {page ? <page.Component key={page.id} /> : <p>No pages yet.</p>}
+          <Suspense fallback={<div aria-hidden="true" className="min-h-svh" />}>
+            {page ? (
+              <>
+                <page.Component key={page.id} />
+                {moved && <FocusOnArrival key={`focus-${page.id}`} main={mainRef} />}
+              </>
+            ) : (
+              <p>No pages yet.</p>
+            )}
           </Suspense>
         </main>
       </div>

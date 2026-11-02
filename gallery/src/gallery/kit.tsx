@@ -220,7 +220,7 @@ export function Page({
 export function PageTitle({ id, title, lede, className = "" }: { id: string; title: string; lede: string; className?: string }) {
   return (
     <div className={"flex max-w-[64ch] flex-wrap items-baseline gap-x-2 text-h1 text-balance " + className}>
-      <h1 id={id} className="text-fg">{title}</h1>
+      <h1 id={id} tabIndex={-1} className="text-fg outline-none">{title}</h1>
       <p className="text-fg-subtle">{lede}</p>
     </div>
   );
