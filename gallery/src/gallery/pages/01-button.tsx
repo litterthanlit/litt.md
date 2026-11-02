@@ -46,13 +46,14 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
     "A setting that is on or off. Use Switch, or Checkbox when the choice can be wrong, such as accepting terms.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus to the button. A disabled or loading button is skipped."],
+    [["Tab"], "Moves focus to the button. A disabled button is skipped; a loading one keeps its place."],
     [["Enter", "Space"], "Activates the button."],
   ],
   a11y: [
     "It is a real <button>, so the role, Enter and Space need no extra code. The type defaults to button, so inside a form it does not submit unless you pass type=\"submit\".",
     "An icon-only button has no visible text, so always pass an aria-label. The icons themselves are hidden from screen readers.",
-    "Loading sets aria-busy and disables the button, so it cannot be pressed twice. A disabled button leaves the tab order, so say what happened somewhere else, such as a toast or a status line.",
+    "Loading sets aria-busy and aria-disabled and ignores presses, so it cannot be pressed twice, and a submit does not send the form again. It is not disabled, so it keeps focus and its place in the tab order while it waits.",
+    "A disabled button leaves the tab order, so say why somewhere else, such as a status line next to it.",
     "Keyboard focus draws a 2px outline at a 2px offset. Mouse and touch presses do not show it.",
     "A press sinks the button half a pixel and tightens its cast, by mouse or finger, and the OS tap flash is off so a touch press does not show two things. Touch has no hover, so a pressed button also takes its hover fill. Under reduced motion the button does not sink, and the fill still shows the press.",
     "Small is 32px tall and medium is 44px. Use medium or large for primary actions on touch screens.",

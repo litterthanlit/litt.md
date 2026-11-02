@@ -44,7 +44,7 @@
     },
     "button": {
       "version": "2026.11.02",
-      "hash": "71dd85504e37de2d"
+      "hash": "4d85b98931c93954"
     },
     "callout": {
       "version": "2026.10.26",
@@ -323,8 +323,8 @@
       "hash": "9284b88d1dba66bb"
     },
     "settings": {
-      "version": "2026.10.22",
-      "hash": "e259c1eecba4d39d"
+      "version": "2026.11.02",
+      "hash": "221b8970fe553e98"
     },
     "shopify": {
       "version": "2026.10.24",
