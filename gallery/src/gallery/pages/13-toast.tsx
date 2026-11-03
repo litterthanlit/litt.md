@@ -64,7 +64,7 @@ dismiss(id);`,
     [["Enter", "Space"], "Presses the focused action or dismiss button."],
   ],
   a11y: [
-    "Each toast is its own live region. Neutral and success toasts are role=\"status\" and polite. Errors are role=\"alert\" and assertive, so they interrupt. All of them sit in one region labelled Notifications.",
+    "The Toaster keeps two hidden live regions inside the region labelled Notifications (F8), empty until a toast appears, and then writes its title and description into one: role=\"status\" and polite for neutral and success, role=\"alert\" and assertive for errors, so they interrupt. A region that arrives with its words already in it is often missed by VoiceOver and by NVDA with Firefox. The same toast twice is read twice.",
     "A toast does not take focus when it appears, so a keyboard user reaches it with F8. Never make a toast action the only way to do something, because the toast goes away.",
     "The timer pauses while the pointer is over the stack, while focus is inside it, and while the tab is hidden. Errors never time out. So there is always time to read it.",
     "Toasts beyond the third are inert, so Tab skips them and screen readers do not read them. They return as space frees up.",

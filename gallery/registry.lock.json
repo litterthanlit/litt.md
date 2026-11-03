@@ -367,8 +367,8 @@
       "hash": "8ff8b7f388323c39"
     },
     "states": {
-      "version": "2026.10.19",
-      "hash": "6fea99e54da1c2d6"
+      "version": "2026.11.03",
+      "hash": "16869a90c689371f"
     },
     "steps": {
       "version": "2026.10.25",
@@ -412,7 +412,7 @@
     },
     "toast": {
       "version": "2026.11.03",
-      "hash": "7fa105d082c06186"
+      "hash": "c169dc2ec98e8c67"
     },
     "token-input": {
       "version": "2026.11.02",

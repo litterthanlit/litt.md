@@ -19,8 +19,10 @@
  *   toward the right edge, fading, never bouncing.
  * - Behavior: auto-dismiss after 5s (the spec); errors and toasts with an action stay. Paused while hovered,
  *   focused, held by a finger or when the tab is hidden. Escape dismisses the
- *   focused toast. F8 moves focus to the newest toast. Each toast is its own live
- *   region: polite, or assertive for errors.
+ *   focused toast. F8 moves focus to the newest toast. The Toaster keeps two empty,
+ *   hidden live regions, polite and (for errors) assertive, and writes a toast's
+ *   title and description into one after it appears, which screen readers hear
+ *   more reliably than a region that arrives with its words already in it.
  * - Touch: there is no hover, so tapping the stack pins it open; tap outside to
  *   close it again.
  *
@@ -184,8 +186,43 @@ function ToasterRoot({ children }: { children?: ReactNode }) {
   );
 }
 
+type Announce = (id: string, text: string, urgent: boolean) => void;
+
+/* The words go in a frame after the region is cleared, so the same words twice are heard twice. Toasts that arrive in
+   one frame are read together. Keyed by toast, so a strict-mode double mount reads it once. */
+function useAnnouncer() {
+  const status = useRef<HTMLDivElement>(null);
+  const alert = useRef<HTMLDivElement>(null);
+  const queued = useRef({ status: new Map<string, string>(), alert: new Map<string, string>() });
+  const frame = useRef(0);
+  useEffect(() => () => cancelAnimationFrame(frame.current), []);
+  const announce = useCallback<Announce>((id, text, urgent) => {
+    const region = (urgent ? alert : status).current;
+    queued.current[urgent ? "alert" : "status"].set(id, text);
+    if (region) region.textContent = "";
+    cancelAnimationFrame(frame.current);
+    frame.current = requestAnimationFrame(() => {
+      for (const [q, el] of [[queued.current.status, status.current], [queued.current.alert, alert.current]] as const) {
+        if (q.size && el) el.textContent = [...q.values()].join(" ");
+        q.clear();
+      }
+    });
+  }, []);
+  return { status, alert, announce };
+}
+
+/* The title and the description, each read as a sentence. */
+function spoken(words: HTMLElement): string {
+  return [...words.children]
+    .map((el) => el.textContent?.trim() ?? "")
+    .filter(Boolean)
+    .map((line) => (/[.!?…]$/.test(line) ? line : line + "."))
+    .join(" ");
+}
+
 function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: string) => void }) {
   const { compact, coarse } = useDevice();
+  const live = useAnnouncer();
   /* The edge is chosen while the stack is empty and kept until it empties again, so a toast never jumps. */
   const sheetOpen = useSheetOpen();
   const overSheet = compact && sheetOpen;
@@ -312,6 +349,8 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
         });
       }}
     >
+      <div ref={live.status} role="status" aria-live="polite" aria-atomic="true" className="sr-only" />
+      <div ref={live.alert} role="alert" aria-live="assertive" aria-atomic="true" className="sr-only" />
       <AnimatePresence onExitComplete={syncFocus}>
         {items.map((item, i) => {
           const depth = items.length - 1 - i;
@@ -327,6 +366,7 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
               top={top}
               onDismiss={dismiss}
               onMeasure={measured}
+              onAnnounce={live.announce}
             />
           );
         })}
@@ -345,6 +385,7 @@ function ToastView({
   top,
   onDismiss,
   onMeasure,
+  onAnnounce,
 }: {
   item: ToastItem;
   depth: number;
@@ -356,6 +397,7 @@ function ToastView({
   top: boolean;
   onDismiss: (id: string) => void;
   onMeasure: (id: string, height: number | null) => void;
+  onAnnounce: Announce;
 }) {
   const { compact, coarse } = useDevice();
   const enter = useTransition("expressive");
@@ -364,6 +406,7 @@ function ToastView({
   const settled = useRef(false);
   const node = useRef<HTMLDivElement>(null);
   const content = useRef<HTMLDivElement>(null);
+  const words = useRef<HTMLDivElement>(null);
   /* The way a swipe sent this toast. A timeout, the close button and Esc leave it null: they drop on compact
      screens and go right elsewhere. */
   const swiped = useRef<"left" | "right" | null>(null);
@@ -406,6 +449,10 @@ function ToastView({
     };
   }, [item.id, onMeasure]);
 
+  useEffect(() => {
+    if (words.current) onAnnounce(item.id, spoken(words.current), tone === "error");
+  }, [item.id, tone, onAnnounce]);
+
   /* A finger resting on a toast holds its clock, so it never leaves under the thumb. */
   useEffect(() => {
     if (!held) return;
@@ -440,9 +487,6 @@ function ToastView({
       {...drag.panel}
       data-toast-id={item.id}
       data-tone={tone}
-      role={tone === "error" ? "alert" : "status"}
-      aria-live={tone === "error" ? "assertive" : "polite"}
-      aria-atomic="true"
       inert={away}
       className={"litt-glass absolute inset-x-0 rounded-surface " + (top ? "top-0 origin-bottom" : "bottom-0 origin-top")}
       style={fit ? { ...drag.panel.style, height: fit } : drag.panel.style}
@@ -489,7 +533,7 @@ function ToastView({
           initial={false}
           animate={{ opacity: showContent ? 1 : 0, transition: move }}
         >
-          <div className="min-w-0 flex-1">
+          <div ref={words} className="min-w-0 flex-1">
             <p className={"line-clamp-2 text-small font-title " + (tone === "error" ? "text-danger" : "text-fg")}>{item.title}</p>
             {item.description && <p className="line-clamp-4 text-caption font-normal text-fg-subtle">{item.description}</p>}
           </div>

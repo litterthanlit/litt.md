@@ -14,7 +14,7 @@
  * - Corners: the panel is rounded-surface; skeleton blocks are rounded-control (text, covers),
  *   rounded-surface (a card) or rounded-pill (an avatar), concentric as everywhere.
  */
-import type { HTMLAttributes, ReactNode } from "react";
+import { useEffect, useState, type HTMLAttributes, type ReactNode } from "react";
 import { AlertIcon } from "./icons";
 
 /** The panel Empty and ErrorState sit in: a surface-2 fill and a line hairline, no shadow. */
@@ -112,9 +112,16 @@ export type LoadingProps = HTMLAttributes<HTMLDivElement> & {
 
 /** Groups Skeleton blocks and announces its label once as a status. Swap it for the content when it arrives. */
 export function Loading({ label = "Loading", children, className = "", ...rest }: LoadingProps) {
+  /* The status mounts empty and takes its label a frame later: screen readers often stay silent for a live region
+     that arrives with its words already in it. */
+  const [said, setSaid] = useState(false);
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setSaid(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
   return (
     <div role="status" className={className} {...rest}>
-      <span className="sr-only">{label}</span>
+      <span className="sr-only">{said ? label : ""}</span>
       {children}
     </div>
   );

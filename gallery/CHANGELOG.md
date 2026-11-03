@@ -12,6 +12,8 @@ A slide is a drag, and not everyone can drag. Slide to confirm takes the words t
 - **changed** `toast`: a toast grows to fit its words instead of cutting them (WCAG 1.4.10, 1.4.12). It is at least 72px tall; the title wraps to two lines and the description to four, so on a narrow screen a long error keeps the part that says what to do. Toasts behind the front peek at its height, the open list places each by its measured height, and a height change snaps. Short toasts look exactly as before. Nothing in your code has to change.
 - **changed** `settings`: Delete studio passes `confirmText`, so the studio can be deleted by typing its name. Reinstall `slide-confirm` with it.
 - **changed** `date-picker`: the calendar fits a 320px screen (WCAG 1.4.10). Its seven columns are 40px (44px for a finger) wherever they fit and share the room evenly where they do not, so Sunday and the next-month arrow are never cut off. Anywhere it fitted before it looks exactly the same. Nothing in your code has to change.
+- **changed** `toast`: screen readers hear every toast (WCAG 4.1.3). A toast is no longer its own live region, which VoiceOver and NVDA with Firefox often miss when it arrives with its words already in it. The Toaster keeps two hidden live regions mounted, polite and (for errors) assertive, and writes the toast's title and description into one after it appears; the same toast twice is read twice. Nothing you see changes, and nothing in your code has to change.
+- **changed** `states`: Loading's status mounts empty and takes its label a frame later, so a screen reader says "Loading projects" when it appears. Nothing you see changes.
 
 ## 2026-11-02 · Flat: a second material
 
