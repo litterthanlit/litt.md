@@ -70,3 +70,47 @@ jobs:
         run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+  # The WCAG regression checks run beside the main job, on their own build, so neither job nears its time limit.
+  wcag:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: gallery/package-lock.json
+
+      - name: Install
+        run: npm ci --prefix gallery
+
+      - name: Build
+        run: npm run build --prefix gallery
+
+      - name: Install Playwright
+        run: |
+          npm install --prefix "$RUNNER_TEMP/a11y" --no-save --no-package-lock playwright@1.56.1 axe-core@4.10.3
+          "$RUNNER_TEMP/a11y/node_modules/.bin/playwright" install --with-deps chromium
+
+      - name: Reflow (no page scrolls sideways at 320px)
+        run: npm run test:reflow --prefix gallery && npm run test:reflow --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Text zoom (no lines overlap at 200% text on any page)
+        run: npm run test:text-zoom --prefix gallery && npm run test:text-zoom --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Forced colors (the lit row, selected tab and current code cell stand apart, light and dark)
+        run: npm run test:forced-colors --prefix gallery && npm run test:forced-colors --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Focus (never falls to the body after a route, a submit or a confirm; no layout shift on a slow phone)
+        run: npm run test:focus --prefix gallery && npm run test:focus --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
