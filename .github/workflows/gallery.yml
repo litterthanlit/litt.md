@@ -75,3 +75,8 @@ jobs:
         run: npm run test:reflow --prefix gallery && npm run test:reflow --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Text zoom (no lines overlap at 200% text on any page)
+        run: npm run test:text-zoom --prefix gallery && npm run test:text-zoom --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
