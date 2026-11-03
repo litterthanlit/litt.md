@@ -18,6 +18,7 @@ import { Carousel, CarouselContent, CarouselControls, CarouselItem } from "@/com
 import { Lightbox, type LightboxItem } from "@/components/lightbox";
 import { ProjectCover } from "@/components/list-cover";
 import { Media } from "@/components/media";
+import { Heading } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -88,9 +89,9 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   const id = useId();
   return (
     <section aria-labelledby={id} className="grid gap-1 @min-[48rem]:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] @min-[48rem]:gap-12">
-      <h2 id={id} className="text-h4 text-fg">
+      <Heading level={2} id={id} className="text-h4 text-fg">
         {title}
-      </h2>
+      </Heading>
       <div className="grid max-w-(--measure) gap-4 text-reading text-fg-muted">{children}</div>
     </section>
   );
@@ -112,7 +113,7 @@ export function CaseStudy() {
         <Breadcrumb label="Where this page is" items={PROJECT.trail} />
         {/* The title and its line as one sentence in two inks; the h1 stays the name alone. */}
         <div className="flex flex-wrap items-baseline gap-x-2 text-h1 text-balance">
-          <h1 className="text-fg">{PROJECT.name}</h1>
+          <Heading level={1} className="text-fg">{PROJECT.name}</Heading>
           <p className="font-normal text-fg-muted">{PROJECT.line}</p>
         </div>
       </header>
@@ -139,9 +140,9 @@ export function CaseStudy() {
 
       <section aria-labelledby={seriesId} className="grid gap-6">
         <div className="grid gap-1">
-          <h2 id={seriesId} className="text-h4 text-fg">
+          <Heading level={2} id={seriesId} className="text-h4 text-fg">
             The series
-          </h2>
+          </Heading>
           <p className="max-w-(--measure) text-small text-fg-subtle">Each series opens on its first frame at full width, and the next one is always in view.</p>
         </div>
         <Carousel label="The series" index={slide} onIndexChange={setSlide}>
@@ -164,9 +165,9 @@ export function CaseStudy() {
       </Section>
 
       <section aria-labelledby={detailsId} className="grid gap-6">
-        <h2 id={detailsId} className="sr-only">
+        <Heading level={2} id={detailsId} className="sr-only">
           Details
-        </h2>
+        </Heading>
         <ul className="grid gap-6 @min-[36rem]:grid-cols-2">
           {DETAILS.map((image, i) => (
             <li key={image.id} className={image.width > image.height ? "@min-[36rem]:col-span-2" : ""}>

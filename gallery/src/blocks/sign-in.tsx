@@ -12,6 +12,7 @@ import { Button } from "@/components/button";
 import { Callout } from "@/components/callout";
 import { focusFirstInvalid } from "@/components/form";
 import { TextField } from "@/components/input";
+import { Heading, Main } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -110,11 +111,11 @@ export function SignIn() {
         </a>
       </header>
 
-      <main className="grid w-full max-w-5xl content-center gap-16 @min-[56rem]:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] @min-[56rem]:gap-24">
+      <Main className="grid w-full max-w-5xl content-center gap-16 @min-[56rem]:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] @min-[56rem]:gap-24">
         <div className="grid w-full max-w-100 content-start gap-8">
           {/* The title and its line as one sentence in two inks; the h1 stays the name alone. */}
           <div className="flex flex-wrap items-baseline gap-x-2 text-h1 text-balance">
-            <h1 className="text-fg">Sign in</h1>
+            <Heading level={1} className="text-fg">Sign in</Heading>
             <p className="font-normal text-fg-muted">to the studio, and pick up where you left off.</p>
           </div>
 
@@ -168,9 +169,9 @@ export function SignIn() {
 
         {/* What is new: quiet, beside the form from 1024 up and gone below, so a phone sees only the form. */}
         <section aria-labelledby={newsId} className="hidden content-start gap-6 border-l border-line pl-12 @min-[56rem]:grid">
-          <h2 id={newsId} className="text-body font-title text-fg">
+          <Heading level={2} id={newsId} className="text-body font-title text-fg">
             What is new
-          </h2>
+          </Heading>
           <ul className="grid gap-4">
             {NEWS.map((n) => (
               <li key={n.version} className="flex items-baseline gap-3">
@@ -180,7 +181,7 @@ export function SignIn() {
             ))}
           </ul>
         </section>
-      </main>
+      </Main>
 
       <footer className="flex flex-wrap gap-x-6 gap-y-2">
         <a href={LINKS.terms} className={quietLink}>

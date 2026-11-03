@@ -9,6 +9,7 @@
 import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
 import { DeviceProvider, useFun, type Tier } from "@/motion";
 import { Button } from "@/components/button";
+import { Framed } from "@/components/framed";
 import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
@@ -234,7 +235,8 @@ const stayPut = (e: MouseEvent) => {
 /**
  * A window onto an app, for a block: the canvas with a hairline, scrolling inside itself, at a fixed height so a
  * stage stays one size. `phone` makes it phone wide and tells the components inside they are on a phone. `bare`
- * drops the padding, for a block that brings its own (a full page, an app shell).
+ * drops the padding, for a block that brings its own (a full page, an app shell). The block inside is Framed, so the
+ * page keeps its one main and h1.
  */
 export function AppFrame({ label, phone = false, bare = false, className = "", children }: { label: string; phone?: boolean; bare?: boolean; className?: string; children: ReactNode }) {
   const frame = (
@@ -250,7 +252,7 @@ export function AppFrame({ label, phone = false, bare = false, className = "", c
         className
       }
     >
-      {children}
+      <Framed>{children}</Framed>
     </div>
   );
   if (!phone) return frame;

@@ -15,6 +15,7 @@ import { Button } from "@/components/button";
 import { Segmented } from "@/components/segmented";
 import { Empty } from "@/components/states";
 import { Tag, type TagStatus } from "@/components/tag";
+import { Heading } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -105,9 +106,9 @@ function DayGroup({ day }: { day: Day }) {
   const id = useId();
   return (
     <section aria-labelledby={id} className="grid gap-2">
-      <h2 id={id} className="text-caption text-fg-subtle">
+      <Heading level={2} id={id} className="text-caption text-fg-subtle">
         {day.label}
-      </h2>
+      </Heading>
       <ul>
         {day.events.map((e) => (
           <EventRow key={e.id} event={e} />
@@ -127,7 +128,7 @@ export function Activity() {
   return (
     <div className="@container grid w-full max-w-3xl grid-cols-1 gap-8">
       <header className="grid gap-1">
-        <h1 className="text-h1 text-fg">Activity</h1>
+        <Heading level={1} className="text-h1 text-fg">Activity</Heading>
         <p className="text-body text-fg-muted">Deploys, comments and people across the studio, newest first.</p>
       </header>
 

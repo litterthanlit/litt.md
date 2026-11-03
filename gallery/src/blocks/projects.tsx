@@ -17,6 +17,7 @@ import { Input } from "@/components/input";
 import { ProjectFilters, ProjectGrid, ProjectList, ProjectsEmpty, matchesFilter, type Project, type ProjectFilter } from "@/components/list";
 import { Segmented } from "@/components/segmented";
 import { Empty } from "@/components/states";
+import { Heading } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -71,7 +72,7 @@ export function Projects() {
     <div className="@container grid w-full grid-cols-1 gap-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-1">
-          <h1 className="text-h1 text-fg">Projects</h1>
+          <Heading level={1} className="text-h1 text-fg">Projects</Heading>
           <p className="text-body text-fg-muted">
             {count(projects.length, "project")}, {count(live, "live", "live").toLowerCase()}.
           </p>

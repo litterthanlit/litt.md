@@ -826,6 +826,11 @@ const COPY = {
     description: "Toasts arrive from just below the corner and leave sideways. Older ones stack behind the newest and open into a list on hover or focus.",
     docs: "Import Toaster, toast and useToast from components/litt/toast. Mount Toaster once, then call toast() anywhere.",
   },
+  framed: {
+    title: "Framed",
+    description: "Whether a whole screen stands alone or sits inside a page that has its own main landmark and h1. Inside Framed, a block's Main is a div and its headings drop one level, so the page keeps one main, one h1 and an outline that never skips.",
+    docs: "Import Framed from components/litt/framed and wrap a block's preview in it, such as a screen shown in a docs page. A block rendered as your page needs nothing.",
+  },
   "list-cover": {
     title: "List cover",
     description: "The generated cover art used by project rows and cards.",

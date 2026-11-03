@@ -159,7 +159,7 @@ function SizesDemo() {
   const [site, setSite] = useState("atelier-nord");
   return (
     <div className="grid w-full max-w-xl gap-8">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="w-44">
           <Select size="sm" aria-label="Sort by" options={SORTS} value={sort} onValueChange={setSort} />
         </div>

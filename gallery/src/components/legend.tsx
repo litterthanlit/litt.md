@@ -5,7 +5,9 @@
  *
  * - Anatomy: a wrapping row of toggle buttons in a `role="group"` named by `label`. Each is a swatch (a 12 by 4px
  *   rail at the control radius, the Breakdown legend's swatch) in the hue's mark tone, the name (small, `--fg`), and
- *   an optional reading after it (caption, `--fg-subtle`, tabular), such as a total.
+ *   an optional reading after it (caption, `--fg-subtle`, tabular), such as a total. With `lines`, for a LineChart,
+ *   the rail is cut as the chart dashes the line (teal dashed, violet dotted, rose dash-dotted), so a series is never
+ *   told by color alone (WCAG 1.4.1); blue and amber, solid lines, keep the plain rail.
  * - Hues: assigned exactly as the Chart's `paints(series, true)` does with `hues` on, so a Legend and a BarChart or
  *   LineChart given the same list always agree: an item with `hue` keeps it, and every item without one takes the
  *   next hue in the fixed order (blue, amber, teal, violet, rose), counting only items without one. The order comes
@@ -44,6 +46,16 @@ const MARK: Record<LegendHue, string> = {
 };
 /** A hidden series' swatch: the Meter's track. */
 const TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
+const LINE: Record<LegendHue, string> = {
+  blue: "stroke-data-blue",
+  amber: "stroke-data-amber",
+  teal: "stroke-data-teal",
+  violet: "stroke-data-violet",
+  rose: "stroke-data-rose",
+};
+const LINE_TRACK = "stroke-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
+/** The LineChart's dashes (its HUE_DASH: dashed, dotted, dash-dotted) cut into this swatch's 12 by 4px rail. */
+const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2" };
 
 export type LegendItem = {
   /** The series' name, exactly as the chart's series is named: "Builds". It is the button's text and the key in `hidden`, so keep names unique. */
@@ -65,6 +77,8 @@ export type LegendProps = {
   defaultHidden?: string[];
   /** Called with the new list of hidden names each time an item is pressed. Pass the shown series to the chart from it. */
   onHiddenChange?: (hidden: string[]) => void;
+  /** Cuts each swatch the way the LineChart dashes that hue's line. Set it when the Legend keys a LineChart. */
+  lines?: boolean;
   /** Extra classes for the row, such as a bottom margin. */
   className?: string;
 };
@@ -94,7 +108,7 @@ const live =
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
 
 /** A row of toggles, one per series: a hued swatch and the name, pressed while the series shows. */
-export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], onHiddenChange, className = "" }: LegendProps) {
+export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], onHiddenChange, lines = false, className = "" }: LegendProps) {
   const noteId = useId();
   const [inner, setInner] = useState<string[]>(defaultHidden);
   const hidden = hiddenProp ?? inner;
@@ -125,6 +139,7 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
     <div role="group" aria-label={label} className={"flex flex-wrap gap-x-1 gap-y-1 " + className}>
       {items.map((item) => {
         const shown = isShown(item.name);
+        const hue = hues[item.name]!;
         const last = shown && shownCount <= 1;
         return (
           <button
@@ -143,10 +158,24 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
               }
             }}
           >
-            <span
-              aria-hidden="true"
-              className={"h-1 w-3 shrink-0 rounded-control transition-colors duration-(--dur-instant) ease-litt " + (shown ? MARK[hues[item.name]!] : TRACK)}
-            />
+            {lines && DASH[hue] ? (
+              <svg width={12} height={4} aria-hidden="true" focusable="false" className="shrink-0">
+                <line
+                  x1={0}
+                  x2={12}
+                  y1={2}
+                  y2={2}
+                  strokeWidth={4}
+                  strokeDasharray={DASH[hue]}
+                  className={"transition-colors duration-(--dur-instant) ease-litt " + (shown ? LINE[hue] : LINE_TRACK)}
+                />
+              </svg>
+            ) : (
+              <span
+                aria-hidden="true"
+                className={"h-1 w-3 shrink-0 rounded-control transition-colors duration-(--dur-instant) ease-litt " + (shown ? MARK[hue] : TRACK)}
+              />
+            )}
             <span className={"litt-trim text-small transition-colors duration-(--dur-instant) ease-litt " + (shown ? "text-fg" : "text-fg-subtle")}>
               {item.name}
             </span>

@@ -3996,7 +3996,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
       if (has("toast")) {
         await attempt("toast shows", async () => {
           await item("toast").locator("[data-testid=toast-trigger]").click();
-          await page.getByText("Saved from the smoke page").waitFor({ state: "visible", timeout: 5000 });
+          await page.locator("[data-toast-id]").getByText("Saved from the smoke page").waitFor({ state: "visible", timeout: 5000 });
           await page.waitForTimeout(500);
           await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-toast.png`) });
         });

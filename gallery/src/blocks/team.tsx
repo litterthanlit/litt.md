@@ -22,6 +22,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tag } from "@/components/tag";
 import { toast } from "@/components/toast";
 import { TokenInput } from "@/components/token-input";
+import { Heading } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -152,7 +153,7 @@ export function Team() {
     <div className="@container grid w-full grid-cols-1 gap-8">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-1">
-          <h1 className="text-h1 text-fg">Team</h1>
+          <Heading level={1} className="text-h1 text-fg">Team</Heading>
           <p className="text-body text-fg-muted">
             {count(people, "person", "people")}
             {invites ? ` and ${count(invites, "open invite").toLowerCase()}` : ""}.

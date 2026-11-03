@@ -18,6 +18,7 @@ import { SlideConfirm } from "@/components/slide-confirm";
 import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { toast } from "@/components/toast";
+import { Heading } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -114,7 +115,7 @@ export function Settings() {
   return (
     <div className="@container grid w-full max-w-3xl grid-cols-1 gap-12">
       <header className="grid gap-1">
-        <h1 className="text-h1 text-fg">Settings</h1>
+        <Heading level={1} className="text-h1 text-fg">Settings</Heading>
         <p className="text-body text-fg-muted">Your profile, your email and how {STUDIO} looks to you.</p>
       </header>
 

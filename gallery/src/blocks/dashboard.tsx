@@ -13,6 +13,7 @@ import { Pagination } from "@/components/pagination";
 import { Stat, StatGroup } from "@/components/stat";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { Tag, type TagStatus } from "@/components/tag";
+import { Heading } from "@/components/framed";
 
 const DAYS = ["3 Oct", "4 Oct", "5 Oct", "6 Oct", "7 Oct", "8 Oct", "9 Oct", "10 Oct", "11 Oct", "12 Oct", "13 Oct", "14 Oct", "15 Oct", "16 Oct"];
 const PER_DAY = [5, 7, 4, 9, 6, 1, 0, 6, 8, 5, 9, 7, 2, 1];
@@ -45,9 +46,9 @@ function Section({ title, note, children }: { title: string; note: string; child
   return (
     <section aria-labelledby={id} className="grid grid-cols-1 gap-4">
       <div className="grid gap-1">
-        <h2 id={id} className="text-body text-fg">
+        <Heading level={2} id={id} className="text-body text-fg">
           {title}
-        </h2>
+        </Heading>
         <p className="text-small text-fg-subtle">{note}</p>
       </div>
       {children}
@@ -88,7 +89,7 @@ export function Dashboard({ label = "Studio", viewportHeight }: DashboardProps) 
       }
     >
       <div className="@container grid grid-cols-1 gap-8">
-        <h1 className="text-h3 text-fg">Overview</h1>
+        <Heading level={1} className="text-h3 text-fg">Overview</Heading>
 
         <StatGroup>
           <Stat label="Active projects" value={12} delta="Up 2 on last month" tone="good" />
