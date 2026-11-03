@@ -80,3 +80,8 @@ jobs:
         run: npm run test:text-zoom --prefix gallery && npm run test:text-zoom --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Forced colors (the lit row, selected tab and current code cell stand apart, light and dark)
+        run: npm run test:forced-colors --prefix gallery && npm run test:forced-colors --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
