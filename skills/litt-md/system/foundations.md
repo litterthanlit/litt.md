@@ -29,7 +29,7 @@ Every value lives in `assets/tokens.css`. This file names the variables and expl
 
 Nothing goes to 700 or above or below 400, running text never takes 500 or 600, and 600 never appears above the caption size. Geist Mono stays at 400, at the caption size too. `tokens.css` sets `h1`–`h6`, `b` and `strong` to the title weight and `th` to the label weight, and turns off faux bold. In Tailwind, display to h4 carry the title weight and the caption carries the label weight on their own; `font-title` and `font-label` set the role on anything else, and a reading or a count at the caption size (a value, not a label) adds `font-normal`, as a mono caption does.
 
-**Scale.** Each step bundles size, a whole-pixel line height and tracking (`--type-<step>-size`, `-leading`, `-tracking`).
+**Scale.** Each step bundles size, a line height and tracking (`--type-<step>-size`, `-leading`, `-tracking`). The line height is in rem, a whole pixel at the default 16px, so it grows with the size when a reader sets larger text and lines never overlap.
 
 | Step | Size / leading | Weight | Use |
 |---|---|---|---|

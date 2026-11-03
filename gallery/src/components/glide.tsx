@@ -13,6 +13,11 @@
  *   Keyboard: it follows the highlighted item.
  * - Keyboard-driven highlights also show an inset 1px focus ring for 3:1
  *   visibility. A pointer-driven highlight shows no ring.
+ * - Forced colors: the highlight is Highlight, the system's current-item fill, so
+ *   the row on it sets forced-color-adjust: none (the browser's backplate would
+ *   paint Canvas under its words) and HighlightText on itself and its children. A
+ *   list whose highlight is hover only, beside a selection that is Highlight
+ *   already, passes forcedHighlight: false.
  * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the highlight
  *   stretches toward the row it is going to. Its leading edge goes on fun mode's glide
  *   spring and its trailing edge follows on the slower swap spring, so it reaches out,
@@ -51,6 +56,8 @@ export type GlideOptions = {
   keepOnLeave?: boolean | (() => boolean);
   /** Scroll the row into view on keyboard moves (a list with a max height). */
   scroll?: boolean;
+  /** Under forced colors, fill the highlight with Highlight (the default). Off where Highlight already means selected. */
+  forcedHighlight?: boolean;
 };
 
 /** Spread onto every row. */
@@ -257,7 +264,10 @@ export function useGlide(options: GlideOptions = {}) {
       ref={hl}
       aria-hidden="true"
       data-ring="false"
-      className="pointer-events-none absolute top-0 left-0 rounded-control bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] data-[ring=true]:shadow-[inset_0_0_0_1px_var(--focus)]"
+      className={
+        "pointer-events-none absolute top-0 left-0 rounded-control bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] data-[ring=true]:shadow-[inset_0_0_0_1px_var(--focus)]" +
+        (options.forcedHighlight === false ? "" : " forced-colors:bg-[Highlight] forced-colors:[forced-color-adjust:none]")
+      }
       style={fun ? { y, opacity, scaleY, originY: 0 } : { y, opacity }}
     />
   );

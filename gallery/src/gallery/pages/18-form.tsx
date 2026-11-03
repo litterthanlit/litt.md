@@ -88,7 +88,7 @@ useEffect(() => {
     "Fieldset is a real fieldset with a legend. Its description and its hint or error are linked with aria-describedby, and disabled disables every control inside it. With rows it only changes the layout, so the switches are still separate controls, each with its own label.",
     "The summary does not replace the inline errors. Each field must still show its own message with aria-invalid and aria-describedby, as TextField and Textarea do, and the form should be noValidate so the browser's own bubbles do not compete.",
     "Optional is part of the label's text, so a screen reader says \"Company (optional)\". Do not use an asterisk, and do not disable the submit to say a field is wrong.",
-    "A loading button is disabled, which can drop focus to the page. The demos put focus back on the submit when the save ends.",
+    "A loading submit keeps focus and ignores presses until the save ends, so Enter in a field cannot send the form twice.",
     "FormSection is a section named by its title. Below 1024 it is one column, in reading order. FormActions with align=\"fields\" only moves the row to the fields column, so the submit still comes first in the source and the tab order matches the screen, stacked or not.",
   ],
 };
@@ -98,20 +98,13 @@ useEffect(() => {
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Pretends to save for a moment, then runs onSaved. A real form awaits its request here. The loading button is
- * disabled, which can drop focus to the page, so focus goes back to the submit when the save ends.
+ * Pretends to save for a moment, then runs onSaved. A real form awaits its request here.
  */
 function useSave(onSaved: () => void) {
   const [saving, setSaving] = useState(false);
-  const submit = useRef<HTMLButtonElement>(null);
   const timer = useRef(0);
-  const wasSaving = useRef(false);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
-  useEffect(() => {
-    if (wasSaving.current && !saving && document.activeElement === document.body) submit.current?.focus();
-    wasSaving.current = saving;
-  }, [saving]);
 
   const save = () => {
     setSaving(true);
@@ -120,7 +113,7 @@ function useSave(onSaved: () => void) {
       onSaved();
     }, 1400);
   };
-  return { saving, save, submit };
+  return { saving, save };
 }
 
 /* ------------------------------------------------------------------ start a project */
@@ -163,7 +156,7 @@ function StartProjectDemo() {
   const [values, setValues] = useState<ProjectValues>(NO_PROJECT);
   const [errors, setErrors] = useState<ProjectErrors>({});
   const [failedSubmits, setFailedSubmits] = useState(0);
-  const { saving, save, submit } = useSave(() =>
+  const { saving, save } = useSave(() =>
     toast({ title: "Brief sent", description: "We reply within a working day.", tone: "success" }),
   );
 
@@ -250,7 +243,7 @@ function StartProjectDemo() {
         description={errors.consent}
         onChange={(e) => change("consent", e.target.checked)}
       />
-      <Button ref={submit} type="submit" variant="primary" block loading={saving}>
+      <Button type="submit" variant="primary" block loading={saving}>
         Send brief
       </Button>
     </form>
@@ -294,7 +287,7 @@ const STUDIO: Settings = {
 function SettingsDemo() {
   const [saved, setSaved] = useState(STUDIO);
   const [values, setValues] = useState(STUDIO);
-  const { saving, save, submit } = useSave(() => {
+  const { saving, save } = useSave(() => {
     setSaved(values);
     toast({ title: "Settings saved", description: "Your studio profile is up to date.", tone: "success" });
   });
@@ -396,7 +389,7 @@ function SettingsDemo() {
       </FormSection>
 
       <FormActions align="fields" className="mt-12">
-        <Button ref={submit} type="submit" variant="primary" loading={saving}>
+        <Button type="submit" variant="primary" loading={saving}>
           Save changes
         </Button>
         <Button variant="ghost" disabled={saving} onClick={() => setValues(saved)}>
@@ -425,7 +418,7 @@ function SignInDemo() {
   const [errors, setErrors] = useState<Partial<Record<keyof SignIn, string>>>({});
   const [failedSubmits, setFailedSubmits] = useState(0);
   const [signedIn, setSignedIn] = useState(false);
-  const { saving, save, submit } = useSave(() => setSignedIn(true));
+  const { saving, save } = useSave(() => setSignedIn(true));
 
   /* Two fields are too few for a summary. Once the errors have rendered, focus the first invalid field. */
   useEffect(() => {
@@ -471,7 +464,7 @@ function SignInDemo() {
         error={errors.password}
         onChange={(e) => change("password", e.target.value)}
       />
-      <Button ref={submit} type="submit" variant="primary" block loading={saving}>
+      <Button type="submit" variant="primary" block loading={saving}>
         Sign in
       </Button>
       <p role="status" className="min-h-5 text-small text-fg-subtle">

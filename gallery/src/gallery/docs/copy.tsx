@@ -13,8 +13,9 @@ type CopyState = "idle" | "copied" | "failed";
 export const ghostSm =
   "relative inline-flex h-control-sm shrink-0 items-center justify-center gap-control rounded-control px-control-pad-sm " +
   "whitespace-nowrap select-none text-small font-title text-fg-muted " +
-  "cursor-pointer transition-[background-color,color,transform] duration-(--dur-instant) ease-litt " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg active:scale-(--press-scale) " +
+  "cursor-pointer transition-[background-color,color,translate] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+  "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg active:translate-y-(--press-depth) " +
+  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 const FEEDBACK_MS = 2000; // how long "Copied" stays up (feedback, not animation)

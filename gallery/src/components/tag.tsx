@@ -65,14 +65,14 @@ export function Tag({ status, hue, raised = false, children, className = "", ...
   return (
     <span
       className={
-        "inline-flex h-6 shrink-0 items-center whitespace-nowrap px-2 text-caption " +
+        "inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap px-2 text-caption " +
         (hue ? "rounded-control " + HUE[hue] : (raised ? RAISED : PLAIN) + ink) +
         " " +
         className
       }
       {...rest}
     >
-      {children}
+      {typeof children === "string" || typeof children === "number" ? <span className="min-w-0 truncate">{children}</span> : children}
     </span>
   );
 }

@@ -63,20 +63,13 @@ function check(v: Values, ids: Ids): FormError[] {
 }
 
 /**
- * Pretends to save for a moment, then runs onSaved. Await your request here instead. The loading button is disabled,
- * which can drop focus to the page, so focus goes back to Save when the save ends.
+ * Pretends to save for a moment, then runs onSaved. Await your request here instead.
  */
 function useSave(onSaved: () => void) {
   const [saving, setSaving] = useState(false);
-  const submit = useRef<HTMLButtonElement>(null);
   const timer = useRef(0);
-  const wasSaving = useRef(false);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
-  useEffect(() => {
-    if (wasSaving.current && !saving && document.activeElement === document.body) submit.current?.focus();
-    wasSaving.current = saving;
-  }, [saving]);
 
   const save = () => {
     setSaving(true);
@@ -85,7 +78,7 @@ function useSave(onSaved: () => void) {
       onSaved();
     }, 1200);
   };
-  return { saving, save, submit };
+  return { saving, save };
 }
 
 /* ----------------------------------------------------------------- the screen */
@@ -98,7 +91,7 @@ export function Settings() {
   const [values, setValues] = useState(SAVED);
   const [errors, setErrors] = useState<FormError[]>([]);
   const [failedSaves, setFailedSaves] = useState(0);
-  const { saving, save, submit } = useSave(() => {
+  const { saving, save } = useSave(() => {
     setSaved(values);
     toast({ title: "Settings saved", description: "Your profile is up to date.", tone: "success" });
   });
@@ -189,7 +182,7 @@ export function Settings() {
         </FormSection>
 
         <FormActions align="fields" className="mt-12">
-          <Button ref={submit} type="submit" variant="primary" loading={saving}>
+          <Button type="submit" variant="primary" loading={saving}>
             Save changes
           </Button>
           <Button

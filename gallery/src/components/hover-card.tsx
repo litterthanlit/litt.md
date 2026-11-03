@@ -244,7 +244,7 @@ function Surface({
           if (e.pointerType !== "touch") ctx.later(false);
         }}
         className={
-          "relative z-50 max-w-(--radix-popover-content-available-width) rounded-surface p-4 outline-none " +
+          "relative z-50 max-w-(--radix-popover-content-available-width) rounded-surface outline-none " +
           "origin-(--radix-popover-content-transform-origin) data-[state=closed]:pointer-events-none " +
           WIDTH[size] +
           (flat ? " bg-surface-2 shadow-float" : " litt-glass")
@@ -254,7 +254,9 @@ function Surface({
         exit={{ opacity: 0, scale: 0.98, x: out.x, y: out.y, transition: exit }}
         style={{ x, y }}
       >
-        {children}
+        {/* Scrolls inside the card when the screen is shorter than it. The padding sits inside the scroller, so a focus
+            ring is never clipped, and the card's own glass keeps its shadow. */}
+        <div className="max-h-(--radix-popover-content-available-height) overflow-y-auto rounded-surface p-4">{children}</div>
       </motion.div>
     </RadixPopover.Content>
   );

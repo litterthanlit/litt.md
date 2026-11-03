@@ -587,7 +587,7 @@ function LittTurn({
       {/* The sources the answer has cited so far, numbered in the order it cites them, for the marks, the search's results and the list. */}
       <Sources sources={cited}>
         {/* One measure for every part, the prose's, so the rows end where the words do. */}
-        <div className="grid min-w-0 max-w-[68ch] gap-3">
+        <div className="grid min-w-0 max-w-(--measure) gap-3">
           <Thinking active={view.thinking} duration={frozen ? THOUGHT_SECONDS : undefined}>
             {reveal(THOUGHT, view.thought).map((runs, i) => (
               <p key={i}>

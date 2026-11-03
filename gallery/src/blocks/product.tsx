@@ -209,7 +209,7 @@ export function ProductPage() {
               <AccordionItem key={m.title} value={m.title}>
                 <AccordionTrigger>{m.title}</AccordionTrigger>
                 <AccordionContent>
-                  <p className="max-w-[65ch] text-body text-fg-muted">{m.body}</p>
+                  <p className="max-w-(--measure) text-body text-fg-muted">{m.body}</p>
                 </AccordionContent>
               </AccordionItem>
             ))}

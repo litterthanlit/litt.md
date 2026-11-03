@@ -222,7 +222,7 @@ const CHEVRON =
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled";
 
 const REMOVE =
-  "relative grid size-6 shrink-0 place-items-center rounded-control text-fg-subtle " +
+  "relative grid size-6 shrink-0 cursor-pointer place-items-center rounded-control text-fg-subtle " +
   "transition-[color] duration-(--dur-instant) ease-litt hover:text-fg " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled " +
@@ -675,7 +675,8 @@ type PanelProps = {
 const ROW =
   "relative flex h-control-md w-full cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt " +
-  "text-fg-muted aria-selected:text-fg data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled";
+  "text-fg-muted aria-selected:text-fg data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled " +
+  "forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText]";
 /** The group label row: the Menu's. */
 const LABEL_ROW = "flex h-control-sm items-center px-3 text-caption text-fg-subtle";
 

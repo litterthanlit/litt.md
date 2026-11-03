@@ -444,7 +444,7 @@ function aliasSelector(selector) {
     if (part === '[data-theme="dark"]') return `${part}, .dark`;
     if (part === "[data-theme]") return `${part}, .dark, .light`;
     if (part === ':root:not([data-theme="light"])') return ':root:not([data-theme="light"], .light)';
-    if (part === ":root") return part;
+    if (!part.includes("data-theme")) return part;
     return fail(`tokens.css: the selector "${part}" mentions data-theme in a form gen-registry.mjs does not alias to .dark/.light; teach aliasSelector()`);
   }).join(", ");
 }

@@ -65,7 +65,7 @@ const COUNT = new Intl.NumberFormat();
 
 const button =
   "flex h-7 min-w-7 cursor-pointer items-center justify-center gap-1 rounded-control px-1.5 [-webkit-tap-highlight-color:transparent] " +
-  "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
+  "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
   "pointer-coarse:h-11 pointer-coarse:min-w-11";
 const idle =

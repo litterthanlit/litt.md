@@ -226,7 +226,7 @@ export function Thinking({
               initial={{ opacity: 0, y: -travel / 4 }}
               animate={{ opacity: 1, y: 0, transition: enter }}
               exit={{ opacity: 0, transition: exit }}
-              className="grid max-w-[68ch] gap-2 pt-1 pb-1 pl-6 text-small break-words text-fg-subtle"
+              className="grid max-w-(--measure) gap-2 pt-1 pb-1 pl-6 text-small break-words text-fg-subtle"
             >
               {children}
             </motion.div>

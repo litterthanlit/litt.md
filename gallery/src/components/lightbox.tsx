@@ -238,7 +238,7 @@ function Layer({ label, items, index, go, close, tier, returnFocus }: LayerProps
           </div>
 
           <div className="flex min-h-control-sm items-start justify-between gap-4 px-4 sm:px-6">
-            <p className="max-w-[65ch] min-w-0 text-small text-fg-muted">{item.caption}</p>
+            <p className="max-w-(--measure) min-w-0 text-small text-fg-muted">{item.caption}</p>
             {compact && (
               <div className="flex shrink-0 items-center gap-2">
                 {previousButton}

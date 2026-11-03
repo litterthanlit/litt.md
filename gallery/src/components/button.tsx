@@ -6,6 +6,8 @@
  *   (--button-pad-lg), so a short label never makes a square block.
  * - The label is at the title weight (R8, font-title). State changes color and fill only; the
  *   box never moves or resizes (loading keeps the label mounted at opacity 0).
+ * - Loading is busy, not disabled: the button keeps its variant's look and its focus (a disabled button drops focus
+ *   to the page), and a click does nothing, a submit's included, until it ends. It does not sink while it waits.
  * - Material (R3): a secondary button is the press material's raised block (--block, --block-lift), and its cast
  *   tightens while it is pressed (--block-press), at once, never faded (R2). The primary is the accent with its glow
  *   and a top highlight. Ghost lies flat, and so does a disabled button: nothing to push.
@@ -42,7 +44,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
   /** Height on the shared control scale: sm is 32, md is 44, lg is 56. Use lg for hero actions only, md in a page form and a dialog. */
   size?: ButtonSize;
-  /** Swaps the label for a spinner, keeps the width, sets aria-busy and disables the button. */
+  /** Swaps the label for a spinner and keeps the width. The button stays focusable and keeps its look, sets aria-busy and aria-disabled, and ignores clicks (a submit's too) until loading ends. */
   loading?: boolean;
   /** 16px icon before the label. */
   icon?: ReactNode;
@@ -60,6 +62,7 @@ const base =
   "cursor-pointer transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "[-webkit-tap-highlight-color:transparent] " +
   "active:translate-y-(--press-depth) disabled:cursor-not-allowed disabled:active:translate-y-0 " +
+  "data-loading:cursor-wait data-loading:active:translate-y-0 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 const sizes: Record<ButtonSize, string> = {
@@ -76,13 +79,13 @@ const variants: Record<ButtonVariant, string> = {
     /* Flat has no light (R2): under data-material="flat" the fill catches no top highlight. */
     "in-[[data-material=flat]]:inset-shadow-none",
   secondary:
-    "bg-block text-fg shadow-(--block-lift) enabled:active:shadow-(--block-press) forced-colors:border " +
+    "bg-block text-fg shadow-(--block-lift) enabled:not-data-loading:active:shadow-(--block-press) forced-colors:border " +
     "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover)",
   ghost:
     "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
   danger:
-    "bg-block text-danger shadow-(--block-lift) enabled:active:shadow-(--block-press) forced-colors:border " +
+    "bg-block text-danger shadow-(--block-lift) enabled:not-data-loading:active:shadow-(--block-press) forced-colors:border " +
     "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " +
     /* A dialog's confirm. These rules sort after the block's, so they win its ties (active, a finger's press). */
     "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
@@ -127,6 +130,7 @@ export function Button({
   disabled,
   type = "button",
   style,
+  onClick,
   ...rest
 }: ButtonProps) {
   const fun = useFun();
@@ -142,11 +146,14 @@ export function Button({
   return (
     <button
       type={type}
-      disabled={disabled || loading}
+      disabled={disabled}
       aria-busy={loading || undefined}
+      aria-disabled={loading || undefined}
+      data-loading={loading || undefined}
       className={[base, sizes[size], variants[variant], disabledLook, shape, block ? "w-full" : "", className].join(" ")}
       style={press ? { ...press, ...style } : style}
       {...rest}
+      onClick={loading ? (e) => e.preventDefault() : onClick}
     >
       <span
         className={

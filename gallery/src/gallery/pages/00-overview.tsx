@@ -309,7 +309,8 @@ function Hero({ count, site }: { count: string; site: PageEntry[] }) {
         <div className="grid gap-4">
           <h1
             id="page-overview"
-            className="max-w-[16ch] text-[36px] leading-[40px] tracking-[-0.02em] text-balance text-fg sm:text-[56px] sm:leading-[60px]" // litt-allow: the gallery's hero, an exception to the 18px cap asked of Nick (proposals/gallery-wow.md, 2)
+            tabIndex={-1}
+            className="max-w-[16ch] outline-none text-[36px] leading-[40px] tracking-[-0.02em] text-balance text-fg sm:text-[56px] sm:leading-[60px]" // litt-allow: the gallery's hero, an exception to the 18px cap asked of Nick (proposals/gallery-wow.md, 2)
           >
             A design language you can hold.
           </h1>

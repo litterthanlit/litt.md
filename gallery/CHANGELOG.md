@@ -12,6 +12,22 @@ Flat says litt's depth ladder by fill alone, on neutral greys: one attribute on 
 - **changed** `button`: a secondary or destructive button under a pointer reads `--litt-block-hover`, and under `data-material="flat"` the primary and a destructive dialog's confirm catch no top highlight. Nothing changes under Press.
 - **changed** `checkbox`: under `data-material="flat"` a checked or mixed box catches no top highlight. Nothing changes under Press.
 - **changed** `select`, `date-picker`, `number-field`, `color-picker`, `run-card`: a raised trigger or step under a pointer reads `--litt-block-hover`. Under Press it is the same 4% as before; under Flat a placeholder on a hovered trigger keeps 4.5:1.
+- **changed** `button`: `loading` no longer disables the button. It keeps its look and its focus, sets `aria-disabled` beside `aria-busy`, ignores presses (a submit's too, so Enter in a field cannot send the form twice) and does not sink until loading ends. If you put focus back on a submit after a save, you can drop that code.
+- **changed** `settings`: Save no longer puts focus back on itself when a save ends, since a loading button now keeps its focus. Reinstall `button` with it.
+- **changed** `glide`: under forced colors (Windows contrast themes) the highlight is the system's Highlight fill; before, the system painted it away and a highlighted row looked like the rest. A row on it needs HighlightText: the menu, select, combobox and command menu rows here already do. New `forcedHighlight: false` keeps it off for a list where Highlight already means selected. Nothing in your code has to change.
+- **changed** `menu`, `select`, `combobox`, `command-menu`: under forced colors the highlighted row is Highlight with HighlightText, its icon and shortcut included, so the arrow keys show where you are. The context menu gets it through `menu`. Nothing in your code has to change.
+- **changed** `run-list`: under forced colors the selected run's words show on its Highlight block (the browser's backplate hid them), and the hover highlight stays out of the way, so Highlight still means selected.
+- **changed** `tabs`: under forced colors the underline variant's line is Highlight; before, the system painted it away.
+- **changed** `code-input`: under forced colors the current cell takes a Highlight outline, since its focus ring is a shadow the system removes, and the caret shows in CanvasText.
+- **changed** `litt`: line heights are in rem (`--litt-type-*-leading`), the same 28, 22, 20 and 16px at the default size, so text a reader has set larger no longer runs into its own lines. Under `prefers-contrast: more` the grey ink is the full ink, both hairlines take the control outline's 3:1 and glass is its solid fill, in both themes and under Flat. `--litt-gutter` is never less than the safe area on either side, so a phone in landscape keeps the page clear of the notch (with `viewport-fit=cover`). Nothing in your code has to change.
+- **changed** `toast`: a toast with an `action` stays until it is dismissed, like an error, so there is time to reach its button; pass `duration` to time it out as before. The region is named "Notifications (F8)", so a screen reader says how to reach it.
+- **changed** `tag`: a tag is never wider than its container. A text label cuts at the end with an ellipsis instead of running out of the box; a tag still keeps its width beside other things in a row.
+- **changed** `hover-card`: a card taller than the room the screen leaves scrolls inside itself. Nothing changes for a card that fits.
+- **changed** `token-input`, `combobox`: a value's remove button shows the pointer cursor.
+- **changed** `color-picker`: the hue rail takes a press 6px above and below it with a mouse, a 24px target, as it already did 16px for a finger.
+- **changed** `checkbox`, `table-filter`, `header`: the shadow no longer fades with the fill, so the material steps at once (R2). The focus ring is unchanged.
+- **changed** `message`, `thinking`, `lightbox`: running text keeps to `--litt-measure` (65ch) instead of its own width; a message and the reasoning were 68ch.
+- **changed** `agent`, `case-study`, `product`: running text keeps to `--litt-measure` (65ch).
 
 ## 2026-11-01 · Tune: one line that tunes a component against litt's rules
 
