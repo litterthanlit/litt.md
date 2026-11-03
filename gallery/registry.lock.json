@@ -71,8 +71,8 @@
       "hash": "65c7c17861989a16"
     },
     "chart": {
-      "version": "2026.10.26",
-      "hash": "e682b1f754e489da"
+      "version": "2026.11.03",
+      "hash": "74797e3453306535"
     },
     "checkbox": {
       "version": "2026.11.02",
@@ -207,8 +207,8 @@
       "hash": "ea575e1562a67b6b"
     },
     "legend": {
-      "version": "2026.10.26",
-      "hash": "2eb4ccf5fd9134a9"
+      "version": "2026.11.03",
+      "hash": "0871686c71f7ae19"
     },
     "lightbox": {
       "version": "2026.11.02",
@@ -407,8 +407,8 @@
       "hash": "1859fbdccd894046"
     },
     "time-scrubber": {
-      "version": "2026.10.26",
-      "hash": "36207c53f6ae70a1"
+      "version": "2026.11.03",
+      "hash": "a00b859369f12c36"
     },
     "timeline": {
       "version": "2026.10.26",

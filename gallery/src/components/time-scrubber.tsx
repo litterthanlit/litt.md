@@ -11,7 +11,9 @@
  *   at the caption size in --fg-subtle, tabular, and the events as 2px marks, 20px tall, in their status color
  *   (neutral is --fg-muted). The ticks are lighter than any mark in light mode and dimmer in dark, so a mark stands
  *   out by lightness, height and width, not by hue alone (in light mode the status colors are as dark as
- *   --fg-subtle, so --fg-subtle ticks would hide them). Steps sit 12px apart.
+ *   --fg-subtle, so --fg-subtle ticks would hide them). A warning's mark carries a 6px diamond on its top and a
+ *   danger's a 6px dot, so status is never color alone (WCAG 1.4.1), and in forced colors, where every mark is
+ *   CanvasText, the shapes still tell them apart. Steps sit 12px apart.
  * - The needle is the Slider's cap, fixed in the middle and riding over the ruler: 8px wide, at the control radius less
  *   2px, with a grip line down its face (--cap, --cap-lift: lit on its top edge, casting straight down, R2). It stands
  *   from 4px under the top wall to above the times, so it never cuts one, and the grip line is the exact time. An event
@@ -48,7 +50,7 @@ export type TimeScrubberMark = {
   at: number;
   /** What happened, short: "Build completed". Shown beside the reading when the needle is on it, and read out. */
   label: string;
-  /** The status color of its mark. Neutral is --fg-muted. Color is never alone: the label says the rest. */
+  /** The status color of its mark. Neutral is --fg-muted. Color is never alone: a warning carries a diamond, a danger a dot, and the label says the rest. */
   tone?: TimeScrubberTone;
 };
 
@@ -95,6 +97,12 @@ const TONE: Record<TimeScrubberTone, string> = {
   success: "bg-success",
   warning: "bg-warning",
   danger: "bg-danger",
+};
+
+/** The head on a mark's top, so a warning and a danger differ from the rest by shape as well as color. */
+const HEAD: Partial<Record<TimeScrubberTone, string>> = {
+  warning: "rotate-45",
+  danger: "rounded-pill",
 };
 
 /** Digits after the point, so 0.1 steps land on 0.3 and not 0.30000000000000004. */
@@ -334,13 +342,20 @@ export function TimeScrubber({
               <span className="text-caption font-normal whitespace-nowrap text-fg-subtle tabular-nums">{formatValue(t)}</span>
             </div>
           ))}
-          {sorted.map((m) => (
-            <span
-              key={`${m.at}-${m.label}`}
-              className={"absolute top-2 h-5 w-0.5 -translate-x-1/2 rounded-pill forced-colors:bg-[CanvasText] " + TONE[m.tone ?? "neutral"]}
-              style={{ left: (m.at - min) * perUnit }}
-            />
-          ))}
+          {sorted.map((m) => {
+            const tone = m.tone ?? "neutral";
+            return (
+              <span
+                key={`${m.at}-${m.label}`}
+                className={"absolute top-2 h-5 w-0.5 -translate-x-1/2 rounded-pill forced-colors:bg-[CanvasText] " + TONE[tone]}
+                style={{ left: (m.at - min) * perUnit }}
+              >
+                {HEAD[tone] && (
+                  <span className={"absolute -top-0.5 left-1/2 size-1.5 -translate-x-1/2 forced-colors:bg-[CanvasText] " + TONE[tone] + " " + HEAD[tone]} />
+                )}
+              </span>
+            );
+          })}
         </motion.div>
         {/* The well's edge and its top wall's shade, over the ruler, so it slides under them. */}
         <span

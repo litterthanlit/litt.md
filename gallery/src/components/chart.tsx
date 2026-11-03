@@ -12,7 +12,9 @@
  *   every series without one the next hue in the fixed order. Color follows the series, never its place, so a
  *   filter that drops a series never repaints the others. A hue series rests in the hue's mark tone (3:1 on every
  *   surface) and its emphasised mark takes the hue's text tone, a step stronger, so no mark falls under 3:1 and
- *   none needs an edge or a dash. Up to five hue series.
+ *   none needs an edge. Up to five hue series. Color alone must not tell five lines apart (WCAG 1.4.1), so the
+ *   third, fourth and fifth hues' lines are dashed, dotted and dash-dotted, in the legend swatch too; blue and
+ *   amber stay solid. The dash follows the hue, as the color does.
  * - Anatomy: horizontal gridlines only (line), the zero baseline in line-strong, three to five lines in all. Axis
  *   labels are caption-size in fg-subtle with tabular numbers. When categories are too close for their
  *   labels, every nth label shows, counted back from the last mark so the current one keeps its label. Bars are at
@@ -112,7 +114,14 @@ const mix = (percent: number) => `color-mix(in oklab, var(--fg) ${percent}%, tra
 const FILL = ["fill-fg", "fill-[color-mix(in_oklab,var(--fg)_55%,transparent)]", "fill-[color-mix(in_oklab,var(--fg)_30%,transparent)]"];
 const STROKE = ["var(--fg)", mix(55), mix(30)];
 const EDGE = "stroke-[color-mix(in_oklab,var(--fg)_55%,transparent)]";
-const DASH = "6 4";
+/** A line's dash (round caps add 1px to each end of a dash, so 0.5 draws a dot), and the same at the legend swatch's 16px, whose caps are square. */
+type Dash = { line: string; swatch: string };
+const DASHED: Dash = { line: "6 4", swatch: "4 3" };
+const HUE_DASH: Partial<Record<ChartHue, Dash>> = {
+  teal: DASHED,
+  violet: { line: "0.5 5", swatch: "2 2" },
+  rose: { line: "8 4 0.5 4", swatch: "6 2 2 2" },
+};
 
 const HUE_ORDER: ChartHue[] = ["blue", "amber", "teal", "violet", "rose"];
 /* Literal names, so Tailwind sees the classes and the registry can rename the variables: the mark tone at rest, the
@@ -125,8 +134,8 @@ const HUE_PAINT: Record<ChartHue, [rest: string, strong: string, stroke: string,
   rose: ["fill-data-rose", "fill-data-rose-text", "var(--data-rose)", "var(--data-rose-text)"],
 };
 
-/** How one series is painted: its bar fills at rest and emphasised, its line and marker colors, and its third-series cues. */
-type Paint = { rest: string; strong: string; stroke: string; marker: string; edge: boolean; dash: boolean };
+/** How one series is painted: its bar fills at rest and emphasised, its line and marker colors, and the cues past color. */
+type Paint = { rest: string; strong: string; stroke: string; marker: string; edge: boolean; dash?: Dash };
 
 function paints(series: ChartSeries[], hues: boolean): Paint[] {
   let next = 0;
@@ -134,13 +143,13 @@ function paints(series: ChartSeries[], hues: boolean): Paint[] {
     const hue = s.hue ?? (hues ? HUE_ORDER[next++ % HUE_ORDER.length] : undefined);
     if (hue) {
       const [rest, strong, stroke, marker] = HUE_PAINT[hue];
-      return { rest, strong, stroke, marker, edge: false, dash: false };
+      return { rest, strong, stroke, marker, edge: false, dash: HUE_DASH[hue] };
     }
     /* The foreground: one series rests at 55% with the emphasised mark full; several step down by their place. */
     const level = Math.min(j, 2);
     return series.length === 1
-      ? { rest: FILL[1]!, strong: FILL[0]!, stroke: STROKE[0]!, marker: STROKE[0]!, edge: false, dash: false }
-      : { rest: FILL[level]!, strong: FILL[level]!, stroke: STROKE[level]!, marker: STROKE[level]!, edge: level === 2, dash: level === 2 };
+      ? { rest: FILL[1]!, strong: FILL[0]!, stroke: STROKE[0]!, marker: STROKE[0]!, edge: false }
+      : { rest: FILL[level]!, strong: FILL[level]!, stroke: STROKE[level]!, marker: STROKE[level]!, edge: level === 2, dash: level === 2 ? DASHED : undefined };
   });
 }
 
@@ -645,7 +654,7 @@ function Lines({ g, series, paint, n, emphasis, ring, entrance, enter }: MarksPr
             strokeWidth={2}
             strokeLinejoin="round"
             strokeLinecap="round"
-            strokeDasharray={paint[j]!.dash ? DASH : undefined}
+            strokeDasharray={paint[j]!.dash?.line}
           />
         ))}
       </motion.g>
@@ -671,7 +680,7 @@ function Swatch({ kind, paint }: { kind: Kind; paint: Paint }) {
       ) : kind === "bar" ? (
         <rect x={4} y={0} width={8} height={8} strokeWidth={1} className={paint.rest + (paint.edge ? " " + EDGE : " stroke-transparent")} />
       ) : (
-        <line x1={0} x2={16} y1={4} y2={4} stroke={paint.stroke} strokeWidth={2} strokeDasharray={paint.dash ? "4 3" : undefined} />
+        <line x1={0} x2={16} y1={4} y2={4} stroke={paint.stroke} strokeWidth={2} strokeDasharray={paint.dash?.swatch} />
       )}
     </svg>
   );
@@ -769,7 +778,7 @@ export function BarChart({ height = 240, xTitle = "Label", highlight = "last", e
   return <Chart kind="bar" height={height} xTitle={xTitle} highlight={highlight} entrance={entrance} {...rest} />;
 }
 
-/** A 2px line over the same grid. One series is fg with a marker on the current point; up to three step down, the third dashed, or up to five in data hues. */
+/** A 2px line over the same grid. One series is fg with a marker on the current point; up to three step down, the third dashed, or up to five in data hues, the third to fifth dashed, dotted and dash-dotted. */
 export function LineChart({ height = 240, xTitle = "Label", highlight = "last", entrance = true, ...rest }: LineChartProps) {
   return <Chart kind="line" height={height} xTitle={xTitle} highlight={highlight} entrance={entrance} {...rest} />;
 }
