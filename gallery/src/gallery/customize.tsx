@@ -266,12 +266,15 @@ function CustomizePanel() {
   );
 }
 
-/** The header's Customize button and its panel. On a phone the button is an icon and the panel is a sheet. */
-export default function Customize() {
+/**
+ * The header's Customize button and its panel. On a phone the button is an icon and the panel is a sheet. `defaultOpen`
+ * is for the shell, which mounts this once it is wanted: a press on its stand-in button opens the panel on arrival.
+ */
+export default function Customize({ defaultOpen = false }: { defaultOpen?: boolean }) {
   const { compact } = useDevice();
   const label = "Customize";
   return (
-    <Popover>
+    <Popover defaultOpen={defaultOpen}>
       {/* The id lets the look notice (look-notice.tsx) hand focus here. */}
       <PopoverTrigger asChild>
         {compact ? (
