@@ -85,3 +85,8 @@ jobs:
         run: npm run test:forced-colors --prefix gallery && npm run test:forced-colors --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Focus (never falls to the body after a route, a submit or a confirm; no layout shift on a slow phone)
+        run: npm run test:focus --prefix gallery && npm run test:focus --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
