@@ -55,7 +55,7 @@ dismiss(id);`,
     "The message is about one field. Show it under the field, as TextField does with error, because a toast leaves and the field stays wrong.",
     "The message must stay on the page, like an empty state or a running status. Put it in the page, because a toast leaves after about five seconds.",
     "A hint for a button or an icon. Use Tooltip.",
-    "A long message. The toast is a fixed 72px and cuts the description to one line, so say it in the page and link to it.",
+    "A long message. The toast grows to fit a title of two lines and a description of four, so a narrow screen or larger text keeps what to do, but past that it cuts. Say more in the page and link to it.",
   ],
   keyboard: [
     [["F8"], "Moves focus to the newest toast, so the keyboard can reach its buttons."],
@@ -173,6 +173,25 @@ function ErrorDemo() {
   );
 }
 
+function LongDemo() {
+  const { toast } = useToast(); // needs a <Toaster> above it
+  return (
+    <Launcher>
+      <Button
+        onClick={() =>
+          toast({
+            title: "Couldn't publish litt.design",
+            description: "The domain is still verifying DNS. Try again in about 10 minutes, or check the records in Settings.",
+            tone: "error",
+          })
+        }
+      >
+        Publish litt.design
+      </Button>
+    </Launcher>
+  );
+}
+
 /** The same burst, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
 function PhoneDemo() {
   return (
@@ -222,6 +241,15 @@ export default function ToastPage() {
           caption="Errors stay until you dismiss them, and they are announced assertively. Escape dismisses the toast that has focus. The exit slides right by the travel distance and fades, with no bounce. On a phone it drops down instead."
         >
           <ErrorDemo />
+        </Stage>
+
+        <Stage
+          title="A longer message"
+          tier="expressive"
+          code="LongDemo"
+          caption="The toast grows to fit its words: the title wraps to two lines and the description to four, so on a narrow screen or with larger text the part that says what to do stays. Toasts behind it peek at its height; open the stack and each takes its own. A height snaps, it never animates."
+        >
+          <LongDemo />
         </Stage>
       </Toaster>
 

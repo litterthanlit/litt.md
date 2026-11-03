@@ -4,6 +4,14 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-03 · Another way through: type to confirm, and toasts that fit their words
+
+A slide is a drag, and not everyone can drag. Slide to confirm takes the words to type as its other way through, the pattern GitHub and Vercel use to delete a project. And a toast now grows to fit what it says, so a narrow screen never cuts the part that says what to do.
+
+- **changed** `slide-confirm`: new `confirmText`, the words to type instead of sliding (WCAG 2.5.7). It adds "Or type to confirm" under the track, which opens a labelled field and a danger button with the label's verb ("Delete Atelier Nord"); the button waits for the exact words (trimmed, case kept), and it or Enter confirms by the slide's own path. Esc closes the field. It now installs `input` and `button`. After it confirms, the thumb is `aria-disabled` instead of `disabled`, so focus stays on it rather than falling to the page. Without `confirmText` nothing else changes.
+- **changed** `toast`: a toast grows to fit its words instead of cutting them (WCAG 1.4.10, 1.4.12). It is at least 72px tall; the title wraps to two lines and the description to four, so on a narrow screen a long error keeps the part that says what to do. Toasts behind the front peek at its height, the open list places each by its measured height, and a height change snaps. Short toasts look exactly as before. Nothing in your code has to change.
+- **changed** `settings`: Delete studio passes `confirmText`, so the studio can be deleted by typing its name. Reinstall `slide-confirm` with it.
+
 ## 2026-11-02 · Flat: a second material
 
 Flat says litt's depth ladder by fill alone, on neutral greys: one attribute on `<html>`, `data-material="flat"`, and the components follow. Press, the raised-and-sunken material, stays the default. A raised block under a pointer now reads one token, `--litt-block-hover`, so a material can set its own hover.

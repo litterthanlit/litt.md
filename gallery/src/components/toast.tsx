@@ -4,14 +4,16 @@
  * - <Toaster> is a provider plus a portal. Mount it once around the part of the
  *   app that fires toasts; children call useToast(). A bare toast() also works
  *   and routes to the Toaster mounted last.
- * - Look: litt-glass (float shadow), rounded-surface, 360px, fixed height (72px)
- *   so the stack math is plain arithmetic. No status dot: an error's title is
- *   --danger, the rest are --fg, and the words say the rest. A small ghost action and
- *   a round close button.
+ * - Look: litt-glass (float shadow), rounded-surface, 360px, at least 72px tall and
+ *   taller when its words wrap (WCAG 1.4.10 and 1.4.12): the title takes up to two
+ *   lines and the description up to four, so a narrow screen or larger text never cuts
+ *   what to do. No status dot: an error's title is --danger, the rest are --fg, and the
+ *   words say the rest. A small ghost action and a round close button.
  * - Stack: the newest is in front. Older toasts sit behind, 8px and 16px up,
- *   scaled 0.96 and 0.92, fading. Beyond three they wait out of sight and move
- *   up as space frees. Hover or keyboard focus expands the stack into a list.
- *   Only transform and opacity move, never height or top.
+ *   scaled 0.96 and 0.92, fading, cut to the front toast's height so only their top
+ *   edges show. Beyond three they wait out of sight and move up as space frees. Hover
+ *   or keyboard focus expands the stack into a list, each toast at its own measured
+ *   height. Only transform and opacity move; a height snaps, never animates.
  * - Motion: entering is expressive (from below by useTravel(), scale 0.98 to 1).
  *   Restacking is responsive. Exiting is useExit("expressive"): x by travel
  *   toward the right edge, fading, never bouncing.
@@ -48,6 +50,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -64,9 +67,9 @@ import { XIcon } from "@/components/icons";
 export type ToastTone = "neutral" | "success" | "error";
 
 export type ToastOptions = {
-  /** The message. Keep it to a few words: it is one line, or two when there is no description. */
+  /** The message. Keep it to a few words: it wraps to two lines at most. */
   title: ReactNode;
-  /** A second line in a quieter color, cut to one line. */
+  /** More detail in a quieter color, such as what to do next. It wraps to four lines at most, and the toast grows to fit. */
   description?: ReactNode;
   /** "neutral" (the default), "success" or "error". An error's title is the danger color; errors are announced at once and stay until dismissed. */
   tone?: ToastTone;
@@ -84,22 +87,25 @@ type ToastApi = {
   dismissAll: () => void;
 };
 
-/* Stack geometry. Fixed height keeps every position a sum of constants. */
+/* Stack geometry. A toast is at least MIN_HEIGHT tall, and is taken as that until it has been measured. */
 const MAX_VISIBLE = 3;
-const HEIGHT = 72;
+const MIN_HEIGHT = 72;
 const GAP = 8;
 const PEEK = 8;
 const SCALES = [1, 0.96, 0.92];
 const FADES = [1, 0.8, 0.55];
 const AUTO_DISMISS_MS = 5000;
 
-/* Where a toast sits in the stack. Docked at the bottom, older toasts go up; docked at the top, they go down. */
-function slotFor(depth: number, expanded: boolean, top: boolean) {
+type Slot = { y: number; scale: number; opacity: number };
+
+/* Where a toast sits in the stack. Docked at the bottom, older toasts go up; docked at the top, they go down.
+   `before` is how far the expanded list puts it from the edge: the newer visible toasts' heights and gaps. */
+function slotFor(depth: number, expanded: boolean, top: boolean, before: number): Slot {
   const d = Math.min(depth, MAX_VISIBLE - 1);
   const away = depth >= MAX_VISIBLE;
   const way = top ? 1 : -1;
   return expanded
-    ? { y: way * d * (HEIGHT + GAP), scale: 1, opacity: away ? 0 : 1 }
+    ? { y: way * before, scale: 1, opacity: away ? 0 : 1 }
     : { y: way * d * PEEK, scale: SCALES[d], opacity: away ? 0 : FADES[d] };
 }
 
@@ -194,10 +200,26 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
   const [pinned, setPinned] = useState(false);
   const [tabHidden, setTabHidden] = useState(() => document.visibilityState === "hidden");
 
+  const [heights, setHeights] = useState<Record<string, number>>({});
+  const measured = useCallback((id: string, h: number | null) => {
+    setHeights((all) => {
+      if (all[id] === h) return all;
+      const next = { ...all };
+      if (h === null) delete next[id];
+      else next[id] = h;
+      return next;
+    });
+  }, []);
+
   const expanded = hover || kbd || pinned;
   const paused = hover || focusIn || pinned || tabHidden;
   const count = Math.min(items.length, MAX_VISIBLE);
-  const height = count === 0 ? 0 : expanded ? count * HEIGHT + (count - 1) * GAP : HEIGHT + (count - 1) * PEEK;
+  /* Newest first: before[d] is the room the newer visible toasts take in the expanded list. */
+  const sizes = items.map((t) => heights[t.id] ?? MIN_HEIGHT).reverse();
+  const before = [0];
+  for (let d = 1; d < count; d++) before.push(before[d - 1] + sizes[d - 1] + GAP);
+  const front = sizes[0] ?? MIN_HEIGHT;
+  const height = count === 0 ? 0 : expanded ? before[count - 1] + sizes[count - 1] : front + (count - 1) * PEEK;
 
   useEffect(() => {
     const onVisibility = () => setTabHidden(document.visibilityState === "hidden");
@@ -291,17 +313,23 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
       }}
     >
       <AnimatePresence onExitComplete={syncFocus}>
-        {items.map((item, i) => (
-          <ToastView
-            key={item.id}
-            item={item}
-            depth={items.length - 1 - i}
-            expanded={expanded}
-            paused={paused}
-            top={top}
-            onDismiss={dismiss}
-          />
-        ))}
+        {items.map((item, i) => {
+          const depth = items.length - 1 - i;
+          return (
+            <ToastView
+              key={item.id}
+              item={item}
+              depth={depth}
+              slot={slotFor(depth, expanded, top, before[Math.min(depth, count - 1)])}
+              fit={!expanded && depth > 0 ? front : undefined}
+              expanded={expanded}
+              paused={paused}
+              top={top}
+              onDismiss={dismiss}
+              onMeasure={measured}
+            />
+          );
+        })}
       </AnimatePresence>
     </section>
   );
@@ -310,17 +338,24 @@ function ToastRegion({ items, dismiss }: { items: ToastItem[]; dismiss: (id: str
 function ToastView({
   item,
   depth,
+  slot,
+  fit,
   expanded,
   paused,
   top,
   onDismiss,
+  onMeasure,
 }: {
   item: ToastItem;
   depth: number;
+  slot: Slot;
+  /** The front toast's height, while this one peeks from behind it in the folded stack. */
+  fit: number | undefined;
   expanded: boolean;
   paused: boolean;
   top: boolean;
   onDismiss: (id: string) => void;
+  onMeasure: (id: string, height: number | null) => void;
 }) {
   const { compact, coarse } = useDevice();
   const enter = useTransition("expressive");
@@ -328,6 +363,7 @@ function ToastView({
   const travel = useTravel();
   const settled = useRef(false);
   const node = useRef<HTMLDivElement>(null);
+  const content = useRef<HTMLDivElement>(null);
   /* The way a swipe sent this toast. A timeout, the close button and Esc leave it null: they drop on compact
      screens and go right elsewhere. */
   const swiped = useRef<"left" | "right" | null>(null);
@@ -338,7 +374,6 @@ function ToastView({
 
   const tone = item.tone ?? "neutral";
   const away = depth >= MAX_VISIBLE;
-  const slot = slotFor(depth, expanded, top);
   /* Arrivals and timeouts come from, and go back to, the edge the stack is docked at. */
   const edge = top ? -travel : travel;
   const showContent = depth === 0 || expanded;
@@ -355,6 +390,21 @@ function ToastView({
       onDismiss(item.id);
     },
   });
+
+  /* The content's own height, which a folded toast behind the front keeps even while its box is cut to the front's. */
+  useLayoutEffect(() => {
+    const el = content.current;
+    if (!el) return;
+    const read = () => onMeasure(item.id, el.offsetHeight);
+    read();
+    if (typeof ResizeObserver === "undefined") return () => onMeasure(item.id, null);
+    const ro = new ResizeObserver(read);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      onMeasure(item.id, null);
+    };
+  }, [item.id, onMeasure]);
 
   /* A finger resting on a toast holds its clock, so it never leaves under the thumb. */
   useEffect(() => {
@@ -394,7 +444,8 @@ function ToastView({
       aria-live={tone === "error" ? "assertive" : "polite"}
       aria-atomic="true"
       inert={away}
-      className={"litt-glass absolute inset-x-0 h-18 rounded-surface " + (top ? "top-0 origin-bottom" : "bottom-0 origin-top")}
+      className={"litt-glass absolute inset-x-0 rounded-surface " + (top ? "top-0 origin-bottom" : "bottom-0 origin-top")}
+      style={fit ? { ...drag.panel.style, height: fit } : drag.panel.style}
       onPointerDown={(e) => {
         /* Only a toast that shows its content can be swiped; the ones peeking from behind wait their turn. */
         if (!showContent) return;
@@ -430,39 +481,43 @@ function ToastView({
         settled.current = true;
       }}
     >
-      <motion.div
-        className="flex h-full items-center gap-3 px-4"
-        initial={false}
-        animate={{ opacity: showContent ? 1 : 0, transition: move }}
-      >
-        <div className="min-w-0 flex-1">
-          <p className={"text-small font-title " + (tone === "error" ? "text-danger " : "text-fg ") + (item.description ? "truncate" : "line-clamp-2")}>{item.title}</p>
-          {item.description && <p className="truncate text-caption font-normal text-fg-subtle">{item.description}</p>}
-        </div>
-        {item.action && (
+      {/* A folded toast cut to the front's height hides the rest here: clipping the glass itself would cut its shadow. */}
+      <div className={"h-full " + (fit ? "overflow-hidden" : "")}>
+        <motion.div
+          ref={content}
+          className="flex min-h-18 items-center gap-3 px-4 py-3"
+          initial={false}
+          animate={{ opacity: showContent ? 1 : 0, transition: move }}
+        >
+          <div className="min-w-0 flex-1">
+            <p className={"line-clamp-2 text-small font-title " + (tone === "error" ? "text-danger" : "text-fg")}>{item.title}</p>
+            {item.description && <p className="line-clamp-4 text-caption font-normal text-fg-subtle">{item.description}</p>}
+          </div>
+          {item.action && (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="pointer-coarse:h-control-md"
+              onClick={() => {
+                item.action?.onClick();
+                onDismiss(item.id);
+              }}
+            >
+              {item.action.label}
+            </Button>
+          )}
           <Button
             size="sm"
             variant="ghost"
-            className="pointer-coarse:h-control-md"
-            onClick={() => {
-              item.action?.onClick();
-              onDismiss(item.id);
-            }}
+            iconOnly
+            aria-label="Dismiss notification"
+            className="pointer-coarse:-mr-1.5 pointer-coarse:h-control-md pointer-coarse:w-control-md"
+            onClick={() => onDismiss(item.id)}
           >
-            {item.action.label}
+            <XIcon />
           </Button>
-        )}
-        <Button
-          size="sm"
-          variant="ghost"
-          iconOnly
-          aria-label="Dismiss notification"
-          className="pointer-coarse:-mr-1.5 pointer-coarse:h-control-md pointer-coarse:w-control-md"
-          onClick={() => onDismiss(item.id)}
-        >
-          <XIcon />
-        </Button>
-      </motion.div>
+        </motion.div>
+      </div>
     </motion.div>
   );
 }
