@@ -133,6 +133,19 @@ export default defineConfig({
   base: "/",
   plugins: [pageMeta(), pagePreload(), react(), tailwindcss()],
   resolve: { alias: { "@": here("./src") } },
+  build: {
+    rollupOptions: {
+      output: {
+        /* React and Motion in chunks of their own: every page needs them, they change only with their package, and a
+           deploy that touches any page would otherwise send them again inside the main chunk. */
+        manualChunks(id) {
+          if (/\/node_modules\/(?:react|react-dom|scheduler)\//.test(id)) return "react";
+          if (/\/node_modules\/(?:motion|framer-motion|motion-dom|motion-utils)\//.test(id)) return "motion";
+          return undefined;
+        },
+      },
+    },
+  },
   define: {
     __LITT_MD_VERSION__: JSON.stringify(littVersion),
     __GALLERY_VERSION__: JSON.stringify(gallery.version),
