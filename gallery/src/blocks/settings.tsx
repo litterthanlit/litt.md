@@ -204,6 +204,7 @@ export function Settings() {
           <SlideConfirm
             label={`Slide to delete ${STUDIO}`}
             confirmedLabel="Studio deleted"
+            confirmText={STUDIO}
             onConfirm={() => toast({ title: `${STUDIO} deleted`, description: "Its projects and deploys are gone.", tone: "neutral" })}
           />
         </FormSection>

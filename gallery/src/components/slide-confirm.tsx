@@ -15,9 +15,14 @@
  *   become the confirmed label, and onConfirm runs once. Esc while dragging sends it back.
  * - Keyboard and assistive tech: the thumb is a real button named by the label. Enter, Space or a screen reader's
  *   activate confirms, because a key press is already deliberate; a mouse click on the thumb does not, or the slide
- *   would be pointless. Every gesture has a button that does the same thing. Focus is the 2px ring on the thumb.
- * - After it confirms, the button is disabled and a polite status says the confirmed label. Remount it (a new key)
- *   to ask again.
+ *   would be pointless. Focus is the 2px ring on the thumb.
+ * - Typing (confirmText): for a mouse or a pen that cannot drag (WCAG 2.5.7), a quiet "Or type to confirm" under the
+ *   track opens a field labelled with the words to type and a danger button that says the label's verb ("Delete
+ *   Atelier Nord"). The button waits until the field holds exactly those words (trimmed, case kept, pasting is fine);
+ *   it or Enter confirms by the same path as the slide. Esc in the field closes it and puts focus back on the link.
+ *   It shows at once, with nothing animating. Without confirmText nothing is added.
+ * - After it confirms, the thumb is aria-disabled, not disabled, so focus stays on it (a typed confirm moves focus
+ *   there too), and a polite status says the confirmed label. Remount it (a new key) to ask again.
  * - Touch: the thumb owns the drag (touch-action none, data-no-drag), so a sheet never moves under it.
  * - Disabled: the track at fg 3%, the thumb --surface-2 with a --line edge, no pointer, no tab stop. The words stay
  *   --fg-subtle, because they still say what it would do, as a disabled Slider's end words do.
@@ -34,6 +39,8 @@ import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent
 import { animate, motion, useMotionValue, useTransform, type AnimationPlaybackControls } from "motion/react";
 import { useFun, useTransition } from "@/motion";
 import { CheckIcon, ChevronRightIcon } from "@/components/icons";
+import { TextField } from "@/components/input";
+import { Button } from "@/components/button";
 
 export type SlideConfirmSize = "md" | "lg";
 
@@ -48,7 +55,13 @@ export type SlideConfirmProps = {
   size?: SlideConfirmSize;
   /** Makes it unavailable: muted, skipped by Tab, and ignoring the pointer. */
   disabled?: boolean;
-  /** Extra classes for the track, such as a width. It fills its container by default. */
+  /**
+   * The words to type instead of sliding, such as the project's name: "Atelier Nord". Adds "Or type to confirm" under
+   * the track, for anyone who cannot drag. The match is exact after trimming, case included. The confirm button says
+   * the label without its "Slide to".
+   */
+  confirmText?: string;
+  /** Extra classes for the track (with confirmText, the track and its typing panel), such as a width. It fills its container by default. */
   className?: string;
 };
 
@@ -61,7 +74,7 @@ const track: Record<SlideConfirmSize, string> = {
 const SLACK = 4;
 
 /** A track with a thumb to slide to the end. The thumb is also a button: Enter, Space or a screen reader confirms. */
-export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size = "md", disabled = false, className = "" }: SlideConfirmProps) {
+export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confirmText, size = "md", disabled = false, className = "" }: SlideConfirmProps) {
   const back = useTransition("responsive");
   const hintId = useId();
   const box = useRef<HTMLDivElement>(null);
@@ -70,6 +83,11 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
   const [max, setMax] = useState(0); // how far the thumb can travel
   const [inner, setInner] = useState(0); // the track's width inside its padding
   const [done, setDone] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [typed, setTyped] = useState("");
+  const panelId = useId();
+  const opener = useRef<HTMLButtonElement>(null);
+  const field = useRef<HTMLInputElement>(null);
   const drag = useRef<{ from: number; id: number } | null>(null);
   /* Fun mode: the throw. The last moves, to read the speed the thumb is let go at, and the flight it is on. */
   const fun = useFun();
@@ -129,6 +147,27 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
     setDone(true);
     onConfirm?.();
   };
+  const matches = confirmText !== undefined && typed.trim() === confirmText;
+  const typeConfirm = () => {
+    if (!matches || done || disabled) return;
+    /* Focus moves before the commit that disables the field and the button, so it never falls to the page. */
+    thumb.current?.focus();
+    confirm();
+  };
+  useEffect(() => {
+    if (typing) field.current?.focus();
+  }, [typing]);
+  const onFieldKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      typeConfirm();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setTyping(false);
+      opener.current?.focus();
+    }
+  };
+  const verb = label.replace(/^slide to /i, "").replace(/^./, (c) => c.toUpperCase());
   const goBack = () => {
     drag.current = null;
     if (fun) return fly(0, 0);
@@ -192,7 +231,7 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
 
   const ink = done ? "text-fg" : "text-fg-subtle"; // disabled words stay fg-subtle: they still say what it would do, as a disabled Slider's end words do
 
-  return (
+  const slider = (
     <div
       ref={box}
       data-no-drag=""
@@ -200,7 +239,7 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
         "relative isolate flex w-full items-center overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) select-none forced-colors:border " +
         track[size] +
         " " +
-        className
+        (confirmText === undefined ? className : "")
       }
     >
       {/* The part the thumb has passed: a full-width band scaled from the left, so only a transform changes. */}
@@ -219,7 +258,8 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
       <motion.button
         ref={thumb}
         type="button"
-        disabled={disabled || done}
+        disabled={disabled}
+        aria-disabled={done || undefined}
         aria-label={label}
         aria-describedby={hintId}
         style={fun ? { x: walled, scaleX: squash, originX: wall } : { x }}
@@ -256,6 +296,42 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, size =
       <span role="status" className="sr-only">
         {done ? confirmedLabel : ""}
       </span>
+    </div>
+  );
+  if (confirmText === undefined) return slider;
+  return (
+    <div className={"grid w-full gap-2 " + className}>
+      {slider}
+      <Button
+        ref={opener}
+        variant="ghost"
+        size="sm"
+        disabled={disabled || done}
+        aria-expanded={typing}
+        aria-controls={typing ? panelId : undefined}
+        onClick={() => setTyping((t) => !t)}
+        className="justify-self-start pointer-coarse:h-control-md"
+      >
+        Or type to confirm
+      </Button>
+      {typing && (
+        <div id={panelId} className="grid gap-3">
+          <TextField
+            ref={field}
+            label={`Type "${confirmText}" to confirm`}
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+            onKeyDown={onFieldKeyDown}
+            disabled={disabled || done}
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+          />
+          <Button variant="danger" disabled={!matches || disabled || done} onClick={typeConfirm} className="justify-self-start">
+            {verb}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
