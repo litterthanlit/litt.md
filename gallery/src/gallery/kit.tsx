@@ -346,7 +346,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
   if (code === undefined) {
     return (
       <section className="grid gap-6" aria-label={title}>
-        <div className={"litt-raised relative grid overflow-visible rounded-surface p-8 sm:p-12 " + place + " " + height}>{children}</div>
+        <div className={"litt-raised relative grid overflow-visible rounded-surface p-4 min-[24rem]:p-8 sm:p-12 " + place + " " + height}>{children}</div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           {heading}
           {onReplay && (
@@ -394,7 +394,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
         <div className={"litt-raised relative order-1 grid overflow-visible rounded-surface " + height}>
           <TabsPanels className="grid min-w-0">
             {/* The preview remounts when you come back to it, so a replay always starts clean. */}
-            <TabsPanel value="preview" tabIndex={-1} className={"grid p-8 sm:p-12 " + place}>
+            <TabsPanel value="preview" tabIndex={-1} className={"grid p-4 min-[24rem]:p-8 sm:p-12 " + place}>
               {children}
             </TabsPanel>
             <TabsPanel value="code" tabIndex={-1} className="min-w-0">

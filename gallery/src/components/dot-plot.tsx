@@ -548,33 +548,36 @@ export function DotPlot({
         </ul>
       )}
 
-      <table className="sr-only [&_th]:font-normal">
-        <caption>{label}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Range</th>
-            <th scope="col">Count{unit ? ` (${unitFor(2)})` : ""}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {g.occupied.map((i) => (
-            <tr key={i}>
-              <th scope="row">{rangeOf(i)}</th>
-              <td>{g.counts[i]}</td>
+      {/* A table will not shrink to sr-only's 1px, so a wrapper clips it; otherwise a long one widens a phone's page. */}
+      <div className="sr-only">
+        <table className="[&_th]:font-normal">
+          <caption>{label}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Range</th>
+              <th scope="col">Count{unit ? ` (${unitFor(2)})` : ""}</th>
             </tr>
-          ))}
-        </tbody>
-        {extras.length > 0 && (
-          <tfoot>
-            {extras.map(([k, v]) => (
-              <tr key={k + v}>
-                <th scope="row">{k}</th>
-                <td>{v}</td>
+          </thead>
+          <tbody>
+            {g.occupied.map((i) => (
+              <tr key={i}>
+                <th scope="row">{rangeOf(i)}</th>
+                <td>{g.counts[i]}</td>
               </tr>
             ))}
-          </tfoot>
-        )}
-      </table>
+          </tbody>
+          {extras.length > 0 && (
+            <tfoot>
+              {extras.map(([k, v]) => (
+                <tr key={k + v}>
+                  <th scope="row">{k}</th>
+                  <td>{v}</td>
+                </tr>
+              ))}
+            </tfoot>
+          )}
+        </table>
+      </div>
     </div>
   );
 }

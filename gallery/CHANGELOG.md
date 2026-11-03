@@ -20,6 +20,7 @@ A slide is a drag, and not everyone can drag. Slide to confirm takes the words t
 - **changed** `chart`: a line in the teal, violet or rose data hue is dashed, dotted or dash-dotted, in the legend swatch too, so five lines are never told apart by color alone (WCAG 1.4.1). Blue and amber, the first two hues, stay solid, and the dash follows the hue as the color does. Bars and the quiet foreground are as before.
 - **changed** `legend`: new `lines`, for a Legend that keys a LineChart: a teal, violet or rose swatch is cut dashed, dotted or dash-dotted, as the chart draws that line. Blue and amber, and every swatch without `lines`, are as before.
 - **changed** `time-scrubber`: a warning's mark carries a 6px diamond on its top and a danger's a 6px dot, so status is never color alone, and in forced colors, where every mark is CanvasText, they still differ (WCAG 1.4.1). Neutral and success marks are as before.
+- **changed** `dot-plot`: its hidden data table sits in a clipped wrapper, as the chart's does, so a long one never widens a phone's page (WCAG 1.4.10). A table will not shrink to `sr-only`'s 1px on its own. Screen readers read the same table, and nothing you see changes.
 
 ## 2026-11-02 · Flat: a second material
 
