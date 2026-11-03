@@ -23,6 +23,7 @@ import { Segmented } from "@/components/segmented";
 import { Tag } from "@/components/tag";
 import { Tree, type TreeNode } from "@/components/tree";
 import { useDevice } from "@/motion";
+import { Heading } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -161,7 +162,7 @@ export function Deployment() {
         <Breadcrumb label="Where this deploy is" items={DEPLOY.trail} />
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="grid gap-1">
-            <h1 className="text-h1 text-fg">{DEPLOY.commit}</h1>
+            <Heading level={1} className="text-h1 text-fg">{DEPLOY.commit}</Heading>
             <p className="text-body text-fg-muted">
               Deploy {DEPLOY.id} of {DEPLOY.project}, started by{" "}
               <HoverCard>

@@ -29,6 +29,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import { useDevice } from "@/motion";
 import { Button } from "@/components/button";
 import { DialogSheet } from "@/components/dialog";
+import { useFramed } from "@/components/framed";
 import { MenuIcon, XIcon } from "@/components/icons";
 
 /* Whether a link is drawn in the phone sheet, and how to close it. */
@@ -49,7 +50,8 @@ export type AppShellProps = {
   viewportHeight?: string;
   /**
    * The page goes in the main landmark. Set false when the shell is shown inside another page that has its own main
-   * landmark, such as a preview in a docs site: the page area is then a div, so the page keeps one main.
+   * landmark, such as a preview in a docs site: the page area is then a div, so the page keeps one main. It is false
+   * by default inside a Framed, and true otherwise.
    */
   mainLandmark?: boolean;
   /** Extra classes for the shell, such as a background. */
@@ -66,11 +68,12 @@ export function AppShell({
   menuLabel = "Open navigation",
   sheetTitle = "Navigation",
   viewportHeight = "100svh",
-  mainLandmark = true,
+  mainLandmark,
   className = "",
   children,
 }: AppShellProps) {
-  const PageArea = mainLandmark ? "main" : "div";
+  const framed = useFramed();
+  const PageArea = (mainLandmark ?? !framed) ? "main" : "div";
   const { compact } = useDevice();
   const [open, setOpen] = useState(false);
   /* A window that grows past the compact width has no sheet to leave open. */

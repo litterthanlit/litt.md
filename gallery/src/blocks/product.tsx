@@ -26,6 +26,7 @@ import { OptionPicker } from "@/components/option-picker";
 import { Price, type Money } from "@/components/price";
 import { defaultPicks, findVariant, optionsFor, type Product, type ProductImage } from "@/components/product-card";
 import { toast } from "@/components/toast";
+import { Heading } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -182,7 +183,7 @@ export function ProductPage() {
         <div className="grid content-start gap-8 @min-[40rem]:sticky @min-[40rem]:top-8 @min-[40rem]:self-start">
           <header className="grid gap-1">
             {product.vendor && <p className="text-caption font-normal text-fg-subtle">{product.vendor}</p>}
-            <h1 className="text-h1 text-fg">{product.title}</h1>
+            <Heading level={1} className="text-h1 text-fg">{product.title}</Heading>
             {variant && <Price price={variant.price} compareAt={variant.compareAt} saving className="text-body" />}
           </header>
 

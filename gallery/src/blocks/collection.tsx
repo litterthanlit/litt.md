@@ -18,6 +18,7 @@ import { ProductCard, ProductGrid, isSoldOut, priceRange, type Product } from "@
 import { Segmented } from "@/components/segmented";
 import { Select } from "@/components/select";
 import { Empty } from "@/components/states";
+import { Heading } from "@/components/framed";
 
 /* ----------------------------------------------------------------- data */
 
@@ -113,9 +114,9 @@ export function Collection() {
       <header className="flex items-start justify-between gap-4">
         {/* The title and its count as one line in two inks; the h1 stays the name alone. */}
         <div className="flex flex-wrap items-baseline gap-x-2 text-h1">
-          <h1 id={titleId} className="text-fg">
+          <Heading level={1} id={titleId} className="text-fg">
             Prints
-          </h1>
+          </Heading>
           <p className="font-normal text-fg-muted">
             {shown.length} {shown.length === 1 ? "print" : "prints"}, made to order.
           </p>
