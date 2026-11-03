@@ -70,3 +70,8 @@ jobs:
         run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Reflow (no page scrolls sideways at 320px)
+        run: npm run test:reflow --prefix gallery && npm run test:reflow --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y

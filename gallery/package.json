@@ -25,6 +25,7 @@
     "test:agents": "node scripts/test-agents.mjs",
     "test:a11y": "node scripts/a11y.mjs",
     "test:motion": "node scripts/reduced-motion.mjs",
+    "test:reflow": "node scripts/reflow.mjs",
     "test:shopify": "node scripts/test-shopify.mjs",
     "test:wall": "node scripts/wall.mjs",
     "test:home": "node scripts/home.mjs",
