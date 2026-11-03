@@ -259,8 +259,8 @@ const InPicker = createContext(false);
 const HOVER =
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
 /** Day cells: 40px, 44px on a finger. In a container narrower than seven of them the columns share what there is. */
-const CELL = "h-10 w-10 max-w-full pointer-coarse:h-11 pointer-coarse:w-11";
-const ROW = "grid grid-cols-7";
+const CELL = "aspect-square w-full";
+const ROW = "grid grid-cols-[repeat(7,minmax(0,2.5rem))] pointer-coarse:grid-cols-[repeat(7,minmax(0,2.75rem))]";
 
 const dayBase =
   "relative grid size-full place-items-center rounded-control text-small tabular-nums select-none " +
@@ -457,7 +457,7 @@ export function Calendar<M extends CalendarMode = "single">({
       ref={root}
       role={label ? "group" : undefined}
       aria-label={label}
-      className={"grid w-max max-w-full content-start gap-3 " + className}
+      className={"grid w-full max-w-max content-start gap-3 " + className}
     >
       <div className="flex items-center justify-between gap-2">
         {/* The grid's name, and a polite live region, so paging is announced. The animated title is only seen. */}
@@ -512,7 +512,7 @@ export function Calendar<M extends CalendarMode = "single">({
               key={w.long}
               role="columnheader"
               aria-label={w.long}
-              className="grid h-6 w-10 max-w-full place-items-center text-caption text-fg-subtle pointer-coarse:w-11"
+              className="grid h-6 w-full place-items-center text-caption text-fg-subtle"
             >
               {w.short}
             </div>
