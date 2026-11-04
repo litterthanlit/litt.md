@@ -71,6 +71,11 @@ jobs:
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
+      - name: Corners (nothing rubs a rounded box's curve at any shape, sliders at both ends)
+        run: npm run test:corners --prefix gallery && npm run test:corners --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
   # The WCAG regression checks run beside the main job, on their own build, so neither job nears its time limit.
   wcag:
     runs-on: ubuntu-latest

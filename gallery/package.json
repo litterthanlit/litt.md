@@ -29,6 +29,7 @@
     "test:text-zoom": "node scripts/text-zoom.mjs",
     "test:forced-colors": "node scripts/forced-colors.mjs",
     "test:focus": "node scripts/focus.mjs",
+    "test:corners": "node scripts/corners.mjs",
     "test:shopify": "node scripts/test-shopify.mjs",
     "test:wall": "node scripts/wall.mjs",
     "test:home": "node scripts/home.mjs",
