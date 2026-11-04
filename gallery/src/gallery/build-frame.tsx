@@ -8,15 +8,32 @@
  */
 import type { ReactNode } from "react";
 import { Framed } from "@/components/framed";
-import { DeviceProvider } from "@/motion";
+import { DeviceProvider, SoftSwap } from "@/motion";
 import { useCustomize } from "./customize-state";
 import { stayPut } from "./kit";
 import { lookAttributes } from "./look";
 
-export function BuildFrame({ label, phone, split, children }: { label: string; phone: boolean; split: boolean; children: () => ReactNode }) {
+/** `swapKey` names what the frame shows: a new one swaps it in soft focus (SoftSwap, R4). */
+export function BuildFrame({
+  label,
+  phone,
+  split,
+  swapKey,
+  children,
+}: {
+  label: string;
+  phone: boolean;
+  split: boolean;
+  swapKey: string;
+  children: () => ReactNode;
+}) {
   const { look } = useCustomize();
   const copy = (dark: boolean | null) => {
-    const framed = <Framed>{children()}</Framed>;
+    const framed = (
+      <Framed>
+        <SoftSwap swapKey={swapKey}>{children()}</SoftSwap>
+      </Framed>
+    );
     const sized = phone ? (
       <div className="mx-auto w-full max-w-sm">
         <DeviceProvider mode="phone">{framed}</DeviceProvider>

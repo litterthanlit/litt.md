@@ -75,7 +75,7 @@ export default function BuildPage() {
             </div>
           </div>
 
-          <BuildFrame label={label} phone={phone} split={split}>
+          <BuildFrame label={label} phone={phone} split={split} swapKey={screen.id}>
             {() => screenView(screen, phone)}
           </BuildFrame>
 

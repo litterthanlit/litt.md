@@ -4,6 +4,12 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-04 · Soft focus: the motion engine's one blur
+
+The gallery's new Build page shows a look on whole screens, and switching screens is the first swap to arrive in soft focus, the one motion R4 lets blur.
+
+- **changed** `motion`: new `SoftSwap`, litt's one soft focus (R4): content a hand swaps arrives in a fade with a blur of at most 4px that clears on the responsive spring, never on the first paint, and not at all under reduced motion. `LIMITS.softBlur` is 4. Nothing in your code has to change.
+
 ## 2026-11-03 · Another way through: type to confirm, and toasts that fit their words
 
 A slide is a drag, and not everyone can drag. Slide to confirm takes the words to type as its other way through, the pattern GitHub and Vercel use to delete a project. And a toast now grows to fit what it says, so a narrow screen never cuts the part that says what to do.

@@ -15,6 +15,8 @@
  * - a link inside a screen moves the gallery off #build,
  * - Copy install, Copy setup or Copy prompt copy the wrong text,
  * - outside the frame, main holds anything but one accent fill, Copy install (the frame is its own view, R6),
+ * - a screen change does not arrive in soft focus (a blur above 0 and never above 4px, cleared to none), blurs under
+ *   reduced motion, or anything blurs on the first paint (R4, SoftSwap),
  * - the page throws.
  *
  * Needs Playwright, found as home.mjs finds it.
@@ -60,8 +62,11 @@ const check = (ok, claim) => (ok ? passed : problems).push(claim);
 
 const browser = await chromium.launch();
 
-async function open(hash, { phone = false, query = "" } = {}) {
-  const ctx = await browser.newContext(phone ? { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true } : { viewport: { width: 1440, height: 900 } });
+async function open(hash, { phone = false, query = "", reduce = false } = {}) {
+  const ctx = await browser.newContext({
+    ...(phone ? { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true } : { viewport: { width: 1440, height: 900 } }),
+    reducedMotion: reduce ? "reduce" : "no-preference",
+  });
   const pg = await ctx.newPage();
   const errors = [];
   pg.on("pageerror", (e) => errors.push(String(e)));
@@ -169,6 +174,50 @@ const fillsOutsideFrame = (pg) =>
   }
   check(!strayed, "twenty Tabs from the frame never focus inside the dark copy");
   for (const e of errors) problems.push(`views: ${e}`);
+  await ctx.close();
+}
+
+/* ---------- soft focus (R4, SoftSwap) ---------- */
+/* Every animation frame for `ms`: the frame's content filter and which screen it holds. Started before the click, so
+   the first frames of the swap are in it. */
+const sample = (pg, ms = 600) =>
+  pg.evaluate(
+    (ms) =>
+      new Promise((done) => {
+        const out = [];
+        const t0 = performance.now();
+        const tick = () => {
+          const el = document.querySelector("[data-build-frame] [data-soft-swap]");
+          out.push({ t: performance.now() - t0, filter: el ? getComputedStyle(el).filter : "missing", opacity: el ? Number(getComputedStyle(el).opacity) : 0, screen: el?.querySelector("[data-screen]")?.getAttribute("data-screen") ?? null });
+          if (performance.now() - t0 < ms) requestAnimationFrame(tick);
+          else done(out);
+        };
+        requestAnimationFrame(tick);
+      }),
+    ms,
+  );
+const blurPx = (f) => Number(/blur\(([\d.]+)px\)/.exec(f)?.[1] ?? 0);
+{
+  const { ctx, pg, errors } = await open("build");
+  const first = await sample(pg);
+  check(first.every((s) => blurPx(s.filter) === 0), "nothing blurs on the first paint of #build");
+  const during = sample(pg, 1000);
+  await pick(pg, "Screen", "Product");
+  const swap = await during;
+  const peak = Math.max(...swap.map((s) => blurPx(s.filter)));
+  check(peak > 0 && peak <= 4, `a screen change arrives in soft focus, its blur peaking at ${peak}px (above 0, at most 4)`);
+  check(swap.at(-1).filter === "none" && swap.at(-1).screen === "product", `the blur clears to none on the new screen (${swap.at(-1).filter}, ${swap.at(-1).screen})`);
+  for (const e of errors) problems.push(`soft focus: ${e}`);
+  await ctx.close();
+}
+{
+  const { ctx, pg, errors } = await open("build", { reduce: true });
+  const during = sample(pg, 400);
+  await pick(pg, "Screen", "Agent");
+  const swap = await during;
+  check(swap.every((s) => blurPx(s.filter) === 0), "under reduced motion a screen change never blurs");
+  check(swap.at(-1).screen === "agent" && swap.every((s) => s.opacity === 1), `under reduced motion the new screen comes in with no fade (lowest opacity ${Math.min(...swap.map((s) => s.opacity))})`);
+  for (const e of errors) problems.push(`soft focus reduced: ${e}`);
   await ctx.close();
 }
 
