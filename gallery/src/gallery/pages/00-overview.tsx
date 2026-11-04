@@ -27,6 +27,9 @@
  *   and filtering never play fifty entrances at once. The pointer coming onto it, a press or focus wakes it in place
  *   (StillMotion active={false}): nothing remounts and nothing replays, and from then on it moves as it does on its
  *   own page, fun mode included. The wall moves where your hand is and nowhere else.
+ * - A tile opens into its mosaic (mosaic.tsx, after s-p.studio, 2026-11-04): every demo on its page, live, dealt out
+ *   from the tile and gathered back into it, while the page steps back into soft focus. The expand button beside the
+ *   name opens it, and so does a click on the tile's empty ground; the name still goes to the page.
  * - Nothing on the wall moves by itself (WCAG 2.2.2). A tile that shows a process (a plan working through its steps,
  *   tabs taking turns) plays it only while the pointer rests on it, pauses when the pointer leaves, and stops for good
  *   once you press or focus inside (useLoop in tile.tsx). At rest and under reduced motion it shows one finished state.
@@ -43,9 +46,10 @@ import { Toaster } from "@/components/toast";
 import { pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
 import { Button } from "@/components/button";
-import { CheckIcon, CopyIcon } from "@/components/icons";
+import { CheckIcon, CopyIcon, ExpandIcon } from "@/components/icons";
 import { CopyStatus, useCopy } from "../docs/copy";
 import { Deck } from "../deck";
+import { Mosaic } from "../mosaic";
 import { SearchButton } from "../search";
 import { PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
 
@@ -84,11 +88,13 @@ function useNear<T extends HTMLElement>(ref: React.RefObject<T | null>): boolean
 }
 
 /**
- * One component on the wall: the real one, live, on its tile, with its name under it. It mounts as it nears
- * the screen and stays out of reach for two frames, so a demo that moves focus as it mounts cannot pull the page.
- * It is held still until the pointer, a press or focus reaches it.
+ * One component on the wall: the real one, live, on its tile, with its name under it and the button that opens its
+ * mosaic beside the name. It mounts as it nears the screen and stays out of reach for two frames, so a demo that
+ * moves focus as it mounts cannot pull the page. It is held still until the pointer, a press or focus reaches it.
+ * A click on the tile's empty ground (data-open-zone: never on the component itself) opens the mosaic too.
  */
-function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
+function Tile({ page, onOpen, children }: { page: PageEntry; onOpen: (tile: HTMLElement, button: HTMLElement | null) => void; children: ReactNode }) {
+  const button = useRef<HTMLButtonElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const near = useNear(ref);
   const [settled, setSettled] = useState(false);
@@ -107,21 +113,26 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
     <div
       ref={ref}
       data-tile={page.id}
-      onPointerEnter={wake}
-      onPointerDown={wake}
-      onFocus={wake}
+      /* A finger arrives with its press, so a touch, a press or focus wakes the tile only on the component, never on its
+         name or open button: waking can change a component's height (a plan at its first step), which would move them
+         under the tap before its click lands. */
+      onPointerEnter={(e) => e.pointerType !== "touch" && wake()}
+      onPointerDown={(e) => !(e.target as Element).closest("[data-tile-foot]") && wake()}
+      onFocus={(e) => !e.target.closest("[data-tile-foot]") && wake()}
+      onClick={(e) => (e.target as HTMLElement).hasAttribute("data-open-zone") && ref.current && onOpen(ref.current, button.current)}
+      data-open-zone
       className={
-        "group/tile grid min-w-0 grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
+        "group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
       }
     >
-      <div inert={!settled} className="grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
+      <div inert={!settled} data-open-zone className="col-span-2 grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
         {near && (
           <StillMotion active={!awake}>
-            <div className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">{children}</div>
+            <div data-open-zone className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">{children}</div>
           </StillMotion>
         )}
       </div>
-      <h2 className="flex px-4 pb-3 text-small font-normal">
+      <h2 data-tile-foot className="flex min-w-0 px-4 pb-3 text-small font-normal">
         <a
           href={`#${page.id}`}
           className={
@@ -133,6 +144,20 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
           {page.title}
         </a>
       </h2>
+      <div data-tile-foot className="flex items-start pr-2 pb-2">
+        <Button
+          ref={button}
+          iconOnly
+          variant="ghost"
+          size="sm"
+          aria-haspopup="dialog"
+          aria-label={`Open every ${page.title} demo here`}
+          onClick={() => ref.current && onOpen(ref.current, button.current)}
+          className="text-fg-subtle group-hover/tile:text-fg"
+        >
+          <ExpandIcon />
+        </Button>
+      </div>
     </div>
   );
 }
@@ -188,6 +213,8 @@ function Wall({ list }: { list: PageEntry[] }) {
   const funList = list.filter((p) => p.fun);
   const shown = verb === "all" ? list : verb === "fun" ? funList : list.filter((p) => p.verbs?.includes(verb));
   const verbs = VERBS.filter((v) => list.some((p) => p.verbs?.includes(v)));
+  /* The tile whose mosaic is open, and the button focus goes back to when it closes. */
+  const [opened, setOpened] = useState<{ page: PageEntry; tile: HTMLElement; button: HTMLElement | null } | null>(null);
   return (
     <section aria-label="Every component" className="grid gap-6">
       <fieldset className="m-0 min-w-0 border-0 p-0">
@@ -209,12 +236,13 @@ function Wall({ list }: { list: PageEntry[] }) {
       <ul className="grid gap-4 md:grid-flow-row-dense md:grid-cols-2">
         {shown.map((p) => (
           <li key={p.id} className={"grid min-w-0 " + (TALL.has(p.id) ? "md:row-span-2" : "")}>
-            <Tile page={p}>
+            <Tile page={p} onOpen={(tile, button) => setOpened({ page: p, tile, button })}>
               <PageTile page={p} />
             </Tile>
           </li>
         ))}
       </ul>
+      {opened && <Mosaic key={opened.page.id} page={opened.page} tile={opened.tile} returnTo={opened.button} onClosed={() => setOpened(null)} />}
     </section>
   );
 }
