@@ -1408,7 +1408,7 @@ function build(demos = []) {
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
   const onDisk = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
-  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "rules.ts", "device.ts", "drag.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
+  const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "rules.ts", "device.ts", "drag.ts", "hand.ts", "fun.tsx", "soft-swap.tsx"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
   // A block is named after the page that shows it, so its name finds that page, and never after a component.
   const blockFiles = blockNames.map((b) => path.join(blocksDir, `${b}.tsx`));

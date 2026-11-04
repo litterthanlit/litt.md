@@ -189,11 +189,35 @@ export function lookStep(look: Look, site: string): string | null {
   ].join("\n");
 }
 
+/** A screen's prompt: what a person pastes into their coding agent to build one Build page screen in their project, in this look. */
+export function screenPrompt(
+  screen: { name: string; exportName: string; install: string; importPath: string },
+  look: Look,
+  site: string,
+): string {
+  const id = /\/r\/([\w-]+)\.json/.exec(screen.install)?.[1] ?? screen.name.toLowerCase();
+  const steps = [
+    `${screen.install}   (skip what is installed)` +
+      (look.fun ? `\n   Fun mode needs litt's motion engine too: ${installLine(["motion"], site)}` : ""),
+    ...edits(look),
+    [
+      `Render <${screen.exportName} /> inside the app's shell. It is a whole screen, so the sample data at the top of its file is yours to replace.`,
+      `   import { ${screen.exportName} } from "${screen.importPath}";`,
+    ].join("\n"),
+  ];
+  return [
+    `Build the ${screen.name} screen in this project with litt.md.${sameLook(look, REGISTRY_LOOK) ? "" : ` The look is ${lookWords(look)}.`}`,
+    ...steps.map((s, i) => `${i + 1}. ${s}`),
+    `See it: ${site}/?${LOOK_PARAM}=${encodeLook(look)}&screen=${id}#build`,
+  ].join("\n");
+}
+
 /** llms.txt's "## Looks" section, for an agent handed a gallery link. */
 export function looksDoc(site: string): string {
   return [
     `The gallery's Customize panel picks an accent, a material and a motion feel, and a link carries all three: ${site}/?${LOOK_PARAM}=${encodeLook({ accent: "pink", material: "flat", fun: true })}#button. ` +
       `Read the look from the link's text and make its edits. The gallery is a single-page app, so fetching the link returns no look. ` +
+      `The Build page, ${site}/#build, shows a look on whole screens and copies its setup. ` +
       `The registry installs \`${encodeLook(REGISTRY_LOOK)}\`, ${materialWords(REGISTRY_LOOK.material)}, ${motionWords(REGISTRY_LOOK.fun)}. The gallery opens in \`${encodeLook(GALLERY_LOOK)}\`.`,
     [
       `- The link: \`${LOOK_PARAM}=<accent>\`, then \`-flat\` for the flat material, then \`-fun\` for fun mode, in that order (\`pink-flat-fun\`). Anything else is not a look, and a look without \`-flat\` is press.`,

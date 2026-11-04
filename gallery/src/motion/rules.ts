@@ -54,6 +54,8 @@ export const LIMITS = {
   exit: 0.75,
   /** --radius-control in px. The surface is this plus the 4px inset. */
   control: 4,
+  /** Soft focus's blur, in px (R4): the most a swap a hand causes may blur as it arrives. */
+  softBlur: 4,
 } as const;
 
 export type RuleRow = { ok: boolean; text: string };

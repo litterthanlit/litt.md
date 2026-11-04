@@ -146,6 +146,15 @@ check(L.lookInApp({ accent: "pink", material: "press", fun: true }) === 'In your
 check(L.lookInApp({ accent: "pink", material: "flat", fun: true }) === 'In your app: data-accent="pink" and data-material="flat" on <html>, and <FunMode> around the app.', "the panel says all three edits in one line");
 check(L.lookNote(L.GALLERY_LOOK) === "This page shows Monochrome, flat material, calm motion. The registry installs Blue 4 and press material.", "the Install note names the material");
 
+const shot = { name: "Settings", exportName: "Settings", install: "npx shadcn@latest add https://littmd.vercel.app/r/settings.json", importPath: "@/components/litt-blocks/settings" };
+const p = L.screenPrompt(shot, { accent: "pink", material: "flat", fun: false }, SITE);
+check(p.startsWith("Build the Settings screen in this project with litt.md."), "a screen prompt names the screen first");
+check(p.includes(shot.install) && p.includes(`import { Settings } from "${shot.importPath}";`), "a screen prompt installs the block and imports it");
+check(p.includes('data-accent="pink"') && p.includes('data-material="flat"'), "a screen prompt carries the look's edits");
+check(!L.screenPrompt(shot, L.REGISTRY_LOOK, SITE).includes("data-"), "the registry's look adds no edits");
+check(p.endsWith(`See it: ${SITE}/?look=pink-flat&screen=settings#build`), "a screen prompt ends with the Build page link");
+check(L.looksDoc(SITE).includes(`${SITE}/#build`), "llms.txt's Looks names the Build page");
+
 for (const p of passed) console.log(`✓ ${p}`);
 if (problems.length) {
   for (const p of problems) console.error(`✗ ${p}`);
