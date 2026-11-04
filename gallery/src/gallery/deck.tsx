@@ -13,40 +13,17 @@
  * - The fun row and the footer are fun cues (data-fun-cue): they say On and Tuned in fun mode, so a Calm and Fun
  *   comparison hides them.
  */
-import type { ReactNode } from "react";
 import { Button } from "@/components/button";
-import { Segmented } from "@/components/segmented";
 import { Slider } from "@/components/slider";
-import { Switch } from "@/components/switch";
 import { shapeName, SHAPES } from "@/motion/rules";
-import { useCustomize, type ThemeChoice } from "./customize-state";
-import { ACCENTS, lookWords, MATERIALS } from "./look";
-import { AccentChip } from "./swatch";
-
-const THEMES: { value: ThemeChoice; label: string }[] = [
-  { value: "system", label: "System" },
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-];
-
+import { useCustomize } from "./customize-state";
+import { lookWords } from "./look";
+import { AccentControl, FunControl, MaterialControl, ThemeControl } from "./look-controls";
 
 const STOPS = SHAPES.map((_, i) => i);
 
-/** A settings row, as the Switch's align="end": the name at the start, the control at the end. The fieldset's own
-    legend names the control for a screen reader, so the name you see is hidden from it. */
-function Row({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-      <span aria-hidden="true" className="text-small font-title text-fg">
-        {label}
-      </span>
-      {children}
-    </div>
-  );
-}
-
 export function Deck() {
-  const { theme, setTheme, look, setLook, radius, lockedRadius, setRadius, link, modified, reset } = useCustomize();
+  const { radius, lockedRadius, setRadius, link, modified, reset } = useCustomize();
   const stop = (SHAPES as readonly number[]).indexOf(radius);
   return (
     <section aria-labelledby="deck-title" className="litt-raised grid gap-8 p-6 sm:p-8">
@@ -57,7 +34,7 @@ export function Deck() {
         <p className="text-small text-fg-subtle">Every component on this page follows.</p>
       </header>
       <div data-fun-cue="" className="-my-2">
-        <Switch label="Fun mode" description="Springier motion, the same at rest." checked={look.fun} onCheckedChange={(fun) => setLook({ fun })} align="end" />
+        <FunControl />
       </div>
       <Slider
         label="Shape"
@@ -72,33 +49,9 @@ export function Deck() {
         maxLabel="Pill"
         onValueChange={(i) => setRadius(SHAPES[i])}
       />
-      <Row label="Theme">
-        <Segmented legend="Theme" value={theme} onValueChange={setTheme} options={THEMES} />
-      </Row>
-      <Row label="Material">
-        <Segmented
-          legend="Material"
-          value={look.material}
-          onValueChange={(material) => setLook({ material })}
-          options={MATERIALS.map((m) => ({ value: m.id, label: m.name }))}
-        />
-      </Row>
-      <Row label="Accent">
-        <Segmented
-          legend="Accent"
-          value={look.accent}
-          onValueChange={(accent) => setLook({ accent })}
-          options={ACCENTS.map((a) => ({
-            value: a.id,
-            label: (
-              <span className="flex items-center gap-1.5">
-                <AccentChip accent={a.id} size="sm" />
-                {a.short ?? a.name}
-              </span>
-            ),
-          }))}
-        />
-      </Row>
+      <ThemeControl />
+      <MaterialControl />
+      <AccentControl />
       {/* As tall with Reset as without, so the deck never grows under the hand that changed it. */}
       <footer data-fun-cue="" className="-mt-2 border-t border-line pt-4">
         <div className="flex h-control-sm items-center justify-between gap-4 pointer-coarse:h-control-md">
