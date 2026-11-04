@@ -228,7 +228,7 @@ export function PageTitle({ id, title, lede, className = "" }: { id: string; tit
 }
 
 /** A block's links point at an app's routes. In the gallery they go nowhere, and must not move its own hash. */
-const stayPut = (e: MouseEvent) => {
+export const stayPut = (e: MouseEvent) => {
   if (e.target instanceof Element && e.target.closest("a[href]")) e.preventDefault();
 };
 
