@@ -53,6 +53,8 @@ What litt does not take: graphicalui's open configuration (decision 1), and paid
 
 ### 1. The Build page: see a look on whole screens
 
+*Built on 2026-11-04 (`proposals/build-page-plan.md`). Off the plan: the frame's Copy install installs the screen's block until piece 2 ships the look items; the screen lives in the address as `?screen=`; Agent and Projects sit in the App shell with Settings, while Sign in and Product stand alone.*
+
 A gallery page, `#build`, in the nav under Overview. It is gallery chrome, not a registry component.
 
 - **Choices on the left.** The deck's controls at full size: Accent, Material and Motion, plus Theme, which is a viewing choice and not part of the look. Each says its value in words (R5). Surprise me sits here too.

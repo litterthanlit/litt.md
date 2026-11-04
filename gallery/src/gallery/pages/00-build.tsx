@@ -53,7 +53,7 @@ export default function BuildPage() {
     <article aria-labelledby="page-build" className="grid gap-12 pb-24">
       <PageTitle id="page-build" title={meta.title} lede={meta.lede} />
 
-      <div className="grid gap-12 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-8">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-8">
         <section aria-label="Your look" className="grid content-start gap-6">
           <AccentControl />
           <MaterialControl />
@@ -64,10 +64,11 @@ export default function BuildPage() {
           </p>
         </section>
 
-        <section aria-label="Preview" className="grid min-w-0 content-start gap-4">
+        <section aria-label="Preview" className="grid min-w-0 grid-cols-1 content-start gap-4">
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
             <div className="max-w-full overflow-x-auto">
-              <Segmented legend="Screen" value={screen.id} onValueChange={setScreen} options={SCREENS.map((s) => ({ value: s.id, label: s.name }))} />
+              {/* Its own width, so on a phone the strip scrolls instead of crushing the names. */}
+              <Segmented legend="Screen" value={screen.id} onValueChange={setScreen} options={SCREENS.map((s) => ({ value: s.id, label: s.name }))} className="w-max" />
             </div>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
               <Segmented legend="Width" value={width} onValueChange={setWidth} options={[...WIDTHS]} />

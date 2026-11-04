@@ -105,6 +105,12 @@ Then the Flat round, on `claude/brave-mendel-t92xdv` (taste profile v1.4). Nick 
 - **The host test** (`test:registry`, the look scenario) sets the attribute in fresh Vite and Next.js apps and checks the canvas and the secondary Button in every theme. Next's `tsc` step fails in every scenario on `LayoutProps` from the current `create-next-app` template, before this round: the harness needs `next typegen` before `tsc`.
 - **What the screenshots showed**, and what the components theme should change, is at the end of `proposals/flat.md`.
 
+Then the Build page round, on `claude/brave-mendel-t92xdv` again after #69 merged (no taste change; the 2026-11-04 release). Nick: "the goal is to help people build beautiful UI, lets build it", and chose all five decisions in `proposals/builder.md` as suggested. Piece 1 is built from `proposals/build-page-plan.md`:
+
+- **`#build`** (`pages/00-build.tsx`), after Overview in the nav: the look's controls on the left (shared with the deck in `look-controls.tsx`), and on the right a frame (`build-frame.tsx`) with six screens (`build-screens.tsx`: Settings, Dashboard, Product, Sign in, Agent, Projects; app screens inside litt's App shell), Desktop or Phone, and Light beside dark (the dark copy is inert and clipped to the right half). Under it: Copy install (the page's one accent fill), Copy setup, Copy prompt (`screenPrompt` in `look.ts`) and Copy link. The screen is `?screen=` in the address.
+- **`SoftSwap`** in the motion engine: soft focus (R4), a blur of at most 4px that clears on the responsive spring, never on the first paint, nothing under reduced motion. Switching screens is its first user. It ships in the `motion` item.
+- **`test:build-page`** in CI holds all of it.
+
 ## The roadmap
 
 | Step | Status | Where |
@@ -126,11 +132,13 @@ Then the Flat round, on `claude/brave-mendel-t92xdv` (taste profile v1.4). Nick 
 | Warmer and friendlier: stone neutrals (v0.15), P12 (v0.16), demo-first gallery | Merged #24; the logo fix in #25 | `claude/adoring-fermat-r03tiz` |
 | First screen (hero, deck, search) and hands (range chart, run card, rule builder, the hand engine) | Merged #59; waits on Nick's look | `claude/tender-pasteur-xwxb2v` |
 | Agents round two (tool calls that show what they found, sources, file changes, run list) | Built; waits on Nick's look | #60 |
-| Flat, a second material (v1.4) | Built; waits on Nick's look | `claude/brave-mendel-t92xdv` |
+| Flat, a second material (v1.4) | Merged #69 | `claude/brave-mendel-t92xdv` |
+| The builder, piece 1: the Build page and SoftSwap | Built; waits on Nick's look | `claude/brave-mendel-t92xdv` |
 | shadcn directory listing (the last of the six competition gaps) | Open upstream | [shadcn-ui/ui#12404](https://github.com/shadcn-ui/ui/pull/12404) |
 
 ### Next, in order
 
+0000. **Nick's look at the Build page** (`#build`): pick a look, switch the six screens, Phone, Light beside dark, and paste Copy prompt into an agent. Then piece 2 of `proposals/builder.md`, one command per look.
 000. **Nick's look at Flat** (`proposals/flat.md`): the overview, Customize, the switch and the slider in Press and Flat, both themes, on a phone. Then the components theme: litt.design's card frame, a round icon button, `SoftSwap`, and Q17.
 00. **Nick's look at the first screen** (`proposals/gallery-wow.md`): the 56px statement as an exception or not, the deck as the first object, "a view is one screen" for R6, and which of the six proposals comes next (photography under glass, a live screens showcase, sounds in fun mode, search keywords, copy from the wall, New tags). Then the hands round: brush the Range chart, fold the Run card and build a rule, in both themes, on a phone and in fun mode, and answer the four questions at the end of `proposals/hands.md`. If the hand engine holds, move the Time scrubber onto it next (its own copy of the hand stays for one release). Then the agents' second round: the Agent page, the three new pages and the ten questions at the end of `proposals/agents-2.md`.
 0. **Nick's tests of the commerce step**: the five Commerce pages and the Product and Collection blocks in both themes and on a phone, the three questions at the end of `proposals/commerce.md`, then `npm run test:agents -- --tasks product-page --judge`.

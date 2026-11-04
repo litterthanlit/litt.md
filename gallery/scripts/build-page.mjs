@@ -177,6 +177,19 @@ const fillsOutsideFrame = (pg) =>
   await ctx.close();
 }
 
+/* ---------- on a phone, the screen strip scrolls instead of crushing its words ---------- */
+{
+  const { ctx, pg, errors } = await open("build", { phone: true });
+  const boxes = await pg
+    .locator("main fieldset", { has: pg.locator("legend", { hasText: /^Screen$/ }) })
+    .locator("label")
+    .evaluateAll((ls) => ls.map((l) => { const b = l.getBoundingClientRect(); return { left: b.left, right: b.right, fits: l.scrollWidth <= l.clientWidth + 1, oneLine: b.height < 48 }; }));
+  const overlap = boxes.some((b, i) => i > 0 && b.left < boxes[i - 1].right - 0.5);
+  check(boxes.length === 6 && !overlap && boxes.every((b) => b.fits && b.oneLine), `on a phone each of the six screen names keeps its width and one line (${JSON.stringify(boxes.map((b) => [Math.round(b.right - b.left), b.fits, b.oneLine]))})`);
+  for (const e of errors) problems.push(`phone strip: ${e}`);
+  await ctx.close();
+}
+
 /* ---------- soft focus (R4, SoftSwap) ---------- */
 /* Every animation frame for `ms`: the frame's content filter and which screen it holds. Started before the click, so
    the first frames of the swap are in it. */
