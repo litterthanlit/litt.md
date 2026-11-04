@@ -17,6 +17,7 @@ import { SlideConfirm } from "@/components/slide-confirm";
 import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { AccentBlues } from "./blues";
+import { BuildBoard, BuildStage, BuildSteps, MOCK } from "./build-mocks";
 import { PICK, accentVars } from "./accents";
 import {
   BlockButton,
@@ -160,6 +161,8 @@ const PANELS = 520;
 const C1 = 0;
 const C2 = 1000;
 const ROW = { a: 1290, b: 1600, c: 1920, d: 2320 };
+/* The Build page as a tool, three ways (build-mocks.tsx), below everything else. */
+const BUILD = 2700;
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
@@ -200,4 +203,7 @@ export const ITEMS: CanvasItem[] = [
       </div>
     ),
   },
+  { id: "build-stage", name: "Build · A, stage", x: 0, y: BUILD, width: MOCK.width + 48, height: MOCK.height + 48, render: () => <BuildStage /> },
+  { id: "build-board", name: "Build · B, board", x: MOCK.width + 128, y: BUILD, width: MOCK.width + 48, height: MOCK.height + 48, render: () => <BuildBoard /> },
+  { id: "build-steps", name: "Build · C, steps", x: 2 * (MOCK.width + 128), y: BUILD, width: MOCK.width + 48, height: MOCK.height + 48, render: () => <BuildSteps /> },
 ];
