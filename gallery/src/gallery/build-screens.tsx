@@ -13,6 +13,8 @@ import { Settings } from "@/blocks/settings";
 import { SignIn } from "@/blocks/sign-in";
 import { AppShell, SidebarLink, SidebarNav } from "@/components/app-shell";
 import { Toaster } from "@/components/toast";
+import { Miniature } from "./miniature";
+import { pages } from "./registry";
 
 export type ScreenId = "settings" | "dashboard" | "product" | "sign-in" | "agent" | "projects";
 /**
@@ -32,6 +34,7 @@ export const SCREENS: readonly BuildScreen[] = [
 ];
 
 export const screenOf = (id: string): BuildScreen => SCREENS.find((s) => s.id === id) ?? SCREENS[0];
+const pageOf = (id: ScreenId) => pages.find((p) => p.id === id)!;
 
 /** The app the shelled screens belong to. Its links go nowhere in the gallery (the frame keeps them put). */
 const NAV: { id: ScreenId; label: string }[] = [
@@ -61,17 +64,47 @@ function ScreenShell({ current, children }: { current: ScreenId; children: React
   );
 }
 
-/** A screen as the frame shows it, in its seat. `phone` narrows the padding, as AppFrame does on a phone. */
-export function screenView(screen: BuildScreen, phone: boolean): ReactNode {
+/** A screen as the stage shows it, in its seat. */
+export function screenView(screen: BuildScreen): ReactNode {
   const block = screen.render();
-  const gutter = phone ? "[--gutter:var(--space-4)]" : "[--gutter:var(--space-8)]";
   const seated =
     screen.seat === "shell" ? <ScreenShell current={screen.id}>{block}</ScreenShell>
-    : screen.seat === "padded" ? <div className={phone ? "p-4" : "p-8"}>{block}</div>
+    : screen.seat === "padded" ? <div className="p-8">{block}</div>
     : block;
   return (
-    <div data-screen={screen.id} className={gutter}>
+    <div data-screen={screen.id} className="[--gutter:var(--space-8)]">
       {seated}
+    </div>
+  );
+}
+
+/**
+ * All screens: the six side by side, each a picture of its block's page (Miniature, inert and hidden from assistive
+ * tech) inside a button that says its name. The current one is raised (R3, selected is raised); a pick hands it back.
+ */
+export function AllScreens({ current, onPick }: { current: ScreenId; onPick: (id: ScreenId) => void }) {
+  return (
+    <div data-build-all="" className="grid grid-cols-1 justify-items-center gap-6 py-4 sm:grid-cols-2 xl:grid-cols-3">
+      {SCREENS.map((s) => {
+        const on = s.id === current;
+        return (
+          <button
+            key={s.id}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onPick(s.id)}
+            className={
+              "grid w-68 justify-items-start gap-2 rounded-surface p-1 text-left transition-colors duration-(--dur-instant) ease-litt " +
+              (on ? "bg-block shadow-(--block-lift)" : "hover:bg-(--block-hover)")
+            }
+          >
+            <span aria-hidden="true" inert className="relative block h-44 w-full overflow-hidden rounded-control bg-canvas shadow-[inset_0_0_0_1px_var(--line)]">
+              <Miniature page={pageOf(s.id)} width={264} height={176} inset={0} still />
+            </span>
+            <span className={"px-1 pb-1 text-small " + (on ? "font-title text-fg" : "text-fg-muted")}>{s.name}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }

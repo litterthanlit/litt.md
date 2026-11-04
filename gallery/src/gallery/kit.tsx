@@ -61,6 +61,8 @@ export type PageMeta = {
    * components and link to their pages. It links the site's own pages (the ones with no group) itself.
    */
   wall?: boolean;
+  /** A tool, not a docs page (the Build page): it runs the whole width with no sidebar, so its stage has the room. */
+  tool?: boolean;
   /**
    * The page may override the locked tokens with the motion dial. Every page
    * leaves this off except the Playground; the dial's CSS variables exist only

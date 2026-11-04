@@ -102,6 +102,7 @@ function FocusOnArrival({ main }: { main: RefObject<HTMLElement | null> }) {
 }
 
 function Shell({ page }: { page: PageEntry | undefined }) {
+  const wide = !!(page?.wall || page?.tool);
   const mainRef = useRef<HTMLElement>(null);
   /* With fun mode on, the pages it changes come first: a Fun group after the site's own pages. They stay in their
      own groups too, so the nav never reshuffles under you. */
@@ -230,9 +231,9 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         ]}
       />
 
-      {/* A wall page (the overview) is its own way in, so it takes the sidebar's column too. */}
-      <div inert={menu} className={"relative mx-auto grid max-w-wide gap-x-12 px-gutter " + (page?.wall ? "" : "lg:grid-cols-[176px_minmax(0,1fr)]")}>
-        <nav aria-label="Components" className={page?.wall ? "hidden" : "hidden lg:block"}>
+      {/* A wall page (the overview) is its own way in, and a tool (Build) needs the room: both take the sidebar's column. */}
+      <div inert={menu} className={"relative mx-auto grid max-w-wide gap-x-12 px-gutter " + (wide ? "" : "lg:grid-cols-[176px_minmax(0,1fr)]")}>
+        <nav aria-label="Components" className={wide ? "hidden" : "hidden lg:block"}>
           <NavPreview className="h-full">
             {/* Its own scroller, so a short window still reaches the last group. It reaches 12px past the
                 column on each side, so the selected fill and the focus ring are never clipped. */}

@@ -1,55 +1,55 @@
 /**
- * Build: pick a look, see it on whole screens, hand it to your agent (proposals/builder.md, piece 1).
+ * Build: pick a look, see it on a whole screen, hand it to your agent (proposals/builder.md, piece 1; the Stage, from
+ * the canvas mockups Nick picked: "go with A, with the see all screens view").
  *
- * Gallery chrome, not a component: an ungrouped page beside Overview, so it has no wall tile and no registry item. The
- * look's controls are the deck's (look-controls.tsx), so the two never disagree. The frame (build-frame.tsx) shows one
- * of six screens (build-screens.tsx) at desktop or phone width, or light beside dark. Under it, the four ways out:
- * Copy install is the page's one accent fill (R6); the frame is its own view, so the screens keep their own primary
- * actions. The screen lives in the address (?screen=), so Copy link reopens what you see.
+ * A tool, not a docs page (meta.tool): the whole width, no sidebar. Three parts and one action:
+ * - The stage: the screen, real and usable, in a frame (build-frame.tsx), on a quiet ground. Its own view for R6, so
+ *   the screens keep their own primary actions.
+ * - The look (look-panel.tsx): accent, material and motion as pictures, floating over the stage on a wide screen.
+ * - A pill under the stage: the six screens by name, and All screens, which shows them side by side to pick from.
+ * Copy prompt is the page's one accent fill: its prompt installs the screen and sets the look, so it is all an agent
+ * needs. Copy link reopens what you see: the look and the screen (?screen=).
  */
 import { useState } from "react";
+import { Button } from "@/components/button";
 import { LinkIcon } from "@/components/icons";
 import { Segmented } from "@/components/segmented";
-import { Switch } from "@/components/switch";
 import { useUrlParam } from "@/components/table-filter";
+import { SoftSwap } from "@/motion";
 import { BuildFrame } from "../build-frame";
-import { SCREENS, screenOf, screenView } from "../build-screens";
+import { AllScreens, SCREENS, screenOf, screenView, type ScreenId } from "../build-screens";
 import { useCustomize } from "../customize-state";
 import { CopyButton } from "../docs/copy";
 import { installCommand, SITE } from "../docs/copy-prompt";
 import { PageTitle, type PageMeta } from "../kit";
-import { lookNote, lookSetup, lookWords, screenPrompt, withLook } from "../look";
-import { AccentControl, FunControl, MaterialControl, ThemeControl } from "../look-controls";
+import { LookPanel } from "../look-panel";
+import { screenPrompt, withLook } from "../look";
 
 export const meta: PageMeta = {
   id: "build",
   title: "Build",
-  lede: "Pick a look and see it on whole screens, then hand it to your agent.",
+  lede: "Pick a look, see it on a whole screen, hand it to your agent.",
   order: 0.2,
-  summary: "Your look on six whole screens, with the commands that put it in your app.",
+  summary: "Your look on six whole screens, and the prompt that puts one in your app.",
   tiers: ["responsive"],
+  tool: true,
 };
-
-const WIDTHS = [
-  { value: "desktop", label: "Desktop" },
-  { value: "phone", label: "Phone" },
-] as const;
 
 export default function BuildPage() {
   const { look } = useCustomize();
   const [screenParam, setScreen] = useUrlParam("screen");
   const screen = screenOf(screenParam);
-  const [width, setWidth] = useState<"desktop" | "phone">("desktop");
-  const [split, setSplit] = useState(false);
-  const phone = width === "phone";
-  const label = `${screen.name}, ${width}${split ? ", light beside dark" : ""}`;
+  const [all, setAll] = useState(false);
+  const pick = (id: ScreenId) => {
+    setScreen(id);
+    setAll(false);
+  };
   /* The screen from state, not the address: useUrlParam writes the address a beat after it renders. */
   const link = () => {
     const url = new URL(location.href);
     url.searchParams.set("screen", screen.id);
     return withLook(url.href, look);
   };
-  const note = lookNote(look);
   const prompt = screenPrompt(
     { name: screen.name, exportName: screen.exportName, install: installCommand(screen.id), importPath: `@/components/litt-blocks/${screen.id}` },
     look,
@@ -57,50 +57,40 @@ export default function BuildPage() {
   );
 
   return (
-    <article aria-labelledby="page-build" className="grid gap-12 pb-24">
-      <PageTitle id="page-build" title={meta.title} lede={meta.lede} />
+    <article aria-labelledby="page-build" className="grid grid-cols-1 gap-8 pb-16">
+      <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+        <PageTitle id="page-build" title={meta.title} lede={meta.lede} />
+        <div className="flex items-center gap-2">
+          <CopyButton text={link} variant="ghost" icon={<LinkIcon />}>
+            Copy link
+          </CopyButton>
+          <CopyButton text={prompt} variant="primary">
+            Copy prompt
+          </CopyButton>
+        </div>
+      </div>
 
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-8">
-        <section aria-label="Your look" className="grid content-start gap-6">
-          <AccentControl />
-          <MaterialControl />
-          <FunControl />
-          <ThemeControl />
-          <p aria-live="polite" className="border-t border-line pt-4 text-small text-fg-muted">
-            {lookWords(look)}
-          </p>
-        </section>
+      <div data-build-stage="" className="grid min-w-0 grid-cols-1 gap-6 rounded-surface bg-surface-2 p-4 sm:p-6 lg:relative lg:block lg:min-h-224 lg:p-8 lg:pr-96 lg:pb-32">
+        <div className="min-w-0">
+          <SoftSwap swapKey={all ? "all" : "one"}>
+            {all ? <AllScreens current={screen.id} onPick={pick} /> : <BuildFrame label={`${screen.name} screen`} swapKey={screen.id}>{screenView(screen)}</BuildFrame>}
+          </SoftSwap>
+        </div>
 
-        <section aria-label="Preview" className="grid min-w-0 grid-cols-1 content-start gap-4">
-          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-            <div className="max-w-full overflow-x-auto">
+        {/* Under the stage: sticky on a phone, so the screens stay in reach; floating at the stage's foot from lg. */}
+        <div className="sticky bottom-4 z-10 flex justify-center lg:absolute lg:inset-x-0 lg:bottom-8 lg:pr-96">
+          <div className="litt-glass flex max-w-full items-center gap-2 p-2">
+            <div className="min-w-0 overflow-x-auto">
               {/* Its own width, so on a phone the strip scrolls instead of crushing the names. */}
-              <Segmented legend="Screen" value={screen.id} onValueChange={setScreen} options={SCREENS.map((s) => ({ value: s.id, label: s.name }))} className="w-max" />
+              <Segmented size="sm" legend="Screen" value={screen.id} onValueChange={pick} options={SCREENS.map((s) => ({ value: s.id, label: s.name }))} className="w-max" />
             </div>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Segmented legend="Width" value={width} onValueChange={setWidth} options={[...WIDTHS]} />
-              <Switch label="Light beside dark" checked={split} onCheckedChange={setSplit} />
-            </div>
+            <Button size="sm" variant={all ? "secondary" : "ghost"} aria-pressed={all} onClick={() => setAll(!all)} className="shrink-0">
+              All screens
+            </Button>
           </div>
+        </div>
 
-          {split && <p className="text-small text-fg-muted">A picture of both themes. Turn off Light beside dark to use the screen.</p>}
-          <BuildFrame label={label} phone={phone} split={split} swapKey={screen.id}>
-            {() => screenView(screen, phone)}
-          </BuildFrame>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <CopyButton text={installCommand(screen.id)} variant="primary">
-              Copy install
-            </CopyButton>
-            <CopyButton text={lookSetup(look, SITE)}>Copy setup</CopyButton>
-            <CopyButton text={prompt}>Copy prompt</CopyButton>
-            <CopyButton text={link} variant="ghost" icon={<LinkIcon />}>
-              Copy link
-            </CopyButton>
-          </div>
-          {/* Until a look installs in one command, the install brings the registry's look; say so beside it. */}
-          {note && <p className="text-small text-fg-muted">{note} Copy setup or Copy prompt carries this one.</p>}
-        </section>
+        <LookPanel className="lg:absolute lg:top-8 lg:right-8 lg:w-80" />
       </div>
     </article>
   );

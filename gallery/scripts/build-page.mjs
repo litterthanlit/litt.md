@@ -6,17 +6,18 @@
  *   node scripts/build-page.mjs --dist dist
  *
  * It fails when:
- * - #build has no h1 "Build", or the sidebar does not list it right after Overview,
- * - the page's Material or Accent control does not change the gallery (data-material on <html>, data-accent on <body>),
- * - a screen pick does not show that screen in the frame or does not keep ?screen= in the address, or a link with a look
- *   and a screen does not open on both, or Copy link does not give the address back,
- * - Phone does not draw the screen phone wide and phone shaped (the shell's menu button),
- * - Light beside dark leaves the dark copy reachable: it must be inert, hidden from assistive tech and never focused,
- * - a link inside a screen moves the gallery off #build,
- * - Copy install, Copy setup or Copy prompt copy the wrong text,
- * - outside the frame, main holds anything but one accent fill, Copy install (the frame is its own view, R6),
+ * - #build has no h1 "Build", the sidebar does not list it right after Overview, or the page keeps the docs sidebar
+ *   (it is a tool: the whole width is the stage),
+ * - the look panel's Accent, Material or Motion does not change the gallery,
+ * - a screen pick does not show that screen on the stage or keep ?screen= in the address, a link with a look and a
+ *   screen does not open on both, or Copy link does not carry the screen picked last,
+ * - All screens does not show the six, or picking one there does not bring it back to the stage,
+ * - a new screen does not open at its top, or a link inside a screen moves the gallery off #build,
+ * - Copy prompt copies another screen's prompt,
+ * - on a phone the screen names crush instead of scrolling in their strip,
  * - a screen change does not arrive in soft focus (a blur above 0 and never above 4px, cleared to none), blurs under
  *   reduced motion, or anything blurs on the first paint (R4, SoftSwap),
+ * - outside the stage, main holds anything but one accent fill, Copy prompt (the stage is its own view, R6),
  * - the page throws.
  *
  * Needs Playwright, found as home.mjs finds it.
@@ -76,8 +77,14 @@ async function open(hash, { phone = false, query = "", reduce = false } = {}) {
 }
 
 const frame = (pg) => pg.locator("[data-build-frame]");
+/* A choice is a native radio under its label, out of sight; a hand presses the label. Found by the radio's own name,
+   since a label can hold a picture (an accent's "Go" chip) that is hidden from assistive tech. */
 const pick = (pg, legend, name) =>
-  pg.locator("main fieldset", { has: pg.locator("legend", { hasText: new RegExp(`^${legend}$`) }) }).locator("label").filter({ hasText: new RegExp(`^${name}$`) }).first().click();
+  pg
+    .locator("main fieldset", { has: pg.locator("legend", { hasText: new RegExp(`^${legend}$`) }) })
+    .locator("label", { has: pg.getByRole("radio", { name, exact: true }) })
+    .first()
+    .click();
 const settle = (pg) => pg.waitForTimeout(400);
 const clipboard = (pg) => pg.evaluate(() => navigator.clipboard.readText());
 const copied = async (pg, name) => {
@@ -86,7 +93,7 @@ const copied = async (pg, name) => {
   await pg.waitForFunction((b) => navigator.clipboard.readText().then((t) => t !== b), before, { timeout: 2000 }).catch(() => {});
   return clipboard(pg);
 };
-/* The accent fills in main outside the frame, as wall.mjs counts them: a box of at least 24 by 16 in var(--accent). */
+/* The accent fills in main outside the stage, as wall.mjs counts them: a box of at least 24 by 16 in var(--accent). */
 const fillsOutsideFrame = (pg) =>
   pg.evaluate(() => {
     const probe = document.createElement("div");
@@ -95,7 +102,7 @@ const fillsOutsideFrame = (pg) =>
     const accent = getComputedStyle(probe).backgroundColor;
     probe.remove();
     return [...document.querySelectorAll("main *")]
-      .filter((el) => !el.closest("[data-build-frame], [aria-hidden=true], .sr-only") && getComputedStyle(el).backgroundColor === accent)
+      .filter((el) => !el.closest("[data-build-stage], [aria-hidden=true], .sr-only") && getComputedStyle(el).backgroundColor === accent)
       .filter((el) => { const b = el.getBoundingClientRect(); return b.width >= 24 && b.height >= 16; })
       .map((el) => el.textContent.trim());
   });
@@ -103,118 +110,61 @@ const fillsOutsideFrame = (pg) =>
 /* ---------- the page and its place ---------- */
 {
   const { ctx, pg, errors } = await open("build");
+  await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: `http://localhost:${port}` });
   check((await pg.locator("main h1").first().textContent())?.trim().startsWith("Build"), "#build has the h1 Build");
   const order = await pg.locator("nav[aria-label=Components] a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
   check(order.indexOf("#build") === order.indexOf("#overview") + 1, `the sidebar lists Build right after Overview (${order.slice(0, 4).join(", ")})`);
+  check(!(await pg.locator("nav[aria-label=Components]").isVisible()), "#build is a tool: the docs sidebar steps aside");
 
   await pick(pg, "Material", "Press");
-  check((await pg.evaluate(() => document.documentElement.dataset.material)) === undefined, "the page's Press takes data-material off <html>");
+  check((await pg.evaluate(() => document.documentElement.dataset.material)) === undefined, "the look panel's Press takes data-material off <html>");
   await pick(pg, "Material", "Flat");
-  check((await pg.evaluate(() => document.documentElement.dataset.material)) === "flat", "the page's Flat puts data-material=flat back");
   await pick(pg, "Accent", "Pink");
-  check((await pg.evaluate(() => document.body.dataset.accent)) === "pink", "the page's Pink sets data-accent=pink on <body>");
+  await pick(pg, "Motion", "Fun");
+  check(
+    (await pg.evaluate(() => [document.body.dataset.accent, document.documentElement.dataset.material].join("/"))) === "pink/flat" &&
+      (await pg.locator("main").getByText("Pink, flat material, fun motion").count()) >= 1,
+    "the look panel's Pink, Flat and Fun change the gallery and are said in words",
+  );
 
-  check((await frame(pg).locator("[data-screen=settings]").count()) >= 1, "the frame opens on Settings");
+  check((await frame(pg).locator("[data-screen=settings]").count()) >= 1, "the stage opens on Settings");
+  await frame(pg).evaluate((el) => { el.scrollTop = 600; });
   await pick(pg, "Screen", "Dashboard");
   await settle(pg);
-  check(
-    (await frame(pg).locator("[data-screen=dashboard]").first().getByText("Active projects").count()) >= 1 && (await frame(pg).locator("[data-screen=settings]").count()) === 0,
-    "picking Dashboard shows the Dashboard in the frame",
-  );
-  await pg.waitForFunction(() => new URLSearchParams(location.search).get("screen") === "dashboard", null, { timeout: 2000 }).catch(() => {});
-  check(new URLSearchParams(await pg.evaluate(() => location.search)).get("screen") === "dashboard", "the address keeps ?screen=dashboard");
+  const shown = await frame(pg).locator("[data-screen=dashboard]").getByText("Active projects").first().waitFor({ timeout: 3000 }).then(() => true, () => false);
+  check(shown, "picking Dashboard shows it on the stage");
+  check((await frame(pg).evaluate((el) => el.scrollTop)) === 0, "a new screen opens at its top");
+  check((await copied(pg, "Copy link")).includes("screen=dashboard"), "Copy link right after the pick carries screen=dashboard");
+  check((await copied(pg, "Copy prompt")).startsWith("Build the Dashboard screen in this project with litt.md."), "Copy prompt builds the Dashboard screen");
 
-  await frame(pg).locator("[data-build-copy] a[href]").first().click();
+  await pg.locator("main").getByRole("button", { name: "All screens" }).click();
+  await settle(pg);
+  const tiles = pg.locator("main [data-build-all] > button");
+  check((await tiles.count()) === 6, "All screens shows the six");
+  await pg.locator("main [data-build-all]").getByRole("button", { name: "Projects", exact: true }).click();
+  await settle(pg);
+  check(
+    (await frame(pg).locator("[data-screen=projects]").count()) >= 1 && (await pg.locator("main [data-build-all]").count()) === 0,
+    "picking Projects in All screens brings it to the stage",
+  );
+  await pg.waitForFunction(() => new URLSearchParams(location.search).get("screen") === "projects", null, { timeout: 2000 }).catch(() => {});
+  check(new URLSearchParams(await pg.evaluate(() => location.search)).get("screen") === "projects", "the address keeps ?screen=projects");
+
+  await frame(pg).locator("[data-screen] a[href]").first().click();
   check((await pg.evaluate(() => location.hash)) === "#build", "a link inside a screen leaves the gallery on #build");
   for (const e of errors) problems.push(`page: ${e}`);
   await ctx.close();
 }
 
-/* ---------- a link carries the look and the screen; the copies ---------- */
+/* ---------- a link carries the look and the screen ---------- */
 {
   const { ctx, pg, errors } = await open("build", { query: "?look=pink-flat&screen=dashboard" });
-  await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: `http://localhost:${port}` });
   check(
     (await pg.evaluate(() => [document.body.dataset.accent, document.documentElement.dataset.material].join("/"))) === "pink/flat" &&
       (await frame(pg).locator("[data-screen=dashboard]").count()) >= 1,
     "?look=pink-flat&screen=dashboard#build opens on Pink, Flat and the Dashboard",
   );
-  check((await copied(pg, "Copy link")) === (await pg.evaluate(() => location.href)), "Copy link gives the address back, look and screen in it");
-  check((await copied(pg, "Copy install")) === "npx shadcn@latest add https://littmd.vercel.app/r/dashboard.json", "Copy install installs the Dashboard block");
-  check((await copied(pg, "Copy setup")).startsWith('Set up the litt.md look "Pink, flat material, calm motion"'), "Copy setup gives the look's setup");
-  check((await copied(pg, "Copy prompt")).startsWith("Build the Dashboard screen in this project with litt.md."), "Copy prompt builds the Dashboard screen");
   for (const e of errors) problems.push(`link: ${e}`);
-  await ctx.close();
-}
-
-/* ---------- Copy link follows a pick, and the install says which look it brings ---------- */
-{
-  const { ctx, pg, errors } = await open("build");
-  await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: `http://localhost:${port}` });
-  await pick(pg, "Screen", "Dashboard");
-  check((await copied(pg, "Copy link")).includes("screen=dashboard"), "Copy link right after picking Dashboard carries screen=dashboard");
-  await pg.waitForTimeout(400);
-  await pick(pg, "Screen", "Projects");
-  await pg.waitForTimeout(400);
-  check((await copied(pg, "Copy link")).includes("screen=projects"), "Copy link after the address has settled carries the screen picked last");
-  for (const e of errors) problems.push(`copy link: ${e}`);
-  await ctx.close();
-}
-for (const [query, want] of [
-  ["?look=pink-flat", "This page shows Pink, flat material, calm motion. The registry installs Blue 4 and press material."],
-  ["?look=blue4", null],
-]) {
-  const { ctx, pg, errors } = await open("build", { query });
-  const note = await pg.locator("main").getByText("This page shows", { exact: false }).allTextContents();
-  check(want ? note.some((n) => n.trim().startsWith(want)) : note.length === 0, `${query}: ${want ? "beside Copy install the page says the registry installs another look" : "the registry's own look needs no note"} (${JSON.stringify(note)})`);
-  for (const e of errors) problems.push(`look note ${query}: ${e}`);
-  await ctx.close();
-}
-
-/* ---------- phone, and light beside dark ---------- */
-{
-  const { ctx, pg, errors } = await open("build");
-  await pick(pg, "Width", "Phone");
-  await settle(pg);
-  const width = await frame(pg).locator("[data-screen]").first().evaluate((el) => el.getBoundingClientRect().width);
-  check(width > 0 && width <= 384, `Phone draws the screen at most 384px wide (${Math.round(width)}px)`);
-  check((await frame(pg).getByRole("button", { name: "Open navigation" }).count()) >= 1, "on Phone the shell is phone shaped (its menu button shows)");
-
-  await pick(pg, "Width", "Desktop");
-  await pg.locator("main").getByRole("switch", { name: /Light beside dark/ }).click();
-  await settle(pg);
-  const copies = frame(pg).locator("[data-build-copy]");
-  check((await copies.count()) === 2, "Light beside dark draws two copies");
-  const dark = await copies.nth(1).evaluate((el) => ({
-    theme: el.getAttribute("data-theme"), material: el.getAttribute("data-material"), inert: el.inert, hidden: el.getAttribute("aria-hidden"),
-    page: document.documentElement.dataset.material ?? null,
-  }));
-  check(dark.theme === "dark" && dark.material === dark.page && dark.inert && dark.hidden === "true", `the dark copy is dark, in the page's material, inert and aria-hidden (${JSON.stringify(dark)})`);
-  await frame(pg).focus();
-  let strayed = false;
-  for (let i = 0; i < 20; i++) {
-    await pg.keyboard.press("Tab");
-    if (await pg.evaluate(() => !!document.activeElement?.closest("[data-build-copy][inert]"))) strayed = true;
-  }
-  check(!strayed, "twenty Tabs from the frame never focus inside the dark copy");
-  /* Split is a picture of both themes: a hand on the right half must not reach the hidden light copy under it. */
-  await frame(pg).evaluate((el) => { el.scrollTop = 0; });
-  await pg.evaluate(() => window.scrollTo(0, 0));
-  const values = () => frame(pg).locator("[data-build-copy]").first().locator("input").evaluateAll((is) => is.map((i) => i.value));
-  const before = await values();
-  const target = await frame(pg).locator("[data-build-copy]").first().locator("input").evaluateAll((is, mid) => {
-    const i = is.find((el) => { const b = el.getBoundingClientRect(); return b.left > mid && b.width > 0; });
-    if (!i) return null;
-    const b = i.getBoundingClientRect();
-    return { x: b.left + b.width / 2, y: b.top + b.height / 2 };
-  }, await frame(pg).evaluate((el) => { const b = el.getBoundingClientRect(); return b.left + b.width / 2; }));
-  if (target) {
-    await pg.mouse.click(target.x, target.y);
-    await pg.keyboard.type("typed");
-  }
-  check(!!target && JSON.stringify(await values()) === JSON.stringify(before), "in Light beside dark, a click and typing on the right half change nothing");
-  check((await pg.locator("main").getByText("Turn off Light beside dark to use the screen.", { exact: false }).count()) === 1, "in Light beside dark the page says to turn it off to use the screen");
-  for (const e of errors) problems.push(`views: ${e}`);
   await ctx.close();
 }
 
@@ -275,11 +225,11 @@ const blurPx = (f) => Number(/blur\(([\d.]+)px\)/.exec(f)?.[1] ?? 0);
   await ctx.close();
 }
 
-/* ---------- one accent fill outside the frame ---------- */
+/* ---------- one accent fill outside the stage ---------- */
 for (const look of ["blue4", "pink"]) {
   const { ctx, pg, errors } = await open("build", { query: `?look=${look}` });
   const fills = await fillsOutsideFrame(pg);
-  check(fills.length === 1 && fills[0].startsWith("Copy install"), `in ${look}, main outside the frame has one accent fill, Copy install (${JSON.stringify(fills)})`);
+  check(fills.length === 1 && fills[0].startsWith("Copy prompt"), `in ${look}, main outside the stage has one accent fill, Copy prompt (${JSON.stringify(fills)})`);
   for (const e of errors) problems.push(`fills ${look}: ${e}`);
   await ctx.close();
 }
