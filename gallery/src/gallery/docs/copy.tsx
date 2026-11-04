@@ -74,7 +74,7 @@ export function CopyStatus({ state }: { state: CopyState }) {
 }
 
 /** An sm button that copies `text` and says Copied, in words, for two seconds, with its announcement beside it. */
-export function CopyButton({ text, children, variant = "secondary", icon = <CopyIcon /> }: { text: string; children: string; variant?: "secondary" | "ghost"; icon?: ReactNode }) {
+export function CopyButton({ text, children, variant = "secondary", icon = <CopyIcon /> }: { text: string; children: string; variant?: "primary" | "secondary" | "ghost"; icon?: ReactNode }) {
   const [state, copy] = useCopy();
   const copied = state === "copied";
   return (
