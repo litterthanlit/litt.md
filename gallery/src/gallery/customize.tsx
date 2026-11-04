@@ -254,7 +254,7 @@ function CustomizePanel() {
         </div>
         <div className="flex flex-wrap gap-2">
           <CopyButton text={lookSetup(look, SITE)}>Copy setup</CopyButton>
-          <CopyButton text={withLook(location.href, look)} variant="ghost" icon={<LinkIcon />}>
+          <CopyButton text={() => withLook(location.href, look)} variant="ghost" icon={<LinkIcon />}>
             Copy link
           </CopyButton>
         </div>

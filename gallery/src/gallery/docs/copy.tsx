@@ -73,13 +73,16 @@ export function CopyStatus({ state }: { state: CopyState }) {
   );
 }
 
-/** An sm button that copies `text` and says Copied, in words, for two seconds, with its announcement beside it. */
-export function CopyButton({ text, children, variant = "secondary", icon = <CopyIcon /> }: { text: string; children: string; variant?: "primary" | "secondary" | "ghost"; icon?: ReactNode }) {
+/**
+ * An sm button that copies `text` and says Copied, in words, for two seconds, with its announcement beside it. `text`
+ * may be a function, read at the click: for text that follows the address, which a page may write after it renders.
+ */
+export function CopyButton({ text, children, variant = "secondary", icon = <CopyIcon /> }: { text: string | (() => string); children: string; variant?: "primary" | "secondary" | "ghost"; icon?: ReactNode }) {
   const [state, copy] = useCopy();
   const copied = state === "copied";
   return (
     <>
-      <Button size="sm" variant={variant} icon={copied ? <CheckIcon /> : icon} onClick={() => copy(text)}>
+      <Button size="sm" variant={variant} icon={copied ? <CheckIcon /> : icon} onClick={() => copy(typeof text === "function" ? text() : text)}>
         {/* Both labels share one cell, so the button keeps its width while it says Copied. */}
         <span className="grid">
           <span className={"col-start-1 row-start-1 " + (copied ? "opacity-0" : "")}>{children}</span>

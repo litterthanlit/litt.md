@@ -18,7 +18,7 @@ import { useCustomize } from "../customize-state";
 import { CopyButton } from "../docs/copy";
 import { installCommand, SITE } from "../docs/copy-prompt";
 import { PageTitle, type PageMeta } from "../kit";
-import { lookSetup, lookWords, screenPrompt, withLook } from "../look";
+import { lookNote, lookSetup, lookWords, screenPrompt, withLook } from "../look";
 import { AccentControl, FunControl, MaterialControl, ThemeControl } from "../look-controls";
 
 export const meta: PageMeta = {
@@ -43,6 +43,13 @@ export default function BuildPage() {
   const [split, setSplit] = useState(false);
   const phone = width === "phone";
   const label = `${screen.name}, ${width}${split ? ", light beside dark" : ""}`;
+  /* The screen from state, not the address: useUrlParam writes the address a beat after it renders. */
+  const link = () => {
+    const url = new URL(location.href);
+    url.searchParams.set("screen", screen.id);
+    return withLook(url.href, look);
+  };
+  const note = lookNote(look);
   const prompt = screenPrompt(
     { name: screen.name, exportName: screen.exportName, install: installCommand(screen.id), importPath: `@/components/litt-blocks/${screen.id}` },
     look,
@@ -76,6 +83,7 @@ export default function BuildPage() {
             </div>
           </div>
 
+          {split && <p className="text-small text-fg-muted">A picture of both themes. Turn off Light beside dark to use the screen.</p>}
           <BuildFrame label={label} phone={phone} split={split} swapKey={screen.id}>
             {() => screenView(screen, phone)}
           </BuildFrame>
@@ -86,10 +94,12 @@ export default function BuildPage() {
             </CopyButton>
             <CopyButton text={lookSetup(look, SITE)}>Copy setup</CopyButton>
             <CopyButton text={prompt}>Copy prompt</CopyButton>
-            <CopyButton text={withLook(location.href, look)} variant="ghost" icon={<LinkIcon />}>
+            <CopyButton text={link} variant="ghost" icon={<LinkIcon />}>
               Copy link
             </CopyButton>
           </div>
+          {/* Until a look installs in one command, the install brings the registry's look; say so beside it. */}
+          {note && <p className="text-small text-fg-muted">{note} Copy setup or Copy prompt carries this one.</p>}
         </section>
       </div>
     </article>

@@ -147,6 +147,30 @@ const fillsOutsideFrame = (pg) =>
   await ctx.close();
 }
 
+/* ---------- Copy link follows a pick, and the install says which look it brings ---------- */
+{
+  const { ctx, pg, errors } = await open("build");
+  await ctx.grantPermissions(["clipboard-read", "clipboard-write"], { origin: `http://localhost:${port}` });
+  await pick(pg, "Screen", "Dashboard");
+  check((await copied(pg, "Copy link")).includes("screen=dashboard"), "Copy link right after picking Dashboard carries screen=dashboard");
+  await pg.waitForTimeout(400);
+  await pick(pg, "Screen", "Projects");
+  await pg.waitForTimeout(400);
+  check((await copied(pg, "Copy link")).includes("screen=projects"), "Copy link after the address has settled carries the screen picked last");
+  for (const e of errors) problems.push(`copy link: ${e}`);
+  await ctx.close();
+}
+for (const [query, want] of [
+  ["?look=pink-flat", "This page shows Pink, flat material, calm motion. The registry installs Blue 4 and press material."],
+  ["?look=blue4", null],
+]) {
+  const { ctx, pg, errors } = await open("build", { query });
+  const note = await pg.locator("main").getByText("This page shows", { exact: false }).allTextContents();
+  check(want ? note.some((n) => n.trim().startsWith(want)) : note.length === 0, `${query}: ${want ? "beside Copy install the page says the registry installs another look" : "the registry's own look needs no note"} (${JSON.stringify(note)})`);
+  for (const e of errors) problems.push(`look note ${query}: ${e}`);
+  await ctx.close();
+}
+
 /* ---------- phone, and light beside dark ---------- */
 {
   const { ctx, pg, errors } = await open("build");
@@ -173,6 +197,23 @@ const fillsOutsideFrame = (pg) =>
     if (await pg.evaluate(() => !!document.activeElement?.closest("[data-build-copy][inert]"))) strayed = true;
   }
   check(!strayed, "twenty Tabs from the frame never focus inside the dark copy");
+  /* Split is a picture of both themes: a hand on the right half must not reach the hidden light copy under it. */
+  await frame(pg).evaluate((el) => { el.scrollTop = 0; });
+  await pg.evaluate(() => window.scrollTo(0, 0));
+  const values = () => frame(pg).locator("[data-build-copy]").first().locator("input").evaluateAll((is) => is.map((i) => i.value));
+  const before = await values();
+  const target = await frame(pg).locator("[data-build-copy]").first().locator("input").evaluateAll((is, mid) => {
+    const i = is.find((el) => { const b = el.getBoundingClientRect(); return b.left > mid && b.width > 0; });
+    if (!i) return null;
+    const b = i.getBoundingClientRect();
+    return { x: b.left + b.width / 2, y: b.top + b.height / 2 };
+  }, await frame(pg).evaluate((el) => { const b = el.getBoundingClientRect(); return b.left + b.width / 2; }));
+  if (target) {
+    await pg.mouse.click(target.x, target.y);
+    await pg.keyboard.type("typed");
+  }
+  check(!!target && JSON.stringify(await values()) === JSON.stringify(before), "in Light beside dark, a click and typing on the right half change nothing");
+  check((await pg.locator("main").getByText("Turn off Light beside dark to use the screen.", { exact: false }).count()) === 1, "in Light beside dark the page says to turn it off to use the screen");
   for (const e of errors) problems.push(`views: ${e}`);
   await ctx.close();
 }

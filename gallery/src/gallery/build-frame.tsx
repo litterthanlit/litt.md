@@ -1,9 +1,10 @@
 /**
  * The Build page's frame: one window onto a screen, scrolling inside itself at AppFrame's height, with the screen's
  * links kept put (kit.tsx, stayPut). Light beside dark draws the screen twice in one grid cell: the light copy, and
- * a dark copy clipped to the right half. One scroll moves both, so the halves never slip apart. The dark copy is a
- * picture of the same screen: inert and hidden from assistive tech, so its ids, headings and focus stops never
- * double the light one's. Each copy spreads the look (look.ts, lookAttributes), since a themed root redeclares
+ * a dark copy clipped to the right half. One scroll moves both. Split is a picture of both themes: both copies are
+ * inert, so a hand on the right half never reaches the light copy under it and the halves never fall out of step;
+ * the page says to turn it off to use the screen. The dark copy is also hidden from assistive tech, so its ids,
+ * headings and focus stops never double the light one's. Each copy spreads the look (look.ts, lookAttributes), since a themed root redeclares
  * Blue 4 and Press.
  */
 import type { ReactNode } from "react";
@@ -47,7 +48,8 @@ export function BuildFrame({
         key={dark ? "dark" : "light"}
         data-build-copy=""
         {...lookAttributes(look, dark)}
-        {...(dark ? { inert: true, "aria-hidden": true } : {})}
+        inert
+        {...(dark ? { "aria-hidden": true } : {})}
         className={"[grid-area:1/1] bg-canvas text-fg " + (dark ? "[clip-path:inset(0_0_0_50%)]" : "")}
       >
         {sized}
