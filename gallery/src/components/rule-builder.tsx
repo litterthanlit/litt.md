@@ -648,6 +648,13 @@ function useBuilder(): BuilderContext {
 /* ---------------------------------------------------------------- the parts */
 
 /* A row at rest is flat; a held one is the raised block, at once (R2: a shadow never fades). */
+/* A row's corners: the control radius, but never past half its one-line height, so a row that wraps (a narrow
+   builder, a field of picks, an error under it) keeps the corners it had on one line, concentric with the fields in
+   it, instead of turning into a lozenge at the pill. A group's are the surface radius, or the control radius up to 4px past the rows' cap
+   when that is rounder, so a group never holds rows rounder than itself. Below the pill both
+   are as before. */
+const ROW_RADIUS = "rounded-[min(var(--radius-control),calc(var(--control-md)/2))]";
+const GROUP_RADIUS = "rounded-[max(var(--radius-surface),min(var(--radius-control),calc(var(--control-md)/2+4px)))]";
 const FLAT_ROW = "shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]";
 const ERROR_ROW = "shadow-[inset_0_0_0_1px_var(--danger),var(--highlight)]";
 const HELD = "bg-block shadow-(--block-lift)";
@@ -750,7 +757,7 @@ function ConditionRow({ condition, index, count, held, handle, remove }: { condi
       role="group"
       aria-label={`Condition ${index + 1} of ${count}`}
       aria-describedby={error ? errorId : undefined}
-      className={"@container rounded-control forced-colors:border " + (held ? HELD : error ? ERROR_ROW : FLAT_ROW)}
+      className={"@container " + ROW_RADIUS + " forced-colors:border " + (held ? HELD : error ? ERROR_ROW : FLAT_ROW)}
     >
       <div className={ROW}>
         {condition.locked ? (
@@ -810,7 +817,7 @@ function GroupPanel({ group, depth, held, handle, remove }: { group: RuleBuilder
     <div
       role="group"
       aria-label={`Group, ${words}`}
-      className={"@container/panel grid gap-2 rounded-surface p-1 pb-3 forced-colors:border " + (held ? HELD : "bg-surface-2 " + FLAT_ROW)}
+      className={"@container/panel grid gap-2 " + GROUP_RADIUS + " p-1 pb-3 forced-colors:border " + (held ? HELD : "bg-surface-2 " + FLAT_ROW)}
     >
       <div className="flex min-w-0 items-center gap-2">
         {handle}

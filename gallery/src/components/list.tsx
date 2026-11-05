@@ -265,7 +265,7 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
       />
 
       {project.cover ? (
-        <div className="relative aspect-[8/5] shrink-0 overflow-hidden rounded-control bg-surface-2 transition-[background-color] duration-(--dur-instant) ease-litt group-hover:bg-surface-3 pointer-coarse:group-active:bg-surface-3">
+        <div className="relative aspect-[8/5] shrink-0 overflow-hidden rounded-[calc(var(--radius-surface)-4px)] bg-surface-2 transition-[background-color] duration-(--dur-instant) ease-litt group-hover:bg-surface-3 pointer-coarse:group-active:bg-surface-3">
           <ProjectCover name={project.cover} />
           {select}
         </div>

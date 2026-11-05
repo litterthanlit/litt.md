@@ -72,7 +72,7 @@ export type TokenInputProps = {
 /* The field: the Input's cut (floor, line, shade) and its focus, error and disabled looks, on a
    wrapper that holds the tokens. The ring follows the text input only (the remove buttons draw their own). */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text rounded-control bg-cut font-normal text-fg " +
+  "relative flex w-full min-w-0 cursor-text bg-cut font-normal text-fg " +
   "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
@@ -81,6 +81,15 @@ const FIELD =
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
+
+/* The corners: the control radius, but never past half the one-line height, so a field that wraps to more rows of
+   tokens keeps the corners it had on one line and stays concentric with the tokens inside, instead of turning into a
+   lozenge at the pill. On one line it is the same as the control radius. */
+const RADIUS = {
+  sm: "rounded-[min(var(--radius-control),calc(var(--control-sm)/2))] pointer-coarse:rounded-[min(var(--radius-control),calc(var(--control-md)/2))]",
+  md: "rounded-[min(var(--radius-control),calc(var(--control-md)/2))]",
+  lg: "rounded-[min(var(--radius-control),calc(var(--control-lg)/2))]",
+};
 
 /* Padding on the 4px grid. A 24px token row plus this air lands on 32, 44 (centered in the minimum) and 56. */
 const FIELD_SIZE = {
@@ -297,7 +306,7 @@ export function TokenInput({
         ref={fieldRef}
         data-invalid={invalid ? "" : undefined}
         data-disabled={disabled ? "" : undefined}
-        className={[FIELD, FIELD_SIZE[size], TEXT_SIZE[size], "pointer-coarse:text-(length:--control-text-lg)"].join(" ")}
+        className={[FIELD, RADIUS[size], FIELD_SIZE[size], TEXT_SIZE[size], "pointer-coarse:text-(length:--control-text-lg)"].join(" ")}
         onMouseDown={(e) => {
           /* A press on the field's own air focuses the input and keeps focus from falling off it. */
           if (disabled || (e.target as HTMLElement).closest("button, input")) return;
