@@ -60,14 +60,7 @@ if (!shapes.length || shapes.some((r) => !SHAPES.includes(r))) { console.error(`
 
 /* Breaks the check knows about and has not fixed yet: each prints, and none fails the run, but one that no longer happens
    does, so the entry goes when the fix lands. Anything else that rubs a curve fails as usual. */
-const KNOWN = [
-  {
-    page: "rule-builder",
-    radius: 28,
-    what: /of <div\.(?:relative\.flex\.w-full|@container\.rounded-control)/,
-    why: "a condition row or a token field that wraps past 56px stops being a stadium at the pill's 28px, and the fields and tags inside keep their own radius, so they sit off the curve",
-  },
-];
+const KNOWN = [];
 const knownFor = (f) => KNOWN.find((k) => k.page === f.id && k.radius === f.radius && k.what.test(f.what));
 
 const pages = fs.readdirSync(path.join(here, "../src/gallery/pages"))

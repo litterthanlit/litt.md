@@ -57,6 +57,17 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const galleryRoot = path.resolve(here, "../../../gallery");
 const RULES = ["weight", "radius", "shadow", "color", "type", "motion", "other"];
 
+/* The radii worked out from the tokens to keep nested corners concentric, the only arbitrary radii allowed. Written in
+   the gallery's names; a host's are the same with --litt-. */
+const CONCENTRIC = [
+  "calc(var(--radius-control)-2px)", // a block set 2px into a control (the switch, the slider)
+  "min(var(--radius-control),calc(var(--control-sm)/2))", // a control that wraps (a field of tokens, a rule row): its
+  "min(var(--radius-control),calc(var(--control-md)/2))", // corners stop at half its one-line height, so at the pill
+  "min(var(--radius-control),calc(var(--control-lg)/2))", // it stays concentric with what it holds
+  "max(var(--radius-surface),min(var(--radius-control),calc(var(--control-md)/2+4px)))", // a panel holding such rows
+];
+const CONCENTRIC_HOST = CONCENTRIC.map((v) => v.replace(/var\(--/g, "var(--litt-"));
+
 class UsageError extends Error {}
 
 /* ---------------------------------------------------------------------------- shared helpers */
@@ -121,10 +132,10 @@ function lintGallery(files, root) {
       if (/\bfont-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/.test(line)) fail("weight", "weight by role (R8): use font-normal (text), font-title (titles, buttons, tabs) or font-label (12px labels)");
       if (/\bfont-\[\d+\]/.test(line)) fail("weight", "arbitrary weight (R8): use font-normal, font-title or font-label");
       if (/fontWeight\s*:\s*['"]?(?!(?:400|500|600)\b)(?:\d|bold|bolder|lighter)/.test(line)) fail("weight", "fontWeight other than 400, 500 or 600 (R8): use font-normal, font-title or font-label");
-      for (const m of line.matchAll(/\brounded(-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
+      for (const m of line.matchAll(/\brounded(-[\w-]*\[[^\]\s]*\]|-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
-        if (v === "rounded-[calc(var(--radius-control)-2px)]") continue; // a block set 2px into a control (the switch, the slider): concentric with it
+        if (CONCENTRIC.some((c) => v === `rounded-[${c}]`)) continue;
         if (!/^rounded(-(t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(pill|none|control|surface)$/.test(v)) fail("radius", `${v}: use rounded-control (controls, rows, inputs), rounded-surface (cards, menus, dialogs, toasts) or rounded-pill (avatars, icon-only buttons)`);
       }
       if (/borderRadius\s*:\s*['"]?(?!0\b|999|9999|var\(--radius-(pill|control|surface)\))[\d.]/.test(line)) fail("radius", "borderRadius: use the radius tokens");
@@ -530,7 +541,7 @@ function checkToken(t, scope, add, isClassContext) {
   // radius
   if ((m = RADIUS_RE.exec(b))) {
     const rest = m[2];
-    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || rest === "[calc(var(--litt-radius-control)-2px)]" || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
+    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || CONCENTRIC_HOST.some((c) => rest === `[${c}]`) || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
     if (!ok && (rest !== undefined || isClassContext())) {
       add("radius", `${b}: ${HOST_ADVICE.radius}${rest === "full" ? ". rounded-full is rounded-litt-pill" : ""}`);
     }
