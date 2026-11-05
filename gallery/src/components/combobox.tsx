@@ -63,6 +63,7 @@ import {
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useIsPresent, useMotionValue } from "motion/react";
 import { useDevice, useExit, useTransition, useTravel, useVisibleScreen } from "@/motion";
+import { GROW } from "@/motion/deal";
 import { CheckIcon, ChevronDownIcon } from "@/components/icons";
 import { Tag } from "@/components/tag";
 import { GLIDE_ROW, useGlide, type GlideSource } from "@/components/glide";
@@ -859,9 +860,9 @@ function Panel(props: PanelProps) {
           "data-[state=closed]:pointer-events-none " +
           (flat ? "bg-surface-2 shadow-float" : "litt-glass")
         }
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : 0.98, transition: enter }}
-        exit={{ opacity: 0, scale: 0.98, x: out.x, y: out.y, transition: exit }}
+        initial={{ opacity: 0, scale: GROW }}
+        animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : GROW, transition: enter }}
+        exit={{ opacity: 0, scale: GROW, x: out.x, y: out.y, transition: exit }}
         style={{ x, y }}
         /* Rows never take focus: the caret stays in the field. */
         onMouseDown={(e) => e.preventDefault()}

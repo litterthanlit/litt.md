@@ -49,6 +49,7 @@ import {
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { animate, motion, useMotionValue, type AnimationPlaybackControls, type HTMLMotionProps } from "motion/react";
 import { useExit, useTransition, useTravel } from "@/motion";
+import { GROW } from "@/motion/deal";
 import { CheckIcon, ChevronDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
 
@@ -220,7 +221,7 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const scale = useMotionValue(0.98);
+  const scale = useMotionValue(GROW);
   const opacity = useMotionValue(0);
   const node = useRef<HTMLDivElement | null>(null);
   const side = useRef<Side>("bottom");
@@ -262,7 +263,7 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
         const o = offset(side.current);
         x.jump(o.x);
         y.jump(o.y);
-        scale.jump(0.98);
+        scale.jump(GROW);
         opacity.jump(0);
       }
       entered.current = true;
@@ -285,7 +286,7 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
     const runs = [
       animate(x, o.x, exit),
       animate(y, o.y, exit),
-      animate(scale, 0.98, exit),
+      animate(scale, GROW, exit),
       animate(opacity, 0, {
         ...exit,
         onComplete: () => {

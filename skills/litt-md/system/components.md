@@ -375,7 +375,7 @@ Where someone is in a flow of three to six steps, such as setting up a studio. N
 ## Tooltip
 Solid, not glass, with `--shadow-tooltip`, `--radius-control` and small type in `--fg`.
 - **Delay:** opens after a 200ms hover delay, and at once on focus.
-- **Motion:** responsive tier. It grows from the trigger from `--press-scale` (0.98) and travels in a quarter of `--travel` from the side it renders on.
+- **Motion:** responsive tier. It grows from the trigger from 0.9 and travels in a quarter of `--travel` from the side it renders on.
 - **Exit:** `--dur-exit-responsive` with `--ease-out`.
 - **On touch** a tooltip opens on a press and hold of 500ms, not on a tap, so a tap only does what the button does. (500ms is an interaction delay, like the 200ms hover delay, not a motion token.) It closes on the next touch anywhere. Shortcut chips are hidden on coarse screens. The label that matters must also be the button's `aria-label`, or visible text.
 
@@ -385,7 +385,7 @@ A native `<dialog>` in the top layer, `.litt-glass` with `--glass-shadow: var(--
 - **Rows:** small size, `--radius-control`, padding `--space-2`/`--space-3`, in a list padded `--space-1` so the corners stay concentric. The lit row gets an fg-7% fill and `--fg`, plus a `↵` kbd hint.
 - **Behavior:** the combobox + listbox pattern (`aria-activedescendant`). The first enabled row is always lit. ArrowUp and ArrowDown move, wrap and skip disabled rows. Enter fires only on the lit row. Esc clears the query first, then closes. A backdrop click closes.
 - **Filtering:** typing changes the list instantly, in the original order, and the panel never animates its height. The empty state says nothing matches and drops the Enter hint.
-- **Motion:** responsive tier. It drops in over a dimmed canvas (`--dur-responsive`, `--ease-responsive`) with opacity, a quarter of `--travel` and `--press-scale`, and leaves on `--dur-exit-responsive`. One gliding highlight (transform, responsive) follows the lit row. The specimen shows the entrance and a per-row fill; the glide is built in the gallery.
+- **Motion:** responsive tier. Opened by a press (a search button), it grows out of what was pressed: its transform-origin sits on the button and it scales up from 0.9 without travelling. Opened by the shortcut, it drops in over a dimmed canvas (`--dur-responsive`, `--ease-responsive`) with opacity, a quarter of `--travel` and `--press-scale`. It leaves on `--dur-exit-responsive`, back into the button when it grew from one. One gliding highlight (transform, responsive) follows the lit row. The specimen shows the entrance and a per-row fill; the glide is built in the gallery.
 - Open with ⌘K or Ctrl+K and a visible trigger button.
 - **On compact screens** the panel sits at the top edge: `--space-2` below the safe-area inset and `--space-2` from each side, not 15vh down. Its list height is the visible screen less the keyboard, read from the visual viewport, so no row hides behind the keyboard.
 - **Motion on compact** stays on the responsive tier: it drops from the top by half of `--travel`, scales from `--press-scale`, and leaves on `--dur-exit-responsive`. It is not draggable, because its list scrolls.
@@ -393,7 +393,7 @@ A native `<dialog>` in the top layer, `.litt-glass` with `--glass-shadow: var(--
 
 ## Popover and dropdown
 Glass with `--shadow-float`, `--radius-surface`, padding `--space-1`, rows at `--radius-control` as in the command menu. Positioned in the top layer (`popover` attribute) or a portal.
-- **Motion:** responsive tier. It grows from the trigger's corner and slides a quarter of `--travel`: a dropdown menu from 0.9, so the growth reads as coming out of its button, and a popover from `--press-scale` (0.98). One gliding highlight (transform, responsive) follows the lit row. Exit on `--dur-exit-responsive`.
+- **Motion:** responsive tier. It grows from the trigger's corner from 0.9, so the growth reads as coming out of its button, and slides a quarter of `--travel`. One gliding highlight (transform, responsive) follows the lit row. Exit on `--dur-exit-responsive`.
 - **Open:** a pointer open lights nothing until the pointer moves. A keyboard open (Enter or ArrowDown) lights the first row with a focus ring.
 - **Submenus** are solid, because glass never sits on glass.
 - **Checkbox and radio rows** keep the check in a fixed 16px cell, so labels never shift, and the menu stays open while options change.
@@ -431,7 +431,7 @@ One image of a set at the size of the screen, opened from a Media.
 - **Layer:** the whole screen, on the canvas at 97% that only fades (instant tier), so the image is the one surface and the page behind is a trace. No blur and no glass: the image is the material.
 - **Image:** as large as the screen allows less the bars, at its own shape, in a Media frame (the surface radius, the hairline, `--surface-2` while it loads). Its width and height give it its shape before it loads.
 - **Bars:** the label at the small size and `--weight-title` with "3 of 12" in a tabular caption beside it, and a round Close at the end, at the top. The caption under the image at the small size in `--fg-muted`, at most `--measure` wide. Previous and Next are round secondary buttons beside the image on a wide screen and at the end of the caption row on a compact one, 44px on coarse pointers, disabled at the ends. Nothing loops.
-- **Motion:** opening is the view's expressive moment, as a dialog's: the image rises by `--travel` and settles from `--press-scale`, and leaves on the exit token; `tier="responsive"` when the view has spent it. The next image fades in from `--travel` on the side it comes from and the last one out by half that, on the responsive tier.
+- **Motion:** opening is the view's expressive moment, as a dialog's: opened from its Media frame, the image grows out of the frame (transform-origin on it, from 0.9) and shrinks back into it; opened any other way it rises by `--travel` and settles from `--press-scale`. It leaves on the exit token; `tier="responsive"` when the view has spent it. The next image fades in from `--travel` on the side it comes from and the last one out by half that, on the responsive tier.
 - **Touch:** a finger swipes the image sideways one to one (Foundations section 6). Past `--dismiss-distance` of its width or faster than `--dismiss-velocity` it carries on out and the next one comes in; pulled where there is nothing, it resists. The buttons stay.
 - **Keys and focus:** focus lands on the panel so ← → Home and End work at once; Esc, Close or a click on the ground around the image closes it, and focus goes back to the image that opened it, or the slide it closed on.
 - **On compact screens** it stays full screen; it is not a sheet, because it already fills the screen.

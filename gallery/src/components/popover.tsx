@@ -59,6 +59,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import * as RadixPopover from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useMotionValue } from "motion/react";
 import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { GROW } from "@/motion/deal";
 import { Button } from "@/components/button";
 import { DialogSheet } from "@/components/dialog";
 import { XIcon } from "@/components/icons";
@@ -367,9 +368,9 @@ function Surface({
         ref={el}
         data-popover-surface=""
         className={surface}
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : 0.98, transition: enter }}
-        exit={{ opacity: 0, scale: 0.98, x: out.x, y: out.y, transition: exit }}
+        initial={{ opacity: 0, scale: GROW }}
+        animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : GROW, transition: enter }}
+        exit={{ opacity: 0, scale: GROW, x: out.x, y: out.y, transition: exit }}
         style={{ x, y }}
       >
         <div

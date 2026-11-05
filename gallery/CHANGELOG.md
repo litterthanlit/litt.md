@@ -12,6 +12,10 @@ A surface can now open out of the element that opened it and go back into it, th
 - **changed** `dialog`: opened by a press (a button, a menu row), the centred panel grows out of what was pressed: its transform-origin sits on the opener and it scales up from 0.9 without travelling, and it shrinks back into it on close. Opened any other way (from code, a shortcut) it rises from below as before. The side sheet and the phone sheet are as before. Nothing in your code has to change.
 - **changed** `menu`: the panel grows from its trigger's corner from 0.9 instead of 0.98, so the growth reads as coming out of the button. Submenus too. Nothing in your code has to change.
 - **changed** `context-menu`: it grows from the pointer's corner from 0.9, as the Menu does. Nothing in your code has to change.
+- **changed** `popover`, `hover-card`, `select`, `combobox`, `tooltip`: they grow from the trigger's corner from 0.9 instead of 0.98, as the Menu does (the Combobox's list from its field). Date picker and Color picker open in a Popover, so they follow. Nothing in your code has to change.
+- **changed** `command-menu`: opened by a press (a search button), the panel grows out of it, as a Dialog does; opened by the shortcut it drops in from above as before. Nothing in your code has to change.
+- **changed** `lightbox`: opened from its Media frame, the image grows out of the frame and shrinks back into it; opened any other way it rises as before. Nothing in your code has to change.
+- **changed** `motion`: `useGrowFrom(open, enabled)`, the Dialog's way of growing from the press that opened it as one hook, now shared by Dialog, Command menu and Lightbox.
 
 ## 2026-11-03 · Another way through: type to confirm, and toasts that fit their words
 

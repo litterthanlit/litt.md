@@ -60,7 +60,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useTransform } from "motion/react";
 import { useDevice, useExit, useMotionDial, useSheetPresence, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { useDismissDrag } from "@/motion/drag";
-import { GROW, openerBox, originOn, useOpeners, type Box } from "@/motion/deal";
+import { GROW, useGrowFrom } from "@/motion/deal";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
 
@@ -274,16 +274,11 @@ export function DialogContent({
   const ref = useRef<HTMLDivElement | null>(null);
   const sheet = side === "right";
   /* Where the press that opened it was, read as it opens: the panel grows out of it. */
-  useOpeners();
-  const opener = useRef<Box | null>(null);
-  const wasOpen = useRef(false);
-  if (open && !wasOpen.current) opener.current = sheet ? null : openerBox();
-  wasOpen.current = open;
-  const grows = opener.current !== null;
-  /* Set before the first frame is painted, while the panel is drawn at GROW about its centre. */
+  const grow = useGrowFrom<HTMLDivElement>(open, !sheet);
+  const grows = grow.grows;
   const panelRef = (el: HTMLDivElement | null) => {
     ref.current = el;
-    if (el && opener.current && !el.style.transformOrigin) el.style.transformOrigin = originOn(el, opener.current, GROW);
+    grow.ref(el);
   };
   const hasBody = children != null && children !== false;
 

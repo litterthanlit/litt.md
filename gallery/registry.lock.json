@@ -99,12 +99,12 @@
       "hash": "9158c60f366fa726"
     },
     "combobox": {
-      "version": "2026.11.02",
-      "hash": "5b282a3f0ef8c4a7"
+      "version": "2026.11.05",
+      "hash": "e932e8c20d163812"
     },
     "command-menu": {
-      "version": "2026.11.02",
-      "hash": "ed03de18af1ecbf9"
+      "version": "2026.11.05",
+      "hash": "d789f556f9fabc26"
     },
     "composer": {
       "version": "2026.10.26",
@@ -136,7 +136,7 @@
     },
     "dialog": {
       "version": "2026.11.05",
-      "hash": "d0a4a582d1a4089a"
+      "hash": "443e59eff9321b1c"
     },
     "dot-plot": {
       "version": "2026.11.03",
@@ -183,8 +183,8 @@
       "hash": "7951010af01b54ed"
     },
     "hover-card": {
-      "version": "2026.11.02",
-      "hash": "aa38993dc34ac951"
+      "version": "2026.11.05",
+      "hash": "a8cde875b15c3cfc"
     },
     "icons": {
       "version": "2026.10.26",
@@ -211,8 +211,8 @@
       "hash": "0871686c71f7ae19"
     },
     "lightbox": {
-      "version": "2026.11.02",
-      "hash": "3fea5454d8fcd0a4"
+      "version": "2026.11.05",
+      "hash": "839088aae16c87a4"
     },
     "list": {
       "version": "2026.10.25",
@@ -244,7 +244,7 @@
     },
     "motion": {
       "version": "2026.11.05",
-      "hash": "b1fc564cc6ef415a"
+      "hash": "e932072587c5f1bc"
     },
     "number-field": {
       "version": "2026.11.02",
@@ -267,8 +267,8 @@
       "hash": "afc28126f79bafa5"
     },
     "popover": {
-      "version": "2026.10.15",
-      "hash": "2cb4d20598f1de38"
+      "version": "2026.11.05",
+      "hash": "464d733db59a6e8e"
     },
     "price": {
       "version": "2026.10.24",
@@ -323,8 +323,8 @@
       "hash": "04b99fc49c4adf98"
     },
     "select": {
-      "version": "2026.11.02",
-      "hash": "8d999cdae698575a"
+      "version": "2026.11.05",
+      "hash": "36b4800841832ba3"
     },
     "settings": {
       "version": "2026.11.03",
@@ -427,8 +427,8 @@
       "hash": "ae2a9e569f25f046"
     },
     "tooltip": {
-      "version": "2026.10.25",
-      "hash": "0acfedc16142e1e0"
+      "version": "2026.11.05",
+      "hash": "cbc5ae6c3600b26b"
     },
     "tree": {
       "version": "2026.10.26",

@@ -26,7 +26,7 @@
  * says where the press that opened it happened, read at the press, so it still answers once the trigger is gone (a
  * menu row that opened a dialog).
  */
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { animate, type AnimationPlaybackControls, type Transition } from "motion/react";
 import { useExit, useMotionDial, useStagger, useTransition, useTravel } from "./index";
 
@@ -192,6 +192,9 @@ function listen() {
   document.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && note(e), true);
 }
 
+/* From the moment the engine loads, so the press that mounts an overlay is already noted when the overlay asks. */
+listen();
+
 /** Starts noting presses (once per page), so openerBox() can answer. Call it in any overlay that grows from its opener. */
 export function useOpeners() {
   useEffect(listen, []);
@@ -214,4 +217,21 @@ export function originOn(panel: Element, opener: Box, scale = 1) {
   const c = center(r);
   const o = center(opener);
   return `${o.x - (c.x - w / 2)}px ${o.y - (c.y - h / 2)}px`;
+}
+
+/**
+ * For an overlay that grows out of the press that opened it (a Dialog, the Command menu, a Lightbox): whether it does,
+ * and a ref for the panel that puts its transform-origin on the opener before the first frame, while the panel is drawn
+ * at GROW. Read on the render where `open` turns true; `enabled` false (a sheet) never grows.
+ */
+export function useGrowFrom<T extends HTMLElement>(open: boolean, enabled = true): { grows: boolean; ref: (el: T | null) => void } {
+  useOpeners();
+  const opener = useRef<Box | null>(null);
+  const wasOpen = useRef(false);
+  if (open && !wasOpen.current) opener.current = enabled ? openerBox() : null;
+  wasOpen.current = open;
+  const ref = useCallback((el: T | null) => {
+    if (el && opener.current && !el.style.transformOrigin) el.style.transformOrigin = originOn(el, opener.current, GROW);
+  }, []);
+  return { grows: opener.current !== null, ref };
 }
