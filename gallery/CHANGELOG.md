@@ -4,6 +4,12 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-05 · Device: a third material
+
+Device says litt's depth ladder in hardware, after the components studies: one attribute on `<html>`, `data-material="device"`, and the components follow. Press stays the default.
+
+- **changed** `litt`: a third material, Device. `data-material="device"` on `<html>` sets an aluminium body (`--litt-device-*`, in each theme), plates on it, wells cut into it, keys that stand on a 2px skirt and sink the whole 2px when pressed, and fields behind LCD glass. The accents, status inks and data hues are retuned for the body, so every contrast pair still passes; `data-accent="pink"` and `"mono"` still win on the same element. New tokens every material sets: `--litt-field`, `--litt-field-ink`, `--litt-field-ink-subtle`, `--litt-field-line`, `--litt-field-shade` and `--litt-font-field` (the cut, the inks and the sans, outside Device), and `--litt-label-case`, `--litt-label-tracking` and `--litt-engrave` with the `litt-legend` class (a 12px label, engraved capitals under Device). Reduced motion keeps a key still. Nothing changes until you set the attribute. Device sets field text in Geist Mono, so load it at 400.
+
 ## 2026-11-02 · Flat: a second material
 
 Flat says litt's depth ladder by fill alone, on neutral greys: one attribute on `<html>`, `data-material="flat"`, and the components follow. Press, the raised-and-sunken material, stays the default. A raised block under a pointer now reads one token, `--litt-block-hover`, so a material can set its own hover.

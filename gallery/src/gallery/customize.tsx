@@ -105,6 +105,9 @@ function CustomizePanel() {
     shapeRule(radius),
     { ok: true, text: accentRule[look.accent] },
     ...(look.material === "flat" ? [{ ok: true, text: "Flat fits R3: the depth ladder by fill alone. Copy setup says how to set data-material." }] : []),
+    ...(look.material === "device"
+      ? [{ ok: true, text: "Device fits R3 in hardware: keys, wells and LCD glass. Copy setup says how to set data-material." }]
+      : []),
     ...(look.fun
       ? [{ ok: false, cue: true, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Copy setup says how to wrap your app in <FunMode>, and the changelog says if the trial ends." }]
       : []),
