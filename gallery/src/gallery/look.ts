@@ -42,9 +42,12 @@ export type MaterialInfo = {
 export const MATERIALS: readonly MaterialInfo[] = [
   { id: "press", name: "Press", note: "Raised blocks in sunken trays, lit from the top", attribute: null },
   { id: "flat", name: "Flat", note: "Grey fills and hairlines, nothing casts", attribute: "flat" },
-  { id: "device", name: "Device", note: "Keys, wells and LCD glass on an aluminium body", attribute: "device" },
+  { id: "device", name: "Device", note: "Keys and dark LCD screens on an aluminium body, full mono, an orange accent", attribute: "device" },
 ];
 export const materialOf = (id: Material) => MATERIALS.find((m) => m.id === id)!;
+/** An accent's name in a material: Device answers the no-attribute accent with its own orange, so Blue 4 reads "Orange" there. */
+export const accentName = (accent: Accent, material: Material, short = false) =>
+  accent === "blue4" && material === "device" ? "Orange" : short ? (accentOf(accent).short ?? accentOf(accent).name) : accentOf(accent).name;
 
 /** What the gallery opens in, and what Reset goes back to: a visitor meets the material before the color. */
 export const GALLERY_LOOK: Look = { accent: "mono", material: "flat", fun: false };
@@ -98,7 +101,7 @@ export function lookAttributes(look: Pick<Look, "accent" | "material">, dark: bo
 const motionWords = (fun: boolean) => (fun ? "fun motion" : "calm motion");
 const materialWords = (material: Material) => `${material} material`;
 /** In words (R5): "Pink, flat material, fun motion", "Monochrome, press material, calm motion". */
-export const lookWords = (look: Look) => `${accentOf(look.accent).name}, ${materialWords(look.material)}, ${motionWords(look.fun)}`;
+export const lookWords = (look: Look) => `${accentName(look.accent, look.material)}, ${materialWords(look.material)}, ${motionWords(look.fun)}`;
 
 const REGISTRY_WORDS = `${accentOf(REGISTRY_LOOK.accent).name}, ${materialWords(REGISTRY_LOOK.material)} and ${motionWords(REGISTRY_LOOK.fun)}`;
 const COUNT = ["no things", "one thing", "two things", "three things"];
@@ -127,7 +130,7 @@ function edits(look: Look): string[] {
         `   Next.js, app/layout.tsx: <html lang="en" ${attr}>    Vite, index.html: <html lang="en" ${attr}>`,
         material === "flat"
           ? `   Flat says the depth ladder by fill alone, on neutral greys: nothing casts and nothing catches the light. Never set it from an effect.`
-          : `   Device says the depth ladder in hardware: an aluminium body, keys that sink 2px, wells, and fields behind LCD glass in Geist Mono (load it at 400). Never set it from an effect.`,
+          : `   Device says the depth ladder in hardware: an aluminium body, keys that sink 2px, dark LCD screens for panels and overlays, an orange accent, and every word in Geist Mono (load it at 400, 500 and 600). Never set it from an effect.`,
         `   An element that sets its own theme (class="dark", class="light" or data-theme) needs ${attr} too.`,
       ].join("\n"),
     );

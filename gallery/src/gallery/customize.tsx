@@ -20,7 +20,7 @@ import { Tag } from "@/components/tag";
 import { useCustomize, useDark, type ThemeChoice } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
-import { accentOf, ACCENTS, GALLERY_LOOK, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Accent, type Material } from "./look";
+import { accentName, accentOf, ACCENTS, GALLERY_LOOK, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Accent, type Material } from "./look";
 import { AccentChip } from "./swatch";
 import { loadTypeface } from "./typeface";
 
@@ -130,8 +130,7 @@ function CustomizePanel() {
     setLook({ accent: a, material: m, fun: feel });
     setRadius(r);
     setTypeface(f.id);
-    const accentName = accentOf(a).name;
-    setSaid(`${accentName}, ${materialOf(m).name.toLowerCase()} material, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
+    setSaid(`${accentName(a, m)}, ${materialOf(m).name.toLowerCase()} material, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
   };
 
   return (
@@ -152,7 +151,7 @@ function CustomizePanel() {
         legend="Accent"
         value={look.accent}
         onValueChange={(accent) => setLook({ accent })}
-        options={ACCENTS.map((a) => ({ value: a.id, label: a.short ?? a.name, picture: <AccentChip accent={a.id} /> }))}
+        options={ACCENTS.map((a) => ({ value: a.id, label: accentName(a.id, look.material, true), picture: <AccentChip accent={a.id} /> }))}
       />
       <CardPicker
         size="sm"
