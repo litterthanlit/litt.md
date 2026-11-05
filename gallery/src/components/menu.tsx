@@ -180,7 +180,7 @@ const row =
 const tone = "text-fg-muted data-[highlighted]:text-fg pointer-coarse:active:text-fg";
 const toneDanger = "text-danger";
 /** The group label row, and the caption that names a submenu's list. */
-const labelRow = "flex h-control-sm items-center px-3 text-caption text-fg-subtle";
+const labelRow = "flex h-control-sm items-center px-3 text-caption text-fg-subtle litt-legend";
 
 /** The fixed 16px cell at the start of every row. */
 function Cell({ children }: { children?: ReactNode }) {

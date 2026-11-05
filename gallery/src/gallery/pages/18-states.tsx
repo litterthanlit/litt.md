@@ -176,7 +176,7 @@ function LoadingListDemo() {
 function CardSkeleton() {
   return (
     <div className="litt-raised flex h-full flex-col rounded-surface p-1">
-      <Skeleton className="aspect-[8/5] shrink-0" />
+      <Skeleton radius="cover" className="aspect-[8/5] shrink-0" />
       <div className="grid gap-1 px-3 pt-4">
         <Skeleton text="body" className="w-3/5" />
         <Skeleton text="small" className="w-4/5" />

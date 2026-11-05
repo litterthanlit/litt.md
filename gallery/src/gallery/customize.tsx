@@ -20,7 +20,7 @@ import { Tag } from "@/components/tag";
 import { useCustomize, useDark, type ThemeChoice } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
-import { accentOf, ACCENTS, GALLERY_LOOK, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Accent, type Material } from "./look";
+import { accentName, accentOf, ACCENTS, GALLERY_LOOK, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Accent, type Material } from "./look";
 import { AccentChip } from "./swatch";
 import { loadTypeface } from "./typeface";
 
@@ -105,6 +105,9 @@ function CustomizePanel() {
     shapeRule(radius),
     { ok: true, text: accentRule[look.accent] },
     ...(look.material === "flat" ? [{ ok: true, text: "Flat fits R3: the depth ladder by fill alone. Copy setup says how to set data-material." }] : []),
+    ...(look.material === "device"
+      ? [{ ok: true, text: "Device fits R3 in hardware: keys, wells and LCD glass. Copy setup says how to set data-material." }]
+      : []),
     ...(look.fun
       ? [{ ok: false, cue: true, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Copy setup says how to wrap your app in <FunMode>, and the changelog says if the trial ends." }]
       : []),
@@ -127,8 +130,7 @@ function CustomizePanel() {
     setLook({ accent: a, material: m, fun: feel });
     setRadius(r);
     setTypeface(f.id);
-    const accentName = accentOf(a).name;
-    setSaid(`${accentName}, ${materialOf(m).name.toLowerCase()} material, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
+    setSaid(`${accentName(a, m)}, ${materialOf(m).name.toLowerCase()} material, ${shapeName(r).toLowerCase()} corners, ${f.name} and ${feel ? "fun" : "calm"} motion.`);
   };
 
   return (
@@ -149,7 +151,7 @@ function CustomizePanel() {
         legend="Accent"
         value={look.accent}
         onValueChange={(accent) => setLook({ accent })}
-        options={ACCENTS.map((a) => ({ value: a.id, label: a.short ?? a.name, picture: <AccentChip accent={a.id} /> }))}
+        options={ACCENTS.map((a) => ({ value: a.id, label: accentName(a.id, look.material, true), picture: <AccentChip accent={a.id} /> }))}
       />
       <CardPicker
         size="sm"

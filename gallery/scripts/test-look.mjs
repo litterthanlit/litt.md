@@ -36,10 +36,12 @@ const check = (ok, claim) => (ok ? passed : problems).push(claim);
 const SITE = "https://littmd.vercel.app";
 
 /* ---------- the link ---------- */
-check(L.LOOKS.length === 12 && new Set(L.LOOKS.map(L.encodeLook)).size === 12, `twelve looks, twelve spellings (${L.LOOKS.map(L.encodeLook).join(", ")})`);
+check(L.LOOKS.length === 18 && new Set(L.LOOKS.map(L.encodeLook)).size === 18, `eighteen looks, eighteen spellings (${L.LOOKS.map(L.encodeLook).join(", ")})`);
 check(L.encodeLook(L.GALLERY_LOOK) === "mono-flat" && L.encodeLook(L.REGISTRY_LOOK) === "blue4", "the gallery opens in mono-flat, the registry installs blue4");
 check(L.sameLook(L.decodeLook("pink-fun"), { accent: "pink", material: "press", fun: true }), "a link from before Flat reads as press");
 check(L.decodeLook("pink-fun-flat") === null, "the material comes before the motion in a slug");
+check(L.decodeLook("pink-fun-device") === null && L.decodeLook("pink-flat-device") === null, "one material per slug, before the motion");
+check(L.encodeLook({ accent: "mono", material: "device", fun: true }) === "mono-device-fun", "Device spells -device");
 for (const look of L.LOOKS) {
   const back = L.decodeLook(L.encodeLook(look));
   check(back !== null && L.sameLook(back, look), `${L.encodeLook(look)} reads back as ${L.lookWords(look)}`);
@@ -99,6 +101,11 @@ const firstPaint = [
   ["?look=PINK", { accent: "pink" }, "pink/flat"],
   ["?look=green", { accent: "pink" }, "pink/flat"],
   ["?look=pink-fun-x", null, "mono/flat"],
+  ["?look=pink-device", { material: "flat" }, "pink/device"],
+  ["?look=mono", { material: "device" }, "mono/press"],
+  ["", { material: "device" }, "mono/device"],
+  ["", { accent: "pink", material: "device" }, "pink/device"],
+  ["?look=blue4-flat-device", { material: "device" }, "mono/device"],
   ["", null, "mono/flat"],
 ];
 check(scripts.length >= 2, `index.html paints with ${scripts.length} scripts before #root`);
@@ -120,6 +127,7 @@ const materialsNamed = L.MATERIALS.map((m) => m.attribute).filter((a) => a !== n
 check(materialsNamed.length === materialsAnswered.size && materialsNamed.every((x) => materialsAnswered.has(x)), `tokens.css answers exactly the materials here (${[...materialsAnswered].join(", ")})`);
 check(L.MATERIALS.find((m) => m.id === L.REGISTRY_LOOK.material)?.attribute === null, "the registry's look is the material with no attribute");
 check(JSON.stringify(L.lookAttributes({ accent: "mono", material: "flat" }, true)) === JSON.stringify({ "data-theme": "dark", "data-accent": "mono", "data-material": "flat" }), "a nested scope carries the material");
+check(JSON.stringify(L.lookAttributes({ accent: "pink", material: "device" }, false)) === JSON.stringify({ "data-theme": "light", "data-accent": "pink", "data-material": "device" }), "a nested scope carries Device");
 check(JSON.stringify(L.lookAttributes({ accent: "blue4", material: "press" }, false)) === JSON.stringify({ "data-theme": "light" }), "Blue 4 on press is a theme and nothing else");
 
 /* ---------- what a look asks a project to change ---------- */
@@ -128,10 +136,11 @@ for (const look of L.LOOKS) {
   const slug = L.encodeLook(look);
   const attribute = L.ACCENTS.find((a) => a.id === look.accent).attribute;
   const setup = L.lookSetup(look, SITE);
-  const asks = (text) => [/data-accent="(\w+)"/.exec(text)?.[1] ?? null, text.includes("<FunMode>"), text.includes('data-material="flat"')];
-  const [setupAttr, setupFun, setupFlat] = asks(setup);
-  check(setupFlat === (look.material === "flat"), `${slug}: Copy setup asks for data-material="flat" exactly when the look is flat`);
-  if (look.material === "flat") check(/needs data-material="flat" too/.test(setup), `${slug}: Copy setup says a nested theme needs data-material too`);
+  const asks = (text) => [/data-accent="(\w+)"/.exec(text)?.[1] ?? null, text.includes("<FunMode>"), /data-material="(\w+)"/.exec(text)?.[1] ?? "press"];
+  const [setupAttr, setupFun, setupMaterial] = asks(setup);
+  check(setupMaterial === look.material, `${slug}: Copy setup asks for data-material="${look.material}" exactly when the look is ${look.material}`);
+  if (look.material !== "press") check(new RegExp(`needs data-material="${look.material}" too`).test(setup), `${slug}: Copy setup says a nested theme needs data-material too`);
+  if (look.material === "device") check(setup.includes("Geist Mono"), `${slug}: Copy setup says Device sets the glass in Geist Mono`);
   check(setupAttr === attribute && setupFun === look.fun, `${slug}: Copy setup asks for ${attribute ? `data-accent="${attribute}"` : "no attribute"} and ${look.fun ? "<FunMode>" : "no <FunMode>"}`);
   check(setup.includes(`${SITE}/r/litt.json`) && setup.includes(`${SITE}/r/motion.json`) === look.fun, `${slug}: Copy setup installs litt${look.fun ? " and motion" : ""}`);
   /* Measured in built hosts: each of these on a nested element puts Blue 4 back under it. */
@@ -139,8 +148,8 @@ for (const look of L.LOOKS) {
   check(setup.endsWith(`See it: ${SITE}/?look=${slug}`), `${slug}: Copy setup ends with the link to the look`);
   const step = L.lookStep(look, SITE);
   if (L.sameLook(look, L.REGISTRY_LOOK)) continue;
-  const [stepAttr, stepFun, stepFlat] = asks(step);
-  check(stepAttr === attribute && stepFun === look.fun && stepFlat === (look.material === "flat"), `${slug}: the Copy prompt's step asks for the same edits`);
+  const [stepAttr, stepFun, stepMaterial] = asks(step);
+  check(stepAttr === attribute && stepFun === look.fun && stepMaterial === look.material, `${slug}: the Copy prompt's step asks for the same edits`);
 }
 check(L.lookInApp({ accent: "pink", material: "press", fun: true }) === 'In your app: data-accent="pink" on <html>, and <FunMode> around the app.', "the panel says Pink and fun mode's edits in one line");
 check(L.lookInApp({ accent: "pink", material: "flat", fun: true }) === 'In your app: data-accent="pink" and data-material="flat" on <html>, and <FunMode> around the app.', "the panel says all three edits in one line");

@@ -772,7 +772,7 @@ function MotionRow({ className = "", children, ...rest }: TableRowProps) {
 /* -------------------------------------------------------------------------- */
 
 const head =
-  "group/head sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption font-label whitespace-nowrap";
+  "group/head sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption font-label whitespace-nowrap litt-legend";
 
 /** How far one press of ← or → moves a column's edge, in px; Shift moves four times as far. */
 const COLUMN_STEP = 16;
@@ -969,7 +969,7 @@ export function TableHead({
       type="button"
       onClick={onSort}
       className={[
-        "flex h-control-md w-full cursor-pointer items-center gap-1 px-4 text-caption",
+        "flex h-control-md w-full cursor-pointer items-center gap-1 px-4 text-caption litt-legend",
         // Numbers sit flush right, so the icon goes to the left of the label to keep the label above the figures.
         numeric ? "flex-row-reverse" : "",
         "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent]",

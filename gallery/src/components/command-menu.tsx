@@ -32,6 +32,7 @@
  *   when onCancel is given; CommandMenu always gives it. The field keeps the focus, as it
  *   is the first thing in the dialog that takes it, because typing is the point. Both
  *   signals come from useDevice, so <DeviceProvider mode="phone"> previews them.
+ * - Device: under data-material="device" the search and the results set in the mono (font-field) and the group labels are engraved (litt-legend).
  */
 import {
   useEffect,
@@ -213,7 +214,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
             setSource("keyboard");
           }}
           onKeyDown={onKeyDown}
-          className="h-full min-w-0 flex-1 truncate bg-transparent text-body text-fg outline-none placeholder:text-fg-subtle pointer-coarse:text-(length:--control-text-lg)"
+          className="h-full min-w-0 flex-1 truncate bg-transparent text-body text-fg outline-none placeholder:text-fg-subtle pointer-coarse:text-(length:--control-text-lg) font-field"
         />
         {coarse && onCancel && (
           <Button variant="ghost" size="md" onClick={onCancel}>
@@ -235,7 +236,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           {glide.highlight}
           {sections.map((s) => (
             <div key={s.id} role="group" aria-labelledby={`${uid}-g-${s.id}`}>
-              <div id={`${uid}-g-${s.id}`} className="flex h-control-sm items-center px-3 text-caption text-fg-subtle">
+              <div id={`${uid}-g-${s.id}`} className="flex h-control-sm items-center px-3 text-caption text-fg-subtle litt-legend">
                 {s.heading}
               </div>
               {s.rows.map((r) => (
@@ -248,7 +249,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
                   data-active={r.index === current || undefined}
                   {...GLIDE_ROW}
                   onClick={() => !r.disabled && onSelect(r)}
-                  className="relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText]"
+                  className="relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText] font-field"
                 >
                   {r.icon !== undefined && <span className="grid size-4 shrink-0 place-items-center">{r.icon}</span>}
                   <span className="min-w-0 truncate">{r.label}</span>

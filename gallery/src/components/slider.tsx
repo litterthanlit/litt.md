@@ -150,15 +150,15 @@ const plateBase =
   "forced-colors:border";
 const plateRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
 
-/* The slot: 6px in from each end of the plate, 16px down and 12px tall, its corners the control radius less 2px. It
-   clips the fill. Disabled, it is a flat --surface-3. */
+/* The slot: 8px outside the cap's travel at each end (6px in from the plate's ends at small radii), 16px down and 12px
+   tall, its corners the control radius less 2px. It clips the fill. Disabled, it is a flat --surface-3. */
 const slot =
-  "pointer-events-none absolute inset-x-1.5 top-4 h-3 overflow-hidden rounded-[calc(var(--radius-control)-2px)] bg-slot shadow-(--slot-shade) " +
+  "pointer-events-none absolute top-4 h-3 overflow-hidden rounded-[calc(var(--radius-control)-2px)] bg-slot shadow-(--slot-shade) " +
   "group-data-disabled:bg-surface-3 group-data-disabled:shadow-none forced-colors:border";
 
-/* The cap's travel: 14px in from each end of the plate (PAD), which is 8px in from the slot's ends. A rail as wide as
-   the travel moves by translate, with the cap on its right edge, so the cap and the fill move by transform only. */
-const capTravel = "pointer-events-none absolute inset-y-0 left-3.5 right-3.5";
+/* The cap's travel: inset (see inset) from each end of the plate, which is 8px in from the slot's ends. A rail as wide
+   as the travel moves by translate, with the cap on its right edge, so the cap and the fill move by transform only. */
+const capTravel = "pointer-events-none absolute inset-y-0";
 const fillTravel = "absolute inset-y-0 left-2 right-2";
 const fillLook =
   "bg-slot-fill shadow-(--slot-fill-shade) " +
@@ -177,7 +177,7 @@ const capGrip = "absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-cap-grip g
 
 /* Radix's thumb holds the role, the keys and the value. The cap you see is drawn above it, so the thumb is invisible
    and as wide as the cap, which keeps it on the same travel. */
-const thumbTrack = "absolute inset-y-0 left-2.5 right-2.5";
+const thumbTrack = "absolute inset-y-0";
 const thumbHidden = "block h-full w-2 opacity-0 focus-visible:outline-none";
 
 /** How many digits a number needs after the point, so snapping to a step of 0.1 never leaves 0.30000000000000004. */
@@ -202,19 +202,32 @@ function setRef<T>(ref: Ref<T> | undefined, el: T | null) {
   else if (ref) (ref as RefObject<T | null>).current = el;
 }
 
-/** How far in from each end of the plate the cap's center can go, in px. The travel is the plate less twice this. */
+/* How far in from each end of the plate the cap's center can go: 14px, or the plate's corner radius when that is
+   larger (the plate draws it at most half its height). On a pill the cap then stands at the center of each end's
+   half-circle, as clear of the curve as it is of the top and bottom, instead of rubbing it. The travel is the plate
+   less twice this. inset is the CSS, padOf the same rule read off a mounted plate; change them together. */
 const PAD = 14;
+const inset = (less = 0) => `calc(max(${PAD}px, min(var(--radius-control), var(--control-md) / 2)) - ${less}px)`;
+const insetX = (less = 0): CSSProperties => ({ left: inset(less), right: inset(less) });
+function padOf(plate: HTMLElement) {
+  const r = parseFloat(getComputedStyle(plate).borderTopLeftRadius) || 0;
+  return Math.max(PAD, Math.min(r, plate.offsetHeight / 2));
+}
 
-/** The pointer on the plate, undoing any scale above it: its x and the plate's width, in the plate's own px. */
+/** The pointer on the plate, undoing any scale above it: its x, the plate's width and the travel's inset, in the plate's own px. */
 function measure(plate: HTMLElement, clientX: number) {
   const r = plate.getBoundingClientRect();
   const w = plate.offsetWidth || r.width;
   const scale = r.width / w || 1;
-  return { x: (clientX - r.left) / scale, w };
+  return { x: (clientX - r.left) / scale, w, pad: padOf(plate) };
 }
+type Measure = ReturnType<typeof measure>;
 
-/** Where x, on a plate w wide, is along the travel, from 0 to 1. */
-const along = (x: number, w: number) => Math.min(1, Math.max(0, (x - PAD) / (w - 2 * PAD || 1)));
+/** Where the cap's center is on the plate when it is p of the way along. */
+const capAt = (p: number, m: Measure) => m.pad + p * (m.w - 2 * m.pad);
+
+/** Where x is along the travel, from 0 to 1. */
+const along = (x: number, m: Measure) => Math.min(1, Math.max(0, (x - m.pad) / (m.w - 2 * m.pad || 1)));
 
 /** A rail as wide as the travel, moved so its right edge sits p of the way along. */
 const railAt = (p: number): CSSProperties => ({ transform: `translateX(${((p - 1) * 100).toFixed(3)}%)` });
@@ -228,7 +241,7 @@ function Notch({ p, home }: { p: number; home: boolean }) {
         "pointer-events-none absolute w-px -translate-x-1/2 group-data-disabled:hidden forced-colors:bg-[CanvasText] " +
         (home ? "top-7 h-2 bg-notch-home" : "top-8 h-1 bg-notch")
       }
-      style={{ left: `calc(${PAD}px + (100% - ${2 * PAD}px) * ${p.toFixed(4)})` }}
+      style={{ left: `calc(${inset()} + (100% - 2 * ${inset()}) * ${p.toFixed(4)})` }}
     />
   );
 }
@@ -273,7 +286,7 @@ function useLean() {
 /** One cap on its rail: the face, the grip line, the sink while held and the lean. The ring is drawn when `ring` is on. */
 function Cap({ p, held, lean, glide, ring = false }: { p: number; held: boolean; lean: number; glide: boolean; ring?: boolean }) {
   return (
-    <span aria-hidden="true" className={capTravel + (glide ? glides : "")} style={railAt(p)}>
+    <span aria-hidden="true" className={capTravel + (glide ? glides : "")} style={{ ...insetX(), ...railAt(p) }}>
       <span className={capBox} style={{ transform: `translateY(${held ? "var(--press-depth)" : "0px"}) rotate(${lean}deg)` }}>
         <span className={capFace(held) + (ring ? " outline-2 outline-offset-2 outline-focus" : "")} />
         <span className={capGrip} />
@@ -404,12 +417,12 @@ export function Slider({
   const [held, setHeld] = useState(false);
   const [glide, setGlide] = useState(true);
   const lean = useLean();
-  const to = (x: number, w: number) => change(valueAt(along(x, w), min, max, step, home));
+  const to = (x: number, m: Measure) => change(valueAt(along(x, m), min, max, step, home));
   const onPointerDown = (e: PointerEvent<HTMLSpanElement>) => {
     if (disabled || (e.pointerType === "mouse" && e.button !== 0) || !plateRef.current) return;
     e.preventDefault();
     const m = measure(plateRef.current, e.clientX);
-    const cap = PAD + p * (m.w - 2 * PAD);
+    const cap = capAt(p, m);
     const onCap = Math.abs(m.x - cap) <= 10;
     hand.current = { id: e.pointerId, offset: onCap ? cap - m.x : 0 };
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -417,7 +430,7 @@ export function Slider({
     setHeld(true);
     setGlide(!onCap);
     lean.start(m.x, e.timeStamp);
-    if (!onCap) to(m.x, m.w);
+    if (!onCap) to(m.x, m);
   };
   const onPointerMove = (e: PointerEvent<HTMLSpanElement>) => {
     const h = hand.current;
@@ -426,7 +439,7 @@ export function Slider({
     const m = measure(plateRef.current, e.clientX);
     setGlide(false);
     lean.move(m.x, e.timeStamp);
-    to(m.x + h.offset, m.w);
+    to(m.x + h.offset, m);
   };
   const onPointerEnd = (e: PointerEvent<HTMLSpanElement>) => {
     const h = hand.current;
@@ -475,7 +488,7 @@ export function Slider({
         data-held={held ? "" : undefined}
         className={plateBase + " " + plateRing}
       >
-        <span aria-hidden="true" className={slot}>
+        <span aria-hidden="true" className={slot} style={insetX(8)}>
           <span className={fillTravel + (glide ? glides : "")} style={railAt(p)}>
             <span className={"absolute inset-y-0 right-0 w-[calc(100%+0.5rem)] " + fillLook} />
           </span>
@@ -485,7 +498,7 @@ export function Slider({
         ))}
         {home !== null && home >= min && home <= max && <Notch p={(home - min) / span} home />}
         <Cap p={p} held={held} lean={lean.lean} glide={glide} />
-        <RadixSlider.Track className={thumbTrack}>
+        <RadixSlider.Track className={thumbTrack} style={insetX(4)}>
           <RadixSlider.Thumb
             ref={(el: HTMLSpanElement | null) => {
               thumbRef.current = el;
@@ -608,8 +621,8 @@ export function RangeSlider({
   const [glide, setGlide] = useState(true);
   const [ringed, setRinged] = useState<0 | 1 | null>(null);
   const lean = useLean();
-  const moveEnd = (end: 0 | 1, x: number, w: number) => {
-    const v = valueAt(along(x, w), min, max, step, null);
+  const moveEnd = (end: 0 | 1, x: number, m: Measure) => {
+    const v = valueAt(along(x, m), min, max, step, null);
     const [a, b] = latest.current;
     change(end === 0 ? [v, b] : [a, v]);
   };
@@ -617,7 +630,7 @@ export function RangeSlider({
     if (disabled || (e.pointerType === "mouse" && e.button !== 0) || !plateRef.current) return;
     e.preventDefault();
     const m = measure(plateRef.current, e.clientX);
-    const caps = [PAD + pf * (m.w - 2 * PAD), PAD + pt * (m.w - 2 * PAD)] as const;
+    const caps = [capAt(pf, m), capAt(pt, m)] as const;
     const end: 0 | 1 = caps[0] === caps[1] ? (m.x < caps[0] ? 0 : 1) : m.x < (caps[0] + caps[1]) / 2 ? 0 : 1;
     const onCap = Math.abs(m.x - caps[end]) <= 10;
     hand.current = { id: e.pointerId, end, offset: onCap ? caps[end] - m.x : 0 };
@@ -626,7 +639,7 @@ export function RangeSlider({
     setHeld(end);
     setGlide(!onCap);
     lean.start(m.x, e.timeStamp);
-    if (!onCap) moveEnd(end, m.x, m.w);
+    if (!onCap) moveEnd(end, m.x, m);
   };
   const onPointerMove = (e: PointerEvent<HTMLSpanElement>) => {
     const h = hand.current;
@@ -635,7 +648,7 @@ export function RangeSlider({
     const m = measure(plateRef.current, e.clientX);
     setGlide(false);
     lean.move(m.x, e.timeStamp);
-    moveEnd(h.end, m.x + h.offset, m.w);
+    moveEnd(h.end, m.x + h.offset, m);
   };
   const onPointerEnd = (e: PointerEvent<HTMLSpanElement>) => {
     const h = hand.current;
@@ -681,7 +694,7 @@ export function RangeSlider({
         data-held={held !== null ? "" : undefined}
         className={plateBase}
       >
-        <span aria-hidden="true" className={slot}>
+        <span aria-hidden="true" className={slot} style={insetX(8)}>
           {/* The fill between the caps: a rail-wide band moved to the first cap and scaled to the second, transform only. */}
           <span
             className={fillTravel + " origin-left" + (glide ? glides : "")}
@@ -693,7 +706,7 @@ export function RangeSlider({
         {([0, 1] as const).map((i) => (
           <Cap key={i} p={i === 0 ? pf : pt} held={held === i} lean={held === i ? lean.lean : 0} glide={glide} ring={ringed === i} />
         ))}
-        <RadixSlider.Track className={thumbTrack}>
+        <RadixSlider.Track className={thumbTrack} style={insetX(4)}>
           {([0, 1] as const).map((i) => (
             <RadixSlider.Thumb
               key={i}

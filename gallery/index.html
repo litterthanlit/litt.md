@@ -17,7 +17,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
 </head>
 <body>
 <script>
@@ -51,22 +51,23 @@
       /* The accent: Blue 4 is tokens.css with no attribute, pink is [data-accent="pink"]. */
       if (c.accent === "blue4") delete document.body.dataset.accent;
       else if (c.accent === "pink") document.body.dataset.accent = "pink";
-      /* The material: Flat is [data-material="flat"] on <html>, Press is tokens.css with no attribute. */
+      /* The material: Flat and Device are [data-material] on <html>, Press is tokens.css with no attribute. */
       if (c.material === "press") delete document.documentElement.dataset.material;
+      else if (c.material === "device") document.documentElement.dataset.material = "device";
     } catch (e) {}
   })();
 </script>
 <script>
   /* A link's look (?look=pink, ?look=pink-flat-fun) paints over the saved accent and material, and is never saved. Its
      own script, since the one above stops when nothing is saved. The grammar is LOOKS in src/gallery/look.ts, and
-     scripts/test-look.mjs runs this copy against it. A link without -flat is press. Fun mode has nothing to paint. */
+     scripts/test-look.mjs runs this copy against it. A link without -flat or -device is press. Fun mode has nothing to paint. */
   (function () {
     try {
-      var m = /^(mono|blue4|pink)(-flat)?(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
+      var m = /^(mono|blue4|pink)(-flat|-device)?(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
       if (!m) return;
       if (m[1] === "blue4") delete document.body.dataset.accent;
       else document.body.dataset.accent = m[1];
-      if (m[2]) document.documentElement.dataset.material = "flat";
+      if (m[2]) document.documentElement.dataset.material = m[2].slice(1);
       else delete document.documentElement.dataset.material;
     } catch (e) {}
   })();

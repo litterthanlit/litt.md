@@ -30,7 +30,7 @@ export const installCommands = (components: Pick<ComponentDoc, "stem" | "file" |
 /** The components.json entry that turns the URLs into @litt/<item>. */
 export const REGISTRIES_ENTRY = `"registries": { "@litt": "${REGISTRY_URL}" }`;
 
-const FONTS_URL = "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap";
+const FONTS_URL = "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap";
 
 /** The exports a page documents: its `exports` list in order, or every export of its components. */
 export function documentedExports(docs: Pick<PageDocs, "exports">, components: ComponentDoc[]) {

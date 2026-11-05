@@ -20,7 +20,7 @@ import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { shapeName, SHAPES } from "@/motion/rules";
 import { useCustomize, type ThemeChoice } from "./customize-state";
-import { ACCENTS, lookWords, MATERIALS } from "./look";
+import { accentName, ACCENTS, lookWords, MATERIALS } from "./look";
 import { AccentChip } from "./swatch";
 
 const THEMES: { value: ThemeChoice; label: string }[] = [
@@ -93,7 +93,7 @@ export function Deck() {
             label: (
               <span className="flex items-center gap-1.5">
                 <AccentChip accent={a.id} size="sm" />
-                {a.short ?? a.name}
+                {accentName(a.id, look.material, true)}
               </span>
             ),
           }))}
