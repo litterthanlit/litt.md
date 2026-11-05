@@ -61,6 +61,8 @@ const RULES = ["weight", "radius", "shadow", "color", "type", "motion", "other"]
    the gallery's names; a host's are the same with --litt-. */
 const CONCENTRIC = [
   "calc(var(--radius-control)-2px)", // a block set 2px into a control (the switch, the slider)
+  "calc(var(--radius-surface)-4px)", // a block set 4px into a surface (a card's cover, a picker's cards): the control
+  // radius at every shape but the pill, where the control radius would be rounder than the surface
   "min(var(--radius-control),calc(var(--control-sm)/2))", // a control that wraps (a field of tokens, a rule row): its
   "min(var(--radius-control),calc(var(--control-md)/2))", // corners stop at half its one-line height, so at the pill
   "min(var(--radius-control),calc(var(--control-lg)/2))", // it stays concentric with what it holds

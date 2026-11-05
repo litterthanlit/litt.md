@@ -4,7 +4,7 @@
  *
  *   npm run build && npm run test:corners
  *   node scripts/corners.mjs --dist dist --pages slider,switch --shapes 28
- *   node scripts/corners.mjs --self-test       the Slider's old cap on a pill, put in one page's main, must fail it
+ *   node scripts/corners.mjs --self-test       two old breaks, put in one page's main, must each fail it
  *
  * The rule is the one the components keep by hand (components.md: "so the corners stay concentric"): a box drawn
  * inside a rounded box keeps at least as much room from the curve as from the nearest straight side, within a pixel.
@@ -16,6 +16,10 @@
  * whose nearest painted ancestor is that outer box, wholly inside it. It is only judged at a corner where its own
  * corner's center lies inside the outer corner's square, closer to both walls than the radius: there its curve,
  * grown by its own radius, must stay as far from the outer curve as it stands from the nearer of those two walls.
+ * And an inner box that is a layer, filling three quarters of the outer's width or height and within the outer's
+ * radius of one of those edges (rows in a group, a field in a row, a card's cover), must not be rounder than a closed
+ * outer box (one drawn all round): a group at 16px around 22px rows reads
+ * inside out even though nothing touches a curve. Circles are exempt: avatars and icon-only buttons are round by rule.
  * Radii are read as the browser draws them (scaled down when they overflow a side). Text, icons and images are not
  * boxes, so an icon in a round button is never judged by its square frame; a box drawn by borders alone shows only the
  * corners where two of them meet. Each page is read at rest at every shape, then with every slider at its start and at
@@ -111,7 +115,8 @@ function measure(within) {
     const cls = typeof el.className === "string" ? el.className.trim().split(/\s+/).slice(0, 3).join(".") : "";
     const named = el.closest("[aria-label],[role=slider],[role=switch],button,label");
     const text = (named?.getAttribute("aria-label") || named?.textContent || "").trim().replace(/\s+/g, " ").slice(0, 24);
-    const test = el.closest("[data-corners-self-test]") ? "self-test " : "";
+    const plant = el.closest("[data-corners-self-test]");
+    const test = plant ? `self-test ${plant.getAttribute("data-corners-self-test")} ` : "";
     return `${test}<${el.tagName.toLowerCase()}${cls ? "." + cls : ""}>${text ? ` in "${text}"` : ""}`;
   };
   const isBox = new Map();
@@ -166,6 +171,18 @@ function measure(within) {
     if (worst) {
       found.push(`${describe(inner)} is ${worst.room.toFixed(1)}px from the curve of ${describe(outer)} (radius ${Math.round(Math.max(...ro))}px) but ${worst.wall.toFixed(1)}px from its wall`);
     }
+    /* A layer (a box that fills most of its outer box one way, three quarters of its width or its height, and comes
+       within the outer's radius of one of those two edges: rows in a group, a field in a row, a card's cover) is
+       never rounder than the box that holds it. A control in a padded card stands further in than the card's radius,
+       so a full-width pill button in a card is fine. */
+    const R = Math.max(...ro.filter((_, k) => outerShows[k]), 0);
+    const r = Math.max(...ri.filter((_, k) => shows[k]), 0);
+    const closed = outerShows.every(Boolean);
+    const across = I.width >= 0.75 * O.width && Math.min(I.left - O.left, O.right - I.right) <= R + 0.5;
+    const down = I.height >= 0.75 * O.height && Math.min(I.top - O.top, O.bottom - I.bottom) <= R + 0.5;
+    const layer = closed && (across || down);
+    const round = Math.abs(I.width - I.height) <= 1 && r >= I.width / 2 - 0.5; // an avatar, an icon-only button: round by rule
+    if (layer && !round && r > R + TOLERANCE) found.push(`${describe(inner)} spans ${describe(outer)} but is rounder: radius ${r.toFixed(1)}px in ${R.toFixed(1)}px`);
   }
   return found;
 }
@@ -177,19 +194,27 @@ const failures = [];
 async function checkPage(id) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: "light", reducedMotion: "reduce" });
   if (selfTest) {
-    /* The Slider's plate and cap as they were before the cap's travel followed the radius: 14px in from a pill's end. */
+    /* Two old breaks, one for each rule: the Slider's plate and cap as they were before the cap's travel followed the
+       radius (14px in from a pill's end), and a Rule builder group's 16px panel holding a 22px row edge to edge. */
     await ctx.addInitScript(() => {
       new MutationObserver((_, obs) => {
         const main = document.querySelector("main h1") && document.querySelector("main");
         if (!main) return;
         obs.disconnect();
         const plate = document.createElement("div");
-        plate.setAttribute("data-corners-self-test", "");
+        plate.setAttribute("data-corners-self-test", "rub");
         plate.style.cssText = "position:relative;width:240px;height:44px;border-radius:22px;background:gray";
         const cap = document.createElement("div");
         cap.style.cssText = "position:absolute;left:10px;top:4px;width:8px;height:36px;border-radius:4px;background:black";
         plate.append(cap);
         main.append(plate);
+        const panel = document.createElement("div");
+        panel.setAttribute("data-corners-self-test", "layer");
+        panel.style.cssText = "position:relative;width:300px;height:120px;border-radius:16px;background:gray";
+        const row = document.createElement("div");
+        row.style.cssText = "position:absolute;left:16px;right:16px;top:40px;height:44px;border-radius:22px;background:black";
+        panel.append(row);
+        main.append(panel);
       }).observe(document, { childList: true, subtree: true });
     });
   }
@@ -251,10 +276,11 @@ const took = `${Math.round((Date.now() - started) / 1000)}s`;
 const shapeWords = shapes.map((r) => shapeName(r)).join(", ");
 
 if (selfTest) {
-  const caught = new Set(failures.filter((f) => /^self-test /.test(f.what)).map((f) => `${f.id} ${f.radius}`));
-  const missed = pages.flatMap((id) => shapes.map((r) => `${id} ${r}`)).filter((k) => !caught.has(k));
+  const kinds = { rub: "the Slider's old cap on a pill", layer: "a 22px row in a 16px group" };
+  const keys = new Set(failures.flatMap((f) => { const m = /^self-test (\w+) /.exec(f.what); return m ? [`${f.id} ${f.radius} ${m[1]}`] : []; }));
+  const missed = pages.flatMap((id) => shapes.flatMap((r) => Object.keys(kinds).map((k) => `${id} ${r} ${k}`))).filter((k) => !keys.has(k));
   const broken = failures.filter((f) => /running the check/.test(f.what));
-  console.log(`corners self-test: the Slider's old cap on a pill was caught on ${caught.size} of ${runs} runs (${took}).`);
+  for (const [k, words] of Object.entries(kinds)) console.log(`corners self-test: ${words} was caught on ${[...keys].filter((x) => x.endsWith(` ${k}`)).length} of ${runs} runs (${took}).`);
   for (const f of broken) console.log(`✗ ${f.id} at ${shapeName(f.radius)}: ${f.what}`);
   if (missed.length || broken.length) { if (missed.length) console.log(`✗ not caught on ${missed.join(", ")}: the check has gone blind.`); process.exit(1); }
   process.exit(0);

@@ -42,6 +42,7 @@ const rowClass = cn(
 const chipClass = [
   "inline-flex items-center rounded-litt-pill px-litt-control-pad-sm",
   "rounded-[min(var(--litt-radius-control),calc(var(--litt-control-sm)/2))]",
+  "rounded-[calc(var(--litt-radius-surface)-4px)]",
   "transition-colors",
   "duration-(--litt-dur-instant)",
   "ease-litt",

@@ -4,12 +4,16 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-04 · Pills that fit
+## 2026-11-05 · Pills that fit
 
-At the pill, the Slider's cap no longer rubs the plate's round ends, and rows and fields that wrap keep their one-line corners.
+At the pill, the Slider's cap no longer rubs the plate's round ends, rows and fields that wrap keep their one-line corners, and nothing sits rounder than the box that holds it.
 
 - **changed** `rule-builder`: a condition row's corners stop at half its one-line height (22px) and a group's are at least 4px rounder than its rows, so at the pill a row that wraps keeps its one-line corners instead of turning into a lozenge, and a group never holds rows rounder than itself. At litt's own radius, and anything up to 22px, nothing moves. Reinstall `combobox` with it.
 - **changed** `combobox`, `token-input`: a field's corners stop at half its one-line height, so at the pill a field that wraps to a second row of tokens stays concentric with them instead of curving into the first one. On one line, and at radii up to 16px, nothing moves. Nothing in your code has to change.
+- **changed** `card`, `list`: a cover set 4px into the card (the inset and plain cover styles) takes the surface radius less 4px. That is the control radius at every shape but the pill, where a 28px cover sat rounder than its 16px card; there it is 12px. Nothing in your code has to change.
+- **changed** `card-picker`: the large size's cards take the tray's surface radius less 4px, so at the pill they are never rounder than the tray. At every other shape nothing moves.
+- **changed** `run-list`, `tool-call`: the selected run's block and the command under approval take the surface radius less 4px, so at the pill they are never rounder than the panel or card around them. At every other shape nothing moves.
+- **changed** `states`: Skeleton has a `cover` radius, the surface radius less 4px, for a cover set into a card as Card's is. `control`, the default, is unchanged.
 - **changed** `slider`: the cap's travel starts at the larger of 14px and the plate's corner radius (at most half its height), and the slot and the notches follow it, so on a pill (`--litt-radius-control` past 14px) the cap stands in the middle of each round end, as clear of the curve as of the top and bottom. At litt's own radius, and anything up to 14px, nothing moves. `RangeSlider` does the same. Nothing in your code has to change.
 
 ## 2026-11-03 · Another way through: type to confirm, and toasts that fit their words
