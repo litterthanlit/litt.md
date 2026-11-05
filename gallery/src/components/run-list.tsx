@@ -454,7 +454,7 @@ export function RunList({
                     transition={rowMove}
                     initial={byHand ? { opacity: 0 } : false}
                     animate={{ opacity: 1, transition: enter }}
-                    className="flex h-8 items-center px-3 text-caption text-fg-subtle"
+                    className="flex h-8 items-center px-3 text-caption text-fg-subtle litt-legend"
                   >
                     {group.heading}
                   </motion.p>

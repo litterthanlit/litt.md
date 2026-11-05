@@ -130,7 +130,7 @@ export function Gauge({ label, value, min = 0, max = 100, valueText, figure, cap
         </g>
       </svg>
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 text-center" style={{ paddingInline: pad }}>
-        <span className="text-caption text-fg-subtle">{label}</span>
+        <span className="text-caption text-fg-subtle litt-legend">{label}</span>
         <span className="text-h2 tabular-nums text-fg">{shownFigure}</span>
         {caption && (
           <span id={captionId} className="text-caption font-normal text-fg-subtle">

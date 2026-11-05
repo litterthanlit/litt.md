@@ -39,12 +39,12 @@ export type NumberFieldSize = "sm" | "md" | "lg";
 
 /* The Input's cut (floor, line, shade), on a wrapper that holds the text and the steppers. The ring follows the text only. */
 const FIELD =
-  "relative flex w-full min-w-0 items-center rounded-control bg-cut font-normal text-fg " +
-  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
+  "relative flex w-full min-w-0 items-center rounded-control bg-field font-field font-normal text-field-ink " +
+  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
-  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
+  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
 
@@ -397,7 +397,7 @@ export function NumberField({
           onBlur={commit}
           onKeyDown={onKeyDown}
           className={
-            "h-full min-w-0 flex-1 bg-transparent tabular-nums outline-none placeholder:text-fg-subtle disabled:cursor-not-allowed " +
+            "h-full min-w-0 flex-1 bg-transparent tabular-nums outline-none placeholder:text-field-ink-subtle disabled:cursor-not-allowed " +
             "pointer-coarse:text-(length:--control-text-lg) " +
             SIZE[size].pad +
             " " +
@@ -405,7 +405,7 @@ export function NumberField({
           }
         />
         {unit && (
-          <span aria-hidden="true" className={"shrink-0 pr-2 pl-1 pointer-coarse:text-(length:--control-text-lg) " + (disabled ? "text-fg-disabled " : "text-fg-subtle ") + SIZE[size].type}>
+          <span aria-hidden="true" className={"shrink-0 pr-2 pl-1 pointer-coarse:text-(length:--control-text-lg) " + (disabled ? "text-fg-disabled " : "text-field-ink-subtle ") + SIZE[size].type}>
             {unit}
           </span>
         )}
