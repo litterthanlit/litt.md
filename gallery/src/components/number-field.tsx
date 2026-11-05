@@ -56,10 +56,10 @@ const SIZE: Record<NumberFieldSize, { field: string; type: string; pad: string; 
   lg: { field: "h-control-lg", type: "text-(length:--control-text-lg)", pad: "pl-control-pad-lg", step: "size-12" },
 };
 
-/* Secondary Button's block, nested 4px in the field. The sink is transitioned as `translate`, which Tailwind's
+/* Secondary Button's block, nested 4px in the field, at the field's radius less that inset, never under 2px. The sink is transitioned as `translate`, which Tailwind's
    translate-y-* sets; the cast swaps at once (R2). */
 const STEPPER =
-  "grid shrink-0 place-items-center rounded-[calc(var(--radius-control)-2px)] select-none [-webkit-tap-highlight-color:transparent] " +
+  "grid shrink-0 place-items-center rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--block-lift) enabled:forced-colors:border " +
   "enabled:hover:bg-(--block-hover) " +

@@ -44,7 +44,8 @@ const HUE: Record<TagHue, string> = {
 };
 
 const PLAIN = "rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] ";
-const RAISED = "rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border ";
+/* In a field, 4px in: the field's radius less the inset, never under 2px (foundations.md, Concentric). */
+const RAISED = "rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] bg-block shadow-(--block-lift) forced-colors:border ";
 
 export type TagProps = HTMLAttributes<HTMLSpanElement> & {
   /** Leave it out for a plain label. Set it for a status: the text takes that color, and the fill never does. */

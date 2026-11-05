@@ -29,6 +29,9 @@ export function Radii() {
         className="rounded-[min(var(--litt-radius-control),12px)] bg-litt-surface-1" // expect: radius
       />
       <div
+        className="rounded-[calc(var(--litt-radius-surface)-5px)] bg-litt-surface-1" // expect: radius
+      />
+      <div
         className="rounded-lg bg-litt-surface-1" // expect: radius
       />
       <div
