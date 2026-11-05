@@ -4,6 +4,12 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-04 · A slider that fits a pill
+
+The Slider's cap no longer rubs the round ends of a pill-shaped plate.
+
+- **changed** `slider`: the cap's travel starts at the larger of 14px and the plate's corner radius (at most half its height), and the slot and the notches follow it, so on a pill (`--litt-radius-control` past 14px) the cap stands in the middle of each round end, as clear of the curve as of the top and bottom. At litt's own radius, and anything up to 14px, nothing moves. `RangeSlider` does the same. Nothing in your code has to change.
+
 ## 2026-11-03 · Another way through: type to confirm, and toasts that fit their words
 
 A slide is a drag, and not everyone can drag. Slide to confirm takes the words to type as its other way through, the pattern GitHub and Vercel use to delete a project. And a toast now grows to fit what it says, so a narrow screen never cuts the part that says what to do.
