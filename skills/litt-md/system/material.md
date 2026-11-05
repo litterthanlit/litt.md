@@ -79,6 +79,25 @@ The same depth ladder said by fill alone, on neutral greys, after the work slide
 - **Nested themes.** An element that sets its own theme (`class="dark"`, `data-theme`) redeclares the stone neutrals and the press tokens, so it needs `data-material="flat"` too, as it needs `data-accent`.
 - **Never:** a cast, a highlight or a lit wall under Flat, or a grey with chroma.
 
+### 8. Device: `[data-material="device"]` (R3)
+The same depth ladder said in hardware, after the components studies (journal, 2026-11-05; `proposals/device.md`). The canvas is an aluminium body, and what a hand uses reads as an object at rest: a key on a 2px skirt, a well cut into the body, a field behind LCD glass. A project chooses it with the attribute on `<html>`; Press stays the default (Q17, Q18).
+
+| Depth | Press | Device |
+|---|---|---|
+| Sunken: a tray | `--tray`, a hairline and the top wall's shade | a well, a step darker than the body, its top wall in shade |
+| Sunken: a cut you type into | `--cut` and its top wall's shade | LCD glass: `--field` near black, `--field-ink` at 7:1, the text in the mono (`--font-field`) |
+| Sunken: a cut you mark | `--cut` and its top wall's shade | a light well (`--cut`), so a box checked in the ink still reads |
+| Sunken: a slot | `--slot`, both walls, the fill a step darker | a well with a lit fill, like a meter |
+| Flat: canvas and surfaces | a hairline and the top highlight | the aluminium body; plates a step lighter, lit on their top edge |
+| Raised: a block | white or a warm grey, a contact line and a cast | a key: its face, a dark rim, a 2px skirt, and a press that sinks the whole 2px |
+| Raised: a cap and its plate | taller, a cast up to 3px | a knob in the key's face, the same 3px |
+| Floating | glass, a zero-offset glow, a ring | unchanged |
+
+- **The values.** Each theme block declares `--device-*`: the neutrals, the press tokens, the field, and the accents, status inks and data hues retuned so every pair passes on the body. The device block maps the live names onto them, and pink and monochrome are restated after it so they still win on `<html>`. The check runs every pair again under Device (check 12).
+- **Tokens every material sets.** `--field`, `--field-ink`, `--field-ink-subtle`, `--field-line`, `--field-shade` and `--font-field` are the cut, the inks and the sans outside Device; `--label-case`, `--label-tracking` and `--engrave` (the `.litt-legend` class) leave a label as it is. A component that reads them changes under Device and nowhere else.
+- **Nested themes.** As under Flat, an element that sets its own theme needs `data-material="device"` too.
+- **Never:** ambient motion (no flicker, scanline or blinking caret: R4 holds), texture images, or the accent on chrome.
+
 ## Glow: `--glow` (R6)
 A 1px accent ring plus a soft, zero-offset accent light around the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (R2).
 

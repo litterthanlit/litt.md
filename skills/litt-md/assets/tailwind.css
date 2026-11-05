@@ -38,6 +38,10 @@
   --color-surface-3: var(--surface-3);
   --color-tray: var(--tray);           /* a control's sunken tray, and the block raised in it (material.md, 6) */
   --color-cut: var(--cut);             /* a field's floor, cut a hair into the page (material.md, 6) */
+  --color-field: var(--field);         /* what you type sits on: the cut, or Device's LCD glass */
+  --color-field-ink: var(--field-ink);
+  --color-field-ink-subtle: var(--field-ink-subtle);
+  --color-field-line: var(--field-line);
   --color-block: var(--block);
   /* The slider's post (R3): a slot cut into a plate, its pulled-out fill, the cap and its grip, and the notches. */
   --color-slot: var(--slot);
@@ -136,6 +140,9 @@
      label (a reading, a count, a key), adds font-normal. */
   --font-weight-title: var(--weight-title);
   --font-weight-label: var(--weight-label);
+  /* font-field: the type of what you type, the sans or Device's mono. Safe like the keys below: tokens.css
+     declares --font-field unlayered. */
+  --font-field: var(--font-field);
 
   /* Layout: py-section, max-w-content, etc. */
   --spacing-section: var(--section-y);

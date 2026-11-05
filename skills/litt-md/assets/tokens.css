@@ -217,6 +217,65 @@
   --flat-fg-subtle: #676767;
   --flat-fg-disabled: #9e9e9e;
 
+  /* Device's values (data-material="device", below; proposals/device.md): the components studies' hardware, a cool
+     aluminium body with plates on it, wells cut into it, keys standing on it and fields behind LCD glass. The neutrals
+     and the hues retuned to pass check 5 on that body; check 12 holds the glass. */
+  --device-canvas: #d7dade;
+  --device-surface-1: #e8eaed;
+  --device-surface-2: #e0e2e6;
+  --device-surface-3: #cdd0d5;
+  --device-line: #c3c7cc;
+  --device-line-strong: #b0b4bb;
+  --device-line-control: #696e76;
+  --device-fg: #121418;
+  --device-fg-muted: #454a52;
+  --device-fg-subtle: #454a52;
+  --device-fg-disabled: #868b93;
+  --device-tray: #c4c8ce;
+  --device-cut: #f4f5f7;
+  --device-block: #f4f5f7;
+  --device-slot: #c4c8ce;
+  --device-slot-fill: #a9aeb6;
+  --device-cap: #f4f5f7;
+  --device-cap-held: #e6e8eb;
+  --device-field: #1e1f21;
+  --device-field-ink: #f2f2f2;
+  --device-field-ink-subtle: #a2a3a6;
+  --device-field-line: #2b2c2f;
+  --device-accent: #0957fd;
+  --device-accent-hover: #0e4ada;
+  --device-accent-text: #0b47f7;
+  --device-accent-pink: #c0007e;
+  --device-accent-pink-text: #90005d;
+  --device-focus: #0957fd;
+  --device-success: #006e2d;
+  --device-warning: #8f4e00;
+  --device-danger: #b42329;
+  --device-data-blue: #1170b8;
+  --device-data-blue-text: #0a5f9c;
+  --device-data-amber: #ae6800;
+  --device-data-amber-text: #885100;
+  --device-data-teal: #008881;
+  --device-data-teal-text: #006a63;
+  --device-data-violet: #8265d9;
+  --device-data-violet-text: #6949ba;
+  --device-data-rose: #c94a46;
+  --device-data-rose-text: #a8362c;
+  --device-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  --device-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.14), inset 0 1px 2px rgba(0, 0, 0, 0.28);
+  --device-cut-shade: inset 0 1px 2px rgba(0, 0, 0, 0.16);
+  --device-field-shade: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+  --device-block-lift: inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 0 1px rgba(0, 0, 0, 0.14), 0 2px 0 0 rgba(0, 0, 0, 0.24), 0 3px 6px -3px rgba(0, 0, 0, 0.3);
+  --device-block-press: inset 0 1px 2px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.16), 0 0 0 0 transparent;
+  --device-key-lift: inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.14), 0 2px 0 0 rgba(0, 0, 0, 0.24), 0 3px 6px -3px rgba(0, 0, 0, 0.3);
+  --device-slot-shade: inset 0 1px 2px rgba(0, 0, 0, 0.32), inset 0 0 0 1px rgba(0, 0, 0, 0.12), inset 0 -1px 0 rgba(255, 255, 255, 0.6);
+  --device-slot-fill-shade: inset 0 1px 1.5px rgba(0, 0, 0, 0.22);
+  --device-plate-lift: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.1), 0 3px 6px -2px rgba(0, 0, 0, 0.2);
+  --device-cap-lift: inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(0, 0, 0, 0.08), 0 0 0 0.5px rgba(0, 0, 0, 0.28), 0 1px 1px rgba(0, 0, 0, 0.2), 0 3px 5px -1px rgba(0, 0, 0, 0.26);
+  --device-cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.3), 0 0.5px 1px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.14);
+  --device-cap-grip: rgba(0, 0, 0, 0.24);
+  --device-engrave: 0 1px 0 rgba(255, 255, 255, 0.6);
+
   /* Accent: Blue 4, Litt's own (v1.0), a bright cobalt that still carries white past 5.5:1, a cool light on the
      warm stone neutrals. Nick's swatch is P3 #2656f4, the same color as this sRGB value. Swap per project, or run
      monochrome ([data-accent="mono"], below). The hover is a step darker here and lighter in dark. The text tone
@@ -333,6 +392,63 @@
   --flat-fg-subtle: #c6c6c6;
   --flat-fg-disabled: #656565;
 
+  /* Device's values (data-material="device", below; proposals/device.md). */
+  --device-canvas: #1d1f22;
+  --device-surface-1: #26282c;
+  --device-surface-2: #222428;
+  --device-surface-3: #2e3135;
+  --device-line: #383b40;
+  --device-line-strong: #474a50;
+  --device-line-control: #7d828a;
+  --device-fg: #eef0f3;
+  --device-fg-muted: #bcc0c7;
+  --device-fg-subtle: #bcc0c7;
+  --device-fg-disabled: #666a72;
+  --device-tray: #131416;
+  --device-cut: #1a1c1e;
+  --device-block: #3d3f44;
+  --device-slot: #131416;
+  --device-slot-fill: #5a5e66;
+  --device-cap: #4a4c51;
+  --device-cap-held: #55585d;
+  --device-field: #0b0b0c;
+  --device-field-ink: #f2f2f2;
+  --device-field-ink-subtle: #9c9da0;
+  --device-field-line: #7d828a;
+  --device-accent: #1b67ff;
+  --device-accent-hover: #1660f0;
+  --device-accent-text: #6b87ff;
+  --device-accent-pink: #d3268e;
+  --device-accent-pink-text: #feb9db;
+  --device-focus: #1b67ff;
+  --device-success: #4bc680;
+  --device-warning: #e19b1b;
+  --device-danger: #ff756f;
+  --device-data-blue: #3496ef;
+  --device-data-blue-text: #69b7ff;
+  --device-data-amber: #c07b03;
+  --device-data-amber-text: #d79540;
+  --device-data-teal: #09a198;
+  --device-data-teal-text: #42b4ab;
+  --device-data-violet: #8f78df;
+  --device-data-violet-text: #b4a3fd;
+  --device-data-rose: #e76c9c;
+  --device-data-rose-text: #f2879c;
+  --device-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --device-tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 2px rgba(0, 0, 0, 0.7);
+  --device-cut-shade: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+  --device-field-shade: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+  --device-block-lift: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.75), 0 2px 0 0 rgba(0, 0, 0, 0.85), 0 3px 6px -3px rgba(0, 0, 0, 0.6);
+  --device-block-press: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.75), 0 0 0 0 transparent;
+  --device-key-lift: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.75), 0 2px 0 0 rgba(0, 0, 0, 0.85), 0 3px 6px -3px rgba(0, 0, 0, 0.6);
+  --device-slot-shade: inset 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  --device-slot-fill-shade: inset 0 1px 1.5px rgba(0, 0, 0, 0.5);
+  --device-plate-lift: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(0, 0, 0, 0.4), 0 3px 6px -2px rgba(0, 0, 0, 0.5);
+  --device-cap-lift: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.8), 0 1px 1px rgba(0, 0, 0, 0.5), 0 3px 5px -1px rgba(0, 0, 0, 0.6);
+  --device-cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.8), 0 0.5px 1px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --device-cap-grip: rgba(255, 255, 255, 0.18);
+  --device-engrave: 0 -1px 0 rgba(0, 0, 0, 0.6);
+
   --accent: #0957fd;
   --accent-hover: #1e64fe;     /* a step lighter in dark */
   --accent-fg: #ffffff;
@@ -429,6 +545,63 @@
     --flat-fg-subtle: #c6c6c6;
     --flat-fg-disabled: #656565;
 
+    /* Device's values (data-material="device", below; proposals/device.md). */
+    --device-canvas: #1d1f22;
+    --device-surface-1: #26282c;
+    --device-surface-2: #222428;
+    --device-surface-3: #2e3135;
+    --device-line: #383b40;
+    --device-line-strong: #474a50;
+    --device-line-control: #7d828a;
+    --device-fg: #eef0f3;
+    --device-fg-muted: #bcc0c7;
+    --device-fg-subtle: #bcc0c7;
+    --device-fg-disabled: #666a72;
+    --device-tray: #131416;
+    --device-cut: #1a1c1e;
+    --device-block: #3d3f44;
+    --device-slot: #131416;
+    --device-slot-fill: #5a5e66;
+    --device-cap: #4a4c51;
+    --device-cap-held: #55585d;
+    --device-field: #0b0b0c;
+    --device-field-ink: #f2f2f2;
+    --device-field-ink-subtle: #9c9da0;
+    --device-field-line: #7d828a;
+    --device-accent: #1b67ff;
+    --device-accent-hover: #1660f0;
+    --device-accent-text: #6b87ff;
+    --device-accent-pink: #d3268e;
+    --device-accent-pink-text: #feb9db;
+    --device-focus: #1b67ff;
+    --device-success: #4bc680;
+    --device-warning: #e19b1b;
+    --device-danger: #ff756f;
+    --device-data-blue: #3496ef;
+    --device-data-blue-text: #69b7ff;
+    --device-data-amber: #c07b03;
+    --device-data-amber-text: #d79540;
+    --device-data-teal: #09a198;
+    --device-data-teal-text: #42b4ab;
+    --device-data-violet: #8f78df;
+    --device-data-violet-text: #b4a3fd;
+    --device-data-rose: #e76c9c;
+    --device-data-rose-text: #f2879c;
+    --device-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+    --device-tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 1px 2px rgba(0, 0, 0, 0.7);
+    --device-cut-shade: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+    --device-field-shade: inset 0 1px 2px rgba(0, 0, 0, 0.8);
+    --device-block-lift: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.75), 0 2px 0 0 rgba(0, 0, 0, 0.85), 0 3px 6px -3px rgba(0, 0, 0, 0.6);
+    --device-block-press: inset 0 1px 2px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.75), 0 0 0 0 transparent;
+    --device-key-lift: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.75), 0 2px 0 0 rgba(0, 0, 0, 0.85), 0 3px 6px -3px rgba(0, 0, 0, 0.6);
+    --device-slot-shade: inset 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.05), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+    --device-slot-fill-shade: inset 0 1px 1.5px rgba(0, 0, 0, 0.5);
+    --device-plate-lift: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(0, 0, 0, 0.4), 0 3px 6px -2px rgba(0, 0, 0, 0.5);
+    --device-cap-lift: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.8), 0 1px 1px rgba(0, 0, 0, 0.5), 0 3px 5px -1px rgba(0, 0, 0, 0.6);
+    --device-cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.8), 0 0.5px 1px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
+    --device-cap-grip: rgba(255, 255, 255, 0.18);
+    --device-engrave: 0 -1px 0 rgba(0, 0, 0, 0.6);
+
     --accent: #0957fd;
     --accent-hover: #1e64fe;
     --accent-fg: #ffffff;
@@ -515,6 +688,18 @@
   --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+  /* What you type into (R3's cut, the field). Press and Flat draw it as the cut in the page's inks and the sans;
+     Device sets it behind LCD glass in the mono. Checkboxes, radios and wells keep --cut. */
+  --field: var(--cut);
+  --field-ink: var(--fg);
+  --field-ink-subtle: var(--fg-subtle);
+  --field-line: var(--line-control);
+  --field-shade: var(--cut-shade);
+  --font-field: var(--font-sans);
+  /* A 12px label (R8): sentence case, no engraving. Device engraves it in capitals. */
+  --label-case: none;
+  --label-tracking: var(--type-caption-tracking);
+  --engrave: 0 0 0 transparent;
 }
 
 /* --------------------------------------------------------------------------
@@ -611,6 +796,121 @@
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
 }
 
+/* --------------------------------------------------------------------------
+   Device (R3, proposals/device.md): data-material="device" on <html> says the
+   depth ladder in hardware. The canvas is an aluminium body, surfaces are plates
+   on it, a tray is a well cut into it, a block is a key that stands 2px on its
+   skirt and sinks the whole 2px when pressed, and what you type sits behind LCD
+   glass in the mono. 12px labels are engraved capitals. Nothing moves on its own
+   (R4). Last in the file, after Flat; the two never share an element.
+   -------------------------------------------------------------------------- */
+:root[data-material="device"],
+[data-material="device"] {
+  --canvas: var(--device-canvas);
+  --surface-1: var(--device-surface-1);
+  --surface-2: var(--device-surface-2);
+  --surface-3: var(--device-surface-3);
+  --line: var(--device-line);
+  --line-strong: var(--device-line-strong);
+  --line-control: var(--device-line-control);
+  --fg: var(--device-fg);
+  --fg-muted: var(--device-fg-muted);
+  --fg-subtle: var(--device-fg-subtle);
+  --fg-disabled: var(--device-fg-disabled);
+  /* The hues, retuned so check 5 passes on the aluminium body. Pink and monochrome are restated below, so they still win. */
+
+  --accent: var(--device-accent);
+  --accent-hover: var(--device-accent-hover);
+  --accent-text: var(--device-accent-text);
+  --accent-pink: var(--device-accent-pink);
+  --accent-pink-text: var(--device-accent-pink-text);
+  --focus: var(--device-focus);
+  --focus-pink: var(--device-accent-pink);
+  --success: var(--device-success);
+  --warning: var(--device-warning);
+  --danger: var(--device-danger);
+  --data-blue: var(--device-data-blue);
+  --data-blue-text: var(--device-data-blue-text);
+  --data-amber: var(--device-data-amber);
+  --data-amber-text: var(--device-data-amber-text);
+  --data-teal: var(--device-data-teal);
+  --data-teal-text: var(--device-data-teal-text);
+  --data-violet: var(--device-data-violet);
+  --data-violet-text: var(--device-data-violet-text);
+  --data-rose: var(--device-data-rose);
+  --data-rose-text: var(--device-data-rose-text);
+
+  --highlight: var(--device-highlight);
+  --tray: var(--device-tray);
+  --tray-shade: var(--device-tray-shade);
+  --cut: var(--device-cut);
+  --cut-shade: var(--device-cut-shade);
+  --block: var(--device-block);
+  --block-lift: var(--device-block-lift);
+  --block-press: var(--device-block-press);
+  --key-lift: var(--device-key-lift);
+  --slot: var(--device-slot);
+  --slot-shade: var(--device-slot-shade);
+  --slot-fill: var(--device-slot-fill);
+  --slot-fill-shade: var(--device-slot-fill-shade);
+  --plate-lift: var(--device-plate-lift);
+  --cap: var(--device-cap);
+  --cap-held: var(--device-cap-held);
+  --cap-lift: var(--device-cap-lift);
+  --cap-press: var(--device-cap-press);
+  --cap-grip: var(--device-cap-grip);
+  /* A key's full travel: it sinks onto its skirt. */
+  --press-depth: 2px;
+  --block-hover: color-mix(in oklab, var(--block), var(--fg) 4%);
+
+  --field: var(--device-field);
+  --field-ink: var(--device-field-ink);
+  --field-ink-subtle: var(--device-field-ink-subtle);
+  --field-line: var(--device-field-line);
+  --field-shade: var(--device-field-shade);
+  --font-field: var(--font-mono);
+  --label-case: uppercase;
+  --label-tracking: 0.08em;
+  --engrave: var(--device-engrave);
+
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+  --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
+  --data-amber-tint: color-mix(in oklab, var(--data-amber) var(--tint-strength), var(--surface-1));
+  --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
+  --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
+  --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+}
+
+/* Pink and monochrome on a Device element: restated after Device, so on <html> with both attributes the accent still
+   wins (Device's hue mappings would otherwise beat them on order). */
+:root[data-material="device"][data-accent="pink"],
+[data-material="device"][data-accent="pink"] {
+  --accent: var(--accent-pink);
+  --accent-hover: var(--accent-pink-hover);
+  --accent-text: var(--accent-pink-text);
+  --accent-tint: var(--accent-pink-tint);
+  --focus: var(--focus-pink);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-pink) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-pink) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-pink) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-pink);
+}
+
+:root[data-material="device"][data-accent="mono"],
+[data-material="device"][data-accent="mono"] {
+  --accent: var(--fg);
+  --accent-hover: color-mix(in oklab, var(--fg), var(--canvas) 18%);
+  --accent-fg: var(--canvas);
+  --accent-text: var(--fg);
+  --accent-tint: color-mix(in oklab, var(--fg) 7%, var(--canvas));
+  --focus: var(--fg);
+  --light: none;
+  --glow: var(--block-lift);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
+}
+
 /* Without color-mix: the light goes, the glow is the ring, and every tint, Flat's fills included, is a plain step.
    One block, after Flat, as the registry holds one per level. */
 @supports not (color: color-mix(in oklab, red, blue)) {
@@ -630,6 +930,15 @@
     --light: none;
     --glow: 0 0 0 1px var(--accent-pink);
   }
+  :root[data-material="device"],
+  [data-material="device"] {
+    --block-hover: var(--surface-2);
+    --data-blue-tint: var(--surface-2);
+    --data-amber-tint: var(--surface-2);
+    --data-teal-tint: var(--surface-2);
+    --data-violet-tint: var(--surface-2);
+    --data-rose-tint: var(--surface-2);
+  }
   :root[data-material="flat"],
   [data-material="flat"] {
     --slot-fill: var(--line-strong);
@@ -645,7 +954,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root {
+  :root,
+  :root[data-material="device"],
+  [data-material="device"] {
     --dur-instant: 0ms;
     --dur-responsive: 0ms;
     --dur-expressive: 0ms;
@@ -669,7 +980,9 @@
   :root:not([data-theme="light"]),
   [data-theme],
   :root[data-material="flat"],
-  [data-material="flat"] {
+  [data-material="flat"],
+  :root[data-material="device"],
+  [data-material="device"] {
     --fg-muted: var(--fg);
     --fg-subtle: var(--fg);
     --line: var(--line-control);
@@ -737,6 +1050,13 @@
   }
 
   /* The light source: put it on a hero or section, once per view (R2). */
+  /* A 12px label (R8) as a legend: sentence case in Press and Flat, engraved capitals under Device
+     (proposals/device.md). Pair it with text-caption, whose tracking it keeps outside Device. */
+  .litt-legend {
+    text-transform: var(--label-case);
+    letter-spacing: var(--label-tracking);
+    text-shadow: var(--engrave);
+  }
   .litt-lit {
     background-image: var(--light);
     background-repeat: no-repeat;

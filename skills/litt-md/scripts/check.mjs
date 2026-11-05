@@ -38,6 +38,11 @@
  *               same OKLCH lightness, in both themes; the flat block maps every neutral onto its mirror and comes
  *               after monochrome; nothing in it casts, blurs, sinks or is "none"; it restates the focus ring and the
  *               data tints. Check 5 runs every pair again under Flat.
+ * 12. Device:  data-material="device" (proposals/device.md). Every --device-* value is defined in both themes; the
+ *               device block maps every neutral and press token onto its --device-* twin, comes after Flat, sinks 2px
+ *               and restates the focus ring and the data tints; pink and monochrome are restated on Device after it; reduced
+ *               motion stills the key; the glass sets the mono, its ink reaches 7:1 and its placeholder 4.5:1, and the
+ *               field's edge 3:1 on the body. Check 5 runs every pair again under Device, and check 8 holds its shadows.
  *
  * Exits 1 if anything fails.
  */
@@ -120,6 +125,12 @@ const flatOf = (theme, map) => {
   out.set("--tray", out.get("--canvas"));
   return out;
 };
+// Device maps each token onto its --device-* twin (proposals/device.md), the hues included.
+const deviceOf = (map) => {
+  const out = new Map(map);
+  for (const [k, v] of map) if (k.startsWith("--device-")) out.set(`--${k.slice(9)}`, v);
+  return out;
+};
 
 // 2. Drift ---------------------------------------------------------------
 console.log("Hex drift");
@@ -147,8 +158,8 @@ missing.length ? missing.forEach((k) => fail(`${k} is defined in only one theme`
 
 // 5. Contrast -------------------------------------------------------------
 console.log("Contrast");
-// Every pair runs in each theme, then again under Flat (check 11 holds the mirrors themselves).
-const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)]];
+// Every pair runs in each theme, then again under Flat and under Device (checks 11 and 12 hold the mirrors themselves).
+const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)], ["device light", deviceOf(light)], ["device dark", deviceOf(dark)]];
 const rgb = (h) => { h = h.replace("#", ""); if (h.length === 3) h = [...h].map((c) => c + c).join(""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
 const lum = (h) => { const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
@@ -236,11 +247,12 @@ const hoverShare = (body) => {
 };
 const pressHover = hoverShare(block(/:root,\s*\[data-theme\]\s*\{/));
 const flatHover = hoverShare(block(/:root\[data-material="flat"\],\s*\[data-material="flat"\]\s*\{/));
+const deviceHover = hoverShare(block(/:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{(?=\s*--canvas)/));
 if (pressHover === null) fail("tokens.css: --block-hover is not color-mix(in oklab, var(--block), var(--fg) N%) on :root, [data-theme]");
 if (flatHover === null) fail('tokens.css: the flat block does not restate --block-hover as color-mix(in oklab, var(--block), var(--fg) N%)');
 let hoverChecks = 0, hoverFails = 0;
 for (const [theme, map] of THEMES) {
-  const share = theme.startsWith("flat") ? flatHover : pressHover;
+  const share = theme.startsWith("flat") ? flatHover : theme.startsWith("device") ? deviceHover : pressHover;
   const b = map.get("--block"), f = map.get("--fg");
   if (share === null || ![b, f].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) continue;
   const [B, F] = [toLab(b), toLab(f)];
@@ -251,9 +263,9 @@ for (const [theme, map] of THEMES) {
     if (r < 4.5) { hoverFails++; fail(`${theme}: ${ink} on a hovered block (${hover}) is ${r.toFixed(2)}:1, needs 4.5:1`); }
   }
 }
-if (!hoverFails && hoverChecks) ok(`${hoverChecks} ink pairs on a hovered block pass (Press ${pressHover * 100}%, Flat ${flatHover * 100}% ink)`);
-if (!apartFails) ok(`the accent stands at least 0.12 from every data hue (${apartChecks} pairs, both themes and Flat)`);
-if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes and under Flat`);
+if (!hoverFails && hoverChecks) ok(`${hoverChecks} ink pairs on a hovered block pass (Press ${pressHover * 100}%, Flat ${flatHover * 100}%, Device ${deviceHover * 100}% ink)`);
+if (!apartFails) ok(`the accent stands at least 0.12 from every data hue (${apartChecks} pairs, both themes, Flat and Device)`);
+if (!failures.some((f) => f.includes(":1"))) ok(`${contrastChecks} contrast pairs pass in both themes, under Flat and under Device`);
 
 /* APCA 0.0.98G lightness contrast. WCAG 2 passed the dark theme's grey at 5.5:1 while it read too dark (Lc 41), so
    the text inks must also reach Lc 60, the floor for reading text, on every surface. */
@@ -276,7 +288,7 @@ for (const [theme, map] of THEMES) {
     }
   }
 }
-if (!apcaFails) ok(`${apcaChecks} text pairs reach APCA Lc 60 in both themes and under Flat`);
+if (!apcaFails) ok(`${apcaChecks} text pairs reach APCA Lc 60 in both themes, under Flat and under Device`);
 
 // 6. Weight by role (R8) -------------------------------------------------
 console.log("Weight by role (R8)");
@@ -370,12 +382,12 @@ radiusFails.length ? radiusFails.forEach(fail) : ok(`corners are 0, ${rc}px, ${r
 // 8. Shadows: the depth ladder (R3) -----------------------------------------
 console.log("Shadows (the depth ladder)");
 const shadowFails = [];
-const cut = /^--(?:tray-shade|cut-shade|slot-shade|slot-fill-shade)$/;
-const raised = /^--(?:block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift)$/;
+const cut = /^--(?:device-)?(?:tray-shade|cut-shade|field-shade|slot-shade|slot-fill-shade)$/;
+const raised = /^--(?:device-)?(?:block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift)$/;
 const lit = (layer) => /rgba?\(\s*255\s*,\s*255\s*,\s*255\b/.test(layer) || /\bwhite\b/i.test(layer);
 for (const f of assetFiles) {
   const text = strip(read(f));
-  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--highlight|--tray-shade|--slot(?:-fill)?-shade|--block-(?:lift|press)|--cap-(?:lift|press)|--plate-lift)\s*:\s*([^;}]+)/g)) {
+  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--(?:device-)?(?:highlight|tray-shade|cut-shade|field-shade|slot(?:-fill)?-shade|block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift))\s*:\s*([^;}]+)/g)) {
     const isCut = cut.test(m[1]), isRaised = raised.test(m[1]), isPress = isCut || isRaised;
     for (const layer of splitLayers(m[2])) {
       if (/^var\(/.test(layer) || layer === "none") continue;
@@ -553,6 +565,54 @@ else {
     if (!/var\(--surface-1\)/.test(flat.get(`--data-${h}-tint`) || "")) flatFails.push(`flat: --data-${h}-tint is not restated over var(--surface-1)`);
 }
 flatFails.length ? flatFails.forEach(fail) : ok(`flat: ${FLAT_NEUTRALS.length} neutrals at chroma 0 in both themes, mapped last, nothing casts, lit or sinks`);
+
+// 12. Device --------------------------------------------------------------
+console.log('Device (data-material="device")');
+const devFails = [];
+const DEVICE_MAPPED = [...FLAT_NEUTRALS, "--highlight", "--tray", "--tray-shade", "--cut", "--cut-shade", "--block", "--block-lift", "--block-press",
+  "--key-lift", "--slot", "--slot-shade", "--slot-fill", "--slot-fill-shade", "--plate-lift", "--cap", "--cap-held", "--cap-lift", "--cap-press",
+  "--cap-grip", "--field", "--field-ink", "--field-ink-subtle", "--field-line", "--field-shade"];
+const DEVICE_HUES = ["--accent", "--accent-hover", "--accent-text", "--accent-pink", "--accent-pink-text", "--focus", "--focus-pink", "--success", "--warning", "--danger",
+  ...["blue", "amber", "teal", "violet", "rose"].flatMap((h) => [`--data-${h}`, `--data-${h}-text`])];
+const devName = (n) => `--device-${n.slice(2)}`;
+for (const n of DEVICE_MAPPED) for (const [theme, map] of [["light", light], ["dark", dark]]) if (!map.has(devName(n))) devFails.push(`${theme}: ${devName(n)} is missing`);
+const devRe = /:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{(?=\s*--canvas)/;
+const devAt = css.search(devRe);
+if (devAt < 0) devFails.push('tokens.css has no device block (:root[data-material="device"], [data-material="device"] { --canvas: ... })');
+else {
+  const dev = decls(block(devRe));
+  if (devAt < flatAt) devFails.push("the device block comes before Flat; it goes last");
+  for (const n of DEVICE_MAPPED) if (dev.get(n) !== `var(${devName(n)})`) devFails.push(`the device block maps ${n} to ${dev.get(n) ?? "nothing"}, not var(${devName(n)})`);
+  for (const n of DEVICE_HUES) if (dev.get(n) !== `var(${devName(n)})` && !(n === "--focus-pink" && dev.get(n) === "var(--device-accent-pink)")) devFails.push(`the device block maps ${n} to ${dev.get(n) ?? "nothing"}`);
+  for (const [k, v] of dev) if (/(^|[\s,(])none($|[\s,)])/.test(v)) devFails.push(`device: ${k} is "${v}" (an empty shadow is 0 0 0 0 transparent)`);
+  if (dev.get("--press-depth") !== "2px") devFails.push(`device: --press-depth is ${dev.get("--press-depth") ?? "unset"}, must be 2px (a key's travel)`);
+  if (dev.get("--font-field") !== "var(--font-mono)") devFails.push("device: --font-field must be var(--font-mono), the glass's type");
+  const ring = dev.get("--focus-ring") || "";
+  if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) devFails.push(`device: --focus-ring must restate the ring with var(--focus) (is "${ring}")`);
+  for (const h of ["blue", "amber", "teal", "violet", "rose"])
+    if (!/var\(--surface-1\)/.test(dev.get(`--data-${h}-tint`) || "")) devFails.push(`device: --data-${h}-tint is not restated over var(--surface-1)`);
+}
+for (const accent of ["pink", "mono"]) {
+  const re = new RegExp(`:root\\[data-material="device"\\]\\[data-accent="${accent}"\\],\\s*\\[data-material="device"\\]\\[data-accent="${accent}"\\]\\s*\\{`);
+  const at = css.search(re);
+  if (at < 0 || at < devAt) devFails.push(`${accent} is not restated on Device after the device block, so Device's hues would beat it on <html>`);
+  else {
+    const restated = decls(block(re)), own = decls(block(new RegExp(`:root\\[data-accent="${accent}"\\],\\s*\\[data-accent="${accent}"\\]\\s*\\{`)));
+    for (const [k, v] of own) if (restated.get(k) !== v) devFails.push(`device ${accent}: ${k} is ${restated.get(k) ?? "missing"}, not ${v} as ${accent}'s own block`);
+  }
+}
+if (!/@media \(prefers-reduced-motion: reduce\)\s*\{\s*:root,\s*:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{/.test(css))
+  devFails.push('reduced motion must restate --press-depth on :root[data-material="device"], [data-material="device"], or a key still sinks');
+for (const [theme, map] of [["light", light], ["dark", dark]]) {
+  const g = (n) => map.get(devName(n));
+  for (const [f, b, min, note] of [["--field-ink", "--field", 7, "the glass's ink"], ["--field-ink-subtle", "--field", 4.5, "a placeholder on the glass"],
+    ["--field-line", "--canvas", 3, "a field's edge on the body"], ["--field-line", "--surface-1", 3, "a field's edge on a plate"]]) {
+    if (![g(f), g(b)].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { devFails.push(`${theme}: ${devName(f)} or ${devName(b)} is not a six-digit hex`); continue; }
+    const r = ratio(g(f), g(b));
+    if (r < min) devFails.push(`${theme}: ${devName(f)} on ${devName(b)} is ${r.toFixed(2)}:1, needs ${min}:1 (${note})`);
+  }
+}
+devFails.length ? devFails.forEach(fail) : ok(`device: ${DEVICE_MAPPED.length} tokens mapped in both themes, after Flat, pink and mono restated, a 2px key, glass at 7:1 in the mono`);
 
 console.log(failures.length ? `\n${failures.length} check(s) failed.` : `\nAll checks passed${warnings.length ? ` (${warnings.length} warning(s))` : ""}.`);
 process.exit(failures.length ? 1 : 0);
