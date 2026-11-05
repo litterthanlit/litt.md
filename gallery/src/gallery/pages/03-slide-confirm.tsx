@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["drag", "press"],
   summary:
-    "A track and a thumb to slide to the end, for an action that cannot be undone, such as deleting a project on a phone. The thumb follows the finger one to one; let go early and it springs back on the responsive tier, reach the end and it confirms. The thumb is also a button, so Enter, Space or a screen reader confirms too.",
+    "A track and a thumb to slide to the end, for an action that cannot be undone, such as deleting a project on a phone. The thumb follows the finger one to one; let go early and it springs back on the responsive tier, reach the end and it confirms. The thumb is also a button, so Enter, Space or a screen reader confirms too, and with confirmText anyone who cannot drag can type the name instead.",
   fun: "Throw the thumb: with enough speed it coasts to the end, squashes against it and confirms.",
   tiers: ["responsive"],
 };
@@ -25,7 +25,10 @@ export const docs: PageDocs = {
   label="Slide to delete Atelier Nord"
   confirmedLabel="Deleting Atelier Nord"
   onConfirm={() => deleteProject("atelier-nord")}
-/>`,
+/>
+
+// For a mouse or a pen that cannot drag: "Or type to confirm" under the track.
+<SlideConfirm label="Slide to delete Atelier Nord" confirmText="Atelier Nord" onConfirm={…} />`,
   use: [
     "An action that cannot be undone, on a screen people use with a finger: deleting a project, cancelling a plan, publishing to a client's live domain.",
     "A confirmation inside a sheet or a card, where a second dialog would stack one surface on another.",
@@ -39,12 +42,14 @@ export const docs: PageDocs = {
   keyboard: [
     [["Tab"], "Moves focus to the thumb."],
     [["Enter", "Space"], "Confirms. A key press is already deliberate."],
-    [["Esc"], "While dragging, sends the thumb back to the start."],
+    [["Esc"], "While dragging, sends the thumb back to the start. In the typing field, closes it."],
+    [["Enter"], "In the typing field, confirms once the words match."],
   ],
   a11y: [
     "The thumb is a real button named by the label, described by \"Drag the thumb to the end, or press Enter.\" A screen reader's activate confirms, because sliding is not a gesture it can make.",
     "A mouse click on the thumb does nothing on its own: only reaching the end, a key or assistive tech confirms, so the slide still guards against a stray press.",
-    "Once it confirms, the thumb is disabled and a polite status says the confirmed label.",
+    "With confirmText, \"Or type to confirm\" opens a labelled field and a danger button that waits for the exact words, so a mouse, a pen or a switch that cannot drag still has a way (WCAG 2.5.7). Pasting works.",
+    "Once it confirms, the thumb is aria-disabled rather than disabled, so focus stays on it, and a polite status says the confirmed label.",
     "The words in the track are hidden from screen readers, because the thumb's name already says them.",
     "Under reduced motion the thumb snaps back instead of springing.",
   ],
@@ -92,6 +97,36 @@ function DeleteProjectDemo() {
   );
 }
 
+function TypeDemo() {
+  const [round, setRound] = useState(0);
+  const [said, setSaid] = useState("");
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <SlideConfirm
+        key={round}
+        label="Slide to delete Atelier Nord"
+        confirmedLabel="Deleting Atelier Nord"
+        confirmText="Atelier Nord"
+        onConfirm={() => setSaid("onConfirm ran: deleting atelier-nord")}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <Status>{said}</Status>
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!said}
+          onClick={() => {
+            setRound((r) => r + 1);
+            setSaid("");
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function PublishDemo() {
   return (
     <div className="grid w-full max-w-sm gap-6">
@@ -115,6 +150,16 @@ export default function SlideConfirmPage() {
       </Stage>
 
       <Stage
+        title="Or type to confirm"
+        tier="responsive"
+        align="start"
+        code="TypeDemo"
+        caption="confirmText adds a quiet link under the track for anyone who cannot drag. It opens a field labelled with the words to type and a danger button that waits until they match exactly. The button or Enter confirms the same way the slide does: the thumb moves to the end with its check and onConfirm runs once. Esc closes the field."
+      >
+        <TypeDemo />
+      </Stage>
+
+      <Stage
         title="Sizes and disabled"
         tier="responsive"
         align="start"
@@ -124,7 +169,7 @@ export default function SlideConfirmPage() {
         <PublishDemo />
       </Stage>
 
-      <TryIt of="SlideConfirm" component={SlideConfirm} props={{ label: "Slide to delete Atelier Nord", confirmedLabel: "Deleting Atelier Nord", className: "max-w-sm" }} controls={["label", "confirmedLabel", "size", "disabled"]} />
+      <TryIt of="SlideConfirm" component={SlideConfirm} props={{ label: "Slide to delete Atelier Nord", confirmedLabel: "Deleting Atelier Nord", className: "max-w-sm" }} controls={["label", "confirmedLabel", "confirmText", "size", "disabled"]} />
     </Page>
   );
 }

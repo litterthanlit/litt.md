@@ -96,7 +96,8 @@ const SIZES: Record<CardPickerSize, { tray: string; card: string; corner: string
   lg: {
     tray: "grid grid-cols-1 auto-rows-fr gap-1 rounded-surface p-1",
     card: "flex min-h-16 min-w-0 items-start gap-3 p-4 text-left",
-    corner: "rounded-control",
+    /* 4px into the tray's surface radius: the control radius at every shape but the pill, where that would be rounder than the tray. */
+    corner: "rounded-[calc(var(--radius-surface)-4px)]",
   },
 };
 

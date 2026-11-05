@@ -105,7 +105,7 @@ function TotalsDemo() {
   const shown = visits.filter((s) => !hidden.includes(s.name)).map((s) => ({ ...s, hue: hues[s.name] }));
   return (
     <div className="grid w-full max-w-2xl gap-4">
-      <Legend label="Sites" items={items} hidden={hidden} onHiddenChange={setHidden} />
+      <Legend label="Sites" items={items} hidden={hidden} onHiddenChange={setHidden} lines />
       <LineChart label="Visits per week by site" labels={WEEKS} series={shown} unit="visits" xTitle="Week" hues legend={false} />
     </div>
   );

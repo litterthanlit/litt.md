@@ -9,6 +9,7 @@
 import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
 import { DeviceProvider, useFun, type Tier } from "@/motion";
 import { Button } from "@/components/button";
+import { Framed } from "@/components/framed";
 import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
@@ -234,7 +235,8 @@ const stayPut = (e: MouseEvent) => {
 /**
  * A window onto an app, for a block: the canvas with a hairline, scrolling inside itself, at a fixed height so a
  * stage stays one size. `phone` makes it phone wide and tells the components inside they are on a phone. `bare`
- * drops the padding, for a block that brings its own (a full page, an app shell).
+ * drops the padding, for a block that brings its own (a full page, an app shell). The block inside is Framed, so the
+ * page keeps its one main and h1.
  */
 export function AppFrame({ label, phone = false, bare = false, className = "", children }: { label: string; phone?: boolean; bare?: boolean; className?: string; children: ReactNode }) {
   const frame = (
@@ -250,7 +252,7 @@ export function AppFrame({ label, phone = false, bare = false, className = "", c
         className
       }
     >
-      {children}
+      <Framed>{children}</Framed>
     </div>
   );
   if (!phone) return frame;
@@ -344,7 +346,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
   if (code === undefined) {
     return (
       <section className="grid gap-6" aria-label={title}>
-        <div className={"litt-raised relative grid overflow-visible rounded-surface p-8 sm:p-12 " + place + " " + height}>{children}</div>
+        <div className={"litt-raised relative grid overflow-visible rounded-surface p-4 min-[24rem]:p-8 sm:p-12 " + place + " " + height}>{children}</div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           {heading}
           {onReplay && (
@@ -392,7 +394,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
         <div className={"litt-raised relative order-1 grid overflow-visible rounded-surface " + height}>
           <TabsPanels className="grid min-w-0">
             {/* The preview remounts when you come back to it, so a replay always starts clean. */}
-            <TabsPanel value="preview" tabIndex={-1} className={"grid p-8 sm:p-12 " + place}>
+            <TabsPanel value="preview" tabIndex={-1} className={"grid p-4 min-[24rem]:p-8 sm:p-12 " + place}>
               {children}
             </TabsPanel>
             <TabsPanel value="code" tabIndex={-1} className="min-w-0">

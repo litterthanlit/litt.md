@@ -516,7 +516,7 @@ export function RunList({
                             layoutId="selected"
                             transition={blockMove}
                             aria-hidden="true"
-                            className="absolute inset-0 rounded-control bg-block shadow-(--block-lift) forced-colors:border forced-colors:bg-[Highlight]"
+                            className="absolute inset-0 rounded-[calc(var(--radius-surface)-4px)] bg-block shadow-(--block-lift) forced-colors:border forced-colors:bg-[Highlight]"
                           />
                         )}
                         {run.href ? (

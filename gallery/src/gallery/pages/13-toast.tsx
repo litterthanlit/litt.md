@@ -55,7 +55,7 @@ dismiss(id);`,
     "The message is about one field. Show it under the field, as TextField does with error, because a toast leaves and the field stays wrong.",
     "The message must stay on the page, like an empty state or a running status. Put it in the page, because a toast leaves after about five seconds.",
     "A hint for a button or an icon. Use Tooltip.",
-    "A long message. The toast is a fixed 72px and cuts the description to one line, so say it in the page and link to it.",
+    "A long message. The toast grows to fit a title of two lines and a description of four, so a narrow screen or larger text keeps what to do, but past that it cuts. Say more in the page and link to it.",
   ],
   keyboard: [
     [["F8"], "Moves focus to the newest toast, so the keyboard can reach its buttons."],
@@ -64,7 +64,7 @@ dismiss(id);`,
     [["Enter", "Space"], "Presses the focused action or dismiss button."],
   ],
   a11y: [
-    "Each toast is its own live region. Neutral and success toasts are role=\"status\" and polite. Errors are role=\"alert\" and assertive, so they interrupt. All of them sit in one region labelled Notifications.",
+    "The Toaster keeps two hidden live regions inside the region labelled Notifications (F8), empty until a toast appears, and then writes its title and description into one: role=\"status\" and polite for neutral and success, role=\"alert\" and assertive for errors, so they interrupt. A region that arrives with its words already in it is often missed by VoiceOver and by NVDA with Firefox. The same toast twice is read twice.",
     "A toast does not take focus when it appears, so a keyboard user reaches it with F8. Never make a toast action the only way to do something, because the toast goes away.",
     "The timer pauses while the pointer is over the stack, while focus is inside it, and while the tab is hidden. Errors never time out. So there is always time to read it.",
     "Toasts beyond the third are inert, so Tab skips them and screen readers do not read them. They return as space frees up.",
@@ -173,6 +173,25 @@ function ErrorDemo() {
   );
 }
 
+function LongDemo() {
+  const { toast } = useToast(); // needs a <Toaster> above it
+  return (
+    <Launcher>
+      <Button
+        onClick={() =>
+          toast({
+            title: "Couldn't publish litt.design",
+            description: "The domain is still verifying DNS. Try again in about 10 minutes, or check the records in Settings.",
+            tone: "error",
+          })
+        }
+      >
+        Publish litt.design
+      </Button>
+    </Launcher>
+  );
+}
+
 /** The same burst, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
 function PhoneDemo() {
   return (
@@ -222,6 +241,15 @@ export default function ToastPage() {
           caption="Errors stay until you dismiss them, and they are announced assertively. Escape dismisses the toast that has focus. The exit slides right by the travel distance and fades, with no bounce. On a phone it drops down instead."
         >
           <ErrorDemo />
+        </Stage>
+
+        <Stage
+          title="A longer message"
+          tier="expressive"
+          code="LongDemo"
+          caption="The toast grows to fit its words: the title wraps to two lines and the description to four, so on a narrow screen or with larger text the part that says what to do stays. Toasts behind it peek at its height; open the stack and each takes its own. A height snaps, it never animates."
+        >
+          <LongDemo />
         </Stage>
       </Toaster>
 
