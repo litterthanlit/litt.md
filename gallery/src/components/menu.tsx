@@ -896,7 +896,10 @@ export function Menu({
 }: MenuProps) {
   const [open, setOpen] = useState(false);
   return (
-    <DropdownMenu.Root open={open} onOpenChange={setOpen}>
+    /* Not modal: a modal menu locks the page's scroll and stops pointer events on the body, and either one makes the
+       browser restyle the whole page as the menu opens, which stalls its first frames. A press outside closes it
+       (and reaches what is there); focus, Esc and typeahead are as before. */
+    <DropdownMenu.Root open={open} onOpenChange={setOpen} modal={false}>
       <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>
       <AnimatePresence>
         {open && (

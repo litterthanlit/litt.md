@@ -394,6 +394,7 @@ A native `<dialog>` in the top layer, `.litt-glass` with `--glass-shadow: var(--
 ## Popover and dropdown
 Glass with `--shadow-float`, `--radius-surface`, padding `--space-1`, rows at `--radius-control` as in the command menu. Positioned in the top layer (`popover` attribute) or a portal.
 - **Motion:** responsive tier. It grows from the trigger's corner from 0.9, so the growth reads as coming out of its button, and slides a quarter of `--travel`. One gliding highlight (transform, responsive) follows the lit row. Exit on `--dur-exit-responsive`.
+- **Not modal:** a dropdown menu leaves the page as it is: it keeps its scroll, and a press outside closes the menu and reaches what it lands on. Locking the page restyles all of it as the menu opens, which costs the entrance its first frames.
 - **Open:** a pointer open lights nothing until the pointer moves. A keyboard open (Enter or ArrowDown) lights the first row with a focus ring.
 - **Submenus** are solid, because glass never sits on glass.
 - **Checkbox and radio rows** keep the check in a fixed 16px cell, so labels never shift, and the menu stays open while options change.
@@ -414,6 +415,7 @@ Actions on the thing under the pointer: right-click a row, a file, a card.
 - **Look and rows:** the Menu's exactly: glass at `--radius-surface` with `--shadow-float`, 44px rows, the gliding highlight, checkbox and radio rows in a fixed 16px cell, solid submenus, labels and separators. The same row components work in both.
 - **Open:** a right-click opens it at the pointer; Shift+F10 or the menu key opens it on the focused target; on touch, a press and hold of 500ms (the tooltip's hold) opens it at the finger and stops the browser's own callout and text selection on that target.
 - **Motion:** the responsive tier. It grows from the pointer's corner from 0.9, as the Menu does, and travels a quarter of `--travel` from the side it opens on after collision flipping, and leaves on the exit token.
+- **Not modal**, as the Menu: the page keeps its scroll, and a press outside closes it and reaches what it lands on.
 - **Every action in it is also reachable another way** (a "⋯" Menu on the row, a toolbar, a shortcut). A context menu is a shortcut, never the only path, because a touch or keyboard user may never find it.
 - **On compact screens** it stays anchored at the finger, like the Menu, and a submenu replaces the list in place with a Back row first.
 

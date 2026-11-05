@@ -211,7 +211,8 @@ export function ContextMenu({ trigger, label, backLabel = "Back", children }: Co
   }, [open]);
 
   return (
-    <ContextMenuPrimitive.Root open={open} onOpenChange={setOpen}>
+    /* Not modal, as the Menu: no scroll lock or body pointer lock, so it opens without restyling the whole page. */
+    <ContextMenuPrimitive.Root open={open} onOpenChange={setOpen} modal={false}>
       <ContextMenuPrimitive.Trigger asChild>
         <Target element={trigger} coarse={coarse} />
       </ContextMenuPrimitive.Trigger>

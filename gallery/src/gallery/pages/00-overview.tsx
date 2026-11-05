@@ -10,11 +10,11 @@
  * (deck.tsx), litt's own controls wired to the whole gallery, so the first thing a hand reaches changes every tile.
  * After the blocks, three steps for building with Claude, which Get started takes focus to.
  *
- * - A tile is one step down from a stage: --surface-2 with the hairline at the surface radius, so the raised surfaces
- *   in it read as objects, as a selected segment does on its track. It is a surface token, not a tint, because a
- *   component's own quiet track (fg 5%, as in Slide to confirm) then lands on a ground whose contrast is checked:
- *   a 5% tile under a 5% track took the grey under 4.5:1. The tile carries no chrome: the component, then its name
- *   in the grey, which links to its page and turns --fg while the pointer is on the tile. A tile is a plain div with
+ * - A tile has no box (Nick, 2026-11-05: "remove the boxes and that icon around the components, leave just the title
+ *   in the corner, let the design do the talking"): the component on the canvas, as on its own page, and its name in
+ *   the grey in the corner, which links to its page and turns --fg while the pointer is on the tile. The space around
+ *   the component is the tile's ground: a click there opens its mosaic. The open button is still there for the
+ *   keyboard and screen readers, and shows only while it has keyboard focus. A tile is a plain div with
  *   its name as an h2, not a named section: 72 region landmarks would bury the page's own for a screen reader, while
  *   the headings still take you from tile to tile, and the headings inside a component (a card's title, an accordion's
  *   questions) sit one level under its name.
@@ -125,7 +125,7 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
       onClick={(e) => (e.target as HTMLElement).hasAttribute("data-open-zone") && ref.current && onOpen(ref.current, button.current)}
       data-open-zone
       className={
-        "group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
+        "group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto]"
       }
     >
       <div inert={!settled} data-open-zone className="col-span-2 grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
@@ -163,7 +163,8 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
           aria-haspopup="dialog"
           aria-label={`Open every ${page.title} demo here`}
           onClick={() => ref.current && onOpen(ref.current, button.current)}
-          className="text-fg-subtle group-hover/tile:text-fg"
+          /* Seen only by the keyboard: a pointer opens the mosaic from the tile's ground. */
+          className="text-fg-subtle opacity-0 focus-visible:opacity-100"
         >
           <ExpandIcon />
         </Button>
