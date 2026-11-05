@@ -20,7 +20,13 @@
  * - Pieces move by transform, opacity and filter only, and nothing is measured while it moves: pass `places`, the
  *   untransformed layout boxes, when a piece already carries a transform.
  * - Reduced motion (useDealMotion's `reduced`): nothing moves, both resolve at once.
+ *
+ * An overlay that opens out of its trigger (a Menu, a Dialog) grows from it: it scales up from GROW with its
+ * transform-origin on the trigger, so it comes out of the trigger's side without flying across the screen. openerBox()
+ * says where the press that opened it happened, read at the press, so it still answers once the trigger is gone (a
+ * menu row that opened a dialog).
  */
+import { useEffect } from "react";
 import { animate, type AnimationPlaybackControls, type Transition } from "motion/react";
 import { useExit, useMotionDial, useStagger, useTransition, useTravel } from "./index";
 
@@ -163,4 +169,49 @@ export function gather(order: HTMLElement[], to: Box, motion: DealMotion, { plac
     );
   }
   return settled(runs);
+}
+
+/** The scale an overlay grows from when it comes out of its trigger. */
+export const GROW = 0.9;
+
+/* The last press on something that opens things: where it was and when. */
+let pressed: { box: Box; at: number } | null = null;
+let listening = false;
+/* A press opens its overlay in the same task or the next few frames; one older than this opened something else. */
+const PRESS_MS = 1000;
+const OPENERS = "button, a[href], [role=button], [role=menuitem], [role=menuitemcheckbox], [role=menuitemradio], [role=option], [role=tab]";
+
+function listen() {
+  if (listening || typeof document === "undefined") return;
+  listening = true;
+  const note = (e: Event) => {
+    const el = (e.target as Element | null)?.closest?.(OPENERS);
+    if (el) pressed = { box: el.getBoundingClientRect(), at: performance.now() };
+  };
+  document.addEventListener("pointerdown", note, true);
+  document.addEventListener("keydown", (e) => (e.key === "Enter" || e.key === " ") && note(e), true);
+}
+
+/** Starts noting presses (once per page), so openerBox() can answer. Call it in any overlay that grows from its opener. */
+export function useOpeners() {
+  useEffect(listen, []);
+}
+
+/** The box of whatever was just pressed to open an overlay, or null when nothing was (it opened by itself, or by code). */
+export function openerBox(): Box | null {
+  const p = pressed;
+  return p && performance.now() - p.at < PRESS_MS ? p.box : null;
+}
+
+/**
+ * The transform-origin, in px of `panel`'s own box, that puts the origin on `opener`'s centre. `panel` may already be
+ * drawn at `scale` about its centre (its first frame); its untransformed box is worked out from that.
+ */
+export function originOn(panel: Element, opener: Box, scale = 1) {
+  const r = panel.getBoundingClientRect();
+  const w = r.width / scale;
+  const h = r.height / scale;
+  const c = center(r);
+  const o = center(opener);
+  return `${o.x - (c.x - w / 2)}px ${o.y - (c.y - h / 2)}px`;
 }

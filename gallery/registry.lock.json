@@ -111,7 +111,7 @@
       "hash": "8c99e7cf194f5594"
     },
     "context-menu": {
-      "version": "2026.10.19",
+      "version": "2026.11.05",
       "hash": "0e0950f318d38a8d"
     },
     "curve-editor": {
@@ -135,8 +135,8 @@
       "hash": "e9170257cc68133b"
     },
     "dialog": {
-      "version": "2026.10.26",
-      "hash": "ba7611447c9c6da8"
+      "version": "2026.11.05",
+      "hash": "d0a4a582d1a4089a"
     },
     "dot-plot": {
       "version": "2026.11.03",
@@ -235,8 +235,8 @@
       "hash": "6bc2611a9862421a"
     },
     "menu": {
-      "version": "2026.11.02",
-      "hash": "aab47ba531848d0f"
+      "version": "2026.11.05",
+      "hash": "2fe66742a6b965e4"
     },
     "message": {
       "version": "2026.11.02",
@@ -244,7 +244,7 @@
     },
     "motion": {
       "version": "2026.11.05",
-      "hash": "3264ad2bddceebd2"
+      "hash": "b1fc564cc6ef415a"
     },
     "number-field": {
       "version": "2026.11.02",
