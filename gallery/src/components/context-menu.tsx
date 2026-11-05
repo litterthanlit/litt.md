@@ -211,8 +211,9 @@ export function ContextMenu({ trigger, label, backLabel = "Back", children }: Co
   }, [open]);
 
   return (
-    /* Not modal, as the Menu: no scroll lock or body pointer lock, so it opens without restyling the whole page. */
-    <ContextMenuPrimitive.Root open={open} onOpenChange={setOpen} modal={false}>
+    /* Modal, unlike the Menu: opened by a press and hold, it must outlast the finger lifting, which a non-modal menu
+       would take for a press outside. */
+    <ContextMenuPrimitive.Root open={open} onOpenChange={setOpen}>
       <ContextMenuPrimitive.Trigger asChild>
         <Target element={trigger} coarse={coarse} />
       </ContextMenuPrimitive.Trigger>
