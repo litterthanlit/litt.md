@@ -107,7 +107,7 @@ const darkMedia = decls(block(/:root:not\(\[data-theme="light"\]\)\s*\{/));
 /* Flat (proposals/flat.md): data-material="flat" maps each neutral onto its --flat-* mirror, which every theme block
    declares. A theme under Flat is that theme's map with the mirrors swapped in, and the fills Flat gives the press
    tokens: a block is surface-3, a cut surface-1, and a tray has no fill, so what shows through it is the canvas. */
-const FLAT_NEUTRALS = ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--line", "--line-strong", "--line-control", "--fg", "--fg-muted", "--fg-subtle", "--fg-disabled"];
+const FLAT_NEUTRALS = ["--canvas", "--well", "--surface-1", "--surface-2", "--surface-3", "--line", "--line-strong", "--line-control", "--fg", "--fg-muted", "--fg-subtle", "--fg-disabled"];
 const flatName = (n) => `--flat-${n.slice(2)}`;
 const flatOf = (theme, map) => {
   const out = new Map(map);
@@ -154,12 +154,12 @@ const lum = (h) => { const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 const pairs = [
   // [foreground, backgrounds, minimum, note]
-  ["--fg", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
-  ["--fg-muted", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "body text"],
-  ["--fg-subtle", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "supporting text"],
+  ["--fg", ["--canvas", "--well", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
+  ["--fg-muted", ["--canvas", "--well", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "body text"],
+  ["--fg-subtle", ["--canvas", "--well", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "supporting text"],
   ["--fg-subtle", ["--tray"], 4.5, "a card picker's labels and lines on its tray"],
-  ["--line-control", ["--canvas", "--surface-1", "--surface-2", "--cut"], 3, "control outline"],
-  ["--focus", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring"],
+  ["--line-control", ["--canvas", "--well", "--surface-1", "--surface-2", "--cut"], 3, "control outline"],
+  ["--focus", ["--canvas", "--well", "--surface-1", "--surface-2"], 3, "focus ring"],
   ["--accent-fg", ["--accent", "--accent-hover"], 4.5, "text on accent"],
   ["--danger-fg", ["--danger"], 4.5, "text on the danger fill"],
   ["--accent-text", ["--canvas", "--surface-1", "--accent-tint"], 4.5, "accent as link text"],

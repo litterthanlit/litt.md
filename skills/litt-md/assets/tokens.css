@@ -186,7 +186,8 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  --canvas: #fcfbfa;
+  --canvas: #ffffff;           /* the page: pure white (v1.5) */
+  --well: #fcfbfa;             /* the ground a part sits on when it is shown on its own, a step off the page */
   --surface-1: #ffffff;
   --surface-2: #f7f5f3;
   --surface-3: #efecea;
@@ -205,7 +206,8 @@
 
   /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
      chroma 0 (proposals/flat.md). Check 11 holds them there. */
-  --flat-canvas: #fbfbfb;
+  --flat-canvas: #ffffff;
+  --flat-well: #fbfbfb;
   --flat-surface-1: #ffffff;
   --flat-surface-2: #f5f5f5;
   --flat-surface-3: #ededed;
@@ -306,6 +308,7 @@
   color-scheme: dark;
 
   --canvas: #0a0908;
+  --well: #11100f;             /* a step off the page: lighter, as dark surfaces rise */
   --surface-1: #11100f;
   --surface-2: #191715;
   --surface-3: #201d1b;
@@ -322,6 +325,7 @@
   /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
      chroma 0 (proposals/flat.md). Check 11 holds them there. */
   --flat-canvas: #090909;
+  --flat-well: #101010;
   --flat-surface-1: #101010;
   --flat-surface-2: #171717;
   --flat-surface-3: #1e1e1e;
@@ -402,6 +406,7 @@
     color-scheme: dark;
 
     --canvas: #0a0908;
+    --well: #11100f;             /* a step off the page: lighter, as dark surfaces rise */
     --surface-1: #11100f;
     --surface-2: #191715;
     --surface-3: #201d1b;
@@ -418,6 +423,7 @@
     /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
        chroma 0 (proposals/flat.md). Check 11 holds them there. */
     --flat-canvas: #090909;
+    --flat-well: #101010;
     --flat-surface-1: #101010;
     --flat-surface-2: #171717;
     --flat-surface-3: #1e1e1e;
@@ -569,6 +575,7 @@
 :root[data-material="flat"],
 [data-material="flat"] {
   --canvas: var(--flat-canvas);
+  --well: var(--flat-well);
   --surface-1: var(--flat-surface-1);
   --surface-2: var(--flat-surface-2);
   --surface-3: var(--flat-surface-3);

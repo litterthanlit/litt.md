@@ -66,7 +66,8 @@ Nothing goes to 700 or above or below 400, running text never takes 500 or 600, 
 
 | Role | Variables | Use |
 |---|---|---|
-| Ground | `--canvas` | Page background |
+| Ground | `--canvas` | Page background: pure white in light |
+| Well | `--well` | The ground under a part shown on its own (a gallery tile, a piece of a set): a step off the page, without a line, the old canvas in light and a step lighter in dark |
 | Surfaces | `--surface-1`, `--surface-2`, `--surface-3` | Raised cards, then nested or hover fills, then pressed fills or wells |
 | Lines | `--line`, `--line-strong` | Decorative hairlines; dividers that need to be seen |
 | Control line | `--line-control` | Outline of inputs, checkboxes and selects (at least 3:1) |

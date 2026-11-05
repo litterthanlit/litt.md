@@ -86,7 +86,7 @@ These change only when Nick changes them.
 
 ## Token quick view (values live only in `assets/tokens.css`)
 
-- **Surfaces:** `--canvas`, `--surface-1`, `--surface-2`, `--surface-3`
+- **Surfaces:** `--canvas`, `--well`, `--surface-1`, `--surface-2`, `--surface-3`
 - **Lines:** `--line`, `--line-strong`, `--line-control`
 - **Text:** `--fg` (titles, key values), `--fg-muted` and `--fg-subtle` (one grey for all other text, two names), `--fg-disabled`
 - **Accent:** `--accent` (a fill only), `--accent-hover`, `--accent-fg`, `--accent-text` (links and accent text), `--accent-tint`, `--focus`
@@ -95,7 +95,7 @@ These change only when Nick changes them.
 - **Material:** `--glass-bg`, `--glass-border`, `--highlight`, `--light`, `--glow`, `--grain`. Primitives: `.litt-glass`, `.litt-raised`, `.litt-lit`, `.litt-grain`, `.litt-grain-fade`, `.litt-trim`.
 - **Depth:** `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` (zero-offset glow + 1px ring)
 - **Press** (the depth ladder's sunken and raised steps, R3): sunken `--tray`, `--tray-shade`, `--cut`, `--cut-shade`, `--slot`, `--slot-shade`, `--slot-fill`, `--slot-fill-shade`; raised `--block`, `--block-lift`, `--block-press`, `--block-hover` (a block under a pointer), `--key-lift`, `--cap`, `--cap-held`, `--cap-lift`, `--cap-press`, `--plate-lift`; marks `--cap-grip`, `--notch`, `--notch-home`. Monochrome: `[data-accent="mono"]`. Pink: `[data-accent="pink"]`, with `--accent-pink`, `--accent-pink-hover`, `--accent-pink-text`, `--accent-pink-tint` and `--focus-pink`.
-- **Flat** (`[data-material="flat"]`, R3): the mirrors `--flat-canvas`, `--flat-surface-1`, `--flat-surface-2`, `--flat-surface-3`, `--flat-line`, `--flat-line-strong`, `--flat-line-control`, `--flat-fg`, `--flat-fg-muted`, `--flat-fg-subtle`, `--flat-fg-disabled`, which the attribute maps onto the live neutrals.
+- **Flat** (`[data-material="flat"]`, R3): the mirrors `--flat-canvas`, `--flat-well`, `--flat-surface-1`, `--flat-surface-2`, `--flat-surface-3`, `--flat-line`, `--flat-line-strong`, `--flat-line-control`, `--flat-fg`, `--flat-fg-muted`, `--flat-fg-subtle`, `--flat-fg-disabled`, which the attribute maps onto the live neutrals.
 - **Type:** `--font-sans` (Geist), `--font-mono` (Geist Mono), `--weight` (400), `--weight-title` (500), `--weight-label` (600), `--type-{display,h1,h2,h3,h4,reading,body,small,caption}-{size,leading,tracking}`
 - **Space and layout:** `--space-{1,2,3,4,6,8,12,16,24,32,40}`, `--section-y`, `--gutter`, `--grid-gap`, `--container-{reading,content,wide}`
 - **Shape:** `--radius-control` (4), `--radius-surface` (8), `--radius-pill`

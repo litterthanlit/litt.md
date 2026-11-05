@@ -11,8 +11,9 @@
  * After the blocks, three steps for building with Claude, which Get started takes focus to.
  *
  * - A tile has no box (Nick, 2026-11-05: "remove the boxes and that icon around the components, leave just the title
- *   in the corner, let the design do the talking"): the component on the canvas, as on its own page, and its name in
- *   the grey in the corner, which links to its page and turns --fg while the pointer is on the tile. The space around
+ *   in the corner, let the design do the talking"), only its ground: the well (--well, a step off the pure white page,
+ *   with no line; "current background needs to be inside the product card"), the component on it at its real size,
+ *   and its name in the grey in the corner, which links to its page and turns --fg while the pointer is on the tile. The space around
  *   the component is the tile's ground: a click there opens its mosaic. The open button is still there for the
  *   keyboard and screen readers, and shows only while it has keyboard focus. A tile is a plain div with
  *   its name as an h2, not a named section: 72 region landmarks would bury the page's own for a screen reader, while
@@ -125,7 +126,7 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
       onClick={(e) => (e.target as HTMLElement).hasAttribute("data-open-zone") && ref.current && onOpen(ref.current, button.current)}
       data-open-zone
       className={
-        "group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto]"
+        "group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-well"
       }
     >
       <div inert={!settled} data-open-zone className="col-span-2 grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">

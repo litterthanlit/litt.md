@@ -334,8 +334,8 @@ const StageCode = lazy(loadStageCode);
 type View = "preview" | "code";
 
 /**
- * A stage as one piece of the overview's mosaic (mosaic.tsx): its demo on the canvas, with no box, as a tile has
- * none, and its title under it.
+ * A stage as one piece of the overview's mosaic (mosaic.tsx): its demo on the well, as a tile's, with no line, and
+ * its title under it.
  * The figure holds the piece's place in the grid and never moves; the face inside it is what the mosaic deals out
  * and gathers back. A large stage takes both columns, and so does one whose demo is wider than a column (data-wide,
  * set by the mosaic as it opens). Like a tile, it is held still until the pointer, a press or focus reaches it.
@@ -350,7 +350,7 @@ function MosaicPiece({ title, size, place, onReplay, replayLabel, children }: { 
         onPointerEnter={wake}
         onPointerDown={wake}
         onFocus={wake}
-        className="grid min-w-0 grid-rows-[minmax(0,1fr)_auto]"
+        className="grid min-w-0 grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-well"
       >
         <div className={"grid min-h-64 min-w-0 p-4 sm:p-8 " + place}>
           <StillMotion active={!awake}>
