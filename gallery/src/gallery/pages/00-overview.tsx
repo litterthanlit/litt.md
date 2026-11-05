@@ -50,6 +50,7 @@ import { CheckIcon, CopyIcon, ExpandIcon } from "@/components/icons";
 import { CopyStatus, useCopy } from "../docs/copy";
 import { Deck } from "../deck";
 import { Mosaic } from "../mosaic";
+import { arriveFrom } from "../arrival";
 import { SearchButton } from "../search";
 import { PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
 
@@ -113,6 +114,7 @@ function Tile({ page, onOpen, children }: { page: PageEntry; onOpen: (tile: HTML
     <div
       ref={ref}
       data-tile={page.id}
+      data-arrive="stage"
       /* A finger arrives with its press, so a touch, a press or focus wakes the tile only on the component, never on its
          name or open button: waking can change a component's height (a plan at its first step), which would move them
          under the tap before its click lands. */
@@ -135,6 +137,8 @@ function Tile({ page, onOpen, children }: { page: PageEntry; onOpen: (tile: HTML
       <h2 data-tile-foot className="flex min-w-0 px-4 pb-3 text-small font-normal">
         <a
           href={`#${page.id}`}
+          /* The page opens out of this tile, as its mosaic does (arrival.tsx). */
+          onClick={() => ref.current && arriveFrom(page.id, { deck: ref.current.getBoundingClientRect() })}
           className={
             "-mx-2 flex h-control-sm items-center rounded-control px-2 text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
             "transition-colors duration-(--dur-instant) ease-litt hover:text-fg group-hover/tile:text-fg pointer-coarse:h-control-md " +
@@ -332,7 +336,7 @@ const LEAD = ["gauge", "heatmap", "plan", "slide-confirm", "pad", "time-scrubber
  */
 function Hero({ count, site }: { count: string; site: PageEntry[] }) {
   return (
-    <header className="grid items-center gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+    <header data-arrive="head" className="grid items-center gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
       <div className="grid content-center gap-8">
         <div className="grid gap-4">
           <h1

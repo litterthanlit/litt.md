@@ -4,6 +4,12 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-05 · Deal and gather: things come from where you touched them
+
+A surface can now open out of the element that opened it and go back into it, the choreography of the gallery's mosaic, as one building block in the motion engine.
+
+- **changed** `motion`: new `lib/litt/motion/deal.ts`. `deal(pieces, from, motion)` starts each piece where it comes from and springs it to its place on the expressive spring, `--litt-stagger` apart, out of soft focus (a 4px blur on the responsive spring) and appearing on the instant tier. `from` is a small deck on one element (`{ deck: box }`: the pieces fan out of it, the nearest first), one element per piece (`{ each: boxes }`: each grows out of its own) or a nudge of `--litt-travel` from an element's side (`{ toward: box }`, or `null` for from below). `gather(order, to, motion)` takes them back into a deck on one element, the farthest first, on the expressive exit, from wherever they are drawn, so a close can interrupt a deal. `useDealMotion()` reads the tiers from the tokens; under reduced motion nothing moves and both resolve at once. Transform, opacity and filter only. Nothing else in the engine changes, and nothing in your code has to change.
+
 ## 2026-11-03 · Another way through: type to confirm, and toasts that fit their words
 
 A slide is a drag, and not everyone can drag. Slide to confirm takes the words to type as its other way through, the pattern GitHub and Vercel use to delete a project. And a toast now grows to fit what it says, so a narrow screen never cuts the part that says what to do.

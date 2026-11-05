@@ -5,6 +5,7 @@
  *
  * - The pieces are the page's own stages, live (PreviewContext "mosaic" in kit.tsx). Each piece is a figure that holds
  *   its place in the grid and a face inside it that moves, and each is held still until reached for, as a tile is.
+ * - The choreography is deal() and gather() (@/motion/deal), the building block page arrivals use too.
  * - Open is the view's one expressive moment. The faces start as a small deck on the tile and spread to their places
  *   on the expressive spring, nearest first, --stagger apart, arriving out of soft focus (a 4px blur on the
  *   responsive spring, R4). Behind them the page steps back on the responsive spring: it fades, shrinks a little and
@@ -21,40 +22,21 @@
 import { Suspense, useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { animate, motion, useMotionValue, type AnimationPlaybackControls, type Transition } from "motion/react";
-import { useExit, useMotionDial, useStagger, useTransition, useTravel } from "@/motion";
+import { useExit, useTravel } from "@/motion";
+import { deal, gather, SOFT_FOCUS, useDealMotion } from "@/motion/deal";
 import { useDismissDrag } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { ArrowRightIcon, XIcon } from "@/components/icons";
+import { arriveFrom, boxesOf } from "./arrival";
 import { PreviewContext } from "./kit";
 import type { PageEntry } from "./registry";
 
-type Box = { left: number; top: number; width: number; height: number };
-const center = (r: Box) => ({
-  x: r.left + r.width / 2,
-  y: r.top + r.height / 2,
-});
-const dist = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
-
-/** How far the page steps back behind the mosaic: its scale and its blur, the blur at R4's 4px ceiling. */
+/** How far the page steps back behind the mosaic: a little smaller, and soft at R4's ceiling. */
 const BACK_SCALE = 0.985;
-const BACK_BLUR = 4;
 
-/**
- * Where a piece sits while it is still in the tile: the k-th card of a small deck at the tile's centre, scaled to
- * about half the tile. Returned as the face's offset from its place in the grid.
- */
-function deck(place: Box, tile: Box, k: number, n: number) {
-  const s = Math.min((tile.width * 0.56) / place.width, (tile.height * 0.56) / place.height, 1);
-  const fan = (k - (n - 1) / 2) * 3;
-  const from = center(place);
-  const to = center(tile);
-  return { x: to.x + fan - from.x, y: to.y + fan * 0.6 - from.y, scale: s };
-}
-
-/** The faces of the pieces, in the grid's order. */
+/** The faces of the pieces, in the grid's order (the page's stage order). */
 const facesIn = (grid: HTMLElement) => [...grid.querySelectorAll<HTMLElement>("[data-piece-face]")];
 
-/** Everything still running when the mosaic closes. */
 const settled = (runs: AnimationPlaybackControls[]) => Promise.all(runs.map((r) => r.finished)).catch(() => undefined);
 
 type MosaicProps = {
@@ -80,13 +62,8 @@ export function Mosaic(props: MosaicProps) {
 
 /* Inside the portal, so its layout effects run once the pieces are in the document. */
 function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
-  const { reduced } = useMotionDial();
-  const expressive = useTransition("expressive");
-  const responsive = useTransition("responsive");
-  const instant = useTransition("instant");
-  const exit = useExit("expressive");
+  const m = useDealMotion();
   const exitQuick = useExit("responsive");
-  const stagger = useStagger();
   const travel = useTravel();
 
   const grid = useRef<HTMLDivElement>(null);
@@ -102,11 +79,7 @@ function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
   const backScale = useMotionValue(1);
   const backBlur = useMotionValue(0);
 
-  const drag = useDismissDrag({
-    direction: "down",
-    onDismiss: () => close(),
-    enabled: !closing,
-  });
+  const drag = useDismissDrag({ direction: "down", onDismiss: () => close(), enabled: !closing });
 
   useLayoutEffect(() => {
     const root = document.getElementById("root");
@@ -126,7 +99,7 @@ function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
       const back = Math.min(Math.max(y / innerHeight, 0) * 1.8, 1);
       backOpacity.set(back);
       backScale.set(BACK_SCALE + (1 - BACK_SCALE) * back);
-      backBlur.set(BACK_BLUR * (1 - back));
+      backBlur.set(SOFT_FOCUS * (1 - back));
     };
     const off = [backOpacity.on("change", paint), backScale.on("change", paint), backBlur.on("change", paint), drag.offset.on("change", follow)];
     return () => {
@@ -135,52 +108,30 @@ function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
     };
   }, [backOpacity, backScale, backBlur, drag.offset]);
 
-  /* Deal: from a deck on the tile to the grid. */
+  /* Deal the pieces out of the tile, while the page steps back. */
   useLayoutEffect(() => {
     const faces = facesIn(grid.current!);
     setCount(faces.length);
     /* A demo wider than its column takes both (it is laid out for a page's full column), before anything is measured. */
     for (const face of faces) if (face.scrollWidth > face.clientWidth + 1) face.parentElement!.dataset.wide = "";
-    const from = tile.getBoundingClientRect();
-    const near = center(from);
-    const placed = faces
-      .map((face) => ({
-        face,
-        place: face.parentElement!.getBoundingClientRect(),
-      }))
-      .sort((a, b) => dist(center(a.place), near) - dist(center(b.place), near));
-    order.current = placed.map((p) => p.face);
-    if (reduced) {
+    /* The figure is the place: the face in it is what moves. */
+    const dealt = deal(faces, { deck: tile.getBoundingClientRect() }, m, { places: faces.map((f) => f.parentElement!.getBoundingClientRect()) });
+    order.current = dealt.order;
+    if (m.reduced) {
       backOpacity.set(0);
       phase.current = "open";
       return;
     }
-    const runs: AnimationPlaybackControls[] = [
-      animate(backOpacity, 0, responsive),
-      animate(backScale, BACK_SCALE, responsive),
-      animate(backBlur, BACK_BLUR, responsive),
-    ];
-    placed.forEach(({ face, place }, k) => {
-      const d = deck(place, from, k, placed.length);
-      const delay = k * stagger;
-      /* The first frame is painted before any delay runs out, so the face starts in the deck, not in its place. */
-      face.style.opacity = "0";
-      face.style.transform = `translateX(${d.x}px) translateY(${d.y}px) scale(${d.scale})`;
-      face.style.filter = `blur(${BACK_BLUR}px)`;
-      runs.push(
-        animate(face, { x: [d.x, 0], y: [d.y, 0], scale: [d.scale, 1] }, { ...expressive, delay }),
-        animate(face, { opacity: [0, 1] }, { ...instant, delay }),
-        animate(face, { filter: [`blur(${BACK_BLUR}px)`, "blur(0px)"] }, { ...responsive, delay }),
-      );
-    });
     const bar = head.current!;
     bar.style.opacity = "0";
-    runs.push(animate(bar, { opacity: [0, 1], y: [travel / 2, 0] }, { ...responsive, delay: stagger * 2 }));
-    void settled(runs).then(() => {
-      if (phase.current !== "opening") return;
-      phase.current = "open";
-      /* At rest a face carries no filter: even blur(0px) would make it a containing block for fixed parts inside it. */
-      for (const face of faces) face.style.filter = "";
+    const runs = [
+      animate(backOpacity, 0, m.focus),
+      animate(backScale, BACK_SCALE, m.focus),
+      animate(backBlur, SOFT_FOCUS, m.focus),
+      animate(bar, { opacity: [0, 1], y: [travel / 2, 0] }, { ...m.focus, delay: m.stagger * 2 }),
+    ];
+    void Promise.all([dealt.finished, settled(runs)]).then(() => {
+      if (phase.current === "opening") phase.current = "open";
     });
     // Once, on open: the deal reads where the tile is at that moment.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -192,40 +143,27 @@ function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
     requestAnimationFrame(() => returnTo?.isConnected && returnTo.focus({ preventScroll: true }));
   }
 
-  /* Gather: from wherever each face is drawn now back into the deck on the tile. */
+  /* Gather the pieces back into the tile, from wherever each is drawn now, while the page comes back into focus. */
   function close() {
     if (phase.current === "closing") return;
     phase.current = "closing";
     setClosing(true);
-    if (reduced) return finish();
-    const to = tile.getBoundingClientRect();
+    if (m.reduced) return finish();
     const pulled = drag.offset.get();
-    const half = ((exit as { duration?: number }).duration ?? 0) / 2;
-    const runs: AnimationPlaybackControls[] = [
-      animate(drag.offset, 0, exit),
-      animate(backOpacity, 1, { ...responsive, delay: half / 2 } as Transition),
-      animate(backScale, 1, { ...responsive, delay: half / 2 } as Transition),
-      animate(backBlur, 0, { ...responsive, delay: half / 2 } as Transition),
+    const back = { ...m.focus, delay: ((m.exit as { duration?: number }).duration ?? 0) / 4 } as Transition;
+    const runs = [
+      animate(drag.offset, 0, m.exit),
+      animate(backOpacity, 1, back),
+      animate(backScale, 1, back),
+      animate(backBlur, 0, back),
       animate(head.current!, { opacity: 0 }, exitQuick),
     ];
-    const faces = [...order.current].reverse();
-    faces.forEach((face, j) => {
-      const k = faces.length - 1 - j;
+    /* The drag moves the whole mosaic and goes back to 0 as the pieces leave, so aim from the unmoved places. */
+    const places = order.current.map((face) => {
       const r = face.parentElement!.getBoundingClientRect();
-      /* The drag moves the whole mosaic and comes back to 0 as the faces leave, so aim from the unmoved place. */
-      const d = deck({ left: r.left, top: r.top - pulled, width: r.width, height: r.height }, to, k, faces.length);
-      const delay = (j * stagger) / 2;
-      runs.push(
-        animate(face, { x: d.x, y: d.y, scale: d.scale }, { ...exit, delay }),
-        animate(face, { filter: `blur(${BACK_BLUR}px)` }, { ...exit, delay }),
-        animate(face, { opacity: 0 }, {
-          ...exit,
-          duration: half,
-          delay: delay + half,
-        } as Transition),
-      );
+      return { left: r.left, top: r.top - pulled, width: r.width, height: r.height };
     });
-    void settled(runs).then(finish);
+    void Promise.all([gather(order.current, tile.getBoundingClientRect(), m, { places }), settled(runs)]).then(finish);
   }
 
   /* A drag never starts on a piece, and a finger only drags from the title bar (anywhere else it scrolls). */
@@ -270,6 +208,8 @@ function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
             <div className="ml-auto flex items-center gap-2 pointer-fine:ml-0">
               <a
                 href={`#${page.id}`}
+                /* The page opens out of the mosaic: each of its stages grows out of its piece here (arrival.tsx). */
+                onClick={() => grid.current && arriveFrom(page.id, { each: boxesOf(facesIn(grid.current)) })}
                 className={
                   "flex h-control-sm items-center gap-2 rounded-control px-3 text-small font-title text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
                   "transition-colors duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:h-control-md " +

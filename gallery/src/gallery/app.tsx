@@ -6,6 +6,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObjec
 import { MotionDialProvider, useFun } from "@/motion";
 import { funPages, pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
 import { useRoute } from "./route";
+import { Arrival, useLinkOrigins } from "./arrival";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
 import { Segmented } from "@/components/segmented";
@@ -103,6 +104,7 @@ function FocusOnArrival({ main }: { main: RefObject<HTMLElement | null> }) {
 
 function Shell({ page }: { page: PageEntry | undefined }) {
   const mainRef = useRef<HTMLElement>(null);
+  useLinkOrigins();
   /* With fun mode on, the pages it changes come first: a Fun group after the site's own pages. They stay in their
      own groups too, so the nav never reshuffles under you. */
   const fun = useFun();
@@ -264,6 +266,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
               <>
                 <page.Component key={page.id} />
                 {moved && <FocusOnArrival key={`focus-${page.id}`} main={mainRef} />}
+                <Arrival key={`arrive-${page.id}`} route={page.id} main={mainRef} />
               </>
             ) : (
               <p>No pages yet.</p>
