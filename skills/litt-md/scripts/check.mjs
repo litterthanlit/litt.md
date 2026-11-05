@@ -20,7 +20,7 @@
  *               --weight-label 600 (12px labels). Nothing at 700 or more or below 400, no
  *               font-medium, -semibold or -bold (font-title and font-label are the role
  *               utilities), no 600 above the caption size, Google Fonts loads only
- *               400, 500 and 600, and the mono only 400.
+ *               400, 500 and 600 (the mono too, for Device's full mono).
  * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill, and a block set
  *               2px into a control takes the control radius less 2px.
  * 8. Shadows:   the depth ladder (R3). Flat and floating things have no offset: an outer shadow is a zero-offset
@@ -128,7 +128,13 @@ const flatOf = (theme, map) => {
 // Device maps each token onto its --device-* twin (proposals/device.md), the hues included.
 const deviceOf = (map) => {
   const out = new Map(map);
-  for (const [k, v] of map) if (k.startsWith("--device-")) out.set(`--${k.slice(9)}`, v);
+  for (const [k, v] of map) if (k.startsWith("--device-") && !k.startsWith("--device-screen-")) out.set(`--${k.slice(9)}`, v);
+  return out;
+};
+// A Device screen (a panel or an overlay on a Device) maps each token onto its --device-screen-* twin.
+const screenOf = (map) => {
+  const out = new Map(deviceOf(map));
+  for (const [k, v] of map) if (k.startsWith("--device-screen-")) out.set(`--${k.slice(16)}`, v);
   return out;
 };
 
@@ -159,7 +165,7 @@ missing.length ? missing.forEach((k) => fail(`${k} is defined in only one theme`
 // 5. Contrast -------------------------------------------------------------
 console.log("Contrast");
 // Every pair runs in each theme, then again under Flat and under Device (checks 11 and 12 hold the mirrors themselves).
-const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)], ["device light", deviceOf(light)], ["device dark", deviceOf(dark)]];
+const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)], ["device light", deviceOf(light)], ["device dark", deviceOf(dark)], ["device screen", screenOf(light)]];
 const rgb = (h) => { h = h.replace("#", ""); if (h.length === 3) h = [...h].map((c) => c + c).join(""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
 const lum = (h) => { const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
@@ -176,7 +182,7 @@ const pairs = [
   ["--accent-text", ["--canvas", "--surface-1", "--accent-tint"], 4.5, "accent as link text"],
   ["--accent", ["--canvas", "--surface-1"], 3, "the accent fill against the page"],
   ["--focus-pink", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring, pink"],
-  ["--accent-fg", ["--accent-pink", "--accent-pink-hover"], 4.5, "text on the pink accent"],
+  ["--accent-pink-fg", ["--accent-pink", "--accent-pink-hover"], 4.5, "text on the pink accent"],
   ["--accent-pink-text", ["--canvas", "--surface-1", "--accent-pink-tint"], 4.5, "the pink accent as link text"],
   ["--accent-pink", ["--canvas", "--surface-1"], 3, "the pink fill against the page"],
   ["--success", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
@@ -252,7 +258,7 @@ if (pressHover === null) fail("tokens.css: --block-hover is not color-mix(in okl
 if (flatHover === null) fail('tokens.css: the flat block does not restate --block-hover as color-mix(in oklab, var(--block), var(--fg) N%)');
 let hoverChecks = 0, hoverFails = 0;
 for (const [theme, map] of THEMES) {
-  const share = theme.startsWith("flat") ? flatHover : theme.startsWith("device") ? deviceHover : pressHover;
+  const share = theme.startsWith("flat") ? flatHover : theme.startsWith("device") ? deviceHover ?? pressHover : pressHover;
   const b = map.get("--block"), f = map.get("--fg");
   if (share === null || ![b, f].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) continue;
   const [B, F] = [toLab(b), toLab(f)];
@@ -338,7 +344,7 @@ for (const f of assetFiles) {
     const [axes, tuples = ""] = spec.split("@");
     const i = axes.split(",").indexOf("wght");
     if (i < 0) continue;
-    const allowed = /mono/i.test(fam) ? ["400"] : ["400", "500", "600"];
+    const allowed = ["400", "500", "600"]; // the mono too, since Device sets every word in it (v1.6)
     for (const t of tuples.split(";")) {
       const w = t.split(",")[i];
       if (!allowed.includes(w)) weightFails.push(`${f}: Google Fonts loads ${fam.replace(/\+/g, " ")} at wght ${w} (only ${allowed.join(", ")}, no ranges)`);
@@ -611,6 +617,18 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
     const r = ratio(g(f), g(b));
     if (r < min) devFails.push(`${theme}: ${devName(f)} on ${devName(b)} is ${r.toFixed(2)}:1, needs ${min}:1 (${note})`);
   }
+}
+// The screens: panels and overlays on a Device map every screen token, the same in every theme.
+{
+  const re = /\[data-material="device"\] :is\(\.litt-raised, \.litt-glass\) \{/;
+  if (css.search(re) < 0) devFails.push('tokens.css has no [data-material="device"] :is(.litt-raised, .litt-glass) block, the screens');
+  else {
+    const scr = decls(block(re));
+    const names = [...light.keys()].filter((k) => k.startsWith("--device-screen-"));
+    for (const k of names) if (scr.get(`--${k.slice(16)}`) !== `var(${k})`) devFails.push(`the screen block maps --${k.slice(16)} to ${scr.get(`--${k.slice(16)}`) ?? "nothing"}`);
+    for (const k of names) if (light.get(k) !== dark.get(k)) devFails.push(`${k} differs between the themes; a screen is the same in each`);
+  }
+  if ((decls(block(devRe)).get("--font-sans") || "") !== "var(--font-mono)") devFails.push("device: --font-sans must be var(--font-mono), Device's full mono");
 }
 devFails.length ? devFails.forEach(fail) : ok(`device: ${DEVICE_MAPPED.length} tokens mapped in both themes, after Flat, pink and mono restated, a 2px key, glass at 7:1 in the mono`);
 
