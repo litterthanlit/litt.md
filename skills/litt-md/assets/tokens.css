@@ -689,13 +689,13 @@
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
   /* What you type into (R3's cut, the field). Press and Flat draw it as the cut in the page's inks and the sans;
-     Device sets it behind LCD glass in the mono. Checkboxes, radios and wells keep --cut. */
+     Device sets it behind LCD glass, in the mono (--field-font, which only Device sets: font-field falls back to
+     the sans where the field is drawn, so a face picked on <body> still reaches it). Checkboxes, radios and wells keep --cut. */
   --field: var(--cut);
   --field-ink: var(--fg);
   --field-ink-subtle: var(--fg-subtle);
   --field-line: var(--line-control);
   --field-shade: var(--cut-shade);
-  --font-field: var(--font-sans);
   /* A 12px label (R8): sentence case, no engraving. Device engraves it in capitals. */
   --label-case: none;
   --label-tracking: var(--type-caption-tracking);
@@ -868,7 +868,7 @@
   --field-ink-subtle: var(--device-field-ink-subtle);
   --field-line: var(--device-field-line);
   --field-shade: var(--device-field-shade);
-  --font-field: var(--font-mono);
+  --field-font: var(--font-mono);
   --label-case: uppercase;
   --label-tracking: 0.08em;
   --engrave: var(--device-engrave);

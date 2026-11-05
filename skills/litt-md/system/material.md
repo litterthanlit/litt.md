@@ -85,7 +85,7 @@ The same depth ladder said in hardware, after the components studies (journal, 2
 | Depth | Press | Device |
 |---|---|---|
 | Sunken: a tray | `--tray`, a hairline and the top wall's shade | a well, a step darker than the body, its top wall in shade |
-| Sunken: a cut you type into | `--cut` and its top wall's shade | LCD glass: `--field` near black, `--field-ink` at 7:1, the text in the mono (`--font-field`) |
+| Sunken: a cut you type into | `--cut` and its top wall's shade | LCD glass: `--field` near black, `--field-ink` at 7:1, the text in the mono (`--field-font`) |
 | Sunken: a cut you mark | `--cut` and its top wall's shade | a light well (`--cut`), so a box checked in the ink still reads |
 | Sunken: a slot | `--slot`, both walls, the fill a step darker | a well with a lit fill, like a meter |
 | Flat: canvas and surfaces | a hairline and the top highlight | the aluminium body; plates a step lighter, lit on their top edge |
@@ -94,7 +94,7 @@ The same depth ladder said in hardware, after the components studies (journal, 2
 | Floating | glass, a zero-offset glow, a ring | unchanged |
 
 - **The values.** Each theme block declares `--device-*`: the neutrals, the press tokens, the field, and the accents, status inks and data hues retuned so every pair passes on the body. The device block maps the live names onto them, and pink and monochrome are restated after it so they still win on `<html>`. The check runs every pair again under Device (check 12).
-- **Tokens every material sets.** `--field`, `--field-ink`, `--field-ink-subtle`, `--field-line`, `--field-shade` and `--font-field` are the cut, the inks and the sans outside Device; `--label-case`, `--label-tracking` and `--engrave` (the `.litt-legend` class) leave a label as it is. A component that reads them changes under Device and nowhere else.
+- **Tokens every material sets.** `--field`, `--field-ink`, `--field-ink-subtle`, `--field-line`, `--field-shade` and `--field-font` are the cut, the inks and the sans outside Device; `--label-case`, `--label-tracking` and `--engrave` (the `.litt-legend` class) leave a label as it is. A component that reads them changes under Device and nowhere else.
 - **Nested themes.** As under Flat, an element that sets its own theme needs `data-material="device"` too.
 - **Never:** ambient motion (no flicker, scanline or blinking caret: R4 holds), texture images, or the accent on chrome.
 

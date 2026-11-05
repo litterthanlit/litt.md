@@ -140,9 +140,8 @@
      label (a reading, a count, a key), adds font-normal. */
   --font-weight-title: var(--weight-title);
   --font-weight-label: var(--weight-label);
-  /* font-field: the type of what you type, the sans or Device's mono. Safe like the keys below: tokens.css
-     declares --font-field unlayered. */
-  --font-field: var(--font-field);
+  /* font-field: the type of what you type, Device's mono (--field-font) or else the sans, resolved where the field is drawn. */
+  --font-field: var(--field-font, var(--font-sans));
 
   /* Layout: py-section, max-w-content, etc. */
   --spacing-section: var(--section-y);

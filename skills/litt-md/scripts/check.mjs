@@ -586,7 +586,7 @@ else {
   for (const n of DEVICE_HUES) if (dev.get(n) !== `var(${devName(n)})` && !(n === "--focus-pink" && dev.get(n) === "var(--device-accent-pink)")) devFails.push(`the device block maps ${n} to ${dev.get(n) ?? "nothing"}`);
   for (const [k, v] of dev) if (/(^|[\s,(])none($|[\s,)])/.test(v)) devFails.push(`device: ${k} is "${v}" (an empty shadow is 0 0 0 0 transparent)`);
   if (dev.get("--press-depth") !== "2px") devFails.push(`device: --press-depth is ${dev.get("--press-depth") ?? "unset"}, must be 2px (a key's travel)`);
-  if (dev.get("--font-field") !== "var(--font-mono)") devFails.push("device: --font-field must be var(--font-mono), the glass's type");
+  if (dev.get("--field-font") !== "var(--font-mono)") devFails.push("device: --field-font must be var(--font-mono), the glass's type");
   const ring = dev.get("--focus-ring") || "";
   if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) devFails.push(`device: --focus-ring must restate the ring with var(--focus) (is "${ring}")`);
   for (const h of ["blue", "amber", "teal", "violet", "rose"])
