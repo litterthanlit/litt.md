@@ -6,7 +6,7 @@
  *   lg 56; 16px text on coarse pointers, where sm grows to 44), with the same focus line and ring, error line and
  *   flat disabled look. The text is the query. A 16px chevron button in
  *   --fg-subtle sits at the end, --control-gap from the text, and opens and closes the list; it never turns.
- *   The label sits above and the hint or error under it, wired as TextField's are.
+ *   The label sits above and the hint or error under it, wired as TextField's are. Under Device the field is LCD glass in the mono, through the --field tokens.
  * - List: anchored under the field and flipped above it when there is no room, as wide as the field. It is the
  *   Menu's panel: glass at the surface radius with the 4px inset, 44px rows at the control radius, one gliding
  *   highlight (glide.tsx), and the picked option's 16px check in a fixed cell at the row's start, so labels never
@@ -169,12 +169,12 @@ const toList = (value: string | string[] | undefined): string[] | undefined =>
 /* The Input's cut (floor, line, shade) and its focus, error and disabled looks, on a wrapper that holds the text
    field (and the tokens). The ring follows the text field only: the remove buttons draw their own. */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text bg-cut font-normal text-fg " +
-  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
+  "relative flex w-full min-w-0 cursor-text bg-field font-field font-normal text-field-ink " +
+  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
-  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
+  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   "pointer-coarse:text-(length:--control-text-lg) " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
@@ -226,8 +226,8 @@ const MANY_CHEVRON: Record<ComboboxSize, string> = {
 };
 
 const CHEVRON =
-  "grid shrink-0 cursor-pointer place-items-center self-stretch text-fg-subtle outline-none " +
-  "[-webkit-tap-highlight-color:transparent] transition-[color] duration-(--dur-instant) ease-litt hover:text-fg " +
+  "grid shrink-0 cursor-pointer place-items-center self-stretch text-field-ink-subtle outline-none " +
+  "[-webkit-tap-highlight-color:transparent] transition-[color] duration-(--dur-instant) ease-litt hover:text-field-ink " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled";
 
 const REMOVE =
@@ -507,7 +507,7 @@ export function Combobox<Multiple extends boolean = false>({
       onChange={onChange}
       onKeyDown={onKeyDown}
       className={
-        "min-w-0 flex-1 truncate bg-transparent text-fg outline-none placeholder:text-fg-subtle " +
+        "min-w-0 flex-1 truncate bg-transparent text-field-ink outline-none placeholder:text-field-ink-subtle " +
         "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
         (many ? "box-content h-6 pl-2" : "h-full " + ONE_INPUT[size])
       }
@@ -687,7 +687,7 @@ const ROW =
   "text-fg-muted aria-selected:text-fg data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled " +
   "forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText]";
 /** The group label row: the Menu's. */
-const LABEL_ROW = "flex h-control-sm items-center px-3 text-caption text-fg-subtle";
+const LABEL_ROW = "flex h-control-sm items-center px-3 text-caption text-fg-subtle litt-legend";
 
 /**
  * The anchored list. It mounts on open and stays through its exit, so the glide starts fresh each time. While it

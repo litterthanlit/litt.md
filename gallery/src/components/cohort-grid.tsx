@@ -158,7 +158,7 @@ function averageRow(cohorts: Cohort[], periods: number, valueType: "percent" | "
 
 /* ----------------------------------------------------------------- cells */
 
-const headCell = "h-control-md border-b border-line px-3 py-3 align-middle text-caption font-label whitespace-nowrap text-fg-subtle";
+const headCell = "h-control-md border-b border-line px-3 py-3 align-middle text-caption font-label whitespace-nowrap text-fg-subtle litt-legend";
 const bodyCell = "h-control-md px-3 py-3 align-middle whitespace-nowrap";
 /** The sticky cohort column: the box's own surface under it, and a hairline at its end once the periods scroll under it. */
 const sticky =

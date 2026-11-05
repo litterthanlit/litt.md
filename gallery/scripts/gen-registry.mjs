@@ -39,7 +39,7 @@
  *     rounded-control     -> rounded-litt-control
  *     duration-(--dur-instant), shadow-[inset_0_0_0_1px_var(--line)], getPropertyValue("--travel")
  *                         -> the same with --litt-...
- *     ease-litt, litt-glass, litt-raised, litt-trim, litt-lit, litt-grain keep their names.
+ *     ease-litt, litt-glass, litt-raised, litt-trim, litt-legend, litt-lit, litt-grain keep their names.
  *   The gallery builds Tailwind in strict mode, so every themed utility in a component is a litt
  *   token by construction. The key sets come from tokens.css and tailwind.css, never from a hand list.
  *

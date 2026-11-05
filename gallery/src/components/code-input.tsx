@@ -128,17 +128,17 @@ export function CodeInput({
                   (current ? " forced-colors:outline-2 forced-colors:outline-offset-2 forced-colors:outline-[Highlight]" : "") +
                   (disabled
                     ? " bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
-                    : " bg-cut text-fg " +
+                    : " bg-field font-field text-field-ink " +
                       (current
                         ? error
-                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)]"
-                          : "shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)]"
+                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)]"
+                          : "shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)]"
                         : error
-                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)]"
-                          : "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]"))
+                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)]"
+                          : "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)]"))
                 }
               >
-                {char || (current ? <span className="h-5 w-px bg-fg forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" /> : null)}
+                {char || (current ? <span className="h-5 w-px bg-field-ink forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" /> : null)}
               </span>
             );
           })}

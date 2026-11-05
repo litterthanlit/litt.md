@@ -167,7 +167,7 @@ export type SidebarNavProps = {
 export function SidebarNav({ label, heading, children }: SidebarNavProps) {
   return (
     <nav aria-label={label}>
-      {heading && <p className="px-3 pb-2 text-caption text-fg-subtle">{heading}</p>}
+      {heading && <p className="px-3 pb-2 text-caption text-fg-subtle litt-legend">{heading}</p>}
       <ul className="grid gap-1">{children}</ul>
     </nav>
   );

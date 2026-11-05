@@ -7,7 +7,7 @@
  *   shade) at the control radius. Heights are minimums on the shared scale (sm 32, md 44, lg 56),
  *   and the 2px focus ring wraps the whole field while its text input is focus-visible. An
  *   invalid field turns the line to --danger. Like the Input it has no hover. Padding sits on the
- *   4px grid, so the field grows by whole token rows (24px tokens, 4px apart) as they wrap.
+ *   4px grid, so the field grows by whole token rows (24px tokens, 4px apart) as they wrap. Under Device the field is LCD glass in the mono, through the --field tokens.
  * - Token: a raised Tag (R3: a block you can lift out of the cut, --block and --block-lift, its
  *   corners the control radius less 2px; 24px, the sans at the caption size and the label weight),
  *   with a 24px remove button that grows to a 44px hit area on coarse pointers through an
@@ -72,12 +72,12 @@ export type TokenInputProps = {
 /* The field: the Input's cut (floor, line, shade) and its focus, error and disabled looks, on a
    wrapper that holds the tokens. The ring follows the text input only (the remove buttons draw their own). */
 const FIELD =
-  "relative flex w-full min-w-0 cursor-text bg-cut font-normal text-fg " +
-  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
+  "relative flex w-full min-w-0 cursor-text bg-field font-field font-normal text-field-ink " +
+  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
-  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
+  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
@@ -387,7 +387,7 @@ export function TokenInput({
               aria-invalid={invalid || undefined}
               aria-describedby={note ? noteId : undefined}
               className={
-                "box-content h-6 min-w-0 flex-1 bg-transparent pl-2 text-fg outline-none placeholder:text-fg-subtle " +
+                "box-content h-6 min-w-0 flex-1 bg-transparent pl-2 text-field-ink outline-none placeholder:text-field-ink-subtle " +
                 "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:placeholder:text-fg-disabled"
               }
               onChange={(e) => {

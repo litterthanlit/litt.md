@@ -8,11 +8,12 @@
  * that copy against this one.
  */
 export type Accent = "mono" | "blue4" | "pink";
-/** The depth ladder said in press (raised blocks in sunken trays, lit from the top) or flat (fill alone, on greys). */
-export type Material = "press" | "flat";
+/** The depth ladder said in press (raised blocks in sunken trays, lit from the top), flat (fill alone, on greys) or device
+    (keys, wells and LCD glass on an aluminium body, proposals/device.md). */
+export type Material = "press" | "flat" | "device";
 export type Look = { readonly accent: Accent; readonly material: Material; readonly fun: boolean };
-/** A look as a link names it: the accent, then -flat, then -fun. One spelling per look, and no character URLSearchParams encodes. */
-export type LookSlug = `${Accent}${"" | "-flat"}${"" | "-fun"}`;
+/** A look as a link names it: the accent, then -flat or -device, then -fun. One spelling per look, and no character URLSearchParams encodes. */
+export type LookSlug = `${Accent}${"" | "-flat" | "-device"}${"" | "-fun"}`;
 export type AccentInfo = {
   id: Accent;
   name: string;
@@ -35,14 +36,18 @@ export type MaterialInfo = {
   name: string;
   note: string;
   /** The data-material value tokens.css answers; null for Press, which is tokens.css with no attribute. */
-  attribute: "flat" | null;
+  attribute: "flat" | "device" | null;
 };
 /** The materials in the order every picker shows them. */
 export const MATERIALS: readonly MaterialInfo[] = [
   { id: "press", name: "Press", note: "Raised blocks in sunken trays, lit from the top", attribute: null },
   { id: "flat", name: "Flat", note: "Grey fills and hairlines, nothing casts", attribute: "flat" },
+  { id: "device", name: "Device", note: "Keys and dark LCD screens on an aluminium body, full mono, an orange accent", attribute: "device" },
 ];
 export const materialOf = (id: Material) => MATERIALS.find((m) => m.id === id)!;
+/** An accent's name in a material: Device answers the no-attribute accent with its own orange, so Blue 4 reads "Orange" there. */
+export const accentName = (accent: Accent, material: Material, short = false) =>
+  accent === "blue4" && material === "device" ? "Orange" : short ? (accentOf(accent).short ?? accentOf(accent).name) : accentOf(accent).name;
 
 /** What the gallery opens in, and what Reset goes back to: a visitor meets the material before the color. */
 export const GALLERY_LOOK: Look = { accent: "mono", material: "flat", fun: false };
@@ -60,7 +65,7 @@ export const LOOK_PARAM = "look";
 
 export const sameLook = (a: Look, b: Look) => a.accent === b.accent && a.material === b.material && a.fun === b.fun;
 export const encodeLook = (look: Look): LookSlug =>
-  `${look.accent}${look.material === "flat" ? "-flat" : ""}${look.fun ? "-fun" : ""}` as LookSlug;
+  `${look.accent}${look.material === "press" ? "" : `-${look.material}`}${look.fun ? "-fun" : ""}` as LookSlug;
 /** Strict, because it reads the address: anything but a LookSlug is null, and the caller ignores it. */
 export const decodeLook = (raw: string | null | undefined): Look | null => LOOKS.find((l) => encodeLook(l) === raw) ?? null;
 export const lookFromSearch = (search: string) => decodeLook(new URLSearchParams(search).get(LOOK_PARAM));
@@ -86,7 +91,7 @@ export function withLook(href: string, look: Look | null): string {
  * anything else that sets its own theme spreads these.
  */
 export function lookAttributes(look: Pick<Look, "accent" | "material">, dark: boolean) {
-  const out: { "data-theme": "light" | "dark"; "data-accent"?: "mono" | "pink"; "data-material"?: "flat" } = { "data-theme": dark ? "dark" : "light" };
+  const out: { "data-theme": "light" | "dark"; "data-accent"?: "mono" | "pink"; "data-material"?: "flat" | "device" } = { "data-theme": dark ? "dark" : "light" };
   const accent = accentOf(look.accent).attribute, material = materialOf(look.material).attribute;
   if (accent) out["data-accent"] = accent;
   if (material) out["data-material"] = material;
@@ -96,7 +101,7 @@ export function lookAttributes(look: Pick<Look, "accent" | "material">, dark: bo
 const motionWords = (fun: boolean) => (fun ? "fun motion" : "calm motion");
 const materialWords = (material: Material) => `${material} material`;
 /** In words (R5): "Pink, flat material, fun motion", "Monochrome, press material, calm motion". */
-export const lookWords = (look: Look) => `${accentOf(look.accent).name}, ${materialWords(look.material)}, ${motionWords(look.fun)}`;
+export const lookWords = (look: Look) => `${accentName(look.accent, look.material)}, ${materialWords(look.material)}, ${motionWords(look.fun)}`;
 
 const REGISTRY_WORDS = `${accentOf(REGISTRY_LOOK.accent).name}, ${materialWords(REGISTRY_LOOK.material)} and ${motionWords(REGISTRY_LOOK.fun)}`;
 const COUNT = ["no things", "one thing", "two things", "three things"];
@@ -123,7 +128,9 @@ function edits(look: Look): string[] {
       [
         `The material: ${attr} on <html>.`,
         `   Next.js, app/layout.tsx: <html lang="en" ${attr}>    Vite, index.html: <html lang="en" ${attr}>`,
-        `   Flat says the depth ladder by fill alone, on neutral greys: nothing casts and nothing catches the light. Never set it from an effect.`,
+        material === "flat"
+          ? `   Flat says the depth ladder by fill alone, on neutral greys: nothing casts and nothing catches the light. Never set it from an effect.`
+          : `   Device says the depth ladder in hardware: an aluminium body, keys that sink 2px, dark LCD screens for panels and overlays, an orange accent, and every word in Geist Mono (load it at 400, 500 and 600). Never set it from an effect.`,
         `   An element that sets its own theme (class="dark", class="light" or data-theme) needs ${attr} too.`,
       ].join("\n"),
     );
@@ -196,7 +203,7 @@ export function looksDoc(site: string): string {
       `Read the look from the link's text and make its edits. The gallery is a single-page app, so fetching the link returns no look. ` +
       `The registry installs \`${encodeLook(REGISTRY_LOOK)}\`, ${materialWords(REGISTRY_LOOK.material)}, ${motionWords(REGISTRY_LOOK.fun)}. The gallery opens in \`${encodeLook(GALLERY_LOOK)}\`.`,
     [
-      `- The link: \`${LOOK_PARAM}=<accent>\`, then \`-flat\` for the flat material, then \`-fun\` for fun mode, in that order (\`pink-flat-fun\`). Anything else is not a look, and a look without \`-flat\` is press.`,
+      `- The link: \`${LOOK_PARAM}=<accent>\`, then \`-flat\` or \`-device\` for the material, then \`-fun\` for fun mode, in that order (\`pink-flat-fun\`, \`mono-device\`). Anything else is not a look, and a look without a material is press.`,
       ...ACCENTS.map(
         (a) =>
           `- \`${a.id}\`, ${a.name} (${a.note[0]!.toLowerCase() + a.note.slice(1)}): ` +
@@ -204,12 +211,12 @@ export function looksDoc(site: string): string {
       ),
       ...MATERIALS.map(
         (m) =>
-          `- ${m.attribute ? `\`-flat\`` : "No \`-flat\`"}, ${m.name} (${m.note[0]!.toLowerCase() + m.note.slice(1)}): ` +
+          `- ${m.attribute ? `\`-${m.attribute}\`` : "No material"}, ${m.name} (${m.note[0]!.toLowerCase() + m.note.slice(1)}): ` +
           (m.attribute ? `\`data-material="${m.attribute}"\` on \`<html>\`.` : "no attribute. It is what tokens.css ships."),
       ),
       `- \`-fun\`: wrap the app in \`<FunMode>\` from \`@/lib/litt/motion\` (the motion item). Fun mode is a trial: it changes how litt's parts move, never how they look at rest, and reduced motion turns it off.`,
       `- Put each attribute on \`<html>\` (Next.js app/layout.tsx, Vite index.html), never on a wrapper and never from an effect: there it reaches every portal and paints before any script, in light, dark and the system setting. An element that sets its own theme (\`class="dark"\`, \`class="light"\` or \`data-theme\`) needs them too. Never restate \`--litt-accent\` or the neutrals in CSS.`,
     ].join("\n"),
-    `The twelve looks: ${LOOKS.map((l) => `\`${encodeLook(l)}\` (${lookWords(l)})`).join(", ")}.`,
+    `The ${LOOKS.length} looks: ${LOOKS.map((l) => `\`${encodeLook(l)}\` (${lookWords(l)})`).join(", ")}.`,
   ].join("\n\n");
 }

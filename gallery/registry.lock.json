@@ -19,8 +19,8 @@
       "hash": "ee06b785f64d2d02"
     },
     "app-shell": {
-      "version": "2026.11.03",
-      "hash": "91d63c7283e43e1e"
+      "version": "2026.11.05",
+      "hash": "9c8ce943bb8b6383"
     },
     "avatar": {
       "version": "2026.10.26",
@@ -83,12 +83,12 @@
       "hash": "ceaafb65f3ba39c9"
     },
     "code-input": {
-      "version": "2026.11.02",
-      "hash": "05f66b8a645dc5d7"
+      "version": "2026.11.05",
+      "hash": "9267768a68aa8a39"
     },
     "cohort-grid": {
-      "version": "2026.10.26",
-      "hash": "5d833840275c5aad"
+      "version": "2026.11.05",
+      "hash": "4667068ac8bfa9bc"
     },
     "collection": {
       "version": "2026.11.03",
@@ -100,15 +100,15 @@
     },
     "combobox": {
       "version": "2026.11.05",
-      "hash": "b0484588324d46fe"
+      "hash": "005cbafc2874eba9"
     },
     "command-menu": {
-      "version": "2026.11.02",
-      "hash": "ed03de18af1ecbf9"
+      "version": "2026.11.05",
+      "hash": "f3f38d833c253db2"
     },
     "composer": {
-      "version": "2026.10.26",
-      "hash": "8c99e7cf194f5594"
+      "version": "2026.11.05",
+      "hash": "6e12ad835e2ef85b"
     },
     "context-menu": {
       "version": "2026.10.19",
@@ -163,8 +163,8 @@
       "hash": "21d1efc2ba25379b"
     },
     "gauge": {
-      "version": "2026.10.26",
-      "hash": "bc7b1253ebe4338c"
+      "version": "2026.11.05",
+      "hash": "e60d1628ae7a95aa"
     },
     "glide": {
       "version": "2026.11.02",
@@ -191,8 +191,8 @@
       "hash": "92ffc0cb458467b6"
     },
     "input": {
-      "version": "2026.10.26",
-      "hash": "22c2b767f7766a62"
+      "version": "2026.11.05",
+      "hash": "9a139f7f807711f3"
     },
     "insights": {
       "version": "2026.10.26",
@@ -223,8 +223,8 @@
       "hash": "c05d8979d2f10a6c"
     },
     "litt": {
-      "version": "2026.11.02",
-      "hash": "5480ea6120045164"
+      "version": "2026.11.05",
+      "hash": "efbfea73dffdc281"
     },
     "log-view": {
       "version": "2026.10.25",
@@ -235,8 +235,8 @@
       "hash": "6bc2611a9862421a"
     },
     "menu": {
-      "version": "2026.11.02",
-      "hash": "aab47ba531848d0f"
+      "version": "2026.11.05",
+      "hash": "c2505543c881e483"
     },
     "message": {
       "version": "2026.11.02",
@@ -247,8 +247,8 @@
       "hash": "ec9f18fad0e25e61"
     },
     "number-field": {
-      "version": "2026.11.02",
-      "hash": "6215c5e94a0e1f5d"
+      "version": "2026.11.05",
+      "hash": "dfc308a337f292ea"
     },
     "option-picker": {
       "version": "2026.10.26",
@@ -312,7 +312,7 @@
     },
     "run-list": {
       "version": "2026.11.05",
-      "hash": "0f5c2f831581da93"
+      "hash": "02e9cf88a2ae8aaa"
     },
     "scroll-area": {
       "version": "2026.10.26",
@@ -383,8 +383,8 @@
       "hash": "3df64b9e7e1f9731"
     },
     "table": {
-      "version": "2026.10.27",
-      "hash": "0fc0323851feae4c"
+      "version": "2026.11.05",
+      "hash": "b221c553d386cc20"
     },
     "table-filter": {
       "version": "2026.11.02",
@@ -420,7 +420,7 @@
     },
     "token-input": {
       "version": "2026.11.05",
-      "hash": "ac0cbd27ac556042"
+      "hash": "4a6b690fbaa9f37d"
     },
     "tool-call": {
       "version": "2026.11.05",
