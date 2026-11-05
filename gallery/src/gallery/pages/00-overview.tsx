@@ -49,7 +49,7 @@ import { Button } from "@/components/button";
 import { CheckIcon, CopyIcon, ExpandIcon } from "@/components/icons";
 import { CopyStatus, useCopy } from "../docs/copy";
 import { Deck } from "../deck";
-import { Mosaic } from "../mosaic";
+import { MosaicHost, openMosaic, pressTile } from "../mosaic";
 import { arriveFrom } from "../arrival";
 import { SearchButton } from "../search";
 import { PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
@@ -94,7 +94,8 @@ function useNear<T extends HTMLElement>(ref: React.RefObject<T | null>): boolean
  * moves focus as it mounts cannot pull the page. It is held still until the pointer, a press or focus reaches it.
  * A click on the tile's empty ground (data-open-zone: never on the component itself) opens the mosaic too.
  */
-function Tile({ page, onOpen, children }: { page: PageEntry; onOpen: (tile: HTMLElement, button: HTMLElement | null) => void; children: ReactNode }) {
+function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
+  const onOpen = (tile: HTMLElement, button: HTMLElement | null) => openMosaic({ page, tile, returnTo: button });
   const button = useRef<HTMLButtonElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const near = useNear(ref);
@@ -138,7 +139,12 @@ function Tile({ page, onOpen, children }: { page: PageEntry; onOpen: (tile: HTML
         <a
           href={`#${page.id}`}
           /* The page opens out of this tile, as its mosaic does (arrival.tsx). */
-          onClick={() => ref.current && arriveFrom(page.id, { deck: ref.current.getBoundingClientRect() })}
+          onClick={() => {
+            if (!ref.current) return;
+            arriveFrom(page.id, { deck: ref.current.getBoundingClientRect() });
+            /* The page takes a moment to mount, so the tile answers the tap first. */
+            pressTile(ref.current);
+          }}
           className={
             "-mx-2 flex h-control-sm items-center rounded-control px-2 text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
             "transition-colors duration-(--dur-instant) ease-litt hover:text-fg group-hover/tile:text-fg pointer-coarse:h-control-md " +
@@ -217,8 +223,6 @@ function Wall({ list }: { list: PageEntry[] }) {
   const funList = list.filter((p) => p.fun);
   const shown = verb === "all" ? list : verb === "fun" ? funList : list.filter((p) => p.verbs?.includes(verb));
   const verbs = VERBS.filter((v) => list.some((p) => p.verbs?.includes(v)));
-  /* The tile whose mosaic is open, and the button focus goes back to when it closes. */
-  const [opened, setOpened] = useState<{ page: PageEntry; tile: HTMLElement; button: HTMLElement | null } | null>(null);
   return (
     <section aria-label="Every component" className="grid gap-6">
       <fieldset className="m-0 min-w-0 border-0 p-0">
@@ -240,13 +244,13 @@ function Wall({ list }: { list: PageEntry[] }) {
       <ul className="grid gap-4 md:grid-flow-row-dense md:grid-cols-2">
         {shown.map((p) => (
           <li key={p.id} className={"grid min-w-0 " + (TALL.has(p.id) ? "md:row-span-2" : "")}>
-            <Tile page={p} onOpen={(tile, button) => setOpened({ page: p, tile, button })}>
+            <Tile page={p}>
               <PageTile page={p} />
             </Tile>
           </li>
         ))}
       </ul>
-      {opened && <Mosaic key={opened.page.id} page={opened.page} tile={opened.tile} returnTo={opened.button} onClosed={() => setOpened(null)} />}
+      <MosaicHost />
     </section>
   );
 }

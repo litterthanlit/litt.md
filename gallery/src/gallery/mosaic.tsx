@@ -19,11 +19,11 @@
  *   it. Never from a piece: its own gestures own it.
  * - Reduced motion: it appears and goes at once. Radix Dialog is the accessibility layer, as in Dialog.
  */
-import { Suspense, useLayoutEffect, useRef, useState, type MouseEvent, type PointerEvent } from "react";
+import { Suspense, useLayoutEffect, useRef, useSyncExternalStore, type MouseEvent, type PointerEvent } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
-import { animate, motion, useMotionValue, type AnimationPlaybackControls, type Transition } from "motion/react";
-import { useExit, useTravel } from "@/motion";
-import { deal, gather, SOFT_FOCUS, useDealMotion } from "@/motion/deal";
+import { animate, motion } from "motion/react";
+import { useExit } from "@/motion";
+import { deal, gather, useDealMotion } from "@/motion/deal";
 import { useDismissDrag } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { ArrowRightIcon, XIcon } from "@/components/icons";
@@ -31,13 +31,8 @@ import { arriveFrom, boxesOf } from "./arrival";
 import { PreviewContext } from "./kit";
 import type { PageEntry } from "./registry";
 
-/** How far the page steps back behind the mosaic: a little smaller, and soft at R4's ceiling. */
-const BACK_SCALE = 0.985;
-
 /** The faces of the pieces, in the grid's order (the page's stage order). */
 const facesIn = (grid: HTMLElement) => [...grid.querySelectorAll<HTMLElement>("[data-piece-face]")];
-
-const settled = (runs: AnimationPlaybackControls[]) => Promise.all(runs.map((r) => r.finished)).catch(() => undefined);
 
 type MosaicProps = {
   page: PageEntry;
@@ -48,6 +43,63 @@ type MosaicProps = {
   /** Called when the close has finished, to unmount it. */
   onClosed: () => void;
 };
+
+/* Which mosaic is open lives outside React's tree of tiles, so opening and closing one re-renders only the mosaic,
+   never the wall of live tiles behind it. */
+type Opened = Omit<MosaicProps, "onClosed">;
+let opened: Opened | null = null;
+const listeners = new Set<() => void>();
+const emit = () => listeners.forEach((l) => l());
+const subscribe = (l: () => void) => (listeners.add(l), () => void listeners.delete(l));
+
+/**
+ * Presses `tile` in at once (--press-scale, a compositor animation), so a tap answers on the next frame even when
+ * what it opens takes a while to mount. Whatever takes over from the tile lets go of it with releaseTile().
+ */
+export function pressTile(tile: HTMLElement) {
+  /* The press token on the instant tier, as a button presses; under reduced motion the scale is 1 and nothing moves. */
+  const token = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const scale = parseFloat(token("--press-scale")) || 1;
+  if (scale === 1) return;
+  tile.animate([{ transform: "none" }, { transform: `scale(${scale})` }], {
+    duration: parseFloat(token("--dur-instant")) || 0,
+    easing: token("--ease-out"),
+    fill: "forwards",
+    id: "litt-press",
+  });
+}
+export const releaseTile = (tile: HTMLElement) => tile.getAnimations().forEach((a) => a.id === "litt-press" && a.cancel());
+
+/**
+ * Opens a tile's mosaic. One at a time: a second open while one is showing is ignored. The tile presses in first and
+ * the mosaic mounts a frame later, so the press is on screen before its demos start mounting.
+ */
+export function openMosaic(next: Opened) {
+  if (opened) return;
+  opened = next;
+  pressTile(next.tile);
+  requestAnimationFrame(() => requestAnimationFrame(emit));
+}
+
+/** Where the open mosaic renders: put one beside the wall, inside its Toaster. */
+export function MosaicHost() {
+  const current = useSyncExternalStore(
+    subscribe,
+    () => opened,
+    () => null,
+  );
+  if (!current) return null;
+  return (
+    <Mosaic
+      key={current.page.id}
+      {...current}
+      onClosed={() => {
+        opened = null;
+        emit();
+      }}
+    />
+  );
+}
 
 /** Open while mounted; it calls onClosed when its close has played. */
 export function Mosaic(props: MosaicProps) {
@@ -63,74 +115,65 @@ export function Mosaic(props: MosaicProps) {
 /* Inside the portal, so its layout effects run once the pieces are in the document. */
 function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
   const m = useDealMotion();
-  const exitQuick = useExit("responsive");
-  const travel = useTravel();
+  /* The drag's offset is a MotionValue (useDismissDrag), so its way back is a Motion tween on the exit token. */
+  const exitTween = useExit("expressive");
 
   const grid = useRef<HTMLDivElement>(null);
   const head = useRef<HTMLDivElement>(null);
   const title = useRef<HTMLHeadingElement>(null);
   const phase = useRef<"opening" | "open" | "closing">("opening");
   const order = useRef<HTMLElement[]>([]);
-  const [count, setCount] = useState(0);
-  const [closing, setClosing] = useState(false);
+  /* No state changes while it moves: a render here re-renders every live demo in it. The count is written straight
+     into the title, and the drag stays on (a close already in progress ignores it). */
+  const count = useRef<HTMLSpanElement>(null);
 
-  /* The page behind: three values painted onto #root, so a drag, the open and the close can all move them. */
-  const backOpacity = useMotionValue(1);
-  const backScale = useMotionValue(1);
-  const backBlur = useMotionValue(0);
+  /* Behind the mosaic, the canvas fades in over the page: one screen-sized layer, so it costs nothing per frame. */
+  const scrim = useRef<HTMLDivElement>(null);
 
-  const drag = useDismissDrag({ direction: "down", onDismiss: () => close(), enabled: !closing });
+  const drag = useDismissDrag({ direction: "down", onDismiss: () => close() });
 
+  /* While the mosaic is open, a drag decides how much of the page shows through: all of it at a screen's height. */
+  useLayoutEffect(
+    () =>
+      drag.offset.on("change", (y) => {
+        if (phase.current !== "open" || !scrim.current) return;
+        scrim.current.style.opacity = String(1 - Math.min(Math.max(y / innerHeight, 0) * 1.8, 1));
+      }),
+    [drag.offset],
+  );
+
+  /* Deal the pieces out of the tile, while the page goes behind the canvas. */
   useLayoutEffect(() => {
-    const root = document.getElementById("root");
-    if (!root) return;
-    /* Shrink toward the middle of what is on screen, not the middle of the whole page. */
-    root.style.transformOrigin = `50% ${scrollY + innerHeight / 2}px`;
-    const paint = () => {
-      const s = backScale.get();
-      const b = backBlur.get();
-      root.style.opacity = String(backOpacity.get());
-      root.style.transform = s === 1 ? "" : `scale(${s})`;
-      root.style.filter = b > 0.05 ? `blur(${b}px)` : "";
-    };
-    /* While the mosaic is open, a drag decides how far the page has come back: all the way at a screen's height. */
-    const follow = (y: number) => {
-      if (phase.current !== "open") return;
-      const back = Math.min(Math.max(y / innerHeight, 0) * 1.8, 1);
-      backOpacity.set(back);
-      backScale.set(BACK_SCALE + (1 - BACK_SCALE) * back);
-      backBlur.set(SOFT_FOCUS * (1 - back));
-    };
-    const off = [backOpacity.on("change", paint), backScale.on("change", paint), backBlur.on("change", paint), drag.offset.on("change", follow)];
-    return () => {
-      off.forEach((f) => f());
-      root.style.opacity = root.style.transform = root.style.filter = root.style.transformOrigin = "";
-    };
-  }, [backOpacity, backScale, backBlur, drag.offset]);
-
-  /* Deal the pieces out of the tile, while the page steps back. */
-  useLayoutEffect(() => {
+    releaseTile(tile);
     const faces = facesIn(grid.current!);
-    setCount(faces.length);
+    count.current!.textContent = faces.length === 1 ? "1 demo" : `${faces.length} demos`;
     /* A demo wider than its column takes both (it is laid out for a page's full column), before anything is measured. */
     for (const face of faces) if (face.scrollWidth > face.clientWidth + 1) face.parentElement!.dataset.wide = "";
     /* The figure is the place: the face in it is what moves. */
     const dealt = deal(faces, { deck: tile.getBoundingClientRect() }, m, { places: faces.map((f) => f.parentElement!.getBoundingClientRect()) });
     order.current = dealt.order;
+    const shade = scrim.current!;
+    shade.style.opacity = "1";
     if (m.reduced) {
-      backOpacity.set(0);
       phase.current = "open";
       return;
     }
-    const bar = head.current!;
-    bar.style.opacity = "0";
+    /* Each ends where its inline style already is, so nothing has to be written when it settles. */
     const runs = [
-      animate(backOpacity, 0, m.focus),
-      animate(backScale, BACK_SCALE, m.focus),
-      animate(backBlur, SOFT_FOCUS, m.focus),
-      animate(bar, { opacity: [0, 1], y: [travel / 2, 0] }, { ...m.focus, delay: m.stagger * 2 }),
+      shade.animate([{ opacity: 0 }, { opacity: 1 }], { ...m.settle, fill: "backwards" }),
+      head.current!.animate(
+        [
+          { opacity: 0, transform: `translateY(${m.travel / 2}px)` },
+          { opacity: 1, transform: "none" },
+        ],
+        {
+          ...m.settle,
+          delay: m.stagger * 2,
+          fill: "backwards",
+        },
+      ),
     ];
-    void Promise.all([dealt.finished, settled(runs)]).then(() => {
+    void Promise.all([dealt.finished, ...runs.map((r) => r.finished)]).then(() => {
       if (phase.current === "opening") phase.current = "open";
     });
     // Once, on open: the deal reads where the tile is at that moment.
@@ -143,27 +186,30 @@ function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
     requestAnimationFrame(() => returnTo?.isConnected && returnTo.focus({ preventScroll: true }));
   }
 
-  /* Gather the pieces back into the tile, from wherever each is drawn now, while the page comes back into focus. */
+  /* Gather the pieces back into the tile, from wherever each is drawn now, while the page comes back. */
   function close() {
     if (phase.current === "closing") return;
     phase.current = "closing";
-    setClosing(true);
     if (m.reduced) return finish();
     const pulled = drag.offset.get();
-    const back = { ...m.focus, delay: ((m.exit as { duration?: number }).duration ?? 0) / 4 } as Transition;
-    const runs = [
-      animate(drag.offset, 0, m.exit),
-      animate(backOpacity, 1, back),
-      animate(backScale, 1, back),
-      animate(backBlur, 0, back),
-      animate(head.current!, { opacity: 0 }, exitQuick),
+    const shade = scrim.current!;
+    const bar = head.current!;
+    /* The drag's own spring-back may take the offset over, so its way back to 0 is not waited on. */
+    animate(drag.offset, 0, exitTween);
+    const runs: Promise<unknown>[] = [
+      shade.animate([{ opacity: getComputedStyle(shade).opacity }, { opacity: 0 }], { ...m.settle, delay: m.exit.duration / 4, fill: "forwards" }).finished,
+      bar.animate([{ opacity: getComputedStyle(bar).opacity }, { opacity: 0 }], { duration: m.exit.duration / 2, easing: m.exit.easing, fill: "forwards" })
+        .finished,
     ];
     /* The drag moves the whole mosaic and goes back to 0 as the pieces leave, so aim from the unmoved places. */
     const places = order.current.map((face) => {
       const r = face.parentElement!.getBoundingClientRect();
       return { left: r.left, top: r.top - pulled, width: r.width, height: r.height };
     });
-    void Promise.all([gather(order.current, tile.getBoundingClientRect(), m, { places }), settled(runs)]).then(finish);
+    runs.push(gather(order.current, tile.getBoundingClientRect(), m, { places, shift: { x: 0, y: pulled } }));
+    void Promise.all(runs)
+      .catch(() => undefined)
+      .then(finish);
   }
 
   /* A drag never starts on a piece, and a finger only drags from the title bar (anywhere else it scrolls). */
@@ -197,12 +243,13 @@ function Layer({ page, tile, returnTo, onClosed }: MosaicProps) {
       onClick={onClick}
       className="fixed inset-0 z-50 grid content-[safe_center] overflow-y-auto overscroll-contain px-gutter pt-[max(var(--space-12),env(safe-area-inset-top,0px))] pb-[max(var(--space-16),env(safe-area-inset-bottom,0px))] outline-none"
     >
+      <div ref={scrim} aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 bg-canvas opacity-0" />
       <motion.div data-mosaic-empty style={{ y: drag.offset }} className="mx-auto grid w-full max-w-wide min-w-0 gap-4">
         <div ref={head} data-mosaic-handle className="grid cursor-grab gap-2 select-none [touch-action:pan-x_pinch-zoom] active:cursor-grabbing">
           <div aria-hidden="true" className="h-1 w-8 justify-self-center rounded-pill bg-line-strong" />
           <div className="flex min-h-control-md flex-wrap items-center gap-x-4 gap-y-2">
             <RadixDialog.Title ref={title} tabIndex={-1} className="text-h1 font-title text-fg outline-none">
-              {page.title} <span className="font-normal text-fg-subtle tabular-nums">{count === 1 ? "1 demo" : `${count} demos`}</span>
+              {page.title} <span ref={count} className="font-normal text-fg-subtle tabular-nums" />
             </RadixDialog.Title>
             <p className="ml-auto hidden text-caption text-fg-subtle pointer-fine:block">Drag down, press Esc or click outside to close</p>
             <div className="ml-auto flex items-center gap-2 pointer-fine:ml-0">
