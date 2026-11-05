@@ -23,12 +23,22 @@
  *   transform.
  * - Reduced motion (useDealMotion's `reduced`): nothing moves, both resolve at once.
  *
+ * Each material moves its own way (Nick, 2026-11-05: "each theme should have its own motion language"):
+ *   Flat    things come from where you touched them: a set deals out of what opened it, an overlay grows out of its
+ *           opener from 0.9, and both go back into it.
+ *   Press   things have weight: a set settles into place from half of --travel above, one after another, on the
+ *           expressive spring, and an overlay rises and settles from --press-scale, as litt always has. Nothing flies.
+ *   Device  things are mechanisms: a set switches on in place in three short steps on the instant tier, one after
+ *           another like segments lighting, and an overlay switches on and off with no growth and no slide.
+ * The material is data-material on <html> (useMaterial); Press is no attribute.
+ *
  * An overlay that opens out of its trigger (a Menu, a Dialog) grows from it: it scales up from GROW with its
  * transform-origin on the trigger, so it comes out of the trigger's side without flying across the screen. openerBox()
  * says where the press that opened it happened, read at the press, so it still answers once the trigger is gone (a
  * menu row that opened a dialog).
  */
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import type { Transition } from "motion/react";
 import { useMotionDial } from "./index";
 import { toCss } from "./spring";
 
@@ -52,13 +62,38 @@ export type DealMotion = {
   /** The nudge of the light form, in px. */
   travel: number;
   reduced: boolean;
+  /** Which motion language: the material's. */
+  material: Material;
 };
+
+/** litt's materials, each with its own motion language. */
+export type Material = "press" | "flat" | "device";
+
+const readMaterial = (): Material => {
+  const m = typeof document === "undefined" ? null : document.documentElement.dataset.material;
+  return m === "flat" || m === "device" ? m : "press";
+};
+const watchMaterial = (change: () => void) => {
+  const mo = new MutationObserver(change);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-material"] });
+  return () => mo.disconnect();
+};
+
+/** The material on <html>, kept current when it changes (the gallery's Customize panel). Press on the server. */
+export function useMaterial(): Material {
+  return useSyncExternalStore(watchMaterial, readMaterial, () => "press");
+}
+
+/* Device's step: three even steps, as a display's segments light, never a fade. */
+const STEPS = "steps(3, end)";
+const stepEase = (p: number) => (p >= 1 ? 1 : Math.floor(p * 3) / 3);
 
 /** Where pieces come from. */
 export type DealSource = { deck: Box } | { each: (Box | null)[] } | { toward: Box | null };
 
 export function useDealMotion(): DealMotion {
   const { dial, locked, slow, reduced, tuning } = useMotionDial();
+  const material = useMaterial();
   const k = tuning ? slow : 1;
   const out = `cubic-bezier(${locked.easeOut.join(", ")})`;
   const spring = (s: typeof dial.expressive): Timing => {
@@ -73,6 +108,7 @@ export function useDealMotion(): DealMotion {
     stagger: reduced ? 0 : dial.stagger * k,
     travel: reduced ? 0 : dial.travel,
     reduced,
+    material,
   };
 }
 
@@ -133,11 +169,29 @@ function moving(pieces: HTMLElement[], anims: Animation[]) {
  */
 export function deal(pieces: HTMLElement[], from: DealSource, motion: DealMotion, { places = pieces.map(box) }: { places?: Box[] } = {}) {
   const index = pieces.map((_, i) => i);
-  if ("deck" in from) index.sort((a, b) => dist(places[a]!, from.deck) - dist(places[b]!, from.deck));
+  /* Flat deals from the touch outward; Press and Device go in reading order, top to bottom. */
+  if (motion.material === "flat" && "deck" in from) index.sort((a, b) => dist(places[a]!, from.deck) - dist(places[b]!, from.deck));
+  else if (motion.material !== "flat") index.sort((a, b) => places[a]!.top - places[b]!.top || places[a]!.left - places[b]!.left);
   const order = index.map((i) => pieces[i]!);
   if (motion.reduced || !pieces.length) return { order, finished: Promise.resolve() };
 
   const anims: Animation[] = [];
+  if (motion.material !== "flat") {
+    index.forEach((i, k) => {
+      const piece = pieces[i]!;
+      const delay = k * motion.stagger;
+      for (const a of ours(piece)) a.cancel();
+      if (motion.material === "device") {
+        anims.push(piece.animate([{ opacity: 0 }, { opacity: 1 }], { duration: motion.appear.duration, easing: STEPS, delay, fill: "backwards", id: ID }));
+      } else {
+        anims.push(
+          piece.animate([{ transform: `translateY(${-motion.travel / 2}px)` }, { transform: "none" }], { ...motion.spring, delay, fill: "backwards", id: ID }),
+          piece.animate([{ opacity: 0 }, { opacity: 1 }], { ...motion.appear, delay, fill: "backwards", id: ID }),
+        );
+      }
+    });
+    return { order, finished: moving(pieces, anims) };
+  }
   index.forEach((i, k) => {
     const piece = pieces[i]!;
     const place = places[i]!;
@@ -172,6 +226,25 @@ export function gather(
   if (motion.reduced || !order.length) return Promise.resolve();
   const half = motion.exit.duration / 2;
   const anims: Animation[] = [];
+  if (motion.material !== "flat") {
+    for (let j = 0; j < order.length; j++) {
+      const piece = order[order.length - 1 - j]!;
+      const opacity = getComputedStyle(piece).opacity;
+      const lifted = motion.material === "device" ? null : getComputedStyle(piece).transform;
+      for (const a of ours(piece)) a.cancel();
+      const delay = (j * motion.stagger) / 2;
+      if (motion.material === "device") {
+        anims.push(piece.animate([{ opacity }, { opacity: 0 }], { duration: motion.appear.duration, easing: STEPS, delay, fill: "both", id: ID }));
+      } else {
+        /* Press lifts a little off its place as it goes, the way it came, and never gathers anywhere. */
+        anims.push(
+          piece.animate([{ transform: lifted === "none" ? "none" : lifted! }, { transform: `translateY(${-motion.travel / 4}px)` }], { ...motion.exit, delay, fill: "both", id: ID }),
+          piece.animate([{ opacity }, { opacity: 0 }], { ...motion.exit, delay, fill: "both", id: ID }),
+        );
+      }
+    }
+    return moving(order, anims);
+  }
   for (let j = 0; j < order.length; j++) {
     const k = order.length - 1 - j;
     const piece = order[k]!;
@@ -196,8 +269,37 @@ export function gather(
   return moving(order, anims);
 }
 
-/** The scale an overlay grows from when it comes out of its trigger. */
+/** The scale an overlay grows from when it comes out of its trigger, under Flat. */
 export const GROW = 0.9;
+/* Press grows from --press-scale, as litt's overlays always have. */
+const PRESS_GROW = 0.98;
+
+/** How an overlay (a menu, a popover, a dialog) enters and leaves under the current material. */
+export type OverlayMotion = {
+  material: Material;
+  /** The scale it grows from: 0.9 under Flat, 0.98 under Press, 1 under Device (it does not grow). */
+  grow: number;
+  /** Whether it slides its quarter of --travel from the side it opens on: not under Device. */
+  slides: boolean;
+  /** Under Device it switches on and off in steps instead: use these as its transitions. */
+  switches: boolean;
+  switchIn: Transition;
+  switchOut: Transition;
+};
+
+export function useOverlayMotion(): OverlayMotion {
+  const material = useMaterial();
+  const { dial, reduced, tuning, slow } = useMotionDial();
+  const step: Transition = { duration: reduced ? 0 : (dial.instant / 1000) * (tuning ? slow : 1), ease: stepEase };
+  return {
+    material,
+    grow: material === "flat" ? GROW : material === "press" ? PRESS_GROW : 1,
+    slides: material !== "device",
+    switches: material === "device",
+    switchIn: step,
+    switchOut: step,
+  };
+}
 
 /* The last press on something that opens things: where it was and when. */
 let pressed: { box: Box; at: number } | null = null;
@@ -251,6 +353,9 @@ export function originOn(panel: Element, opener: Box, scale = 1) {
  */
 export function useGrowFrom<T extends HTMLElement>(open: boolean, enabled = true): { grows: boolean; ref: (el: T | null) => void } {
   useOpeners();
+  /* Only Flat grows out of its opener; Press rises and Device switches on where it is. */
+  const material = useMaterial();
+  enabled = enabled && material === "flat";
   const opener = useRef<Box | null>(null);
   const wasOpen = useRef(false);
   if (open && !wasOpen.current) opener.current = enabled ? openerBox() : null;

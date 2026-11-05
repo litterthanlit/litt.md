@@ -7,7 +7,7 @@
  *   to read. rounded-control, text-small, 6px by 8px, 240px at most. A shortcut
  *   is the shared Kbd chip (kbd.tsx).
  * - Motion (responsive tier): it grows from the trigger. Opacity 0 to 1, scale
- *   GROW (0.9, @/motion/deal) to 1, and a nudge of travel/4 toward the trigger, from the side it
+ *   the material's grow scale (useOverlayMotion, @/motion/deal; under Device it switches on in steps) to 1, and a nudge of travel/4 toward the trigger, from the side it
  *   really renders on (Radix data-side, read after collision flipping).
  *   transform-origin is Radix's trigger-side origin. The exit is useExit, a
  *   quiet fade, run by AnimatePresence on a force-mounted Radix portal.
@@ -33,7 +33,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { AnimatePresence, motion } from "motion/react";
 import { useDevice, useExit, useTransition, useTravel } from "@/motion";
-import { GROW } from "@/motion/deal";
+import { useOverlayMotion } from "@/motion/deal";
 import { Kbd } from "./kbd";
 
 export type TooltipSide = "top" | "right" | "bottom" | "left";
@@ -201,9 +201,15 @@ function TooltipSurface({
 }: Pick<TooltipProps, "content" | "shortcut" | "align"> & { side: TooltipSide }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [side, setSide] = useState<TooltipSide>(requested);
-  const enter = useTransition("responsive");
-  const exit = useExit("responsive");
-  const travel = useTravel();
+  /* The material's motion language (@/motion/deal): it grows from om.grow, and under Device it switches on and off
+     in steps where it stands, with no slide. */
+  const om = useOverlayMotion();
+  const springIn = useTransition("responsive");
+  const springOut = useExit("responsive");
+  const enter = om.switches ? om.switchIn : springIn;
+  const exit = om.switches ? om.switchOut : springOut;
+  const fullTravel = useTravel();
+  const travel = om.slides ? fullTravel : 0;
 
   /* Radix flips the tooltip when it would collide with the viewport. It writes
      the side it really renders on to data-side, a beat after mount. Follow it,
@@ -237,9 +243,9 @@ function TooltipSurface({
       <motion.div
         key={side}
         className="flex max-w-60 origin-(--radix-tooltip-content-transform-origin) items-center gap-3 rounded-control bg-surface-3 px-2 py-1.5 text-small text-fg shadow-tooltip inset-shadow-highlight"
-        initial={{ opacity: 0, scale: GROW, ...toward }}
+        initial={{ opacity: 0, scale: om.grow, ...toward }}
         animate={{ opacity: 1, scale: 1, x: 0, y: 0, transition: enter }}
-        exit={{ opacity: 0, scale: GROW, transition: exit }}
+        exit={{ opacity: 0, scale: om.grow, transition: exit }}
       >
         <span className="min-w-0 text-pretty">{content}</span>
         {shortcut && <Kbd>{shortcut}</Kbd>}

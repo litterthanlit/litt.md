@@ -60,7 +60,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useTransform } from "motion/react";
 import { useDevice, useExit, useMotionDial, useSheetPresence, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { useDismissDrag } from "@/motion/drag";
-import { GROW, useGrowFrom } from "@/motion/deal";
+import { GROW, useGrowFrom, useOverlayMotion } from "@/motion/deal";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
 
@@ -276,6 +276,9 @@ export function DialogContent({
   /* Where the press that opened it was, read as it opens: the panel grows out of it. */
   const grow = useGrowFrom<HTMLDivElement>(open, !sheet);
   const grows = grow.grows;
+  /* Under Device the panel switches on and off where it stands (@/motion/deal, the motion languages). */
+  const om = useOverlayMotion();
+  const switches = om.switches && !sheet;
   const panelRef = (el: HTMLDivElement | null) => {
     ref.current = el;
     grow.ref(el);
@@ -403,12 +406,14 @@ export function DialogContent({
                   className
                 }
                 style={{ gridTemplateAreas: '"head close" "body body" "foot foot"' }}
-                initial={sheet ? { opacity: 0, x: travel } : grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: travel, scale: 0.98 }}
-                animate={{ opacity: 1, x: 0, y: 0, scale: 1, transition: enter }}
+                initial={sheet ? { opacity: 0, x: travel } : switches ? { opacity: 0 } : grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: travel, scale: 0.98 }}
+                animate={{ opacity: 1, x: 0, y: 0, scale: 1, transition: switches ? om.switchIn : enter }}
                 exit={
                   sheet
                     ? { opacity: 0, x: travel / 2, transition: exit }
-                    : grows
+                    : switches
+                      ? { opacity: 0, transition: om.switchOut }
+                      : grows
                       ? { opacity: 0, scale: GROW, transition: exit }
                       : { opacity: 0, y: travel / 2, scale: 0.98, transition: exit }
                 }

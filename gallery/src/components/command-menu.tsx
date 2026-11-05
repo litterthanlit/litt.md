@@ -47,7 +47,7 @@ import {
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
 import { useDevice, useExit, useTransition, useTravel, useVisibleScreen } from "@/motion";
-import { GROW, useGrowFrom } from "@/motion/deal";
+import { GROW, useGrowFrom, useOverlayMotion } from "@/motion/deal";
 import { Button } from "./button";
 import { SearchIcon } from "./icons";
 import { Kbd } from "./kbd";
@@ -335,6 +335,8 @@ function Body({
   const [opener] = useState(() => document.activeElement as HTMLElement | null);
   /* Opened by a press (the search button), it grows out of it; by the shortcut, it drops in from above. */
   const grow = useGrowFrom<HTMLDivElement>(true, !compact);
+  /* Under Device the panel switches on and off where it stands (@/motion/deal, the motion languages). */
+  const om = useOverlayMotion();
 
   return (
     <Dialog.Portal forceMount>
@@ -380,9 +382,9 @@ function Body({
               "litt-glass pointer-events-auto w-full max-w-140 origin-top rounded-surface outline-none [--glass-shadow:var(--shadow-modal)]" +
               (compact ? " flex max-h-full flex-col [--cmd-list-max:none]" : "")
             }
-            initial={grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: -travel / 2, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1, transition: enter }}
-            exit={{ opacity: 0, scale: grow.grows ? GROW : 0.98, transition: exit }}
+            initial={om.switches ? { opacity: 0 } : grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: -travel / 2, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1, transition: om.switches ? om.switchIn : enter }}
+            exit={om.switches ? { opacity: 0, transition: om.switchOut } : { opacity: 0, scale: grow.grows ? GROW : 0.98, transition: exit }}
           >
             <Dialog.Title className="sr-only">Command menu</Dialog.Title>
             <CommandPanel

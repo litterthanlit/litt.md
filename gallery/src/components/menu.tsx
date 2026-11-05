@@ -6,7 +6,8 @@
  *   p-1 (4px), min width 240. Rows are 44px and rounded-control, which sits
  *   concentric inside the 4px inset. A submenu is opened from a floating
  *   surface, so it is solid (bg-surface-2 + shadow-float), never glass on glass.
- * - Motion, responsive tier. The panel grows from the trigger, from GROW (0.9, @/motion/deal): Radix gives
+ * - Motion, responsive tier, in the material's language (useOverlayMotion, @/motion/deal): it grows from the trigger
+ *   from 0.9 under Flat and 0.98 under Press, and under Device it switches on in steps with no slide. Radix gives
  *   --radix-dropdown-menu-content-transform-origin, and it travels a quarter of
  *   the travel token from the side it actually opens on (after collision
  *   flipping). We wait for Radix to place it, then read data-side. Exit uses
@@ -63,7 +64,7 @@ import { createPortal } from "react-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, animate, motion, useMotionValue, usePresence } from "motion/react";
 import { useDevice, useExit, useTransition, useTravel } from "@/motion";
-import { GROW } from "@/motion/deal";
+import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronRightIcon } from "./icons";
 import { GLIDE_ROW, useGlide, type Glide } from "./glide";
 
@@ -653,9 +654,15 @@ export function MenuPanel({
 }: MenuPanelProps) {
   const inherited = useParts();
   const P = own ?? inherited;
-  const enter = useTransition("responsive");
-  const exit = useExit("responsive");
-  const travel = useTravel();
+  /* The material's motion language (@/motion/deal): it grows from om.grow, and under Device it switches on and off
+     in steps where it stands, with no slide. */
+  const om = useOverlayMotion();
+  const springIn = useTransition("responsive");
+  const springOut = useExit("responsive");
+  const enter = om.switches ? om.switchIn : springIn;
+  const exit = om.switches ? om.switchOut : springOut;
+  const fullTravel = useTravel();
+  const travel = om.slides ? fullTravel : 0;
   const latest = useRef(enter);
   latest.current = enter;
   const { compact, coarse } = useDevice();
@@ -785,9 +792,9 @@ export function MenuPanel({
       e.preventDefault();
       pop();
     },
-    initial: { opacity: 0, scale: GROW },
-    animate: { opacity: placed ? 1 : 0, scale: placed ? 1 : GROW, transition: enter },
-    exit: { opacity: 0, scale: GROW, x: out.x, y: out.y, transition: exit },
+    initial: { opacity: 0, scale: om.grow },
+    animate: { opacity: placed ? 1 : 0, scale: placed ? 1 : om.grow, transition: enter },
+    exit: { opacity: 0, scale: om.grow, x: out.x, y: out.y, transition: exit },
     style: { x, y },
   };
   const surface =
