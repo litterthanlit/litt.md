@@ -674,7 +674,9 @@ export function RangeChart({
                     type="button"
                     disabled={disabled}
                     aria-pressed={pressed}
-                    aria-label={`${s.label}, ${percent(s.share)}`}
+                    /* The words on the segment, in their order, so a voice command that says what it sees presses it
+                       (WCAG 2.5.3); it keeps the label when a narrow segment hides it. */
+                    aria-label={`${s.label} ${percent(s.share)}`}
                     onClick={() => settleTo([s.start, s.end - 1], true)}
                     className={
                       "@container relative flex h-full min-w-0 items-center justify-center rounded-[calc(var(--radius-control)-2px)] text-caption font-title select-none " +
@@ -694,7 +696,7 @@ export function RangeChart({
                     {/* The padding is inside the container, so the queries measure the whole segment and a narrow one
                         gives up its padding before its share: a phone's selected block still says "23%". */}
                     <span className="relative z-1 flex min-w-0 items-center gap-1.5 px-2 @max-[3rem]:px-0.5">
-                      <span className="truncate @max-[7rem]:hidden">{s.label}</span>
+                      <span className="truncate @max-[7rem]:hidden">{s.label}</span>{" "}
                       <span className={"shrink-0 font-normal tabular-nums @max-[2rem]:hidden " + (disabled ? "" : "text-fg-subtle")}>{percent(s.share)}</span>
                     </span>
                   </button>
