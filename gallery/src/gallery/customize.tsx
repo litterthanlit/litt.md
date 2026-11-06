@@ -1,10 +1,11 @@
 /**
- * Customize, the panel: the header's button and the popover with the accent, the material, motion's feel, the theme,
+ * Customize, the panel: the header's button and the popover with the material, the accent, motion's feel, the theme,
  * the shape and the typeface. It loads on its own, so the shell stays small; the state and the writes on <body> live in
  * customize-state.tsx.
  *
  * As little as possible (Rams): only the controls and what carries them out of the browser. No intro, no headings,
- * no notes. A hairline splits the look (the accent, the material and motion's feel, which Copy setup and Copy link
+ * no notes. A hairline splits the look (the material, then the accent, since a material answers the accent with its own colors
+ * (Device has orange where the others have Blue 4), then motion's feel, which Copy setup and Copy link
  * carry, so they sit right under it) from what stays in this browser (the theme, the shape and the face). The accents
  * are swatches, the color itself with its name inside. The shape is an ordered scale, so it is a Slider with a stop
  * per shape and the locked one marked home, as the overview's deck has it; a choice whose picture says more than its word is a CardPicker tile; a choice
@@ -114,6 +115,13 @@ function CustomizePanel() {
   return (
     <div className="grid gap-8">
       <section aria-label="Look" className="grid gap-6">
+        <CardPicker
+          size="sm"
+          legend="Material"
+          value={look.material}
+          onValueChange={(material) => setLook({ material })}
+          options={MATERIALS.map((m) => ({ value: m.id, label: m.name, picture: <MaterialPreview material={m.id} /> }))}
+        />
         <Swatches
           legend="Accent"
           value={look.accent}
@@ -124,13 +132,6 @@ function CustomizePanel() {
             attrs: lookAttributes({ accent: a.id, material: look.material }, dark),
             className: "bg-accent text-small text-accent-fg",
           }))}
-        />
-        <CardPicker
-          size="sm"
-          legend="Material"
-          value={look.material}
-          onValueChange={(material) => setLook({ material })}
-          options={MATERIALS.map((m) => ({ value: m.id, label: m.name, picture: <MaterialPreview material={m.id} /> }))}
         />
         <div data-fun-cue="">
           <Switch label="Fun motion" checked={look.fun} onCheckedChange={(fun) => setLook({ fun })} align="end" />
