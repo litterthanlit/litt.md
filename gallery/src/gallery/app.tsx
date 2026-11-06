@@ -3,11 +3,12 @@
  * tunes motion; the header's Customize panel tunes type and shape on every page.
  */
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
-import { MotionDialProvider, useFun } from "@/motion";
-import { funPages, pageRuns, pages, prefetchPages, type PageEntry } from "./registry";
+import { MotionDialProvider, useDevice, useFun } from "@/motion";
+import { funPages, pageRuns, pages, prefetchPages, settled, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
+import { Button } from "@/components/button";
 import { Segmented } from "@/components/segmented";
 import { CustomizeProvider, useCustomize, type ThemeChoice } from "./customize-state";
 import { LookNotice } from "./look-notice";
@@ -17,16 +18,52 @@ import { SearchButton, SearchProvider } from "./search";
 import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons";
 
 /* The panel and the popover load on their own; until then the button holds its place. */
-const Customize = lazy(() => import("./customize"));
+const loadCustomize = () => import("./customize");
+const Customize = lazy(loadCustomize);
 /* The language canvas (#canvas) is not a page: it takes the whole window, and only loads when asked for. */
 const LanguageCanvas = lazy(() => import("../canvas/canvas"));
 
-function CustomizeFallback() {
+/**
+ * The Customize button, and the panel once it is wanted. The panel's chunk and the pickers it brings (27KB gzipped) are
+ * not for the first paint, so they load later: the pointer or focus on the button fetches the chunk, and a press or the
+ * visit settling mounts the panel. Until then a stand-in button wears the same name and place, and a press on it opens
+ * the panel the moment it lands. The stand-in is swapped for the real button only after a press or at rest, never on
+ * hover: a swap under the pointer, between press and release, loses the click.
+ */
+function CustomizeSlot() {
+  const { compact } = useDevice();
+  const [wanted, setWanted] = useState(false);
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    void settled().then(() => setWanted(true));
+  }, []);
+  const warm = () => void loadCustomize().catch(() => {}); // a miss just loads on the press
+  const standIn = (
+    <Button
+      id="customize-trigger"
+      size="sm"
+      variant="ghost"
+      iconOnly={compact}
+      icon={compact ? undefined : <SlidersIcon />}
+      aria-label={compact ? "Customize" : undefined}
+      aria-haspopup="dialog"
+      aria-expanded={false}
+      aria-busy={open || undefined}
+      onPointerEnter={warm}
+      onFocus={warm}
+      onClick={() => {
+        setWanted(true);
+        setOpen(true);
+      }}
+    >
+      {compact ? <SlidersIcon /> : "Customize"}
+    </Button>
+  );
+  if (!wanted) return standIn;
   return (
-    <span aria-hidden="true" className="inline-flex h-control-sm items-center gap-2 px-3 text-small font-title text-fg-subtle max-sm:w-control-sm max-sm:justify-center max-sm:px-0">
-      <SlidersIcon />
-      <span className="max-sm:hidden">Customize</span>
-    </span>
+    <Suspense fallback={standIn}>
+      <Customize defaultOpen={open} />
+    </Suspense>
   );
 }
 
@@ -145,6 +182,9 @@ function Shell({ page }: { page: PageEntry | undefined }) {
     document.title = !page || page.id === pages[0]?.id ? "litt.md Gallery" : `${page.title} · litt.md Gallery`;
   }, [page]);
 
+  /* A name under the pointer or in focus is about to be opened: its chunk starts now. A miss just loads on open. */
+  const warm = (p: PageEntry) => void p.preload().catch(() => {});
+
   /* The current page wears the segmented control's selected segment: surface-1, the hairline and the
      top highlight. The others take the header's hover fill. In the sidebar the fill bleeds 12px past
      the text, so names stay aligned with the group headings. A component's name previews it on hover. */
@@ -154,6 +194,8 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       href={`#${p.id}`}
       aria-current={p.id === page?.id ? "page" : undefined}
       data-preview={compact || !p.group ? undefined : p.id}
+      onPointerEnter={() => warm(p)}
+      onFocus={() => warm(p)}
       className={
         "flex items-center gap-2 rounded-control px-3 text-small select-none [-webkit-tap-highlight-color:transparent] " +
         "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
@@ -194,9 +236,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           </a>
           <div className="flex items-center gap-1 sm:gap-2">
             <SearchButton place="header" />
-            <Suspense fallback={<CustomizeFallback />}>
-              <Customize />
-            </Suspense>
+            <CustomizeSlot />
             <Tooltip content="Source on GitHub">
               <a href={REPO} target="_blank" rel="noreferrer" aria-label="litt.md on GitHub" className={iconLink + " max-sm:hidden"}>
                 <GitHubMark />
@@ -296,7 +336,10 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 export function App() {
   const route = useRoute();
   const page = pages.find((p) => p.id === route) ?? pages[0];
-  useEffect(prefetchPages, []);
+  /* The other pages' chunks wait until the first page's has landed, so they never slow the page that was asked for. */
+  useEffect(() => {
+    page?.preload().then(prefetchPages, prefetchPages);
+  }, []);
   return (
     /* One provider for the whole gallery, so the 300ms tooltip skip window carries across pages.
        It writes no CSS variables unless the page sets `tune`. */
