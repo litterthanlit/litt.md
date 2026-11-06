@@ -6,22 +6,22 @@
  * As little as possible (Rams): only the controls and what carries them out of the browser. No intro, no headings,
  * no notes. A hairline splits the look (the accent, the material and motion's feel, which Copy setup and Copy link
  * carry, so they sit right under it) from what stays in this browser (the theme, the shape and the face). The accents
- * are swatches with their name inside; a choice whose picture says more than its word is a CardPicker tile; a choice
+ * and the shapes are swatches, the thing itself with its name inside; a choice whose picture says more than its word is a CardPicker tile; a choice
  * the word says whole is a row. The footer is quiet: Surprise me as an icon, and once anything changed, Copy tokens and Reset.
  */
 import { useEffect, useId, useState, type CSSProperties } from "react";
 import { useDevice } from "@/motion";
-import { customizeSnippet, shapeName, shapeSurface, SHAPES } from "@/motion/rules";
+import { customizeSnippet, shapeName, SHAPES } from "@/motion/rules";
 import { Button } from "@/components/button";
 import { CardPicker } from "@/components/card-picker";
-import { CheckIcon, LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
+import { LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { Segmented } from "@/components/segmented";
 import { Switch } from "@/components/switch";
 import { useCustomize, useDark, type ThemeChoice } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
-import { accentName, ACCENTS, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Accent, type Material } from "./look";
+import { accentName, ACCENTS, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Material } from "./look";
 import { loadTypeface } from "./typeface";
 
 const THEMES: { value: ThemeChoice; label: string }[] = [
@@ -30,38 +30,35 @@ const THEMES: { value: ThemeChoice; label: string }[] = [
   { value: "system", label: "System" },
 ];
 
+/** One swatch: its name, and how the box behind the name is drawn (classes, a style, and attributes such as a look). */
+type Swatch<T extends string> = { value: T; label: string; className: string; style?: CSSProperties; attrs?: Record<string, string> };
+
 /**
- * The accents as swatches: each one a block in its own color with its name inside in --accent-fg, so the color and
- * the word are one thing. Native radios, so the arrow keys and the group's name come from the browser. The pick
- * carries a check and a ring in --fg outside the swatch, so it never leans on the color; the keyboard's ring is
- * --focus. The swatch is a sample, not an action, so it never counts as a view's accent fill (R6).
+ * A choice drawn as the thing itself with its name inside: the accents as blocks in their color, the shapes as boxes
+ * at their radius. Native radios, so the arrow keys and the group's name come from the browser; the box is hidden and
+ * the radio carries the name. The pick is a ring in --fg outside the box, at its radius, so it never leans on color;
+ * the keyboard's ring is --focus. An accent's block is a sample, not an action, so it never counts as a fill (R6).
  */
-function AccentSwatches({ value, material, onValueChange }: { value: Accent; material: Material; onValueChange: (a: Accent) => void }) {
-  const dark = useDark();
+function Swatches<T extends string>({ legend, value, onValueChange, options }: { legend: string; value: T; onValueChange: (v: T) => void; options: Swatch<T>[] }) {
   const name = useId();
   return (
     <fieldset className="m-0 min-w-0 border-0 p-0">
-      <legend className="mb-2 p-0 text-small font-title text-fg">Accent</legend>
-      <div className="grid grid-cols-3 gap-2">
-        {ACCENTS.map((a) => {
-          const picked = value === a.id;
-          const label = accentName(a.id, material, true);
+      <legend className="mb-2 p-0 text-small font-title text-fg">{legend}</legend>
+      <div className="grid grid-flow-col auto-cols-fr gap-2">
+        {options.map((o) => {
+          const picked = value === o.value;
           return (
             <label
-              key={a.id}
+              key={o.value}
+              style={o.style}
               className={
-                "relative cursor-pointer rounded-control outline-offset-2 [-webkit-tap-highlight-color:transparent] has-focus-visible:outline-2 has-focus-visible:outline-focus " +
+                "relative min-w-0 cursor-pointer rounded-control outline-offset-2 [-webkit-tap-highlight-color:transparent] has-focus-visible:outline-2 has-focus-visible:outline-focus " +
                 (picked ? "outline-2 outline-fg" : "")
               }
             >
-              <input type="radio" className="sr-only" name={name} value={a.id} checked={picked} aria-label={label} onChange={() => onValueChange(a.id)} />
-              <span
-                aria-hidden="true"
-                {...lookAttributes({ accent: a.id, material }, dark)}
-                className="flex h-12 items-center justify-center gap-1.5 rounded-control bg-accent px-2 text-small font-title text-accent-fg forced-colors:border"
-              >
-                {picked && <CheckIcon />}
-                <span className="truncate">{label}</span>
+              <input type="radio" className="sr-only" name={name} value={o.value} checked={picked} aria-label={o.label} onChange={() => onValueChange(o.value)} />
+              <span aria-hidden="true" {...o.attrs} style={o.style} className={"flex h-12 items-center justify-center rounded-control px-1 font-title forced-colors:border " + o.className}>
+                <span className="truncate">{o.label}</span>
               </span>
             </label>
           );
@@ -82,20 +79,9 @@ function MaterialPreview({ material }: { material: Material }) {
   );
 }
 
-/** A card at the shape's surface radius holding a control at its control radius, in the tile's ink. */
-function ShapePreview({ radius }: { radius: number }) {
-  return (
-    <span
-      style={{ "--radius-control": `${radius}px`, "--radius-surface": `${shapeSurface(radius)}px` } as CSSProperties}
-      className="grid h-8 w-12 place-items-center rounded-surface shadow-[inset_0_0_0_1px_currentColor]"
-    >
-      <span className="h-3 w-7 rounded-control bg-current" />
-    </span>
-  );
-}
-
 function CustomizePanel() {
   const { theme, setTheme, typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
+  const dark = useDark();
   const [said, setSaid] = useState("");
   const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
   const snippet = customizeSnippet(radius, lockedRadius, type);
@@ -122,7 +108,17 @@ function CustomizePanel() {
   return (
     <div className="grid gap-8">
       <section aria-label="Look" className="grid gap-6">
-        <AccentSwatches value={look.accent} material={look.material} onValueChange={(accent) => setLook({ accent })} />
+        <Swatches
+          legend="Accent"
+          value={look.accent}
+          onValueChange={(accent) => setLook({ accent })}
+          options={ACCENTS.map((a) => ({
+            value: a.id,
+            label: accentName(a.id, look.material, true),
+            attrs: lookAttributes({ accent: a.id, material: look.material }, dark),
+            className: "bg-accent text-small text-accent-fg",
+          }))}
+        />
         <CardPicker
           size="sm"
           legend="Material"
@@ -157,12 +153,17 @@ function CustomizePanel() {
           </span>
           <Segmented legend="Theme" value={theme} onValueChange={setTheme} options={THEMES} />
         </div>
-        <CardPicker
-          size="sm"
+        <Swatches
           legend="Shape"
           value={String(radius)}
           onValueChange={(v) => setRadius(Number(v))}
-          options={SHAPES.map((r) => ({ value: String(r), label: shapeName(r), picture: <ShapePreview radius={r} /> }))}
+          options={SHAPES.map((r) => ({
+            value: String(r),
+            label: shapeName(r),
+            style: { borderRadius: `${r}px` },
+            className:
+              "text-caption shadow-[inset_0_0_0_1px_var(--line-strong)] " + (r === radius ? "text-fg" : "text-fg-subtle hover:text-fg"),
+          }))}
         />
         <CardPicker
           size="sm"
