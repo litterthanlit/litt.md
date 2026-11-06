@@ -5,18 +5,18 @@
  *
  * Two sections, by where a choice goes. Look (the accent, the material and motion's feel) is what Copy setup and Copy
  * link carry, so Your look sits under its three controls. This browser (the theme, the shape and the face) stays here.
- * A choice whose picture says more than its word is a tile (the registry's CardPicker at sm): each accent as a dot in
- * its color, each material as a block in its tray, each shape as a card and a control at that radius, each
+ * The accents are swatches, each its color with its name inside. A choice whose picture says more than its word is a
+ * tile (the registry's CardPicker at sm): each material as a block in its tray, each shape as a card and a control at that radius, each
  * face as "Aa". A choice the word says whole is a row: the theme on a Segmented control, fun motion on a Switch, as
  * the overview's deck has them. Surprise me shuffles the accent, the material, the shape, the face and the feel at
  * once, and says what it picked.
  */
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useId, useState, type CSSProperties } from "react";
 import { useDevice } from "@/motion";
 import { customizeSnippet, shapeName, shapeRule, shapeSurface, SHAPES, typeRule } from "@/motion/rules";
 import { Button } from "@/components/button";
 import { CardPicker } from "@/components/card-picker";
-import { LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
+import { CheckIcon, LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { Segmented } from "@/components/segmented";
 import { Switch } from "@/components/switch";
@@ -25,7 +25,6 @@ import { useCustomize, useDark, type ThemeChoice } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
 import { accentName, accentOf, ACCENTS, GALLERY_LOOK, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Accent, type Material } from "./look";
-import { AccentChip } from "./swatch";
 import { loadTypeface } from "./typeface";
 
 /* What to set for each accent is in Copy setup, under Your look. */
@@ -40,6 +39,47 @@ const THEMES: { value: ThemeChoice; label: string }[] = [
   { value: "dark", label: "Dark" },
   { value: "system", label: "System" },
 ];
+
+/**
+ * The accents as swatches: each one a block in its own color with its name inside in --accent-fg, so the color and
+ * the word are one thing. Native radios, so the arrow keys and the group's name come from the browser. The pick
+ * carries a check and a ring in --fg outside the swatch, so it never leans on the color; the keyboard's ring is
+ * --focus. The swatch is a sample, not an action, so it never counts as a view's accent fill (R6).
+ */
+function AccentSwatches({ value, material, onValueChange }: { value: Accent; material: Material; onValueChange: (a: Accent) => void }) {
+  const dark = useDark();
+  const name = useId();
+  return (
+    <fieldset className="m-0 min-w-0 border-0 p-0">
+      <legend className="mb-2 p-0 text-small font-title text-fg">Accent</legend>
+      <div className="grid grid-cols-3 gap-2">
+        {ACCENTS.map((a) => {
+          const picked = value === a.id;
+          const label = accentName(a.id, material, true);
+          return (
+            <label
+              key={a.id}
+              className={
+                "relative cursor-pointer rounded-control outline-offset-2 [-webkit-tap-highlight-color:transparent] has-focus-visible:outline-2 has-focus-visible:outline-focus " +
+                (picked ? "outline-2 outline-fg" : "")
+              }
+            >
+              <input type="radio" className="sr-only" name={name} value={a.id} checked={picked} aria-label={label} onChange={() => onValueChange(a.id)} />
+              <span
+                aria-hidden="true"
+                {...lookAttributes({ accent: a.id, material }, dark)}
+                className="flex h-12 items-center justify-center gap-1.5 rounded-control bg-accent px-2 text-small font-title text-accent-fg forced-colors:border"
+              >
+                {picked && <CheckIcon />}
+                <span className="truncate">{label}</span>
+              </span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
 
 /** A block in its tray, drawn in one material: raised and cast in Press, a grey fill in a hairline in Flat. */
 function MaterialPreview({ material }: { material: Material }) {
@@ -118,13 +158,7 @@ function CustomizePanel() {
       {/* The look: what leaves this browser, so its three choices sit with the words and the links that carry them. */}
       <section aria-labelledby="customize-look" className="grid gap-6">
         <Heading id="customize-look" title="Look" note="Goes with Copy setup and Copy link" />
-        <CardPicker
-          size="sm"
-          legend="Accent"
-          value={look.accent}
-          onValueChange={(accent) => setLook({ accent })}
-          options={ACCENTS.map((a) => ({ value: a.id, label: accentName(a.id, look.material, true), picture: <AccentChip accent={a.id} size="dot" /> }))}
-        />
+        <AccentSwatches value={look.accent} material={look.material} onValueChange={(accent) => setLook({ accent })} />
         <CardPicker
           size="sm"
           legend="Material"
