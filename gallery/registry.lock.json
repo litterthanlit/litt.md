@@ -20,7 +20,7 @@
     },
     "app-shell": {
       "version": "2026.11.06",
-      "hash": "15c1ef5f8d496f02"
+      "hash": "db759722a42893f7"
     },
     "avatar": {
       "version": "2026.11.06",
@@ -44,7 +44,7 @@
     },
     "button": {
       "version": "2026.11.06",
-      "hash": "86dec7423196dfd4"
+      "hash": "e52cccb16f4e683a"
     },
     "callout": {
       "version": "2026.11.06",
@@ -96,7 +96,7 @@
     },
     "color-picker": {
       "version": "2026.11.06",
-      "hash": "471088ed68b36b75"
+      "hash": "126b02f9c5a8f4d9"
     },
     "combobox": {
       "version": "2026.11.06",
@@ -124,7 +124,7 @@
     },
     "date-picker": {
       "version": "2026.11.06",
-      "hash": "6f9987b1b8cf9b58"
+      "hash": "599e168a69af434f"
     },
     "deployment": {
       "version": "2026.11.03",
@@ -216,7 +216,7 @@
     },
     "list": {
       "version": "2026.11.06",
-      "hash": "f26d875b4b140785"
+      "hash": "93a52568fe0a8cac"
     },
     "list-cover": {
       "version": "2026.10.26",
@@ -224,7 +224,7 @@
     },
     "litt": {
       "version": "2026.11.06",
-      "hash": "99ccd64547cee6f0"
+      "hash": "7fb382ba9019cbda"
     },
     "log-view": {
       "version": "2026.11.06",
@@ -240,7 +240,7 @@
     },
     "message": {
       "version": "2026.11.06",
-      "hash": "7589d5263d2fb8a2"
+      "hash": "0fc4e698b1bfc519"
     },
     "motion": {
       "version": "2026.11.05",
@@ -248,11 +248,11 @@
     },
     "number-field": {
       "version": "2026.11.06",
-      "hash": "44c6bb7ec6823470"
+      "hash": "1dc89f5b60c88356"
     },
     "option-picker": {
       "version": "2026.11.06",
-      "hash": "fb170a2ccc583794"
+      "hash": "29ed86ee28557935"
     },
     "pad": {
       "version": "2026.10.26",
@@ -291,8 +291,8 @@
       "hash": "ba0d61f1ea516b76"
     },
     "range-chart": {
-      "version": "2026.11.05",
-      "hash": "26b6e3dae3c3fda5"
+      "version": "2026.11.06",
+      "hash": "3b510b0be4606ccd"
     },
     "resizable": {
       "version": "2026.11.06",
@@ -320,7 +320,7 @@
     },
     "segmented": {
       "version": "2026.11.06",
-      "hash": "793c8155777e64b9"
+      "hash": "f1b0ec0255c878bb"
     },
     "select": {
       "version": "2026.11.06",
@@ -392,11 +392,11 @@
     },
     "tabs": {
       "version": "2026.11.06",
-      "hash": "8c80a17080174a86"
+      "hash": "8d28963e0a25e6c6"
     },
     "tag": {
       "version": "2026.11.06",
-      "hash": "697eda5d8f970c2e"
+      "hash": "b927073b2566def4"
     },
     "team": {
       "version": "2026.11.03",

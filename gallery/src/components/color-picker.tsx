@@ -523,7 +523,7 @@ export function ColorPanel({
               if (!hex) return null;
               const on = hex === value;
               return (
-                <label key={sw.value + sw.label} title={sw.label} className="relative block cursor-pointer [-webkit-tap-highlight-color:transparent]">
+                <label key={sw.value + sw.label} title={sw.label} className="litt-target relative block cursor-pointer [-webkit-tap-highlight-color:transparent]">
                   <input
                     type="radio"
                     name={`${id}-swatch`}

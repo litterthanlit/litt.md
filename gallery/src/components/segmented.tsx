@@ -112,7 +112,7 @@ export function Segmented<T extends string>({
               <label
                 key={o.value}
                 className={
-                  "relative grid h-full select-none place-items-center rounded-[calc(var(--radius-control)-2px)] font-title " +
+                  "litt-target relative grid h-full select-none place-items-center rounded-[calc(var(--radius-control)-2px)] font-title " +
                   "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
                   look.segment +
                   (off

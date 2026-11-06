@@ -41,8 +41,12 @@ export function ProjectCard({ open }: { open: boolean }) {
       />
       <div className="rounded-[min(var(--radius-control),calc(var(--control-md)/2))] bg-surface-2" />
       <div className="rounded-[calc(var(--radius-surface)-4px)] bg-surface-2" />
+      <div className="rounded-[calc(var(--radius-surface)-8px)] bg-surface-2" />
       <div
-        className="rounded-[calc(var(--radius-surface)-8px)] bg-surface-2" // expect: radius
+        className="rounded-[calc(var(--radius-surface)-3px)] bg-surface-2" // expect: radius
+      />
+      <div
+        className="rounded-[calc(var(--radius-pill)-4px)] bg-surface-2" // expect: radius
       />
       <div
         className="rounded-[min(var(--radius-control),12px)] bg-surface-2" // expect: radius

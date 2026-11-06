@@ -392,7 +392,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
           aria-expanded={notes}
           aria-controls={notesId}
           onClick={() => setNotes((n) => !n)}
-          className="group/notes -mx-2 flex h-control-sm items-center gap-1 rounded-control px-2 text-small text-fg-subtle in-[[data-material=flat]]:mx-0 in-[[data-material=flat]]:bg-block in-[[data-material=flat]]:px-3 in-[[data-material=flat]]:text-fg-muted select-none [-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          className="group/notes litt-target relative -mx-2 flex h-control-sm items-center gap-1 rounded-control px-2 text-small text-fg-subtle in-[[data-material=flat]]:mx-0 in-[[data-material=flat]]:bg-block in-[[data-material=flat]]:px-3 in-[[data-material=flat]]:text-fg-muted select-none [-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
           How it works
           <ChevronDownIcon className="transition-[rotate] duration-(--dur-responsive) ease-responsive group-aria-expanded/notes:rotate-180" />

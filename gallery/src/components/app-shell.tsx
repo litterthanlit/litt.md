@@ -174,8 +174,10 @@ export function SidebarNav({ label, heading, children }: SidebarNavProps) {
   );
 }
 
+/* The links sit 4px apart; an invisible 2px past each edge covers the gap, so a pointer between two rows is always on
+   one and the hover never flickers off and on (no dead gaps). */
 const row =
-  "relative flex w-full items-center gap-3 rounded-control px-3 whitespace-nowrap select-none " +
+  "relative flex w-full items-center gap-3 rounded-control px-3 whitespace-nowrap select-none after:absolute after:inset-x-0 after:-inset-y-0.5 " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 

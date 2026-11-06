@@ -128,15 +128,23 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 |---|---|---|
 | `--radius-control` | 4px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
 | `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
-| `--radius-pill` | 999px | Avatars and icon-only buttons. Radio marks are circles. (A block set into a control takes `--radius-control` less its 2px inset.) |
+| `--radius-pill` | 999px | Avatars and icon-only buttons. Radio marks are circles. |
 
-**Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
+**Concentric.** A box inside a rounded box takes the outer radius less the inset between them, so the two corners share one center: inner = outer − inset.
+
+- A surface is the control radius plus the 4px (`--space-1`) around it: 4 + 4 = 8. So a control 4px inside a surface keeps the control radius, and a block 2px inside a control takes the control radius less 2px.
+- Work the number out from the tokens, never as a new px value: `calc(var(--radius-surface) - 4px)` for a cover or a row set 4px into a card, `calc(var(--radius-control) - 2px)` for a block set 2px into a control. Written that way it holds at every shape the radius tokens take, the pill included, where the control radius alone would sit rounder than its surface.
+- It only matters near the edge, where the inner corner sits inside the outer one's curve (menu rows, a card cover, a segmented control, a token in a field). Further in, a control is just the control radius.
+- A box can never be rounder than the box that holds it, and a control that wraps keeps the corners it had on one line: `min(var(--radius-control), calc(var(--control-md) / 2))`.
+- Round things (avatars, icon-only buttons, a pill) are round by their size, not by this rule.
+
+There are no other radii: no 6, 12 or 16 typed by hand.
 
 **Under Flat** (`data-material="flat"`, v1.9) the shape is the Pill: `--radius-control` 28px and `--radius-surface` 16px, set in Flat's block, so a host gets them with the attribute. The other shapes still apply on top (the gallery's Customize panel writes them on `<body>`), because every Flat recipe reads the radius tokens and never a number. Flat's own language is in `proposals/flat-pill.md` and R3.
 
 - `tokens.css` gives `button`, `input`, `select` and `textarea` the control radius, and `.litt-raised` and `.litt-glass` the surface radius. A full-bleed bar like the header sets `border-radius: 0`.
 - Borders are 1px (`--hairline`), drawn as `inset 0 0 0 1px var(--line)` so they don't change layout.
-- In Tailwind: `rounded-control`, `rounded-surface`, `rounded-pill`, nothing else.
+- In Tailwind: `rounded-control`, `rounded-surface`, `rounded-pill`, and the concentric radii worked out from them (`rounded-[calc(var(--radius-surface)-4px)]`), nothing else.
 
 ## 5. Motion
 
@@ -155,6 +163,7 @@ Fast by default, with one signature moment per view. Motion confirms an action a
 - **Properties.** Transform and opacity animate. Color, background-color, border-color, fill and the focus ring may fade, at `--dur-instant` only. Never layout (width, height, top, left, margin, padding), never `transition: all`, never material (R2).
 - **Press.** A pressed block sinks `--press-depth` (half a pixel) on `:active` (`translate`, instant tier), and a raised thing's cast tightens at once (R2, R3). Floating surfaces still grow from `--press-scale` (0.98) as they open. A state change never moves the box otherwise.
 - **Under a hand (R4).** A dragged part follows the pointer 1:1, with no easing, and holds where it was taken. A jump (a key, a press beside the part) and a release settle on the responsive spring. A default the part can come home to holds it within about a step. Pushed fast, a slider's cap leans into the move, at most 4°, and rights itself on the spring. Transform only, and reduced motion stills it all.
+- **A theme switch is instant.** Changing the theme, the accent, the material or the shape starts no transition, or every hover fade on the page runs at once (Emil Kowalski, Rauno Freiberg). Write the change with transitions off for that frame: add a style with `*, *::before, *::after { transition: none !important }`, write the attribute, read any computed style so the new values settle, then remove the style.
 - **One expressive moment per view.** A second one uses the responsive tier. A sheet on a compact screen does not count (section 6).
 - **Ceilings.** The instant tween stays at or under 240ms. Spring visual time stays at or under 350ms, and bounce at or under 0.12. `scripts/check.mjs` enforces both.
 - **Soft focus (R4).** A content swap a hand causes (a carousel step, a caption that changes with it, a tab's panel) may arrive in soft focus: the fade, with a blur of at most 4px that clears on the responsive spring. Never on material, never on a scroll, never on its own; reduced motion stills it. It is the one filter that moves, so it will live in one place, `SoftSwap` in the motion engine (the components theme), and the lint keeps failing a filter animated anywhere else.
@@ -187,6 +196,10 @@ A phone changes how things are reached, not how litt moves. The tiers, tokens an
 
 **A gesture is never the only way.** Every swipe has a visible button (a close button, 44px on coarse screens). Esc and a tap on the scrim also close. The grabber is decoration and is hidden from assistive tech.
 
+**A finger gets 44px.** On a coarse pointer every control takes a tap at 44 by 44px or more, however small it is drawn (Apple, Vercel). Put `.litt-target` (in `tokens.css`) on a positioned control that does not use `::before`: an invisible `::before` reaches out to 44px, and nothing you see or the room it takes changes. A box that is the control itself (a checkbox's input) cannot carry it.
+
+**No dead space between rows.** In a clickable list (a nav, a menu, a list of rows) a pointer between two rows is always on one, so the hover never flickers off and on (Rauno Freiberg). Rows that sit apart reach over the gap with an invisible `::after`; a row over a divider reaches 1px past it.
+
 **Touch has no hover.** Nothing depends on it.
 - A pressed row or card fills at its own hover fill, never below fg 6% (`:active` on coarse screens, instant tier, color only): a finger covers the row, and a fainter fill disappears under it. Buttons keep the press scale and also take their hover fill, so a press still shows under reduced motion, where the scale is 1.
 - A tooltip opens on a 500ms press and hold, not on a tap, so a tap only does its action. Shortcut chips and key hints are hidden on coarse screens.
@@ -200,9 +213,9 @@ A phone changes how things are reached, not how litt moves. The tiers, tokens an
 ## 7. Accessibility floor
 
 These are not negotiable, whatever the taste:
-- Body text reaches 4.5:1 or more, large text 3:1 or more, control outlines and the focus ring 3:1 or more, in both themes. Run `node scripts/check.mjs`.
+- Body text reaches 4.5:1 or more, large text 3:1 or more, control outlines and the focus ring 3:1 or more, in both themes. Link text (`--accent-text`) reaches 4.5:1 on the canvas and every surface. Run `node scripts/check.mjs`.
 - A visible focus indicator on every interactive element: `:focus-visible` gets a 2px `--focus` outline at 2px offset (already in `tokens.css`), or `--focus-ring` on inputs.
-- Hit targets are at least 44px tall for primary controls (`--control-md`) and at least 32px for dense secondary ones (`--control-sm`).
+- Hit targets are at least 44px tall for primary controls (`--control-md`) and at least 32px for dense secondary ones (`--control-sm`). Nothing a pointer can hit is under 24 by 24px without room around it (WCAG 2.5.8), and on a coarse pointer every control takes 44 by 44px (`.litt-target`, section 6).
 - Use semantic elements first (`button`, `a`, `dialog`, `fieldset`); ARIA only to fill gaps.
 - Respect `prefers-reduced-motion` and `prefers-reduced-transparency` (glass becomes solid).
 - Never use color as the only signal. Pair status color with text or an icon.

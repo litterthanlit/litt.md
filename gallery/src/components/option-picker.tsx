@@ -160,7 +160,7 @@ export function OptionPicker({
             const out = v.available === false;
             const ink = hydrated || /^(#|rgb)/i.test(v.swatch?.color ?? "") ? inkOn(v.swatch?.color) : undefined;
             return (
-              <label key={v.value} className="relative block cursor-pointer [-webkit-tap-highlight-color:transparent]">
+              <label key={v.value} className="litt-target relative block cursor-pointer [-webkit-tap-highlight-color:transparent]">
                 <input
                   type="radio"
                   name={group}
@@ -204,7 +204,7 @@ export function OptionPicker({
                 <label
                   key={v.value}
                   className={
-                    "relative grid h-full min-w-0 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] px-2 text-small font-title " +
+                    "litt-target relative grid h-full min-w-0 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] px-2 text-small font-title " +
                     "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
                     (out ? "text-fg-disabled" : on ? "text-fg" : "text-fg-subtle hover:text-fg " + PRESS)
                   }

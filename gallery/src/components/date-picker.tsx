@@ -267,7 +267,7 @@ const CELL = "aspect-square w-full";
 const ROW = "grid grid-cols-[repeat(7,minmax(0,2.5rem))] pointer-coarse:grid-cols-[repeat(7,minmax(0,2.75rem))]";
 
 const dayBase =
-  "relative grid size-full place-items-center rounded-control in-[[data-material=flat]]:rounded-pill text-small tabular-nums select-none " +
+  "litt-target relative grid size-full place-items-center rounded-control in-[[data-material=flat]]:rounded-pill text-small tabular-nums select-none " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 

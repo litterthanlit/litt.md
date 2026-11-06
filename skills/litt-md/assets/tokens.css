@@ -249,7 +249,7 @@
   --device-accent-hover: #a8380a;
   --device-accent-fg: #ffffff;
   --device-accent-tint: #f6e4d8;
-  --device-accent-text: #a8380a;
+  --device-accent-text: #a23200;
   --device-accent-pink: #c0007e;
   --device-accent-pink-text: #90005d;
   --device-focus: #c2410c;
@@ -595,7 +595,7 @@
   --accent: #0957fd;
   --accent-hover: #1e64fe;     /* a step lighter in dark */
   --accent-fg: #ffffff;
-  --accent-text: #5e78fe;      /* lifted to pass 4.5:1 on the canvas and on its tint, and toward indigo, apart from the chart blue */
+  --accent-text: #6579fd;      /* lifted to pass 4.5:1 on the canvas, every surface and its tint, and toward indigo, apart from the chart blue */
   --accent-tint: #0e1a31;
   --focus: #5e78fe;
   --accent-pink: #c0007e;
@@ -820,7 +820,7 @@
     --accent: #0957fd;
     --accent-hover: #1e64fe;
     --accent-fg: #ffffff;
-    --accent-text: #5e78fe;
+    --accent-text: #6579fd;
     --accent-tint: #0e1a31;
     --focus: #5e78fe;
     --accent-pink: #c0007e;
@@ -1376,6 +1376,21 @@
     background: var(--surface-1);
     border-radius: var(--radius-surface);
     box-shadow: inset 0 0 0 1px var(--line), var(--highlight);
+  }
+
+  /* A touch target: on a coarse pointer, an invisible ::before grows the place a finger can land to at least
+     44 by 44px around the control, without changing how it looks or the room it takes. Put it on a positioned
+     control (relative or absolute) that does not use ::before itself. */
+  @media (pointer: coarse) {
+    .litt-target::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: max(100%, 44px);
+      height: max(100%, 44px);
+      translate: -50% -50%;
+    }
   }
 
   /* Trim a label to its cap height so padding equals visible air (R9).
