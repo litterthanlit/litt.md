@@ -6,7 +6,8 @@
  * As little as possible (Rams): only the controls and what carries them out of the browser. No intro, no headings,
  * no notes. A hairline splits the look (the accent, the material and motion's feel, which Copy setup and Copy link
  * carry, so they sit right under it) from what stays in this browser (the theme, the shape and the face). The accents
- * and the shapes are swatches, the thing itself with its name inside; a choice whose picture says more than its word is a CardPicker tile; a choice
+ * are swatches, the color itself with its name inside. The shape is an ordered scale, so it is a Slider with a stop
+ * per shape and the locked one marked home, as the overview's deck has it; a choice whose picture says more than its word is a CardPicker tile; a choice
  * the word says whole is a row. The footer is quiet: Surprise me as an icon, and once anything changed, Copy tokens and Reset.
  */
 import { useEffect, useId, useState, type CSSProperties } from "react";
@@ -17,12 +18,16 @@ import { CardPicker } from "@/components/card-picker";
 import { LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import { Segmented } from "@/components/segmented";
+import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { useCustomize, useDark, type ThemeChoice } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
 import { accentName, ACCENTS, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Material } from "./look";
 import { loadTypeface } from "./typeface";
+
+/** The shape slider's stops, one per shape. */
+const STOPS = SHAPES.map((_, i) => i);
 
 const THEMES: { value: ThemeChoice; label: string }[] = [
   { value: "light", label: "Light" },
@@ -34,8 +39,7 @@ const THEMES: { value: ThemeChoice; label: string }[] = [
 type Swatch<T extends string> = { value: T; label: string; className: string; style?: CSSProperties; attrs?: Record<string, string> };
 
 /**
- * A choice drawn as the thing itself with its name inside: the accents as blocks in their color, the shapes as boxes
- * at their radius. Native radios, so the arrow keys and the group's name come from the browser; the box is hidden and
+ * A choice drawn as the thing itself with its name inside: the accents as blocks in their color. Native radios, so the arrow keys and the group's name come from the browser; the box is hidden and
  * the radio carries the name. The pick is a ring in --fg outside the box, at its radius, so it never leans on color;
  * the keyboard's ring is --focus. An accent's block is a sample, not an action, so it never counts as a fill (R6).
  */
@@ -153,17 +157,18 @@ function CustomizePanel() {
           </span>
           <Segmented legend="Theme" value={theme} onValueChange={setTheme} options={THEMES} />
         </div>
-        <Swatches
-          legend="Shape"
-          value={String(radius)}
-          onValueChange={(v) => setRadius(Number(v))}
-          options={SHAPES.map((r) => ({
-            value: String(r),
-            label: shapeName(r),
-            style: { borderRadius: `${r}px` },
-            className:
-              "text-caption shadow-[inset_0_0_0_1px_var(--line-strong)] " + (r === radius ? "text-fg" : "text-fg-subtle hover:text-fg"),
-          }))}
+        <Slider
+          label="Shape"
+          value={(SHAPES as readonly number[]).indexOf(radius)}
+          min={0}
+          max={SHAPES.length - 1}
+          step={1}
+          marks={STOPS}
+          home={(SHAPES as readonly number[]).indexOf(lockedRadius)}
+          formatValue={(i) => shapeName(SHAPES[i])}
+          minLabel="Square"
+          maxLabel="Pill"
+          onValueChange={(i) => setRadius(SHAPES[i])}
         />
         <CardPicker
           size="sm"
