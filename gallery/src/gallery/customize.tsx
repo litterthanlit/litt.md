@@ -11,7 +11,7 @@
  * per shape and the locked one marked home, as the overview's deck has it; a choice whose picture says more than its word is a CardPicker tile; a choice
  * the word says whole is a row. The footer is quiet: Surprise me as an icon, and once anything changed, Copy tokens and Reset.
  */
-import { useEffect, useId, useState, type CSSProperties } from "react";
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
 import { useDevice } from "@/motion";
 import { customizeSnippet, shapeName, SHAPES } from "@/motion/rules";
 import { Button } from "@/components/button";
@@ -31,13 +31,17 @@ const STOPS = SHAPES.map((_, i) => i);
 
 
 /** One swatch: its name, and how the box behind the name is drawn (classes, a style, and attributes such as a look). */
-type Swatch<T extends string> = { value: T; label: string; className: string; style?: CSSProperties; attrs?: Record<string, string> };
+/** One swatch: its name, and how the box behind the name is drawn (classes, a style, and attributes such as a look).
+    content draws the inside in place of the name; named shows the name when the swatch is not picked too. */
+type Swatch<T extends string> = { value: T; label: string; className: string; style?: CSSProperties; attrs?: Record<string, string>; content?: ReactNode; named?: boolean };
 
 /**
- * A choice drawn as the thing itself, with its name inside once it is picked (R5: the value you have is said in
- * words; the others say theirs on hover, and every radio carries its name): the accents as blocks in their color. Native radios, so the arrow keys and the group's name come from the browser; the box is hidden and
- * the radio carries the name. The pick is a ring in --fg outside the box, at its radius, so it never leans on color;
- * the keyboard's ring is --focus. An accent's block is a sample, not an action, so it never counts as a fill (R6).
+ * A choice drawn as the thing itself: the accents as blocks in their color, the materials as a key in their tray.
+ * An accent says its name once picked (R5: the value you have is said in words; the others say theirs on hover). A
+ * material always does, since a surface does not say what it is the way a color does. Native radios, so the arrow
+ * keys and the group's name come from the browser; the box is hidden and the radio carries the name. The pick is a
+ * ring in --fg outside the box, so it never leans on color; the keyboard's ring is --focus. An accent's block is a
+ * sample, not an action, so it never counts as a fill (R6).
  */
 function Swatches<T extends string>({ legend, value, onValueChange, options }: { legend: string; value: T; onValueChange: (v: T) => void; options: Swatch<T>[] }) {
   const name = useId();
@@ -58,14 +62,32 @@ function Swatches<T extends string>({ legend, value, onValueChange, options }: {
               }
             >
               <input type="radio" className="sr-only" name={name} value={o.value} checked={picked} aria-label={o.label} onChange={() => onValueChange(o.value)} />
-              <span aria-hidden="true" {...o.attrs} style={o.style} className={"flex h-12 items-center justify-center rounded-control px-1 font-title forced-colors:border " + o.className}>
-                <span className={"truncate " + (picked ? "" : "opacity-0 pointer-coarse:group-active:opacity-100")}>{o.label}</span>
+              <span aria-hidden="true" {...o.attrs} style={o.style} className={"flex items-center justify-center rounded-control font-title forced-colors:border " + o.className}>
+                {o.content ?? <span className={"truncate " + (picked || o.named ? "" : "opacity-0 pointer-coarse:group-active:opacity-100")}>{o.label}</span>}
               </span>
             </label>
           );
         })}
       </div>
     </fieldset>
+  );
+}
+
+/**
+ * A material as a key standing in a tray, its name on the key. Drawn inside the swatch's own data-material, so the
+ * tokens make the difference: Press raised and casting, Flat a fill in a hairline tray, Device an aluminium key with
+ * a 2px drop and every word in Geist Mono (font-sans, which Device restates as mono).
+ */
+function MaterialKey({ name }: { name: string }) {
+  return (
+    <span data-material-tray="" className="grid size-full place-items-center rounded-control bg-tray p-1.5 shadow-(--tray-shade)">
+      <span
+        data-material-key=""
+        className="grid h-9 w-full place-items-center rounded-[calc(var(--radius-control)-2px)] bg-block font-sans text-small font-title text-fg shadow-(--block-lift) forced-colors:border"
+      >
+        {name}
+      </span>
+    </span>
   );
 }
 
@@ -106,7 +128,9 @@ function CustomizePanel() {
             value: m.id,
             label: m.name,
             attrs: lookAttributes({ accent: look.accent, material: m.id }, dark),
-            className: "bg-block text-small text-fg shadow-(--block-lift)",
+            className: "h-16",
+            content: <MaterialKey name={m.name} />,
+            named: true,
           }))}
         />
         <Swatches
@@ -117,7 +141,7 @@ function CustomizePanel() {
             value: a.id,
             label: accentName(a.id, look.material, true),
             attrs: lookAttributes({ accent: a.id, material: look.material }, dark),
-            className: "bg-accent text-small text-accent-fg",
+            className: "h-12 px-1 bg-accent text-small text-accent-fg",
           }))}
         />
         <div data-fun-cue="">
