@@ -1,117 +1,101 @@
 /**
- * Customize, the panel: the header's button and the popover with the accent, the material, the theme, the shape, the
- * typeface and motion's feel. It loads on its own, so the shell stays small; the state and the writes on <body> live in
+ * Customize, the panel: the header's button and the popover with the material, the accent, motion's feel, the theme,
+ * the shape and the typeface. It loads on its own, so the shell stays small; the state and the writes on <body> live in
  * customize-state.tsx.
  *
- * Every choice is a tile that shows what it does before it says it (the registry's CardPicker at sm): each accent as
- * a small button in its color, each material as a block in its tray, each theme as a small window, each shape as a card and a control at that radius, each
- * face as "Aa", and Calm and Fun as a dot that moves on that mode's spring when it is picked. Surprise me shuffles the accent, the material,
- * the shape, the face and the feel at once, and says what it picked.
+ * As little as possible (Rams): only the controls and what carries them out of the browser. No intro, no headings,
+ * no notes. A hairline splits the look (the material, then the accent, since a material answers the accent with its own colors
+ * (Device has orange where the others have Blue 4), then motion's feel, which Copy setup and Copy link
+ * carry, so they sit right under it) from what stays in this browser (the theme, the shape and the face). The accents
+ * are swatches, the color itself with its name inside. The shape is an ordered scale, so it is a Slider with a stop
+ * per shape and the locked one marked home, as the overview's deck has it; a choice whose picture says more than its word is a CardPicker tile; a choice
+ * the word says whole is a row. The footer is quiet: Surprise me as an icon, and once anything changed, Copy tokens and Reset.
  */
-import { useEffect, useState, type CSSProperties } from "react";
-import { motion } from "motion/react";
-import { FUN_SPRINGS, useDevice, useTransition } from "@/motion";
-import { customizeSnippet, shapeName, shapeRule, shapeSurface, SHAPES, typeRule } from "@/motion/rules";
+import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
+import { useDevice } from "@/motion";
+import { customizeSnippet, shapeName, SHAPES } from "@/motion/rules";
 import { Button } from "@/components/button";
-import { CardPicker } from "@/components/card-picker";
 import { LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
-import { Tag } from "@/components/tag";
-import { useCustomize, useDark, type ThemeChoice } from "./customize-state";
+import { Select } from "@/components/select";
+import { Slider } from "@/components/slider";
+import { Switch } from "@/components/switch";
+import { useCustomize, useDark } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
-import { accentName, accentOf, ACCENTS, GALLERY_LOOK, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Accent, type Material } from "./look";
-import { AccentChip } from "./swatch";
+import { accentName, ACCENTS, lookAttributes, lookSetup, lookWords, materialOf, MATERIALS, withLook } from "./look";
 import { loadTypeface } from "./typeface";
 
-/* What to set for each accent is in Copy setup, under Your look. */
-const accentRule: Record<Accent, string> = {
-  mono: "Monochrome fits R6: the primary action takes the ink.",
-  blue4: "Blue 4 is what tokens.css ships: nothing to set.",
-  pink: "Pink fits R6: its tones ship in tokens.css, 0.12 from every data hue.",
-};
+/** The shape slider's stops, one per shape. */
+const STOPS = SHAPES.map((_, i) => i);
 
-/** A page in one theme, as a small window: a title line, a body line and the primary action in the current accent. */
-function Window({ dark, accent, className = "" }: { dark: boolean; accent: Accent; className?: string }) {
-  const { look } = useCustomize();
+
+/** One swatch: its name, and how the box behind the name is drawn (classes, a style, and attributes such as a look). */
+/** One swatch: its name, and how the box behind the name is drawn (classes, a style, and attributes such as a look).
+    content draws the inside in place of the name; named shows the name when the swatch is not picked too. */
+type Swatch<T extends string> = { value: T; label: string; className: string; style?: CSSProperties; attrs?: Record<string, string>; content?: ReactNode; named?: boolean };
+
+/**
+ * A choice drawn as the thing itself: the accents as blocks in their color, the materials as a key in their tray.
+ * An accent says its name once picked (R5: the value you have is said in words; the others say theirs on hover). A
+ * material always does, since a surface does not say what it is the way a color does. Native radios, so the arrow
+ * keys and the group's name come from the browser; the box is hidden and the radio carries the name. The pick is a
+ * ring in --fg outside the box, so it never leans on color; the keyboard's ring is --focus. An accent's block is a
+ * sample, not an action, so it never counts as a fill (R6).
+ */
+function Swatches<T extends string>({ legend, value, onValueChange, options }: { legend: string; value: T; onValueChange: (v: T) => void; options: Swatch<T>[] }) {
+  const name = useId();
   return (
-    <span
-      {...lookAttributes({ accent, material: look.material }, dark)}
-      style={{ "--radius-control": "4px" } as CSSProperties}
-      className={"grid h-8 w-12 grid-rows-[auto_auto_1fr] gap-1 rounded-control bg-canvas p-1.5 shadow-[inset_0_0_0_1px_var(--line-strong)] " + className}
-    >
-      <span className="h-1 w-5 rounded-pill bg-fg" />
-      <span className="h-1 w-8 rounded-pill bg-[color-mix(in_oklab,var(--fg)_30%,transparent)]" />
-      <span className="h-2 w-4 self-end justify-self-end rounded-pill bg-accent" />
-    </span>
+    <fieldset className="m-0 min-w-0 border-0 p-0">
+      <legend className="mb-2 p-0 text-small font-title text-fg">{legend}</legend>
+      <div className="grid grid-flow-col auto-cols-fr gap-2">
+        {options.map((o) => {
+          const picked = value === o.value;
+          return (
+            <label
+              key={o.value}
+              title={o.label}
+              style={o.style}
+              className={
+                "group relative min-w-0 cursor-pointer rounded-control outline-offset-2 [-webkit-tap-highlight-color:transparent] has-focus-visible:outline-2 has-focus-visible:outline-focus " +
+                (picked ? "outline-2 outline-fg" : "")
+              }
+            >
+              <input type="radio" className="sr-only" name={name} value={o.value} checked={picked} aria-label={o.label} onChange={() => onValueChange(o.value)} />
+              <span aria-hidden="true" {...o.attrs} style={o.style} className={"flex items-center justify-center rounded-control font-title forced-colors:border " + o.className}>
+                {o.content ?? <span className={"truncate " + (picked || o.named ? "" : "opacity-0 pointer-coarse:group-active:opacity-100")}>{o.label}</span>}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
   );
 }
 
-function ThemePreview({ theme, accent }: { theme: ThemeChoice; accent: Accent }) {
-  if (theme !== "system") return <Window dark={theme === "dark"} accent={accent} />;
+/**
+ * A material as a key standing in a tray, its name on the key. Drawn inside the swatch's own data-material, so the
+ * tokens make the difference: Press raised and casting, Flat a fill in a hairline tray, Device an aluminium key with
+ * a 2px drop and every word in Geist Mono (font-sans, which Device restates as mono).
+ */
+function MaterialKey({ name }: { name: string }) {
   return (
-    <span className="relative h-8 w-12">
-      <Window dark={false} accent={accent} className="absolute inset-0" />
-      <Window dark accent={accent} className="absolute inset-0 [clip-path:inset(0_0_0_50%)]" />
-    </span>
-  );
-}
-
-/** A block in its tray, drawn in one material: raised and cast in Press, a grey fill in a hairline in Flat. */
-function MaterialPreview({ material }: { material: Material }) {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <span {...lookAttributes({ accent: look.accent, material }, dark)} className="grid h-6 w-10 grid-cols-2 rounded-control bg-tray p-0.5 shadow-(--tray-shade)">
-      <span className="rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift)" />
-    </span>
-  );
-}
-
-/** A card at the shape's surface radius holding a control at its control radius, in the tile's ink. */
-function ShapePreview({ radius }: { radius: number }) {
-  return (
-    <span
-      style={{ "--radius-control": `${radius}px`, "--radius-surface": `${shapeSurface(radius)}px` } as CSSProperties}
-      className="grid h-8 w-12 place-items-center rounded-surface shadow-[inset_0_0_0_1px_currentColor]"
-    >
-      <span className="h-3 w-7 rounded-control bg-current" />
-    </span>
-  );
-}
-
-/** A dot on a rail that crosses when its tile is picked, on that feel's spring: the responsive tier, or fun mode's pop. */
-function FeelPreview({ fun, on }: { fun: boolean; on: boolean }) {
-  const responsive = useTransition("responsive");
-  const pop = { type: "spring", visualDuration: FUN_SPRINGS.pop.time, bounce: FUN_SPRINGS.pop.bounce } as const;
-  return (
-    <span className="relative h-2 w-10 rounded-pill bg-tray shadow-(--tray-shade)">
-      <motion.span
-        initial={false}
-        animate={{ x: on ? 28 : 0 }}
-        transition={fun ? pop : responsive}
-        className="absolute -top-0.5 left-0 size-3 rounded-pill bg-current"
-      />
+    <span data-material-tray="" className="grid size-full place-items-center rounded-control bg-tray p-1.5 shadow-(--tray-shade)">
+      <span
+        data-material-key=""
+        className="grid h-9 w-full place-items-center rounded-[calc(var(--radius-control)-2px)] bg-block font-sans text-small font-title text-fg shadow-(--block-lift) forced-colors:border"
+      >
+        {name}
+      </span>
     </span>
   );
 }
 
 function CustomizePanel() {
-  const { theme, setTheme, typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
+  const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
+  const dark = useDark();
   const [said, setSaid] = useState("");
   const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
-  const rows = [
-    typeRule(type),
-    shapeRule(radius),
-    { ok: true, text: accentRule[look.accent] },
-    ...(look.material === "flat" ? [{ ok: true, text: "Flat fits R3: the depth ladder by fill alone. Copy setup says how to set data-material." }] : []),
-    ...(look.material === "device"
-      ? [{ ok: true, text: "Device fits R3 in hardware: keys, wells and LCD glass. Copy setup says how to set data-material." }]
-      : []),
-    ...(look.fun
-      ? [{ ok: false, cue: true, text: "Fun mode is a trial: its springs bounce past the locked 0.12. Copy setup says how to wrap your app in <FunMode>, and the changelog says if the trial ends." }]
-      : []),
-  ];
   const snippet = customizeSnippet(radius, lockedRadius, type);
 
   /* Every face draws its own "Aa", so each loads once the panel opens. */
@@ -134,135 +118,106 @@ function CustomizePanel() {
   };
 
   return (
-    <div className="grid gap-6">
-      <div className="grid gap-3">
-        <div className="flex items-start justify-between gap-4">
-          <p className="text-small text-fg-subtle">Every page follows, saved in this browser. The motion dial lives in the Playground.</p>
-          <Button size="sm" icon={<SparkleIcon />} onClick={surprise} className="shrink-0">
-            Surprise me
-          </Button>
+    <div className="grid gap-8">
+      <section aria-label="Look" className="grid gap-6">
+        <Swatches
+          legend="Material"
+          value={look.material}
+          onValueChange={(material) => setLook({ material })}
+          options={MATERIALS.map((m) => ({
+            value: m.id,
+            label: m.name,
+            attrs: lookAttributes({ accent: look.accent, material: m.id }, dark),
+            className: "h-16",
+            content: <MaterialKey name={m.name} />,
+            named: true,
+          }))}
+        />
+        <Swatches
+          legend="Accent"
+          value={look.accent}
+          onValueChange={(accent) => setLook({ accent })}
+          options={ACCENTS.map((a) => ({
+            value: a.id,
+            label: accentName(a.id, look.material, true),
+            attrs: lookAttributes({ accent: a.id, material: look.material }, dark),
+            className: "h-12 px-1 bg-accent text-small text-accent-fg",
+          }))}
+        />
+        <div data-fun-cue="">
+          <Switch label="Fun motion" checked={look.fun} onCheckedChange={(fun) => setLook({ fun })} align="end" />
         </div>
-        <p aria-live="polite" className={"text-caption font-normal text-fg " + (said ? "" : "sr-only")}>
+        {/* The look is what leaves this browser: the edits for your app, and a link that shows it to someone else. */}
+        <div role="group" aria-labelledby="your-look" className="grid gap-2">
+          <p className="sr-only">
+            <span id="your-look">Your look</span> <span data-fun-cue="">{lookWords(look)}</span>
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <CopyButton text={lookSetup(look, SITE)}>Copy setup</CopyButton>
+            <CopyButton text={withLook(location.href, look)} variant="ghost" icon={<LinkIcon />}>
+              Copy link
+            </CopyButton>
+          </div>
+        </div>
+      </section>
+
+      <section aria-label="This browser" className="grid gap-6 border-t border-line pt-6">
+        <Slider
+          label="Shape"
+          value={(SHAPES as readonly number[]).indexOf(radius)}
+          min={0}
+          max={SHAPES.length - 1}
+          step={1}
+          marks={STOPS}
+          home={(SHAPES as readonly number[]).indexOf(lockedRadius)}
+          formatValue={(i) => shapeName(SHAPES[i])}
+          minLabel="Square"
+          maxLabel="Pill"
+          onValueChange={(i) => setRadius(SHAPES[i])}
+        />
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+          <span id="customize-face" className="text-small font-title text-fg">
+            Typeface
+          </span>
+          <div className="w-40">
+            <Select
+              size="sm"
+              aria-labelledby="customize-face"
+              value={typeface.id}
+              onValueChange={setTypeface}
+              options={typefaces.map((f) => ({ value: f.id, textValue: f.name, label: <span style={{ fontFamily: f.stack }}>{f.short ?? f.name}</span> }))}
+            />
+          </div>
+        </div>
+      </section>
+
+      <div className="grid gap-2 border-t border-line pt-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="ghost" iconOnly aria-label="Surprise me" title="Surprise me" onClick={surprise}>
+            <SparkleIcon />
+          </Button>
+          <span className="flex-1" />
+          {modified && snippet && (
+            <CopyButton text={snippet} variant="ghost">
+              Copy tokens
+            </CopyButton>
+          )}
+          {modified && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                reset();
+                setSaid("");
+              }}
+            >
+              Reset to defaults
+            </Button>
+          )}
+        </div>
+        <p id="customize-said" aria-live="polite" className={"text-caption font-normal text-fg-subtle " + (said ? "" : "sr-only")}>
           {said}
         </p>
-      </div>
-      <CardPicker
-        size="sm"
-        legend="Accent"
-        value={look.accent}
-        onValueChange={(accent) => setLook({ accent })}
-        options={ACCENTS.map((a) => ({ value: a.id, label: accentName(a.id, look.material, true), picture: <AccentChip accent={a.id} /> }))}
-      />
-      <CardPicker
-        size="sm"
-        legend="Material"
-        value={look.material}
-        onValueChange={(material) => setLook({ material })}
-        options={MATERIALS.map((m) => ({ value: m.id, label: m.name, picture: <MaterialPreview material={m.id} /> }))}
-      />
-      <CardPicker
-        size="sm"
-        legend="Theme"
-        value={theme}
-        onValueChange={setTheme}
-        options={(["light", "dark", "system"] as const).map((t) => ({
-          value: t,
-          label: t === "light" ? "Light" : t === "dark" ? "Dark" : "System",
-          picture: <ThemePreview theme={t} accent={look.accent} />,
-        }))}
-      />
-      <CardPicker
-        size="sm"
-        legend="Shape"
-        value={String(radius)}
-        onValueChange={(v) => setRadius(Number(v))}
-        options={SHAPES.map((r) => ({ value: String(r), label: shapeName(r), picture: <ShapePreview radius={r} /> }))}
-      />
-      <CardPicker
-        size="sm"
-        legend="Typeface"
-        value={typeface.id}
-        onValueChange={setTypeface}
-        options={typefaces.map((f) => ({
-          value: f.id,
-          label: f.short ?? f.name,
-          picture: (
-            <span className="text-display font-title" style={{ fontFamily: f.stack }}>
-              Aa
-            </span>
-          ),
-        }))}
-      />
-      <CardPicker
-        size="sm"
-        legend="Motion"
-        value={look.fun ? "fun" : "calm"}
-        onValueChange={(v) => setLook({ fun: v === "fun" })}
-        options={[
-          { value: "calm", label: "Calm", picture: <FeelPreview fun={false} on={!look.fun} /> },
-          { value: "fun", label: "Fun", picture: <FeelPreview fun on={look.fun} /> },
-        ]}
-      />
-      <div className="grid gap-3 border-t border-line pt-4">
-        {modified ? (
-          <>
-            <ul className="grid gap-2" aria-label="Against the litt.md rules">
-              {rows.map((c) => (
-                <li key={c.text} data-fun-cue={"cue" in c ? "" : undefined} className="flex items-start gap-2 text-small">
-                  <Tag status={c.ok ? "success" : "warning"}>{c.ok ? "Fits" : "Change"}</Tag>
-                  <span className={"pt-0.5 " + (c.ok ? "text-fg-subtle" : "text-fg-muted")}>{c.text}</span>
-                </li>
-              ))}
-            </ul>
-            {snippet && (
-              <pre tabIndex={0} aria-label="Tokens to paste into tokens.css" className="max-h-40 overflow-auto rounded-control bg-surface-2 p-3 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]">
-                {snippet}
-              </pre>
-            )}
-            <div className="flex gap-2">
-              {snippet && <CopyButton text={snippet}>Copy tokens</CopyButton>}
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  reset();
-                  setSaid("");
-                }}
-              >
-                Reset to defaults
-              </Button>
-            </div>
-          </>
-        ) : (
-          <p className="text-caption font-normal text-fg-subtle">
-            The gallery's defaults: {typeface.name}, {shapeName(radius)} controls and {shapeSurface(radius)}px surfaces, {accentOf(GALLERY_LOOK.accent).name.toLowerCase()}, {materialOf(GALLERY_LOOK.material).name.toLowerCase()} and calm motion. The registry ships Blue 4 and press.
-          </p>
-        )}
-      </div>
-      {/* The look is what leaves this browser: the edits for your app, and a link that shows it to someone else. */}
-      <div role="group" aria-labelledby="your-look" className="grid gap-3 border-t border-line pt-4">
-        <div className="grid gap-1">
-          <p className="flex flex-wrap items-baseline gap-x-2 text-small">
-            <span id="your-look" className="font-title text-fg">
-              Your look
-            </span>
-            <span data-fun-cue="" className="text-fg-muted">
-              {lookWords(look)}
-            </span>
-          </p>
-          <p data-fun-cue="" className="text-caption font-normal text-fg-subtle">
-            {lookInApp(look)}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <CopyButton text={lookSetup(look, SITE)}>Copy setup</CopyButton>
-          <CopyButton text={withLook(location.href, look)} variant="ghost" icon={<LinkIcon />}>
-            Copy link
-          </CopyButton>
-        </div>
-        {(typeface.id !== "locked" || radius !== lockedRadius) && (
-          <p className="text-caption font-normal text-fg-subtle">Type and shape stay in this browser. A look carries the accent, the material and the motion.</p>
-        )}
       </div>
     </div>
   );

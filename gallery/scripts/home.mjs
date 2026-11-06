@@ -179,12 +179,33 @@ const accentNow = (pg) => pg.evaluate(() => {
   await panel.waitFor();
   const accentTiles = panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) });
   check(await accentTiles.getByRole("radio", { name: "Mono" }).isChecked(), "the panel opens with Mono picked");
+  /* Each material swatch is a key in a tray, drawn in its own material: the tokens make the difference. */
+  const material = panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Material$/ }) });
+  const specimens = () =>
+    material.locator("[data-material-tray]").evaluateAll((els) =>
+      els.map((t) => {
+        const k = t.querySelector("[data-material-key]");
+        return { text: k?.textContent?.trim() ?? "", key: k ? getComputedStyle(k).boxShadow : "", tray: getComputedStyle(t).boxShadow, font: k ? getComputedStyle(k).fontFamily : "" };
+      }),
+    );
+  const mono = await specimens();
+  check(mono.map((x) => x.text).join("|") === "Press|Flat|Device", "every material swatch names itself: Press, Flat, Device");
+  check(new Set(mono.map((x) => x.key)).size === 3, "the three material keys cast three different shadows");
+  check(mono[1]?.tray.includes("inset") ?? false, "the Flat tray draws its hairline, so Flat never vanishes into the panel");
   await accentTiles.locator("label", { has: pg.getByRole("radio", { name: "Pink" }) }).click();
   check((await pg.evaluate(() => document.body.dataset.accent)) === "pink", "the panel's Pink tile sets data-accent=pink on <body>");
+  const pink = await specimens();
+  await accentTiles.locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
+  const blue = await specimens();
+  const runs = [mono, pink, blue];
+  check(
+    runs.every((r) => /Geist Mono|monospace/.test(r[2]?.font ?? "") && !/Geist Mono/.test(r[0]?.font ?? "")) && new Set(runs.map((r) => r[2]?.key)).size === 1,
+    "Device's key is Geist Mono and the same under every accent; Press's is not mono",
+  );
   const look = () => pg.evaluate(() => [document.body.dataset.accent, document.body.style.getPropertyValue("--radius-control"), document.body.style.getPropertyValue("--font-sans")].join("|"));
   const before = await look();
   await panel.getByRole("button", { name: "Surprise me" }).click();
-  const said = (await panel.locator("[aria-live=polite]").first().textContent())?.trim() ?? "";
+  const said = (await panel.locator("#customize-said").textContent())?.trim() ?? "";
   check((await look()) !== before && said.endsWith("motion."), `Surprise me changes the accent, the shape and the face, and says so ("${said}")`);
   await panel.getByRole("button", { name: "Reset to defaults" }).click();
   check((await look()) === "mono||", "the panel's Reset goes back to monochrome, the locked shape and the locked face");
@@ -293,7 +314,7 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
   const panel = pg.getByRole("dialog", { name: "Customize" });
   const group = panel.getByRole("group", { name: "Your look" });
   await group.waitFor();
-  check(await says(group, "Monochrome, flat material, calm motion", 'In your app: data-accent="mono" and data-material="flat" on <html>.'), "the panel's Your look says Monochrome, flat material, calm motion and its two edits");
+  check(await says(group, "Monochrome, flat material, calm motion"), "the panel's Your look says Monochrome, flat material, calm motion");
   const setup = await copied(group, "Copy setup");
   check(setup.startsWith('Set up the litt.md look "Monochrome, flat material, calm motion"') && setup.includes('<html lang="en" data-accent="mono">') && setup.includes('<html lang="en" data-material="flat">') && !setup.includes("<FunMode>"), "Copy setup gives the Monochrome and Flat edits and no fun mode");
   check((await group.getByRole("status").filter({ hasText: /^Copied$/ }).count()) >= 1, "Copy setup says Copied");
@@ -301,7 +322,7 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
 
   await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
   await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Material$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Press" }) }).click();
-  check(await says(group, "Blue 4, press material, calm motion", "This is what the registry installs. Nothing to change."), "in Blue 4, press and calm motion, Your look says there is nothing to change");
+  check(await says(group, "Blue 4, press material, calm motion"), "in Blue 4, press and calm motion, Your look says so");
   check((await install.getByText("This page shows").count()) === 0, "in Blue 4 and calm motion, the Install note goes");
   await pg.keyboard.press("Escape");
   const plain = await copied(pg.locator("main"), "Copy prompt");
