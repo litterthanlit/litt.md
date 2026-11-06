@@ -19,6 +19,10 @@
  *   covers the end cells too, rounded on their outer side, so it only shows its round end under a preview.
  *   While the second end is chosen, the pointer (or the focused day) previews the band. Picking the second
  *   end before the first swaps them.
+ * - Flat (proposals/flat-pill.md): days are circles, a picked day or a range end an accent circle (ink in
+ *   Monochrome) with --accent-fg on it, the days between a --surface-3 band. The field is a grey pill with no
+ *   outline (ink ring on focus, danger ring on an error). The presets column loses its divider and the chosen
+ *   preset is a grey bubble.
  * - Keyboard: the date grid pattern. One day is the tab stop (the picked day, else today, kept inside min and
  *   max). Arrows move a day or a week, Home and End go to the week's ends, PageUp and PageDown a month (the
  *   same day, or the month's last), with Shift a year. Enter or Space picks (the day is a real button). Focus
@@ -263,7 +267,7 @@ const CELL = "aspect-square w-full";
 const ROW = "grid grid-cols-[repeat(7,minmax(0,2.5rem))] pointer-coarse:grid-cols-[repeat(7,minmax(0,2.75rem))]";
 
 const dayBase =
-  "relative grid size-full place-items-center rounded-control text-small tabular-nums select-none " +
+  "relative grid size-full place-items-center rounded-control in-[[data-material=flat]]:rounded-pill text-small tabular-nums select-none " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
@@ -611,14 +615,14 @@ function DayCell({
     );
   }
   const look = day.filled
-    ? "bg-fg text-canvas"
+    ? "bg-fg text-canvas in-[[data-material=flat]]:bg-accent in-[[data-material=flat]]:text-accent-fg forced-colors:in-[[data-material=flat]]:[forced-color-adjust:none] forced-colors:in-[[data-material=flat]]:bg-[Highlight] forced-colors:in-[[data-material=flat]]:text-[HighlightText]"
     : day.disabled
       ? "text-fg-disabled"
       : "text-fg " + HOVER;
   return (
     <div role="gridcell" aria-selected={day.selected} className={"relative " + CELL}>
       {day.band !== "none" && (
-        <span aria-hidden="true" className={"absolute inset-0 bg-[color-mix(in_oklab,var(--fg)_8%,transparent)] " + BAND[day.band]} />
+        <span aria-hidden="true" className={"absolute inset-0 bg-[color-mix(in_oklab,var(--fg)_8%,transparent)] in-[[data-material=flat]]:bg-surface-3 " + BAND[day.band]} />
       )}
       <button
         type="button"
@@ -660,6 +664,12 @@ const field =
   "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:data-placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
+  /* Flat (rule 4): a grey pill with no outline, the ink ring for focus, the danger ring for an error, disabled flat. */
+  "in-[[data-material=flat]]:focus-visible:outline-none in-[[data-material=flat]]:focus-visible:shadow-(--focus-ring) " +
+  "in-[[data-material=flat]]:aria-invalid:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:aria-invalid:enabled:active:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:aria-invalid:data-[state=open]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:disabled:shadow-none " +
   "forced-colors:border";
 
 const sizes: Record<DatePickerSize, string> = {
@@ -797,13 +807,13 @@ export function DatePicker<M extends CalendarMode = "single">({
           ) : (
             <Hug>
               {presets && presets.length > 0 && (
-                <div className="grid min-w-32 content-start border-r border-line pt-3 pr-1">
+                <div className="grid min-w-32 content-start border-r border-line pt-3 pr-1 in-[[data-material=flat]]:border-r-0">
                   {presets.map((p) => (
                     <button
                       key={p.label}
                       type="button"
                       onClick={() => pick(p.value)}
-                      className={presetRow + " " + (sameValue(p.value, value) ? "text-fg" : "text-fg-muted")}
+                      className={presetRow + " " + (sameValue(p.value, value) ? "text-fg in-[[data-material=flat]]:bg-surface-3 forced-colors:underline" : "text-fg-muted")}
                     >
                       {p.label}
                     </button>

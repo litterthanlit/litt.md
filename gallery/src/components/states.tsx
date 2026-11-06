@@ -17,8 +17,8 @@
 import { useEffect, useState, type HTMLAttributes, type ReactNode } from "react";
 import { AlertIcon } from "./icons";
 
-/** The panel Empty and ErrorState sit in: a surface-2 fill and a line hairline, no shadow. */
-const PANEL = "rounded-surface bg-surface-2 p-8 shadow-[inset_0_0_0_1px_var(--line)]";
+/** The panel Empty and ErrorState sit in: a surface-2 fill and a line hairline, no shadow. Flat: a grey (surface-3) card, no hairline. */
+const PANEL = "rounded-surface bg-surface-2 p-8 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none";
 
 /* -------------------------------------------------------------------------- */
 /* Empty                                                                      */

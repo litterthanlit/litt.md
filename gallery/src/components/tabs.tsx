@@ -23,6 +23,8 @@
  * - Corners: rounded-control on tabs. The segmented track is a sunken tray (R3: --tray, --tray-shade) at the
  *   control radius, clipped with overflow-hidden, and its fill is the raised block (--block, --block-lift), concentric
  *   inside the 2px inset: selected is raised, as in Segmented and the Switch.
+ * - Flat (proposals/flat-pill.md): no hairline and no track. The chosen tab is a grey bubble (--block) at the control radius, the
+ *   others are --fg-muted words, for both variants. Under forced colors the bubble is an outline, as the segmented fill is.
  * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
  *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
  *   is off so the two do not double. Small tabs grow to the control-md height on a coarse
@@ -195,7 +197,7 @@ function TravellingLine({ list }: { list: RefObject<HTMLDivElement | null> }) {
   }, [travel?.to]);
 
   if (!travel || !fun) return null;
-  return <motion.span aria-hidden="true" className="pointer-events-none absolute bottom-0 left-0 z-10 h-0.5 w-px origin-left bg-fg" style={{ x: start, scaleX }} />;
+  return <motion.span aria-hidden="true" className="in-[[data-material=flat]]:hidden pointer-events-none absolute bottom-0 left-0 z-10 h-0.5 w-px origin-left bg-fg" style={{ x: start, scaleX }} />;
 }
 
 /** The row of tabs. It is a named group, so give it an aria-label. */
@@ -207,12 +209,12 @@ export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<t
     /* The hairline lives on the wrapper. The list overlaps it by 1px, so the
        2px indicator covers the hairline and nothing is clipped by the scroll. */
     return (
-      <div className="border-b border-line">
+      <div className="border-b border-line in-[[data-material=flat]]:border-b-0">
         {fun ? (
           /* Fun mode: the list is the travelling line's box, and holds it after the tabs. */
           <TabsPrimitive.List
             ref={list}
-            className={"relative -mb-px flex w-full overflow-x-auto pb-px [scrollbar-width:none] " + className}
+            className={"relative -mb-px flex w-full overflow-x-auto pb-px in-[[data-material=flat]]:gap-1 [scrollbar-width:none] " + className}
             {...rest}
           >
             {rest.children}
@@ -220,7 +222,7 @@ export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<t
           </TabsPrimitive.List>
         ) : (
           <TabsPrimitive.List
-            className={"-mb-px flex w-full overflow-x-auto pb-px [scrollbar-width:none] " + className}
+            className={"-mb-px flex w-full overflow-x-auto pb-px in-[[data-material=flat]]:gap-1 [scrollbar-width:none] " + className}
             {...rest}
           />
         )}
@@ -248,10 +250,14 @@ const PRESS =
   "[-webkit-tap-highlight-color:transparent] " +
   "enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] enabled:pointer-coarse:active:text-fg";
 
+/* Flat: the words are --fg-muted until chosen. */
+const F_MUTED = "in-[[data-material=flat]]:text-fg-muted in-[[data-material=flat]]:hover:text-fg in-[[data-material=flat]]:data-[state=active]:text-fg";
+
 /* isolate: the indicator sits at -z-10 inside the tab, behind the label and the focus ring. */
 const triggerBase =
   "relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-title " +
   "text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg data-[state=active]:text-fg " +
+  F_MUTED + " " +
   PRESS + " " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
@@ -303,7 +309,9 @@ export function TabsTrigger({
           aria-hidden="true"
           className={
             variant === "underline"
-              ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg forced-colors:bg-[Highlight] forced-colors:[forced-color-adjust:none]"
+              ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg forced-colors:bg-[Highlight] forced-colors:[forced-color-adjust:none] " +
+              /* Flat: the line becomes a grey bubble; under forced colors it is a Highlight outline, not a fill. */
+              "in-[[data-material=flat]]:inset-y-0 in-[[data-material=flat]]:h-auto in-[[data-material=flat]]:rounded-control in-[[data-material=flat]]:bg-block in-[[data-material=flat]]:forced-colors:bg-transparent in-[[data-material=flat]]:forced-colors:border-2 in-[[data-material=flat]]:forced-colors:border-[Highlight]"
               : "absolute inset-0 -z-10 bg-block shadow-(--block-lift) forced-colors:border " + FILL_RADIUS
           }
         />

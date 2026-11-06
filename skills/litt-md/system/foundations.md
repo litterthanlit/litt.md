@@ -132,6 +132,8 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 
 **Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
 
+**Under Flat** (`data-material="flat"`, v1.9) the shape is the Pill: `--radius-control` 28px and `--radius-surface` 16px, set in Flat's block, so a host gets them with the attribute. The other shapes still apply on top (the gallery's Customize panel writes them on `<body>`), because every Flat recipe reads the radius tokens and never a number. Flat's own language is in `proposals/flat-pill.md` and R3.
+
 - `tokens.css` gives `button`, `input`, `select` and `textarea` the control radius, and `.litt-raised` and `.litt-glass` the surface radius. A full-bleed bar like the header sets `border-radius: 0`.
 - Borders are 1px (`--hairline`), drawn as `inset 0 0 0 1px var(--line)` so they don't change layout.
 - In Tailwind: `rounded-control`, `rounded-surface`, `rounded-pill`, nothing else.

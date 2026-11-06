@@ -21,6 +21,7 @@
  * - Motion: none of its own. The current block jumps to its page rather than gliding, because the run of numbers
  *   reshapes around it. A press on it tightens its cast (--block-press) and sinks it --press-depth, at once (R2,
  *   R4); Previous and Next press as Button does. The rows it pages are the table's job (Table, animateChanges).
+ * - Flat: no tray; the current page is a grey bubble (--block) at the control radius, the other numbers --fg-muted words with a grey bubble on hover.
  */
 import { useRef } from "react";
 import { Button } from "@/components/button";
@@ -45,10 +46,12 @@ const GROUP = (n: number) => n.toLocaleString("en-GB");
 const TOUCH = "pointer-coarse:h-control-md";
 
 /** The tray the numbers sit in, as the Segmented control's: 2px in, so a page is the tray's height less 4px. */
-const TRAY = "flex h-control-sm items-stretch rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " + TOUCH;
+const TRAY = "flex h-control-sm items-stretch rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " +
+  /* Flat: no tray, the pages stand apart as pills. */
+  "in-[[data-material=flat]]:gap-1 in-[[data-material=flat]]:p-0 in-[[data-material=flat]]:bg-transparent " + TOUCH;
 
 const PAGE =
-  "grid h-full min-w-7 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] px-2 " +
+  "grid h-full min-w-7 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] in-[[data-material=flat]]:rounded-control px-2 " +
   "text-small font-normal tabular-nums [-webkit-tap-highlight-color:transparent] pointer-coarse:min-w-10 " +
   "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
@@ -56,7 +59,7 @@ const CURRENT =
   "bg-block text-fg shadow-(--block-lift) active:shadow-(--block-press) active:translate-y-(--press-depth) forced-colors:border-2";
 /** Another page: quiet until hovered, and a finger's press fills it, as on a segment. */
 const OTHER =
-  "text-fg-subtle hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
+  "text-fg-subtle in-[[data-material=flat]]:text-fg-muted hover:text-fg in-[[data-material=flat]]:hover:bg-surface-3 pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
 
 /** The page numbers to show: all of them when there are few, otherwise the ends and the current page's neighbours. `null` is a gap. */
 function pageItems(page: number, count: number): (number | null)[] {

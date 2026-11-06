@@ -203,7 +203,7 @@ function CustomizePanel() {
           { value: "fun", label: "Fun", picture: <FeelPreview fun on={look.fun} /> },
         ]}
       />
-      <div className="grid gap-3 border-t border-line pt-4">
+      <div className="grid gap-3 border-t border-line pt-4 in-[[data-material=flat]]:border-t-0">
         {modified ? (
           <>
             <ul className="grid gap-2" aria-label="Against the litt.md rules">
@@ -215,7 +215,7 @@ function CustomizePanel() {
               ))}
             </ul>
             {snippet && (
-              <pre tabIndex={0} aria-label="Tokens to paste into tokens.css" className="max-h-40 overflow-auto rounded-control bg-surface-2 p-3 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]">
+              <pre tabIndex={0} aria-label="Tokens to paste into tokens.css" className="max-h-40 overflow-auto rounded-control bg-surface-2 p-3 font-mono text-caption font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none">
                 {snippet}
               </pre>
             )}
@@ -240,7 +240,7 @@ function CustomizePanel() {
         )}
       </div>
       {/* The look is what leaves this browser: the edits for your app, and a link that shows it to someone else. */}
-      <div role="group" aria-labelledby="your-look" className="grid gap-3 border-t border-line pt-4">
+      <div role="group" aria-labelledby="your-look" className="grid gap-3 border-t border-line pt-4 in-[[data-material=flat]]:border-t-0">
         <div className="grid gap-1">
           <p className="flex flex-wrap items-baseline gap-x-2 text-small">
             <span id="your-look" className="font-title text-fg">

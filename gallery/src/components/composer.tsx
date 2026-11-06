@@ -6,6 +6,8 @@
  *   shade, because it is what you type into. While the text area has focus the line is --focus plus --focus-ring,
  *   as the Input's. Inside it, top to bottom: the file chips, the text area, and a toolbar row of sm controls
  *   padded --space-2. The line fades on the instant tier and nothing else about the box moves. Under Device the field is LCD glass in the mono, through the --field tokens.
+ * - Flat: a grey field at the surface radius with no outline (--cut is grey), focus the ink ring, a removable chip a white
+ *   bubble on it, and Send the round accent key that lies grey while empty (the Button's disabled look).
  * - Text: the body size (16px on coarse pointers, so iOS never zooms) in --fg, the placeholder in --fg-subtle,
  *   side padding as the Input's md. It starts one line tall and grows a line at a time up to `maxRows` (8), then
  *   scrolls inside. The height is set in a layout effect, so it snaps with the text and is never animated. A
@@ -122,7 +124,7 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
     <span
       className={[
         "inline-flex h-8 max-w-full min-w-0 items-center gap-2 rounded-control pl-2 font-normal text-fg",
-        onRemove ? "bg-block pr-1 shadow-(--block-lift) forced-colors:border" : "bg-surface-1 pr-2 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]",
+        onRemove ? "bg-block pr-1 shadow-(--block-lift) forced-colors:border in-[[data-material=flat]]:bg-surface-1" : "bg-surface-1 pr-2 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none",
         className,
       ].join(" ")}
     >
@@ -216,6 +218,8 @@ const BOX =
   "data-[dragging]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade)] " +
   "data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
+  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:has-[textarea:focus-visible]:shadow-(--focus-ring) " +
+  "in-[[data-material=flat]]:data-[dragging]:shadow-(--focus-ring) in-[[data-material=flat]]:data-[disabled]:shadow-none " +
   "forced-colors:border forced-colors:has-[textarea:focus-visible]:outline-2 forced-colors:has-[textarea:focus-visible]:outline-solid forced-colors:has-[textarea:focus-visible]:outline-offset-2";
 
 const AREA =

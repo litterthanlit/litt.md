@@ -22,6 +22,7 @@
  *   phase's mark tone. With `previousSeconds` a ghost bar at fg 12% shows the last run's length beside it, with
  *   "was 31s" at its foot. A step whose bar would be shorter than a row keeps the thin line. A failed step's bar is
  *   danger, the one status color a mark takes.
+ * - Flat: done and now are accent marks (the tick cut from an accent disc, the half-filled ring), waiting and skipped take the line-control edge, and the result row has no rule.
  * - Result: the closing row under a hairline. The label is body size in success, danger or fg by `tone`, the total
  *   is tabular in fg at the end, and the tone is said in hidden text.
  * - Bar: a strip of the whole run from data, not children. 32px tall at the control radius with overflow hidden,
@@ -70,10 +71,10 @@ const MARK_FG = "bg-[color-mix(in_oklab,var(--fg)_55%,transparent)]";
 const GHOST = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
 
 const ICON_TONE: Record<TimelineStatus, string> = {
-  done: "text-fg-muted",
-  running: "text-fg",
-  pending: "text-fg-subtle",
-  skipped: "text-fg-subtle",
+  done: "text-fg-muted in-[[data-material=flat]]:text-accent", // litt-allow: a mark filled with the accent, not text
+  running: "text-fg in-[[data-material=flat]]:text-accent", // litt-allow: a mark filled with the accent, not text
+  pending: "text-fg-subtle in-[[data-material=flat]]:text-line-control",
+  skipped: "text-fg-subtle in-[[data-material=flat]]:text-line-control",
   failed: "text-danger",
 };
 const RESULT_TONE: Record<TimelineTone, string> = {
@@ -406,7 +407,7 @@ export function TimelineResult({ label, total, tone = "neutral", className = "" 
     if (tone === "success") setBurst(hues.current.size ? [...hues.current] : []);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps -- on arrival only
   return (
-    <li ref={row} className={"mt-4 flex items-baseline justify-between gap-4 border-t border-line pt-4 " + className}>
+    <li ref={row} className={"mt-4 flex items-baseline justify-between gap-4 border-t border-line in-[[data-material=flat]]:border-transparent pt-4 " + className}>
       <span className={"relative min-w-0 text-body " + RESULT_TONE[tone]}>
         {label}
         <span className="sr-only">{RESULT_WORD[tone]}</span>

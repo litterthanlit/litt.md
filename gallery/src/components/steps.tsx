@@ -15,9 +15,10 @@
  *   are never buttons: a flow moves forward by its own Continue.
  * - Accessibility: an ordered list named by the label. The current step has aria-current="step", and each step's state
  *   is said in hidden text ("done", "current", "not started"). Nothing animates; the colors change at once.
+ * - Flat: done is an accent disc with a tick, now an accent ring, to come the --line-control edge; connectors and rails are thin accent or grey pills.
  */
 import type { ReactNode } from "react";
-import { StatusIcon } from "@/components/icons";
+import { CheckIcon, StatusIcon } from "@/components/icons";
 
 export type Step = {
   /** Unique, and the React key. */
@@ -50,6 +51,13 @@ const back =
   "rounded-control transition-colors duration-(--dur-instant) ease-litt hover:text-fg " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
+/* Flat's mark (proposals/flat-pill.md): done is an accent disc with a tick, now an accent ring, to come the 3:1 control edge. */
+const FLAT_MARK: Record<State, string> = {
+  done: "bg-accent text-accent-fg",
+  current: "border-2 border-accent",
+  todo: "border-[1.5px] border-line-control",
+};
+
 /** The mark, the label and the hidden state of one step, as a button when it can be gone back to. */
 function Label({ step, state, onSelect }: { step: Step; state: State; onSelect?: () => void }) {
   const words = (
@@ -58,7 +66,17 @@ function Label({ step, state, onSelect }: { step: Step; state: State; onSelect?:
       <span className="sr-only">, {SAID[state]}</span>
     </>
   );
-  const mark = <StatusIcon status={MARK[state]} className={"shrink-0 " + (state === "current" ? "text-fg" : state === "done" ? "text-fg-muted" : "text-fg-subtle")} />;
+  const mark = (
+    <>
+      <StatusIcon
+        status={MARK[state]}
+        className={"shrink-0 in-[[data-material=flat]]:hidden " + (state === "current" ? "text-fg" : state === "done" ? "text-fg-muted" : "text-fg-subtle")}
+      />
+      <span aria-hidden="true" className={"hidden size-4 shrink-0 place-items-center rounded-pill in-[[data-material=flat]]:grid " + FLAT_MARK[state]}>
+        {state === "done" && <CheckIcon className="size-3" />}
+      </span>
+    </>
+  );
   return onSelect && state === "done" ? (
     <button type="button" onClick={onSelect} className={"flex min-w-0 items-center gap-2 text-left text-small " + INK[state] + " " + back}>
       {mark}
@@ -89,7 +107,7 @@ export function Steps({ label, steps, current, onStepSelect, orientation = "hori
                 <Label step={step} state={state} onSelect={onStepSelect && (() => onStepSelect(i))} />
               </div>
               {/* The hairline down to the next mark, in --fg once this step is done. */}
-              <span aria-hidden="true" className={"mx-auto w-px " + (i < steps.length - 1 ? (state === "done" ? "bg-fg" : "bg-line") : "")} />
+              <span aria-hidden="true" className={"mx-auto w-px " + (i < steps.length - 1 ? (state === "done" ? "bg-fg in-[[data-material=flat]]:bg-accent" : "bg-line in-[[data-material=flat]]:bg-surface-3") : "") + " in-[[data-material=flat]]:w-0.5 in-[[data-material=flat]]:rounded-pill"} />
               <div className={"pb-6 text-small text-fg-subtle " + (i === steps.length - 1 ? "pb-0" : "")}>
                 {step.description && <p className="pt-1">{step.description}</p>}
               </div>
@@ -109,7 +127,7 @@ export function Steps({ label, steps, current, onStepSelect, orientation = "hori
           return (
             <li key={step.id} aria-current={state === "current" ? "step" : undefined} className="flex min-w-0 flex-1 items-center gap-3 last:flex-none">
               <Label step={step} state={state} onSelect={onStepSelect && (() => onStepSelect(i))} />
-              {i < steps.length - 1 && <span aria-hidden="true" className={"h-px min-w-6 flex-1 " + (state === "done" ? "bg-fg" : "bg-line")} />}
+              {i < steps.length - 1 && <span aria-hidden="true" className={"h-px min-w-6 flex-1 in-[[data-material=flat]]:h-0.5 in-[[data-material=flat]]:rounded-pill " + (state === "done" ? "bg-fg in-[[data-material=flat]]:bg-accent" : "bg-line in-[[data-material=flat]]:bg-surface-3")} />}
             </li>
           );
         })}
@@ -128,7 +146,7 @@ export function Steps({ label, steps, current, onStepSelect, orientation = "hori
             const state = stateOf(i);
             return (
               <li key={step.id} aria-current={state === "current" ? "step" : undefined} className="flex-1">
-                <span className={"block h-1 rounded-control " + (state === "todo" ? "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]" : "bg-fg")} />
+                <span className={"block h-1 rounded-control in-[[data-material=flat]]:rounded-pill " + (state === "todo" ? "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] in-[[data-material=flat]]:bg-surface-3" : "bg-fg in-[[data-material=flat]]:bg-accent")} />
                 <span className="sr-only">
                   {step.label}, {SAID[state]}
                 </span>

@@ -5,6 +5,7 @@
  * - Surface: --surface-2 with an inset --line hairline at the surface radius, as the CodeBlock's. A 32px header holds
  *   the label in the mono at the caption size in --fg-subtle, your actions, and Copy. The lines are the mono at the
  *   small size, padded 16px, under the header.
+ * - Flat: a grey card (--surface-3) with no hairline, and Copy a round white key.
  * - A line: its number in a gutter (mono caption, --fg-subtle, never selected or copied), its time when it has one
  *   (in one right-aligned column as wide as the longest time, so the text stays in line as "+9.6s" becomes "+10.2s"),
  *   then the text. Info is --fg-muted, debug --fg-subtle. A warning's text is --warning and an error's --danger, each
@@ -145,7 +146,7 @@ export function LogView({
   }, [lines]);
 
   return (
-    <div className={"relative grid min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)] rounded-surface bg-surface-2 " + className}>
+    <div className={"relative grid min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)] rounded-surface bg-surface-2 in-[[data-material=flat]]:bg-surface-3 " + className}>
       <div className="flex h-control-sm items-center justify-between gap-2 pr-1 pl-4 pointer-coarse:h-control-md">
         <span className="min-w-0 truncate text-caption font-normal text-fg-subtle">{label}</span>
         <div className="flex shrink-0 items-center gap-1">
@@ -157,7 +158,7 @@ export function LogView({
             aria-label="Copy log"
             disabled={!lines.length}
             onClick={copy}
-            className="focus-visible:outline-offset-[-2px] pointer-coarse:h-control-md pointer-coarse:w-control-md"
+            className="focus-visible:outline-offset-[-2px] pointer-coarse:h-control-md pointer-coarse:w-control-md in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:hover:bg-surface-1"
           >
             {copied === "copied" ? <CheckIcon /> : <CopyIcon />}
           </Button>
@@ -210,7 +211,7 @@ export function LogView({
         </div>
       )}
 
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-surface shadow-[inset_0_0_0_1px_var(--line)]" />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-surface shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:hidden" />
       <span role="status" aria-live="polite" className="sr-only">
         {copied === "copied" ? "Copied" : copied === "failed" ? "Copy failed. Select the lines and copy them by hand." : ""}
       </span>

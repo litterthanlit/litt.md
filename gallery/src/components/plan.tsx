@@ -16,6 +16,8 @@
  *   half-filled circle, never spinning or pulsing, and carries aria-current="step". Done is fg-muted with the check,
  *   never struck through: the color steps it back. Failed takes the x in danger, its label stays fg, and "Failed"
  *   follows in words. Skipped is the dashed circle in fg-subtle with "Skipped". Status color stays on the icon.
+ * - Flat: a grey card at the surface radius with no frame. A done step is a round accent mark with a --accent-fg tick, the
+ *   running step an accent half-filled ring, and the rail's fill the accent.
  * - Detail: a step can carry one line under it at the caption size in fg-subtle, in the label's column.
  * - Words: every status is also said in hidden text after the label ("Run the build, running"), and the visible
  *   "Failed" and "Skipped" are hidden from assistive tech so the status is said once.
@@ -32,7 +34,7 @@
  */
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
-import { StatusIcon, type StepStatus } from "@/components/icons";
+import { CheckIcon, StatusIcon, type StepStatus } from "@/components/icons";
 import { useTransition, useTravel } from "@/motion";
 
 /** One step of a plan. */
@@ -63,7 +65,7 @@ export type PlanProps = {
 /** The icon takes the text color, so the tone is set here: running fg, done fg-muted, failed danger, the rest fg-subtle. */
 const ICON_TONE: Record<StepStatus, string> = {
   pending: "text-fg-subtle",
-  running: "text-fg",
+  running: "text-fg in-[[data-material=flat]]:text-accent-text",
   done: "text-fg-muted",
   failed: "text-danger",
   skipped: "text-fg-subtle",
@@ -155,7 +157,7 @@ export function Plan({ label, steps, bare = false, className = "" }: PlanProps) 
   });
 
   return (
-    <div className={className}>
+    <div className={(bare ? "" : "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:p-4 in-[[data-material=flat]]:forced-colors:border ") + className}>
       {bare ? (
         <span id={id} className="sr-only">
           {label}
@@ -172,7 +174,7 @@ export function Plan({ label, steps, bare = false, className = "" }: PlanProps) 
             </span>
           </div>
           <div aria-hidden="true" className={"h-1 overflow-hidden rounded-control " + TRACK}>
-            <div className="h-full rounded-control bg-fg" style={{ width: `${share}%` }} />
+            <div className="h-full rounded-control bg-fg in-[[data-material=flat]]:bg-accent" style={{ width: `${share}%` }} />
           </div>
         </div>
       )}
@@ -190,7 +192,16 @@ export function Plan({ label, steps, bare = false, className = "" }: PlanProps) 
               className="grid min-h-8 grid-cols-[1rem_minmax(0,1fr)] items-start gap-x-3 py-1.5"
             >
               <span className={`flex h-[1lh] items-center text-small ${FADE} ${ICON_TONE[step.status]}`}>
-                <StatusIcon status={step.status} />
+                {step.status === "done" ? (
+                  <>
+                    <StatusIcon status="done" className="in-[[data-material=flat]]:hidden" />
+                    <span className="hidden size-4 place-items-center rounded-pill bg-accent text-accent-fg in-[[data-material=flat]]:grid forced-colors:border">
+                      <CheckIcon className="size-3" />
+                    </span>
+                  </>
+                ) : (
+                  <StatusIcon status={step.status} />
+                )}
               </span>
               <div className="min-w-0">
                 <p className={`text-small ${FADE} ${LABEL_TONE[step.status]}`}>

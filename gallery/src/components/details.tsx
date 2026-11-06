@@ -27,6 +27,7 @@
  * - Semantics: a description list. Each label is a term and its value the description, so a screen reader reads
  *   "Region, fra1". The card links nowhere, so it has no hover and no focus stop of its own.
  * - Motion: none. A value that changes just changes, and the copy icon swaps at once.
+ * - Flat: no rules between rows or under the header, and the card casts the float shadow in place of its hairline.
  */
 import {
   createContext,
@@ -55,7 +56,7 @@ const DetailsContext = createContext<{ layout: DetailsLayout; loading: boolean }
 /* The list itself. Rows use a subgrid, so every label shares one column and the values line up. */
 const LIST: Record<DetailsLayout, string> = {
   rows:
-    "grid grid-cols-[fit-content(40%)_minmax(0,1fr)] gap-x-6 divide-y divide-line " +
+    "grid grid-cols-[fit-content(40%)_minmax(0,1fr)] gap-x-6 divide-y divide-line in-[[data-material=flat]]:divide-y-0 " +
     "@max-[20rem]:grid-cols-1",
   grid: "grid grid-cols-1 gap-x-8 gap-y-6 @min-[20rem]:grid-cols-2",
 };
@@ -114,7 +115,7 @@ export function Details({
   ...rest
 }: DetailsProps) {
   const header = title !== undefined || action !== undefined;
-  const surface = bare ? "" : `litt-raised rounded-surface ${header ? PADDING[layout].header : PADDING[layout].plain}`;
+  const surface = bare ? "" : `litt-raised rounded-surface in-[[data-material=flat]]:shadow-(--shadow-float) ${header ? PADDING[layout].header : PADDING[layout].plain}`;
   return (
     <DetailsContext.Provider value={{ layout, loading }}>
       <Tag aria-busy={loading || undefined} className={`@container min-w-0 ${surface} ${className}`} {...rest}>
@@ -131,7 +132,7 @@ export function Details({
           className={[
             LIST[layout],
             layout === "grid" ? COLUMNS[columns] : "",
-            header ? (layout === "grid" ? "border-t border-line pt-6" : "border-t border-line") : "",
+            header ? (layout === "grid" ? "border-t border-line in-[[data-material=flat]]:border-t-0 pt-6" : "border-t border-line in-[[data-material=flat]]:border-t-0") : "",
           ].join(" ")}
         >
           {children}

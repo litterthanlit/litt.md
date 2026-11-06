@@ -30,6 +30,7 @@
  * - On coarse screens the links, the wordmark link and the menu button are --control-md tall (44px),
  *   and a pressed link fills like a hovered one (pointer-coarse:active:, instant tier, color only),
  *   because a finger has no hover.
+ * - Flat: no hairline under the bar; the current link is a grey bubble, the others --fg-muted words.
  */
 import type { ReactNode } from "react";
 import { Button } from "./button";
@@ -84,13 +85,13 @@ const FROM = {
 } as const;
 
 const link =
-  "relative flex h-control-sm items-center rounded-control px-control-pad-sm text-small whitespace-nowrap select-none " +
+  "relative flex h-control-sm items-center rounded-control px-control-pad-sm text-small in-[[data-material=flat]]:text-fg-muted whitespace-nowrap select-none " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color,color] duration-(--dur-instant) ease-litt " +
   "pointer-coarse:h-control-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 /* The current page is raised (R3); the others fill on hover, and on a press on touch. */
 const current = "bg-block text-fg shadow-(--block-lift) forced-colors:border";
 const other =
-  "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " +
+  "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] in-[[data-material=flat]]:hover:bg-surface-3 hover:text-fg " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
 
 /** The sticky glass header. It sits at the top of the page, with content that scrolls under it. */
@@ -109,7 +110,7 @@ export function Header({
   const draw = renderLink ?? ((l: HeaderLink, props: HeaderLinkProps) => <a href={l.href} {...props} />);
   return (
     /* Full-bleed, so no corners: .litt-glass carries the surface radius. */
-    <header className={"litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none " + className}>
+    <header className={"litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none in-[[data-material=flat]]:before:shadow-none " + className}>
       {/* The bar is the container, so the layout follows the width it is given. */}
       <div className="@container">
         <div className="mx-auto flex h-(--header-h) max-w-wide items-center gap-4 px-gutter @min-[40rem]:gap-6">

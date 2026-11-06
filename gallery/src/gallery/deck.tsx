@@ -49,7 +49,7 @@ export function Deck() {
   const { theme, setTheme, look, setLook, radius, lockedRadius, setRadius, link, modified, reset } = useCustomize();
   const stop = (SHAPES as readonly number[]).indexOf(radius);
   return (
-    <section aria-labelledby="deck-title" className="litt-raised grid gap-8 p-6 sm:p-8">
+    <section aria-labelledby="deck-title" className="litt-raised grid gap-8 p-6 sm:p-8 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none">
       <header className="grid gap-1">
         <h2 id="deck-title" className="text-body font-title text-fg">
           Tune the gallery
@@ -100,7 +100,7 @@ export function Deck() {
         />
       </Row>
       {/* As tall with Reset as without, so the deck never grows under the hand that changed it. */}
-      <footer data-fun-cue="" className="-mt-2 border-t border-line pt-4">
+      <footer data-fun-cue="" className="-mt-2 border-t border-line pt-4 in-[[data-material=flat]]:border-transparent">
         <div className="flex h-control-sm items-center justify-between gap-4 pointer-coarse:h-control-md">
           <p className="text-caption font-normal text-fg-subtle" aria-live="polite">
             {link ? `From a link: ${lookWords(link.look)}.` : modified ? "Tuned in this browser." : "The gallery's defaults: monochrome, flat, calm, the locked shape."}

@@ -2,6 +2,7 @@
  * Stat: a number tile for one figure that tells you how things stand, such as active projects or the
  * median build time. Compose a row of them in a StatGroup.
  *
+ * - Flat: no box at all (no fill, no hairline); the figure sits on the page and space parts the tiles.
  * - Surface (components.md, Stat): `.litt-raised`, so the surface radius, surface-1, an inset hairline and the
  *   top highlight, and no outer shadow (R3). Never glass (R3), never an accent rail. Padding is space-4 in a narrow
  *   group and space-6 once the group is 48rem wide. A tile links nowhere, so it has no hover and no motion.
@@ -75,7 +76,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", trend, class
   const tile = (
     <div
       className={
-        "litt-raised flex h-full min-w-0 flex-col gap-2 rounded-surface p-4 @min-[48rem]:p-6 " + className
+        "litt-raised in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-none flex h-full min-w-0 flex-col gap-2 rounded-surface p-4 @min-[48rem]:p-6 " + className
       }
     >
       <dt className="text-small text-fg-subtle">{label}</dt>

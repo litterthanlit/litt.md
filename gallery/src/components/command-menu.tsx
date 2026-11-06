@@ -192,7 +192,8 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
     <>
       <div
         className={
-          "flex h-13 shrink-0 items-center gap-3 border-b border-[var(--glass-border)] " + (coarse && onCancel ? "pl-4 pr-1" : "px-4")
+          "flex h-13 shrink-0 items-center gap-3 border-b border-[var(--glass-border)] " + (coarse && onCancel ? "pl-4 pr-1" : "px-4") +
+          " in-[[data-material=flat]]:m-1 in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:border-transparent in-[[data-material=flat]]:bg-surface-3"
         }
       >
         <SearchIcon className="shrink-0 text-fg-subtle" />
@@ -231,7 +232,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           ref={glide.ref}
           {...glide.props}
           onMouseDown={(e) => e.preventDefault()}
-          className="relative max-h-[var(--cmd-list-max,min(55dvh,22rem))] min-h-0 overflow-y-auto overscroll-contain p-1"
+          className="relative max-h-[var(--cmd-list-max,min(55dvh,22rem))] min-h-0 overflow-y-auto overscroll-contain p-1 in-[[data-material=flat]]:[&>[data-ring]]:rounded-[calc(var(--radius-surface)-4px)]"
         >
           {glide.highlight}
           {sections.map((s) => (
@@ -249,7 +250,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
                   data-active={r.index === current || undefined}
                   {...GLIDE_ROW}
                   onClick={() => !r.disabled && onSelect(r)}
-                  className="relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText] font-field"
+                  className="relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText] font-field"
                 >
                   {r.icon !== undefined && <span className="grid size-4 shrink-0 place-items-center">{r.icon}</span>}
                   <span className="min-w-0 truncate">{r.label}</span>
@@ -271,7 +272,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           Under 24rem the arrow hint goes first, since the Enter hint says what will happen.
           On a touch screen every hint here is a keyboard one, so the whole footer goes. */}
       {!coarse && (
-        <div className="@container shrink-0 border-t border-[var(--glass-border)]">
+        <div className="@container shrink-0 border-t border-[var(--glass-border)] in-[[data-material=flat]]:border-transparent">
           <div className="flex h-10 items-center gap-4 px-4 text-caption text-fg-subtle">
             <span className="flex @max-sm:hidden">
               <Hint keys="↑↓">to move</Hint>
@@ -286,6 +287,11 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
     </>
   );
 }
+
+/** Flat: the glass becomes a solid surface-1 card with the modal shadow and no hairline. */
+const FLAT_PANEL =
+  "in-[[data-material=flat]]:[--glass-bg:var(--surface-1)] in-[[data-material=flat]]:[--glass-border:transparent] " +
+  "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px] ";
 
 /* ---------------------------------------------------------------- dialog */
 
@@ -379,7 +385,7 @@ function Body({
           <motion.div
             ref={grow.ref}
             className={
-              "litt-glass pointer-events-auto w-full max-w-140 origin-top rounded-surface outline-none [--glass-shadow:var(--shadow-modal)]" +
+              "litt-glass pointer-events-auto w-full max-w-140 origin-top rounded-surface outline-none [--glass-shadow:var(--shadow-modal)] " + FLAT_PANEL +
               (compact ? " flex max-h-full flex-col [--cmd-list-max:none]" : "")
             }
             initial={om.switches ? { opacity: 0 } : grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: -travel / 2, scale: 0.98 }}

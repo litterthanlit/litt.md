@@ -9,6 +9,8 @@
  *   segments, the picked one the raised block (R3: --block, --block-lift), gliding to the pick on the responsive tier (fun mode's glide
  *   spring in fun mode). The track fills its column, so the options of one product line up. Keep labels short; a long
  *   list of values is a Select.
+ * - Flat (proposals/flat-pill.md): the text track is the Segmented control's Flat look (no frame, the pick a grey
+ *   bubble). Swatch chips keep their fg-12% hairline: it is the product's color needing an edge, not chrome.
  * - Swatch values (every value has a color or an image): 24px chips (32 on a touch screen) at the control radius with
  *   an fg-12% hairline, 8px apart, as the Color picker's swatches. The color is the product's, not litt's: content,
  *   like a photograph, never a data hue and never chrome. It fills only the chip. The picked chip carries a 16px

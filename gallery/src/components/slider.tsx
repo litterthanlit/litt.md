@@ -33,6 +33,10 @@
  * - Disabled: everything lies flat (nothing to push): the plate --surface-2 with a hairline, the slot --surface-3,
  *   the cap --surface-2 with a hairline. The label dims to --fg-disabled; the value and the end words stay at
  *   --fg-subtle, because they are still read.
+ * - Flat (proposals/flat-pill.md): no plate. The slot is a thin 4px --surface-3 track, the pulled-out part is the accent,
+ *   and the cap is a 20px accent knob ringed in --canvas, with no grip line. The travel's inset is --sl-pad (the plate
+ *   sets it, and padOf reads it back as the plate's left padding): 14px or the radius in Press and Device, 10px, the
+ *   knob's radius, in Flat.
  * - Forced colors drops box-shadow and background colors, so the plate, the slot and the cap get real borders and
  *   the cap takes the system highlight.
  *
@@ -145,8 +149,11 @@ export type RangeSliderProps = {
    for a single slider, carries the focus ring. Disabled, it lies flat. */
 const plateBase =
   "group relative block h-control-md w-full cursor-grab touch-pan-y select-none rounded-control bg-block shadow-(--plate-lift) " +
+  "[--sl-pad:max(14px,min(var(--radius-control),calc(var(--control-md)/2)))] pl-(--sl-pad) in-[[data-material=flat]]:[--sl-pad:10px] " +
+  "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-none " +
   "data-held:cursor-grabbing " +
   "data-disabled:cursor-not-allowed data-disabled:bg-surface-2 data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
+  "in-[[data-material=flat]]:data-disabled:bg-transparent in-[[data-material=flat]]:data-disabled:shadow-none " +
   "forced-colors:border";
 const plateRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
 
@@ -154,6 +161,7 @@ const plateRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-o
    tall, its corners the control radius less 2px. It clips the fill. Disabled, it is a flat --surface-3. */
 const slot =
   "pointer-events-none absolute top-4 h-3 overflow-hidden rounded-[calc(var(--radius-control)-2px)] bg-slot shadow-(--slot-shade) " +
+  "in-[[data-material=flat]]:top-5 in-[[data-material=flat]]:h-1 " +
   "group-data-disabled:bg-surface-3 group-data-disabled:shadow-none forced-colors:border";
 
 /* The cap's travel: inset (see inset) from each end of the plate, which is 8px in from the slot's ends. A rail as wide
@@ -161,19 +169,21 @@ const slot =
 const capTravel = "pointer-events-none absolute inset-y-0";
 const fillTravel = "absolute inset-y-0 left-2 right-2";
 const fillLook =
-  "bg-slot-fill shadow-(--slot-fill-shade) " +
+  "bg-slot-fill shadow-(--slot-fill-shade) in-[[data-material=flat]]:bg-accent " +
   "group-data-disabled:bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] group-data-disabled:shadow-none forced-colors:bg-[Highlight]";
 /* The glide: a jump of the cap (a key, or a press on the slot) settles on the responsive spring. A drag follows 1:1. */
 const glides = " transition-transform duration-(--dur-responsive) ease-responsive";
 
 /* The cap: 8px wide and 36px tall, 4px from the plate's top, centered on its rail's right edge. It leans from its foot
    and sinks while held, on the responsive spring. */
-const capBox = "absolute top-1 -right-1 h-9 w-2 origin-bottom transition-transform duration-(--dur-responsive) ease-responsive";
+const capBox = "absolute top-1 -right-1 h-9 w-2 origin-bottom in-[[data-material=flat]]:top-3 in-[[data-material=flat]]:-right-2.5 in-[[data-material=flat]]:h-5 in-[[data-material=flat]]:w-5 in-[[data-material=flat]]:origin-center transition-transform duration-(--dur-responsive) ease-responsive";
 const capFace = (held: boolean) =>
   "absolute inset-0 rounded-[calc(var(--radius-control)-2px)] forced-colors:border forced-colors:bg-[Highlight] " +
   (held ? "bg-cap-held shadow-(--cap-press) " : "bg-cap shadow-(--cap-lift) ") +
-  "group-data-disabled:bg-surface-2 group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)]";
-const capGrip = "absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-cap-grip group-data-disabled:bg-line";
+  "in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-accent in-[[data-material=flat]]:shadow-[0_0_0_3px_var(--canvas)] " +
+  "group-data-disabled:bg-surface-2 group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
+  "in-[[data-material=flat]]:group-data-disabled:bg-fg-disabled in-[[data-material=flat]]:group-data-disabled:shadow-[0_0_0_3px_var(--canvas)]";
+const capGrip = "in-[[data-material=flat]]:hidden absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-cap-grip group-data-disabled:bg-line";
 
 /* Radix's thumb holds the role, the keys and the value. The cap you see is drawn above it, so the thumb is invisible
    and as wide as the cap, which keeps it on the same travel. */
@@ -205,13 +215,12 @@ function setRef<T>(ref: Ref<T> | undefined, el: T | null) {
 /* How far in from each end of the plate the cap's center can go: 14px, or the plate's corner radius when that is
    larger (the plate draws it at most half its height). On a pill the cap then stands at the center of each end's
    half-circle, as clear of the curve as it is of the top and bottom, instead of rubbing it. The travel is the plate
-   less twice this. inset is the CSS, padOf the same rule read off a mounted plate; change them together. */
+   less twice this. --sl-pad (plateBase) is the CSS rule, and padOf reads it back as the plate's left padding; the 14 in both is PAD. */
 const PAD = 14;
-const inset = (less = 0) => `calc(max(${PAD}px, min(var(--radius-control), var(--control-md) / 2)) - ${less}px)`;
+const inset = (less = 0) => `calc(var(--sl-pad) - ${less}px)`;
 const insetX = (less = 0): CSSProperties => ({ left: inset(less), right: inset(less) });
 function padOf(plate: HTMLElement) {
-  const r = parseFloat(getComputedStyle(plate).borderTopLeftRadius) || 0;
-  return Math.max(PAD, Math.min(r, plate.offsetHeight / 2));
+  return parseFloat(getComputedStyle(plate).paddingLeft) || PAD;
 }
 
 /** The pointer on the plate, undoing any scale above it: its x, the plate's width and the travel's inset, in the plate's own px. */
@@ -239,7 +248,7 @@ function Notch({ p, home }: { p: number; home: boolean }) {
       aria-hidden="true"
       className={
         "pointer-events-none absolute w-px -translate-x-1/2 group-data-disabled:hidden forced-colors:bg-[CanvasText] " +
-        (home ? "top-7 h-2 bg-notch-home" : "top-8 h-1 bg-notch")
+        (home ? "top-7 h-2 bg-notch-home in-[[data-material=flat]]:top-8" : "top-8 h-1 bg-notch")
       }
       style={{ left: `calc(${inset()} + (100% - 2 * ${inset()}) * ${p.toFixed(4)})` }}
     />

@@ -7,6 +7,9 @@
  *   --block-lift) gliding inside it: the Segmented control's track and block, grown tall. The tray floor is what makes
  *   unpicked cards read as a choice and not as static cards. Flat cards with a raised pick fail in light mode, where
  *   --block is the same white as --surface-1, so only a shadow would tell the pick apart. Never an accent fill (R6).
+ * - Flat (proposals/flat-pill.md): no tray. Each option is a grey card (--surface-3, --space-2 apart, at the surface
+ *   radius), and the picked one lifts to --surface-1 with a 2px accent ring, which is the block gliding in. The ring is
+ *   an inset shadow, so forced colors keeps the surface's border.
  * - Every card in a picker has the same size: equal columns, or equal rows when stacked. So the block never changes
  *   shape while it glides, and the details (a price) line up across a row.
  * - sm: tiles, a picture over a word in one row of 2 to 5, the label --fg-subtle and the picked one --fg. The tray
@@ -89,15 +92,15 @@ const ARRANGE: Record<2 | 3 | 4 | 5 | 6, { tray: string; card: string; detail: s
 
 const SIZES: Record<CardPickerSize, { tray: string; card: string; corner: string }> = {
   sm: {
-    tray: "grid grid-flow-col auto-cols-fr rounded-control p-0.5",
+    tray: "grid grid-flow-col auto-cols-fr rounded-control p-0.5 in-[[data-material=flat]]:gap-2 in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:p-0",
     card: "grid min-w-0 justify-items-center gap-2 px-1 pt-3 pb-2.5 text-caption font-title",
-    corner: "rounded-[calc(var(--radius-control)-2px)]",
+    corner: "rounded-[calc(var(--radius-control)-2px)] in-[[data-material=flat]]:rounded-surface",
   },
   lg: {
-    tray: "grid grid-cols-1 auto-rows-fr gap-1 rounded-surface p-1",
+    tray: "grid grid-cols-1 auto-rows-fr gap-1 rounded-surface p-1 in-[[data-material=flat]]:gap-2 in-[[data-material=flat]]:p-0",
     card: "flex min-h-16 min-w-0 items-start gap-3 p-4 text-left",
     /* 4px into the tray's surface radius: the control radius at every shape but the pill, where that would be rounder than the tray. */
-    corner: "rounded-[calc(var(--radius-surface)-4px)]",
+    corner: "rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:rounded-surface",
   },
 };
 
@@ -147,7 +150,7 @@ export function CardPicker<T extends string>({
           <label
             key={o.value}
             className={
-              "relative select-none " + look.corner + " " + look.card + (size === "lg" ? " " + arrange.card : "") + " " +
+              "relative select-none " + (picked ? "" : "in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:hover:bg-(--block-hover) ") + look.corner + " " + look.card + (size === "lg" ? " " + arrange.card : "") + " " +
               "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
               (off
                 ? "cursor-not-allowed text-fg-disabled"
@@ -180,7 +183,7 @@ export function CardPicker<T extends string>({
                 layoutId="card-picker-surface"
                 transition={glide}
                 aria-hidden="true"
-                className={"absolute inset-0 " + look.corner + " bg-block shadow-(--block-lift) forced-colors:border-2"}
+                className={"absolute inset-0 " + look.corner + " bg-block shadow-(--block-lift) in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-[inset_0_0_0_2px_var(--accent)] forced-colors:border-2"}
               />
             )}
             {size === "sm" ? (
