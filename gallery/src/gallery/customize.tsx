@@ -5,8 +5,8 @@
  *
  * Two sections, by where a choice goes. Look (the accent, the material and motion's feel) is what Copy setup and Copy
  * link carry, so Your look sits under its three controls. This browser (the theme, the shape and the face) stays here.
- * A choice whose picture says more than its word is a tile (the registry's CardPicker at sm): each accent as a small
- * button in its color, each material as a block in its tray, each shape as a card and a control at that radius, each
+ * A choice whose picture says more than its word is a tile (the registry's CardPicker at sm): each accent as a dot in
+ * its color, each material as a block in its tray, each shape as a card and a control at that radius, each
  * face as "Aa". A choice the word says whole is a row: the theme on a Segmented control, fun motion on a Switch, as
  * the overview's deck has them. Surprise me shuffles the accent, the material, the shape, the face and the feel at
  * once, and says what it picked.
@@ -123,7 +123,7 @@ function CustomizePanel() {
           legend="Accent"
           value={look.accent}
           onValueChange={(accent) => setLook({ accent })}
-          options={ACCENTS.map((a) => ({ value: a.id, label: accentName(a.id, look.material, true), picture: <AccentChip accent={a.id} /> }))}
+          options={ACCENTS.map((a) => ({ value: a.id, label: accentName(a.id, look.material, true), picture: <AccentChip accent={a.id} size="dot" /> }))}
         />
         <CardPicker
           size="sm"
