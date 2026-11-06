@@ -468,7 +468,7 @@ export function ToolApproval({
           <p id={titleId} className="text-body font-title text-fg">
             {title}
           </p>
-          <code className="block rounded-control bg-surface-2 px-3 py-2 font-mono text-small text-fg whitespace-pre-wrap [overflow-wrap:anywhere]">
+          <code className="block rounded-[calc(var(--radius-surface)-4px)] bg-surface-2 px-3 py-2 font-mono text-small text-fg whitespace-pre-wrap [overflow-wrap:anywhere]">
             {command}
           </code>
           {given(description) && <p className="text-small text-fg-subtle">{description}</p>}

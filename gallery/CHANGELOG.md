@@ -4,6 +4,31 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-05 · Device, a third material, and nothing rounder than what holds it
+
+Device says litt's depth ladder in hardware, after the components studies: one attribute on `<html>`, `data-material="device"`, and the components follow. Press stays the default.
+
+At the pill, rows and fields that wrap keep their one-line corners, and nothing sits rounder than the box that holds it.
+
+- **changed** `number-field`, `tag`: a stepper, and a raised tag in a field, take the field's radius less their 4px inset, never under 2px. At litt's own radius they are 2px as before; at 6px they are 2px instead of 4px, so they share the field's corner center instead of sitting rounder. Nothing in your code has to change.
+- **changed** `litt`: a third material, Device. `data-material="device"` on `<html>` sets an aluminium body (`--litt-device-*`, in each theme), plates on it, wells cut into it, keys that stand on a 2px skirt and sink the whole 2px when pressed, and fields behind LCD glass. The accents, status inks and data hues are retuned for the body, so every contrast pair still passes; `data-accent="pink"` and `"mono"` still win on the same element. New tokens every material sets: `--litt-field`, `--litt-field-ink`, `--litt-field-ink-subtle`, `--litt-field-line`, `--litt-field-shade` and `--litt-field-font` (the cut, the inks and the sans, outside Device), and `--litt-label-case`, `--litt-label-tracking` and `--litt-engrave` with the `litt-legend` class (a 12px label, engraved capitals under Device). Reduced motion keeps a key still. Nothing changes until you set the attribute. Device sets field text in Geist Mono, so load it at 400.
+- **changed** `litt`: Device, reshaped after the studies. Every word sets in Geist Mono (Device sets `--litt-font-sans` to the mono; load it at 400, 500 and 600). Its accent is orange: a deep orange with white words on the light body, a bright orange with dark words in the dark, with `--litt-accent-fg` and `--litt-accent-tint` to match; Pink and Monochrome still win when set. Every panel (`litt-raised`) and overlay (`litt-glass`) is a dark LCD screen set into the light body, with its own inks, keys and hues (`--litt-device-screen-*`), so a component inside one needs nothing. Under Device, amber is an ochre and rose a mauve, so both stand apart from the orange. New `--litt-accent-pink-fg` keeps the words on a pink fill white wherever a material changes `--litt-accent-fg`.
+- **changed** `input`, `number-field`, `code-input`, `combobox`, `token-input`, `composer`: the box you type into reads the field tokens (`bg-litt-field`, `text-litt-field-ink`, `--litt-field-line`, `--litt-field-shade`, `font-field`), so under `data-material="device"` it is LCD glass with its text in the mono. Under Press and Flat these are the cut, the inks and the sans, so nothing changes there. A `mono` Input keeps the mono everywhere. The code input's caret takes the field's ink.
+- **changed** `command-menu`: under Device the search and the results set in the mono, and the group labels are engraved. Nothing changes under Press or Flat.
+- **changed** `menu`, `app-shell`, `gauge`, `table`, `cohort-grid`, `run-list`, `combobox`: their 12px group and column labels carry `litt-legend`, engraved capitals under Device. Nothing changes under Press or Flat.
+- **changed** `rule-builder`: a condition row's corners stop at half its one-line height (22px) and a group's are at least 4px rounder than its rows, so at the pill a row that wraps keeps its one-line corners instead of turning into a lozenge, and a group never holds rows rounder than itself. At litt's own radius, and anything up to 22px, nothing moves. Reinstall `combobox` with it.
+- **changed** `combobox`, `token-input`: a field's corners stop at half its one-line height, so at the pill a field that wraps to a second row of tokens stays concentric with them instead of curving into the first one. On one line, and at radii up to 16px, nothing moves. Nothing in your code has to change.
+- **changed** `card`, `list`: a cover set 4px into the card (the inset and plain cover styles) takes the surface radius less 4px. That is the control radius at every shape but the pill, where a 28px cover sat rounder than its 16px card; there it is 12px. Nothing in your code has to change.
+- **changed** `card-picker`: the large size's cards take the tray's surface radius less 4px, so at the pill they are never rounder than the tray. At every other shape nothing moves.
+- **changed** `run-list`, `tool-call`: the selected run's block and the command under approval take the surface radius less 4px, so at the pill they are never rounder than the panel or card around them. At every other shape nothing moves.
+- **changed** `states`: Skeleton has a `cover` radius, the surface radius less 4px, for a cover set into a card as Card's is. `control`, the default, is unchanged.
+
+## 2026-11-04 · A slider that fits a pill
+
+The Slider's cap no longer rubs the round ends of a pill-shaped plate.
+
+- **changed** `slider`: the cap's travel starts at the larger of 14px and the plate's corner radius (at most half its height), and the slot and the notches follow it, so on a pill (`--litt-radius-control` past 14px) the cap stands in the middle of each round end, as clear of the curve as of the top and bottom. At litt's own radius, and anything up to 14px, nothing moves. `RangeSlider` does the same. Nothing in your code has to change.
+
 ## 2026-11-03 · Another way through: type to confirm, and toasts that fit their words
 
 A slide is a drag, and not everyone can drag. Slide to confirm takes the words to type as its other way through, the pattern GitHub and Vercel use to delete a project. And a toast now grows to fit what it says, so a narrow screen never cuts the part that says what to do.

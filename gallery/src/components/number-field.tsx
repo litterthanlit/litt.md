@@ -39,12 +39,12 @@ export type NumberFieldSize = "sm" | "md" | "lg";
 
 /* The Input's cut (floor, line, shade), on a wrapper that holds the text and the steppers. The ring follows the text only. */
 const FIELD =
-  "relative flex w-full min-w-0 items-center rounded-control bg-cut font-normal text-fg " +
-  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
+  "relative flex w-full min-w-0 items-center rounded-control bg-field font-field font-normal text-field-ink " +
+  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
-  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
+  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
 
@@ -56,10 +56,10 @@ const SIZE: Record<NumberFieldSize, { field: string; type: string; pad: string; 
   lg: { field: "h-control-lg", type: "text-(length:--control-text-lg)", pad: "pl-control-pad-lg", step: "size-12" },
 };
 
-/* Secondary Button's block, nested 4px in the field. The sink is transitioned as `translate`, which Tailwind's
+/* Secondary Button's block, nested 4px in the field, at the field's radius less that inset, never under 2px. The sink is transitioned as `translate`, which Tailwind's
    translate-y-* sets; the cast swaps at once (R2). */
 const STEPPER =
-  "grid shrink-0 place-items-center rounded-[calc(var(--radius-control)-2px)] select-none [-webkit-tap-highlight-color:transparent] " +
+  "grid shrink-0 place-items-center rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--block-lift) enabled:forced-colors:border " +
   "enabled:hover:bg-(--block-hover) " +
@@ -397,7 +397,7 @@ export function NumberField({
           onBlur={commit}
           onKeyDown={onKeyDown}
           className={
-            "h-full min-w-0 flex-1 bg-transparent tabular-nums outline-none placeholder:text-fg-subtle disabled:cursor-not-allowed " +
+            "h-full min-w-0 flex-1 bg-transparent tabular-nums outline-none placeholder:text-field-ink-subtle disabled:cursor-not-allowed " +
             "pointer-coarse:text-(length:--control-text-lg) " +
             SIZE[size].pad +
             " " +
@@ -405,7 +405,7 @@ export function NumberField({
           }
         />
         {unit && (
-          <span aria-hidden="true" className={"shrink-0 pr-2 pl-1 pointer-coarse:text-(length:--control-text-lg) " + (disabled ? "text-fg-disabled " : "text-fg-subtle ") + SIZE[size].type}>
+          <span aria-hidden="true" className={"shrink-0 pr-2 pl-1 pointer-coarse:text-(length:--control-text-lg) " + (disabled ? "text-fg-disabled " : "text-field-ink-subtle ") + SIZE[size].type}>
             {unit}
           </span>
         )}

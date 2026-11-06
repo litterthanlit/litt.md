@@ -81,9 +81,10 @@ const ratios: Record<Ratio, string> = {
 };
 
 const coverShape: Record<CoverStyle, string> = {
-  // Padded by 4px, so the control radius sits concentric inside the card's surface radius.
-  none: "rounded-control",
-  inset: "rounded-control",
+  // Padded by 4px, so the surface radius less 4px sits concentric inside the card's: the control radius at every
+  // shape but the pill, where the control radius would be rounder than the card.
+  none: "rounded-[calc(var(--radius-surface)-4px)]",
+  inset: "rounded-[calc(var(--radius-surface)-4px)]",
   // Full-bleed: it takes the card's surface radius at the top. A hairline drawn over it
   // (::before) stands in for the card's own, which the cover would otherwise hide.
   bleed:

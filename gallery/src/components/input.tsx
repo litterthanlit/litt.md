@@ -15,6 +15,7 @@
  *   which reads as disabled. The line is its own layer, so focus and an error swap only its color: focus turns
  *   it --focus and adds --focus-ring (:focus-visible only), an error turns it --danger and keeps the ring on
  *   focus. Disabled lies flat on surface-2 with the plain --line hairline and no shade: nothing to type.
+ *   Under Device (data-material="device") the field is LCD glass in the mono, through the --field tokens.
  * - Typed text at the text weight and the label at the title weight (R8). The edge fades on the
  *   instant tier, the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
@@ -26,13 +27,13 @@ export type InputSize = "sm" | "md" | "lg";
 
 /* The cut every field shares: floor, line, shade, focus, error, disabled. */
 const field =
-  "w-full min-w-0 rounded-control bg-cut font-normal text-fg placeholder:text-fg-subtle " +
+  "w-full min-w-0 rounded-control bg-field font-normal text-field-ink placeholder:text-field-ink-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
-  "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
+  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)] " +
+  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
+  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border and focus gets an outline. */
@@ -70,7 +71,7 @@ export function Input({ size = "md", invalid = false, mono = false, className = 
   return (
     <input
       aria-invalid={invalid || undefined}
-      className={[field, inputSizes[size], mono ? "font-mono" : "", className].join(" ")}
+      className={[field, inputSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
       {...rest}
     />
   );
@@ -188,7 +189,7 @@ export function Textarea({
         rows={rows}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className={[field, "block resize-y", textareaSizes[size], mono ? "font-mono" : "", className].join(" ")}
+        className={[field, "block resize-y", textareaSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
         {...rest}
       />
     </Field>
