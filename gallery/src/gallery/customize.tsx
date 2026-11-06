@@ -15,26 +15,20 @@ import { useEffect, useId, useState, type CSSProperties } from "react";
 import { useDevice } from "@/motion";
 import { customizeSnippet, shapeName, SHAPES } from "@/motion/rules";
 import { Button } from "@/components/button";
-import { CardPicker } from "@/components/card-picker";
 import { LinkIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
-import { Segmented } from "@/components/segmented";
+import { Select } from "@/components/select";
 import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
-import { useCustomize, useDark, type ThemeChoice } from "./customize-state";
+import { useCustomize, useDark } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
-import { accentName, ACCENTS, lookAttributes, lookInApp, lookSetup, lookWords, materialOf, MATERIALS, withLook, type Material } from "./look";
+import { accentName, ACCENTS, lookAttributes, lookSetup, lookWords, materialOf, MATERIALS, withLook } from "./look";
 import { loadTypeface } from "./typeface";
 
 /** The shape slider's stops, one per shape. */
 const STOPS = SHAPES.map((_, i) => i);
 
-const THEMES: { value: ThemeChoice; label: string }[] = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "System" },
-];
 
 /** One swatch: its name, and how the box behind the name is drawn (classes, a style, and attributes such as a look). */
 type Swatch<T extends string> = { value: T; label: string; className: string; style?: CSSProperties; attrs?: Record<string, string> };
@@ -59,13 +53,13 @@ function Swatches<T extends string>({ legend, value, onValueChange, options }: {
               title={o.label}
               style={o.style}
               className={
-                "relative min-w-0 cursor-pointer rounded-control outline-offset-2 [-webkit-tap-highlight-color:transparent] has-focus-visible:outline-2 has-focus-visible:outline-focus " +
+                "group relative min-w-0 cursor-pointer rounded-control outline-offset-2 [-webkit-tap-highlight-color:transparent] has-focus-visible:outline-2 has-focus-visible:outline-focus " +
                 (picked ? "outline-2 outline-fg" : "")
               }
             >
               <input type="radio" className="sr-only" name={name} value={o.value} checked={picked} aria-label={o.label} onChange={() => onValueChange(o.value)} />
               <span aria-hidden="true" {...o.attrs} style={o.style} className={"flex h-12 items-center justify-center rounded-control px-1 font-title forced-colors:border " + o.className}>
-                {picked && <span className="truncate">{o.label}</span>}
+                <span className={"truncate " + (picked ? "" : "opacity-0 pointer-coarse:group-active:opacity-100")}>{o.label}</span>
               </span>
             </label>
           );
@@ -75,19 +69,8 @@ function Swatches<T extends string>({ legend, value, onValueChange, options }: {
   );
 }
 
-/** A block in its tray, drawn in one material: raised and cast in Press, a grey fill in a hairline in Flat. */
-function MaterialPreview({ material }: { material: Material }) {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <span {...lookAttributes({ accent: look.accent, material }, dark)} className="grid h-6 w-10 grid-cols-2 rounded-control bg-tray p-0.5 shadow-(--tray-shade)">
-      <span className="rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift)" />
-    </span>
-  );
-}
-
 function CustomizePanel() {
-  const { theme, setTheme, typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
+  const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
   const dark = useDark();
   const [said, setSaid] = useState("");
   const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
@@ -115,12 +98,16 @@ function CustomizePanel() {
   return (
     <div className="grid gap-8">
       <section aria-label="Look" className="grid gap-6">
-        <CardPicker
-          size="sm"
+        <Swatches
           legend="Material"
           value={look.material}
           onValueChange={(material) => setLook({ material })}
-          options={MATERIALS.map((m) => ({ value: m.id, label: m.name, picture: <MaterialPreview material={m.id} /> }))}
+          options={MATERIALS.map((m) => ({
+            value: m.id,
+            label: m.name,
+            attrs: lookAttributes({ accent: look.accent, material: m.id }, dark),
+            className: "bg-block text-small text-fg shadow-(--block-lift)",
+          }))}
         />
         <Swatches
           legend="Accent"
@@ -147,19 +134,10 @@ function CustomizePanel() {
               Copy link
             </CopyButton>
           </div>
-          <p data-fun-cue="" className="text-caption font-normal text-fg-subtle">
-            {lookInApp(look)}
-          </p>
         </div>
       </section>
 
       <section aria-label="This browser" className="grid gap-6 border-t border-line pt-6">
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-          <span aria-hidden="true" className="text-small font-title text-fg">
-            Theme
-          </span>
-          <Segmented legend="Theme" value={theme} onValueChange={setTheme} options={THEMES} />
-        </div>
         <Slider
           label="Shape"
           value={(SHAPES as readonly number[]).indexOf(radius)}
@@ -173,21 +151,20 @@ function CustomizePanel() {
           maxLabel="Pill"
           onValueChange={(i) => setRadius(SHAPES[i])}
         />
-        <CardPicker
-          size="sm"
-          legend="Typeface"
-          value={typeface.id}
-          onValueChange={setTypeface}
-          options={typefaces.map((f) => ({
-            value: f.id,
-            label: f.short ?? f.name,
-            picture: (
-              <span className="text-display font-title" style={{ fontFamily: f.stack }}>
-                Aa
-              </span>
-            ),
-          }))}
-        />
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+          <span id="customize-face" className="text-small font-title text-fg">
+            Typeface
+          </span>
+          <div className="w-40">
+            <Select
+              size="sm"
+              aria-labelledby="customize-face"
+              value={typeface.id}
+              onValueChange={setTypeface}
+              options={typefaces.map((f) => ({ value: f.id, textValue: f.name, label: <span style={{ fontFamily: f.stack }}>{f.short ?? f.name}</span> }))}
+            />
+          </div>
+        </div>
       </section>
 
       <div className="grid gap-2 border-t border-line pt-4">

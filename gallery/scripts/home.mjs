@@ -289,7 +289,7 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
   const panel = pg.getByRole("dialog", { name: "Customize" });
   const group = panel.getByRole("group", { name: "Your look" });
   await group.waitFor();
-  check(await says(group, "Monochrome, flat material, calm motion", 'In your app: data-accent="mono" and data-material="flat" on <html>.'), "the panel's Your look says Monochrome, flat material, calm motion and its two edits");
+  check(await says(group, "Monochrome, flat material, calm motion"), "the panel's Your look says Monochrome, flat material, calm motion");
   const setup = await copied(group, "Copy setup");
   check(setup.startsWith('Set up the litt.md look "Monochrome, flat material, calm motion"') && setup.includes('<html lang="en" data-accent="mono">') && setup.includes('<html lang="en" data-material="flat">') && !setup.includes("<FunMode>"), "Copy setup gives the Monochrome and Flat edits and no fun mode");
   check((await group.getByRole("status").filter({ hasText: /^Copied$/ }).count()) >= 1, "Copy setup says Copied");
@@ -297,7 +297,7 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
 
   await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
   await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Material$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Press" }) }).click();
-  check(await says(group, "Blue 4, press material, calm motion", "This is what the registry installs. Nothing to change."), "in Blue 4, press and calm motion, Your look says there is nothing to change");
+  check(await says(group, "Blue 4, press material, calm motion"), "in Blue 4, press and calm motion, Your look says so");
   check((await install.getByText("This page shows").count()) === 0, "in Blue 4 and calm motion, the Install note goes");
   await pg.keyboard.press("Escape");
   const plain = await copied(pg.locator("main"), "Copy prompt");
