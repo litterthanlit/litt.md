@@ -57,16 +57,24 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const galleryRoot = path.resolve(here, "../../../gallery");
 const RULES = ["weight", "radius", "shadow", "color", "type", "motion", "other"];
 
-/* The radii worked out from the tokens to keep nested corners concentric, the only arbitrary radii allowed. Written in
-   the gallery's names; a host's are the same with --litt-. */
+/* The radii worked out from the tokens to keep nested corners concentric (foundations.md, Concentric), the only
+   arbitrary radii allowed. Written in the gallery's names; a host's are the same with --litt-.
+   First the rule itself: inner = outer less the inset, a radius token less a step of the spacing scale (or the 2px a
+   block sits into a control), such as calc(var(--radius-surface)-4px) for a cover set 4px into a card. */
+const INSETS = [2, 4, 8, 12, 16, 24];
+const concentricInset = (v, prefix) => {
+  const m = new RegExp(`^calc\\(var\\(--${prefix}radius-(?:control|surface)\\)-(\\d+)px\\)$`).exec(v);
+  return !!m && INSETS.includes(Number(m[1]));
+};
+/* Then the caps that keep a box from growing rounder than what it holds or what holds it. */
 const CONCENTRIC = [
-  "calc(var(--radius-control)-2px)", // a block set 2px into a control (the switch, the slider)
-  "calc(var(--radius-surface)-4px)", // a block set 4px into a surface (a card's cover, a picker's cards): the control
-  // radius at every shape but the pill, where the control radius would be rounder than the surface
   "min(var(--radius-control),calc(var(--control-sm)/2))", // a control that wraps (a field of tokens, a rule row): its
   "min(var(--radius-control),calc(var(--control-md)/2))", // corners stop at half its one-line height, so at the pill
   "min(var(--radius-control),calc(var(--control-lg)/2))", // it stays concentric with what it holds
   "max(var(--radius-surface),min(var(--radius-control),calc(var(--control-md)/2+4px)))", // a panel holding such rows
+  /* A block 4px into a field (a stepper, a token): the field's radius less the inset, but not under the 2px detail
+     while the field has 4: 2px at litt's own radius as before, concentric once the field is rounder. */
+  "max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))",
 ];
 const CONCENTRIC_HOST = CONCENTRIC.map((v) => v.replace(/var\(--/g, "var(--litt-"));
 
@@ -137,7 +145,7 @@ function lintGallery(files, root) {
       for (const m of line.matchAll(/\brounded(-[\w-]*\[[^\]\s]*\]|-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
-        if (CONCENTRIC.some((c) => v === `rounded-[${c}]`)) continue;
+        if (CONCENTRIC.some((c) => v === `rounded-[${c}]`) || concentricInset(v.replace(/^rounded-\[(.*)\]$/, "$1"), "")) continue;
         if (!/^rounded(-(t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(pill|none|control|surface)$/.test(v)) fail("radius", `${v}: use rounded-control (controls, rows, inputs), rounded-surface (cards, menus, dialogs, toasts) or rounded-pill (avatars, icon-only buttons)`);
       }
       if (/borderRadius\s*:\s*['"]?(?!0\b|999|9999|var\(--radius-(pill|control|surface)\))[\d.]/.test(line)) fail("radius", "borderRadius: use the radius tokens");
@@ -543,7 +551,7 @@ function checkToken(t, scope, add, isClassContext) {
   // radius
   if ((m = RADIUS_RE.exec(b))) {
     const rest = m[2];
-    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || CONCENTRIC_HOST.some((c) => rest === `[${c}]`) || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
+    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || CONCENTRIC_HOST.some((c) => rest === `[${c}]`) || concentricInset(rest.replace(/^\[(.*)\]$/, "$1"), "litt-") || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
     if (!ok && (rest !== undefined || isClassContext())) {
       add("radius", `${b}: ${HOST_ADVICE.radius}${rest === "full" ? ". rounded-full is rounded-litt-pill" : ""}`);
     }

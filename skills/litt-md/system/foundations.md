@@ -127,13 +127,21 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 |---|---|---|
 | `--radius-control` | 4px | Buttons, inputs, selects, tabs, tags, chips, kbd, menu rows, tooltips |
 | `--radius-surface` | 8px | Cards, panels, menus, popovers, dialogs, toasts, the command menu |
-| `--radius-pill` | 999px | Avatars and icon-only buttons. Radio marks are circles. (A block set into a control takes `--radius-control` less its 2px inset.) |
+| `--radius-pill` | 999px | Avatars and icon-only buttons. Radio marks are circles. |
 
-**Concentric.** A surface is the control radius plus the inset around it: 4 + 4 = 8. A control that sits 4px (`--space-1`) inside a surface keeps its corners parallel. This only matters near the edge (menu rows, a card cover, a segmented control). Elsewhere a control is just 4px. There are no other radii: no 6, 12 or 16.
+**Concentric.** A box inside a rounded box takes the outer radius less the inset between them, so the two corners share one center: inner = outer − inset.
+
+- A surface is the control radius plus the 4px (`--space-1`) around it: 4 + 4 = 8. So a control 4px inside a surface keeps the control radius, and a block 2px inside a control takes the control radius less 2px.
+- Work the number out from the tokens, never as a new px value: `calc(var(--radius-surface) - 4px)` for a cover or a row set 4px into a card, `calc(var(--radius-control) - 2px)` for a block set 2px into a control. Written that way it holds at every shape the radius tokens take, the pill included, where the control radius alone would sit rounder than its surface.
+- It only matters near the edge, where the inner corner sits inside the outer one's curve (menu rows, a card cover, a segmented control, a token in a field). Further in, a control is just the control radius.
+- A box can never be rounder than the box that holds it, and a control that wraps keeps the corners it had on one line: `min(var(--radius-control), calc(var(--control-md) / 2))`.
+- Round things (avatars, icon-only buttons, a pill) are round by their size, not by this rule.
+
+There are no other radii: no 6, 12 or 16 typed by hand.
 
 - `tokens.css` gives `button`, `input`, `select` and `textarea` the control radius, and `.litt-raised` and `.litt-glass` the surface radius. A full-bleed bar like the header sets `border-radius: 0`.
 - Borders are 1px (`--hairline`), drawn as `inset 0 0 0 1px var(--line)` so they don't change layout.
-- In Tailwind: `rounded-control`, `rounded-surface`, `rounded-pill`, nothing else.
+- In Tailwind: `rounded-control`, `rounded-surface`, `rounded-pill`, and the concentric radii worked out from them (`rounded-[calc(var(--radius-surface)-4px)]`), nothing else.
 
 ## 5. Motion
 

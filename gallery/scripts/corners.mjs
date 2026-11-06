@@ -4,7 +4,7 @@
  *
  *   npm run build && npm run test:corners
  *   node scripts/corners.mjs --dist dist --pages slider,switch --shapes 28
- *   node scripts/corners.mjs --self-test       two old breaks, put in one page's main, must each fail it
+ *   node scripts/corners.mjs --self-test       three old breaks, put in one page's main, must each fail it
  *
  * The rule is the one the components keep by hand (components.md: "so the corners stay concentric"): a box drawn
  * inside a rounded box keeps at least as much room from the curve as from the nearest straight side, within a pixel.
@@ -20,6 +20,9 @@
  * radius of one of those edges (rows in a group, a field in a row, a card's cover), must not be rounder than a closed
  * outer box (one drawn all round): a group at 16px around 22px rows reads
  * inside out even though nothing touches a curve. Circles are exempt: avatars and icon-only buttons are round by rule.
+ * And exactly: an inner corner that starts inside the outer corner's curve takes the outer radius less the inset
+ * (the larger of its two), within a pixel, so the corners share one center (foundations.md, Concentric). Things round
+ * by their size (avatars, icon-only buttons, pills) are exempt, since half their height sets their radius.
  * Radii are read as the browser draws them (scaled down when they overflow a side). Text, icons and images are not
  * boxes, so an icon in a round button is never judged by its square frame; a box drawn by borders alone shows only the
  * corners where two of them meet. Each page is read at rest at every shape, then with every slider at its start and at
@@ -64,7 +67,14 @@ if (!shapes.length || shapes.some((r) => !SHAPES.includes(r))) { console.error(`
 
 /* Breaks the check knows about and has not fixed yet: each prints, and none fails the run, but one that no longer happens
    does, so the entry goes when the fix lands. Anything else that rubs a curve fails as usual. */
-const KNOWN = [];
+const KNOWN = [
+  {
+    page: "rule-builder",
+    radius: 6,
+    what: /in the corner of <div\.@container\.rounded-\[min\(var\(--radius-control\)/,
+    why: "at 6px a condition row keeps the control radius and so do the fields 4px inside it, 2px rounder than concentric (at litt's own 4px their corners start where the row's curve ends); fixing it means rows take the surface radius, 8px at the default, which is a taste call",
+  },
+];
 const knownFor = (f) => KNOWN.find((k) => k.page === f.id && k.radius === f.radius && k.what.test(f.what));
 
 const pages = fs.readdirSync(path.join(here, "../src/gallery/pages"))
@@ -153,7 +163,10 @@ function measure(within) {
       [1, -1, O.left, O.bottom, I.left, I.bottom],
     ];
     let worst = null;
+    let off = null;
     const shows = isBox.get(inner);
+    /* Round by its size (an avatar, an icon-only button, a pill): its radius is half its height, not a choice. */
+    const roundBySize = Math.max(...ri) >= Math.min(I.width, I.height) / 2 - 0.5;
     const outerShows = isBox.get(outer);
     corners.forEach(([sx, sy, ox, oy, ix, iy], k) => {
       if (!shows[k] || !outerShows[k]) return;
@@ -162,12 +175,21 @@ function measure(within) {
       if (R <= TOLERANCE) return;
       const gx = (ix - ox) * sx;
       const gy = (iy - oy) * sy;
+      /* Exact: an inner corner that starts inside the outer corner's curve takes the outer radius less the inset, so the
+         two share one center (foundations.md, Concentric). With two insets, the larger one. */
+      if (!roundBySize && gx >= -0.5 && gy >= -0.5 && gx < R && gy < R) {
+        const want = Math.max(0, R - Math.max(gx, gy));
+        if (Math.abs(r - want) > TOLERANCE && (!off || Math.abs(r - want) > Math.abs(off.r - off.want))) off = { r, want, R, inset: Math.max(gx, gy) };
+      }
       /* Only where the inner corner's center sits in the outer corner's square, where the wall is curved. */
       if (gx + r >= R || gy + r >= R) return;
       const room = R - Math.hypot(R - gx - r, R - gy - r) - r;
       const wall = Math.min(gx, gy);
       if (room < wall - TOLERANCE && (!worst || wall - room > worst.short)) worst = { room, wall, short: wall - room };
     });
+    if (off) {
+      found.push(`${describe(inner)} has radius ${off.r.toFixed(1)}px in the corner of ${describe(outer)}, which wants ${off.R.toFixed(1)} less its ${off.inset.toFixed(1)}px inset: ${off.want.toFixed(1)}px (${off.r > off.want ? "rounder" : "sharper"})`);
+    }
     if (worst) {
       found.push(`${describe(inner)} is ${worst.room.toFixed(1)}px from the curve of ${describe(outer)} (radius ${Math.round(Math.max(...ro))}px) but ${worst.wall.toFixed(1)}px from its wall`);
     }
@@ -215,6 +237,13 @@ async function checkPage(id) {
         row.style.cssText = "position:absolute;left:16px;right:16px;top:40px;height:44px;border-radius:22px;background:black";
         panel.append(row);
         main.append(panel);
+        const card = document.createElement("div");
+        card.setAttribute("data-corners-self-test", "sharp");
+        card.style.cssText = "position:relative;width:240px;height:200px;border-radius:16px;background:gray";
+        const cover = document.createElement("div");
+        cover.style.cssText = "position:absolute;left:4px;right:4px;top:4px;height:120px;border-radius:0;background:black";
+        card.append(cover);
+        main.append(card);
       }).observe(document, { childList: true, subtree: true });
     });
   }
@@ -276,7 +305,7 @@ const took = `${Math.round((Date.now() - started) / 1000)}s`;
 const shapeWords = shapes.map((r) => shapeName(r)).join(", ");
 
 if (selfTest) {
-  const kinds = { rub: "the Slider's old cap on a pill", layer: "a 22px row in a 16px group" };
+  const kinds = { rub: "the Slider's old cap on a pill", layer: "a 22px row in a 16px group", sharp: "a square cover 4px into a 16px card" };
   const keys = new Set(failures.flatMap((f) => { const m = /^self-test (\w+) /.exec(f.what); return m ? [`${f.id} ${f.radius} ${m[1]}`] : []; }));
   const missed = pages.flatMap((id) => shapes.flatMap((r) => Object.keys(kinds).map((k) => `${id} ${r} ${k}`))).filter((k) => !keys.has(k));
   const broken = failures.filter((f) => /running the check/.test(f.what));
