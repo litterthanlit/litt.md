@@ -39,7 +39,8 @@ const THEMES: { value: ThemeChoice; label: string }[] = [
 type Swatch<T extends string> = { value: T; label: string; className: string; style?: CSSProperties; attrs?: Record<string, string> };
 
 /**
- * A choice drawn as the thing itself with its name inside: the accents as blocks in their color. Native radios, so the arrow keys and the group's name come from the browser; the box is hidden and
+ * A choice drawn as the thing itself, with its name inside once it is picked (R5: the value you have is said in
+ * words; the others say theirs on hover, and every radio carries its name): the accents as blocks in their color. Native radios, so the arrow keys and the group's name come from the browser; the box is hidden and
  * the radio carries the name. The pick is a ring in --fg outside the box, at its radius, so it never leans on color;
  * the keyboard's ring is --focus. An accent's block is a sample, not an action, so it never counts as a fill (R6).
  */
@@ -54,6 +55,7 @@ function Swatches<T extends string>({ legend, value, onValueChange, options }: {
           return (
             <label
               key={o.value}
+              title={o.label}
               style={o.style}
               className={
                 "relative min-w-0 cursor-pointer rounded-control outline-offset-2 [-webkit-tap-highlight-color:transparent] has-focus-visible:outline-2 has-focus-visible:outline-focus " +
@@ -62,7 +64,7 @@ function Swatches<T extends string>({ legend, value, onValueChange, options }: {
             >
               <input type="radio" className="sr-only" name={name} value={o.value} checked={picked} aria-label={o.label} onChange={() => onValueChange(o.value)} />
               <span aria-hidden="true" {...o.attrs} style={o.style} className={"flex h-12 items-center justify-center rounded-control px-1 font-title forced-colors:border " + o.className}>
-                <span className="truncate">{o.label}</span>
+                {picked && <span className="truncate">{o.label}</span>}
               </span>
             </label>
           );
