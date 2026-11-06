@@ -8,6 +8,8 @@
  *   corners the control radius less the inset, so the two stay concentric. The thumb carries a 16px chevron. The tray
  *   says what will happen ("Slide to delete Atelier Nord") at the small size in --fg-subtle, and the part of the
  *   tray the thumb has passed fills at fg 6%. A disabled thumb lies flat (surface-2 and a hairline): nothing to push.
+ * - Flat (proposals/flat-pill.md): the tray is a grey --surface-3 pill with no frame and the thumb is an ink circle with
+ *   its chevron in --canvas, no cast. A disabled thumb is a flat --surface-2 with no hairline.
  * - Sizes: md is 44 tall, lg 56; on a coarse pointer md grows to 56, because a finger does the sliding.
  * - Drag: the thumb follows the pointer one to one, with no easing, as the Slider's does. The words fade as it
  *   goes, by its position, not by a timer. Let go before the end and it springs back to the start on the
@@ -236,7 +238,7 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confir
       ref={box}
       data-no-drag=""
       className={
-        "relative isolate flex w-full items-center overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) select-none forced-colors:border " +
+        "relative isolate flex w-full items-center overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) select-none forced-colors:border in-[[data-material=flat]]:bg-surface-3 " +
         track[size] +
         " " +
         (confirmText === undefined ? className : "")
@@ -275,8 +277,8 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confir
           "transition-colors duration-(--dur-instant) ease-litt " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
           (disabled
-            ? "cursor-not-allowed bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
-            : "bg-block text-fg shadow-(--block-lift) " + (done ? "cursor-default" : "cursor-grab active:cursor-grabbing active:shadow-(--block-press)"))
+            ? "cursor-not-allowed bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none"
+            : "bg-block text-fg shadow-(--block-lift) in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:text-canvas " + (done ? "cursor-default" : "cursor-grab active:cursor-grabbing active:shadow-(--block-press)"))
         }
       >
         {fun ? (

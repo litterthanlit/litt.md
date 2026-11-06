@@ -4,6 +4,8 @@
  * - <Toaster> is a provider plus a portal. Mount it once around the part of the
  *   app that fires toasts; children call useToast(). A bare toast() also works
  *   and routes to the Toaster mounted last.
+ * - Flat: an ink pill with canvas words and buttons; an error keeps canvas too, since red
+ *   would not read on ink.
  * - Look: litt-glass (float shadow), rounded-surface, 360px, at least 72px tall and
  *   taller when its words wrap (WCAG 1.4.10 and 1.4.12): the title takes up to two
  *   lines and the description up to four, so a narrow screen or larger text never cuts
@@ -90,6 +92,14 @@ type ToastApi = {
 };
 
 /* Stack geometry. A toast is at least MIN_HEIGHT tall, and is taken as that until it has been measured. */
+/** Flat: an ink pill, solid, no hairline; its buttons read canvas on it. */
+const FLAT_PILL =
+  "in-[[data-material=flat]]:rounded-control in-[[data-material=flat]]:[--glass-bg:var(--fg)] in-[[data-material=flat]]:[--glass-border:transparent] " +
+  "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px] ";
+const FLAT_BUTTON =
+  "in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:hover:bg-[color-mix(in_oklab,var(--canvas)_16%,transparent)] " +
+  "in-[[data-material=flat]]:focus-visible:outline-canvas";
+
 const MAX_VISIBLE = 3;
 const MIN_HEIGHT = 72;
 const GAP = 8;
@@ -488,7 +498,7 @@ function ToastView({
       data-toast-id={item.id}
       data-tone={tone}
       inert={away}
-      className={"litt-glass absolute inset-x-0 rounded-surface " + (top ? "top-0 origin-bottom" : "bottom-0 origin-top")}
+      className={"litt-glass absolute inset-x-0 rounded-surface " + FLAT_PILL + (top ? "top-0 origin-bottom" : "bottom-0 origin-top")}
       style={fit ? { ...drag.panel.style, height: fit } : drag.panel.style}
       onPointerDown={(e) => {
         /* Only a toast that shows its content can be swiped; the ones peeking from behind wait their turn. */
@@ -529,19 +539,19 @@ function ToastView({
       <div className={"h-full " + (fit ? "overflow-hidden" : "")}>
         <motion.div
           ref={content}
-          className="flex min-h-18 items-center gap-3 px-4 py-3"
+          className="flex min-h-18 items-center gap-3 px-4 py-3 in-[[data-material=flat]]:px-6"
           initial={false}
           animate={{ opacity: showContent ? 1 : 0, transition: move }}
         >
           <div ref={words} className="min-w-0 flex-1">
-            <p className={"line-clamp-2 text-small font-title " + (tone === "error" ? "text-danger" : "text-fg")}>{item.title}</p>
-            {item.description && <p className="line-clamp-4 text-caption font-normal text-fg-subtle">{item.description}</p>}
+            <p className={"line-clamp-2 text-small font-title in-[[data-material=flat]]:text-canvas " + (tone === "error" ? "text-danger" : "text-fg")}>{item.title}</p>
+            {item.description && <p className="line-clamp-4 text-caption font-normal text-fg-subtle in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:opacity-80">{item.description}</p>}
           </div>
           {item.action && (
             <Button
               size="sm"
               variant="ghost"
-              className="pointer-coarse:h-control-md"
+              className={"pointer-coarse:h-control-md " + FLAT_BUTTON}
               onClick={() => {
                 item.action?.onClick();
                 onDismiss(item.id);
@@ -555,7 +565,7 @@ function ToastView({
             variant="ghost"
             iconOnly
             aria-label="Dismiss notification"
-            className="pointer-coarse:-mr-1.5 pointer-coarse:h-control-md pointer-coarse:w-control-md"
+            className={"pointer-coarse:-mr-1.5 pointer-coarse:h-control-md pointer-coarse:w-control-md " + FLAT_BUTTON}
             onClick={() => onDismiss(item.id)}
           >
             <XIcon />

@@ -16,6 +16,9 @@
  *   which stays inside the popover's 12px padding.
  * - Hue: a 12px rail at the control radius with the six hue stops, cut like the area, and the same thumb filled with
  *   the pure hue.
+ * - Flat (proposals/flat-pill.md): the trigger and the hex field are grey pills with no outline (ink ring on focus,
+ *   danger ring on an error); the area loses its cut edge and rounds concentric with the panel. The hairline over
+ *   the user's own color stays: it keeps white and black visible, it is not a frame.
  * - Keyboard (the React Aria ColorArea pattern, as the Pad): two visually hidden range inputs for the area, Saturation
  *   in the tab order and Brightness at tabindex -1, still reachable by a screen reader. ← → change saturation, ↑ ↓
  *   brightness, Shift makes it 10 steps, Page Up and Page Down move brightness by 10, Home and End take saturation to
@@ -182,7 +185,7 @@ const hairline = "pointer-events-none absolute inset-0 rounded-control shadow-[i
 
 /* The area and the hue are cut into the panel: a translucent edge, which reads over any color, and the cut's shade. */
 const cutEdge =
-  "pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--fg)_14%,transparent),var(--cut-shade)]";
+  "pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--fg)_14%,transparent),var(--cut-shade)] in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:shadow-none";
 
 /* The Select trigger's look and sizes (select.tsx), as the Date picker copies them. */
 const field =
@@ -200,6 +203,12 @@ const field =
   "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:data-placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
+  /* Flat (rule 4): a grey pill with no outline, the ink ring for focus, the danger ring for an error, disabled flat. */
+  "in-[[data-material=flat]]:focus-visible:outline-none in-[[data-material=flat]]:focus-visible:shadow-(--focus-ring) " +
+  "in-[[data-material=flat]]:aria-invalid:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:aria-invalid:enabled:active:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:aria-invalid:data-[state=open]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:disabled:shadow-none " +
   "forced-colors:border";
 
 export type ColorPickerSize = "sm" | "md" | "lg";
@@ -412,7 +421,7 @@ export function ColorPanel({
       {/* Saturation and brightness. */}
       <div
         data-no-drag=""
-        className="relative w-full cursor-crosshair touch-none select-none rounded-control"
+        className="relative w-full cursor-crosshair touch-none select-none rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)]"
         style={{
           height,
           backgroundColor: pure,

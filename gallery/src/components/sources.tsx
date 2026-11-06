@@ -17,6 +17,8 @@
  *   number chip, the mark's look but not a control, where a Tool call row shows its mark; the row's fill hangs 8px into
  *   the gutter so its text keeps the turn's edge. With `sources` (what a search found) a row the turn cites wears its
  *   number and an uncited one shows its kind's icon in fg-subtle with hidden "Not cited".
+ * - Flat: the list is a grey card at the surface radius with no frame, its rows concentric inside it, and the number chip
+ *   a white pill.
  * - The moment: rest on a mark and its row lights (fg 6%), and so does every other mark of that source (fg on fg 12%).
  *   Rest on a row and its marks light. Color only, on the instant tier; nothing moves. The light is a small store in
  *   Sources with two fields, `hovered` (the pointer) and `focused` (the keyboard), merged where it is read
@@ -245,7 +247,7 @@ export function Sources({ sources, children }: SourcesProps) {
 const CHIP =
   "inline-flex h-4 min-w-4 items-center justify-center rounded-control px-1 text-caption font-normal leading-none tabular-nums " +
   "transition-colors duration-(--dur-instant) ease-litt forced-colors:border forced-colors:border-[CanvasText]";
-const CHIP_REST = "bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] text-fg-muted";
+const CHIP_REST = "bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] text-fg-muted in-[[data-material=flat]]:bg-surface-1";
 const CHIP_LIT = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] text-fg forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]";
 const chip = (lit: boolean) => CHIP + " " + (lit ? CHIP_LIT : CHIP_REST);
 /* MessageText styles every `a` inside it at (0,1,1); the data-citation variant compiles to (0,2,0) and wins. */
@@ -441,8 +443,14 @@ export function SourceList({ sources, label = "Sources", hideLabel = false, clas
   if (!rows.length) return null;
 
   return (
-    <div className={"grid min-w-0 font-sans whitespace-normal " + className}>
-      <p id={labelId} className={hideLabel ? "sr-only" : "flex min-h-8 items-center gap-2"}>
+    <div
+      className={
+        "grid min-w-0 font-sans whitespace-normal in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:p-2 " +
+        "in-[[data-material=flat]]:forced-colors:border " +
+        className
+      }
+    >
+      <p id={labelId} className={hideLabel ? "sr-only" : "flex min-h-8 items-center gap-2 in-[[data-material=flat]]:px-2"}>
         <span className="text-small font-title text-fg">{label}</span>
         <span className="text-caption font-normal tabular-nums text-fg-subtle">{rows.length}</span>
       </p>
@@ -459,6 +467,7 @@ export function SourceList({ sources, label = "Sources", hideLabel = false, clas
    Tool call row shows its mark, and the row never runs past its container's end. */
 const ROW =
   "-ms-2 grid min-h-11 grid-cols-[1rem_minmax(0,1fr)] items-start gap-x-2 rounded-control px-2 py-1 text-start " +
+  "in-[[data-material=flat]]:ms-0 in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] " +
   "transition-colors duration-(--dur-instant) ease-litt";
 const ROW_LINK =
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +

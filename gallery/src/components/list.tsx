@@ -141,7 +141,7 @@ const PRESS_FILL = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,tr
 const rowClass =
   "relative flex size-full items-center gap-4 rounded-control px-4 text-left after:absolute after:inset-x-0 after:-bottom-px after:h-px " +
   "cursor-pointer transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " + PRESS_FILL + " " +
+  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] in-[[data-material=flat]]:hover:bg-surface-3 " + PRESS_FILL + " " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 function RowContent({ project }: { project: Project }) {
@@ -186,7 +186,7 @@ export function ProjectList({ projects, onOpen, entrance = true, label = "Projec
   return (
     <ul
       aria-label={label}
-      className={"w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)] " + className}
+      className={"w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none " + className}
     >
       {projects.map((p, i) => {
         // Rows after the sixth reuse the sixth's delay.
@@ -194,7 +194,7 @@ export function ProjectList({ projects, onOpen, entrance = true, label = "Projec
         return (
           <motion.li
             key={p.id}
-            className="h-16 border-b border-line last:border-b-0"
+            className="h-16 border-b border-line last:border-b-0 in-[[data-material=flat]]:border-transparent"
             initial={entrance ? { opacity: 0, y: travel } : false}
             animate={{ opacity: 1, y: 0, transition: { ...enter, delay: wait } }}
           >
@@ -254,14 +254,14 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
   return (
     <article
       data-selected={selected || undefined}
-      className={"litt-raised group relative flex h-full flex-col rounded-surface p-1 " + className}
+      className={"litt-raised group relative flex h-full flex-col rounded-surface p-1 in-[[data-material=flat]]:shadow-float " + className}
     >
       {/* The ring. It changes color only, on the instant tier. */}
       <span
         aria-hidden="true"
         className={
           "pointer-events-none absolute inset-0 rounded-surface border transition-[border-color] duration-(--dur-instant) ease-litt " +
-          (selected ? "border-focus" : "border-line group-hover:border-line-strong pointer-coarse:group-active:border-line-strong")
+          (selected ? "border-focus" : "border-line group-hover:border-line-strong pointer-coarse:group-active:border-line-strong in-[[data-material=flat]]:border-transparent in-[[data-material=flat]]:group-hover:border-transparent")
         }
       />
 

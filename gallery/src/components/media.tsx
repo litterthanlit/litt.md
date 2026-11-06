@@ -169,7 +169,7 @@ export function Media({
       <span
         aria-hidden="true"
         className={[
-          "pointer-events-none absolute inset-0 shadow-[inset_0_0_0_1px_var(--line)]",
+          "pointer-events-none absolute inset-0 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:group-hover/media:shadow-none in-[[data-material=flat]]:group-active/media:shadow-none",
           corners,
           interactive
             ? "transition-[box-shadow] duration-(--dur-instant) ease-litt group-hover/media:shadow-[inset_0_0_0_1px_var(--line-strong)] group-active/media:shadow-[inset_0_0_0_1px_var(--line-strong)]"

@@ -142,6 +142,12 @@ const WIDTH = { sm: "w-64", md: "w-80", lg: "w-96" } as const;
 /** What a popover must not be glass over: any glass surface, and any popover. */
 const FLOATING = ".litt-glass, [data-popover-surface]";
 
+/** Flat: the glass becomes a solid surface-1 card with the float shadow and no hairline. */
+const FLAT_PANEL =
+  "in-[[data-material=flat]]:[--glass-bg:var(--surface-1)] in-[[data-material=flat]]:[--glass-border:transparent] " +
+  "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px]";
+
+
 /**
  * The panel. Render it inside a Popover, next to the PopoverTrigger.
  * Focus lands on the control marked data-autofocus, else the first focusable control, else the panel itself.
@@ -220,7 +226,7 @@ function Sheet({
       }}
       described={false}
       contentRef={panel}
-      className={flat ? "[--glass-bg:var(--surface-2)] [--glass-shadow:var(--shadow-float)]" : ""}
+      className={(flat ? "[--glass-bg:var(--surface-2)] [--glass-shadow:var(--shadow-float)] " : "") + FLAT_PANEL}
     >
       <SheetParts label={label} padded={padded ?? true} onFloating={setOverFloating}>
         {children}
@@ -350,7 +356,7 @@ function Surface({
     "relative z-50 max-w-(--radix-popover-content-available-width) rounded-surface p-1 outline-none " +
     "origin-(--radix-popover-content-transform-origin) data-[state=closed]:pointer-events-none " +
     WIDTH[size] +
-    (flat ? " bg-surface-2 shadow-float" : " litt-glass");
+    (flat ? " bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1" : " litt-glass " + FLAT_PANEL);
 
   return (
     <RadixPopover.Content
@@ -381,7 +387,7 @@ function Surface({
       >
         <div
           className={
-            "max-h-[calc(var(--radix-popover-content-available-height)-0.5rem)] overflow-y-auto overscroll-contain rounded-control" +
+            "max-h-[calc(var(--radix-popover-content-available-height)-0.5rem)] overflow-y-auto overscroll-contain rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)]" +
             (padded ? " p-3" : "")
           }
         >
