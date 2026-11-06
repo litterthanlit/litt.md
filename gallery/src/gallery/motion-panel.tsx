@@ -124,7 +124,7 @@ export function MotionPanel({ device, onDeviceChange }: {
 
   const segmented = "grid overflow-hidden rounded-control shadow-[inset_0_0_0_1px_var(--line-strong)]";
   const segment =
-    "h-control-sm cursor-pointer text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg";
+    "litt-target relative h-control-sm cursor-pointer text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg aria-pressed:bg-surface-3 aria-pressed:text-fg";
   const instantRange = span(dial.instant, 60, 160);
   const respRange = span(dial.responsive.time, 0.12, 0.4);
   const expRange = span(dial.expressive.time, 0.2, 0.7);

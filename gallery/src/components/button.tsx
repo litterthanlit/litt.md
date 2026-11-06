@@ -58,7 +58,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-title " +
+  "litt-target relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-title " +
   "cursor-pointer transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "[-webkit-tap-highlight-color:transparent] " +
   "active:translate-y-(--press-depth) disabled:cursor-not-allowed disabled:active:translate-y-0 " +

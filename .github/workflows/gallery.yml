@@ -116,6 +116,11 @@ jobs:
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
+      - name: Gaps (no dead space between the rows of a clickable list)
+        run: npm run test:gaps --prefix gallery && npm run test:gaps --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
       - name: Corners (nothing rubs a rounded box's curve at any shape, sliders at both ends, concentric)
         run: npm run test:corners --prefix gallery && npm run test:corners --prefix gallery -- --self-test
         env:
