@@ -11,7 +11,7 @@ type CopyState = "idle" | "copied" | "failed";
 /* The same look as Button's ghost, sm: a link that leaves the site, beside a copy button. Button renders a
    <button>, and a link needs an <a> to be a link (middle click, "open in new tab"). */
 export const ghostSm =
-  "relative inline-flex h-control-sm shrink-0 items-center justify-center gap-control rounded-control px-control-pad-sm " +
+  "litt-target relative inline-flex h-control-sm shrink-0 items-center justify-center gap-control rounded-control px-control-pad-sm " +
   "whitespace-nowrap select-none text-small font-title text-fg-muted " +
   "cursor-pointer transition-[background-color,color,translate] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg active:translate-y-(--press-depth) " +

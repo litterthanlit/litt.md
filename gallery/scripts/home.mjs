@@ -109,8 +109,12 @@ const accentNow = (pg) => pg.evaluate(() => {
   await d.getByRole("switch", { name: "Fun mode" }).click();
   check((await pg.locator("input[type=radio][value=fun]").count()) === 0, "with Fun mode off again, the Fun filter goes");
 
+  /* A theme switch is instant (foundations.md, Motion): no hover fade on the page runs because the theme changed. */
+  await pg.evaluate(() => { window.__before = new Set(document.getAnimations()); });
   await pick(d, "Dark");
   check((await pg.evaluate(() => document.documentElement.dataset.theme)) === "dark", "the deck's Dark sets data-theme=dark on <html>");
+  const fades = await pg.evaluate(() => document.getAnimations().filter((a) => !window.__before.has(a) && a instanceof CSSTransition && a.effect?.target?.closest?.("main") && !a.effect.target.closest("[aria-labelledby=deck-title]")).length);
+  check(fades === 0, `switching to Dark starts no transition in the page outside the deck (${fades} started)`);
   const header = pg.locator("header fieldset", { has: pg.locator("legend", { hasText: "Theme" }) }).first();
   check(await header.getByRole("radio", { name: "Dark" }).isChecked(), "the header's theme switch says Dark too");
   await pick(header, "Light");

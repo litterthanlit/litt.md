@@ -39,6 +39,19 @@ import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
+
+/**
+ * A theme, accent, material or shape switch is instant (foundations.md, Motion): every hover fade on the page would
+ * otherwise run at once. Transitions are off while the change is written and the styles are worked out, then back on.
+ */
+function instantly(change: () => void) {
+  const off = document.createElement("style");
+  off.textContent = "*,*::before,*::after{transition:none!important}"; // litt-allow: turns every transition off for the one frame a theme is written
+  document.head.append(off);
+  change();
+  void getComputedStyle(document.body).color; // work the new styles out while nothing transitions
+  off.remove();
+}
 const ACCENT_IDS = ACCENTS.map((a) => a.id);
 const MATERIAL_IDS = MATERIALS.map((m) => m.id);
 export type ThemeChoice = "system" | "light" | "dark";
@@ -97,8 +110,10 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   });
   const setTheme = (t: ThemeChoice) => {
     setThemeState(t);
-    if (t === "system") document.documentElement.removeAttribute("data-theme");
-    else document.documentElement.setAttribute("data-theme", t);
+    instantly(() => {
+      if (t === "system") document.documentElement.removeAttribute("data-theme");
+      else document.documentElement.setAttribute("data-theme", t);
+    });
     try {
       localStorage.setItem(THEME_KEY, t);
     } catch {
@@ -128,7 +143,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   const modified = typeface.id !== "locked" || radiusTuned !== null || !sameLook(look, GALLERY_LOOK);
 
   /* Write the choices on <body>, and remove what is back to locked. A layout effect, so a change never paints stale. */
-  useLayoutEffect(() => {
+  useLayoutEffect(() => instantly(() => {
     const s = document.body.style;
     if (typeface.id === "locked") s.removeProperty("--font-sans");
     else {
@@ -148,7 +163,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
     const material = materialOf(look.material).attribute;
     if (material) document.documentElement.dataset.material = material;
     else delete document.documentElement.dataset.material;
-  }, [typeface, radiusTuned, look.accent, look.material]);
+  }), [typeface, radiusTuned, look.accent, look.material]);
 
   /* Remember a change, and only a change, so a later change to tokens.css is never shadowed. Your own look only: a
      link's is never saved. */

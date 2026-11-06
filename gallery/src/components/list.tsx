@@ -137,8 +137,9 @@ export function ProjectTag({ children }: { children: ReactNode }) {
 /** What a finger holding a row shows: fg 6%, a step above the 4% hover fill because the finger covers the row. */
 const PRESS_FILL = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
 
+/* The row reaches 1px past its bottom, over the divider, so a pointer between two rows is always on one. */
 const rowClass =
-  "flex size-full items-center gap-4 rounded-control px-4 text-left " +
+  "relative flex size-full items-center gap-4 rounded-control px-4 text-left after:absolute after:inset-x-0 after:-bottom-px after:h-px " +
   "cursor-pointer transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " + PRESS_FILL + " " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
@@ -330,7 +331,7 @@ export function ProjectFilters({
             aria-pressed={on}
             onClick={() => onChange(f.id)}
             className={
-              "inline-flex h-control-sm cursor-pointer items-center rounded-control px-control-pad-sm text-small font-title " +
+              "litt-target relative inline-flex h-control-sm cursor-pointer items-center rounded-control px-control-pad-sm text-small font-title " +
               "transition-[background-color,color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
               (on

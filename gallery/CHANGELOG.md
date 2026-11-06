@@ -4,6 +4,15 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-06 · Details that make it feel right
+
+Four rules from design engineers, now kept: a theme switch is instant, a list of rows has no dead space between them, link text passes 4.5:1 on every surface, and on a touch screen every control takes a finger at 44 by 44px.
+
+- **changed** `litt`: `--litt-accent-text` in dark is `#6579fd` (was `#5e78fe`), so a link passes 4.5:1 on every surface, the darkest included; Device's light `--litt-device-accent-text` is `#a23200` (was `#a8380a`) for the same reason. New `.litt-target`: on a coarse pointer, an invisible `::before` grows a positioned control's tap area to at least 44 by 44px without changing how it looks. Nothing in your code has to change.
+- **changed** `button`, `tabs`, `segmented`, `date-picker`, `option-picker`, `color-picker`, `range-chart`, `number-field`: on a touch screen each control takes a finger at 44 by 44px or more (`.litt-target`), however small it is drawn. Nothing you see changes. Reinstall `litt` with them.
+- **changed** `list`: its filter chips take a finger at 44px on a touch screen, and a row reaches over the divider under it, so a pointer between two rows is always on one. Nothing you see changes. Reinstall `litt` with it.
+- **changed** `app-shell`: a sidebar link reaches 2px past each edge, over the 4px between links, so the hover never drops between two of them. Nothing you see changes.
+
 ## 2026-11-05 · Device, a third material, and nothing rounder than what holds it
 
 Device says litt's depth ladder in hardware, after the components studies: one attribute on `<html>`, `data-material="device"`, and the components follow. Press stays the default.
