@@ -28,7 +28,6 @@
  * - Accessibility: a region named by `label`, with aria-roledescription="carousel"; each slide a group with
  *   aria-roledescription="slide" named "3 of 12". Slides out of view stay readable, because scrolling reaches them.
  *   After a button or a key the new range is said once in a polite status; a swipe says nothing.
- * - Flat: the Previous and Next keys are the Button's round grey circles; nothing else changes.
  */
 import {
   Children,

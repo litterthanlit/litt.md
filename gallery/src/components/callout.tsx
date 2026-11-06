@@ -2,7 +2,6 @@
  * Callout: an inline note in the page flow. A tip, a heads-up, or a result to act on, such as
  * "Try H to snooze" or "Your Framer plan renews in 3 days".
  *
- * - Flat: a grey card (surface-3) with no hairline.
  * - Surface (components.md, Callout): `.litt-raised`, because it sits in the flow. Never glass (R3),
  *   no shadow (R3), and never a left rail, a tinted background or a colored border. A status that
  *   colored the whole box would turn a note into an alarm, and a rail is the one thing litt bans.
@@ -85,7 +84,7 @@ export function Callout({
   const closeAt = action ? "col-start-4 @max-[28rem]:col-start-3" : "col-start-3";
   return (
     <div role={role} className={`@container ${className}`} {...rest}>
-      <div className={`litt-raised in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none grid items-start gap-x-3 p-4 ${cols}`}>
+      <div className={`litt-raised grid items-start gap-x-3 p-4 ${cols}`}>
         <span className={`flex h-[1lh] items-center text-body [&>svg]:size-4 [&>svg]:shrink-0 ${COLOR[tone]}`}>
           {icon ?? ICON[tone]}
         </span>

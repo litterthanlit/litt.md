@@ -8,7 +8,6 @@
  *   at the small size in fg-muted and the clock in the caption in fg-subtle with tabular numbers. Hover steps
  *   the label to fg, and a press on a finger does the same. The text sits on a shared baseline, so the clock never
  *   rides high or low beside the label.
- * - Flat: a grey card at the surface radius with no frame; the reasoning keeps its indent inside it.
  * - No shimmer, no pulse, no spinner, no dots, no caret (R2, and "no motion that is not a response to the person").
  *   The only live signal is the clock, which counts whole seconds from when `active` turned true. It is a number
  *   changing, not an animation.
@@ -185,14 +184,7 @@ export function Thinking({
   }
 
   return (
-    <div
-      data-state={open ? "open" : "closed"}
-      className={
-        "relative in-[[data-material=flat]]:max-w-(--measure) in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-1 " +
-        "in-[[data-material=flat]]:forced-colors:border " +
-        className
-      }
-    >
+    <div data-state={open ? "open" : "closed"} className={"relative " + className}>
       <button
         type="button"
         aria-expanded={open}

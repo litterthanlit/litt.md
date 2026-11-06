@@ -11,7 +11,6 @@
  *   when there are several). Under them, a Number field at sm for the quantity, its label hidden ("Quantity of Open
  *   water" for screen readers), and Remove as an sm ghost button named "Remove Open water". Lines are a ul split by
  *   --line hairlines, 16px above and below.
- * - Flat: no hairline between lines, the space parts them. The sheet is the Dialog's (--surface-1, the float shadow).
  * - Remove: a line goes at once, with Undo in a toast ("Removed Open water"). No confirm: it can be undone. Focus moves
  *   to the next line's Remove, or the previous one, or the empty state's action, never to the page behind. The toast
  *   needs a Toaster mounted once near the root.
@@ -123,8 +122,8 @@ export type CartLineProps = {
 export function CartLine({ item, onQuantityChange, onRemove, locale, className = "" }: CartLineProps) {
   const several = item.quantity > 1;
   return (
-    <li className={"flex gap-4 border-t border-line in-[[data-material=flat]]:border-t-0 py-4 first:border-t-0 first:pt-0 last:pb-0 " + className}>
-      <Media ratio="1/1" radius="control" alt="" src={item.image?.src} srcSet={item.image?.srcSet} sizes="64px" className="w-16 shrink-0 in-[[data-material=flat]]:[&>span[aria-hidden=true].pointer-events-none]:shadow-none" />
+    <li className={"flex gap-4 border-t border-line py-4 first:border-t-0 first:pt-0 last:pb-0 " + className}>
+      <Media ratio="1/1" radius="control" alt="" src={item.image?.src} srcSet={item.image?.srcSet} sizes="64px" className="w-16 shrink-0" />
       <div className="grid min-w-0 flex-1 content-start gap-3">
         <div className="flex items-start justify-between gap-4">
           <div className="grid min-w-0 gap-1">

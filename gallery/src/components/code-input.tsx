@@ -11,8 +11,6 @@
  *   sans at the body size, in tabular figures. Six cells split three and three
  *   with a wider gap, so the code reads in halves. The label sits above at the title weight and a hint or an error
  *   below, as on a TextField.
- * - Flat (proposals/flat-pill.md): a grey pill per cell with no outline, the ink ring on the current one and the
- *   danger ring on every cell with an error.
  * - Focus: the cell the next character goes into takes the focus line and ring, and an empty one shows a still 1px
  *   caret. Nothing blinks.
  * - Typing: only what the code can hold gets in (digits, or letters and digits in capitals); the rest is dropped, so a
@@ -128,14 +126,6 @@ export function CodeInput({
                   (length === 6 && i === 3 ? " ml-2" : "") +
                   /* Forced colors drop the ring (a box-shadow), so the current cell takes an outline there. */
                   (current ? " forced-colors:outline-2 forced-colors:outline-offset-2 forced-colors:outline-[Highlight]" : "") +
-                  /* Flat: no outline on a cell; the ink ring marks the current one, the danger ring an error. */
-                  (disabled
-                    ? " in-[[data-material=flat]]:shadow-none"
-                    : error
-                      ? " in-[[data-material=flat]]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)]"
-                      : current
-                        ? " in-[[data-material=flat]]:shadow-(--focus-ring)"
-                        : " in-[[data-material=flat]]:shadow-none") +
                   (disabled
                     ? " bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
                     : " bg-field font-field text-field-ink " +

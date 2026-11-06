@@ -2,8 +2,6 @@
  * Menu: a dropdown on @radix-ui/react-dropdown-menu (roles, focus, typeahead,
  * submenus) with everything visual written here.
  *
- * - Flat: a solid surface-1 card (no glass, no hairline), the float shadow; rows are grey bubbles at the panel
- *   radius less its 4px padding, and a separator is a gap, not a line.
  * - Surface: floating glass (litt-glass, default float shadow), rounded-surface,
  *   p-1 (4px), min width 240. Rows are 44px and rounded-control, which sits
  *   concentric inside the 4px inset. A submenu is opened from a floating
@@ -173,15 +171,10 @@ function useRowView() {
   };
 }
 
-/** Flat: the glass panel becomes a solid surface-1 card with the float shadow and no hairline. */
-const FLAT_PANEL =
-  "in-[[data-material=flat]]:[--glass-bg:var(--surface-1)] in-[[data-material=flat]]:[--glass-border:transparent] " +
-  "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px]";
-
 /* ------------------------------------------------------------------ rows */
 
 const row =
-  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] " +
+  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] forced-colors:data-[highlighted]:[forced-color-adjust:none] forced-colors:data-[highlighted]:text-[HighlightText] forced-colors:data-[highlighted]:**:text-[HighlightText]";
@@ -365,7 +358,7 @@ export function MenuGroup({
 /** Full-bleed 1px hairline: it ignores the 4px inset of the panel. */
 export function MenuSeparator() {
   const P = useParts();
-  return <P.Separator className="-mx-1 my-1 h-px bg-line in-[[data-material=flat]]:h-0 in-[[data-material=flat]]:bg-transparent" />;
+  return <P.Separator className="-mx-1 my-1 h-px bg-line" />;
 }
 
 /** What the two submenu implementations share. */
@@ -805,7 +798,7 @@ export function MenuPanel({
     style: { x, y },
   };
   const surface =
-    "relative z-50 min-w-60 rounded-surface outline-none in-[[data-material=flat]]:[&>[data-ring]]:rounded-[calc(var(--radius-surface)-4px)] " +
+    "relative z-50 min-w-60 rounded-surface outline-none " +
     P.origin +
     " data-[state=closed]:pointer-events-none " +
     (drilling ? "" : "p-1 ");
@@ -843,7 +836,7 @@ export function MenuPanel({
             loop
             {...placedProp}
           >
-            <motion.div {...motionProps} className={surface + "bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1"}>
+            <motion.div {...motionProps} className={surface + "bg-surface-2 shadow-float"}>
               {body}
             </motion.div>
           </P.SubContent>
@@ -866,7 +859,7 @@ export function MenuPanel({
             loop
             {...placedProp}
           >
-            <motion.div {...motionProps} className={surface + "litt-glass " + FLAT_PANEL}>
+            <motion.div {...motionProps} className={surface + "litt-glass"}>
               {body}
             </motion.div>
           </P.Content>

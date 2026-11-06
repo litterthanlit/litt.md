@@ -68,7 +68,7 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
         aria-valuemax={max}
         aria-valuenow={known ? Math.round(share * max) : undefined}
         aria-valuetext={reading}
-        className="relative h-2 overflow-hidden rounded-control bg-slot in-[[data-material=flat]]:bg-surface-3 forced-colors:border"
+        className="relative h-2 overflow-hidden rounded-control bg-slot forced-colors:border"
       >
         {/* A full-width band scaled from the left: only a transform changes as the value grows. */}
         <div
@@ -78,7 +78,7 @@ export function Progress({ label, value, max = 100, valueText, status = "active"
           }
           style={{ transform: `scaleX(${share})` }}
         />
-        <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-(--slot-shade) in-[[data-material=flat]]:shadow-none" />
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control shadow-(--slot-shade)" />
       </div>
       {message && (
         <p id={messageId} className={"text-small " + (status === "failed" ? "text-danger" : "text-fg-subtle")}>

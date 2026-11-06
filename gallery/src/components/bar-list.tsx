@@ -103,7 +103,7 @@ const NARROW = "@max-[28rem]:grid-cols-[0.5rem_[lead]_auto_[label]_minmax(0,1fr)
 const ROW = "col-span-full grid min-h-control-md grid-cols-subgrid items-center rounded-control py-2 text-left";
 const PRESS =
   "w-full cursor-pointer [-webkit-tap-highlight-color:transparent] transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] in-[[data-material=flat]]:hover:bg-surface-3 pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 function Row({
@@ -149,7 +149,7 @@ function Row({
         aria-hidden="true"
         className="col-start-[bar] row-start-1 px-4 @max-[28rem]:col-start-[label] @max-[28rem]:col-end-[end] @max-[28rem]:row-start-2 @max-[28rem]:px-0 @max-[28rem]:pt-1"
       >
-        <span className="block h-1 overflow-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] in-[[data-material=flat]]:bg-surface-3">
+        <span className="block h-1 overflow-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]">
           {grow.moving ? (
             <motion.span className={"block h-full w-full rounded-control " + fill} style={{ x: slide }} />
           ) : (
@@ -170,7 +170,7 @@ function Row({
     </>
   );
   return (
-    <li ref={register} className="col-span-full grid grid-cols-subgrid border-t border-line first:border-t-0 in-[[data-material=flat]]:border-transparent">
+    <li ref={register} className="col-span-full grid grid-cols-subgrid border-t border-line first:border-t-0">
       {item.href ? (
         <a href={item.href} onClick={press} className={ROW + " " + PRESS}>
           {cells}

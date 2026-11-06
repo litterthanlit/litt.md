@@ -16,7 +16,6 @@
  *   open or close a branch), * opens every branch beside the focused one, and typing a name's first letters jumps to it.
  * - Accessibility: role="tree" named by `label`, each row a treeitem with aria-level, aria-setsize, aria-posinset,
  *   aria-expanded on branches and aria-selected, and children in a group. Focus shows the 2px ring inside the row.
- * - Flat: no level guides; the selected row is a grey bubble and a row takes one on hover.
  */
 import { useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { ChevronRightIcon, FileIcon, FolderIcon } from "@/components/icons";
@@ -54,7 +53,7 @@ const ROW =
 const ITEM_FOCUS = "[&:focus-visible>div]:outline-2 [&:focus-visible>div]:-outline-offset-2 [&:focus-visible>div]:outline-focus";
 
 const IDLE =
-  "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] in-[[data-material=flat]]:hover:bg-surface-3";
+  "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
 
 /* Selected is raised (R3): the press material's block, the same on the canvas and on a surface. */
 const SELECTED = {
@@ -207,7 +206,7 @@ export function Tree({
               <span
                 key={l}
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 w-px bg-line in-[[data-material=flat]]:hidden"
+                className="pointer-events-none absolute inset-y-0 w-px bg-line"
                 style={{ insetInlineStart: START + l * INDENT + 7.5 }}
               />
             ))}

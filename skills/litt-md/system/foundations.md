@@ -140,8 +140,6 @@ They were fitted to litt's surfaces in each theme and checked for color-blind se
 
 There are no other radii: no 6, 12 or 16 typed by hand.
 
-**Under Flat** (`data-material="flat"`, v1.9) the shape is the Pill: `--radius-control` 28px and `--radius-surface` 16px, set in Flat's block, so a host gets them with the attribute. The other shapes still apply on top (the gallery's Customize panel writes them on `<body>`), because every Flat recipe reads the radius tokens and never a number. Flat's own language is in `proposals/flat-pill.md` and R3.
-
 - `tokens.css` gives `button`, `input`, `select` and `textarea` the control radius, and `.litt-raised` and `.litt-glass` the surface radius. A full-bleed bar like the header sets `border-radius: 0`.
 - Borders are 1px (`--hairline`), drawn as `inset 0 0 0 1px var(--line)` so they don't change layout.
 - In Tailwind: `rounded-control`, `rounded-surface`, `rounded-pill`, and the concentric radii worked out from them (`rounded-[calc(var(--radius-surface)-4px)]`), nothing else.

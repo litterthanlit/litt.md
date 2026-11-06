@@ -8,8 +8,6 @@
  *   and the 2px focus ring wraps the whole field while its text input is focus-visible. An
  *   invalid field turns the line to --danger. Like the Input it has no hover. Padding sits on the
  *   4px grid, so the field grows by whole token rows (24px tokens, 4px apart) as they wrap. Under Device the field is LCD glass in the mono, through the --field tokens.
- * - Flat (proposals/flat-pill.md): a grey field with no outline (the ink ring on focus, the danger ring on an error),
- *   each token a --surface-1 bubble on it, the "+N" chip bare text.
  * - Token: a raised Tag (R3: a block you can lift out of the cut, --block and --block-lift, its
  *   corners the control radius less 2px; 24px, the sans at the caption size and the label weight),
  *   with a 24px remove button that grows to a 44px hit area on coarse pointers through an
@@ -81,11 +79,6 @@ const FIELD =
   "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
   "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat: a grey field with no outline; the ink ring on focus, the danger ring on an error. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:has-[input:focus-visible]:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:data-[invalid]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[invalid]:has-[input:focus-visible]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[disabled]:shadow-none " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
 
@@ -113,7 +106,7 @@ const TEXT_SIZE = {
 };
 
 const REMOVE =
-  "relative grid size-6 shrink-0 cursor-pointer place-items-center rounded-control text-fg-subtle in-[[data-material=flat]]:rounded-pill " +
+  "relative grid size-6 shrink-0 cursor-pointer place-items-center rounded-control text-fg-subtle " +
   "transition-[color] duration-(--dur-instant) ease-litt hover:text-fg " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled " +
@@ -367,7 +360,7 @@ export function TokenInput({
                   key="more"
                   layout="position"
                   aria-label={`${more} more`}
-                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-none"
+                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]"
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, transition: exit }}

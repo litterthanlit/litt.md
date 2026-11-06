@@ -18,7 +18,6 @@
  *   Tabs), and keep the group for wider screens.
  * - Accessibility: each handle is a separator with aria-valuenow (the size of the panel before it), aria-valuemin,
  *   aria-valuemax and aria-controls pointing at that panel, named by `label` ("Resize the file tree").
- * - Flat: no hairline; the handle is a small grey grip pill that darkens on hover and drag.
  */
 import {
   Children,
@@ -281,15 +280,13 @@ export function ResizableHandle({ label = "Resize", className = "" }: ResizableH
       onDoubleClick={() => reset(before)}
       className={[
         "relative z-10 shrink-0 touch-none bg-line [-webkit-tap-highlight-color:transparent]",
-        /* Flat: no line; a small grey grip pill stands at the middle of the handle. */
-        "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:hover:bg-transparent in-[[data-material=flat]]:data-[dragging]:bg-transparent in-[[data-material=flat]]:after:absolute in-[[data-material=flat]]:after:top-1/2 in-[[data-material=flat]]:after:left-1/2 in-[[data-material=flat]]:after:-translate-1/2 in-[[data-material=flat]]:after:rounded-pill in-[[data-material=flat]]:after:bg-line-strong in-[[data-material=flat]]:hover:after:bg-fg-subtle in-[[data-material=flat]]:data-[dragging]:after:bg-fg-subtle",
         "transition-[background-color] duration-(--dur-instant) ease-litt hover:bg-line-strong data-[dragging]:bg-fg-subtle",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus",
         /* The hit area: 12px, or 44px under a finger, centered on the hairline. */
         "before:absolute",
         horizontal
-          ? "w-px in-[[data-material=flat]]:after:h-8 in-[[data-material=flat]]:after:w-1 cursor-col-resize self-stretch before:inset-y-0 before:-inset-x-1.5 pointer-coarse:before:-inset-x-5"
-          : "h-px in-[[data-material=flat]]:after:h-1 in-[[data-material=flat]]:after:w-8 cursor-row-resize self-stretch before:inset-x-0 before:-inset-y-1.5 pointer-coarse:before:-inset-y-5",
+          ? "w-px cursor-col-resize self-stretch before:inset-y-0 before:-inset-x-1.5 pointer-coarse:before:-inset-x-5"
+          : "h-px cursor-row-resize self-stretch before:inset-x-0 before:-inset-y-1.5 pointer-coarse:before:-inset-y-5",
         className,
       ].join(" ")}
     />

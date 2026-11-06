@@ -11,7 +11,6 @@
  *   the words and the figure. Under it "Activity" (caption, --fg-subtle) over the steps, a bare Plan (its marks, tones
  *   and hidden words; the card says the count and keeps the live region), and the `preview` beside them once the card
  *   is wide enough, under them when it is not.
- * - Flat: the open card is a grey card (--surface-3) with no hairline; the folded block is the grey bubble the tokens give.
  * - Anatomy, folded: the same box as the raised block (R3: --block, --block-lift, the control radius, md height, the
  *   width of its words and never wider than its container): a button with aria-expanded="false" holding the ring,
  *   the title over the words (the card's sizes on 16px lines, the title cut at the end), the figure and Expand with a
@@ -282,10 +281,7 @@ export function RunCard({
             transition={enter}
             role="group"
             aria-labelledby={titleId}
-            className={
-              "litt-raised @container grid gap-4 p-4 in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:forced-colors:border " +
-              className
-            }
+            className={"litt-raised @container grid gap-4 p-4 " + className}
           >
             {/* One row when the card has room: the title over the words, then the ring, the figure and the buttons.
                 Narrow, two: the title and the buttons, then the ring, the words and the figure in a row of their own

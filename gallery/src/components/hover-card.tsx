@@ -137,12 +137,6 @@ const WIDTH = { sm: "w-64", md: "w-80" } as const;
 /** What a card must not be glass over: any glass surface, and any popover. */
 const FLOATING = ".litt-glass, [data-popover-surface]";
 
-/** Flat: the glass becomes a solid surface-1 card with the float shadow and no hairline. */
-const FLAT_PANEL =
-  "in-[[data-material=flat]]:[--glass-bg:var(--surface-1)] in-[[data-material=flat]]:[--glass-border:transparent] " +
-  "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px]";
-
-
 export type HoverCardContentProps = {
   /** The side of the trigger it opens on first. With no room there it flips. */
   side?: Side;
@@ -260,7 +254,7 @@ function Surface({
           "relative z-50 max-w-(--radix-popover-content-available-width) rounded-surface outline-none " +
           "origin-(--radix-popover-content-transform-origin) data-[state=closed]:pointer-events-none " +
           WIDTH[size] +
-          (flat ? " bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1" : " litt-glass " + FLAT_PANEL)
+          (flat ? " bg-surface-2 shadow-float" : " litt-glass")
         }
         initial={{ opacity: 0, scale: om.grow }}
         animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : om.grow, transition: enter }}

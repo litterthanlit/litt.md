@@ -33,8 +33,6 @@
  *   exactly where it does without fun mode. Reduced motion turns it off.
  * - Motion: the ruler moves by transform only. Under reduced motion it jumps to where it settles.
  * - Touch: the track owns sideways drags (data-no-drag, touch-action pan-y), so the page still scrolls up and down.
- * - Flat (proposals/flat-pill.md): the track is a grey field with no outline and no shade; the ruler, the marks and the
- *   cap are as they are.
  * - Disabled: everything lies flat: the well --surface-3 with the plain --line hairline (a step below the cap, so the
  *   flat cap still shows), the cap --surface-2 with a --line edge and a --line grip. No pointer and no tab stop.
  * - Forced colors drops box-shadow and the floors, so the track gets a real border and the cap a border and the
@@ -364,8 +362,7 @@ export function TimeScrubber({
           aria-hidden="true"
           className={
             "pointer-events-none absolute inset-0 rounded-surface " +
-            (disabled ? "shadow-[inset_0_0_0_1px_var(--line)]" : "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]") +
-            " in-[[data-material=flat]]:shadow-none"
+            (disabled ? "shadow-[inset_0_0_0_1px_var(--line)]" : "shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]")
           }
         />
         {/* The cap: its grip line marks the exact time. */}
@@ -374,7 +371,7 @@ export function TimeScrubber({
           className={
             "pointer-events-none absolute top-1 left-1/2 h-6 w-2 -translate-x-1/2 rounded-[calc(var(--radius-control)-2px)] " +
             "forced-colors:border forced-colors:bg-[Highlight] " +
-            (disabled ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none" : "bg-cap shadow-(--cap-lift)")
+            (disabled ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]" : "bg-cap shadow-(--cap-lift)")
           }
         >
           <span className={"absolute inset-y-2 left-1/2 w-px -translate-x-1/2 " + (disabled ? "bg-line" : "bg-cap-grip")} />

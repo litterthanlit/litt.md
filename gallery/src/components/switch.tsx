@@ -29,10 +29,6 @@
  *   as a CSS linear() easing, so it meets the far wall with a little life and settles. At rest it is exactly the
  *   block above. Reduced motion turns it off.
  * - Touch: rows are at least 44px tall. The tray owns a sideways drag and leaves vertical scrolling to the page.
- * - Flat (R1 to R3, proposals/flat-pill.md): the words go (side and fill say the state), the tray loses its fill and
- *   keeps only the 1.5px --line-control edge while off, with a --line-control knob at the start. On it is an ink
- *   tray with a canvas knob (the accent only for tone="accent", the one main switch, P1) at the end. The tray is 44 by 26 and the knob 20, so the crossing is --sw-travel (18px
- *   in Flat, 44px in Press and Device) and a drag measures it from that variable. Press and Device are untouched.
  * - Forced colors drops box-shadow and background colors, so the tray and the block get real borders and system
  *   colors mark the on state.
  */
@@ -76,7 +72,7 @@ export type SwitchProps = {
   ref?: Ref<HTMLButtonElement>;
 };
 
-/** How far the block crosses in Press and Device, in px: the tray's 92, less 2px on each side, less the block's own 44. Flat sets its own through --sw-travel. */
+/** How far the block crosses, in px: the tray's 92, less 2px on each side, less the block's own 44. */
 const TRAVEL = 44;
 /** How far a finger moves before a press becomes a drag, in px. */
 const SLOP = 4;
@@ -86,13 +82,6 @@ const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 /* The tray is the button. The row's label is stretched over the whole row, so the tray sits above it (z-1) and a
    press on the tray itself still lands on the button. It clips the block, so a cast never spills past its walls. */
 const tray =
-  "[--sw-travel:44px] in-[[data-material=flat]]:[--sw-travel:18px] " +
-  "in-[[data-material=flat]]:h-6.5 in-[[data-material=flat]]:w-11 in-[[data-material=flat]]:p-[3px] " +
-  "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-[inset_0_0_0_1.5px_var(--line-control)] " +
-  "in-[[data-material=flat]]:data-[state=checked]:bg-fg in-[[data-material=flat]]:data-[state=checked]:shadow-none " +
-  "in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=unchecked]:bg-transparent " +
-  "in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=checked]:bg-[color-mix(in_oklab,var(--fg)_86%,var(--canvas))] " +
-  "in-[[data-material=flat]]:disabled:opacity-40 in-[[data-material=flat]]:disabled:data-[state=checked]:bg-fg " +
   "peer relative z-1 inline-flex h-8 w-23 shrink-0 cursor-pointer touch-pan-y items-center self-start overflow-hidden rounded-control p-0.5 " +
   "bg-tray shadow-(--tray-shade) " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
@@ -101,26 +90,19 @@ const tray =
   "forced-colors:border forced-colors:p-px " + // the border is real, so the padding gives it back its px
   focusRing;
 
-/* Flat: the one main switch (tone="accent", P1) fills with the accent when on; every other switch is ink. */
-const trayAccent =
-  " in-[[data-material=flat]]:data-[state=checked]:bg-accent in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=checked]:bg-accent-hover";
-
 /* The block. Its corners are the control radius less the 2px it is set in, so they stay concentric with the tray's. */
 const blockBase =
   "pointer-events-none flex h-7 w-11 shrink-0 items-center justify-center rounded-[calc(var(--radius-control)-2px)] " +
   "text-caption font-title select-none " +
-  "forced-colors:border " +
-  "in-[[data-material=flat]]:h-5 in-[[data-material=flat]]:w-5 in-[[data-material=flat]]:rounded-[calc(var(--radius-control)-2px)]";
+  "forced-colors:border";
 
-const blockOff =
-  "bg-block text-fg-muted shadow-(--block-lift) group-active/switch:shadow-(--block-press) " +
-  "in-[[data-material=flat]]:bg-line-control in-[[data-material=flat]]:shadow-none";
+const blockOff = "bg-block text-fg-muted shadow-(--block-lift) group-active/switch:shadow-(--block-press)";
 const blockOn: Record<SwitchTone, string> = {
-  neutral: "bg-block text-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) in-[[data-material=flat]]:bg-canvas in-[[data-material=flat]]:shadow-none forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
-  accent: "bg-accent text-accent-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) in-[[data-material=flat]]:bg-canvas in-[[data-material=flat]]:shadow-none forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+  neutral: "bg-block text-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+  accent: "bg-accent text-accent-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
 };
 /* Disabled, the block lies flat: no cast, a hairline, and the word in --fg-disabled. */
-const blockDisabled = "bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)] forced-colors:text-[GrayText] in-[[data-material=flat]]:bg-line-control in-[[data-material=flat]]:shadow-none";
+const blockDisabled = "bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)] forced-colors:text-[GrayText]";
 
 /* The block's crossing on the responsive tier, and its fill, word and cast on the instant tier. While a hand drags it,
    it follows one to one, so only the colors keep their fade. */
@@ -167,7 +149,7 @@ export function Switch({
   };
 
   /* A hand on the block: where it took hold, and where the block is now. A press becomes a drag past SLOP px. */
-  const hand = useRef<{ id: number; x0: number; from: number; at: number; scale: number; travel: number; moved: boolean } | null>(null);
+  const hand = useRef<{ id: number; x0: number; from: number; at: number; scale: number; moved: boolean } | null>(null);
   const dropped = useRef(-1);
   const [dragX, setDragX] = useState<number | null>(null);
 
@@ -176,9 +158,8 @@ export function Switch({
     const el = e.currentTarget;
     el.setPointerCapture(e.pointerId);
     const scale = el.getBoundingClientRect().width / (el.offsetWidth || 1) || 1;
-    const travel = parseFloat(getComputedStyle(el).getPropertyValue("--sw-travel")) || TRAVEL;
-    const from = on ? travel : 0;
-    hand.current = { id: e.pointerId, x0: e.clientX, from, at: from, scale, travel, moved: false };
+    const from = on ? TRAVEL : 0;
+    hand.current = { id: e.pointerId, x0: e.clientX, from, at: from, scale, moved: false };
   };
   const onPointerMove = (e: PointerEvent<HTMLButtonElement>) => {
     const h = hand.current;
@@ -186,7 +167,7 @@ export function Switch({
     const dx = (e.clientX - h.x0) / h.scale;
     if (!h.moved && Math.abs(dx) < SLOP) return;
     h.moved = true;
-    h.at = Math.min(h.travel, Math.max(0, h.from + dx));
+    h.at = Math.min(TRAVEL, Math.max(0, h.from + dx));
     setDragX(h.at);
   };
   const onPointerEnd = (e: PointerEvent<HTMLButtonElement>) => {
@@ -198,7 +179,7 @@ export function Switch({
     if (e.type === "pointercancel") return;
     /* The click that follows a drag must not flip it back: the drop already chose the side. */
     dropped.current = e.timeStamp;
-    const next = h.at > h.travel / 2;
+    const next = h.at > TRAVEL / 2;
     if (next !== on) set(next);
   };
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -207,8 +188,8 @@ export function Switch({
   };
 
   const dragging = dragX !== null;
-  const shown = dragging ? dragX > (hand.current?.travel ?? TRAVEL) / 2 : on;
-  const x = dragging ? `${dragX}px` : on ? "var(--sw-travel)" : "0px";
+  const shown = dragging ? dragX > TRAVEL / 2 : on;
+  const x = dragging ? dragX : on ? TRAVEL : 0;
 
   /* Fun mode: the crossing (the first transitioned property) takes the glide spring; the rest keep the instant tier. */
   const fun = useFun();
@@ -248,10 +229,10 @@ export function Switch({
         onPointerCancel={onPointerEnd}
         onClick={onClick}
         data-no-drag=""
-        className={tray + (tone === "accent" ? trayAccent : "") + (end ? " col-start-2 row-start-1" : " col-start-1 row-start-1")}
+        className={tray + (end ? " col-start-2 row-start-1" : " col-start-1 row-start-1")}
       >
-        <SwitchPrimitive.Thumb className={block} style={{ ...motion, translate: `${x} 0` }}>
-          <span aria-hidden="true" className="in-[[data-material=flat]]:hidden">{shown ? words[1] : words[0]}</span>
+        <SwitchPrimitive.Thumb className={block} style={{ ...motion, translate: `${x}px 0` }}>
+          <span aria-hidden="true">{shown ? words[1] : words[0]}</span>
         </SwitchPrimitive.Thumb>
       </SwitchPrimitive.Root>
       {/* The label is stretched over the whole row, so a click anywhere in it toggles the switch. */}

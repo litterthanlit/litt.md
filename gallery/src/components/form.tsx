@@ -17,8 +17,6 @@
  *   fields column of a FormSection from 1024 up.
  * - Spacing: fields sit --space-6 (24) apart and groups --space-12 (48) apart. A Fieldset adds
  *   24 above and below itself, so in a column of fields it sits 48 from its neighbours.
- * - Flat (proposals/flat-pill.md, rule 5): no hairline between sections and none between the rows of a Fieldset with
- *   rows. The air stays and does the parting.
  * - Optional fields are marked, not required ones: "(optional)" in --fg-subtle after the label.
  *   There are no asterisks.
  * - Motion: none of its own. The summary appears at once, because it answers a submit and a
@@ -108,7 +106,7 @@ export function FormSection({ title, description, headingLevel = 2, children, cl
         "grid gap-x-12 gap-y-6 " +
         COLUMNS +
         " " +
-        "not-first:mt-12 not-first:border-t not-first:border-line not-first:pt-12 in-[[data-material=flat]]:not-first:border-t-0 " +
+        "not-first:mt-12 not-first:border-t not-first:border-line not-first:pt-12 " +
         className
       }
     >
@@ -166,7 +164,7 @@ export function Fieldset({ legend, description, help, error, disabled, rows = fa
           {description}
         </p>
       )}
-      <div className={rows ? "grid divide-y divide-line border-y border-line in-[[data-material=flat]]:divide-y-0 in-[[data-material=flat]]:border-y-0" : "grid gap-6"}>{children}</div>
+      <div className={rows ? "grid divide-y divide-line border-y border-line" : "grid gap-6"}>{children}</div>
       {note && (
         <p id={`${id}-note`} className={"mt-2 text-small " + (error ? "text-danger" : "text-fg-subtle")}>
           {note}

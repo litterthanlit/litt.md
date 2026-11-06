@@ -29,8 +29,6 @@
  * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the press goes deeper (1px) and the sink moves
  *   on fun mode's press spring, as a CSS linear() easing, so the release springs back with a little life. Only the
  *   sink's timing changes; fills keep the instant tier. Still CSS, no script per press. Reduced motion turns it off.
- * - Flat (proposals/flat-pill.md): the secondary is a grey pill with no cast (the tokens), icon-only is a grey circle,
- *   and a disabled button is a grey fill with --fg-disabled words and no hairline.
  * - Disabled keeps a hairline, so the button keeps its shape on a surface-2 area.
  * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
  *   round (pill) and need an aria-label.
@@ -98,8 +96,7 @@ const variants: Record<ButtonVariant, string> = {
     "in-[[data-dialog-footer]]:enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)]",
 };
 const disabledLook =
-  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none " +
-  "in-[[data-material=flat]]:disabled:bg-surface-3 in-[[data-material=flat]]:disabled:shadow-none";
+  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none";
 
 /* One child is the label. Several (an icon and a word) sit in the row: text runs are trimmed labels, elements sit as they are. */
 function label(children: ReactNode): ReactNode {

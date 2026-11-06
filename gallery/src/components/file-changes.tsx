@@ -9,7 +9,6 @@
  *   they say "Keep the rest" and "Undo the rest", and both act on pending files only, so a press never re-decides a
  *   file the person chose. With nothing pending the buttons go, the header keeps its height, and the caption is a
  *   receipt: "All reviewed: 3 kept, 1 undone". Below 28rem (a container query) the buttons sit under the words.
- * - Flat: with a `summary` the review is a grey card at the surface radius with no frame, its rows concentric inside it.
  * - Row: a list item at least 32px tall (44px on a finger) at the control radius. A disclosure button holds the
  *   chevron, a 16px FileIcon in --fg-subtle and the path in mono at the small size, the directory in --fg-subtle and
  *   cut first, from its start so the nearest folder stays ("…styles/fonts.css"), the file name in --fg and never
@@ -428,13 +427,7 @@ export function FileChanges({
   );
 
   return (
-    <div
-      className={
-        "@container min-w-0 " +
-        (summary ? "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:p-4 in-[[data-material=flat]]:forced-colors:border " : "") +
-        className
-      }
-    >
+    <div className={"@container min-w-0 " + className}>
       {head}
       {rows.length === 0 ? (
         <p className={"text-small text-fg-subtle " + (summary ? "mt-2" : "")}>No files changed.</p>
@@ -500,7 +493,7 @@ export function FileChanges({
               <li key={key} className="min-w-0">
                 <div
                   className={
-                    "-mx-2 flex min-w-0 items-start gap-2 rounded-control px-2 in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] " + rowHeight + (opens ? " " + ROW_FILL : "")
+                    "-mx-2 flex min-w-0 items-start gap-2 rounded-control px-2 " + rowHeight + (opens ? " " + ROW_FILL : "")
                   }
                 >
                   {opens ? (

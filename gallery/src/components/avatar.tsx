@@ -54,7 +54,7 @@ const FILL: Record<AvatarHue, string> = {
   teal: "bg-data-teal-tint text-data-teal-text",
   violet: "bg-data-violet-tint text-data-violet-text",
   rose: "bg-data-rose-tint text-data-rose-text",
-  neutral: "bg-surface-2 text-fg-muted in-[[data-material=flat]]:bg-surface-3",
+  neutral: "bg-surface-2 text-fg-muted",
 };
 
 /* The edge sits on its own layer above the fill and any photo, so the ring a group draws on the
@@ -462,7 +462,7 @@ export function Avatar({ name, src, size = "md", hue, look = "initials", decorat
           {initialsOf(name)}
         </span>
       )}
-      <span aria-hidden="true" className={`pointer-events-none absolute inset-0 rounded-pill in-[[data-material=flat]]:shadow-none ${photo ? PHOTO_EDGE : EDGE[tone]}`} />
+      <span aria-hidden="true" className={`pointer-events-none absolute inset-0 rounded-pill ${photo ? PHOTO_EDGE : EDGE[tone]}`} />
     </span>
   );
 }
@@ -504,7 +504,7 @@ export function AvatarGroup({ label, children, size = "md", max = 4, total, ring
             <span
               role="img"
               aria-label={`${more} more`}
-              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 text-caption tabular-nums font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none ${BOX_MIN[size]}`}
+              className={`inline-grid select-none place-items-center rounded-pill bg-surface-2 px-1 text-caption tabular-nums font-normal text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] ${BOX_MIN[size]}`}
             >
               <span className={`litt-trim ${UNCOVER}`}>+{more}</span>
             </span>

@@ -5,8 +5,6 @@
  *
  * - Track: a sunken tray (R3: --tray, --tray-shade) at the control radius, 2px padding, as the Switch's. The segments
  *   inside sit at the control radius less that inset, so the corners stay concentric.
- * - Flat (proposals/flat-pill.md): the tray has no fill or frame (the tokens), so the selected segment is a grey bubble
- *   (--block is --surface-3) at the control radius, and the others are --fg-muted words. Its forced-colors border stays.
  * - Segment: --fg-subtle, and --fg on hover. The selected one is the raised block (--block, --block-lift), in --fg:
  *   selected is raised, the same block as a switch's. Labels at the title weight (R8), and no segment changes size
  *   when selected.

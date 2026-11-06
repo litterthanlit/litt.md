@@ -14,7 +14,6 @@
  * - Router: links are plain <a> unless you pass renderLink, as the Header takes it (data items, so a function
  *   draws each link). The folded levels are real links in the Menu (MenuItem href) unless you pass onNavigate.
  * - Motion: none. The Menu that holds the folded levels owns its own, on the responsive tier.
- * - Flat: plain words with slashes between; a link takes a grey bubble on hover.
  */
 import type { ReactNode } from "react";
 import { useDevice } from "@/motion";
@@ -59,8 +58,6 @@ const link =
   "relative inline-flex h-control-sm shrink-0 items-center rounded-control whitespace-nowrap text-fg-muted " +
   "[-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt " +
   "hover:text-fg pointer-coarse:active:text-fg " +
-  /* Flat: plain words that light up as a grey bubble. */
-  "in-[[data-material=flat]]:px-3 in-[[data-material=flat]]:hover:bg-surface-3 " +
   /* 44px on a finger, without moving the text: the layer is centered on the 32px link and adds 6px above and below. */
   "pointer-coarse:before:absolute pointer-coarse:before:inset-x-0 pointer-coarse:before:-inset-y-1.5 " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
@@ -68,7 +65,7 @@ const link =
 /** The "/" between two levels. Decoration: a screen reader hears the list instead. */
 function Slash() {
   return (
-    <span aria-hidden="true" className="shrink-0 px-2 text-fg-subtle select-none in-[[data-material=flat]]:px-0.5">
+    <span aria-hidden="true" className="shrink-0 px-2 text-fg-subtle select-none">
       /
     </span>
   );
@@ -101,7 +98,7 @@ export function Breadcrumb({
   const draw = renderLink ?? ((item: BreadcrumbItem, props: BreadcrumbLinkProps) => <a href={item.href} {...props} />);
   const level = (item: BreadcrumbItem) =>
     item === current ? (
-      <span aria-current="page" className="min-w-0 truncate text-fg in-[[data-material=flat]]:px-3">
+      <span aria-current="page" className="min-w-0 truncate text-fg">
         {item.label}
       </span>
     ) : (

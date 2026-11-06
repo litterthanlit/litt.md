@@ -18,8 +18,6 @@
  *   the press material's block, --block with --block-lift, in --fg like the text typed beside it.
  *   It sits inside the field's control radius, so its corners are that radius less 2px. Forced
  *   colors drops the lift, so it keeps a 1px border. A hue tag files a category and never rises.
- * - Flat (proposals/flat-pill.md): a plain tag is a grey pill (--surface-3) with no hairline, a hue tag keeps its tint
- *   without the hairline, and a raised tag is a --surface-1 bubble, so it stands out of the grey field it sits in.
  * - Static: no motion and no states. A tag is a label, not a control, so it never takes
  *   focus. If you need something to press, use Button or a chip.
  */
@@ -38,16 +36,16 @@ const STATUS: Record<TagStatus, string> = {
 };
 
 const HUE: Record<TagHue, string> = {
-  blue: "bg-data-blue-tint text-data-blue-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-blue)_24%,transparent),var(--highlight)] in-[[data-material=flat]]:shadow-none",
-  amber: "bg-data-amber-tint text-data-amber-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-amber)_24%,transparent),var(--highlight)] in-[[data-material=flat]]:shadow-none",
-  teal: "bg-data-teal-tint text-data-teal-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-teal)_24%,transparent),var(--highlight)] in-[[data-material=flat]]:shadow-none",
-  violet: "bg-data-violet-tint text-data-violet-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-violet)_24%,transparent),var(--highlight)] in-[[data-material=flat]]:shadow-none",
-  rose: "bg-data-rose-tint text-data-rose-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-rose)_24%,transparent),var(--highlight)] in-[[data-material=flat]]:shadow-none",
+  blue: "bg-data-blue-tint text-data-blue-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-blue)_24%,transparent),var(--highlight)]",
+  amber: "bg-data-amber-tint text-data-amber-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-amber)_24%,transparent),var(--highlight)]",
+  teal: "bg-data-teal-tint text-data-teal-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-teal)_24%,transparent),var(--highlight)]",
+  violet: "bg-data-violet-tint text-data-violet-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-violet)_24%,transparent),var(--highlight)]",
+  rose: "bg-data-rose-tint text-data-rose-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-rose)_24%,transparent),var(--highlight)]",
 };
 
-const PLAIN = "rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none ";
+const PLAIN = "rounded-control bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] ";
 /* In a field, 4px in: the field's radius less the inset, never under 2px (foundations.md, Concentric). */
-const RAISED = "rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] bg-block shadow-(--block-lift) in-[[data-material=flat]]:bg-surface-1 forced-colors:border ";
+const RAISED = "rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] bg-block shadow-(--block-lift) forced-colors:border ";
 
 export type TagProps = HTMLAttributes<HTMLSpanElement> & {
   /** Leave it out for a plain label. Set it for a status: the text takes that color, and the fill never does. */

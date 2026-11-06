@@ -13,9 +13,6 @@
  *   lift, --fg-disabled): nothing to push. A press steps once; held, it repeats after 400ms, every 70ms, until it
  *   lets go or reaches the bound. They are not Tab stops (the arrow keys do the same in the field), and pressing one
  *   leaves focus where it was.
- * - Flat (proposals/flat-pill.md, idea C): a grey track with no outline, the value (and its unit) in a --surface-1
- *   bubble, a round − and + either side of it with no fill until the pointer is over them. Focus is the ink ring on
- *   the track, an error the danger ring. The DOM is the same; the bubble wrapper is display: contents under Press.
  * - Typing is free: what is typed is read when the field is left or Enter is pressed, in the page's locale (group
  *   separators, a comma decimal). Then it is kept between min and max, put on the step, and shown formatted
  *   (Intl.NumberFormat, with `format` for a currency or a percent). Text that is not a number goes back to the last
@@ -49,20 +46,7 @@ const FIELD =
   "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
   "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat: a grey track with no outline; the ring and the danger ring are the only edges. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:has-[input:focus-visible]:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:data-[invalid]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[invalid]:has-[input:focus-visible]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[disabled]:shadow-none " +
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
-
-/* Flat's bubble: the value (and its unit) in a --surface-1 bubble that fills the track between the round − and +.
-   Under Press the wrapper is display: contents, so the field lays out exactly as before. */
-const BUBBLE =
-  "contents in-[[data-material=flat]]:flex in-[[data-material=flat]]:order-2 in-[[data-material=flat]]:min-w-0 in-[[data-material=flat]]:flex-1 " +
-  "in-[[data-material=flat]]:items-center in-[[data-material=flat]]:self-stretch in-[[data-material=flat]]:rounded-[calc(var(--radius-control)-2px)] " +
-  "in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:has-[input:disabled]:bg-transparent " +
-  "forced-colors:in-[[data-material=flat]]:border";
 
 /* Height, the text's size and the air before it, and the steppers' size: the field's height less 8px, so each block
    sits 4px inside the field. */
@@ -80,9 +64,7 @@ const STEPPER =
   "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--block-lift) enabled:forced-colors:border " +
   "enabled:hover:bg-(--block-hover) " +
   "enabled:active:shadow-(--block-press) enabled:active:translate-y-(--press-depth) " +
-  "disabled:cursor-not-allowed disabled:text-fg-disabled " +
-  /* Flat: a round key on the track, no fill until the pointer is over it. */
-  "in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:enabled:bg-transparent in-[[data-material=flat]]:enabled:hover:bg-(--block-hover)";
+  "disabled:cursor-not-allowed disabled:text-fg-disabled";
 
 const HOLD_DELAY = 400; // ms before a held stepper starts repeating
 const HOLD_EVERY = 70; // ms between repeats
@@ -349,7 +331,7 @@ export function NumberField({
         aria-label={typeof label === "string" ? `${word} ${label.toLowerCase()}` : word}
         aria-controls={id}
         disabled={disabled || bound}
-        className={STEPPER + " " + SIZE[size].step + (dir < 0 ? " in-[[data-material=flat]]:order-1" : " in-[[data-material=flat]]:order-3")}
+        className={STEPPER + " " + SIZE[size].step}
         onPointerDown={(e: ReactPointerEvent<HTMLButtonElement>) => {
           if (e.button !== 0) return;
           e.preventDefault(); // focus stays where it was
@@ -387,14 +369,13 @@ export function NumberField({
       <div
         data-invalid={error ? "" : undefined}
         data-disabled={disabled ? "" : undefined}
-        className={FIELD + " pr-1 in-[[data-material=flat]]:py-1 in-[[data-material=flat]]:pl-1 " + SIZE[size].field}
+        className={FIELD + " pr-1 " + SIZE[size].field}
         onClick={(e) => {
           /* A press on the field's air focuses the text; a press on a stepper leaves focus where it was, so a phone's
              keyboard does not open under a thumb that is only stepping. */
           if (!(e.target as Element).closest("button")) input.current?.focus();
         }}
       >
-        <span className={BUBBLE}>
         <input
           ref={input}
           id={id}
@@ -428,8 +409,7 @@ export function NumberField({
             {unit}
           </span>
         )}
-        </span>
-        <span className="flex shrink-0 items-center gap-1 in-[[data-material=flat]]:contents">
+        <span className="flex shrink-0 items-center gap-1">
           {stepper(-1)}
           {stepper(1)}
         </span>

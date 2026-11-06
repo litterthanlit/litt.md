@@ -16,8 +16,6 @@
  *   it --focus and adds --focus-ring (:focus-visible only), an error turns it --danger and keeps the ring on
  *   focus. Disabled lies flat on surface-2 with the plain --line hairline and no shade: nothing to type.
  *   Under Device (data-material="device") the field is LCD glass in the mono, through the --field tokens.
- * - Flat (proposals/flat-pill.md): a grey pill (--cut is --surface-3) with no outline and no shade. Focus is the
- *   ink ring, an error the danger ring, disabled lies flat with no hairline. A textarea rounds to --radius-surface.
  * - Typed text at the text weight and the label at the title weight (R8). The edge fades on the
  *   instant tier, the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
@@ -38,11 +36,6 @@ const field =
   "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat (rule 4): a grey pill with no outline; focus is the ink ring, an error the danger ring, disabled lies flat with no hairline. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:focus-visible:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:aria-invalid:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:aria-invalid:focus-visible:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:disabled:shadow-none " +
   /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid forced-colors:focus-visible:outline-offset-2";
 
@@ -196,7 +189,7 @@ export function Textarea({
         rows={rows}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className={[field, "block resize-y in-[[data-material=flat]]:rounded-surface", textareaSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
+        className={[field, "block resize-y", textareaSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
         {...rest}
       />
     </Field>

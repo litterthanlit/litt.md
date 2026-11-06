@@ -16,7 +16,6 @@
  * - Axes: vertical by default, horizontal or both on request. Vertical content is a block, so text wraps; sideways
  *   content keeps its own width and scrolls.
  * - Reduced motion: the duration token is zero, so the thumb and the hairlines change at once.
- * - Flat: no edge hairlines; only the thumb shows there is more.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode, type Ref } from "react";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
@@ -143,7 +142,7 @@ export function ScrollArea({ label, orientation = "vertical", className = "", vi
   const scrolls = edges.scrollsX || edges.scrollsY;
   const bar = (on: boolean) =>
     "group/bar flex touch-none select-none p-0.5 " + (armed ? FADE : "") + (on ? "opacity-100" : "pointer-events-none opacity-0");
-  const line = (on: boolean) => "pointer-events-none absolute " + (armed ? TINT : "") + (on ? "bg-line in-[[data-material=flat]]:bg-transparent" : "bg-transparent");
+  const line = (on: boolean) => "pointer-events-none absolute " + (armed ? TINT : "") + (on ? "bg-line" : "bg-transparent");
 
   return (
     <ScrollAreaPrimitive.Root
