@@ -7,7 +7,7 @@
  *   as the Input's. Inside it, top to bottom: the file chips, the text area, and a toolbar row of sm controls
  *   padded --space-2. The line fades on the instant tier and nothing else about the box moves. Under Device the field is LCD glass in the mono, through the --field tokens.
  * - Flat: a grey field at the surface radius with no outline (--cut is grey), focus the ink ring, a removable chip a white
- *   bubble on it, and Send the round accent key that lies grey while empty (the Button's disabled look).
+ *   bubble on it, and Send the round ink key that lies grey while empty (the Button's disabled look).
  * - Text: the body size (16px on coarse pointers, so iOS never zooms) in --fg, the placeholder in --fg-subtle,
  *   side padding as the Input's md. It starts one line tall and grows a line at a time up to `maxRows` (8), then
  *   scrolls inside. The height is set in a layout effect, so it snaps with the text and is never animated. A

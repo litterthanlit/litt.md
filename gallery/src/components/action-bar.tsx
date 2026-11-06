@@ -10,7 +10,7 @@
  *   R3), padded 4px so sm buttons sit concentric in it. The count in words at the start ("3 selected", small, --fg),
  *   a hairline, the actions as sm buttons, then a round ghost Clear. Never an accent fill: a selection can be large
  *   and the view's one primary action is elsewhere. A destructive action keeps its word ("Delete"), not a red fill.
- * - Flat: one accent pill (ink in Monochrome), its count and actions in accent-fg, no hairline.
+ * - Flat: one ink pill, its count and actions in canvas, no hairline.
  * - Motion: it rises by --travel and fades in on the responsive tier, and drops by half that on the exit token. The
  *   count changes in place. Under reduced motion it appears and goes.
  * - Keyboard: a toolbar. Tab enters it once, on the first action; ← and → move between its buttons, Home and End go
@@ -23,13 +23,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { useExit, useTransition, useTravel } from "@/motion";
 import { XIcon } from "@/components/icons";
 
-/** Flat: one accent pill (ink in Monochrome); the actions inside read accent-fg, bare, with a faint bubble on hover. */
+/** Flat: one ink pill; the actions inside read canvas, bare, with a faint bubble on hover. */
 const FLAT_BAR =
-  "in-[[data-material=flat]]:rounded-control in-[[data-material=flat]]:[--glass-bg:var(--accent)] in-[[data-material=flat]]:[--glass-border:transparent] " +
+  "in-[[data-material=flat]]:rounded-control in-[[data-material=flat]]:[--glass-bg:var(--fg)] in-[[data-material=flat]]:[--glass-border:transparent] " +
   "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px] " +
-  "in-[[data-material=flat]]:[&_div_button]:bg-transparent! in-[[data-material=flat]]:[&_button]:text-accent-fg! " +
-  "in-[[data-material=flat]]:[&_div_button:hover]:bg-[color-mix(in_oklab,var(--accent-fg)_16%,transparent)]! " +
-  "in-[[data-material=flat]]:[&_button]:outline-accent-fg";
+  "in-[[data-material=flat]]:[&_div_button]:bg-transparent! in-[[data-material=flat]]:[&_button]:text-canvas! " +
+  "in-[[data-material=flat]]:[&_div_button:hover]:bg-[color-mix(in_oklab,var(--canvas)_16%,transparent)]! " +
+  "in-[[data-material=flat]]:[&_button]:outline-canvas";
 
 export type ActionBarProps = {
   /** How many are selected. The bar shows while it is above zero. */
@@ -130,7 +130,7 @@ function Bar({ count, noun, onClear, children }: Required<Pick<ActionBarProps, "
       animate={{ opacity: 1, y: 0, transition: enter }}
       exit={{ opacity: 0, y: travel / 2, transition: exit }}
     >
-      <span className="shrink-0 truncate pr-2 pl-3 text-small text-fg tabular-nums in-[[data-material=flat]]:pl-4 in-[[data-material=flat]]:text-accent-fg">{count} selected</span>
+      <span className="shrink-0 truncate pr-2 pl-3 text-small text-fg tabular-nums in-[[data-material=flat]]:pl-4 in-[[data-material=flat]]:text-canvas">{count} selected</span>
       <span aria-hidden="true" className="h-5 w-px shrink-0 bg-line in-[[data-material=flat]]:hidden" />
       <div className="flex min-w-0 items-center gap-1">{children}</div>
       <button
@@ -138,7 +138,7 @@ function Bar({ count, noun, onClear, children }: Required<Pick<ActionBarProps, "
         aria-label="Clear selection"
         onClick={onClear}
         className={
-          "grid size-8 shrink-0 cursor-pointer place-items-center rounded-pill text-fg-muted in-[[data-material=flat]]:bg-[color-mix(in_oklab,var(--accent-fg)_16%,transparent)] in-[[data-material=flat]]:text-accent-fg in-[[data-material=flat]]:hover:bg-[color-mix(in_oklab,var(--accent-fg)_24%,transparent)] in-[[data-material=flat]]:hover:text-accent-fg in-[[data-material=flat]]:focus-visible:outline-accent-fg [-webkit-tap-highlight-color:transparent] " +
+          "grid size-8 shrink-0 cursor-pointer place-items-center rounded-pill text-fg-muted in-[[data-material=flat]]:bg-[color-mix(in_oklab,var(--canvas)_16%,transparent)] in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:hover:bg-[color-mix(in_oklab,var(--canvas)_24%,transparent)] in-[[data-material=flat]]:hover:text-canvas in-[[data-material=flat]]:focus-visible:outline-canvas [-webkit-tap-highlight-color:transparent] " +
           "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
           "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:size-11"

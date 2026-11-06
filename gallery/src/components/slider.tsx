@@ -33,8 +33,8 @@
  * - Disabled: everything lies flat (nothing to push): the plate --surface-2 with a hairline, the slot --surface-3,
  *   the cap --surface-2 with a hairline. The label dims to --fg-disabled; the value and the end words stay at
  *   --fg-subtle, because they are still read.
- * - Flat (proposals/flat-pill.md): no plate. The slot is a thin 4px --surface-3 track, the pulled-out part is the accent,
- *   and the cap is a 20px accent knob ringed in --canvas, with no grip line. The travel's inset is --sl-pad (the plate
+ * - Flat (proposals/flat-pill.md): no plate. The slot is a thin 4px --surface-3 track, the pulled-out part is the ink,
+ *   and the cap is a 20px ink knob ringed in --canvas, with no grip line. The travel's inset is --sl-pad (the plate
  *   sets it, and padOf reads it back as the plate's left padding): 14px or the radius in Press and Device, 10px, the
  *   knob's radius, in Flat.
  * - Forced colors drops box-shadow and background colors, so the plate, the slot and the cap get real borders and
@@ -148,14 +148,18 @@ export type RangeSliderProps = {
 /* The plate: raised, the control's height, at the control radius (R3: --block, --plate-lift). It is the hit area and,
    for a single slider, carries the focus ring. Disabled, it lies flat. */
 const plateBase =
-  "group relative block h-control-md w-full cursor-grab touch-pan-y select-none rounded-control bg-block shadow-(--plate-lift) " +
+  "group relative block h-control-md w-full cursor-grab touch-pan-y select-none rounded-control in-[[data-material=flat]]:rounded-none bg-block shadow-(--plate-lift) " +
   "[--sl-pad:max(14px,min(var(--radius-control),calc(var(--control-md)/2)))] pl-(--sl-pad) in-[[data-material=flat]]:[--sl-pad:10px] " +
   "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-none " +
   "data-held:cursor-grabbing " +
   "data-disabled:cursor-not-allowed data-disabled:bg-surface-2 data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "in-[[data-material=flat]]:data-disabled:bg-transparent in-[[data-material=flat]]:data-disabled:shadow-none " +
   "forced-colors:border";
-const plateRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
+/* Flat: the plate is invisible and square (its notches sit near its ends), so the ring goes on the knob instead. */
+const plateRing =
+  "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus in-[[data-material=flat]]:has-[:focus-visible]:outline-none";
+const capRingFlat =
+  " in-[[data-material=flat]]:group-has-[:focus-visible]:outline-2 in-[[data-material=flat]]:group-has-[:focus-visible]:outline-offset-2 in-[[data-material=flat]]:group-has-[:focus-visible]:outline-focus";
 
 /* The slot: 8px outside the cap's travel at each end (6px in from the plate's ends at small radii), 16px down and 12px
    tall, its corners the control radius less 2px. It clips the fill. Disabled, it is a flat --surface-3. */
@@ -169,7 +173,7 @@ const slot =
 const capTravel = "pointer-events-none absolute inset-y-0";
 const fillTravel = "absolute inset-y-0 left-2 right-2";
 const fillLook =
-  "bg-slot-fill shadow-(--slot-fill-shade) in-[[data-material=flat]]:bg-accent " +
+  "bg-slot-fill shadow-(--slot-fill-shade) in-[[data-material=flat]]:bg-fg " +
   "group-data-disabled:bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] group-data-disabled:shadow-none forced-colors:bg-[Highlight]";
 /* The glide: a jump of the cap (a key, or a press on the slot) settles on the responsive spring. A drag follows 1:1. */
 const glides = " transition-transform duration-(--dur-responsive) ease-responsive";
@@ -180,7 +184,7 @@ const capBox = "absolute top-1 -right-1 h-9 w-2 origin-bottom in-[[data-material
 const capFace = (held: boolean) =>
   "absolute inset-0 rounded-[calc(var(--radius-control)-2px)] forced-colors:border forced-colors:bg-[Highlight] " +
   (held ? "bg-cap-held shadow-(--cap-press) " : "bg-cap shadow-(--cap-lift) ") +
-  "in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-accent in-[[data-material=flat]]:shadow-[0_0_0_3px_var(--canvas)] " +
+  "in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:shadow-[0_0_0_3px_var(--canvas)] " +
   "group-data-disabled:bg-surface-2 group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "in-[[data-material=flat]]:group-data-disabled:bg-fg-disabled in-[[data-material=flat]]:group-data-disabled:shadow-[0_0_0_3px_var(--canvas)]";
 const capGrip = "in-[[data-material=flat]]:hidden absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-cap-grip group-data-disabled:bg-line";
@@ -293,11 +297,11 @@ function useLean() {
 }
 
 /** One cap on its rail: the face, the grip line, the sink while held and the lean. The ring is drawn when `ring` is on. */
-function Cap({ p, held, lean, glide, ring = false }: { p: number; held: boolean; lean: number; glide: boolean; ring?: boolean }) {
+function Cap({ p, held, lean, glide, ring = false, ringFlat = false }: { p: number; held: boolean; lean: number; glide: boolean; ring?: boolean; ringFlat?: boolean }) {
   return (
     <span aria-hidden="true" className={capTravel + (glide ? glides : "")} style={{ ...insetX(), ...railAt(p) }}>
       <span className={capBox} style={{ transform: `translateY(${held ? "var(--press-depth)" : "0px"}) rotate(${lean}deg)` }}>
-        <span className={capFace(held) + (ring ? " outline-2 outline-offset-2 outline-focus" : "")} />
+        <span className={capFace(held) + (ring ? " outline-2 outline-offset-2 outline-focus" : "") + (ringFlat ? capRingFlat : "")} />
         <span className={capGrip} />
       </span>
     </span>
@@ -506,7 +510,7 @@ export function Slider({
           <Notch key={v} p={(v - min) / span} home={false} />
         ))}
         {home !== null && home >= min && home <= max && <Notch p={(home - min) / span} home />}
-        <Cap p={p} held={held} lean={lean.lean} glide={glide} />
+        <Cap p={p} held={held} lean={lean.lean} glide={glide} ringFlat />
         <RadixSlider.Track className={thumbTrack} style={insetX(4)}>
           <RadixSlider.Thumb
             ref={(el: HTMLSpanElement | null) => {

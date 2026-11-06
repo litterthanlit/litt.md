@@ -8,7 +8,7 @@
  *   unpicked cards read as a choice and not as static cards. Flat cards with a raised pick fail in light mode, where
  *   --block is the same white as --surface-1, so only a shadow would tell the pick apart. Never an accent fill (R6).
  * - Flat (proposals/flat-pill.md): no tray. Each option is a grey card (--surface-3, --space-2 apart, at the surface
- *   radius), and the picked one lifts to --surface-1 with a 2px accent ring, which is the block gliding in. The ring is
+ *   radius), and the picked one lifts to --surface-1 with a 2px ink ring, which is the block gliding in. The ring is
  *   an inset shadow, so forced colors keeps the surface's border.
  * - Every card in a picker has the same size: equal columns, or equal rows when stacked. So the block never changes
  *   shape while it glides, and the details (a price) line up across a row.
@@ -183,7 +183,7 @@ export function CardPicker<T extends string>({
                 layoutId="card-picker-surface"
                 transition={glide}
                 aria-hidden="true"
-                className={"absolute inset-0 " + look.corner + " bg-block shadow-(--block-lift) in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-[inset_0_0_0_2px_var(--accent)] forced-colors:border-2"}
+                className={"absolute inset-0 " + look.corner + " bg-block shadow-(--block-lift) in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-[inset_0_0_0_2px_var(--fg)] forced-colors:border-2"}
               />
             )}
             {size === "sm" ? (

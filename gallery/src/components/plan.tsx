@@ -16,8 +16,8 @@
  *   half-filled circle, never spinning or pulsing, and carries aria-current="step". Done is fg-muted with the check,
  *   never struck through: the color steps it back. Failed takes the x in danger, its label stays fg, and "Failed"
  *   follows in words. Skipped is the dashed circle in fg-subtle with "Skipped". Status color stays on the icon.
- * - Flat: a grey card at the surface radius with no frame. A done step is a round accent mark with a --accent-fg tick, the
- *   running step an accent half-filled ring, and the rail's fill the accent.
+ * - Flat: a grey card at the surface radius with no frame. A done step is a round ink mark with a --canvas tick, the
+ *   running step an ink half-filled ring, and the rail's fill the ink.
  * - Detail: a step can carry one line under it at the caption size in fg-subtle, in the label's column.
  * - Words: every status is also said in hidden text after the label ("Run the build, running"), and the visible
  *   "Failed" and "Skipped" are hidden from assistive tech so the status is said once.
@@ -65,7 +65,7 @@ export type PlanProps = {
 /** The icon takes the text color, so the tone is set here: running fg, done fg-muted, failed danger, the rest fg-subtle. */
 const ICON_TONE: Record<StepStatus, string> = {
   pending: "text-fg-subtle",
-  running: "text-fg in-[[data-material=flat]]:text-accent-text",
+  running: "text-fg in-[[data-material=flat]]:text-fg",
   done: "text-fg-muted",
   failed: "text-danger",
   skipped: "text-fg-subtle",
@@ -174,7 +174,7 @@ export function Plan({ label, steps, bare = false, className = "" }: PlanProps) 
             </span>
           </div>
           <div aria-hidden="true" className={"h-1 overflow-hidden rounded-control " + TRACK}>
-            <div className="h-full rounded-control bg-fg in-[[data-material=flat]]:bg-accent" style={{ width: `${share}%` }} />
+            <div className="h-full rounded-control bg-fg in-[[data-material=flat]]:bg-fg" style={{ width: `${share}%` }} />
           </div>
         </div>
       )}
@@ -195,7 +195,7 @@ export function Plan({ label, steps, bare = false, className = "" }: PlanProps) 
                 {step.status === "done" ? (
                   <>
                     <StatusIcon status="done" className="in-[[data-material=flat]]:hidden" />
-                    <span className="hidden size-4 place-items-center rounded-pill bg-accent text-accent-fg in-[[data-material=flat]]:grid forced-colors:border">
+                    <span className="hidden size-4 place-items-center rounded-pill bg-fg text-canvas in-[[data-material=flat]]:grid forced-colors:border">
                       <CheckIcon className="size-3" />
                     </span>
                   </>

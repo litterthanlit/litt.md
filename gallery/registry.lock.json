@@ -8,7 +8,7 @@
     },
     "action-bar": {
       "version": "2026.11.06",
-      "hash": "a71039789d020b00"
+      "hash": "09c6dfea8cc66216"
     },
     "activity": {
       "version": "2026.11.03",
@@ -56,7 +56,7 @@
     },
     "card-picker": {
       "version": "2026.11.06",
-      "hash": "d4c2ae3b5f9e0c42"
+      "hash": "11c18fa1132172cd"
     },
     "carousel": {
       "version": "2026.11.06",
@@ -76,7 +76,7 @@
     },
     "checkbox": {
       "version": "2026.11.06",
-      "hash": "1c3f033fb7cef8e0"
+      "hash": "728e7ca33ec5614e"
     },
     "code-block": {
       "version": "2026.11.06",
@@ -108,7 +108,7 @@
     },
     "composer": {
       "version": "2026.11.06",
-      "hash": "f666f0b4c10264c1"
+      "hash": "49fe1cd8075b4e56"
     },
     "context-menu": {
       "version": "2026.11.05",
@@ -124,7 +124,7 @@
     },
     "date-picker": {
       "version": "2026.11.06",
-      "hash": "db7b774c2783d73f"
+      "hash": "6f9987b1b8cf9b58"
     },
     "deployment": {
       "version": "2026.11.03",
@@ -240,7 +240,7 @@
     },
     "message": {
       "version": "2026.11.06",
-      "hash": "8475177527fc110d"
+      "hash": "7589d5263d2fb8a2"
     },
     "motion": {
       "version": "2026.11.05",
@@ -264,7 +264,7 @@
     },
     "plan": {
       "version": "2026.11.06",
-      "hash": "652aebffd81d2b29"
+      "hash": "d4859621c7f7d3e9"
     },
     "popover": {
       "version": "2026.11.06",
@@ -344,11 +344,11 @@
     },
     "slide-confirm": {
       "version": "2026.11.06",
-      "hash": "d6336026ee438bd1"
+      "hash": "86a733cb84f5fa4a"
     },
     "slider": {
       "version": "2026.11.06",
-      "hash": "a84436fd82a908ed"
+      "hash": "1c6ee9471c8232e9"
     },
     "sources": {
       "version": "2026.11.06",
@@ -376,11 +376,11 @@
     },
     "steps": {
       "version": "2026.11.06",
-      "hash": "8bad7b26557b7347"
+      "hash": "eb874003dc2c37b0"
     },
     "switch": {
       "version": "2026.11.06",
-      "hash": "d6629e74a92fda2f"
+      "hash": "60cd7e903c544b1e"
     },
     "table": {
       "version": "2026.11.06",
@@ -412,11 +412,11 @@
     },
     "timeline": {
       "version": "2026.11.06",
-      "hash": "1971772359fa56a6"
+      "hash": "fbab116e5a8bd8e3"
     },
     "toast": {
       "version": "2026.11.06",
-      "hash": "3ee2f827fc32b66c"
+      "hash": "2906a60e049ff866"
     },
     "token-input": {
       "version": "2026.11.06",
@@ -428,7 +428,7 @@
     },
     "tooltip": {
       "version": "2026.11.06",
-      "hash": "d0a800df3a2ccc86"
+      "hash": "25953dceef19632a"
     },
     "tree": {
       "version": "2026.11.06",

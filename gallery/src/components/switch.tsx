@@ -30,8 +30,8 @@
  *   block above. Reduced motion turns it off.
  * - Touch: rows are at least 44px tall. The tray owns a sideways drag and leaves vertical scrolling to the page.
  * - Flat (R1 to R3, proposals/flat-pill.md): the words go (side and fill say the state), the tray loses its fill and
- *   keeps only the 1.5px --line-control edge while off, with a --line-control knob at the start. On it is an accent
- *   tray with a canvas knob at the end. The tray is 44 by 26 and the knob 20, so the crossing is --sw-travel (18px
+ *   keeps only the 1.5px --line-control edge while off, with a --line-control knob at the start. On it is an ink
+ *   tray with a canvas knob (the accent only for tone="accent", the one main switch, P1) at the end. The tray is 44 by 26 and the knob 20, so the crossing is --sw-travel (18px
  *   in Flat, 44px in Press and Device) and a drag measures it from that variable. Press and Device are untouched.
  * - Forced colors drops box-shadow and background colors, so the tray and the block get real borders and system
  *   colors mark the on state.
@@ -89,10 +89,10 @@ const tray =
   "[--sw-travel:44px] in-[[data-material=flat]]:[--sw-travel:18px] " +
   "in-[[data-material=flat]]:h-6.5 in-[[data-material=flat]]:w-11 in-[[data-material=flat]]:p-[3px] " +
   "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-[inset_0_0_0_1.5px_var(--line-control)] " +
-  "in-[[data-material=flat]]:data-[state=checked]:bg-accent in-[[data-material=flat]]:data-[state=checked]:shadow-none " +
+  "in-[[data-material=flat]]:data-[state=checked]:bg-fg in-[[data-material=flat]]:data-[state=checked]:shadow-none " +
   "in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=unchecked]:bg-transparent " +
-  "in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=checked]:bg-accent-hover " +
-  "in-[[data-material=flat]]:disabled:opacity-40 in-[[data-material=flat]]:disabled:data-[state=checked]:bg-accent " +
+  "in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=checked]:bg-[color-mix(in_oklab,var(--fg)_86%,var(--canvas))] " +
+  "in-[[data-material=flat]]:disabled:opacity-40 in-[[data-material=flat]]:disabled:data-[state=checked]:bg-fg " +
   "peer relative z-1 inline-flex h-8 w-23 shrink-0 cursor-pointer touch-pan-y items-center self-start overflow-hidden rounded-control p-0.5 " +
   "bg-tray shadow-(--tray-shade) " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
@@ -100,6 +100,10 @@ const tray =
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border forced-colors:p-px " + // the border is real, so the padding gives it back its px
   focusRing;
+
+/* Flat: the one main switch (tone="accent", P1) fills with the accent when on; every other switch is ink. */
+const trayAccent =
+  " in-[[data-material=flat]]:data-[state=checked]:bg-accent in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=checked]:bg-accent-hover";
 
 /* The block. Its corners are the control radius less the 2px it is set in, so they stay concentric with the tray's. */
 const blockBase =
@@ -244,7 +248,7 @@ export function Switch({
         onPointerCancel={onPointerEnd}
         onClick={onClick}
         data-no-drag=""
-        className={tray + (end ? " col-start-2 row-start-1" : " col-start-1 row-start-1")}
+        className={tray + (tone === "accent" ? trayAccent : "") + (end ? " col-start-2 row-start-1" : " col-start-1 row-start-1")}
       >
         <SwitchPrimitive.Thumb className={block} style={{ ...motion, translate: `${x} 0` }}>
           <span aria-hidden="true" className="in-[[data-material=flat]]:hidden">{shown ? words[1] : words[0]}</span>

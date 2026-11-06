@@ -16,8 +16,8 @@
  *   --block-lift). Never the accent (R6): the one accent fill is the primary action's, and a form
  *   can hold many checked boxes. Disabled, it lies flat on --surface-2 with the hairline, and so
  *   does the bead.
- * - Flat (proposals/flat-pill.md, rules 2 and 3): off is transparent inside the --line-control edge, on is the accent
- *   fill with the tick, dash or bead in --accent-fg. At the Pill shape the 20px box is a circle; at other shapes it
+ * - Flat (proposals/flat-pill.md, rules 2 and 3): off is transparent inside the --line-control edge, on is the ink
+ *   fill with the tick, dash or bead in --canvas. At the Pill shape the 20px box is a circle; at other shapes it
  *   follows --radius-control, and a radio is always round.
  * - The label sits on the right, --space-2 away, at the small size, and the whole row is
  *   clickable. The label is a real <label for>, stretched over the row, so its accessible
@@ -66,7 +66,7 @@ const drawnInput =
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
   "checked:bg-fg checked:shadow-none enabled:checked:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
   "in-[[data-material=flat]]:enabled:checked:inset-shadow-none " + // Flat has no light (R2)
-  "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:checked:bg-accent " +
+  "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:checked:bg-fg " +
   "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] aria-invalid:checked:shadow-[inset_0_0_0_1px_var(--danger)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "disabled:checked:bg-surface-3 " +
@@ -76,7 +76,7 @@ const drawnInput =
 /* Only a checkbox has a mixed state. A radio matches :indeterminate whenever nothing in its group is picked, so it must not use it. */
 const mixed =
   " indeterminate:bg-fg indeterminate:shadow-none enabled:indeterminate:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
-  "in-[[data-material=flat]]:enabled:indeterminate:inset-shadow-none in-[[data-material=flat]]:indeterminate:bg-accent " +
+  "in-[[data-material=flat]]:enabled:indeterminate:inset-shadow-none in-[[data-material=flat]]:indeterminate:bg-fg " +
   "aria-invalid:indeterminate:shadow-[inset_0_0_0_1px_var(--danger)] disabled:indeterminate:bg-surface-3";
 
 const nativeInput =
@@ -99,7 +99,7 @@ const mixedWash =
 
 /* A mark is centered in the chip, and fades with the fill. */
 const mark =
-  "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start text-canvas in-[[data-material=flat]]:text-accent-fg opacity-0 " +
+  "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start text-canvas in-[[data-material=flat]]:text-canvas opacity-0 " +
   "transition-opacity duration-(--dur-instant) ease-litt peer-disabled:text-fg-disabled";
 
 /* A chosen radio's bead: a small raised block standing in the ink, drawn as the cell's ::after so peer-disabled can lay
@@ -107,7 +107,7 @@ const mark =
 const bead =
   "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start opacity-0 " +
   "transition-opacity duration-(--dur-instant) ease-litt peer-checked:opacity-100 " +
-  "after:size-2 after:rounded-pill after:bg-block after:shadow-(--block-lift) in-[[data-material=flat]]:after:bg-accent-fg " +
+  "after:size-2 after:rounded-pill after:bg-block after:shadow-(--block-lift) in-[[data-material=flat]]:after:bg-canvas " +
   "peer-disabled:after:bg-fg-disabled peer-disabled:after:shadow-none forced-colors:after:bg-[CanvasText]";
 
 /** The dash for the mixed state: 16px, 1.5px stroke, like the other icons. */

@@ -19,8 +19,8 @@
  *   covers the end cells too, rounded on their outer side, so it only shows its round end under a preview.
  *   While the second end is chosen, the pointer (or the focused day) previews the band. Picking the second
  *   end before the first swaps them.
- * - Flat (proposals/flat-pill.md): days are circles, a picked day or a range end an accent circle (ink in
- *   Monochrome) with --accent-fg on it, the days between a --surface-3 band. The field is a grey pill with no
+ * - Flat (proposals/flat-pill.md): days are circles, a picked day or a range end an ink circle with
+ *   --canvas on it, the days between a --surface-3 band. The field is a grey pill with no
  *   outline (ink ring on focus, danger ring on an error). The presets column loses its divider and the chosen
  *   preset is a grey bubble.
  * - Keyboard: the date grid pattern. One day is the tab stop (the picked day, else today, kept inside min and
@@ -615,7 +615,7 @@ function DayCell({
     );
   }
   const look = day.filled
-    ? "bg-fg text-canvas in-[[data-material=flat]]:bg-accent in-[[data-material=flat]]:text-accent-fg forced-colors:in-[[data-material=flat]]:[forced-color-adjust:none] forced-colors:in-[[data-material=flat]]:bg-[Highlight] forced-colors:in-[[data-material=flat]]:text-[HighlightText]"
+    ? "bg-fg text-canvas in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:text-canvas forced-colors:in-[[data-material=flat]]:[forced-color-adjust:none] forced-colors:in-[[data-material=flat]]:bg-[Highlight] forced-colors:in-[[data-material=flat]]:text-[HighlightText]"
     : day.disabled
       ? "text-fg-disabled"
       : "text-fg " + HOVER;
