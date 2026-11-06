@@ -180,7 +180,7 @@ const accentNow = (pg) => pg.evaluate(() => {
   const look = () => pg.evaluate(() => [document.body.dataset.accent, document.body.style.getPropertyValue("--radius-control"), document.body.style.getPropertyValue("--font-sans")].join("|"));
   const before = await look();
   await panel.getByRole("button", { name: "Surprise me" }).click();
-  const said = (await panel.locator("[aria-live=polite]").first().textContent())?.trim() ?? "";
+  const said = (await panel.locator("#customize-said").textContent())?.trim() ?? "";
   check((await look()) !== before && said.endsWith("motion."), `Surprise me changes the accent, the shape and the face, and says so ("${said}")`);
   await panel.getByRole("button", { name: "Reset to defaults" }).click();
   check((await look()) === "mono||", "the panel's Reset goes back to monochrome, the locked shape and the locked face");
