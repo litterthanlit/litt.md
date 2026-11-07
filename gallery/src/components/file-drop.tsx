@@ -8,6 +8,9 @@
  *   the size limit in --fg-subtle), and Choose files, a secondary button at the end. While files are dragged over it,
  *   the line turns --focus, as a field's does on focus, and the words say what a drop will do. Nothing
  *   else moves; the line changes on the instant tier.
+ * - Flat (proposals/flat-pill.md): no outline, no dashed edge: a grey area (--cut is --surface-3) that deepens
+ *   while a file is over it, the icon a --surface-1 circle on it, no rule between file rows. Under forced colors the
+ *   dragging area keeps a Highlight outline.
  * - On a touch screen nothing is dragged in, so the words say "Add files" and the button does the work.
  * - Choosing: Choose files opens the file picker; so does a click anywhere on the area. Only the button is a tab stop.
  * - Checking: files whose type is not in accept or whose size is over maxSize are turned away, each with a sentence
@@ -117,16 +120,16 @@ export function FileDrop({ label, accept, maxSize, multiple = true, onFiles, onR
         className={
           "flex flex-wrap items-center gap-4 rounded-surface p-4 transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border sm:flex-nowrap sm:p-6 " +
           (disabled
-            ? "cursor-not-allowed bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
+            ? "cursor-not-allowed bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none"
             : dragging
-              ? "bg-cut shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade)]"
-              : "cursor-pointer bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]")
+              ? "bg-cut shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade)] in-[[data-material=flat]]:bg-[color-mix(in_oklab,var(--surface-3),var(--fg)_6%)] in-[[data-material=flat]]:shadow-none forced-colors:in-[[data-material=flat]]:outline-2 forced-colors:in-[[data-material=flat]]:outline-solid forced-colors:in-[[data-material=flat]]:outline-[Highlight]"
+              : "cursor-pointer bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] in-[[data-material=flat]]:shadow-none")
         }
       >
         <span
           aria-hidden="true"
           className={
-            "grid size-8 shrink-0 place-items-center rounded-control " +
+            "grid size-8 shrink-0 place-items-center rounded-control in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:shadow-none " +
             (disabled ? "bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]" : "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]")
           }
         >
@@ -142,7 +145,7 @@ export function FileDrop({ label, accept, maxSize, multiple = true, onFiles, onR
             </p>
           )}
         </div>
-        <Button size="sm" variant="secondary" disabled={disabled} aria-describedby={hint ? hintId : undefined} onClick={() => input.current?.click()}>
+        <Button size="sm" variant="secondary" className="in-[[data-material=flat]]:enabled:bg-surface-1" disabled={disabled} aria-describedby={hint ? hintId : undefined} onClick={() => input.current?.click()}>
           {multiple ? "Choose files" : "Choose a file"}
         </Button>
         <input
@@ -199,7 +202,7 @@ export type FileRowProps = {
 export function FileRow({ name, size, progress, error, onRetry, onRemove }: FileRowProps) {
   const uploading = progress !== undefined && progress < 100 && !error;
   return (
-    <li className="flex items-start gap-3 border-t border-line py-3 first:border-t-0">
+    <li className="flex items-start gap-3 border-t border-line py-3 first:border-t-0 in-[[data-material=flat]]:border-t-0">
       <FileIcon className="mt-0.5 shrink-0 text-fg-muted" />
       <div className="grid min-w-0 flex-1 gap-2">
         <p className="flex items-baseline justify-between gap-4">

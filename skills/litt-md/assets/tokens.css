@@ -983,10 +983,16 @@
   --fg-subtle: var(--flat-fg-subtle);
   --fg-disabled: var(--flat-fg-disabled);
 
+  /* Flat opens at the Pill shape (proposals/flat-pill.md, rule 1); the Customize shapes still override it. */
+  --radius-control: 28px;
+  --radius-surface: 16px;
+
   --highlight: inset 0 0 0 0 transparent;
   --tray: transparent;
-  --tray-shade: inset 0 0 0 1px var(--line-strong);
-  --cut: var(--surface-1);
+  /* No frame around a group (rule 2): a tray is the place, and only a control that is off keeps an edge. */
+  --tray-shade: inset 0 0 0 0 transparent;
+  /* A field is a grey pill (rule 4), no outline. */
+  --cut: var(--surface-3);
   --cut-shade: inset 0 0 0 0 transparent;
   --block: var(--surface-3);
   --block-lift: 0 0 0 0 transparent;

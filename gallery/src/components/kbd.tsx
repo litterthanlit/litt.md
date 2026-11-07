@@ -9,6 +9,7 @@
  *   (--block, --key-lift: the block's lift with a darker lower edge), so it
  *   reads as a key and not a tag. That edge is a shade, never light, so it
  *   stays dark in both themes (R2). It keeps a border in forced colors.
+ * - Flat (proposals/flat-pill.md): plain text. No fill, no cast, no side padding, in --fg-muted.
  * - The size is the caption step (12px), on the type scale like every other label.
  * - shrink-0 so it never squashes in a flex row; min-w-5 keeps a lone glyph square.
  * - Static: no motion and no states. It is a real <kbd>, so whether a hint is
@@ -18,7 +19,8 @@ import type { ReactNode } from "react";
 
 const chip =
   "inline-grid h-5 min-w-5 shrink-0 place-items-center rounded-control bg-block px-1 " +
-  "font-sans font-normal text-caption text-fg-subtle shadow-(--key-lift) forced-colors:border";
+  "font-sans font-normal text-caption text-fg-subtle shadow-(--key-lift) forced-colors:border " +
+  "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:px-0 in-[[data-material=flat]]:text-fg-muted in-[[data-material=flat]]:shadow-none";
 
 /** One key cap, or one chord written in glyphs, such as ⇧⌘C. Keys pressed one after another each get their own Kbd, 4px apart. */
 export function Kbd({

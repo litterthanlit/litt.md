@@ -9,6 +9,8 @@
  *   first image, or drawn art passed as `cover`. Under it, an optional vendor at the caption size in --fg-subtle,
  *   4px above the title at the body size and the title weight in --fg, and the Price under it (From when the
  *   variants differ in price, the compare-at price struck through when the lowest is on sale).
+ * - Flat: the Card is --surface-1 with the float shadow and no hairline, and the grey cover sits inset at the surface radius
+ *   less the card's 4px, so it stays concentric.
  * - One link: the title is the card's CardLink, stretched over the card, so the card is one tab stop named by the
  *   product. No buy button and no accent: a grid of cards would be a dozen accent fills (R6), and the card's job is to
  *   open the product. Hover is the Card's: the fill steps once, nothing lifts.
@@ -155,7 +157,7 @@ export function ProductCard({
   return (
     <Card as={as} cover="inset" className={className}>
       <CardCover ratio="auto">
-        <Media ratio={ratio} radius="control" src={cover ? undefined : image?.src} srcSet={image?.srcSet} sizes={sizes} alt={image?.alt ?? ""} width={image?.width} height={image?.height}>
+        <Media ratio={ratio} radius="control" className="in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:[&>span[aria-hidden=true].pointer-events-none]:shadow-none" src={cover ? undefined : image?.src} srcSet={image?.srcSet} sizes={sizes} alt={image?.alt ?? ""} width={image?.width} height={image?.height}>
           {cover}
         </Media>
       </CardCover>

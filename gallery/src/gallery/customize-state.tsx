@@ -32,8 +32,8 @@
  * other choices and is part of the look. The gallery opens in Flat; the registry ships Press (Q17).
  */
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
-import { FunMode, useMotionDial } from "@/motion";
-import { SHAPES, shapeSurface } from "@/motion/rules";
+import { FunMode } from "@/motion";
+import { LIMITS, PILL, SHAPES, shapeSurface } from "@/motion/rules";
 import { accentOf, ACCENTS, GALLERY_LOOK, lookFromSearch, materialOf, MATERIALS, sameLook, withLook, type Accent, type Look, type Material } from "./look";
 import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
@@ -97,7 +97,6 @@ function readSaved(): Saved {
 
 export function CustomizeProvider({ children }: { children: ReactNode }) {
   const typefaces = useTypefaces();
-  const { locked } = useMotionDial();
   const [saved] = useState(readSaved);
   const [faceId, setFaceId] = useState(() => (typefaces.some((f) => f.id === saved.face?.id) ? saved.face!.id : "locked"));
   const [radiusTuned, setRadiusTuned] = useState<number | null>(() =>
@@ -139,7 +138,10 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   const look = linked ?? own;
 
   const typeface = typefaces.find((f) => f.id === faceId) ?? typefaces[0];
-  const radius = radiusTuned ?? locked.radius;
+  /* Each material locks its own shape: Flat opens at the Pill (tokens.css, proposals/flat-pill.md), Press and Device at
+     litt's control radius. Read from the look, not from <html> at load, so a switch of material moves the default too. */
+  const lockedRadius = look.material === "flat" ? PILL : LIMITS.control;
+  const radius = radiusTuned ?? lockedRadius;
   const modified = typeface.id !== "locked" || radiusTuned !== null || !sameLook(look, GALLERY_LOOK);
 
   /* Write the choices on <body>, and remove what is back to locked. A layout effect, so a change never paints stale. */
@@ -200,8 +202,8 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       typeface,
       setTypeface: setFaceId,
       radius,
-      lockedRadius: locked.radius,
-      setRadius: (r) => setRadiusTuned(r === locked.radius ? null : r),
+      lockedRadius,
+      setRadius: (r) => setRadiusTuned(r === lockedRadius ? null : r),
       look,
       setLook,
       link: linked && !sameLook(linked, own) ? { look: linked, keep: () => setLook({}), drop } : null,
@@ -214,7 +216,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       },
     };
     /* setTheme only writes state, <html> and storage, so the first one stays good. */
-  }, [theme, typefaces, typeface, radius, locked.radius, own, linked, look, modified]);
+  }, [theme, typefaces, typeface, radius, lockedRadius, own, linked, look, modified]);
 
   return (
     <CustomizeContext.Provider value={value}>

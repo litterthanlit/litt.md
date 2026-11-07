@@ -5,6 +5,8 @@
  * - The agent's turn has no bubble. Its words sit on the page at the body size in --fg-muted, in a measure of
  *   about 68ch, because the answer is the content and a box around long prose cramps it. The parts of a turn
  *   (thinking, a plan, tool calls, the answer, its actions) are children of one Message and sit --space-3 apart.
+ * - Flat: the agent's answer (MessageText) is a grey bubble at the surface radius and the person's turn an ink bubble
+ *   with --canvas text and no hairline (flat-pill.md, rules 3 and 4).
  * - The person's turn is a bubble: right-aligned, `.litt-raised` at the surface radius, padding --space-3 and
  *   --space-4, text in --fg, at most 80% of the column (85% on compact screens) and 32rem. No tail and no accent
  *   fill: the accent stays on Send. Files the person sent sit above it.
@@ -335,6 +337,8 @@ export function Message({
             <div
               className={
                 "litt-raised px-4 py-3 text-body text-fg whitespace-pre-wrap [overflow-wrap:anywhere] " +
+                "in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:shadow-none " +
+                "in-[[data-material=flat]]:forced-colors:border " +
                 (compact ? "max-w-[min(85%,32rem)]" : "max-w-[min(80%,32rem)]")
               }
             >
@@ -410,6 +414,9 @@ const PROSE = [
   "[&_blockquote]:grid [&_blockquote]:gap-3 [&_blockquote]:ps-4 [&_blockquote]:text-fg-subtle",
   "[&_hr]:my-1 [&_hr]:border-line",
   "[&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-surface",
+  /* Flat: the answer is a grey bubble (the person's is the ink one), and inline code lifts to a white pill inside it. */
+  "in-[[data-material=flat]]:w-fit in-[[data-material=flat]]:self-start in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-4 in-[[data-material=flat]]:text-fg",
+  "in-[[data-material=flat]]:[&_code]:bg-surface-1 in-[[data-material=flat]]:[&_code]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:[&_pre_code]:rounded-none in-[[data-material=flat]]:[&_pre]:bg-surface-1 in-[[data-material=flat]]:[&_pre]:shadow-none in-[[data-material=flat]]:[&_tr]:border-0 in-[[data-material=flat]]:[&_hr]:border-0",
   /* A table: hairlines between rows, headings in --fg, cells that wrap instead of scrolling. */
   "[&_table]:w-full [&_table]:border-collapse [&_table]:text-small [&_tr]:border-b [&_tr]:border-line",
   "[&_th]:py-2 [&_th]:pe-4 [&_th]:text-start [&_th]:text-caption [&_th]:text-fg [&_td]:py-2 [&_td]:pe-4 [&_td]:align-top [&_:is(th,td)]:[overflow-wrap:anywhere]",

@@ -161,7 +161,7 @@ function CustomizePanel() {
         </div>
       </section>
 
-      <section aria-label="This browser" className="grid gap-6 border-t border-line pt-6">
+      <section aria-label="This browser" className="grid gap-6 border-t border-line pt-6 in-[[data-material=flat]]:border-t-0">
         <Slider
           label="Shape"
           value={(SHAPES as readonly number[]).indexOf(radius)}
@@ -191,7 +191,7 @@ function CustomizePanel() {
         </div>
       </section>
 
-      <div className="grid gap-2 border-t border-line pt-4">
+      <div className="grid gap-2 border-t border-line pt-4 in-[[data-material=flat]]:border-t-0">
         <div className="flex flex-wrap items-center gap-2">
           <Button size="sm" variant="ghost" iconOnly aria-label="Surprise me" title="Surprise me" onClick={surprise}>
             <SparkleIcon />

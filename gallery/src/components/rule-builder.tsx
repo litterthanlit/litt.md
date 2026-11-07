@@ -18,6 +18,8 @@
  *   and it stays first. A nested group is a flat panel (--surface-2, a hairline, the surface radius) with its handle,
  *   "Group · 3 conditions" and remove, then its own join, rail and rows. Under every group: Add condition and, while
  *   maxDepth allows, Add group, secondary sm buttons. Never the accent (R6): the caller's Save is the view's one.
+ * - Flat: no frames and no rail (flat-pill.md, rules 2 and 5). A row is bare, its grey fields set apart by space, a nested group
+ *   a grey panel with no hairline, and the held row the grey bubble. Only an error keeps its --danger edge.
  * - Hand (R4, motion/hand.ts): take a handle and the row takes the raised block's material at once (--block,
  *   --block-lift, the shadow swapped, never faded, R2) and follows the pointer 1:1 along its group, held where it was
  *   taken and never past the first free place or the last. The rows it passes move out of its way by transform, each
@@ -655,7 +657,7 @@ function useBuilder(): BuilderContext {
    are as before. */
 const ROW_RADIUS = "rounded-[min(var(--radius-control),calc(var(--control-md)/2))]";
 const GROUP_RADIUS = "rounded-[max(var(--radius-surface),min(var(--radius-control),calc(var(--control-md)/2+4px)))]";
-const FLAT_ROW = "shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]";
+const FLAT_ROW = "shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] in-[[data-material=flat]]:shadow-none";
 const ERROR_ROW = "shadow-[inset_0_0_0_1px_var(--danger),var(--highlight)]";
 const HELD = "bg-block shadow-(--block-lift)";
 
@@ -664,8 +666,8 @@ const HELD = "bg-block shadow-(--block-lift)";
    the rows trade places. */
 const RAIL =
   "before:pointer-events-none before:absolute before:-top-2 before:-left-3 before:h-[calc(50%+0.5rem)] before:w-3 " +
-  "before:rounded-bl-control before:border-b before:border-l before:border-line-strong";
-const RAIL_ON = "after:pointer-events-none after:absolute after:top-[calc(50%-var(--radius-control))] after:bottom-0 after:-left-3 after:border-l after:border-line-strong";
+  "before:rounded-bl-control before:border-b before:border-l before:border-line-strong in-[[data-material=flat]]:before:hidden";
+const RAIL_ON = "after:pointer-events-none after:absolute after:top-[calc(50%-var(--radius-control))] after:bottom-0 after:-left-3 after:border-l after:border-line-strong in-[[data-material=flat]]:after:hidden";
 
 /* The handle's cell, so a lock and a still grip take the handle's room. */
 const CELL = "grid h-control-sm w-control-sm shrink-0 place-items-center pointer-coarse:h-control-md pointer-coarse:w-control-md";

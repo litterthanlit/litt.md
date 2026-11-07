@@ -7,6 +7,9 @@
  *   flat disabled look. The text is the query. A 16px chevron button in
  *   --fg-subtle sits at the end, --control-gap from the text, and opens and closes the list; it never turns.
  *   The label sits above and the hint or error under it, wired as TextField's are. Under Device the field is LCD glass in the mono, through the --field tokens.
+ * - Flat (proposals/flat-pill.md): the field is a grey pill with no outline (ink ring on focus, danger ring on an
+ *   error), tokens are --surface-1 bubbles on it; list rows are grey bubbles at the panel radius less its 4px padding,
+ *   groups parted by a gap, no separators.
  * - List: anchored under the field and flipped above it when there is no room, as wide as the field. It is the
  *   Menu's panel: glass at the surface radius with the 4px inset, 44px rows at the control radius, one gliding
  *   highlight (glide.tsx), and the picked option's 16px check in a fixed cell at the row's start, so labels never
@@ -178,6 +181,11 @@ const FIELD =
   "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   "pointer-coarse:text-(length:--control-text-lg) " +
+  /* Flat: a grey field with no outline; the ink ring on focus, the danger ring on an error. */
+  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:has-[input:focus-visible]:shadow-(--focus-ring) " +
+  "in-[[data-material=flat]]:data-[invalid]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:data-[invalid]:has-[input:focus-visible]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:data-[disabled]:shadow-none " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
 
@@ -232,7 +240,7 @@ const CHEVRON =
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled";
 
 const REMOVE =
-  "relative grid size-6 shrink-0 cursor-pointer place-items-center rounded-control text-fg-subtle " +
+  "relative grid size-6 shrink-0 cursor-pointer place-items-center rounded-control text-fg-subtle in-[[data-material=flat]]:rounded-pill " +
   "transition-[color] duration-(--dur-instant) ease-litt hover:text-fg " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled " +
@@ -683,7 +691,7 @@ type PanelProps = {
 };
 
 const ROW =
-  "relative flex h-control-md w-full cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
+  "relative flex h-control-md w-full cursor-pointer select-none items-center gap-3 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] px-3 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt " +
   "text-fg-muted aria-selected:text-fg data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled " +
   "forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText]";
@@ -898,7 +906,7 @@ function Panel(props: PanelProps) {
               s.label === null ? (
                 <Fragment key={s.key}>{s.options.map(row)}</Fragment>
               ) : (
-                <div key={s.key} role="group" aria-labelledby={`${listId}-${s.key}`}>
+                <div key={s.key} role="group" aria-labelledby={`${listId}-${s.key}`} className="in-[[data-material=flat]]:not-first:mt-2">
                   <div id={`${listId}-${s.key}`} data-group-label="" className={LABEL_ROW}>
                     {s.label}
                   </div>

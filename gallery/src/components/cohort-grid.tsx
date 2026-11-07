@@ -158,7 +158,7 @@ function averageRow(cohorts: Cohort[], periods: number, valueType: "percent" | "
 
 /* ----------------------------------------------------------------- cells */
 
-const headCell = "h-control-md border-b border-line px-3 py-3 align-middle text-caption font-label whitespace-nowrap text-fg-subtle litt-legend";
+const headCell = "h-control-md border-b border-line in-[[data-material=flat]]:border-transparent px-3 py-3 align-middle text-caption font-label whitespace-nowrap text-fg-subtle litt-legend";
 const bodyCell = "h-control-md px-3 py-3 align-middle whitespace-nowrap";
 /** The sticky cohort column: the box's own surface under it, and a hairline at its end once the periods scroll under it. */
 const sticky =
@@ -261,7 +261,7 @@ export function CohortGrid({
         {...(scrolls ? { role: "group", "aria-labelledby": captionId, tabIndex: 0 } : {})}
         data-scrolled={scrolled}
         className={
-          "group relative w-full overflow-x-auto rounded-surface border border-line bg-surface-1 " +
+          "group relative w-full overflow-x-auto rounded-surface border border-line in-[[data-material=flat]]:border-transparent bg-surface-1 " +
           "[scrollbar-color:var(--line-strong)_transparent] [scrollbar-width:thin] " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         }
@@ -286,9 +286,9 @@ export function CohortGrid({
             </tr>
           </thead>
           <tbody>
-            {cohorts.map((c, i) => row(c, i === cohorts.length - 1 ? "" : "border-b border-line", `${i}-${c.label}`))}
+            {cohorts.map((c, i) => row(c, i === cohorts.length - 1 ? "" : "border-b border-line in-[[data-material=flat]]:border-transparent", `${i}-${c.label}`))}
           </tbody>
-          {summary && <tfoot>{row(summary, "border-t border-line-strong", "summary")}</tfoot>}
+          {summary && <tfoot>{row(summary, "border-t border-line-strong in-[[data-material=flat]]:border-transparent", "summary")}</tfoot>}
         </table>
       </div>
       <Legend hue={hue} />
