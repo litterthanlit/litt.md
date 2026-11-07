@@ -35,34 +35,34 @@ function AgentFrame({ label, className, children }: { label: string; className: 
   );
 }
 
-/** Each hero block as its own page draws its demo: desktop, and the phone frame below the sm breakpoint. */
-const HEROES: Record<string, ComponentType<{ phone: boolean }>> = {
-  dashboard: ({ phone }) =>
+/** Each hero block as its own page draws its demo, desktop and the phone frame below the sm breakpoint, named for the world so the home hero and a wall block never share a landmark name. */
+const HEROES: Record<string, ComponentType<{ phone: boolean; world: string }>> = {
+  dashboard: ({ phone, world }) =>
     phone ? (
-      <AppFrame label="Studio dashboard, phone" phone bare className="[--gutter:var(--space-4)]">
+      <AppFrame label={`${world} in use: the studio dashboard, phone`} phone bare className="[--gutter:var(--space-4)]">
         <Dashboard label="Phone" viewportHeight="44rem" />
       </AppFrame>
     ) : (
-      <AppFrame label="Studio dashboard, desktop" bare className="[--gutter:var(--space-8)]">
+      <AppFrame label={`${world} in use: the studio dashboard, desktop`} bare className="[--gutter:var(--space-8)]">
         <Dashboard label="Desktop" viewportHeight="44rem" />
       </AppFrame>
     ),
-  "case-study": ({ phone }) => (
-    <AppFrame label={phone ? "Case study, phone" : "Case study, desktop"} phone={phone}>
+  "case-study": ({ phone, world }) => (
+    <AppFrame label={`${world} in use: a case study, ${phone ? "phone" : "desktop"}`} phone={phone}>
       <CaseStudy />
     </AppFrame>
   ),
-  agent: ({ phone }) =>
+  agent: ({ phone, world }) =>
     phone ? (
       <div className="mx-auto w-full min-w-0 max-w-[24.375rem]">
         <DeviceProvider mode="phone">
-          <AgentFrame label="Halo build chat on a phone" className="h-176">
+          <AgentFrame label={`${world} in use: the Halo build chat, phone`} className="h-176">
             <AgentChat finished label="Conversation with Litt on a phone" />
           </AgentFrame>
         </DeviceProvider>
       </div>
     ) : (
-      <AgentFrame label="Halo build chat" className="h-180">
+      <AgentFrame label={`${world} in use: the Halo build chat`} className="h-180">
         <AgentChat />
       </AgentFrame>
     ),
@@ -89,7 +89,7 @@ export function WorldHero({ material }: { material: Material }) {
   return (
     <Framed>
       <Suspense fallback={<div aria-hidden="true" className="min-h-176 rounded-surface bg-well" />}>
-        <Hero phone={phone} />
+        <Hero phone={phone} world={materialOf(material).name} />
       </Suspense>
     </Framed>
   );

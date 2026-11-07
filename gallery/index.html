@@ -72,6 +72,16 @@
     } catch (e) {}
   })();
 </script>
+<script>
+  /* A world page (#press, #flat, #device) opens in its own material, whatever is saved or linked: arriving there
+     writes it (src/gallery/world.tsx, proposals/worlds.md decision 1), so the first paint says the same. */
+  (function () {
+    var w = /^#(press|flat|device)$/.exec(location.hash);
+    if (!w) return;
+    if (w[1] === "press") delete document.documentElement.dataset.material;
+    else document.documentElement.dataset.material = w[1];
+  })();
+</script>
 <div id="root"></div>
 <script type="module" src="/src/main.tsx"></script>
 </body>
