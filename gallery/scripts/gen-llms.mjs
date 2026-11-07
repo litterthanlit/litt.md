@@ -106,7 +106,7 @@ function readPages() {
     if (docs) {
       for (const stem of docs.components) if (!componentDocs[stem]) fail(`${f}: docs.components names "${stem}", which src/generated/docs.json does not have`);
     }
-    pages.push({ file: `gallery/src/gallery/pages/${f}`, meta, docs });
+    pages.push({ file: `gallery/src/gallery/pages/${f}`, meta, docs, study: /^export\s+const\s+study\b/m.test(src) });
   }
   return pages.sort((a, b) => a.meta.order - b.meta.order);
 }
@@ -176,6 +176,7 @@ function pageMarkdown(page, cp) {
     meta.tiers.length ? `Tiers: ${meta.tiers.map((t) => TIER_WORDS[t]).join("; ")}. Only transform and opacity animate, plus color fades on the instant tier.` : "None.",
     REDUCED_MOTION,
   );
+  if (meta.mechanism) parts.push("## How it moves", meta.mechanism);
   return parts.join("\n\n") + "\n";
 }
 
@@ -233,7 +234,7 @@ function llmsTxt(pages, cp, look) {
   for (const g of GROUPS) {
     const list = withDocs.filter((p) => p.meta.group === g);
     if (!list.length) continue;
-    sections.push(`## ${g}`, list.map((p) => `- [${p.meta.title}](${ORIGIN}/docs/${p.meta.id}.md): ${p.meta.summary}`).join("\n"));
+    sections.push(`## ${g}`, list.map((p) => `- [${p.meta.title}](${ORIGIN}/docs/${p.meta.id}.md)${p.study ? " (a study)" : ""}: ${p.meta.summary}`).join("\n"));
   }
   const blocks = patterns.filter((p) => p.meta.block);
   const demos = patterns.filter((p) => !p.meta.block);
