@@ -11,6 +11,8 @@
  * - Each group row leads with a 16px icon in --fg-subtle and ends with its count and a chevron; the outside links lead
  *   with their mark and end with an arrow. Every other link that is not current is --fg-muted, --fg on hover.
  * - Everything sits on the page gutter, so the cards' edges line up with the header's wordmark.
+ * - The worlds (Press, Flat, Device) are the way in, so they are a section of their own above the components, not a
+ *   group: three rows with a name, its line and a mark on the world the gallery is in (proposals/worlds.md).
  * - The groups drill down in place, as litt's Menu does on a phone: a group's row opens its pages in the same card,
  *   with a Back row; the new list comes in from half of the travel token and the old one leaves a quarter of it,
  *   on the responsive tier. A group's row also names the current page when it holds it, so you know where you are.
@@ -39,8 +41,10 @@ import {
   SlidersIcon,
   SparkleIcon,
 } from "@/components/icons";
+import { useCustomize } from "./customize-state";
 import { PAGE_GROUPS, type PageGroup } from "./kit";
-import { funPages, pages, type PageEntry } from "./registry";
+import type { MaterialInfo } from "./look";
+import { funPages, pages, worlds, type PageEntry } from "./registry";
 
 /** Two lines, the menu glyph. */
 const MenuGlyph = ({ className = "" }: { className?: string }) => (
@@ -51,6 +55,13 @@ const MenuGlyph = ({ className = "" }: { className?: string }) => (
 const CloseGlyph = ({ className = "" }: { className?: string }) => (
   <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" aria-hidden="true" focusable="false" className={className}>
     <path d="m4 4 8 8M12 4l-8 8" />
+  </svg>
+);
+
+/** Three planes in a cube: the worlds. */
+const WorldsGlyph = ({ className = "" }: { className?: string }) => (
+  <svg width={16} height={16} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinejoin="round" strokeLinecap="round" aria-hidden="true" focusable="false" className={className}>
+    <path d="M8 1.75 13.5 4.9v6.2L8 14.25 2.5 11.1V4.9L8 1.75ZM2.5 4.9 8 8.05l5.5-3.15M8 8.05v6.2" />
   </svg>
 );
 
@@ -81,9 +92,10 @@ export function MenuButton({ open, onToggle, ref }: { open: boolean; onToggle: (
 }
 
 /** A group of the menu: a page group, or, with fun mode on, the pages it changes. */
-type MenuGroup = PageGroup | "Fun";
+type MenuGroup = Exclude<PageGroup, "Worlds"> | "Fun";
 
-const GROUP_ICON: Record<MenuGroup, ReactNode> = {
+const GROUP_ICON: Record<MenuGroup | "Worlds", ReactNode> = {
+  Worlds: <WorldsGlyph />,
   Fun: <SparkleIcon />,
   Controls: <SlidersIcon />,
   Overlays: <LayersIcon />,
@@ -126,6 +138,23 @@ function PageRow({ page, current, size }: { page: PageEntry; current: boolean; s
       }
     >
       {page.title}
+    </a>
+  );
+}
+
+/** A world: its name and its line, marked when it is the one the gallery is in (aria-current "true") or the page that is open ("page"). */
+function WorldRow({ world, current, here }: { world: MaterialInfo & { page: PageEntry }; current: boolean; here: boolean }) {
+  return (
+    <a
+      href={`#${world.id}`}
+      aria-current={here ? "page" : current ? "true" : undefined}
+      className={rowBase + "min-h-control-md py-2 " + (here ? rowCurrent : rowIdle)}
+    >
+      <span className="grid min-w-0 flex-1">
+        <span className={"text-body " + (current ? "text-fg" : "")}>{world.name}</span>
+        <span className="text-caption font-normal text-fg-subtle">{world.tagline}</span>
+      </span>
+      {current && <span aria-hidden="true" className="size-1.5 shrink-0 rounded-pill bg-fg forced-color-adjust-none" />}
     </a>
   );
 }
@@ -207,11 +236,12 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
   }, []);
 
   const site = pages.filter((p) => !p.group);
+  const { look } = useCustomize();
   /* With fun mode on, its pages lead as a group of their own; they stay in their own groups too. */
   const fun = useFun();
   const groups: { group: MenuGroup; pages: PageEntry[] }[] = [
     ...(fun && funPages.length ? [{ group: "Fun" as const, pages: funPages }] : []),
-    ...PAGE_GROUPS.map((g) => ({ group: g, pages: pages.filter((p) => p.group === g) })).filter((g) => g.pages.length),
+    ...PAGE_GROUPS.flatMap((g) => (g === "Worlds" ? [] : [{ group: g, pages: pages.filter((p) => p.group === g) }])).filter((g) => g.pages.length),
   ];
   const shown = groups.find((g) => g.group === group);
 
@@ -245,6 +275,21 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
           <PageRow key={p.id} page={p} current={p.id === current?.id} size="lg" />
         ))}
       </div>
+
+      {/* The worlds are the way in, so they come before the components and do not drill. */}
+      {worlds.length > 0 && (
+        <section aria-labelledby="menu-worlds" className="grid">
+          <p id="menu-worlds" className="flex items-center gap-2 px-4 pb-1 text-caption text-fg-subtle">
+            {GROUP_ICON.Worlds}
+            Worlds
+          </p>
+          <div className="litt-raised grid rounded-surface p-1">
+            {worlds.map((w) => (
+              <WorldRow key={w.id} world={w} current={look.material === w.id} here={current?.id === w.page.id} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* The components, by group, drilling down in place. */}
       <section aria-labelledby="menu-components" className="grid">

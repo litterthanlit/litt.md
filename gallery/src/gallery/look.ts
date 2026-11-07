@@ -31,18 +31,86 @@ export const ACCENTS: readonly AccentInfo[] = [
 ];
 export const accentOf = (id: Accent) => ACCENTS.find((a) => a.id === id)!;
 
+/**
+ * What a world says about itself on its page (proposals/worlds.md): each is one short line, said in words (R5).
+ * The gallery renders them as the Foundations cards; llms.txt ships them to agents.
+ */
+export type WorldFoundations = {
+  color: string;
+  type: string;
+  light: string;
+  shape: string;
+  motion: string;
+};
 export type MaterialInfo = {
   id: Material;
   name: string;
   note: string;
   /** The data-material value tokens.css answers; null for Press, which is tokens.css with no attribute. */
   attribute: "flat" | "device" | null;
+  /** The world's one line, under its name on its page and on the home's hero. */
+  tagline: string;
+  /** Who the world is for, as the lede under the tagline. */
+  audience: string;
+  /** The block page (src/gallery/pages/30-*.tsx, meta.block) the world opens on, live at real size. */
+  hero: string;
+  /** Its motion language in one line (foundations.md, Motion languages). */
+  foundations: WorldFoundations;
 };
-/** The materials in the order every picker shows them. */
+/**
+ * The materials in the order every picker shows them. A material is a world (proposals/worlds.md, decision 3): a page
+ * you arrive on, named after it, with the one component tree under it. The world page's id is the material's id, and
+ * the current world is look.material, so nothing here is state.
+ */
 export const MATERIALS: readonly MaterialInfo[] = [
-  { id: "press", name: "Press", note: "Raised blocks in sunken trays, lit from the top", attribute: null },
-  { id: "flat", name: "Flat", note: "Grey fills and hairlines, nothing casts", attribute: "flat" },
-  { id: "device", name: "Device", note: "Keys and dark LCD screens on an aluminium body, full mono, an orange accent", attribute: "device" },
+  {
+    id: "press",
+    name: "Press",
+    note: "Raised blocks in sunken trays, lit from the top",
+    attribute: null,
+    tagline: "Lit from above. Objects you can hold.",
+    audience: "Product UI, settings and dashboards. What the registry installs.",
+    hero: "dashboard",
+    foundations: {
+      color: "Warm stone neutrals at one hue, Blue 4 as the one accent, or monochrome or pink.",
+      type: "Geist in three weights by role: text 400, titles 500, 12px labels 600. Nothing above 18px.",
+      light: "One light from the top. Blocks rise from sunken trays, caps ride in slots, glass floats over the page.",
+      shape: "Controls 4px, surfaces 8px, pills only for avatars and icon-only buttons, every corner concentric.",
+      motion: "Things have weight. A set settles into place from above on the expressive spring; an overlay rises and settles. Nothing flies.",
+    },
+  },
+  {
+    id: "flat",
+    name: "Flat",
+    note: "Grey fills and hairlines, nothing casts",
+    attribute: "flat",
+    tagline: "Grey is the object. Nothing casts.",
+    audience: "Sites, portfolios and reading. What the gallery opens in.",
+    hero: "case-study",
+    foundations: {
+      color: "The same neutrals at chroma 0: neutral grey, nothing warm. The accent and the data hues are unchanged.",
+      type: "Geist in three weights by role, as Press.",
+      light: "None. The depth ladder is said by fill alone: grey is the object, a hairline is the place.",
+      shape: "As Press: 4px, 8px and the pill, concentric.",
+      motion: "Things come from where you touched them. A set deals out of what opened it and gathers back; an overlay grows from its opener.",
+    },
+  },
+  {
+    id: "device",
+    name: "Device",
+    note: "Keys and dark LCD screens on an aluminium body, full mono, an orange accent",
+    attribute: "device",
+    tagline: "Hardware. Keys, wells and LCD glass, every word in the mono.",
+    audience: "Agents, terminals and tools.",
+    hero: "agent",
+    foundations: {
+      color: "A cool aluminium body, dark LCD screens for panels and overlays, an orange accent, the hues retuned to the body.",
+      type: "Geist Mono for every word, in the three role weights. 12px labels are engraved capitals.",
+      light: "Hardware. Plates on the body, wells cut into it, keys on a 2px skirt that sink the whole 2px, fields behind glass.",
+      shape: "As Press: 4px, 8px and the pill, concentric.",
+      motion: "Things are mechanisms. A set switches on in place in steps, as a display's segments light; an overlay switches on where it stands. Nothing fades or travels.",
+    },
+  },
 ];
 export const materialOf = (id: Material) => MATERIALS.find((m) => m.id === id)!;
 /** An accent's name in a material: Device answers the no-attribute accent with its own orange, so Blue 4 reads "Orange" there. */
@@ -199,7 +267,7 @@ export function lookStep(look: Look, site: string): string | null {
 /** llms.txt's "## Looks" section, for an agent handed a gallery link. */
 export function looksDoc(site: string): string {
   return [
-    `The gallery's Customize panel picks an accent, a material and a motion feel, and a link carries all three: ${site}/?${LOOK_PARAM}=${encodeLook({ accent: "pink", material: "flat", fun: true })}#button. ` +
+    `A look is the gallery's material (its world, chosen in the nav or on the deck), accent and motion feel (the Customize panel), and a link carries all three: ${site}/?${LOOK_PARAM}=${encodeLook({ accent: "pink", material: "flat", fun: true })}#button. ` +
       `Read the look from the link's text and make its edits. The gallery is a single-page app, so fetching the link returns no look. ` +
       `The registry installs \`${encodeLook(REGISTRY_LOOK)}\`, ${materialWords(REGISTRY_LOOK.material)}, ${motionWords(REGISTRY_LOOK.fun)}. The gallery opens in \`${encodeLook(GALLERY_LOOK)}\`.`,
     [

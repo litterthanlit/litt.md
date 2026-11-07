@@ -47,8 +47,11 @@ import { Toaster } from "@/components/toast";
 import { pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
 import { Button } from "@/components/button";
-import { CheckIcon, CopyIcon, ExpandIcon } from "@/components/icons";
-import { CopyStatus, useCopy } from "../docs/copy";
+import { ExpandIcon } from "@/components/icons";
+import { Start, toStart } from "../steps";
+import { WorldHero } from "../world";
+import { materialOf } from "../look";
+import { useCustomize } from "../customize-state";
 import { Deck } from "../deck";
 import { MosaicHost, openMosaic, pressTile } from "../mosaic";
 import { arriveFrom } from "../arrival";
@@ -64,6 +67,28 @@ export const meta: PageMeta = {
   tiers: ["instant", "responsive", "expressive"],
   wall: true,
 };
+
+/** The current world's block, live at real size, under the hero: the world's name links to its page. Flipping Material on the deck swaps it. */
+function HomeHero() {
+  const { look } = useCustomize();
+  const world = materialOf(look.material);
+  return (
+    <section aria-labelledby="home-hero-title" data-home-hero className="grid gap-4">
+      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <h2 id="home-hero-title" className="text-h2 text-fg">
+          <a
+            href={`#${world.id}`}
+            className="rounded-control transition-colors duration-(--dur-instant) ease-litt hover:text-fg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          >
+            {world.name}
+          </a>
+        </h2>
+        <p className="text-small text-fg-subtle">{world.tagline}</p>
+      </div>
+      <WorldHero material={look.material} />
+    </section>
+  );
+}
 
 const WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty",
   ...["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine"].map((n) => `Twenty-${n.toLowerCase()}`), "Thirty",
@@ -383,104 +408,17 @@ function Hero({ count, site }: { count: string; site: PageEntry[] }) {
   );
 }
 
-/* ---------- getting started ---------- */
-
-const ORIGIN = "https://littmd.vercel.app";
-
-/** The hash is the page's route, so the hero reaches the steps by focus, as "Skip to blocks" does, not by a link. */
-function toStart() {
-  document.getElementById("start-title")?.focus();
-}
-
-/** A line to paste: the text in the mono, scrolling sideways if it must, and a copy button beside it, never over it. */
-function Paste({ text, label }: { text: string; label: string }) {
-  const [state, copy] = useCopy();
-  return (
-    <div className="flex min-w-0 items-center gap-2 rounded-surface bg-surface-2 py-2 pr-2 pl-4 shadow-[inset_0_0_0_1px_var(--line)]">
-      <pre tabIndex={0} role="group" aria-label={label} className="min-w-0 flex-1 overflow-x-auto py-1 font-mono text-small text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
-        <code>{text}</code>
-      </pre>
-      <Button iconOnly variant="ghost" size="sm" aria-label={`Copy: ${label}`} onClick={() => copy(text)}>
-        {state === "copied" ? <CheckIcon /> : <CopyIcon />}
-      </Button>
-      <CopyStatus state={state} />
-    </div>
-  );
-}
-
-/** One step, as a row: what you do in a few words, then the one thing to paste. */
-function Step({ n, title, text, paste, label }: { n: number; title: string; text: string; paste: string; label: string }) {
-  return (
-    <li className="grid min-w-0 gap-4 py-6 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-12">
-      <div className="grid content-start gap-1">
-        <p className="text-caption text-fg-subtle tabular-nums">Step {n}</p>
-        <h3 className="text-body font-title text-fg">{title}</h3>
-        <p className="max-w-[48ch] text-small text-fg-muted">{text}</p>
-      </div>
-      <Paste text={paste} label={label} />
-    </li>
-  );
-}
-
-/**
- * The three things to do with litt, each with its paste: the language for Claude, a part for the app, and the score.
- * The AI tools page has the MCP setup for each tool.
- */
-function Start() {
-  return (
-    <section aria-labelledby="start-title" className="grid gap-6">
-      {/* Focusable from code only, for the hero's Get started. */}
-      <h2 id="start-title" tabIndex={-1} className="max-w-[64ch] scroll-mt-24 text-h2 text-balance outline-none">
-        <span className="text-fg">Build with your agent.</span>{" "}
-        <span className="font-normal text-fg-subtle">The taste comes with the parts: Claude reads the rules, installs the components and checks its own work.</span>
-      </h2>
-      <ol className="grid divide-y divide-line border-y border-line">
-        <Step
-          n={1}
-          title="Give Claude the language"
-          text="The litt.md plugin: the rules, the specs and the workflows to build, critique and check."
-          paste={"claude plugin marketplace add litterthanlit/litt.md\nclaude plugin install litt-md@litt"}
-          label="Install the plugin"
-        />
-        <Step
-          n={2}
-          title="Add any part"
-          text="Every component installs with shadcn, on litt's own tokens, so your theme stays untouched."
-          paste={`npx shadcn@latest add ${ORIGIN}/r/button.json`}
-          label="Add a component"
-        />
-        <Step
-          n={3}
-          title="Score your app"
-          text="Ask Claude, and it measures your code against litt out of 100, with every fix."
-          paste="how litt is this app?"
-          label="Ask Claude"
-        />
-      </ol>
-      <p className="text-small text-fg-subtle">
-        Cursor, VS Code and Codex:{" "}
-        <a
-          href="#ai"
-          className="rounded-control text-accent-text underline decoration-[color-mix(in_oklab,var(--accent-text)_40%,transparent)] underline-offset-2 transition-colors duration-(--dur-instant) ease-litt hover:decoration-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-        >
-          AI tools
-        </a>{" "}
-        has the setup, through shadcn's MCP server.
-      </p>
-    </section>
-  );
-}
-
 export default function Overview() {
   /* The components and patterns; Overview, Changelog, AI tools and the Playground have no group, and blocks are screens. */
-  const list = pages.filter((p) => p.group && p.group !== "Blocks");
+  const list = pages.filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world);
   const wall = [...LEAD.map((id) => list.find((p) => p.id === id)).filter((p): p is PageEntry => !!p), ...list.filter((p) => !LEAD.includes(p.id))];
-  const blocks = pages.filter((p) => p.group === "Blocks");
-  const site = pages.filter((p) => !p.group && !p.wall);
+  const blocks = pages.filter((p) => p.group === "Blocks" && !p.world);
+  const site = pages.filter((p) => !p.group && !p.wall && !p.world);
   const count = WORDS[list.length] ?? String(list.length);
   return (
     <article aria-labelledby="page-overview" className="grid gap-12 pb-24">
       <Hero count={count} site={site} />
+      <HomeHero />
       <h2 className="mt-12 max-w-[64ch] text-h2 text-balance">
         <span className="text-fg">Every one, live.</span> <span className="font-normal text-fg-subtle">{meta.lede}</span>
       </h2>
