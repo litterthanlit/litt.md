@@ -3,14 +3,14 @@
  * About's. In order: Anatomy, How it moves (meta.mechanism), States, Replay, Under each material, Source. The contract
  * is the type in kit.tsx; the callouts are in study-anatomy.tsx. Nothing here moves on its own.
  */
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { CodeBlock } from "@/components/code-block";
 import lock from "../../registry.lock.json";
 import { useCustomize, useDark } from "./customize-state";
 import { STATES, type PageDocs, type PageMeta, type PageStudy } from "./kit";
 import { lookAttributes, MATERIALS } from "./look";
-import { Anatomy, OBJECT_WRAP, STAGE_BOX } from "./study-anatomy";
+import { Anatomy, FILL_WRAP, STAGE_BOX } from "./study-anatomy";
 
 const sources = import.meta.glob<string>("../components/*.tsx", { query: "?raw", import: "default" });
 
@@ -28,10 +28,11 @@ function States({ states }: { states: PageStudy["states"] }) {
   if (!present.length) return null;
   return (
     <div className={STAGE_BOX + " min-h-48"}>
+      {/* Each state gets a column that grows, so an object that takes its width (a slide to confirm) has a tray to draw. */}
       <div className="flex flex-wrap items-end justify-center gap-8">
         {present.map((s) => (
-          <figure key={s} className="m-0 grid justify-items-center gap-3">
-            <div className={OBJECT_WRAP}>{states[s]}</div>
+          <figure key={s} className="m-0 grid min-w-0 flex-1 basis-56 justify-items-center gap-3">
+            <div className={FILL_WRAP}>{states[s]}</div>
             <figcaption className="text-caption text-fg-subtle">{s}</figcaption>
           </figure>
         ))}
@@ -47,7 +48,7 @@ function Replay({ object, replay }: { object: ReactNode; replay: NonNullable<Pag
   return (
     <div className="grid gap-6">
       <div className={STAGE_BOX + " min-h-80 place-items-center"}>
-        <div className={OBJECT_WRAP}>{n === 0 ? object : <Fragment key={n}>{replay.run(n)}</Fragment>}</div>
+        <div className={FILL_WRAP}>{n === 0 ? object : <Fragment key={n}>{replay.run(n)}</Fragment>}</div>
       </div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <p className="max-w-[60ch] text-small text-fg-subtle">{replay.caption}</p>
@@ -59,11 +60,25 @@ function Replay({ object, replay }: { object: ReactNode; replay: NonNullable<Pag
   );
 }
 
-function Materials({ object }: { object: ReactNode }) {
+/* Three frames side by side while the object fits a third of the row; a wider object (a chart, a chat row) stacks them,
+   so it is drawn at the size Anatomy draws it and never shrinks to fit. Frame padding is p-8 (64px across) and the
+   gap is 24px. */
+const FRAME_PAD = 64, FRAME_GAP = 24;
+function Materials({ object, objectWidth }: { object: ReactNode; objectWidth: number }) {
   const { look } = useCustomize();
   const dark = useDark();
+  const grid = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const el = grid.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setWidth(el.getBoundingClientRect().width));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const stacked = width > 0 && objectWidth > (width - 2 * FRAME_GAP) / 3 - FRAME_PAD;
   return (
-    <div className="grid gap-6 md:grid-cols-3">
+    <div ref={grid} className={"grid gap-6 " + (stacked ? "" : "md:grid-cols-3")}>
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -71,7 +86,7 @@ function Materials({ object }: { object: ReactNode }) {
             data-study-material={m.id}
             className="grid min-h-56 min-w-0 place-items-center rounded-surface bg-canvas p-4 text-fg outline-1 -outline-offset-1 outline-line min-[24rem]:p-8"
           >
-            <div className={OBJECT_WRAP}>{object}</div>
+            <div className={FILL_WRAP}>{object}</div>
           </div>
           <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
         </figure>
@@ -134,10 +149,12 @@ function Source({ stem, headingId }: { stem: string; headingId: string }) {
 export function StudySections({ meta, docs, study }: { meta: PageMeta; docs?: PageDocs; study: PageStudy }) {
   const id = (part: string) => `study-${part}-${meta.id}`;
   const stem = docs?.components[0];
+  const [objectWidth, setObjectWidth] = useState(0);
+  const onObjectWidth = useCallback((w: number) => setObjectWidth((was) => (Math.abs(was - w) < 0.5 ? was : w)), []);
   return (
     <>
       <Section id={id("anatomy")} title="Anatomy" flush>
-        <Anatomy object={study.object} parts={study.parts} />
+        <Anatomy object={study.object} parts={study.parts} onObjectWidth={onObjectWidth} />
       </Section>
       {meta.mechanism && (
         <Section id={id("mechanism")} title="How it moves">
@@ -155,7 +172,7 @@ export function StudySections({ meta, docs, study }: { meta: PageMeta; docs?: Pa
         </Section>
       )}
       <Section id={id("materials")} title="Under each material" flush>
-        <Materials object={study.object} />
+        <Materials object={study.object} objectWidth={objectWidth} />
       </Section>
       {stem && <Source stem={stem} headingId={id("source")} />}
     </>

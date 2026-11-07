@@ -19,10 +19,15 @@ export const STAGE_BOX =
 
 /** The wrapper every drawing of the object shares, in Anatomy and under each material, so it renders the same. */
 export const OBJECT_WRAP = "relative grid min-w-0 place-items-center";
+/** The same, filling its stage, so an object that takes its width (a slider, a slide to confirm) gets room; Anatomy and the material frames share it, so their objects match. */
+export const FILL_WRAP = "relative grid w-full min-w-0 justify-items-center";
 
 type Part = PageStudy["parts"][number];
 type Callout = {
+  /** The number shown, counting only the parts that resolved. */
   n: number;
+  /** The part's index in `parts`. */
+  index: number;
   left: boolean;
   /** Where the line meets the part. */
   x: number;
@@ -42,6 +47,7 @@ function measure(stage: HTMLElement, wrap: HTMLElement, parts: Part[]): Callout[
   const base = stage.getBoundingClientRect();
   const labels = stage.querySelectorAll<HTMLElement>("[data-callout-label]");
   const out: Callout[] = [];
+  let n = 0;
   parts.forEach((part, i) => {
     let el: Element | null = null;
     try {
@@ -59,7 +65,8 @@ function measure(stage: HTMLElement, wrap: HTMLElement, parts: Part[]): Callout[
     const lw = labels[i]?.offsetWidth ?? 0;
     const cy = rect.y + rect.h / 2;
     out.push({
-      n: i + 1,
+      n: ++n,
+      index: i,
       left,
       x: left ? rect.x : rect.x + rect.w,
       y: cy,
@@ -78,7 +85,7 @@ function measure(stage: HTMLElement, wrap: HTMLElement, parts: Part[]): Callout[
   return out;
 }
 
-export function Anatomy({ object, parts }: { object: ReactNode; parts: Part[] }) {
+export function Anatomy({ object, parts, onObjectWidth }: { object: ReactNode; parts: Part[]; onObjectWidth?: (width: number) => void }) {
   const stage = useRef<HTMLDivElement>(null);
   const wrap = useRef<HTMLDivElement>(null);
   const [callouts, setCallouts] = useState<Callout[]>([]);
@@ -88,6 +95,7 @@ export function Anatomy({ object, parts }: { object: ReactNode; parts: Part[] })
     const s = stage.current, w = wrap.current;
     if (!s || !w) return;
     const run = () => {
+      onObjectWidth?.(w.firstElementChild?.getBoundingClientRect().width ?? 0);
       const next = measure(s, w, parts);
       const key = JSON.stringify(next);
       if (key !== last.current) {
@@ -102,18 +110,18 @@ export function Anatomy({ object, parts }: { object: ReactNode; parts: Part[] })
     for (const el of w.querySelectorAll("*")) ro.observe(el);
     void document.fonts?.ready.then(run);
     return () => ro.disconnect();
-  }, [parts]);
+  }, [parts, onObjectWidth]);
 
-  const placed = new Map(callouts.map((c) => [c.n, c]));
+  const placed = new Map(callouts.map((c) => [c.index, c]));
 
   return (
     <div className="grid gap-4">
       <div ref={stage} className={STAGE_BOX + " min-h-72 place-items-center"}>
-        <div ref={wrap} className={OBJECT_WRAP}>{object}</div>
+        <div ref={wrap} className={FILL_WRAP}>{object}</div>
         {/* The labels hold still and hidden until they are measured. */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 max-sm:hidden">
           {parts.map((p, i) => {
-            const c = placed.get(i + 1);
+            const c = placed.get(i);
             return (
               <span
                 key={p.name}
@@ -121,7 +129,7 @@ export function Anatomy({ object, parts }: { object: ReactNode; parts: Part[] })
                 style={c ? { top: c.ly, left: c.lx, translate: "0 -50%" } : undefined}
                 className={"absolute flex items-baseline gap-2 whitespace-nowrap text-caption text-fg-muted " + (c ? "" : "invisible")}
               >
-                <span className="tabular-nums text-fg-subtle">{i + 1}</span>
+                <span className="tabular-nums text-fg-subtle">{c?.n ?? ""}</span>
                 {p.name}
               </span>
             );
@@ -146,10 +154,10 @@ export function Anatomy({ object, parts }: { object: ReactNode; parts: Part[] })
       </div>
       {/* The parts as a list: read aloud on desktop, and the labels on a phone. */}
       <ol role="list" className="sr-only m-0 list-none p-0 max-sm:not-sr-only max-sm:grid max-sm:gap-1">
-        {parts.map((p, i) => (
-          <li key={p.name} className="flex items-baseline gap-2 text-caption text-fg-muted">
-            <span aria-hidden="true" className="min-w-[2ch] tabular-nums text-fg-subtle">{i + 1}</span>
-            {p.name}
+        {callouts.map((c) => (
+          <li key={parts[c.index]!.name} className="flex items-baseline gap-2 text-caption text-fg-muted">
+            <span aria-hidden="true" className="min-w-[2ch] tabular-nums text-fg-subtle">{c.n}</span>
+            {parts[c.index]!.name}
           </li>
         ))}
       </ol>
