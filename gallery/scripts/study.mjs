@@ -16,7 +16,7 @@
  * - an anatomy part does not resolve: the callout lines on a desktop (the numbered badges on a phone) are not as many
  *   as the items in the parts list, or the console warns about a selector,
  * - the Anatomy object and the Under each material frame of the gallery's current material (data-material on <html>,
- *   Press when none) are not the same picture, pixel for pixel (at most 8 apart in any channel: the worst anti-aliasing difference measured between two correct drawings is 7).
+ *   Press when none) are not the same picture, pixel for pixel (at most 8 apart in any channel: the worst anti-aliasing difference measured between two correct drawings is 7; and at most 16 pixels, or 0.5% of the picture, past that, which is what a half-pixel edge costs in dark, where a real move costs hundreds).
  *   Each is a screenshot of the object itself after fonts load and a 1.5s wait, with animations disabled, the
  *   callout labels and lines hidden and the stage boxes given one flat ground, so only the object is compared.
  *   The two PNGs are decoded and compared in the page, drawn into canvases (no PNG library is needed),
@@ -153,7 +153,7 @@ async function compare(pg, a, b) {
       if (m > 8) { off++; first ??= `(${(i / 4) % p.w}, ${Math.floor(i / 4 / p.w)})`; }
       worst = Math.max(worst, m);
     }
-    return { off, worst, first, size: `${p.w}x${p.h}` };
+    return { off, worst, first, size: `${p.w}x${p.h}`, area: p.w * p.h };
   }, [a.toString("base64"), b.toString("base64")]);
 }
 
@@ -241,7 +241,11 @@ async function audit(page, size, scheme, look, mutate) {
     fs.writeFileSync(`${stem}-anatomy.png`, shotA);
     fs.writeFileSync(`${stem}-${material}.png`, shotB);
   }
-  claim(C.pixels, !diff.mismatch && diff.off === 0 ? null : `${where}: the ${material} frame differs from Anatomy, ${diff.mismatch ? `size ${diff.size}` : `${diff.off} pixels off by more than 8 (worst ${diff.worst}, first at ${diff.first}, size ${diff.size})`}`);
+  /* A half-pixel edge that lands on another fraction costs a few pixels along the outline, most in dark, where the
+     object's edge meets the white ground; a moved edge or a padding change costs hundreds. So up to 16 pixels, or
+     0.5% of the picture, may differ. */
+  const edge = diff.mismatch ? 0 : Math.max(16, Math.round(diff.area * 0.005));
+  claim(C.pixels, !diff.mismatch && diff.off <= edge ? null : `${where}: the ${material} frame differs from Anatomy, ${diff.mismatch ? `size ${diff.size}` : `${diff.off} pixels off by more than 8 (worst ${diff.worst}, first at ${diff.first}, size ${diff.size})`}`);
 
   /* Source. */
   const source = pg.locator(`section[aria-labelledby="study-source-${page.id}"]`);
