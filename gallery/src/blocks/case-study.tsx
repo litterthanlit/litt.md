@@ -145,7 +145,7 @@ export function CaseStudy() {
           </Heading>
           <p className="max-w-(--measure) text-small text-fg-subtle">Each series opens on its first frame at full width, and the next one is always in view.</p>
         </div>
-        <Carousel label="The series" index={slide} onIndexChange={setSlide}>
+        <Carousel label="Series pictures" index={slide} onIndexChange={setSlide}>
           <CarouselContent>
             {SERIES.map((image, i) => (
               <CarouselItem key={image.id} label={image.caption}>

@@ -4,6 +4,12 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-07 · Worlds: each material is a page you arrive on
+
+Press, Flat and Device are now places (`proposals/worlds.md`): a page each, with its line, who it is for, the block it opens on live at real size, its five foundations and the install steps. The sidebar and the phone menu lead with the three, the overview shows the current world's block under the deck, and Material leaves the Customize panel for them. `llms.txt` gains a Worlds section. Nothing in the registry changes for it, but one block had two landmarks with one name.
+
+- **fixed** `case-study`: the pictures' carousel is named "Series pictures", so it no longer shares "The series" with the section around it (two landmarks with one name; WCAG 1.3.1). Nothing you see changes.
+
 ## 2026-11-06 · Details that make it feel right
 
 Four rules from design engineers, now kept: a theme switch is instant, a list of rows has no dead space between them, link text passes 4.5:1 on every surface, and on a touch screen every control takes a finger at 44 by 44px.
