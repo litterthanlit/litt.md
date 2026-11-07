@@ -5,7 +5,7 @@
  *   changed line's band never paints over it. A 32px header holds the file name or the language in mono at
  *   the caption size in `--fg-subtle`, and the Copy button. The header is its own row, so the button can never
  *   cover code. The code is mono at the small size in `--fg`, padded `--space-4`, with a tab size of 2.
- * - Flat: a grey card (--surface-3) with no hairline, and the Copy key a round white key on it.
+ * - Flat: a grey card (--surface-2, as Press, so a diff row's tint keeps its words at 4.5:1) with no hairline, and the Copy key a round white key on it.
  * - Highlighting: tsx, ts, jsx and js go through sugar-high, and every other language is plain. Code is not
  *   data, so the colors are the foreground's tones and the accent text for strings (no data hues, R7).
  *   sugar-high paints each token with a syntax variable, so this file declares all of them on the block
@@ -183,7 +183,7 @@ export function CodeBlock({
   const name = label ?? filename ?? "Code";
 
   return (
-    <div className={`relative min-w-0 max-w-full rounded-surface bg-surface-2 in-[[data-material=flat]]:bg-surface-3 ${SYNTAX} ${className}`}>
+    <div className={`relative min-w-0 max-w-full rounded-surface bg-surface-2 ${SYNTAX} ${className}`}>
       <div className="flex h-control-sm items-center justify-between gap-2 pl-4 pr-1 pointer-coarse:h-control-md">
         <span className="min-w-0 truncate font-mono text-caption font-normal text-fg-subtle">{filename ?? lang}</span>
         <Button
