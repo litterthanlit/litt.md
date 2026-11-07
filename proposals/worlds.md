@@ -85,6 +85,17 @@ The studies that are hardware become litt components, under Device first, each o
 
 Each one is a `litt` or item line in `CHANGELOG.md`, versioned as every item is, and goes through `test:registry` because Device recipes read tokens the host must have.
 
+### Breadth: domains are the rows, worlds the columns
+
+Nick: "I also had plans for shopify integration and ecomerce components etc. every possible component possible." Breadth and worlds are the two axes of one grid, not two plans. A **domain** (Forms, Data, Agents, Commerce, and the next ones) is a row: its parts, and a block that shows them composed, as Commerce shipped Product and Collection with seven items and the Shopify client (`commerce.md`, decided 2026-10-24, waiting on Nick's tests). A **world** is a column. Every domain's block is a hero under every material, so each domain adds one screen to each world page's On this page rail, and a new world costs every domain nothing.
+
+Two rules keep breadth from becoming the count trap:
+
+- A new part answers a need in litt's own world (journal, 2026-10-22), never a line on a competitor's list. "Every component" means every need a product has, said in litt.
+- A domain ships as parts plus a block, never parts alone. The block is the proof, the hero and the agent test's task.
+
+Commerce's next needs, in order: store search from the Command menu and Combobox (`commerce.md` decision 1 deferred it); an account area (orders as a Timeline, addresses as a Form, a payment method as a Card picker); order status in words (R5); a promo code as a Token input; a size guide as a Dialog; reviews as a Bar list, stars never in color (R7). Checkout stays Shopify's. Under Device a store is a point-of-sale terminal, a hero no reference has.
+
 ### Sound, as a world's ability
 
 bencho sells Sounds; Nick's studies tie a sound to the visual event; `gallery-wow.md` proposed sounds in fun mode and left it as Nick's call. In a world, sound is an ability a material brings (Nick: "each system provides new abilities"). Device is the one that has it: a key's click on press, a notch's tick on the slider, a switch's clack, a code digit's beep behind the glass. Synthesised with Web Audio, no files, so the registry ships no assets. Off by default; a Sound choice in Customize, Silent or On; only in answer to a hand, never on arrival or on its own (R4 holds for the ear too); reduced motion leaves it alone, since it is not motion, but a system-level mute does not exist, so the default is Silent.
