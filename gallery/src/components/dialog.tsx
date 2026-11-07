@@ -6,7 +6,11 @@
  * - Controlled open state plus AnimatePresence plus forceMount, so exits
  *   animate before Radix unmounts anything.
  * - Panel enter (expressive tier): opacity 0 to 1, y from useTravel() to 0,
- *   scale 0.98 to 1. It may bounce slightly, as the tokens allow. The side sheet
+ *   scale 0.98 to 1. It may bounce slightly, as the tokens allow. Opened by a
+ *   press (a button, a menu row), it grows out of what was pressed instead: its
+ *   transform-origin sits on the opener (openerBox, @/motion/deal) and it
+ *   scales up from GROW (0.9) without travelling, so it comes out of the
+ *   button's side and is placed, not thrown; it shrinks back into it on close. The side sheet
  *   travels the same small distance on x, never its own width. When the view has
  *   already spent its expressive moment, tier="responsive" moves it on that tier.
  * - Exit: useExit(tier), quicker and never bouncing.
@@ -56,6 +60,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useTransform } from "motion/react";
 import { useDevice, useExit, useMotionDial, useSheetPresence, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { useDismissDrag } from "@/motion/drag";
+import { GROW, useGrowFrom, useOverlayMotion } from "@/motion/deal";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
 
@@ -268,6 +273,16 @@ export function DialogContent({
   const travel = useTravel();
   const ref = useRef<HTMLDivElement | null>(null);
   const sheet = side === "right";
+  /* Where the press that opened it was, read as it opens: the panel grows out of it. */
+  const grow = useGrowFrom<HTMLDivElement>(open, !sheet);
+  const grows = grow.grows;
+  /* Under Device the panel switches on and off where it stands (@/motion/deal, the motion languages). */
+  const om = useOverlayMotion();
+  const switches = om.switches && !sheet;
+  const panelRef = (el: HTMLDivElement | null) => {
+    ref.current = el;
+    grow.ref(el);
+  };
   const hasBody = children != null && children !== false;
 
   /* Focus the field the person came to fill, or the marked button, else the
@@ -378,7 +393,7 @@ export function DialogContent({
             <RadixDialog.Content
               forceMount
               asChild
-              ref={ref}
+              ref={panelRef}
               onOpenAutoFocus={(e) => focusOnOpen(e, ref.current, coarse, pickFocus)}
               {...(description ? {} : { "aria-describedby": undefined })}
             >
@@ -391,12 +406,16 @@ export function DialogContent({
                   className
                 }
                 style={{ gridTemplateAreas: '"head close" "body body" "foot foot"' }}
-                initial={sheet ? { opacity: 0, x: travel } : { opacity: 0, y: travel, scale: 0.98 }}
-                animate={{ opacity: 1, x: 0, y: 0, scale: 1, transition: enter }}
+                initial={sheet ? { opacity: 0, x: travel } : switches ? { opacity: 0 } : grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: travel, scale: 0.98 }}
+                animate={{ opacity: 1, x: 0, y: 0, scale: 1, transition: switches ? om.switchIn : enter }}
                 exit={
                   sheet
                     ? { opacity: 0, x: travel / 2, transition: exit }
-                    : { opacity: 0, y: travel / 2, scale: 0.98, transition: exit }
+                    : switches
+                      ? { opacity: 0, transition: om.switchOut }
+                      : grows
+                      ? { opacity: 0, scale: GROW, transition: exit }
+                      : { opacity: 0, y: travel / 2, scale: 0.98, transition: exit }
                 }
               >
                 {slots}

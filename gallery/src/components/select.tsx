@@ -49,6 +49,7 @@ import {
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { animate, motion, useMotionValue, type AnimationPlaybackControls, type HTMLMotionProps } from "motion/react";
 import { useExit, useTransition, useTravel } from "@/motion";
+import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
 
@@ -212,15 +213,21 @@ type SurfaceProps = Omit<HTMLMotionProps<"div">, "ref" | "children"> & {
  * element. It mounts when the list opens, and stays mounted through the exit.
  */
 function Surface({ ref, options, open, leaving, flat, input, onExited, style, ...rest }: SurfaceProps) {
-  const enter = useTransition("responsive");
-  const exit = useExit("responsive");
-  const travel = useTravel();
+  /* The material's motion language (@/motion/deal): it grows from om.grow, and under Device it switches on and off
+     in steps where it stands, with no slide. */
+  const om = useOverlayMotion();
+  const springIn = useTransition("responsive");
+  const springOut = useExit("responsive");
+  const enter = om.switches ? om.switchIn : springIn;
+  const exit = om.switches ? om.switchOut : springOut;
+  const fullTravel = useTravel();
+  const travel = om.slides ? fullTravel : 0;
   const latest = useRef({ enter, exit, travel, onExited });
   latest.current = { enter, exit, travel, onExited };
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const scale = useMotionValue(0.98);
+  const scale = useMotionValue(om.grow);
   const opacity = useMotionValue(0);
   const node = useRef<HTMLDivElement | null>(null);
   const side = useRef<Side>("bottom");
@@ -262,7 +269,7 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
         const o = offset(side.current);
         x.jump(o.x);
         y.jump(o.y);
-        scale.jump(0.98);
+        scale.jump(om.grow);
         opacity.jump(0);
       }
       entered.current = true;
@@ -285,7 +292,7 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
     const runs = [
       animate(x, o.x, exit),
       animate(y, o.y, exit),
-      animate(scale, 0.98, exit),
+      animate(scale, om.grow, exit),
       animate(opacity, 0, {
         ...exit,
         onComplete: () => {

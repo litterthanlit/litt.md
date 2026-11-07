@@ -99,20 +99,20 @@
       "hash": "bee51377a6bed924"
     },
     "combobox": {
-      "version": "2026.11.05",
-      "hash": "005cbafc2874eba9"
+      "version": "2026.11.06",
+      "hash": "a3ef341ee5110594"
     },
     "command-menu": {
-      "version": "2026.11.05",
-      "hash": "f3f38d833c253db2"
+      "version": "2026.11.06",
+      "hash": "10a163a5f70b696c"
     },
     "composer": {
       "version": "2026.11.05",
       "hash": "6e12ad835e2ef85b"
     },
     "context-menu": {
-      "version": "2026.10.19",
-      "hash": "0e0950f318d38a8d"
+      "version": "2026.11.05",
+      "hash": "4e67b64f794f971a"
     },
     "curve-editor": {
       "version": "2026.10.27",
@@ -135,8 +135,8 @@
       "hash": "e9170257cc68133b"
     },
     "dialog": {
-      "version": "2026.10.26",
-      "hash": "ba7611447c9c6da8"
+      "version": "2026.11.05",
+      "hash": "b8bb02e37444df3d"
     },
     "dot-plot": {
       "version": "2026.11.03",
@@ -183,8 +183,8 @@
       "hash": "7951010af01b54ed"
     },
     "hover-card": {
-      "version": "2026.11.02",
-      "hash": "aa38993dc34ac951"
+      "version": "2026.11.05",
+      "hash": "84655f1a86d11b33"
     },
     "icons": {
       "version": "2026.10.26",
@@ -211,8 +211,8 @@
       "hash": "0871686c71f7ae19"
     },
     "lightbox": {
-      "version": "2026.11.02",
-      "hash": "3fea5454d8fcd0a4"
+      "version": "2026.11.05",
+      "hash": "b5a78d618dc5bb8d"
     },
     "list": {
       "version": "2026.11.06",
@@ -224,7 +224,7 @@
     },
     "litt": {
       "version": "2026.11.06",
-      "hash": "d631da5e3282f313"
+      "hash": "af2cd23ce4ab6037"
     },
     "log-view": {
       "version": "2026.10.25",
@@ -235,16 +235,16 @@
       "hash": "6bc2611a9862421a"
     },
     "menu": {
-      "version": "2026.11.05",
-      "hash": "c2505543c881e483"
+      "version": "2026.11.06",
+      "hash": "dfb462055cbf17ba"
     },
     "message": {
       "version": "2026.11.02",
       "hash": "7713057cfdc4f4a9"
     },
     "motion": {
-      "version": "2026.11.01",
-      "hash": "ec9f18fad0e25e61"
+      "version": "2026.11.05",
+      "hash": "cf09af5d672c49b6"
     },
     "number-field": {
       "version": "2026.11.06",
@@ -267,8 +267,8 @@
       "hash": "afc28126f79bafa5"
     },
     "popover": {
-      "version": "2026.10.15",
-      "hash": "2cb4d20598f1de38"
+      "version": "2026.11.05",
+      "hash": "863ef5b67da1055d"
     },
     "price": {
       "version": "2026.10.24",
@@ -292,7 +292,7 @@
     },
     "range-chart": {
       "version": "2026.11.06",
-      "hash": "20d34d0734c115fa"
+      "hash": "3b510b0be4606ccd"
     },
     "resizable": {
       "version": "2026.10.24",
@@ -323,8 +323,8 @@
       "hash": "bd8628ca2be858a3"
     },
     "select": {
-      "version": "2026.11.02",
-      "hash": "8d999cdae698575a"
+      "version": "2026.11.05",
+      "hash": "ab9e73358342ca5d"
     },
     "settings": {
       "version": "2026.11.03",
@@ -427,8 +427,8 @@
       "hash": "867a162cab924c3f"
     },
     "tooltip": {
-      "version": "2026.10.25",
-      "hash": "0acfedc16142e1e0"
+      "version": "2026.11.05",
+      "hash": "bff94283c5689c3c"
     },
     "tree": {
       "version": "2026.10.26",

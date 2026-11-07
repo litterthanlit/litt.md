@@ -8,6 +8,7 @@ Create one color style per token, with both a light and a dark value (Framer col
 
 ```
 Canvas            → --canvas
+Well              → --well
 Surface/1, /2, /3 → --surface-1 … --surface-3
 Line/Default, /Strong, /Control → --line, --line-strong, --line-control
 Text/Primary, /Muted, /Subtle, /Disabled → --fg, --fg-muted, --fg-subtle, --fg-disabled

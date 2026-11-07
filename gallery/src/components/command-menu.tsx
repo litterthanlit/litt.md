@@ -13,7 +13,8 @@
  *   non-empty query first and closes when it is empty. Every handler returns
  *   early while an IME is composing. Pointer leave keeps the highlight.
  * - Filtering keeps the original order and shows a designed empty state.
- * - Motion, responsive tier: the panel fades, drops half the travel and scales
+ * - Motion, responsive tier: opened by a press (a search button), the panel grows out of it (transform-origin on
+ *   the button, from GROW, @/motion/deal); opened by the shortcut, it fades, drops half the travel and scales
  *   0.98 to 1; the overlay fades on opacity only; exits use useExit. Typing
  *   changes the list instantly and the panel's height is never animated: the
  *   list has a max height and scrolls inside. The gliding highlight is glide.tsx.
@@ -46,6 +47,7 @@ import {
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
 import { useDevice, useExit, useTransition, useTravel, useVisibleScreen } from "@/motion";
+import { GROW, useGrowFrom, useOverlayMotion } from "@/motion/deal";
 import { Button } from "./button";
 import { SearchIcon } from "./icons";
 import { Kbd } from "./kbd";
@@ -331,6 +333,10 @@ function Body({
   const [query, setQuery] = useState("");
   /* There is no Dialog.Trigger (the page owns the button and the shortcut), so give focus back ourselves. */
   const [opener] = useState(() => document.activeElement as HTMLElement | null);
+  /* Opened by a press (the search button), it grows out of it; by the shortcut, it drops in from above. */
+  const grow = useGrowFrom<HTMLDivElement>(true, !compact);
+  /* Under Device the panel switches on and off where it stands (@/motion/deal, the motion languages). */
+  const om = useOverlayMotion();
 
   return (
     <Dialog.Portal forceMount>
@@ -371,13 +377,14 @@ function Body({
           }}
         >
           <motion.div
+            ref={grow.ref}
             className={
               "litt-glass pointer-events-auto w-full max-w-140 origin-top rounded-surface outline-none [--glass-shadow:var(--shadow-modal)]" +
               (compact ? " flex max-h-full flex-col [--cmd-list-max:none]" : "")
             }
-            initial={{ opacity: 0, y: -travel / 2, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1, transition: enter }}
-            exit={{ opacity: 0, scale: 0.98, transition: exit }}
+            initial={om.switches ? { opacity: 0 } : grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: -travel / 2, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1, transition: om.switches ? om.switchIn : enter }}
+            exit={om.switches ? { opacity: 0, transition: om.switchOut } : { opacity: 0, scale: grow.grows ? GROW : 0.98, transition: exit }}
           >
             <Dialog.Title className="sr-only">Command menu</Dialog.Title>
             <CommandPanel

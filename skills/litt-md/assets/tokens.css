@@ -186,7 +186,8 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  --canvas: #fcfbfa;
+  --canvas: #ffffff;           /* the page: pure white (v1.5) */
+  --well: #fcfbfa;             /* the ground a part sits on when it is shown on its own, a step off the page */
   --surface-1: #ffffff;
   --surface-2: #f7f5f3;
   --surface-3: #efecea;
@@ -205,7 +206,8 @@
 
   /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
      chroma 0 (proposals/flat.md). Check 11 holds them there. */
-  --flat-canvas: #fbfbfb;
+  --flat-canvas: #ffffff;
+  --flat-well: #fbfbfb;
   --flat-surface-1: #ffffff;
   --flat-surface-2: #f5f5f5;
   --flat-surface-3: #ededed;
@@ -221,6 +223,7 @@
      aluminium body with plates on it, wells cut into it, keys standing on it and fields behind LCD glass. The neutrals
      and the hues retuned to pass check 5 on that body; check 12 holds the glass. */
   --device-canvas: #d7dade;
+  --device-well: #e8eaed;
   --device-surface-1: #e8eaed;
   --device-surface-2: #e0e2e6;
   --device-surface-3: #cdd0d5;
@@ -280,6 +283,7 @@
   /* Device's screens (proposals/device.md): panels (.litt-raised) and overlays (.litt-glass) are dark LCD screens set into
      the body, the same in every theme. Check 5 runs every pair on them too. */
   --device-screen-canvas: #111214;
+  --device-screen-well: #17181a;
   --device-screen-surface-1: #17181a;
   --device-screen-surface-2: #141517;
   --device-screen-surface-3: #1d1f22;
@@ -433,6 +437,7 @@
   color-scheme: dark;
 
   --canvas: #0a0908;
+  --well: #11100f;             /* a step off the page: lighter, as dark surfaces rise */
   --surface-1: #11100f;
   --surface-2: #191715;
   --surface-3: #201d1b;
@@ -449,6 +454,7 @@
   /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
      chroma 0 (proposals/flat.md). Check 11 holds them there. */
   --flat-canvas: #090909;
+  --flat-well: #101010;
   --flat-surface-1: #101010;
   --flat-surface-2: #171717;
   --flat-surface-3: #1e1e1e;
@@ -462,6 +468,7 @@
 
   /* Device's values (data-material="device", below; proposals/device.md). */
   --device-canvas: #1d1f22;
+  --device-well: #26282c;
   --device-surface-1: #26282c;
   --device-surface-2: #222428;
   --device-surface-3: #2e3135;
@@ -521,6 +528,7 @@
   /* Device's screens (proposals/device.md): panels (.litt-raised) and overlays (.litt-glass) are dark LCD screens set into
      the body, the same in every theme. Check 5 runs every pair on them too. */
   --device-screen-canvas: #111214;
+  --device-screen-well: #17181a;
   --device-screen-surface-1: #17181a;
   --device-screen-surface-2: #141517;
   --device-screen-surface-3: #1d1f22;
@@ -654,6 +662,7 @@
     color-scheme: dark;
 
     --canvas: #0a0908;
+    --well: #11100f;             /* a step off the page: lighter, as dark surfaces rise */
     --surface-1: #11100f;
     --surface-2: #191715;
     --surface-3: #201d1b;
@@ -670,6 +679,7 @@
     /* Flat's neutrals (data-material="flat", below): each the stone value above at its OKLCH lightness and
        chroma 0 (proposals/flat.md). Check 11 holds them there. */
     --flat-canvas: #090909;
+    --flat-well: #101010;
     --flat-surface-1: #101010;
     --flat-surface-2: #171717;
     --flat-surface-3: #1e1e1e;
@@ -683,6 +693,7 @@
 
     /* Device's values (data-material="device", below; proposals/device.md). */
     --device-canvas: #1d1f22;
+    --device-well: #26282c;
     --device-surface-1: #26282c;
     --device-surface-2: #222428;
     --device-surface-3: #2e3135;
@@ -742,6 +753,7 @@
     /* Device's screens (proposals/device.md): panels (.litt-raised) and overlays (.litt-glass) are dark LCD screens set into
        the body, the same in every theme. Check 5 runs every pair on them too. */
     --device-screen-canvas: #111214;
+    --device-screen-well: #17181a;
     --device-screen-surface-1: #17181a;
     --device-screen-surface-2: #141517;
     --device-screen-surface-3: #1d1f22;
@@ -959,6 +971,7 @@
 :root[data-material="flat"],
 [data-material="flat"] {
   --canvas: var(--flat-canvas);
+  --well: var(--flat-well);
   --surface-1: var(--flat-surface-1);
   --surface-2: var(--flat-surface-2);
   --surface-3: var(--flat-surface-3);
@@ -1012,6 +1025,7 @@
 :root[data-material="device"],
 [data-material="device"] {
   --canvas: var(--device-canvas);
+  --well: var(--device-well);          /* a part shown on its own sits on a plate of the body */
   --surface-1: var(--device-surface-1);
   --surface-2: var(--device-surface-2);
   --surface-3: var(--device-surface-3);
@@ -1126,6 +1140,7 @@
    Pink and monochrome are restated inside, since the accent resolves where it is declared. */
 [data-material="device"] :is(.litt-raised, .litt-glass) {
   --canvas: var(--device-screen-canvas);
+  --well: var(--device-screen-well);
   --surface-1: var(--device-screen-surface-1);
   --surface-2: var(--device-screen-surface-2);
   --surface-3: var(--device-screen-surface-3);

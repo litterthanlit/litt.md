@@ -7,7 +7,7 @@
  * the page title 16px above its summary, and a stage's title 4px above its caption.
  */
 import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
-import { DeviceProvider, useFun, type Tier } from "@/motion";
+import { DeviceProvider, StillMotion, useFun, type Tier } from "@/motion";
 import { Button } from "@/components/button";
 import { Framed } from "@/components/framed";
 import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
@@ -112,9 +112,10 @@ const BlockActions = lazy(() => import("./docs/block-actions"));
 /**
  * Set by the sidebar's hover preview (nav-preview.tsx) and the overview's blocks. A page then draws only its first
  * stage's demo, with no title, caption or docs, so every page has a preview without a line of its own. The overview's
- * wall sets "tile": a page that has a `tile` draws that instead, and any other page its first demo.
+ * wall sets "tile": a page that has a `tile` draws that instead, and any other page its first demo. The overview's
+ * mosaic (mosaic.tsx) sets "mosaic": the page draws every stage as a piece, its demo and its title, and nothing else.
  */
-export const PreviewContext = createContext<boolean | "tile">(false);
+export const PreviewContext = createContext<boolean | "tile" | "mosaic">(false);
 
 /**
  * The first <Stage>'s demo among a page's children, for preview mode. It looks through fragments and through any
@@ -131,6 +132,26 @@ function firstDemo(children: ReactNode): ReactNode | null {
     return child.type === Fragment ? found : cloneElement(child, undefined, found);
   }
   return null;
+}
+
+/**
+ * Only the <Stage>s among a page's children, for the mosaic. It looks through fragments and wrappers as firstDemo
+ * does, and keeps each wrapper (a Toaster) around the stages it holds.
+ */
+function onlyStages(children: ReactNode): ReactNode[] {
+  const out: ReactNode[] = [];
+  for (const child of Children.toArray(children)) {
+    if (!isValidElement<{ children?: ReactNode }>(child)) continue;
+    if (child.type === Stage) {
+      out.push(child);
+      continue;
+    }
+    if (child.props.children === undefined) continue;
+    const inner = onlyStages(child.props.children);
+    if (!inner.length) continue;
+    out.push(child.type === Fragment ? inner : cloneElement(child, undefined, ...inner));
+  }
+  return out;
 }
 
 /** Which page a Stage sits in, so its Code tab can find the page file. */
@@ -167,12 +188,13 @@ export function Page({
   children: ReactNode;
 }) {
   const preview = useContext(PreviewContext);
+  if (preview === "mosaic") return <>{onlyStages(children)}</>;
   if (preview === "tile" && tile !== undefined) return <>{tile}</>;
   if (preview) return <>{firstDemo(children)}</>;
   return (
     <PageIdContext.Provider value={meta.id}>
       <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">
-        <header className="grid gap-6">
+        <header data-arrive="head" className="grid gap-6">
           <PageTitle id={`page-${meta.id}`} title={meta.title} lede={meta.lede} />
           <FunHint text={meta.fun} />
           {/* The tiers and the docs actions share one row, so the first demo comes up sooner. */}
@@ -311,13 +333,52 @@ const StageCode = lazy(loadStageCode);
 
 type View = "preview" | "code";
 
+/**
+ * A stage as one piece of the overview's mosaic (mosaic.tsx): its demo on the well, as a tile's, with no line, and
+ * its title under it.
+ * The figure holds the piece's place in the grid and never moves; the face inside it is what the mosaic deals out
+ * and gathers back. A large stage takes both columns, and so does one whose demo is wider than a column (data-wide,
+ * set by the mosaic as it opens). Like a tile, it is held still until the pointer, a press or focus reaches it.
+ */
+function MosaicPiece({ title, size, place, onReplay, replayLabel, children }: { title: string; size: "md" | "lg"; place: string; onReplay?: () => void; replayLabel: string; children: ReactNode }) {
+  const [awake, setAwake] = useState(false);
+  const wake = () => setAwake(true);
+  return (
+    <figure data-piece className={"m-0 grid min-w-0 md:data-wide:col-span-2 " + (size === "lg" ? "md:col-span-2" : "")}>
+      <div
+        data-piece-face
+        onPointerEnter={wake}
+        onPointerDown={wake}
+        onFocus={wake}
+        className="grid min-w-0 grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-well"
+      >
+        <div className={"grid min-h-64 min-w-0 p-4 sm:p-8 " + place}>
+          <StillMotion active={!awake}>
+            <div className={"grid w-full min-w-0 [&>*]:min-w-0 " + place}>{children}</div>
+          </StillMotion>
+        </div>
+        <figcaption className="flex min-h-control-md items-center justify-between gap-3 px-4 pb-2 text-small text-fg-muted">
+          <span className="min-w-0">{title}</span>
+          {onReplay && (
+            <Button size="sm" variant="ghost" onClick={onReplay}>
+              {replayLabel}
+            </Button>
+          )}
+        </figcaption>
+      </div>
+    </figure>
+  );
+}
+
 export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", size = "md", align = "center", code, children }: StageProps) {
+  const preview = useContext(PreviewContext);
   const pageId = useContext(PageIdContext);
   const [view, setView] = useState<View>("preview");
   const [notes, setNotes] = useState(false);
   const notesId = useId();
   const place = align === "center" ? "place-items-center" : align === "start" ? "place-items-start" : "place-items-end";
   const height = size === "lg" ? "min-h-112" : "min-h-80";
+  if (preview === "mosaic") return <MosaicPiece title={title} size={size} place={place} onReplay={onReplay} replayLabel={replayLabel}>{children}</MosaicPiece>;
 
   /* The caption folds behind "How it works", so the demo speaks first. The chevron turns half a
      turn on the responsive tier, as in the Accordion; the text itself appears at once. */
@@ -345,7 +406,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
 
   if (code === undefined) {
     return (
-      <section className="grid gap-6" aria-label={title}>
+      <section data-arrive="stage" className="grid gap-6" aria-label={title}>
         <div className={"litt-raised relative grid overflow-visible rounded-surface p-4 min-[24rem]:p-8 sm:p-12 " + place + " " + height}>{children}</div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           {heading}
@@ -360,7 +421,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
   }
 
   return (
-    <section className="grid gap-6" aria-label={title}>
+    <section data-arrive="stage" className="grid gap-6" aria-label={title}>
       {/* The tabs root wraps both the box and the caption row, so the switch can sit in the
           caption row while its panels sit in the box. `contents` keeps it out of the layout.
           The caption row comes first in the DOM and last on screen (order), so the tab list

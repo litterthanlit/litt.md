@@ -211,6 +211,8 @@ export function ContextMenu({ trigger, label, backLabel = "Back", children }: Co
   }, [open]);
 
   return (
+    /* Modal, unlike the Menu: opened by a press and hold, it must outlast the finger lifting, which a non-modal menu
+       would take for a press outside. */
     <ContextMenuPrimitive.Root open={open} onOpenChange={setOpen}>
       <ContextMenuPrimitive.Trigger asChild>
         <Target element={trigger} coarse={coarse} />

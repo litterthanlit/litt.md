@@ -5,7 +5,7 @@
  * entrances at once, and nothing on it moves by itself (WCAG 2.2.2, and litt's "no looping autoplay"). A tile that
  * shows a process (a plan working through its steps, tabs taking turns) drives it with useLoop(): it plays only while
  * the pointer rests on the tile, pauses when the pointer leaves, and stops for good once someone presses or focuses
- * inside, so whoever reaches in gets a still thing to use.
+ * inside, so whoever reaches in gets a still thing to use. A touch never plays it, since a finger cannot rest.
  */
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { useMotionDial } from "@/motion";
@@ -27,7 +27,8 @@ export function useLoop<T extends HTMLElement>(length: number, ms: number, still
     const el = ref.current;
     if (!el) return;
     const host = el.closest<HTMLElement>("[data-tile]") ?? el;
-    const enter = () => setHovered(true);
+    /* A finger cannot rest on a tile, so a touch never starts the loop: its steps would move the tile under the tap. */
+    const enter = (e: PointerEvent) => e.pointerType !== "touch" && setHovered(true);
     const leave = () => setHovered(false);
     const stop = () => setTouched(true);
     host.addEventListener("pointerenter", enter);

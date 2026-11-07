@@ -10,11 +10,12 @@
  * (deck.tsx), litt's own controls wired to the whole gallery, so the first thing a hand reaches changes every tile.
  * After the blocks, three steps for building with Claude, which Get started takes focus to.
  *
- * - A tile is one step down from a stage: --surface-2 with the hairline at the surface radius, so the raised surfaces
- *   in it read as objects, as a selected segment does on its track. It is a surface token, not a tint, because a
- *   component's own quiet track (fg 5%, as in Slide to confirm) then lands on a ground whose contrast is checked:
- *   a 5% tile under a 5% track took the grey under 4.5:1. The tile carries no chrome: the component, then its name
- *   in the grey, which links to its page and turns --fg while the pointer is on the tile. A tile is a plain div with
+ * - A tile has no box (Nick, 2026-11-05: "remove the boxes and that icon around the components, leave just the title
+ *   in the corner, let the design do the talking"), only its ground: the well (--well, a step off the pure white page,
+ *   with no line; "current background needs to be inside the product card"), the component on it at its real size,
+ *   and its name in the grey in the corner, which links to its page and turns --fg while the pointer is on the tile. The space around
+ *   the component is the tile's ground: a click there opens its mosaic. The open button is still there for the
+ *   keyboard and screen readers, and shows only while it has keyboard focus. A tile is a plain div with
  *   its name as an h2, not a named section: 72 region landmarks would bury the page's own for a screen reader, while
  *   the headings still take you from tile to tile, and the headings inside a component (a card's title, an accordion's
  *   questions) sit one level under its name.
@@ -27,6 +28,9 @@
  *   and filtering never play fifty entrances at once. The pointer coming onto it, a press or focus wakes it in place
  *   (StillMotion active={false}): nothing remounts and nothing replays, and from then on it moves as it does on its
  *   own page, fun mode included. The wall moves where your hand is and nowhere else.
+ * - A tile opens into its mosaic (mosaic.tsx, after s-p.studio, 2026-11-04): every demo on its page, live, dealt out
+ *   from the tile and gathered back into it, while the page steps back into soft focus. The expand button beside the
+ *   name opens it, and so does a click on the tile's empty ground; the name still goes to the page.
  * - Nothing on the wall moves by itself (WCAG 2.2.2). A tile that shows a process (a plan working through its steps,
  *   tabs taking turns) plays it only while the pointer rests on it, pauses when the pointer leaves, and stops for good
  *   once you press or focus inside (useLoop in tile.tsx). At rest and under reduced motion it shows one finished state.
@@ -43,9 +47,11 @@ import { Toaster } from "@/components/toast";
 import { pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
 import { Button } from "@/components/button";
-import { CheckIcon, CopyIcon } from "@/components/icons";
+import { CheckIcon, CopyIcon, ExpandIcon } from "@/components/icons";
 import { CopyStatus, useCopy } from "../docs/copy";
 import { Deck } from "../deck";
+import { MosaicHost, openMosaic, pressTile } from "../mosaic";
+import { arriveFrom } from "../arrival";
 import { SearchButton } from "../search";
 import { PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
 
@@ -84,11 +90,14 @@ function useNear<T extends HTMLElement>(ref: React.RefObject<T | null>): boolean
 }
 
 /**
- * One component on the wall: the real one, live, on its tile, with its name under it. It mounts as it nears
- * the screen and stays out of reach for two frames, so a demo that moves focus as it mounts cannot pull the page.
- * It is held still until the pointer, a press or focus reaches it.
+ * One component on the wall: the real one, live, on its tile, with its name under it and the button that opens its
+ * mosaic beside the name. It mounts as it nears the screen and stays out of reach for two frames, so a demo that
+ * moves focus as it mounts cannot pull the page. It is held still until the pointer, a press or focus reaches it.
+ * A click on the tile's empty ground (data-open-zone: never on the component itself) opens the mosaic too.
  */
 function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
+  const onOpen = (tile: HTMLElement, button: HTMLElement | null) => openMosaic({ page, tile, returnTo: button });
+  const button = useRef<HTMLButtonElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const near = useNear(ref);
   const [settled, setSettled] = useState(false);
@@ -107,23 +116,36 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
     <div
       ref={ref}
       data-tile={page.id}
-      onPointerEnter={wake}
-      onPointerDown={wake}
-      onFocus={wake}
+      data-arrive="stage"
+      /* A finger arrives with its press, so a touch, a press or focus wakes the tile only on the component, never on its
+         name or open button: waking can change a component's height (a plan at its first step), which would move them
+         under the tap before its click lands. */
+      onPointerEnter={(e) => e.pointerType !== "touch" && wake()}
+      onPointerDown={(e) => !(e.target as Element).closest("[data-tile-foot]") && wake()}
+      onFocus={(e) => !e.target.closest("[data-tile-foot]") && wake()}
+      onClick={(e) => (e.target as HTMLElement).hasAttribute("data-open-zone") && ref.current && onOpen(ref.current, button.current)}
+      data-open-zone
       className={
-        "group/tile grid min-w-0 grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
+        "group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-well"
       }
     >
-      <div inert={!settled} className="grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
+      <div inert={!settled} data-open-zone className="col-span-2 grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
         {near && (
           <StillMotion active={!awake}>
-            <div className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">{children}</div>
+            <div data-open-zone className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">{children}</div>
           </StillMotion>
         )}
       </div>
-      <h2 className="flex px-4 pb-3 text-small font-normal">
+      <h2 data-tile-foot className="flex min-w-0 px-4 pb-3 text-small font-normal">
         <a
           href={`#${page.id}`}
+          /* The page opens out of this tile, as its mosaic does (arrival.tsx). */
+          onClick={() => {
+            if (!ref.current) return;
+            arriveFrom(page.id, { deck: ref.current.getBoundingClientRect() });
+            /* The page takes a moment to mount, so the tile answers the tap first. */
+            pressTile(ref.current);
+          }}
           className={
             "-mx-2 flex h-control-sm items-center rounded-control px-2 text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
             "transition-colors duration-(--dur-instant) ease-litt hover:text-fg group-hover/tile:text-fg pointer-coarse:h-control-md " +
@@ -133,6 +155,21 @@ function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
           {page.title}
         </a>
       </h2>
+      <div data-tile-foot className="flex items-start pr-2 pb-2">
+        <Button
+          ref={button}
+          iconOnly
+          variant="ghost"
+          size="sm"
+          aria-haspopup="dialog"
+          aria-label={`Open every ${page.title} demo here`}
+          onClick={() => ref.current && onOpen(ref.current, button.current)}
+          /* Seen only by the keyboard: a pointer opens the mosaic from the tile's ground. */
+          className="text-fg-subtle opacity-0 focus-visible:opacity-100"
+        >
+          <ExpandIcon />
+        </Button>
+      </div>
     </div>
   );
 }
@@ -215,6 +252,7 @@ function Wall({ list }: { list: PageEntry[] }) {
           </li>
         ))}
       </ul>
+      <MosaicHost />
     </section>
   );
 }
@@ -304,7 +342,7 @@ const LEAD = ["gauge", "heatmap", "plan", "slide-confirm", "pad", "time-scrubber
  */
 function Hero({ count, site }: { count: string; site: PageEntry[] }) {
   return (
-    <header className="grid items-center gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+    <header data-arrive="head" className="grid items-center gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
       <div className="grid content-center gap-8">
         <div className="grid gap-4">
           <h1

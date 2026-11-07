@@ -59,6 +59,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import * as RadixPopover from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useMotionValue } from "motion/react";
 import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { useOverlayMotion } from "@/motion/deal";
 import { Button } from "@/components/button";
 import { DialogSheet } from "@/components/dialog";
 import { XIcon } from "@/components/icons";
@@ -292,9 +293,15 @@ function Surface({
   children,
 }: Required<Pick<PopoverContentProps, "label" | "side" | "align" | "sideOffset" | "size" | "padded">> &
   Pick<PopoverContentProps, "solid" | "collisionBoundary" | "children">) {
-  const enter = useTransition("responsive");
-  const exit = useExit("responsive");
-  const travel = useTravel();
+  /* The material's motion language (@/motion/deal): it grows from om.grow, and under Device it switches on and off
+     in steps where it stands, with no slide. */
+  const om = useOverlayMotion();
+  const springIn = useTransition("responsive");
+  const springOut = useExit("responsive");
+  const enter = om.switches ? om.switchIn : springIn;
+  const exit = om.switches ? om.switchOut : springOut;
+  const fullTravel = useTravel();
+  const travel = om.slides ? fullTravel : 0;
   const latest = useRef(enter);
   latest.current = enter;
 
@@ -367,9 +374,9 @@ function Surface({
         ref={el}
         data-popover-surface=""
         className={surface}
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : 0.98, transition: enter }}
-        exit={{ opacity: 0, scale: 0.98, x: out.x, y: out.y, transition: exit }}
+        initial={{ opacity: 0, scale: om.grow }}
+        animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : om.grow, transition: enter }}
+        exit={{ opacity: 0, scale: om.grow, x: out.x, y: out.y, transition: exit }}
         style={{ x, y }}
       >
         <div

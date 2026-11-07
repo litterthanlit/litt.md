@@ -1990,7 +1990,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const read = async () => `${await from.getAttribute("aria-valuetext")}|${await to.getAttribute("aria-valuetext")}`;
           const start = await read();
           if (start !== "Day 21|Day 40") throw new Error(`the sliders read ${start}, expected Day 21|Day 40`);
-          const launch = root.getByRole("button", { name: /^Launch, / });
+          const launch = root.getByRole("button", { name: /^Launch \d/ });
           if ((await launch.getAttribute("aria-pressed")) !== "true") throw new Error("the Launch segment is not aria-pressed while the range is the launch");
           await from.focus();
           await page.keyboard.press("ArrowRight");
@@ -2003,7 +2003,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.waitForTimeout(400);
           const paged = await read();
           if (paged !== "Day 41|Day 59") throw new Error(`Page Up on move range gave ${paged}, expected Day 41|Day 59: the span moves to the next segment start and keeps its width`);
-          await root.getByRole("button", { name: /^Since, / }).click();
+          await root.getByRole("button", { name: /^Since \d/ }).click();
           await page.waitForTimeout(500);
           const since = await read();
           if (since !== "Day 41|Day 60") throw new Error(`pressing Since gave ${since}, expected Day 41|Day 60`);

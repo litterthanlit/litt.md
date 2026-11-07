@@ -13,7 +13,8 @@
  *   the caption under the image, at the small size in --fg-muted, never wider than the measure. Previous and Next are
  *   round secondary buttons beside the image on a wide screen and at the end of the caption row on a phone; 44px on a
  *   touch screen. At an end the button is disabled. Nothing loops.
- * - Motion: opening is the view's expressive moment, as a dialog's: the image rises by --travel and settles from 0.98,
+ * - Motion: opening is the view's expressive moment, as a dialog's: opened from its Media frame, the image grows out
+ *   of the frame (transform-origin on it, from GROW, @/motion/deal); opened any other way it rises by --travel and settles from 0.98,
  *   and leaves on the exit token. `tier="responsive"` when the view has spent it. Moving to the next image fades it in
  *   from --travel on the side it comes from and the last one out by half that, on the responsive tier.
  * - Touch: a finger swipes the image sideways one to one (useDismissDrag); past --dismiss-distance of its width, or
@@ -31,6 +32,7 @@ import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
 import { useDevice, useExit, useTransition, useTravel } from "@/motion";
 import { useDismissDrag, type DismissInfo } from "@/motion/drag";
+import { GROW, useGrowFrom, useOverlayMotion } from "@/motion/deal";
 import { Button } from "@/components/button";
 import { ChevronLeftIcon, ChevronRightIcon, XIcon } from "@/components/icons";
 import { Media } from "@/components/media";
@@ -120,6 +122,10 @@ function Layer({ label, items, index, go, close, tier, returnFocus }: LayerProps
   const fadeOut = useExit("instant");
   const travel = useTravel();
   const panel = useRef<HTMLDivElement | null>(null);
+  /* Opened from its Media frame (a press), the image grows out of the frame; opened any other way, it rises. */
+  const grow = useGrowFrom<HTMLDivElement>(true);
+  /* Under Device the image switches on and off where it stands (@/motion/deal, the motion languages). */
+  const om = useOverlayMotion();
   /* Which way the last move went: 1 forward, -1 back. The image coming in and the one going out both read it. */
   const [dir, setDir] = useState<1 | -1>(1);
   const [status, setStatus] = useState("");
@@ -225,10 +231,17 @@ function Layer({ label, items, index, go, close, tier, returnFocus }: LayerProps
           >
             {!compact && previousButton}
             <motion.div
+              ref={grow.ref}
               className="grid size-full min-h-0 min-w-0"
-              initial={{ opacity: 0, y: travel, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1, transition: enter }}
-              exit={{ opacity: 0, y: travel / 2, scale: 0.98, transition: exit }}
+              initial={om.switches ? { opacity: 0 } : grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: travel, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1, transition: om.switches ? om.switchIn : enter }}
+              exit={
+                om.switches
+                  ? { opacity: 0, transition: om.switchOut }
+                  : grow.grows
+                    ? { opacity: 0, scale: GROW, transition: exit }
+                    : { opacity: 0, y: travel / 2, scale: 0.98, transition: exit }
+              }
             >
               <AnimatePresence initial={false} custom={dir}>
                 <Slide key={index} item={item} dir={dir} swipe={coarse} canPrevious={canPrevious} canNext={canNext} onSwipe={(by) => move(index + by)} />
