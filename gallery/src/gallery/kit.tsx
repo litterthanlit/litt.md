@@ -111,8 +111,9 @@ export type PageStudy = {
    */
   states: Partial<Record<StateName, ReactNode>>;
   /**
-   * Replay: `run(n)` mounts for each press of the button (n counts up), and what mounts plays the mechanism from its
-   * start and ends at its end state; under reduced motion it mounts at the end state. The caption says what to watch.
+   * Replay: until the first press the stage holds `object` at rest (nothing moves on its own, R4). Each press mounts
+   * `run(n)` afresh (n from 1), and what mounts plays the mechanism from its start and ends at its end state; under
+   * reduced motion it mounts at the end state. The caption says what to watch.
    */
   replay?: { label: string; caption: string; run: (n: number) => ReactNode };
 };

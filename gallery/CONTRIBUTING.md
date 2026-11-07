@@ -171,7 +171,7 @@ export const study: PageStudy = {
 - `object` is the part as one still thing at real size, with no accent fill unless it is the page's one. It is drawn for Anatomy and once under each material, so it must render the same each time.
 - `parts` are in reading order. Name them as litt does (the tray, the block, the cap, the slot, the words, the line). A selector is resolved inside the object, first match wins. One that matches nothing warns in dev and loses its callout, so check the Anatomy in a build.
 - `states` holds the R1 states the component really has (default, hover, pressed, focus, disabled, empty, loading, error), laid out in that order. Reach each through a prop (`disabled`, `loading`, an empty value). Leave hover and pressed out: a state only a pointer reaches is not faked, and the page's stages already show it live.
-- `replay.run(n)` mounts afresh for each press and plays the mechanism from its start to its end state, so it ends where the page's demos end. Under reduced motion it mounts at the end state. The caption says what to watch.
+- Until the first press the Replay stage holds `object` at rest, so nothing moves on its own (R4). `replay.run(n)` then mounts afresh for each press (n from 1) and plays the mechanism from its start to its end state, so it ends where the page's demos end. Under reduced motion it mounts at the end state. The caption says what to watch.
 - `meta.mechanism` is what the hand does, what springs on which tier, what the material changes, and what reduced motion does, in plain short sentences.
 - Source and Under each material come for free: the first file in `docs.components` as it installs, with its version, and the object under Press, Flat and Device.
 

@@ -40,14 +40,14 @@ function States({ states }: { states: PageStudy["states"] }) {
   );
 }
 
-function Replay({ replay }: { replay: NonNullable<PageStudy["replay"]> }) {
+/* Nothing moves on its own (R4): until the first press the stage holds the object at rest, and each press mounts
+   run(n) afresh, so an overlay's replay never opens on page load or takes focus from a reader who did not ask. */
+function Replay({ object, replay }: { object: ReactNode; replay: NonNullable<PageStudy["replay"]> }) {
   const [n, setN] = useState(0);
   return (
     <div className="grid gap-6">
       <div className={STAGE_BOX + " min-h-80 place-items-center"}>
-        <div className={OBJECT_WRAP}>
-          <Fragment key={n}>{replay.run(n)}</Fragment>
-        </div>
+        <div className={OBJECT_WRAP}>{n === 0 ? object : <Fragment key={n}>{replay.run(n)}</Fragment>}</div>
       </div>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <p className="max-w-[60ch] text-small text-fg-subtle">{replay.caption}</p>
@@ -151,7 +151,7 @@ export function StudySections({ meta, docs, study }: { meta: PageMeta; docs?: Pa
       )}
       {study.replay && (
         <Section id={id("replay")} title="Replay" flush>
-          <Replay replay={study.replay} />
+          <Replay object={study.object} replay={study.replay} />
         </Section>
       )}
       <Section id={id("materials")} title="Under each material" flush>
