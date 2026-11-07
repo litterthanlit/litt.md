@@ -11,12 +11,14 @@ import { DeviceProvider, StillMotion, useFun, type Tier } from "@/motion";
 import { Button } from "@/components/button";
 import { Framed } from "@/components/framed";
 import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
+import type { Material } from "./look";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
 
 /** The sidebar's groups, in the order they appear. */
 /** Blocks come last: whole screens built from the components in the groups above them. */
-export const PAGE_GROUPS = ["Controls", "Overlays", "Layout", "Data", "Agents", "Commerce", "Blocks"] as const;
+/** Worlds first: the three materials as pages you arrive on (proposals/worlds.md). The nav and the menu draw that group as the way in, not as a group of components. */
+export const PAGE_GROUPS = ["Worlds", "Controls", "Overlays", "Layout", "Data", "Agents", "Commerce", "Blocks"] as const;
 export type PageGroup = (typeof PAGE_GROUPS)[number];
 
 /**
@@ -61,6 +63,11 @@ export type PageMeta = {
    * components and link to their pages. It links the site's own pages (the ones with no group) itself.
    */
   wall?: boolean;
+  /**
+   * The page is a world: the material it shows (proposals/worlds.md). Its id is the material's id, its group is Worlds,
+   * and it runs the whole width (wall) with the hero block live under the name. Opening it sets the gallery's material.
+   */
+  world?: Material;
   /**
    * The page may override the locked tokens with the motion dial. Every page
    * leaves this off except the Playground; the dial's CSS variables exist only
