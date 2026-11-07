@@ -17,7 +17,7 @@
  *   as the items in the parts list, or the console warns about a selector,
  * - the Anatomy object and the Under each material frame of the gallery's current material (data-material on <html>,
  *   Press when none) are not the same picture, pixel for pixel (at most 8 apart in any channel: the worst anti-aliasing difference measured between two correct drawings is 7).
- *   Each is a screenshot of the object's wrapper after fonts load and a 1.5s wait, with animations disabled, the
+ *   Each is a screenshot of the object itself after fonts load and a 1.5s wait, with animations disabled, the
  *   callout labels and lines hidden and the stage boxes given one flat ground, so only the object is compared.
  *   The two PNGs are decoded and compared in the page, drawn into canvases (no PNG library is needed),
  * - anything opens on its own: after load and 1.5s, a dialog is open outside main, anything has aria-modal, or the
@@ -217,13 +217,15 @@ async function audit(page, size, scheme, look, mutate) {
   /* The pixel claim. One style hides the callouts and gives every stage box the same ground. */
   await pg.addStyleTag({ content: `section[aria-labelledby^=study-anatomy] svg.pointer-events-none, [data-callout-label] { visibility: hidden !important }
     section[aria-labelledby^=study-anatomy] > div > div:first-child, [data-study-material] { background: #fff !important; box-shadow: none !important; outline: none !important; border: 0 !important }` });
-  const a = pg.locator(`section[aria-labelledby="study-anatomy-${page.id}"] > div > div:first-child > div:first-child`);
-  const b = pg.locator(`[data-study-material="${material}"] > div`);
+  /* The object itself, not its wrapper: the wrapper fills its stage, and the stages differ in width. */
+  const a = pg.locator(`section[aria-labelledby="study-anatomy-${page.id}"] > div > div:first-child > div:first-child > *:first-child`);
+  const b = pg.locator(`[data-study-material="${material}"] > div > *:first-child`);
   const shoot = async (el) => {
     await el.evaluate((n) => {
       n.scrollIntoView({ block: "center" });
       /* The two boxes sit at different fractions of a pixel, which moves the object's edges by less than a pixel;
          nudge each onto the pixel grid (a relative offset, so nothing else in the layout moves). */
+      if (getComputedStyle(n).position === "static") n.style.position = "relative";
       const r = n.getBoundingClientRect();
       n.style.left = `${Math.round(r.left + scrollX) - (r.left + scrollX)}px`;
       n.style.top = `${Math.round(r.top + scrollY) - (r.top + scrollY)}px`;
