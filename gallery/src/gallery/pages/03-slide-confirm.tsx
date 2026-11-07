@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/button";
 import { SlideConfirm } from "@/components/slide-confirm";
-import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useMotionDial } from "@/motion";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "slide-confirm",
@@ -14,6 +15,8 @@ export const meta: PageMeta = {
     "A track and a thumb to slide to the end, for an action that cannot be undone, such as deleting a project on a phone. The thumb follows the finger one to one; let go early and it springs back on the responsive tier, reach the end and it confirms. The thumb is also a button, so Enter, Space or a screen reader confirms too, and with confirmText anyone who cannot drag can type the name instead.",
   fun: "Throw the thumb: with enough speed it coasts to the end, squashes against it and confirms.",
   tiers: ["responsive"],
+  mechanism:
+    "Press the thumb and it follows the finger one to one, with no easing, while the words fade by its position and the part it has passed fills at fg 6%. Let go early and it springs home on the responsive tier, 200ms with no bounce. Reach the end and it confirms once: a check replaces the chevron and the words change. Enter and Space confirm too. Under Flat the tray is a grey pill and the thumb an ink circle. Under Device the thumb is a key in a well. Reduced motion snaps the thumb back.",
 };
 
 export const docs: PageDocs = {
@@ -53,6 +56,57 @@ export const docs: PageDocs = {
     "The words in the track are hidden from screen readers, because the thumb's name already says them.",
     "Under reduced motion the thumb snaps back instead of springing.",
   ],
+};
+
+function ReplayConfirm() {
+  const { reduced } = useMotionDial();
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const click = () => box.current?.querySelector("button")?.click();
+    if (reduced) {
+      click();
+      return;
+    }
+    const t = setTimeout(click, 300);
+    return () => clearTimeout(t);
+  }, [reduced]);
+  return (
+    <div ref={box} className="w-full max-w-sm">
+      <SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" />
+    </div>
+  );
+}
+
+export const study: PageStudy = {
+  object: (
+    <div className="w-full max-w-sm">
+      <SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" />
+    </div>
+  ),
+  parts: [
+    { name: "The tray", selector: "[data-no-drag]" },
+    { name: "The passed part", selector: "[data-no-drag] > span:first-child" },
+    { name: "The words", selector: "[data-no-drag] > span:nth-child(2)" },
+    { name: "The thumb", selector: "[data-no-drag] > button" },
+    { name: "The chevron", selector: "[data-no-drag] > button svg" },
+  ],
+  states: {
+    default: (
+      <div className="w-full max-w-sm">
+        <SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" />
+      </div>
+    ),
+    disabled: (
+      <div className="w-full max-w-sm">
+        <SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" disabled />
+      </div>
+    ),
+  },
+  replay: {
+    label: "Replay the confirm",
+    caption: "The track cannot be driven from outside, so it confirms by its keyboard path: the thumb jumps to the end with its check and the words change. Drag the thumb above to see the slide itself.",
+    run: () => <ReplayConfirm />,
+  },
 };
 
 /** A quiet status line beside a control, so each stage shows what it did. */
@@ -138,7 +192,7 @@ function PublishDemo() {
 
 export default function SlideConfirmPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} study={study}>
       <Stage
         title="Delete a project"
         tier="responsive"

@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
 import { SettingsIcon } from "@/components/icons";
 import { RangeSlider, Slider } from "@/components/slider";
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from "@/components/table";
-import { DeviceProvider } from "@/motion";
-import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { DeviceProvider, useMotionDial } from "@/motion";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "slider",
@@ -17,6 +17,8 @@ export const meta: PageMeta = {
   summary:
     "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. A raised plate holds a slot, and a cap rides in it: take the cap and it follows your hand 1:1, press the slot and it goes there on the spring. Notches mark steps, and the default holds the cap a little. The label row says the value.",
   tiers: ["instant", "responsive"],
+  mechanism:
+    "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. Home holds the cap a little. Moving parts are transforms only. Under Flat the plate goes and the slot is a thin track with an ink knob. Under Device the plate is a body with a well cut into it. Reduced motion stills the glide and the lean.",
 };
 
 export const docs: PageDocs = {
@@ -102,6 +104,69 @@ export const docs: PageDocs = {
 };
 
 const formatSpeed = (v: number) => `${v.toFixed(1)}x`;
+
+const studySlider = {
+  label: "Animation speed",
+  min: 0.5,
+  max: 2,
+  step: 0.1,
+  marks: [0.5, 1.5, 2],
+  home: 1,
+  minLabel: "Slower",
+  maxLabel: "Faster",
+  formatValue: formatSpeed,
+};
+
+function ReplayGlide() {
+  const { reduced } = useMotionDial();
+  const [v, setV] = useState(reduced ? 1.5 : 0.5);
+  useEffect(() => {
+    if (reduced) return;
+    const t = setTimeout(() => setV(1.5), 300);
+    return () => clearTimeout(t);
+  }, [reduced]);
+  return (
+    <div className="w-full max-w-sm">
+      <Slider {...studySlider} value={v} onValueChange={setV} />
+    </div>
+  );
+}
+
+export const study: PageStudy = {
+  object: (
+    <div className="w-full max-w-sm">
+      <Slider {...studySlider} defaultValue={1.2} />
+    </div>
+  ),
+  parts: [
+    { name: "The label", selector: '[id$="-label"]' },
+    { name: "The value", selector: '[id$="-label"] + span' },
+    { name: "The plate", selector: "[data-no-drag]" },
+    { name: "The slot", selector: "[data-no-drag] > span:first-child" },
+    { name: "The pulled-out part", selector: "[data-no-drag] > span:first-child > span > span" },
+    { name: "The notches", selector: "[data-no-drag] > span:nth-child(2)" },
+    { name: "The cap", selector: "[data-no-drag] > span:nth-last-child(2)" },
+    { name: "The end words", selector: ".text-caption" },
+  ],
+  states: {
+    default: (
+      <div className="w-full max-w-sm">
+        <Slider {...studySlider} defaultValue={1.2} />
+      </div>
+    ),
+    disabled: (
+      <div className="w-full max-w-sm">
+        <Slider {...studySlider} defaultValue={1.2} disabled />
+      </div>
+    ),
+  },
+  replay: {
+    label: "Replay the glide",
+    caption: "Watch the cap glide from the slow end to 1.5x while the value follows.",
+    run: () => <ReplayGlide />,
+  },
+};
+
 const formatQuality = (v: number) => `${v}%`;
 const formatSeconds = (v: number) => `${v}s`;
 const formatPrice = (v: number) => `€${v}`;
@@ -429,7 +494,7 @@ function PhoneDemo() {
 
 export default function SliderPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} study={study}>
       <Stage
         title="Animation speed"
         tier="responsive"

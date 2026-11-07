@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { Switch } from "@/components/switch";
-import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useMotionDial } from "@/motion";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "switch",
@@ -15,6 +16,8 @@ export const meta: PageMeta = {
     "An on or off setting you can feel. A raised block sits in a sunken tray and says its state, Off at the start and On at the end. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",
   fun: "Flip a switch: the block springs across and meets the far wall with a little life.",
   tiers: ["responsive", "instant"],
+  mechanism:
+    "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space sends it across the tray on the responsive tier, 200ms with no bounce. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and word change on the instant tier, 100ms, and the tray never moves. Under Flat the words go and the tray is ink when on. Under Device the block is a key on a skirt in a well. Reduced motion drops the crossing.",
 };
 
 export const docs: PageDocs = {
@@ -72,6 +75,37 @@ export const docs: PageDocs = {
     "A disabled switch is muted, skipped by Tab, left out of a form, and exempt from contrast rules. If the reason is not obvious, say it in the description.",
   ],
 };
+
+function ReplayFlip() {
+  const { reduced } = useMotionDial();
+  const [on, setOn] = useState(reduced);
+  useEffect(() => {
+    if (reduced) return;
+    const t = setTimeout(() => setOn(true), 300);
+    return () => clearTimeout(t);
+  }, [reduced]);
+  return <Switch label="Email me about new deploys" checked={on} onCheckedChange={setOn} />;
+}
+
+export const study: PageStudy = {
+  object: <Switch label="Email me about new deploys" defaultChecked />,
+  parts: [
+    { name: "The tray", selector: "[role=switch]" },
+    { name: "The block", selector: "[role=switch] > span" },
+    { name: "The word", selector: "[role=switch] > span > span" },
+    { name: "The label", selector: "label" },
+  ],
+  states: {
+    default: <Switch label="Email me about new deploys" defaultChecked />,
+    disabled: <Switch label="Email me about new deploys" defaultChecked disabled />,
+  },
+  replay: {
+    label: "Replay the flip",
+    caption: "Watch the block cross the tray, then the word and the fill change a beat apart.",
+    run: () => <ReplayFlip />,
+  },
+};
+
 
 function SettingsListDemo() {
   const [saved, setSaved] = useState("");
@@ -166,7 +200,7 @@ function DisabledDemo() {
 
 export default function SwitchPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} study={study}>
       <Stage
         title="Settings list"
         tier="responsive"
