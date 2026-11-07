@@ -23,6 +23,7 @@
  * - Reduced motion: the hooks return zero and the duration tokens are zero, so everything snaps.
  * - Touch: there is no hover, so on a coarse pointer a pressed trigger fills at fg 6% (instant tier, color only).
  * - Focus by modality: :focus-visible only, the 2px ring at a 2px offset around the trigger.
+ * - Flat: no dividers; each trigger is a pill-radius row that turns grey on hover, the open item becomes a grey card, and the chevron sits on a round grey key that turns.
  */
 import {
   createContext,
@@ -153,7 +154,7 @@ export function Accordion<T extends "single" | "multiple" = "single">({
   const ctx = useMemo<RootCtx>(() => ({ open, headingLevel, hold, release }), [open, headingLevel, hold, release]);
 
   const body = (
-    <motion.div ref={rootRef} layout="position" transition={enter} className={"border-t border-line " + className}>
+    <motion.div ref={rootRef} layout="position" transition={enter} className={"border-t border-line in-[[data-material=flat]]:border-t-0 in-[[data-material=flat]]:grid in-[[data-material=flat]]:gap-1 " + className}>
       {children}
     </motion.div>
   );
@@ -207,7 +208,7 @@ export function AccordionItem({ value, disabled = false, className = "", childre
     <ItemContext.Provider value={item}>
       <AccordionPrimitive.Item value={value} disabled={disabled} asChild>
         {/* relative: the content that leaves is placed against the row (popLayout). */}
-        <motion.div layout="position" transition={enter} className={"relative border-b border-line " + className}>
+        <motion.div layout="position" transition={enter} className={"relative border-b border-line in-[[data-material=flat]]:border-b-0 in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:data-[state=open]:bg-surface-3 transition-colors duration-(--dur-instant) ease-litt " + className}>
           {children}
         </motion.div>
       </AccordionPrimitive.Item>
@@ -221,10 +222,16 @@ export function AccordionItem({ value, disabled = false, className = "", childre
 
 const trigger =
   "group/trigger flex min-h-control-lg w-full cursor-pointer items-center gap-4 rounded-control py-4 text-left text-body text-fg font-title " +
+  "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-3 in-[[data-material=flat]]:hover:bg-surface-3 " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color] duration-(--dur-instant) ease-litt " +
   "enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
+
+/* Flat: the chevron sits on a round grey key that turns with it; on an open card the key lifts to surface-1. */
+const KEY =
+  "in-[[data-material=flat]]:size-8 in-[[data-material=flat]]:place-items-center in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-surface-3 " +
+  "in-[[data-material=flat]]:group-data-[state=open]/trigger:bg-surface-1";
 
 export type AccordionTriggerProps = {
   /** The section's name, at the body size. It is the button's accessible name, so keep it short and plain. */
@@ -247,7 +254,7 @@ export function AccordionTrigger({ children, className = "" }: AccordionTriggerP
           {/* Two layers: the turn is responsive, the color instant, and one element cannot pair two tiers. */}
           <span
             aria-hidden="true"
-            className="grid shrink-0 transition-[rotate] duration-(--dur-responsive) ease-responsive group-data-[state=open]/trigger:rotate-180"
+            className={"grid shrink-0 transition-[rotate] duration-(--dur-responsive) ease-responsive group-data-[state=open]/trigger:rotate-180 " + KEY}
           >
             <ChevronDownIcon className="text-fg-subtle transition-colors duration-(--dur-instant) ease-litt group-hover/trigger:text-fg group-disabled/trigger:text-fg-disabled" />
           </span>
@@ -310,7 +317,7 @@ export function AccordionContent({ children, className = "" }: AccordionContentP
             initial={mounted.current ? { opacity: 0, y: -travel / 4 } : false}
             animate={{ opacity: 1, y: 0, transition: enter }}
             exit={{ opacity: 0, transition: exit }}
-            className={"max-w-(--measure) pb-6 text-body text-fg-muted data-[state=closed]:pointer-events-none " + className}
+            className={"max-w-(--measure) pb-6 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:pb-5 text-body text-fg-muted data-[state=closed]:pointer-events-none " + className}
           >
             {children}
           </motion.div>

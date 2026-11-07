@@ -27,6 +27,8 @@
  *   not take focus when it appears: the person may be reading. A polite live region says "Waiting for your approval:
  *   <command>". With a `decision` it becomes a ToolCall row. If the buttons held focus when the choice was made, focus
  *   moves to the row, so a keyboard never falls back to the top of the page.
+ * - Flat: a call and a group are grey cards at the surface radius with no frame, details sit in white wells, and the
+ *   approval is a --surface-1 card with the float shadow and no hairline.
  * - Motion: the chevron's quarter turn is the instant tier (CSS). A call's details and a group's calls fade in and travel a
  *   quarter of the travel token on the responsive tier, and leave on the exit token. Their height snaps. A status mark
  *   swaps at once and colors fade on the instant tier. Nothing loops.
@@ -100,6 +102,11 @@ const given = (node: ReactNode) => node !== undefined && node !== null && node !
 
 /** True inside a ToolCallGroup, where a call is a list item. */
 const InGroup = createContext(false);
+
+/* Flat: a call (or a run of them) is a grey card with no frame, rows part by space (flat-pill.md, rules 4 and 5). */
+const CARD =
+  "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-1 " +
+  "in-[[data-material=flat]]:[[data-tool-call]+&]:mt-1 in-[[data-material=flat]]:forced-colors:border ";
 
 const ROW =
   "group/row flex min-h-8 w-full items-center gap-2 text-left pointer-coarse:min-h-11";
@@ -190,8 +197,9 @@ function Block({ caption, name, children }: { caption: string; name: string | un
         tabIndex={0}
         aria-label={name ? `${caption} of ${name}` : caption}
         className={
-          "max-h-64 overflow-auto rounded-surface bg-surface-2 p-3 font-mono text-caption font-normal text-fg " +
+          "max-h-64 overflow-auto rounded-[calc(var(--radius-surface)-4px)] bg-surface-2 p-3 font-mono text-caption font-normal text-fg " +
           "whitespace-pre-wrap [overflow-wrap:anywhere] shadow-[inset_0_0_0_1px_var(--line)] " +
+          "in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none " +
           "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
         }
       >
@@ -288,7 +296,11 @@ export function ToolCall({
   );
 
   return (
-    <div role={inGroup ? "listitem" : undefined} className={"min-w-0 " + className}>
+    <div
+      role={inGroup ? "listitem" : undefined}
+      data-tool-call={inGroup ? undefined : ""}
+      className={"min-w-0 " + (inGroup ? "" : CARD) + className}
+    >
       {opens ? (
         <button
           type="button"
@@ -370,7 +382,7 @@ export function ToolCallGroup({
   const said = summary ?? `${count} tool ${count === 1 ? "call" : "calls"}`;
 
   return (
-    <div className={"min-w-0 " + className}>
+    <div data-tool-call="" className={"min-w-0 " + CARD + className}>
       <button type="button" aria-expanded={open} aria-controls={open ? id : undefined} onClick={toggle} className={ROW + " " + ROW_BUTTON}>
         <span id={summaryId} className={"min-w-0 py-1 text-small text-fg-muted " + BRIGHTEN}>
           {said}
@@ -464,11 +476,11 @@ export function ToolApproval({
         {said}
       </div>
       {decision === "pending" ? (
-        <div role="group" aria-labelledby={titleId} className="litt-raised grid gap-3 p-4">
+        <div role="group" aria-labelledby={titleId} className="litt-raised grid gap-3 p-4 in-[[data-material=flat]]:shadow-float">
           <p id={titleId} className="text-body font-title text-fg">
             {title}
           </p>
-          <code className="block rounded-[calc(var(--radius-surface)-4px)] bg-surface-2 px-3 py-2 font-mono text-small text-fg whitespace-pre-wrap [overflow-wrap:anywhere]">
+          <code className="block rounded-[calc(var(--radius-surface)-4px)] bg-surface-2 in-[[data-material=flat]]:bg-surface-3 px-3 py-2 font-mono text-small text-fg whitespace-pre-wrap [overflow-wrap:anywhere]">
             {command}
           </code>
           {given(description) && <p className="text-small text-fg-subtle">{description}</p>}

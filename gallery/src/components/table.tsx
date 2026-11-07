@@ -9,7 +9,7 @@
  *   there is no hover, so a row held down fills instead (fg 6%, same tier, color only), and so does a
  *   sortable header; the OS tap flash is off so the two do not double. The header row is sticky,
  *   caption size at the label weight (R8), fg-subtle, sentence case; figures stay at 400. The box is a
- *   hairline at the surface radius, filled surface-1 so the sticky header can cover the rows that scroll under it.
+ *   hairline at the surface radius (Flat: no frame, no header rule, no row lines; a row is a grey bubble under the pointer, its first and last cell rounded), filled surface-1 so the sticky header can cover the rows that scroll under it.
  * - Semantics: a <table> with a hidden <caption>, <th scope="col"> headers and a <th scope="row"> for each primary
  *   cell, so a screen reader announces the row's name with every value. A sortable header holds a real button and
  *   sets aria-sort on its th.
@@ -158,6 +158,7 @@ const STICKY_1 = [
   "[&_tbody_tr>*:first-child]:transition-[background-color] [&_tbody_tr>*:first-child]:duration-(--dur-instant) [&_tbody_tr>*:first-child]:ease-litt",
   "[&_tbody_tr:hover>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
   "[&_tbody_tr[data-selected]>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
+  "in-[[data-material=flat]]:[&_tbody_tr:hover>*:first-child]:bg-surface-3 in-[[data-material=flat]]:[&_tbody_tr[data-selected]>*:first-child]:bg-surface-3",
   "[&_tr>*:first-child]:after:pointer-events-none [&_tr>*:first-child]:after:absolute [&_tr>*:first-child]:after:inset-y-0 [&_tr>*:first-child]:after:end-0",
   "[&_tr>*:first-child]:after:w-px [&_tr>*:first-child]:after:bg-line [&_tr>*:first-child]:after:opacity-0 data-scrolled:[&_tr>*:first-child]:after:opacity-100",
 ].join(" ");
@@ -167,6 +168,7 @@ const STICKY_2 = [
   "[&_tbody_tr>*:nth-child(-n+2)]:transition-[background-color] [&_tbody_tr>*:nth-child(-n+2)]:duration-(--dur-instant) [&_tbody_tr>*:nth-child(-n+2)]:ease-litt",
   "[&_tbody_tr:hover>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
   "[&_tbody_tr[data-selected]>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
+  "in-[[data-material=flat]]:[&_tbody_tr:hover>*:nth-child(-n+2)]:bg-surface-3 in-[[data-material=flat]]:[&_tbody_tr[data-selected]>*:nth-child(-n+2)]:bg-surface-3",
   "[&_tr>*:nth-child(2)]:after:pointer-events-none [&_tr>*:nth-child(2)]:after:absolute [&_tr>*:nth-child(2)]:after:inset-y-0 [&_tr>*:nth-child(2)]:after:end-0",
   "[&_tr>*:nth-child(2)]:after:w-px [&_tr>*:nth-child(2)]:after:bg-line [&_tr>*:nth-child(2)]:after:opacity-0 data-scrolled:[&_tr>*:nth-child(2)]:after:opacity-100",
 ].join(" ");
@@ -305,7 +307,7 @@ export function Table({
         {...(scrolls ? { role: "group", "aria-labelledby": captionId, tabIndex: 0 } : {})}
         aria-busy={busy || undefined}
         className={
-          "relative w-full overflow-auto rounded-surface border border-line bg-surface-1 " +
+          "relative w-full overflow-auto rounded-surface border border-line bg-surface-1 in-[[data-material=flat]]:border-transparent " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
           className
         }
@@ -557,7 +559,7 @@ export function TableVirtualBody({
         {spacer((count - end) * height, "after")}
         {loadError ? (
           <tr>
-            <td colSpan={columns} className="h-control-md border-b border-line px-4 py-1 align-middle">
+            <td colSpan={columns} className="h-control-md border-b border-line in-[[data-material=flat]]:border-transparent px-4 py-1 align-middle">
               {/* Sticky, so the words and Retry stay in view in a table scrolled sideways. */}
               <div role="alert" className="sticky start-4 flex w-max items-center gap-3 text-small text-fg-subtle">
                 <span className="text-danger">
@@ -656,7 +658,7 @@ export function useRowSelection(shown: readonly string[], initial: Iterable<stri
 /** Whether Shift was held for this change: a click's, or the key's on Space. */
 const shifted = (e: ChangeEvent<HTMLInputElement>) => (e.nativeEvent as MouseEvent).shiftKey === true;
 
-const selectCell = "w-12 border-b border-line py-0 pr-0 pl-4 align-middle [&>div]:py-0";
+const selectCell = "w-12 in-[[data-material=flat]]:group-hover/row:bg-surface-3 in-[[data-material=flat]]:group-data-selected/row:bg-surface-3 in-[[data-material=flat]]:first:rounded-l-control in-[[data-material=flat]]:last:rounded-r-control border-b border-line in-[[data-material=flat]]:border-transparent py-0 pr-0 pl-4 align-middle [&>div]:py-0";
 
 export type TableSelectHeadProps = {
   /** All, some or none of the rows shown are selected: useRowSelection's `head`. */
@@ -704,11 +706,13 @@ export function TableSelectCell({ checked, onToggle, label }: TableSelectCellPro
 /* -------------------------------------------------------------------------- */
 
 const rowHover =
-  "transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+  "group/row transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
   /* A selected row keeps the press fill, hovered or not. The box says it in words; the fill only helps the eye. */
-  "data-selected:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
+  "data-selected:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+  /* Flat: the bubble is painted on the cells so its ends can round; the row itself stays clear. */
+  "in-[[data-material=flat]]:hover:bg-transparent in-[[data-material=flat]]:pointer-coarse:active:bg-transparent in-[[data-material=flat]]:data-selected:bg-transparent";
 
 export type TableRowProps = Omit<ComponentProps<"tr">, "ref"> & {
   /** Fills the row fg 6%, for a row whose TableSelectCell is checked. */
@@ -772,7 +776,7 @@ function MotionRow({ className = "", children, ...rest }: TableRowProps) {
 /* -------------------------------------------------------------------------- */
 
 const head =
-  "group/head sticky top-0 z-10 h-control-md border-b border-line bg-surface-1 text-caption font-label whitespace-nowrap litt-legend";
+  "group/head sticky top-0 z-10 h-control-md border-b border-line in-[[data-material=flat]]:border-transparent bg-surface-1 text-caption font-label whitespace-nowrap litt-legend";
 
 /** How far one press of ← or → moves a column's edge, in px; Shift moves four times as far. */
 const COLUMN_STEP = 16;
@@ -1009,7 +1013,7 @@ export type TableCellProps = Omit<ComponentProps<"td">, "ref" | "scope"> & {
 export function TableCell({ numeric = false, primary = false, className = "", children, ...rest }: TableCellProps) {
   const cls = [
     // font-normal because a <th> is bold by default, and a host app may not reset it.
-    "h-control-md border-b border-line px-4 py-3 align-middle font-normal whitespace-nowrap",
+    "h-control-md border-b border-line in-[[data-material=flat]]:border-transparent px-4 py-3 align-middle font-normal whitespace-nowrap in-[[data-material=flat]]:group-hover/row:bg-surface-3 in-[[data-material=flat]]:group-data-selected/row:bg-surface-3 in-[[data-material=flat]]:first:rounded-l-control in-[[data-material=flat]]:last:rounded-r-control",
     numeric ? "text-right text-caption font-normal tabular-nums" : "text-left text-small",
     primary ? "text-fg" : "text-fg-subtle",
     className,
@@ -1074,7 +1078,7 @@ export function TableSkeleton({ columns, rows = 4 }: TableSkeletonProps) {
       {Array.from({ length: rows }, (_, row) => (
         <tr key={row} aria-hidden="true">
           {columns.map((kind, col) => (
-            <td key={col} className="h-control-md border-b border-line px-4 py-3 align-middle">
+            <td key={col} className="h-control-md border-b border-line in-[[data-material=flat]]:border-transparent px-4 py-3 align-middle">
               <span className={"block rounded-control bg-surface-2 " + skeletonBar[kind]} />
             </td>
           ))}

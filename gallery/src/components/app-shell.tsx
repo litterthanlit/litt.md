@@ -23,6 +23,7 @@
  * Before the page has hydrated a phone shows the top bar and no sidebar, by CSS (max-sm), so there is no flash.
  *
  * Motion: none of its own. The sheet's is the Dialog's.
+ * - Flat: no sidebar or footer rule; the current row is a grey bubble and other rows take one on hover.
  */
 import { createContext, useContext, useEffect, useMemo, useState, type ComponentProps, type CSSProperties, type ElementType, type MouseEvent, type ReactNode } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
@@ -89,11 +90,11 @@ export function AppShell({
         style={{ "--shell-height": viewportHeight } as CSSProperties}
       >
         {!compact && (
-          <div className="w-60 shrink-0 border-r border-line bg-surface-1 max-sm:hidden">
+          <div className="w-60 shrink-0 border-r border-line bg-surface-1 in-[[data-material=flat]]:border-r-0 max-sm:hidden">
             <div className="sticky top-0 flex h-(--shell-height) flex-col">
               <div className={wordmarkRow + " px-6"}>{wordmark}</div>
               <div className="grid min-h-0 flex-1 content-start gap-6 overflow-y-auto px-3 pb-6">{nav}</div>
-              {footer && <div className="shrink-0 border-t border-line p-3">{footer}</div>}
+              {footer && <div className="shrink-0 border-t border-line in-[[data-material=flat]]:border-t-0 p-3">{footer}</div>}
             </div>
           </div>
         )}
@@ -136,7 +137,7 @@ export function AppShell({
           <div className="min-h-0 overflow-y-auto overscroll-contain px-3 pt-6 pb-(--sheet-foot)" style={{ gridArea: "body" }}>
             <ShellContext value={inSheet}>
               <div className="grid content-start gap-6">{nav}</div>
-              {footer && <div className="mt-6 border-t border-line pt-3">{footer}</div>}
+              {footer && <div className="mt-6 border-t border-line in-[[data-material=flat]]:border-t-0 pt-3">{footer}</div>}
             </ShellContext>
           </div>
         </DialogSheet>
@@ -204,7 +205,7 @@ export function SidebarLink({ current = false, icon, as: Tag = "a", className = 
             sheet ? "h-control-md text-body" : "h-9 text-small pointer-coarse:h-control-md",
             current
               ? "bg-block text-fg shadow-(--block-lift) forced-colors:border"
-              : "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " +
+              : "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] in-[[data-material=flat]]:hover:bg-surface-3 hover:text-fg " +
                 "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg",
             className,
           ].join(" ")

@@ -18,7 +18,7 @@
  * bins and both shots carry the same text colors). Two rows that differ only in their words stay well under it.
  *
  * The self-test injects CSS that puts the highlights back as they were (the glide ring with no fill, the lit rows in
- * CanvasText and the tab underline left to forced-color-adjust: auto, no outline on the current cell) and fails if any
+ * CanvasText and the tab underline, or Flat's bubble and its Highlight border, left to forced-color-adjust: auto, no outline on the current cell) and fails if any
  * page still passes.
  *
  * Needs Playwright, found as a11y.mjs finds it (A11Y_TOOLS, then here, then the cloud container's global copy).
@@ -66,7 +66,7 @@ const LIT = "[data-highlighted], [data-active]";
 const BROKEN = [
   "[data-ring]{background:transparent!important;forced-color-adjust:auto!important}",
   "[data-highlighted],[data-active],[data-highlighted] *,[data-active] *{forced-color-adjust:auto!important;color:CanvasText!important}",
-  '[role="tab"]>[aria-hidden="true"]{forced-color-adjust:auto!important;background:transparent!important}',
+  '[role="tab"]>[aria-hidden="true"]{forced-color-adjust:auto!important;background:transparent!important;border-width:0!important}',
   'main [aria-hidden="true"]>span{outline:none!important}',
 ].join("\n");
 

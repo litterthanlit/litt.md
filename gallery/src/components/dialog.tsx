@@ -14,6 +14,7 @@
  *   travels the same small distance on x, never its own width. When the view has
  *   already spent its expressive moment, tier="responsive" moves it on that tier.
  * - Exit: useExit(tier), quicker and never bouncing.
+ * - Flat: a solid surface-1 card (no glass, no hairline), and the phone sheet loses its footer rule.
  * - Overlay: a canvas tint that only fades (instant tier). No blur.
  * - Corners: the panel is rounded-surface; the sheet hugs the right edge, so
  *   only its left corners are rounded. .litt-glass carries the surface radius,
@@ -135,6 +136,11 @@ function focusOnOpen(event: Event, panel: HTMLElement | null, coarse: boolean, f
   (panel.querySelector<HTMLElement>("[data-autofocus]") ?? panel).focus({ preventScroll: true });
 }
 
+/** Flat: the glass becomes a solid surface-1 card with the modal shadow and no hairline. */
+const FLAT_PANEL =
+  "in-[[data-material=flat]]:[--glass-bg:var(--surface-1)] in-[[data-material=flat]]:[--glass-border:transparent] " +
+  "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px] ";
+
 const SCRIM = "absolute inset-0 bg-[color-mix(in_oklab,var(--canvas)_55%,transparent)]";
 
 export type DialogSheetProps = {
@@ -231,7 +237,7 @@ function SheetLayer({ onDismiss, onOpenAutoFocus, described = true, contentRef, 
           className={
             "litt-glass relative grid max-h-full w-full max-w-[40rem] -mb-6 justify-self-center pb-6 " +
             "grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] rounded-t-surface rounded-b-none " +
-            "[--glass-shadow:var(--shadow-modal)] [--sheet-foot:max(var(--space-6),env(safe-area-inset-bottom,0px))] " +
+            FLAT_PANEL + "[--glass-shadow:var(--shadow-modal)] [--sheet-foot:max(var(--space-6),env(safe-area-inset-bottom,0px))] " +
             "focus-visible:outline-none " +
             className
           }
@@ -326,9 +332,9 @@ export function DialogContent({
           className={
             "flex flex-wrap justify-end gap-3 px-6 sm:px-8 " +
             (compact
-              ? "border-t border-line pt-6 pb-(--sheet-foot)"
+              ? "border-t border-line pt-6 pb-(--sheet-foot) in-[[data-material=flat]]:border-transparent"
               : sheet
-                ? "border-t border-line pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]"
+                ? "border-t border-line pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] in-[[data-material=flat]]:border-transparent"
                 : "pb-6 sm:pb-8 " + (hasBody ? "pt-2" : "pt-6"))
           }
           style={{ gridArea: "foot" }}
@@ -400,6 +406,7 @@ export function DialogContent({
               <motion.div
                 className={
                   "litt-glass grid grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] [--glass-shadow:var(--shadow-modal)] " +
+                  FLAT_PANEL +
                   (sheet
                     ? "h-full w-[400px] max-w-[calc(100%-2rem)] rounded-l-surface rounded-r-none "
                     : "max-h-full w-full max-w-[480px] rounded-surface ") +

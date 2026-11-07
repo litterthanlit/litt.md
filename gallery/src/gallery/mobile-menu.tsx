@@ -113,7 +113,7 @@ const rowBase =
   "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus ";
 const rowIdle = "text-fg-muted hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
-const rowCurrent = "bg-block text-fg shadow-(--block-lift) forced-colors:border";
+const rowCurrent = "bg-block text-fg shadow-(--block-lift) in-[[data-material=flat]]:shadow-none forced-colors:border";
 
 function PageRow({ page, current, size }: { page: PageEntry; current: boolean; size: "lg" | "md" }) {
   if (size === "md") {
@@ -294,7 +294,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
       {/* The components, by group, drilling down in place. */}
       <section aria-labelledby="menu-components" className="grid">
         <Label id="menu-components">Components</Label>
-        <div className="litt-raised relative overflow-hidden rounded-surface p-1">
+        <div className="litt-raised relative overflow-hidden rounded-surface p-1 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none">
           <AnimatePresence mode="popLayout" initial={false} custom={dir}>
             {shown ? (
               <motion.div key={shown.group} custom={dir} variants={slide} initial="in" animate="still" exit="out" className="grid">
@@ -345,7 +345,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
 
       <section aria-labelledby="menu-more" className="grid">
         <Label id="menu-more">More</Label>
-        <div className="litt-raised grid rounded-surface p-1">
+        <div className="litt-raised grid rounded-surface p-1 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none">
           {links.map((l) => (
             <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className={rowBase + "h-control-md text-body " + rowIdle}>
               {l.lead}

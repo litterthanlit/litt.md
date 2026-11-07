@@ -13,6 +13,9 @@
  *   --fg-subtle, and a 16px chevron that never turns. Focus is the 2px --focus outline at a 2px offset,
  *   as on every button. An error draws a 1px --danger edge inside the block and keeps its cast; disabled,
  *   it lies flat on --surface-2 with the hairline. A long value truncates with an ellipsis.
+ * - Flat (proposals/flat-pill.md): the trigger is a grey pill with no outline (ink ring on focus, danger ring on an
+ *   error, flat when disabled); list rows are grey bubbles under the pointer at the panel radius less its 4px padding,
+ *   no separators, the current one marked by its check.
  * - List: the Menu's panel. Glass at the surface radius with a 4px inset, 44px rows at the control
  *   radius with 12px side padding, one gliding highlight (glide.tsx), and a 16px check in a fixed
  *   cell at the end of the current option. It is at least as wide as the trigger and never taller
@@ -128,6 +131,12 @@ const field =
   "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:data-placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
+  /* Flat (rule 4): a grey pill with no outline, the ink ring for focus, the danger ring for an error, disabled flat. */
+  "in-[[data-material=flat]]:focus-visible:outline-none in-[[data-material=flat]]:focus-visible:shadow-(--focus-ring) " +
+  "in-[[data-material=flat]]:aria-invalid:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:aria-invalid:enabled:active:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:aria-invalid:data-[state=open]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
+  "in-[[data-material=flat]]:disabled:shadow-none " +
   /* Forced colors (Windows high contrast) drops box-shadow, so the block keeps its shape with a real border. */
   "forced-colors:border";
 
@@ -150,7 +159,7 @@ type ListContext = {
 const ListCtx = createContext<ListContext | null>(null);
 
 const row =
-  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none " +
+  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] px-3 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt " +
   "text-fg-muted data-[state=checked]:text-fg group-data-[quiet=false]/list:data-[highlighted]:text-fg " +

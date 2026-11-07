@@ -205,7 +205,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
         (compact ? "h-control-sm shrink-0 " : "-mx-3 h-8 ") +
         (p.id === page?.id
-          ? "bg-block text-fg shadow-(--block-lift) forced-colors:border"
+          ? "bg-block text-fg shadow-(--block-lift) in-[[data-material=flat]]:shadow-none forced-colors:border"
           : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg")
       }
     >
@@ -262,16 +262,16 @@ function Shell({ page }: { page: PageEntry | undefined }) {
       </button>
 
       {/* Full-bleed, so no corners: .litt-glass carries the surface radius. */}
-      <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none">
+      <header className="litt-glass sticky top-[env(safe-area-inset-top,0px)] z-30 rounded-none in-[[data-material=flat]]:[--glass-border:transparent] in-[[data-material=flat]]:[--glass-shadow:0_0_0_0_transparent]">
         <div className="mx-auto flex h-16 max-w-wide items-center justify-between gap-4 px-gutter">
           {/* The wordmark sits in a segmented control's anatomy: the quiet track at the surface radius with
               the 4px inset, and one raised segment at the control radius, as tall as the theme switch at the
               other end of the bar, so the two ends match. */}
           <a
             href={`#${pages[0]?.id ?? ""}`}
-            className="inline-grid h-control-sm rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-1 shadow-[inset_0_0_0_1px_var(--line)] select-none [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md"
+            className="inline-grid h-control-sm rounded-surface bg-[color-mix(in_oklab,var(--fg)_5%,transparent)] p-1 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:rounded-control in-[[data-material=flat]]:bg-block in-[[data-material=flat]]:p-0 in-[[data-material=flat]]:shadow-none select-none [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md"
           >
-            <span className="grid place-items-center rounded-control bg-surface-1 px-control-pad-sm text-small font-title text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]">
+            <span className="grid place-items-center rounded-control bg-surface-1 px-control-pad-sm text-small font-title text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-none">
               <span className="litt-trim">litt.md</span>
             </span>
           </a>
@@ -288,7 +288,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                 <Avatar name={MAKER.name} src={MAKER.photo} size="sm" decorative />
               </a>
             </Tooltip>
-            <span aria-hidden="true" className="mx-1 h-5 w-px bg-line max-sm:hidden" />
+            <span aria-hidden="true" className="mx-1 h-5 w-px bg-line max-sm:hidden in-[[data-material=flat]]:hidden" />
             {/* On a phone the theme and GitHub live in the menu, so the bar keeps the wordmark, Customize and the menu. */}
             <div className="max-sm:hidden">
               <ThemeSwitch theme={theme} onChange={setTheme} />
@@ -323,7 +323,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
               {runs.flatMap((run, i) => [
                 ...(i === worldsAt ? [worldsBlock] : []),
                 run.group ? (
-                  <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4">
+                  <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4 in-[[data-material=flat]]:border-t-0">
                     <p className="flex items-baseline justify-between pb-2 text-caption">
                       <span id={`nav-${run.group}`} className="text-fg-muted">{run.group}</span>
                       <span aria-hidden="true" className="font-normal text-fg-subtle tabular-nums">{run.pages.length}</span>
@@ -331,7 +331,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                     {run.pages.map((p) => navLink(p))}
                   </div>
                 ) : (
-                  <div key={run.pages[0]!.id} className="grid border-t border-line py-4 first:border-t-0 first:pt-0">
+                  <div key={run.pages[0]!.id} className="grid border-t border-line py-4 first:border-t-0 first:pt-0 in-[[data-material=flat]]:border-t-0">
                     {run.pages.map((p) => navLink(p))}
                   </div>
                 ),
@@ -356,7 +356,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         </main>
       </div>
 
-      <footer inert={menu} className="border-t border-line">
+      <footer inert={menu} className="border-t border-line in-[[data-material=flat]]:border-t-0">
         <div className="mx-auto flex max-w-wide flex-wrap items-center justify-between gap-4 px-gutter py-8 text-caption text-fg-subtle">
           <a href={MAKER.href} target="_blank" rel="noreferrer" className="group flex items-center gap-2 transition-colors duration-(--dur-instant) ease-litt hover:text-fg">
             <Avatar name={MAKER.name} src={MAKER.photo} size="sm" decorative />

@@ -5,6 +5,7 @@
  *   changed line's band never paints over it. A 32px header holds the file name or the language in mono at
  *   the caption size in `--fg-subtle`, and the Copy button. The header is its own row, so the button can never
  *   cover code. The code is mono at the small size in `--fg`, padded `--space-4`, with a tab size of 2.
+ * - Flat: a grey card (--surface-2, as Press, so a diff row's tint keeps its words at 4.5:1) with no hairline, and the Copy key a round white key on it.
  * - Highlighting: tsx, ts, jsx and js go through sugar-high, and every other language is plain. Code is not
  *   data, so the colors are the foreground's tones and the accent text for strings (no data hues, R7).
  *   sugar-high paints each token with a syntax variable, so this file declares all of them on the block
@@ -190,7 +191,7 @@ export function CodeBlock({
           variant="ghost"
           size="sm"
           aria-label="Copy code"
-          className="focus-visible:outline-offset-[-2px] pointer-coarse:h-control-md pointer-coarse:w-control-md"
+          className="focus-visible:outline-offset-[-2px] pointer-coarse:h-control-md pointer-coarse:w-control-md in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:hover:bg-surface-1"
           onClick={() => copy(code)}
         >
           {state === "copied" ? <CheckIcon /> : <CopyIcon />}
@@ -234,7 +235,7 @@ export function CodeBlock({
           ))}
         </code>
       </pre>
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-surface shadow-[inset_0_0_0_1px_var(--line)]" />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-surface shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:hidden" />
       <span role="status" aria-live="polite" className="sr-only">
         {state === "copied" ? "Copied" : state === "failed" ? "Copy failed. Select the text and copy it by hand." : ""}
       </span>
