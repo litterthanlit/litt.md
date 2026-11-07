@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Kbd } from "@/components/kbd";
 import {
@@ -19,8 +19,8 @@ import {
   SunIcon,
   UserIcon,
 } from "@/components/icons";
-import { DeviceProvider } from "@/motion";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { DeviceProvider, useMotionDial } from "@/motion";
+import { Page, Stage, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "command-menu",
@@ -32,6 +32,8 @@ export const meta: PageMeta = {
     "Search every page, project and action from the keyboard. The panel drops in over a dimmed canvas, and one highlight glides between rows as you arrow through them. On a phone it sits at the top edge and follows the keyboard.",
   fun: "Move through the results: the highlight reaches for each row, then gathers itself there.",
   tiers: ["instant", "responsive"],
+  mechanism:
+    "The hand opens it with a press or the shortcut, then types. The field keeps focus the whole time, and the rows only light. One highlight glides to the row you point at or arrow to, and a keyboard move adds a focus ring. Opening is the responsive tier, 200ms with no bounce. Press rises and settles, Flat grows out of the Search button, and Device switches on where it stands, in steps, with the search and rows set in the mono. Typing is instant, and the list never animates its height. Under reduced motion the panel appears at once and the highlight jumps to the row.",
 };
 
 export const docs: PageDocs = {
@@ -194,6 +196,54 @@ function PanelDemo({ initialQuery = "" }: { initialQuery?: string }) {
   );
 }
 
+/* The study's object is the panel at rest, inline in its frame, with the first row lit. "export" leaves only the disabled row. */
+const FILTERED_DISABLED = "export";
+
+/* Replay: the real dialog, opened 300ms after it mounts and closed 1.5s later. Under reduced motion it opens at once. */
+function ReplayDemo() {
+  const { reduced } = useMotionDial();
+  const [open, setOpen] = useState(reduced);
+  useEffect(() => {
+    if (reduced) return;
+    const opens = setTimeout(() => setOpen(true), 300);
+    const closes = setTimeout(() => setOpen(false), 1800);
+    return () => {
+      clearTimeout(opens);
+      clearTimeout(closes);
+    };
+  }, [reduced]);
+  return (
+    <div className="grid justify-items-center">
+      <Button icon={<SearchIcon />} iconRight={<Kbd>⌘K</Kbd>} onClick={() => setOpen(true)}>
+        Search
+      </Button>
+      <CommandMenu open={open} onOpenChange={setOpen} groups={GROUPS} openedBy="pointer" onSelect={() => {}} />
+    </div>
+  );
+}
+
+export const study: PageStudy = {
+  object: <PanelDemo />,
+  parts: [
+    { name: "The search", selector: "[role=combobox]" },
+    { name: "The group label", selector: "[role=group] > div" },
+    { name: "The highlight", selector: "[data-ring]" },
+    { name: "The row", selector: "[role=option]" },
+    { name: "A disabled row", selector: "[aria-disabled=true]" },
+    { name: "The footer", selector: "[role=listbox] + div" },
+  ],
+  states: {
+    default: <PanelDemo />,
+    disabled: <PanelDemo initialQuery={FILTERED_DISABLED} />,
+    empty: <EmptyDemo />,
+  },
+  replay: {
+    label: "Replay",
+    caption: "Watch the panel arrive from the Search button, then leave. It opens 300ms after it mounts.",
+    run: () => <ReplayDemo />,
+  },
+};
+
 function EmptyDemo() {
   return <PanelDemo initialQuery="figma" />;
 }
@@ -234,7 +284,7 @@ function PhoneDemo() {
 
 export default function CommandMenuPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} study={study}>
       <Stage
         title="Open it"
         tier="responsive"

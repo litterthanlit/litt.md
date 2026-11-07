@@ -69,11 +69,53 @@ export type PageMeta = {
    */
   world?: Material;
   /**
+   * The mechanism, one paragraph in the studies' voice (proposals/worlds.md, unit 2): what the hand does, what springs
+   * on which tier, what each material changes, what reduced motion does. The page shows it under Anatomy, and
+   * gen-llms.mjs ships it to agents. Set it with `study`.
+   */
+  mechanism?: string;
+  /**
    * The page may override the locked tokens with the motion dial. Every page
    * leaves this off except the Playground; the dial's CSS variables exist only
    * while a page with `tune` is open.
    */
   tune?: boolean;
+};
+
+/** The R1 states, in the order every States row shows them. */
+export const STATES = ["default", "hover", "pressed", "focus", "disabled", "empty", "loading", "error"] as const;
+export type StateName = (typeof STATES)[number];
+
+/**
+ * A study (proposals/worlds.md, unit 2): what makes a component page read like one of Nick's studies. Anatomy, the
+ * part at rest with callouts naming its parts; States, every R1 state it has in one row; the mechanism (meta.mechanism)
+ * in a paragraph; Replay, which runs the mechanism; Source, the registry file inline with its version; and Under each
+ * material, the same object under Press, Flat and Device. All of it is page data, and the kit draws it (study.tsx), so
+ * nothing in src/components changes for a study. <Page study={study}>.
+ */
+export type PageStudy = {
+  /**
+   * The part at rest, one object, as `tile` is: still, deterministic, at real size, and no accent fill unless it is the
+   * page's one (R6). It is drawn for Anatomy and once per material, so it must render the same each time.
+   */
+  object: ReactNode;
+  /**
+   * The anatomy callouts, in reading order: a part's name and a CSS selector the kit resolves inside the object's box
+   * (the first match). Name the parts litt names: the tray, the block, the cap, the slot, the words, the line.
+   */
+  parts: { name: string; selector: string }[];
+  /**
+   * The part in each R1 state it has, by name; the kit lays them out in STATES order and leaves out the rest. Each is
+   * a still rendering through a prop the component has (disabled, loading, error, an empty value); a state the
+   * component can only reach under a pointer (hover, pressed) is left out rather than faked.
+   */
+  states: Partial<Record<StateName, ReactNode>>;
+  /**
+   * Replay: until the first press the stage holds `object` at rest (nothing moves on its own, R4). Each press mounts
+   * `run(n)` afresh (n from 1), and what mounts plays the mechanism from its start and ends at its end state; under
+   * reduced motion it mounts at the end state. The caption says what to watch.
+   */
+  replay?: { label: string; caption: string; run: (n: number) => ReactNode };
 };
 
 /**
@@ -115,6 +157,8 @@ const DocsActions = lazy(() => loadDocs().then((m) => ({ default: m.DocsActions 
 const DocsSections = lazy(() => loadDocs().then((m) => ({ default: m.DocsSections })));
 /* A block page's actions need no docs data, so they are a small chunk of their own. */
 const BlockActions = lazy(() => import("./docs/block-actions"));
+/* The study layer loads only for pages that pass `study`: the callouts, the source and the material frames. */
+const StudySections = lazy(() => import("./study").then((m) => ({ default: m.StudySections })));
 
 /**
  * Set by the sidebar's hover preview (nav-preview.tsx) and the overview's blocks. A page then draws only its first
@@ -181,11 +225,14 @@ function FunHint({ text }: { text?: string }) {
 export function Page({
   meta,
   docs,
+  study,
   tile,
   children,
 }: {
   meta: PageMeta;
   docs?: PageDocs;
+  /** The study treatment (PageStudy): Anatomy, States, the mechanism, Replay, Source and Under each material, after the stages. */
+  study?: PageStudy;
   /**
    * The component as one object, for its tile on the overview's wall: what to draw when the first demo is more than
    * a tile should hold (a form around the field, a set of states, a page's worth). Real size, live, one thing to
@@ -228,6 +275,11 @@ export function Page({
           </div>
         </header>
         {children}
+        {study && (
+          <Suspense fallback={<div aria-hidden="true" className="min-h-[40svh]" />}>
+            <StudySections meta={meta} docs={docs} study={study} />
+          </Suspense>
+        )}
         <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4">
           <h2 id={`about-${meta.id}`} className="-mb-3 text-h3 text-fg">About</h2>
           <p className="max-w-(--measure) text-reading text-fg-muted">{meta.summary}</p>

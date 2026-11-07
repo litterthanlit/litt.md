@@ -4,8 +4,8 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/
 import { SettingsIcon } from "@/components/icons";
 import { TextField } from "@/components/input";
 import { Segmented } from "@/components/segmented";
-import { DeviceProvider } from "@/motion";
-import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
+import { DeviceProvider, useMotionDial } from "@/motion";
+import { Page, Stage, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "dialog",
@@ -16,6 +16,8 @@ export const meta: PageMeta = {
   summary:
     "The one expressive moment. The panel is placed, not thrown: it rises by the travel token's distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce. On a phone it is a bottom sheet you can drag away.",
   tiers: ["instant", "expressive"],
+  mechanism:
+    "The hand presses a button and the panel answers. This is the view's one expressive moment, 350ms with a bounce of 0.12 at most. Press rises by the travel distance and settles from the press scale. Flat grows the panel out of the button that opened it, from 0.9, and shrinks it back into it. Device switches it on where it stands, in steps, with no slide. The scrim only fades, on the instant tier. Closing takes 0.75 of the time and never bounces. Focus goes in and returns to the button. Under reduced motion the panel appears and leaves at once.",
 };
 
 export const docs: PageDocs = {
@@ -392,6 +394,84 @@ function SheetDemo() {
 }
 
 /** The same settings dialog, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
+/* The study's object is the closed trigger: the panel is a portal and modal, so it cannot sit at rest inline. */
+function ClosedDialog({ disabled = false }: { disabled?: boolean }) {
+  return (
+    <Launcher status="Nothing published yet">
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button disabled={disabled}>Publish litt.design v3</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Publish litt.design v3?"
+          description="Home, Work and Journal go live on litt.design. You can roll back from the history."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button>Save draft</Button>
+            </>
+          }
+        />
+      </Dialog>
+    </Launcher>
+  );
+}
+
+/* Replay: opens 300ms after it mounts and closes 1.5s later. Under reduced motion it opens at once and stays. */
+function ReplayDemo() {
+  const { reduced } = useMotionDial();
+  const [open, setOpen] = useState(reduced);
+  useEffect(() => {
+    if (reduced) return;
+    const opens = setTimeout(() => setOpen(true), 300);
+    const closes = setTimeout(() => setOpen(false), 1800);
+    return () => {
+      clearTimeout(opens);
+      clearTimeout(closes);
+    };
+  }, [reduced]);
+  return (
+    <Launcher status={null}>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button>Publish litt.design v3</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Publish litt.design v3?"
+          description="Home, Work and Journal go live on litt.design. You can roll back from the history."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button variant="primary">Publish</Button>
+            </>
+          }
+        />
+      </Dialog>
+    </Launcher>
+  );
+}
+
+export const study: PageStudy = {
+  object: <ClosedDialog />,
+  parts: [
+    { name: "The trigger", selector: "button" },
+    { name: "The status", selector: "[role=status]" },
+  ],
+  states: {
+    default: <ClosedDialog />,
+    disabled: <ClosedDialog disabled />,
+  },
+  replay: {
+    label: "Replay",
+    caption: "Watch the panel rise out of the page, settle, and leave a little quicker. It opens 300ms after it mounts.",
+    run: () => <ReplayDemo />,
+  },
+};
+
 function PhoneDemo() {
   return (
     <DeviceProvider mode="phone">
@@ -402,7 +482,7 @@ function PhoneDemo() {
 
 export default function DialogPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} study={study}>
       <Stage
         title="Confirm"
         tier="expressive"

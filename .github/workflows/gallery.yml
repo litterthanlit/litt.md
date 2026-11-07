@@ -55,29 +55,15 @@ jobs:
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
-      - name: Wall (the overview with every tile mounted, one accent fill, nothing sideways or empty)
-        run: npm run test:wall --prefix gallery
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Home (the overview's deck tunes the gallery, Get started reaches the steps, ⌘K search opens one menu)
-        run: npm run test:home --prefix gallery
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Worlds (the Press, Flat and Device pages, arriving writes the look, a live hero, one accent fill, Foundations from look.ts, nav and llms.txt)
-        run: npm run test:worlds --prefix gallery && npm run test:worlds --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
       # The self-test runs with motion allowed and must see motion, so a check that has gone blind fails too.
       - name: Reduced motion (nothing moves on any page or overlay, desktop and phone)
         run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
-  # The WCAG regression checks and the corners check run beside the main job, on their own build, so neither job
-  # nears its time limit.
+  # The WCAG regression checks, the corners check and the page checks that need no axe (the wall, the home, the
+  # worlds, the studies) run beside the main job, on their own build, so neither job nears its time limit: axe alone
+  # takes the main job about twenty of its thirty minutes.
   wcag:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -128,5 +114,26 @@ jobs:
 
       - name: Corners (nothing rubs a rounded box's curve at any shape, sliders at both ends, concentric)
         run: npm run test:corners --prefix gallery && npm run test:corners --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      # The page checks that need no axe run here too: axe alone takes the main job most of its 30 minutes.
+      - name: Wall (the overview with every tile mounted, one accent fill, nothing sideways or empty)
+        run: npm run test:wall --prefix gallery
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Home (the overview's deck tunes the gallery, Get started reaches the steps, ⌘K search opens one menu)
+        run: npm run test:home --prefix gallery
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Worlds (the Press, Flat and Device pages, arriving writes the look, a live hero, one accent fill, Foundations from look.ts, nav and llms.txt)
+        run: npm run test:worlds --prefix gallery && npm run test:worlds --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      - name: Study (every study page has its sections, anatomy parts resolve, the material frame is the Anatomy object pixel for pixel, nothing opens on its own, source and docs)
+        run: npm run test:study --prefix gallery && npm run test:study --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y

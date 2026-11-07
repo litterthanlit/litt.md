@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { ArrowUpRightIcon, CopyIcon, MoreIcon, PlusIcon, SettingsIcon, TrashIcon } from "@/components/icons";
-import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useMotionDial } from "@/motion";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "button",
@@ -12,6 +13,8 @@ export const meta: PageMeta = {
   summary: "Roomy and slightly rounded, with the label at the title weight. Secondary is a raised block, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press tightens the cast and sinks the block half a pixel, so the button answers without ever changing its size.",
   fun: "Press and let go: the button goes deeper and springs back with a little life.",
   tiers: ["instant"],
+  mechanism:
+    "Hover swaps the fill on the instant tier, 100ms. A press sinks the block half a pixel and tightens its cast at once, with no fade, so the hand feels it land. The box never changes size: loading keeps the label mounted at opacity 0 and the spinner turns inside the same width. Under Flat the secondary is a grey pill with no cast, so the press shows in the fill alone. Under Device it is a key on a 2px skirt, and the press takes the skirt. Reduced motion sets the sink to 0 and the fill still answers.",
 };
 
 export const docs: PageDocs = {
@@ -60,6 +63,36 @@ import { PlusIcon, SettingsIcon } from "@/components/icons";
     "A disabled button is muted and exempt from contrast rules. If the reason is not obvious, say it in text next to the button.",
     "Danger says it in words, not only in red: the label names the loss (Delete project, not OK). The red words reach 4.5:1 on the block, and the confirm's words reach it on the red fill, in light and dark.",
   ],
+};
+
+function ReplayLoading() {
+  const { reduced } = useMotionDial();
+  const [loading, setLoading] = useState(!reduced);
+  useEffect(() => {
+    if (reduced) return;
+    const t = setTimeout(() => setLoading(false), 1200);
+    return () => clearTimeout(t);
+  }, [reduced]);
+  return <Button loading={loading}>View work</Button>;
+}
+
+export const study: PageStudy = {
+  object: <Button>View work</Button>,
+  parts: [
+    { name: "The block", selector: "button" },
+    { name: "The row", selector: "button > span" },
+    { name: "The label", selector: "button .litt-trim" },
+  ],
+  states: {
+    default: <Button>View work</Button>,
+    disabled: <Button disabled>View work</Button>,
+    loading: <Button loading>View work</Button>,
+  },
+  replay: {
+    label: "Replay loading",
+    caption: "Watch the width: the label fades out under the spinner, and the block does not move.",
+    run: () => <ReplayLoading />,
+  },
 };
 
 function VariantsDemo() {
@@ -124,7 +157,7 @@ function IconsDemo() {
 
 export default function ButtonPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} study={study}>
       <Stage
         title="Variants"
         tier="instant"

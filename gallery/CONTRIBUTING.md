@@ -153,6 +153,28 @@ export default function MenuPage() {
 - Only claim what the code does. Check every keyboard and accessibility line against the component and its Radix part.
 - **Try it** (`<TryIt>` from `../kit`, after the last stage) puts the component beside controls for its props and shows the JSX for what is set. The controls come from the generated prop types: a boolean is a Switch, a union of string literals a Segmented control or a Select, and a string (or a ReactNode you start as text) an Input. Name the export and pass the component and the props it always needs: `<TryIt of="Tag" component={Tag} props={{ children: "In review" }} />`. Add `controls` to choose and order the props, or to offer a DOM attribute such as `{ name: "disabled", type: "boolean" }`, and `derive` for a prop that follows another, such as a Gauge's valueText.
 
+## Give a page a study
+
+A study is what makes a page read like one of Nick's: the part drawn at rest with its parts named, every state in a row, the mechanism in a paragraph, a button that runs it again, the three materials side by side, and the source. You write data; the kit draws it (`src/gallery/study.tsx`, after the stages and before About). Nothing in `src/components` changes for a study.
+
+```tsx
+export const study: PageStudy = {
+  object: <Button variant="secondary">View work</Button>,
+  parts: [{ name: "The block", selector: "button" }, { name: "The words", selector: "button > span" }],
+  states: { default: …, disabled: <Button disabled>…</Button>, loading: <Button loading>…</Button> },
+  replay: { label: "Replay", caption: "Watch the label hand over to the spinner.", run: (n) => <Demo n={n} /> },
+};
+// meta.mechanism: "…"          // one paragraph; gen-llms.mjs ships it as "How it moves"
+// <Page meta={meta} docs={docs} study={study}>
+```
+
+- `object` is the part as one still thing at real size, with no accent fill unless it is the page's one. It is drawn for Anatomy and once under each material, so it must render the same each time.
+- `parts` are in reading order. Name them as litt does (the tray, the block, the cap, the slot, the words, the line). A selector is resolved inside the object, first match wins. One that matches nothing warns in dev and loses its callout, so check the Anatomy in a build.
+- `states` holds the R1 states the component really has (default, hover, pressed, focus, disabled, empty, loading, error), laid out in that order. Reach each through a prop (`disabled`, `loading`, an empty value). Leave hover and pressed out: a state only a pointer reaches is not faked, and the page's stages already show it live.
+- Until the first press the Replay stage holds `object` at rest, so nothing moves on its own (R4). `replay.run(n)` then mounts afresh for each press (n from 1) and plays the mechanism from its start to its end state, so it ends where the page's demos end. Under reduced motion it mounts at the end state. The caption says what to watch.
+- `meta.mechanism` is what the hand does, what springs on which tier, what the material changes, and what reduced motion does, in plain short sentences.
+- Source and Under each material come for free: the first file in `docs.components` as it installs, with its version, and the object under Press, Flat and Device.
+
 ## It ships in the registry
 
 Every `src/components/<name>.tsx` with a page becomes an installable item (`npx shadcn@latest add https://littmd.vercel.app/r/<name>.json`). `scripts/gen-registry.mjs` builds it, so there is nothing to register by hand, but write the component so it can live in someone else's app:
