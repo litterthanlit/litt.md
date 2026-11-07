@@ -179,9 +179,26 @@ function pageMarkdown(page, cp) {
   return parts.join("\n\n") + "\n";
 }
 
+/** Each material is a world: a page in the gallery with one line, an audience and five foundations (look.ts owns the words). */
+function worldsDoc(look) {
+  const foundations = (f) =>
+    bullets([`Color: ${f.color}`, `Type: ${f.type}`, `Light: ${f.light}`, `Shape: ${f.shape}`, `Motion: ${f.motion}`]);
+  return [
+    "A world is a material and the page you arrive on for it. One component tree answers all three, so a world is a tokens block and a motion language, never a second set of components.",
+    ...look.MATERIALS.map((m) =>
+      [
+        `### ${m.name}`,
+        `${m.tagline} ${m.audience}`,
+        `${m.attribute ? `\`data-material="${m.attribute}"\` on \`<html>\`.` : "No attribute. It is what tokens.css ships."} Gallery: ${ORIGIN}/#${m.id}`,
+        foundations(m.foundations),
+      ].join("\n\n"),
+    ),
+  ].join("\n\n");
+}
+
 function llmsTxt(pages, cp, look) {
   const withDocs = pages.filter((p) => p.docs);
-  const patterns = pages.filter((p) => !p.docs && p.meta.group);
+  const patterns = pages.filter((p) => !p.docs && p.meta.group && !p.meta.world);
   const sections = [
     "# litt.md",
     "> Nick's design language for web and product UI as a shadcn registry: React and Tailwind CSS v4 components on locked tokens. Technical precision, lit from above: an 8px grid, hairlines, Geist at 14px in three weights by role, warm stone neutrals, glass only on floating surfaces, and quick motion with one expressive moment per view.",
@@ -201,6 +218,8 @@ function llmsTxt(pages, cp, look) {
     ].join("\n\n"),
     "## Looks",
     look.looksDoc(ORIGIN),
+    "## Worlds",
+    worldsDoc(look),
     "## House rules",
     bullets([
       "Weight by role: text at 400, titles, buttons and tabs at 500 (font-litt-title), 12px labels at 600 (font-litt-label, carried by text-litt-caption). Never font-medium, font-semibold or font-bold. Nothing is set above 18px.",

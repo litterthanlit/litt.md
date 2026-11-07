@@ -4,7 +4,7 @@
  */
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { MotionDialProvider, useDevice, useFun } from "@/motion";
-import { funPages, pageRuns, pages, prefetchPages, settled, type PageEntry } from "./registry";
+import { funPages, pageRuns, pages, prefetchPages, settled, worlds, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { Arrival, useLinkOrigins } from "./arrival";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
@@ -145,9 +145,10 @@ function Shell({ page }: { page: PageEntry | undefined }) {
   /* With fun mode on, the pages it changes come first: a Fun group after the site's own pages. They stay in their
      own groups too, so the nav never reshuffles under you. */
   const fun = useFun();
-  const runs: { group?: string; pages: PageEntry[] }[] = pageRuns();
+  const runs: { group?: string; pages: PageEntry[] }[] = pageRuns().filter((r) => r.group !== "Worlds");
   if (fun && funPages.length) runs.splice(runs[0]?.group ? 0 : 1, 0, { group: "Fun", pages: funPages });
   const [theme, setTheme] = useTheme();
+  const { look } = useCustomize();
   const [menu, setMenu] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   /* Esc and the button give focus back to the button; a link moves it to the page it opened. The focus moves once
@@ -210,6 +211,44 @@ function Shell({ page }: { page: PageEntry | undefined }) {
     >
       {p.title}
     </a>
+  );
+
+  /* A world is the way in, not a component: its name and its line, marked when the gallery is in it (aria-current
+     "true") or its page is open ("page"). Rows touch, so a pointer never crosses dead space between two. */
+  const worldLink = (w: (typeof worlds)[number]) => {
+    const here = w.page.id === page?.id;
+    const current = look.material === w.id;
+    return (
+      <a
+        key={w.id}
+        href={`#${w.id}`}
+        aria-current={here ? "page" : current ? "true" : undefined}
+        onPointerEnter={() => warm(w.page)}
+        onFocus={() => warm(w.page)}
+        className={
+          "-mx-3 flex min-h-8 items-center gap-2 rounded-control px-3 py-1.5 select-none [-webkit-tap-highlight-color:transparent] pointer-coarse:min-h-11 " +
+          "transition-[background-color,color] duration-(--dur-instant) ease-litt " +
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+          (here ? "bg-block text-fg shadow-(--block-lift) forced-colors:border" : "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " + (current ? "text-fg" : "text-fg-subtle"))
+        }
+      >
+        <span className="grid min-w-0 flex-1">
+          <span className="text-small">{w.name}</span>
+          <span className="text-caption font-normal text-fg-subtle">{w.tagline}</span>
+        </span>
+        {current && <span aria-hidden="true" className="size-1.5 shrink-0 rounded-pill bg-fg forced-color-adjust-none" />}
+      </a>
+    );
+  };
+  /* The worlds sit above the component groups: after the site's own pages, before the first group. */
+  const worldsAt = runs.findIndex((r) => r.group);
+  const worldsBlock = worlds.length > 0 && (
+    <div key="worlds" role="group" aria-labelledby="nav-worlds" className="grid border-t border-line py-4">
+      <p className="pb-2 text-caption">
+        <span id="nav-worlds" className="text-fg-muted">Worlds</span>
+      </p>
+      {worlds.map(worldLink)}
+    </div>
   );
 
   return (
@@ -280,7 +319,9 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                 column on each side, so the selected fill and the focus ring are never clipped. */}
             {/* Each group is its own segment: a hairline above it, its name and count, then its pages. */}
             <div className="sticky top-16 -mx-3 grid max-h-[calc(100svh-4rem)] content-start overflow-y-auto px-3 pt-24 pb-12 [scrollbar-width:none]">
-              {runs.map((run) =>
+              {worldsAt < 0 && worldsBlock}
+              {runs.flatMap((run, i) => [
+                ...(i === worldsAt ? [worldsBlock] : []),
                 run.group ? (
                   <div key={run.group} role="group" aria-labelledby={`nav-${run.group}`} className="grid border-t border-line py-4 in-[[data-material=flat]]:border-t-0">
                     <p className="flex items-baseline justify-between pb-2 text-caption">
@@ -294,7 +335,7 @@ function Shell({ page }: { page: PageEntry | undefined }) {
                     {run.pages.map((p) => navLink(p))}
                   </div>
                 ),
-              )}
+              ])}
             </div>
           </NavPreview>
         </nav>

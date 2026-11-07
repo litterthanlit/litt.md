@@ -7,12 +7,17 @@
  *
  * It fails when:
  * It runs in Blue 4 and in pink, set before the page loads: the gallery opens in monochrome, where the accent is the
- * ink that checkboxes and switches fill with too, so only a colored accent can tell an accent fill apart.
+ * ink that checkboxes and switches fill with too, so only a colored accent can tell an accent fill apart. It runs
+ * under each material too (Press, Flat and Device, saved in the same way before the page loads), since a material
+ * changes what a tile draws. Flat, the gallery's own look, runs in both accents; Press and Device run in Blue 4 only,
+ * because all six material and accent pairs take about four minutes and the accent never changes what a material draws.
  *
  * - the wall shows more than one accent fill (R6: one per view). Each tile is its page's `tile`, one object with no
  *   accent fill, and the Button tile carries the one. A page whose first demo ends in a primary button needs a tile.
  * - two accent fills anywhere on the page sit within one screen of each other, so a screen could show both. The hero's
  *   Get started is the first screen's one, and the Button tile has to sit at least a screen below it.
+ * - the wall holds a world's tile (a tile named Press, Flat or Device: a world is a page you arrive on, not a component),
+ * - the page's material is not the one set (data-material on <html> is the material's attribute, none for Press),
  * - the page or a tile scrolls sideways,
  * - a tile draws nothing,
  * - the page has more than one main or h1, two landmarks share a name, or a tile's name is not its h2 (so the headings
@@ -91,16 +96,18 @@ function inspect() {
   const mains = [...document.querySelectorAll("main, [role=main]")].filter(shown).length;
   const h1s = [...document.querySelectorAll("h1")].filter(shown).length;
   const names = tiles.filter((t) => t.querySelector(":scope > h2") === null).map((t) => name(t));
-  return { count: tiles.length, fills, close, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
+  return { material: document.documentElement.dataset.material, tileNames: tiles.map((t) => t.dataset.tile), count: tiles.length, fills, close, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
 }
 
 const browser = await chromium.launch();
 const problems = [];
 let count = 0;
-for (const accent of ["blue4", "pink"]) for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
+const ATTRIBUTE = { press: undefined, flat: "flat", device: "device" };
+const RUNS = [["press", "blue4"], ["flat", "blue4"], ["flat", "pink"], ["device", "blue4"]];
+for (const [material, accent] of RUNS) for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
   for (const theme of ["light", "dark"]) {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
-    await ctx.addInitScript((a) => localStorage.setItem("litt-gallery:customize", JSON.stringify({ accent: a })), accent);
+    await ctx.addInitScript(([a, m]) => localStorage.setItem("litt-gallery:customize", JSON.stringify({ accent: a, material: m })), [accent, material]);
     const pg = await ctx.newPage();
     const errors = [];
     pg.on("pageerror", (e) => errors.push(String(e)));
@@ -117,7 +124,10 @@ for (const accent of ["blue4", "pink"]) for (const [width, height, label] of [[1
     await pg.waitForTimeout(800);
     const r = await pg.evaluate(inspect);
     count = r.count;
-    const where = `${accent} · ${theme} · ${label}`;
+    const where = `${material} · ${accent} · ${theme} · ${label}`;
+    if (r.material !== ATTRIBUTE[material]) problems.push(`${where}: data-material on <html> is ${r.material ?? "absent"}, expected ${ATTRIBUTE[material] ?? "absent"}`);
+    const worldTiles = r.tileNames.filter((n) => /^(press|flat|device)$/i.test(n));
+    if (worldTiles.length) problems.push(`${where}: the wall holds world tiles (${worldTiles.join(", ")}); a world is a page, not a component`);
     if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, the wall allows one: ${r.fills.join(", ")}`);
     for (const c of r.close) problems.push(`${where}: two accent fills within one screen (R6): ${c}`);
     if (r.pageWide) problems.push(`${where}: the page scrolls sideways`);
@@ -139,4 +149,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, Blue 4 and pink, light and dark, desktop and phone: one accent fill on the wall and none within a screen of another, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall: ${count} tiles, Press, Flat and Device (Flat in Blue 4 and pink, the others in Blue 4), light and dark, desktop and phone: one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
