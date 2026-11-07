@@ -10,6 +10,9 @@
  *   the header's switch says the same), the accent (the gallery opens in monochrome, and Blue 4 and pink each fill Get
  *   started in their color), the material (the gallery opens in Flat, data-material on <html>, and Press takes it
  *   off) or the shape (the control radius on <body>),
+ * - the deck's Material does not change the home hero under it (Device names Device and shows the Agent block, Flat the
+ *   Case study, data-material on <html> follows), or a material switch starts a transition in the page outside the deck,
+ * - the Customize panel still offers a Material control (it moved to the deck and to the world pages),
  * - Reset does not put the gallery's defaults back (the locked shape, monochrome, Flat),
  * - a look from a link (?look=pink-fun) does not paint before the app runs, writes storage, drops out of the address on
  *   the next page, or loses the Table's filters; or an accent change during it does not keep the link's look and save,
@@ -145,6 +148,21 @@ const accentNow = (pg) => pg.evaluate(() => {
   check((await material()) === undefined && (await lift()) !== flatLift, "the deck's Press takes data-material off <html>, and the block casts again");
   await pick(d, "Flat");
   check((await material()) === "flat" && (await lift()) === flatLift, "the deck's Flat puts data-material=flat back");
+  /* The home hero under the deck is the current world's block, live (proposals/worlds.md, decision 2). */
+  const hero = pg.locator("section[data-home-hero]");
+  const heroName = () => hero.getByRole("heading", { level: 2 }).first().textContent();
+  check((await heroName())?.trim() === "Flat" && (await hero.getByRole("region", { name: "Case study, desktop" }).count()) === 1, "in Flat, the home hero names Flat and shows the Case study");
+  await pg.evaluate(() => { window.__before = new Set(document.getAnimations()); });
+  await pick(d, "Device");
+  await hero.getByRole("group", { name: "Halo build chat" }).waitFor();
+  check((await heroName())?.trim() === "Device" && (await hero.getByRole("textbox", { name: "Message Litt" }).count()) === 1 && (await hero.getByRole("region", { name: "Case study, desktop" }).count()) === 0, "the deck's Device makes the home hero name Device and show the Agent block (Halo build chat, Message Litt) in place of the Case study");
+  check((await material()) === "device", "the deck's Device sets data-material=device on <html>");
+  check((await hero.getByRole("heading", { level: 2 }).first().getByRole("link").getAttribute("href")) === "#device", "the home hero's heading links to the Device world page");
+  const slides = await pg.evaluate(() => document.getAnimations().filter((a) => !window.__before.has(a) && a instanceof CSSTransition && a.effect?.target?.closest?.("main") && !a.effect.target.closest("[aria-labelledby=deck-title]")).map((a) => a.transitionProperty + " on " + (a.effect.target.tagName + "." + String(a.effect.target.className).slice(0, 40))));
+  check(slides.length === 0, `switching to Device starts no transition in the page outside the deck (${slides.length} started${slides.length ? ": " + slides.slice(0, 3).join("; ") : ""})`);
+  await pick(d, "Flat");
+  await hero.getByRole("region", { name: "Case study, desktop" }).waitFor();
+  check((await heroName())?.trim() === "Flat" && (await material()) === "flat" && (await hero.getByRole("group", { name: "Halo build chat" }).count()) === 0, "the deck's Flat brings the Case study back and data-material=flat");
   const getStarted = pg.getByRole("button", { name: "Get started" });
   check((await litInsets(getStarted)) === 0, "under Flat, Get started catches no top highlight (R2: Flat has no light)");
   await pick(d, "Press");
@@ -179,29 +197,14 @@ const accentNow = (pg) => pg.evaluate(() => {
   await panel.waitFor();
   const accentTiles = panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) });
   check(await accentTiles.getByRole("radio", { name: "Mono" }).isChecked(), "the panel opens with Mono picked");
-  /* Each material swatch is a key in a tray, drawn in its own material: the tokens make the difference. */
-  const material = panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Material$/ }) });
-  const specimens = () =>
-    material.locator("[data-material-tray]").evaluateAll((els) =>
-      els.map((t) => {
-        const k = t.querySelector("[data-material-key]");
-        return { text: k?.textContent?.trim() ?? "", key: k ? getComputedStyle(k).boxShadow : "", tray: getComputedStyle(t).boxShadow, font: k ? getComputedStyle(k).fontFamily : "" };
-      }),
-    );
-  const mono = await specimens();
-  check(mono.map((x) => x.text).join("|") === "Press|Flat|Device", "every material swatch names itself: Press, Flat, Device");
-  check(new Set(mono.map((x) => x.key)).size === 3, "the three material keys cast three different shadows");
-  check(mono[1]?.tray.includes("inset") ?? false, "the Flat tray draws its hairline, so Flat never vanishes into the panel");
+  /* The material is a world now (proposals/worlds.md): chosen on the deck and by arriving on a world's page, never here. */
+  check(
+    (await panel.getByRole("radiogroup", { name: /material/i }).count()) === 0 && (await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /material/i }) }).count()) === 0 && (await panel.getByRole("radio", { name: /^(Press|Flat|Device)$/ }).count()) === 0,
+    "the Customize panel offers no Material control: no radio group or fieldset named Material, no Press, Flat or Device radio",
+  );
   await accentTiles.locator("label", { has: pg.getByRole("radio", { name: "Pink" }) }).click();
   check((await pg.evaluate(() => document.body.dataset.accent)) === "pink", "the panel's Pink tile sets data-accent=pink on <body>");
-  const pink = await specimens();
   await accentTiles.locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
-  const blue = await specimens();
-  const runs = [mono, pink, blue];
-  check(
-    runs.every((r) => /Geist Mono|monospace/.test(r[2]?.font ?? "") && !/Geist Mono/.test(r[0]?.font ?? "")) && new Set(runs.map((r) => r[2]?.key)).size === 1,
-    "Device's key is Geist Mono and the same under every accent; Press's is not mono",
-  );
   const look = () => pg.evaluate(() => [document.body.dataset.accent, document.body.style.getPropertyValue("--radius-control"), document.body.style.getPropertyValue("--font-sans")].join("|"));
   const before = await look();
   await panel.getByRole("button", { name: "Surprise me" }).click();
@@ -321,7 +324,11 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
   check((await copied(group, "Copy link")) === `http://localhost:${port}/index.html?look=mono-flat#button`, "Copy link gives this page with ?look=mono-flat");
 
   await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
-  await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Material$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Press" }) }).click();
+  await pg.keyboard.press("Escape");
+  await pg.evaluate(() => { location.hash = "#press"; });
+  await pg.waitForFunction(() => document.documentElement.dataset.material === undefined);
+  await pg.evaluate(() => { location.hash = "#button"; });
+  await pg.locator("header").getByRole("button", { name: "Customize" }).click();
   check(await says(group, "Blue 4, press material, calm motion"), "in Blue 4, press and calm motion, Your look says so");
   check((await install.getByText("This page shows").count()) === 0, "in Blue 4 and calm motion, the Install note goes");
   await pg.keyboard.press("Escape");

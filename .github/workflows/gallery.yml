@@ -65,6 +65,11 @@ jobs:
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
+      - name: Worlds (Press, Flat and Device pages: arriving writes the look, a live hero, one accent fill, Foundations from look.ts, nav and llms.txt)
+        run: npm run test:worlds --prefix gallery && npm run test:worlds --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
       # The self-test runs with motion allowed and must see motion, so a check that has gone blind fails too.
       - name: Reduced motion (nothing moves on any page or overlay, desktop and phone)
         run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
