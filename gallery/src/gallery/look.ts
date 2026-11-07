@@ -267,7 +267,7 @@ export function lookStep(look: Look, site: string): string | null {
 /** llms.txt's "## Looks" section, for an agent handed a gallery link. */
 export function looksDoc(site: string): string {
   return [
-    `The gallery's Customize panel picks an accent, a material and a motion feel, and a link carries all three: ${site}/?${LOOK_PARAM}=${encodeLook({ accent: "pink", material: "flat", fun: true })}#button. ` +
+    `A look is the gallery's material (its world, chosen in the nav or on the deck), accent and motion feel (the Customize panel), and a link carries all three: ${site}/?${LOOK_PARAM}=${encodeLook({ accent: "pink", material: "flat", fun: true })}#button. ` +
       `Read the look from the link's text and make its edits. The gallery is a single-page app, so fetching the link returns no look. ` +
       `The registry installs \`${encodeLook(REGISTRY_LOOK)}\`, ${materialWords(REGISTRY_LOOK.material)}, ${motionWords(REGISTRY_LOOK.fun)}. The gallery opens in \`${encodeLook(GALLERY_LOOK)}\`.`,
     [

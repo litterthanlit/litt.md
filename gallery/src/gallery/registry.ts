@@ -1,6 +1,7 @@
 /** Pages register themselves: any src/gallery/pages/*.tsx exporting `meta` and a default component. */
 import { lazy, type ComponentType } from "react";
 import type { PageGroup, PageMeta } from "./kit";
+import { MATERIALS, type MaterialInfo } from "./look";
 
 /* The nav needs every page's meta at once, but not every page's code. So meta comes
    from a tiny module holding only `export const meta` (the page-meta plugin in
@@ -20,6 +21,15 @@ export const pages: PageEntry[] = Object.entries(metas)
     return { ...meta, Component: lazy(load), preload: load };
   })
   .sort((a, b) => a.order - b.order);
+
+/**
+ * The worlds that have a page, in the materials' order (proposals/worlds.md): the way in, drawn by the sidebar and the
+ * phone menu above the component groups. Empty until the world pages exist.
+ */
+export const worlds: (MaterialInfo & { page: PageEntry })[] = MATERIALS.flatMap((m) => {
+  const page = pages.find((p) => p.world === m.id);
+  return page ? [{ ...m, page }] : [];
+});
 
 /** The pages whose component moves differently in fun mode (meta.fun), in sidebar order. */
 export const funPages = pages.filter((p) => p.fun);

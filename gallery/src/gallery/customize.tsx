@@ -1,11 +1,14 @@
 /**
- * Customize, the panel: the header's button and the popover with the material, the accent, motion's feel, the theme,
- * the shape and the typeface. It loads on its own, so the shell stays small; the state and the writes on <body> live in
+ * Customize, the panel: the header's button and the popover with the accent, motion's feel, the theme, the shape and
+ * the typeface. It loads on its own, so the shell stays small; the state and the writes on <body> live in
  * customize-state.tsx.
  *
+ * The material is not here. A material is a world, a place you arrive on (proposals/worlds.md), so it is chosen where
+ * you arrive: the nav's Worlds, the world pages and the overview's deck. Surprise me still picks one, and Your look,
+ * Copy setup and Copy link still carry it.
+ *
  * As little as possible (Rams): only the controls and what carries them out of the browser. No intro, no headings,
- * no notes. A hairline splits the look (the material, then the accent, since a material answers the accent with its own colors
- * (Device has orange where the others have Blue 4), then motion's feel, which Copy setup and Copy link
+ * no notes. A hairline splits the look (the accent, then motion's feel, which Copy setup and Copy link
  * carry, so they sit right under it) from what stays in this browser (the theme, the shape and the face). The accents
  * are swatches, the color itself with its name inside. The shape is an ordered scale, so it is a Slider with a stop
  * per shape and the locked one marked home, as the overview's deck has it; a choice whose picture says more than its word is a CardPicker tile; a choice
@@ -36,9 +39,9 @@ const STOPS = SHAPES.map((_, i) => i);
 type Swatch<T extends string> = { value: T; label: string; className: string; style?: CSSProperties; attrs?: Record<string, string>; content?: ReactNode; named?: boolean };
 
 /**
- * A choice drawn as the thing itself: the accents as blocks in their color, the materials as a key in their tray.
- * An accent says its name once picked (R5: the value you have is said in words; the others say theirs on hover). A
- * material always does, since a surface does not say what it is the way a color does. Native radios, so the arrow
+ * A choice drawn as the thing itself: the accents as blocks in their color. An accent says its name once picked (R5:
+ * the value you have is said in words; the others say theirs on hover); `named` and `content` let a swatch say its name
+ * always or draw something else inside. Native radios, so the arrow
  * keys and the group's name come from the browser; the box is hidden and the radio carries the name. The pick is a
  * ring in --fg outside the box, so it never leans on color; the keyboard's ring is --focus. An accent's block is a
  * sample, not an action, so it never counts as a fill (R6).
@@ -73,24 +76,6 @@ function Swatches<T extends string>({ legend, value, onValueChange, options }: {
   );
 }
 
-/**
- * A material as a key standing in a tray, its name on the key. Drawn inside the swatch's own data-material, so the
- * tokens make the difference: Press raised and casting, Flat a fill in a hairline tray, Device an aluminium key with
- * a 2px drop and every word in Geist Mono (font-sans, which Device restates as mono).
- */
-function MaterialKey({ name }: { name: string }) {
-  return (
-    <span data-material-tray="" className="grid size-full place-items-center rounded-control bg-tray p-1.5 shadow-(--tray-shade)">
-      <span
-        data-material-key=""
-        className="grid h-9 w-full place-items-center rounded-[calc(var(--radius-control)-2px)] bg-block font-sans text-small font-title text-fg shadow-(--block-lift) forced-colors:border"
-      >
-        {name}
-      </span>
-    </span>
-  );
-}
-
 function CustomizePanel() {
   const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
   const dark = useDark();
@@ -120,19 +105,6 @@ function CustomizePanel() {
   return (
     <div className="grid gap-8">
       <section aria-label="Look" className="grid gap-6">
-        <Swatches
-          legend="Material"
-          value={look.material}
-          onValueChange={(material) => setLook({ material })}
-          options={MATERIALS.map((m) => ({
-            value: m.id,
-            label: m.name,
-            attrs: lookAttributes({ accent: look.accent, material: m.id }, dark),
-            className: "h-16",
-            content: <MaterialKey name={m.name} />,
-            named: true,
-          }))}
-        />
         <Swatches
           legend="Accent"
           value={look.accent}
