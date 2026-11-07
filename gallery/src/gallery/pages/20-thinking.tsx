@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Thinking } from "@/components/thinking";
-import { DeviceProvider } from "@/motion";
-import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
+import { DeviceProvider, useMotionDial } from "@/motion";
+import { Page, Stage, useReplay, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "thinking",
@@ -14,6 +14,8 @@ export const meta: PageMeta = {
   summary:
     "The agent's reasoning as a quiet disclosure above its answer. It reads \"Thinking\" with a clock that counts whole seconds, then \"Thought for 12s\", and it folds itself away when the answer starts unless you opened it. No shimmer, no pulse, no spinner: the clock is the only live signal.",
   tiers: ["instant", "responsive"],
+  mechanism:
+    "No hand moves this; the agent does. While it thinks, the row reads Thinking and a clock counts whole seconds, the only live signal. The reasoning streams in with no fade per word. When the thought ends the clock stops and the body folds away. A reader's choice always wins. The chevron turns a quarter on the instant tier, and the body fades in and travels a little on the responsive tier. Its height snaps. Press keeps the plain row, Flat sets it in a grey card, and Device lights it in steps. Under reduced motion the body appears and leaves at once.",
 };
 
 export const docs: PageDocs = {
@@ -212,11 +214,72 @@ function PhoneDemo() {
   );
 }
 
+const STUDY_REASONING = [
+  "The deploy failed at the build step, not the upload. The log shows a missing environment variable, so nothing reached the host.",
+  "Adding the variable to the project and running the build again should clear it. No code needs to change.",
+];
+
+/* The study's object: a finished thought, open on two lines of its reasoning, with a fixed duration so no clock runs. */
+function StudyThought({ open }: { open: boolean }) {
+  return (
+    <div className="w-full max-w-xl">
+      <Thinking duration={12} defaultOpen={open}>
+        {STUDY_REASONING.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+      </Thinking>
+    </div>
+  );
+}
+
+/* Replay: thinks for 3s while the reasoning streams in, then finishes and folds. Under reduced motion it mounts finished. */
+function ReplayTurn() {
+  const { reduced } = useMotionDial();
+  const { shown } = useStream(STUDY_REASONING, 40);
+  const [thinking, setThinking] = useState(!reduced);
+  useEffect(() => {
+    if (reduced) return;
+    const id = setTimeout(() => setThinking(false), 3000);
+    return () => clearTimeout(id);
+  }, [reduced]);
+  const lines = reduced || !thinking ? STUDY_REASONING : shown;
+  return (
+    <div className="grid w-full max-w-xl gap-3">
+      <Thinking active={thinking} duration={reduced ? 3 : undefined}>
+        {lines.map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
+        ))}
+      </Thinking>
+      {!thinking && <p className="text-body text-fg-muted">Add the missing variable to the project and build again.</p>}
+    </div>
+  );
+}
+
+export const study: PageStudy = {
+  object: <StudyThought open />,
+  parts: [
+    { name: "The row", selector: "button[aria-expanded]" },
+    { name: "The chevron", selector: "button[aria-expanded] svg" },
+    { name: "The label", selector: "button[aria-expanded] > span > span" },
+    { name: "The clock", selector: "button[aria-expanded] span[aria-hidden=true]" },
+    { name: "The body", selector: "[id$=-body] > div" },
+    { name: "A line of thought", selector: "[id$=-body] p" },
+  ],
+  states: {
+    default: <StudyThought open={false} />,
+  },
+  replay: {
+    label: "Replay",
+    caption: "Watch the clock count whole seconds while the reasoning streams, then stop and fold away at 3 seconds.",
+    run: () => <ReplayTurn />,
+  },
+};
+
 export default function ThinkingPage() {
   const [liveKey, replayLive] = useReplay();
   const [phoneKey, replayPhone] = useReplay();
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} study={study}>
       <Stage
         title="A live thought"
         tier="responsive"

@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RangeChart, type RangeChartBar, type RangeChartSegment, type RangeChartTick } from "@/components/range-chart";
-import { DeviceProvider } from "@/motion";
-import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { DeviceProvider, useMotionDial } from "@/motion";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "range-chart",
@@ -14,6 +14,8 @@ export const meta: PageMeta = {
     "One quantity over time as a barcode of thin bars, its segments and their shares in a tray above, and a range you brush by hand: drag across the bars, drag either cap, or drag the whole span. The edges follow the pointer one to one and settle on a bar or a segment start on the responsive tier; the segment the range matches is raised, and the total of what is brushed rolls as you go, its last group in the quiet ink. In fun mode the span can be thrown, and the bars it sweeps rise.",
   fun: "Throw the span: it coasts across the bars, they rise as it passes, and it lands on the segment start nearest where it would stop.",
   tiers: ["responsive", "instant"],
+  mechanism:
+    "The hand drags across the bars to brush a span, takes either cap, or takes the whole span and moves it. The edges follow the pointer one to one, with no easing. On release they settle onto a bar or a segment start on the responsive spring, 200ms with no bounce, and the figure rolls as they go. Bars light on the instant tier. Press raises the matching segment, Flat grows the page's parts out of what you touched, and Device steps the display on. Under reduced motion the edges jump to where they settle and the figure just changes.",
 };
 
 export const docs: PageDocs = {
@@ -193,9 +195,56 @@ function VisitorsTile() {
   return <RangeChart label="Visitors" unit="visitors" bars={VISITORS} segments={SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} height={56} className="w-full" />;
 }
 
+/* Replay: mounts with the whole range and brushes the launch 300ms later, through the controlled value. Under reduced motion it mounts brushed. */
+function BrushDemo() {
+  const { reduced } = useMotionDial();
+  const [range, setRange] = useState<[number, number]>(reduced ? LAUNCH_RANGE : [0, VISITORS.length - 1]);
+  useEffect(() => {
+    if (reduced) return;
+    const id = setTimeout(() => setRange(LAUNCH_RANGE), 300);
+    return () => clearTimeout(id);
+  }, [reduced]);
+  return (
+    <div className="w-full max-w-2xl">
+      <RangeChart label="Visitors to halo.studio" unit="visitors" bars={VISITORS} segments={SEGMENTS} axis={MONTH_TICKS} value={range} onValueChange={setRange} height={56} />
+    </div>
+  );
+}
+
+/* The study's object is the chart with the launch brushed, still. */
+function StudyChart({ disabled = false }: { disabled?: boolean }) {
+  return (
+    <div className="w-full max-w-2xl">
+      <RangeChart label="Visitors to halo.studio" unit="visitors" bars={VISITORS} segments={SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} height={56} disabled={disabled} />
+    </div>
+  );
+}
+
+export const study: PageStudy = {
+  object: <StudyChart />,
+  parts: [
+    { name: "The reading", selector: "[role=group] > div:first-child p" },
+    { name: "Whole range", selector: "[role=group] > div:first-child button" },
+    { name: "The raised segment", selector: "[aria-pressed=true]" },
+    { name: "The bars", selector: "svg[role=img]" },
+    { name: "The rail", selector: "[data-no-drag] > div" },
+    { name: "The cap", selector: "[data-cap=from]" },
+    { name: "The axis", selector: "[data-no-drag] + div" },
+  ],
+  states: {
+    default: <StudyChart />,
+    disabled: <StudyChart disabled />,
+  },
+  replay: {
+    label: "Replay",
+    caption: "Watch a span brushed across the bars: the edges settle, the launch segment rises and the figure rolls. It starts 300ms after it mounts.",
+    run: () => <BrushDemo />,
+  },
+};
+
 export default function RangeChartPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<VisitorsTile />}>
+    <Page meta={meta} docs={docs} study={study} tile={<VisitorsTile />}>
       <Stage
         title="Visitors to halo.studio"
         tier="responsive"
