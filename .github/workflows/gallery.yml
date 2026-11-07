@@ -70,6 +70,11 @@ jobs:
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
+      - name: Study (every study page has its sections, anatomy parts resolve, the material frame is the Anatomy object pixel for pixel, nothing opens on its own, source and docs)
+        run: npm run test:study --prefix gallery && npm run test:study --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
       # The self-test runs with motion allowed and must see motion, so a check that has gone blind fails too.
       - name: Reduced motion (nothing moves on any page or overlay, desktop and phone)
         run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
