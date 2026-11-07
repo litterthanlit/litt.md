@@ -96,6 +96,24 @@ Two rules keep breadth from becoming the count trap:
 
 Commerce's next needs, in order: store search from the Command menu and Combobox (`commerce.md` decision 1 deferred it); an account area (orders as a Timeline, addresses as a Form, a payment method as a Card picker); order status in words (R5); a promo code as a Token input; a size guide as a Dialog; reviews as a Bar list, stars never in color (R7). Checkout stays Shopify's. Under Device a store is a point-of-sale terminal, a hero no reference has.
 
+### Depth: each world's own abilities and parts
+
+Written 2026-11-07, after units 1 and 2 were built. Nick: "I think each theme should go deeper into its own world and its strengths." Units 1 and 2 made the worlds places and the parts deep; this makes each world deep in its own direction.
+
+**The line to hold.** A shared part stays one component, with tokens and a motion language per world and never a JavaScript branch (Q18, decision 10). Depth comes from two other things: an **ability** only one world has, and a **part** only one world has. A world-only part is a separate registry item, so it costs the other worlds nothing; a shared part that forks per world costs every builder a branch forever. A world goes deep by adding leaves, never by splitting the trunk.
+
+| World | What it is | Its strength | Abilities only it has | Parts only it has (new, or brought home) | Its hero, deepened |
+|---|---|---|---|---|---|
+| Press | The instrument | Precision, depth you can feel, data | One light from above; glass that floats; caps in slots; a press that sinks half a pixel | A knob with detents; a meter bank (level, VU, a gauge row); an instrument panel block built from the tuning kit (Inspector, Spring editor, Curve editor, Pad) | A control room: the tuning kit over a live chart, not a dashboard |
+| Flat | The page | Quiet, imagery, reading | Soft focus on a hand; deal and gather from what you touched; the pill; no lines between things | litt.design's work slider (grey frames, hover a step darker); a large cover in a grey frame; an editorial reading layout; a photo essay block | A portfolio home with one large image, which answers Q5 (art direction for imagery) for Flat alone |
+| Device | The machine | Agents, terminals, hardware | Sound on a key (decision 8); LCD readouts; engraved labels; every word in the mono | The studies (agent indicators, tape reels, spool, a seven-segment counter, a one-time code behind glass); a terminal block | An agent console that could be a physical box |
+
+**How a world-only part is said.** A page gains `meta.worlds`, the materials the part belongs to, defaulting to all three (`["press", "flat", "device"]`). The wall, the sidebar, the phone menu and the world pages hide a part outside its worlds; the registry stamps the attribute the part needs in its install notes and `llms.txt`; a world page gains a section after Components, **Only here**, listing its abilities and its own parts. That is one field and three filters, and it is the honest answer to "is this a theme or a world": a theme recolours the same parts, a world has parts and abilities the others do not.
+
+**What stays shared.** Everything that exists today. A part that makes sense in every world (a button, a table, a dialog) is never made world-only to seem deeper; the test of a world-only part is that it is wrong in the other two (a knob with detents on a flat page, a photo essay on an LCD).
+
+**Order.** Device first, since its parts exist on litt.design and its abilities are decided; Flat second, since its parts exist on litt.design too and its hero answers an open question; Press last, since it is already the deepest and its new parts are inventions. Each wave is a release with its own changelog lines, and `test:wall` and `test:worlds` gain a claim that a world-only part shows in its world alone.
+
 ### Sound, as a world's ability
 
 bencho sells Sounds; Nick's studies tie a sound to the visual event; `gallery-wow.md` proposed sounds in fun mode and left it as Nick's call. In a world, sound is an ability a material brings (Nick: "each system provides new abilities"). Device is the one that has it: a key's click on press, a notch's tick on the slider, a switch's clack, a code digit's beep behind the glass. Synthesised with Web Audio, no files, so the registry ships no assets. Off by default; a Sound choice in Customize, Silent or On; only in answer to a hand, never on arrival or on its own (R4 holds for the ear too); reduced motion leaves it alone, since it is not motion, but a system-level mute does not exist, so the default is Silent.
@@ -126,6 +144,7 @@ Built as recommended unless Nick says otherwise.
 | 9 | What is paid, and when | **Nothing now.** A brand world as the studio's product first; a studies pack once eight are in. | Audience first. The free worlds are the marketing. |
 | 10 | The registry's default material (Q17) and Device's place (Q18) | **Unchanged**: the registry ships Press; a project picks a world by its attribute; recipes through tokens, never a JS branch. | A world is chosen, not imposed. If a study needs a branch, it is a second item. |
 | 11 | The 56px statement on the world pages | **Keep the gallery exception**, as the home has it. | A world page is a first screen. Same question as `gallery-wow.md`'s 1. |
+| 12 | How a world goes deeper (Depth, above) | **Abilities and world-only parts, said with `meta.worlds`; shared parts never fork.** Device first, then Flat, then Press. | A leaf costs nothing; a fork in the trunk costs every builder a branch. The strengths are already written in the taste docs; this is where they show. |
 
 ## Migration, in verifiable units
 
@@ -133,11 +152,11 @@ Each unit ends with `verify`, the build, screenshots in both themes at 1440 and 
 
 1. **Worlds in the nav and on the home.** The three world pages (`00-press.tsx`, `00-flat.tsx`, `00-device.tsx`), Material moved from Customize's popover onto the deck and into the nav, the hero block live under the deck, Foundations as cards onto existing pages, `gen-llms.mjs` writing a Worlds section from `look.ts`. **Nothing in `src/components` changes**, so no registry version moves. `test:wall` runs the wall under each material. `test:home` checks the deck's Material switch changes every tile and starts no transition (a material switch is instant, like a theme switch).
 2. **The study treatment in the kit.** `Page` gains Anatomy, Replay, States, Mechanism, Source and the Under each material strip, from page data; `gen-docs.mjs` lists which pages carry them; `gen-llms.mjs` ships `meta.mechanism`. The eight pages of decision 5. A pixel test: a demo at rest is identical with and without the treatment, and under each material it matches the material's own page.
-3. **Device, wave one.** `agent-indicator`, `copy-button`, Progress's tape recipe, Thinking's Device row, Code input's and Command menu's Study pages. Changelog lines, `test:registry`, `check.mjs` check 12 under Device for every new pair.
+3. **Depth, in three waves** (decision 12), each its own PR. First `meta.worlds` and the Only here section, with the filters and the claim in `test:wall` and `test:worlds`, in the same PR as the Device wave. **Device:** `agent-indicator`, `copy-button`, Progress's tape recipe, Thinking's Device row, a seven-segment counter, the Study pages for Code input and Command menu; changelog lines, `test:registry`, `check.mjs` check 12 under Device for every new pair. **Flat:** the work slider, the large cover, the editorial reading layout, the photo essay block, and the portfolio hero; Q5 answered for Flat. **Press:** the knob, the meter bank, the instrument panel block, and the control room hero.
 4. **Sound**, if decision 8 holds. Customize gains Sound; `check.mjs` gains a check that nothing plays without a pointer or key event in the last 300ms.
 5. **The business surface.** OG images per look on world and Study pages; a Worlds section in `README.md`; the brand-world offer as a page on litt.design, not in this repo.
 
-Unit 1 is a week and changes how the site reads; it is the one to ship first and post about. Units 2 and 3 are where the depth comes from and can run as parallel builders in worktrees, as the agents and data-color steps did.
+Unit 1 is a week and changes how the site reads; it is the one to ship first and post about. Units 2 and 3 are where the depth comes from and can run as parallel builders in worktrees, as the agents and data-color steps did. Units 1 and 2 shipped on 2026-11-07 (PRs 84 and 85).
 
 ## What does not change
 
