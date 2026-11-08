@@ -19,10 +19,11 @@
    Theme-independent tokens
    -------------------------------------------------------------------------- */
 :root {
-  /* Type: Geist carries every role, headings and numbers included (numbers in tabular
-     figures), as on litt.design. Geist Mono only for code and terminal output (v0.19).
-     "Geist" is Google Fonts' name for the face, "Geist Sans" Fontsource's. */
-  --font-sans: "Geist", "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Type: each world has its own face (proposals/worlds.md, decision 14), and the sans carries every role, headings
+     and numbers included (numbers in tabular figures). Press sets Helvetica Neue, below on every theme root; Flat sets
+     Geist and Device Geist Mono, in their blocks. Geist Mono is otherwise only for code and terminal output (v0.19).
+     A project or a reader that picks a face sets --font-choice, which every world reads first, so the choice wins
+     in every world and in every nested one. Nothing in litt declares it. */
   --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   /* Weight by role (R8). Three weights and nothing else: no 700 and up, nothing
@@ -252,6 +253,11 @@
   --device-accent-text: #a23200;
   --device-accent-pink: #c0007e;
   --device-accent-pink-text: #90005d;
+  /* Blue 4 on the body (data-accent="blue"): the fill as Press's, its text a step deeper to keep 4.5:1 on the aluminium. */
+  --device-accent-blue: #0957fd;
+  --device-accent-blue-hover: #0e4ada;
+  --device-accent-blue-text: #0541ea;
+  --device-focus-blue: #0957fd;
   --device-focus: #c2410c;
   --device-success: #006e2d;
   --device-warning: #8f4e00;
@@ -316,6 +322,10 @@
   --device-screen-focus: #ff8a1f;
   --device-screen-focus-pink: #e8489f;
   --device-screen-accent-pink-tint: #2b0d1d;
+  --device-screen-accent-blue: #0957fd;
+  --device-screen-accent-blue-text: #7084fd;
+  --device-screen-accent-blue-tint: #0e1a31;
+  --device-screen-focus-blue: #5e78fe;
   --device-screen-danger-fg: #111214;
   --device-screen-success: #4bc680;
   --device-screen-warning: #e19b1b;
@@ -351,12 +361,20 @@
      warm stone neutrals. Nick's swatch is P3 #2656f4, the same color as this sRGB value. Swap per project, or run
      monochrome ([data-accent="mono"], below). The hover is a step darker here and lighter in dark. The text tone
      sits a hair toward indigo so a link stays 0.12 (OKLab) from every data hue's text (R6); the check measures it. */
-  --accent: #0957fd;
-  --accent-hover: #0e4ada;
-  --accent-fg: #ffffff;        /* text on accent, at least 4.5:1 */
-  --accent-text: #104dfd;      /* the accent as text (links), at least 4.5:1 on canvas and on its tint */
-  --accent-tint: #e7f0ff;
-  --focus: #0957fd;            /* focus ring, at least 3:1 on canvas and surfaces */
+  --accent-blue: #0957fd;
+  --accent-blue-hover: #0e4ada;
+  --accent-blue-fg: #ffffff;   /* text on Blue 4, at least 4.5:1, so it stays white where a material darkens --accent-fg */
+  --accent-blue-text: #104dfd; /* Blue 4 as text (links), at least 4.5:1 on canvas and on its tint */
+  --accent-blue-tint: #e7f0ff;
+  --focus-blue: #0957fd;       /* focus ring, at least 3:1 on canvas and surfaces */
+  /* The accent is Blue 4 here, Press's own (proposals/worlds.md, decision 14). Flat answers it with the ink and Device
+     with orange, below; data-accent="blue" asks for Blue 4 in any world. */
+  --accent: var(--accent-blue);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
   /* Pink, the other accent ([data-accent="pink"], below): a hot raspberry at Blue 4's weight, so white still reads
      past 5.5:1. Its fill and text keep 0.12 (OKLab) from the rose data hue like Blue 4's do, which is why the text
      tone is a deep berry in light and a pale pink in dark: a pink link at the rose's own lightness would read as a series. */
@@ -497,6 +515,10 @@
   --device-accent-text: #ff9a3c;
   --device-accent-pink: #d3268e;
   --device-accent-pink-text: #feb9db;
+  --device-accent-blue: #2166fd;
+  --device-accent-blue-hover: #2569fe;
+  --device-accent-blue-text: #bcd3fe; /* a pale blue, as pink's text is a pale pink: a link at the sky hue's lightness would read as a series */
+  --device-focus-blue: #7084fd;
   --device-focus: #ff8a1f;
   --device-success: #4bc680;
   --device-warning: #e19b1b;
@@ -561,6 +583,10 @@
   --device-screen-focus: #ff8a1f;
   --device-screen-focus-pink: #e8489f;
   --device-screen-accent-pink-tint: #2b0d1d;
+  --device-screen-accent-blue: #0957fd;
+  --device-screen-accent-blue-text: #7084fd;
+  --device-screen-accent-blue-tint: #0e1a31;
+  --device-screen-focus-blue: #5e78fe;
   --device-screen-danger-fg: #111214;
   --device-screen-success: #4bc680;
   --device-screen-warning: #e19b1b;
@@ -592,12 +618,18 @@
   --device-screen-glass-bg-solid: rgba(17, 18, 20, 0.98);
   --device-screen-glass-border: rgba(255, 255, 255, 0.08);
 
-  --accent: #0957fd;
-  --accent-hover: #1e64fe;     /* a step lighter in dark */
-  --accent-fg: #ffffff;
-  --accent-text: #6579fd;      /* lifted to pass 4.5:1 on the canvas, every surface and its tint, and toward indigo, apart from the chart blue */
-  --accent-tint: #0e1a31;
-  --focus: #5e78fe;
+  --accent-blue: #0957fd;
+  --accent-blue-hover: #1e64fe; /* a step lighter in dark */
+  --accent-blue-fg: #ffffff;
+  --accent-blue-text: #6579fd; /* lifted to pass 4.5:1 on the canvas, every surface and its tint, and toward indigo, apart from the chart blue */
+  --accent-blue-tint: #0e1a31;
+  --focus-blue: #5e78fe;
+  --accent: var(--accent-blue);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
   --accent-pink: #c0007e;
   --accent-pink-hover: #cd1c89; /* a step lighter in dark */
   --accent-pink-fg: #ffffff;  /* text on the pink fill, so it stays white where a material darkens --accent-fg */
@@ -722,6 +754,10 @@
     --device-accent-text: #ff9a3c;
     --device-accent-pink: #d3268e;
     --device-accent-pink-text: #feb9db;
+    --device-accent-blue: #2166fd;
+    --device-accent-blue-hover: #2569fe;
+    --device-accent-blue-text: #bcd3fe;
+    --device-focus-blue: #7084fd;
     --device-focus: #ff8a1f;
     --device-success: #4bc680;
     --device-warning: #e19b1b;
@@ -786,6 +822,10 @@
     --device-screen-focus: #ff8a1f;
     --device-screen-focus-pink: #e8489f;
     --device-screen-accent-pink-tint: #2b0d1d;
+    --device-screen-accent-blue: #0957fd;
+    --device-screen-accent-blue-text: #7084fd;
+    --device-screen-accent-blue-tint: #0e1a31;
+    --device-screen-focus-blue: #5e78fe;
     --device-screen-danger-fg: #111214;
     --device-screen-success: #4bc680;
     --device-screen-warning: #e19b1b;
@@ -817,12 +857,18 @@
     --device-screen-glass-bg-solid: rgba(17, 18, 20, 0.98);
     --device-screen-glass-border: rgba(255, 255, 255, 0.08);
 
-    --accent: #0957fd;
-    --accent-hover: #1e64fe;
-    --accent-fg: #ffffff;
-    --accent-text: #6579fd;
-    --accent-tint: #0e1a31;
-    --focus: #5e78fe;
+    --accent-blue: #0957fd;
+    --accent-blue-hover: #1e64fe;
+    --accent-blue-fg: #ffffff;
+    --accent-blue-text: #6579fd;
+    --accent-blue-tint: #0e1a31;
+    --focus-blue: #5e78fe;
+    --accent: var(--accent-blue);
+    --accent-hover: var(--accent-blue-hover);
+    --accent-fg: var(--accent-blue-fg);
+    --accent-text: var(--accent-blue-text);
+    --accent-tint: var(--accent-blue-tint);
+    --focus: var(--focus-blue);
     --accent-pink: #c0007e;
     --accent-pink-hover: #cd1c89;
     --accent-pink-fg: #ffffff;  /* text on the pink fill, so it stays white where a material darkens --accent-fg */
@@ -895,6 +941,9 @@
   --glow: 0 0 0 1px color-mix(in oklab, var(--accent) 55%, transparent),
           0 0 24px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+  /* Press's own face: Helvetica Neue, installed on Apple's systems, Helvetica or Arial elsewhere. On every theme root,
+     so a Press part inside another world takes it again, as it takes the press neutrals. */
+  --font-sans: var(--font-choice, "Helvetica Neue", Helvetica, Arial, sans-serif);
   /* A raised block under a pointer: the ink mixed into the block. Flat sets its own share. */
   --block-hover: color-mix(in oklab, var(--block), var(--fg) 4%);
   /* A hue's tint: the fill behind its -text tone in a tag or an avatar. Mixed into
@@ -916,6 +965,27 @@
   --label-case: none;
   --label-tracking: var(--type-caption-tracking);
   --engrave: 0 0 0 transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Blue 4 (R6): data-accent="blue" on <html> or <body> asks for Blue 4 in a world
+   whose own accent is another (Flat's ink, Device's orange). Press needs no
+   attribute: Blue 4 is its own. The derived tokens are restated, as pink's are.
+   -------------------------------------------------------------------------- */
+:root[data-accent="blue"],
+[data-accent="blue"] {
+  --accent: var(--accent-blue);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-blue) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-blue) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-blue) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-blue);
 }
 
 /* --------------------------------------------------------------------------
@@ -983,6 +1053,18 @@
   --fg-subtle: var(--flat-fg-subtle);
   --fg-disabled: var(--flat-fg-disabled);
 
+  /* Flat's own accent is the ink and its own face Geist (proposals/worlds.md, decision 14): monochrome's block, restated
+     here so no attribute is needed. data-accent="blue" or "pink" on the same element wins, restated after this block. */
+  --accent: var(--fg);
+  --accent-hover: color-mix(in oklab, var(--fg), var(--canvas) 18%);
+  --accent-fg: var(--canvas);
+  --accent-text: var(--fg);
+  --accent-tint: color-mix(in oklab, var(--fg) 7%, var(--canvas));
+  --focus: var(--fg);
+  --light: none;
+  --glow: var(--block-lift);
+  --font-sans: var(--font-choice, "Geist", "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif);
+
   /* Flat opens at the Pill shape (proposals/flat-pill.md, rule 1); the Customize shapes still override it. */
   --radius-control: 28px;
   --radius-surface: 16px;
@@ -1020,6 +1102,40 @@
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
 }
 
+/* Blue 4 and pink on a Flat element: restated after Flat, so on <html> with both attributes the accent still wins
+   (Flat's own ink would otherwise beat them on order). */
+:root[data-material="flat"][data-accent="blue"],
+[data-material="flat"][data-accent="blue"] {
+  --accent: var(--accent-blue);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-blue) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-blue) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-blue) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-blue);
+}
+
+:root[data-material="flat"][data-accent="pink"],
+[data-material="flat"][data-accent="pink"] {
+  --accent: var(--accent-pink);
+  --accent-fg: var(--accent-pink-fg);
+  --accent-hover: var(--accent-pink-hover);
+  --accent-text: var(--accent-pink-text);
+  --accent-tint: var(--accent-pink-tint);
+  --focus: var(--focus-pink);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-pink) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-pink) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-pink) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-pink);
+}
+
 /* --------------------------------------------------------------------------
    Device (R3, proposals/device.md): data-material="device" on <html> says the
    depth ladder in hardware. The canvas is an aluminium body, surfaces are plates
@@ -1051,6 +1167,10 @@
   --accent-text: var(--device-accent-text);
   --accent-pink: var(--device-accent-pink);
   --accent-pink-text: var(--device-accent-pink-text);
+  --accent-blue: var(--device-accent-blue);
+  --accent-blue-hover: var(--device-accent-blue-hover);
+  --accent-blue-text: var(--device-accent-blue-text);
+  --focus-blue: var(--device-focus-blue);
   --focus: var(--device-focus);
   --focus-pink: var(--device-accent-pink);
   --success: var(--device-success);
@@ -1096,8 +1216,8 @@
   --field-line: var(--device-field-line);
   --field-shade: var(--device-field-shade);
   --field-font: var(--font-mono);
-  /* Full mono: every word on a Device sets in Geist Mono, at the three role weights (R8). */
-  --font-sans: var(--font-mono);
+  /* Full mono: every word on a Device sets in Geist Mono, at the three role weights (R8), unless a face is chosen. */
+  --font-sans: var(--font-choice, var(--font-mono));
   --label-case: uppercase;
   --label-tracking: 0.08em;
   --engrave: var(--device-engrave);
@@ -1110,8 +1230,24 @@
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
 }
 
-/* Pink and monochrome on a Device element: restated after Device, so on <html> with both attributes the accent still
-   wins (Device's hue mappings would otherwise beat them on order). */
+/* Blue 4, pink and monochrome on a Device element: restated after Device, so on <html> with both attributes the accent
+   still wins (Device's hue mappings would otherwise beat them on order). */
+:root[data-material="device"][data-accent="blue"],
+[data-material="device"][data-accent="blue"] {
+  --accent: var(--accent-blue);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-blue) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-blue) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-blue) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-blue);
+}
+
 :root[data-material="device"][data-accent="pink"],
 [data-material="device"][data-accent="pink"] {
   --accent: var(--accent-pink);
@@ -1176,6 +1312,10 @@
   --accent-tint: var(--device-screen-accent-tint);
   --accent-pink: var(--device-screen-accent-pink);
   --accent-pink-text: var(--device-screen-accent-pink-text);
+  --accent-blue: var(--device-screen-accent-blue);
+  --accent-blue-text: var(--device-screen-accent-blue-text);
+  --accent-blue-tint: var(--device-screen-accent-blue-tint);
+  --focus-blue: var(--device-screen-focus-blue);
   --focus: var(--device-screen-focus);
   --focus-pink: var(--device-screen-focus-pink);
   --accent-pink-tint: var(--device-screen-accent-pink-tint);
@@ -1220,6 +1360,21 @@
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
 }
 
+:is([data-material="device"][data-accent="blue"], [data-material="device"] [data-accent="blue"], [data-accent="blue"] [data-material="device"]) :is(.litt-raised, .litt-glass) {
+  --accent: var(--accent-blue);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-blue) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-blue) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-blue) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-blue);
+}
+
 :is([data-material="device"][data-accent="pink"], [data-material="device"] [data-accent="pink"], [data-accent="pink"] [data-material="device"]) :is(.litt-raised, .litt-glass) {
   --accent: var(--accent-pink);
   --accent-fg: var(--accent-pink-fg);
@@ -1260,6 +1415,11 @@
     --data-teal-tint: var(--surface-2);
     --data-violet-tint: var(--surface-2);
     --data-rose-tint: var(--surface-2);
+  }
+  :root[data-accent="blue"],
+  [data-accent="blue"] {
+    --light: none;
+    --glow: 0 0 0 1px var(--accent-blue);
   }
   :root[data-accent="pink"],
   [data-accent="pink"] {

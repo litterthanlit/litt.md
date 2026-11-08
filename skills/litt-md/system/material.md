@@ -76,7 +76,8 @@ The same depth ladder said by fill alone, on neutral greys, after the work slide
 
 - **The greys.** Each theme block declares `--flat-canvas` to `--flat-fg-disabled`, each the stone neutral at its OKLCH lightness and chroma 0, and the flat block maps the live names onto them. The check runs every contrast pair again under Flat.
 - **An empty shadow is `0 0 0 0 transparent`, never `none`.** Components put these tokens in comma lists (an error ring plus `--block-lift`), and `none` there voids the whole shadow.
-- **Nested themes.** An element that sets its own theme (`class="dark"`, `data-theme`) redeclares the stone neutrals and the press tokens, so it needs `data-material="flat"` too, as it needs `data-accent`.
+- **Its own accent and face.** Flat's accent is the ink, monochrome's tones restated in its block, and its face is Geist (`proposals/worlds.md`, decision 14). `data-accent="blue"` or `"pink"` on the same element asks for that accent instead, restated after the flat block so it wins on `<html>`.
+- **Nested themes.** An element that sets its own theme (`class="dark"`, `data-theme`) redeclares the stone neutrals, the press tokens, Blue 4 and Helvetica Neue, so it needs `data-material="flat"` too, as it needs `data-accent`.
 - **Never:** a cast, a highlight or a lit wall under Flat, or a grey with chroma.
 
 ### 8. Device: `[data-material="device"]` (R3)

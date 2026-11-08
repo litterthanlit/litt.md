@@ -4,6 +4,14 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-09 · Each world has its own color and type
+
+A world you can tell apart at a glance has its own color and its own voice (`proposals/worlds.md`, decision 14). With no `data-accent` each world shows its own accent, and with no face chosen its own face: Press is Blue 4 in Helvetica Neue, Flat is the ink in Geist, Device is orange in Geist Mono, as it was. An accent you ask for, or a face you choose, still wins in every world.
+
+- **breaking** `litt`: Press sets Helvetica Neue (Helvetica or Arial where it is not installed), not Geist, and Flat (`data-material="flat"`) runs in the ink, as monochrome does, not Blue 4, and sets Geist. New: `data-accent="blue"` asks for Blue 4 in any world, with its tones `--litt-accent-blue`, `--litt-accent-blue-hover`, `--litt-accent-blue-fg`, `--litt-accent-blue-text`, `--litt-accent-blue-tint` and `--litt-focus-blue` (Press's `--litt-accent` and `--litt-focus` read them; Device retunes them to its body and its screens). New: `--litt-font-choice`, a face you choose, which every world sets in place of its own; litt never declares it. Migrate: a Flat project that wants Blue 4 back puts `data-accent="blue"` on `<html>` beside `data-material="flat"`. A Press project that wants Geist back sets `--litt-font-choice: "Geist", "Geist Sans", sans-serif` on `:root` (`base-styles` already loads Geist). Device, and a project that sets `data-accent="mono"` or `"pink"`, change nothing.
+- **changed** `base-styles`: an element that sets a theme or a material (`data-theme`, `data-material`, `.dark`, `.light`) sets the family again, so a part shown in another world takes that world's face.
+- **changed** `motion`: the Customize snippet's face line is `--litt-font-choice`, the one every world reads, in place of `--litt-font-sans`.
+
 ## 2026-11-08 · Device goes deeper: its own parts, and Only here
 
 A world goes deeper by parts and abilities that exist in it alone (`proposals/worlds.md`, Depth). A part names its worlds in its page's `meta.worlds`; the wall, the nav and the other world pages hide it, and its world page lists it under Only here. Device gets the first four, brought home from the studies on litt.design: each needs `data-material="device"` on `<html>` and says so in its install notes.
