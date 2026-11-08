@@ -163,159 +163,177 @@ Written 2026-11-08, after decision 14 shipped each world's own color and type. N
 
 bencho sells Sounds; Nick's studies tie a sound to the visual event; `gallery-wow.md` proposed sounds in fun mode and left it as Nick's call. In a world, sound is an ability a material brings (Nick: "each system provides new abilities"). Device is the one that has it: a key's click on press, a notch's tick on the slider, a switch's clack, a code digit's beep behind the glass. Synthesised with Web Audio, no files, so the registry ships no assets. Off by default; a Sound choice in Customize, Silent or On; only in answer to a hand, never on arrival or on its own (R4 holds for the ear too); reduced motion leaves it alone, since it is not motion, but a system-level mute does not exist, so the default is Silent.
 
-## Inventory: body or recipe, per world
+## Inventory: three bodies per part
 
-Written 2026-11-08 for Nick, after wave one of the bodies (Switch, Button, Slider), for Nick to strike before Device wave one is built. It covers every part with a page, decides which worlds give it a body and which give it a recipe, and orders the bodies into waves. The test from Bodies, above: a part gets a body in a world when the hand touches it there, or when that world's structure is different (a key, not a block or a pill; a fader, not a slot; a readout on LCD glass, not a field; a lamp; a detent; segments). In every other cell the part gets a recipe, with the reason written down. A body may change what a part is made of and how the hand works it, never what it is for.
+Rewritten 2026-11-08 for Nick, after decision 15. The first draft of this table gave a body only where a hand touched a part and a recipe (tokens only) everywhere else, and it built the worlds one after another, Device first. Nick has since chosen every visible part and all three worlds per wave (Three directions, above), so every cell below is a body: its own structure and its own hand, pushed to its world's extreme, Press the instrument, Flat the page, Device the machine. Each row passes the test of a body: in greyscale and one font, the three cells are three different things. Today's Press is the shape all three worlds share, so every Press cell is a new body too, not today's part; it stays the default body in each part's own file.
 
-The rows are the 95 items with a page (`docs.json` names 97). Framed and Glide have no page and get no row. Framed draws nothing. Glide is the highlight that travels between rows, and under Device nothing travels, so the Device bodies that hold rows put a lamp on the current row in its place (Select's list builds the lamp row; Menu, Command menu, Combobox and Tree reuse it). Shopify, Shopify cart, Icons and Tune have rows even though they draw nothing of their own or draw only glyphs.
+The rows are the 95 items with a page (`docs.json` names 97). Framed and Glide have no page and get no row. Framed draws nothing. Glide is the highlight that travels between rows: under Press it carries the lifted slat, under Flat the grey bubble, and under Device nothing travels, so the lamp row takes its place. "Built" means the body has shipped; Device's bodies in wave 1 are being built now.
 
-Press is the default body in each part's own file. A Press cell says `body` only where Press's body should change from today. Press is built last.
-
-The order is world by world: Device first, then Flat, then Press. A Device wave that touches a part with a Flat body lifts today's Flat recipe (its `in-[[data-material=flat]]:` classes) into that body unchanged, to the pixel, as wave one did; Flat's own redesign of its bodies comes in Flat's waves. The Flat and Press columns are a first pass: each world gets its own read of this table before its waves, so a recipe there is a default, not a verdict.
-
-| Part | Press | Flat | Device | Wave |
+| Part | Press, the instrument | Flat, the page | Device, the machine | Wave |
 |---|---|---|---|---|
-| Accordion (`accordion`) | recipe: today's header rows and hairlines | recipe: grey pill per section, no lines (already a class recipe) | body: each header an engraved legend on a plate, with a small toggle key at its end that latches down while its section is open | D3 |
-| Action bar (`action-bar`) | recipe: glass bar of Buttons | recipe: the ink bar (already a class recipe) | recipe: the bar is a screen by the `.litt-glass` rule, and its actions are Buttons, which are keys already | none |
-| Agent indicator (`agent-indicator`) | n/a (Device only) | n/a (Device only) | built (a Device part) | built |
-| App shell (`app-shell`) | recipe: layout | recipe: no hairlines, grey hover (already a class recipe) | recipe: layout; the sidebar is a plate on the body, the current link steps its ink, the mono comes with the material | none |
-| Avatar (`avatar`) | recipe: a picture in a circle | recipe: a grey circle, no edge | recipe: a picture or initials in a circle; nothing to press, nothing to read off glass | none |
-| Bar list (`bar-list`) | recipe: data | recipe: data; grey track | recipe: data; the thin bars are lit fills from the slot tokens, the rows are links | none |
-| Breadcrumb (`breadcrumb`) | recipe: words and links | recipe: grey pill on hover (already a class recipe) | recipe: words and links in the mono | none |
-| Breakdown (`breakdown`) | recipe: data | recipe: data | recipe: data; one rail in the data hues | none |
-| Button (`button`) | built | built | built | built |
-| Callout (`callout`) | recipe: a note on a raised surface | recipe: a grey fill, no cast (already a class recipe) | recipe: a note on a plate; tokens | none |
-| Card (`card`) | recipe: layout | recipe: layout | recipe: layout; a screen by the `.litt-raised` rule | none |
-| Card picker (`card-picker`) | recipe: today's picked card raised | recipe: grey cards, the picked one ringed in ink (already a class recipe) | body: each card a plate with a lamp in its corner; the picked one set down 2px into a well with its lamp lit, so picked reads as latched, not raised | D2 |
-| Carousel (`carousel`) | recipe: slides and Buttons | recipe: slides and Buttons (the work slider is a Flat part of its own) | recipe: the slides are pictures, and its controls are Buttons, which carry the key | none |
-| Cart (`cart`) | recipe: composes Dialog's sheet, Number field and Button | recipe: the same parts' Flat bodies and recipes | recipe: composes Dialog's sheet, Number field and Button, which carry their own Device bodies | none |
-| Chart (`chart`) | recipe: data | recipe: data; grey Meter track | recipe: data; marks in the data hues, the Meter a lit fill in a well from the slot tokens | none |
-| Checkbox and radio (`checkbox`) | recipe: today's cut with a tick in ink, and the ring with its bead | body: an outline when off and an ink fill when on, the radio a ring around an ink dot; no cut and no shade (today a class recipe; it moves into its body) | body: a square key that latches down and lights its lamp in the ink when checked, half lit when mixed; a radio group is a set of the same keys, interlocked, so pressing one lets the last one up | D1, F1 |
-| Code block (`code-block`) | recipe: code on a surface | recipe: no hairline, a grey copy pill (already a class recipe) | recipe: already a screen in the mono; its copy action is a Button | none |
-| Code input (`code-input`) | recipe: today's cells | recipe: grey cells with no outline (already a class recipe) | body: one glass cell per character showing the ghost "8" of the seven-segment study, each typed digit lit in segments; still one text field underneath | D1 |
-| Cohort grid (`cohort-grid`) | recipe: data table | recipe: no lines (already a class recipe) | recipe: a data table; the mono and the screen inks | none |
-| Color picker (`color-picker`) | recipe: today's wells and rails | recipe: grey wells and the Popover's solid card | body: the swatch a lit well, the hex on the Input's glass, and the panel a screen whose hue and alpha rails are faders in wells with key caps | D2 |
-| Combobox (`combobox`) | recipe: today's cut and glass list | recipe: grey field, solid card (already a class recipe) | body: the Input's glass field; its list a screen with the lamp row; chosen values as lit cells, as Token input has them | D3 |
-| Command menu (`command-menu`) | recipe: today's glass | recipe: solid card, grey search (already a class recipe) | body: a terminal: the search a prompt line on glass with an engraved mark, the results screen lines with the lamp row, the footer's shortcuts as key caps | D3 |
-| Composer (`composer`) | recipe: today's cut and toolbar | recipe: grey field from the cut tokens (already a class recipe) | body: the Input's glass with an engraved prompt mark, file chips as lit cells, the toolbar a row of keys, and Send the one key in the accent | D2 |
-| Context menu (`context-menu`) | recipe: Menu's panel and rows | recipe: Menu's panel and rows | recipe: it renders Menu's panel and rows, so it gets Menu's Device body with no code of its own | none |
-| Copy button (`copy-button`) | n/a (Device only) | n/a (Device only) | built (a Device part) | built |
-| Curve editor (`curve-editor`) | recipe: today's instrument | recipe: grey floor, ink curve, round handles from tokens | body: a scope: the curve a lit trace on LCD glass, its two handles knob caps, and `cubic-bezier(…)` an LCD line | D2 |
-| Date picker (`date-picker`) | recipe: today's field and calendar | recipe: grey day pills, the chosen day in ink, from tokens | body: the date on an LCD readout; the calendar a screen of small day keys, the chosen day latched with its lamp lit and a range lit between its ends | D3 |
-| Details (`details`) | recipe: labelled facts | recipe: labelled facts | recipe: facts on a plate; the labels engraved by `--label-case` and `--engrave` | none |
-| Dialog (`dialog`) | recipe: today's glass that rises with weight | body: a solid card that grows from its opener, no glass and no ring | body: a screen set into the body by a bezel that switches on in three steps where it stands; the title an engraved legend, the actions keys | D3, F2 |
-| Dot plot (`dot-plot`) | recipe: data | recipe: data | recipe: data; dots in the data hues | none |
-| File changes (`file-changes`) | recipe: a review list | recipe: a review list | recipe: a review list on a screen; its actions are Buttons | none |
-| File drop (`file-drop`) | recipe: today's cut | recipe: a grey area, a ring while a file is over it, from tokens | body: a slot cut into the body with an engraved legend and a Choose key; each file a line on LCD glass, its upload Progress's segments | D2 |
-| Forms (`form`) | recipe: layout | recipe: layout | recipe: layout of fields that carry their own bodies | none |
-| Funnel (`funnel`) | recipe: data | recipe: data | recipe: data; one rail per step | none |
-| Gauge (`gauge`) | recipe: today's ticks (the meter bank is a Press part of its own) | recipe: ticks in ink on grey | body: a moving-coil meter: a needle over engraved ticks behind glass, the figure in segments under it; the needle settles on the responsive spring only when the value changes | D4 |
-| Header (`header`) | recipe: sticky glass | recipe: solid, no highlight | recipe: the glass is a screen by the rule; nav words in the mono | none |
-| Heatmap (`heatmap`) | recipe: data | recipe: data | recipe: already a dot matrix in the data hues; the screen inks do the rest | none |
-| Hover card (`hover-card`) | recipe: glass | recipe: a solid card from the glass tokens | recipe: a screen by the glass rule; the motion language switches it on where it stands | none |
-| Icons (`icons`) | recipe: glyphs in `currentColor` | recipe: glyphs in `currentColor` | recipe: glyphs in `currentColor` take the ink they sit in | none |
-| Input (`input`) | recipe: today's cut with the top wall's shade | body: a grey field with no outline, the focus ring the only line | body: LCD glass set in a bezel well, the label engraved on the body above, the hint and the error as dim LCD lines, an error saying its word beside a lamp in `--danger` | D1, F1 |
-| Inspector (`inspector`) | recipe: a panel of litt's controls | recipe: the controls' Flat bodies | recipe: a panel of Sliders, Switches, Segmented and Inputs, which carry their own bodies; the panel is a screen | none |
-| Kbd (`kbd`) | recipe: a key cap from `--key-lift` | recipe: a grey cap | recipe: already a key cap; Device's key tokens give it the skirt, and it is never pressed | none |
-| Legend (`legend`) | recipe: today's toggles | recipe: grey pills, a hidden series an outline | body: a row of latching keys, each with a lamp in its series' data hue; down shows the series, up hides it, and its word says which | D2 |
-| Lightbox (`lightbox`) | recipe: glass around a picture | recipe: grows from the thumbnail (the motion language) | recipe: a picture at screen size stays a picture; the motion language switches it on, its controls are Buttons | none |
-| List and cards (`list`) | recipe: rows and cards | recipe: rows and cards | recipe: rows and cards; the filter chips are Tags and Buttons | none |
-| List cover (`list-cover`) | recipe: rectangles and hairlines | recipe: rectangles and hairlines | recipe: abstract covers drawn in the screen inks | none |
-| Log view (`log-view`) | recipe: lines on a surface | recipe: lines on a surface | recipe: already lines on a screen in the mono, the Code block's surface | none |
-| Media (`media`) | recipe: a picture in a frame | recipe: a grey frame (the large cover is a Flat part of its own) | recipe: an image stays an image; the frame reads tokens | none |
-| Menu (`menu`) | recipe: today's glass and Glide | recipe: a solid card and a grey bubble that glides, from Flat's glass and block tokens | body: a screen list whose current row is marked by the lamp row, switching row to row with no glide; shortcut legends engraved | D3 |
-| Message (`message`) | recipe: reading | recipe: reading | recipe: words in the mono on the body; nothing for the hand | none |
-| Number field (`number-field`) | recipe: today's cut with − and + blocks | recipe: a grey pill with round grey − and +, from tokens and the radius | body: the figure on an LCD readout, − and + as keys on their 2px skirts beside the glass, not inside it | D1 |
-| Option picker (`option-picker`) | recipe: today's words in a tray | recipe: grey pills, the chosen one in ink, from the tray and block tokens | body: the values as a row of latching keys with engraved legends, the chosen one down with its lamp lit (the radio's keys); a sold-out value lies flat and says so | D1 |
-| Pad (`pad`) | recipe: today's floor and cap | recipe: a grey floor and a mid grey cap with no cast, from tokens | body: an XY pad behind LCD glass: a dot grid, a lit crosshair through a knob cap, both values as readouts on the glass | D2 |
-| Pagination (`pagination`) | recipe: the range in words and two Buttons | recipe: the same | recipe: the range in words and two Buttons, which are keys | none |
-| Plan (`plan`) | recipe: steps ticked off | recipe: steps ticked off | body: a column of step lamps on an engraved strip, each done step's lamp lit, the step at work with the Agent indicator beside it while it works | D4 |
-| Popover (`popover`) | recipe: glass | recipe: a solid card that grows from its trigger | recipe: a screen by the glass rule; the motion language switches it on in place | none |
-| Price (`price`) | recipe: a figure | recipe: a figure | recipe: a figure in the mono; tokens | none |
-| Product card (`product-card`) | recipe: a Card | recipe: a Card | recipe: a Card, so a screen by the rule | none |
-| Progress (`progress`) | recipe: today's slot and fill | recipe: a pill track with an ink fill, from tokens | body: segments in a well that light in steps, the percent in seven segments; an unknown length is the Chase's step lights, moving only while the work runs | D4 |
-| Range chart (`range-chart`) | recipe: data | recipe: data | recipe: data; its total is a Rolling number, which gets segments, and its brush reads the tray and cap tokens | none |
-| Resizable (`resizable`) | recipe: a line and a grip | recipe: no line, a grey grip | recipe: the hand drags the grip 1:1 and needs no detent; the grip reads the key tokens | none |
-| Rolling number (`rolling-number`) | recipe: digits that roll | recipe: digits that roll | body: the figure on seven-segment digits behind glass, a changed digit switching in three steps where it stands instead of rolling (nothing travels) | D4 |
-| Rule builder (`rule-builder`) | recipe: rows of Select, Input and Button | recipe: the same parts' Flat bodies | recipe: rows of Select, Input and Button, which carry their own bodies | none |
-| Run card (`run-card`) | recipe: card, ring and words | recipe: card, ring and words | body: the ring a dial of lit segments that light in steps, the step it is on an LCD line, the folded run a key you press to open it again | D4 |
-| Run list (`run-list`) | recipe: rows | recipe: rows | recipe: rows that say where each run stands in words; tokens | none |
-| Scroll area (`scroll-area`) | recipe: a scrollbar from tokens | recipe: the same | recipe: the scrollbar reads tokens; nothing to say in hardware | none |
-| Segmented control (`segmented`) | body: today's raised segment, which the hand can also drag along its tray to land on the nearer option, as the Switch's block does (Nick's call) | body: a grey bubble that glides between the words, no tray | body: a row of keys on one skirt, the chosen one latched down with its lamp lit; a press lets the last one up, with no glide | D1, F1, P1 |
-| Select (`select`) | recipe: today's raised trigger and glass list | body: a grey bubble trigger and a solid card list, no glass | body: the value on an LCD readout with up and down keys at its end that step through the options without opening it; pressing the readout opens the list as a screen with the lamp row; the keyboard is the contract's | D1, F1 |
-| Seven-segment (`seven-segment`) | n/a (Device only) | n/a (Device only) | built (a Device part) | built |
-| Shopify (`shopify`) | recipe: a library that draws nothing | recipe: draws nothing | recipe: draws nothing | none |
-| Shopify cart (`shopify-cart`) | recipe: a cart provider that draws nothing | recipe: draws nothing | recipe: draws nothing | none |
-| Slide to confirm (`slide-confirm`) | recipe: today's cap in a tray | recipe: a pill track and a mid grey cap from Flat's cap tokens | body: a latch key pushed along a well to an end stop, the track's words on an LCD strip and a lamp at the stop that lights once confirmed; let go short and it goes home in steps | D1 |
-| Slider (`slider`) | built | built | built | built |
-| Sources (`sources`) | recipe: numbered marks and a list | recipe: the same | recipe: numbered marks and a list in words | none |
-| Sparkline (`sparkline`) | recipe: data | recipe: data | recipe: data; one line | none |
-| Spread (`spread`) | recipe: data | recipe: data | recipe: data; one rail per row | none |
-| Spring editor (`spring-editor`) | recipe: today's instrument | recipe: a grey floor and a mid grey cap, from tokens | body: the Pad's glass with the spring's curve drawn as a lit trace, time and bounce as readouts on the glass | D2 |
-| Stat (`stat`) | recipe: a figure in a tile | recipe: a figure in a tile | recipe: a figure on a screen; a changing figure uses Rolling number, which carries the segments | none |
-| States (`states`) | recipe: empty, loading and error | recipe: the same | body: loading as the Chase's step lights in a well, moving only while it loads; empty and error as LCD lines with their words, an error with a lamp in `--danger` | D4 |
-| Steps (`steps`) | recipe: today's steps | recipe: grey steps from tokens | body: a strip of numbered lamps, done ones lit in the ink, what is left dark, the current step's word on an LCD line | D4 |
-| Switch (`switch`) | built | built | built | built |
-| Table (`table`) | recipe: data | recipe: data; no lines | recipe: data; rows and columns in the mono and the screen inks | none |
-| Table filter (`table-filter`) | recipe: a Button that opens the Menu | recipe: the same | recipe: a Button that opens the Menu, and both carry their own bodies | none |
-| Tabs (`tabs`) | recipe: today's underline that glides | body: a grey bubble that glides behind the current label, no underline | body: engraved legends on the body with a lamp under the current one, switching on, never gliding; the segmented variant takes Segmented's row of keys | D1, F1 |
-| Tag (`tag`) | recipe: a word | recipe: a grey pill | recipe: a status is a word; tokens give it the mono | none |
-| Tape progress (`tape-progress`) | n/a (Device only) | n/a (Device only) | built (a Device part) | built |
-| Thinking (`thinking`) | recipe: today's disclosure and clock | recipe: the same | body: the clock in seven segments on a small LCD, the Agent indicator in its slot (decision 7), the reasoning on glass in the mono | D4 |
-| Time scrubber (`time-scrubber`) | recipe: today's ruler and needle | recipe: a grey ruler and an ink needle, from tokens | body: a tape counter: the time in seven segments over an engraved ruler in a well under the fixed needle; the arrow keys move it in detents | D2 |
-| Timeline (`timeline`) | recipe: data | recipe: data | recipe: steps in order, with times and outcomes in words | none |
-| Toast (`toast`) | recipe: today's glass slip | body: an ink pill with canvas words, its action inside the pill | body: one LCD line in a bezel, the message in the mono and its action a key at the end; it switches on in steps, and a failure says its word beside a lamp in `--danger` | D3, F2 |
-| Token input (`token-input`) | recipe: today's cut with tags as blocks | recipe: a grey field, tokens as grey pills (Tag's Flat recipe) | body: the Input's glass with each token an inverted cell of lit mono words and a small engraved key to remove it, since a raised tag cannot stand on glass | D2 |
-| Tool call (`tool-call`) | recipe: rows that fold | recipe: the same | recipe: rows that fold; its approval is Buttons | none |
-| Tooltip (`tooltip`) | recipe: glass | recipe: a solid label | recipe: a small screen by the glass rule; words only | none |
-| Tree (`tree`) | recipe: today's raised selected row | recipe: a grey bubble on the selected row | body: rows on a screen, the selected row marked by the lamp row instead of raised, a folder's toggle a small key that latches down while it is open | D3 |
-| Tune (`tune`) | recipe: it builds an Inspector | recipe: the Inspector's | recipe: it builds an Inspector, so it follows the Inspector's parts | none |
+| Accordion (`accordion`) | Sections as slats in a tray; the open slat lifts and its panel sits in a well beneath | Headings in the title weight parted by space; the open section's text simply follows, a − beside it | Each header an engraved legend on a plate, a toggle key at its end latched down while open | 5 |
+| Action bar (`action-bar`) | A glass bench floating at the foot, actions as blocks in a tray, the count on a raised face | An ink pill at the foot, the count and actions as words in canvas ink | A screen strip fixed to the bottom edge: the count in segments, the actions a row of keys | 4 |
+| Agent indicator (`agent-indicator`) | n/a (Device only) | n/a (Device only) | built | built |
+| App shell (`app-shell`) | The sidebar a plate standing on the page; the current link a raised block on a tray rail | No sidebar frame: links as a column of words, the current in a grey bubble, space for the edge | A chassis: the sidebar an engraved panel with a lamp by the current link, the main area a screen | 5 |
+| Avatar (`avatar`) | The picture in a raised round bezel with a lit rim, like a dial's | The picture alone, round, no edge; without one, initials in ink on a grey disc | A small round window of LCD glass, the picture behind it or initials in the mono | 10 |
+| Bar list (`bar-list`) | Each row a slat; its bar a fill drawn out of a slot cut into the slat | Rows parted by space, a grey band behind each label to its share, the value in ink | Each row a run of lit segments in a well, the value in seven segments at its end | 7 |
+| Breadcrumb (`breadcrumb`) | Each level a small block on a rail, the current one raised and lit | Words in grey split by a slash, the current in ink; a grey bubble under the hand | An engraved strip of small keys, one per level, the current latched with its lamp lit | 5 |
+| Breakdown (`breakdown`) | One slot cut into a plate, the parts as fills end to end, readings on a raised face below | One grey band split by space into the parts, their names and shares set as words under it | A segment bar in a well, runs lit in each part's hue, the shares as LCD lines | 7 |
+| Button (`button`) | A thick block on its own plate, lit top edge and shade below, sinking into the plate when pressed | Words in a grey pill, nothing standing; the primary an ink pill a step darker under the hand | built | 2 |
+| Callout (`callout`) | A small plate standing on the page, its icon sunk in a well at the start | A paragraph in a grey bubble, the lead words in the title weight; no frame | A fault panel: a strip of LCD glass with a lamp at its start, the note in the mono | 8 |
+| Card (`card`) | A plate that stands and casts, lit along its top edge, its cover set into a sunken well | No box: the picture on its grey ground and its words below, space around | A module fixed into the body, an engraved legend across its top, its content on a screen set in | 8 |
+| Card picker (`card-picker`) | Cards as plates in a tray; the picked plate rises out of it and catches the light | Cards as pictures and words; the picked one in a grey bubble with an ink tick and its word | Each card a plate with a corner lamp; the picked one set down 2px into a well, its lamp lit | 2 |
+| Carousel (`carousel`) | Slides seated in a long tray, a cap in a slot below marking the place, ridden to scroll | Slides edge to edge, parted by space; "3 of 8" in grey words and two grey pills | A viewfinder: one slide behind glass, the frame number in segments, step keys either side | 10 |
+| Cart (`cart`) | A glass tray of slats, one per line; quantities as rocker blocks, the total on a raised face | A sheet set like a receipt: item, quantity and price in columns of type, space between lines | A till: lines in the mono on a screen, the total in segments, Checkout the one accent key | 10 |
+| Chart (`chart`) | Marks in a sunken well, its grid as grooves lit from the top, the axis on a raised rail | Ink marks on grey, no axes and no gridlines, each value set in type beside its mark | A dot-matrix screen: bars as columns of lit dots, a line as a trace of dots, the reading in segments | 7 |
+| Checkbox and radio (`checkbox`) | A square cut into a plate, an ink block seated flush when checked; the radio a cup taking a bead | An outline when off and an ink fill when on, the label beside in type; no cut, no shade | A square key that latches down and lights; radio keys interlock, pressing one lets the last up | 1 |
+| Code block (`code-block`) | Code in a well cut into a plate, line numbers on a raised gutter rail, Copy a block | Code on grey with no frame and no rules, Copy a grey word | A terminal screen behind a bezel, mono on dark glass, Copy the Copy button's key | 9 |
+| Code input (`code-input`) | A plate with one cut per character; a filled cut catches the light on its lower wall | One grey pill per character parted by space, the current one ringed in ink | One glass cell per character with the ghost "8", each typed digit lit in segments | 1 |
+| Cohort grid (`cohort-grid`) | A plate of small wells, the number on each floor, the hue dot sunk beside it | Numbers in columns of type, a hue dot before each, no rules and no cells | A lamp board: one lamp per cell at four brightnesses in the hue, the number in the mono beside | 8 |
+| Color picker (`color-picker`) | The swatch a raised face; the area a well with a cap, hue and alpha caps in slots | A grey sheet: the area and two pill rails with round ink knobs, the value in words | The swatch a lit well, the value on glass, the hue and alpha rails faders in wells | 3 |
+| Combobox (`combobox`) | A cut field on a plate; its list a glass tray of slats, the current slat lifted | A grey pill field; its list a sheet that grows from it, the current in a grey bubble | The Input's glass; its list a screen with the lamp row, chosen values as lit cells | 5 |
+| Command menu (`command-menu`) | A glass slab that rises: the search a cut across its top, results as slats, the current lifted | A sheet of type: the query in ink, results as lines parted by space, the current in a grey bubble | A terminal: a prompt line on glass, results as screen lines with the lamp row, shortcuts as key caps | 4 |
+| Composer (`composer`) | A deep well cut into a plate, its tools a rail of blocks below, Send the one lit block | A grey pill that grows with the text, its tools as grey words, Send an ink circle | The Input's glass with a prompt mark, files as lit cells, tools a row of keys, Send the accent key | 2 |
+| Context menu (`context-menu`) | Menu's glass tray of slats, rising at the pointer | Menu's sheet, growing from the point you pressed | Menu's screen with the lamp row, switching on at the pointer | 4 |
+| Copy button (`copy-button`) | n/a (Device only) | n/a (Device only) | built | built |
+| Curve editor (`curve-editor`) | A well with a lit grid, the curve a groove, its handles caps ridden on short arms | An ink curve on grey, two round ink knobs, the values in words; no grid, no frame | A scope: the curve a lit trace on glass, handles as knob caps, the value an LCD line | 3 |
+| Date picker (`date-picker`) | The date on a raised face; the month a tray of day blocks, the chosen day raised and lit | Figures set in a grid of space, the chosen day an ink circle, a range a grey bubble | The date on a readout with step keys; the month a screen of day keys, the chosen one latched | 5 |
+| Details (`details`) | A plate of rows, each value seated in a shallow well beside its label | Label and value as two columns of type, grey and ink, space between rows | A spec plate: labels engraved in capitals, each value on a strip of LCD glass | 8 |
+| Dialog (`dialog`) | A glass slab that rises with weight, its actions as blocks in a tray along its foot | A sheet that grows from its opener: solid, no glass, no ring, actions as pills at its end | A screen in a bezel that switches on in three steps, an engraved title, its actions keys | 4 |
+| Dot plot (`dot-plot`) | Dots as raised beads stacked in a sunken well, the goal a groove across its floor | Ink dots on grey stacked from the center, no axis, the counts in type beside | A dot-matrix screen: each stack a column of lit dots, the goal an engraved mark on the bezel | 7 |
+| File changes (`file-changes`) | Each file a slat in a tray, its counts on a raised face, Keep and Undo as blocks | File names as lines of type, counts as grey words, each diff on grey with no rules | A screen of mono lines, + and − counts in segments per file, Keep and Undo as keys | 9 |
+| File drop (`file-drop`) | A deep tray in a plate, its lower wall lit while a file is over it; each file a slat | A grey sheet with one sentence, "Drop files or choose", ringed in ink while a file is over it | A slot in the body with an engraved legend and a Choose key; each file a glass line | 2 |
+| Forms (`form`) | A plate per group, fields seated in a column of cuts, labels on the plate above | A column of grey pills and type, groups parted by space and a title, no frames | A front panel: groups as engraved sections on the body, each field a glass window | 8 |
+| Funnel (`funnel`) | One slot per step cut into a plate, each fill drawn to its share, stepping down | Steps as lines of type, a grey band behind each to its share, conversion in words | A column of segment bars in wells, each count in segments, conversion on an LCD line | 7 |
+| Gauge (`gauge`) | A dial sunk into a plate, a raised pointer over ticks lit on its floor | An ink arc on a grey arc, the figure in type at its center, no ticks | A moving-coil meter: a needle over engraved ticks behind glass, the figure in segments | 6 |
+| Header (`header`) | A glass bar over the page, nav links as blocks on a rail, the current raised | A line of words on the page, the current in ink; no bar, no glass, no rule under it | The body's top panel: engraved legends, a lamp under the current, the title on an LCD strip | 5 |
+| Heatmap (`heatmap`) | A plate of small wells, each fill seated in its well, the scale in a slot beside | Grey and hue squares parted by space, no frame, the scale in words | A dot matrix of lit dots at four brightnesses in the data hues, behind glass | 7 |
+| Hover card (`hover-card`) | A small glass slab that rises from its link, lit along its top edge | A sheet that grows from its link, its words and picture, no ring | A small screen that switches on beside its link in steps, its facts as LCD lines | 4 |
+| Icons (`icons`) | follows the ink | follows the ink | follows the ink | none |
+| Input (`input`) | A cut into a raised plate with its top wall's shade, the label on the plate above | A grey pill with no outline, the label as words above, the focus ring the only line | LCD glass in a bezel well, the label engraved above, hint and error as dim LCD lines | 1 |
+| Inspector (`inspector`) | A rack of plates, one per group, controls seated in trays, values on raised faces | A column of rows parted by space, the label in grey, its control at the end; no panels | A patch panel: engraved section legends, faders and keys in rows, values on LCD | 3 |
+| Kbd (`kbd`) | A raised key cap standing proud of the line, lit top edge and shade below | The key's name in a small grey bubble, nothing raised | A real key on its 2px skirt, its legend engraved in capitals | 9 |
+| Legend (`legend`) | Series as blocks in a tray with a hue chip; a hidden one sinks flush and says Hidden | Series as words with a hue dot; a hidden one in grey with an outline dot | A row of latching keys, each lamp in its series' hue, down shows it, its word says which | 2 |
+| Lightbox (`lightbox`) | The picture on a lit plate under glass, previous and next as blocks on the glass's foot | The picture grows from its thumbnail onto a whole grey page, the count in words, nothing else | A viewfinder screen: the picture behind a bezel, the frame number in segments, step keys | 10 |
+| List and cards (`list`) | Rows as slats in a tray, the hovered slat lifts and catches the light; cards as plates | Rows as lines of type parted by space, a grey bubble under the hand; cards as pictures and words | Screen lines with the lamp row; filter chips as latching keys | 8 |
+| List cover (`list-cover`) | Rectangles as raised plates and cut wells, lit from above | Flat grey and ink rectangles set like a page layout | Patterns of lit segments and dots in the screen inks | 10 |
+| Log view (`log-view`) | Lines in a deep well, its header a raised rail with Copy as a block | Mono lines on grey, no frame, the newest at the foot, Copy a grey word | A terminal behind a bezel, lines in the screen ink, a lamp lit while the job runs | 9 |
+| Media (`media`) | The picture seated in a well cut into a plate, its lower wall lit | The picture alone on grey, no frame; a failure is one sentence on the grey | The picture behind glass in a bezel; loading the Chase, a failure an LCD line | 10 |
+| Menu (`menu`) | A glass tray of slats, the hovered slat lifted and lit, shortcuts as key caps | A sheet of words that grows from its trigger, a grey bubble gliding under the hand | A screen list with the lamp row, switching row to row, shortcut legends engraved | 4 |
+| Message (`message`) | The person's turn on a raised face, the agent's words on the page, actions as small blocks | The person's turn in a grey bubble, the agent's bare type, actions as grey words | A printout on a screen: turns as mono lines, who spoke engraved in capitals | 9 |
+| Number field (`number-field`) | The figure in a cut, − and + one rocker block beside it that tips toward the side pressed | The figure in ink between − and + set as words, one grey pill around all three | The figure on an LCD readout, − and + as keys on their skirts beside the glass | 1 |
+| Option picker (`option-picker`) | Values as blocks in a tray, the chosen one raised and lit, a sold-out one lying flat | Values as words in grey pills, the chosen in an ink pill, sold out struck and said | A row of latching keys with engraved legends, the chosen down and lit; sold out lies flat | 1 |
+| Pad (`pad`) | A sunken floor in a plate with a lit grid, a casting cap ridden over it, values on raised faces | A grey square, a round ink knob, the two values in words; no grid | An XY pad behind glass: a dot grid, a lit crosshair through a knob cap, both values as readouts | 3 |
+| Pagination (`pagination`) | The range on a raised face, Previous and Next as blocks at either end of a tray | The range in words, Previous and Next as grey word pills | The range in segments on an LCD strip, two step keys at its ends | 2 |
+| Plan (`plan`) | Steps as slats in a tray, done ones seated flush with an ink tick, the current raised | Steps as a list of type, done ones grey with a tick, the current in ink | A column of step lamps on an engraved strip, done ones lit, the Agent indicator by the current | 6 |
+| Popover (`popover`) | A glass slab that rises from its trigger, its fields seated in cuts | A sheet that grows from its trigger, no ring, its content as type | A small screen in a bezel that switches on where it stands | 4 |
+| Price (`price`) | The figure on a raised face, the old price sunk in a cut beside it | The figure in ink type, the old price grey and struck, the unit in words | The amount in seven segments, the old price a dim LCD line, the currency engraved | 10 |
+| Product card (`product-card`) | A plate with its picture in a sunken well, the price and Add on a raised rail below | The picture and its words, no box, the price in ink under the name | A vending window: the picture behind glass, the price in segments, Add a key | 10 |
+| Progress (`progress`) | A fill drawn out of a slot cut into a plate, the percent on a raised face at its end | An ink band in a grey pill, the percent in words beside it | Segments in a well lighting in steps, the percent in seven segments; unknown length the Chase | 6 |
+| Range chart (`range-chart`) | Bars in a sunken well, the brush two caps riding a slot above, the total on a raised face | Ink bars on grey, the brushed span a grey bubble, the total in type above; no axis | Bars as lit dot columns on a screen, the brush two fader caps, the total in segments | 3 |
+| Resizable (`resizable`) | Panels as plates, the gap between them a slot with a cap you ride across | No line: space between the panels, a grey pill grip under the hand | Panels as screens set in the body, the divider a ridged bar with a lamp lit while held | 3 |
+| Rolling number (`rolling-number`) | Digits on drums behind a slot window, rolling past its lit lower lip | Figures in plain ink type that roll, no window and no frame | Seven-segment digits behind glass, a changed digit switching in three steps where it stands | 6 |
+| Rule builder (`rule-builder`) | Each rule a slat in a tray of field, operator and value blocks; groups as nested trays | Each rule a sentence of grey pills, "Seniority is Manager", groups indented by space | A patch bay: each rule a row of readouts with step keys, groups on engraved panels | 9 |
+| Run card (`run-card`) | A plate with the run's ring as a fill round a sunken dial, the step on a raised face | The run's name and step in type, the ring an ink arc on grey, no box | A dial of lit segments lighting in steps, the step on an LCD line, folded a key to press | 6 |
+| Run list (`run-list`) | Runs as slats in a tray, the open one raised, each status word on its slat's face | Runs as lines of type, status in words, the open one in a grey bubble | Screen lines, a status lamp and its word per run, the open one latched | 9 |
+| Scroll area (`scroll-area`) | The thumb a cap riding a slot cut along the edge | A thin grey pill thumb on nothing, no track | A well along the edge, a run of lit segments for the part in view | 3 |
+| Segmented control (`segmented`) | Blocks in a tray, the chosen one raised; the hand drags it along the tray to the nearer option | Words alone, a grey bubble gliding to the chosen one, no tray | A row of keys on one skirt, the chosen latched with its lamp lit, no glide | 1 |
+| Select (`select`) | A raised block trigger; its list a glass tray of slats, the current slat lifted | A grey pill trigger; its list a sheet that grows from it, the current in a grey bubble | The value on a readout with up and down keys; pressing the readout opens a screen with the lamp row | 1 |
+| Seven-segment (`seven-segment`) | n/a (Device only) | n/a (Device only) | built | built |
+| Shopify (`shopify`) | no body (draws nothing) | no body (draws nothing) | no body (draws nothing) | none |
+| Shopify cart (`shopify-cart`) | no body (draws nothing) | no body (draws nothing) | no body (draws nothing) | none |
+| Slide to confirm (`slide-confirm`) | A gripped cap ridden along a slot in a plate to an end stop, its words in the slot's floor | A grey pill with an ink circle you push to its end, the words inside the pill | A latch key pushed along a well to a stop, words on an LCD strip, a lamp lit once confirmed | 1 |
+| Slider (`slider`) | A cap on a deep plate with lit notches, its value on a raised face that rides with it | A pill track, the filled part ink, a round ink knob, the value in words at its end | built | 2 |
+| Sources (`sources`) | Numbered marks as tiny raised blocks in the line; the list a tray of slats | Numbers as small grey bubbles in the text; the list as lines of type | Numbers as small engraved keys; the list screen lines, a lamp on the one cited | 9 |
+| Sparkline (`sparkline`) | One line as a groove in a sunken strip, its last point a raised bead | One ink line on nothing, the last value in type at its end | A dot trace on a small screen, the last value in segments | 7 |
+| Spread (`spread`) | One slot per row cut into a plate, the spread a fill, the median a cap seated in it | Per row an ink thread on grey, the median a dot, the figure in type | Per row a run of lit segments across the range, the median brighter, the figure in segments | 7 |
+| Spring editor (`spring-editor`) | The curve in a sunken well, time and bounce on two knobs that turn in detents | An ink curve on grey, time and bounce as two pill sliders with their values in words | The Pad's glass, the spring a lit trace, time and bounce as readouts on the glass | 3 |
+| Stat (`stat`) | The figure on a raised face set into a plate, the label on its top rail | The figure in ink type on the page, no box; space parts the tiles | The figure in seven segments on an LCD window, the label engraved above | 6 |
+| States (`states`) | Empty as a tray with its sentence on the floor; loading still plates at the content's size | Empty and error as one sentence and a pill; loading still grey blocks at the content's size | Loading the Chase in a well; empty and error LCD lines, an error with a lamp in `--danger` | 6 |
+| Steps (`steps`) | A row of blocks on a rail, done ones seated flush, the current raised and lit | Numbers and words in a line, done in grey, the current in ink, the rest outlined | A strip of numbered lamps, done ones lit, the current step's word on an LCD line | 6 |
+| Switch (`switch`) | A thick block thrown along a deep tray to a stop, uncovering On or Off set in the floor | A small ink pill with a canvas knob when on, an outline pill when off, the word in type beside | built | 2 |
+| Table (`table`) | Rows as slats in a tray, the hovered slat lifts and catches the light, the header a raised rail | Rows set apart by space, no lines, the header in grey label type, a grey bubble under the hand | A screen of mono columns, the lamp row at the start, the header engraved on the bezel | 8 |
+| Table filter (`table-filter`) | A block that stays raised while a filter is on, opening Menu's glass tray | A word with its count, in ink while on, opening Menu's sheet | A latching key, its lamp lit while a filter is on, opening Menu's screen | 5 |
+| Tabs (`tabs`) | Labels as tabs cut from a plate's top edge, the current one standing forward, joined to its panel | Labels as words, the current in ink with a grey bubble behind it, the panel bare below | Engraved legends with a lamp under the current one, switching on, never gliding | 1 |
+| Tag (`tag`) | A small raised block with a lit top edge, its word on the face | The word in a grey pill, nothing raised | The word engraved in capitals on a small plate; a status tag adds its lamp | 2 |
+| Tape progress (`tape-progress`) | n/a (Device only) | n/a (Device only) | built | built |
+| Thinking (`thinking`) | A block you press open, the reasoning in a tray below, the clock on a raised face | A line of grey type, "Thinking 4s", the reasoning plain grey text under it | The clock in segments on a small LCD, the Agent indicator in its slot, the reasoning on glass | 6 |
+| Time scrubber (`time-scrubber`) | A ruler in a sunken slot, a cap ridden along it, notches lit from above at each mark | A grey pill ruler, an ink needle, the time in type above | A tape counter: the time in segments over an engraved ruler under a fixed needle, keys in detents | 3 |
+| Timeline (`timeline`) | Steps as slats, each time on a raised face, the whole run a fill drawn along a slot | Steps as lines of type in columns, times grey, outcomes in words, nothing joining them | A strip of step lamps, each time in segments, the outcome as words on an LCD line | 8 |
+| Toast (`toast`) | A glass slip that rises from below with weight, its action a block on its face | An ink pill with canvas words, its action a word inside the pill | One LCD line in a bezel that switches on in steps, its action a key at the end | 4 |
+| Token input (`token-input`) | A cut with each token a raised block standing out of it, a small block to remove it | A grey pill field, tokens as darker grey pills with an × | The Input's glass, each token an inverted cell of lit mono words with a small remove key | 2 |
+| Tool call (`tool-call`) | Each call a slat in a tray, a run folding into one raised block, Approve and Deny as blocks | Calls as lines of type, "Read src/app.tsx", a run folded into one line, approval two pills | Mono lines on a screen, a status lamp and word per call, approval two keys | 9 |
+| Tooltip (`tooltip`) | A small glass label that rises a hair over its trigger | A small ink pill of words | One LCD line that switches on beside its trigger | 4 |
+| Tree (`tree`) | Rows as slats nested in stepped trays, the selected slat raised and lit | Names as indented lines of type, the selected in a grey bubble, no guide lines | Screen rows with the lamp row, a folder's toggle a small key latched down while open | 5 |
+| Tune (`tune`) | no body (draws nothing) | no body (draws nothing) | no body (draws nothing) | none |
 
 ### Pieces built once
 
-Device's bodies share five mechanisms, so each is built once in the first wave that needs it and reused after:
+Each world builds a few mechanisms once, in the first wave that needs them, and every later body reuses them.
 
-- **The latching key row** (Checkbox and radio, D1): Segmented, Tabs, Option picker, then Card picker and Legend.
-- **The readout with step keys** (Select and Number field, D1): Date picker and Time scrubber.
-- **The lamp row** (Select's list, D1): Menu, Command menu, Combobox and Tree. It replaces Glide under Device.
-- **The segments** (Seven-segment, shipped): Code input, Rolling number, Progress, Thinking, Time scrubber, Gauge.
-- **The Chase** (Agent indicator, shipped): Progress with no known length, and States' loading.
+**Press, the instrument.**
+
+- **The plate** (wave 1, under Input and Code input): a block that stands on the page with a lit top edge and a shade below. Card, Callout, Details, Stat, Forms, Inspector, App shell and Product card stand on it.
+- **The tray of slats** (wave 1, Select's list): rows as slats, the hovered or current slat lifted on Glide. Menu, Command menu, Combobox, List, Table, Tree, Run list, Tool call, Plan, Timeline, Cart and File changes.
+- **The raised face** (wave 1, Number field): a value on its own raised face. Stat, Price, Pagination, Progress, Date picker and Thinking's clock.
+- **The lit well** (wave 3, Pad): a sunken floor with its grid lit from the top as grooves. Curve and Spring editors, Range chart, then every chart in wave 7, Media and Product card's cover.
+- **The cap in a slot** (built, Slider): Slide to confirm, Time scrubber, Range chart's brush, Resizable, Scroll area, Progress, Funnel and Spread.
+- **The knob with detents** (wave 3, Spring editor): it is also the Press-only knob part (Depth, above).
+
+**Flat, the page.**
+
+- **The sheet** (wave 1, Select's list): a solid card that grows from where you touched. Menu, Context menu, Popover, Hover card, Dialog, Combobox, Command menu and Date picker.
+- **The ink row** (wave 1, Select's list): a line of type set apart by space, the current one in ink, no rule. List, Table, Tree, Run list, Tool call, Timeline, File changes, Plan, Cart and Message.
+- **The grey bubble** (built, Flat's Glide): Tabs, Segmented, Select, Menu, App shell, Header, Breadcrumb and Range chart's span.
+- **The pill** (wave 1, Input): every field and every control a hand touches. Button, Tag, Token input, Pagination, Number field and Composer.
+- **The ink mark on grey** (wave 3, Range chart): marks with their values set beside them, no axes, no gridlines. Every chart in wave 7, Gauge, Progress and Run card's ring.
+
+**Device, the machine.**
+
+- **The latching key row** (wave 1, Checkbox and radio): Segmented, Tabs, Option picker, Card picker, Legend, Table filter and Breadcrumb.
+- **The readout with step keys** (wave 1, Select and Number field): Date picker, Time scrubber, Pagination and Rule builder.
+- **The lamp row** (wave 1, Select's list): Menu, Command menu, Combobox, Tree, List, Table, Run list and App shell. It replaces Glide under Device.
+- **The segments** (built, Seven-segment): Code input, Rolling number, Progress, Stat, Price, Gauge, Time scrubber and Thinking.
+- **The Chase** (built, Agent indicator): Progress with no known length, States' loading and Media's loading.
+- **The dot matrix** (wave 3, Range chart; added in this round): Chart, Sparkline, Dot plot and Heatmap.
 
 ### The rules every body keeps
 
-- One accent fill per view. A lamp lights in the ink, or the glass's own ink, unless the part is the view's one accent: a primary key, or a `tone="accent"` switch. Legend's lamps take the data hues because there the color carries data.
-- Nothing moves on its own. A lamp lights on a state change, a segment switches when its figure changes, and the Chase runs only while the work does.
-- 44px targets on coarse pointers. A small key (Tree's folder key, Token input's remove key, Select's step keys) keeps its look and grows its hit area.
-- States in words. A lamp or an outline never says a state alone: the word stays, or the accessible state says it where Flat drops the word.
-- Sound (decision 8) arrives in Device's bodies as they ship, Silent by default.
+- **The greyscale test.** Every body is checked in greyscale in one font against its two siblings; if its structure does not name its world, it is not done.
+- **One accent fill per view.** A lamp lights in the ink or the glass's own ink, a Flat "on" is the ink, and a Press lift is never the accent, unless the part is the view's one accent: a primary key or button, or a `tone="accent"` switch. Lamps, dots and fills take the data hues only where the color carries data (Legend, Heatmap, Cohort grid, Breakdown).
+- **Nothing moves on its own.** A slat lifts under a hand, a lamp lights on a state change, a segment switches when its figure changes, and the Chase runs only while the work does.
+- **States in words.** A lamp, a lift, an outline or an ink fill never says a state alone: the word stays, or the accessible state says it. A Flat chart's values set beside its marks are those words.
+- **Weight by role, nothing above 18px.** Flat's editorial ranking comes from weight, ink and space; Device's segments and engraved capitals keep the role weights.
+- **44px targets on coarse pointers.** A small key, a bead or a remove × keeps its look and grows its hit area.
+- **The motion bounds and tiers**, in each world's own language. Sound (decision 8) arrives in Device's bodies as they ship, Silent by default.
 
-### Device waves
+### Waves
 
-1. **D1:** Checkbox and radio, Segmented, Input, Select, Tabs, Number field, Code input, Slide to confirm, Option picker (9). The controls a hand presses and types into on every form and settings page, and the agreed table's remaining controls. They build the key row, the readout and the lamp row on the key, well and glass that Switch, Button and Slider proved.
-2. **D2:** Card picker, Pad, Spring editor, Curve editor, Time scrubber, Token input, File drop, Composer, Legend, Color picker (10). The rest of what a hand drags or types into. Each is built from wave one's glass, keys and readouts, so it comes after them.
-3. **D3:** Dialog, Toast, Menu, Command menu, Combobox, Date picker, Accordion, Tree (8). What a hand opens. Each is a screen that switches on where it stands, its rows marked by wave one's lamp row and its actions on keys that are already built.
-4. **D4:** Progress, Rolling number, Gauge, Steps, Plan, Thinking, Run card, States (8). What a hand watches. These are readouts that move only when the work does, built on the segments and the Chase already shipped, last because no hand waits on them.
+Every wave builds all three bodies of each of its parts, one PR per wave, with `test:study` asserting three different `data-body`s per part.
 
-### Flat waves
+1. **Wave 1:** Checkbox and radio, Segmented, Input, Select, Tabs, Number field, Code input, Slide to confirm, Option picker (9). The controls on every form and settings page; they build each world's first pieces (plate, tray of slats, sheet, ink row, key row, readout, lamp row). Device's bodies are being built now; Press's and Flat's follow in the same wave.
+2. **Wave 2:** Switch, Button, Slider, Card picker, Token input, Composer, File drop, Legend, Pagination, Tag (10). The rest of what a hand presses: the three parts the deck uses get their pushed Press and Flat bodies, so the home shows all three worlds the moment it lands.
+3. **Wave 3:** Pad, Spring editor, Curve editor, Color picker, Time scrubber, Range chart, Resizable, Scroll area, Inspector (9). What a hand drags and tunes; it builds the lit well, the knob, the ink mark on grey and the dot matrix that the data waves reuse.
+4. **Wave 4:** Dialog, Toast, Menu, Context menu, Command menu, Popover, Hover card, Tooltip, Action bar (9). What a hand opens over the page: glass, the sheet and the bezel screen, each in its world's motion language.
+5. **Wave 5:** Combobox, Date picker, Accordion, Tree, Table filter, Header, App shell, Breadcrumb (8). What a hand opens in place and moves through, built on wave 1's lists and wave 4's overlays.
+6. **Wave 6:** Progress, Rolling number, Gauge, Steps, States, Stat, Plan, Thinking, Run card (9). What a hand watches: figures and steps that change only while the work does.
+7. **Wave 7:** Chart, Sparkline, Bar list, Breakdown, Funnel, Spread, Dot plot, Heatmap (8). Data you read, on wave 3's well, marks and matrix.
+8. **Wave 8:** Table, Cohort grid, Timeline, Card, Callout, Details, Forms, List and cards (8). Tables and the layout every screen is built from, on the plate, the ink row and the lamp row.
+9. **Wave 9:** Message, Sources, Tool call, File changes, Run list, Log view, Code block, Rule builder, Kbd (9). What an agent's turn and a tool are read in.
+10. **Wave 10:** Product card, Price, Cart, Media, List cover, Carousel, Lightbox, Avatar (8). Commerce and imagery, last because they compose everything above, and Flat's own parts (the work slider, the large cover, the photo essay) follow on them.
 
-1. **F1, after D4:** Checkbox and radio, Segmented, Input, Select, Tabs (5). Their Flat bodies are lifted in D1, unchanged; F1 is where Flat redesigns them.
-2. **F2, with F1:** Dialog, Toast (2), lifted in D3.
-
-After them come Flat's own parts, not bodies: the work slider, the large cover, the editorial reading layout and the photo essay.
-
-### Press waves
-
-1. **P1, after Flat's waves:** Segmented (1). The block drags along its tray, as the Switch's does, and Tabs' segmented variant follows. This is the one place where Press's hand should change from today's, and it waits on Nick.
-
-After it come Press's own parts, not bodies: the knob, the meter bank, the instrument panel and the control room.
+After wave 10 come the world-only parts (Depth, above): Press's knob, meter bank and instrument panel, and Flat's work slider, large cover, editorial layout and photo essay.
 
 ### Counts
 
 Of the 95 parts:
 
-- **Device:** 38 with a Device body (3 built, 35 to build in D1 to D4), 4 Device-only parts (built), and 53 recipes.
-- **Flat:** 10 with a Flat body (3 built, 7 to build in F1 and F2), 81 recipes, and 4 n/a.
-- **Press:** 3 built bodies, 1 body change (Segmented, P1), 87 recipes, and 4 n/a.
+- **Press:** 87 bodies to build (waves 1 to 10, Switch, Button and Slider included), 4 n/a (the Device-only parts).
+- **Flat:** 87 bodies to build, 4 n/a.
+- **Device:** 84 bodies to build, 3 shared bodies built (Switch, Button, Slider) and 4 Device-only parts built.
+- **No body:** 4. Shopify, Shopify cart and Tune draw nothing; Icons follow the ink.
+
+That is 258 bodies across ten waves, about 26 a wave, each with its hand tests.
 
 ## What this says about the business
 
