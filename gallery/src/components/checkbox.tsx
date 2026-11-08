@@ -27,6 +27,14 @@
  *   spring and the tick draws itself in, as a pen would. Only on a person's change, and only while it moves: once
  *   still, the box and the tick are exactly the drawn ones above. Reduced motion turns it off.
  * - Touch: rows grow from 36 to 44px tall on coarse pointers.
+ * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the real <input>
+ *   with its role, checked and mixed state, the label and description, the groups and the keys. It resolves them once
+ *   into ChoiceBodyProps and renders the body the material picks (byWorld) for the drawn look. PressBody, below, is the
+ *   default (the cut above). bodies/checkbox.flat.tsx is Flat's recipe, an outline when off and the ink when on.
+ *   bodies/checkbox.device.tsx is Device's: a square key in a well that latches down and lights its lamp when checked,
+ *   and half lights it when mixed. A radio group there is a row of the same keys, interlocked, so pressing one lets the
+ *   last one up. The "native" look is the browser's own box in every world. A frame that sets its own look draws its
+ *   own body, not <html>'s.
  */
 import {
   createContext,
@@ -37,13 +45,16 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type ComponentProps,
   type InputHTMLAttributes,
   type ReactNode,
   type Ref,
 } from "react";
 import { animate } from "motion/react";
-import { useFun } from "@/motion";
+import { byWorld, useFun, useMaterial } from "@/motion";
 import { CheckIcon } from "@/components/icons";
+import { ChoiceDeviceBody } from "./bodies/checkbox.device";
+import { ChoiceFlatBody } from "./bodies/checkbox.flat";
 
 export type ChoiceAppearance = "drawn" | "native";
 
@@ -110,6 +121,44 @@ const bead =
   "after:size-2 after:rounded-pill after:bg-block after:shadow-(--block-lift) in-[[data-material=flat]]:after:bg-canvas " +
   "peer-disabled:after:bg-fg-disabled peer-disabled:after:shadow-none forced-colors:after:bg-[CanvasText]";
 
+/**
+ * What the contract hands a body: the input resolved once. A body draws the control, the <input> (appearance: none)
+ * and what sits beside it in the row's first cell; the row, the label and the description stay with the contract. A
+ * body keeps the input's props whole (`input`: ref, id, type, checked, handlers, aria-*), says the state without color
+ * alone, and carries data-body on the input.
+ */
+export type ChoiceBodyProps = {
+  /** "checkbox" has a mixed state; a "radio" does not (it matches :indeterminate whenever its group is empty). */
+  kind: "checkbox" | "radio";
+  /** The input's props, without a className: the body draws it. */
+  input: ComponentProps<"input">;
+  /** The tick's ref, which fun mode draws in. A body that has no tick leaves it alone. */
+  tick: Ref<HTMLSpanElement>;
+};
+
+/** Press, the default body: the cut, with the ink around its mark and a raised bead for a radio. */
+function PressBody({ kind, input, tick }: ChoiceBodyProps) {
+  const radio = kind === "radio";
+  return (
+    <>
+      <input {...input} data-body="press" className={drawnInput + (radio ? " rounded-pill" : " rounded-control" + mixed)} />
+      <span aria-hidden="true" className={wash + (radio ? " rounded-pill" : " rounded-control" + mixedWash)} />
+      {radio ? (
+        <span aria-hidden="true" className={bead} />
+      ) : (
+        <>
+          <span ref={tick} aria-hidden="true" className={mark + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>
+            <CheckIcon />
+          </span>
+          <span aria-hidden="true" className={mark + " peer-indeterminate:opacity-100"}>
+            <DashGlyph />
+          </span>
+        </>
+      )}
+    </>
+  );
+}
+
 /** The dash for the mixed state: 16px, 1.5px stroke, like the other icons. */
 function DashGlyph() {
   return (
@@ -164,6 +213,7 @@ function Choice({
   );
 
   /* Fun mode: a box a person checks pops, and its tick draws in. Inline styles only while it moves, then cleared. */
+  const material = useMaterial();
   const fun = useFun();
   const tick = useRef<HTMLSpanElement>(null);
   const onChange = rest.onChange;
@@ -186,40 +236,31 @@ function Choice({
     });
   };
 
-  const radio = kind === "radio";
+  const Body = byWorld(material, { press: PressBody, flat: ChoiceFlatBody, device: ChoiceDeviceBody });
+  const device = material === "device";
+  const inputProps: ComponentProps<"input"> = {
+    ref: setRef,
+    id,
+    type: kind,
+    "aria-invalid": invalid || undefined,
+    "aria-describedby": [describedByProp, descriptionId].filter(Boolean).join(" ") || undefined,
+    ...rest,
+    onChange: handleChange,
+  };
   return (
     <div className={"group/choice relative grid w-fit select-none grid-cols-[auto_1fr] gap-x-2 py-2 pointer-coarse:py-3 " + className}>
-      <input
-        ref={setRef}
-        id={id}
-        type={kind}
-        aria-invalid={invalid || undefined}
-        aria-describedby={[describedByProp, descriptionId].filter(Boolean).join(" ") || undefined}
-        className={appearance === "native" ? nativeInput : drawnInput + (radio ? " rounded-pill" : " rounded-control" + mixed)}
-        {...rest}
-        onChange={handleChange}
-      />
-      {appearance === "drawn" && (
-        <>
-          <span aria-hidden="true" className={wash + (radio ? " rounded-pill" : " rounded-control" + mixedWash)} />
-          {radio ? (
-            <span aria-hidden="true" className={bead} />
-          ) : (
-            <>
-              <span ref={tick} aria-hidden="true" className={mark + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>
-                <CheckIcon />
-              </span>
-              <span aria-hidden="true" className={mark + " peer-indeterminate:opacity-100"}>
-                <DashGlyph />
-              </span>
-            </>
-          )}
-        </>
+      {appearance === "native" ? (
+        <input {...inputProps} data-body={material} className={nativeInput} />
+      ) : (
+        <Body kind={kind} input={inputProps} tick={tick} />
       )}
       {/* The label is stretched over the whole row, so a click anywhere in it toggles the input. */}
       <label
         htmlFor={id}
-        className="col-start-2 row-start-1 min-h-5 cursor-pointer text-small font-title text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled"
+        className={
+          "col-start-2 row-start-1 min-h-5 cursor-pointer text-small font-title text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled" +
+          (device ? " pt-0.5" : "") // Device's key is 24px, so the first line sits 2px lower to meet its middle
+        }
       >
         {label}
       </label>
@@ -305,6 +346,7 @@ export function Radio({ label, value, description, invalid, appearance, onChange
 
 /* A fieldset with a legend, the options, and a hint or an error under them. */
 function GroupShell({
+  row = false,
   legend,
   help,
   error,
@@ -318,13 +360,15 @@ function GroupShell({
   disabled: boolean | undefined;
   className: string;
   children: ReactNode;
+  /** The options run in a row (Device's radio keys, side by side). */
+  row?: boolean;
 }) {
   const noteId = useId();
   const note = error ?? help;
   return (
     <fieldset disabled={disabled} aria-describedby={note ? noteId : undefined} className={"m-0 min-w-0 border-0 p-0 " + className}>
       <legend className={"p-0 text-small " + (disabled ? "text-fg-disabled" : "text-fg")}>{legend}</legend>
-      <div className="grid justify-items-start">{children}</div>
+      <div className={row ? "flex flex-wrap gap-x-5" : "grid justify-items-start"}>{children}</div>
       {note && (
         <p id={noteId} className={"text-small " + (error ? "text-danger" : "text-fg-subtle")}>
           {note}
@@ -402,6 +446,7 @@ export function RadioGroup({
   children,
 }: RadioGroupProps) {
   const auto = useId();
+  const row = useMaterial() === "device";
   const [inner, setInner] = useState(defaultValue);
   const value = valueProp ?? inner;
   const select = (v: string) => {
@@ -411,7 +456,7 @@ export function RadioGroup({
   return (
     <RadioContext.Provider value={{ name: nameProp ?? auto, value, select }}>
       <GroupContext.Provider value={{ appearance, invalid: !!error }}>
-        <GroupShell legend={legend} help={help} error={error} disabled={disabled} className={className}>
+        <GroupShell row={row} legend={legend} help={help} error={error} disabled={disabled} className={className}>
           {children}
         </GroupShell>
       </GroupContext.Provider>
