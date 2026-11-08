@@ -4,6 +4,17 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-08 · Device goes deeper: its own parts, and Only here
+
+A world goes deeper by parts and abilities that exist in it alone (`proposals/worlds.md`, Depth). A part names its worlds in its page's `meta.worlds`; the wall, the nav and the other world pages hide it, and its world page lists it under Only here. Device gets the first four, brought home from the studies on litt.design: each needs `data-material="device"` on `<html>` and says so in its install notes.
+
+- **added** `agent-indicator`: AgentIndicator, what an agent is doing in hardware, one mechanism per phase (thinking, searching, reading, reasoning, running, writing), moving only while tokens arrive, crossfading between phases, holding one frame under reduced motion.
+- **added** `copy-button`: CopyButton, a key that copies the command on its LCD, sinks its 2px, draws its check and decodes the command back in a glyph wave.
+- **added** `tape-progress`: TapeProgress, Progress said as two reels at the tape's constant pace, the value in words.
+- **added** `seven-segment`: SevenSegment, a figure on seven-segment digits behind glass, its segments fading like phosphor.
+- **changed** `thinking`: an `indicator` slot beside the clock, for what the agent is doing while it thinks. Nothing changes until you pass it; the Agent block passes an AgentIndicator under Device.
+- **changed** `code-input`: no change to the code; its page gains a study.
+
 ## 2026-11-07 · Worlds: each material is a page you arrive on
 
 Press, Flat and Device are now places (`proposals/worlds.md`): a page each, with its line, who it is for, the block it opens on live at real size, its five foundations and the install steps. The sidebar and the phone menu lead with the three, the overview shows the current world's block under the deck, and Material leaves the Customize panel for them. `llms.txt` gains a Worlds section. Nothing in the registry changes for it, but one block had two landmarks with one name.
