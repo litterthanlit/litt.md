@@ -20,7 +20,7 @@ Set the project to follow the system theme. Preview both modes before publishing
 
 ## 2. Text styles
 
-Font: **Geist** (Google Fonts, available in Framer) and **Geist Mono**. Create text styles from the scale in `foundations.md`, with the size, line height and letter spacing taken from the `--type-*` tokens. Framer takes letter spacing in em, so enter the token value directly (for example −0.015em for display), and line heights in px (28, 22, 20, 16).
+Font: each world's own. Press is **Helvetica Neue**, Flat **Geist** (Google Fonts, available in Framer), Device **Geist Mono** for every word; Geist Mono is otherwise for code. Create text styles from the scale in `foundations.md`, with the size, line height and letter spacing taken from the `--type-*` tokens. Framer takes letter spacing in em, so enter the token value directly (for example −0.015em for display), and line heights in px (28, 22, 20, 16).
 
 ```
 Display  → H1 tag on the hero only (18 on every breakpoint; nothing is larger)

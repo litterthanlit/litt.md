@@ -11,7 +11,7 @@ import { MonitorIcon, MoonIcon, SparkleIcon, SunIcon } from "@/components/icons"
 import { PAGE_GROUPS } from "./kit";
 import { pages } from "./registry";
 import { useCustomize, type ThemeChoice } from "./customize-state";
-import { ACCENTS } from "./look";
+import { accentName, accentsIn, canonicalAccent } from "./look";
 import { inWorld } from "./registry";
 
 type Action = { id: string; label: string; icon?: CommandItem["icon"]; run: () => void };
@@ -27,7 +27,9 @@ export default function SearchMenu({ open, onOpenChange, openedBy }: { open: boo
   const actions: Action[] = [
     { id: "do:fun", label: look.fun ? "Turn fun mode off" : "Turn fun mode on", icon: <SparkleIcon />, run: () => setLook({ fun: !look.fun }) },
     ...themes.filter(([t]) => t !== theme).map(([t, label, icon]) => ({ id: `do:theme-${t}`, label, icon, run: () => setTheme(t) })),
-    ...ACCENTS.filter((a) => a.id !== look.accent).map((a) => ({ id: `do:accent-${a.id}`, label: `${a.name} accent`, run: () => setLook({ accent: a.id }) })),
+    ...accentsIn(look.material)
+      .filter((a) => a.id !== canonicalAccent(look.accent, look.material))
+      .map((a) => ({ id: `do:accent-${a.id}`, label: `${accentName(a.id, look.material)} accent`, run: () => setLook({ accent: a.id }) })),
     ...(modified ? [{ id: "do:reset", label: "Reset to defaults", run: reset }] : []),
   ];
 

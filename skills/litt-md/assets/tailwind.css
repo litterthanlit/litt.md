@@ -197,4 +197,10 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
+  /* Each world sets its own face (tokens.css, --font-sans), so an element that sets a theme or a material sets the
+     family again, and a part shown in another world takes that world's face. */
+  [data-theme],
+  [data-material] {
+    font-family: var(--font-sans);
+  }
 }

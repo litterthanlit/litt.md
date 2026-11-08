@@ -5,17 +5,18 @@
  * (motion/fun.tsx), Calm (the locked motion) or Fun, and needs no CSS: it is a
  * <FunMode> around the gallery.
  *
- * The accent is monochrome by default, Blue 4 or pink (R6). Monochrome is data-accent="mono" on <body>, which tokens.css
- * answers with the ink for the primary action, the links and the focus ring, and a block's lift for the glow; pink is
- * data-accent="pink"; Blue 4 is what tokens.css ships with no attribute. The gallery opens in monochrome, so a visitor
- * meets the material before the color; the registry still ships Blue 4 as :root.
+ * The accent is the world's own by default (R6, proposals/worlds.md decision 14): tokens.css with no attribute answers
+ * Press with Blue 4, Flat with the ink and Device with orange, so the gallery, which opens in Flat, opens in the ink and
+ * a visitor meets the material before the color. Blue 4, Monochrome or Pink asked for is data-accent="blue", "mono" or
+ * "pink" on <body> (none where it is the world's own), and it stays asked for as you move between worlds.
  *
  * The choices are saved in this browser and written on <body>, not <html>:
- * - the locked values stay readable on <html> (useTypefaces, readLocked), so
- *   the panel can always say what differs;
+ * - the locked values stay readable on <html> (readLocked), so the panel can always say what differs;
  * - the Playground's motion dial writes its variables on <html> and removes
  *   them when you leave, so the two never undo each other. Everything the
  *   gallery draws sits inside <body>, portals included, so <body> wins.
+ * The face is the exception: it is --font-choice on <html>, which every world's face reads first (tokens.css), so it
+ * reaches <html>'s own font and every frame that shows another world.
  * index.html applies the saved choices before first paint; this provider owns
  * them after that.
  *
@@ -34,8 +35,8 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { FunMode } from "@/motion";
 import { LIMITS, PILL, SHAPES, shapeSurface } from "@/motion/rules";
-import { accentOf, ACCENTS, GALLERY_LOOK, lookFromSearch, materialOf, MATERIALS, sameLook, withLook, type Accent, type Look, type Material } from "./look";
-import { loadTypeface, useTypefaces, type Typeface } from "./typeface";
+import { accentAttribute, ACCENTS, GALLERY_LOOK, lookFromSearch, materialOf, MATERIALS, sameLook, withLook, type Accent, type Look, type Material } from "./look";
+import { FACES, loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
 /** Read by the inline script in index.html too: keep the shape in step with it. */
 const KEY = "litt-gallery:customize";
@@ -96,9 +97,8 @@ function readSaved(): Saved {
 }
 
 export function CustomizeProvider({ children }: { children: ReactNode }) {
-  const typefaces = useTypefaces();
   const [saved] = useState(readSaved);
-  const [faceId, setFaceId] = useState(() => (typefaces.some((f) => f.id === saved.face?.id) ? saved.face!.id : "locked"));
+  const [faceId, setFaceId] = useState(() => (FACES.some((f) => f.id === saved.face?.id) ? saved.face!.id : "locked"));
   const [radiusTuned, setRadiusTuned] = useState<number | null>(() =>
     (SHAPES as readonly number[]).includes(saved.radius as number) ? (saved.radius as number) : null,
   );
@@ -137,20 +137,25 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   }, []);
   const look = linked ?? own;
 
-  const typeface = typefaces.find((f) => f.id === faceId) ?? typefaces[0];
+  /* The world's own face first. A face chosen elsewhere that is this world's own reads as the world's own here, and
+     comes back in a world where it is not. */
+  const typefaces = useTypefaces(look.material);
+  const chosen = FACES.find((f) => f.id === faceId);
+  const typeface = (chosen && typefaces.find((f) => f.id === chosen.id)) ?? typefaces[0];
   /* Each material locks its own shape: Flat opens at the Pill (tokens.css, proposals/flat-pill.md), Press and Device at
      litt's control radius. Read from the look, not from <html> at load, so a switch of material moves the default too. */
   const lockedRadius = look.material === "flat" ? PILL : LIMITS.control;
   const radius = radiusTuned ?? lockedRadius;
   const modified = typeface.id !== "locked" || radiusTuned !== null || !sameLook(look, GALLERY_LOOK);
 
-  /* Write the choices on <body>, and remove what is back to locked. A layout effect, so a change never paints stale. */
+  /* Write the choices on <body> (the face on <html>), and remove what is back to locked. A layout effect, so a change
+     never paints stale. */
   useLayoutEffect(() => instantly(() => {
     const s = document.body.style;
-    if (typeface.id === "locked") s.removeProperty("--font-sans");
+    if (typeface.id === "locked") document.documentElement.style.removeProperty("--font-choice");
     else {
       loadTypeface(typeface);
-      s.setProperty("--font-sans", typeface.stack);
+      document.documentElement.style.setProperty("--font-choice", typeface.stack);
     }
     if (radiusTuned === null) {
       s.removeProperty("--radius-control");
@@ -159,7 +164,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
       s.setProperty("--radius-control", `${radiusTuned}px`);
       s.setProperty("--radius-surface", `${shapeSurface(radiusTuned)}px`);
     }
-    const attribute = accentOf(look.accent).attribute;
+    const attribute = accentAttribute(look.accent, look.material);
     if (attribute) document.body.dataset.accent = attribute;
     else delete document.body.dataset.accent;
     const material = materialOf(look.material).attribute;
@@ -172,7 +177,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const next: Saved = {};
-      if (typeface.id !== "locked") next.face = { id: typeface.id, stack: typeface.stack, href: typeface.href };
+      if (chosen) next.face = { id: chosen.id, stack: chosen.stack, href: chosen.href };
       if (radiusTuned !== null) next.radius = radiusTuned;
       if (own.accent !== GALLERY_LOOK.accent) next.accent = own.accent;
       if (own.material !== GALLERY_LOOK.material) next.material = own.material;
@@ -182,7 +187,7 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
     } catch {
       /* storage can be unavailable; the choice still applies until the page reloads */
     }
-  }, [typeface, radiusTuned, own]);
+  }, [chosen, radiusTuned, own]);
 
   const value = useMemo<Ctx>(() => {
     /* history.state carries route.ts's mark on the entry, so it stays. */

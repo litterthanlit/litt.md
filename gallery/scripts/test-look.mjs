@@ -6,7 +6,7 @@
  *   npm run test:look
  *
  * It fails when:
- * - a look does not survive its own link, or anything but the six spellings reads as a look,
+ * - a look does not survive its own link, or anything but its spellings (and the links from before decision 14) reads as a look,
  * - the address keeps more than the look on a new page entry, or loses another parameter when the look changes,
  * - index.html's scripts before #root paint another accent than look.ts and the saved choices give, for a link, a
  *   saved accent, both or neither,
@@ -36,9 +36,14 @@ const check = (ok, claim) => (ok ? passed : problems).push(claim);
 const SITE = "https://littmd.vercel.app";
 
 /* ---------- the link ---------- */
-check(L.LOOKS.length === 18 && new Set(L.LOOKS.map(L.encodeLook)).size === 18, `eighteen looks, eighteen spellings (${L.LOOKS.map(L.encodeLook).join(", ")})`);
-check(L.encodeLook(L.GALLERY_LOOK) === "mono-flat" && L.encodeLook(L.REGISTRY_LOOK) === "blue4", "the gallery opens in mono-flat, the registry installs blue4");
+check(L.LOOKS.length === 20 && new Set(L.LOOKS.map(L.encodeLook)).size === 20, `twenty looks, twenty spellings (${L.LOOKS.map(L.encodeLook).join(", ")})`);
+check(L.encodeLook(L.GALLERY_LOOK) === "flat" && L.encodeLook(L.REGISTRY_LOOK) === "press", "the gallery opens in flat, the registry installs press, each the world's own accent");
 check(L.sameLook(L.decodeLook("pink-fun"), { accent: "pink", material: "press", fun: true }), "a link from before Flat reads as press");
+check(L.encodeLook(L.decodeLook("blue4")) === "press" && L.encodeLook(L.decodeLook("mono-flat")) === "flat" && L.encodeLook(L.decodeLook("mono-flat-fun")) === "flat-fun", "a link from before decision 14 reads as the world's own: blue4 is press, mono-flat is flat");
+check(L.encodeLook(L.decodeLook("blue4-flat")) === "blue4-flat" && L.encodeLook(L.decodeLook("blue4-device")) === "blue4-device", "Blue 4 asked for on Flat or Device is its own look");
+check(L.sameLook({ accent: "mono", material: "flat", fun: false }, L.GALLERY_LOOK) && !L.sameLook({ accent: "mono", material: "press", fun: false }, L.REGISTRY_LOOK), "Monochrome asked for on Flat is Flat's own, and on Press is not");
+check(L.accentName("world", "press") === "Blue 4" && L.accentName("world", "flat") === "Monochrome" && L.accentName("world", "device") === "Orange", "each world names its own accent");
+check(L.accentsIn("press").map((a) => a.id).join() === "world,mono,pink" && L.accentsIn("flat").map((a) => a.id).join() === "world,blue4,pink" && L.accentsIn("device").map((a) => a.id).join() === "world,blue4,mono,pink", "a picker offers the world's own first, then every other accent");
 check(L.decodeLook("pink-fun-flat") === null, "the material comes before the motion in a slug");
 check(L.decodeLook("pink-fun-device") === null && L.decodeLook("pink-flat-device") === null, "one material per slug, before the motion");
 check(L.encodeLook({ accent: "mono", material: "device", fun: true }) === "mono-device-fun", "Device spells -device");
@@ -47,7 +52,7 @@ for (const look of L.LOOKS) {
   check(back !== null && L.sameLook(back, look), `${L.encodeLook(look)} reads back as ${L.lookWords(look)}`);
   check(encodeURIComponent(L.encodeLook(look)) === L.encodeLook(look), `${L.encodeLook(look)} needs no encoding in an address`);
 }
-for (const raw of ["green", "pink-fun-x", "flat", "pink-flat-flat", "mono-press", "PINK", "", "fun", "pink,fun", "pink fun", " pink", "blue", "-fun", null, undefined]) {
+for (const raw of ["green", "pink-fun-x", "flat-flat", "press-flat", "world", "world-flat", "pink-flat-flat", "mono-press", "PINK", "", "fun", "pink,fun", "pink fun", " pink", "blue", "-fun", null, undefined]) {
   check(L.decodeLook(raw) === null, `${JSON.stringify(raw)} is not a look`);
 }
 check(L.sameLook(L.lookFromSearch("?status=ready&look=pink-fun"), { accent: "pink", material: "press", fun: true }), "the look reads from a query that holds other parameters");
@@ -65,54 +70,71 @@ check(L.withLook("https://x.test/?q=a%20b#table", null) === "https://x.test/?q=a
 const html = read("index.html");
 const body = html.slice(html.indexOf("<body>"), html.indexOf('<div id="root">'));
 const scripts = [...body.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
-/** What index.html's scripts paint before the app: the data-accent on <body> (undefined is Blue 4) and the
+/** What index.html's scripts paint before the app: the data-accent on <body> (none is the world's own) and the
     data-material on <html> (undefined is Press). */
-function paint(search, saved) {
+function paint(search, saved, hash = "") {
   const dataset = {}, rootDataset = {};
   const document = {
     body: { dataset, style: { setProperty() {} } },
-    documentElement: { dataset: rootDataset },
+    documentElement: { dataset: rootDataset, style: { setProperty() {} } },
     head: { appendChild() {} },
     createElement: () => ({ setAttribute() {} }),
   };
   const localStorage = { getItem: (k) => (k === "litt-gallery:customize" && saved ? JSON.stringify(saved) : null) };
-  const context = vm.createContext({ document, localStorage, location: { search }, URLSearchParams });
+  const context = vm.createContext({ document, localStorage, location: { search, hash }, URLSearchParams });
   for (const s of scripts) vm.runInContext(s, context);
-  return `${dataset.accent ?? "blue4"}/${rootDataset.material ?? "press"}`;
+  return `${dataset.accent ?? "none"}/${rootDataset.material ?? "press"}`;
 }
-const attributeOf = (accent) => L.ACCENTS.find((a) => a.id === accent).attribute ?? undefined;
 /** What look.ts says the page shows, in paint()'s spelling. */
-const modelOf = (search, saved) => {
+const modelOf = (search, saved, hash = "") => {
   const look = L.lookFromSearch(search) ?? {
     accent: L.ACCENTS.some((a) => a.id === saved?.accent) ? saved.accent : L.GALLERY_LOOK.accent,
     material: L.MATERIALS.some((m) => m.id === saved?.material) ? saved.material : L.GALLERY_LOOK.material,
   };
-  return `${attributeOf(look.accent) ?? "blue4"}/${look.material}`;
+  const material = /^#(press|flat|device)$/.exec(hash)?.[1] ?? look.material;
+  return `${L.accentAttribute(look.accent, material) ?? "none"}/${material}`;
 };
 const firstPaint = [
-  ...L.LOOKS.map((l) => [`?look=${L.encodeLook(l)}`, null, `${attributeOf(l.accent) ?? "blue4"}/${l.material}`]),
+  ...L.LOOKS.map((l) => [`?look=${L.encodeLook(l)}`, null, `${L.accentAttribute(l.accent, l.material) ?? "none"}/${l.material}`]),
   ["?look=mono", { accent: "blue4" }, "mono/press"],
   ["?status=ready&look=pink", { accent: "blue4" }, "pink/press"],
-  ["?look=blue4", { accent: "pink", material: "flat" }, "blue4/press"],
+  ["?look=blue4", { accent: "pink", material: "flat" }, "none/press"],
+  ["?look=press", { accent: "pink", material: "flat" }, "none/press"],
+  ["?look=mono-flat", { accent: "pink" }, "none/flat"],
+  ["?look=blue4-device", null, "blue/device"],
   ["?look=pink-flat-fun", { material: "press" }, "pink/flat"],
   ["", { accent: "pink" }, "pink/flat"],
-  ["", { material: "press" }, "mono/press"],
-  ["", { accent: "blue4" }, "blue4/flat"],
+  ["", { material: "press" }, "none/press"],
+  ["", { accent: "blue4" }, "blue/flat"],
+  ["", { accent: "blue4", material: "press" }, "none/press"],
+  ["", { accent: "mono", material: "press" }, "mono/press"],
   ["?look=PINK", { accent: "pink" }, "pink/flat"],
   ["?look=green", { accent: "pink" }, "pink/flat"],
-  ["?look=pink-fun-x", null, "mono/flat"],
+  ["?look=pink-fun-x", null, "none/flat"],
   ["?look=pink-device", { material: "flat" }, "pink/device"],
   ["?look=mono", { material: "device" }, "mono/press"],
-  ["", { material: "device" }, "mono/device"],
+  ["", { material: "device" }, "none/device"],
+  ["", { accent: "mono", material: "device" }, "mono/device"],
   ["", { accent: "pink", material: "device" }, "pink/device"],
-  ["?look=blue4-flat-device", { material: "device" }, "mono/device"],
-  ["", null, "mono/flat"],
+  ["?look=blue4-flat-device", { material: "device" }, "none/device"],
+  ["", null, "none/flat"],
 ];
 check(scripts.length >= 2, `index.html paints with ${scripts.length} scripts before #root`);
 for (const [search, saved, want] of firstPaint) {
   const got = paint(search, saved);
   const model = modelOf(search, saved);
   check(got === want && model === want, `"${search}" with ${saved ? JSON.stringify(saved) : "nothing"} saved paints ${want} (index.html: ${got}, look.ts: ${model})`);
+}
+/* A world page writes its material, and the accent follows the world: asked for stays asked for, the world's own stays its own. */
+for (const [search, saved, hash, want] of [
+  ["", { accent: "mono" }, "#device", "mono/device"],
+  ["", { accent: "mono" }, "#press", "mono/press"],
+  ["", null, "#device", "none/device"],
+  ["", { accent: "blue4", material: "flat" }, "#press", "none/press"],
+  ["?look=pink-flat", null, "#device", "pink/device"],
+]) {
+  const got = paint(search, saved, hash), model = modelOf(search, saved, hash);
+  check(got === want && model === want, `${hash} with "${search}" and ${saved ? JSON.stringify(saved) : "nothing"} saved paints ${want} (index.html: ${got}, look.ts: ${model})`);
 }
 
 /* ---------- the accents tokens.css answers ---------- */
@@ -126,15 +148,17 @@ const materialsAnswered = new Set([...read("../skills/litt-md/assets/tokens.css"
 const materialsNamed = L.MATERIALS.map((m) => m.attribute).filter((a) => a !== null);
 check(materialsNamed.length === materialsAnswered.size && materialsNamed.every((x) => materialsAnswered.has(x)), `tokens.css answers exactly the materials here (${[...materialsAnswered].join(", ")})`);
 check(L.MATERIALS.find((m) => m.id === L.REGISTRY_LOOK.material)?.attribute === null, "the registry's look is the material with no attribute");
-check(JSON.stringify(L.lookAttributes({ accent: "mono", material: "flat" }, true)) === JSON.stringify({ "data-theme": "dark", "data-accent": "mono", "data-material": "flat" }), "a nested scope carries the material");
+check(JSON.stringify(L.lookAttributes({ accent: "blue4", material: "flat" }, true)) === JSON.stringify({ "data-theme": "dark", "data-accent": "blue", "data-material": "flat" }), "a nested scope carries the material, and Blue 4 asked for on Flat");
+check(JSON.stringify(L.lookAttributes({ accent: "mono", material: "flat" }, false)) === JSON.stringify({ "data-theme": "light", "data-material": "flat" }), "Monochrome on Flat is Flat's own: no data-accent");
 check(JSON.stringify(L.lookAttributes({ accent: "pink", material: "device" }, false)) === JSON.stringify({ "data-theme": "light", "data-accent": "pink", "data-material": "device" }), "a nested scope carries Device");
 check(JSON.stringify(L.lookAttributes({ accent: "blue4", material: "press" }, false)) === JSON.stringify({ "data-theme": "light" }), "Blue 4 on press is a theme and nothing else");
+check(JSON.stringify(L.lookAttributes({ accent: "world", material: "device" }, false)) === JSON.stringify({ "data-theme": "light", "data-material": "device" }), "Device's own orange is the material and nothing else");
 
 /* ---------- what a look asks a project to change ---------- */
 check(L.lookStep(L.REGISTRY_LOOK, SITE) === null && L.lookNote(L.REGISTRY_LOOK) === null, "the registry's own look asks for no step and no note");
 for (const look of L.LOOKS) {
   const slug = L.encodeLook(look);
-  const attribute = L.ACCENTS.find((a) => a.id === look.accent).attribute;
+  const attribute = L.accentAttribute(look.accent, look.material);
   const setup = L.lookSetup(look, SITE);
   const asks = (text) => [/data-accent="(\w+)"/.exec(text)?.[1] ?? null, text.includes("<FunMode>"), /data-material="(\w+)"/.exec(text)?.[1] ?? "press"];
   const [setupAttr, setupFun, setupMaterial] = asks(setup);

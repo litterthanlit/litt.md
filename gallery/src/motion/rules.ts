@@ -233,7 +233,7 @@ export function tokensSnippet(dial: Dial): string {
 /** The tokens.css lines for the Customize panel's choices: only what differs from the locked values. */
 export function customizeSnippet(radius: number, lockedRadius: number, type: TypeChoice): string {
   const out: string[] = [];
-  if (type.name !== type.locked) out.push(`/* Type: sizes, weights by role and tracking stay as they are. */`, `--font-sans: ${type.stack};`);
+  if (type.name !== type.locked) out.push(`/* Type: every world sets this face in place of its own; sizes, weights by role and tracking stay as they are. */`, `--font-choice: ${type.stack};`);
   if (radius !== lockedRadius) {
     if (out.length) out.push(``);
     const note = radius === PILL ? `/* Shape: pill controls (28px is half the 56px lg control); surfaces take 16px, since a pill has no concentric surface. */` : `/* Shape: surfaces are controls plus the 4px inset. */`;

@@ -21,19 +21,19 @@
 </head>
 <body>
 <script>
-  /* Apply the saved Customize choices (type, shape, the accent and the material) before first paint. They live on
-     <body>, except the material, which goes on <html> like data-theme, since it changes the canvas:
-     src/gallery/customize-state.tsx says why, and owns them once the app runs. The gallery opens in monochrome and
-     flat (GALLERY_LOOK in src/gallery/look.ts), so both are set first and a saved choice replaces them. */
-  document.body.dataset.accent = "mono";
-  document.documentElement.dataset.material = "flat";
+  /* Apply the saved Customize choices (type, shape, the accent and the material) before first paint. Shape lives on
+     <body>; the face is --font-choice on <html>, which every world's face reads first; the material goes on <html>
+     like data-theme, since it changes the canvas: src/gallery/customize-state.tsx says why, and owns them once the app
+     runs. The accent and the material are gathered into littLook and painted by the last script, since the accent's
+     attribute depends on the world. The gallery opens in Flat's own (GALLERY_LOOK in src/gallery/look.ts). */
+  var littLook = { accent: "world", material: "flat" };
   (function () {
     try {
       var c = JSON.parse(localStorage.getItem("litt-gallery:customize") || "null");
       if (!c) return;
       var s = document.body.style;
       if (c.face && typeof c.face.stack === "string") {
-        s.setProperty("--font-sans", c.face.stack);
+        document.documentElement.style.setProperty("--font-choice", c.face.stack);
         var href = c.face.href;
         if (typeof href === "string" && href.indexOf("https://fonts.googleapis.com/") === 0) {
           var l = document.createElement("link");
@@ -48,38 +48,37 @@
         s.setProperty("--radius-control", c.radius + "px");
         s.setProperty("--radius-surface", (c.radius === 28 ? 16 : c.radius === 0 ? 0 : c.radius + 4) + "px");
       }
-      /* The accent: Blue 4 is tokens.css with no attribute, pink is [data-accent="pink"]. */
-      if (c.accent === "blue4") delete document.body.dataset.accent;
-      else if (c.accent === "pink") document.body.dataset.accent = "pink";
-      /* The material: Flat and Device are [data-material] on <html>, Press is tokens.css with no attribute. */
-      if (c.material === "press") delete document.documentElement.dataset.material;
-      else if (c.material === "device") document.documentElement.dataset.material = "device";
+      if (c.accent === "blue4" || c.accent === "mono" || c.accent === "pink") littLook.accent = c.accent;
+      if (c.material === "press" || c.material === "flat" || c.material === "device") littLook.material = c.material;
     } catch (e) {}
   })();
 </script>
 <script>
-  /* A link's look (?look=pink, ?look=pink-flat-fun) paints over the saved accent and material, and is never saved. Its
-     own script, since the one above stops when nothing is saved. The grammar is LOOKS in src/gallery/look.ts, and
-     scripts/test-look.mjs runs this copy against it. A link without -flat or -device is press. Fun mode has nothing to paint. */
+  /* A link's look (?look=flat, ?look=pink-flat-fun) paints over the saved accent and material, and is never saved. Its
+     own script, since the one above stops when nothing is saved. The grammar is SLUG in src/gallery/look.ts, and
+     scripts/test-look.mjs runs this copy against it: the world alone is its own accent, an accent without a material is
+     press. Fun mode has nothing to paint. */
   (function () {
     try {
-      var m = /^(mono|blue4|pink)(-flat|-device)?(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
-      if (!m) return;
-      if (m[1] === "blue4") delete document.body.dataset.accent;
-      else document.body.dataset.accent = m[1];
-      if (m[2]) document.documentElement.dataset.material = m[2].slice(1);
-      else delete document.documentElement.dataset.material;
+      var m = /^(?:(press|flat|device)|(blue4|mono|pink)(?:-(flat|device))?)(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
+      if (m) littLook = { accent: m[2] || "world", material: m[1] || m[3] || "press" };
     } catch (e) {}
   })();
 </script>
 <script>
   /* A world page (#press, #flat, #device) opens in its own material, whatever is saved or linked: arriving there
-     writes it (src/gallery/world.tsx, proposals/worlds.md decision 1), so the first paint says the same. */
+     writes it (src/gallery/world.tsx, proposals/worlds.md decision 1), so the first paint says the same. Then the
+     look is painted: no data-accent for the world's own, and none for an accent asked for in the world whose own it
+     is (accentAttribute in src/gallery/look.ts). */
   (function () {
     var w = /^#(press|flat|device)$/.exec(location.hash);
-    if (!w) return;
-    if (w[1] === "press") delete document.documentElement.dataset.material;
-    else document.documentElement.dataset.material = w[1];
+    if (w) littLook.material = w[1];
+    var m = littLook.material, a = littLook.accent;
+    a = a === "blue4" ? (m === "press" ? "" : "blue") : a === "mono" ? (m === "flat" ? "" : "mono") : a === "pink" ? "pink" : "";
+    if (a) document.body.dataset.accent = a;
+    else delete document.body.dataset.accent;
+    if (m === "press") delete document.documentElement.dataset.material;
+    else document.documentElement.dataset.material = m;
   })();
 </script>
 <div id="root"></div>

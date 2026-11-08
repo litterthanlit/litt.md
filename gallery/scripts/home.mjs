@@ -7,13 +7,13 @@
  *
  * It fails when:
  * - a control on the deck does not change the gallery: Fun mode (the wall then offers its Fun filter), the theme (and
- *   the header's switch says the same), the accent (the gallery opens in monochrome, and Blue 4 and pink each fill Get
+ *   the header's switch says the same), the accent (the gallery opens in Flat's own, the ink, and Blue 4 and pink each fill Get
  *   started in their color), the material (the gallery opens in Flat, data-material on <html>, and Press takes it
  *   off) or the shape (the control radius on <body>),
  * - the deck's Material does not change the home hero under it (Device names Device and shows the Agent block, Flat the
  *   Case study, data-material on <html> follows), or a material switch starts a transition in the page outside the deck,
  * - the Customize panel still offers a Material control (it moved to the deck and to the world pages),
- * - Reset does not put the gallery's defaults back (the locked shape, monochrome, Flat),
+ * - Reset does not put the gallery's defaults back (the locked shape, Flat and its own accent),
  * - a look from a link (?look=pink-fun) does not paint before the app runs, writes storage, drops out of the address on
  *   the next page, or loses the Table's filters; or an accent change during it does not keep the link's look and save,
  * - the notice under the header does not offer the link's look (Keep this look saves it, Back to mine goes back to
@@ -125,12 +125,12 @@ const accentNow = (pg) => pg.evaluate(() => {
 
   const start = pg.getByRole("button", { name: "Get started" });
   const fill = () => start.evaluate((el) => getComputedStyle(el).backgroundColor);
-  check((await pg.evaluate(() => document.body.dataset.accent)) === "mono", "the gallery opens in monochrome (data-accent=mono on <body>)");
+  check((await pg.evaluate(() => document.body.dataset.accent)) === undefined, "the gallery opens in Flat's own accent, the ink (no data-accent on <body>)");
   await pg.waitForTimeout(300); // the ink changed with the theme above, and the fill fades to it on the instant tier
   const ink = await accentNow(pg);
   check((await fill()) === ink, "Get started is filled with the accent, the ink");
   await pick(d, "Blue 4");
-  check((await pg.evaluate(() => document.body.dataset.accent)) === undefined, "Blue 4 takes data-accent off <body>, the tokens as litt ships them");
+  check((await pg.evaluate(() => document.body.dataset.accent)) === "blue", "Blue 4 on Flat sets data-accent=blue on <body>");
   await pg.waitForTimeout(300); // the fill fades on the instant tier
   const blue = await accentNow(pg);
   check(blue !== ink && (await fill()) === blue, "in Blue 4, Get started is Blue 4");
@@ -177,8 +177,8 @@ const accentNow = (pg) => pg.evaluate(() => {
 
   await d.getByRole("button", { name: "Reset" }).click();
   check(
-    (await radius()) === "" && (await pg.evaluate(() => document.body.dataset.accent)) === "mono" && (await material()) === "flat",
-    "Reset takes the shape back to the locked tokens, the accent back to monochrome and the material back to Flat",
+    (await radius()) === "" && (await pg.evaluate(() => document.body.dataset.accent)) === undefined && (await material()) === "flat",
+    "Reset takes the shape back to the locked tokens, the material back to Flat and the accent back to its own",
   );
 
   await start.click();
@@ -205,13 +205,13 @@ const accentNow = (pg) => pg.evaluate(() => {
   await accentTiles.locator("label", { has: pg.getByRole("radio", { name: "Pink" }) }).click();
   check((await pg.evaluate(() => document.body.dataset.accent)) === "pink", "the panel's Pink tile sets data-accent=pink on <body>");
   await accentTiles.locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
-  const look = () => pg.evaluate(() => [document.body.dataset.accent, document.body.style.getPropertyValue("--radius-control"), document.body.style.getPropertyValue("--font-sans")].join("|"));
+  const look = () => pg.evaluate(() => [document.body.dataset.accent, document.body.style.getPropertyValue("--radius-control"), document.documentElement.style.getPropertyValue("--font-choice")].join("|"));
   const before = await look();
   await panel.getByRole("button", { name: "Surprise me" }).click();
   const said = (await panel.locator("#customize-said").textContent())?.trim() ?? "";
   check((await look()) !== before && said.endsWith("motion."), `Surprise me changes the accent, the shape and the face, and says so ("${said}")`);
   await panel.getByRole("button", { name: "Reset to defaults" }).click();
-  check((await look()) === "mono||", "the panel's Reset goes back to monochrome, the locked shape and the locked face");
+  check((await look()) === "||", "the panel's Reset goes back to Flat's own accent, the locked shape and the world's own face");
   for (const e of errors) problems.push(`customize: ${e}`);
   await ctx.close();
 }
@@ -246,8 +246,8 @@ const says = async (scope, ...parts) => {
   await pick(deck(pg), "Blue 4");
   await pg.waitForFunction(() => localStorage.getItem("litt-gallery:customize") !== null, null, { timeout: 2000 }).catch(() => {});
   check(
-    (await saved(pg)) === JSON.stringify({ accent: "blue4", material: "press", fun: true }) && (await pg.evaluate(() => location.search)) === "" && (await bodyAccent(pg)) === undefined,
-    "Blue 4 during the preview keeps the link's press and fun mode, saves Blue 4 with them, and takes the look out of the address",
+    (await saved(pg)) === JSON.stringify({ material: "press", fun: true }) && (await pg.evaluate(() => location.search)) === "" && (await bodyAccent(pg)) === undefined,
+    "Blue 4, Press's own, during the preview keeps the link's press and fun mode, saves them with the world's own accent, and takes the look out of the address",
   );
   for (const e of errors) problems.push(`link change: ${e}`);
   await ctx.close();
@@ -311,7 +311,7 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
   const install = pg.locator("section[aria-labelledby=install]");
   check(await says(install, "This page shows Monochrome, flat material, calm motion. The registry installs Blue 4 and press material."), "in Monochrome and Flat, the Install section says the registry installs Blue 4 and press");
   const prompt = await copied(pg.locator("main"), "Copy prompt");
-  check(prompt.includes("2. Match the look\n") && prompt.includes('data-accent="mono"') && prompt.includes("3. Usage\n"), "in Monochrome, Copy prompt adds Match the look as step 2, with data-accent=\"mono\"");
+  check(prompt.includes("2. Match the look\n") && prompt.includes('data-material="flat"') && !prompt.includes("data-accent=") && prompt.includes("3. Usage\n"), "in Flat's own look, Copy prompt adds Match the look as step 2, with data-material=\"flat\" and no data-accent");
 
   await pg.locator("header").getByRole("button", { name: "Customize" }).click();
   const panel = pg.getByRole("dialog", { name: "Customize" });
@@ -319,9 +319,9 @@ const waitSaved = (pg, value) => pg.waitForFunction((v) => localStorage.getItem(
   await group.waitFor();
   check(await says(group, "Monochrome, flat material, calm motion"), "the panel's Your look says Monochrome, flat material, calm motion");
   const setup = await copied(group, "Copy setup");
-  check(setup.startsWith('Set up the litt.md look "Monochrome, flat material, calm motion"') && setup.includes('<html lang="en" data-accent="mono">') && setup.includes('<html lang="en" data-material="flat">') && !setup.includes("<FunMode>"), "Copy setup gives the Monochrome and Flat edits and no fun mode");
+  check(setup.startsWith('Set up the litt.md look "Monochrome, flat material, calm motion"') && !setup.includes("data-accent=") && setup.includes('<html lang="en" data-material="flat">') && !setup.includes("<FunMode>"), "Copy setup gives the Flat edit alone (its own accent is the ink) and no fun mode");
   check((await group.getByRole("status").filter({ hasText: /^Copied$/ }).count()) >= 1, "Copy setup says Copied");
-  check((await copied(group, "Copy link")) === `http://localhost:${port}/index.html?look=mono-flat#button`, "Copy link gives this page with ?look=mono-flat");
+  check((await copied(group, "Copy link")) === `http://localhost:${port}/index.html?look=flat#button`, "Copy link gives this page with ?look=flat");
 
   await panel.locator("fieldset", { has: pg.locator("legend", { hasText: /^Accent$/ }) }).locator("label", { has: pg.getByRole("radio", { name: "Blue 4" }) }).click();
   await pg.keyboard.press("Escape");
