@@ -107,14 +107,13 @@ export function OptionPickerDeviceBody({ group, values, value, swatches, onPick,
             style={detent}
           >
             <input type="radio" name={group} value={v.value} checked={on} onChange={() => onPick(v.value)} className="peer sr-only" />
-            <span className="relative z-1 flex min-w-0 flex-col items-center gap-0.5 leading-none">
-              <span className="flex min-w-0 max-w-full items-center gap-1.5">
-                <span aria-hidden="true" className={lamp + (on ? (out ? " bg-fg-subtle forced-colors:bg-[Highlight]" : lampLit) : lampOff)} />
-                <span className="truncate">{labelOf(v)}</span>
-              </span>
+            {/* One line, the lamp at the key's middle, so it stays clear of a round key's curves at every shape. */}
+            <span className="relative z-1 flex min-w-0 max-w-full items-center gap-1.5 leading-none">
+              <span aria-hidden="true" className={lamp + (on ? (out ? " bg-fg-subtle forced-colors:bg-[Highlight]" : lampLit) : lampOff)} />
+              <span className="truncate">{labelOf(v)}</span>
               {out && (
                 <>
-                  <span aria-hidden="true" className="truncate text-fg-disabled">sold out</span>
+                  <span aria-hidden="true" className="shrink-0 text-fg-disabled">sold out</span>
                   <span className="sr-only">, sold out</span>
                 </>
               )}

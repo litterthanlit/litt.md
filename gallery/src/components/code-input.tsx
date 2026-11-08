@@ -101,7 +101,7 @@ function PressBody({ length, cellHeight, code, at, focused, disabled, error }: C
       aria-hidden="true"
       data-body="press"
       className={
-        "flex w-full gap-2 rounded-surface p-2 forced-colors:border " +
+        "flex w-full gap-2 rounded-surface p-1 forced-colors:border " +
         (disabled ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]" : "bg-block shadow-(--plate-lift)")
       }
     >
@@ -112,7 +112,7 @@ function PressBody({ length, cellHeight, code, at, focused, disabled, error }: C
           <span
             key={i}
             className={
-              "relative grid min-w-7 flex-1 basis-0 place-items-center rounded-[calc(var(--radius-surface)-8px)] text-body tabular-nums font-normal " +
+              "relative grid min-w-7 flex-1 basis-0 place-items-center rounded-[calc(var(--radius-surface)-4px)] text-body tabular-nums font-normal " +
               "transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border " +
               cellHeight +
               /* six cells read as two halves of three */
@@ -134,7 +134,7 @@ function PressBody({ length, cellHeight, code, at, focused, disabled, error }: C
             {char ||
               (current ? <span className="h-5 w-px bg-field-ink forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" /> : null)}
             {char && !disabled && (
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0 rotate-180 rounded-[calc(var(--radius-surface)-8px)] shadow-(--highlight)" />
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 rotate-180 rounded-[calc(var(--radius-surface)-4px)] shadow-(--highlight)" />
             )}
           </span>
         );

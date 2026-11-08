@@ -9,8 +9,8 @@
  *   0.09, an unlit segment the ink at 10%. It is drawn here and not imported, because that part is a whole readout
  *   (its own glass, a phosphor loop per instance) and a cell is already the glass.
  * - Only a typed character lights (R4). A change switches in place in three steps on the instant tier, as the Switch's
- *   detent does, and nothing glides. Reduced motion zeroes the tier, so it switches at once. The caret of the next cell
- *   is a still 1px line at the glass's left, which never blinks.
+ *   detent does, and nothing glides. Reduced motion zeroes the tier, so it switches at once. The next cell needs no
+ *   caret: its pane takes the focus line and ring, and nothing blinks.
  * - Focus: the next cell takes the --focus line and ring. An error puts the --danger line on every pane. Disabled
  *   lies flat: --surface-2, the --line hairline, the segments in --fg-disabled.
  * - Forced colors drops shadows, so each pane gets a real border, the current one an outline, and the segments follow
@@ -100,9 +100,6 @@ export function CodeInputDeviceBody({ length, cellHeight, code, at, focused, dis
             }
           >
             {figure ? <Figure char={char} /> : <span className="font-field text-body font-title">{char}</span>}
-            {char === "" && current && (
-              <span className="absolute inset-y-2.5 left-2 w-px bg-field-ink forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" />
-            )}
           </span>
         );
       })}

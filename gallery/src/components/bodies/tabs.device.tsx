@@ -9,8 +9,8 @@
  *   row, as on the other bodies.
  * - Segmented: a row of keys on one skirt. The track is the skirt, a darker plate with a rim, and the keys stand on it a
  *   hair apart, each a key face (--block, the lit top edge, the darker lower edge). The chosen key is latched down: it
- *   has sunk the whole --press-depth (2px) onto the skirt, its cast is the pressed one (--block-press), and its lamp is
- *   lit. A key under the hand sinks the same 2px, and never more, whatever fun mode asks.
+ *   has sunk the whole --press-depth (2px) onto the skirt, so its skirt is gone, its face is a step darker (--block mixed
+ *   55% toward --tray) and inset-shaded with --tray-shade, as the Segmented control's latched key is, and its lamp is lit. A key under the hand sinks the same 2px, and never more, whatever fun mode asks.
  * - Motion: nothing travels between tabs. The change switches in place in three steps on the instant tier (steps(3,
  *   end), --dur-instant), as the switch's detent does: the lamp lights, the word's ink changes and a key drops.
  *   Reduced motion zeroes the tier, so the step is at once.
@@ -74,7 +74,8 @@ const key: Record<TabsTriggerBodyProps["size"], string> = {
 const keyFace =
   "rounded-control bg-block text-fg-muted hover:bg-(--block-hover) hover:text-fg " +
   "[--key-edge:var(--highlight),inset_0_-1px_0_color-mix(in_oklab,black_10%,transparent)] shadow-(--key-edge) " +
-  "data-[state=active]:text-fg data-[state=active]:shadow-(--block-press) data-[state=active]:[transform:translateY(var(--press-depth))] " +
+  "data-[state=active]:bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] data-[state=active]:hover:bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] " +
+  "data-[state=active]:text-fg data-[state=active]:shadow-(--tray-shade) data-[state=active]:[transform:translateY(var(--press-depth))] " +
   "enabled:active:text-fg enabled:active:shadow-(--block-press) enabled:active:[transform:translateY(var(--press-depth))] " +
   "forced-colors:border forced-colors:data-[state=active]:border-[Highlight]";
 

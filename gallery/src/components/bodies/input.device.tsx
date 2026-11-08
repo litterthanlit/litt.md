@@ -85,15 +85,16 @@ export function FieldDeviceBody({ id, noteId, label, note, error, disabled, chil
       {note && (
         <p
           id={noteId}
-          className="flex w-fit max-w-full items-start gap-1.5 rounded-control bg-field px-2.5 py-1 font-field text-caption shadow-(--field-shade) forced-colors:border"
+          className="flex max-w-full items-center gap-2 font-field text-caption"
         >
+          {/* The error's lamp sits on the body beside the glass, an indicator on the bezel, clear of the glass's curve. */}
           {error && (
             <span
               aria-hidden="true"
-              className="mt-[5px] size-1.5 shrink-0 rounded-pill bg-danger shadow-[0_0_6px_var(--danger)] forced-colors:bg-[Highlight]"
+              className="size-1.5 shrink-0 rounded-pill bg-danger shadow-[0_0_6px_var(--danger)] forced-colors:bg-[Highlight]"
             />
           )}
-          <span className={error ? "text-field-ink" : "text-field-ink-subtle"}>{note}</span>
+          <span className={"w-fit max-w-full rounded-control bg-field px-2.5 py-1 shadow-(--field-shade) forced-colors:border " + (error ? "text-field-ink" : "text-field-ink-subtle")}>{note}</span>
         </p>
       )}
     </div>
