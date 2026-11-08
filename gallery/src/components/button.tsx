@@ -38,9 +38,9 @@
  *   the sizes, the label, the spinner) and Press's body. It resolves them once into ButtonBodyProps and picks a body
  *   by the material on <html> (byWorld, useMaterial). Flat's pill is bodies/button.flat.tsx; Device's key on its 2px
  *   skirt is bodies/button.device.tsx. A frame that sets its own material (a study strip, a side-by-side preview)
- *   wraps its buttons in <ButtonWorld material="device"> to draw that body.
+ *   wraps its buttons in a MaterialProvider to draw that body.
  */
-import { Children, createContext, useContext, type ButtonHTMLAttributes, type ComponentPropsWithRef, type CSSProperties, type ReactNode } from "react";
+import { Children, type ButtonHTMLAttributes, type ComponentPropsWithRef, type CSSProperties, type ReactNode } from "react";
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { ButtonFlatBody } from "./bodies/button.flat";
 import { ButtonDeviceBody } from "./bodies/button.device";
@@ -148,21 +148,6 @@ export type ButtonBodyProps = {
   rootProps: ComponentPropsWithRef<"button"> & { "data-loading"?: true };
 };
 
-const WorldContext = createContext<ReturnType<typeof useMaterial> | null>(null);
-
-/** A frame that sets its own `data-material` (a study strip, a side-by-side preview) wraps its buttons in this to draw that material's body, since a button reads <html> otherwise. */
-export function ButtonWorld({
-  material,
-  children,
-}: {
-  /** The material the frame draws: press, flat or device. */
-  material: "press" | "flat" | "device";
-  /** The buttons in the frame. */
-  children: ReactNode;
-}) {
-  return <WorldContext.Provider value={material}>{children}</WorldContext.Provider>;
-}
-
 /** Press's body: the raised block that sinks half a pixel. The default, and what a world without a body of its own gets. */
 function PressBody({ variant, sizeClass, shapeClass, blockClass, className, fun, children, spinner, loading, rootProps }: ButtonBodyProps) {
   const { style, ...root } = rootProps;
@@ -201,7 +186,6 @@ export function Button({
 }: ButtonProps) {
   const fun = useFun();
   const material = useMaterial();
-  const world = useContext(WorldContext) ?? material;
   /* Fun mode: the sink (the third transitioned property) takes the press spring and goes deeper; the fills keep the instant tier. */
   const press: CSSProperties | undefined = fun
     ? ({
@@ -210,7 +194,7 @@ export function Button({
         transitionTimingFunction: `var(--ease-out), var(--ease-out), ${fun.press.easing}`,
       } as CSSProperties)
     : undefined;
-  const Body = byWorld(world, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody });
+  const Body = byWorld(material, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody });
   return (
     <Body
       variant={variant}

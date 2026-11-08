@@ -79,7 +79,6 @@ export function ButtonDeviceBody({ variant, iconOnly, sizeClass, shapeClass, blo
         />
       )}
       <span
-        aria-hidden="true"
         className={
           "pointer-events-none absolute inset-0 bg-(--key) shadow-(--key-edge) " + round + " " +
           "transition-[background-color,translate] duration-(--dur-instant) ease-litt " +

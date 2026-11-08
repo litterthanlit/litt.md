@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button, ButtonWorld } from "@/components/button";
+import { Button } from "@/components/button";
 import { ArrowUpRightIcon, CopyIcon, MoreIcon, PlusIcon, SettingsIcon, TrashIcon } from "@/components/icons";
-import { useMotionDial } from "@/motion";
+import { MaterialProvider, useMotionDial } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 import { lookAttributes, MATERIALS } from "../look";
@@ -22,7 +22,7 @@ export const meta: PageMeta = {
 export const docs: PageDocs = {
   components: ["button", "icons"],
   exports: ["Button", "Spinner"],
-  usage: `import { Button, ButtonWorld } from "@/components/button";
+  usage: `import { Button } from "@/components/button";
 import { PlusIcon, SettingsIcon } from "@/components/icons";
 
 <Button variant="primary" onClick={save}>Save changes</Button>
@@ -116,7 +116,7 @@ function ThreeBodiesDemo() {
     <div className="grid gap-6 md:grid-cols-3">
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <ButtonWorld material={m.id}>
+          <MaterialProvider material={m.id}>
             <div
               {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
               data-body-frame={m.id}
@@ -127,7 +127,7 @@ function ThreeBodiesDemo() {
               <Button variant="ghost">Cancel</Button>
               <Button variant="danger">Delete project</Button>
             </div>
-          </ButtonWorld>
+          </MaterialProvider>
           <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
         </figure>
       ))}
