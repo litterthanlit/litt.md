@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.07",
+  "latest": "2026.11.08",
   "items": {
     "accordion": {
       "version": "2026.11.06",
@@ -15,8 +15,12 @@
       "hash": "e5db8e1b0f40b890"
     },
     "agent": {
-      "version": "2026.11.02",
-      "hash": "ee06b785f64d2d02"
+      "version": "2026.11.08",
+      "hash": "44d6443a450dd10b"
+    },
+    "agent-indicator": {
+      "version": "2026.11.08",
+      "hash": "43cc430b8c4e8159"
     },
     "app-shell": {
       "version": "2026.11.06",
@@ -83,7 +87,7 @@
       "hash": "941606ce76eb027f"
     },
     "code-input": {
-      "version": "2026.11.06",
+      "version": "2026.11.08",
       "hash": "a3c8121c0dabce83"
     },
     "cohort-grid": {
@@ -113,6 +117,10 @@
     "context-menu": {
       "version": "2026.11.05",
       "hash": "4e67b64f794f971a"
+    },
+    "copy-button": {
+      "version": "2026.11.08",
+      "hash": "c15f59e2c204cc14"
     },
     "curve-editor": {
       "version": "2026.10.27",
@@ -330,6 +338,10 @@
       "version": "2026.11.03",
       "hash": "accd97042a3f6209"
     },
+    "seven-segment": {
+      "version": "2026.11.08",
+      "hash": "2f68f09a637387cc"
+    },
     "shopify": {
       "version": "2026.10.24",
       "hash": "18bfba74da1d4e27"
@@ -398,13 +410,17 @@
       "version": "2026.11.06",
       "hash": "b927073b2566def4"
     },
+    "tape-progress": {
+      "version": "2026.11.08",
+      "hash": "f072118b4919c762"
+    },
     "team": {
       "version": "2026.11.03",
       "hash": "c2266b62f761178d"
     },
     "thinking": {
-      "version": "2026.11.06",
-      "hash": "c80d0dd536f7ab2d"
+      "version": "2026.11.08",
+      "hash": "d37bf136b8e3216e"
     },
     "time-scrubber": {
       "version": "2026.11.06",
