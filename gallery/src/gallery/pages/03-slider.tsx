@@ -5,6 +5,8 @@ import { SettingsIcon } from "@/components/icons";
 import { RangeSlider, Slider } from "@/components/slider";
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from "@/components/table";
 import { DeviceProvider, useMotionDial } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -18,7 +20,7 @@ export const meta: PageMeta = {
     "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. A raised plate holds a slot, and a cap rides in it: take the cap and it follows your hand 1:1, press the slot and it goes there on the spring. Notches mark steps, and the default holds the cap a little. The label row says the value.",
   tiers: ["instant", "responsive"],
   mechanism:
-    "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. Home holds the cap a little. Moving parts are transforms only. Under Flat the plate goes and the slot is a thin track with an ink knob. Under Device the plate is a body with a well cut into it. Reduced motion stills the glide and the lean.",
+    "Take the cap and it follows the hand one to one, with no easing, sinking half a pixel as its cast tightens. Press the slot, or use an arrow key, and the cap glides there on the responsive tier, 200ms with no bounce. Pushed fast it leans, at most 4 degrees, and rights itself when the hand slows. Home holds the cap a little. Moving parts are transforms only. Reduced motion stills the glide and the lean. Each world has its own body. Press is the cap riding in a slot, which casts and leans into a fast push. Under Flat there is no plate: a thin track, an ink fill and a round knob that your hand moves like a page, with nothing to sink into. Under Device it is a fader: a well cut into the aluminium with engraved ticks beneath it, a key for a cap that sinks its whole 2px under your finger, the fill lit like a meter, and the value on an LCD in the mono. The cap jumps under reduced motion in every body.",
 };
 
 export const docs: PageDocs = {
@@ -492,6 +494,29 @@ function PhoneDemo() {
   );
 }
 
+/** One slider and one range slider, drawn as each world's body (the Under each material idiom, with the sliders live). */
+function BodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full min-w-0 gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            data-bodies-material={m.id}
+            className="grid min-w-0 content-center gap-8 rounded-surface bg-canvas p-4 text-fg outline-1 -outline-offset-1 outline-line min-[24rem]:p-8"
+          >
+            <Slider {...studySlider} defaultValue={1.2} />
+            <RangeSlider label="Build time" min={0} max={120} defaultValue={[20, 80]} showValue formatValue={formatSeconds} minLabel="Faster" maxLabel="Slower" />
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function SliderPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -511,6 +536,16 @@ export default function SliderPage() {
         caption="The slider steps in fives, snaps as you drag, and sends its name and value with the form, like a native field. Press Export to see what was sent."
       >
         <QualityDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="responsive"
+        size="lg"
+        code="BodiesDemo"
+        caption="One contract, three bodies: the same props, keys and screen reader words, a different thing under the hand. Press is a cap that casts and leans in a slot. Flat is a thin track and a round ink knob. Device is a fader: a key with a line across its face rides over a well, the fill lit like a meter, engraved ticks beneath, the value on an LCD. Each frame sets its own look, so all three stand side by side whatever the page is in."
+      >
+        <BodiesDemo />
       </Stage>
 
       <Stage

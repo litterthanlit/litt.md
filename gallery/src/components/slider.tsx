@@ -33,10 +33,12 @@
  * - Disabled: everything lies flat (nothing to push): the plate --surface-2 with a hairline, the slot --surface-3,
  *   the cap --surface-2 with a hairline. The label dims to --fg-disabled; the value and the end words stay at
  *   --fg-subtle, because they are still read.
- * - Flat (proposals/flat-pill.md): no plate. The slot is a thin 4px --surface-3 track, the pulled-out part is the ink,
- *   and the cap is a 20px ink knob ringed in --canvas, with no grip line. The travel's inset is --sl-pad (the plate
- *   sets it, and padOf reads it back as the plate's left padding): 14px or the radius in Press and Device, 10px, the
- *   knob's radius, in Flat.
+ * - Bodies (proposals/worlds.md, Bodies): this file is the contract (the props, the Radix root and thumbs, the label and
+ *   value words, the marks and home, the hand, the keys, the range form) and the Press body, which is the default. Flat
+ *   (proposals/flat-pill.md: a thin track, an ink fill, a round knob) lives in bodies/slider.flat.tsx and Device (a
+ *   fader: a well, engraved ticks, a key for a cap, the value on an LCD) in bodies/slider.device.tsx. Each takes
+ *   SliderBodyProps and carries data-body on its root. The travel's inset is --sl-pad: the body's root sets it, and
+ *   padOf reads it back as the root's left padding.
  * - Forced colors drops box-shadow and background colors, so the plate, the slot and the cap get real borders and
  *   the cap takes the system highlight.
  *
@@ -56,8 +58,11 @@
  *   because Radix sends Home to the first thumb and End to the last, whichever has focus.
  * - A form sends both values under name (FormData.getAll(name) is [from, to]), not under name[].
  */
-import { useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ComponentProps, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
 import * as RadixSlider from "@radix-ui/react-slider";
+import { byWorld, useMaterial } from "@/motion";
+import { SliderDevice } from "./bodies/slider.device";
+import { SliderFlat } from "./bodies/slider.flat";
 
 export type SliderProps = {
   /** The label above the slider. Required, because it names the thumb for screen readers. */
@@ -148,24 +153,17 @@ export type RangeSliderProps = {
 /* The plate: raised, the control's height, at the control radius (R3: --block, --plate-lift). It is the hit area and,
    for a single slider, carries the focus ring. Disabled, it lies flat. */
 const plateBase =
-  "group relative block h-control-md w-full cursor-grab touch-pan-y select-none rounded-control in-[[data-material=flat]]:rounded-none bg-block shadow-(--plate-lift) " +
-  "[--sl-pad:max(14px,min(var(--radius-control),calc(var(--control-md)/2)))] pl-(--sl-pad) in-[[data-material=flat]]:[--sl-pad:10px] " +
-  "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-none " +
+  "group relative block h-control-md w-full cursor-grab touch-pan-y select-none rounded-control bg-block shadow-(--plate-lift) " +
+  "[--sl-pad:max(14px,min(var(--radius-control),calc(var(--control-md)/2)))] pl-(--sl-pad) " +
   "data-held:cursor-grabbing " +
   "data-disabled:cursor-not-allowed data-disabled:bg-surface-2 data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  "in-[[data-material=flat]]:data-disabled:bg-transparent in-[[data-material=flat]]:data-disabled:shadow-none " +
   "forced-colors:border";
-/* Flat: the plate is invisible and square (its notches sit near its ends), so the ring goes on the knob instead. */
-const plateRing =
-  "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus in-[[data-material=flat]]:has-[:focus-visible]:outline-none";
-const capRingFlat =
-  " in-[[data-material=flat]]:group-has-[:focus-visible]:outline-2 in-[[data-material=flat]]:group-has-[:focus-visible]:outline-offset-2 in-[[data-material=flat]]:group-has-[:focus-visible]:outline-focus";
+const plateRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
 
 /* The slot: 8px outside the cap's travel at each end (6px in from the plate's ends at small radii), 16px down and 12px
    tall, its corners the control radius less 2px. It clips the fill. Disabled, it is a flat --surface-3. */
 const slot =
   "pointer-events-none absolute top-4 h-3 overflow-hidden rounded-[calc(var(--radius-control)-2px)] bg-slot shadow-(--slot-shade) " +
-  "in-[[data-material=flat]]:top-5 in-[[data-material=flat]]:h-1 " +
   "group-data-disabled:bg-surface-3 group-data-disabled:shadow-none forced-colors:border";
 
 /* The cap's travel: inset (see inset) from each end of the plate, which is 8px in from the slot's ends. A rail as wide
@@ -173,21 +171,19 @@ const slot =
 const capTravel = "pointer-events-none absolute inset-y-0";
 const fillTravel = "absolute inset-y-0 left-2 right-2";
 const fillLook =
-  "bg-slot-fill shadow-(--slot-fill-shade) in-[[data-material=flat]]:bg-fg " +
+  "bg-slot-fill shadow-(--slot-fill-shade) " +
   "group-data-disabled:bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] group-data-disabled:shadow-none forced-colors:bg-[Highlight]";
 /* The glide: a jump of the cap (a key, or a press on the slot) settles on the responsive spring. A drag follows 1:1. */
 const glides = " transition-transform duration-(--dur-responsive) ease-responsive";
 
 /* The cap: 8px wide and 36px tall, 4px from the plate's top, centered on its rail's right edge. It leans from its foot
    and sinks while held, on the responsive spring. */
-const capBox = "absolute top-1 -right-1 h-9 w-2 origin-bottom in-[[data-material=flat]]:top-3 in-[[data-material=flat]]:-right-2.5 in-[[data-material=flat]]:h-5 in-[[data-material=flat]]:w-5 in-[[data-material=flat]]:origin-center transition-transform duration-(--dur-responsive) ease-responsive";
+const capBox = "absolute top-1 -right-1 h-9 w-2 origin-bottom transition-transform duration-(--dur-responsive) ease-responsive";
 const capFace = (held: boolean) =>
   "absolute inset-0 rounded-[calc(var(--radius-control)-2px)] forced-colors:border forced-colors:bg-[Highlight] " +
   (held ? "bg-cap-held shadow-(--cap-press) " : "bg-cap shadow-(--cap-lift) ") +
-  "in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:shadow-[0_0_0_3px_var(--canvas)] " +
-  "group-data-disabled:bg-surface-2 group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  "in-[[data-material=flat]]:group-data-disabled:bg-fg-disabled in-[[data-material=flat]]:group-data-disabled:shadow-[0_0_0_3px_var(--canvas)]";
-const capGrip = "in-[[data-material=flat]]:hidden absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-cap-grip group-data-disabled:bg-line";
+  "group-data-disabled:bg-surface-2 group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)]";
+const capGrip = "absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-cap-grip group-data-disabled:bg-line";
 
 /* Radix's thumb holds the role, the keys and the value. The cap you see is drawn above it, so the thumb is invisible
    and as wide as the cap, which keeps it on the same travel. */
@@ -252,7 +248,7 @@ function Notch({ p, home }: { p: number; home: boolean }) {
       aria-hidden="true"
       className={
         "pointer-events-none absolute w-px -translate-x-1/2 group-data-disabled:hidden forced-colors:bg-[CanvasText] " +
-        (home ? "top-7 h-2 bg-notch-home in-[[data-material=flat]]:top-8" : "top-8 h-1 bg-notch")
+        (home ? "top-7 h-2 bg-notch-home" : "top-8 h-1 bg-notch")
       }
       style={{ left: `calc(${inset()} + (100% - 2 * ${inset()}) * ${p.toFixed(4)})` }}
     />
@@ -297,16 +293,46 @@ function useLean() {
 }
 
 /** One cap on its rail: the face, the grip line, the sink while held and the lean. The ring is drawn when `ring` is on. */
-function Cap({ p, held, lean, glide, ring = false, ringFlat = false }: { p: number; held: boolean; lean: number; glide: boolean; ring?: boolean; ringFlat?: boolean }) {
+function Cap({ p, held, lean, glide, ring = false }: { p: number; held: boolean; lean: number; glide: boolean; ring?: boolean }) {
   return (
     <span aria-hidden="true" className={capTravel + (glide ? glides : "")} style={{ ...insetX(), ...railAt(p) }}>
       <span className={capBox} style={{ transform: `translateY(${held ? "var(--press-depth)" : "0px"}) rotate(${lean}deg)` }}>
-        <span className={capFace(held) + (ring ? " outline-2 outline-offset-2 outline-focus" : "") + (ringFlat ? capRingFlat : "")} />
+        <span className={capFace(held) + (ring ? " outline-2 outline-offset-2 outline-focus" : "")} />
         <span className={capGrip} />
       </span>
     </span>
   );
 }
+
+/** One cap as a body draws it: where it is along the travel (0 to 1), whether a hand holds it, its lean in degrees, and whether it rings itself for keyboard focus (a range only). */
+export type SliderBodyCap = { p: number; held: boolean; lean: number; ring: boolean };
+
+/**
+ * What the Slider and the RangeSlider resolve for a body (proposals/worlds.md, Bodies): the values as fractions, the
+ * notches, the Radix root and thumb props and the ref the hand measures. A body draws the root, the track, the cap
+ * or caps and the ticks, and carries data-body on its root; it never changes a prop, a key or the hand.
+ */
+export type SliderBodyProps = {
+  /** Two caps with the fill between them, or one. */
+  range: boolean;
+  /** The caps, one or two, left to right. */
+  caps: SliderBodyCap[];
+  /** The pulled-out part's transform on its rail as wide as the travel: its right edge at the cap, or the band between the two caps. */
+  fill: CSSProperties;
+  /** The marks (as fractions of the travel), then home last, which a body draws longer. */
+  notches: { p: number; home: boolean }[];
+  /** A jump of the cap settles on the responsive spring; a drag follows 1:1. */
+  glide: boolean;
+  /** A hand holds a cap. */
+  held: boolean;
+  disabled: boolean;
+  /** The root's ref, which the hand measures. Its left padding is the travel's inset. */
+  plateRef: Ref<HTMLSpanElement>;
+  /** The Radix root's props: the values, the range, the form name and the hand's handlers. */
+  root: Omit<ComponentProps<typeof RadixSlider.Root>, "ref" | "className" | "children" | "data-held" | "data-no-drag">;
+  /** The Radix thumbs' props (the role, the names, the keys), left to right, each with its key. */
+  thumbs: (Omit<ComponentProps<typeof RadixSlider.Thumb>, "className"> & { key: string })[];
+};
 
 type FieldProps = {
   labelId: string;
@@ -323,14 +349,18 @@ type FieldProps = {
   className: string;
   /** Marks the field as a group named by its label, for a control with more than one thumb. */
   group?: boolean;
+  /** Sets the value on an LCD well in the mono (the Device body). */
+  lcd?: boolean;
+  ref?: Ref<HTMLDivElement>;
   /** The plate, and anything that must sit inside the field. */
   children: ReactNode;
 };
 
 /** What the Slider and the RangeSlider share around the plate: the label row, the end words and the help text. */
-function Field({ labelId, label, shown, held = false, helpId, help, minLabel, maxLabel, disabled, className, group = false, children }: FieldProps) {
+function Field({ labelId, label, shown, held = false, helpId, help, minLabel, maxLabel, disabled, className, group = false, lcd = false, ref, children }: FieldProps) {
   return (
     <div
+      ref={ref}
       role={group ? "group" : undefined}
       aria-labelledby={group ? labelId : undefined}
       aria-disabled={group && disabled ? true : undefined}
@@ -342,7 +372,15 @@ function Field({ labelId, label, shown, held = false, helpId, help, minLabel, ma
         </span>
         {shown !== undefined && (
           /* Disabled, the value steps down to --fg-subtle, not --fg-disabled: it is still information, and it must stay readable. */
-          <span aria-hidden="true" className={"text-small tabular-nums transition-colors duration-(--dur-instant) ease-litt " + (disabled ? "text-fg-subtle" : held ? "text-fg" : "text-fg-muted")}>
+          <span
+            aria-hidden="true"
+            className={
+              "text-small tabular-nums transition-colors duration-(--dur-instant) ease-litt " +
+              (lcd
+                ? "rounded-control bg-field px-2.5 py-0.5 font-field shadow-(--field-shade) " + (disabled ? "text-field-ink-subtle" : held ? "text-field-ink" : "text-field-ink-subtle")
+                : disabled ? "text-fg-subtle" : held ? "text-fg" : "text-fg-muted")
+            }
+          >
             {shown}
           </span>
         )}
@@ -363,6 +401,47 @@ function Field({ labelId, label, shown, held = false, helpId, help, minLabel, ma
       )}
     </div>
   );
+}
+
+/** The Press body: a raised plate, a slot cut into it and a cap riding in the slot that casts. */
+function SliderPress({ range, caps, fill, notches, glide, held, plateRef, root, thumbs }: SliderBodyProps) {
+  return (
+    <RadixSlider.Root ref={plateRef} {...root} data-body="press" data-no-drag="" data-held={held ? "" : undefined} className={range ? plateBase : plateBase + " " + plateRing}>
+      <span aria-hidden="true" className={slot} style={insetX(8)}>
+        <span className={fillTravel + (range ? " origin-left" : "") + (glide ? glides : "")} style={fill}>
+          <span className={(range ? "absolute inset-0 " : "absolute inset-y-0 right-0 w-[calc(100%+0.5rem)] ") + fillLook} />
+        </span>
+      </span>
+      {notches.map((n) => (
+        <Notch key={n.p} p={n.p} home={n.home} />
+      ))}
+      {caps.map((cap, i) => (
+        <Cap key={i} p={cap.p} held={cap.held} lean={cap.lean} glide={glide} ring={cap.ring} />
+      ))}
+      <RadixSlider.Track className={thumbTrack} style={insetX(4)}>
+        {thumbs.map(({ key, ...thumb }) => (
+          <RadixSlider.Thumb key={key} {...thumb} className={thumbHidden} />
+        ))}
+      </RadixSlider.Track>
+    </RadixSlider.Root>
+  );
+}
+
+/**
+ * The body for the material the slider stands in: the nearest element that sets its own theme (a study's frame, a
+ * nested preview) says its own, else <html> does. The first render uses <html>'s; a slider in a frame corrects before paint.
+ */
+function useBody() {
+  const html = useMaterial();
+  const [field, setField] = useState<HTMLDivElement | null>(null);
+  const [near, setNear] = useState<typeof html | null>(null);
+  useLayoutEffect(() => {
+    const theme = field?.closest<HTMLElement>("[data-theme]");
+    if (!theme || theme === document.documentElement) return setNear(null);
+    const m = theme.dataset.material;
+    setNear(m === "flat" || m === "device" ? m : "press");
+  }, [field, html]);
+  return { Body: byWorld(near ?? html, { press: SliderPress, flat: SliderFlat, device: SliderDevice }), material: near ?? html, fieldRef: setField };
 }
 
 /** One slider: a label above that says the value, a cap riding in a slot on a raised plate, and optional words under its ends. Every value is a number, and a form sends it under name. */
@@ -466,9 +545,16 @@ export function Slider({
   };
 
   const notched = (marks ?? []).filter((v) => v !== home && v >= min && v <= max);
+  const notches = [
+    ...notched.map((v) => ({ p: (v - min) / span, home: false })),
+    ...(home !== null && home >= min && home <= max ? [{ p: (home - min) / span, home: true }] : []),
+  ];
+  const { Body, material, fieldRef } = useBody();
 
   return (
     <Field
+      ref={fieldRef}
+      lcd={material === "device"}
       labelId={labelId}
       label={label}
       shown={showValue ? text : undefined}
@@ -480,51 +566,46 @@ export function Slider({
       disabled={disabled}
       className={className}
     >
-      <RadixSlider.Root
-        ref={plateRef}
-        /* The cap runs from the left and the hand is measured from the left, so Radix places the thumb from the left too, under any DirectionProvider. */
-        dir="ltr"
-        name={disabled ? undefined : name}
-        min={min}
-        max={max}
-        step={step}
+      <Body
+        plateRef={plateRef}
+        range={false}
+        caps={[{ p, held, lean: lean.lean, ring: false }]}
+        fill={railAt(p)}
+        notches={notches}
+        glide={glide}
+        held={held}
         disabled={disabled}
-        value={[value]}
-        onValueChange={(v) => change(v[0])}
-        onValueCommit={(v) => v[0] !== undefined && onValueCommit?.(v[0])}
-        onKeyDown={pageKeys}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerEnd}
-        onPointerCancel={onPointerEnd}
-        data-no-drag=""
-        data-held={held ? "" : undefined}
-        className={plateBase + " " + plateRing}
-      >
-        <span aria-hidden="true" className={slot} style={insetX(8)}>
-          <span className={fillTravel + (glide ? glides : "")} style={railAt(p)}>
-            <span className={"absolute inset-y-0 right-0 w-[calc(100%+0.5rem)] " + fillLook} />
-          </span>
-        </span>
-        {notched.map((v) => (
-          <Notch key={v} p={(v - min) / span} home={false} />
-        ))}
-        {home !== null && home >= min && home <= max && <Notch p={(home - min) / span} home />}
-        <Cap p={p} held={held} lean={lean.lean} glide={glide} ringFlat />
-        <RadixSlider.Track className={thumbTrack} style={insetX(4)}>
-          <RadixSlider.Thumb
-            ref={(el: HTMLSpanElement | null) => {
+        root={{
+          /* The cap runs from the left and the hand is measured from the left, so Radix places the thumb from the left too, under any DirectionProvider. */
+          dir: "ltr",
+          name: disabled ? undefined : name,
+          min,
+          max,
+          step,
+          disabled,
+          value: [value],
+          onValueChange: (v) => change(v[0]),
+          onValueCommit: (v) => v[0] !== undefined && onValueCommit?.(v[0]),
+          onKeyDown: pageKeys,
+          onPointerDown,
+          onPointerMove,
+          onPointerUp: onPointerEnd,
+          onPointerCancel: onPointerEnd,
+        }}
+        thumbs={[
+          {
+            key: "thumb",
+            ref: (el: HTMLSpanElement | null) => {
               thumbRef.current = el;
               setRef(ref, el);
-            }}
-            id={id}
-            aria-labelledby={labelId}
-            aria-describedby={helpId}
-            aria-valuetext={formatValue ? text : undefined}
-            className={thumbHidden}
-          />
-        </RadixSlider.Track>
-      </RadixSlider.Root>
+            },
+            id,
+            "aria-labelledby": labelId,
+            "aria-describedby": helpId,
+            "aria-valuetext": formatValue ? text : undefined,
+          },
+        ]}
+      />
     </Field>
   );
 }
@@ -634,6 +715,7 @@ export function RangeSlider({
   const [glide, setGlide] = useState(true);
   const [ringed, setRinged] = useState<0 | 1 | null>(null);
   const lean = useLean();
+  const { Body, material, fieldRef } = useBody();
   const moveEnd = (end: 0 | 1, x: number, m: Measure) => {
     const v = valueAt(along(x, m), min, max, step, null);
     const [a, b] = latest.current;
@@ -676,6 +758,8 @@ export function RangeSlider({
 
   return (
     <Field
+      ref={fieldRef}
+      lcd={material === "device"}
       labelId={labelId}
       label={label}
       shown={showValue ? text : undefined}
@@ -688,60 +772,49 @@ export function RangeSlider({
       className={className}
       group
     >
-      <RadixSlider.Root
-        ref={plateRef}
-        dir="ltr" // as the Slider's: the caps and the hand run from the left
-        min={min}
-        max={max}
-        step={step}
+      <Body
+        plateRef={plateRef}
+        range
+        caps={([0, 1] as const).map((i) => ({ p: i === 0 ? pf : pt, held: held === i, lean: held === i ? lean.lean : 0, ring: ringed === i }))}
+        /* The fill between the caps: a rail-wide band moved to the first cap and scaled to the second, transform only. */
+        fill={{ transform: `translateX(${(pf * 100).toFixed(3)}%) scaleX(${Math.max(0, pt - pf).toFixed(4)})` }}
+        notches={[]}
+        glide={glide}
+        held={held !== null}
         disabled={disabled}
-        value={values}
-        preserveThumbOrder
-        onValueChange={change}
-        onValueCommit={commit}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerEnd}
-        onPointerCancel={onPointerEnd}
-        data-no-drag=""
-        data-held={held !== null ? "" : undefined}
-        className={plateBase}
-      >
-        <span aria-hidden="true" className={slot} style={insetX(8)}>
-          {/* The fill between the caps: a rail-wide band moved to the first cap and scaled to the second, transform only. */}
-          <span
-            className={fillTravel + " origin-left" + (glide ? glides : "")}
-            style={{ transform: `translateX(${(pf * 100).toFixed(3)}%) scaleX(${Math.max(0, pt - pf).toFixed(4)})` }}
-          >
-            <span className={"absolute inset-0 " + fillLook} />
-          </span>
-        </span>
-        {([0, 1] as const).map((i) => (
-          <Cap key={i} p={i === 0 ? pf : pt} held={held === i} lean={held === i ? lean.lean : 0} glide={glide} ring={ringed === i} />
-        ))}
-        <RadixSlider.Track className={thumbTrack} style={insetX(4)}>
-          {([0, 1] as const).map((i) => (
-            <RadixSlider.Thumb
-              key={i}
-              ref={(el: HTMLSpanElement | null) => {
-                thumbs.current[i] = el;
-                if (i === 0) setRef(ref, el);
-              }}
-              id={thumbId(i)}
-              /* A form sends both values under the same name (Radix would add [] to it). */
-              name={disabled ? undefined : name}
-              aria-labelledby={nameId(i)}
-              aria-describedby={helpId}
-              aria-valuetext={formatValue ? fmt(values[i]) : undefined}
-              onKeyDown={thumbKeys(i)}
-              /* The focused cap rings itself, for keyboard focus only, so you can tell which one the keys move. */
-              onFocus={(e) => setRinged(e.currentTarget.matches(":focus-visible") ? i : null)}
-              onBlur={() => setRinged(null)}
-              className={thumbHidden}
-            />
-          ))}
-        </RadixSlider.Track>
-      </RadixSlider.Root>
+        root={{
+          dir: "ltr", // as the Slider's: the caps and the hand run from the left
+          min,
+          max,
+          step,
+          disabled,
+          value: values,
+          preserveThumbOrder: true,
+          onValueChange: change,
+          onValueCommit: commit,
+          onPointerDown,
+          onPointerMove,
+          onPointerUp: onPointerEnd,
+          onPointerCancel: onPointerEnd,
+        }}
+        thumbs={([0, 1] as const).map((i) => ({
+          key: `thumb-${i}`,
+          ref: (el: HTMLSpanElement | null) => {
+            thumbs.current[i] = el;
+            if (i === 0) setRef(ref, el);
+          },
+          id: thumbId(i),
+          /* A form sends both values under the same name (Radix would add [] to it). */
+          name: disabled ? undefined : name,
+          "aria-labelledby": nameId(i),
+          "aria-describedby": helpId,
+          "aria-valuetext": formatValue ? fmt(values[i]) : undefined,
+          onKeyDown: thumbKeys(i),
+          /* The focused cap rings itself, for keyboard focus only, so you can tell which one the keys move. */
+          onFocus: (e) => setRinged(e.currentTarget.matches(":focus-visible") ? i : null),
+          onBlur: () => setRinged(null),
+        }))}
+      />
       {/* The names: the label and the end, as one string, so a screen reader says "Build time, from". Hidden text still names a thumb. */}
       {([0, 1] as const).map((i) => (
         <span key={i} id={nameId(i)} hidden>
