@@ -12,6 +12,7 @@ import { PAGE_GROUPS } from "./kit";
 import { pages } from "./registry";
 import { useCustomize, type ThemeChoice } from "./customize-state";
 import { ACCENTS } from "./look";
+import { inWorld } from "./registry";
 
 type Action = { id: string; label: string; icon?: CommandItem["icon"]; run: () => void };
 
@@ -33,7 +34,7 @@ export default function SearchMenu({ open, onOpenChange, openedBy }: { open: boo
   const toItem = (p: (typeof pages)[number]): CommandItem => ({ id: p.id, label: p.title });
   /* Components first, since they are what people come to find; the site's own pages and the actions after them. */
   const groups: CommandGroup[] = [
-    ...PAGE_GROUPS.map((g) => ({ id: g, heading: g, items: pages.filter((p) => p.group === g).map(toItem) })),
+    ...PAGE_GROUPS.map((g) => ({ id: g, heading: g, items: pages.filter((p) => p.group === g && inWorld(p, look.material)).map(toItem) })),
     { id: "site", heading: "Pages", items: pages.filter((p) => !p.group).map(toItem) },
     { id: "actions", heading: "Customize", items: actions.map(({ id, label, icon }) => ({ id, label, icon })) },
   ];

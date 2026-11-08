@@ -56,6 +56,8 @@ export type MaterialInfo = {
   hero: string;
   /** Its motion language in one line (foundations.md, Motion languages). */
   foundations: WorldFoundations;
+  /** What only this world can do (proposals/worlds.md, Depth): three or four lines, each an ability, for Only here. */
+  abilities: string[];
 };
 /**
  * The materials in the order every picker shows them. A material is a world (proposals/worlds.md, decision 3): a page
@@ -78,6 +80,12 @@ export const MATERIALS: readonly MaterialInfo[] = [
       shape: "Controls 4px, surfaces 8px, pills only for avatars and icon-only buttons, every corner concentric.",
       motion: "Things have weight. A set settles into place from above on the expressive spring; an overlay rises and settles. Nothing flies.",
     },
+    abilities: [
+      "One light from above: every raised thing catches it on its top edge and casts below.",
+      "Glass that floats: overlays are frosted, lit and ringed, over anything.",
+      "Caps in slots: a slider's cap rides in a slot and casts 3px, a thing you can hold.",
+      "A press that sinks: a pressed block goes half a pixel down and its cast tightens.",
+    ],
   },
   {
     id: "flat",
@@ -94,6 +102,12 @@ export const MATERIALS: readonly MaterialInfo[] = [
       shape: "As Press: 4px, 8px and the pill, concentric.",
       motion: "Things come from where you touched them. A set deals out of what opened it and gathers back; an overlay grows from its opener.",
     },
+    abilities: [
+      "Soft focus on a hand: a swap you cause arrives out of focus and settles, never on scroll.",
+      "Deal and gather: a set comes out of what you touched and goes back into it.",
+      "The pill: one shape for every control, a circle for a one-symbol key.",
+      "No lines between things: grey is the object, a hairline is the place.",
+    ],
   },
   {
     id: "device",
@@ -110,6 +124,12 @@ export const MATERIALS: readonly MaterialInfo[] = [
       shape: "As Press: 4px, 8px and the pill, concentric.",
       motion: "Things are mechanisms. A set switches on in place in steps, as a display's segments light; an overlay switches on where it stands. Nothing fades or travels.",
     },
+    abilities: [
+      "LCD readouts: what you type and what the machine says sit behind dark glass, light ink in the mono.",
+      "Keys on a skirt: every button is a key that sinks its whole 2px when pressed.",
+      "Engraved labels: 12px labels are capitals cut into the body.",
+      "Mechanisms for an agent at work: segments, a tuner, meters, a dot matrix, step lights and tape reels, moving only while tokens arrive.",
+    ],
   },
 ];
 export const materialOf = (id: Material) => MATERIALS.find((m) => m.id === id)!;

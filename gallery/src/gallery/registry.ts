@@ -1,7 +1,7 @@
 /** Pages register themselves: any src/gallery/pages/*.tsx exporting `meta` and a default component. */
 import { lazy, type ComponentType } from "react";
 import type { PageGroup, PageMeta } from "./kit";
-import { MATERIALS, type MaterialInfo } from "./look";
+import { MATERIALS, type Material, type MaterialInfo } from "./look";
 
 /* The nav needs every page's meta at once, but not every page's code. So meta comes
    from a tiny module holding only `export const meta` (the page-meta plugin in
@@ -30,6 +30,11 @@ export const worlds: (MaterialInfo & { page: PageEntry })[] = MATERIALS.flatMap(
   const page = pages.find((p) => p.world === m.id);
   return page ? [{ ...m, page }] : [];
 });
+
+/** Whether a page belongs in a world: every page does unless its meta.worlds leaves that world out. */
+export const inWorld = (page: Pick<PageMeta, "worlds">, material: Material): boolean => !page.worlds || page.worlds.includes(material);
+/** The parts that exist in one world alone, in sidebar order, for its Only here section. */
+export const onlyIn = (material: Material): PageEntry[] => pages.filter((p) => p.worlds && p.worlds.length < MATERIALS.length && p.worlds.includes(material));
 
 /** The pages whose component moves differently in fun mode (meta.fun), in sidebar order. */
 export const funPages = pages.filter((p) => p.fun);

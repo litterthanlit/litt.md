@@ -4,7 +4,7 @@
  */
 import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { MotionDialProvider, useDevice, useFun } from "@/motion";
-import { funPages, pageRuns, pages, prefetchPages, settled, worlds, type PageEntry } from "./registry";
+import { funPages, inWorld, pageRuns, pages, prefetchPages, settled, worlds, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { Arrival, useLinkOrigins } from "./arrival";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
@@ -145,10 +145,13 @@ function Shell({ page }: { page: PageEntry | undefined }) {
   /* With fun mode on, the pages it changes come first: a Fun group after the site's own pages. They stay in their
      own groups too, so the nav never reshuffles under you. */
   const fun = useFun();
-  const runs: { group?: string; pages: PageEntry[] }[] = pageRuns().filter((r) => r.group !== "Worlds");
-  if (fun && funPages.length) runs.splice(runs[0]?.group ? 0 : 1, 0, { group: "Fun", pages: funPages });
-  const [theme, setTheme] = useTheme();
   const { look } = useCustomize();
+  /* The lists show a page only in the worlds it belongs to (meta.worlds). The page you are on stays open when a flip
+     of Material leaves it out; only the lists drop it. */
+  const inFun = funPages.filter((p) => inWorld(p, look.material));
+  const runs: { group?: string; pages: PageEntry[] }[] = pageRuns(pages.filter((p) => inWorld(p, look.material))).filter((r) => r.group !== "Worlds");
+  if (fun && inFun.length) runs.splice(runs[0]?.group ? 0 : 1, 0, { group: "Fun", pages: inFun });
+  const [theme, setTheme] = useTheme();
   const [menu, setMenu] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
   /* Esc and the button give focus back to the button; a link moves it to the page it opened. The focus moves once

@@ -25,6 +25,11 @@
  *   or does not mark the world page you are on (aria-current="page"),
  * - the phone's menu does not list Worlds with its three rows before the first component group,
  * - a world page scrolls sideways at 390 or at 320,
+ * - a world page has no Only here section (section#only-here[data-only-here]), or its abilities are not the world's
+ *   abilities from look.ts, in order, or its parts are not exactly the pages whose meta.worlds is this world and fewer
+ *   than all three (read from src/gallery/pages, so no list is written here): a part missing, or a part of another world,
+ * - the sidebar on a component page, under each material, does not list every world-only page of that material, or lists
+ *   one that is another world's alone (zero world-only pages is a pass: it asserts what the sidebar and the sources hold),
  * - public/llms.txt lacks a Worlds section with Press, Flat and Device, or lists a world page as a component's docs.
  *
  * Not here: nothing moving under reduced motion on a world page. reduced-motion.mjs (test:motion) opens every file in
@@ -73,6 +78,16 @@ async function loadLook() {
   }
 }
 const WORLDS = (await loadLook()).MATERIALS;
+/** The pages that belong to fewer than all three worlds, from each page's `export const meta` (as wall.mjs reads it). */
+const PAGES_DIR = path.join(here, "..", "src", "gallery", "pages");
+const WORLD_ONLY = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith(".tsx")).flatMap((f) => {
+  const meta = /export\s+const\s+meta\b[\s\S]*?\n\};?/.exec(fs.readFileSync(path.join(PAGES_DIR, f), "utf8"))?.[0] ?? "";
+  const id = /\bid:\s*"([^"]+)"/.exec(meta)?.[1];
+  const worlds = /\bworlds:\s*\[([^\]]*)\]/.exec(meta)?.[1];
+  const list = worlds ? [...worlds.matchAll(/"([^"]+)"/g)].map((m) => m[1]) : [];
+  return id && list.length > 0 && list.length < WORLDS.length ? [{ id, worlds: list }] : [];
+});
+const ownParts = (world) => WORLD_ONLY.filter((p) => p.worlds.includes(world.id)).map((p) => p.id);
 const FOUNDATIONS = [["color", "Color"], ["type", "Type"], ["light", "Light"], ["shape", "Shape"], ["motion", "Motion"]];
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2", ".md": "text/markdown", ".txt": "text/plain" };
@@ -123,7 +138,12 @@ function inspect() {
   const target = reach[0];
   target?.focus({ preventScroll: true });
   const cards = [...document.querySelectorAll("section#foundations li")].map((li) => ({ label: li.querySelector("h3")?.textContent?.trim() ?? "", text: li.querySelector("p")?.textContent?.trim() ?? "" }));
+  const only = document.querySelector("section#only-here[data-only-here]");
+  const onlyHere = only
+    ? { abilities: [...only.querySelectorAll("[data-only-here-abilities] li")].map((li) => li.textContent.trim()), parts: [...only.querySelectorAll("[data-only-here-parts] a")].map((a) => a.getAttribute("href")) }
+    : null;
   return {
+    onlyHere,
     first: first.map((m) => m.what),
     rest: rest.length,
     close,
@@ -170,6 +190,10 @@ async function audit(world, size, scheme, mutate) {
   const want = FOUNDATIONS.map(([key, label]) => ({ label, text: world.foundations[key] }));
   const same = r.cards.length === 5 && want.every((w, i) => r.cards[i].label === w.label && r.cards[i].text === w.text);
   claim("Foundations is five cards, Color, Type, Light, Shape, Motion, each with the world's line from look.ts", same ? null : `${where}: cards ${JSON.stringify(r.cards.map((c) => c.label))} (want ${want.map((w) => w.label).join(", ")}), text ${r.cards.every((c, i) => c.text === want[i]?.text) ? "matches" : "differs from look.ts"}`);
+  const parts = ownParts(world).map((id) => `#${id}`);
+  const got = r.onlyHere;
+  const sameSet = got && got.parts.length === parts.length && parts.every((h) => got.parts.includes(h));
+  claim("a world page has an Only here section listing the world's abilities from look.ts and exactly its own parts", got && got.abilities.join("|") === world.abilities.join("|") && sameSet ? null : `${where}: ${got ? `abilities ${got.abilities.length} (want ${world.abilities.length}, ${got.abilities.join("|") === world.abilities.join("|") ? "same text" : "text differs from look.ts"}), parts ${JSON.stringify(got.parts)} (want ${JSON.stringify(parts)})` : "no section#only-here[data-only-here]"}`);
   claim("a world page does not scroll sideways at 1440 or 390", r.pageWide ? `${where}: the page scrolls sideways` : null);
   for (const e of errors) claim("a world page throws nothing", `${where}: ${e}`);
   await ctx.close();
@@ -186,6 +210,8 @@ if (selfTest) {
     ["the first screen holds exactly one accent fill (the Install button)", () => { const d = document.createElement("div"); d.style.cssText = "position:absolute;top:80px;left:8px;width:120px;height:40px;background:var(--accent)"; document.querySelector("main").append(d); }],
     ["Foundations is five cards, Color, Type, Light, Shape, Motion, each with the world's line from look.ts", () => document.querySelector("section#foundations li").remove()],
     ["Foundations is five cards, Color, Type, Light, Shape, Motion, each with the world's line from look.ts", () => { document.querySelector("section#foundations li p").textContent = "Made up."; }],
+    ["a world page has an Only here section listing the world's abilities from look.ts and exactly its own parts", () => document.querySelector("[data-only-here-abilities] li").remove()],
+    ["a world page has an Only here section listing the world's abilities from look.ts and exactly its own parts", () => { const a = document.createElement("a"); a.href = "#not-mine"; const li = document.createElement("li"); li.append(a); const ul = document.createElement("ul"); ul.setAttribute("data-only-here-parts", ""); ul.append(li); document.querySelector("section#only-here").append(ul); }],
     ["a world page does not scroll sideways at 1440 or 390", () => { const d = document.createElement("div"); d.style.cssText = "width:3000px;height:4px"; document.querySelector("main").append(d); }],
     ["the hero block is framed and live: a labelled frame, and a named button or link in it takes focus", () => document.querySelectorAll("section[data-world-hero] :is(button, a[href])").forEach((el) => el.remove())],
   ];
@@ -251,6 +277,17 @@ for (const world of WORLDS) for (const scheme of ["light", "dark"]) {
   await pg.locator("main h1").filter({ hasText: "Button" }).waitFor();
   const off = Object.fromEntries(await rows());
   claim("on a component page, the sidebar marks the gallery's world (Device) aria-current=true and no other row", off.Device === "true" && off.Press == null && off.Flat == null ? null : `rows on #button: ${JSON.stringify(off)}`);
+  await ctx.close();
+}
+
+/* ---------- the sidebar lists a world-only page in its world and in no other ---------- */
+for (const world of WORLDS) {
+  const { ctx, pg } = await open("button", { width: 1440, height: 900, saved: { accent: "blue4", material: world.id } });
+  await pg.locator("main h1").filter({ hasText: "Button" }).waitFor();
+  const listed = await pg.evaluate(() => [...document.querySelectorAll("[role=group][aria-labelledby^=nav-]:not([aria-labelledby=nav-worlds]) a[href^='#']")].map((a) => a.getAttribute("href").slice(1)));
+  const missing = WORLD_ONLY.filter((p) => p.worlds.includes(world.id) && !listed.includes(p.id)).map((p) => p.id);
+  const foreign = WORLD_ONLY.filter((p) => !p.worlds.includes(world.id) && listed.includes(p.id)).map((p) => p.id);
+  claim("on a component page the sidebar lists the world-only pages of the gallery's world and none of another's", missing.length === 0 && foreign.length === 0 && listed.includes("button") ? null : `${world.id}: missing ${JSON.stringify(missing)}, from other worlds ${JSON.stringify(foreign)}, Button listed ${listed.includes("button")}`);
   await ctx.close();
 }
 

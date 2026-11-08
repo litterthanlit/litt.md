@@ -146,8 +146,12 @@ function propsSection(stems, docs, cp) {
   return out.join("\n\n");
 }
 
-function pageMarkdown(page, cp) {
+/** The materials a page belongs to alone (meta.worlds of length one), as look.ts names them; none for a part in every world. */
+const ownWorld = (meta, look) => (meta.worlds?.length === 1 ? look.MATERIALS.find((m) => m.id === meta.worlds[0]) : undefined);
+
+function pageMarkdown(page, cp, look) {
   const { meta, docs } = page;
+  const own = ownWorld(meta, look);
   const comps = docs.components.map((s) => componentDocs[s]);
   const first = docs.components[0];
   const versions = docs.components.map((s) => `${s} ${lock.items[s]?.version ?? "(not in the registry)"}`).join(", ");
@@ -157,6 +161,7 @@ function pageMarkdown(page, cp) {
     `Part of litt.md, Nick's design language, as a shadcn registry for React and Tailwind CSS v4. Version: ${versions}. Live demo: ${ORIGIN}/#${meta.id}. Source: ${REPO}/blob/main/${componentDocs[first].file}. Changes: ${ORIGIN}/changelog.md.`,
     "## Install",
     "```bash\n" + cp.installCommands(comps) + "\n```",
+    ...(own ? [own.attribute ? `Needs \`data-material="${own.attribute}"\` on \`<html>\`.` : "Needs no data-material attribute: Press is the default."] : []),
     `Every token it brings is prefixed with litt (\`--litt-accent\`, \`bg-litt-surface-1\`), so nothing in the project changes. With ${code(cp.REGISTRIES_ENTRY)} in components.json the same install is \`npx shadcn@latest add @litt/${first}\`. For litt's fonts, heading weights and focus ring across the whole app, also add ${code(cp.registryUrl("base-styles"))}.`,
     "## Usage",
     "```tsx\n" + cp.usageSnippet(docs, comps) + "\n```",
@@ -181,7 +186,7 @@ function pageMarkdown(page, cp) {
 }
 
 /** Each material is a world: a page in the gallery with one line, an audience and five foundations (look.ts owns the words). */
-function worldsDoc(look) {
+function worldsDoc(look, pages) {
   const foundations = (f) =>
     bullets([`Color: ${f.color}`, `Type: ${f.type}`, `Light: ${f.light}`, `Shape: ${f.shape}`, `Motion: ${f.motion}`]);
   return [
@@ -192,6 +197,7 @@ function worldsDoc(look) {
         `${m.tagline} ${m.audience}`,
         `${m.attribute ? `\`data-material="${m.attribute}"\` on \`<html>\`.` : "No attribute. It is what tokens.css ships."} Gallery: ${ORIGIN}/#${m.id}`,
         foundations(m.foundations),
+        `Only here:\n\n${bullets([...m.abilities, ...pages.filter((p) => p.meta.worlds?.length === 1 && p.meta.worlds[0] === m.id).map((p) => `[${p.meta.title}](${ORIGIN}/#${p.meta.id}): ${p.meta.summary}`)])}`,
       ].join("\n\n"),
     ),
   ].join("\n\n");
@@ -220,7 +226,7 @@ function llmsTxt(pages, cp, look) {
     "## Looks",
     look.looksDoc(ORIGIN),
     "## Worlds",
-    worldsDoc(look),
+    worldsDoc(look, pages),
     "## House rules",
     bullets([
       "Weight by role: text at 400, titles, buttons and tabs at 500 (font-litt-title), 12px labels at 600 (font-litt-label, carried by text-litt-caption). Never font-medium, font-semibold or font-bold. Nothing is set above 18px.",
@@ -234,7 +240,7 @@ function llmsTxt(pages, cp, look) {
   for (const g of GROUPS) {
     const list = withDocs.filter((p) => p.meta.group === g);
     if (!list.length) continue;
-    sections.push(`## ${g}`, list.map((p) => `- [${p.meta.title}](${ORIGIN}/docs/${p.meta.id}.md)${p.study ? " (a study)" : ""}: ${p.meta.summary}`).join("\n"));
+    sections.push(`## ${g}`, list.map((p) => `- [${p.meta.title}](${ORIGIN}/docs/${p.meta.id}.md)${p.study ? " (a study)" : ""}${ownWorld(p.meta, look) ? ` (${ownWorld(p.meta, look).name} only)` : ""}: ${p.meta.summary}`).join("\n"));
   }
   const blocks = patterns.filter((p) => p.meta.block);
   const demos = patterns.filter((p) => !p.meta.block);
@@ -264,7 +270,7 @@ async function main() {
   const pages = readPages();
   const files = new Map();
   const docsPages = pages.filter((p) => p.docs);
-  for (const p of docsPages) files.set(`docs/${p.meta.id}.md`, pageMarkdown(p, cp));
+  for (const p of docsPages) files.set(`docs/${p.meta.id}.md`, pageMarkdown(p, cp, look));
   const llms = llmsTxt(pages, cp, look);
   files.set("llms.txt", llms);
   files.set("llms-full.txt", llms + "\n---\n\n" + docsPages.map((p) => files.get(`docs/${p.meta.id}.md`)).join("\n---\n\n"));

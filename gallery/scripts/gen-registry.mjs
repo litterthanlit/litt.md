@@ -761,6 +761,27 @@ function transformFile(file, targets, source) {
  * short sentences, no em dashes. A missing entry fails the build, so a new component gets words.
  */
 const COPY = {
+  /* Device's own parts (proposals/worlds.md, Depth): each needs data-material="device" on <html>; its page says so. */
+  "agent-indicator": {
+    title: "Agent indicator",
+    description: "What an agent is doing, in hardware: a seven-segment chase for thinking, a tuner for searching, stereo meters for reading, a dot matrix for reasoning, step lights for running and tape reels for writing, each moving only while tokens arrive. A Device part.",
+    docs: "Needs data-material=\"device\" on <html>. Pass the phase and it crossfades between mechanisms; pass paused to hold it. Under reduced motion each holds one frame. It says the phase in words for a screen reader.",
+  },
+  "copy-button": {
+    title: "Copy button",
+    description: "A key that copies a command shown on LCD glass: the key sinks its 2px, the check draws in, and the command's glyphs decode back in a wave. A Device part.",
+    docs: "Needs data-material=\"device\" on <html>. Pass the text to copy; it says Copied for a moment and goes back. Under reduced motion the glyphs swap at once.",
+  },
+  "tape-progress": {
+    title: "Tape progress",
+    description: "Progress as two tape reels: the supply empties and the take-up fills, each turning at the speed the tape's constant pace gives its radius, with the value said in words. A Device part.",
+    docs: "Needs data-material=\"device\" on <html>. The same props as Progress (label, value, max, status). Under reduced motion the reels jump to the value.",
+  },
+  "seven-segment": {
+    title: "Seven-segment readout",
+    description: "A figure or a count on seven-segment digits behind LCD glass, each digit's segments lit from the ink and fading like phosphor when they change. A Device part.",
+    docs: "Needs data-material=\"device\" on <html>. Pass a value and the digits; a change rolls the segments on the instant tier. Under reduced motion they switch at once.",
+  },
   litt: {
     title: "litt tokens",
     description: "litt.md's colors, type, space, shape, depth and motion as CSS variables, Tailwind names and the litt-glass, litt-raised, litt-trim, litt-lit and litt-grain classes. Every name starts with litt, so none of it touches your own.",

@@ -69,6 +69,13 @@ export type PageMeta = {
    */
   world?: Material;
   /**
+   * The worlds this part belongs to (proposals/worlds.md, Depth, decision 12). Leave it out for a part that makes sense
+   * in every world, which is nearly all of them. A world-only part names its worlds (`["device"]`): the wall, the
+   * sidebar, the phone menu and the other world pages hide it, and its world page lists it under Only here. A shared
+   * part never forks per world; a world goes deeper by parts and abilities that exist in it alone.
+   */
+  worlds?: Material[];
+  /**
    * The mechanism, one paragraph in the studies' voice (proposals/worlds.md, unit 2): what the hand does, what springs
    * on which tier, what each material changes, what reduced motion does. The page shows it under Anatomy, and
    * gen-llms.mjs ships it to agents. Set it with `study`.

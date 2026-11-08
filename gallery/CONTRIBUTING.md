@@ -175,6 +175,10 @@ export const study: PageStudy = {
 - `meta.mechanism` is what the hand does, what springs on which tier, what the material changes, and what reduced motion does, in plain short sentences.
 - Source and Under each material come for free: the first file in `docs.components` as it installs, with its version, and the object under Press, Flat and Device.
 
+## Say which worlds a part belongs to
+
+A part is in all three worlds unless you say otherwise. Set `worlds: ["device"]` in the page's `meta` (the materials it belongs to, from `"press"`, `"flat"` and `"device"`) only when the part is wrong in the other two: the test is a knob with detents on a flat page, a photo essay on an LCD. A button, a table or a dialog is never made world-only to seem deeper. The wall, the sidebar, the phone menu and search then hide the page outside its worlds, the world page lists it under **Only here** (its title, linking to the page), and the install note and `llms.txt` say which `data-material` it needs. The recipe still comes from tokens, never a JavaScript branch (Q18). `test:wall` and `test:worlds` read `meta.worlds` from the page, so there is no list to update.
+
 ## It ships in the registry
 
 Every `src/components/<name>.tsx` with a page becomes an installable item (`npx shadcn@latest add https://littmd.vercel.app/r/<name>.json`). `scripts/gen-registry.mjs` builds it, so there is nothing to register by hand, but write the component so it can live in someone else's app:

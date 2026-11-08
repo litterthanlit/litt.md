@@ -32,6 +32,17 @@ The label is at `--weight-title` at every size, with no extra tracking. Hover ch
 - **Icons:** 16px, 1.5px stroke, `--control-gap` (8) from the label. An icon may also come as a child next to the label, as shadcn writes it: each run of text is a trimmed label and each element sits in the row. Icon-only buttons are square in size (32/44/56), round (`--radius-pill`), and need an `aria-label`.
 - **No arrow suffix by default.** An arrow is allowed only when the button navigates away from the site.
 
+## Copy button
+A key that copies a command, beside the LCD glass that shows it. A Device part (`meta.worlds`): it reads the key and field tokens every material sets, so it is only at home under `data-material="device"`, and `proposals/device-studies.md` has the numbers. A value in a row of details keeps the Details row's icon button.
+- **Anatomy:** a key 2.9em square at `--radius-control`, its face `--block`, its rim and 2px skirt `--key-lift`, the glyph in `--fg`; beside it a line of glass at `--radius-control`, `--field` with `--field-shade`, the command in the mono at the small size in `--field-ink` after a `$` prompt in `--field-ink-subtle`. The glass wraps a long command and never cuts it; a hidden character keeps its width, so the line never moves.
+- **Press:** the key sinks the whole `--press-depth` and `--block-press` replaces the lift, at once. The pointer target grows to 44px on a coarse pointer.
+- **Copied (R5):** the copy glyph crossfades to a check in opacity and scale on the responsive tier, and the check draws in (its stroke offset from 1 to 0) after 75ms. The glass says "Copied" in words for 1800ms, then the key goes back. A polite status says it, and only on a real copy.
+- **The wave:** a copy clears the command from the right and, when the hold ends, it decodes back in from the left. A character shows glyphs from the display's ROM (half-width katakana, digits and `:=*+<>`) for 140 to 340ms, swapping every 35 to 85ms at a flicker of 0.6 to 1.0, fading out or in; each starts at most 18ms after its neighbour, and the whole wave takes at most 520ms. A second copy mid-wave reverses it where it is. Every frame writes the spans' text, visibility and opacity, never React state, and the loop stops when they settle.
+- **Never:** a rehearsal on mount (nothing moves on its own, R4), a sound in this wave, a blur in the crossfade (a filter does not animate).
+- **Failure:** a clipboard write that fails selects the command on the glass so it can be copied by hand, and the status says so.
+- **Reduced motion:** the glyphs swap at once and nothing draws; the sink and the fills still answer.
+- **Accessibility:** a button named "Copy command" (or the caller's `label`); the command is real text for a screen reader and the scrambling spans are hidden from it.
+
 ## Input
 `--radius-control`, on the same control scale as buttons: `--control-md` (44, padding 16, 14px text) by default, in dialogs and in stacked forms; `--control-lg` (56, padding 24, 16px) only when it shares a row with an lg button (the inline form); `--control-sm` (32) in tables and toolbars. The field is the cut (R3): `--cut` inside the inset `--line-control` line, with its top wall's shade (`--cut-shade`): a floor a hair into the page, white in light and a step below the surfaces in dark. Text `--fg`, placeholder `--fg-subtle`. The line keeps the field at 3:1; the shade only says the floor sits lower. Never the tray's grey floor, which reads as disabled.
 - **Inline form:** an lg input and an lg primary button side by side (`1fr auto`, `--space-2` apart), stacking full width below 640px.
@@ -509,6 +520,13 @@ A figure that updates in place while someone watches, because of something they 
 - **Accessibility:** the whole formatted figure is text for screen readers and the rolling cells are hidden. A change is not announced; the caller says it in a live region if it matters.
 - Not for a figure that loads once, or one that changes many times a second (a timer).
 
+## Seven-segment
+A figure or a count on seven-segment digits behind LCD glass. A Device part (`meta.worlds`): the glass is `--field` and the lit segments `--field-ink`, so it is only at home under `data-material="device"`. A figure on any other material is Rolling number.
+- **Anatomy:** a pane of glass at `--radius-control` (`--field`, `--field-shade`) holding one figure per character, 0.35em apart. A figure is 43 by 66 in its own units, seven polygons a to g 6.6 thick with a gap of 1 and a slant of 0.09 about the middle row. An unlit segment is `--field-ink` at 10%, a lit one the ink. A dot lights a small point at the foot of the figure before it.
+- **Takes:** the digits 0 to 9, a minus, a dot and a space. `digits` sets the width (default: as many figures as the value has); the value is right-aligned. One too long shows a bar on every figure, never a wrong number.
+- **Motion:** a change lights the new segments at once, and the ones that go out fade like phosphor on the instant tier: brightness times exp(−dt / 0.11) each frame, under 0.02 written as 0. One small loop per readout writes the opacity attributes, never React state, and stops when every segment has settled. Nothing moves on its own. Reduced motion switches the segments at once.
+- **Accessibility:** the figures are hidden; the value is said in hidden words ("minus 12.5"), after the label if there is one. A change is not announced.
+
 ## Chart
 Bars compare amounts and a line follows change over time. Both are drawn in plain SVG, with no chart library, and both are quiet: R6 is the reason, because the accent belongs to the one primary action and a chart is made of many marks.
 - **Color:** a mark is never the accent. By default it is the quiet foreground: one series is `--fg` at about 55% for bars and `--fg` for a line. The current mark (the last bar, or the last point) and the hovered or focused one are full `--fg`; while a mark is hovered or focused it replaces the current one, so only one is ever full. Up to three series step down the foreground: `--fg`, 55% and 30%, with a legend above the plot. At 30% a mark is under 3:1 against the card, so the third series' bars carry a 1px edge at 55% and its line is dashed.
@@ -668,6 +686,15 @@ Work that is happening now, such as an upload or an import, with a known end. A 
 - **Motion:** the done part is a full-width band scaled from the left, a transform on the instant tier. Under reduced motion it jumps.
 - **Accessibility:** `role="progressbar"`, named by the label, `aria-valuenow` while known and the reading as `aria-valuetext`.
 
+## Tape progress
+Progress said as two tape reels in a smoked window. A Device part (`meta.worlds`): the window is LCD glass, so it is only at home under `data-material="device"`. It takes Progress's props and says the value as Progress does; use Progress under the other materials.
+- **Anatomy:** the label and the reading above, as Progress has them; under them the window at `--radius-control`, `--field` with `--field-shade`, 200 by 110 in its own units and at most 440px wide: the supply reel on the left, the take-up on the right, the tape between them over two guides and across a head, and a record light, the accent, lit while the work runs and out when it is done, failed or not known.
+- **The reels:** discs. A pack's radius goes by area, the supply sqrt(hub² + (1 − p) · span) and the take-up sqrt(hub² + p · span), both from 15 to 38, so the tape on one is the tape gone from the other. The pack is the ink at 13%, the hub's three spokes 55%, the tape 30%, the head 25%. The tape is one path tangent to both packs.
+- **Pace:** the tape moves at one speed, so a reel's angular velocity goes with 1/r: the emptying reel speeds up and the filling one slows down, about eight turns end to end.
+- **Motion:** the value is eased by a critically damped spring (stiffness 140, damping 24), integrated in fixed steps; the loop writes the reels' two local properties and the tape's path, never React state, and stops when the spring settles. The first render sits at the value. Reduced motion jumps. Nothing seeks in this wave.
+- **Ending:** done fills the take-up and says Done; failed stops the reels where they are, puts the light out and says Failed in `--danger`; with no value the reels sit at the start and the reading says "Waiting".
+- **Accessibility:** `role="progressbar"` named by the label, `aria-valuenow` while known and the reading as `aria-valuetext`; the reels are hidden. Done and failed are said once in a polite status.
+
 ## Forms
 How the controls above make a page. One left-aligned column, never centered (R9).
 - **Spacing:** fields sit `--space-6` (24) apart. Related controls share a fieldset with a legend at the small size and `--weight-title` in `--fg`, like a field's label. A section's title sits 4px above its description. Groups sit `--space-12` (48) apart.
@@ -720,6 +747,17 @@ The agent's reasoning, as a quiet disclosure above its answer.
 - **Open and closed:** it is open while the agent thinks, so the reader can watch it work, and closes itself when thinking ends, unless the reader toggled it. `open` and `onOpenChange` control it. The chevron turns a quarter on the instant tier.
 - **Motion:** the body fades in and travels a quarter of `--travel` down on the responsive tier, and leaves on the exit token. Its height snaps and is never animated.
 - **Accessibility:** the row is a button with `aria-expanded` and `aria-controls`. The ticking clock is hidden from screen readers; a polite live region says "Thinking" once at the start and "Thought for 12 seconds" at the end.
+- **Indicator:** an optional slot beside the row while the thought is active, for an Agent indicator under Device. It is a sibling of the button, so the button's name is unchanged, and it is no taller than the row, so the row keeps its height when the thought ends and it goes. Press and Flat pass nothing and the row is as above.
+
+## Agent indicator
+What an agent is doing, said in hardware. A Device part (`proposals/worlds.md`, Depth): it needs `data-material="device"`, and in another material it still renders, as a dark cut with ink on it.
+- **Box:** 5.6em by 2.6em, so the font size sets the size and every mechanism can stand in for every other. It sits inline, at the size of the words beside it (the caption size in a Thinking row, 31px tall). The window is LCD glass: `--field` for the floor, `--field-line` and `--field-shade` for the edge, as an Input's, at `--radius-control`; the matrix sits in a bezel at `--radius-surface`.
+- **Phases:** thinking is two seven-segment figures with a lit segment chasing clockwise and fading like phosphor; searching is a tuner whose needle seeks five stations on a spring and lights a lamp where it locks; reading is stereo meters that rise with each burst of tokens and fall at 26 dB a second, with a peak that holds; reasoning is an 11 by 5 dot matrix of drifting waves; running is eight step lights with a playhead that latches and clears; writing is two tape reels turning at the speed their packs give them, with a record lamp that dims while it rewinds.
+- **Inks:** lit parts are `--field-ink`, unlit parts the same ink at 8 to 15%, never a second color. The one accent (`--accent`) is the record lamp: the needle and lamp, the playhead, the reels' lamp. No hex, no glow past `0.4em`.
+- **Moves only while tokens arrive (R4):** it runs while a phase is set and `paused` is false, which an app ties to its stream. Paused, it holds the frame it is on. It stops off screen. On mount each mechanism is stepped 1.2s ahead before it first paints, so one is never seen at rest. Under reduced motion it holds that frame and never runs.
+- **One loop:** every indicator on the page shares one `requestAnimationFrame`, which stops when none is live. A frame writes attributes and inline styles, only when a value changed; React never re-renders for animation.
+- **Phase change:** the new mechanism fades in over the old in one grid cell on `--dur-exit-responsive` (150ms), opacity only, and the old one unmounts.
+- **Accessibility:** `role="status"` with the phase in words for a screen reader ("Thinking"), because the picture is never the only word (R5). The drawing is hidden from assistive tech. `label` replaces the words.
 
 ## Tool call
 What the agent did: a row per call, a group that folds a run of them, and an approval that asks first.

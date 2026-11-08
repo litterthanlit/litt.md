@@ -8,7 +8,9 @@ import { ArrowUpRightIcon } from "@/components/icons";
 import type { PageDocs, PageMeta } from "../kit";
 import { useCustomize } from "../customize-state";
 import { componentDoc } from "../docs-data";
-import { lookStep } from "../look";
+import { lookStep, materialOf } from "../look";
+import { pages } from "../registry";
+import { useRoute } from "../route";
 import { CopyButton, ghostSm } from "./copy";
 import { buildPrompt, markdownUrl, SITE, sourceUrl } from "./copy-prompt";
 import { DocsSections as Sections } from "./sections";
@@ -68,10 +70,20 @@ export function DocsActions(props: { meta: Pick<PageMeta, "id" | "title" | "summ
   );
 }
 
+/** A part that belongs to one world says what it needs; a part in every world (or in two) says nothing. */
+function useNeeds(): string | undefined {
+  const route = useRoute();
+  const worlds = pages.find((p) => p.id === route)?.worlds;
+  if (worlds?.length !== 1) return undefined;
+  const attribute = materialOf(worlds[0]!).attribute;
+  return attribute ? `Needs data-material="${attribute}" on <html>.` : "Needs no data-material attribute: Press is the default.";
+}
+
 export function DocsSections({ docs }: { docs: PageDocs }) {
+  const needs = useNeeds();
   return (
     <DocsBoundary>
-      <Sections docs={docs} />
+      <Sections docs={docs} needs={needs} />
     </DocsBoundary>
   );
 }

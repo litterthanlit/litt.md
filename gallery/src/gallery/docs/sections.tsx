@@ -75,7 +75,7 @@ function Keyboard({ rows }: { rows: NonNullable<PageDocs["keyboard"]> }) {
 
 const mono = "font-mono text-fg-muted";
 
-export function DocsSections({ docs }: { docs: PageDocs }) {
+export function DocsSections({ docs, needs }: { docs: PageDocs; needs?: string }) {
   const components = docs.components.map(componentDoc);
   const exportDocs = documentedExports(docs, components);
   const { look } = useCustomize();
@@ -85,6 +85,7 @@ export function DocsSections({ docs }: { docs: PageDocs }) {
     <div className="grid gap-12 border-t border-line pt-12">
       <Section id="install" title="Install">
         <CodeBlock code={installCommands(components)} lang="shell" label="Install command" />
+        {needs && <p className="max-w-[65ch] text-small text-fg-subtle">{needs}</p>}
         {/* The gallery can show a look the registry does not install, so the command alone would not give you this page. */}
         {note && (
           <div data-fun-cue="" className="flex max-w-[65ch] flex-wrap items-center gap-x-3 gap-y-1">

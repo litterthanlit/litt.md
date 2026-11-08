@@ -34,6 +34,11 @@ export const docs: PageDocs = {
   <p>Eleven of the images are over 6 MB.</p>
 </Thinking>
 
+// Under Device, what the agent is doing beside the clock while it thinks. Gone once the thought is finished.
+<Thinking active={thinking} indicator={<AgentIndicator phase="thinking" paused={!thinking} />}>
+  <p>{reasoning}</p>
+</Thinking>
+
 // Your own words in place of "Thinking" and "Thought for", and your own control of the open state.
 <Thinking label="Reasoning" active={thinking} open={open} onOpenChange={setOpen}>
   <p>{reasoning}</p>
@@ -41,6 +46,7 @@ export const docs: PageDocs = {
   use: [
     "An agent reasons before it answers and you want to show it without letting it crowd the answer. The reasoning is there to read, and out of the way once it has been read.",
     "The reasoning streams in. Open while the agent works, it lets the reader watch, and when the answer starts it folds away by itself.",
+    "An app on Device wants the row to say what the agent is doing as well as how long. Pass an Agent indicator as the indicator, and it sits beside the clock while the thought runs.",
     "A saved conversation. Pass the seconds the thought took as duration and it reads \"Thought for 12s\", closed, ready to open.",
     "The reader should always win. A thought they opened stays open, and one they closed stays closed, whatever the agent does next.",
   ],
@@ -62,6 +68,7 @@ export const docs: PageDocs = {
     "Open or closed is not said by the chevron alone: aria-expanded carries it, and the words say whether the agent is still thinking.",
     "The row is 32px tall, and 44px on a coarse pointer. Hover and a press on a finger brighten the label, and focus-visible draws the 2px ring.",
     "Reduced motion removes the travel and the fade, and the chevron turns at once. The clock keeps counting, because it is a number and not an animation.",
+    "The indicator is a sibling of the row's button, never inside it, so the button's name is unchanged. It carries its own status words for a screen reader. It shows only while the thought is active, and the row keeps its height when it goes.",
     "What the reasoning says is the caller's. Show what your model gives you to show, and leave the row out when there is nothing to read.",
   ],
 };

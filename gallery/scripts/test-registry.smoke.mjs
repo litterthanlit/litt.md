@@ -3101,7 +3101,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (label !== "Build times, 60 builds: median 40 s, 68% within the 50 s goal") throw new Error(`the summary reads "${label}"`);
           const legend = (await box.locator("ul").first().innerText()).replace(/\s+/g, " ");
           if (!/Within goal 68%/.test(legend) || !/Over 32%/.test(legend)) throw new Error(`the legend reads "${legend}"`);
-          const rows = await box.locator("table.sr-only tbody tr").count();
+          const rows = await box.locator(".sr-only table tbody tr, table.sr-only tbody tr").count();
           if (rows < 20) throw new Error(`the hidden table has ${rows} rows`);
           const edges = await box.evaluate((root) => {
             const dots = [...root.querySelectorAll("svg[role=img] circle")].filter((c) => c.getAttribute("r") === "3");

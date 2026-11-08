@@ -44,7 +44,7 @@
 import { Suspense, useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { StillMotion, useFun } from "@/motion";
 import { Toaster } from "@/components/toast";
-import { pages, type PageEntry } from "../registry";
+import { inWorld, pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
 import { Button } from "@/components/button";
 import { ExpandIcon } from "@/components/icons";
@@ -409,10 +409,11 @@ function Hero({ count, site }: { count: string; site: PageEntry[] }) {
 }
 
 export default function Overview() {
+  const { look } = useCustomize();
   /* The components and patterns; Overview, Changelog, AI tools and the Playground have no group, and blocks are screens. */
-  const list = pages.filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world);
+  const list = pages.filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world && inWorld(p, look.material));
   const wall = [...LEAD.map((id) => list.find((p) => p.id === id)).filter((p): p is PageEntry => !!p), ...list.filter((p) => !LEAD.includes(p.id))];
-  const blocks = pages.filter((p) => p.group === "Blocks" && !p.world);
+  const blocks = pages.filter((p) => p.group === "Blocks" && !p.world && inWorld(p, look.material));
   const site = pages.filter((p) => !p.group && !p.wall && !p.world);
   const count = WORDS[list.length] ?? String(list.length);
   return (

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { CodeInput } from "@/components/code-input";
-import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
+import { useMotionDial } from "@/motion";
+import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "code-input",
@@ -13,6 +14,8 @@ export const meta: PageMeta = {
   summary:
     "A short one-time code, such as the six digits from a sign-in email, drawn as one cell per character, each cut into the page like an Input, but built as one real field, so paste, the browser's one-time-code autofill and screen readers all work as in any field. The next cell takes the focus edge and a still caret, and the last character runs onComplete once. The edges fade on the instant tier.",
   tiers: ["instant"],
+  mechanism:
+    "One real input lies over the cells, invisible, so typing, paste and one-time-code autofill work as in any field; the cells are only drawn from its value. The cell the next character goes into takes the focus edge and a still caret, and nothing blinks. Each digit fills a cell and the edge moves to the next, fading on the instant tier, 100ms. The last digit runs onComplete once. An error puts the danger edge on every cell. Under Device each cell is a piece of LCD glass in the mono, and under Flat a grey pill. Reduced motion has nothing to remove: the edges change at once.",
 };
 
 export const docs: PageDocs = {
@@ -50,6 +53,70 @@ export const docs: PageDocs = {
 };
 
 const RIGHT = "246810";
+
+/* The study draws its objects unfocused, so the current cell and its caret would never show. A focusin on the field
+   is what React's onFocus listens to, so it lights them without moving the real focus off the page. */
+function Lit({ children }: { children: ReactNode }) {
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    box.current?.querySelector("input")?.dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+  }, []);
+  return <div ref={box}>{children}</div>;
+}
+
+/** Types 135790 into the field one digit at a time, so the Replay shows the edge move cell by cell. */
+function TypeIn() {
+  const { reduced } = useMotionDial();
+  const [code, setCode] = useState(reduced ? "135790" : "");
+  useEffect(() => {
+    if (reduced) return;
+    let n = 0;
+    const timer = window.setInterval(() => {
+      n += 1;
+      setCode("135790".slice(0, n));
+      if (n >= 6) window.clearInterval(timer);
+    }, 220);
+    return () => window.clearInterval(timer);
+  }, [reduced]);
+  return (
+    <Lit>
+      <CodeInput label="Sign-in code" value={code} help="We sent six digits to ines@halo.studio." />
+    </Lit>
+  );
+}
+
+export const study: PageStudy = {
+  object: (
+    <Lit>
+      <CodeInput label="Sign-in code" defaultValue="135" />
+    </Lit>
+  ),
+  parts: [
+    { name: "The glass", selector: "[aria-hidden=true]" },
+    { name: "A digit cell", selector: "[aria-hidden=true] > span:nth-child(1)" },
+    { name: "The current cell", selector: "[aria-hidden=true] > span:nth-child(4)" },
+    { name: "The caret", selector: "[aria-hidden=true] > span:nth-child(4) > span" },
+  ],
+  states: {
+    default: (
+      <Lit>
+        <CodeInput label="Sign-in code" defaultValue="135" />
+      </Lit>
+    ),
+    disabled: <CodeInput label="Sign-in code" defaultValue="135790" disabled />,
+    error: <CodeInput label="Sign-in code" defaultValue="135790" error="That code is not right." />,
+    empty: (
+      <Lit>
+        <CodeInput label="Sign-in code" />
+      </Lit>
+    ),
+  },
+  replay: {
+    label: "Type the code",
+    caption: "Watch the focus edge and the caret move on one cell at a time as each digit lands.",
+    run: () => <TypeIn />,
+  },
+};
 
 function VerifyDemo() {
   const [round, setRound] = useState(0);
@@ -98,7 +165,7 @@ function StatesDemo() {
 
 export default function CodeInputPage() {
   return (
-    <Page meta={meta} docs={docs}>
+    <Page meta={meta} docs={docs} study={study}>
       <Stage
         title="Sign in with a code"
         tier="instant"
