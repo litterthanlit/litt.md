@@ -37,7 +37,7 @@
  * says where the press that opened it happened, read at the press, so it still answers once the trigger is gone (a
  * menu row that opened a dialog).
  */
-import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import type { Transition } from "motion/react";
 import { useMotionDial } from "./index";
 import { toCss } from "./spring";
@@ -79,9 +79,32 @@ const watchMaterial = (change: () => void) => {
   return () => mo.disconnect();
 };
 
-/** The material on <html>, kept current when it changes (the gallery's Customize panel). Press on the server. */
+const MaterialContext = createContext<Material | null>(null);
+
+/**
+ * A material for what is inside, over the one on <html>: a frame that shows a part in another world (a study's Under
+ * each material strip, a Three bodies stage) wraps it in this beside its data-material attribute, so the part picks
+ * that world's body and motion language. An app never needs it; its material is on <html>.
+ */
+export function MaterialProvider({ material, children }: { material: Material; children: ReactNode }) {
+  return createElement(MaterialContext.Provider, { value: material }, children);
+}
+
+/** The material: the nearest MaterialProvider's, else the one on <html>, kept current when it changes (the gallery's Customize panel). Press on the server. */
 export function useMaterial(): Material {
-  return useSyncExternalStore(watchMaterial, readMaterial, () => "press");
+  const framed = useContext(MaterialContext);
+  const page = useSyncExternalStore(watchMaterial, readMaterial, (): Material => "press");
+  return framed ?? page;
+}
+
+/**
+ * One contract, three bodies (proposals/worlds.md, Bodies): a part a hand touches keeps one contract and has a body per
+ * material, picked here. Press is the default body and lives in the part's own file; Flat's and Device's live in
+ * src/components/bodies/<part>.<material>.tsx and are imported by the part, so the registry ships them in its item.
+ * A world without a body of its own falls back to Press, so a part gains bodies one at a time.
+ */
+export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T }): T {
+  return bodies[material] ?? bodies.press;
 }
 
 /* Device's step: three even steps, as a display's segments light, never a fade. */

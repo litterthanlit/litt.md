@@ -47,8 +47,8 @@
       "hash": "1a95da13e9965bf7"
     },
     "button": {
-      "version": "2026.11.06",
-      "hash": "e52cccb16f4e683a"
+      "version": "2026.11.08",
+      "hash": "94dda5010d8b9e08"
     },
     "callout": {
       "version": "2026.11.06",
@@ -251,8 +251,8 @@
       "hash": "0fc4e698b1bfc519"
     },
     "motion": {
-      "version": "2026.11.05",
-      "hash": "cf09af5d672c49b6"
+      "version": "2026.11.08",
+      "hash": "f947154eb9fe1204"
     },
     "number-field": {
       "version": "2026.11.06",
@@ -359,8 +359,8 @@
       "hash": "86a733cb84f5fa4a"
     },
     "slider": {
-      "version": "2026.11.06",
-      "hash": "1c6ee9471c8232e9"
+      "version": "2026.11.08",
+      "hash": "ef7474d45905e683"
     },
     "sources": {
       "version": "2026.11.06",
@@ -391,8 +391,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "switch": {
-      "version": "2026.11.06",
-      "hash": "60cd7e903c544b1e"
+      "version": "2026.11.08",
+      "hash": "e23b5bb0aa284f43"
     },
     "table": {
       "version": "2026.11.06",

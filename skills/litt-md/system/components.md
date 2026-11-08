@@ -9,6 +9,8 @@ Button · Input · Number field · Code input · Token input · File drop · Sel
 
 ---
 
+**Bodies** (`proposals/worlds.md`, Bodies, v1.10): a part a hand touches keeps one contract and has a body per material, its own markup and its own interaction, picked by `data-material` at runtime. A part's **Bodies** line names the three; a part without one has one body in every material.
+
 ## Button
 `--radius-control`. Three sizes on the shared control scale (R9); the label is wrapped in `.litt-trim` so the padding equals the visible air at sm and md. lg runs wider than its air, so a short label never makes a square block:
 
@@ -31,6 +33,7 @@ The label is at `--weight-title` at every size, with no extra tracking. Hover ch
 - **Loading:** keep the width, swap the label for a 16px spinner (stroke `currentColor`, 1.5), and set `aria-busy="true"`.
 - **Icons:** 16px, 1.5px stroke, `--control-gap` (8) from the label. An icon may also come as a child next to the label, as shadcn writes it: each run of text is a trimmed label and each element sits in the row. Icon-only buttons are square in size (32/44/56), round (`--radius-pill`), and need an `aria-label`.
 - **No arrow suffix by default.** An arrow is allowed only when the button navigates away from the site.
+- **Bodies:** Press is the raised block that sinks `--press-depth` (half a pixel). Flat is a pill, fill only, a step darker under the hand, with no cast and no travel. Device is a key: a face on the Device key tokens standing on a 2px skirt drawn as its own element, the label in the mono at `--weight-title`, sinking the whole `--press-depth` (2px) onto the skirt on the instant tier. Its primary face is `--accent` with `--accent-fg` words, secondary a key in `--block`, danger red words on a key, and ghost a flat label that sinks into a `--tray` well; loading puts the spinner behind a small LCD well (`--field`). Reduced motion removes the travel and the fill still shows the press. Same props, same real `<button>`, same `aria-busy`, in all three.
 
 ## Copy button
 A key that copies a command, beside the LCD glass that shows it. A Device part (`meta.worlds`): it reads the key and field tokens every material sets, so it is only at home under `data-material="device"`, and `proposals/device-studies.md` has the numbers. A value in a row of details keeps the Details row's icon button.
@@ -129,6 +132,7 @@ An on or off setting that takes effect as a setting, such as an email when a bui
 - **Motion:** the block crosses on the responsive tier (bounce 0), by translate; its fill, word and cast change on the instant tier. The tray never moves. Hover deepens the tray's floor by fg 4%.
 - **Disabled:** the tray goes flat to `--surface-2` with a `--line` edge, and the block lies flat in it (`--surface-2`, a `--line` edge, no cast), its word `--fg-disabled`, still on its side. The label dims to `--fg-disabled`, but the description stays `--fg-subtle`: it is often what says why the switch is off-limits, so it must stay readable. A checkbox's description does the same.
 - **Label:** the label sits right of the switch, `--space-3` away, at the small size and `--weight-title`, centered on the tray, and the whole row toggles it. A description can sit under the label in `--fg-subtle`. In a settings list the label and description come first and the switch sits at the row's end (`align="end"`), so the switches line up in one column.
+- **Bodies:** Press is the block in its tray with On and Off in words (above). Flat is an ink pill when on and an outline when off, a round knob sliding 18px, no words (the side and the fill say it). Device is a toggle key (`--block`, `--key-lift`, a 2px skirt) in a well that flips 20px in three steps on the instant tier with a detent, sinks its 2px under the hand, and says its state with a word in the mono on a small LCD beside it and a lamp that lights when on (the glass's ink, or `--accent` for `tone="accent"`). One contract: the props, the `role="switch"`, the label, the keys and the drag are the same in all three.
 - **Touch:** every row is at least 44px tall. The tray owns a sideways drag and leaves vertical scrolling to the page.
 - Build it on a `role="switch"` button with `aria-checked`. Space toggles it. A form sends it like a checkbox.
 
@@ -144,6 +148,7 @@ A value on a continuous range, such as the default animation speed. Use it when 
 - **Touch:** the plate is 44px tall, and all of it is the hit area. A drag that starts on a slider never moves a sheet.
 - **Disabled:** everything lies flat: the plate and the cap go to `--surface-2` with `--line` edges, the slot to `--surface-3`, the notches away. The label dims to `--fg-disabled`; the value and the end words stay `--fg-subtle`, because they are still read.
 - **Range:** two caps in one slot with the fill between them, for a span such as builds that took between 20s and 80s in a table filter. A press takes the nearer cap. The focused cap draws the focus ring around itself, so you can tell which one the keys move. Each cap is named by the label and its end ("Build time, from" and "Build time, to"). The span shows at the end of the label row in `--fg-muted`, tabular, and reads "20s to 80s": words, never a dash. The caps never cross, and stay at least `minStepsBetweenThumbs` steps apart (1 by default). The pair sits in a group named by the label. The keys act on the focused cap: Home and End take it to its end of the slot, as far as the other cap allows. A form sends both values under `name`.
+- **Bodies:** Press is the cap in its slot on a raised plate, as above. Flat has no plate: a thin 4px `--surface-3` track, the pulled-out part in `--fg`, a 20px ink knob ringed in `--canvas`. Device is a fader: a 16px well cut into the body (`--slot`, `--slot-shade`) with its pulled-out part lit in `--accent` (the ink under Monochrome), small engraved ticks under it (`--notch`, `--engrave`) at the marks or at every tenth, a key for a cap (`--key-lift`, 14 by 28px) with a line across its face that sinks `--press-depth` when held, and the value on an LCD well in the mono (`--field`, `--field-ink`). The props, the keys, the marks, home and the range form are the same in all three.
 
 ## Pad
 Two values set at once on one surface, such as a reply's tone against its length. It is the Slider in two dimensions; use two Sliders when the values are independent.

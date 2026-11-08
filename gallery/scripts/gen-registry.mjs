@@ -567,6 +567,9 @@ function targetOf(file) {
 function itemOf(file) {
   const r = norm(path.relative(srcDir, file));
   if (r.startsWith("motion/")) return "motion";
+  // A body (proposals/worlds.md, Bodies) ships inside the part it is named after: bodies/switch.flat.tsx is the switch's.
+  const body = /^components\/bodies\/([\w-]+)\.(flat|device)\.tsx$/.exec(r);
+  if (body) return body[1];
   const m = /^(?:components|blocks)\/([\w-]+)\.tsx$/.exec(r);
   if (!m) return fail(`${rel(file)}: not a component or block file`);
   return m[1];
@@ -1429,6 +1432,14 @@ function build(demos = []) {
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
   const onDisk = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
+  // A part's bodies (src/components/bodies/<part>.<material>.tsx) ship inside its item at components/litt/bodies/.
+  const bodiesDir = path.join(componentsDir, "bodies");
+  const bodyFiles = fs.existsSync(bodiesDir) ? fs.readdirSync(bodiesDir).filter((f) => f.endsWith(".tsx")).sort().map((f) => path.join(bodiesDir, f)) : [];
+  for (const f of bodyFiles) {
+    const m = /^([\w-]+)\.(flat|device)\.tsx$/.exec(path.basename(f));
+    if (!m) fail(`${rel(f)}: a body is named <part>.flat.tsx or <part>.device.tsx`);
+    if (!stems.includes(m[1])) fail(`${rel(f)}: no component "${m[1]}" for this body to belong to`);
+  }
   const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "rules.ts", "device.ts", "drag.ts", "deal.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);
   // A block is named after the page that shows it, so its name finds that page, and never after a component.
@@ -1440,7 +1451,7 @@ function build(demos = []) {
   }
 
   const targets = new Map();
-  for (const f of [...componentFiles, ...motionFiles, ...blockFiles]) targets.set(f, targetOf(f));
+  for (const f of [...componentFiles, ...bodyFiles, ...motionFiles, ...blockFiles]) targets.set(f, targetOf(f));
 
   // 2. Transform every file once.
   const transformed = new Map();
