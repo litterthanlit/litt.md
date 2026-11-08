@@ -15,8 +15,8 @@ export const meta: PageMeta = {
   order: 5, group: "Controls",
   verbs: ["select"],
   summary:
-    "Underline or segmented. The indicator slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked.",
-  fun: "Pick a tab far away: the underline stretches over, leading edge first, and gathers under it.",
+    "Underline or segmented. The chosen face slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked. Press cuts them as folder tabs on a plate; Flat sets them as words with a grey bubble.",
+  fun: "Pick a tab far away: the standing tab, or the bubble, glides over on a looser spring.",
   tiers: ["instant", "responsive"],
 };
 
@@ -294,16 +294,21 @@ function ThreeBodiesDemo() {
             <MaterialProvider material={m.id}>
               <Tabs defaultValue="overview" className="w-full">
                 <TabsList aria-label="Atelier Nord">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="activity">Activity</TabsTrigger>
-                  <TabsTrigger value="deploys">Deploys</TabsTrigger>
+                  <TabsTrigger value="overview">Home</TabsTrigger>
+                  <TabsTrigger value="activity">Usage</TabsTrigger>
+                  <TabsTrigger value="logs">Logs</TabsTrigger>
                 </TabsList>
+                <TabsPanels className="px-control-pad-md pt-4">
+                  <TabsPanel value="overview"><p className="text-small text-fg-muted">12,480 visits this week.</p></TabsPanel>
+                  <TabsPanel value="activity"><p className="text-small text-fg-muted">Published 4 min ago.</p></TabsPanel>
+                  <TabsPanel value="logs"><p className="text-small text-fg-muted">Build 5f2e9c1, 42s.</p></TabsPanel>
+                </TabsPanels>
               </Tabs>
-              <Tabs defaultValue="list" variant="segmented">
+              <Tabs defaultValue="list" variant="segmented" className="max-w-full">
                 <TabsList aria-label="View">
                   <TabsTrigger value="list">List</TabsTrigger>
                   <TabsTrigger value="grid">Grid</TabsTrigger>
-                  <TabsTrigger value="timeline">Timeline</TabsTrigger>
+                  <TabsTrigger value="map">Map</TabsTrigger>
                 </TabsList>
               </Tabs>
             </MaterialProvider>
@@ -353,7 +358,7 @@ export default function TabsPage() {
         title="Project tabs"
         tier="responsive"
         size="lg"
-        caption="Pick a tab. The 2px indicator slides to it on the responsive tier while the label only changes color, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way."
+        caption="Pick a tab. The chosen face (a tab standing on the plate in Press, a grey bubble in Flat) slides to it on the responsive tier while the label only changes color, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way."
         code="ProjectTabs"
       >
         <ProjectTabs />
@@ -362,7 +367,7 @@ export default function TabsPage() {
       <Stage
         title="View switch"
         tier="responsive"
-        caption="The segmented style uses the same sliding block as a fill. Pick a view and the preview crossfades. Labels never change weight or size, so the group keeps its exact box. On a touch screen a tab you hold fills."
+        caption="The segmented style uses the same sliding face as a raised block in a tray (Press) or a bubble behind the word (Flat). Pick a view and the preview crossfades. Labels never change weight or size, so the group keeps its exact box. On a touch screen a tab you hold fills."
         code="ViewSwitch"
       >
         <ViewSwitch />
@@ -380,7 +385,7 @@ export default function TabsPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One set of tabs, one contract, three bodies. Press is an underline that glides to the chosen tab. Flat is a grey bubble that glides behind its label. Device is engraved legends with a lamp under the current one, and a row of keys on one skirt when segmented, the chosen key latched down with its lamp lit; they switch in place and never glide. Each is drawn here whatever look the page is in; the roles, the arrow keys and what a screen reader hears are the same in all three."
+        caption="One set of tabs, one contract, three bodies. Press is folder tabs cut from a plate's top edge: the chosen one stands forward in the plate's own lit face and is joined to its panel, the others sit lower and darker, and segmented is blocks in a tray with the chosen one raised. Flat is words with the chosen one in ink on a grey bubble, and nothing under the row; the panel is bare. Device is engraved legends with a lamp under the current one, and a row of keys on one skirt when segmented, the chosen key latched down with its lamp lit; it switches in place and never glides. Each is drawn here whatever look the page is in; the roles, the arrow keys and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
