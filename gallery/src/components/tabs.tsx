@@ -25,6 +25,12 @@
  *   inside the 2px inset: selected is raised, as in Segmented and the Switch.
  * - Flat (proposals/flat-pill.md): no hairline and no track. The chosen tab is a grey bubble (--block) at the control radius, the
  *   others are --fg-muted words, for both variants. Under forced colors the bubble is an outline, as the segmented fill is.
+ * - Bodies (proposals/worlds.md): this file keeps the contract (value, variant, size, direction, the roles, the roving
+ *   focus and arrow keys, which Radix supplies) and Press's body, the underline that glides. It resolves each piece into
+ *   TabsListBodyProps and TabsTriggerBodyProps and picks a body by the material on <html> (byWorld, useMaterial). Flat's
+ *   grey bubble is bodies/tabs.flat.tsx; Device's engraved legends, a lamp under the current one that switches on in
+ *   place (and, segmented, a row of keys on one skirt with the current one latched down) is bodies/tabs.device.tsx.
+ *   Fun mode's travelling underline is Press's alone; the other bodies never glide.
  * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
  *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
  *   is off so the two do not double. Small tabs grow to the control-md height on a coarse
@@ -46,7 +52,9 @@ import {
 } from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { animate, AnimatePresence, LayoutGroup, motion, useMotionValue, useTransform, type Variants } from "motion/react";
-import { useExit, useFun, useTransition, useTravel } from "@/motion";
+import { byWorld, useExit, useFun, useMaterial, useTransition, useTravel } from "@/motion";
+import { TabsListFlatBody, TabsTriggerFlatBody } from "./bodies/tabs.flat";
+import { TabsListDeviceBody, TabsTriggerDeviceBody } from "./bodies/tabs.device";
 
 export type TabsVariant = "underline" | "segmented";
 export type TabsSize = "sm" | "md";
@@ -116,6 +124,7 @@ export function Tabs({
   /* Fun mode's underline: set in the same pass as the new value, so the tab's own indicator never shows at the new tab
      before the travelling line has started from the old one. */
   const fun = useFun();
+  const material = useMaterial();
   const [travel, setTravel] = useState<{ from: string; to: string } | null>(null);
   const arrived = useCallback(() => setTravel(null), []);
   if (travel && !fun) setTravel(null); // fun mode turned off mid-travel: nothing is travelling any more
@@ -124,7 +133,7 @@ export function Tabs({
     const from = triggers.current.get(seen);
     const to = triggers.current.get(value);
     if (from && to) setDir(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING ? 1 : -1);
-    if (fun && variant === "underline" && from && to) setTravel({ from: travel?.from ?? seen, to: value });
+    if (fun && material === "press" && variant === "underline" && from && to) setTravel({ from: travel?.from ?? seen, to: value });
   }
 
   return (
@@ -200,30 +209,37 @@ function TravellingLine({ list }: { list: RefObject<HTMLDivElement | null> }) {
   return <motion.span aria-hidden="true" className="in-[[data-material=flat]]:hidden pointer-events-none absolute bottom-0 left-0 z-10 h-0.5 w-px origin-left bg-fg" style={{ x: start, scaleX }} />;
 }
 
-/** The row of tabs. It is a named group, so give it an aria-label. */
-export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
-  const { variant, size } = useTabs();
+/** What a list body gets from the contract: the variant and size, the extra classes, and the tablist's own attributes. A body adds its look and its data-body, and nothing else about what the list is. */
+export type TabsListBodyProps = {
+  variant: TabsVariant;
+  size: TabsSize;
+  className: string;
+  rootProps: ComponentPropsWithoutRef<typeof TabsPrimitive.List>;
+};
+
+/** Press's body: a hairline under the row (underline), or a sunken track (segmented). Fun mode's travelling line lives here. */
+function PressListBody({ variant, size, className, rootProps }: TabsListBodyProps) {
   const fun = useFun();
   const list = useRef<HTMLDivElement>(null);
   if (variant === "underline") {
     /* The hairline lives on the wrapper. The list overlaps it by 1px, so the
        2px indicator covers the hairline and nothing is clipped by the scroll. */
     return (
-      <div className="border-b border-line in-[[data-material=flat]]:border-b-0">
+      <div data-body="press" className="border-b border-line in-[[data-material=flat]]:border-b-0">
         {fun ? (
           /* Fun mode: the list is the travelling line's box, and holds it after the tabs. */
           <TabsPrimitive.List
             ref={list}
             className={"relative -mb-px flex w-full overflow-x-auto pb-px in-[[data-material=flat]]:gap-1 [scrollbar-width:none] " + className}
-            {...rest}
+            {...rootProps}
           >
-            {rest.children}
+            {rootProps.children}
             <TravellingLine list={list} />
           </TabsPrimitive.List>
         ) : (
           <TabsPrimitive.List
             className={"-mb-px flex w-full overflow-x-auto pb-px in-[[data-material=flat]]:gap-1 [scrollbar-width:none] " + className}
-            {...rest}
+            {...rootProps}
           />
         )}
       </div>
@@ -231,14 +247,22 @@ export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<t
   }
   return (
     <TabsPrimitive.List
+      data-body="press"
       className={
         "inline-flex w-fit max-w-full overflow-x-auto overflow-y-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) [scrollbar-width:none] " +
         (size === "sm" ? "h-control-sm pointer-coarse:h-control-md " : "h-control-md ") +
         className
       }
-      {...rest}
+      {...rootProps}
     />
   );
+}
+
+/** The row of tabs. It is a named group, so give it an aria-label. */
+export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
+  const { variant, size } = useTabs();
+  const Body = byWorld(useMaterial(), { press: PressListBody, flat: TabsListFlatBody, device: TabsListDeviceBody });
+  return <Body variant={variant} size={size} className={className} rootProps={rest} />;
 }
 
 /** Concentric with the track: control radius minus the 2px inset. */
@@ -278,29 +302,34 @@ type TabsTriggerProps = ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> &
   value: string;
 };
 
-/** One tab. Its label only changes color, so the tab never moves or resizes. */
-export function TabsTrigger({
-  value,
-  className = "",
-  children,
-  ...rest
-}: TabsTriggerProps) {
-  const { value: current, variant, size, register, travel } = useTabs();
-  const responsive = useTransition("responsive");
-  /* Fun mode: the segmented fill glides on the glide spring; the underline is drawn by the travelling line until it
-     arrives, and has no layoutId, so it never animates on its own when it comes back. */
-  const fun = useFun();
-  const enter = fun ? fun.glide : responsive;
-  const line = fun && variant === "underline";
-  const active = current === value && !(line && travel);
-  const ref = useCallback((el: HTMLButtonElement | null) => register(value, el), [register, value]);
+/** What a trigger body gets from the contract: the tab's value, its geometry on the control scale, whether the Press and Flat indicator is drawn on it, and the button's attributes. A body adds its look and its data-body; the selected state is Radix's (aria-selected, data-state). */
+export type TabsTriggerBodyProps = {
+  value: string;
+  variant: TabsVariant;
+  size: TabsSize;
+  /** The size and padding classes the control scale gives this variant and size. */
+  shapeClass: string;
+  /** Whether the sliding indicator belongs on this tab now (it is the selected one, and fun mode's line is not carrying it). */
+  active: boolean;
+  /** Fun mode's travelling line draws the underline, so the tab's own indicator has no layoutId. */
+  line: boolean;
+  /** The spring the indicator slides on. */
+  enter: ReturnType<typeof useTransition>;
+  className: string;
+  triggerRef: (el: HTMLButtonElement | null) => void;
+  rootProps: Omit<ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>, "value" | "className" | "children">;
+  children: ReactNode;
+};
 
+/** Press's body: the label, and a 2px line (or a raised block in the track) that glides behind it. */
+function PressTriggerBody({ value, variant, shapeClass, active, line, enter, className, triggerRef, rootProps, children }: TabsTriggerBodyProps) {
   return (
     <TabsPrimitive.Trigger
-      ref={ref}
+      ref={triggerRef}
       value={value}
-      className={[triggerBase, triggerShape[variant][size], className].join(" ")}
-      {...rest}
+      data-body="press"
+      className={[triggerBase, shapeClass, className].join(" ")}
+      {...rootProps}
     >
       {active && (
         <motion.span
@@ -318,6 +347,43 @@ export function TabsTrigger({
       )}
       <span className="litt-trim relative">{children}</span>
     </TabsPrimitive.Trigger>
+  );
+}
+
+/** One tab. Its label only changes color, so the tab never moves or resizes. */
+export function TabsTrigger({
+  value,
+  className = "",
+  children,
+  ...rest
+}: TabsTriggerProps) {
+  const { value: current, variant, size, register, travel } = useTabs();
+  const responsive = useTransition("responsive");
+  const material = useMaterial();
+  /* Fun mode: the segmented fill glides on the glide spring; the underline is drawn by the travelling line until it
+     arrives, and has no layoutId, so it never animates on its own when it comes back. Only Press draws that line. */
+  const fun = useFun();
+  const enter = fun ? fun.glide : responsive;
+  const line = !!fun && variant === "underline" && material === "press";
+  const active = current === value && !(line && travel);
+  const ref = useCallback((el: HTMLButtonElement | null) => register(value, el), [register, value]);
+  const Body = byWorld(material, { press: PressTriggerBody, flat: TabsTriggerFlatBody, device: TabsTriggerDeviceBody });
+
+  return (
+    <Body
+      value={value}
+      variant={variant}
+      size={size}
+      shapeClass={triggerShape[variant][size]}
+      active={active}
+      line={line}
+      enter={enter}
+      className={className}
+      triggerRef={ref}
+      rootProps={rest}
+    >
+      {children}
+    </Body>
   );
 }
 
