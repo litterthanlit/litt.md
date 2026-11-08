@@ -294,21 +294,21 @@ function ThreeBodiesDemo() {
             <MaterialProvider material={m.id}>
               <Tabs defaultValue="overview" className="w-full">
                 <TabsList aria-label="Atelier Nord">
-                  <TabsTrigger value="overview">Overview</TabsTrigger>
-                  <TabsTrigger value="activity">Activity</TabsTrigger>
-                  <TabsTrigger value="deploys">Deploys</TabsTrigger>
+                  <TabsTrigger value="overview">Home</TabsTrigger>
+                  <TabsTrigger value="activity">Usage</TabsTrigger>
+                  <TabsTrigger value="logs">Logs</TabsTrigger>
                 </TabsList>
                 <TabsPanels className="px-control-pad-md pt-4">
                   <TabsPanel value="overview"><p className="text-small text-fg-muted">12,480 visits this week.</p></TabsPanel>
                   <TabsPanel value="activity"><p className="text-small text-fg-muted">Published 4 min ago.</p></TabsPanel>
-                  <TabsPanel value="deploys"><p className="text-small text-fg-muted">Build 5f2e9c1, 42s.</p></TabsPanel>
+                  <TabsPanel value="logs"><p className="text-small text-fg-muted">Build 5f2e9c1, 42s.</p></TabsPanel>
                 </TabsPanels>
               </Tabs>
-              <Tabs defaultValue="list" variant="segmented">
+              <Tabs defaultValue="list" variant="segmented" className="max-w-full">
                 <TabsList aria-label="View">
                   <TabsTrigger value="list">List</TabsTrigger>
                   <TabsTrigger value="grid">Grid</TabsTrigger>
-                  <TabsTrigger value="timeline">Timeline</TabsTrigger>
+                  <TabsTrigger value="map">Map</TabsTrigger>
                 </TabsList>
               </Tabs>
             </MaterialProvider>
