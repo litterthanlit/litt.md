@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { CodeInput } from "@/components/code-input";
-import { useMotionDial } from "@/motion";
+import { MaterialProvider, useMotionDial } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -15,7 +17,7 @@ export const meta: PageMeta = {
     "A short one-time code, such as the six digits from a sign-in email, drawn as one cell per character, each cut into the page like an Input, but built as one real field, so paste, the browser's one-time-code autofill and screen readers all work as in any field. The next cell takes the focus edge and a still caret, and the last character runs onComplete once. The edges fade on the instant tier.",
   tiers: ["instant"],
   mechanism:
-    "One real input lies over the cells, invisible, so typing, paste and one-time-code autofill work as in any field; the cells are only drawn from its value. The cell the next character goes into takes the focus edge and a still caret, and nothing blinks. Each digit fills a cell and the edge moves to the next, fading on the instant tier, 100ms. The last digit runs onComplete once. An error puts the danger edge on every cell. Under Device each cell is a piece of LCD glass in the mono, and under Flat a grey pill. Reduced motion has nothing to remove: the edges change at once.",
+    "One real input lies over the cells, invisible, so typing, paste and one-time-code autofill work as in any field; the cells are only drawn from its value. The cell the next character goes into takes the focus edge and a still caret, and nothing blinks. Each digit fills a cell and the edge moves to the next, fading on the instant tier, 100ms. The last digit runs onComplete once. An error puts the danger edge on every cell. Under Press each cell is cut into the page like an Input. Under Flat it is a grey pill with no outline. Under Device each cell is a pane of LCD glass showing the dim ghost of a seven-segment eight until its digit is typed, then the digit lit in segments, switching in three steps on the instant tier. Reduced motion has nothing to remove: the edges change at once.",
 };
 
 export const docs: PageDocs = {
@@ -163,6 +165,29 @@ function StatesDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center justify-items-start gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <CodeInput label="Sign-in code" defaultValue="135" />
+              <CodeInput label="Sign-in code" defaultValue="135790" error="That code is not right." />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function CodeInputPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -184,6 +209,15 @@ export default function CodeInputPage() {
         caption="An alphanumeric code of four at lg, with letters in capitals; six cells split three and three, shorter codes do not. An error puts the danger edge on every cell. Disabled is flat and muted, as the Input."
       >
         <StatesDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One code field, one contract, three bodies. Press is a cut cell per character. Flat is a grey pill with no outline. Device is a pane of LCD glass per character, an unlit seven-segment eight until its digit is typed. Each is drawn here whatever look the page is in; the one real input, the keyboard, paste and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="CodeInput" component={CodeInput} props={{ label: "Sign-in code", help: "We sent six digits to ines@halo.studio.", error: "" }} controls={["label", "length", "type", "size", "help", "error", "disabled"]} />

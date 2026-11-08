@@ -72,6 +72,7 @@ A short one-time code, such as the six digits from a sign-in email. It looks lik
 - **Focus:** the cell the next character goes into takes the focus edge and ring, and an empty one shows a still 1px caret. Nothing blinks.
 - **Typing:** only what the code can hold gets in (digits, or letters and digits in capitals), so a pasted "123 456" lands as 123456. The last character runs the completion callback once; the caller checks the code there. Backspace clears from the end.
 - **Error and disabled:** an error puts the `--danger` edge on every cell and says what to do under them. Disabled lies flat: `--surface-2` with the `--line` hairline and `--fg-disabled`. The edges fade on the instant tier.
+- **Bodies:** Press is the cut cell per character, as above. Flat is a grey pill per cell with no outline, the ink ring on the current one and the danger ring on an error. Device is a pane of LCD glass per character (`--field`, `--field-shade`) showing the dim ghost of a seven-segment eight until its character is typed, then the digit lit in segments in `--field-ink` (a letter of an alphanumeric code is set in the mono), switching in place in three steps on the instant tier. One contract: the one real `<input>` with `autocomplete="one-time-code"`, paste, the keyboard, the label and the note are the same in all three.
 
 ## Token input
 A field that collects short values as removable tokens: sender domains, recipients, tags. The Input's sibling, with the Tag inside.
