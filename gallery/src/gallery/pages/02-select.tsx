@@ -16,7 +16,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["select", "open"],
   summary:
-    "One value from a short list. You press the trigger, so it is a raised block, the secondary Button's, and it stays pressed while its list is open. The list is the Menu's glass panel: 44px rows, one gliding highlight and a check on the current option. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
+    "One value from a short list. You press the trigger, so it is a raised block, the secondary Button's, and it stays pressed while its list is open. The list is a tray of slats in glass, 44px each, with one gliding highlight, and the current slat lifted with a check. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
   fun: "Move through the options: the highlight reaches for the next row, then gathers itself there.",
   tiers: ["instant", "responsive"],
 };
@@ -365,7 +365,7 @@ export default function SelectPage() {
       <Stage
         title="Sizes"
         tier="responsive"
-        caption="Small is 32, medium is 44 and large is 56, the same scale as Button, so a select and a button of one size sit flush. Small goes in a toolbar and large beside a large button. The trigger and the list are the same width at least, and the list is the Menu's panel with one gliding highlight."
+        caption="Small is 32, medium is 44 and large is 56, the same scale as Button, so a select and a button of one size sit flush. Small goes in a toolbar and large beside a large button. The trigger and the list are the same width at least, and the list is a tray of slats with one gliding highlight."
         code="SizesDemo"
       >
         <SizesDemo />
@@ -374,7 +374,7 @@ export default function SelectPage() {
       <Stage
         title="Help, error, disabled and long values"
         tier="instant"
-        caption="Focus draws the 2px focus ring around the block, as on a button. An error draws a danger edge inside it and the block keeps its cast. The error replaces the help text and says how to fix it. Pick a region and it clears. The disabled select lies flat, muted and skipped by Tab, and a long value ends in an ellipsis. The chevron never turns."
+        caption="Focus draws the 2px focus ring around the block, as on a button. An error draws a danger edge inside it and the block keeps its cast. The error replaces the help text and says how to fix it. Pick a region and it clears. The disabled select lies flat, muted and skipped by Tab, and a long value ends in an ellipsis. The up and down mark never turns."
         code="StatesDemo"
       >
         <StatesDemo />
@@ -403,7 +403,7 @@ export default function SelectPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One select, one contract, three bodies. Press is a raised block with a glass list and a check on the current row. Flat is a grey pill with a solid card. Device is an LCD readout with a pair of small keys at its end that step through the options without opening the list, and a list drawn as a screen: the current row is marked by a lamp, and the highlight switches from row to row with no glide. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        caption="One select, one contract, three bodies. Press is a raised block with a window cut into its end, and a glass list with a tray cut into it: the options are slats, and the current slat is lifted out of the tray with a check. Flat is a grey pill and a plain chevron, and a list that is one solid grey sheet with no shadow or ring: words parted by space, the current one in a grey bubble, the title weight and a check. Device is an LCD readout with a pair of real keys at its end that step through the options without opening the list, and a list drawn as a screen: the current row is marked by a lamp, and the highlight switches from row to row with no glide. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

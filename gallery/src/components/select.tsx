@@ -6,19 +6,17 @@
  * - Two parts, like Input. Select is the bare trigger and list, for a toolbar or inline use, and it
  *   needs an aria-label or aria-labelledby. SelectField adds the label above and the help or error
  *   below, all wired up, in the same layout as TextField.
- * - Trigger: you press it, so it is raised, not cut (R3, material.md 6): the secondary Button's block
+ * - Trigger (Press): you press it, so it is raised, not cut (R3, material.md 6): the secondary Button's block
  *   (--block, --block-lift), its hover fill and its press, which tightens the cast (--block-press) at once
  *   and sinks it --press-depth. While its list is open it stays pressed. The Input's sizes (sm 32, md 44,
  *   lg 56, 16px text on coarse pointers), the value in --fg at the text weight, the placeholder in
- *   --fg-subtle, and a 16px chevron that never turns. Focus is the 2px --focus outline at a 2px offset,
+ *   --fg-subtle, and at its end a window cut into the block (--cut, --cut-shade, 4px in) holding a 16px up and down mark that never turns. Focus is the 2px --focus outline at a 2px offset,
  *   as on every button. An error draws a 1px --danger edge inside the block and keeps its cast; disabled,
  *   it lies flat on --surface-2 with the hairline. A long value truncates with an ellipsis.
- * - Flat (proposals/flat-pill.md): the trigger is a grey pill with no outline (ink ring on focus, danger ring on an
- *   error, flat when disabled); list rows are grey bubbles under the pointer at the panel radius less its 4px padding,
- *   no separators, the current one marked by its check.
- * - List: the Menu's panel. Glass at the surface radius with a 4px inset, 44px rows at the control
- *   radius with 12px side padding, one gliding highlight (glide.tsx), and a 16px check in a fixed
- *   cell at the end of the current option. It is at least as wide as the trigger and never taller
+ * - Flat (bodies/select.flat.tsx): a grey pill and a solid grey sheet; the current row is a grey bubble, the title weight and a check.
+ * - List (Press): glass at the surface radius with a tray cut into it 4px in (--tray, --tray-shade), 44px slats in the tray
+ *   with 12px side padding, one gliding highlight (glide.tsx), and the current slat lifted: a block face behind it (z -10, so
+ *   the highlight and its ring show over it) and a 16px check in a fixed cell at its end. It is at least as wide as the trigger and never taller
  *   than the room on screen, and it scrolls inside. Opened inside glass (a dialog, a sheet, the
  *   header, a popover) it is solid (bg-surface-2 + shadow-float), found from the DOM when it opens.
  * - Motion, responsive tier, as the Menu. The list grows from the trigger
@@ -61,7 +59,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { animate, motion, useMotionValue, type AnimationPlaybackControls, type HTMLMotionProps } from "motion/react";
 import { byWorld, useExit, useMaterial, useTransition, useTravel } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
-import { CheckIcon, ChevronDownIcon } from "@/components/icons";
+import { CheckIcon, ChevronsUpDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
 import { SelectDeviceList, SelectDeviceRow, SelectDeviceTrigger } from "./bodies/select.device";
 import { SelectFlatList, SelectFlatRow, SelectFlatTrigger } from "./bodies/select.flat";
@@ -143,7 +141,7 @@ export type SelectTriggerBodyProps = {
   step: { prev: () => void; next: () => void; canPrev: boolean; canNext: boolean };
 };
 
-/* The raised trigger, which the Date and Color pickers copy: block, press, open, focus, error, disabled. */
+/* The Press trigger, which the Date and Color pickers copy: a raised block with a window cut into its end. */
 const field =
   "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-block text-left font-normal text-fg " +
   "data-placeholder:text-fg-subtle " +
@@ -159,32 +157,32 @@ const field =
   "aria-invalid:data-[state=open]:shadow-[inset_0_0_0_1px_var(--danger),var(--block-press)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:data-placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat (rule 4): a grey pill with no outline, the ink ring for focus, the danger ring for an error, disabled flat. */
-  "in-[[data-material=flat]]:focus-visible:outline-none in-[[data-material=flat]]:focus-visible:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:aria-invalid:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:aria-invalid:enabled:active:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:aria-invalid:data-[state=open]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:disabled:shadow-none " +
   /* Forced colors (Windows high contrast) drops box-shadow, so the block keeps its shape with a real border. */
   "forced-colors:border";
 
+/* The window sits 4px in from the block's end, top and bottom, so its corners are the block's less 4px. */
 const sizes: Record<SelectSize, string> = {
-  sm: "h-control-sm px-control-pad-sm text-small pointer-coarse:h-control-md",
-  md: "h-control-md px-control-pad-md text-body",
-  lg: "h-control-lg px-control-pad-lg text-(length:--control-text-lg)",
+  sm: "h-control-sm pl-control-pad-sm pr-1 text-small pointer-coarse:h-control-md",
+  md: "h-control-md pl-control-pad-md pr-1 text-body",
+  lg: "h-control-lg pl-control-pad-lg pr-1 text-(length:--control-text-lg)",
 };
 
-/** The Press trigger: the raised block, the secondary Button's. */
+/** The Press trigger: a raised block with a cut window at its end holding the up and down mark. */
 function PressTrigger({ root, size, className, selected, placeholder }: SelectTriggerBodyProps) {
   return (
     <SelectPrimitive.Trigger {...root} data-body="press" className={[field, sizes[size], className].join(" ")}>
-      {/* Radix drops a className on Value, so this span carries the truncation and pushes the chevron to the end. */}
+      {/* Radix drops a className on Value, so this span carries the truncation and pushes the window to the end. */}
       <span className="min-w-0 flex-1 truncate">
         <SelectPrimitive.Value placeholder={placeholder}>{selected}</SelectPrimitive.Value>
       </span>
-      <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="shrink-0 text-fg-subtle group-disabled/trigger:text-fg-disabled" />
-      </SelectPrimitive.Icon>
+      <span
+        aria-hidden="true"
+        className="my-1 grid aspect-square shrink-0 self-stretch place-items-center rounded-[calc(var(--radius-control)-4px)] bg-cut shadow-(--cut-shade) group-disabled/trigger:bg-transparent group-disabled/trigger:shadow-none forced-colors:border"
+      >
+        <SelectPrimitive.Icon asChild>
+          <ChevronsUpDownIcon className="shrink-0 text-fg-subtle group-disabled/trigger:text-fg-disabled" />
+        </SelectPrimitive.Icon>
+      </span>
     </SelectPrimitive.Trigger>
   );
 }
@@ -201,9 +199,13 @@ type ListContext = {
 };
 const ListCtx = createContext<ListContext | null>(null);
 
+/* A slat sits in the tray with 4px around it, so its corners are the tray's less 4px, and the tray's the glass's less 4px. The
+   current slat's raised face is a pseudo-element behind everything, so the gliding highlight and its keyboard ring still show over it. */
 const row =
-  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] px-3 text-small outline-none " +
+  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-[calc(var(--radius-surface)-8px)] px-3 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] " +
+  "before:absolute before:inset-0 before:-z-10 before:rounded-[calc(var(--radius-surface)-8px)] " +
+  "data-[state=checked]:before:bg-block data-[state=checked]:before:shadow-[var(--highlight),var(--block-lift)] forced-colors:data-[state=checked]:before:border " +
   "transition-colors duration-(--dur-instant) ease-litt " +
   "text-fg-muted data-[state=checked]:text-fg group-data-[quiet=false]/list:data-[highlighted]:text-fg " +
   "forced-colors:group-data-[quiet=false]/list:data-[highlighted]:[forced-color-adjust:none] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:text-[HighlightText] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:**:text-[HighlightText] " +
@@ -266,7 +268,7 @@ export type SelectListBodyProps = {
   children: ReactNode;
 };
 
-/** The Press list: the Menu's glass panel, one gliding highlight, a check on the current row. */
+/** The Press list: a glass panel with a tray cut into it, the options as slats, the current one a raised block. */
 function PressList({ root, flat, glide, children }: SelectListBodyProps) {
   return (
     <motion.div
@@ -274,15 +276,16 @@ function PressList({ root, flat, glide, children }: SelectListBodyProps) {
       data-body="press"
       className={
         "group/list relative z-50 max-h-(--radix-select-content-available-height) max-w-(--radix-select-content-available-width) " +
-        "min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin) rounded-surface outline-none " +
+        "min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin) rounded-surface p-1 outline-none " +
         (flat ? "bg-surface-2 shadow-float" : "litt-glass")
       }
     >
-      {/* The glass cannot clip, its shadow lives on ::before, so the viewport clips and scrolls the rows. Radix
-          hides the scrollbar by default; a long list gets a thin one back, so it reads as scrollable. */}
+      {/* The glass cannot clip, its shadow lives on ::before, so the viewport is the tray: it clips and scrolls the slats.
+          Radix hides the scrollbar by default; a long list gets a thin one back, so it reads as scrollable. It is its own
+          stacking context, so a slat's raised face (z -10) stays above the tray and under the highlight. */}
       <SelectPrimitive.Viewport
         ref={glide.ref}
-        className="rounded-surface p-1 overscroll-contain [scrollbar-color:var(--line-strong)_transparent]! [scrollbar-width:thin]!"
+        className="isolate rounded-[calc(var(--radius-surface)-4px)] bg-tray p-1 shadow-(--tray-shade) forced-colors:border overscroll-contain [&>[data-ring]]:rounded-[calc(var(--radius-surface)-8px)] [scrollbar-color:var(--line-strong)_transparent]! [scrollbar-width:thin]!"
       >
         {glide.highlight}
         {children}
