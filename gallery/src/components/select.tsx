@@ -35,6 +35,13 @@
  *   never takes focus, so nothing stays lit after it.
  * - On compact screens the list stays anchored, like a dropdown menu. It is not a sheet.
  * - Closing returns focus to the trigger at once, not when the exit has finished.
+ * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, Radix's roles and keys,
+ *   the value, the open state, the exit and the highlight's focus. It resolves them into SelectTriggerBodyProps,
+ *   SelectListBodyProps and SelectRowBodyProps and renders the body the material picks (byWorld). The Press bodies are
+ *   below, the default. bodies/select.flat.tsx is the grey pill and the solid card. bodies/select.device.tsx is an LCD
+ *   readout with a pair of step keys at its end (a pointer extra: they are out of the tab order and out of the
+ *   accessibility tree, and the keyboard stays Radix's) and a list drawn as a screen, its current row a lit lamp and its
+ *   highlight switching row to row with no glide.
  */
 import {
   createContext,
@@ -45,16 +52,19 @@ import {
   useLayoutEffect,
   useRef,
   useState,
+  type ComponentProps,
   type MutableRefObject,
   type ReactNode,
   type Ref,
 } from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { animate, motion, useMotionValue, type AnimationPlaybackControls, type HTMLMotionProps } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { byWorld, useExit, useMaterial, useTransition, useTravel } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
+import { SelectDeviceList, SelectDeviceRow, SelectDeviceTrigger } from "./bodies/select.device";
+import { SelectFlatList, SelectFlatRow, SelectFlatTrigger } from "./bodies/select.flat";
 
 export type SelectSize = "sm" | "md" | "lg";
 
@@ -115,6 +125,24 @@ const FLOATING = ".litt-glass, [data-popover-surface]";
 
 /* ---------------------------------------------------------------- trigger */
 
+/** What a trigger body draws: Radix's trigger props, the picked label and the step keys' state. */
+export type SelectTriggerBodyProps = {
+  /** Everything Radix's trigger needs (ref, id, aria-*, the pointer and key handlers). Spread it onto the one trigger button. */
+  root: ComponentProps<typeof SelectPrimitive.Trigger>;
+  size: SelectSize;
+  /** The caller's extra classes; the body puts them on its outermost box. */
+  className: string;
+  invalid: boolean;
+  disabled: boolean;
+  /** Whether the list is open. */
+  open: boolean;
+  /** The picked option's label, or undefined while nothing is picked. */
+  selected: ReactNode;
+  placeholder: ReactNode;
+  /** Stepping through the options without opening the list: the Device body's keys. Out of the tab order. */
+  step: { prev: () => void; next: () => void; canPrev: boolean; canNext: boolean };
+};
+
 /* The raised trigger, which the Date and Color pickers copy: block, press, open, focus, error, disabled. */
 const field =
   "group/trigger flex w-full min-w-0 cursor-pointer items-center gap-control rounded-control bg-block text-left font-normal text-fg " +
@@ -146,6 +174,21 @@ const sizes: Record<SelectSize, string> = {
   lg: "h-control-lg px-control-pad-lg text-(length:--control-text-lg)",
 };
 
+/** The Press trigger: the raised block, the secondary Button's. */
+function PressTrigger({ root, size, className, selected, placeholder }: SelectTriggerBodyProps) {
+  return (
+    <SelectPrimitive.Trigger {...root} data-body="press" className={[field, sizes[size], className].join(" ")}>
+      {/* Radix drops a className on Value, so this span carries the truncation and pushes the chevron to the end. */}
+      <span className="min-w-0 flex-1 truncate">
+        <SelectPrimitive.Value placeholder={placeholder}>{selected}</SelectPrimitive.Value>
+      </span>
+      <SelectPrimitive.Icon asChild>
+        <ChevronDownIcon className="shrink-0 text-fg-subtle group-disabled/trigger:text-fg-disabled" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  );
+}
+
 /* --------------------------------------------------------------- the list */
 
 /** Shared by the rows of one open list. */
@@ -167,25 +210,15 @@ const row =
   "data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] pointer-coarse:active:text-fg";
 
-function Row({ option }: { option: SelectOption }) {
-  const ctx = useContext(ListCtx);
-  if (!ctx) return null;
-  const { glide, quiet, touch } = ctx;
+/** What a row body draws: the props Radix's item needs, and the option. */
+export type SelectRowBodyProps = {
+  item: Omit<ComponentProps<typeof SelectPrimitive.Item>, "className" | "children">;
+  option: SelectOption;
+};
+
+function PressRow({ item, option }: SelectRowBodyProps) {
   return (
-    <SelectPrimitive.Item
-      {...GLIDE_ROW}
-      value={option.value}
-      disabled={option.disabled}
-      textValue={option.textValue}
-      /* A tap would focus the row it lands on, and a focused row looks keyboard-lit. */
-      onMouseDown={(e) => {
-        if (touch.current) e.preventDefault();
-      }}
-      onFocus={(e) => {
-        if (!quiet.current) glide.focusRow(e.currentTarget);
-      }}
-      className={row}
-    >
+    <SelectPrimitive.Item {...item} className={row}>
       <span className="min-w-0 flex-1 truncate">
         <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
       </span>
@@ -195,6 +228,66 @@ function Row({ option }: { option: SelectOption }) {
         </SelectPrimitive.ItemIndicator>
       </span>
     </SelectPrimitive.Item>
+  );
+}
+
+function Row({ option }: { option: SelectOption }) {
+  const ctx = useContext(ListCtx);
+  const Body = byWorld(useMaterial(), { press: PressRow, flat: SelectFlatRow, device: SelectDeviceRow });
+  if (!ctx) return null;
+  const { glide, quiet, touch } = ctx;
+  return (
+    <Body
+      option={option}
+      item={{
+        ...GLIDE_ROW,
+        value: option.value,
+        disabled: option.disabled,
+        textValue: option.textValue,
+        /* A tap would focus the row it lands on, and a focused row looks keyboard-lit. */
+        onMouseDown: (e) => {
+          if (touch.current) e.preventDefault();
+        },
+        onFocus: (e) => {
+          if (!quiet.current) glide.focusRow(e.currentTarget);
+        },
+      }}
+    />
+  );
+}
+
+/** What a list body draws: the animated surface's props, the glide, and the rows. */
+export type SelectListBodyProps = {
+  /** The props for the one surface element: Radix's, the motion values, the quiet flag and the pointer and key handlers. */
+  root: HTMLMotionProps<"div"> & { ref?: Ref<HTMLDivElement>; "data-quiet"?: boolean };
+  /** True when the list sits inside glass (a dialog, a sheet, the header, a popover) and must be solid. */
+  flat: boolean;
+  glide: Glide;
+  children: ReactNode;
+};
+
+/** The Press list: the Menu's glass panel, one gliding highlight, a check on the current row. */
+function PressList({ root, flat, glide, children }: SelectListBodyProps) {
+  return (
+    <motion.div
+      {...root}
+      data-body="press"
+      className={
+        "group/list relative z-50 max-h-(--radix-select-content-available-height) max-w-(--radix-select-content-available-width) " +
+        "min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin) rounded-surface outline-none " +
+        (flat ? "bg-surface-2 shadow-float" : "litt-glass")
+      }
+    >
+      {/* The glass cannot clip, its shadow lives on ::before, so the viewport clips and scrolls the rows. Radix
+          hides the scrollbar by default; a long list gets a thin one back, so it reads as scrollable. */}
+      <SelectPrimitive.Viewport
+        ref={glide.ref}
+        className="rounded-surface p-1 overscroll-contain [scrollbar-color:var(--line-strong)_transparent]! [scrollbar-width:thin]!"
+      >
+        {glide.highlight}
+        {children}
+      </SelectPrimitive.Viewport>
+    </motion.div>
   );
 }
 
@@ -328,47 +421,37 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
   };
   const ctx: ListContext = { glide, quiet: quietRef, touch };
 
+  const List = byWorld(useMaterial(), { press: PressList, flat: SelectFlatList, device: SelectDeviceList });
+  const root: SelectListBodyProps["root"] = {
+    ...rest,
+    ref: setNode,
+    "data-quiet": quiet,
+    style: { ...style, x, y, scale, opacity, ...(open ? null : { pointerEvents: "none" as const }) },
+    onPointerEnter: compose(rest.onPointerEnter, gp.onPointerEnter),
+    onPointerLeave: compose(rest.onPointerLeave, gp.onPointerLeave),
+    onPointerMoveCapture: compose(rest.onPointerMoveCapture, (e) => {
+      if (e.pointerType !== "touch") wake();
+      gp.onPointerMoveCapture(e);
+    }),
+    onPointerDownCapture: compose(rest.onPointerDownCapture, (e) => {
+      touch.current = e.pointerType === "touch";
+      /* A finger's press shows on the row itself (its own fill), so the glide does not light it as well. */
+      if (!touch.current) gp.onPointerDownCapture(e);
+    }),
+    onKeyDownCapture: compose(rest.onKeyDownCapture, (e) => {
+      wake();
+      gp.onKeyDownCapture(e);
+    }),
+  };
+
   return (
-    <motion.div
-      {...rest}
-      ref={setNode}
-      data-quiet={quiet}
-      className={
-        "group/list relative z-50 max-h-(--radix-select-content-available-height) max-w-(--radix-select-content-available-width) " +
-        "min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin) rounded-surface outline-none " +
-        (flat ? "bg-surface-2 shadow-float" : "litt-glass")
-      }
-      style={{ ...style, x, y, scale, opacity, ...(open ? null : { pointerEvents: "none" as const }) }}
-      onPointerEnter={compose(rest.onPointerEnter, gp.onPointerEnter)}
-      onPointerLeave={compose(rest.onPointerLeave, gp.onPointerLeave)}
-      onPointerMoveCapture={compose(rest.onPointerMoveCapture, (e) => {
-        if (e.pointerType !== "touch") wake();
-        gp.onPointerMoveCapture(e);
-      })}
-      onPointerDownCapture={compose(rest.onPointerDownCapture, (e) => {
-        touch.current = e.pointerType === "touch";
-        /* A finger's press shows on the row itself (its own fill), so the glide does not light it as well. */
-        if (!touch.current) gp.onPointerDownCapture(e);
-      })}
-      onKeyDownCapture={compose(rest.onKeyDownCapture, (e) => {
-        wake();
-        gp.onKeyDownCapture(e);
-      })}
-    >
-      <ListCtx.Provider value={ctx}>
-        {/* The glass cannot clip, its shadow lives on ::before, so the viewport clips and scrolls the rows. Radix
-            hides the scrollbar by default; a long list gets a thin one back, so it reads as scrollable. */}
-        <SelectPrimitive.Viewport
-          ref={glide.ref}
-          className="rounded-surface p-1 overscroll-contain [scrollbar-color:var(--line-strong)_transparent]! [scrollbar-width:thin]!"
-        >
-          {glide.highlight}
-          {options.map((o) => (
-            <Row key={o.value} option={o} />
-          ))}
-        </SelectPrimitive.Viewport>
-      </ListCtx.Provider>
-    </motion.div>
+    <ListCtx.Provider value={ctx}>
+      <List root={root} flat={flat} glide={glide}>
+        {options.map((o) => (
+          <Row key={o.value} option={o} />
+        ))}
+      </List>
+    </ListCtx.Provider>
   );
 }
 
@@ -439,6 +522,17 @@ export function Select({
   const selected = options.find((o) => o.value === value);
   const done = useCallback(() => setLeaving(false), []);
 
+  /* The step keys (Device): the neighbour among the options a hand can pick. Nothing picked, either key picks the first. */
+  const Trigger = byWorld(useMaterial(), { press: PressTrigger, flat: SelectFlatTrigger, device: SelectDeviceTrigger });
+  const pickable = options.filter((o) => !o.disabled);
+  const at = pickable.findIndex((o) => o.value === value);
+  const step = {
+    canPrev: !disabled && pickable.length > 0 && at !== 0,
+    canNext: !disabled && pickable.length > 0 && at !== pickable.length - 1,
+    prev: () => pickable.length > 0 && pick(pickable[Math.max(at - 1, 0)].value),
+    next: () => pickable.length > 0 && pick(pickable[Math.min(at + 1, pickable.length - 1)].value),
+  };
+
   return (
     <SelectPrimitive.Root
       value={value}
@@ -449,29 +543,30 @@ export function Select({
       required={required}
       name={name}
     >
-      <SelectPrimitive.Trigger
-        ref={trigger}
-        id={id}
-        aria-label={ariaLabel}
-        aria-labelledby={ariaLabelledBy}
-        aria-describedby={ariaDescribedBy}
-        aria-invalid={invalid || undefined}
-        onPointerDown={() => {
-          input.current = "pointer";
+      <Trigger
+        root={{
+          ref: trigger,
+          id,
+          "aria-label": ariaLabel,
+          "aria-labelledby": ariaLabelledBy,
+          "aria-describedby": ariaDescribedBy,
+          "aria-invalid": invalid || undefined,
+          onPointerDown: () => {
+            input.current = "pointer";
+          },
+          onKeyDown: () => {
+            input.current = "key";
+          },
         }}
-        onKeyDown={() => {
-          input.current = "key";
-        }}
-        className={[field, sizes[size], className].join(" ")}
-      >
-        {/* Radix drops a className on Value, so this span carries the truncation and pushes the chevron to the end. */}
-        <span className="min-w-0 flex-1 truncate">
-          <SelectPrimitive.Value placeholder={placeholder}>{selected?.label}</SelectPrimitive.Value>
-        </span>
-        <SelectPrimitive.Icon asChild>
-          <ChevronDownIcon className="shrink-0 text-fg-subtle group-disabled/trigger:text-fg-disabled" />
-        </SelectPrimitive.Icon>
-      </SelectPrimitive.Trigger>
+        size={size}
+        className={className}
+        invalid={invalid}
+        disabled={!!disabled}
+        open={open}
+        selected={selected?.label}
+        placeholder={placeholder}
+        step={step}
+      />
 
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
