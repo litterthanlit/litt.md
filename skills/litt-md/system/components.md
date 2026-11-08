@@ -98,6 +98,7 @@ One value from a short list (a role, a region, a plan). It replaces the native `
 - **Label:** above the trigger, as the Input's, with help text or an error under it. A form sends the value, through a hidden native field.
 - **On compact screens** the list stays anchored, like a dropdown menu: a phone form's trigger is full width, so the list is too, and its rows are already 44px. It is not a sheet.
 - Inside a dialog, a sheet or the header the list is solid (`--surface-2` and `--shadow-float`), never glass on glass.
+- **Bodies:** Press is the raised block with a glass list and a check on the current row (above). Flat is a grey pill with no outline and a solid card whose rows are grey bubbles under the pointer. Device is an LCD readout (`--field`, `--field-shade`, the value in the mono) with a pair of small keys (`--block`, `--key-lift`) at its end that step to the previous or next option without opening the list, and a list drawn as a screen: the current row carries a lit lamp at its start (the glass's ink, never the accent) and the highlight switches from row to row with no glide. The keys are a pointer extra, out of the tab order and the accessibility tree, with 44px targets on coarse pointers. The props, the Radix roles, the keys and the hidden native field are the same in all three.
 
 ## Combobox
 Type to find one value, or several, in a long list: a client, a framework, a teammate. Select is for a short fixed list; Command menu is for actions.
