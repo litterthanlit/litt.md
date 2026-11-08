@@ -4,8 +4,9 @@
  *
  * - The trigger is a readout: the value in the mono on LCD glass (--field, --field-shade, --field-ink), at the Input's
  *   sizes. Pressing the readout opens the list, as Radix's trigger does. Its end carries a pair of small keys
- *   (--block, --key-lift) that step to the previous and the next option without opening the list. They stack on a
- *   pointer with a mouse and sit side by side, 44px wide, on a coarse pointer, each with a 44px target. They sink the whole
+ *   (--block, --key-lift) that step to the previous and the next option without opening the list. They sit side by side, each
+ *   a real key the full height of the glass (40px wide, 28px tall at sm and 40px at md), and 44px wide with a 44px
+ *   target on a coarse pointer. They sink the whole
  *   --press-depth (2px) under the hand, and one lies flat when there is nowhere left to step.
  * - The keys are a pointer extra. They are out of the tab order (tabIndex -1) and out of the accessibility tree
  *   (aria-hidden), and a press on them never moves focus, so the keyboard is Radix's alone: Space, Enter or an arrow
@@ -56,10 +57,10 @@ const readout =
   "hover:bg-[color-mix(in_oklab,var(--field-ink)_8%,transparent)] data-[state=open]:bg-[color-mix(in_oklab,var(--field-ink)_14%,transparent)] " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:bg-transparent";
 
-const keys = "flex shrink-0 flex-col gap-px pointer-coarse:flex-row pointer-coarse:gap-0.5";
+const keys = "flex shrink-0 gap-0.5";
 const keyBox =
-  "litt-target relative grid w-6 flex-1 cursor-pointer place-items-center rounded-[calc(var(--radius-control)-2px)] bg-block text-fg-muted shadow-(--key-lift) " +
-  "pointer-coarse:w-11 pointer-coarse:flex-none [-webkit-tap-highlight-color:transparent] " +
+  "litt-target relative grid w-10 cursor-pointer place-items-center rounded-[calc(var(--radius-control)-2px)] bg-block text-fg-muted shadow-(--key-lift) " +
+  "pointer-coarse:w-11 [-webkit-tap-highlight-color:transparent] " +
   "transition-[transform,box-shadow,color,background-color] duration-(--dur-instant) ease-litt " +
   "enabled:hover:bg-(--block-hover) enabled:hover:text-fg " +
   "enabled:active:shadow-(--block-press) enabled:active:[transform:translateY(var(--press-depth))] " +
