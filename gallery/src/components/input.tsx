@@ -18,11 +18,14 @@
  *   Under Device (data-material="device") the field is LCD glass in the mono, through the --field tokens.
  * - Bodies (proposals/worlds.md): the contract below (the input, its label, aria-invalid, aria-describedby) resolves once
  *   into InputBodyProps, TextareaBodyProps and FieldBodyProps, and the body the material picks (byWorld) draws them.
- *   Press is the cut above, here. Flat is the grey pill (bodies/input.flat.tsx). Device is LCD glass set in a bezel
+ *   Press is the cut and its plate, here. Flat is the grey pill (bodies/input.flat.tsx). Device is LCD glass set in a bezel
  *   well, the label engraved on the body above it, the hint and the error dim LCD lines, an error with a lamp in
  *   --danger (bodies/input.device.tsx).
- * - Flat (proposals/flat-pill.md): a grey pill (--cut is --surface-3) with no outline and no shade. Focus is the
- *   ink ring, an error the danger ring, disabled lies flat with no hairline. A textarea rounds to --radius-surface.
+ * - Press, the instrument: a TextField or Textarea is a small plate that stands and casts (--block, --plate-lift, at
+ *   --radius-surface), the label on the plate above and the hint or error under, and the cut sunk into it. The bare
+ *   Input is the cut alone. A host's className (a width) lands on the cut, never on the plate.
+ * - Flat, the page: a grey pill with nothing standing and no frame; the label in ink, the hint plain grey words, an
+ *   error words in --danger with the pill's fill tinting (bodies/input.flat.tsx).
  * - Typed text at the text weight and the label at the title weight (R8). The edge fades on the
  *   instant tier, the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
@@ -39,18 +42,13 @@ export type InputSize = "sm" | "md" | "lg";
 const field =
   "w-full min-w-0 rounded-control bg-field font-normal text-field-ink placeholder:text-field-ink-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
-  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
+  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
+  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--field-shade),var(--focus-ring)] " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--field-shade)] " +
+  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--field-shade),var(--focus-ring)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat (rule 4): a grey pill with no outline; focus is the ink ring, an error the danger ring, disabled lies flat with no hairline. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:focus-visible:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:aria-invalid:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:aria-invalid:focus-visible:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:disabled:shadow-none " +
   /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid forced-colors:focus-visible:outline-offset-2";
 
@@ -137,10 +135,16 @@ function useFieldParts(idProp: string | undefined, help: ReactNode, error: React
   return { id, note, noteId, describedBy: [describedBy, note ? noteId : undefined].filter(Boolean).join(" ") || undefined };
 }
 
-/* Press: label above, control, then a hint or an error below. The error replaces the hint. */
+/* The plate holds a cut: its corners stop at half the control's height plus its 4px, so at the pill shape the cut,
+   capped at half its own height, stays inside the plate's curve. */
+const PLATE_RADIUS = "rounded-[max(var(--radius-surface),min(var(--radius-control),calc(var(--control-md)/2+4px)))]";
+const CUT_IN_PLATE = "[&_input]:rounded-[min(var(--radius-control),calc(var(--control-md)/2))] [&_textarea]:rounded-[min(var(--radius-control),calc(var(--control-md)/2))]";
+
+/* Press: a plate that stands and casts, the label on it above the cut, the hint or the error under. The plate is the
+   surface radius, and the cut inside it is never rounder than the plate. */
 function PressField({ id, noteId, label, note, error, disabled, children }: FieldBodyProps) {
   return (
-    <div data-body="press" className="grid gap-2">
+    <div data-body="press" className={"grid content-start gap-2 " + PLATE_RADIUS + " bg-block p-3 shadow-(--plate-lift) forced-colors:border " + CUT_IN_PLATE}>
       <label htmlFor={id} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
@@ -241,7 +245,7 @@ function PressTextarea({ size, invalid, mono, className, control }: TextareaBody
     <textarea
       data-body="press"
       aria-invalid={invalid || undefined}
-      className={[field, "block resize-y in-[[data-material=flat]]:rounded-surface", textareaSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
+      className={[field, "block resize-y", textareaSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
       {...control}
     />
   );
