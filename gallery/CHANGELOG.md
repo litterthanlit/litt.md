@@ -12,6 +12,7 @@ A world goes deeper by parts and abilities that exist in it alone (`proposals/wo
 - **added** `copy-button`: CopyButton, a key that copies the command on its LCD, sinks its 2px, draws its check and decodes the command back in a glyph wave.
 - **added** `tape-progress`: TapeProgress, Progress said as two reels at the tape's constant pace, the value in words.
 - **added** `seven-segment`: SevenSegment, a figure on seven-segment digits behind glass, its segments fading like phosphor.
+
 Later the same day, the first bodies (`proposals/worlds.md`, Bodies): a part a hand touches keeps one contract and has a body per material, its own markup and its own interaction, picked by `data-material` at runtime. Nothing in your code changes; under Press each part renders as before.
 
 - **changed** `switch`: a body per material. Press is the block in its tray with On and Off in words, as before. Flat is an ink pill when on and an outline when off, with no words, the knob sliding. Device is a toggle key that flips with a detent, its word on LCD. The bodies ship inside the item (`components/litt/bodies/`).
