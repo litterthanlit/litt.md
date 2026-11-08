@@ -25,6 +25,12 @@
  *   It shows at once, with nothing animating. Without confirmText nothing is added.
  * - After it confirms, the thumb is aria-disabled, not disabled, so focus stays on it (a typed confirm moves focus
  *   there too), and a polite status says the confirmed label. Remount it (a new key) to ask again.
+ * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the drag and its
+ *   thresholds, the keyboard confirm, the typing path, the confirmed state and the reset. It resolves them once into
+ *   SlideConfirmBodyProps and renders the body the material picks (byWorld). PressBody, below, is the default (the tray
+ *   and block above). bodies/slide-confirm.flat.tsx is the grey pill with an ink circle. bodies/slide-confirm.device.tsx
+ *   is a latch key pushed along a well to an end stop: the words sit on an LCD strip in the well, a lamp at the stop
+ *   lights once confirmed, and a key let go short goes home in three steps on the instant tier, not on a spring.
  * - Touch: the thumb owns the drag (touch-action none, data-no-drag), so a sheet never moves under it.
  * - Disabled: the track at fg 3%, the thumb --surface-2 with a --line edge, no pointer, no tab stop. The words stay
  *   --fg-subtle, because they still say what it would do, as a disabled Slider's end words do.
@@ -37,12 +43,14 @@
  *   pops in. Still only transform and opacity, and the thumb rests exactly where it does without fun mode. A key
  *   or a screen reader still confirms at once. Reduced motion turns it off.
  */
-import { useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { animate, motion, useMotionValue, useTransform, type AnimationPlaybackControls } from "motion/react";
-import { useFun, useTransition } from "@/motion";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ComponentProps, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref } from "react";
+import { animate, motion, useMotionValue, useTransform, type AnimationPlaybackControls, type MotionValue } from "motion/react";
+import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { CheckIcon, ChevronRightIcon } from "@/components/icons";
 import { TextField } from "@/components/input";
 import { Button } from "@/components/button";
+import { SlideConfirmDeviceBody } from "./bodies/slide-confirm.device";
+import { SlideConfirmFlatBody } from "./bodies/slide-confirm.flat";
 
 export type SlideConfirmSize = "md" | "lg";
 
@@ -67,17 +75,94 @@ export type SlideConfirmProps = {
   className?: string;
 };
 
-const track: Record<SlideConfirmSize, string> = {
+/**
+ * What a body draws: the contract (slide-confirm.tsx) resolves the drag, the keys and the state once, and a body only
+ * draws them with its own markup. A body keeps the tray's `data-no-drag` and its three children in order (the passed
+ * part, the words, the thumb), then `tail`; carries data-body on its root; and never changes a prop, a key or a threshold.
+ */
+export type SlideConfirmBodyProps = {
+  /** What sliding does: the words in the track before it confirms. */
+  label: string;
+  /** The words once it has confirmed. */
+  confirmedLabel: string;
+  /** Confirmed: the thumb is at the end, aria-disabled, and the words are the confirmed label. */
+  done: boolean;
+  disabled: boolean;
+  /** The size, so a body can place what sits beside the thumb. */
+  size: SlideConfirmSize;
+  /** The track's height on the control scale, plus any width class the caller gave it. */
+  track: string;
+  /** The tray, measured for the end of the travel. */
+  box: Ref<HTMLDivElement>;
+  /** The passed part as a scale from the left, 0 to 1. */
+  band: MotionValue<number>;
+  /** The words' opacity, by the thumb's position. */
+  words: MotionValue<number>;
+  /** The thumb's chevron, or the check once confirmed (fun mode pops it in). */
+  glyph: ReactNode;
+  /** The thumb button's props: its ref, name, handlers, position and aria. A body adds only its look. */
+  thumb: ComponentProps<typeof motion.button>;
+  /** The hint and the polite status, screen reader only. Rendered last inside the tray. */
+  tail: ReactNode;
+};
+
+const trackSizes: Record<SlideConfirmSize, string> = {
   md: "h-control-md pointer-coarse:h-control-lg",
   lg: "h-control-lg",
 };
+
+/** Press, the default body: a raised block that slides in a sunken tray, its words centered in the tray. */
+function PressBody({ label, confirmedLabel, done, disabled, track, box, band, words, glyph, thumb, tail }: SlideConfirmBodyProps) {
+  const ink = done ? "text-fg" : "text-fg-subtle"; // disabled words stay fg-subtle: they still say what it would do, as a disabled Slider's end words do
+  return (
+    <div
+      ref={box}
+      data-body="press"
+      data-no-drag=""
+      className={"relative isolate flex w-full items-center overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) select-none forced-colors:border " + track}
+    >
+      {/* The part the thumb has passed: a full-width band scaled from the left, so only a transform changes. */}
+      <motion.span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0.5 left-0.5 -z-1 w-[calc(100%-0.25rem)] origin-left rounded-[calc(var(--radius-control)-2px)] bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]"
+        style={{ scaleX: band }}
+      />
+      <motion.span
+        aria-hidden="true"
+        className={"pointer-events-none absolute inset-0 grid place-items-center px-14 text-center text-small " + ink}
+        style={{ opacity: done ? 1 : words }}
+      >
+        <span className="truncate">{done ? confirmedLabel : label}</span>
+      </motion.span>
+      <motion.button
+        {...thumb}
+        className={
+          "relative grid aspect-square h-full shrink-0 touch-none place-items-center rounded-[calc(var(--radius-control)-2px)] [-webkit-tap-highlight-color:transparent] " +
+          "transition-colors duration-(--dur-instant) ease-litt " +
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
+          (disabled
+            ? "cursor-not-allowed bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
+            : "bg-block text-fg shadow-(--block-lift) " + (done ? "cursor-default" : "cursor-grab active:cursor-grabbing active:shadow-(--block-press)"))
+        }
+      >
+        {glyph}
+      </motion.button>
+      {tail}
+    </div>
+  );
+}
 
 /** How close to the end counts as the end, in px, so a finger need not land on the last pixel. */
 const SLACK = 4;
 
 /** A track with a thumb to slide to the end. The thumb is also a button: Enter, Space or a screen reader confirms. */
 export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confirmText, size = "md", disabled = false, className = "" }: SlideConfirmProps) {
-  const back = useTransition("responsive");
+  const material = useMaterial();
+  const Body = byWorld(material, { press: PressBody, flat: SlideConfirmFlatBody, device: SlideConfirmDeviceBody });
+  const springHome = useTransition("responsive");
+  /* Device's key goes home in three steps on the instant tier, as the Switch's detent does: no spring. */
+  const instant = useTransition("instant");
+  const back = material === "device" ? { ...instant, ease: (t: number) => (t >= 1 ? 1 : Math.floor(t * 3) / 3) } : springHome;
   const hintId = useId();
   const box = useRef<HTMLDivElement>(null);
   const thumb = useRef<HTMLButtonElement>(null);
@@ -104,7 +189,7 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confir
     [],
   );
 
-  /* Measured before paint and kept current, so the end is always the end. */
+  /* Measured before paint and kept current, so the end is always the end (and again if the material swaps the body). */
   useLayoutEffect(() => {
     const el = box.current;
     const t = thumb.current;
@@ -120,7 +205,7 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confir
     const ro = new ResizeObserver(read);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [Body]); // a new body is new elements, so it is measured again
 
   /* A confirmed thumb stays at the end, also when the track is resized. */
   useEffect(() => {
@@ -231,74 +316,56 @@ export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confir
     }
   };
 
-  const ink = done ? "text-fg" : "text-fg-subtle"; // disabled words stay fg-subtle: they still say what it would do, as a disabled Slider's end words do
+  const glyph = fun ? (
+    /* Fun mode: the check pops in where the chevron was. */
+    <motion.span key={done ? "done" : "slide"} className="grid place-items-center" initial={done ? { scale: 0.4, opacity: 0 } : false} animate={{ scale: 1, opacity: 1 }} transition={fun.pop}>
+      {done ? <CheckIcon /> : <ChevronRightIcon />}
+    </motion.span>
+  ) : done ? (
+    <CheckIcon />
+  ) : (
+    <ChevronRightIcon />
+  );
 
   const slider = (
-    <div
-      ref={box}
-      data-no-drag=""
-      className={
-        "relative isolate flex w-full items-center overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) select-none forced-colors:border in-[[data-material=flat]]:bg-surface-3 " +
-        track[size] +
-        " " +
-        (confirmText === undefined ? className : "")
-      }
-    >
-      {/* The part the thumb has passed: a full-width band scaled from the left, so only a transform changes. */}
-      <motion.span
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0.5 left-0.5 -z-1 w-[calc(100%-0.25rem)] origin-left rounded-[calc(var(--radius-control)-2px)] bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]"
-        style={{ scaleX: band }}
-      />
-      <motion.span
-        aria-hidden="true"
-        className={"pointer-events-none absolute inset-0 grid place-items-center px-14 text-center text-small " + ink}
-        style={{ opacity: done ? 1 : words }}
-      >
-        <span className="truncate">{done ? confirmedLabel : label}</span>
-      </motion.span>
-      <motion.button
-        ref={thumb}
-        type="button"
-        disabled={disabled}
-        aria-disabled={done || undefined}
-        aria-label={label}
-        aria-describedby={hintId}
-        style={fun ? { x: walled, scaleX: squash, originX: wall } : { x }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={goBack}
-        onKeyDown={onKeyDown}
+    <Body
+      label={label}
+      confirmedLabel={confirmedLabel}
+      done={done}
+      disabled={disabled}
+      size={size}
+      track={trackSizes[size] + " " + (confirmText === undefined ? className : "")}
+      box={box}
+      band={band}
+      words={words}
+      glyph={glyph}
+      thumb={{
+        ref: thumb,
+        type: "button",
+        disabled,
+        "aria-disabled": done || undefined,
+        "aria-label": label,
+        "aria-describedby": hintId,
+        style: fun ? { x: walled, scaleX: squash, originX: wall } : { x },
+        onPointerDown,
+        onPointerMove,
+        onPointerUp,
+        onPointerCancel: goBack,
+        onKeyDown,
         /* detail is 0 for a click made by a key or by assistive tech, and 1 or more for a real press. */
-        onClick={(e) => e.detail === 0 && confirm()}
-        className={
-          "relative grid aspect-square h-full shrink-0 touch-none place-items-center rounded-[calc(var(--radius-control)-2px)] [-webkit-tap-highlight-color:transparent] " +
-          "transition-colors duration-(--dur-instant) ease-litt " +
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
-          (disabled
-            ? "cursor-not-allowed bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none"
-            : "bg-block text-fg shadow-(--block-lift) in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:text-canvas " + (done ? "cursor-default" : "cursor-grab active:cursor-grabbing active:shadow-(--block-press)"))
-        }
-      >
-        {fun ? (
-          /* Fun mode: the check pops in where the chevron was. */
-          <motion.span key={done ? "done" : "slide"} className="grid place-items-center" initial={done ? { scale: 0.4, opacity: 0 } : false} animate={{ scale: 1, opacity: 1 }} transition={fun.pop}>
-            {done ? <CheckIcon /> : <ChevronRightIcon />}
-          </motion.span>
-        ) : done ? (
-          <CheckIcon />
-        ) : (
-          <ChevronRightIcon />
-        )}
-      </motion.button>
-      <span id={hintId} className="sr-only">
-        Drag the thumb to the end, or press Enter.
-      </span>
-      <span role="status" className="sr-only">
-        {done ? confirmedLabel : ""}
-      </span>
-    </div>
+        onClick: (e) => e.detail === 0 && confirm(),
+      }}
+      tail={
+        <>
+          <span id={hintId} className="sr-only">
+            Drag the thumb to the end, or press Enter.
+          </span>
+          <span role="status" className="sr-only">
+            {done ? confirmedLabel : ""}
+          </span>
+        </>
+      }
+    />
   );
   if (confirmText === undefined) return slider;
   return (
