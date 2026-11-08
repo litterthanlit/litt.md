@@ -149,6 +149,160 @@ Flat's column is mostly built, which is why Flat reads closest to a world. Press
 
 bencho sells Sounds; Nick's studies tie a sound to the visual event; `gallery-wow.md` proposed sounds in fun mode and left it as Nick's call. In a world, sound is an ability a material brings (Nick: "each system provides new abilities"). Device is the one that has it: a key's click on press, a notch's tick on the slider, a switch's clack, a code digit's beep behind the glass. Synthesised with Web Audio, no files, so the registry ships no assets. Off by default; a Sound choice in Customize, Silent or On; only in answer to a hand, never on arrival or on its own (R4 holds for the ear too); reduced motion leaves it alone, since it is not motion, but a system-level mute does not exist, so the default is Silent.
 
+## Inventory: body or recipe, per world
+
+Written 2026-11-08 for Nick, after wave one of the bodies (Switch, Button, Slider), for Nick to strike before Device wave one is built. It covers every part with a page, decides which worlds give it a body and which give it a recipe, and orders the bodies into waves. The test from Bodies, above: a part gets a body in a world when the hand touches it there, or when that world's structure is different (a key, not a block or a pill; a fader, not a slot; a readout on LCD glass, not a field; a lamp; a detent; segments). In every other cell the part gets a recipe, with the reason written down. A body may change what a part is made of and how the hand works it, never what it is for.
+
+The rows are the 95 items with a page (`docs.json` names 97). Framed and Glide have no page and get no row. Framed draws nothing. Glide is the highlight that travels between rows, and under Device nothing travels, so the Device bodies that hold rows put a lamp on the current row in its place (Select's list builds the lamp row; Menu, Command menu, Combobox and Tree reuse it). Shopify, Shopify cart, Icons and Tune have rows even though they draw nothing of their own or draw only glyphs.
+
+Press is the default body in each part's own file. A Press cell says `body` only where Press's body should change from today. Press is built last.
+
+The order is world by world: Device first, then Flat, then Press. A Device wave that touches a part with a Flat body lifts today's Flat recipe (its `in-[[data-material=flat]]:` classes) into that body unchanged, to the pixel, as wave one did; Flat's own redesign of its bodies comes in Flat's waves. The Flat and Press columns are a first pass: each world gets its own read of this table before its waves, so a recipe there is a default, not a verdict.
+
+| Part | Press | Flat | Device | Wave |
+|---|---|---|---|---|
+| Accordion (`accordion`) | recipe: today's header rows and hairlines | recipe: grey pill per section, no lines (already a class recipe) | body: each header an engraved legend on a plate, with a small toggle key at its end that latches down while its section is open | D3 |
+| Action bar (`action-bar`) | recipe: glass bar of Buttons | recipe: the ink bar (already a class recipe) | recipe: the bar is a screen by the `.litt-glass` rule, and its actions are Buttons, which are keys already | none |
+| Agent indicator (`agent-indicator`) | n/a (Device only) | n/a (Device only) | built (a Device part) | built |
+| App shell (`app-shell`) | recipe: layout | recipe: no hairlines, grey hover (already a class recipe) | recipe: layout; the sidebar is a plate on the body, the current link steps its ink, the mono comes with the material | none |
+| Avatar (`avatar`) | recipe: a picture in a circle | recipe: a grey circle, no edge | recipe: a picture or initials in a circle; nothing to press, nothing to read off glass | none |
+| Bar list (`bar-list`) | recipe: data | recipe: data; grey track | recipe: data; the thin bars are lit fills from the slot tokens, the rows are links | none |
+| Breadcrumb (`breadcrumb`) | recipe: words and links | recipe: grey pill on hover (already a class recipe) | recipe: words and links in the mono | none |
+| Breakdown (`breakdown`) | recipe: data | recipe: data | recipe: data; one rail in the data hues | none |
+| Button (`button`) | built | built | built | built |
+| Callout (`callout`) | recipe: a note on a raised surface | recipe: a grey fill, no cast (already a class recipe) | recipe: a note on a plate; tokens | none |
+| Card (`card`) | recipe: layout | recipe: layout | recipe: layout; a screen by the `.litt-raised` rule | none |
+| Card picker (`card-picker`) | recipe: today's picked card raised | recipe: grey cards, the picked one ringed in ink (already a class recipe) | body: each card a plate with a lamp in its corner; the picked one set down 2px into a well with its lamp lit, so picked reads as latched, not raised | D2 |
+| Carousel (`carousel`) | recipe: slides and Buttons | recipe: slides and Buttons (the work slider is a Flat part of its own) | recipe: the slides are pictures, and its controls are Buttons, which carry the key | none |
+| Cart (`cart`) | recipe: composes Dialog's sheet, Number field and Button | recipe: the same parts' Flat bodies and recipes | recipe: composes Dialog's sheet, Number field and Button, which carry their own Device bodies | none |
+| Chart (`chart`) | recipe: data | recipe: data; grey Meter track | recipe: data; marks in the data hues, the Meter a lit fill in a well from the slot tokens | none |
+| Checkbox and radio (`checkbox`) | recipe: today's cut with a tick in ink, and the ring with its bead | body: an outline when off and an ink fill when on, the radio a ring around an ink dot; no cut and no shade (today a class recipe; it moves into its body) | body: a square key that latches down and lights its lamp in the ink when checked, half lit when mixed; a radio group is a set of the same keys, interlocked, so pressing one lets the last one up | D1, F1 |
+| Code block (`code-block`) | recipe: code on a surface | recipe: no hairline, a grey copy pill (already a class recipe) | recipe: already a screen in the mono; its copy action is a Button | none |
+| Code input (`code-input`) | recipe: today's cells | recipe: grey cells with no outline (already a class recipe) | body: one glass cell per character showing the ghost "8" of the seven-segment study, each typed digit lit in segments; still one text field underneath | D1 |
+| Cohort grid (`cohort-grid`) | recipe: data table | recipe: no lines (already a class recipe) | recipe: a data table; the mono and the screen inks | none |
+| Color picker (`color-picker`) | recipe: today's wells and rails | recipe: grey wells and the Popover's solid card | body: the swatch a lit well, the hex on the Input's glass, and the panel a screen whose hue and alpha rails are faders in wells with key caps | D2 |
+| Combobox (`combobox`) | recipe: today's cut and glass list | recipe: grey field, solid card (already a class recipe) | body: the Input's glass field; its list a screen with the lamp row; chosen values as lit cells, as Token input has them | D3 |
+| Command menu (`command-menu`) | recipe: today's glass | recipe: solid card, grey search (already a class recipe) | body: a terminal: the search a prompt line on glass with an engraved mark, the results screen lines with the lamp row, the footer's shortcuts as key caps | D3 |
+| Composer (`composer`) | recipe: today's cut and toolbar | recipe: grey field from the cut tokens (already a class recipe) | body: the Input's glass with an engraved prompt mark, file chips as lit cells, the toolbar a row of keys, and Send the one key in the accent | D2 |
+| Context menu (`context-menu`) | recipe: Menu's panel and rows | recipe: Menu's panel and rows | recipe: it renders Menu's panel and rows, so it gets Menu's Device body with no code of its own | none |
+| Copy button (`copy-button`) | n/a (Device only) | n/a (Device only) | built (a Device part) | built |
+| Curve editor (`curve-editor`) | recipe: today's instrument | recipe: grey floor, ink curve, round handles from tokens | body: a scope: the curve a lit trace on LCD glass, its two handles knob caps, and `cubic-bezier(…)` an LCD line | D2 |
+| Date picker (`date-picker`) | recipe: today's field and calendar | recipe: grey day pills, the chosen day in ink, from tokens | body: the date on an LCD readout; the calendar a screen of small day keys, the chosen day latched with its lamp lit and a range lit between its ends | D3 |
+| Details (`details`) | recipe: labelled facts | recipe: labelled facts | recipe: facts on a plate; the labels engraved by `--label-case` and `--engrave` | none |
+| Dialog (`dialog`) | recipe: today's glass that rises with weight | body: a solid card that grows from its opener, no glass and no ring | body: a screen set into the body by a bezel that switches on in three steps where it stands; the title an engraved legend, the actions keys | D3, F2 |
+| Dot plot (`dot-plot`) | recipe: data | recipe: data | recipe: data; dots in the data hues | none |
+| File changes (`file-changes`) | recipe: a review list | recipe: a review list | recipe: a review list on a screen; its actions are Buttons | none |
+| File drop (`file-drop`) | recipe: today's cut | recipe: a grey area, a ring while a file is over it, from tokens | body: a slot cut into the body with an engraved legend and a Choose key; each file a line on LCD glass, its upload Progress's segments | D2 |
+| Forms (`form`) | recipe: layout | recipe: layout | recipe: layout of fields that carry their own bodies | none |
+| Funnel (`funnel`) | recipe: data | recipe: data | recipe: data; one rail per step | none |
+| Gauge (`gauge`) | recipe: today's ticks (the meter bank is a Press part of its own) | recipe: ticks in ink on grey | body: a moving-coil meter: a needle over engraved ticks behind glass, the figure in segments under it; the needle settles on the responsive spring only when the value changes | D4 |
+| Header (`header`) | recipe: sticky glass | recipe: solid, no highlight | recipe: the glass is a screen by the rule; nav words in the mono | none |
+| Heatmap (`heatmap`) | recipe: data | recipe: data | recipe: already a dot matrix in the data hues; the screen inks do the rest | none |
+| Hover card (`hover-card`) | recipe: glass | recipe: a solid card from the glass tokens | recipe: a screen by the glass rule; the motion language switches it on where it stands | none |
+| Icons (`icons`) | recipe: glyphs in `currentColor` | recipe: glyphs in `currentColor` | recipe: glyphs in `currentColor` take the ink they sit in | none |
+| Input (`input`) | recipe: today's cut with the top wall's shade | body: a grey field with no outline, the focus ring the only line | body: LCD glass set in a bezel well, the label engraved on the body above, the hint and the error as dim LCD lines, an error saying its word beside a lamp in `--danger` | D1, F1 |
+| Inspector (`inspector`) | recipe: a panel of litt's controls | recipe: the controls' Flat bodies | recipe: a panel of Sliders, Switches, Segmented and Inputs, which carry their own bodies; the panel is a screen | none |
+| Kbd (`kbd`) | recipe: a key cap from `--key-lift` | recipe: a grey cap | recipe: already a key cap; Device's key tokens give it the skirt, and it is never pressed | none |
+| Legend (`legend`) | recipe: today's toggles | recipe: grey pills, a hidden series an outline | body: a row of latching keys, each with a lamp in its series' data hue; down shows the series, up hides it, and its word says which | D2 |
+| Lightbox (`lightbox`) | recipe: glass around a picture | recipe: grows from the thumbnail (the motion language) | recipe: a picture at screen size stays a picture; the motion language switches it on, its controls are Buttons | none |
+| List and cards (`list`) | recipe: rows and cards | recipe: rows and cards | recipe: rows and cards; the filter chips are Tags and Buttons | none |
+| List cover (`list-cover`) | recipe: rectangles and hairlines | recipe: rectangles and hairlines | recipe: abstract covers drawn in the screen inks | none |
+| Log view (`log-view`) | recipe: lines on a surface | recipe: lines on a surface | recipe: already lines on a screen in the mono, the Code block's surface | none |
+| Media (`media`) | recipe: a picture in a frame | recipe: a grey frame (the large cover is a Flat part of its own) | recipe: an image stays an image; the frame reads tokens | none |
+| Menu (`menu`) | recipe: today's glass and Glide | recipe: a solid card and a grey bubble that glides, from Flat's glass and block tokens | body: a screen list whose current row is marked by the lamp row, switching row to row with no glide; shortcut legends engraved | D3 |
+| Message (`message`) | recipe: reading | recipe: reading | recipe: words in the mono on the body; nothing for the hand | none |
+| Number field (`number-field`) | recipe: today's cut with − and + blocks | recipe: a grey pill with round grey − and +, from tokens and the radius | body: the figure on an LCD readout, − and + as keys on their 2px skirts beside the glass, not inside it | D1 |
+| Option picker (`option-picker`) | recipe: today's words in a tray | recipe: grey pills, the chosen one in ink, from the tray and block tokens | body: the values as a row of latching keys with engraved legends, the chosen one down with its lamp lit (the radio's keys); a sold-out value lies flat and says so | D1 |
+| Pad (`pad`) | recipe: today's floor and cap | recipe: a grey floor and a mid grey cap with no cast, from tokens | body: an XY pad behind LCD glass: a dot grid, a lit crosshair through a knob cap, both values as readouts on the glass | D2 |
+| Pagination (`pagination`) | recipe: the range in words and two Buttons | recipe: the same | recipe: the range in words and two Buttons, which are keys | none |
+| Plan (`plan`) | recipe: steps ticked off | recipe: steps ticked off | body: a column of step lamps on an engraved strip, each done step's lamp lit, the step at work with the Agent indicator beside it while it works | D4 |
+| Popover (`popover`) | recipe: glass | recipe: a solid card that grows from its trigger | recipe: a screen by the glass rule; the motion language switches it on in place | none |
+| Price (`price`) | recipe: a figure | recipe: a figure | recipe: a figure in the mono; tokens | none |
+| Product card (`product-card`) | recipe: a Card | recipe: a Card | recipe: a Card, so a screen by the rule | none |
+| Progress (`progress`) | recipe: today's slot and fill | recipe: a pill track with an ink fill, from tokens | body: segments in a well that light in steps, the percent in seven segments; an unknown length is the Chase's step lights, moving only while the work runs | D4 |
+| Range chart (`range-chart`) | recipe: data | recipe: data | recipe: data; its total is a Rolling number, which gets segments, and its brush reads the tray and cap tokens | none |
+| Resizable (`resizable`) | recipe: a line and a grip | recipe: no line, a grey grip | recipe: the hand drags the grip 1:1 and needs no detent; the grip reads the key tokens | none |
+| Rolling number (`rolling-number`) | recipe: digits that roll | recipe: digits that roll | body: the figure on seven-segment digits behind glass, a changed digit switching in three steps where it stands instead of rolling (nothing travels) | D4 |
+| Rule builder (`rule-builder`) | recipe: rows of Select, Input and Button | recipe: the same parts' Flat bodies | recipe: rows of Select, Input and Button, which carry their own bodies | none |
+| Run card (`run-card`) | recipe: card, ring and words | recipe: card, ring and words | body: the ring a dial of lit segments that light in steps, the step it is on an LCD line, the folded run a key you press to open it again | D4 |
+| Run list (`run-list`) | recipe: rows | recipe: rows | recipe: rows that say where each run stands in words; tokens | none |
+| Scroll area (`scroll-area`) | recipe: a scrollbar from tokens | recipe: the same | recipe: the scrollbar reads tokens; nothing to say in hardware | none |
+| Segmented control (`segmented`) | body: today's raised segment, which the hand can also drag along its tray to land on the nearer option, as the Switch's block does (Nick's call) | body: a grey bubble that glides between the words, no tray | body: a row of keys on one skirt, the chosen one latched down with its lamp lit; a press lets the last one up, with no glide | D1, F1, P1 |
+| Select (`select`) | recipe: today's raised trigger and glass list | body: a grey bubble trigger and a solid card list, no glass | body: the value on an LCD readout with up and down keys at its end that step through the options without opening it; pressing the readout opens the list as a screen with the lamp row; the keyboard is the contract's | D1, F1 |
+| Seven-segment (`seven-segment`) | n/a (Device only) | n/a (Device only) | built (a Device part) | built |
+| Shopify (`shopify`) | recipe: a library that draws nothing | recipe: draws nothing | recipe: draws nothing | none |
+| Shopify cart (`shopify-cart`) | recipe: a cart provider that draws nothing | recipe: draws nothing | recipe: draws nothing | none |
+| Slide to confirm (`slide-confirm`) | recipe: today's cap in a tray | recipe: a pill track and a mid grey cap from Flat's cap tokens | body: a latch key pushed along a well to an end stop, the track's words on an LCD strip and a lamp at the stop that lights once confirmed; let go short and it goes home in steps | D1 |
+| Slider (`slider`) | built | built | built | built |
+| Sources (`sources`) | recipe: numbered marks and a list | recipe: the same | recipe: numbered marks and a list in words | none |
+| Sparkline (`sparkline`) | recipe: data | recipe: data | recipe: data; one line | none |
+| Spread (`spread`) | recipe: data | recipe: data | recipe: data; one rail per row | none |
+| Spring editor (`spring-editor`) | recipe: today's instrument | recipe: a grey floor and a mid grey cap, from tokens | body: the Pad's glass with the spring's curve drawn as a lit trace, time and bounce as readouts on the glass | D2 |
+| Stat (`stat`) | recipe: a figure in a tile | recipe: a figure in a tile | recipe: a figure on a screen; a changing figure uses Rolling number, which carries the segments | none |
+| States (`states`) | recipe: empty, loading and error | recipe: the same | body: loading as the Chase's step lights in a well, moving only while it loads; empty and error as LCD lines with their words, an error with a lamp in `--danger` | D4 |
+| Steps (`steps`) | recipe: today's steps | recipe: grey steps from tokens | body: a strip of numbered lamps, done ones lit in the ink, what is left dark, the current step's word on an LCD line | D4 |
+| Switch (`switch`) | built | built | built | built |
+| Table (`table`) | recipe: data | recipe: data; no lines | recipe: data; rows and columns in the mono and the screen inks | none |
+| Table filter (`table-filter`) | recipe: a Button that opens the Menu | recipe: the same | recipe: a Button that opens the Menu, and both carry their own bodies | none |
+| Tabs (`tabs`) | recipe: today's underline that glides | body: a grey bubble that glides behind the current label, no underline | body: engraved legends on the body with a lamp under the current one, switching on, never gliding; the segmented variant takes Segmented's row of keys | D1, F1 |
+| Tag (`tag`) | recipe: a word | recipe: a grey pill | recipe: a status is a word; tokens give it the mono | none |
+| Tape progress (`tape-progress`) | n/a (Device only) | n/a (Device only) | built (a Device part) | built |
+| Thinking (`thinking`) | recipe: today's disclosure and clock | recipe: the same | body: the clock in seven segments on a small LCD, the Agent indicator in its slot (decision 7), the reasoning on glass in the mono | D4 |
+| Time scrubber (`time-scrubber`) | recipe: today's ruler and needle | recipe: a grey ruler and an ink needle, from tokens | body: a tape counter: the time in seven segments over an engraved ruler in a well under the fixed needle; the arrow keys move it in detents | D2 |
+| Timeline (`timeline`) | recipe: data | recipe: data | recipe: steps in order, with times and outcomes in words | none |
+| Toast (`toast`) | recipe: today's glass slip | body: an ink pill with canvas words, its action inside the pill | body: one LCD line in a bezel, the message in the mono and its action a key at the end; it switches on in steps, and a failure says its word beside a lamp in `--danger` | D3, F2 |
+| Token input (`token-input`) | recipe: today's cut with tags as blocks | recipe: a grey field, tokens as grey pills (Tag's Flat recipe) | body: the Input's glass with each token an inverted cell of lit mono words and a small engraved key to remove it, since a raised tag cannot stand on glass | D2 |
+| Tool call (`tool-call`) | recipe: rows that fold | recipe: the same | recipe: rows that fold; its approval is Buttons | none |
+| Tooltip (`tooltip`) | recipe: glass | recipe: a solid label | recipe: a small screen by the glass rule; words only | none |
+| Tree (`tree`) | recipe: today's raised selected row | recipe: a grey bubble on the selected row | body: rows on a screen, the selected row marked by the lamp row instead of raised, a folder's toggle a small key that latches down while it is open | D3 |
+| Tune (`tune`) | recipe: it builds an Inspector | recipe: the Inspector's | recipe: it builds an Inspector, so it follows the Inspector's parts | none |
+
+### Pieces built once
+
+Device's bodies share five mechanisms, so each is built once in the first wave that needs it and reused after:
+
+- **The latching key row** (Checkbox and radio, D1): Segmented, Tabs, Option picker, then Card picker and Legend.
+- **The readout with step keys** (Select and Number field, D1): Date picker and Time scrubber.
+- **The lamp row** (Select's list, D1): Menu, Command menu, Combobox and Tree. It replaces Glide under Device.
+- **The segments** (Seven-segment, shipped): Code input, Rolling number, Progress, Thinking, Time scrubber, Gauge.
+- **The Chase** (Agent indicator, shipped): Progress with no known length, and States' loading.
+
+### The rules every body keeps
+
+- One accent fill per view. A lamp lights in the ink, or the glass's own ink, unless the part is the view's one accent: a primary key, or a `tone="accent"` switch. Legend's lamps take the data hues because there the color carries data.
+- Nothing moves on its own. A lamp lights on a state change, a segment switches when its figure changes, and the Chase runs only while the work does.
+- 44px targets on coarse pointers. A small key (Tree's folder key, Token input's remove key, Select's step keys) keeps its look and grows its hit area.
+- States in words. A lamp or an outline never says a state alone: the word stays, or the accessible state says it where Flat drops the word.
+- Sound (decision 8) arrives in Device's bodies as they ship, Silent by default.
+
+### Device waves
+
+1. **D1:** Checkbox and radio, Segmented, Input, Select, Tabs, Number field, Code input, Slide to confirm, Option picker (9). The controls a hand presses and types into on every form and settings page, and the agreed table's remaining controls. They build the key row, the readout and the lamp row on the key, well and glass that Switch, Button and Slider proved.
+2. **D2:** Card picker, Pad, Spring editor, Curve editor, Time scrubber, Token input, File drop, Composer, Legend, Color picker (10). The rest of what a hand drags or types into. Each is built from wave one's glass, keys and readouts, so it comes after them.
+3. **D3:** Dialog, Toast, Menu, Command menu, Combobox, Date picker, Accordion, Tree (8). What a hand opens. Each is a screen that switches on where it stands, its rows marked by wave one's lamp row and its actions on keys that are already built.
+4. **D4:** Progress, Rolling number, Gauge, Steps, Plan, Thinking, Run card, States (8). What a hand watches. These are readouts that move only when the work does, built on the segments and the Chase already shipped, last because no hand waits on them.
+
+### Flat waves
+
+1. **F1, after D4:** Checkbox and radio, Segmented, Input, Select, Tabs (5). Their Flat bodies are lifted in D1, unchanged; F1 is where Flat redesigns them.
+2. **F2, with F1:** Dialog, Toast (2), lifted in D3.
+
+After them come Flat's own parts, not bodies: the work slider, the large cover, the editorial reading layout and the photo essay.
+
+### Press waves
+
+1. **P1, after Flat's waves:** Segmented (1). The block drags along its tray, as the Switch's does, and Tabs' segmented variant follows. This is the one place where Press's hand should change from today's, and it waits on Nick.
+
+After it come Press's own parts, not bodies: the knob, the meter bank, the instrument panel and the control room.
+
+### Counts
+
+Of the 95 parts:
+
+- **Device:** 38 with a Device body (3 built, 35 to build in D1 to D4), 4 Device-only parts (built), and 53 recipes.
+- **Flat:** 10 with a Flat body (3 built, 7 to build in F1 and F2), 81 recipes, and 4 n/a.
+- **Press:** 3 built bodies, 1 body change (Segmented, P1), 87 recipes, and 4 n/a.
+
 ## What this says about the business
 
 Litt is not a builder, and this proposal is why: Graphical sells "make any theme" to people who want their own; design.how gives "a few worlds with a point of view" to people who want someone else's taste. Litt is the second kind, and its worlds are already built. What is worth taking from Graphical is the skill file as the product artifact (litt has it) and one-time pricing (decision 9).
