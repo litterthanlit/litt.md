@@ -17,7 +17,8 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    # axe over every page, light and dark, desktop and phone, takes about half an hour on GitHub's runner.
+    timeout-minutes: 50
     steps:
       - uses: actions/checkout@v4
 
@@ -55,18 +56,13 @@ jobs:
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
-      # The self-test runs with motion allowed and must see motion, so a check that has gone blind fails too.
-      - name: Reduced motion (nothing moves on any page or overlay, desktop and phone)
-        run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
 
   # The WCAG regression checks, the corners check and the page checks that need no axe (the wall, the home, the
-  # worlds, the studies) run beside the main job, on their own build, so neither job nears its time limit: axe alone
-  # takes the main job about twenty of its thirty minutes.
+  # worlds, the studies, reduced motion) run beside the main job, on their own build, so neither job nears its time
+  # limit: axe alone takes the main job about half an hour.
   wcag:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
 
@@ -135,5 +131,11 @@ jobs:
 
       - name: Study (every study page has its sections, anatomy parts resolve, the material frame is the Anatomy object pixel for pixel, nothing opens on its own, source and docs)
         run: npm run test:study --prefix gallery && npm run test:study --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
+      # The self-test runs with motion allowed and must see motion, so a check that has gone blind fails too.
+      - name: Reduced motion (nothing moves on any page or overlay, desktop and phone)
+        run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
