@@ -14,7 +14,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["press"],
   summary:
-    "Real checkboxes and radios, drawn as a small cut, like a field: a 20px box at the control radius, or a ring for a radio. On, the mark stands flush in it: the box fills with the ink around its tick, and a chosen radio fills with the ink and holds a small raised bead. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
+    "Real checkboxes and radios, drawn as a small cut, like a field: a 20px box at the control radius, or a cup for a radio. On, an ink block sits flush in the cut around its tick, and a chosen radio takes a small raised bead. In Flat the same inputs are an outline that fills with ink, and the label gets heavier. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
   fun: "Check a box: it pops and draws its tick.",
   tiers: ["instant"],
 };
@@ -264,7 +264,7 @@ export default function CheckboxPage() {
       <Stage
         title="Drawn and native"
         tier="instant"
-        caption="Drawn is the default: the 20px chip is a cut, with the control line, the control radius and the ink fill, the same in every browser. Native is the spec's other option, the browser's own 16px box in the foreground color. Both are real inputs with the same label."
+        caption="Drawn is the default: the 20px chip is the material's own box (a cut in Press, an outline in Flat), with the control line and the control radius, the same in every browser. Native is the spec's other option, the browser's own 16px box in the foreground color. Both are real inputs with the same label."
         code="AppearanceDemo"
       >
         <AppearanceDemo />
@@ -273,7 +273,7 @@ export default function CheckboxPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One contract, three bodies. Press is a cut that fills with ink around its tick, and a ring with a raised bead. Flat is an outline that fills with ink. Device is a square key in a well that latches down and lights its lamp when checked, half lights it when mixed; a radio group there is a row of the same keys, interlocked, so pressing one lets the last one up. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        caption="One contract, three bodies. Press is a cut in the plate with an ink block seated flush in it when checked, and a radio is a cup that takes a raised bead; a press sinks the block. Flat is ink on paper: an outline when off, a plain ink fill when on with no ring round the mark, an ink dash when mixed, and the label set heavier while it is checked. Device is a square key in a well that latches down and lights its lamp when checked, half lights it when mixed; a radio group there is a row of the same keys, interlocked, so pressing one lets the last one up. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

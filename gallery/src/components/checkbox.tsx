@@ -8,17 +8,16 @@
  *   checkbox. "native" is the spec's other option: the browser's own 16px box, with accent-color
  *   set to --fg. Drawn is the default because only a drawn box can be a cut and take the control
  *   radius, and it looks the same in every browser. See the Checkbox page.
- * - Material (R3, material.md 6): the drawn box and ring are the cut, what you put a mark into:
- *   --cut inside the --line-control edge, with the top wall's shade (--cut-shade). An error swaps
- *   the edge for --danger and keeps the shade. On, the mark stands flush in its cut: the box fills
- *   with the ink (--fg), lit only on its top edge and casting nothing, with the tick or dash in
- *   --canvas; a chosen radio fills the same way and holds a bead, a small raised block (--block,
- *   --block-lift). Never the accent (R6): the one accent fill is the primary action's, and a form
- *   can hold many checked boxes. Disabled, it lies flat on --surface-2 with the hairline, and so
- *   does the bead.
- * - Flat (proposals/flat-pill.md, rules 2 and 3): off is transparent inside the --line-control edge, on is the ink
- *   fill with the tick, dash or bead in --canvas. At the Pill shape the 20px box is a circle; at other shapes it
- *   follows --radius-control, and a radio is always round.
+ * - Press (R3, material.md 6): the drawn box and cup are the cut, what you put a mark into: --cut inside the
+ *   --line-control edge with the top wall's shade (--cut-shade) for a checkbox, and a deeper cup (--slot, --slot-shade)
+ *   for a radio. The cut itself never fills. On, an ink block (--fg) is seated flush in it, 2px in so a rim of the cut shows,
+ *   lit only on its top edge, with the tick or dash in --canvas; a chosen radio takes a bead, a round raised block
+ *   (--fg, --block-lift). A press sinks the block --press-depth. Never the accent (R6): the one accent fill is the
+ *   primary action's, and a form can hold many checked boxes. An error swaps the edge for --danger and keeps the shade.
+ *   Disabled, it lies flat on --surface-2 with the hairline, and so does the block and the bead.
+ * - Flat is bodies/checkbox.flat.tsx: ink on paper, an outline when off, the ink when on, the label's weight carrying
+ *   the checked state. At the Pill shape the 20px box is a circle; at other shapes it follows --radius-control, and a
+ *   radio is always round.
  * - The label sits on the right, --space-2 away, at the small size, and the whole row is
  *   clickable. The label is a real <label for>, stretched over the row, so its accessible
  *   name is only its text and the description is linked with aria-describedby.
@@ -69,57 +68,47 @@ const RadioContext = createContext<RadioState | null>(null);
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-/* The input is the chip. The wash, the mark and the label sit in the same grid cell or beside it. The input sits above
-   the label's stretched click area (z-1), so a click on the chip itself still lands on the input, as test tools expect. */
-const drawnInput =
+/* Press: the input is the cut, a place you put a mark into. It stays empty and sunk, checked or not. The ink is a separate
+   block seated in it (below). The input sits above the label's stretched click area (z-1), so a click on the chip itself
+   still lands on the input, as test tools expect. A checkbox's cut is a field's cut (--cut, --cut-shade); a radio's is a
+   cup, deeper (--slot, --slot-shade). */
+const cutBase =
   "peer relative z-1 col-start-1 row-start-1 m-0 size-5 shrink-0 cursor-pointer appearance-none self-start " +
-  "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] " +
-  "transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "checked:bg-fg checked:shadow-none enabled:checked:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
-  "in-[[data-material=flat]]:enabled:checked:inset-shadow-none " + // Flat has no light (R2)
-  "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:checked:bg-fg " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] aria-invalid:checked:shadow-[inset_0_0_0_1px_var(--danger)] " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  "disabled:checked:bg-surface-3 " +
   "forced-colors:border " + // forced colors drops box-shadow, so the edge becomes a real border
   focusRing;
+const squareCut = cutBase + " rounded-control bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]";
+const cupCut = cutBase + " rounded-pill bg-slot shadow-[inset_0_0_0_1px_var(--line-control),var(--slot-shade)]";
 
-/* Only a checkbox has a mixed state. A radio matches :indeterminate whenever nothing in its group is picked, so it must not use it. */
-const mixed =
-  " indeterminate:bg-fg indeterminate:shadow-none enabled:indeterminate:inset-shadow-[0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
-  "in-[[data-material=flat]]:enabled:indeterminate:inset-shadow-none in-[[data-material=flat]]:indeterminate:bg-fg " +
-  "aria-invalid:indeterminate:shadow-[inset_0_0_0_1px_var(--danger)] disabled:indeterminate:bg-surface-3";
+/* Hover and press, as a wash over the cut. It is not tied to the input's own :hover, because the row is the target. */
+const wash =
+  "pointer-events-none relative z-1 col-start-1 row-start-1 size-5 self-start bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] opacity-0 " +
+  "transition-[opacity,background-color] duration-(--dur-instant) ease-litt " +
+  "group-hover/choice:opacity-100 group-active/choice:bg-[color-mix(in_oklab,var(--fg)_10%,transparent)] group-active/choice:opacity-100 " +
+  "peer-disabled:hidden";
+
+/* The ink block: 16px, seated 2px in the cut so a rim of the cut shows round it, its corners the cut's less those 2px.
+   Lit only on its top edge and casting nothing, because it is flush; under the hand it sinks --press-depth. The mark in it
+   is --canvas. The block is shown by opacity, so it fades on the instant tier and never moves on its own. */
+const block =
+  "pointer-events-none relative z-1 col-start-1 row-start-1 m-0.5 grid size-4 place-items-center self-start rounded-[calc(var(--radius-control)-2px)] " +
+  "bg-fg text-canvas opacity-0 shadow-[inset_0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
+  "transition-[opacity,transform] duration-(--dur-instant) ease-litt " +
+  "group-active/choice:translate-y-(--press-depth) " +
+  "peer-disabled:bg-surface-3 peer-disabled:text-fg-disabled peer-disabled:shadow-none forced-colors:border";
+
+/* A chosen radio's bead: a round raised block in the cup, with the block's cast (--block-lift), 12px in a 20px cup. */
+const bead =
+  "pointer-events-none relative z-1 col-start-1 row-start-1 m-1 size-3 self-start rounded-pill bg-fg opacity-0 shadow-(--block-lift) " +
+  "transition-[opacity,transform] duration-(--dur-instant) ease-litt peer-checked:opacity-100 " +
+  "group-active/choice:translate-y-(--press-depth) group-active/choice:shadow-(--block-press) " +
+  "peer-disabled:bg-fg-disabled peer-disabled:shadow-none forced-colors:bg-[CanvasText]";
 
 const nativeInput =
   "peer relative z-1 col-start-1 row-start-1 m-0 mt-0.5 size-4 shrink-0 cursor-pointer self-start justify-self-center accent-fg " +
   "disabled:cursor-not-allowed " +
   focusRing;
-
-/* Hover and press, as a wash over the chip. It is not tied to the input's own :hover, because the row is the target. */
-const wash =
-  "pointer-events-none relative z-1 col-start-1 row-start-1 size-5 self-start bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] opacity-0 " +
-  "transition-[opacity,background-color] duration-(--dur-instant) ease-litt " +
-  "group-hover/choice:opacity-100 group-active/choice:bg-[color-mix(in_oklab,var(--fg)_10%,transparent)] group-active/choice:opacity-100 " +
-  /* A checked or mixed chip is --fg, where an --fg wash would not show, so the wash there is --canvas, as on the Switch. */
-  "peer-checked:bg-[color-mix(in_oklab,var(--canvas)_12%,transparent)] group-active/choice:peer-checked:bg-[color-mix(in_oklab,var(--canvas)_20%,transparent)] " +
-  "peer-disabled:hidden";
-
-/* The same --canvas wash over a mixed chip. A checkbox only: a radio matches :indeterminate when nothing in its group is picked. */
-const mixedWash =
-  " peer-indeterminate:bg-[color-mix(in_oklab,var(--canvas)_12%,transparent)] group-active/choice:peer-indeterminate:bg-[color-mix(in_oklab,var(--canvas)_20%,transparent)]";
-
-/* A mark is centered in the chip, and fades with the fill. */
-const mark =
-  "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start text-canvas in-[[data-material=flat]]:text-canvas opacity-0 " +
-  "transition-opacity duration-(--dur-instant) ease-litt peer-disabled:text-fg-disabled";
-
-/* A chosen radio's bead: a small raised block standing in the ink, drawn as the cell's ::after so peer-disabled can lay
-   it flat. It fades with the fill. */
-const bead =
-  "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start opacity-0 " +
-  "transition-opacity duration-(--dur-instant) ease-litt peer-checked:opacity-100 " +
-  "after:size-2 after:rounded-pill after:bg-block after:shadow-(--block-lift) in-[[data-material=flat]]:after:bg-canvas " +
-  "peer-disabled:after:bg-fg-disabled peer-disabled:after:shadow-none forced-colors:after:bg-[CanvasText]";
 
 /**
  * What the contract hands a body: the input resolved once. A body draws the control, the <input> (appearance: none)
@@ -136,21 +125,21 @@ export type ChoiceBodyProps = {
   tick: Ref<HTMLSpanElement>;
 };
 
-/** Press, the default body: the cut, with the ink around its mark and a raised bead for a radio. */
+/** Press, the default body: a cut in the plate. Checked, an ink block sits flush in it; a radio is a cup that takes a bead. */
 function PressBody({ kind, input, tick }: ChoiceBodyProps) {
   const radio = kind === "radio";
   return (
     <>
-      <input {...input} data-body="press" className={drawnInput + (radio ? " rounded-pill" : " rounded-control" + mixed)} />
-      <span aria-hidden="true" className={wash + (radio ? " rounded-pill" : " rounded-control" + mixedWash)} />
+      <input {...input} data-body="press" className={radio ? cupCut : squareCut} />
+      <span aria-hidden="true" className={wash + (radio ? " rounded-pill" : " rounded-control")} />
       {radio ? (
         <span aria-hidden="true" className={bead} />
       ) : (
         <>
-          <span ref={tick} aria-hidden="true" className={mark + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>
+          <span ref={tick} aria-hidden="true" className={block + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>
             <CheckIcon />
           </span>
-          <span aria-hidden="true" className={mark + " peer-indeterminate:opacity-100"}>
+          <span aria-hidden="true" className={block + " peer-indeterminate:opacity-100"}>
             <DashGlyph />
           </span>
         </>
@@ -259,6 +248,7 @@ function Choice({
         htmlFor={id}
         className={
           "col-start-2 row-start-1 min-h-5 cursor-pointer text-small font-title text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled" +
+          (appearance === "drawn" ? " in-[[data-material=flat]]:font-normal in-[[data-material=flat]]:peer-checked:font-title" : "") + // Flat: the weight says on
           (device ? " pt-0.5" : "") // Device's key is 24px, so the first line sits 2px lower to meet its middle
         }
       >
