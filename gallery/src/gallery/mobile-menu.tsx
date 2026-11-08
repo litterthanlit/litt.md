@@ -44,7 +44,7 @@ import {
 import { useCustomize } from "./customize-state";
 import { PAGE_GROUPS, type PageGroup } from "./kit";
 import type { MaterialInfo } from "./look";
-import { funPages, pages, worlds, type PageEntry } from "./registry";
+import { funPages, inWorld, pages, worlds, type PageEntry } from "./registry";
 
 /** Two lines, the menu glyph. */
 const MenuGlyph = ({ className = "" }: { className?: string }) => (
@@ -239,9 +239,12 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
   const { look } = useCustomize();
   /* With fun mode on, its pages lead as a group of their own; they stay in their own groups too. */
   const fun = useFun();
+  /* A page outside the current world is left out of the lists, and of the counts. */
+  const inThisWorld = (p: PageEntry) => inWorld(p, look.material);
+  const inFun = funPages.filter(inThisWorld);
   const groups: { group: MenuGroup; pages: PageEntry[] }[] = [
-    ...(fun && funPages.length ? [{ group: "Fun" as const, pages: funPages }] : []),
-    ...PAGE_GROUPS.flatMap((g) => (g === "Worlds" ? [] : [{ group: g, pages: pages.filter((p) => p.group === g) }])).filter((g) => g.pages.length),
+    ...(fun && inFun.length ? [{ group: "Fun" as const, pages: inFun }] : []),
+    ...PAGE_GROUPS.flatMap((g) => (g === "Worlds" ? [] : [{ group: g, pages: pages.filter((p) => p.group === g && inThisWorld(p)) }])).filter((g) => g.pages.length),
   ];
   const shown = groups.find((g) => g.group === group);
 

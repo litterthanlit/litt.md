@@ -16,6 +16,9 @@
  *   accent fill, and the Button tile carries the one. A page whose first demo ends in a primary button needs a tile.
  * - two accent fills anywhere on the page sit within one screen of each other, so a screen could show both. The hero's
  *   Get started is the first screen's one, and the Button tile has to sit at least a screen below it.
+ * - under a material, a tile belongs to a page that meta.worlds leaves out of it, or a component page that is in the
+ *   material has no tile (proposals/worlds.md, Depth: a world-only part shows in its world alone). The pages' ids,
+ *   groups and meta.worlds are read from src/gallery/pages, so the list is never written down here,
  * - the wall holds a world's tile (a tile named Press, Flat or Device: a world is a page you arrive on, not a component),
  * - the page's material is not the one set (data-material on <html> is the material's attribute, none for Press),
  * - the page or a tile scrolls sideways,
@@ -51,6 +54,18 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
   console.error(`No build at ${path.relative(process.cwd(), dist) || "."}. Run npm run build first.`);
   process.exit(1);
 }
+
+/** Every page's id, group, world and meta.worlds, read from its `export const meta` as vite.config.ts's page-meta plugin does. */
+const PAGES_DIR = path.join(here, "..", "src", "gallery", "pages");
+const PAGES = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith(".tsx")).map((f) => {
+  const src = fs.readFileSync(path.join(PAGES_DIR, f), "utf8");
+  const meta = /export\s+const\s+meta\b[\s\S]*?\n\};?/.exec(src)?.[0] ?? "";
+  const str = (k) => new RegExp(`\\b${k}:\\s*"([^"]+)"`).exec(meta)?.[1];
+  const worlds = /\bworlds:\s*\[([^\]]*)\]/.exec(meta)?.[1];
+  return { id: str("id"), group: str("group"), world: str("world"), worlds: worlds ? [...worlds.matchAll(/"([^"]+)"/g)].map((m) => m[1]) : undefined };
+});
+const WALL_PAGES = PAGES.filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world);
+const onWall = (p, material) => !p.worlds || p.worlds.includes(material);
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2" };
 const server = http.createServer((req, res) => {
@@ -126,6 +141,10 @@ for (const [material, accent] of RUNS) for (const [width, height, label] of [[14
     count = r.count;
     const where = `${material} · ${accent} · ${theme} · ${label}`;
     if (r.material !== ATTRIBUTE[material]) problems.push(`${where}: data-material on <html> is ${r.material ?? "absent"}, expected ${ATTRIBUTE[material] ?? "absent"}`);
+    const outside = WALL_PAGES.filter((p) => !onWall(p, material) && r.tileNames.includes(p.id)).map((p) => p.id);
+    if (outside.length) problems.push(`${where}: tiles for pages outside ${material} (meta.worlds): ${outside.join(", ")}`);
+    const absent = WALL_PAGES.filter((p) => onWall(p, material) && !r.tileNames.includes(p.id)).map((p) => p.id);
+    if (absent.length) problems.push(`${where}: pages in ${material} with no tile: ${absent.join(", ")}`);
     const worldTiles = r.tileNames.filter((n) => /^(press|flat|device)$/i.test(n));
     if (worldTiles.length) problems.push(`${where}: the wall holds world tiles (${worldTiles.join(", ")}); a world is a page, not a component`);
     if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, the wall allows one: ${r.fills.join(", ")}`);
@@ -149,4 +168,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, Press, Flat and Device (Flat in Blue 4 and pink, the others in Blue 4), light and dark, desktop and phone: one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall: ${count} tiles, Press, Flat and Device (Flat in Blue 4 and pink, the others in Blue 4), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);

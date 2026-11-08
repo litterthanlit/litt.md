@@ -20,6 +20,7 @@ import { DeviceProvider } from "@/motion";
 import { AppFrame } from "./kit";
 import { useCustomize } from "./customize-state";
 import { materialOf, type Material } from "./look";
+import { onlyIn } from "./registry";
 import { Start, toStart } from "./steps";
 
 const Dashboard = lazy(() => import("@/blocks/dashboard").then((m) => ({ default: m.Dashboard })));
@@ -99,6 +100,7 @@ const SECTIONS = [
   { id: "hero", title: "hero-title", label: "In use" },
   { id: "foundations", title: "foundations-title", label: "Foundations" },
   { id: "components", title: "components-title", label: "Components" },
+  { id: "only-here", title: "only-here-title", label: "Only here" },
   { id: "start", title: "start-title", label: "Install" },
 ] as const;
 
@@ -143,6 +145,39 @@ const FOUNDATIONS = [
   ["shape", "Shape"],
   ["motion", "Motion"],
 ] as const;
+
+/** What exists in this world alone: the abilities it brings, then the parts that are wrong anywhere else (meta.worlds). */
+function OnlyHere({ material }: { material: Material }) {
+  const world = materialOf(material);
+  const parts = onlyIn(material);
+  return (
+    <section id="only-here" aria-labelledby="only-here-title" data-only-here className="grid scroll-mt-24 gap-4">
+      <h2 id="only-here-title" tabIndex={-1} className="text-h2 text-fg outline-none">
+        Only here
+      </h2>
+      <p className="max-w-[56ch] text-small text-fg-muted">{parts.length ? `What exists in ${world.name} alone.` : `What exists in ${world.name} alone. No parts of its own yet.`}</p>
+      <ul data-only-here-abilities className="grid max-w-[56ch] gap-2">
+        {world.abilities.map((a) => (
+          <li key={a} className="flex items-baseline gap-3 text-small text-fg-muted">
+            <span aria-hidden="true" className="size-1 shrink-0 translate-y-[-0.2em] rounded-pill bg-fg-subtle forced-color-adjust-none" />
+            <span>{a}</span>
+          </li>
+        ))}
+      </ul>
+      {parts.length > 0 && (
+        <ul data-only-here-parts aria-label={`Parts of ${world.name}`} className="-mx-3 flex flex-wrap gap-1">
+          {parts.map((p) => (
+            <li key={p.id}>
+              <a href={`#${p.id}`} className={LINK}>
+                {p.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
 
 export function World({ material }: { material: Material }) {
   const { look, setLook } = useCustomize();
@@ -212,6 +247,8 @@ export function World({ material }: { material: Material }) {
             </a>
           </div>
         </section>
+
+        <OnlyHere material={material} />
 
         <div id="start" className="scroll-mt-24">
           <Start material={material} />
