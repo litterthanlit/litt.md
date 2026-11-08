@@ -18,7 +18,7 @@ export const meta: PageMeta = {
   fun: "Throw the thumb: with enough speed it coasts to the end, squashes against it and confirms.",
   tiers: ["responsive"],
   mechanism:
-    "Press the thumb and it follows the finger one to one, with no easing, while the words fade by its position and the part it has passed fills at fg 6%. Let go early and it springs home on the responsive tier, 200ms with no bounce. Reach the end and it confirms once: a check replaces the chevron and the words change. Enter and Space confirm too. Each world has its own body. Under Flat the tray is a grey pill and the thumb an ink circle, nothing cast. Under Device the thumb is a latch key pushed along a well to an end stop: the words sit on an LCD strip in the well, a lamp at the stop lights once it confirms, and a key let go short goes home in three steps on the instant tier, never a spring, though under your hand it still follows 1:1. Reduced motion snaps the thumb back in every body.",
+    "Press the cap and it follows the finger one to one, with no easing, while the words fade by its position and the part it has passed fills at fg 6%. Let go early and it springs home on the responsive tier, 200ms with no bounce. Reach the end and it confirms once: a check replaces the chevron and the words change. Enter and Space confirm too. Each world has its own body. Under Press a gripped cap rides in a slot cut into a plate, its words in the slot's floor, to a raised end stop. Under Flat the track is a grey pill and the thumb a plain ink circle, with the words in ink; once confirmed the whole pill turns ink. Under Device the thumb is a latch key pushed along a well to an end stop: the words sit on an LCD strip in the well, a lamp at the stop lights once it confirms, and a key let go short goes home in three steps on the instant tier, never a spring, though under your hand it still follows 1:1. Reduced motion snaps the thumb back in every body.",
 };
 
 export const docs: PageDocs = {
@@ -86,11 +86,11 @@ export const study: PageStudy = {
     </div>
   ),
   parts: [
-    { name: "The tray", selector: "[data-no-drag]" },
-    { name: "The passed part", selector: "[data-no-drag] > span:first-child" },
+    { name: "The track", selector: "[data-no-drag]" },
+    { name: "The slot", selector: "[data-no-drag] > span:first-child" },
     { name: "The words", selector: "[data-no-drag] > span:nth-child(2)" },
     { name: "The thumb", selector: "[data-no-drag] > button" },
-    { name: "The chevron", selector: "[data-no-drag] > button svg" },
+    { name: "The grip", selector: "[data-no-drag] > button > span" },
   ],
   states: {
     default: (
@@ -251,7 +251,7 @@ export default function SlideConfirmPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One track, one contract, three bodies. Press is a block in a tray. Flat is an ink circle in a grey pill. Device is a latch key pushed along a well to an end stop, its words on an LCD strip and a lamp at the stop that lights once it confirms; let go short and the key goes home in three steps, not on a spring. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        caption="One track, one contract, three bodies. Press is a plate with a slot cut into it: a gripped cap rides in the slot to a raised end stop, its words in the slot's floor. Flat is a plain ink circle in a grey pill with its words in ink, and the whole pill turns ink once it confirms. Device is a latch key pushed along a well to an end stop, its words on an LCD strip and a lamp at the stop that lights once it confirms; let go short and the key goes home in three steps, not on a spring. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

@@ -3,13 +3,13 @@
  * sliding a thumb to the end of its track (components.md, "Slide to confirm"). It asks for more than a tap, so a
  * stray press on a phone does nothing.
  *
- * - Anatomy: the press material (R3), as the Switch's: a sunken tray (--tray, --tray-shade, the control radius, 2px of
- *   padding) and a raised block as the thumb (--block, --block-lift, tighter --block-press while it is held), its
- *   corners the control radius less the inset, so the two stay concentric. The thumb carries a 16px chevron. The tray
- *   says what will happen ("Slide to delete Atelier Nord") at the small size in --fg-subtle, and the part of the
- *   tray the thumb has passed fills at fg 6%. A disabled thumb lies flat (surface-2 and a hairline): nothing to push.
- * - Flat (proposals/flat-pill.md): the tray is a grey --surface-3 pill with no frame and the thumb is an ink circle with
- *   its chevron in --canvas, no cast. A disabled thumb is a flat --surface-2 with no hairline.
+ * - Anatomy (Press, the instrument): a plate (--block, --plate-lift) with a slot cut into it (--slot, --slot-shade) and
+ *   a gripped cap riding in the slot (--cap, --cap-lift, grip lines in --cap-grip, 48px wide, 4px proud of the slot) to a
+ *   raised end stop. The words ("Slide to delete Atelier Nord") are in the slot's floor at the small size in
+ *   --fg-subtle, and the part the cap has pulled out is a step darker (--slot-fill). Held, the cap sinks --press-depth
+ *   with --cap-press. A disabled plate lies flat (surface-2 and a hairline): nothing to push.
+ * - Flat (the page): a grey --surface-3 pill and a plain ink circle, no chevron, the words in ink; once confirmed the
+ *   whole pill is ink with --canvas words. A disabled thumb is a flat --surface-3 on --surface-2.
  * - Sizes: md is 44 tall, lg 56; on a coarse pointer md grows to 56, because a finger does the sliding.
  * - Drag: the thumb follows the pointer one to one, with no easing, as the Slider's does. The words fade as it
  *   goes, by its position, not by a timer. Let go before the end and it springs back to the start on the
@@ -27,8 +27,8 @@
  *   there too), and a polite status says the confirmed label. Remount it (a new key) to ask again.
  * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the drag and its
  *   thresholds, the keyboard confirm, the typing path, the confirmed state and the reset. It resolves them once into
- *   SlideConfirmBodyProps and renders the body the material picks (byWorld). PressBody, below, is the default (the tray
- *   and block above). bodies/slide-confirm.flat.tsx is the grey pill with an ink circle. bodies/slide-confirm.device.tsx
+ *   SlideConfirmBodyProps and renders the body the material picks (byWorld). PressBody, below, is the default (the plate,
+ *   slot and cap above). bodies/slide-confirm.flat.tsx is the grey pill with an ink circle. bodies/slide-confirm.device.tsx
  *   is a latch key pushed along a well to an end stop: the words sit on an LCD strip in the well, a lamp at the stop
  *   lights once confirmed, and a key let go short goes home in three steps on the instant tier, not on a spring.
  * - Touch: the thumb owns the drag (touch-action none, data-no-drag), so a sheet never moves under it.
@@ -77,8 +77,8 @@ export type SlideConfirmProps = {
 
 /**
  * What a body draws: the contract (slide-confirm.tsx) resolves the drag, the keys and the state once, and a body only
- * draws them with its own markup. A body keeps the tray's `data-no-drag` and its three children in order (the passed
- * part, the words, the thumb), then `tail`; carries data-body on its root; and never changes a prop, a key or a threshold.
+ * draws them with its own markup. A body keeps the root's `data-no-drag` and its three children in order (the passed
+ * part or the slot that holds it, the words, the thumb), then `tail`; carries data-body on its root; and never changes a prop, a key or a threshold.
  */
 export type SlideConfirmBodyProps = {
   /** What sliding does: the words in the track before it confirms. */
@@ -111,41 +111,69 @@ const trackSizes: Record<SlideConfirmSize, string> = {
   lg: "h-control-lg",
 };
 
-/** Press, the default body: a raised block that slides in a sunken tray, its words centered in the tray. */
+/**
+ * Press, the instrument: a plate that stands on the page (--block, --plate-lift) with a slot cut into it (--slot,
+ * --slot-shade, 8px in from the plate's edge). The words are in the slot's floor, the part the cap has pulled out is a
+ * step darker (--slot-fill, --slot-fill-shade), and a small raised stop (--block, --block-lift) at the slot's end is
+ * what the cap comes to rest against. The cap (--cap, --cap-lift) is 48px wide, stands 4px proud of the slot with
+ * grip lines on its face (--cap-grip), and sinks --press-depth with --cap-press while it is held.
+ */
 function PressBody({ label, confirmedLabel, done, disabled, track, box, band, words, glyph, thumb, tail }: SlideConfirmBodyProps) {
   const ink = done ? "text-fg" : "text-fg-subtle"; // disabled words stay fg-subtle: they still say what it would do, as a disabled Slider's end words do
+  const grip = "w-px " + (disabled ? "bg-line" : "bg-cap-grip");
   return (
     <div
       ref={box}
       data-body="press"
       data-no-drag=""
-      className={"relative isolate flex w-full items-center overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) select-none forced-colors:border " + track}
+      className={
+        "relative isolate flex w-full items-center rounded-control px-4 py-1 select-none forced-colors:border " +
+        (disabled ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] " : "bg-block shadow-(--plate-lift) ") +
+        track
+      }
     >
-      {/* The part the thumb has passed: a full-width band scaled from the left, so only a transform changes. */}
+      {/* The slot, cut into the plate. Its floor holds the part the cap has passed: a full-width band scaled from the left, so only a transform changes. */}
+      <span
+        aria-hidden="true"
+        className={
+          "pointer-events-none absolute inset-2 overflow-hidden rounded-[calc(var(--radius-control)-8px)] forced-colors:border " +
+          (disabled ? "bg-surface-3" : "bg-slot shadow-(--slot-shade)")
+        }
+      >
+        <motion.span
+          className={"absolute inset-y-0 left-2 w-[calc(100%-1rem)] origin-left " + (disabled ? "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]" : "bg-slot-fill shadow-(--slot-fill-shade) forced-colors:bg-[Highlight]")}
+          style={{ scaleX: band }}
+        />
+        {/* The end stop: a small raised block the cap comes to rest against. */}
+        <span className={"absolute inset-y-1 right-0.5 w-1 rounded-pill " + (disabled ? "bg-surface-2" : "bg-block shadow-(--block-lift)")} />
+      </span>
       <motion.span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0.5 left-0.5 -z-1 w-[calc(100%-0.25rem)] origin-left rounded-[calc(var(--radius-control)-2px)] bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]"
-        style={{ scaleX: band }}
-      />
-      <motion.span
-        aria-hidden="true"
-        className={"pointer-events-none absolute inset-0 grid place-items-center px-14 text-center text-small " + ink}
+        className={"pointer-events-none absolute inset-2 grid place-items-center pl-16 pr-10 text-center text-small " + ink}
         style={{ opacity: done ? 1 : words }}
       >
-        <span className="truncate">{done ? confirmedLabel : label}</span>
+        <span className="max-w-full min-w-0 truncate">{done ? confirmedLabel : label}</span>
       </motion.span>
       <motion.button
         {...thumb}
         className={
-          "relative grid aspect-square h-full shrink-0 touch-none place-items-center rounded-[calc(var(--radius-control)-2px)] [-webkit-tap-highlight-color:transparent] " +
-          "transition-colors duration-(--dur-instant) ease-litt " +
+          "relative grid h-full w-12 shrink-0 touch-none place-items-center rounded-[calc(var(--radius-control)-4px)] [-webkit-tap-highlight-color:transparent] " +
+          "transition-[translate,background-color] duration-(--dur-instant) ease-litt " +
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border " +
           (disabled
             ? "cursor-not-allowed bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
-            : "bg-block text-fg shadow-(--block-lift) " + (done ? "cursor-default" : "cursor-grab active:cursor-grabbing active:shadow-(--block-press)"))
+            : "bg-cap text-fg shadow-(--cap-lift) " + (done ? "cursor-default" : "cursor-grab active:translate-y-(--press-depth) active:cursor-grabbing active:bg-cap-held active:shadow-(--cap-press)"))
         }
       >
-        {glyph}
+        {done ? (
+          glyph
+        ) : (
+          <span aria-hidden="true" className="flex h-4 items-stretch gap-1">
+            <span className={grip} />
+            <span className={grip} />
+            <span className={grip} />
+          </span>
+        )}
       </motion.button>
       {tail}
     </div>
