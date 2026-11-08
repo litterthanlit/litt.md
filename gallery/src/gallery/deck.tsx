@@ -91,7 +91,7 @@ export function Deck() {
           options={accentsIn(look.material).map((a) => ({
             value: a.id,
             label: (
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 whitespace-nowrap">
                 <AccentChip accent={a.id} size="sm" />
                 {accentName(a.id, look.material, true)}
               </span>
