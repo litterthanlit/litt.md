@@ -4,7 +4,7 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/
 import { SettingsIcon } from "@/components/icons";
 import { RangeSlider, Slider } from "@/components/slider";
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from "@/components/table";
-import { DeviceProvider, useMotionDial } from "@/motion";
+import { DeviceProvider, MaterialProvider, useMotionDial } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
 import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
@@ -501,14 +501,16 @@ function BodiesDemo() {
   return (
     <div className="grid w-full min-w-0 gap-6 md:grid-cols-3">
       {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+        <figure key={m.id} className="m-0 grid min-w-0 grid-rows-[1fr_auto] gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
             data-bodies-material={m.id}
             className="grid min-w-0 content-center gap-8 rounded-surface bg-canvas p-4 text-fg outline-1 -outline-offset-1 outline-line min-[24rem]:p-8"
           >
-            <Slider {...studySlider} defaultValue={1.2} />
-            <RangeSlider label="Build time" min={0} max={120} defaultValue={[20, 80]} showValue formatValue={formatSeconds} minLabel="Faster" maxLabel="Slower" />
+            <MaterialProvider material={m.id}>
+              <Slider {...studySlider} defaultValue={1.2} />
+              <RangeSlider label="Build time" min={0} max={120} defaultValue={[20, 80]} showValue formatValue={formatSeconds} minLabel="Faster" maxLabel="Slower" />
+            </MaterialProvider>
           </div>
           <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
         </figure>

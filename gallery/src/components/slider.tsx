@@ -58,7 +58,7 @@
  *   because Radix sends Home to the first thumb and End to the last, whichever has focus.
  * - A form sends both values under name (FormData.getAll(name) is [from, to]), not under name[].
  */
-import { useEffect, useId, useLayoutEffect, useRef, useState, type ComponentProps, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
+import { useEffect, useId, useRef, useState, type ComponentProps, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
 import * as RadixSlider from "@radix-ui/react-slider";
 import { byWorld, useMaterial } from "@/motion";
 import { SliderDevice } from "./bodies/slider.device";
@@ -351,16 +351,14 @@ type FieldProps = {
   group?: boolean;
   /** Sets the value on an LCD well in the mono (the Device body). */
   lcd?: boolean;
-  ref?: Ref<HTMLDivElement>;
   /** The plate, and anything that must sit inside the field. */
   children: ReactNode;
 };
 
 /** What the Slider and the RangeSlider share around the plate: the label row, the end words and the help text. */
-function Field({ labelId, label, shown, held = false, helpId, help, minLabel, maxLabel, disabled, className, group = false, lcd = false, ref, children }: FieldProps) {
+function Field({ labelId, label, shown, held = false, helpId, help, minLabel, maxLabel, disabled, className, group = false, lcd = false, children }: FieldProps) {
   return (
     <div
-      ref={ref}
       role={group ? "group" : undefined}
       aria-labelledby={group ? labelId : undefined}
       aria-disabled={group && disabled ? true : undefined}
@@ -427,21 +425,10 @@ function SliderPress({ range, caps, fill, notches, glide, held, plateRef, root, 
   );
 }
 
-/**
- * The body for the material the slider stands in: the nearest element that sets its own theme (a study's frame, a
- * nested preview) says its own, else <html> does. The first render uses <html>'s; a slider in a frame corrects before paint.
- */
+/** The body for the material the slider stands in: the nearest MaterialProvider's, else <html>'s. */
 function useBody() {
-  const html = useMaterial();
-  const [field, setField] = useState<HTMLDivElement | null>(null);
-  const [near, setNear] = useState<typeof html | null>(null);
-  useLayoutEffect(() => {
-    const theme = field?.closest<HTMLElement>("[data-theme]");
-    if (!theme || theme === document.documentElement) return setNear(null);
-    const m = theme.dataset.material;
-    setNear(m === "flat" || m === "device" ? m : "press");
-  }, [field, html]);
-  return { Body: byWorld(near ?? html, { press: SliderPress, flat: SliderFlat, device: SliderDevice }), material: near ?? html, fieldRef: setField };
+  const material = useMaterial();
+  return { Body: byWorld(material, { press: SliderPress, flat: SliderFlat, device: SliderDevice }), material };
 }
 
 /** One slider: a label above that says the value, a cap riding in a slot on a raised plate, and optional words under its ends. Every value is a number, and a form sends it under name. */
@@ -549,11 +536,10 @@ export function Slider({
     ...notched.map((v) => ({ p: (v - min) / span, home: false })),
     ...(home !== null && home >= min && home <= max ? [{ p: (home - min) / span, home: true }] : []),
   ];
-  const { Body, material, fieldRef } = useBody();
+  const { Body, material } = useBody();
 
   return (
     <Field
-      ref={fieldRef}
       lcd={material === "device"}
       labelId={labelId}
       label={label}
@@ -715,7 +701,7 @@ export function RangeSlider({
   const [glide, setGlide] = useState(true);
   const [ringed, setRinged] = useState<0 | 1 | null>(null);
   const lean = useLean();
-  const { Body, material, fieldRef } = useBody();
+  const { Body, material } = useBody();
   const moveEnd = (end: 0 | 1, x: number, m: Measure) => {
     const v = valueAt(along(x, m), min, max, step, null);
     const [a, b] = latest.current;
@@ -758,7 +744,6 @@ export function RangeSlider({
 
   return (
     <Field
-      ref={fieldRef}
       lcd={material === "device"}
       labelId={labelId}
       label={label}
