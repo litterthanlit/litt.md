@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Segmented } from "@/components/segmented";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -188,6 +191,45 @@ function SizesDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center justify-items-start gap-4 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <Segmented
+                legend="Role"
+                size="md"
+                defaultValue="editor"
+                options={[
+                  { value: "viewer", label: "Viewer" },
+                  { value: "editor", label: "Editor" },
+                ]}
+              />
+              <Segmented
+                legend="Range"
+                size="sm"
+                defaultValue="30d"
+                options={[
+                  { value: "7d", label: "7 days" },
+                  { value: "30d", label: "30 days" },
+                ]}
+              />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function SegmentedPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -216,6 +258,15 @@ export default function SegmentedPage() {
         code="SizesDemo"
       >
         <SizesDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One control, one contract, three bodies. Press is a raised segment in a tray that glides to your pick. Flat is a grey bubble that glides. Device is a row of keys in one well: the chosen key stays latched down with its lamp lit, a press lets the last one up, and nothing glides, the change switches in place in three steps. Each is drawn here whatever look the page is in; the props, the arrow keys and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );
