@@ -9,6 +9,7 @@ import { CodeBlock } from "@/components/code-block";
 import lock from "../../registry.lock.json";
 import { useCustomize, useDark } from "./customize-state";
 import { STATES, type PageDocs, type PageMeta, type PageStudy } from "./kit";
+import { MaterialProvider } from "@/motion";
 import { lookAttributes, MATERIALS } from "./look";
 import { Anatomy, FILL_WRAP, STAGE_BOX } from "./study-anatomy";
 
@@ -86,7 +87,9 @@ function Materials({ object, objectWidth }: { object: ReactNode; objectWidth: nu
             data-study-material={m.id}
             className="grid min-h-56 min-w-0 place-items-center rounded-surface bg-canvas p-4 text-fg outline-1 -outline-offset-1 outline-line min-[24rem]:p-8"
           >
-            <div className={FILL_WRAP}>{object}</div>
+            <MaterialProvider material={m.id}>
+              <div className={FILL_WRAP}>{object}</div>
+            </MaterialProvider>
           </div>
           <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
         </figure>

@@ -37,7 +37,7 @@
  * says where the press that opened it happened, read at the press, so it still answers once the trigger is gone (a
  * menu row that opened a dialog).
  */
-import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import type { Transition } from "motion/react";
 import { useMotionDial } from "./index";
 import { toCss } from "./spring";
@@ -79,9 +79,22 @@ const watchMaterial = (change: () => void) => {
   return () => mo.disconnect();
 };
 
-/** The material on <html>, kept current when it changes (the gallery's Customize panel). Press on the server. */
+const MaterialContext = createContext<Material | null>(null);
+
+/**
+ * A material for what is inside, over the one on <html>: a frame that shows a part in another world (a study's Under
+ * each material strip, a Three bodies stage) wraps it in this beside its data-material attribute, so the part picks
+ * that world's body and motion language. An app never needs it; its material is on <html>.
+ */
+export function MaterialProvider({ material, children }: { material: Material; children: ReactNode }) {
+  return createElement(MaterialContext.Provider, { value: material }, children);
+}
+
+/** The material: the nearest MaterialProvider's, else the one on <html>, kept current when it changes (the gallery's Customize panel). Press on the server. */
 export function useMaterial(): Material {
-  return useSyncExternalStore(watchMaterial, readMaterial, () => "press");
+  const framed = useContext(MaterialContext);
+  const page = useSyncExternalStore(watchMaterial, readMaterial, (): Material => "press");
+  return framed ?? page;
 }
 
 /**

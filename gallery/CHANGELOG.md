@@ -18,7 +18,7 @@ Later the same day, the first bodies (`proposals/worlds.md`, Bodies): a part a h
 - **changed** `switch`: a body per material. Press is the block in its tray with On and Off in words, as before. Flat is an ink pill when on and an outline when off, with no words, the knob sliding. Device is a toggle key that flips with a detent, its word on LCD. The bodies ship inside the item (`components/litt/bodies/`).
 - **changed** `button`: a body per material. Press is the raised block that sinks half a pixel, as before. Flat is a pill, fill only, a step darker under the hand. Device is a key on a 2px skirt that sinks the whole 2px.
 - **changed** `slider`: a body per material. Press is the cap in its slot, as before. Flat is a pill track with the filled part in ink and a round knob. Device is a fader in a well on a notched rail.
-- **changed** `motion`: `byWorld(material, { press, flat, device })` and `useMaterial()` are exported, so a part picks its body by the material on `<html>`.
+- **changed** `motion`: `byWorld(material, { press, flat, device })`, `useMaterial()` and `MaterialProvider` are exported, so a part picks its body by the material on `<html>`, or by the material a frame around it sets.
 - **changed** `thinking`: an `indicator` slot beside the clock, for what the agent is doing while it thinks. Nothing changes until you pass it; the Agent block passes an AgentIndicator under Device.
 - **changed** `agent`: under Device the Thinking row carries an AgentIndicator beside the clock while the agent thinks. Press and Flat render exactly as before.
 - **changed** `code-input`: no change to the code; its page gains a study.
