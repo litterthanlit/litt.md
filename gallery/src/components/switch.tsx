@@ -29,16 +29,36 @@
  *   as a CSS linear() easing, so it meets the far wall with a little life and settles. At rest it is exactly the
  *   block above. Reduced motion turns it off.
  * - Touch: rows are at least 44px tall. The tray owns a sideways drag and leaves vertical scrolling to the page.
- * - Flat (R1 to R3, proposals/flat-pill.md): the words go (side and fill say the state), the tray loses its fill and
- *   keeps only the 1.5px --line-control edge while off, with a --line-control knob at the start. On it is an ink
- *   tray with a canvas knob (the accent only for tone="accent", the one main switch, P1) at the end. The tray is 44 by 26 and the knob 20, so the crossing is --sw-travel (18px
- *   in Flat, 44px in Press and Device) and a drag measures it from that variable. Press and Device are untouched.
+ * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the Radix root with
+ *   its role and aria-checked, the hidden input, the label and description, the hand (press, drag, keys) and the state.
+ *   It resolves them once into SwitchBodyProps and renders the body the material picks (byWorld). PressBody, above, is
+ *   the default. bodies/switch.flat.tsx and bodies/switch.device.tsx are the other two; each draws its own root
+ *   element, and its own --sw-travel, which a drag measures. A frame that sets its own look (a study's strip, a
+ *   preview inside a MaterialProvider) draws its own body, not <html>'s.
+ * - Flat (R1 to R3, proposals/flat-pill.md), bodies/switch.flat.tsx: the words go (side and fill say the state), the
+ *   tray loses its fill and keeps only the 1.5px --line-control edge while off, with a --line-control knob at the
+ *   start. On it is an ink tray with a canvas knob (the accent only for tone="accent", the one main switch, P1) at the
+ *   end. The tray is 44 by 26 and the knob 20, so the crossing is 18px.
+ * - Device, bodies/switch.device.tsx: a toggle key in a well that flips with a detent (three steps on the instant
+ *   tier, never a spring), and its word on a small LCD beside it in the mono, with a lamp that lights when on.
  * - Forced colors drops box-shadow and background colors, so the tray and the block get real borders and system
  *   colors mark the on state.
  */
-import { useId, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent, type ReactNode, type Ref } from "react";
+import {
+  useId,
+  useRef,
+  useState,
+  type ComponentProps,
+  type CSSProperties,
+  type MouseEvent,
+  type PointerEvent,
+  type ReactNode,
+  type Ref,
+} from "react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
-import { useFun } from "@/motion";
+import { byWorld, useFun, useMaterial } from "@/motion";
+import { SwitchDeviceBody } from "./bodies/switch.device";
+import { SwitchFlatBody } from "./bodies/switch.flat";
 
 export type SwitchAlign = "start" | "end";
 export type SwitchTone = "neutral" | "accent";
@@ -76,7 +96,32 @@ export type SwitchProps = {
   ref?: Ref<HTMLButtonElement>;
 };
 
-/** How far the block crosses in Press and Device, in px: the tray's 92, less 2px on each side, less the block's own 44. Flat sets its own through --sw-travel. */
+/**
+ * What the contract hands a body: the switch resolved once. A body draws the control (the Radix root and what is
+ * inside it); the row, the label and the description stay with the contract. A body keeps the root's role, aria-checked
+ * and wiring (`root`), says the state without color alone, gives the row 44px, sets --sw-travel on the root (what a
+ * drag measures) and carries data-body on it.
+ */
+export type SwitchBodyProps = {
+  /** The side shown: the switch's state, or the side a drag is over. */
+  shown: boolean;
+  disabled: boolean;
+  /** A hand is dragging the knob, so it follows 1:1 and nothing eases it. */
+  dragging: boolean;
+  /** The knob's translate: the drag's px while dragging, else the start or --sw-travel. */
+  x: string;
+  tone: SwitchTone;
+  /** [off, on]. */
+  words: [string, string];
+  /** The knob's transitions: the crossing on the responsive tier or fun mode's glide, and while dragging only the colors. */
+  motion: CSSProperties;
+  /** The Radix root's props: id, checked, handlers, aria-describedby, name, value, required, ref. */
+  root: ComponentProps<typeof SwitchPrimitive.Root> & { "data-no-drag": "" };
+  /** Where the control sits in the row's grid. */
+  className: string;
+};
+
+/** How far the block crosses in Press, in px: the tray's 92, less 2px on each side, less the block's own 44. Flat and Device set their own through --sw-travel. */
 const TRAVEL = 44;
 /** How far a finger moves before a press becomes a drag, in px. */
 const SLOP = 4;
@@ -86,13 +131,7 @@ const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 /* The tray is the button. The row's label is stretched over the whole row, so the tray sits above it (z-1) and a
    press on the tray itself still lands on the button. It clips the block, so a cast never spills past its walls. */
 const tray =
-  "[--sw-travel:44px] in-[[data-material=flat]]:[--sw-travel:18px] " +
-  "in-[[data-material=flat]]:h-6.5 in-[[data-material=flat]]:w-11 in-[[data-material=flat]]:p-[3px] " +
-  "in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-[inset_0_0_0_1.5px_var(--line-control)] " +
-  "in-[[data-material=flat]]:data-[state=checked]:bg-fg in-[[data-material=flat]]:data-[state=checked]:shadow-none " +
-  "in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=unchecked]:bg-transparent " +
-  "in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=checked]:bg-[color-mix(in_oklab,var(--fg)_86%,var(--canvas))] " +
-  "in-[[data-material=flat]]:disabled:opacity-40 in-[[data-material=flat]]:disabled:data-[state=checked]:bg-fg " +
+  "[--sw-travel:44px] " +
   "peer relative z-1 inline-flex h-8 w-23 shrink-0 cursor-pointer touch-pan-y items-center self-start overflow-hidden rounded-control p-0.5 " +
   "bg-tray shadow-(--tray-shade) " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
@@ -101,26 +140,31 @@ const tray =
   "forced-colors:border forced-colors:p-px " + // the border is real, so the padding gives it back its px
   focusRing;
 
-/* Flat: the one main switch (tone="accent", P1) fills with the accent when on; every other switch is ink. */
-const trayAccent =
-  " in-[[data-material=flat]]:data-[state=checked]:bg-accent in-[[data-material=flat]]:enabled:group-hover/switch:data-[state=checked]:bg-accent-hover";
-
 /* The block. Its corners are the control radius less the 2px it is set in, so they stay concentric with the tray's. */
 const blockBase =
   "pointer-events-none flex h-7 w-11 shrink-0 items-center justify-center rounded-[calc(var(--radius-control)-2px)] " +
   "text-caption font-title select-none " +
-  "forced-colors:border " +
-  "in-[[data-material=flat]]:h-5 in-[[data-material=flat]]:w-5 in-[[data-material=flat]]:rounded-[calc(var(--radius-control)-2px)]";
+  "forced-colors:border";
 
-const blockOff =
-  "bg-block text-fg-muted shadow-(--block-lift) group-active/switch:shadow-(--block-press) " +
-  "in-[[data-material=flat]]:bg-line-control in-[[data-material=flat]]:shadow-none";
+const blockOff = "bg-block text-fg-muted shadow-(--block-lift) group-active/switch:shadow-(--block-press)";
 const blockOn: Record<SwitchTone, string> = {
-  neutral: "bg-block text-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) in-[[data-material=flat]]:bg-canvas in-[[data-material=flat]]:shadow-none forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
-  accent: "bg-accent text-accent-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) in-[[data-material=flat]]:bg-canvas in-[[data-material=flat]]:shadow-none forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+  neutral: "bg-block text-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+  accent: "bg-accent text-accent-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
 };
 /* Disabled, the block lies flat: no cast, a hairline, and the word in --fg-disabled. */
-const blockDisabled = "bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)] forced-colors:text-[GrayText] in-[[data-material=flat]]:bg-line-control in-[[data-material=flat]]:shadow-none";
+const blockDisabled = "bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)] forced-colors:text-[GrayText]";
+
+/** Press, the default body: a raised block that slides in a sunken tray, its state in words. */
+function PressBody({ shown, disabled, x, tone, words, motion, root, className }: SwitchBodyProps) {
+  const block = blockBase + " " + (disabled ? blockDisabled : shown ? blockOn[tone] : blockOff);
+  return (
+    <SwitchPrimitive.Root {...root} data-body="press" className={tray + className}>
+      <SwitchPrimitive.Thumb className={block} style={{ ...motion, translate: `${x} 0` }}>
+        <span aria-hidden="true">{shown ? words[1] : words[0]}</span>
+      </SwitchPrimitive.Thumb>
+    </SwitchPrimitive.Root>
+  );
+}
 
 /* The block's crossing on the responsive tier, and its fill, word and cast on the instant tier. While a hand drags it,
    it follows one to one, so only the colors keep their fade. */
@@ -157,6 +201,7 @@ export function Switch({
   const id = idProp ?? auto;
   const descriptionId = description ? `${id}-description` : undefined;
   const end = align === "end";
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody });
 
   /* The switch keeps its own state when you do not control it, because a drag sets it to a side, not a flip. */
   const [inner, setInner] = useState(defaultChecked ?? false);
@@ -222,8 +267,6 @@ export function Switch({
         }
       : crossing;
 
-  const block = blockBase + " " + (disabled ? blockDisabled : shown ? blockOn[tone] : blockOff);
-
   return (
     <div
       className={
@@ -232,28 +275,33 @@ export function Switch({
         className
       }
     >
-      <SwitchPrimitive.Root
-        ref={ref}
-        id={id}
-        checked={on}
-        onCheckedChange={set}
-        disabled={disabled}
-        required={required}
-        name={name}
-        value={value}
-        aria-describedby={descriptionId}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerEnd}
-        onPointerCancel={onPointerEnd}
-        onClick={onClick}
-        data-no-drag=""
-        className={tray + (tone === "accent" ? trayAccent : "") + (end ? " col-start-2 row-start-1" : " col-start-1 row-start-1")}
-      >
-        <SwitchPrimitive.Thumb className={block} style={{ ...motion, translate: `${x} 0` }}>
-          <span aria-hidden="true" className="in-[[data-material=flat]]:hidden">{shown ? words[1] : words[0]}</span>
-        </SwitchPrimitive.Thumb>
-      </SwitchPrimitive.Root>
+      <Body
+        shown={shown}
+        disabled={!!disabled}
+        dragging={dragging}
+        x={x}
+        tone={tone}
+        words={words}
+        motion={motion}
+        className={end ? " col-start-2 row-start-1" : " col-start-1 row-start-1"}
+        root={{
+          ref,
+          id,
+          checked: on,
+          onCheckedChange: set,
+          disabled,
+          required,
+          name,
+          value,
+          "aria-describedby": descriptionId,
+          onPointerDown,
+          onPointerMove,
+          onPointerUp: onPointerEnd,
+          onPointerCancel: onPointerEnd,
+          onClick,
+          "data-no-drag": "",
+        }}
+      />
       {/* The label is stretched over the whole row, so a click anywhere in it toggles the switch. */}
       <label
         htmlFor={id}
