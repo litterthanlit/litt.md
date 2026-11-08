@@ -84,6 +84,16 @@ export function useMaterial(): Material {
   return useSyncExternalStore(watchMaterial, readMaterial, () => "press");
 }
 
+/**
+ * One contract, three bodies (proposals/worlds.md, Bodies): a part a hand touches keeps one contract and has a body per
+ * material, picked here. Press is the default body and lives in the part's own file; Flat's and Device's live in
+ * src/components/bodies/<part>.<material>.tsx and are imported by the part, so the registry ships them in its item.
+ * A world without a body of its own falls back to Press, so a part gains bodies one at a time.
+ */
+export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T }): T {
+  return bodies[material] ?? bodies.press;
+}
+
 /* Device's step: three even steps, as a display's segments light, never a fade. */
 const STEPS = "steps(3, end)";
 const stepEase = (p: number) => (p >= 1 ? 1 : Math.floor(p * 3) / 3);

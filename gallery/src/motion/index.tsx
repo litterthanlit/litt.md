@@ -327,3 +327,6 @@ export function useStagger(): number {
   const { dial, slow, reduced, tuning } = useMotionDial();
   return reduced ? 0 : (dial.stagger / 1000) * (tuning ? slow : 1);
 }
+
+/* One contract, three bodies (proposals/worlds.md, Bodies): a part picks its body by the material on <html>. */
+export { byWorld, useMaterial } from "./deal";

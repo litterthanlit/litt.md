@@ -9,6 +9,8 @@ Button · Input · Number field · Code input · Token input · File drop · Sel
 
 ---
 
+**Bodies** (`proposals/worlds.md`, Bodies, v1.10): a part a hand touches keeps one contract and has a body per material, its own markup and its own interaction, picked by `data-material` at runtime. A part's **Bodies** line names the three; a part without one has one body in every material.
+
 ## Button
 `--radius-control`. Three sizes on the shared control scale (R9); the label is wrapped in `.litt-trim` so the padding equals the visible air at sm and md. lg runs wider than its air, so a short label never makes a square block:
 
