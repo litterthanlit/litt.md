@@ -16,8 +16,8 @@ export const meta: PageMeta = {
   group: "Commerce",
   verbs: ["select"],
   summary:
-    "One option of a product as native radios with a visible legend that names the pick. Words take the Segmented control's track, its raised surface gliding to the pick on the responsive tier; colors and images take chips with a check. A value that is sold out stays pickable, steps back to the disabled ink and says so in words.",
-  tiers: ["instant", "responsive"],
+    "One option of a product as native radios with a visible legend that names the pick. Words are blocks in a tray in Press and grey pills in Flat; colors and images are small blocks or plain circles. The pick is raised and lit, or an ink pill, or a ringed circle. A value that is sold out stays pickable, steps back and says so in words.",
+  tiers: ["instant"],
 };
 
 export const docs: PageDocs = {
@@ -156,20 +156,20 @@ export default function OptionPickerPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="A print's size and frame"
-        tier="responsive"
+        tier="instant"
         align="start"
         code="PrintOptionsDemo"
-        caption="Pick A1: Walnut and White fade, because they are sold out at that size. Pick one of them anyway and the legend says Sold out, in words. The size's raised surface glides to the pick on the responsive tier; the frame's check appears at once. The price follows the variant."
+        caption="Pick A1: Walnut and White fade, because they are sold out at that size. Pick one of them anyway and the legend says Sold out, in words. A pick changes on the instant tier; nothing glides. The price follows the variant."
       >
         <PrintOptionsDemo />
       </Stage>
 
       <Stage
         title="Words and swatches"
-        tier="responsive"
+        tier="instant"
         align="start"
         code="KindsDemo"
-        caption="Values with no swatch show as a segmented track that fills its column. Values with a color show as chips; the check is black or white, whichever reads on that color. A sold-out value steps back to the disabled ink, or a chip to a faded color under its hairline, and stays pickable."
+        caption="Values with no swatch are words, in blocks or pills by world. Values with a color are chips; in Press the check is black or white, whichever reads on that color, and in Flat the chosen circle is ringed in ink. A sold-out value steps back and stays pickable."
       >
         <KindsDemo />
       </Stage>
@@ -177,7 +177,7 @@ export default function OptionPickerPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One picker, one contract, three bodies. Press is a sunken track with a raised block that glides to the pick. Flat is grey pills with the pick lifted in ink. Device is a bank of latching keys with engraved legends: the picked one stays down with its lamp lit, and a sold-out one lies flat with no skirt and says so in words. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all three."
+        caption="One picker, one contract, three bodies. Press is one tray with a block per value: the chosen block is raised and lit, the others sit seated, a sold-out one lies flat as a cut in the floor, and a color is a small block of its own. Flat has no tray: words in grey pills, the chosen in an ink pill, a sold-out one outlined, struck through and said in words, and colors as plain circles with the chosen one ringed in ink. Device is a bank of latching keys with engraved legends: the picked one stays down with its lamp lit, and a sold-out one lies flat with no skirt and says so in words. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

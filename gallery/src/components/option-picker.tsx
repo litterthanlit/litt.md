@@ -5,29 +5,27 @@
  * - Legend: visible. The option's name at the small size and the title weight in --fg, then the picked value's name in
  *   --fg-subtle ("Frame · Natural oak"), so a swatch's name is always written somewhere. The picked part is hidden from
  *   screen readers, which hear it on the checked radio instead.
- * - Text values take the Segmented control's look and motion: one sunken tray (--tray, --tray-shade), equal
- *   segments, the picked one the raised block (R3: --block, --block-lift), gliding to the pick on the responsive tier (fun mode's glide
- *   spring in fun mode). The track fills its column, so the options of one product line up. Keep labels short; a long
- *   list of values is a Select.
- * - Flat (proposals/flat-pill.md): the text track is the Segmented control's Flat look (no frame, the pick a grey
- *   bubble). Swatch chips keep their fg-12% hairline: it is the product's color needing an edge, not chrome.
- * - Swatch values (every value has a color or an image): 24px chips (32 on a touch screen) at the control radius with
- *   an fg-12% hairline, 8px apart, as the Color picker's swatches. The color is the product's, not litt's: content,
- *   like a photograph, never a data hue and never chrome. It fills only the chip. The picked chip carries a 16px
- *   check in black or white, whichever reads better on that color by APCA, as the Color picker's ink.
+ * - Text values are blocks in a tray in Press (R3: --tray, --tray-shade, --block, --block-lift) and grey pills in Flat.
+ *   Keep labels short; a long list of values is a Select.
+ * - Swatch values (every value has a color or an image): in Press a 40px block (44 on a touch screen) in the tray; in Flat
+ *   a 24px circle (32 on a touch screen) with an fg-12% hairline, since the product's color needs an edge. The color is the product's, not litt's: content,
+ *   like a photograph, never a data hue and never chrome. It fills only the chip. The picked Press block carries a 16px
+ *   check in black or white, whichever reads better on that color by APCA, as the Color picker's ink; the picked Flat circle is ringed in ink.
  * - Sold out: a value with `available: false` stays pickable, so picking it tells the person why they cannot buy it.
- *   Its label steps to --fg-disabled (a chip to 40% opacity under its hairline), it says "sold out" in hidden text,
- *   and while it is picked the legend says "Sold out" after its name. No slash and no strike: the words carry it.
+ *   Its label steps back (a chip fades), it says "sold out" in hidden text, and while it is
+ *   picked the legend says "Sold out" after its name. Flat also strikes the word and says "sold out" beside it.
  * - Focus by modality: the radio's :focus-visible draws the 2px ring, inset on a segment, at a 2px offset on a chip.
  * - Bodies (proposals/worlds.md): this file keeps the contract (the fieldset, the legend, the radios' names and the
- *   pick) and resolves it once into OptionPickerBodyProps. It renders the body the material picks (byWorld): Press, below,
- *   is the sunken track and its gliding block; Flat (bodies/option-picker.flat.tsx) is the grey pills with the pick in
- *   ink; Device (bodies/option-picker.device.tsx) is a row of latching keys, each with a lamp, and a sold-out value
- *   that lies flat. The radios, the arrow keys and every accessible name are the same in all three.
- * - Motion: only the text track's surface moves. Colors change on the instant tier; the check appears at once.
+ *   pick) and resolves it once into OptionPickerBodyProps. It renders the body the material picks (byWorld). Press, below,
+ *   is the instrument: one tray cut into the page with a block per value, the chosen one raised and lit, the rest seated,
+ *   a sold-out one lying flat as a cut in the floor, and a color a small block of its own. Flat
+ *   (bodies/option-picker.flat.tsx) is the page: words in grey pills, the chosen in an ink pill, a sold-out value
+ *   outlined, struck through and said in words, and colors as plain circles with the chosen one ringed in ink. Device
+ *   (bodies/option-picker.device.tsx) is a row of latching keys, each with a lamp. The radios, the arrow keys and every
+ *   accessible name are the same in all three.
+ * - Motion: nothing glides in Press or Flat; a block rises and sinks where it stands, and colors change on the instant tier.
  */
 import { useEffect, useId, useState } from "react";
-import { LayoutGroup, motion } from "motion/react";
 import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { CheckIcon } from "@/components/icons";
 import { OptionPickerDeviceBody } from "./bodies/option-picker.device";
@@ -141,96 +139,92 @@ function inkOn(color: string | undefined): "black" | "white" | undefined {
 
 /* ----------------------------------------------------------------- the bodies */
 
-/** What a finger holding an unpicked segment shows: the fg 6% fill that rows and tabs share, and the hover text color. */
-const PRESS = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
+/* Press: a block seated in the tray (sunk the press depth, the cast tight), a block raised and lit (the cast wide, the
+   top edge lit), and a value that is sold out lying flat: no block at all, a cut in the tray floor. */
+const seated = "bg-[color-mix(in_oklab,var(--block)_45%,var(--tray))] shadow-(--block-press) [transform:translateY(var(--press-depth))]";
+const raised = "bg-block shadow-[var(--highlight),var(--block-lift)]";
+const lying = "bg-cut shadow-(--cut-shade)";
+const tweens = "transition-[color,background-color,transform] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent]";
+const hold = "hover:bg-block active:shadow-(--block-press) active:[transform:translateY(var(--press-depth))]";
 
-/** Press: a sunken track with a raised block gliding to the pick for words, chips with a check for colors and images. */
-function PressBody({ group, values, value, swatches, onPick, labelOf, inkOf, glide, groupId }: OptionPickerBodyProps) {
-  return swatches ? (
-    <div data-body="press" className="flex flex-wrap gap-2 pointer-coarse:gap-3">
+/**
+ * Press, the instrument: one tray cut into the page, and every value a block standing in it. The block you chose is
+ * raised and lit; the others sit seated in the tray; a sold-out value lies flat, a cut in the floor. A color is a small
+ * block of its own, the color its face. Nothing glides: a block rises and sinks where it stands.
+ */
+function PressBody({ group, values, value, swatches, onPick, labelOf, inkOf }: OptionPickerBodyProps) {
+  return (
+    <div
+      data-body="press"
+      className={"flex w-fit max-w-full flex-wrap rounded-control bg-tray p-1 shadow-(--tray-shade) forced-colors:border " + (swatches ? "gap-1.5 pointer-coarse:gap-2" : "gap-1.5")}
+    >
       {values.map((v) => {
         const on = v.value === value;
         const out = v.available === false;
-        const ink = inkOf(v);
+        const radio = (
+          <input type="radio" name={group} value={v.value} checked={on} onChange={() => onPick(v.value)} className="peer sr-only" />
+        );
+        if (swatches) {
+          const ink = inkOf(v);
+          return (
+            <label key={v.value} className="litt-target relative block cursor-pointer">
+              {radio}
+              <span className="sr-only">
+                {labelOf(v)}
+                {out && ", sold out"}
+              </span>
+              <span
+                aria-hidden="true"
+                className={
+                  "relative grid size-10 place-items-center overflow-hidden rounded-[calc(var(--radius-control)-4px)] bg-cover bg-center pointer-coarse:size-11 forced-colors:border " +
+                  tweens +
+                  (on ? " forced-colors:border-2" : "") +
+                  " peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus"
+                }
+                style={{
+                  backgroundColor: v.swatch?.color,
+                  backgroundImage: v.swatch?.image ? `url("${v.swatch.image}")` : undefined,
+                  color: ink ?? "var(--fg)",
+                }}
+              >
+                {/* The face is the product's color. The block's edge and cast sit over it, and a sold-out block loses both. */}
+                <span
+                  className={
+                    "pointer-events-none absolute inset-0 rounded-[calc(var(--radius-control)-4px)] " +
+                    (out ? "bg-canvas/60 shadow-(--cut-shade)" : on ? "shadow-[var(--highlight),var(--block-lift)]" : "shadow-(--block-press)")
+                  }
+                />
+                {on && <CheckIcon className="relative" />}
+              </span>
+            </label>
+          );
+        }
         return (
-          <label key={v.value} className="litt-target relative block cursor-pointer [-webkit-tap-highlight-color:transparent]">
-            <input
-              type="radio"
-              name={group}
-              value={v.value}
-              checked={on}
-              onChange={() => onPick(v.value)}
-              className="peer sr-only"
-            />
-            <span className="sr-only">
+          <label
+            key={v.value}
+            className={
+              "litt-target relative grid h-control-md min-w-14 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-4px)] px-control-pad-md text-small font-title " +
+              tweens +
+              " " +
+              (out ? lying : on ? raised : seated + " " + hold) +
+              " " +
+              (out ? (on ? "text-fg-subtle" : "text-fg-disabled") : on ? "text-fg" : "text-fg-subtle hover:text-fg") +
+              (on ? " forced-colors:border-2" : " forced-colors:border")
+            }
+          >
+            {radio}
+            <span className="litt-trim relative z-1 truncate">
               {labelOf(v)}
-              {out && ", sold out"}
+              {out && <span className="sr-only">, sold out</span>}
             </span>
             <span
               aria-hidden="true"
-              className={
-                "relative grid size-6 place-items-center overflow-hidden rounded-control bg-cover bg-center pointer-coarse:size-8 " +
-                "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus"
-              }
-              style={{
-                backgroundColor: v.swatch?.color,
-                backgroundImage: v.swatch?.image ? `url("${v.swatch.image}")` : undefined,
-                color: ink ?? "var(--fg)",
-              }}
-            >
-              {/* Sold out fades the color, never the hairline, so the chip keeps its edge on any surface. */}
-              {out && <span className="absolute inset-0 bg-canvas opacity-60" />}
-              <span className="pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--fg)_12%,transparent)]" />
-              {on && <CheckIcon className="relative" />}
-            </span>
+              className="pointer-events-none absolute inset-0 z-1 rounded-[calc(var(--radius-control)-4px)] peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
+            />
           </label>
         );
       })}
     </div>
-  ) : (
-    <LayoutGroup id={groupId}>
-      <div data-body="press" className="relative grid h-control-md w-full grid-flow-col auto-cols-fr rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
-        {values.map((v) => {
-          const on = v.value === value;
-          const out = v.available === false;
-          return (
-            <label
-              key={v.value}
-              className={
-                "litt-target relative grid h-full min-w-0 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] px-2 text-small font-title " +
-                "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-                (out ? "text-fg-disabled" : on ? "text-fg" : "text-fg-subtle hover:text-fg " + PRESS)
-              }
-            >
-              <input
-                type="radio"
-                name={group}
-                value={v.value}
-                checked={on}
-                onChange={() => onPick(v.value)}
-                className="peer sr-only"
-              />
-              {on && (
-                <motion.span
-                  layoutId="option-surface"
-                  transition={glide}
-                  aria-hidden="true"
-                  className="absolute inset-0 rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border-2"
-                />
-              )}
-              <span className="litt-trim relative z-1 truncate">
-                {labelOf(v)}
-                {out && <span className="sr-only">, sold out</span>}
-              </span>
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 z-1 rounded-[calc(var(--radius-control)-2px)] peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
-              />
-            </label>
-          );
-        })}
-      </div>
-    </LayoutGroup>
   );
 }
 
