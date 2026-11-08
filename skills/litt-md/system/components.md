@@ -871,6 +871,7 @@ One option of a product, such as its size or its color, as a choice of its value
 - **Sold out:** a value with no variant in stock among the other picks stays pickable. Its label (or chip) steps back to `--fg-disabled` (a chip to 40% opacity under its hairline), it says "sold out" in hidden text, and when it is picked the legend says "Sold out" after its name. No slash across a swatch, no strike: the words carry it, and Add to cart becomes a disabled "Sold out" button.
 - **Keyboard:** the radios' own: ← → between values, Tab to the next option.
 - **Motion:** the text track's surface glides on the responsive tier, as the Segmented control's. Swatches do not move; the check appears at once.
+- **Bodies:** Press is the sunken track with the raised block gliding to the pick, as above. Flat is grey pills with the pick lifted in ink, and chips keep their hairline. Device is a bank of latching keys (`--block`, `--key-lift`, a 2px skirt) in one well (`--tray`, `--tray-shade`) with engraved legends in the mono: the picked key stays down (`--block-press`, sunk `--press-depth`) with its lamp lit, the others stand with a dim ring, and a sold-out key lies flat (no skirt, a hairline) and says "sold out" in words on its face. A chip stands in a small key of its own. Nothing glides; a key switches in three steps on the instant tier. One contract: the native radios, the arrow keys, the legend and the sold-out names are the same in all three.
 
 ## Product card
 One product in a grid, which opens its page.

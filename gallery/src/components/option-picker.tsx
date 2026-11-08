@@ -19,12 +19,19 @@
  *   Its label steps to --fg-disabled (a chip to 40% opacity under its hairline), it says "sold out" in hidden text,
  *   and while it is picked the legend says "Sold out" after its name. No slash and no strike: the words carry it.
  * - Focus by modality: the radio's :focus-visible draws the 2px ring, inset on a segment, at a 2px offset on a chip.
+ * - Bodies (proposals/worlds.md): this file keeps the contract (the fieldset, the legend, the radios' names and the
+ *   pick) and resolves it once into OptionPickerBodyProps. It renders the body the material picks (byWorld): Press, below,
+ *   is the sunken track and its gliding block; Flat (bodies/option-picker.flat.tsx) is the grey pills with the pick in
+ *   ink; Device (bodies/option-picker.device.tsx) is a row of latching keys, each with a lamp, and a sold-out value
+ *   that lies flat. The radios, the arrow keys and every accessible name are the same in all three.
  * - Motion: only the text track's surface moves. Colors change on the instant tier; the check appears at once.
  */
 import { useEffect, useId, useState } from "react";
 import { LayoutGroup, motion } from "motion/react";
-import { useFun, useTransition } from "@/motion";
+import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { CheckIcon } from "@/components/icons";
+import { OptionPickerDeviceBody } from "./bodies/option-picker.device";
+import { OptionPickerFlatBody } from "./bodies/option-picker.flat";
 
 /** One value of an option, as a product lists it. */
 export type OptionValue = {
@@ -60,6 +67,32 @@ export type OptionPickerProps = {
   inputName?: string;
   /** Extra classes for the fieldset. */
   className?: string;
+};
+
+/**
+ * What the contract hands a body: the option resolved once. A body draws the values (the radios and what shows them);
+ * the fieldset and the legend stay with the contract. A body keeps one native radio per value (checked, named
+ * `group`, onChange `onPick`), names a sold-out value ", sold out" in hidden text, keeps a 44px target, and carries
+ * data-body on its root.
+ */
+export type OptionPickerBodyProps = {
+  /** The radios' shared name. */
+  group: string;
+  values: OptionValue[];
+  /** The picked value. */
+  value: string | undefined;
+  /** Every value has a color or an image, so each shows as a chip. */
+  swatches: boolean;
+  /** Picks a value: the radio's change. */
+  onPick: (value: string) => void;
+  /** What a value shows: its label, else the value. */
+  labelOf: (value: OptionValue) => string;
+  /** The ink of the check on a chip, black or white, once the color can be read. */
+  inkOf: (value: OptionValue) => "black" | "white" | undefined;
+  /** The text track's gliding transition: the responsive tier, or fun mode's glide. */
+  glide: ReturnType<typeof useTransition>;
+  /** The id the text track's shared surface is scoped to. */
+  groupId: string;
 };
 
 /* ----------------------------------------------------------------- the ink on a swatch */
@@ -106,10 +139,102 @@ function inkOn(color: string | undefined): "black" | "white" | undefined {
   return apca(1, bg) >= apca(0, bg) ? "white" : "black";
 }
 
-/* ----------------------------------------------------------------- the picker */
+/* ----------------------------------------------------------------- the bodies */
 
 /** What a finger holding an unpicked segment shows: the fg 6% fill that rows and tabs share, and the hover text color. */
 const PRESS = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
+
+/** Press: a sunken track with a raised block gliding to the pick for words, chips with a check for colors and images. */
+function PressBody({ group, values, value, swatches, onPick, labelOf, inkOf, glide, groupId }: OptionPickerBodyProps) {
+  return swatches ? (
+    <div data-body="press" className="flex flex-wrap gap-2 pointer-coarse:gap-3">
+      {values.map((v) => {
+        const on = v.value === value;
+        const out = v.available === false;
+        const ink = inkOf(v);
+        return (
+          <label key={v.value} className="litt-target relative block cursor-pointer [-webkit-tap-highlight-color:transparent]">
+            <input
+              type="radio"
+              name={group}
+              value={v.value}
+              checked={on}
+              onChange={() => onPick(v.value)}
+              className="peer sr-only"
+            />
+            <span className="sr-only">
+              {labelOf(v)}
+              {out && ", sold out"}
+            </span>
+            <span
+              aria-hidden="true"
+              className={
+                "relative grid size-6 place-items-center overflow-hidden rounded-control bg-cover bg-center pointer-coarse:size-8 " +
+                "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus"
+              }
+              style={{
+                backgroundColor: v.swatch?.color,
+                backgroundImage: v.swatch?.image ? `url("${v.swatch.image}")` : undefined,
+                color: ink ?? "var(--fg)",
+              }}
+            >
+              {/* Sold out fades the color, never the hairline, so the chip keeps its edge on any surface. */}
+              {out && <span className="absolute inset-0 bg-canvas opacity-60" />}
+              <span className="pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--fg)_12%,transparent)]" />
+              {on && <CheckIcon className="relative" />}
+            </span>
+          </label>
+        );
+      })}
+    </div>
+  ) : (
+    <LayoutGroup id={groupId}>
+      <div data-body="press" className="relative grid h-control-md w-full grid-flow-col auto-cols-fr rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
+        {values.map((v) => {
+          const on = v.value === value;
+          const out = v.available === false;
+          return (
+            <label
+              key={v.value}
+              className={
+                "litt-target relative grid h-full min-w-0 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] px-2 text-small font-title " +
+                "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+                (out ? "text-fg-disabled" : on ? "text-fg" : "text-fg-subtle hover:text-fg " + PRESS)
+              }
+            >
+              <input
+                type="radio"
+                name={group}
+                value={v.value}
+                checked={on}
+                onChange={() => onPick(v.value)}
+                className="peer sr-only"
+              />
+              {on && (
+                <motion.span
+                  layoutId="option-surface"
+                  transition={glide}
+                  aria-hidden="true"
+                  className="absolute inset-0 rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border-2"
+                />
+              )}
+              <span className="litt-trim relative z-1 truncate">
+                {labelOf(v)}
+                {out && <span className="sr-only">, sold out</span>}
+              </span>
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 z-1 rounded-[calc(var(--radius-control)-2px)] peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
+              />
+            </label>
+          );
+        })}
+      </div>
+    </LayoutGroup>
+  );
+}
+
+/* ----------------------------------------------------------------- the picker */
 
 /** One option of a product as a choice of its values: a segmented track for words, chips for colors and images. */
 export function OptionPicker({
@@ -126,6 +251,7 @@ export function OptionPicker({
   const responsive = useTransition("responsive");
   const fun = useFun();
   const glide = fun ? fun.glide : responsive;
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: OptionPickerFlatBody, device: OptionPickerDeviceBody });
   const [inner, setInner] = useState<string | undefined>(defaultValue ?? values[0]?.value);
   const value = valueProp ?? inner;
   const picked = values.find((v) => v.value === value);
@@ -139,6 +265,7 @@ export function OptionPicker({
     onValueChange?.(v);
   };
   const labelOf = (v: OptionValue) => v.label ?? v.value;
+  const inkOf = (v: OptionValue) => (hydrated || /^(#|rgb)/i.test(v.swatch?.color ?? "") ? inkOn(v.swatch?.color) : undefined);
 
   return (
     <fieldset className={"m-0 min-w-0 border-0 p-0 " + className}>
@@ -153,92 +280,17 @@ export function OptionPicker({
         )}
       </legend>
 
-      {swatches ? (
-        <div className="flex flex-wrap gap-2 pointer-coarse:gap-3">
-          {values.map((v) => {
-            const on = v.value === value;
-            const out = v.available === false;
-            const ink = hydrated || /^(#|rgb)/i.test(v.swatch?.color ?? "") ? inkOn(v.swatch?.color) : undefined;
-            return (
-              <label key={v.value} className="litt-target relative block cursor-pointer [-webkit-tap-highlight-color:transparent]">
-                <input
-                  type="radio"
-                  name={group}
-                  value={v.value}
-                  checked={on}
-                  onChange={() => pick(v.value)}
-                  className="peer sr-only"
-                />
-                <span className="sr-only">
-                  {labelOf(v)}
-                  {out && ", sold out"}
-                </span>
-                <span
-                  aria-hidden="true"
-                  className={
-                    "relative grid size-6 place-items-center overflow-hidden rounded-control bg-cover bg-center pointer-coarse:size-8 " +
-                    "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus"
-                  }
-                  style={{
-                    backgroundColor: v.swatch?.color,
-                    backgroundImage: v.swatch?.image ? `url("${v.swatch.image}")` : undefined,
-                    color: ink ?? "var(--fg)",
-                  }}
-                >
-                  {/* Sold out fades the color, never the hairline, so the chip keeps its edge on any surface. */}
-                  {out && <span className="absolute inset-0 bg-canvas opacity-60" />}
-                  <span className="pointer-events-none absolute inset-0 rounded-control shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--fg)_12%,transparent)]" />
-                  {on && <CheckIcon className="relative" />}
-                </span>
-              </label>
-            );
-          })}
-        </div>
-      ) : (
-        <LayoutGroup id={auto}>
-          <div className="relative grid h-control-md w-full grid-flow-col auto-cols-fr rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border">
-            {values.map((v) => {
-              const on = v.value === value;
-              const out = v.available === false;
-              return (
-                <label
-                  key={v.value}
-                  className={
-                    "litt-target relative grid h-full min-w-0 cursor-pointer select-none place-items-center rounded-[calc(var(--radius-control)-2px)] px-2 text-small font-title " +
-                    "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-                    (out ? "text-fg-disabled" : on ? "text-fg" : "text-fg-subtle hover:text-fg " + PRESS)
-                  }
-                >
-                  <input
-                    type="radio"
-                    name={group}
-                    value={v.value}
-                    checked={on}
-                    onChange={() => pick(v.value)}
-                    className="peer sr-only"
-                  />
-                  {on && (
-                    <motion.span
-                      layoutId="option-surface"
-                      transition={glide}
-                      aria-hidden="true"
-                      className="absolute inset-0 rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border-2"
-                    />
-                  )}
-                  <span className="litt-trim relative z-1 truncate">
-                    {labelOf(v)}
-                    {out && <span className="sr-only">, sold out</span>}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 z-1 rounded-[calc(var(--radius-control)-2px)] peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
-                  />
-                </label>
-              );
-            })}
-          </div>
-        </LayoutGroup>
-      )}
+      <Body
+        group={group}
+        values={values}
+        value={value}
+        swatches={swatches}
+        onPick={pick}
+        labelOf={labelOf}
+        inkOf={inkOf}
+        glide={glide}
+        groupId={auto}
+      />
     </fieldset>
   );
 }
