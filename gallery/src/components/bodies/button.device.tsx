@@ -41,8 +41,9 @@ const variants: Record<ButtonVariant, string> = {
     keyed + " text-fg [--key:var(--block)] hover:[--key:var(--block-hover)] " +
     "enabled:active:[--key:color-mix(in_oklab,var(--block),var(--fg)_10%)]",
   danger:
-    keyed + " text-danger [--key:var(--block)] hover:[--key:var(--block-hover)] " +
-    "enabled:active:[--key:color-mix(in_oklab,var(--block),var(--fg)_10%)] " +
+    /* The red words lean a third toward --fg and the key goes darker under the hand, so the words keep 4.5:1 on the key in both themes. */
+    keyed + " text-[color-mix(in_oklab,var(--danger),var(--fg)_35%)] [--key:var(--block)] hover:[--key:color-mix(in_oklab,var(--block),black_6%)] " +
+    "enabled:active:[--key:color-mix(in_oklab,var(--block),black_14%)] " +
     /* A dialog's confirm: the one red key. These rules sort after the key's, so they win its ties (hover, press). */
     "in-[[data-dialog-footer]]:enabled:text-danger-fg in-[[data-dialog-footer]]:enabled:[--key:var(--danger)] " +
     "in-[[data-dialog-footer]]:enabled:hover:[--key:color-mix(in_oklab,var(--danger),var(--fg)_10%)] " +
