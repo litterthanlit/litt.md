@@ -4086,7 +4086,8 @@ const READ_ACCENT = `(() => {
 /**
  * The look a host sets in its markup, data-accent on <html>: it wins in light, under .dark and in the system's dark
  * (read from --litt-accent-text too, since Blue 4 and Pink fill with one hex in both themes), reaches a node appended to
- * <body> as a portal is, follows a runtime flip to mono, and gives Blue 4 back when removed. With JavaScript off the
+ * <body> as a portal is, follows a runtime flip to mono and to blue, and gives the host's world its own accent back when
+ * removed (the look's host runs Flat, whose own is the ink). With JavaScript off the
  * server's HTML already carries it, and on Next the server-rendered Button is already the look's fill: no flash.
  */
 async function accentContract(browser, url, { accent, look, app }, record) {
@@ -4108,7 +4109,10 @@ async function accentContract(browser, url, { accent, look, app }, record) {
       { name: `data-accent="${look}" on <html>, system dark`, scheme: "dark", want: accent[look].dark },
       /* The look's host also runs Flat, where mono's ink is Flat's grey ink. */
       { name: 'data-accent flipped to "mono" at runtime', scheme: "light", flip: "mono", want: { fill: accent.flat.light.fg, text: accent.flat.light.fg } },
-      { name: "data-accent removed at runtime: Blue 4", scheme: "light", flip: null, want: accent.blue4.light },
+      /* Blue 4 asked for on a Flat host (decision 14): its own tones, as Press's. */
+      { name: 'data-accent flipped to "blue" at runtime', scheme: "light", flip: "blue", want: accent.blue4.light },
+      /* With no data-accent a world shows its own accent, and Flat's is the ink. */
+      { name: "data-accent removed at runtime: Flat's own, the ink", scheme: "light", flip: null, want: { fill: accent.flat.light.fg, text: accent.flat.light.fg } },
     ];
     for (const c of cases) {
       try {
