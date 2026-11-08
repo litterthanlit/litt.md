@@ -34,9 +34,16 @@
  * - Disabled keeps a hairline, so the button keeps its shape on a surface-2 area.
  * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
  *   round (pill) and need an aria-label.
+ * - Bodies (proposals/worlds.md): this file is the contract (props, the real <button>, aria-busy and aria-disabled,
+ *   the sizes, the label, the spinner) and Press's body. It resolves them once into ButtonBodyProps and picks a body
+ *   by the material on <html> (byWorld, useMaterial). Flat's pill is bodies/button.flat.tsx; Device's key on its 2px
+ *   skirt is bodies/button.device.tsx. A frame that sets its own material (a study strip, a side-by-side preview)
+ *   wraps its buttons in <ButtonWorld material="device"> to draw that body.
  */
-import { Children, type ButtonHTMLAttributes, type CSSProperties, type ReactNode } from "react";
-import { useFun } from "@/motion";
+import { Children, createContext, useContext, type ButtonHTMLAttributes, type ComponentPropsWithRef, type CSSProperties, type ReactNode } from "react";
+import { byWorld, useFun, useMaterial } from "@/motion";
+import { ButtonFlatBody } from "./bodies/button.flat";
+import { ButtonDeviceBody } from "./bodies/button.device";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -77,9 +84,7 @@ const iconSizes: Record<ButtonSize, string> = { sm: "w-control-sm", md: "w-contr
 const variants: Record<ButtonVariant, string> = {
   primary:
     "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
-    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] " +
-    /* Flat has no light (R2): under data-material="flat" the fill catches no top highlight. */
-    "in-[[data-material=flat]]:inset-shadow-none",
+    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] ",
   secondary:
     "bg-block text-fg shadow-(--block-lift) enabled:not-data-loading:active:shadow-(--block-press) forced-colors:border " +
     "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover)",
@@ -93,13 +98,11 @@ const variants: Record<ButtonVariant, string> = {
     "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
     "in-[[data-dialog-footer]]:enabled:shadow-none in-[[data-dialog-footer]]:enabled:active:shadow-none " +
     "in-[[data-dialog-footer]]:enabled:inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] " +
-    "in-[[data-material=flat]]:in-[[data-dialog-footer]]:enabled:inset-shadow-none " +
     "in-[[data-dialog-footer]]:enabled:hover:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)] " +
     "in-[[data-dialog-footer]]:enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)]",
 };
 const disabledLook =
-  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none " +
-  "in-[[data-material=flat]]:disabled:bg-surface-3 in-[[data-material=flat]]:disabled:shadow-none";
+  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none ";
 
 /* One child is the label. Several (an icon and a word) sit in the row: text runs are trimmed labels, elements sit as they are. */
 function label(children: ReactNode): ReactNode {
@@ -120,6 +123,66 @@ function label(children: ReactNode): ReactNode {
   return out;
 }
 
+/** What a body gets from the contract: the resolved state, the geometry the control scale sets, and the element's attributes. A body adds its look and its data-body, and nothing else about what the button is. */
+export type ButtonBodyProps = {
+  variant: ButtonVariant;
+  size: ButtonSize;
+  iconOnly: boolean;
+  loading: boolean;
+  disabled: boolean | undefined;
+  /** The control scale's height, side padding and text size for this size. */
+  sizeClass: string;
+  /** The corner: rounded-control, or a round icon-only button's width and pill. */
+  shapeClass: string;
+  /** w-full when the button fills its container, else empty. */
+  blockClass: string;
+  /** The caller's className. */
+  className: string;
+  /** Fun mode's press (the deeper sink and its spring) as a style; undefined when fun mode is off. */
+  fun: CSSProperties | undefined;
+  /** The row: icon, label and trailing icon, mounted at opacity 0 while loading so the width holds. */
+  children: ReactNode;
+  /** The 16px spinner, for the body to place while loading. */
+  spinner: ReactNode;
+  /** type, disabled, aria-busy, aria-disabled, data-loading, the caller's style and other attributes, and the click handler that ignores presses while loading. */
+  rootProps: ComponentPropsWithRef<"button"> & { "data-loading"?: true };
+};
+
+const WorldContext = createContext<ReturnType<typeof useMaterial> | null>(null);
+
+/** A frame that sets its own `data-material` (a study strip, a side-by-side preview) wraps its buttons in this to draw that material's body, since a button reads <html> otherwise. */
+export function ButtonWorld({
+  material,
+  children,
+}: {
+  /** The material the frame draws: press, flat or device. */
+  material: "press" | "flat" | "device";
+  /** The buttons in the frame. */
+  children: ReactNode;
+}) {
+  return <WorldContext.Provider value={material}>{children}</WorldContext.Provider>;
+}
+
+/** Press's body: the raised block that sinks half a pixel. The default, and what a world without a body of its own gets. */
+function PressBody({ variant, sizeClass, shapeClass, blockClass, className, fun, children, spinner, loading, rootProps }: ButtonBodyProps) {
+  const { style, ...root } = rootProps;
+  return (
+    <button
+      {...root}
+      data-body="press"
+      className={[base, sizeClass, variants[variant], disabledLook, shapeClass, blockClass, className].join(" ")}
+      style={fun ? { ...fun, ...style } : style}
+    >
+      {children}
+      {loading && (
+        <span className="absolute inset-0 grid place-items-center" aria-hidden="true">
+          {spinner}
+        </span>
+      )}
+    </button>
+  );
+}
+
 export function Button({
   variant = "secondary",
   size = "md",
@@ -137,7 +200,8 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const fun = useFun();
-  const shape = iconOnly ? `${iconSizes[size]} px-0 rounded-pill` : "rounded-control";
+  const material = useMaterial();
+  const world = useContext(WorldContext) ?? material;
   /* Fun mode: the sink (the third transitioned property) takes the press spring and goes deeper; the fills keep the instant tier. */
   const press: CSSProperties | undefined = fun
     ? ({
@@ -146,17 +210,30 @@ export function Button({
         transitionTimingFunction: `var(--ease-out), var(--ease-out), ${fun.press.easing}`,
       } as CSSProperties)
     : undefined;
+  const Body = byWorld(world, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody });
   return (
-    <button
-      type={type}
+    <Body
+      variant={variant}
+      size={size}
+      iconOnly={iconOnly}
+      loading={loading}
       disabled={disabled}
-      aria-busy={loading || undefined}
-      aria-disabled={loading || undefined}
-      data-loading={loading || undefined}
-      className={[base, sizes[size], variants[variant], disabledLook, shape, block ? "w-full" : "", className].join(" ")}
-      style={press ? { ...press, ...style } : style}
-      {...rest}
-      onClick={loading ? (e) => e.preventDefault() : onClick}
+      sizeClass={sizes[size]}
+      shapeClass={iconOnly ? `${iconSizes[size]} px-0 rounded-pill` : "rounded-control"}
+      blockClass={block ? "w-full" : ""}
+      className={className}
+      fun={press}
+      spinner={<Spinner />}
+      rootProps={{
+        type,
+        disabled,
+        "aria-busy": loading || undefined,
+        "aria-disabled": loading || undefined,
+        "data-loading": loading || undefined,
+        style,
+        ...rest,
+        onClick: loading ? (e) => e.preventDefault() : onClick,
+      }}
     >
       <span
         className={
@@ -170,12 +247,7 @@ export function Button({
         {iconOnly && children}
         {iconRight}
       </span>
-      {loading && (
-        <span className="absolute inset-0 grid place-items-center" aria-hidden="true">
-          <Spinner />
-        </span>
-      )}
-    </button>
+    </Body>
   );
 }
 
