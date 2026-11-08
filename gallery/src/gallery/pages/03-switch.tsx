@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { Switch } from "@/components/switch";
-import { useMotionDial } from "@/motion";
+import { MaterialProvider, useMotionDial } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -17,7 +19,7 @@ export const meta: PageMeta = {
   fun: "Flip a switch: the block springs across and meets the far wall with a little life.",
   tiers: ["responsive", "instant"],
   mechanism:
-    "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space sends it across the tray on the responsive tier, 200ms with no bounce. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and word change on the instant tier, 100ms, and the tray never moves. Under Flat the words go and the tray is ink when on. Under Device the block is a key on a skirt in a well. Reduced motion drops the crossing.",
+    "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space sends it across the tray on the responsive tier, 200ms with no bounce. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and word change on the instant tier, 100ms, and the tray never moves. Under Press the block is weight: it presses down and slides in the tray with a little give, its word changing as it lands. Under Flat it is a pill: nothing presses, an ink fill and a round knob that slides, no words. Under Device it is a toggle key: it sinks its 2px under the finger and flips across its well in three steps with a detent, and its word lights on an LCD beside it with a lamp. Reduced motion drops the crossing.",
 };
 
 export const docs: PageDocs = {
@@ -198,6 +200,29 @@ function DisabledDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center justify-items-start gap-2 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <Switch label="Email me about new deploys" defaultChecked />
+              <Switch label="Weekly digest" />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function SwitchPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -235,6 +260,15 @@ export default function SwitchPage() {
         code="DisabledDemo"
       >
         <DisabledDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One switch, one contract, three bodies. Press is a block in a tray with its state in words. Flat is an ink pill with a round knob and no words. Device is a toggle key in a well that flips with a detent, its word and a lamp on an LCD beside it. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="Switch" component={Switch} props={{ label: "Email me when a build finishes", description: "One email per build, never a digest." }} />

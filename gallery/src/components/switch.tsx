@@ -34,7 +34,7 @@
  *   It resolves them once into SwitchBodyProps and renders the body the material picks (byWorld). PressBody, above, is
  *   the default. bodies/switch.flat.tsx and bodies/switch.device.tsx are the other two; each draws its own root
  *   element, and its own --sw-travel, which a drag measures. A frame that sets its own look (a study's strip, a
- *   preview with lookAttributes) draws its own body, not <html>'s.
+ *   preview inside a MaterialProvider) draws its own body, not <html>'s.
  * - Flat (R1 to R3, proposals/flat-pill.md), bodies/switch.flat.tsx: the words go (side and fill say the state), the
  *   tray loses its fill and keeps only the 1.5px --line-control edge while off, with a --line-control knob at the
  *   start. On it is an ink tray with a canvas knob (the accent only for tone="accent", the one main switch, P1) at the
@@ -46,7 +46,6 @@
  */
 import {
   useId,
-  useLayoutEffect,
   useRef,
   useState,
   type ComponentProps,
@@ -55,7 +54,6 @@ import {
   type PointerEvent,
   type ReactNode,
   type Ref,
-  type RefObject,
 } from "react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
 import { byWorld, useFun, useMaterial } from "@/motion";
@@ -181,24 +179,6 @@ const following: CSSProperties = {
   transitionTimingFunction: "var(--ease-out)",
 };
 
-type Material = ReturnType<typeof useMaterial>;
-
-/* A frame that sets its own look (a study's strip, a preview drawn with lookAttributes) draws its own body, not
-   <html>'s: the nearest [data-material], or Press where a [data-theme] frame says none (it declares Press again). */
-function useBodyMaterial(row: RefObject<HTMLElement | null>): Material {
-  const page = useMaterial();
-  const [framed, setFramed] = useState<Material | null>(null);
-  useLayoutEffect(() => {
-    for (let el = row.current; el; el = el.parentElement) {
-      const m = el.dataset.material;
-      if (m === "flat" || m === "device") return setFramed(m);
-      if (el.dataset.theme) return setFramed("press");
-    }
-    setFramed(null);
-  }, [page, row]);
-  return framed ?? page;
-}
-
 /** One switch with its label. Use checked and onCheckedChange to control it, or defaultChecked to leave it alone. */
 export function Switch({
   label,
@@ -221,8 +201,7 @@ export function Switch({
   const id = idProp ?? auto;
   const descriptionId = description ? `${id}-description` : undefined;
   const end = align === "end";
-  const row = useRef<HTMLDivElement>(null);
-  const Body = byWorld(useBodyMaterial(row), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody });
 
   /* The switch keeps its own state when you do not control it, because a drag sets it to a side, not a flip. */
   const [inner, setInner] = useState(defaultChecked ?? false);
@@ -290,7 +269,6 @@ export function Switch({
 
   return (
     <div
-      ref={row}
       className={
         "group/switch relative grid select-none py-1.5 " +
         (end ? "w-full grid-cols-[1fr_auto] gap-x-4 " : "w-fit grid-cols-[auto_1fr] gap-x-3 ") +

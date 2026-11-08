@@ -17,7 +17,7 @@ const pill =
   "bg-transparent shadow-[inset_0_0_0_1.5px_var(--line-control)] data-[state=checked]:bg-fg data-[state=checked]:shadow-none " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
   "enabled:group-hover/switch:data-[state=checked]:bg-[color-mix(in_oklab,var(--fg)_86%,var(--canvas))] " +
-  "disabled:cursor-not-allowed disabled:opacity-40 disabled:data-[state=checked]:bg-fg " +
+  "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:opacity-40 disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:data-[state=checked]:bg-fg disabled:data-[state=checked]:shadow-none " +
   "forced-colors:border forced-colors:p-px " + // the border is real, so the padding gives it back its px
   focusRing;
 
@@ -34,7 +34,8 @@ const knobOn = "bg-canvas forced-colors:bg-[Highlight]";
 export function SwitchFlatBody({ shown, disabled, x, tone, motion, root, className }: SwitchBodyProps) {
   return (
     <SwitchPrimitive.Root {...root} data-body="flat" className={pill + (tone === "accent" ? pillAccent : "") + className}>
-      <SwitchPrimitive.Thumb className={knob + " " + (disabled || !shown ? knobOff : knobOn)} style={{ ...motion, translate: `${x} 0` }} />
+      {/* The empty child is not decoration: without it Chromium rasters the pill and knob edges a shade differently (measured, 0 pixels with it). */}
+      <SwitchPrimitive.Thumb className={knob + " " + (disabled || !shown ? knobOff : knobOn)} style={{ ...motion, translate: `${x} 0` }}><span aria-hidden="true" className="hidden" /></SwitchPrimitive.Thumb>
     </SwitchPrimitive.Root>
   );
 }

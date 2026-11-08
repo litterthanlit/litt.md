@@ -2,7 +2,7 @@
  * Switch, the Device body (proposals/worlds.md, Bodies; material.md, 8): a toggle key that flips with a detent.
  *
  * - A key (--block, --key-lift: its face, a dark rim and a 2px skirt) in a well (--tray, --tray-shade), 48 by 32, the
- *   key 24 by 26 and 3px in, so it crosses 18px (--sw-travel). Its corners are the well's less those 3px, so the two
+ *   key 24 by 26 and 3px in, so it crosses 18px (--sw-travel). Its corners are the well's less those 2px, so the two
  *   stay concentric at every shape. Two grip lines on its face tell which way it faces.
  * - The detent: the key crosses in three even steps on the instant tier (100ms), as a display's segments light, never
  *   a spring. Reduced motion zeroes the tier, so it flips at once. A drag follows the finger 1:1 and lands on the
@@ -22,21 +22,21 @@ const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-
 
 /* The button holds the well and the glass side by side; its label is the row's, stretched over the whole row. */
 const housing =
-  "[--sw-travel:18px] " +
+  "[--sw-travel:20px] " +
   "peer relative z-1 inline-flex h-8 shrink-0 cursor-pointer touch-pan-y items-center gap-2 self-start rounded-control " +
   "disabled:cursor-not-allowed " +
   focusRing;
 
 /* The well is cut into the body. It clips the key's cast, so nothing spills past its walls. */
 const well =
-  "relative inline-flex h-8 w-12 shrink-0 items-center overflow-hidden rounded-control p-[3px] " +
+  "relative inline-flex h-8 w-12 shrink-0 items-center overflow-hidden rounded-control p-0.5 " +
   "forced-colors:border forced-colors:p-px";
 const wellOn = " bg-tray shadow-(--tray-shade) group-hover/switch:bg-[color-mix(in_oklab,var(--tray),var(--fg)_4%)]";
 const wellDisabled = " bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 
 /* The key's face. At rest its skirt shows 2px below it; pressed it sinks that 2px and the skirt closes. */
 const keyBase =
-  "pointer-events-none flex h-6.5 w-6 shrink-0 items-center justify-center gap-1 rounded-[calc(var(--radius-control)-3px)] " +
+  "pointer-events-none flex h-7 w-6 shrink-0 items-center justify-center gap-1 rounded-[calc(var(--radius-control)-2px)] " +
   "bg-block shadow-(--key-lift) " +
   "group-active/switch:shadow-(--block-press) group-active/switch:[transform:translateY(var(--press-depth))] " +
   "forced-colors:border";
@@ -46,7 +46,7 @@ const grip = "h-3 w-px bg-[color-mix(in_oklab,var(--fg)_28%,transparent)] forced
 
 /* LCD glass beside the key: the word in the mono at the caption size, and the lamp. */
 const glass =
-  "inline-flex h-6 min-w-13 shrink-0 items-center gap-1.5 rounded-control bg-field px-2.5 font-field text-caption font-title " +
+  "inline-flex h-6 min-w-14 shrink-0 items-center gap-1.5 rounded-control bg-field px-2.5 font-field text-caption font-title " +
   "shadow-(--field-shade) forced-colors:border";
 const lamp = "size-1.5 shrink-0 rounded-pill forced-colors:border";
 
