@@ -6,16 +6,16 @@
  *   --line-control line and the top wall's shade (R3), the focus line and ring while the text is focus-visible, the
  *   danger line with an error, flat on surface-2 when disabled. The number at the text weight with tabular figures,
  *   so it does not shift as it changes, and an optional unit after it in --fg-subtle ("seats", "GB").
- * - Steppers: − then +, raised blocks (R3: --block, --block-lift) set 4px inside the field's end, 4px apart, square at
- *   the field's height less 8px (24, 36 or 48px), with corners the control radius less 2px so they stay concentric.
- *   You press them, so they stand up out of the cut; pressed, the cast tightens (--block-press) at once and the block
- *   sinks --press-depth, as a secondary Button does. At its bound a stepper is disabled and lies flat (no fill, no
- *   lift, --fg-disabled): nothing to push. A press steps once; held, it repeats after 400ms, every 70ms, until it
- *   lets go or reaches the bound. They are not Tab stops (the arrow keys do the same in the field), and pressing one
- *   leaves focus where it was.
- * - Flat (proposals/flat-pill.md, idea C): a grey track with no outline, the value (and its unit) in a --surface-1
- *   bubble, a round − and + either side of it with no fill until the pointer is over them. Focus is the ink ring on
- *   the track, an error the danger ring. The DOM is the same; the bubble wrapper is display: contents under Press.
+ * - Steppers (Press): − then +, the two halves of one raised block beside the cut, 8px from it, a 1px seam between
+ *   (R3: --block, --block-lift), each the field's height square, its outer corners the control radius and the corners
+ *   at the seam square. You press them, so they stand up; pressed, a half sinks --press-depth
+ *   and its cast tightens (--block-press) at once while the other half lifts 1px, so the rocker tips toward the side
+ *   pressed. At its bound a half is disabled and lies flat in a socket (--slot, --tray-shade, --fg-disabled): nothing
+ *   to push. A press steps once; held, it repeats after 400ms, every 70ms, until it lets go or reaches the bound.
+ *   They are not Tab stops (the arrow keys do the same in the field), and pressing one leaves focus where it was.
+ * - Flat: one grey pill around three words. The figure in ink at the title weight with its unit after it in grey, and
+ *   − and + set as words either side, no fill until the pointer is over them. No bubble, no icon, no shade. At a bound
+ *   its word goes grey and light. Focus is the ink ring on the pill, an error the danger ring.
  * - Typing is free: what is typed is read when the field is left or Enter is pressed, in the page's locale (group
  *   separators, a comma decimal). Then it is kept between min and max, put on the step, and shown formatted
  *   (Intl.NumberFormat, with `format` for a currency or a percent). Text that is not a number goes back to the last
@@ -31,8 +31,8 @@
  * - hideLabel keeps the label for screen readers only, where the row around the field already says what it counts (a
  *   cart line's quantity). A hidden label is not a scrub handle.
  * - Bodies (proposals/worlds.md, Bodies): the component resolves the props, the value, the keys and the hold into
- *   NumberFieldBodyProps and renders the body the material picks (byWorld). Press is the cut with its blocks, above.
- *   Flat is the grey pill with a round − and + either side of the value. Device is an LCD readout (glass in a bezel
+ *   NumberFieldBodyProps and renders the body the material picks (byWorld). Press is the cut with its rocker, above.
+ *   Flat is the one grey pill with the figure and − and + set as words. Device is an LCD readout (glass in a bezel
  *   well, the number in the mono) with − and + as keys on their 2px skirts beside the glass, not inside it; a key sinks
  *   the whole --press-depth, and a held one repeats as above. The label and the hint stay the component's own; each
  *   body carries data-body on its field and never changes a prop, a key or what a screen reader hears.
@@ -57,20 +57,7 @@ const FIELD =
   "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
   "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat: a grey track with no outline; the ring and the danger ring are the only edges. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:has-[input:focus-visible]:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:data-[invalid]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[invalid]:has-[input:focus-visible]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[disabled]:shadow-none " +
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
-
-/* Flat's bubble: the value (and its unit) in a --surface-1 bubble that fills the track between the round − and +.
-   Under Press the wrapper is display: contents, so the field lays out exactly as before. */
-const BUBBLE =
-  "contents in-[[data-material=flat]]:flex in-[[data-material=flat]]:order-2 in-[[data-material=flat]]:min-w-0 in-[[data-material=flat]]:flex-1 " +
-  "in-[[data-material=flat]]:items-center in-[[data-material=flat]]:self-stretch in-[[data-material=flat]]:rounded-[calc(var(--radius-control)-2px)] " +
-  "in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:has-[input:disabled]:bg-transparent " +
-  "forced-colors:in-[[data-material=flat]]:border";
 
 /* Height, the text's size and the air before it, and the steppers' size: the field's height less 8px, so each block
    sits 4px inside the field. */
@@ -109,34 +96,30 @@ export type NumberFieldBodyProps = {
   onFieldClick: MouseEventHandler<HTMLDivElement>;
 };
 
-/* Secondary Button's block, nested 4px in the field, at the field's radius less that inset, never under 2px. The sink is transitioned as `translate`, which Tailwind's
-   translate-y-* sets; the cast swaps at once (R2). */
-const STEPPER =
-  "litt-target relative grid shrink-0 place-items-center rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] select-none [-webkit-tap-highlight-color:transparent] " +
+/* The cut is the Input's field with nothing inside its end: the figure alone, on the --cut floor. */
+const CUT = FIELD;
+
+/* The rocker: one raised block beside the cut, split in two halves with a seam between. Each half is its own button on
+   the block's material (--block, --block-lift) and the control radius on its outer corners; the corners at the seam are square.
+   Pressed, a half sinks --press-depth and the cast tightens (--block-press) while
+   its partner lifts a touch (the rocker tips toward the side pressed). The sink is transitioned as `translate`, which
+   Tailwind's translate-y-* sets; the cast swaps at once (R2). At its bound a half lies flat (no lift, no fill,
+   --fg-disabled) in the socket the block leaves, so the end that cannot move reads as such. */
+const HALF =
+  "litt-target relative grid h-full aspect-square shrink-0 place-items-center select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--block-lift) enabled:forced-colors:border " +
   "enabled:hover:bg-(--block-hover) " +
   "enabled:active:shadow-(--block-press) enabled:active:translate-y-(--press-depth) " +
-  "disabled:cursor-not-allowed disabled:text-fg-disabled " +
-  /* Flat: a round key on the track, no fill until the pointer is over it. */
-  "in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:enabled:bg-transparent in-[[data-material=flat]]:enabled:hover:bg-(--block-hover)";
+  "disabled:cursor-not-allowed disabled:bg-slot disabled:text-fg-disabled disabled:shadow-(--tray-shade) forced-colors:border";
+const HALF_MINUS = " rounded-l-control rounded-r-none group-has-[[data-dir=plus]:enabled:active]/rocker:enabled:-translate-y-px";
+const HALF_PLUS = " rounded-r-control rounded-l-none group-has-[[data-dir=minus]:enabled:active]/rocker:enabled:-translate-y-px";
 
-/** Press, the cut with its raised − and + blocks inside the end. */
+/** Press, the cut for the figure and a rocker block beside it, − and + its two halves. */
 function PressBody({ sz, invalid, disabled, unit, input, inputRef, minus, plus, onFieldClick }: NumberFieldBodyProps) {
-  const stepper = (props: ComponentProps<"button">, dir: 1 | -1) => (
-    <button {...props} className={STEPPER + " " + sz.step + (dir < 0 ? " in-[[data-material=flat]]:order-1" : " in-[[data-material=flat]]:order-3")}>
-      {dir < 0 ? <MinusIcon /> : <PlusIcon />}
-    </button>
-  );
   return (
-    <div
-      data-body="press"
-      data-invalid={invalid ? "" : undefined}
-      data-disabled={disabled ? "" : undefined}
-      className={FIELD + " pr-1 in-[[data-material=flat]]:py-1 in-[[data-material=flat]]:pl-1 " + sz.field}
-      onClick={onFieldClick}
-    >
-      <span className={BUBBLE}>
+    <div data-body="press" className={"flex min-w-0 items-stretch gap-2 " + sz.field} onClick={onFieldClick}>
+      <div data-invalid={invalid ? "" : undefined} data-disabled={disabled ? "" : undefined} className={CUT + " flex-1 pr-1"}>
         <input
           ref={inputRef}
           {...input}
@@ -153,11 +136,15 @@ function PressBody({ sz, invalid, disabled, unit, input, inputRef, minus, plus, 
             {unit}
           </span>
         )}
-      </span>
-      <span className="flex shrink-0 items-center gap-1 in-[[data-material=flat]]:contents">
-        {stepper(minus, -1)}
-        {stepper(plus, 1)}
-      </span>
+      </div>
+      <div className="group/rocker flex shrink-0 gap-px">
+        <button {...minus} data-dir="minus" className={HALF + HALF_MINUS}>
+          <MinusIcon />
+        </button>
+        <button {...plus} data-dir="plus" className={HALF + HALF_PLUS}>
+          <PlusIcon />
+        </button>
+      </div>
     </div>
   );
 }

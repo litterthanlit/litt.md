@@ -167,7 +167,7 @@ export default function NumberFieldPage() {
         title="Three bodies"
         tier="instant"
         align="start"
-        caption="One number field, one contract, three bodies. Press is the Input's cut with a raised block for each stepper standing up inside its end. Flat is a grey track with the number in a bubble and a round minus and plus either side. Device is an LCD readout, the figure in the mono on glass in a bezel well, with minus and plus as keys on their 2px skirts beside the glass; a key sinks its 2px, and a held one repeats. Each is drawn here whatever look the page is in; the props, the arrow keys, Page Up and Down, Home and End, and what a screen reader hears are the same in all three."
+        caption="One number field, one contract, three bodies. Press is the figure in a cut with minus and plus beside it as one rocker block split in two; press a half and it sinks while the other lifts a touch. Flat is one grey pill around three words: the figure in ink, minus and plus set as words either side, nothing nested. Device is an LCD readout, the figure in the mono on glass in a bezel well, with minus and plus as keys on their 2px skirts beside the glass; a key sinks its 2px, and a held one repeats. Each is drawn here whatever look the page is in; the props, the arrow keys, Page Up and Down, Home and End, and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
