@@ -222,6 +222,9 @@ async function audit(page, size, scheme, look, mutate) {
   /* The pixel claim. One style hides the callouts and gives every stage box the same ground. */
   await pg.addStyleTag({ content: `section[aria-labelledby^=study-anatomy] svg.pointer-events-none, [data-callout-label] { visibility: hidden !important }
     section[aria-labelledby^=study-anatomy] > div > div:first-child, [data-study-material] { background: #fff !important; box-shadow: none !important; outline: none !important; border: 0 !important }` });
+  /* Every stage box is a .litt-raised panel, which Device draws as an LCD screen with its own inks, while the frames sit
+     on the body: under Device the frame becomes a screen too, so the same object is compared in the same place. */
+  if (material === "device") await pg.locator(`[data-study-material="device"]`).evaluate((n) => n.classList.add("litt-raised"));
   /* The object itself, not its wrapper: the wrapper fills its stage, and the stages differ in width. */
   const a = pg.locator(`section[aria-labelledby="study-anatomy-${page.id}"] > div > div:first-child > div:first-child > *:first-child`);
   const b = pg.locator(`[data-study-material="${material}"] > div > *:first-child`);
