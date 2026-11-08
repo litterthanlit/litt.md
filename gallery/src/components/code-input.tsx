@@ -11,8 +11,11 @@
  *   sans at the body size, in tabular figures. Six cells split three and three
  *   with a wider gap, so the code reads in halves. The label sits above at the title weight and a hint or an error
  *   below, as on a TextField.
- * - Flat (proposals/flat-pill.md): a grey pill per cell with no outline, the ink ring on the current one and the
- *   danger ring on every cell with an error.
+ * - Press, the instrument: one raised plate (--block, --plate-lift) holds the cells, each a cut into it (--cut,
+ *   --cut-shade); a typed character's cut catches the light on its lower wall (--highlight turned over).
+ * - Flat, the page (proposals/flat-pill.md): one grey pill per character parted by space, the empty ones the lighter
+ *   grey (--surface-2), a typed one --block with its character in ink at the title weight, the ink ring on the current
+ *   one and the danger ring on every cell with an error.
  * - Focus: the cell the next character goes into takes the focus line and ring, and an empty one shows a still 1px
  *   caret. Nothing blinks.
  * - Typing: only what the code can hold gets in (digits, or letters and digits in capitals); the rest is dropped, so a
@@ -90,10 +93,18 @@ const cellWidths: Record<CodeInputSize, string> = {
   lg: "var(--control-lg)",
 };
 
-/** Press, the default body: one cut cell per character (the Input's), the current one on the focus line and ring. */
+/** Press, the instrument: one raised plate (--block, --plate-lift) holds the cells, each a cut into it (--cut,
+ *  --cut-shade). A typed character's cut catches the light on its lower wall: a lit top edge (--highlight) turned over. */
 function PressBody({ length, cellHeight, code, at, focused, disabled, error }: CodeInputBodyProps) {
   return (
-    <div aria-hidden="true" data-body="press" className="flex w-full gap-2">
+    <div
+      aria-hidden="true"
+      data-body="press"
+      className={
+        "flex w-full gap-2 rounded-surface p-2 forced-colors:border " +
+        (disabled ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]" : "bg-block shadow-(--plate-lift)")
+      }
+    >
       {Array.from({ length }, (_, i) => {
         const char = code[i] ?? "";
         const current = focused && !disabled && i === at;
@@ -101,34 +112,30 @@ function PressBody({ length, cellHeight, code, at, focused, disabled, error }: C
           <span
             key={i}
             className={
-              "grid min-w-8 flex-1 basis-0 place-items-center rounded-control text-body tabular-nums font-normal " +
+              "relative grid min-w-7 flex-1 basis-0 place-items-center rounded-[calc(var(--radius-surface)-8px)] text-body tabular-nums font-normal " +
               "transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border " +
               cellHeight +
               /* six cells read as two halves of three */
               (length === 6 && i === 3 ? " ml-2" : "") +
               /* Forced colors drop the ring (a box-shadow), so the current cell takes an outline there. */
               (current ? " forced-colors:outline-2 forced-colors:outline-offset-2 forced-colors:outline-[Highlight]" : "") +
-              /* Flat: no outline on a cell; the ink ring marks the current one, the danger ring an error. */
               (disabled
-                ? " in-[[data-material=flat]]:shadow-none"
-                : error
-                  ? " in-[[data-material=flat]]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)]"
-                  : current
-                    ? " in-[[data-material=flat]]:shadow-(--focus-ring)"
-                    : " in-[[data-material=flat]]:shadow-none") +
-              (disabled
-                ? " bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
-                : " bg-field font-field text-field-ink " +
+                ? " bg-surface-3 text-fg-disabled"
+                : " bg-cut font-field text-field-ink " +
                   (current
                     ? error
-                      ? "shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)]"
-                      : "shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)]"
+                      ? "shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)]"
+                      : "shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)]"
                     : error
-                      ? "shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)]"
-                      : "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)]"))
+                      ? "shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)]"
+                      : "shadow-(--cut-shade)"))
             }
           >
-            {char || (current ? <span className="h-5 w-px bg-field-ink forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" /> : null)}
+            {char ||
+              (current ? <span className="h-5 w-px bg-field-ink forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" /> : null)}
+            {char && !disabled && (
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 rotate-180 rounded-[calc(var(--radius-surface)-8px)] shadow-(--highlight)" />
+            )}
           </span>
         );
       })}
