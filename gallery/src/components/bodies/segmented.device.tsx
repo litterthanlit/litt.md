@@ -3,8 +3,9 @@
  *
  * - One well (--tray, --tray-shade) holds the keys, side by side, each the width of the widest word. A key is
  *   --block on --key-lift, its corners the well's less its 2px inset, with 2px of the well left under it for its skirt.
- * - The chosen key stays latched down: sunk the whole --press-depth (2px) onto the skirt on --block-press, its lamp
- *   lit in --fg. The others stand up, their lamp a dim ring. A press on a standing key sinks it too, and choosing it
+ * - The chosen key stays latched down: sunk the whole --press-depth (2px) onto the skirt, so its skirt is gone, its
+ *   face a step darker (--block mixed 55% toward --tray) and inset-shaded with --tray-shade, the well's own cut, its lamp lit in --fg.
+ *   The others stand up on --key-lift, whose skirt is the 2px of well left under each key, their lamp a dim ring. A press on a standing key sinks it too, and choosing it
  *   lets the last one up. The word stays, so a lamp never says the state alone.
  * - Nothing glides. The change switches in place in three steps on the instant tier (100ms), as the Switch's detent
  *   does; reduced motion zeroes the tier, so it happens at once.
@@ -68,7 +69,7 @@ export function SegmentedDeviceBody({ legend, showLegend, name, value, options, 
                   (off
                     ? " bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
                     : selected
-                      ? " bg-block text-fg shadow-(--block-press) [transform:translateY(var(--press-depth))]"
+                      ? " bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] text-fg shadow-(--tray-shade) [transform:translateY(var(--press-depth))]"
                       : " bg-block text-fg-subtle shadow-(--key-lift) hover:text-fg group-active/key:text-fg group-active/key:shadow-(--block-press) group-active/key:[transform:translateY(var(--press-depth))]")
                 }
               >

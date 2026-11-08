@@ -263,7 +263,7 @@ export default function SegmentedPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One control, one contract, three bodies. Press is a raised segment in a tray that glides to your pick. Flat is a grey bubble that glides. Device is a row of keys in one well: the chosen key stays latched down with its lamp lit, a press lets the last one up, and nothing glides, the change switches in place in three steps. Each is drawn here whatever look the page is in; the props, the arrow keys and what a screen reader hears are the same in all three."
+        caption="One control, one contract, three bodies. Press is blocks in a tray: one raised block over empty bays that you can take and drag along the tray to the nearer option, or click and arrow to. Flat is words alone, set in a line with no tray, and a grey pill bubble that glides and resizes to the chosen word. Device is a row of keys in one well: the chosen key is latched all the way down, its skirt gone and its lamp lit, a press lets the last one up, and nothing glides, the change switches in place in three steps. Each is drawn here whatever look the page is in; the props, the arrow keys and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

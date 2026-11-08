@@ -1,33 +1,30 @@
 /**
- * Segmented control, the Flat body (proposals/worlds.md, Bodies; proposals/flat-pill.md): the track has no fill or
- * frame (the tokens), so the selected segment is a grey bubble (--block is --surface-3) at the control radius, and the
- * others are --fg-muted words. It glides to the pick like Press. Its forced-colors border stays.
+ * Segmented control, the Flat body (proposals/worlds.md, Bodies; proposals/flat-pill.md): words alone, set in a line.
+ * There is no tray, no fill and no frame. The chosen word sits in a grey bubble (--block is --surface-3) at the pill
+ * radius, sized to its own word, and the others are --fg-muted words with nothing around them. The bubble glides to
+ * the pick, and it changes its width on the way because the words do not share one. Space does the dividing: the
+ * words are set apart by their own padding, and their hit areas touch, so a pointer never lands between two.
+ * Forced colors gives the bubble a real border, which is the only edge, since there is no tray to keep.
  */
 import { LayoutGroup, motion } from "motion/react";
 import type { SegmentedBodyProps, SegmentedSize } from "../segmented";
 
-/* A held unselected segment on a coarse pointer fills (fg 6%, color only) and takes the --fg text. */
+/* A held unselected word on a coarse pointer fills (fg 6%, color only) and takes the --fg text. */
 const PRESS = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
 
 const sizes: Record<SegmentedSize, { track: string; segment: string }> = {
-  sm: { track: "h-control-sm pointer-coarse:h-control-md", segment: "px-control-pad-sm text-caption pointer-coarse:text-small" },
-  md: { track: "h-control-md", segment: "px-control-pad-md text-small" },
+  sm: { track: "h-control-sm pointer-coarse:h-control-md", segment: "px-3.5 text-caption pointer-coarse:text-small" },
+  md: { track: "h-control-md", segment: "px-4 text-small" },
 };
 
-/** Flat, the grey bubble that glides. */
+/** Flat, the grey bubble that glides behind the chosen word. */
 export function SegmentedFlatBody({ legend, showLegend, name, value, options, size, block, disabled, className, select, groupId, enter }: SegmentedBodyProps) {
   const look = sizes[size];
   return (
     <fieldset data-body="flat" disabled={disabled} className={"m-0 min-w-0 border-0 p-0 " + className}>
       <legend className={showLegend ? "mb-2 p-0 text-small font-title text-fg" : "sr-only"}>{legend}</legend>
       <LayoutGroup id={groupId}>
-        <div
-          className={
-            "relative grid-flow-col auto-cols-fr rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " +
-            (block ? "grid w-full " : "inline-grid ") +
-            look.track
-          }
-        >
+        <div className={"relative flex " + (block ? "w-full " : "w-fit ") + look.track}>
           {options.map((o) => {
             const selected = value === o.value;
             const off = disabled || !!o.disabled;
@@ -35,12 +32,13 @@ export function SegmentedFlatBody({ legend, showLegend, name, value, options, si
               <label
                 key={o.value}
                 className={
-                  "litt-target relative grid h-full select-none place-items-center rounded-[calc(var(--radius-control)-2px)] font-title " +
+                  "litt-target relative grid h-full select-none place-items-center rounded-pill font-title " +
                   "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+                  (block ? "flex-1 " : "") +
                   look.segment +
                   (off
                     ? " cursor-not-allowed text-fg-disabled"
-                    : " cursor-pointer " + (selected ? "text-fg" : "text-fg-subtle hover:text-fg " + PRESS))
+                    : " cursor-pointer " + (selected ? "text-fg" : "text-fg-muted hover:text-fg " + PRESS))
                 }
               >
                 <input
@@ -56,17 +54,17 @@ export function SegmentedFlatBody({ legend, showLegend, name, value, options, si
                 />
                 {selected && (
                   <motion.span
-                    layoutId="segmented-surface"
+                    layoutId="segmented-bubble"
                     transition={enter}
                     aria-hidden="true"
-                    className="absolute inset-0 rounded-[calc(var(--radius-control)-2px)] bg-block shadow-(--block-lift) forced-colors:border-2"
+                    className={"absolute inset-0 rounded-pill forced-colors:border-2 " + (off ? "bg-surface-2" : "bg-block")}
                   />
                 )}
                 <span className="litt-trim relative z-1">{o.label}</span>
-                {/* The label and the ring sit above the selected surface (z-1), so the surface never covers them while it glides. */}
+                {/* The word and the ring sit above the bubble (z-1), so the bubble never covers them while it glides. */}
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 z-1 rounded-[calc(var(--radius-control)-2px)] peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
+                  className="pointer-events-none absolute inset-0 z-1 rounded-pill peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
                 />
               </label>
             );
