@@ -17,7 +17,7 @@ export const meta: PageMeta = {
     "A short one-time code, such as the six digits from a sign-in email, drawn as one cell per character, each cut into the page like an Input, but built as one real field, so paste, the browser's one-time-code autofill and screen readers all work as in any field. The next cell takes the focus edge and a still caret, and the last character runs onComplete once. The edges fade on the instant tier.",
   tiers: ["instant"],
   mechanism:
-    "One real input lies over the cells, invisible, so typing, paste and one-time-code autofill work as in any field; the cells are only drawn from its value. The cell the next character goes into takes the focus edge and a still caret, and nothing blinks. Each digit fills a cell and the edge moves to the next, fading on the instant tier, 100ms. The last digit runs onComplete once. An error puts the danger edge on every cell. Under Press each cell is cut into the page like an Input. Under Flat it is a grey pill with no outline. Under Device each cell is a pane of LCD glass showing the dim ghost of a seven-segment eight until its digit is typed, then the digit lit in segments, switching in three steps on the instant tier. Reduced motion has nothing to remove: the edges change at once.",
+    "One real input lies over the cells, invisible, so typing, paste and one-time-code autofill work as in any field; the cells are only drawn from its value. The cell the next character goes into takes the focus edge and a still caret, and nothing blinks. Each digit fills a cell and the edge moves to the next, fading on the instant tier, 100ms. The last digit runs onComplete once. An error puts the danger edge on every cell. Under Press one raised plate holds the cells, each a cut into it, and a typed digit's cut catches the light on its lower wall. Under Flat each is a grey pill parted by space, the empty ones lighter, the typed digit in ink at the title weight. Under Device each cell is a pane of LCD glass showing the dim ghost of a seven-segment eight until its digit is typed, then the digit lit in segments, switching in three steps on the instant tier. Reduced motion has nothing to remove: the edges change at once.",
 };
 
 export const docs: PageDocs = {
@@ -214,7 +214,7 @@ export default function CodeInputPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One code field, one contract, three bodies. Press is a cut cell per character. Flat is a grey pill with no outline. Device is a pane of LCD glass per character, an unlit seven-segment eight until its digit is typed. Each is drawn here whatever look the page is in; the one real input, the keyboard, paste and what a screen reader hears are the same in all three."
+        caption="One code field, one contract, three bodies. Press is one raised plate with a cut per character, a filled cut lit on its lower wall. Flat is one grey pill per character parted by space, the empty ones lighter and the typed digits in ink. Device is a pane of LCD glass per character, an unlit seven-segment eight until its digit is typed. Each is drawn here whatever look the page is in; the one real input, the keyboard, paste and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
