@@ -79,7 +79,7 @@
       "hash": "c04d9b071710a074"
     },
     "checkbox": {
-      "version": "2026.11.06",
+      "version": "2026.11.09",
       "hash": "728e7ca33ec5614e"
     },
     "code-block": {
@@ -87,7 +87,7 @@
       "hash": "941606ce76eb027f"
     },
     "code-input": {
-      "version": "2026.11.08",
+      "version": "2026.11.09",
       "hash": "a3c8121c0dabce83"
     },
     "cohort-grid": {
@@ -199,7 +199,7 @@
       "hash": "92ffc0cb458467b6"
     },
     "input": {
-      "version": "2026.11.06",
+      "version": "2026.11.09",
       "hash": "7356422c5d1e7694"
     },
     "insights": {
@@ -255,11 +255,11 @@
       "hash": "f3b7f7e74e6be3f4"
     },
     "number-field": {
-      "version": "2026.11.06",
+      "version": "2026.11.09",
       "hash": "1dc89f5b60c88356"
     },
     "option-picker": {
-      "version": "2026.11.06",
+      "version": "2026.11.09",
       "hash": "29ed86ee28557935"
     },
     "pad": {
@@ -327,11 +327,11 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "segmented": {
-      "version": "2026.11.06",
+      "version": "2026.11.09",
       "hash": "f1b0ec0255c878bb"
     },
     "select": {
-      "version": "2026.11.06",
+      "version": "2026.11.09",
       "hash": "837a801f14bdbc71"
     },
     "settings": {
@@ -355,7 +355,7 @@
       "hash": "f0e9eb4cd5a8b239"
     },
     "slide-confirm": {
-      "version": "2026.11.06",
+      "version": "2026.11.09",
       "hash": "86a733cb84f5fa4a"
     },
     "slider": {
@@ -403,7 +403,7 @@
       "hash": "20ddca6bee9f812e"
     },
     "tabs": {
-      "version": "2026.11.06",
+      "version": "2026.11.09",
       "hash": "8d28963e0a25e6c6"
     },
     "tag": {

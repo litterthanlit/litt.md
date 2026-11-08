@@ -12,6 +12,18 @@ A world you can tell apart at a glance has its own color and its own voice (`pro
 - **changed** `base-styles`: an element that sets a theme or a material (`data-theme`, `data-material`, `.dark`, `.light`) sets the family again, so a part shown in another world takes that world's face.
 - **changed** `motion`: the Customize snippet's face line is `--litt-font-choice`, the one every world reads, in place of `--litt-font-sans`.
 
+Later the same day, Device wave one of the bodies (`proposals/worlds.md`, Inventory): nine more parts a hand presses and types into get a body per material. Under Press each renders as before, and under Flat as before; Device is where they change. Nothing in your code changes, and the bodies ship inside each item (`components/litt/bodies/`).
+
+- **changed** `checkbox`: a body per material. Press is the cut with a tick, as before. Flat is an outline when off and the ink when on, as before. Device is a square key that latches down and lights its lamp when checked; a radio group is a row of the same keys, interlocked, so pressing one lets the last one up.
+- **changed** `segmented`: a body per material. Press is the raised segment that glides, as before. Flat is the grey bubble, as before. Device is a row of keys on one skirt, the chosen one latched down with its lamp lit, and nothing glides.
+- **changed** `input`: a body per material. Press is the cut with the top wall's shade, as before. Flat is the grey field, as before. Device is LCD glass set in a bezel well, its label engraved on the body above it, its hint and error dim lines on the glass, an error saying its word beside a lamp.
+- **changed** `select`: a body per material. Press is the raised trigger and the glass list, as before. Flat is the grey bubble and the solid card, as before. Device is the value on an LCD readout with up and down keys that step through the options without opening the list, and a list whose current row is marked by a lamp.
+- **changed** `tabs`: a body per material. Press is the underline that glides, as before. Flat is the grey bubble, as before. Device is engraved legends with a lamp under the current one, switching on, never gliding.
+- **changed** `number-field`: a body per material. Press is the cut with its two blocks, as before. Flat is the grey pill, as before. Device is the figure on an LCD readout with minus and plus keys on their skirts beside the glass.
+- **changed** `code-input`: a body per material. Press and Flat are as before. Device is one glass cell per character, each showing a dim seven-segment eight until its digit lights; it is still one text field underneath.
+- **changed** `slide-confirm`: a body per material. Press is the cap in its tray, as before. Flat is the pill track, as before. Device is a latch key pushed along a well to an end stop, the words on an LCD strip and a lamp at the stop that lights once confirmed; let go short and it goes home in steps.
+- **changed** `option-picker`: a body per material. Press and Flat are as before. Device is a row of latching keys with engraved legends, the chosen one down with its lamp lit; a sold-out value lies flat and says so.
+
 ## 2026-11-08 · Device goes deeper: its own parts, and Only here
 
 A world goes deeper by parts and abilities that exist in it alone (`proposals/worlds.md`, Depth). A part names its worlds in its page's `meta.worlds`; the wall, the nav and the other world pages hide it, and its world page lists it under Only here. Device gets the first four, brought home from the studies on litt.design: each needs `data-material="device"` on `<html>` and says so in its install notes.
