@@ -64,6 +64,7 @@ A number someone sets: seats on a plan, a limit, a price. The Input's field with
 - **Keys:** ↑ ↓ step, Shift or Page Up and Page Down ten steps, Home and End the bounds.
 - **Accessibility:** a spinbutton named by the label, with its value, bounds and the formatted value with its unit as `aria-valuetext`; the steppers are named "Increase seats".
 - **Motion:** none. The edge fades on the instant tier, as the Input's.
+- **Bodies:** Press is the cut with raised `--block` steppers standing up inside its end, as above. Flat is a grey track with no outline, the number in a `--surface-1` bubble and a round − and + either side with no fill until the pointer is over them. Device is an LCD readout: the figure in the mono on glass (`--field`, `--field-shade`, `--field-ink`), right-aligned with its unit after it, in a bezel well (`--tray`, `--tray-shade`), with − and + as keys (`--block`, `--key-lift`, a 2px skirt) beside the glass, not inside it; a key sinks the whole `--press-depth` on the instant tier and a held one repeats after 400ms, every 70ms. One contract: the props, the `role="spinbutton"`, the value, ↑ ↓, Page Up and Page Down, and Home and End are the same in all three.
 
 ## Code input
 A short one-time code, such as the six digits from a sign-in email. It looks like one box per character and behaves like one text field.
