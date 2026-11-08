@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { ArrowUpRightIcon, CopyIcon, MoreIcon, PlusIcon, SettingsIcon, TrashIcon } from "@/components/icons";
-import { useMotionDial } from "@/motion";
+import { MaterialProvider, useMotionDial } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
+import { lookAttributes, MATERIALS } from "../look";
 
 export const meta: PageMeta = {
   id: "button",
@@ -14,7 +16,7 @@ export const meta: PageMeta = {
   fun: "Press and let go: the button goes deeper and springs back with a little life.",
   tiers: ["instant"],
   mechanism:
-    "Hover swaps the fill on the instant tier, 100ms. A press sinks the block half a pixel and tightens its cast at once, with no fade, so the hand feels it land. The box never changes size: loading keeps the label mounted at opacity 0 and the spinner turns inside the same width. Under Flat the secondary is a grey pill with no cast, so the press shows in the fill alone. Under Device it is a key on a 2px skirt, and the press takes the skirt. Reduced motion sets the sink to 0 and the fill still answers.",
+    "Hover swaps the fill on the instant tier, 100ms. A press sinks the block half a pixel and tightens its cast at once, with no fade, so the hand feels it land. The box never changes size: loading keeps the label mounted at opacity 0 and the spinner turns inside the same width. Reduced motion sets the sink to 0 and the fill still answers. Each world has its own body, so the hand feels each differently. In Press the hand meets a raised block: it sinks half a pixel and its cast tightens, a small give. In Flat there is no block to push: the pill goes a step darker under the hand and does not move, like pressing paper. In Device the hand meets a key: the face sinks the whole 2px onto its skirt, which is the travel of a real key, and a ghost button sinks into a well.",
 };
 
 export const docs: PageDocs = {
@@ -106,6 +108,33 @@ function VariantsDemo() {
   );
 }
 
+/* The four variants in a frame that sets its own look, as the study's Under each material strip draws a part. */
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <MaterialProvider material={m.id}>
+            <div
+              {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+              data-body-frame={m.id}
+              className="grid min-w-0 content-start justify-items-start gap-4 rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line"
+            >
+              <Button variant="primary">Start a project</Button>
+              <Button variant="secondary">View work</Button>
+              <Button variant="ghost">Cancel</Button>
+              <Button variant="danger">Delete project</Button>
+            </div>
+          </MaterialProvider>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 function DangerDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -165,6 +194,15 @@ export default function ButtonPage() {
         code="VariantsDemo"
       >
         <VariantsDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One contract, three bodies: the same props, the same real button, the same loading and focus, drawn by the material. Press is a raised block that sinks half a pixel. Flat is a pill, fill only, a step darker under the hand. Device is a key on a 2px skirt that sinks the whole 2px. Press each one."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <Stage
