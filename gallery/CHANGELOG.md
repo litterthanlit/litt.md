@@ -13,6 +13,7 @@ A world goes deeper by parts and abilities that exist in it alone (`proposals/wo
 - **added** `tape-progress`: TapeProgress, Progress said as two reels at the tape's constant pace, the value in words.
 - **added** `seven-segment`: SevenSegment, a figure on seven-segment digits behind glass, its segments fading like phosphor.
 - **changed** `thinking`: an `indicator` slot beside the clock, for what the agent is doing while it thinks. Nothing changes until you pass it; the Agent block passes an AgentIndicator under Device.
+- **changed** `agent`: under Device the Thinking row carries an AgentIndicator beside the clock while the agent thinks. Press and Flat render exactly as before.
 - **changed** `code-input`: no change to the code; its page gains a study.
 
 ## 2026-11-07 · Worlds: each material is a page you arrive on

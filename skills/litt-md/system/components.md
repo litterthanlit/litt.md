@@ -720,6 +720,17 @@ The agent's reasoning, as a quiet disclosure above its answer.
 - **Open and closed:** it is open while the agent thinks, so the reader can watch it work, and closes itself when thinking ends, unless the reader toggled it. `open` and `onOpenChange` control it. The chevron turns a quarter on the instant tier.
 - **Motion:** the body fades in and travels a quarter of `--travel` down on the responsive tier, and leaves on the exit token. Its height snaps and is never animated.
 - **Accessibility:** the row is a button with `aria-expanded` and `aria-controls`. The ticking clock is hidden from screen readers; a polite live region says "Thinking" once at the start and "Thought for 12 seconds" at the end.
+- **Indicator:** an optional slot beside the row while the thought is active, for an Agent indicator under Device. It is a sibling of the button, so the button's name is unchanged, and it is no taller than the row, so the row keeps its height when the thought ends and it goes. Press and Flat pass nothing and the row is as above.
+
+## Agent indicator
+What an agent is doing, said in hardware. A Device part (`proposals/worlds.md`, Depth): it needs `data-material="device"`, and in another material it still renders, as a dark cut with ink on it.
+- **Box:** 5.6em by 2.6em, so the font size sets the size and every mechanism can stand in for every other. It sits inline, at the size of the words beside it (the caption size in a Thinking row, 31px tall). The window is LCD glass: `--field` for the floor, `--field-line` and `--field-shade` for the edge, as an Input's, at `--radius-control`; the matrix sits in a bezel at `--radius-surface`.
+- **Phases:** thinking is two seven-segment figures with a lit segment chasing clockwise and fading like phosphor; searching is a tuner whose needle seeks five stations on a spring and lights a lamp where it locks; reading is stereo meters that rise with each burst of tokens and fall at 26 dB a second, with a peak that holds; reasoning is an 11 by 5 dot matrix of drifting waves; running is eight step lights with a playhead that latches and clears; writing is two tape reels turning at the speed their packs give them, with a record lamp that dims while it rewinds.
+- **Inks:** lit parts are `--field-ink`, unlit parts the same ink at 8 to 15%, never a second color. The one accent (`--accent`) is the record lamp: the needle and lamp, the playhead, the reels' lamp. No hex, no glow past `0.4em`.
+- **Moves only while tokens arrive (R4):** it runs while a phase is set and `paused` is false, which an app ties to its stream. Paused, it holds the frame it is on. It stops off screen. On mount each mechanism is stepped 1.2s ahead before it first paints, so one is never seen at rest. Under reduced motion it holds that frame and never runs.
+- **One loop:** every indicator on the page shares one `requestAnimationFrame`, which stops when none is live. A frame writes attributes and inline styles, only when a value changed; React never re-renders for animation.
+- **Phase change:** the new mechanism fades in over the old in one grid cell on `--dur-exit-responsive` (150ms), opacity only, and the old one unmounts.
+- **Accessibility:** `role="status"` with the phase in words for a screen reader ("Thinking"), because the picture is never the only word (R5). The drawing is hidden from assistive tech. `label` replaces the words.
 
 ## Tool call
 What the agent did: a row per call, a group that folds a run of them, and an approval that asks first.

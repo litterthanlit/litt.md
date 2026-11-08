@@ -27,6 +27,10 @@
  *   color fades on the instant tier. The body fades in and travels a quarter of the travel token down on the responsive
  *   tier, and leaves with a fade on the exit token. Its height snaps, never animates: the body unmounts when the fade
  *   ends. It has its own AnimatePresence, without `initial={false}`, so an ancestor's cannot swallow its entrance.
+ * - Indicator: an optional slot beside the row while `active`, for an AgentIndicator under Device (decision 7 of
+ *   worlds.md). It is a sibling of the button, not inside it, so the row's name is unchanged; it is 31px tall at
+ *   the caption size, inside the row's 32px, so the row never changes height when the thought ends and it goes.
+ *   Without the prop the DOM is exactly as it was.
  * - Semantics: a real button with aria-expanded and aria-controls, pointing at a region that is always in the DOM
  *   (empty while closed). The ticking clock is aria-hidden; the finished clock is read as words ("12 seconds").
  *   A polite live region says the label once when the thought starts and "Thought for 12 seconds" when it ends,
@@ -87,6 +91,8 @@ export type ThinkingProps = {
   label?: string;
   /** The reasoning: paragraphs in the small size, spaced apart. It can be empty while the first words are still on their way. */
   children?: ReactNode;
+  /** Something that shows what the agent is doing while it thinks, such as an AgentIndicator under Device. It sits beside the row while `active` and is gone once the thought is finished. Leave it out and the row is exactly as it was. */
+  indicator?: ReactNode;
   /** Extra classes for the whole component, such as a width. */
   className?: string;
 };
@@ -100,6 +106,7 @@ export function Thinking({
   onOpenChange,
   label,
   children,
+  indicator,
   className = "",
 }: ThinkingProps) {
   const uid = useId();
@@ -184,6 +191,39 @@ export function Thinking({
     onOpenChange?.(next);
   }
 
+  const row = (
+    <button
+      type="button"
+      aria-expanded={open}
+      aria-controls={bodyId}
+      onClick={toggle}
+      className={
+        "group inline-flex max-w-full cursor-pointer items-center gap-2 rounded-control text-small font-normal text-fg-muted select-none " +
+        "transition-[color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+        "hover:text-fg pointer-coarse:active:text-fg pointer-coarse:h-control-md " +
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+        (coarse ? "h-control-md" : "h-control-sm")
+      }
+    >
+      <ChevronRightIcon
+        className={
+          "shrink-0 text-fg-subtle transition-[rotate,color] duration-(--dur-instant) ease-litt group-hover:text-fg-muted " +
+          (open ? "rotate-90" : "rotate-0")
+        }
+      />
+      <span className="flex min-w-0 items-baseline gap-2">
+        <span className="min-w-0 truncate">{words}</span>
+        {showClock && (
+          <span aria-hidden="true" className="shrink-0 text-caption font-normal tabular-nums text-fg-subtle">
+            {formatClock(seconds)}
+          </span>
+        )}
+      </span>
+      {/* A finished clock is read in words. A ticking one is never read. */}
+      {!active && showClock && <span className="sr-only"> {speakClock(seconds)}</span>}
+    </button>
+  );
+
   return (
     <div
       data-state={open ? "open" : "closed"}
@@ -193,36 +233,14 @@ export function Thinking({
         className
       }
     >
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={bodyId}
-        onClick={toggle}
-        className={
-          "group inline-flex max-w-full cursor-pointer items-center gap-2 rounded-control text-small font-normal text-fg-muted select-none " +
-          "transition-[color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-          "hover:text-fg pointer-coarse:active:text-fg pointer-coarse:h-control-md " +
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-          (coarse ? "h-control-md" : "h-control-sm")
-        }
-      >
-        <ChevronRightIcon
-          className={
-            "shrink-0 text-fg-subtle transition-[rotate,color] duration-(--dur-instant) ease-litt group-hover:text-fg-muted " +
-            (open ? "rotate-90" : "rotate-0")
-          }
-        />
-        <span className="flex min-w-0 items-baseline gap-2">
-          <span className="min-w-0 truncate">{words}</span>
-          {showClock && (
-            <span aria-hidden="true" className="shrink-0 text-caption font-normal tabular-nums text-fg-subtle">
-              {formatClock(seconds)}
-            </span>
-          )}
-        </span>
-        {/* A finished clock is read in words. A ticking one is never read. */}
-        {!active && showClock && <span className="sr-only"> {speakClock(seconds)}</span>}
-      </button>
+      {indicator === undefined ? (
+        row
+      ) : (
+        <div className="flex min-w-0 items-center gap-3">
+          {row}
+          {active && <span className="shrink-0 text-caption">{indicator}</span>}
+        </div>
+      )}
 
       {/* The region is always here, so aria-controls always points at something. Its own AnimatePresence keeps an
           ancestor's initial={false} from swallowing the entrance. */}

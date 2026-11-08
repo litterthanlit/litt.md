@@ -15,6 +15,7 @@
  * is what the chat shows at one moment.
  */
 import { Fragment, useEffect, useMemo, useReducer, useState, type ReactNode } from "react";
+import { AgentIndicator } from "@/components/agent-indicator";
 import { Composer, FileChip } from "@/components/composer";
 import { FileChanges, type FileChange, type FileDecision } from "@/components/file-changes";
 import type { StepStatus } from "@/components/icons";
@@ -27,6 +28,7 @@ import { Citation, SourceList, Sources, unlinkCitations, type Source } from "@/c
 import { Thinking } from "@/components/thinking";
 import { ToolApproval, ToolCall, ToolCallGroup, type ToolApprovalDecision, type ToolCallProps } from "@/components/tool-call";
 import { useDevice } from "@/motion";
+import { useMaterial } from "@/motion/deal";
 
 /* ---------------------------------------------------------------- the script
 
@@ -567,6 +569,9 @@ function LittTurn({
   onRetry?: () => void;
 }) {
   const busy = !view.done && !stopped;
+  /* Under Device the Thinking row carries the agent indicator (worlds.md, decision 7). The run is thinking while this
+     row is active, so that is the phase; Press and Flat pass nothing and keep the clock alone. */
+  const device = useMaterial() === "device";
   const running = view.calls.includes("running");
   const closing = view.approval === "denied" ? LEFT : LIVE;
   const [p1] = reveal(WHAT_BROKE, view.words1);
@@ -588,7 +593,11 @@ function LittTurn({
       <Sources sources={cited}>
         {/* One measure for every part, the prose's, so the rows end where the words do. */}
         <div className="grid min-w-0 max-w-(--measure) gap-3">
-          <Thinking active={view.thinking} duration={frozen ? THOUGHT_SECONDS : undefined}>
+          <Thinking
+            active={view.thinking}
+            duration={frozen ? THOUGHT_SECONDS : undefined}
+            indicator={device ? <AgentIndicator phase="thinking" paused={!view.thinking} /> : undefined}
+          >
             {reveal(THOUGHT, view.thought).map((runs, i) => (
               <p key={i}>
                 <Runs runs={runs} />
