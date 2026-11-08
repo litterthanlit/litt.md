@@ -269,7 +269,7 @@ export default function InputPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One field, one contract, three bodies. Press is the instrument: the label and the field sit on one small plate that stands and casts, and the field is a cut sunk into it with its top wall in shade. Flat is the page: no plate, the label in ink above a grey pill, the hint plain grey words, and an error as words in danger with the pill's fill tinting, no ring. Device is LCD glass in a bezel well, the label engraved above it, the hint a dim LCD line and the error its words beside a lamp in danger. Each is drawn here whatever look the page is in; the input, its label, aria-invalid and aria-describedby are the same in all three."
+        caption="One field, one contract, three bodies. Press is the instrument: the field is a cut sunk into the surface it sits on, its top wall in shade and its lower wall catching the light, the label on the surface above and the hint or error under. Flat is the page: no plate, the label in ink above a grey pill, the hint plain grey words, and an error as words in danger with the pill's fill tinting, no ring. Device is LCD glass in a bezel well, the label engraved above it, the hint a dim LCD line and the error its words beside a lamp in danger. Each is drawn here whatever look the page is in; the input, its label, aria-invalid and aria-describedby are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
