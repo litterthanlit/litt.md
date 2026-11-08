@@ -21,11 +21,18 @@
  * - Touch: there is no hover, so on a coarse pointer an unselected segment that is held down fills
  *   (PRESS: fg 6%, color only, instant tier) and takes the --fg text. The selected one needs no fill,
  *   its surface is the answer. The box never moves. The OS tap flash is off, so the two do not double.
+ * - Bodies (proposals/worlds.md): this file resolves the state once into SegmentedBodyProps and renders the body the
+ *   material picks (byWorld). Press, here, is the raised segment that glides. Flat (bodies/segmented.flat.tsx) is the
+ *   grey bubble. Device (bodies/segmented.device.tsx) is a row of keys in one well, the chosen one latched down with
+ *   its lamp lit, and nothing glides. The props, the radios and the arrow keys are the same in all three.
  * - The legend is visually hidden by default, as the spec says. Pass showLegend in a form.
  */
 import { useId, useState, type ReactNode } from "react";
 import { LayoutGroup, motion } from "motion/react";
-import { useFun, useTransition } from "@/motion";
+import type { Transition } from "motion/react";
+import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
+import { SegmentedFlatBody } from "./bodies/segmented.flat";
+import { SegmentedDeviceBody } from "./bodies/segmented.device";
 
 export type SegmentedSize = "sm" | "md";
 export type SegmentedOption<T extends string> = {
@@ -70,34 +77,34 @@ const sizes: Record<SegmentedSize, { track: string; segment: string }> = {
   md: { track: "h-control-md", segment: "px-control-pad-md text-small" },
 };
 
-/** A group of native radios in one track, for a short choice such as Viewer or Editor, or System, Light and Dark. */
-export function Segmented<T extends string>({
-  legend,
-  showLegend = false,
-  name: nameProp,
-  value: valueProp,
-  defaultValue,
-  onValueChange,
-  options,
-  size = "md",
-  block = false,
-  disabled = false,
-  className = "",
-}: SegmentedProps<T>) {
-  const auto = useId();
-  const name = nameProp ?? auto;
-  const responsive = useTransition("responsive");
-  /* Fun mode (motion/fun.tsx, a trial): the selected surface glides on a springier spring and settles past its mark. */
-  const fun = useFun();
-  const enter = fun ? fun.glide : responsive;
-  const [inner, setInner] = useState<T | undefined>(defaultValue ?? options.find((o) => !o.disabled)?.value);
-  const value = valueProp ?? inner;
-  const look = sizes[size];
+/** What a body gets: the state resolved once, and the radios' wiring. Every body renders the same fieldset of native radios. */
+export type SegmentedBodyProps<T extends string = string> = {
+  legend: ReactNode;
+  showLegend: boolean;
+  name: string;
+  /** The selected option's value. */
+  value: T | undefined;
+  options: SegmentedOption<T>[];
+  size: SegmentedSize;
+  block: boolean;
+  /** The whole control is disabled (the fieldset). */
+  disabled: boolean;
+  className: string;
+  /** Selects an option: sets the inner state and calls onValueChange. */
+  select: (value: T) => void;
+  /** The LayoutGroup id, so two controls never share a gliding surface. */
+  groupId: string;
+  /** How the selected surface glides, for the bodies that glide. */
+  enter: Transition;
+};
 
+/** Press, the raised segment that glides in a sunken track. */
+function PressBody({ legend, showLegend, name, value, options, size, block, disabled, className, select, groupId, enter }: SegmentedBodyProps) {
+  const look = sizes[size];
   return (
-    <fieldset disabled={disabled} className={"m-0 min-w-0 border-0 p-0 " + className}>
+    <fieldset data-body="press" disabled={disabled} className={"m-0 min-w-0 border-0 p-0 " + className}>
       <legend className={showLegend ? "mb-2 p-0 text-small font-title text-fg" : "sr-only"}>{legend}</legend>
-      <LayoutGroup id={auto}>
+      <LayoutGroup id={groupId}>
         <div
           className={
             "relative grid-flow-col auto-cols-fr rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " +
@@ -128,8 +135,7 @@ export function Segmented<T extends string>({
                   checked={selected}
                   disabled={o.disabled}
                   onChange={() => {
-                    setInner(o.value);
-                    onValueChange?.(o.value);
+                    select(o.value);
                   }}
                 />
                 {selected && (
@@ -152,5 +158,50 @@ export function Segmented<T extends string>({
         </div>
       </LayoutGroup>
     </fieldset>
+  );
+}
+
+/** A group of native radios in one track, for a short choice such as Viewer or Editor, or System, Light and Dark. */
+export function Segmented<T extends string>({
+  legend,
+  showLegend = false,
+  name: nameProp,
+  value: valueProp,
+  defaultValue,
+  onValueChange,
+  options,
+  size = "md",
+  block = false,
+  disabled = false,
+  className = "",
+}: SegmentedProps<T>) {
+  const auto = useId();
+  const name = nameProp ?? auto;
+  const responsive = useTransition("responsive");
+  /* Fun mode (motion/fun.tsx, a trial): the selected surface glides on a springier spring and settles past its mark. */
+  const fun = useFun();
+  const enter = fun ? fun.glide : responsive;
+  const [inner, setInner] = useState<T | undefined>(defaultValue ?? options.find((o) => !o.disabled)?.value);
+  const value = valueProp ?? inner;
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SegmentedFlatBody, device: SegmentedDeviceBody });
+
+  return (
+    <Body
+      legend={legend}
+      showLegend={showLegend}
+      name={name}
+      value={value}
+      options={options as SegmentedOption<string>[]}
+      size={size}
+      block={block}
+      disabled={disabled}
+      className={className}
+      groupId={auto}
+      enter={enter}
+      select={(v) => {
+        setInner(v as T);
+        onValueChange?.(v as T);
+      }}
+    />
   );
 }
