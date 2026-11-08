@@ -4,8 +4,6 @@
  * - Off is an outline: transparent inside the --line-control edge, no cut and no shade. On is the ink (--fg) filled,
  *   with the tick in --canvas; a radio is a plain ink disc, with no ring and no dot, because ink means on. Mixed keeps
  *   the outline and sets an ink dash in it. Nothing is lit and nothing casts.
- * - The label carries the state too: the contract sets it in the title weight while the input is checked and in the
- *   text weight while it is not (checkbox.tsx), so the row reads on or off before the fill is seen.
  * - Hover is a grey wash over the box. At the Pill shape the 20px box is a circle; at other shapes it follows
  *   --radius-control, and a radio is always round.
  * - Forced colors drops fills and shadows: the box keeps a real border, the tick and the dash take the system text

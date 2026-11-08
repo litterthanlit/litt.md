@@ -15,8 +15,7 @@
  *   (--fg, --block-lift). A press sinks the block --press-depth. Never the accent (R6): the one accent fill is the
  *   primary action's, and a form can hold many checked boxes. An error swaps the edge for --danger and keeps the shade.
  *   Disabled, it lies flat on --surface-2 with the hairline, and so does the block and the bead.
- * - Flat is bodies/checkbox.flat.tsx: ink on paper, an outline when off, the ink when on, the label's weight carrying
- *   the checked state. At the Pill shape the 20px box is a circle; at other shapes it follows --radius-control, and a
+ * - Flat is bodies/checkbox.flat.tsx: ink on paper, an outline when off, the ink when on. At the Pill shape the 20px box is a circle; at other shapes it follows --radius-control, and a
  *   radio is always round.
  * - The label sits on the right, --space-2 away, at the small size, and the whole row is
  *   clickable. The label is a real <label for>, stretched over the row, so its accessible
@@ -248,7 +247,6 @@ function Choice({
         htmlFor={id}
         className={
           "col-start-2 row-start-1 min-h-5 cursor-pointer text-small font-title text-fg after:absolute after:inset-0 peer-disabled:cursor-not-allowed peer-disabled:text-fg-disabled" +
-          (appearance === "drawn" ? " in-[[data-material=flat]]:font-normal in-[[data-material=flat]]:peer-checked:font-title" : "") + // Flat: the weight says on
           (device ? " pt-0.5" : "") // Device's key is 24px, so the first line sits 2px lower to meet its middle
         }
       >
