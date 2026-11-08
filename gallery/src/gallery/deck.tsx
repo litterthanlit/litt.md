@@ -20,7 +20,7 @@ import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { shapeName, SHAPES } from "@/motion/rules";
 import { useCustomize, type ThemeChoice } from "./customize-state";
-import { accentName, ACCENTS, lookWords, MATERIALS } from "./look";
+import { accentName, accentsIn, canonicalAccent, lookWords, MATERIALS } from "./look";
 import { AccentChip } from "./swatch";
 
 const THEMES: { value: ThemeChoice; label: string }[] = [
@@ -86,9 +86,9 @@ export function Deck() {
       <Row label="Accent">
         <Segmented
           legend="Accent"
-          value={look.accent}
+          value={canonicalAccent(look.accent, look.material)}
           onValueChange={(accent) => setLook({ accent })}
-          options={ACCENTS.map((a) => ({
+          options={accentsIn(look.material).map((a) => ({
             value: a.id,
             label: (
               <span className="flex items-center gap-1.5">
