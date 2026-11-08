@@ -23,6 +23,8 @@
  * - anything opens on its own: after load and 1.5s, a dialog is open outside main, anything has aria-modal, or the
  *   Replay stage shows a dialog instead of the object at rest. Pressing Replay on the Command menu and Dialog pages
  *   must open an overlay, and Esc must close it,
+ * - a part with bodies (data-body on its root, proposals/worlds.md, Bodies) does not draw its press body in the press
+ *   frame, its flat body in the flat frame and its device body in the device frame,
  * - Under each material has no press, flat and device frames, the three do not differ (the frame's ground and every
  *   element's background, shadow, radius and colour inside it), or a frame has no component with text (or a name) in it,
  * - Show source is not aria-expanded=false at load, or after a press shows no code with `export function`, or the
@@ -109,6 +111,7 @@ const C = {
   rest: "nothing opens on its own: no open dialog or aria-modal after load, and the Replay stage holds the object at rest",
   replay: "pressing Replay on the Command menu and Dialog pages opens an overlay, and Esc closes it",
   frames: "Under each material shows press, flat and device frames drawn three ways, each with a component in it",
+  bodies: "a part with bodies draws its press body in the press frame, its flat body in the flat frame and its device body in the device frame (proposals/worlds.md, Bodies)",
   source: "Show source starts collapsed, and a press shows code with `export function` under a heading naming the file and a version",
   docs: "public/docs/<id>.md has `## How it moves` with the page's mechanism, and llms.txt marks the page \"(a study)\"",
   wide: "a study page does not scroll sideways at 390 or 320",
@@ -171,7 +174,7 @@ function inspect(id) {
   const frames = [...document.querySelectorAll("[data-study-material]")].map((f) => {
     const root = f.firstElementChild?.firstElementChild;
     const named = root ? (root.textContent || "").trim() || [root, ...root.querySelectorAll("[aria-label]")].map((e) => e.getAttribute("aria-label")).find(Boolean) || "" : "";
-    return { id: f.dataset.studyMaterial, ground: [f, ...f.querySelectorAll("*")].map((e) => { const c = getComputedStyle(e); return [c.backgroundColor, c.boxShadow, c.borderRadius, c.color].join("/"); }).join("|"), named };
+    return { id: f.dataset.studyMaterial, ground: [f, ...f.querySelectorAll("*")].map((e) => { const c = getComputedStyle(e); return [c.backgroundColor, c.boxShadow, c.borderRadius, c.color].join("/"); }).join("|"), named, body: f.querySelector("[data-body]")?.dataset.body ?? null };
   });
   const replay = document.querySelector(`section[aria-labelledby="study-replay-${id}"]`);
   return {
@@ -211,6 +214,8 @@ async function audit(page, size, scheme, look, mutate) {
   claim(C.rest, r.openDialogs === 0 && r.modal === 0 && r.replayDialog === 0 ? null : `${where}: ${r.openDialogs} open dialogs outside main, ${r.modal} aria-modal, ${r.replayDialog} dialogs in the Replay stage`);
 
   claim(C.frames, r.frames.map((f) => f.id).join() === "press,flat,device" && new Set(r.frames.map((f) => f.ground)).size === 3 && r.frames.every((f) => f.named) ? null : `${where}: frames ${JSON.stringify(r.frames)}`);
+  /* A part without bodies has no data-body anywhere; one with bodies must show each world its own. */
+  if (r.frames.some((f) => f.body)) claim(C.bodies, r.frames.every((f) => f.body === f.id) ? null : `${where}: the frames hold the bodies ${r.frames.map((f) => `${f.id}:${f.body ?? "none"}`).join(", ")}`);
 
   claim(C.wide, size.width > 640 || r.wide <= 0 ? null : `${where}: ${r.wide}px wider than the screen`);
 
@@ -295,6 +300,7 @@ if (selfTest) {
     [C.docs, "the docs file read is a page with no mechanism", async () => { const m = (await run1(SIZES[0])).mechanism; await docs(button, m, bare?.id ?? "no-such-page"); }],
     [C.sections, "the Source section moves above Anatomy", () => run1(SIZES[0], (pg) => pg.evaluate(() => { const s = document.querySelector("section[aria-labelledby^=study-source]"); s.parentElement.prepend(s); }))],
     [C.frames, "the three frames lose what tells them apart", () => run1(SIZES[0], (pg) => pg.addStyleTag({ content: "[data-study-material], [data-study-material] * { background: Canvas !important; box-shadow: none !important; border-radius: 0 !important; color: CanvasText !important }" }))],
+    [C.bodies, "every body says it is the press body", () => run1(SIZES[0], (pg) => pg.evaluate(() => { for (const el of document.querySelectorAll("[data-study-material] [data-body]")) el.dataset.body = "press"; }))],
     [C.source, "Show source is expanded at load", () => run1(SIZES[0], (pg) => pg.evaluate(() => document.querySelector("section[aria-labelledby^=study-source] button").setAttribute("aria-expanded", "true")))],
     [C.wide, "a 3000px bar on a phone", () => run1(SIZES[1], (pg) => pg.evaluate(() => { const d = document.createElement("div"); d.style.cssText = "width:3000px;height:4px"; document.querySelector("main").append(d); }))],
   ];
