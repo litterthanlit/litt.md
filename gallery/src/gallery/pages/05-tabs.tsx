@@ -310,6 +310,11 @@ function ThreeBodiesDemo() {
                   <TabsTrigger value="grid">Grid</TabsTrigger>
                   <TabsTrigger value="map">Map</TabsTrigger>
                 </TabsList>
+                <TabsPanels className="px-control-pad-md pt-4">
+                  <TabsPanel value="list"><p className="text-small text-fg-muted">12 sites, newest first.</p></TabsPanel>
+                  <TabsPanel value="grid"><p className="text-small text-fg-muted">12 sites, four across.</p></TabsPanel>
+                  <TabsPanel value="map"><p className="text-small text-fg-muted">12 sites in 4 regions.</p></TabsPanel>
+                </TabsPanels>
               </Tabs>
             </MaterialProvider>
           </div>

@@ -119,7 +119,9 @@ const trackSizes: Record<SlideConfirmSize, string> = {
  * grip lines on its face (--cap-grip), and sinks --press-depth with --cap-press while it is held.
  */
 function PressBody({ label, confirmedLabel, done, disabled, track, box, band, words, glyph, thumb, tail }: SlideConfirmBodyProps) {
-  const ink = done ? "text-fg" : "text-fg-subtle"; // disabled words stay fg-subtle: they still say what it would do, as a disabled Slider's end words do
+  /* The words sit in the slot's floor, a step darker than the plate, so they take the full ink to keep 4.5:1 there;
+     disabled, the slot is surface-3 and the words stay fg-subtle, as a disabled Slider's end words do. */
+  const ink = disabled && !done ? "text-fg-subtle" : "text-fg";
   const grip = "w-px " + (disabled ? "bg-line" : "bg-cap-grip");
   return (
     <div
