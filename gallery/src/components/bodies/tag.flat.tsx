@@ -21,8 +21,8 @@ const HUE: Record<TagHue, string> = {
   rose: "bg-data-rose-tint text-data-rose-text",
 };
 
-const PLAIN = "rounded-pill bg-surface-3 ";
-const RAISED = "rounded-pill bg-surface-1 forced-colors:border ";
+const PLAIN = "rounded-control bg-surface-3 ";
+const RAISED = "rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] bg-surface-1 forced-colors:border ";
 
 /** Flat, the grey chip. */
 export function TagFlatBody({ status, hue, raised, label, rest, className }: TagBodyProps) {
@@ -30,7 +30,7 @@ export function TagFlatBody({ status, hue, raised, label, rest, className }: Tag
   return (
     <span
       data-body="flat"
-      className={"inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap px-3 text-caption forced-colors:border " + (hue ? "rounded-pill " + HUE[hue] : (raised ? RAISED : PLAIN) + ink) + " " + className}
+      className={"inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap px-3 text-caption forced-colors:border " + (hue ? "rounded-control " + HUE[hue] : (raised ? RAISED : PLAIN) + ink) + " " + className}
       {...rest}
     >
       {label}

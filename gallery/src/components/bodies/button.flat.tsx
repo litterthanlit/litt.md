@@ -3,8 +3,8 @@
  * catches the light or keeps a hairline, so the press shows in the fill: a step darker under the hand (hover, and the
  * finger's press on a touch screen).
  *
- * - Every button is a pill, whatever shape the Customize panel asks for: the pill is the one shape for what a hand
- *   touches. Primary is an ink pill (the accent fill where an accent is set), a step softer under the hand, with no
+ * - Every button takes the control radius, which Flat opens at the pill (the one shape for what a hand touches), and
+ *   follows a shape the Customize panel asks for. Primary is an ink pill (the accent fill where an accent is set), a step softer under the hand, with no
  *   glow and no highlight (Flat has no light, R2). Secondary is a grey pill (--block is --surface-3 under Flat),
  *   icon-only a grey circle. Ghost is words alone: no fill, even under the hand, which only brings the words to --fg.
  *   Danger is the grey pill with red words; in a dialog's footer it is the confirm, the one red fill.
@@ -42,7 +42,7 @@ export function ButtonFlatBody({ variant, sizeClass, shapeClass, blockClass, cla
     <button
       {...root}
       data-body="flat"
-      className={[base, sizeClass, variants[variant], disabledLook, shapeClass.replace("rounded-control", "rounded-pill"), blockClass, className].join(" ")}
+      className={[base, sizeClass, variants[variant], disabledLook, shapeClass, blockClass, className].join(" ")}
       style={fun ? { ...fun, ...style } : style}
     >
       {children}

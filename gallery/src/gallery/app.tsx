@@ -35,6 +35,9 @@ function CustomizeSlot() {
   const { compact } = useDevice();
   const [wanted, setWanted] = useState(false);
   const [open, setOpen] = useState(false);
+  /* Whether the stand-in held focus (the look notice's Keep sends it here). Removing a focused element fires no blur,
+     so this stays true through the swap, and the real button takes focus back if it fell to the page. */
+  const hadFocus = useRef(false);
   useEffect(() => {
     void settled().then(() => setWanted(true));
   }, []);
@@ -51,7 +54,13 @@ function CustomizeSlot() {
       aria-expanded={false}
       aria-busy={open || undefined}
       onPointerEnter={warm}
-      onFocus={warm}
+      onFocus={() => {
+        hadFocus.current = true;
+        warm();
+      }}
+      onBlur={() => {
+        hadFocus.current = false;
+      }}
       onClick={() => {
         setWanted(true);
         setOpen(true);
@@ -63,7 +72,7 @@ function CustomizeSlot() {
   if (!wanted) return standIn;
   return (
     <Suspense fallback={standIn}>
-      <Customize defaultOpen={open} />
+      <Customize defaultOpen={open} takeFocus={hadFocus} />
     </Suspense>
   );
 }

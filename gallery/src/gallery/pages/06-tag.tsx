@@ -190,10 +190,6 @@ function ThreeBodiesDemo() {
               <div className="flex flex-wrap gap-2">
                 <Tag>Framer</Tag>
                 <Tag hue="amber">Finance</Tag>
-                {/* A raised tag is a value in a field, so it sits in a cut here, as in a Combobox. */}
-                <span className="inline-flex rounded-control bg-cut p-0.5 shadow-(--cut-shade)">
-                  <Tag raised>Identity</Tag>
-                </span>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Tag status="success">Live</Tag>

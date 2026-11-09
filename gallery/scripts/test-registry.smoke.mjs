@@ -1340,15 +1340,24 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (!said.includes("Unlimited projects and previews.") || !said.includes("$12 a month")) throw new Error(`Pro's description is "${said}"`);
           return said;
         });
+        /* Press's body (wave two): every card is a plate in the tray, filled --litt-block; the picked one alone is raised
+           (its own lift, the block's own fill), the rest seated a step darker. So: the picked card is the block, no card
+           is the accent, and one card wears a lift no other card shares. */
         await attempt("card picker: one raised block per tray, filled --litt-block, never the accent", async () => {
           await page.mouse.move(0, 0);
-          const fills = [];
+          const fills = [], allFills = [];
           for (const scope of [narrow, wide, small]) {
-            const filled = await scope.locator("label, label > span").evaluateAll((els) =>
-              els.map((el) => getComputedStyle(el).backgroundColor).filter((c) => c !== "rgba(0, 0, 0, 0)" && c !== "transparent"),
+            const cards = await scope.locator("label").evaluateAll((els) =>
+              els.map((el) => ({ fill: getComputedStyle(el).backgroundColor, shadow: getComputedStyle(el).boxShadow, picked: !!el.querySelector("input:checked") })),
             );
-            if (filled.length !== 1) throw new Error(`a picker has ${filled.length} filled parts (${filled.join(", ")}), expected the one block`);
-            fills.push(filled[0]);
+            const filled = cards.map((c) => c.fill).filter((c) => c !== "rgba(0, 0, 0, 0)" && c !== "transparent");
+            if (!filled.length) throw new Error("a picker has no filled card");
+            const picked = cards.filter((c) => c.picked);
+            if (picked.length !== 1) throw new Error(`a picker has ${picked.length} picked cards`);
+            const raised = cards.filter((c) => c.shadow === picked[0].shadow).length;
+            if (raised !== 1) throw new Error(`${raised} cards wear the picked card's lift, expected the one raised block`);
+            fills.push(picked[0].fill);
+            allFills.push(...filled);
           }
           const [block, accentFill] = await page.evaluate(() => {
             const probe = document.createElement("div");
@@ -1362,6 +1371,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           });
           if (fills.some((f) => f !== block)) throw new Error(`the block is ${fills.join(", ")}, --litt-block is ${block}`);
           if (block === accentFill) throw new Error(`the block is the accent (${accentFill})`);
+          if (allFills.includes(accentFill)) throw new Error(`a card is filled with the accent (${accentFill})`);
           return block;
         });
         await attempt("card picker: a click picks, and the arrow keys skip a disabled card", async () => {
@@ -1384,13 +1394,14 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const n = await cards(narrow), w = await cards(wide);
           const same = (cs) => cs.every((c) => Math.abs(c.w - cs[0].w) <= 1 && Math.abs(c.h - cs[0].h) <= 1);
           if (!(n.every((c) => c.x === n[0].x) && new Set(n.map((c) => c.y)).size === n.length)) throw new Error(`360px is not stacked: ${JSON.stringify(n)}`);
-          if (!(w.every((c) => c.y === w[0].y) && new Set(w.map((c) => c.x)).size === w.length)) throw new Error(`720px is not one row: ${JSON.stringify(w)}`);
+          /* A seated Press card sits --press-depth lower than the raised one, so a row is one y within 2px. */
+          if (!(w.every((c) => Math.abs(c.y - w[0].y) <= 2) && new Set(w.map((c) => c.x)).size === w.length)) throw new Error(`720px is not one row: ${JSON.stringify(w)}`);
           if (!same(n) || !same(w)) throw new Error(`cards differ in size: ${JSON.stringify({ n, w })}`);
           return `rows ${n[0].w}x${n[0].h}, columns ${w[0].w}x${w[0].h}`;
         });
         await attempt("card picker: sm draws tiles, the word under the picture, under 72px tall", async () => {
           const tiles = await cards(small);
-          if (tiles.some((t) => t.h >= 72) || !tiles.every((t) => t.y === tiles[0].y)) throw new Error(`tiles: ${JSON.stringify(tiles)}`);
+          if (tiles.some((t) => t.h >= 72) || !tiles.every((t) => Math.abs(t.y - tiles[0].y) <= 2)) throw new Error(`tiles: ${JSON.stringify(tiles)}`);
           const tile = small.locator("label").first();
           const pic = await tile.getByTestId("card-picker-picture").boundingBox();
           const word = await tile.getByText("List", { exact: true }).boundingBox();

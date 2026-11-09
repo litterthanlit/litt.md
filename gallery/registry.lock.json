@@ -48,7 +48,7 @@
     },
     "button": {
       "version": "2026.11.09",
-      "hash": "cc1dd02e399158d8"
+      "hash": "90485a0b1e5ca812"
     },
     "callout": {
       "version": "2026.11.06",
@@ -112,7 +112,7 @@
     },
     "composer": {
       "version": "2026.11.09",
-      "hash": "f4775ca70349847a"
+      "hash": "6204114cbd942ae6"
     },
     "context-menu": {
       "version": "2026.11.05",
@@ -408,7 +408,7 @@
     },
     "tag": {
       "version": "2026.11.09",
-      "hash": "7f0c9e694490c270"
+      "hash": "2e39808c53ecd1ec"
     },
     "tape-progress": {
       "version": "2026.11.08",

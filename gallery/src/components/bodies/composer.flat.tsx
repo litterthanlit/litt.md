@@ -18,7 +18,7 @@ import type { ComposerBodyProps, FileChipBodyProps } from "../composer";
 import { ArrowUpIcon, FileIcon, PaperclipIcon, StopIcon, XIcon } from "../icons";
 
 const BOX =
-  "group/box relative flex flex-col overflow-hidden rounded-[min(var(--radius-control),calc(var(--control-md)/2))] bg-field font-field font-normal text-field-ink " +
+  "group/box relative flex flex-col overflow-hidden rounded-surface bg-field font-field font-normal text-field-ink " +
   "shadow-none transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[textarea:focus-visible]:shadow-(--focus-ring) data-[dragging]:shadow-(--focus-ring) " +
   "data-[disabled]:bg-surface-2 data-[disabled]:shadow-none " +
