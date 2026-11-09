@@ -110,10 +110,11 @@ export function OptionPickerDeviceBody({ group, values, value, swatches, onPick,
             {/* One line, the lamp at the key's middle, so it stays clear of a round key's curves at every shape. */}
             <span className="relative z-1 flex min-w-0 max-w-full items-center gap-1.5 leading-none">
               <span aria-hidden="true" className={lamp + (on ? (out ? " bg-fg-subtle forced-colors:bg-[Highlight]" : lampLit) : lampOff)} />
-              <span className="truncate">{labelOf(v)}</span>
+              <span className={out ? "shrink-0" : "truncate"}>{labelOf(v)}</span>
               {out && (
                 <>
-                  <span aria-hidden="true" className="shrink-0 text-fg-disabled">sold out</span>
+                  {/* The name stays whole; in a narrow key the words after it give way. */}
+                  <span aria-hidden="true" className="min-w-0 truncate text-fg-disabled">sold out</span>
                   <span className="sr-only">, sold out</span>
                 </>
               )}
