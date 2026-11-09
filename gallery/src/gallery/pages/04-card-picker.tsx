@@ -15,8 +15,8 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["select"],
   summary:
-    "One choice shown as cards: tiles of a picture over a word, or cards with a title, a line and a price. The picked card is the raised block in a sunken tray, and it glides to your pick on the responsive tier.",
-  fun: "Pick another card: the raised block springs to it and settles a hair past its mark.",
+    "One choice shown as cards: tiles of a picture over a word, or cards with a title, a line and a price. In Press the cards are plates in a tray and the picked one rises out of it; in Flat the picked one sits in a grey bubble with an ink tick; in Device each plate has a lamp and the picked one is set down into a well.",
+  fun: "Pick another card in Flat: the grey bubble springs to it and settles a hair past its mark.",
   tiers: ["instant", "responsive"],
 };
 
@@ -62,10 +62,10 @@ const [plan, setPlan] = useState("pro");
     "It is a fieldset with a legend and native radio inputs, so a screen reader says the question and reads each card as, for example, Pro, radio button 2 of 3, checked.",
     "A card's radio is named by its title alone, and its line and detail are read after it as its description: Pro, then Unlimited projects and previews, $12 a month.",
     "Pictures are hidden from screen readers. The title must stand alone.",
-    "The picked card is a raised surface, not color alone, and in forced colors it takes a border.",
+    "The picked card is raised (Press), in a grey bubble with an ink tick (Flat) or set down with its lamp lit (Device), never color alone, and in forced colors it takes a border.",
     "A stacked card is at least 64px tall, and a tile is about 70px, past the 44px touch floor.",
     "A disabled card is muted and skipped by the arrow keys. Its line stays readable, since it says why.",
-    "An error is linked to the group and marks every radio invalid. Under reduced motion the raised block jumps to the pick without gliding.",
+    "An error is linked to the group and marks every radio invalid. Under reduced motion Flat's bubble jumps to the pick without gliding.",
   ],
 };
 
@@ -256,7 +256,7 @@ export default function CardPickerPage() {
         tier="responsive"
         size="lg"
         code="PlanDemo"
-        caption="Three plans in one sunken tray, each a card with a title, a line and a price. The picked card is the raised block, and it glides to your pick through transform on the responsive tier, never the accent. Every card has the same size, so the block keeps its shape as it moves and the prices line up. The cards sit in a row while each gets 12rem of the picker's own width, and stack as rows below that, as on a phone."
+        caption="Three plans, each a card with a title, a line and a price. In Press they are plates seated in one tray and the picked one rises out of it, lit along its top edge, never the accent. Every card has the same size, so nothing changes shape between picks and the prices line up. The cards sit in a row while each gets 12rem of the picker's own width, and stack as rows below that, as on a phone."
       >
         <PlanDemo />
       </Stage>
@@ -266,7 +266,7 @@ export default function CardPickerPage() {
         tier="responsive"
         size="lg"
         code="OnboardingDemo"
-        caption="Nothing is picked until the person answers, because a question must not answer itself. Continue with nothing picked sets the error, which replaces the hint, outlines the tray in the danger color and marks every radio invalid; a pick clears it. Four cards sit two by two once each gets 12rem, and four across from 48rem."
+        caption="Nothing is picked until the person answers, because a question must not answer itself. Continue with nothing picked sets the error, which replaces the hint, outlines the tray in the danger color (Flat has no tray, so the words say it) and marks every radio invalid; a pick clears it. Four cards sit two by two once each gets 12rem, and four across from 48rem."
       >
         <OnboardingDemo />
       </Stage>
@@ -283,7 +283,7 @@ export default function CardPickerPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One control, one contract, three bodies. Press is plates in a tray, the picked one raised out of it. Flat is pictures and words, the picked one in a grey bubble. Device is a plate with a lamp in its corner, the picked one set down into a well with its lamp lit. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all three."
+        caption="One control, one contract, three bodies. Press is plates seated in a tray, the picked one raised out of it and lit along its top edge. Flat is pictures and words with no tray, the picked one in a grey bubble with an ink tick and its word, the bubble gliding to your pick. Device is a plate with a lamp in its corner: the picked one is set down 2px into a well with its lamp lit, and nothing glides, the change switches in place in three steps. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

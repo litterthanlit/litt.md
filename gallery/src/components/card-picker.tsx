@@ -3,15 +3,15 @@
  * theme or a layout. A fieldset of native radios, so the role, the arrow keys, required and the form value come from
  * the browser.
  *
- * - Material: one sunken tray (R3: --tray, --tray-shade) holds every card, and the pick is the raised block (--block,
- *   --block-lift) gliding inside it: the Segmented control's track and block, grown tall. The tray floor is what makes
- *   unpicked cards read as a choice and not as static cards. Flat cards with a raised pick fail in light mode, where
- *   --block is the same white as --surface-1, so only a shadow would tell the pick apart. Never an accent fill (R6).
- * - Flat (proposals/flat-pill.md): no tray. Each option is a grey card (--surface-3, --space-2 apart, at the surface
- *   radius), and the picked one lifts to --surface-1 with a 2px ink ring, which is the block gliding in. The ring is
- *   an inset shadow, so forced colors keeps the surface's border.
- * - Every card in a picker has the same size: equal columns, or equal rows when stacked. So the block never changes
- *   shape while it glides, and the details (a price) line up across a row.
+ * - Material (Press, the instrument): one sunken tray (R3: --tray, --tray-shade) holds every card, and each card is a plate
+ *   in it. The picked plate rises out of the tray and catches the light (--block, --highlight, --block-lift); the
+ *   others sit seated (sunk --press-depth, --block-press), so unpicked cards read as a choice and not as static cards,
+ *   and a disabled one lies flat in the floor, level with the tray (--cut-shade). Never an accent fill (R6).
+ * - Flat (proposals/worlds.md): the page. No tray and no card: pictures and words, and the picked one in a grey bubble
+ *   (--block) with an ink tick and its word in --fg. Grey means chosen.
+ * - Device: a plate with a lamp in its corner, the picked one set down 2px into a well with its lamp lit.
+ * - Every card in a picker has the same size: equal columns, or equal rows when stacked. So a plate or a bubble never
+ *   changes shape between picks, and the details (a price) line up across a row.
  * - sm: tiles, a picture over a word in one row of 2 to 5, the label --fg-subtle and the picked one --fg. The tray
  *   sits at the control radius and the tiles 2px inside it. It draws no description or detail.
  * - lg (the default): cards with a title (--fg), a line (--fg-subtle) and a detail such as a price. The tray sits at
@@ -25,15 +25,16 @@
  *   controlled picker empty.
  * - Bodies (proposals/worlds.md): this file keeps the contract (the fieldset, the legend, the radios, the pick and the
  *   words they are named by) and resolves it once into CardPickerBodyProps. It renders the body the material picks
- *   (byWorld). Press, here, is the tray and the block. Flat (bodies/card-picker.flat.tsx) and Device
+ *   (byWorld). Press, here, is plates in a tray. Flat (bodies/card-picker.flat.tsx) and Device
  *   (bodies/card-picker.device.tsx) are the same radios in other bodies. The arrow keys and every accessible name are
  *   the same in all three.
- * - Motion: the block glides on the responsive tier (fun mode's glide spring in fun mode), and appears at once on the
- *   first pick. Reduced motion turns the glide off. Colors change on the instant tier. The focus ring is drawn from
- *   the radio's :focus-visible, inset, so a mouse never shows it.
+ * - Motion: nothing glides in Press: a plate rises and sinks where it stands, and colors change on the instant tier. Flat's
+ *   bubble glides on the responsive tier (fun mode's glide spring in fun mode) and appears at once on the first pick;
+ *   Device switches in place in three steps. Reduced motion turns the glide off. The focus ring is drawn from the
+ *   radio's :focus-visible, inset, so a mouse never shows it.
  */
 import { useId, useState, type ReactNode } from "react";
-import { LayoutGroup, motion, type Transition } from "motion/react";
+import type { Transition } from "motion/react";
 import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { CardPickerDeviceBody } from "./bodies/card-picker.device";
 import { CardPickerFlatBody } from "./bodies/card-picker.flat";
@@ -84,9 +85,6 @@ export type CardPickerProps<T extends string> = {
   /** Extra classes for the fieldset, such as a width. */
   className?: string;
 };
-
-/** What a finger holding an unpicked card shows, as Segmented's segments. */
-const PRESS = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
 
 /** The class strings that decide where lg's cards sit: the tray's columns, the card's direction and the detail's place, all at one width. */
 export type CardPickerArrange = { tray: string; card: string; detail: string };
@@ -155,8 +153,20 @@ const SIZES: Record<CardPickerSize, { tray: string; card: string; corner: string
   },
 };
 
-/** Press, the instrument: one tray cut into the page, and the picked card the raised block gliding inside it. */
-function PressBody({ legend, hideLegend, disabled, className, name, size, required, invalid, note, noteId, groupId, arrange, cards, pictures, glide, pick }: CardPickerBodyProps) {
+/* The plates. A plate in the tray sits seated (sunk the press depth, the cast tight); the picked one stands raised out of
+   the tray and lit (the cast wide, the top edge lit); a disabled one lies flat in the tray floor. */
+const seated = "bg-[color-mix(in_oklab,var(--block)_45%,var(--tray))] shadow-(--block-press) [transform:translateY(var(--press-depth))]";
+const raised = "bg-block shadow-[var(--highlight),var(--block-lift)]";
+const lying = "bg-[color-mix(in_oklab,var(--block)_45%,var(--tray))] shadow-(--cut-shade)";
+const hold = "hover:bg-[color-mix(in_oklab,var(--block)_70%,var(--tray))] active:bg-block active:shadow-(--block-press)";
+const tweens = "transition-[color,background-color,transform] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent]";
+
+/**
+ * Press, the instrument: one tray cut into the page, and every card a plate standing in it. The plate you picked is
+ * raised out of the tray and lit; the others sit seated in it; a disabled one lies flat in the floor. Nothing
+ * glides: a plate rises and sinks where it stands.
+ */
+function PressBody({ legend, hideLegend, disabled, className, name, size, required, invalid, note, noteId, arrange, cards, pictures, pick }: CardPickerBodyProps) {
   const look = SIZES[size];
   const tray = (
     <div
@@ -172,15 +182,12 @@ function PressBody({ legend, hideLegend, disabled, className, name, size, requir
           key={o.value}
           className={
             "relative select-none " + look.corner + " " + look.card + (size === "lg" ? " " + arrange.card : "") + " " +
-            "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+            tweens + " " +
+            (picked ? raised : off ? lying : seated + " " + hold) + " " +
             (off
-              ? "cursor-not-allowed text-fg-disabled"
-              : "cursor-pointer " +
-                (picked
-                  ? "text-fg"
-                  : size === "sm"
-                    ? "text-fg-subtle hover:text-fg " + PRESS
-                    : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " + PRESS))
+              ? "cursor-not-allowed " + (picked ? "text-fg-subtle" : "text-fg-disabled")
+              : "cursor-pointer " + (picked ? "text-fg" : "text-fg-subtle hover:text-fg")) +
+            (picked ? " forced-colors:border-2" : " forced-colors:border")
           }
         >
           <input
@@ -196,14 +203,6 @@ function PressBody({ legend, hideLegend, disabled, className, name, size, requir
             aria-describedby={size === "lg" && described ? described : undefined}
             onChange={() => pick(o.value)}
           />
-          {picked && (
-            <motion.span
-              layoutId="card-picker-surface"
-              transition={glide}
-              aria-hidden="true"
-              className={"absolute inset-0 " + look.corner + " bg-block shadow-(--block-lift) forced-colors:border-2"}
-            />
-          )}
           {size === "sm" ? (
             <>
               <span aria-hidden="true" className="relative z-1 grid h-8 w-full place-items-center">
@@ -235,7 +234,6 @@ function PressBody({ legend, hideLegend, disabled, className, name, size, requir
               )}
             </>
           )}
-          {/* The pictures, the words and the ring sit above the block (z-1), so it never covers them while it glides. */}
           <span
             aria-hidden="true"
             className={
@@ -249,7 +247,7 @@ function PressBody({ legend, hideLegend, disabled, className, name, size, requir
   return (
     <fieldset data-body="press" disabled={disabled} aria-describedby={note ? noteId : undefined} className={"m-0 min-w-0 border-0 p-0 " + className}>
       <legend className={hideLegend ? "sr-only" : "mb-2 p-0 text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>{legend}</legend>
-      <LayoutGroup id={groupId}>{size === "lg" ? <div className="@container">{tray}</div> : tray}</LayoutGroup>
+      {size === "lg" ? <div className="@container">{tray}</div> : tray}
       {note && (
         <p id={noteId} className={"mt-2 text-small " + (invalid ? "text-danger" : "text-fg-subtle")}>
           {note}
