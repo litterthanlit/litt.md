@@ -294,7 +294,7 @@ function ThreeBodiesDemo() {
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center rounded-surface bg-canvas p-4 text-fg outline-1 -outline-offset-1 outline-line"
+            className="grid min-h-56 min-w-0 content-center rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line"
           >
             <MaterialProvider material={m.id}>
               <ThreeBodiesComposer />
@@ -340,7 +340,7 @@ export default function ComposerPage() {
         tier="instant"
         size="lg"
         code="StudioDemo"
-        caption="A message to Litt in the studio. The box is cut into the page like a field, and each file chip is a raised block you can lift back out. The toolbar holds Attach and a model picker, and one file is still uploading at 64%. Send stays off while the field is empty. Send a message and it becomes Stop for a few seconds, or press Esc in the field to stop it. The two swap at once. Drop or paste a file to add a chip: it fades in with a slight scale on the responsive tier and leaves on the exit token. The field grows a line at a time and snaps, never eases."
+        caption="A message to Litt in the studio. In Press the box is a plate with a deep well cut into it for the text, and each file chip is a raised block you can lift back out of the well. Under it a rail of blocks holds Attach, the model picker and Send. The toolbar holds Attach and a model picker, and one file is still uploading at 64%. Send stays off while the field is empty. Send a message and it becomes Stop for a few seconds, or press Esc in the field to stop it. The two swap at once. Drop or paste a file to add a chip: it fades in with a slight scale on the responsive tier and leaves on the exit token. The field grows a line at a time and snaps, never eases."
       >
         <StudioDemo />
       </Stage>
@@ -379,7 +379,7 @@ export default function ComposerPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One composer, one contract, three bodies. Press is a text field cut into the page, its files raised blocks, with a toolbar row under the text and Send the round accent key. Flat is the same layout as a grey field with no outline and Send the round ink key. Device is a prompt line on LCD glass in a bezel, its files lit cells, its tools and Send a row of keys under the glass with Send the one key in the accent. Each is drawn here whatever look the page is in; the keys, the files, the limits and what a screen reader hears are the same in all three."
+        caption="One composer, one contract, three bodies. Press is a plate with a deep well cut into it for the text, the files raised blocks resting in the well, and a rail of blocks under it with Send the one lit block. Flat is one grey pill that grows with the text, Send an ink circle at the end of the last line, and the tools grey words on a line under it. Device is a prompt line on LCD glass in a bezel, the files lit cells, the tools a row of keys under the glass, and Send the one key in the accent. Each is drawn here whatever look the page is in; the keys, the files, the limits and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

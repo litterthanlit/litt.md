@@ -2,12 +2,18 @@
  * Composer: where the person writes to an agent (components.md, "Composer"). A text field that grows, file
  * chips, a toolbar and Send. FileChip is the chip on its own, for a message that was already sent.
  *
- * - Box: the Input's cut (R3) at the surface radius: the --cut floor, the --line-control line and the top wall's
- *   shade, because it is what you type into. While the text area has focus the line is --focus plus --focus-ring,
- *   as the Input's. Inside it, top to bottom: the file chips, the text area, and a toolbar row of sm controls
- *   padded --space-2. The line fades on the instant tier and nothing else about the box moves. Under Device the field is LCD glass in the mono, through the --field tokens.
- * - Flat: a grey field at the surface radius with no outline (--cut is grey), focus the ink ring, a removable chip a white
- *   bubble on it, and Send the round ink key that lies grey while empty (the Button's disabled look).
+ * - Box (Press, the instrument): a plate (--block, --plate-lift) at the surface radius with a deep well cut into it
+ *   for the text: the Input's cut at its deepest (--slot-shade, --field-shade over the --field floor), its corners the
+ *   plate's less 8px. Inside the well, top to bottom: the file chips (raised blocks resting in it) and the text area.
+ *   Under the well, a rail of sm blocks on the plate, padded --space-2: Attach, the caller's tools, the count, and
+ *   Send, the one lit block. While the text area has focus the well takes --focus-ring, as the Input's. The edges fade
+ *   on the instant tier and nothing else about the box moves.
+ * - Flat: one grey pill (--field is grey) with no line, shade or plate, its corners half a one-line control, that grows
+ *   with the text. Send is the round ink key at the end of the text's last line (grey while empty, the Button's
+ *   disabled look), a removable chip a white bubble, and Attach and the tools grey words on a line under the text.
+ *   Focus is the ink ring.
+ * - Device: a prompt line (">") on LCD glass in the mono (--field tokens) set in a --tray bezel, the files lit cells,
+ *   the tools a row of keys under the glass and Send the one key in the accent (bodies/composer.device.tsx).
  * - Text: the body size (16px on coarse pointers, so iOS never zooms) in --fg, the placeholder in --fg-subtle,
  *   side padding as the Input's md. It starts one line tall and grows a line at a time up to `maxRows` (8), then
  *   scrolls inside. The height is set in a layout effect, so it snaps with the text and is never animated. A
@@ -17,7 +23,7 @@
  *   keyboard has no Shift, Return is a new line and Send sends, unless `enterSends` says otherwise. With `enterSends={false}`,
  *   Cmd+Enter or Ctrl+Enter sends and Enter is a new line. Esc stops a streaming answer while the field has focus.
  *   While streaming, Enter sends nothing: the person can draft the next message, and Send is Stop.
- * - Send: one icon-only round Button at sm (44px on a coarse pointer or a compact screen), named "Send", primary,
+ * - Send: one icon-only Button at sm (a round key in Flat, a block in Press and Device) (44px on a coarse pointer or a compact screen), named "Send", primary,
  *   with an ArrowUp icon: the view's one accent fill (R6). It is disabled while the trimmed text is empty or while
  *   `sendDisabled` or `disabled` is set. While `streaming` the same button becomes Stop: secondary, a filled
  *   square, named "Stop". It is one element, so the swap is at once and focus stays on it. After a send or a stop
@@ -61,6 +67,7 @@ import {
   type ReactNode,
   type Ref,
   type ComponentPropsWithRef,
+  type CSSProperties,
   type TextareaHTMLAttributes,
 } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -290,16 +297,21 @@ export type ComposerBodyProps = {
   status: ReactNode;
 };
 
-/* The box: the Input's cut (floor, line, shade) and its focus and disabled looks, on the surface radius. The ring
-   follows the text area. */
-const BOX =
-  "group/box relative flex flex-col overflow-hidden rounded-surface bg-field font-field font-normal text-field-ink " +
-  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
-  "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[textarea:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
-  "data-[dragging]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade)] " +
+/* Press, the instrument: the box is a plate (--block, --plate-lift) that stands on the page, and the text field is a
+   deep well cut into it: the Input's cut at its deepest, the wall shaded (--slot-shade) and its floor deeper
+   (--field-shade), the lit lower wall the plate's own light. The tools are a rail of blocks on the plate under the
+   well. The ring follows the text area and sits on the well. */
+const PLATE =
+  "group/box relative flex flex-col gap-2 rounded-surface bg-block p-2 font-field font-normal text-field-ink shadow-(--plate-lift) " +
   "data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
+  "forced-colors:border";
+
+const WELL =
+  "relative flex flex-col overflow-hidden rounded-[calc(var(--radius-surface)-8px)] bg-field " +
+  "shadow-[var(--slot-shade),var(--field-shade)] transition-[box-shadow] duration-(--dur-instant) ease-litt " +
+  "has-[textarea:focus-visible]:shadow-[var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
+  "group-data-[dragging]/box:shadow-[inset_0_0_0_1px_var(--focus),var(--slot-shade),var(--field-shade)] " +
+  "group-data-[disabled]/box:bg-transparent group-data-[disabled]/box:shadow-none " +
   "forced-colors:border forced-colors:has-[textarea:focus-visible]:outline-2 forced-colors:has-[textarea:focus-visible]:outline-solid forced-colors:has-[textarea:focus-visible]:outline-offset-2";
 
 const AREA =
@@ -309,39 +321,43 @@ const AREA =
 
 /* Shown over the text while files are dragged over the box: the same place and size as the placeholder. */
 const DROP =
-  "pointer-events-none absolute inset-px bg-field font-field px-[calc(var(--control-pad-md)-1px)] py-[calc(var(--space-3)-1px)] text-body text-field-ink-subtle " +
+  "pointer-events-none absolute inset-0 bg-field font-field px-control-pad-md py-3 text-body text-field-ink-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) opacity-0 transition-opacity duration-(--dur-instant) ease-litt " +
   "group-data-[dragging]/box:opacity-100";
 
-/** Press's body: the Input's cut at the surface radius, the chips above the text and a toolbar row under it. */
+/* The rail's two end blocks sit 8px in from the plate, so their corners are the plate's less 8px. A style, because
+   the button's own rounded-control class would otherwise win. */
+const END: CSSProperties = { borderRadius: "calc(var(--radius-surface) - 8px)" };
+
+/** Press's body: a plate with a deep well cut into it, and a rail of blocks under the well. Send is the one lit block. */
 function PressBody({ className, disabled, dragging, big, suggestions, drop, chips, label, areaId, area, attach, tools, count, send, hint, status, coarse }: ComposerBodyProps) {
-  const grow = "pointer-coarse:h-control-md pointer-coarse:w-control-md max-sm:h-control-md max-sm:w-control-md";
+  const grow = "pointer-coarse:h-control-md max-sm:h-control-md";
   return (
     <div data-body="press" className={["flex min-w-0 flex-col gap-2 max-sm:pb-[env(safe-area-inset-bottom)]", className].join(" ")}>
       {suggestions}
 
-      <div data-dragging={dragging ? "" : undefined} data-disabled={disabled ? "" : undefined} className={BOX} {...drop}>
-        <ul role="list" aria-label="Attached files" className={"hidden flex-wrap has-[li]:flex has-[li]:px-2 has-[li]:pt-2 " + (coarse ? "gap-3" : "gap-2")}>
-          <AnimatePresence initial={false}>{chips}</AnimatePresence>
-        </ul>
+      <div data-dragging={dragging ? "" : undefined} data-disabled={disabled ? "" : undefined} className={PLATE} {...drop}>
+        <div className={WELL}>
+          <ul role="list" aria-label="Attached files" className={"hidden flex-wrap has-[li]:flex has-[li]:px-2 has-[li]:pt-2 " + (coarse ? "gap-3" : "gap-2")}>
+            <AnimatePresence initial={false}>{chips}</AnimatePresence>
+          </ul>
 
-        <div className="relative">
-          <label htmlFor={areaId} className="sr-only">
-            {label}
-          </label>
-          <textarea id={areaId} rows={1} className={AREA} {...area} />
-          <span aria-hidden="true" className={DROP}>
-            Drop to attach
-          </span>
+          <div className="relative">
+            <label htmlFor={areaId} className="sr-only">
+              {label}
+            </label>
+            <textarea id={areaId} rows={1} className={AREA} {...area} />
+            <span aria-hidden="true" className={DROP}>
+              Drop to attach
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 p-2">
+        <div className="flex items-center gap-2">
           {attach && (
             <>
               {attach.picker}
-              <Button variant="ghost" size={big ? "md" : "sm"} iconOnly aria-label="Attach files" disabled={disabled} className={grow} onClick={attach.onClick}>
-                <PaperclipIcon />
-              </Button>
+              <Button variant="secondary" size={big ? "md" : "sm"} icon={<PaperclipIcon />} aria-label="Attach files" disabled={disabled} className={grow} style={END} onClick={attach.onClick} />
             </>
           )}
           {tools && <div className="flex min-w-0 items-center gap-2">{tools}</div>}
@@ -351,7 +367,7 @@ function PressBody({ className, disabled, dragging, big, suggestions, drop, chip
               id={count.id}
               className={
                 "shrink-0 px-1 text-caption font-normal tabular-nums transition-colors duration-(--dur-instant) ease-litt " +
-                (count.full ? "text-danger" : "text-field-ink-subtle")
+                (count.full ? "text-danger" : "text-fg-muted")
               }
             >
               <span className="sr-only">Characters used: </span>
@@ -362,16 +378,15 @@ function PressBody({ className, disabled, dragging, big, suggestions, drop, chip
             ref={send.ref}
             variant={send.streaming ? "secondary" : "primary"}
             size={big ? "md" : "sm"}
-            iconOnly
+            icon={send.streaming ? <StopIcon /> : <ArrowUpIcon />}
             aria-label={send.streaming ? "Stop" : "Send"}
             disabled={send.disabled}
             className={grow}
+            style={END}
             onFocus={send.onFocus}
             onBlur={send.onBlur}
             onClick={send.onClick}
-          >
-            {send.streaming ? <StopIcon /> : <ArrowUpIcon />}
-          </Button>
+          />
         </div>
       </div>
 
