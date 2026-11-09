@@ -1,5 +1,8 @@
 import { Tag, type TagHue, type TagStatus } from "@/components/tag";
 import { TokenInput } from "@/components/token-input";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -172,6 +175,38 @@ function CategoriesDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center justify-items-start gap-4 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <div className="flex flex-wrap gap-2">
+                <Tag>Framer</Tag>
+                <Tag hue="amber">Finance</Tag>
+                <Tag raised>Identity</Tag>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Tag status="success">Live</Tag>
+                <Tag status="warning">In review</Tag>
+                <Tag status="danger">Failed</Tag>
+                <Tag status="neutral">Draft</Tag>
+              </div>
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function TagPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -217,6 +252,14 @@ export default function TagPage() {
         code="DeploysDemo"
       >
         <DeploysDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        caption="One tag, one contract, three bodies. Press is a small raised block with a lit top edge, its word on the face. Flat is the word in a grey pill, nothing raised. Device is the word engraved in capitals on a small plate, and a status tag adds a lamp in its status color. Each is drawn here whatever look the page is in; the words, and what a screen reader hears, are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="Tag" component={Tag} props={{ children: "In review" }} />

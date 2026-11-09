@@ -20,10 +20,18 @@
  *   colors drops the lift, so it keeps a 1px border. A hue tag files a category and never rises.
  * - Flat (proposals/flat-pill.md): a plain tag is a grey pill (--surface-3) with no hairline, a hue tag keeps its tint
  *   without the hairline, and a raised tag is a --surface-1 bubble, so it stands out of the grey field it sits in.
+ * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props and the plain span with
+ *   its label. It resolves them once into TagBodyProps and renders the body the material picks (byWorld). PressBody, below,
+ *   is the default; bodies/tag.flat.tsx and bodies/tag.device.tsx are the other two, each drawing its own span with data-body.
+ * - Device, bodies/tag.device.tsx: the word engraved in capitals on a small plate; a status tag adds a lamp in its status
+ *   color, and the word still says the status.
  * - Static: no motion and no states. A tag is a label, not a control, so it never takes
  *   focus. If you need something to press, use Button or a chip.
  */
 import type { HTMLAttributes, ReactNode } from "react";
+import { byWorld, useMaterial } from "@/motion";
+import { TagDeviceBody } from "./bodies/tag.device";
+import { TagFlatBody } from "./bodies/tag.flat";
 
 export type TagStatus = "success" | "warning" | "danger" | "neutral";
 
@@ -62,20 +70,41 @@ export type TagProps = HTMLAttributes<HTMLSpanElement> & {
   className?: string;
 };
 
-/** A 24px label at the control radius, in the sans at the label weight. Add `status` to color its text, `hue` to file it under a category, or `raised` for a value in a field. */
-export function Tag({ status, hue, raised = false, children, className = "", ...rest }: TagProps) {
+/**
+ * What the contract hands a body: the tag resolved once. A body draws the span and keeps the label inside it as given
+ * (`label`), says a status in words (the lamp is decoration, aria-hidden), stays 24px tall, takes no focus, and
+ * carries data-body on the span.
+ */
+export type TagBodyProps = {
+  status?: TagStatus;
+  hue?: TagHue;
+  raised: boolean;
+  /** The label, truncated when it is plain text. */
+  label: ReactNode;
+  /** The span's other props. */
+  rest: HTMLAttributes<HTMLSpanElement>;
+  className: string;
+};
+
+const BASE = "inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap px-2 text-caption ";
+
+/** Press, the block: today's chip (the flat step), or the raised block for a value in a field. */
+function PressBody({ status, hue, raised, label, rest, className }: TagBodyProps) {
   const ink = status ? STATUS[status] : raised ? "text-fg" : "text-fg-muted";
   return (
     <span
-      className={
-        "inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap px-2 text-caption " +
-        (hue ? "rounded-control " + HUE[hue] : (raised ? RAISED : PLAIN) + ink) +
-        " " +
-        className
-      }
+      data-body="press"
+      className={BASE + (hue ? "rounded-control " + HUE[hue] : (raised ? RAISED : PLAIN) + ink) + " " + className}
       {...rest}
     >
-      {typeof children === "string" || typeof children === "number" ? <span className="min-w-0 truncate">{children}</span> : children}
+      {label}
     </span>
   );
+}
+
+/** A 24px label at the control radius, in the sans at the label weight. Add `status` to color its text, `hue` to file it under a category, or `raised` for a value in a field. */
+export function Tag({ status, hue, raised = false, children, className = "", ...rest }: TagProps) {
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: TagFlatBody, device: TagDeviceBody });
+  const label = typeof children === "string" || typeof children === "number" ? <span className="min-w-0 truncate">{children}</span> : children;
+  return <Body status={status} hue={hue} raised={raised} label={label} rest={rest} className={className} />;
 }
