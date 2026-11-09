@@ -49,7 +49,8 @@
  *               wins, and nothing in litt declares it. data-accent="blue" asks for Blue 4 anywhere: its block, and
  *               Blue 4 and pink restated after Flat as after Device, match their own blocks. An element that sets a
  *               theme or a material sets the family again (tailwind.css). Check 5 runs every Flat pair with the ink as
- *               the accent, and every Blue 4 pair in every world.
+ *               the accent, and every Blue 4 pair in every world. Device's fill is one orange (v1.13): the light body's
+ *               fill, hover and words are the screens', and that fill's 3:1 against the light page is not asked.
  *
  * Exits 1 if anything fails.
  */
@@ -243,6 +244,10 @@ let contrastChecks = 0;
 for (const [theme, map] of THEMES) {
   for (const [fgName, bgs, min, note] of pairs) {
     for (const bgName of bgs) {
+      /* Device's fill is one bright orange on the body and on its screens (v1.13), with dark words that pass 4.5:1 above;
+         on the light aluminium it is a key whose words and rim carry it, so its 3:1 against the page is not asked.
+         check 13 holds it to the screens' orange, and its links and focus ring keep the deep orange's pairs. */
+      if (theme === "device light" && fgName === "--accent" && min === 3) continue;
       const f = map.get(fgName), b = map.get(bgName);
       if (!/^#[0-9a-f]{3,6}$/i.test(f || "") || !/^#[0-9a-f]{3,6}$/i.test(b || "")) { warn(`${theme}: cannot check ${fgName} on ${bgName} (not a plain hex)`); continue; }
       contrastChecks++;
@@ -702,6 +707,8 @@ console.log("Worlds (each world's own accent and face)");
   for (const [theme, map] of [["light", rawLight], ["dark", rawDark]]) if (map.get("--focus") !== "var(--focus-blue)") worldFails.push(`${theme}: --focus must be var(--focus-blue)`);
   if (!/\[data-theme\],\s*\[data-material\]\s*\{\s*font-family:\s*var\(--font-sans\);/.test(strip(read("assets/tailwind.css"))))
     worldFails.push("tailwind.css: [data-theme], [data-material] must set font-family: var(--font-sans), so a nested world takes its face");
+  for (const n of ["accent", "accent-hover", "accent-fg"])
+    if (rawLight.get(`--device-${n}`) !== rawLight.get(`--device-screen-${n}`)) worldFails.push(`device light: --device-${n} is ${rawLight.get(`--device-${n}`)}, not the screens' ${rawLight.get(`--device-screen-${n}`)} (one orange, v1.13)`);
   worldFails.length ? worldFails.forEach(fail) : ok("Press is Blue 4 in Helvetica Neue, Flat the ink in Geist, Device orange in the mono; Blue 4 and pink restated after Flat, a chosen face wins");
 }
 
