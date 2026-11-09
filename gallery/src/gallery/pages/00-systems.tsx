@@ -45,22 +45,25 @@ function Cover({ world }: { world: MaterialInfo }) {
   );
 }
 
+/* The card is its link, stretched over the cover from the row under it: the cover holds live parts, and a link may not
+   hold interactive content, so the cover sits beside the link, not inside it. */
 function Card({ world }: { world: MaterialInfo }) {
   return (
-    <li>
+    <li className="group relative grid gap-3">
+      <Suspense fallback={<div aria-hidden="true" className="h-88 rounded-surface bg-well" />}>
+        <Cover world={world} />
+      </Suspense>
       <a
         href={`#${world.id}`}
-        className="group grid gap-3 rounded-surface select-none [-webkit-tap-highlight-color:transparent] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
+        className={
+          "flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 rounded-control select-none [-webkit-tap-highlight-color:transparent] " +
+          "after:absolute after:inset-0 after:rounded-surface focus-visible:outline-none focus-visible:after:outline-2 focus-visible:after:outline-offset-4 focus-visible:after:outline-focus"
+        }
       >
-        <Suspense fallback={<div aria-hidden="true" className="h-88 rounded-surface bg-well" />}>
-          <Cover world={world} />
-        </Suspense>
-        <span className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-          <span className="text-small font-title text-fg underline decoration-transparent underline-offset-4 transition-colors duration-(--dur-instant) ease-litt group-hover:decoration-line">
-            {world.name}
-          </span>
-          <span className="text-small text-fg-muted">{world.line}</span>
+        <span className="text-small font-title text-fg underline decoration-transparent underline-offset-4 transition-colors duration-(--dur-instant) ease-litt group-hover:decoration-line">
+          {world.name}
         </span>
+        <span className="text-small text-fg-muted">{world.line}</span>
       </a>
     </li>
   );
