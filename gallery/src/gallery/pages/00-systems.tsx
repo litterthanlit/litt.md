@@ -21,7 +21,7 @@ export const meta: PageMeta = {
   tiers: [],
 };
 
-/** A system's cover scene in its own world, centred on its stage. It is a picture of the system here: inert, hidden from a screen reader, which hears the card's name and line. */
+/** A system's cover scene in its own world, its top on the stage. It is a picture of the system here: inert, hidden from a screen reader, which hears the card's name and line. */
 function Cover({ world }: { world: MaterialInfo }) {
   const { scenes, cover } = use(scenesOf(world.id));
   const { look } = useCustomize();
@@ -34,11 +34,14 @@ function Cover({ world }: { world: MaterialInfo }) {
       {...lookAttributes({ accent: look.accent, material: world.id }, dark)}
       aria-hidden="true"
       inert
-      className="grid h-88 min-w-0 place-items-center overflow-hidden rounded-surface bg-canvas px-4 text-fg outline-1 -outline-offset-1 outline-line sm:px-10"
+      className="h-88 min-w-0 overflow-hidden rounded-surface bg-canvas text-fg outline-1 -outline-offset-1 outline-line"
     >
       <MaterialProvider material={world.id}>
-        <div className="grid w-full max-w-md min-w-0">
-          <Render />
+        {/* The top of the scene, as the top of a screen: it fades out into the stage where the card ends. */}
+        <div className="grid h-full content-start justify-items-center px-4 pt-10 [mask-image:linear-gradient(to_bottom,black_75%,transparent)] sm:px-10">
+          <div className="grid w-full max-w-md min-w-0">
+            <Render />
+          </div>
         </div>
       </MaterialProvider>
     </div>
