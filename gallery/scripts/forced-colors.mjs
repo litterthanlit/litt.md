@@ -12,13 +12,13 @@
  * unless it opts out with Highlight and HighlightText (glide.tsx, menu.tsx, tabs.tsx, code-input.tsx). On menu,
  * select, combobox, command menu and context menu it opens the page's first trigger by keyboard (Enter, ArrowDown
  * into a combobox, Shift+F10 on the context menu's target), presses ArrowDown, and screenshots the lit row and a row
- * two away. On tabs it takes the selected underline tab and another tab in its list; on code input, the current
+ * two away. On tabs it takes the selected tab and another tab in its list; on code input, the current
  * cell of a focused, empty field and its last cell. A highlight is seen when one shot has at least MIN of its
  * pixels in colors the other barely has (each channel in 8 steps, so text antialiasing falls into a handful of
  * bins and both shots carry the same text colors). Two rows that differ only in their words stay well under it.
  *
  * The self-test injects CSS that puts the highlights back as they were (the glide ring with no fill, the lit rows in
- * CanvasText and the tab underline, or Flat's bubble and its Highlight border, left to forced-color-adjust: auto, no outline on the current cell) and fails if any
+ * CanvasText and the tab's mark (the folder tab's face, the bubble or the lamp) with its Highlight border, left to forced-color-adjust: auto, no outline on the current cell) and fails if any
  * page still passes.
  *
  * Needs Playwright, found as a11y.mjs finds it (A11Y_TOOLS, then here, then the cloud container's global copy).
@@ -72,7 +72,7 @@ const BROKEN = [
 
 /**
  * Each case opens what it needs and marks two elements, data-fc="lit" and data-fc="other", in the page. clip turns
- * each one's box into the part to compare: the whole row, the strip that holds a tab's underline, a cell and the
+ * each one's box into the part to compare: the whole row, the whole tab, a cell and the
  * outline around it.
  */
 const MENU = (trigger, open) => ({
@@ -103,11 +103,13 @@ const CASES = {
   combobox: MENU('main input[role="combobox"]', "ArrowDown"),
   "command-menu": MENU('main [role="tabpanel"] button', "Enter"),
   "context-menu": MENU('main [role="tabpanel"] button', "Shift+F10"),
+  /* The whole tab: each world draws the current one its own way (Press a folder tab standing forward, Flat a bubble,
+     Device a lamp), and in forced colors each must still tell it from its neighbour. */
   tabs: {
-    clip: (b) => ({ x: b.x, y: b.y + b.height - 6, width: b.width, height: 10 }),
+    clip: (b) => b,
     arrange: (pg) => pg.evaluate(() => {
-      const tab = [...document.querySelectorAll('main [role="tab"][aria-selected="true"]')].find((t) => t.querySelector(':scope > [aria-hidden="true"].h-0\\.5'));
-      if (!tab) return "no underline tab list";
+      const tab = document.querySelector('main [role="tablist"] [role="tab"][aria-selected="true"]');
+      if (!tab) return "no selected tab";
       const other = [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')].find((t) => t !== tab);
       tab.setAttribute("data-fc", "lit");
       other.setAttribute("data-fc", "other");
