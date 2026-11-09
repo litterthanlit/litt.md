@@ -20,12 +20,20 @@
  * - Disabled lies flat: surface-2 with the plain --line hairline and no shade, no drop and no tab stop. The words stay
  *   --fg-subtle, because they still say something (when it opens again), as a disabled Slide to confirm's do.
  * - Forced colors drops box-shadow, so the line becomes a real border.
+ * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the checking, the
+ *   drag count, the picker and its hidden input, the alert, the list and the row's actions. It resolves them once into
+ *   FileDropBodyProps and FileRowBodyProps and renders the body the material picks (byWorld). PressBody and
+ *   PressRowBody, below, are the default (the cut above). bodies/file-drop.flat.tsx is Flat's and
+ *   bodies/file-drop.device.tsx is Device's: a slot with an engraved legend and a Choose key, each file a line of
+ *   LCD glass whose upload lights segments in steps.
  */
-import { useId, useRef, useState, type DragEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type ComponentProps, type DragEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { ArrowUpIcon, FileIcon, RetryIcon, XIcon } from "@/components/icons";
 import { Progress } from "@/components/progress";
-import { useDevice } from "@/motion";
+import { byWorld, useDevice, useMaterial } from "@/motion";
+import { FileDropDeviceBody, FileRowDeviceBody } from "./bodies/file-drop.device";
+import { FileDropFlatBody, FileRowFlatBody } from "./bodies/file-drop.flat";
 
 /** 2048 to "2.0 KB": the size in the units people read. */
 export function formatSize(bytes: number): string {
@@ -95,74 +103,57 @@ export function FileDrop({ label, accept, maxSize, multiple = true, onFiles, onR
     setOver((n) => Math.max(0, n + step));
   };
 
+  const area: ComponentProps<"div"> = {
+    role: "group",
+    "aria-label": label,
+    onDragEnter: (e) => drag(e, 1),
+    onDragLeave: (e) => drag(e, -1),
+    onDragOver: (e) => {
+      if (disabled || !e.dataTransfer.types.includes("Files")) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+    },
+    onDrop: (e) => {
+      if (disabled) return;
+      e.preventDefault();
+      setOver(0);
+      take(e.dataTransfer.files);
+    },
+    /* A click anywhere chooses files too; the button is the keyboard's way in, so the area is no tab stop. */
+    onClick: (e) => {
+      if (!disabled && !(e.target as Element).closest("button")) input.current?.click();
+    },
+  };
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: FileDropFlatBody, device: FileDropDeviceBody });
+
   return (
     <div className={"grid gap-3 " + className}>
-      <div
-        role="group"
-        aria-label={label}
-        onDragEnter={(e) => drag(e, 1)}
-        onDragLeave={(e) => drag(e, -1)}
-        onDragOver={(e) => {
-          if (disabled || !e.dataTransfer.types.includes("Files")) return;
-          e.preventDefault();
-          e.dataTransfer.dropEffect = "copy";
-        }}
-        onDrop={(e) => {
-          if (disabled) return;
-          e.preventDefault();
-          setOver(0);
-          take(e.dataTransfer.files);
-        }}
-        /* A click anywhere chooses files too; the button is the keyboard's way in, so the area is no tab stop. */
-        onClick={(e) => {
-          if (!disabled && !(e.target as Element).closest("button")) input.current?.click();
-        }}
-        className={
-          "flex flex-wrap items-center gap-4 rounded-surface p-4 transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border sm:flex-nowrap sm:p-6 " +
-          (disabled
-            ? "cursor-not-allowed bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none"
-            : dragging
-              ? "bg-cut shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade)] in-[[data-material=flat]]:bg-[color-mix(in_oklab,var(--surface-3),var(--fg)_6%)] in-[[data-material=flat]]:shadow-none forced-colors:in-[[data-material=flat]]:outline-2 forced-colors:in-[[data-material=flat]]:outline-solid forced-colors:in-[[data-material=flat]]:outline-[Highlight]"
-              : "cursor-pointer bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] in-[[data-material=flat]]:shadow-none")
+      <Body
+        area={area}
+        words={dragging ? (multiple ? "Drop to add these files" : "Drop to add this file") : coarse ? "Add files" : "Drop files here"}
+        hint={hint}
+        hintId={hintId}
+        dragging={dragging}
+        disabled={disabled}
+        chooseLabel={multiple ? "Choose files" : "Choose a file"}
+        onChoose={() => input.current?.click()}
+        picker={
+          <input
+            ref={input}
+            type="file"
+            tabIndex={-1}
+            aria-hidden="true"
+            className="sr-only"
+            multiple={multiple}
+            accept={accept?.join(",")}
+            disabled={disabled}
+            onChange={(e) => {
+              take(e.target.files);
+              e.target.value = ""; // so choosing the same file again still counts
+            }}
+          />
         }
-      >
-        <span
-          aria-hidden="true"
-          className={
-            "grid size-8 shrink-0 place-items-center rounded-control in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:shadow-none " +
-            (disabled ? "bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]" : "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]")
-          }
-        >
-          <ArrowUpIcon />
-        </span>
-        <div className="grid min-w-0 flex-1 gap-1">
-          <p className={"text-body font-title " + (disabled ? "text-fg-subtle" : "text-fg")}>
-            {dragging ? (multiple ? "Drop to add these files" : "Drop to add this file") : coarse ? "Add files" : "Drop files here"}
-          </p>
-          {hint && (
-            <p id={hintId} className="text-small text-fg-subtle">
-              {hint}
-            </p>
-          )}
-        </div>
-        <Button size="sm" variant="secondary" className="in-[[data-material=flat]]:enabled:bg-surface-1" disabled={disabled} aria-describedby={hint ? hintId : undefined} onClick={() => input.current?.click()}>
-          {multiple ? "Choose files" : "Choose a file"}
-        </Button>
-        <input
-          ref={input}
-          type="file"
-          tabIndex={-1}
-          aria-hidden="true"
-          className="sr-only"
-          multiple={multiple}
-          accept={accept?.join(",")}
-          disabled={disabled}
-          onChange={(e) => {
-            take(e.target.files);
-            e.target.value = ""; // so choosing the same file again still counts
-          }}
-        />
-      </div>
+      />
       {/* What was turned away, and why. An alert, because it answers what the person just did. */}
       <div role="alert" className="grid gap-1 empty:hidden">
         {turnedAway.map((r) => (
@@ -175,12 +166,76 @@ export function FileDrop({ label, accept, maxSize, multiple = true, onFiles, onR
   );
 }
 
+/**
+ * What the contract hands the area's body: the drag, the picker and the words, resolved once. A body draws the group
+ * (`area`: its role, name, drag and drop handlers and the click that chooses, kept whole, plus its own className and
+ * data-body), the words, the hint, a Choose button that calls onChoose and is described by the hint, and the hidden
+ * `picker` input, which it renders anywhere inside the group. It says dragging and disabled without color alone: the
+ * words change, and a disabled area has no tab stop.
+ */
+export type FileDropBodyProps = {
+  area: ComponentProps<"div">;
+  /** "Drop files here", "Drop to add these files" while dragging, or "Add files" on a touch screen. */
+  words: string;
+  hint?: ReactNode;
+  /** The hint's id, which the Choose button names with aria-describedby. */
+  hintId: string;
+  dragging: boolean;
+  disabled: boolean;
+  /** "Choose files", or "Choose a file" when it takes one. */
+  chooseLabel: string;
+  onChoose: () => void;
+  /** The hidden file input. */
+  picker: ReactNode;
+};
+
+/** Press, the default body: a cut in the plate, the Input's, at the surface radius. */
+function PressBody({ area, words, hint, hintId, dragging, disabled, chooseLabel, onChoose, picker }: FileDropBodyProps) {
+  return (
+    <div
+      {...area}
+      data-body="press"
+      className={
+        "flex flex-wrap items-center gap-4 rounded-surface p-4 transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border sm:flex-nowrap sm:p-6 " +
+        (disabled
+          ? "cursor-not-allowed bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none"
+          : dragging
+            ? "bg-cut shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade)] in-[[data-material=flat]]:bg-[color-mix(in_oklab,var(--surface-3),var(--fg)_6%)] in-[[data-material=flat]]:shadow-none forced-colors:in-[[data-material=flat]]:outline-2 forced-colors:in-[[data-material=flat]]:outline-solid forced-colors:in-[[data-material=flat]]:outline-[Highlight]"
+            : "cursor-pointer bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] in-[[data-material=flat]]:shadow-none")
+      }
+    >
+      <span
+        aria-hidden="true"
+        className={
+          "grid size-8 shrink-0 place-items-center rounded-control in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:shadow-none " +
+          (disabled ? "bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]" : "bg-surface-1 text-fg shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]")
+        }
+      >
+        <ArrowUpIcon />
+      </span>
+      <div className="grid min-w-0 flex-1 gap-1">
+        <p className={"text-body font-title " + (disabled ? "text-fg-subtle" : "text-fg")}>{words}</p>
+        {hint && (
+          <p id={hintId} className="text-small text-fg-subtle">
+            {hint}
+          </p>
+        )}
+      </div>
+      <Button size="sm" variant="secondary" className="in-[[data-material=flat]]:enabled:bg-surface-1" disabled={disabled} aria-describedby={hint ? hintId : undefined} onClick={onChoose}>
+        {chooseLabel}
+      </Button>
+      {picker}
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ FileList and FileRow */
 
 /** The files that were added, one row each. Name it, so a screen reader knows whose files these are. */
 export function FileList({ label, children, className = "" }: { label: string; children: ReactNode; className?: string }) {
+  const device = useMaterial() === "device";
   return (
-    <ul aria-label={label} className={"grid " + className}>
+    <ul aria-label={label} className={"grid " + (device ? "gap-2 " : "") + className}>
       {children}
     </ul>
   );
@@ -198,11 +253,20 @@ export type FileRowProps = {
   onRemove?: () => void;
 };
 
+/** What the contract hands a row's body: the row's props and whether it is uploading (a rail shows, and Remove says Cancel). */
+export type FileRowBodyProps = FileRowProps & { uploading: boolean };
+
 /** One file in a FileList: its name and size, a Progress rail while it uploads, why it failed, Retry and Remove. */
-export function FileRow({ name, size, progress, error, onRetry, onRemove }: FileRowProps) {
-  const uploading = progress !== undefined && progress < 100 && !error;
+export function FileRow(props: FileRowProps) {
+  const uploading = props.progress !== undefined && props.progress < 100 && !props.error;
+  const Body = byWorld(useMaterial(), { press: PressRowBody, flat: FileRowFlatBody, device: FileRowDeviceBody });
+  return <Body {...props} uploading={uploading} />;
+}
+
+/** Press, the default row: a line between rows, the name and size above a Progress rail. */
+function PressRowBody({ name, size, progress, error, uploading, onRetry, onRemove }: FileRowBodyProps) {
   return (
-    <li className="flex items-start gap-3 border-t border-line py-3 first:border-t-0 in-[[data-material=flat]]:border-t-0">
+    <li data-body="press" className="flex items-start gap-3 border-t border-line py-3 first:border-t-0 in-[[data-material=flat]]:border-t-0">
       <FileIcon className="mt-0.5 shrink-0 text-fg-muted" />
       <div className="grid min-w-0 flex-1 gap-2">
         <p className="flex items-baseline justify-between gap-4">

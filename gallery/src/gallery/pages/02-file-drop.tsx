@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { FileDrop, FileList, FileRow } from "@/components/file-drop";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -112,6 +115,33 @@ function StatesDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-w-0 content-start items-start gap-6 rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line md:grid-cols-2"
+          >
+            <MaterialProvider material={m.id}>
+              <FileDrop label={`Project files, ${m.name}`} accept={[".pdf", ".zip"]} hint="PDF or ZIP, up to 10 MB" onFiles={() => {}} />
+              <FileList label={`Uploads, ${m.name}`}>
+                <FileRow name="halo-brief.pdf" size={2_516_582} onRemove={() => {}} />
+                <FileRow name="launch-deck.pdf" size={4_404_019} progress={55} onRemove={() => {}} />
+                <FileRow name="brand-fonts.zip" size={6_291_456} progress={64} error="The connection dropped at 64%." onRetry={() => {}} onRemove={() => {}} />
+              </FileList>
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function FileDropPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -133,6 +163,15 @@ export default function FileDropPage() {
         caption="multiple={false} takes one file and says so on its button. Disabled lies flat on surface-2 with a plain hairline, muted words, no drop and no tab stop; its hint says when it opens again."
       >
         <StatesDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One contract, three bodies. Press is the Input's cut at the surface radius, with each file a row under it. Flat is a grey sheet with no line, the files as rows with no rule. Device is a slot: an engraved legend over LCD glass in a bezel, a Choose key beside it, and each file a line of glass with its upload as segments that light in steps. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="FileDrop" component={FileDrop} props={{ label: "Project files", hint: "PDF or images, up to 10 MB", onFiles: () => {}, className: "w-full max-w-lg" }} controls={["hint", "multiple", "disabled"]} />
