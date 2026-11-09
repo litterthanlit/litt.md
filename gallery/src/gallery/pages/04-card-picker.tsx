@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { CardPicker } from "@/components/card-picker";
 import { CodeIcon, GridIcon, ListIcon, UserIcon, UsersIcon, BuildingIcon } from "@/components/icons";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -205,6 +208,46 @@ function LayoutTile() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <CardPicker
+                legend="Plan"
+                defaultValue="pro"
+                options={[
+                  { value: "free", label: "Free", description: "One project.", detail: "$0" },
+                  { value: "pro", label: "Pro", description: "Unlimited projects.", detail: "$12 a month" },
+                  { value: "team", label: "Team", description: "Roles and SSO.", detail: "$40 a month", disabled: true },
+                ]}
+              />
+              <CardPicker
+                size="sm"
+                legend="Layout"
+                defaultValue="grid"
+                options={[
+                  { value: "list", label: "List", picture: <ListIcon /> },
+                  { value: "grid", label: "Grid", picture: <GridIcon /> },
+                  { value: "code", label: "Code", picture: <CodeIcon /> },
+                ]}
+              />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function CardPickerPage() {
   return (
     <Page meta={meta} docs={docs} tile={<LayoutTile />}>
@@ -235,6 +278,15 @@ export default function CardPickerPage() {
         caption="Size sm draws tiles, a picture over a word, as in the gallery's Customize panel. Pictures draw in currentColor, so the picked one steps up to the stronger ink with its word. Board is disabled and skipped by the arrow keys, and the hint says why. A disabled picker passes it to every tile through the fieldset."
       >
         <SettingsDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One control, one contract, three bodies. Press is plates in a tray, the picked one raised out of it. Flat is pictures and words, the picked one in a grey bubble. Device is a plate with a lamp in its corner, the picked one set down into a well with its lamp lit. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );
