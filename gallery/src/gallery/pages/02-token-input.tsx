@@ -2,6 +2,9 @@ import { useState } from "react";
 import { TextField } from "@/components/input";
 import { Tag } from "@/components/tag";
 import { TokenInput } from "@/components/token-input";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -130,6 +133,29 @@ function TagsDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <TokenInput label="Mail from" defaultValue={["@stripe.com", "ramp.com", "brex.com"]} placeholder="Add a sender" hint="Press Enter or a comma to add one." />
+              <TokenInput label="Project tags" defaultValue={["landing"]} error="Use lowercase letters and dashes." />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 /* ---------- the overview's tile ---------- */
 
 function SendersTile() {
@@ -174,6 +200,16 @@ export default function TokenInputPage() {
         code="TagsDemo"
       >
         <TagsDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="responsive"
+        align="start"
+        caption="One token input, one contract, three bodies. Press is the Input's cut with each token a raised block standing out of it. Flat is a grey field with each token a bubble on it. Device is the Input's glass with each token a lit cell and a small key to remove it. Each is drawn here whatever look the page is in; the label, the roving remove buttons, Backspace, the paste and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );
