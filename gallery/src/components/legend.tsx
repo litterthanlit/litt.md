@@ -28,9 +28,16 @@
  *   toggles, because each is a native button. Focus shows the house `:focus-visible` ring, 2px out.
  * - Motion: none beyond the instant tier's color change.
  * - Bodies (proposals/worlds.md): this file resolves the state once into LegendBodyProps and renders the body the
- *   material picks (byWorld). Press is the row above; Flat and Device are in bodies/.
+ *   material picks (byWorld). Press, here, is blocks in a tray: every series is a block in one tray (--tray,
+ *   --tray-shade) with its hue chip (the 12 by 4px rail, cut as the chart dashes the line with `lines`) set in the
+ *   block's face. A shown series stands: --block on --highlight and --block-lift, its name in --fg. A hidden one
+ *   sinks flush with the tray (no block, the bay's own --cut-shade), its chip the Meter's empty track, and says
+ *   "Hidden" in words after its name, in the slot the reading uses, so a press never changes the box's size. Under
+ *   the hand a block sinks the --press-depth. The tray's floor is darker than the page, so the words on it keep
+ *   --fg and --fg-muted, never --fg-subtle. Flat is words with a hue dot; Device is a bank of latching keys, each
+ *   lamp in its series' hue (bodies/).
  */
-import { useId, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { useId, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from "react";
 import { byWorld, useMaterial } from "@/motion";
 import { LegendFlatBody } from "./bodies/legend.flat";
 import { LegendDeviceBody } from "./bodies/legend.device";
@@ -122,20 +129,28 @@ export type LegendBodyProps = {
 
 const LEGEND_NOTE = "At least one series stays shown.";
 
-const base =
-  "inline-flex h-control-sm shrink-0 items-center gap-2 rounded-control px-2 whitespace-nowrap select-none " +
-  "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-  "pointer-coarse:h-control-md " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
-/** A press does something: the hover fill, and the same fill held down on a coarse pointer. */
-const live =
-  "cursor-pointer hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
-  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
+/* A block changes in the instant tier's colors, and sinks by transform: the cast, the face and the travel. */
+const flip: CSSProperties = {
+  transitionProperty: "transform, color, background-color, box-shadow",
+  transitionDuration: "var(--dur-instant)",
+  transitionTimingFunction: "var(--ease-out)",
+};
+/* A block standing in the tray, and a bay with no block in it (hidden): the cut's own shade, flush with the floor. */
+const standing = "bg-block text-fg shadow-[var(--highlight),var(--block-lift)]";
+const flush = "bg-transparent text-fg shadow-(--cut-shade)";
+const handle =
+  "hover:bg-[color-mix(in_oklab,var(--block),transparent_55%)] " +
+  "active:shadow-[var(--highlight),var(--block-press)] active:[transform:translateY(var(--press-depth))]";
 
-/** Press, the row of toggles: a hued swatch and the name, pressed while the series shows. */
+/** Press, blocks in a tray: a shown series is a block with its hue chip, a hidden one sinks flush and says Hidden. */
 function PressBody({ label, items, lines, className, noteId, note, press, keyDown }: LegendBodyProps) {
   return (
-    <div data-body="press" role="group" aria-label={label} className={"flex flex-wrap gap-x-1 gap-y-1 " + className}>
+    <div
+      data-body="press"
+      role="group"
+      aria-label={label}
+      className={"flex w-fit max-w-full flex-wrap gap-0.5 overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " + className}
+    >
       {items.map((item) => {
         const { shown, hue, last } = item;
         return (
@@ -146,7 +161,14 @@ function PressBody({ label, items, lines, className, noteId, note, press, keyDow
             aria-disabled={last || undefined}
             aria-describedby={last ? noteId : undefined}
             aria-keyshortcuts="Alt+Enter"
-            className={base + " " + (last ? "cursor-default" : live)}
+            style={flip}
+            className={
+              "litt-target relative inline-flex h-control-sm grow items-center gap-2 rounded-[calc(var(--radius-control)-2px)] px-2.5 " +
+              "whitespace-nowrap select-none text-small [-webkit-tap-highlight-color:transparent] pointer-coarse:h-control-md forced-colors:border " +
+              "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
+              (shown ? standing : flush + " forced-colors:border-dashed") +
+              (last ? " cursor-default" : " cursor-pointer " + handle)
+            }
             onClick={(e) => press(e, item.name)}
             onKeyDown={(e) => keyDown(e, item.name)}
           >
@@ -168,12 +190,18 @@ function PressBody({ label, items, lines, className, noteId, note, press, keyDow
                 className={"h-1 w-3 shrink-0 rounded-control transition-colors duration-(--dur-instant) ease-litt " + (shown ? MARK[hue] : TRACK)}
               />
             )}
-            <span className={"litt-trim text-small transition-colors duration-(--dur-instant) ease-litt " + (shown ? "text-fg" : "text-fg-subtle")}>
-              {item.name}
+            <span className="litt-trim font-title">{item.name}</span>
+            {/* The reading and the word Hidden share one slot, sized to the wider, so a press never moves the block. */}
+            <span className="grid text-caption font-normal">
+              <span aria-hidden="true" className={"col-start-1 row-start-1 text-fg-muted" + (shown ? " invisible" : "")}>
+                <span className="litt-trim">Hidden</span>
+              </span>
+              {item.value !== undefined && (
+                <span className={"col-start-1 row-start-1 justify-self-end tabular-nums text-fg-muted" + (shown ? "" : " invisible")}>
+                  <span className="litt-trim">{item.value}</span>
+                </span>
+              )}
             </span>
-            {item.value !== undefined && (
-              <span className="litt-trim text-caption font-normal tabular-nums text-fg-subtle">{item.value}</span>
-            )}
           </button>
         );
       })}

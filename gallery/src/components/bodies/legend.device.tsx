@@ -59,7 +59,7 @@ export function LegendDeviceBody({ label, items, lines, className, noteId, note,
       role="group"
       aria-label={label}
       className={
-        "flex w-fit max-w-full flex-wrap items-start gap-0.5 rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " + className
+        "flex w-fit max-w-full flex-wrap items-start gap-0.5 overflow-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border " + className
       }
     >
       {items.map((item) => {
@@ -74,7 +74,7 @@ export function LegendDeviceBody({ label, items, lines, className, noteId, note,
             aria-keyshortcuts="Alt+Enter"
             style={detent}
             className={
-              "litt-target relative inline-flex h-9.5 shrink-0 items-center gap-1.5 rounded-[calc(var(--radius-control)-2px)] px-2.5 font-field font-title text-caption litt-legend " +
+              "litt-target relative inline-flex h-9.5 grow items-center gap-1.5 rounded-[calc(var(--radius-control)-2px)] px-2.5 font-field font-title text-caption litt-legend " +
               "whitespace-nowrap select-none [-webkit-tap-highlight-color:transparent] forced-colors:border " +
               "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
               (shown ? down + (last ? " cursor-default forced-colors:border-2" : " cursor-pointer forced-colors:border-2") : up + " cursor-pointer " + held)

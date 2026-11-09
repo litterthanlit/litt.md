@@ -221,7 +221,7 @@ export default function LegendPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One contract, three bodies. Press is the row of toggles, a hued rail and a name. Flat is the same row for now. Device is a bank of latching keys: a shown series is a key down with its lamp lit in its hue, a hidden one stands up with a dim ring. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        caption="One contract, three bodies. Press is blocks in a tray: a shown series is a block with its hue chip, and a hidden one sinks flush with the tray and says Hidden. Flat is words with a hue dot, a hidden one in grey with an outline dot. Device is a bank of latching keys: a shown series is a key down with its lamp lit in its hue, a hidden one stands up with a dim ring. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
