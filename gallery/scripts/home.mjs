@@ -361,7 +361,14 @@ for (const look of ["mono", "mono-flat"]) {
 for (const [look, want] of [["mono", 1], ["mono-flat", 0]]) {
   const { ctx, pg, errors } = await open("checkbox", { query: `?look=${look}` });
   const box = pg.locator("main input[type=checkbox]:checked:not(:disabled)").first();
-  check((await litInsets(box)) === want, `?look=${look}: a checked checkbox ${want ? "catches its top highlight" : "catches no top highlight (Flat)"}`);
+  /* The light falls on what the box draws: under Press the ink block seated in the cut beside the input (wave one's
+     body), so every shown piece of the mark is read, not only the input. */
+  const lit = await box.evaluate((input) =>
+    [input, ...input.parentElement.querySelectorAll("*")]
+      .filter((el) => getComputedStyle(el).opacity !== "0")
+      .reduce((n, el) => n + getComputedStyle(el).boxShadow.split(/,(?![^(]*\))/).filter((l) => /inset/.test(l) && !/transparent|rgba\([^)]*,\s*0\)|\/\s*0\)/.test(l)).length, 0),
+  );
+  check(want ? lit >= 1 : lit === 0, `?look=${look}: a checked checkbox ${want ? "catches its top highlight" : "catches no top highlight (Flat)"} (${lit} lit inset${lit === 1 ? "" : "s"})`);
   for (const e of errors) problems.push(`checkbox ${look}: ${e}`);
   await ctx.close();
 }

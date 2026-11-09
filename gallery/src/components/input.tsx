@@ -16,14 +16,26 @@
  *   it --focus and adds --focus-ring (:focus-visible only), an error turns it --danger and keeps the ring on
  *   focus. Disabled lies flat on surface-2 with the plain --line hairline and no shade: nothing to type.
  *   Under Device (data-material="device") the field is LCD glass in the mono, through the --field tokens.
- * - Flat (proposals/flat-pill.md): a grey pill (--cut is --surface-3) with no outline and no shade. Focus is the
- *   ink ring, an error the danger ring, disabled lies flat with no hairline. A textarea rounds to --radius-surface.
+ * - Bodies (proposals/worlds.md): the contract below (the input, its label, aria-invalid, aria-describedby) resolves once
+ *   into InputBodyProps, TextareaBodyProps and FieldBodyProps, and the body the material picks (byWorld) draws them.
+ *   Press is the cut and its plate, here. Flat is the grey pill (bodies/input.flat.tsx). Device is LCD glass set in a bezel
+ *   well, the label engraved on the body above it, the hint and the error dim LCD lines, an error with a lamp in
+ *   --danger (bodies/input.device.tsx).
+ * - Press, the instrument: the field is a cut sunk into the surface it sits on, which is the plate already. Its wall is
+ *   the shade (--slot-shade), its floor deeper (--field-shade stacked on it) and its lower wall catches the light
+ *   (the slot-shade's lit line), never a drawn outline. The label sits on the surface above, the hint or error under.
+ *   A host's className (a width) lands on the cut.
+ * - Flat, the page: a grey pill with nothing standing and no frame; the label in ink, the hint plain grey words, an
+ *   error words in --danger with the pill's fill tinting (bodies/input.flat.tsx).
  * - Typed text at the text weight and the label at the title weight (R8). The edge fades on the
  *   instant tier, the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
  *   its fill under the cursor reads as pressed.
  */
 import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
+import { byWorld, useMaterial } from "@/motion";
+import { FieldDeviceBody, InputDeviceBody, TextareaDeviceBody } from "./bodies/input.device";
+import { FieldFlatBody, InputFlatBody, TextareaFlatBody } from "./bodies/input.flat";
 
 export type InputSize = "sm" | "md" | "lg";
 
@@ -31,18 +43,13 @@ export type InputSize = "sm" | "md" | "lg";
 const field =
   "w-full min-w-0 rounded-control bg-field font-normal text-field-ink placeholder:text-field-ink-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
-  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
+  "shadow-[var(--slot-shade),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
+  "focus-visible:outline-none focus-visible:shadow-[var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--slot-shade),var(--field-shade)] " +
+  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat (rule 4): a grey pill with no outline; focus is the ink ring, an error the danger ring, disabled lies flat with no hairline. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:focus-visible:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:aria-invalid:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:aria-invalid:focus-visible:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:disabled:shadow-none " +
   /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:focus-visible:outline-2 forced-colors:focus-visible:outline-solid forced-colors:focus-visible:outline-offset-2";
 
@@ -70,18 +77,54 @@ export type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
   ref?: Ref<HTMLInputElement>;
 };
 
+/** What a body draws for the bare input: its size, its state, and every input attribute (the ref included) to put on the element. */
+export type InputBodyProps = {
+  size: InputSize;
+  invalid: boolean;
+  mono: boolean;
+  className: string;
+  control: Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & { ref?: Ref<HTMLInputElement> };
+};
+
+/** What a body draws for the textarea: the same, with the textarea's attributes. */
+export type TextareaBodyProps = {
+  size: InputSize;
+  invalid: boolean;
+  mono: boolean;
+  className: string;
+  control: TextareaHTMLAttributes<HTMLTextAreaElement> & { ref?: Ref<HTMLTextAreaElement> };
+};
+
+/** What a body draws around a labelled field: the label, the control (children), and the hint or the error under it. */
+export type FieldBodyProps = {
+  id: string;
+  noteId: string;
+  label: ReactNode;
+  note: ReactNode;
+  error: ReactNode;
+  disabled: boolean | undefined;
+  children: ReactNode;
+};
+
+/* Press, the cut: today's input. */
+function PressInput({ size, invalid, mono, className, control }: InputBodyProps) {
+  return (
+    <input
+      data-body="press"
+      aria-invalid={invalid || undefined}
+      className={[field, inputSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
+      {...control}
+    />
+  );
+}
+
 /**
  * The bare input, with no label. Use it in an inline form, such as an email field beside its submit button, and give it
  * an aria-label, because a placeholder is not a label. Every other input attribute goes through.
  */
 export function Input({ size = "md", invalid = false, mono = false, className = "", ...rest }: InputProps) {
-  return (
-    <input
-      aria-invalid={invalid || undefined}
-      className={[field, inputSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
-      {...rest}
-    />
-  );
+  const Body = byWorld(useMaterial(), { press: PressInput, flat: InputFlatBody, device: InputDeviceBody });
+  return <Body size={size} invalid={invalid} mono={mono} className={className} control={rest} />;
 }
 
 /** The ids and text a labelled field needs: the control's id, the note under it, and what that note says. */
@@ -93,26 +136,10 @@ function useFieldParts(idProp: string | undefined, help: ReactNode, error: React
   return { id, note, noteId, describedBy: [describedBy, note ? noteId : undefined].filter(Boolean).join(" ") || undefined };
 }
 
-/* Label above, control, then a hint or an error below. The error replaces the hint. */
-function Field({
-  id,
-  noteId,
-  label,
-  note,
-  error,
-  disabled,
-  children,
-}: {
-  id: string;
-  noteId: string;
-  label: ReactNode;
-  note: ReactNode;
-  error: ReactNode;
-  disabled: boolean | undefined;
-  children: ReactNode;
-}) {
+/* Press: the surface the field sits on is the plate already, so the label sits on it above the cut, the hint or the error under. */
+function PressField({ id, noteId, label, note, error, disabled, children }: FieldBodyProps) {
   return (
-    <div className="grid gap-2">
+    <div data-body="press" className="grid content-start gap-2">
       <label htmlFor={id} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
@@ -124,6 +151,11 @@ function Field({
       )}
     </div>
   );
+}
+
+function Field(props: FieldBodyProps) {
+  const Body = byWorld(useMaterial(), { press: PressField, flat: FieldFlatBody, device: FieldDeviceBody });
+  return <Body {...props} />;
 }
 
 export type TextFieldProps = Omit<InputProps, "invalid"> & {
@@ -191,14 +223,30 @@ export function Textarea({
   const { id, note, noteId, describedBy } = useFieldParts(idProp, help, error, describedByProp);
   return (
     <Field id={id} noteId={noteId} label={label} note={note} error={error} disabled={rest.disabled}>
-      <textarea
-        id={id}
-        rows={rows}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy}
-        className={[field, "block resize-y in-[[data-material=flat]]:rounded-surface", textareaSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
-        {...rest}
+      <TextareaControl
+        size={size}
+        invalid={!!error}
+        mono={mono}
+        className={className}
+        control={{ id, rows, "aria-describedby": describedBy, ...rest }}
       />
     </Field>
   );
+}
+
+/* Press, the cut: today's textarea. */
+function PressTextarea({ size, invalid, mono, className, control }: TextareaBodyProps) {
+  return (
+    <textarea
+      data-body="press"
+      aria-invalid={invalid || undefined}
+      className={[field, "block resize-y", textareaSizes[size], mono ? "font-mono" : "font-field", className].join(" ")}
+      {...control}
+    />
+  );
+}
+
+function TextareaControl(props: TextareaBodyProps) {
+  const Body = byWorld(useMaterial(), { press: PressTextarea, flat: TextareaFlatBody, device: TextareaDeviceBody });
+  return <Body {...props} />;
 }

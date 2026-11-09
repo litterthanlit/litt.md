@@ -6,16 +6,16 @@
  *   --line-control line and the top wall's shade (R3), the focus line and ring while the text is focus-visible, the
  *   danger line with an error, flat on surface-2 when disabled. The number at the text weight with tabular figures,
  *   so it does not shift as it changes, and an optional unit after it in --fg-subtle ("seats", "GB").
- * - Steppers: − then +, raised blocks (R3: --block, --block-lift) set 4px inside the field's end, 4px apart, square at
- *   the field's height less 8px (24, 36 or 48px), with corners the control radius less 2px so they stay concentric.
- *   You press them, so they stand up out of the cut; pressed, the cast tightens (--block-press) at once and the block
- *   sinks --press-depth, as a secondary Button does. At its bound a stepper is disabled and lies flat (no fill, no
- *   lift, --fg-disabled): nothing to push. A press steps once; held, it repeats after 400ms, every 70ms, until it
- *   lets go or reaches the bound. They are not Tab stops (the arrow keys do the same in the field), and pressing one
- *   leaves focus where it was.
- * - Flat (proposals/flat-pill.md, idea C): a grey track with no outline, the value (and its unit) in a --surface-1
- *   bubble, a round − and + either side of it with no fill until the pointer is over them. Focus is the ink ring on
- *   the track, an error the danger ring. The DOM is the same; the bubble wrapper is display: contents under Press.
+ * - Steppers (Press): − then +, the two halves of one raised block beside the cut, 8px from it, a 1px seam between
+ *   (R3: --block, --block-lift), each the field's height square, its outer corners the control radius and the corners
+ *   at the seam square. You press them, so they stand up; pressed, a half sinks --press-depth
+ *   and its cast tightens (--block-press) at once while the other half lifts 1px, so the rocker tips toward the side
+ *   pressed. At its bound a half is disabled and lies flat in a socket (--slot, --tray-shade, --fg-disabled): nothing
+ *   to push. A press steps once; held, it repeats after 400ms, every 70ms, until it lets go or reaches the bound.
+ *   They are not Tab stops (the arrow keys do the same in the field), and pressing one leaves focus where it was.
+ * - Flat: one grey pill around three words. The figure in ink at the title weight with its unit after it in grey, and
+ *   − and + set as words either side, no fill until the pointer is over them. No bubble, no icon, no shade. At a bound
+ *   its word goes grey and light. Focus is the ink ring on the pill, an error the danger ring.
  * - Typing is free: what is typed is read when the field is left or Enter is pressed, in the page's locale (group
  *   separators, a comma decimal). Then it is kept between min and max, put on the step, and shown formatted
  *   (Intl.NumberFormat, with `format` for a currency or a percent). Text that is not a number goes back to the last
@@ -30,13 +30,21 @@
  *   and the field rests exactly as it does without fun mode. Reduced motion turns it off.
  * - hideLabel keeps the label for screen readers only, where the row around the field already says what it counts (a
  *   cart line's quantity). A hidden label is not a scrub handle.
+ * - Bodies (proposals/worlds.md, Bodies): the component resolves the props, the value, the keys and the hold into
+ *   NumberFieldBodyProps and renders the body the material picks (byWorld). Press is the cut with its rocker, above.
+ *   Flat is the one grey pill with the figure and − and + set as words. Device is an LCD readout (glass in a bezel
+ *   well, the number in the mono) with − and + as keys on their 2px skirts beside the glass, not inside it; a key sinks
+ *   the whole --press-depth, and a held one repeats as above. The label and the hint stay the component's own; each
+ *   body carries data-body on its field and never changes a prop, a key or what a screen reader hears.
  * - Accessibility: the input is a spinbutton named by the label, with aria-valuenow, -valuemin, -valuemax and the
  *   formatted value and unit as aria-valuetext. The steppers are named "Decrease seats" and "Increase seats".
  */
-import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ComponentProps, type KeyboardEvent, type MouseEventHandler, type PointerEvent as ReactPointerEvent, type ReactNode, type RefObject } from "react";
 import { animate } from "motion/react";
-import { useFun } from "@/motion";
+import { byWorld, useFun, useMaterial } from "@/motion";
 import { MinusIcon, PlusIcon } from "@/components/icons";
+import { NumberFieldDeviceBody } from "./bodies/number-field.device";
+import { NumberFieldFlatBody } from "./bodies/number-field.flat";
 
 export type NumberFieldSize = "sm" | "md" | "lg";
 
@@ -49,40 +57,97 @@ const FIELD =
   "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
   "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat: a grey track with no outline; the ring and the danger ring are the only edges. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:has-[input:focus-visible]:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:data-[invalid]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[invalid]:has-[input:focus-visible]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[disabled]:shadow-none " +
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
-
-/* Flat's bubble: the value (and its unit) in a --surface-1 bubble that fills the track between the round − and +.
-   Under Press the wrapper is display: contents, so the field lays out exactly as before. */
-const BUBBLE =
-  "contents in-[[data-material=flat]]:flex in-[[data-material=flat]]:order-2 in-[[data-material=flat]]:min-w-0 in-[[data-material=flat]]:flex-1 " +
-  "in-[[data-material=flat]]:items-center in-[[data-material=flat]]:self-stretch in-[[data-material=flat]]:rounded-[calc(var(--radius-control)-2px)] " +
-  "in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:has-[input:disabled]:bg-transparent " +
-  "forced-colors:in-[[data-material=flat]]:border";
 
 /* Height, the text's size and the air before it, and the steppers' size: the field's height less 8px, so each block
    sits 4px inside the field. */
-const SIZE: Record<NumberFieldSize, { field: string; type: string; pad: string; step: string }> = {
+const SIZE: Record<NumberFieldSize, NumberFieldSizeClasses> = {
   sm: { field: "h-control-sm pointer-coarse:h-control-md", type: "text-small", pad: "pl-control-pad-sm", step: "size-6 pointer-coarse:size-9" },
   md: { field: "h-control-md", type: "text-body", pad: "pl-control-pad-md", step: "size-9" },
   lg: { field: "h-control-lg", type: "text-(length:--control-text-lg)", pad: "pl-control-pad-lg", step: "size-12" },
 };
 
-/* Secondary Button's block, nested 4px in the field, at the field's radius less that inset, never under 2px. The sink is transitioned as `translate`, which Tailwind's
-   translate-y-* sets; the cast swaps at once (R2). */
-const STEPPER =
-  "litt-target relative grid shrink-0 place-items-center rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] select-none [-webkit-tap-highlight-color:transparent] " +
+/** The classes a size gives its body: the field's height, the text's size, the air before it and the steppers' size. */
+export type NumberFieldSizeClasses = { field: string; type: string; pad: string; step: string };
+
+/**
+ * What every body of the NumberField draws (proposals/worlds.md, Bodies): the field between the label and the hint. It
+ * is resolved once by NumberField, which owns the value, the keys, the hold and the fun mode, so a body only lays out
+ * and styles. `input` is the spinbutton's props without a class; the body adds its own and attaches `inputRef`.
+ * `minus` and `plus` are the stepper buttons' props without a class or children. Each body carries data-body on its
+ * root, the field.
+ */
+export type NumberFieldBodyProps = {
+  /** The size's classes. */
+  sz: NumberFieldSizeClasses;
+  /** An error is showing. */
+  invalid: boolean;
+  disabled: boolean;
+  /** The word after the number, drawn aria-hidden. */
+  unit?: string;
+  /** The spinbutton's attributes and handlers. */
+  input: ComponentProps<"input">;
+  inputRef: RefObject<HTMLInputElement | null>;
+  /** The − button's attributes and handlers. */
+  minus: ComponentProps<"button">;
+  /** The + button's attributes and handlers. */
+  plus: ComponentProps<"button">;
+  /** A press on the field's air focuses the text; a press on a stepper does not. */
+  onFieldClick: MouseEventHandler<HTMLDivElement>;
+};
+
+/* The cut is the Input's field with nothing inside its end: the figure alone, on the --cut floor. */
+const CUT = FIELD;
+
+/* The rocker: one raised block beside the cut, split in two halves with a seam between. Each half is its own button on
+   the block's material (--block, --block-lift) and the control radius on its outer corners; the corners at the seam are square.
+   Pressed, a half sinks --press-depth and the cast tightens (--block-press) while
+   its partner lifts a touch (the rocker tips toward the side pressed). The sink is transitioned as `translate`, which
+   Tailwind's translate-y-* sets; the cast swaps at once (R2). At its bound a half lies flat (no lift, no fill,
+   --fg-disabled) in the socket the block leaves, so the end that cannot move reads as such. */
+const HALF =
+  "litt-target relative grid h-full aspect-square shrink-0 place-items-center select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
   "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--block-lift) enabled:forced-colors:border " +
   "enabled:hover:bg-(--block-hover) " +
   "enabled:active:shadow-(--block-press) enabled:active:translate-y-(--press-depth) " +
-  "disabled:cursor-not-allowed disabled:text-fg-disabled " +
-  /* Flat: a round key on the track, no fill until the pointer is over it. */
-  "in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:enabled:bg-transparent in-[[data-material=flat]]:enabled:hover:bg-(--block-hover)";
+  "disabled:cursor-not-allowed disabled:bg-slot disabled:text-fg-disabled disabled:shadow-(--tray-shade) forced-colors:border";
+const HALF_MINUS = " rounded-l-control rounded-r-none group-has-[[data-dir=plus]:enabled:active]/rocker:enabled:-translate-y-px";
+const HALF_PLUS = " rounded-r-control rounded-l-none group-has-[[data-dir=minus]:enabled:active]/rocker:enabled:-translate-y-px";
+
+/** Press, the cut for the figure and a rocker block beside it, − and + its two halves. */
+function PressBody({ sz, invalid, disabled, unit, input, inputRef, minus, plus, onFieldClick }: NumberFieldBodyProps) {
+  return (
+    <div data-body="press" className={"flex min-w-0 items-stretch gap-2 " + sz.field} onClick={onFieldClick}>
+      <div data-invalid={invalid ? "" : undefined} data-disabled={disabled ? "" : undefined} className={CUT + " flex-1 pr-1"}>
+        <input
+          ref={inputRef}
+          {...input}
+          className={
+            "h-full min-w-0 flex-1 bg-transparent tabular-nums outline-none placeholder:text-field-ink-subtle disabled:cursor-not-allowed " +
+            "pointer-coarse:text-(length:--control-text-lg) " +
+            sz.pad +
+            " " +
+            sz.type
+          }
+        />
+        {unit && (
+          <span aria-hidden="true" className={"shrink-0 pr-2 pl-1 pointer-coarse:text-(length:--control-text-lg) " + (disabled ? "text-fg-disabled " : "text-field-ink-subtle ") + sz.type}>
+            {unit}
+          </span>
+        )}
+      </div>
+      <div className="group/rocker flex shrink-0 gap-px">
+        <button {...minus} data-dir="minus" className={HALF + HALF_MINUS}>
+          <MinusIcon />
+        </button>
+        <button {...plus} data-dir="plus" className={HALF + HALF_PLUS}>
+          <PlusIcon />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 const HOLD_DELAY = 400; // ms before a held stepper starts repeating
 const HOLD_EVERY = 70; // ms between repeats
@@ -339,40 +404,36 @@ export function NumberField({
   /* A press with a pointer steps on pointerdown; the click that follows must not step again. */
   const pointerStep = useRef(false);
 
-  const stepper = (dir: 1 | -1) => {
+  const stepperProps = (dir: 1 | -1): ComponentProps<"button"> => {
     const bound = dir < 0 ? atMin : atMax;
     const word = dir < 0 ? "Decrease" : "Increase";
-    return (
-      <button
-        type="button"
-        tabIndex={-1}
-        aria-label={typeof label === "string" ? `${word} ${label.toLowerCase()}` : word}
-        aria-controls={id}
-        disabled={disabled || bound}
-        className={STEPPER + " " + SIZE[size].step + (dir < 0 ? " in-[[data-material=flat]]:order-1" : " in-[[data-material=flat]]:order-3")}
-        onPointerDown={(e: ReactPointerEvent<HTMLButtonElement>) => {
-          if (e.button !== 0) return;
-          e.preventDefault(); // focus stays where it was
-          pointerStep.current = true;
-          latest.current(dir);
-          timers.current.delay = window.setTimeout(() => {
-            timers.current.every = window.setInterval(() => latest.current(dir), HOLD_EVERY);
-          }, HOLD_DELAY);
-        }}
-        onPointerUp={stop}
-        onPointerLeave={stop}
-        onPointerCancel={stop}
-        onClick={() => {
-          /* A screen reader or a keyboard activates without a pointer. */
-          if (pointerStep.current) pointerStep.current = false;
-          else stepBy(dir);
-        }}
-      >
-        {dir < 0 ? <MinusIcon /> : <PlusIcon />}
-      </button>
-    );
+    return {
+      type: "button",
+      tabIndex: -1,
+      "aria-label": typeof label === "string" ? `${word} ${label.toLowerCase()}` : word,
+      "aria-controls": id,
+      disabled: disabled || bound,
+      onPointerDown: (e: ReactPointerEvent<HTMLButtonElement>) => {
+        if (e.button !== 0) return;
+        e.preventDefault(); // focus stays where it was
+        pointerStep.current = true;
+        latest.current(dir);
+        timers.current.delay = window.setTimeout(() => {
+          timers.current.every = window.setInterval(() => latest.current(dir), HOLD_EVERY);
+        }, HOLD_DELAY);
+      },
+      onPointerUp: stop,
+      onPointerLeave: stop,
+      onPointerCancel: stop,
+      onClick: () => {
+        /* A screen reader or a keyboard activates without a pointer. */
+        if (pointerStep.current) pointerStep.current = false;
+        else stepBy(dir);
+      },
+    };
   };
 
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: NumberFieldFlatBody, device: NumberFieldDeviceBody });
   const valueText = value === null ? undefined : `${show(value)}${unit ? ` ${unit}` : ""}`;
 
   return (
@@ -384,56 +445,40 @@ export function NumberField({
       >
         {label}
       </label>
-      <div
-        data-invalid={error ? "" : undefined}
-        data-disabled={disabled ? "" : undefined}
-        className={FIELD + " pr-1 in-[[data-material=flat]]:py-1 in-[[data-material=flat]]:pl-1 " + SIZE[size].field}
-        onClick={(e) => {
+      <Body
+        sz={SIZE[size]}
+        invalid={!!error}
+        disabled={disabled}
+        unit={unit}
+        inputRef={input}
+        input={{
+          id,
+          type: "text",
+          inputMode: (format?.maximumFractionDigits ?? 0) > 0 || decimalsOf(step) > 0 || percent ? "decimal" : "numeric",
+          role: "spinbutton",
+          autoComplete: "off",
+          spellCheck: false,
+          "aria-valuenow": value ?? undefined,
+          "aria-valuemin": min,
+          "aria-valuemax": max,
+          "aria-valuetext": valueText,
+          "aria-invalid": error ? true : undefined,
+          "aria-describedby": note ? noteId : undefined,
+          "aria-required": required || undefined,
+          disabled,
+          value: text,
+          onChange: (e) => setDraft(e.target.value),
+          onBlur: commit,
+          onKeyDown,
+        }}
+        minus={stepperProps(-1)}
+        plus={stepperProps(1)}
+        onFieldClick={(e) => {
           /* A press on the field's air focuses the text; a press on a stepper leaves focus where it was, so a phone's
              keyboard does not open under a thumb that is only stepping. */
           if (!(e.target as Element).closest("button")) input.current?.focus();
         }}
-      >
-        <span className={BUBBLE}>
-        <input
-          ref={input}
-          id={id}
-          type="text"
-          inputMode={(format?.maximumFractionDigits ?? 0) > 0 || decimalsOf(step) > 0 || percent ? "decimal" : "numeric"}
-          role="spinbutton"
-          autoComplete="off"
-          spellCheck={false}
-          aria-valuenow={value ?? undefined}
-          aria-valuemin={min}
-          aria-valuemax={max}
-          aria-valuetext={valueText}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={note ? noteId : undefined}
-          aria-required={required || undefined}
-          disabled={disabled}
-          value={text}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commit}
-          onKeyDown={onKeyDown}
-          className={
-            "h-full min-w-0 flex-1 bg-transparent tabular-nums outline-none placeholder:text-field-ink-subtle disabled:cursor-not-allowed " +
-            "pointer-coarse:text-(length:--control-text-lg) " +
-            SIZE[size].pad +
-            " " +
-            SIZE[size].type
-          }
-        />
-        {unit && (
-          <span aria-hidden="true" className={"shrink-0 pr-2 pl-1 pointer-coarse:text-(length:--control-text-lg) " + (disabled ? "text-fg-disabled " : "text-field-ink-subtle ") + SIZE[size].type}>
-            {unit}
-          </span>
-        )}
-        </span>
-        <span className="flex shrink-0 items-center gap-1 in-[[data-material=flat]]:contents">
-          {stepper(-1)}
-          {stepper(1)}
-        </span>
-      </div>
+      />
       {name && <input type="hidden" name={name} value={value ?? ""} />}
       {note && (
         <p id={noteId} className={"text-small " + (error ? "text-danger" : "text-fg-subtle")}>

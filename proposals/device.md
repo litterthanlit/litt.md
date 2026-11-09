@@ -89,7 +89,7 @@ In the gallery: `Material` gains `"device"` in `look.ts` (the slug `-device`, so
 Nick, on the first build: "We should be using full mono. This isnt like the screenshot I showed you, accent should be orange. Fully reshaping the system." Chosen: reshape Device (not litt's default); panels and overlays become dark LCD screens set into the light body; orange is Device's accent, with Pink and Monochrome still winning when set. So D2 widens to every word, D3's 18px ceiling stays, and the lamps stay out.
 
 - Full mono: the device block sets `--font-sans` to the mono; Geist Mono loads at 400, 500 and 600.
-- Orange: `--device-accent` #c2410c with white words on the light body, #ff8a1f with dark words on a screen and in dark, plus `--accent-fg` and `--accent-tint` per scope. Under Device amber is an ochre and rose a mauve, 0.12 from the orange.
+- Orange: `--device-accent` #ff8a1f with dark words everywhere since taste v1.13 (it was #c2410c with white words on the light body, which Nick changed: "it should be the brighter one"); the deep orange stays for links and the focus ring on the light body, plus `--accent-fg` and `--accent-tint` per scope. Under Device amber is an ochre and rose a mauve, 0.12 from the orange.
 - Screens: one rule, `[data-material="device"] :is(.litt-raised, .litt-glass)`, maps every token onto `--device-screen-*` (the same in each theme), with pink and monochrome restated inside. No component changes.
 
 ## Decisions for Nick

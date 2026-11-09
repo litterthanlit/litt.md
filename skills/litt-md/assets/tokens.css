@@ -246,9 +246,12 @@
   --device-field-ink: #f2f2f2;
   --device-field-ink-subtle: #a2a3a6;
   --device-field-line: #2b2c2f;
-  --device-accent: #c2410c;
-  --device-accent-hover: #a8380a;
-  --device-accent-fg: #ffffff;
+  /* One orange (v1.13): the fill on the light body is the bright orange of the screens, with dark words, as Nick asked
+     ("it should be the brighter one"). Links (--device-accent-text) and the focus ring (--device-focus) keep the deep
+     orange, since words and a ring must read against the light aluminium. */
+  --device-accent: #ff8a1f;
+  --device-accent-hover: #ff9a3c;
+  --device-accent-fg: #111214;
   --device-accent-tint: #f6e4d8;
   --device-accent-text: #a23200;
   --device-accent-pink: #c0007e;
