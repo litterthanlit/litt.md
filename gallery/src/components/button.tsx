@@ -8,16 +8,19 @@
  *   box never moves or resizes (loading keeps the label mounted at opacity 0).
  * - Loading is busy, not disabled: the button keeps its variant's look and its focus (a disabled button drops focus
  *   to the page), and a click does nothing, a submit's included, until it ends. It does not sink while it waits.
- * - Material (R3): a secondary button is the press material's raised block (--block, --block-lift), and its cast
- *   tightens while it is pressed (--block-press), at once, never faded (R2). The primary is the accent with its glow
- *   and a top highlight. Ghost lies flat, and so does a disabled button: nothing to push.
+ * - Material (R3), Press's body: a thick block on its own plate. The plate is the button's own border (--slot, 3px at
+ *   md and lg, 2px at sm); the block is the face inside it, with a lit top edge (--highlight) and a darker wall along
+ *   its foot that is its thickness. A secondary block casts a little (--block-lift) and the primary is the accent with
+ *   its glow. A press sinks the block into the plate: the wall goes, the cast tightens (--block-press), the face
+ *   takes its hover fill and the label drops, all at once, never faded (R2). Ghost has no plate and lies flat, and
+ *   so does a disabled button: a plate with a flat face, nothing to push.
  * - Danger (R7): a destructive action is the same raised block with its words in --danger. Inside a dialog's footer
  *   ([data-dialog-footer], matched structurally with Tailwind's in-* variant) it is the confirm of the dialog that
  *   asks, the one red fill: --danger with --danger-fg words and the primary's lit top edge, with no cast and no glow
  *   (the glow is the primary's, R6). Until the dialog's condition is met it is disabled, so it lies flat like any
  *   disabled button.
- * - Motion: the instant tier. Hover is a CSS transition on --dur-instant, which tokens.css owns. A press sinks the
- *   block --press-depth (half a pixel, R4) rather than shrinking it. Tailwind's active:translate-y-* sets the CSS
+ * - Motion: the instant tier. Hover is a CSS transition on --dur-instant, which tokens.css owns. A press drops the
+ *   label twice --press-depth (one pixel) rather than shrinking the box. Tailwind's translate-y-* sets the CSS
  *   `translate` property, not `transform`, so the transition names `translate`; naming `transform` instead would
  *   let the press snap.
  * - Touch: a pressed button also takes its hover fill, so a press still shows under reduced motion (which sets the
@@ -26,12 +29,11 @@
  *   (`<Button><PlusIcon /> New</Button>`, as shadcn writes it) sit side by side: each
  *   run of text is a trimmed label, and each element sits in the row. A child SVG is
  *   16px, like every button icon. The icon prop is still the documented way.
- * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the press goes deeper (1px) and the sink moves
- *   on fun mode's press spring, as a CSS linear() easing, so the release springs back with a little life. Only the
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the press goes deeper (1px, so the label drops
+ *   two) and the sink moves on fun mode's press spring, as a CSS linear() easing, so the release springs back with a little life. Only the
  *   sink's timing changes; fills keep the instant tier. Still CSS, no script per press. Reduced motion turns it off.
  * - Flat (proposals/flat-pill.md): the secondary is a grey pill with no cast (the tokens), icon-only is a grey circle,
- *   and a disabled button is a grey fill with --fg-disabled words and no hairline.
- * - Disabled keeps a hairline, so the button keeps its shape on a surface-2 area.
+ *   a ghost is words alone, and a disabled button is a grey fill with --fg-disabled words and no hairline.
  * - Corners: rounded-control (4px in litt.md v0.5). Icon-only buttons are
  *   round (pill) and need an aria-label.
  * - Bodies (proposals/worlds.md): this file is the contract (props, the real <button>, aria-busy and aria-disabled,
@@ -67,11 +69,10 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "litt-target relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-title " +
-  "cursor-pointer transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
-  "[-webkit-tap-highlight-color:transparent] " +
-  "active:translate-y-(--press-depth) disabled:cursor-not-allowed disabled:active:translate-y-0 " +
-  "data-loading:cursor-wait data-loading:active:translate-y-0 " +
+  "litt-target group relative inline-flex shrink-0 items-center justify-center gap-control whitespace-nowrap select-none font-title " +
+  "cursor-pointer transition-[background-color,color] duration-(--dur-instant) ease-litt " +
+  "[-webkit-tap-highlight-color:transparent] border-(length:--plate) border-solid bg-clip-padding " +
+  "disabled:cursor-not-allowed data-loading:cursor-wait " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 const sizes: Record<ButtonSize, string> = {
@@ -81,28 +82,43 @@ const sizes: Record<ButtonSize, string> = {
 };
 const iconSizes: Record<ButtonSize, string> = { sm: "w-control-sm", md: "w-control-md", lg: "w-control-lg" };
 
+/* The plate is the border, so it takes room from the box. The side padding gives the same room back, and the button keeps the width it had. */
+const plateSize: Record<ButtonSize, string> = {
+  sm: "[--plate:2px] [padding-inline:calc(var(--control-pad-sm)-2px)]",
+  md: "[--plate:3px] [padding-inline:calc(var(--control-pad-md)-3px)]",
+  lg: "[--plate:3px] [padding-inline:calc(var(--button-pad-lg)-3px)]",
+};
+const plateIcon = "[--plate:3px] px-0";
+
+/* The block's thickness is a 2px wall along its foot, drawn in the face's own background. A press sinks the block into its plate: the wall goes. */
+const wall = "[background-image:linear-gradient(to_top,var(--wall)_2px,transparent_2px)] enabled:not-data-loading:active:[background-image:none] disabled:[background-image:none]";
+
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
-    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] ",
+    "border-(--slot) bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
+    "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] [--wall:color-mix(in_oklab,black_24%,transparent)] " + wall,
   secondary:
-    "bg-block text-fg shadow-(--block-lift) enabled:not-data-loading:active:shadow-(--block-press) forced-colors:border " +
+    "border-(--slot) bg-block text-fg [--stack:var(--highlight),var(--block-lift)] enabled:not-data-loading:active:[--stack:var(--highlight),var(--block-press)] " +
+    "shadow-(--stack) [--wall:color-mix(in_oklab,var(--fg)_14%,transparent)] " + wall + " " +
     "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover)",
   ghost:
-    "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+    "bg-transparent bg-clip-border border-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
   danger:
-    "bg-block text-danger shadow-(--block-lift) enabled:not-data-loading:active:shadow-(--block-press) forced-colors:border " +
+    "border-(--slot) bg-block text-danger [--stack:var(--highlight),var(--block-lift)] enabled:not-data-loading:active:[--stack:var(--highlight),var(--block-press)] " +
+    "shadow-(--stack) [--wall:color-mix(in_oklab,var(--fg)_14%,transparent)] " + wall + " " +
     "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " +
     /* A dialog's confirm. These rules sort after the block's, so they win its ties (active, a finger's press). */
     "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
     "in-[[data-dialog-footer]]:enabled:shadow-none in-[[data-dialog-footer]]:enabled:active:shadow-none " +
     "in-[[data-dialog-footer]]:enabled:inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)] " +
+    "in-[[data-dialog-footer]]:enabled:[--wall:color-mix(in_oklab,black_24%,transparent)] " +
     "in-[[data-dialog-footer]]:enabled:hover:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)] " +
     "in-[[data-dialog-footer]]:enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--danger),var(--fg)_10%)]",
 };
+/* Disabled lies flat: the plate stays, and its face has no cast, no lit edge and no wall. */
 const disabledLook =
-  "disabled:bg-surface-2 disabled:text-fg-disabled disabled:shadow-[inset_0_0_0_1px_var(--line)] disabled:inset-shadow-none ";
+  "disabled:bg-surface-2 disabled:bg-clip-padding disabled:border-(--slot) disabled:text-fg-disabled disabled:shadow-none disabled:inset-shadow-none ";
 
 /* One child is the label. Several (an icon and a word) sit in the row: text runs are trimmed labels, elements sit as they are. */
 function label(children: ReactNode): ReactNode {
@@ -148,17 +164,27 @@ export type ButtonBodyProps = {
   rootProps: ComponentPropsWithRef<"button"> & { "data-loading"?: true };
 };
 
-/** Press's body: the raised block that sinks half a pixel. The default, and what a world without a body of its own gets. */
-function PressBody({ variant, sizeClass, shapeClass, blockClass, className, fun, children, spinner, loading, rootProps }: ButtonBodyProps) {
+/** Press's body: a thick block on its own plate, sinking into it when pressed. The default, and what a world without a body of its own gets. */
+function PressBody({ variant, size, iconOnly, sizeClass, shapeClass, blockClass, className, fun, children, spinner, loading, rootProps }: ButtonBodyProps) {
   const { style, ...root } = rootProps;
   return (
     <button
       {...root}
       data-body="press"
-      className={[base, sizeClass, variants[variant], disabledLook, shapeClass, blockClass, className].join(" ")}
+      className={[base, sizeClass, iconOnly ? plateIcon : plateSize[size], variants[variant], disabledLook, shapeClass, blockClass, className].join(" ")}
       style={fun ? { ...fun, ...style } : style}
     >
-      {children}
+      <span
+        className={
+          "inline-flex items-center justify-center transition-[background-color,color,translate] duration-(--dur-instant) ease-litt " +
+          (variant === "ghost"
+            ? "group-[:enabled:not([data-loading]):active]:translate-y-(--press-depth)"
+            : "group-[:enabled:not([data-loading]):active]:translate-y-[calc(var(--press-depth)*2)]")
+        }
+        style={fun}
+      >
+        {children}
+      </span>
       {loading && (
         <span className="absolute inset-0 grid place-items-center" aria-hidden="true">
           {spinner}
