@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { BarChart, LineChart, type ChartSeries } from "@/components/chart";
 import { Legend, legendHues, type LegendItem } from "@/components/legend";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -146,6 +149,37 @@ function LastOneDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center justify-items-start gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <Legend
+                label="Sites"
+                defaultHidden={["Shop"]}
+                items={[
+                  { name: "Studio", value: "12,340" },
+                  { name: "Journal", value: "6,830" },
+                  { name: "Shop", value: "3,010" },
+                ]}
+              />
+              <Legend label="Lines" lines items={[{ name: "Builds" }, { name: "Previews" }, { name: "Deploys" }]} />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function LegendPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -183,6 +217,14 @@ export default function LegendPage() {
         caption="A chart with nothing on it says nothing, so the last shown series cannot be hidden. Arcadia is the only one shown: pressing it does nothing, and a screen reader hears why. It keeps its tab stop. Alt with a click, or Alt and Enter, shows only the item you pressed."
       >
         <LastOneDemo />
+      </Stage>
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One contract, three bodies. Press is the row of toggles, a hued rail and a name. Flat is the same row for now. Device is a bank of latching keys: a shown series is a key down with its lamp lit in its hue, a hidden one stands up with a dim ring. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );

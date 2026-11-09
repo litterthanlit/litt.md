@@ -27,8 +27,13 @@
  * - Keyboard: each item is its own tab stop (they are independent toggles, not a radio group). Space or Enter
  *   toggles, because each is a native button. Focus shows the house `:focus-visible` ring, 2px out.
  * - Motion: none beyond the instant tier's color change.
+ * - Bodies (proposals/worlds.md): this file resolves the state once into LegendBodyProps and renders the body the
+ *   material picks (byWorld). Press is the row above; Flat and Device are in bodies/.
  */
 import { useId, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { byWorld, useMaterial } from "@/motion";
+import { LegendFlatBody } from "./bodies/legend.flat";
+import { LegendDeviceBody } from "./bodies/legend.device";
 
 /** The five data hues, in their fixed order (R7). The same names as the Chart's and the Breakdown's. */
 export type LegendHue = "blue" | "amber" | "teal" | "violet" | "rose";
@@ -95,7 +100,27 @@ export function legendHues(items: LegendItem[]): Record<string, LegendHue> {
   return out;
 }
 
-const NOTE = "At least one series stays shown.";
+/** One series as a body draws it: its hue resolved from the whole list, and whether it shows or is the last one standing. */
+export type LegendBodyItem = LegendItem & { hue: LegendHue; shown: boolean; last: boolean };
+
+/** What a body gets: the state resolved once. Every body renders the same group of toggle buttons. */
+export type LegendBodyProps = {
+  label: string;
+  items: LegendBodyItem[];
+  lines: boolean;
+  className: string;
+  /** The id of the hidden note the last shown item points at; the body renders the note itself. */
+  noteId: string;
+  /** The hidden note's words. */
+  note: string;
+  /** A click: toggles the series, or with Alt solos it. */
+  press: (e: MouseEvent<HTMLButtonElement>, name: string) => void;
+  /** Alt with Enter solos the series. */
+  keyDown: (e: KeyboardEvent<HTMLButtonElement>, name: string) => void;
+};
+
+
+const LEGEND_NOTE = "At least one series stays shown.";
 
 const base =
   "inline-flex h-control-sm shrink-0 items-center gap-2 rounded-control px-2 whitespace-nowrap select-none " +
@@ -107,40 +132,12 @@ const live =
   "cursor-pointer hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]";
 
-/** A row of toggles, one per series: a hued swatch and the name, pressed while the series shows. */
-export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], onHiddenChange, lines = false, className = "" }: LegendProps) {
-  const noteId = useId();
-  const [inner, setInner] = useState<string[]>(defaultHidden);
-  const hidden = hiddenProp ?? inner;
-  const hues = legendHues(items);
-  const isShown = (name: string) => !hidden.includes(name);
-  const shownCount = items.filter((item) => isShown(item.name)).length;
-
-  const commit = (next: string[]) => {
-    if (hiddenProp === undefined) setInner(next);
-    onHiddenChange?.(next);
-  };
-  const toggle = (name: string) => {
-    if (isShown(name)) {
-      if (shownCount <= 1) return; // the last one stays
-      commit([...hidden, name]);
-    } else {
-      commit(hidden.filter((n) => n !== name));
-    }
-  };
-  const solo = (name: string) => {
-    if (isShown(name) && shownCount <= 1) return;
-    /* Keep names the caller hid that are not items, so a shared hidden list is not wiped. */
-    const others = hidden.filter((n) => !items.some((item) => item.name === n));
-    commit([...others, ...items.map((item) => item.name).filter((n) => n !== name)]);
-  };
-
+/** Press, the row of toggles: a hued swatch and the name, pressed while the series shows. */
+function PressBody({ label, items, lines, className, noteId, note, press, keyDown }: LegendBodyProps) {
   return (
-    <div role="group" aria-label={label} className={"flex flex-wrap gap-x-1 gap-y-1 " + className}>
+    <div data-body="press" role="group" aria-label={label} className={"flex flex-wrap gap-x-1 gap-y-1 " + className}>
       {items.map((item) => {
-        const shown = isShown(item.name);
-        const hue = hues[item.name]!;
-        const last = shown && shownCount <= 1;
+        const { shown, hue, last } = item;
         return (
           <button
             key={item.name}
@@ -150,13 +147,8 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
             aria-describedby={last ? noteId : undefined}
             aria-keyshortcuts="Alt+Enter"
             className={base + " " + (last ? "cursor-default" : live)}
-            onClick={(e: MouseEvent<HTMLButtonElement>) => (e.altKey ? solo(item.name) : toggle(item.name))}
-            onKeyDown={(e: KeyboardEvent<HTMLButtonElement>) => {
-              if (e.altKey && e.key === "Enter") {
-                e.preventDefault();
-                solo(item.name);
-              }
-            }}
+            onClick={(e) => press(e, item.name)}
+            onKeyDown={(e) => keyDown(e, item.name)}
           >
             {lines && DASH[hue] ? (
               <svg width={12} height={4} aria-hidden="true" focusable="false" className="shrink-0">
@@ -186,8 +178,60 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
         );
       })}
       <span id={noteId} className="sr-only">
-        {NOTE}
+        {note}
       </span>
     </div>
+  );
+}
+
+/** A row of toggles, one per series: a hued swatch and the name, pressed while the series shows. */
+export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], onHiddenChange, lines = false, className = "" }: LegendProps) {
+  const noteId = useId();
+  const [inner, setInner] = useState<string[]>(defaultHidden);
+  const hidden = hiddenProp ?? inner;
+  const hues = legendHues(items);
+  const isShown = (name: string) => !hidden.includes(name);
+  const shownCount = items.filter((item) => isShown(item.name)).length;
+
+  const commit = (next: string[]) => {
+    if (hiddenProp === undefined) setInner(next);
+    onHiddenChange?.(next);
+  };
+  const toggle = (name: string) => {
+    if (isShown(name)) {
+      if (shownCount <= 1) return; // the last one stays
+      commit([...hidden, name]);
+    } else {
+      commit(hidden.filter((n) => n !== name));
+    }
+  };
+  const solo = (name: string) => {
+    if (isShown(name) && shownCount <= 1) return;
+    /* Keep names the caller hid that are not items, so a shared hidden list is not wiped. */
+    const others = hidden.filter((n) => !items.some((item) => item.name === n));
+    commit([...others, ...items.map((item) => item.name).filter((n) => n !== name)]);
+  };
+
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody });
+
+  return (
+    <Body
+      label={label}
+      lines={lines}
+      className={className}
+      noteId={noteId}
+      note={LEGEND_NOTE}
+      items={items.map((item) => {
+        const shown = isShown(item.name);
+        return { ...item, hue: hues[item.name]!, shown, last: shown && shownCount <= 1 };
+      })}
+      press={(e, name) => (e.altKey ? solo(name) : toggle(name))}
+      keyDown={(e, name) => {
+        if (e.altKey && e.key === "Enter") {
+          e.preventDefault();
+          solo(name);
+        }
+      }}
+    />
   );
 }
