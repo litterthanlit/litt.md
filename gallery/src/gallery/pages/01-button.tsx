@@ -12,11 +12,11 @@ export const meta: PageMeta = {
   lede: "The action, answered without moving its box.",
   order: 1, group: "Controls",
   verbs: ["press"],
-  summary: "Roomy and slightly rounded, with the label at the title weight. Secondary is a raised block, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press tightens the cast and sinks the block half a pixel, so the button answers without ever changing its size.",
+  summary: "Roomy and slightly rounded, with the label at the title weight. Under Press, secondary is a thick block on its own plate, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press sinks the block into its plate, so the button answers without ever changing its size.",
   fun: "Press and let go: the button goes deeper and springs back with a little life.",
   tiers: ["instant"],
   mechanism:
-    "Hover swaps the fill on the instant tier, 100ms. A press sinks the block half a pixel and tightens its cast at once, with no fade, so the hand feels it land. The box never changes size: loading keeps the label mounted at opacity 0 and the spinner turns inside the same width. Reduced motion sets the sink to 0 and the fill still answers. Each world has its own body, so the hand feels each differently. In Press the hand meets a raised block: it sinks half a pixel and its cast tightens, a small give. In Flat there is no block to push: the pill goes a step darker under the hand and does not move, like pressing paper. In Device the hand meets a key: the face sinks the whole 2px onto its skirt, which is the travel of a real key, and a ghost button sinks into a well.",
+    "Hover swaps the fill on the instant tier, 100ms. A press sinks the block half a pixel and tightens its cast at once, with no fade, so the hand feels it land. The box never changes size: loading keeps the label mounted at opacity 0 and the spinner turns inside the same width. Reduced motion sets the sink to 0 and the fill still answers. Each world has its own body, so the hand feels each differently. In Press the hand meets a thick block on its own plate: the wall along its foot goes, its cast tightens and the label drops a pixel, as the block sinks into the plate. In Flat there is no block to push: the pill goes a step darker under the hand and does not move, like pressing paper, and a ghost is words alone. In Device the hand meets a key: the face sinks the whole 2px onto its skirt, which is the travel of a real key, and a ghost button sinks into a well.",
 };
 
 export const docs: PageDocs = {
@@ -190,7 +190,7 @@ export default function ButtonPage() {
       <Stage
         title="Variants"
         tier="instant"
-        caption="Primary is the one accent fill in a view and carries the glow. Secondary is a raised block that casts a little, straight down. Ghost and a disabled button lie flat: nothing to push. Hover swaps the fill over the instant duration; a press tightens the cast at once and sinks the block half a pixel. To feel other durations, open the Playground."
+        caption="Primary is the one accent fill in a view and carries the glow. Secondary is a thick block on its own plate, lit along its top edge. Ghost and a disabled button lie flat: nothing to push. Hover swaps the fill over the instant duration; a press sinks the block into its plate at once: the wall along its foot goes, the cast tightens and the label drops a pixel. To feel other durations, open the Playground."
         code="VariantsDemo"
       >
         <VariantsDemo />
@@ -199,7 +199,7 @@ export default function ButtonPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One contract, three bodies: the same props, the same real button, the same loading and focus, drawn by the material. Press is a raised block that sinks half a pixel. Flat is a pill, fill only, a step darker under the hand. Device is a key on a 2px skirt that sinks the whole 2px. Press each one."
+        caption="One contract, three bodies: the same props, the same real button, the same loading and focus, drawn by the material. Press is a thick block on its own plate, sinking into it. Flat is a pill, fill only, a step darker under the hand, and a ghost is words alone. Device is a key on a 2px skirt that sinks the whole 2px. Press each one."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
@@ -208,7 +208,7 @@ export default function ButtonPage() {
       <Stage
         title="Danger"
         tier="instant"
-        caption="A destructive action is the secondary block with its words in the danger color, so the red word is the only loud thing. It is not filled red and has no glow. Disabled, it lies flat and loses the red. The one red fill is the confirm of the dialog that asks: the same variant, in the dialog's footer. Open the Dialog page to see it light up."
+        caption="A destructive action is the secondary block, on its plate, with its words in the danger color, so the red word is the only loud thing. It is not filled red and has no glow. Disabled, it lies flat and loses the red. The one red fill is the confirm of the dialog that asks: the same variant, in the dialog's footer. Open the Dialog page to see it light up."
         code="DangerDemo"
       >
         <DangerDemo />

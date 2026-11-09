@@ -10,16 +10,16 @@ import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from
 export const meta: PageMeta = {
   id: "switch",
   title: "Switch",
-  lede: "A block in a tray that says On or Off.",
+  lede: "A block thrown along a tray, uncovering On or Off.",
   order: 3.3,
   group: "Controls",
   verbs: ["press"],
   summary:
-    "An on or off setting you can feel. A raised block sits in a sunken tray and says its state, Off at the start and On at the end. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",
+    "An on or off setting you can feel. A thick block rides a deep tray with On and Off set in its floor, and the block's travel uncovers the one that is true. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",
   fun: "Flip a switch: the block springs across and meets the far wall with a little life.",
   tiers: ["responsive", "instant"],
   mechanism:
-    "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space sends it across the tray on the responsive tier, 200ms with no bounce. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and word change on the instant tier, 100ms, and the tray never moves. Under Press the block is weight: it presses down and slides in the tray with a little give, its word changing as it lands. Under Flat it is a pill: nothing presses, an ink fill and a round knob that slides, no words. Under Device it is a toggle key: it sinks its 2px under the finger and flips across its well in three steps with a detent, and its word lights on an LCD beside it with a lamp. Reduced motion drops the crossing.",
+    "Press the row and the block presses down, its cast tightening at once. A click, a tap or Space sends it across the tray on the responsive tier, 200ms with no bounce. Or take the block and drag it: it follows the finger one to one and lands on the nearer side. Its fill and cast change on the instant tier, 100ms, and the tray never moves. Under Press the block is weight: it presses down and is thrown along the tray, uncovering the word set in the floor. Under Flat it is a small ink pill with a canvas knob when on and an outline when off, the word in type beside it. Under Device it is a toggle key: it sinks its 2px under the finger and flips across its well in three steps with a detent, and its word lights on an LCD beside it with a lamp. Reduced motion drops the crossing.",
 };
 
 export const docs: PageDocs = {
@@ -67,7 +67,7 @@ export const docs: PageDocs = {
   a11y: [
     "The switch is a <button> with role=\"switch\" and aria-checked, from Radix. A screen reader says the label, then switch, then on or off.",
     "The label is a real <label for> stretched over the whole row, so a click or tap anywhere in it toggles the switch. The accessible name is only the label text, and the description is linked with aria-describedby.",
-    "On and off differ in the block's position and its word, so color is never the only signal. The word is hidden from screen readers, which hear on or off from aria-checked instead, and it reaches 4.5:1 in both themes and both tones.",
+    "On and off differ in the block's position and the word it uncovers, so color is never the only signal. The word is hidden from screen readers, which hear on or off from aria-checked instead, and it reaches 4.5:1 in both themes and both tones.",
     "In a form, Radix adds a hidden checkbox that carries the name and value. It is hidden from screen readers, so the setting is not read twice.",
     "A switch changes at once, and nothing tells a screen reader that it saved. If the change is saved, confirm it somewhere, such as a status line or a toast.",
     "Every row is 44px tall at least. A sideways drag that starts on the tray moves the block; a vertical one still scrolls the page.",
@@ -93,8 +93,8 @@ export const study: PageStudy = {
   object: <Switch label="Email me about new deploys" defaultChecked />,
   parts: [
     { name: "The tray", selector: "[role=switch]" },
-    { name: "The block", selector: "[role=switch] > span" },
-    { name: "The word", selector: "[role=switch] > span > span" },
+    { name: "The block", selector: "[role=switch] [data-state]" },
+    { name: "The word", selector: "[role=switch] span[aria-hidden]:not(:empty)" },
     { name: "The label", selector: "label" },
   ],
   states: {
@@ -103,7 +103,7 @@ export const study: PageStudy = {
   },
   replay: {
     label: "Replay the flip",
-    caption: "Watch the block cross the tray, then the word and the fill change a beat apart.",
+    caption: "Watch the block cross the tray and uncover the word in the floor.",
     run: () => <ReplayFlip />,
   },
 };
@@ -256,7 +256,7 @@ export default function SwitchPage() {
       <Stage
         title="Disabled"
         tier="instant"
-        caption="A disabled switch is muted, skipped by Tab and left out of a form. The tray goes flat to surface-2 with a hairline, and the block lies flat in it with no cast. The block stays on its side and keeps its word, so the state still reads."
+        caption="A disabled switch is muted, skipped by Tab and left out of a form. The tray goes flat to surface-2 with a hairline, and the block lies flat in it with no cast. The block stays on its side and uncovers its word, so the state still reads."
         code="DisabledDemo"
       >
         <DisabledDemo />
@@ -265,7 +265,7 @@ export default function SwitchPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One switch, one contract, three bodies. Press is a block in a tray with its state in words. Flat is an ink pill with a round knob and no words. Device is a toggle key in a well that flips with a detent, its word and a lamp on an LCD beside it. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        caption="One switch, one contract, three bodies. Press is a thick block thrown along a deep tray, uncovering On or Off set in the floor; the word is revealed by the block's travel, not printed on it. Flat is a small ink pill with a canvas knob when on and an outline pill when off, the word in type beside it in the text weight, so the label never reflows. Device is a toggle key in a well that flips with a detent, its word and a lamp on an LCD beside it. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

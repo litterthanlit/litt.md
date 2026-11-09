@@ -3,15 +3,15 @@
  * theme or a layout. A fieldset of native radios, so the role, the arrow keys, required and the form value come from
  * the browser.
  *
- * - Material: one sunken tray (R3: --tray, --tray-shade) holds every card, and the pick is the raised block (--block,
- *   --block-lift) gliding inside it: the Segmented control's track and block, grown tall. The tray floor is what makes
- *   unpicked cards read as a choice and not as static cards. Flat cards with a raised pick fail in light mode, where
- *   --block is the same white as --surface-1, so only a shadow would tell the pick apart. Never an accent fill (R6).
- * - Flat (proposals/flat-pill.md): no tray. Each option is a grey card (--surface-3, --space-2 apart, at the surface
- *   radius), and the picked one lifts to --surface-1 with a 2px ink ring, which is the block gliding in. The ring is
- *   an inset shadow, so forced colors keeps the surface's border.
- * - Every card in a picker has the same size: equal columns, or equal rows when stacked. So the block never changes
- *   shape while it glides, and the details (a price) line up across a row.
+ * - Material (Press, the instrument): one sunken tray (R3: --tray, --tray-shade) holds every card, and each card is a plate
+ *   in it. The picked plate rises out of the tray and catches the light (--block, --highlight, --block-lift); the
+ *   others sit seated (sunk --press-depth, --block-press), so unpicked cards read as a choice and not as static cards,
+ *   and a disabled one lies flat in the floor, level with the tray (--cut-shade). Never an accent fill (R6).
+ * - Flat (proposals/worlds.md): the page. No tray and no card: pictures and words, and the picked one in a grey bubble
+ *   (--block) with an ink tick and its word in --fg. Grey means chosen.
+ * - Device: a plate with a lamp in its corner, the picked one set down 2px into a well with its lamp lit.
+ * - Every card in a picker has the same size: equal columns, or equal rows when stacked. So a plate or a bubble never
+ *   changes shape between picks, and the details (a price) line up across a row.
  * - sm: tiles, a picture over a word in one row of 2 to 5, the label --fg-subtle and the picked one --fg. The tray
  *   sits at the control radius and the tiles 2px inside it. It draws no description or detail.
  * - lg (the default): cards with a title (--fg), a line (--fg-subtle) and a detail such as a price. The tray sits at
@@ -23,13 +23,21 @@
  *   description in --fg-subtle, since it says why.
  * - Nothing starts picked without value or defaultValue: a question must not answer itself. value={null} keeps a
  *   controlled picker empty.
- * - Motion: the block glides on the responsive tier (fun mode's glide spring in fun mode), and appears at once on the
- *   first pick. Reduced motion turns the glide off. Colors change on the instant tier. The focus ring is drawn from
- *   the radio's :focus-visible, inset, so a mouse never shows it.
+ * - Bodies (proposals/worlds.md): this file keeps the contract (the fieldset, the legend, the radios, the pick and the
+ *   words they are named by) and resolves it once into CardPickerBodyProps. It renders the body the material picks
+ *   (byWorld). Press, here, is plates in a tray. Flat (bodies/card-picker.flat.tsx) and Device
+ *   (bodies/card-picker.device.tsx) are the same radios in other bodies. The arrow keys and every accessible name are
+ *   the same in all three.
+ * - Motion: nothing glides in Press: a plate rises and sinks where it stands, and colors change on the instant tier. Flat's
+ *   bubble glides on the responsive tier (fun mode's glide spring in fun mode) and appears at once on the first pick;
+ *   Device switches in place in three steps. Reduced motion turns the glide off. The focus ring is drawn from the
+ *   radio's :focus-visible, inset, so a mouse never shows it.
  */
 import { useId, useState, type ReactNode } from "react";
-import { LayoutGroup, motion } from "motion/react";
-import { useFun, useTransition } from "@/motion";
+import type { Transition } from "motion/react";
+import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
+import { CardPickerDeviceBody } from "./bodies/card-picker.device";
+import { CardPickerFlatBody } from "./bodies/card-picker.flat";
 
 export type CardPickerSize = "sm" | "lg";
 
@@ -78,11 +86,11 @@ export type CardPickerProps<T extends string> = {
   className?: string;
 };
 
-/** What a finger holding an unpicked card shows, as Segmented's segments. */
-const PRESS = "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] pointer-coarse:active:text-fg";
+/** The class strings that decide where lg's cards sit: the tray's columns, the card's direction and the detail's place, all at one width. */
+export type CardPickerArrange = { tray: string; card: string; detail: string };
 
 /** Where lg's cards go from stacked rows to columns, by count: each column gets 12rem, and no row holds one card alone. */
-const ARRANGE: Record<2 | 3 | 4 | 5 | 6, { tray: string; card: string; detail: string }> = {
+const ARRANGE: Record<2 | 3 | 4 | 5 | 6, CardPickerArrange> = {
   2: { tray: "@min-[24rem]:grid-cols-2", card: "@min-[24rem]:flex-col", detail: "@min-[24rem]:mt-auto" },
   3: { tray: "@min-[36rem]:grid-cols-3", card: "@min-[36rem]:flex-col", detail: "@min-[36rem]:mt-auto" },
   4: { tray: "@min-[24rem]:grid-cols-2 @min-[48rem]:grid-cols-4", card: "@min-[24rem]:flex-col", detail: "@min-[24rem]:mt-auto" },
@@ -90,19 +98,164 @@ const ARRANGE: Record<2 | 3 | 4 | 5 | 6, { tray: string; card: string; detail: s
   6: { tray: "@min-[24rem]:grid-cols-2 @min-[36rem]:grid-cols-3", card: "@min-[24rem]:flex-col", detail: "@min-[24rem]:mt-auto" },
 };
 
+/** One card, resolved: its option, whether it is picked or off, and the ids its radio is named and described by. */
+export type CardPickerCard = {
+  option: CardPickerOption<string>;
+  picked: boolean;
+  /** Unavailable: the whole picker is disabled, or this option is. */
+  off: boolean;
+  /** The card's id: its title is `${id}-label`, its line `${id}-description` and its detail `${id}-detail`. */
+  id: string;
+  /** The ids the radio is described by (lg), space separated; empty when there is none. */
+  described: string;
+};
+
+/** What a body gets: the state resolved once, and the radios' wiring. Every body renders the same fieldset of native radios. */
+export type CardPickerBodyProps = {
+  legend: ReactNode;
+  hideLegend: boolean;
+  /** The whole picker is disabled (the fieldset). */
+  disabled: boolean;
+  className: string;
+  /** The radios' shared name. */
+  name: string;
+  size: CardPickerSize;
+  required: boolean;
+  /** Any option has a picture (lg then keeps a column for it). */
+  pictures: boolean;
+  /** An error is showing: the tray outlines in danger and every radio is invalid. */
+  invalid: boolean;
+  /** The hint, or the error that replaces it. */
+  note: ReactNode;
+  /** The id the note is drawn with and the fieldset points at. */
+  noteId: string;
+  /** The picker's own id, so two pickers never share a gliding surface. */
+  groupId: string;
+  arrange: CardPickerArrange;
+  cards: CardPickerCard[];
+  /** How the picked surface glides, for the bodies that glide with the layout engine. */
+  glide: Transition;
+  /** Picks an option: sets the inner state and calls onValueChange. */
+  pick: (value: string) => void;
+};
+
 const SIZES: Record<CardPickerSize, { tray: string; card: string; corner: string }> = {
   sm: {
-    tray: "grid grid-flow-col auto-cols-fr rounded-control p-0.5 in-[[data-material=flat]]:gap-2 in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:p-0",
+    tray: "grid grid-flow-col auto-cols-fr rounded-control p-0.5",
     card: "grid min-w-0 justify-items-center gap-2 px-1 pt-3 pb-2.5 text-caption font-title",
-    corner: "rounded-[calc(var(--radius-control)-2px)] in-[[data-material=flat]]:rounded-surface",
+    corner: "rounded-[calc(var(--radius-control)-2px)]",
   },
   lg: {
-    tray: "grid grid-cols-1 auto-rows-fr gap-1 rounded-surface p-1 in-[[data-material=flat]]:gap-2 in-[[data-material=flat]]:p-0",
+    tray: "grid grid-cols-1 auto-rows-fr gap-1 rounded-surface p-1",
     card: "flex min-h-16 min-w-0 items-start gap-3 p-4 text-left",
     /* 4px into the tray's surface radius: the control radius at every shape but the pill, where that would be rounder than the tray. */
-    corner: "rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:rounded-surface",
+    corner: "rounded-[calc(var(--radius-surface)-4px)]",
   },
 };
+
+/* The plates. A plate in the tray sits seated (sunk the press depth, the cast tight); the picked one stands raised out of
+   the tray and lit (the cast wide, the top edge lit); a disabled one lies flat in the tray floor. */
+const seated = "bg-[color-mix(in_oklab,var(--block)_45%,var(--tray))] shadow-(--block-press) [transform:translateY(var(--press-depth))]";
+const raised = "bg-block shadow-[var(--highlight),var(--block-lift)]";
+const lying = "bg-[color-mix(in_oklab,var(--block)_45%,var(--tray))] shadow-(--cut-shade)";
+const hold = "hover:bg-[color-mix(in_oklab,var(--block)_70%,var(--tray))] active:bg-block active:shadow-(--block-press)";
+const tweens = "transition-[color,background-color,transform] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent]";
+
+/**
+ * Press, the instrument: one tray cut into the page, and every card a plate standing in it. The plate you picked is
+ * raised out of the tray and lit; the others sit seated in it; a disabled one lies flat in the floor. Nothing
+ * glides: a plate rises and sinks where it stands.
+ */
+function PressBody({ legend, hideLegend, disabled, className, name, size, required, invalid, note, noteId, arrange, cards, pictures, pick }: CardPickerBodyProps) {
+  const look = SIZES[size];
+  const tray = (
+    <div
+      className={
+        look.tray +
+        " bg-tray forced-colors:border " +
+        (invalid ? "shadow-[inset_0_0_0_1px_var(--danger),var(--tray-shade)]" : "shadow-(--tray-shade)") +
+        (size === "lg" ? " " + arrange.tray : "")
+      }
+    >
+      {cards.map(({ option: o, picked, off, id, described }) => (
+        <label
+          key={o.value}
+          className={
+            "relative select-none " + look.corner + " " + look.card + (size === "lg" ? " " + arrange.card : "") + " " +
+            tweens + " " +
+            (picked ? raised : off ? lying : seated + " " + hold) + " " +
+            (off
+              ? "cursor-not-allowed " + (picked ? "text-fg-subtle" : "text-fg-disabled")
+              : "cursor-pointer " + (picked ? "text-fg" : "text-fg-subtle hover:text-fg")) +
+            (picked ? " forced-colors:border-2" : " forced-colors:border")
+          }
+        >
+          <input
+            type="radio"
+            className="peer sr-only"
+            name={name}
+            value={o.value}
+            checked={picked}
+            disabled={o.disabled}
+            required={required}
+            aria-invalid={invalid ? true : undefined}
+            aria-labelledby={size === "lg" ? `${id}-label` : undefined}
+            aria-describedby={size === "lg" && described ? described : undefined}
+            onChange={() => pick(o.value)}
+          />
+          {size === "sm" ? (
+            <>
+              <span aria-hidden="true" className="relative z-1 grid h-8 w-full place-items-center">
+                {o.picture}
+              </span>
+              <span className="litt-trim relative z-1 max-w-full">{o.label}</span>
+            </>
+          ) : (
+            <>
+              {pictures && (
+                <span aria-hidden="true" className="relative z-1 grid min-h-6 min-w-6 shrink-0 items-center justify-items-start">
+                  {o.picture}
+                </span>
+              )}
+              <span className="relative z-1 grid min-w-0 flex-1 gap-1">
+                <span id={`${id}-label`} className={"text-body font-title " + (off ? "text-fg-disabled" : "text-fg")}>
+                  {o.label}
+                </span>
+                {o.description && (
+                  <span id={`${id}-description`} className="text-small text-fg-subtle">
+                    {o.description}
+                  </span>
+                )}
+              </span>
+              {o.detail && (
+                <span id={`${id}-detail`} className={"relative z-1 shrink-0 text-body font-title tabular-nums " + arrange.detail + (off ? " text-fg-disabled" : " text-fg")}>
+                  {o.detail}
+                </span>
+              )}
+            </>
+          )}
+          <span
+            aria-hidden="true"
+            className={
+              "pointer-events-none absolute inset-0 z-1 " + look.corner + " peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
+            }
+          />
+        </label>
+      ))}
+    </div>
+  );
+  return (
+    <fieldset data-body="press" disabled={disabled} aria-describedby={note ? noteId : undefined} className={"m-0 min-w-0 border-0 p-0 " + className}>
+      <legend className={hideLegend ? "sr-only" : "mb-2 p-0 text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>{legend}</legend>
+      {size === "lg" ? <div className="@container">{tray}</div> : tray}
+      {note && (
+        <p id={noteId} className={"mt-2 text-small " + (invalid ? "text-danger" : "text-fg-subtle")}>
+          {note}
+        </p>
+      )}
+    </fieldset>
+  );
+}
 
 /** One choice shown as cards: tiles of a picture over a word (sm), or cards with a title, a line and a detail such as a price (lg). */
 export function CardPicker<T extends string>({
@@ -128,117 +281,41 @@ export function CardPicker<T extends string>({
   const [inner, setInner] = useState<T | null>(defaultValue ?? null);
   const value = valueProp !== undefined ? valueProp : inner;
   const note = error ?? help;
-  const look = SIZES[size];
   const arrange = ARRANGE[Math.min(Math.max(options.length, 2), 6) as 2 | 3 | 4 | 5 | 6];
-  const pictures = options.some((o) => o.picture);
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: CardPickerFlatBody, device: CardPickerDeviceBody });
 
-  const tray = (
-    <div
-      className={
-        look.tray +
-        " bg-tray forced-colors:border " +
-        (error ? "shadow-[inset_0_0_0_1px_var(--danger),var(--tray-shade)]" : "shadow-(--tray-shade)") +
-        (size === "lg" ? " " + arrange.tray : "")
-      }
-    >
-      {options.map((o, i) => {
-        const picked = value === o.value;
-        const off = disabled || !!o.disabled;
-        const id = `${auto}-${i}`;
-        const described = [o.description && `${id}-description`, o.detail && `${id}-detail`].filter(Boolean).join(" ");
-        return (
-          <label
-            key={o.value}
-            className={
-              "relative select-none " + (picked ? "" : "in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:hover:bg-(--block-hover) ") + look.corner + " " + look.card + (size === "lg" ? " " + arrange.card : "") + " " +
-              "transition-colors duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-              (off
-                ? "cursor-not-allowed text-fg-disabled"
-                : "cursor-pointer " +
-                  (picked
-                    ? "text-fg"
-                    : size === "sm"
-                      ? "text-fg-subtle hover:text-fg " + PRESS
-                      : "text-fg-subtle hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg " + PRESS))
-            }
-          >
-            <input
-              type="radio"
-              className="peer sr-only"
-              name={name}
-              value={o.value}
-              checked={picked}
-              disabled={o.disabled}
-              required={required}
-              aria-invalid={error ? true : undefined}
-              aria-labelledby={size === "lg" ? `${id}-label` : undefined}
-              aria-describedby={size === "lg" && described ? described : undefined}
-              onChange={() => {
-                setInner(o.value);
-                onValueChange?.(o.value);
-              }}
-            />
-            {picked && (
-              <motion.span
-                layoutId="card-picker-surface"
-                transition={glide}
-                aria-hidden="true"
-                className={"absolute inset-0 " + look.corner + " bg-block shadow-(--block-lift) in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-[inset_0_0_0_2px_var(--fg)] forced-colors:border-2"}
-              />
-            )}
-            {size === "sm" ? (
-              <>
-                <span aria-hidden="true" className="relative z-1 grid h-8 w-full place-items-center">
-                  {o.picture}
-                </span>
-                <span className="litt-trim relative z-1 max-w-full">{o.label}</span>
-              </>
-            ) : (
-              <>
-                {pictures && (
-                  <span aria-hidden="true" className="relative z-1 grid min-h-6 min-w-6 shrink-0 items-center justify-items-start">
-                    {o.picture}
-                  </span>
-                )}
-                <span className="relative z-1 grid min-w-0 flex-1 gap-1">
-                  <span id={`${id}-label`} className={"text-body font-title " + (off ? "text-fg-disabled" : "text-fg")}>
-                    {o.label}
-                  </span>
-                  {o.description && (
-                    <span id={`${id}-description`} className="text-small text-fg-subtle">
-                      {o.description}
-                    </span>
-                  )}
-                </span>
-                {o.detail && (
-                  <span id={`${id}-detail`} className={"relative z-1 shrink-0 text-body font-title tabular-nums " + arrange.detail + (off ? " text-fg-disabled" : " text-fg")}>
-                    {o.detail}
-                  </span>
-                )}
-              </>
-            )}
-            {/* The pictures, the words and the ring sit above the block (z-1), so it never covers them while it glides. */}
-            <span
-              aria-hidden="true"
-              className={
-                "pointer-events-none absolute inset-0 z-1 " + look.corner + " peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus"
-              }
-            />
-          </label>
-        );
-      })}
-    </div>
-  );
+  const cards: CardPickerCard[] = options.map((o, i) => {
+    const id = `${auto}-${i}`;
+    return {
+      option: o as CardPickerOption<string>,
+      picked: value === o.value,
+      off: disabled || !!o.disabled,
+      id,
+      described: [o.description && `${id}-description`, o.detail && `${id}-detail`].filter(Boolean).join(" "),
+    };
+  });
 
   return (
-    <fieldset disabled={disabled} aria-describedby={note ? `${auto}-note` : undefined} className={"m-0 min-w-0 border-0 p-0 " + className}>
-      <legend className={hideLegend ? "sr-only" : "mb-2 p-0 text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>{legend}</legend>
-      <LayoutGroup id={auto}>{size === "lg" ? <div className="@container">{tray}</div> : tray}</LayoutGroup>
-      {note && (
-        <p id={`${auto}-note`} className={"mt-2 text-small " + (error ? "text-danger" : "text-fg-subtle")}>
-          {note}
-        </p>
-      )}
-    </fieldset>
+    <Body
+      legend={legend}
+      hideLegend={hideLegend}
+      disabled={disabled}
+      className={className}
+      name={name}
+      size={size}
+      required={required}
+      pictures={options.some((o) => o.picture)}
+      invalid={!!error}
+      note={note}
+      noteId={`${auto}-note`}
+      groupId={auto}
+      arrange={arrange}
+      cards={cards}
+      glide={glide}
+      pick={(v) => {
+        setInner(v as T);
+        onValueChange?.(v as T);
+      }}
+    />
   );
 }

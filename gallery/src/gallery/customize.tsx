@@ -14,7 +14,7 @@
  * per shape and the locked one marked home, as the overview's deck has it; a choice whose picture says more than its word is a CardPicker tile; a choice
  * the word says whole is a row. The footer is quiet: Surprise me as an icon, and once anything changed, Copy tokens and Reset.
  */
-import { useEffect, useId, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { useDevice } from "@/motion";
 import { customizeSnippet, shapeName, SHAPES } from "@/motion/rules";
 import { Button } from "@/components/button";
@@ -199,9 +199,14 @@ function CustomizePanel() {
  * The header's Customize button and its panel. On a phone the button is an icon and the panel is a sheet. `defaultOpen`
  * is for the shell, which mounts this once it is wanted: a press on its stand-in button opens the panel on arrival.
  */
-export default function Customize({ defaultOpen = false }: { defaultOpen?: boolean }) {
+export default function Customize({ defaultOpen = false, takeFocus }: { defaultOpen?: boolean; takeFocus?: RefObject<boolean> }) {
   const { compact } = useDevice();
   const label = "Customize";
+  /* The stand-in held focus when it was swapped for this button: focus has fallen to the page, so take it back here. */
+  useLayoutEffect(() => {
+    if (takeFocus?.current && (document.activeElement === document.body || document.activeElement === null))
+      document.getElementById("customize-trigger")?.focus({ preventScroll: true });
+  }, [takeFocus]);
   return (
     <Popover defaultOpen={defaultOpen}>
       {/* The id lets the look notice (look-notice.tsx) hand focus here. */}

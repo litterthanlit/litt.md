@@ -47,8 +47,8 @@
       "hash": "1a95da13e9965bf7"
     },
     "button": {
-      "version": "2026.11.08",
-      "hash": "94dda5010d8b9e08"
+      "version": "2026.11.09",
+      "hash": "90485a0b1e5ca812"
     },
     "callout": {
       "version": "2026.11.06",
@@ -59,8 +59,8 @@
       "hash": "d2ea971a6a651e96"
     },
     "card-picker": {
-      "version": "2026.11.06",
-      "hash": "11c18fa1132172cd"
+      "version": "2026.11.09",
+      "hash": "a36871c2419c225e"
     },
     "carousel": {
       "version": "2026.11.06",
@@ -111,8 +111,8 @@
       "hash": "42b1161e2815be2a"
     },
     "composer": {
-      "version": "2026.11.06",
-      "hash": "49fe1cd8075b4e56"
+      "version": "2026.11.09",
+      "hash": "b23b3d4f7497622c"
     },
     "context-menu": {
       "version": "2026.11.05",
@@ -155,8 +155,8 @@
       "hash": "13d06e1887a03add"
     },
     "file-drop": {
-      "version": "2026.11.06",
-      "hash": "6205e526b093cea4"
+      "version": "2026.11.09",
+      "hash": "f7a75d31ff85df7c"
     },
     "form": {
       "version": "2026.11.06",
@@ -215,8 +215,8 @@
       "hash": "a6fe723819d955b7"
     },
     "legend": {
-      "version": "2026.11.03",
-      "hash": "0871686c71f7ae19"
+      "version": "2026.11.09",
+      "hash": "0a6515aaad23188b"
     },
     "lightbox": {
       "version": "2026.11.05",
@@ -267,8 +267,8 @@
       "hash": "93e06b2d83651151"
     },
     "pagination": {
-      "version": "2026.11.06",
-      "hash": "8556fc1405f6c19a"
+      "version": "2026.11.09",
+      "hash": "023a9ec16de5f387"
     },
     "plan": {
       "version": "2026.11.06",
@@ -359,8 +359,8 @@
       "hash": "3559e1a3da32df42"
     },
     "slider": {
-      "version": "2026.11.08",
-      "hash": "ef7474d45905e683"
+      "version": "2026.11.09",
+      "hash": "7c649923fac82874"
     },
     "sources": {
       "version": "2026.11.06",
@@ -391,8 +391,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "switch": {
-      "version": "2026.11.08",
-      "hash": "e23b5bb0aa284f43"
+      "version": "2026.11.09",
+      "hash": "e08928364e242b30"
     },
     "table": {
       "version": "2026.11.06",
@@ -407,8 +407,8 @@
       "hash": "4e71e726fa2d51c1"
     },
     "tag": {
-      "version": "2026.11.06",
-      "hash": "b927073b2566def4"
+      "version": "2026.11.09",
+      "hash": "2e39808c53ecd1ec"
     },
     "tape-progress": {
       "version": "2026.11.08",
@@ -435,8 +435,8 @@
       "hash": "2906a60e049ff866"
     },
     "token-input": {
-      "version": "2026.11.06",
-      "hash": "25126a85f96041fd"
+      "version": "2026.11.09",
+      "hash": "93fa775131a17b61"
     },
     "tool-call": {
       "version": "2026.11.06",

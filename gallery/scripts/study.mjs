@@ -302,7 +302,16 @@ if (selfTest) {
     [C.rest, "a dialog is open at load", () => run1(SIZES[0], (pg) => pg.evaluate(() => { const d = document.createElement("div"); d.setAttribute("role", "dialog"); d.dataset.state = "open"; d.setAttribute("aria-modal", "true"); document.body.append(d); }))],
     [C.docs, "the docs file read is a page with no mechanism", async () => { const m = (await run1(SIZES[0])).mechanism; await docs(button, m, bare?.id ?? "no-such-page"); }],
     [C.sections, "the Source section moves above Anatomy", () => run1(SIZES[0], (pg) => pg.evaluate(() => { const s = document.querySelector("section[aria-labelledby^=study-source]"); s.parentElement.prepend(s); }))],
-    [C.frames, "the three frames lose what tells them apart", () => run1(SIZES[0], (pg) => pg.addStyleTag({ content: "[data-study-material], [data-study-material] * { background: Canvas !important; box-shadow: none !important; border-radius: 0 !important; color: CanvasText !important }" }))],
+    /* Bodies differ in their markup, not only their paint, so the break copies the press frame into the other two
+       before it flattens every frame's colours, shadows and corners. */
+    [C.frames, "the three frames lose what tells them apart", () => run1(SIZES[0], async (pg) => {
+      await pg.evaluate(() => {
+        const frames = [...document.querySelectorAll("[data-study-material]")];
+        const press = frames.find((f) => f.dataset.studyMaterial === "press");
+        for (const f of frames) if (f !== press) f.innerHTML = press.innerHTML;
+      });
+      await pg.addStyleTag({ content: "[data-study-material], [data-study-material] * { background: Canvas !important; box-shadow: none !important; border-radius: 0 !important; color: CanvasText !important }" });
+    })],
     [C.bodies, "every body says it is the press body", () => run1(SIZES[0], (pg) => pg.evaluate(() => {
       /* The frames may mount after this runs, so keep forcing the attribute as bodies appear. */
       const force = () => { for (const el of document.querySelectorAll("[data-study-material] [data-body]")) if (el.dataset.body !== "press") el.dataset.body = "press"; };

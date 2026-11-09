@@ -1,5 +1,8 @@
 import { Tag, type TagHue, type TagStatus } from "@/components/tag";
 import { TokenInput } from "@/components/token-input";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -8,7 +11,7 @@ export const meta: PageMeta = {
   lede: "A small label that names, files or reports.",
   order: 6, group: "Controls",
   summary:
-    "A small flat label at the control radius that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, is a raised tag. Nothing about it moves.",
+    "A small label (a raised block in Press, a grey pill in Flat, an engraved plate in Device) that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, is a raised tag. Nothing about it moves.",
   tiers: [],
 };
 
@@ -33,7 +36,7 @@ export const docs: PageDocs = {
 <Tag hue="amber">Finance</Tag>
 <Tag hue="blue">Clients</Tag>
 
-// A value in a field that you can lift back out: a raised block. Token input and Combobox draw theirs this way.
+// A value in a field that you can lift back out: a raised block. Combobox draws its picks this way.
 <Tag raised>Identity</Tag>`,
   use: [
     "A short word names what something is: a kind (Framer, Landing), a client or a platform.",
@@ -55,7 +58,7 @@ export const docs: PageDocs = {
   a11y: [
     "A tag is a plain span of text, so a screen reader reads its label like any other text.",
     "The status is the word, never the color alone. Write \"Failed\", not \"Red\", and check that the label would still make sense in grayscale.",
-    "Every status color reaches 4.5:1 on the tag's surface-1 fill in light and dark, so the caption text is readable.",
+    "Every status color reaches 4.5:1 on the tag's block in light and dark, so the caption text is readable.",
     "A hue tag's text is the hue's text tone, which reaches 4.5:1 on its own tint in light and dark (check.mjs checks every pair). The category is in the word, so the hue is never the only signal.",
     "At 24px a tag is too small to be a touch target. If it must be pressed, build a chip or a Button at 32 or 44px.",
     "Nothing moves, so there is nothing to reduce under reduced motion.",
@@ -172,12 +175,43 @@ function CategoriesDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center justify-items-start gap-4 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <div className="flex flex-wrap gap-2">
+                <Tag>Framer</Tag>
+                <Tag hue="amber">Finance</Tag>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Tag status="success">Live</Tag>
+                <Tag status="warning">In review</Tag>
+                <Tag status="danger">Failed</Tag>
+                <Tag status="neutral">Draft</Tag>
+              </div>
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function TagPage() {
   return (
     <Page meta={meta} docs={docs}>
       <Stage
         title="Labels"
-        caption="A plain tag is 24px tall at the control radius: flat, a surface-1 fill with an inset hairline and the top highlight, and the sans at the caption size and the label weight in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
+        caption="A plain tag is 24px tall at the control radius: in Press a small block with a lit top edge, its word on the face, in the sans at the caption size and the label weight in fg-muted; in Flat the word in a grey pill; in Device the word engraved in capitals on a small plate. It names a kind or a platform and never asks to be pressed. Nothing moves."
         align="start"
         code="LabelsDemo"
       >
@@ -186,7 +220,7 @@ export default function TagPage() {
 
       <Stage
         title="Status"
-        caption="Only the text takes the status color. The fill stays surface-1, so a row of tags stays calm. There is no dot: every tag says its state in words, and neutral Draft and Idea differ by theirs."
+        caption="Only the text takes the status color. The fill stays the tag's own, so a row of tags stays calm. Device adds a lamp in the status color, but every tag says its state in words, and neutral Draft and Idea differ by theirs."
         code="StatusDemo"
       >
         <StatusDemo />
@@ -203,7 +237,7 @@ export default function TagPage() {
 
       <Stage
         title="Raised, in a field"
-        caption="A value someone put in a field and can lift back out is the raised block: the block's fill and its lift, the label in fg, and corners 2px tighter than the field's so they sit concentric inside it. Token input and Combobox draw their values this way, standing up out of the cut. A disabled field lays them flat again."
+        caption="A value someone put in a field and can lift back out is the raised block: the block's fill and its lift, the label in fg, and corners 2px tighter than the field's so they sit concentric inside it. Combobox draws its picks this way, standing up out of the cut. A disabled field lays them flat again."
         align="start"
         code="RaisedDemo"
       >
@@ -217,6 +251,14 @@ export default function TagPage() {
         code="DeploysDemo"
       >
         <DeploysDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        caption="One tag, one contract, three bodies. Press is a small raised block with a lit top edge, its word on the face. Flat is the word in a grey pill, nothing raised. Device is the word engraved in capitals on a small plate, and a status tag adds a lamp in its status color. Each is drawn here whatever look the page is in; the words, and what a screen reader hears, are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="Tag" component={Tag} props={{ children: "In review" }} />

@@ -5,18 +5,18 @@
  *   Space toggles it, and inside a <form> a hidden input sends the value like a checkbox:
  *   the value when on, nothing when off. The hidden input is Radix's, so name, value and
  *   required are passed straight to it.
- * - A block in a tray (material.md, 6, "Press"; Nick's frames, v0.x). The tray is 92 by 32, sunken: --tray with
- *   --tray-shade, a hairline and its top wall's shade on the floor, at the control radius. The block fills half
- *   of it, 44 by 28, set 2px in, raised: --block with --block-lift, a contact line under its edge and a soft cast.
- *   Its corners are the control radius less those 2px, so the two stay concentric at every shape.
- * - The block says its state: "Off" in --fg-muted at the start, "On" in --fg at the end, at the caption size and
- *   the title weight, in sentence case. Position and word both change, so color is never the signal.
- * - Two tones. neutral (the default) keeps the block white when on. accent fills it with the accent and its word
- *   with --accent-fg. The accent is one fill per view (R6), so accent is for a lone switch that is the view's
+ * - A thick block thrown along a deep tray (material.md, 6, "Press"). The tray is 92 by 32, cut deep: --slot with
+ *   --slot-shade, at the control radius. The block fills half of it, 44 by 28, set 2px in, raised: --block with
+ *   --block-lift and a lit top edge (--highlight). Its corners are the control radius less those 2px, so the two
+ *   stay concentric at every shape.
+ * - The tray's floor says the state: "On" set in the floor's start, "Off" at its end, at the caption size and the
+ *   title weight, in --fg. The block carries no word; it covers the word on its side and its travel uncovers the
+ *   other. Position and word both change, so color is never the signal.
+ * - Two tones. neutral (the default) keeps the block white when on. accent fills it with the accent. The accent is one fill per view (R6), so accent is for a lone switch that is the view's
  *   main choice; a list of settings stays neutral.
  * - No invalid state. A choice that can be wrong, such as accepting terms, is a Checkbox.
  * - The label is a real <label for> stretched over the whole row, so a click anywhere in it toggles the switch. Its
- *   accessible name is only its text (the block's word is hidden from screen readers, aria-checked says the state),
+ *   accessible name is only its text (the floor's words are hidden from screen readers, aria-checked says the state),
  *   and the description is linked with aria-describedby. By default the switch comes first, like the checkbox.
  *   With align="end" the label and description come first and the switch sits at the row's end, so the switches
  *   of a settings list line up in one column.
@@ -35,10 +35,10 @@
  *   the default. bodies/switch.flat.tsx and bodies/switch.device.tsx are the other two; each draws its own root
  *   element, and its own --sw-travel, which a drag measures. A frame that sets its own look (a study's strip, a
  *   preview inside a MaterialProvider) draws its own body, not <html>'s.
- * - Flat (R1 to R3, proposals/flat-pill.md), bodies/switch.flat.tsx: the words go (side and fill say the state), the
- *   tray loses its fill and keeps only the 1.5px --line-control edge while off, with a --line-control knob at the
- *   start. On it is an ink tray with a canvas knob (the accent only for tone="accent", the one main switch, P1) at the
- *   end. The tray is 44 by 26 and the knob 20, so the crossing is 18px.
+ * - Flat (R1 to R3, proposals/flat-pill.md), bodies/switch.flat.tsx: a small ink pill with a canvas knob when on and an
+ *   outline pill (the 1.5px --line-control edge, a --line-control knob) when off, the accent only for tone="accent".
+ *   The word sits in type beside it in the text weight, both words in one cell so the row never reflows. The pill is
+ *   44 by 26 and the knob 20, so the crossing is 18px.
  * - Device, bodies/switch.device.tsx: a toggle key in a well that flips with a detent (three steps on the instant
  *   tier, never a spring), and its word on a small LCD beside it in the mono, with a lamp that lights when on.
  * - Forced colors drops box-shadow and background colors, so the tray and the block get real borders and system
@@ -128,40 +128,51 @@ const SLOP = 4;
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-/* The tray is the button. The row's label is stretched over the whole row, so the tray sits above it (z-1) and a
-   press on the tray itself still lands on the button. It clips the block, so a cast never spills past its walls. */
+/* The tray is the button, cut deep into the plate (--slot, --slot-shade). The row's label is stretched over the whole
+   row, so the tray sits above it (z-1) and a press on the tray itself still lands on the button. It clips the block,
+   so a cast never spills past its walls. */
 const tray =
   "[--sw-travel:44px] " +
   "peer relative z-1 inline-flex h-8 w-23 shrink-0 cursor-pointer touch-pan-y items-center self-start overflow-hidden rounded-control p-0.5 " +
-  "bg-tray shadow-(--tray-shade) " +
+  "bg-slot shadow-(--slot-shade) " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "enabled:group-hover/switch:bg-[color-mix(in_oklab,var(--tray),var(--fg)_4%)] " +
+  "enabled:group-hover/switch:bg-[color-mix(in_oklab,var(--slot),var(--fg)_4%)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border forced-colors:p-px " + // the border is real, so the padding gives it back its px
   focusRing;
 
-/* The block. Its corners are the control radius less the 2px it is set in, so they stay concentric with the tray's. */
+/* A word set in the floor, one in each half. The block covers the one on its side and uncovers the other, so travel
+   is what reveals the state. --fg on the --slot floor keeps 4.5:1. */
+const floorWord =
+  "pointer-events-none absolute inset-y-0 flex w-1/2 select-none items-center justify-center text-caption font-title text-fg " +
+  "forced-colors:text-[CanvasText]";
+
+/* The block, thick and bare: a lit top edge (--highlight) over its cast, no word on it. Its corners are the control
+   radius less the 2px it is set in, so they stay concentric with the tray's. */
 const blockBase =
-  "pointer-events-none flex h-7 w-11 shrink-0 items-center justify-center rounded-[calc(var(--radius-control)-2px)] " +
-  "text-caption font-title select-none " +
+  "pointer-events-none flex h-7 w-11 shrink-0 rounded-[calc(var(--radius-control)-2px)] " +
   "forced-colors:border";
 
-const blockOff = "bg-block text-fg-muted shadow-(--block-lift) group-active/switch:shadow-(--block-press)";
+const blockLift = "shadow-[var(--block-lift),var(--highlight)] group-active/switch:shadow-[var(--block-press),var(--highlight)]";
+const blockOff = "bg-block " + blockLift;
 const blockOn: Record<SwitchTone, string> = {
-  neutral: "bg-block text-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
-  accent: "bg-accent text-accent-fg shadow-(--block-lift) group-active/switch:shadow-(--block-press) forced-colors:bg-[Highlight] forced-colors:text-[HighlightText]",
+  neutral: "bg-block " + blockLift + " forced-colors:bg-[Highlight]",
+  accent: "bg-accent " + blockLift + " forced-colors:bg-[Highlight]",
 };
-/* Disabled, the block lies flat: no cast, a hairline, and the word in --fg-disabled. */
-const blockDisabled = "bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)] forced-colors:text-[GrayText]";
+/* Disabled, the block lies flat: no cast, a hairline. */
+const blockDisabled = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 
-/** Press, the default body: a raised block that slides in a sunken tray, its state in words. */
+/** Press, the default body: a thick block thrown along a deep tray to a stop, uncovering the word set in the floor. */
 function PressBody({ shown, disabled, x, tone, words, motion, root, className }: SwitchBodyProps) {
   const block = blockBase + " " + (disabled ? blockDisabled : shown ? blockOn[tone] : blockOff);
+  const word = floorWord + (disabled ? " text-fg-disabled" : "");
+  /* The word under the block is out of sight, so it is out of the page too: a contrast check never reads it through the block. */
+  const covered = " opacity-0";
   return (
     <SwitchPrimitive.Root {...root} data-body="press" className={tray + className}>
-      <SwitchPrimitive.Thumb className={block} style={{ ...motion, translate: `${x} 0` }}>
-        <span aria-hidden="true">{shown ? words[1] : words[0]}</span>
-      </SwitchPrimitive.Thumb>
+      <span aria-hidden="true" className={word + " left-0" + (shown ? "" : covered)}>{words[1]}</span>
+      <span aria-hidden="true" className={word + " right-0" + (shown ? covered : "")}>{words[0]}</span>
+      <SwitchPrimitive.Thumb className={block} style={{ ...motion, translate: `${x} 0` }} />
     </SwitchPrimitive.Root>
   );
 }

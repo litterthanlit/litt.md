@@ -1340,15 +1340,24 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (!said.includes("Unlimited projects and previews.") || !said.includes("$12 a month")) throw new Error(`Pro's description is "${said}"`);
           return said;
         });
+        /* Press's body (wave two): every card is a plate in the tray, filled --litt-block; the picked one alone is raised
+           (its own lift, the block's own fill), the rest seated a step darker. So: the picked card is the block, no card
+           is the accent, and one card wears a lift no other card shares. */
         await attempt("card picker: one raised block per tray, filled --litt-block, never the accent", async () => {
           await page.mouse.move(0, 0);
-          const fills = [];
+          const fills = [], allFills = [];
           for (const scope of [narrow, wide, small]) {
-            const filled = await scope.locator("label, label > span").evaluateAll((els) =>
-              els.map((el) => getComputedStyle(el).backgroundColor).filter((c) => c !== "rgba(0, 0, 0, 0)" && c !== "transparent"),
+            const cards = await scope.locator("label").evaluateAll((els) =>
+              els.map((el) => ({ fill: getComputedStyle(el).backgroundColor, shadow: getComputedStyle(el).boxShadow, picked: !!el.querySelector("input:checked") })),
             );
-            if (filled.length !== 1) throw new Error(`a picker has ${filled.length} filled parts (${filled.join(", ")}), expected the one block`);
-            fills.push(filled[0]);
+            const filled = cards.map((c) => c.fill).filter((c) => c !== "rgba(0, 0, 0, 0)" && c !== "transparent");
+            if (!filled.length) throw new Error("a picker has no filled card");
+            const picked = cards.filter((c) => c.picked);
+            if (picked.length !== 1) throw new Error(`a picker has ${picked.length} picked cards`);
+            const raised = cards.filter((c) => c.shadow === picked[0].shadow).length;
+            if (raised !== 1) throw new Error(`${raised} cards wear the picked card's lift, expected the one raised block`);
+            fills.push(picked[0].fill);
+            allFills.push(...filled);
           }
           const [block, accentFill] = await page.evaluate(() => {
             const probe = document.createElement("div");
@@ -1362,6 +1371,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           });
           if (fills.some((f) => f !== block)) throw new Error(`the block is ${fills.join(", ")}, --litt-block is ${block}`);
           if (block === accentFill) throw new Error(`the block is the accent (${accentFill})`);
+          if (allFills.includes(accentFill)) throw new Error(`a card is filled with the accent (${accentFill})`);
           return block;
         });
         await attempt("card picker: a click picks, and the arrow keys skip a disabled card", async () => {
@@ -1384,13 +1394,14 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const n = await cards(narrow), w = await cards(wide);
           const same = (cs) => cs.every((c) => Math.abs(c.w - cs[0].w) <= 1 && Math.abs(c.h - cs[0].h) <= 1);
           if (!(n.every((c) => c.x === n[0].x) && new Set(n.map((c) => c.y)).size === n.length)) throw new Error(`360px is not stacked: ${JSON.stringify(n)}`);
-          if (!(w.every((c) => c.y === w[0].y) && new Set(w.map((c) => c.x)).size === w.length)) throw new Error(`720px is not one row: ${JSON.stringify(w)}`);
+          /* A seated Press card sits --press-depth lower than the raised one, so a row is one y within 2px. */
+          if (!(w.every((c) => Math.abs(c.y - w[0].y) <= 2) && new Set(w.map((c) => c.x)).size === w.length)) throw new Error(`720px is not one row: ${JSON.stringify(w)}`);
           if (!same(n) || !same(w)) throw new Error(`cards differ in size: ${JSON.stringify({ n, w })}`);
           return `rows ${n[0].w}x${n[0].h}, columns ${w[0].w}x${w[0].h}`;
         });
         await attempt("card picker: sm draws tiles, the word under the picture, under 72px tall", async () => {
           const tiles = await cards(small);
-          if (tiles.some((t) => t.h >= 72) || !tiles.every((t) => t.y === tiles[0].y)) throw new Error(`tiles: ${JSON.stringify(tiles)}`);
+          if (tiles.some((t) => t.h >= 72) || !tiles.every((t) => Math.abs(t.y - tiles[0].y) <= 2)) throw new Error(`tiles: ${JSON.stringify(tiles)}`);
           const tile = small.locator("label").first();
           const pic = await tile.getByTestId("card-picker-picture").boundingBox();
           const word = await tile.getByText("List", { exact: true }).boundingBox();
@@ -1751,12 +1762,20 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("the switch did not start on");
           const look = () =>
             sw.evaluate((el) => {
-              const block = el.firstElementChild;
-              return { word: (block?.textContent ?? "").trim(), x: Math.round((block?.getBoundingClientRect().left ?? 0) - el.getBoundingClientRect().left), tray: getComputedStyle(el).backgroundColor };
+              // The block is the thumb, the last child; the word it says is the one in the floor it leaves uncovered.
+              const block = el.lastElementChild;
+              const b = block?.getBoundingClientRect();
+              const open = [...el.children].filter((w) => w !== block && w.textContent?.trim()).find((w) => {
+                const r = w.getBoundingClientRect();
+                const mid = r.left + r.width / 2;
+                return !b || mid < b.left || mid > b.right;
+              });
+              return { word: (open?.textContent ?? "").trim(), x: Math.round((b?.left ?? 0) - el.getBoundingClientRect().left), tray: getComputedStyle(el).backgroundColor };
             });
           const tray = await page.evaluate(() => {
             const probe = document.createElement("span");
-            probe.style.backgroundColor = "var(--litt-tray)";
+            // The Press switch's tray is a slot, cut deeper than a group's tray.
+            probe.style.backgroundColor = "var(--litt-slot)";
             document.body.append(probe);
             const c = getComputedStyle(probe).backgroundColor;
             probe.remove();
@@ -1764,7 +1783,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           });
           const on = await look();
           if (on.word !== "On") throw new Error(`an on switch's block says "${on.word}", not On`);
-          if (on.tray !== tray) throw new Error(`the tray is ${on.tray}, not --litt-tray (${tray})`);
+          if (on.tray !== tray) throw new Error(`the tray is ${on.tray}, not --litt-slot (${tray})`);
           await sw.click();
           await page.waitForTimeout(600);
           if ((await sw.getAttribute("aria-checked")) !== "false") throw new Error("a click did not turn it off");
@@ -1774,7 +1793,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.keyboard.press("Space");
           await page.waitForTimeout(600);
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("Space did not turn it back on");
-          return `On at ${on.x}px, Off at ${off.x}px, on --litt-tray`;
+          return `On at ${on.x}px, Off at ${off.x}px, on --litt-slot`;
         });
       }
       if (has("accordion")) {
@@ -2984,10 +3003,19 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const box = await field.boundingBox();
           const tokenH = await field.locator("li").first().evaluate((el) => Math.round(el.getBoundingClientRect().height));
           const x = await form.getByRole("button", { name: "Remove @stripe.com" }).boundingBox();
-          if (Math.round(box.height) !== 44 || tokenH !== 24 || Math.round(x.width) !== 24) throw new Error(`field ${box.height}px, token ${tokenH}px, remove button ${x.width}px: expected 44, 24 and 24`);
+          // Press's remove button is a 20px block on the token (a 44px target on a finger, through its ::before).
+          if (Math.round(box.height) !== 44 || tokenH !== 24 || Math.round(x.width) !== 20) throw new Error(`field ${box.height}px, token ${tokenH}px, remove button ${x.width}px: expected 44, 24 and 20`);
+          // Its edge is the Input's cut: the slot's shaded top wall and the field's lit lower wall, no drawn line.
           const edge = await field.evaluate((el) => getComputedStyle(el).boxShadow);
-          const line = await color("--litt-line-control");
-          if (!edge.includes(line)) throw new Error(`the field edge is "${edge}", not --litt-line-control (${line})`);
+          const cut = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.boxShadow = "var(--litt-slot-shade),var(--litt-field-shade)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).boxShadow;
+            probe.remove();
+            return c;
+          });
+          if (!edge.endsWith(cut)) throw new Error(`the field edge is "${edge}", not the cut of --litt-slot-shade and --litt-field-shade ("${cut}")`);
           await field.click({ position: { x: box.width - 20, y: box.height / 2 } });
           await page.waitForTimeout(500);
           if ((await field.locator("li").count()) !== 3) throw new Error("focusing the field should open it to all three tokens");
@@ -3018,7 +3046,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if ((await posted()) !== "ramp.com|brex.com") throw new Error(`the x should remove @stripe.com; the form posts "${await posted()}"`);
           await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-token-input.png`) });
           await page.evaluate(() => document.activeElement?.blur());
-          return "+2, 44/24/24px, comma, validate, keys, posted values";
+          return "+2, 44/24/20px, the cut, comma, validate, keys, posted values";
         });
       }
       if (has("heatmap")) {
@@ -3600,12 +3628,14 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const send = box.getByRole("button", { name: "Send" });
           if (!(await send.isDisabled())) throw new Error("Send should be disabled while the field is empty");
           if ((await fill(send)) === (await probe("backgroundColor", "--litt-accent"))) throw new Error("a disabled Send must not be an accent fill");
+          // Press's box is a plate that stands (--litt-plate-lift), and the text sits in a well cut into it, which takes the ring.
           const rest = await frame.evaluate((el) => getComputedStyle(el).boxShadow);
-          const line = await probe("color", "--litt-line-control");
-          if (!rest.includes(line)) throw new Error(`the resting edge is "${rest}", not --litt-line-control (${line})`);
+          const plate = await probe("boxShadow", "--litt-plate-lift");
+          if (!rest.endsWith(plate)) throw new Error(`the resting box is "${rest}", not a plate (--litt-plate-lift: "${plate}")`);
+          const well = field.locator("xpath=ancestor::div[contains(@class,'has-[textarea:focus-visible]')][1]");
           await field.click();
           await page.waitForTimeout(400); // the edge fades on the instant tier
-          const ring = await frame.evaluate((el) => getComputedStyle(el).boxShadow);
+          const ring = await well.evaluate((el) => getComputedStyle(el).boxShadow);
           const focus = await probe("color", "--litt-focus");
           if (!ring.includes(focus)) throw new Error(`the focused edge has no --litt-focus: "${ring}"`);
           await page.keyboard.type("Why did the Halo build fail?");

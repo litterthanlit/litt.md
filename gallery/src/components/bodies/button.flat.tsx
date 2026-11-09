@@ -3,9 +3,11 @@
  * catches the light or keeps a hairline, so the press shows in the fill: a step darker under the hand (hover, and the
  * finger's press on a touch screen).
  *
- * - Primary is the accent with its glow, and no top highlight (Flat has no light, R2). Secondary is a grey pill
- *   (--block is --surface-3 under Flat), icon-only a grey circle. Ghost has no fill until the hand arrives. Danger is
- *   the grey pill with red words; in a dialog's footer it is the confirm, the one red fill, with no highlight.
+ * - Every button takes the control radius, which Flat opens at the pill (the one shape for what a hand touches), and
+ *   follows a shape the Customize panel asks for. Primary is an ink pill (the accent fill where an accent is set), a step softer under the hand, with no
+ *   glow and no highlight (Flat has no light, R2). Secondary is a grey pill (--block is --surface-3 under Flat),
+ *   icon-only a grey circle. Ghost is words alone: no fill, even under the hand, which only brings the words to --fg.
+ *   Danger is the grey pill with red words; in a dialog's footer it is the confirm, the one red fill.
  * - A disabled button is a grey fill with --fg-disabled words and no hairline.
  * - The contract (props, aria-busy, aria-disabled, sizes, label, spinner) is button.tsx's. This file only says what the
  *   pill is made of. Fun mode's deeper sink still applies, since it is a movement and not a look.
@@ -21,11 +23,9 @@ const base =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow",
+  primary: "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover",
   secondary: "bg-block text-fg forced-colors:border hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover)",
-  ghost:
-    "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
-    "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
+  ghost: "bg-transparent text-fg-muted hover:text-fg enabled:pointer-coarse:active:text-fg",
   danger:
     "bg-block text-danger forced-colors:border hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " +
     /* A dialog's confirm. These rules sort after the pill's, so they win its ties (hover, a finger's press). */
