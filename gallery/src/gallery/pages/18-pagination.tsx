@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Pagination } from "@/components/pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { Tag, type TagStatus } from "@/components/tag";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -144,6 +147,33 @@ function PagesTile() {
   );
 }
 
+function BodiesRow() {
+  const [page, setPage] = useState(4);
+  return <Pagination label="Clients pages" page={page} pageSize={20} total={143} onPageChange={setPage} />;
+}
+
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <BodiesRow />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function PaginationPage() {
   const [key, reset] = useReplay();
   return (
@@ -177,6 +207,16 @@ export default function PaginationPage() {
         caption="The row measures its own width. Under 36rem the page numbers go, and the range with Previous and Next is all there is. That is the phone layout, and a narrow column on a desktop gets it too."
       >
         <NarrowDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        align="start"
+        caption="One pagination, one contract, three bodies. Press is the range in type with Previous and Next as raised blocks and the pages in a sunken tray. Flat is the range in words with grey pills. Device is the range in seven segments on an LCD panel with TO and OF engraved, step keys at the ends and the pages as keys, the current one latched. Each is drawn here whatever look the page is in; the buttons, the live range, the focus handoff at either end and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );
