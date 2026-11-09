@@ -3,18 +3,18 @@
  * domains of a mail rule, the recipients of an invoice or the tags of a project. It is the
  * Input's sibling (components.md, "Token input"): same field, same label and hint.
  *
- * - Field: the Input's cut (R3: the --cut floor, the --line-control line and the top wall's
- *   shade) at the control radius. Heights are minimums on the shared scale (sm 32, md 44, lg 56),
- *   and the 2px focus ring wraps the whole field while its text input is focus-visible. An
- *   invalid field turns the line to --danger. Like the Input it has no hover. Padding sits on the
- *   4px grid, so the field grows by whole token rows (24px tokens, 4px apart) as they wrap. Under Device the field is LCD glass in the mono, through the --field tokens.
- * - Flat (proposals/flat-pill.md): a grey field with no outline (the ink ring on focus, the danger ring on an error),
- *   each token a --surface-1 bubble on it, the "+N" chip bare text.
- * - Token: a raised Tag (R3: a block you can lift out of the cut, --block and --block-lift, its
- *   corners the control radius less 2px; 24px, the sans at the caption size and the label weight),
- *   with a 24px remove button that grows to a 44px hit area on coarse pointers through an
- *   invisible ::before. The "+N" token is a flat surface-2 chip with no button: it stands for
- *   tokens, it is not one. The placeholder shows only while there are no tokens.
+ * - Bodies (proposals/worlds.md): the contract below is one, and the material picks the look.
+ *   Press is the Input's cut (--slot-shade with --field-shade: the top wall shaded, the lower wall lit) with each
+ *   token a block standing out of it (--block with --highlight and --key-lift) and a small block on it (--block with
+ *   --block-lift) that removes it. Flat is a grey pill field, the tokens darker grey pills with a cross, and the "+N"
+ *   bare words. Device is the Input's glass (bodies/token-input.device.tsx), each token an inverted cell of lit mono
+ *   words with a small key. The body decides the field, the chip, the remove button and the "+N", through TokenSkin.
+ * - Field: heights are minimums on the shared scale (sm 32, md 44, lg 56), and the 2px focus ring wraps the whole
+ *   field while its text input is focus-visible. An invalid field draws a --danger line. Like the Input it has no
+ *   hover. Padding sits on the 4px grid, so the field grows by whole token rows (24px tokens, 4px apart) as they wrap.
+ * - Token: 24px, the sans at the caption size, corners the control radius less 4px, with a remove button that grows to
+ *   a 44px hit area on coarse pointers through an invisible ::before. The "+N" stands for tokens, it is not one: no
+ *   button. The placeholder shows only while there are no tokens.
  * - Adding: Enter, a comma and blur commit the typed text, and a paste is split on commas,
  *   semicolons and line breaks. Values are trimmed, and empty ones and case-insensitive
  *   duplicates are ignored. A value that `validate` rejects stays in the input with its message
@@ -35,10 +35,12 @@
  *   to 44, and the remove buttons are 44px targets. After a tap on x the input is not focused,
  *   so the keyboard does not open.
  */
-import { useEffect, useId, useRef, useState, type ClipboardEvent, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ClipboardEvent, type FocusEventHandler, type KeyboardEvent, type MouseEventHandler, type ReactNode, type RefObject } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Tag } from "@/components/tag";
-import { useDevice, useExit, useTransition } from "@/motion";
+import { byWorld, useDevice, useExit, useMaterial, useTransition } from "@/motion";
+import { useOverlayMotion } from "@/motion/deal";
+import { TokenInputDeviceBody } from "./bodies/token-input.device";
+import { TokenInputFlatBody } from "./bodies/token-input.flat";
 
 export type TokenInputProps = {
   /** The label above the field. Required, because a placeholder is not a label. Clicking it focuses the input. */
@@ -71,21 +73,53 @@ export type TokenInputProps = {
   className?: string;
 };
 
+/** What a body decides about one token: its chip, its label, its remove button and the "+N" chip. The part owns the list, the motion and the handlers. */
+export type TokenSkin = {
+  /** The chip around one token: its label and its remove button are the children. */
+  Chip: (props: { disabled: boolean; children: ReactNode }) => ReactNode;
+  /** The classes of the token's label. */
+  text: (disabled: boolean) => string;
+  /** The classes of the remove button, which keeps its name, its tab stop and its 44px target on coarse pointers. */
+  remove: string;
+  /** The cross in the remove button. */
+  Cross: () => ReactNode;
+  /** The classes of the "+N" chip. */
+  more: string;
+};
+
+/** The state the part resolves, and the pieces it owns, for a body to dress. A body draws the label, the field, the note and the live region. */
+export type TokenInputBodyProps = {
+  size: "sm" | "md" | "lg";
+  invalid: boolean;
+  disabled: boolean;
+  className: string;
+  label: ReactNode;
+  labelId: string;
+  inputId: string;
+  note: ReactNode;
+  noteId: string;
+  /** Goes on the element that wraps the tokens and the input: it finds focus and takes a press on its own air. */
+  field: { ref: RefObject<HTMLDivElement | null>; onMouseDown: MouseEventHandler<HTMLDivElement>; onFocus: () => void; onBlur: FocusEventHandler<HTMLDivElement> };
+  /** The tokens and the "+N" chip, drawn with the body's skin. */
+  list: (skin: TokenSkin) => ReactNode;
+  /** The real text input, in its slot. */
+  input: ReactNode;
+  /** One hidden input per value when the field has a name. */
+  hidden: ReactNode;
+  /** What the polite live region says. */
+  said: string;
+};
+
 /* The field: the Input's cut (floor, line, shade) and its focus, error and disabled looks, on a
    wrapper that holds the tokens. The ring follows the text input only (the remove buttons draw their own). */
 const FIELD =
   "relative flex w-full min-w-0 cursor-text bg-field font-field font-normal text-field-ink " +
-  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
+  "shadow-[var(--slot-shade),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
-  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
+  "has-[input:focus-visible]:shadow-[var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
+  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--slot-shade),var(--field-shade)] " +
+  "data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
-  /* Flat: a grey field with no outline; the ink ring on focus, the danger ring on an error. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:has-[input:focus-visible]:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:data-[invalid]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[invalid]:has-[input:focus-visible]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
-  "in-[[data-material=flat]]:data-[disabled]:shadow-none " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
 
@@ -112,13 +146,18 @@ const TEXT_SIZE = {
   lg: "text-(length:--control-text-lg)",
 };
 
+/* Press: a small block on the token. It stands on the token's face (--block with its --highlight and --block-lift) and
+   sinks the --press-depth under a press, its cast stepping down to --block-press. Nothing glides: the sink and the cast
+   are on the instant tier. A disabled token lies flat, so its key does too. */
+const CORNER = "rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))]";
 const REMOVE =
-  "relative grid size-6 shrink-0 cursor-pointer place-items-center rounded-control text-fg-subtle in-[[data-material=flat]]:rounded-pill " +
-  "transition-[color] duration-(--dur-instant) ease-litt hover:text-fg " +
-  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
-  "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:text-fg-disabled " +
-  /* An invisible 44px target around the 24px button on a finger. */
-  "pointer-coarse:before:absolute pointer-coarse:before:-inset-2.5";
+  "relative grid size-5 shrink-0 cursor-pointer place-items-center " + CORNER + " bg-block text-fg-muted shadow-[var(--highlight),var(--block-lift)] " +
+  "transition-[color,transform,box-shadow] duration-(--dur-instant) ease-litt hover:bg-(--block-hover) hover:text-fg " +
+  "active:shadow-[var(--highlight),var(--block-press)] active:[transform:translateY(var(--press-depth))] " +
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus forced-colors:border " +
+  "disabled:cursor-not-allowed disabled:bg-transparent disabled:text-fg-disabled disabled:shadow-none disabled:hover:bg-transparent disabled:hover:text-fg-disabled " +
+  /* An invisible 44px target around the 20px block on a finger. */
+  "pointer-coarse:before:absolute pointer-coarse:before:-inset-3";
 
 const SEPARATOR = /[,;\r\n]/;
 
@@ -137,6 +176,62 @@ function RemoveIcon() {
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" aria-hidden="true" focusable="false">
       <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" />
     </svg>
+  );
+}
+
+/* Press, the cut: today's field, with the Tag's raised block for each token. */
+const PRESS_SKIN: TokenSkin = {
+  Chip: ({ disabled, children }) => (
+    <span
+      className={
+        "inline-flex h-6 max-w-full min-w-0 shrink-0 items-center gap-1 whitespace-nowrap pr-0.5 pl-2 text-caption " +
+        CORNER +
+        (disabled ? " bg-surface-3 text-fg-subtle" : " bg-block text-fg shadow-[var(--highlight),var(--key-lift)] forced-colors:border")
+      }
+    >
+      {children}
+    </span>
+  ),
+  text: () => "min-w-0 truncate",
+  remove: REMOVE,
+  Cross: RemoveIcon,
+  /* "+N" stands for tokens and is not one: a shallow dent in the field, with no block to lift out. */
+  more: "inline-flex h-6 shrink-0 cursor-default items-center bg-tray px-2 text-caption text-fg shadow-(--tray-shade) " + CORNER + " forced-colors:border",
+};
+
+function PressBody({ size, invalid, disabled, className, label, labelId, inputId, note, noteId, field, list, input, hidden, said }: TokenInputBodyProps) {
+  return (
+    <div data-body="press" className={"grid gap-2 " + className}>
+      <label id={labelId} htmlFor={inputId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
+        {label}
+      </label>
+
+      <div
+        ref={field.ref}
+        data-invalid={invalid ? "" : undefined}
+        data-disabled={disabled ? "" : undefined}
+        className={[FIELD, RADIUS[size], FIELD_SIZE[size], TEXT_SIZE[size], "pointer-coarse:text-(length:--control-text-lg)"].join(" ")}
+        onMouseDown={field.onMouseDown}
+        onFocus={field.onFocus}
+        onBlur={field.onBlur}
+      >
+        <div className="relative flex min-w-0 flex-1 flex-wrap items-center gap-1">
+          {list(PRESS_SKIN)}
+          {input}
+        </div>
+        {hidden}
+      </div>
+
+      {note && (
+        <p id={noteId} className={"text-small " + (invalid ? "text-danger" : "text-fg-subtle")}>
+          {note}
+        </p>
+      )}
+
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+        {said}
+      </div>
+    </div>
   );
 }
 
@@ -303,124 +398,126 @@ export function TokenInput({
     }
   }
 
-  return (
-    <div className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
-        {label}
-      </label>
+  const material = useMaterial();
+  const om = useOverlayMotion();
+  /* Press and Flat grow and slide their neighbors; Device switches in place and nothing glides. */
+  const switches = material === "device" && om.switches;
+  const itemEnter = switches ? om.switchIn : enter;
+  const itemExit = switches ? om.switchOut : exit;
+  const Body = byWorld(material, { press: PressBody, flat: TokenInputFlatBody, device: TokenInputDeviceBody });
 
-      <div
-        ref={fieldRef}
-        data-invalid={invalid ? "" : undefined}
-        data-disabled={disabled ? "" : undefined}
-        className={[FIELD, RADIUS[size], FIELD_SIZE[size], TEXT_SIZE[size], "pointer-coarse:text-(length:--control-text-lg)"].join(" ")}
-        onMouseDown={(e) => {
+  const list = (skin: TokenSkin) => (
+    <ul role="list" aria-labelledby={labelId} className="contents">
+      <AnimatePresence initial={false} mode="popLayout" onExitComplete={syncFocus}>
+        {shown.map((token, at) => (
+          <motion.li
+            key={token}
+            layout={switches ? false : "position"}
+            className="flex max-w-full min-w-0 cursor-default"
+            initial={{ opacity: 0, scale: switches ? 1 : 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, transition: itemExit }}
+            transition={itemEnter}
+          >
+            <skin.Chip disabled={disabled}>
+              <span className={skin.text(disabled)}>{token}</span>
+              <button
+                type="button"
+                ref={(el) => {
+                  if (el) buttons.current.set(token, el);
+                  else buttons.current.delete(token);
+                }}
+                aria-label={`Remove ${token}`}
+                tabIndex={token === stop ? 0 : -1}
+                disabled={disabled}
+                className={skin.remove}
+                onFocus={() => setActive(token)}
+                onKeyDown={(e) => onRemoveKeyDown(e, token, at)}
+                onClick={(e) => remove(token, e.detail === 0 ? "key" : "pointer")}
+              >
+                <skin.Cross />
+              </button>
+            </skin.Chip>
+          </motion.li>
+        ))}
+        {more > 0 && (
+          <motion.li
+            key="more"
+            layout={switches ? false : "position"}
+            aria-label={`${more} more`}
+            className={skin.more}
+            initial={{ opacity: 0, scale: switches ? 1 : 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, transition: itemExit }}
+            transition={itemEnter}
+          >
+            +{more}
+          </motion.li>
+        )}
+      </AnimatePresence>
+    </ul>
+  );
+
+  return (
+    <Body
+      size={size}
+      invalid={invalid}
+      disabled={disabled}
+      className={className}
+      label={label}
+      labelId={labelId}
+      inputId={inputId}
+      note={note}
+      noteId={noteId}
+      field={{
+        ref: fieldRef,
+        onMouseDown: (e) => {
           /* A press on the field's own air focuses the input and keeps focus from falling off it. */
           if (disabled || (e.target as HTMLElement).closest("button, input")) return;
           e.preventDefault();
           inputRef.current?.focus();
-        }}
-        onFocus={() => setFocused(true)}
-        onBlur={(e) => {
+        },
+        onFocus: () => setFocused(true),
+        onBlur: (e) => {
           if (e.currentTarget.contains(e.relatedTarget as Node | null)) return; // moving inside the field
           if (document.activeElement === e.target) return; // the window lost focus, not the field
           setFocused(false);
           if (draft.trim() !== "") commit(draft);
-        }}
-      >
-        <div className="relative flex min-w-0 flex-1 flex-wrap items-center gap-1">
-          <ul role="list" aria-labelledby={labelId} className="contents">
-            <AnimatePresence initial={false} mode="popLayout" onExitComplete={syncFocus}>
-              {shown.map((token, at) => (
-                <motion.li
-                  key={token}
-                  layout="position"
-                  className="flex max-w-full min-w-0 cursor-default"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, transition: exit }}
-                  transition={enter}
-                >
-                  <Tag raised={!disabled} className="max-w-full min-w-0 pr-0">
-                    <span className={"min-w-0 truncate " + (disabled ? "text-fg-subtle" : "")}>{token}</span>
-                    <button
-                      type="button"
-                      ref={(el) => {
-                        if (el) buttons.current.set(token, el);
-                        else buttons.current.delete(token);
-                      }}
-                      aria-label={`Remove ${token}`}
-                      tabIndex={token === stop ? 0 : -1}
-                      disabled={disabled}
-                      className={REMOVE}
-                      onFocus={() => setActive(token)}
-                      onKeyDown={(e) => onRemoveKeyDown(e, token, at)}
-                      onClick={(e) => remove(token, e.detail === 0 ? "key" : "pointer")}
-                    >
-                      <RemoveIcon />
-                    </button>
-                  </Tag>
-                </motion.li>
-              ))}
-              {more > 0 && (
-                <motion.li
-                  key="more"
-                  layout="position"
-                  aria-label={`${more} more`}
-                  className="inline-flex h-6 shrink-0 cursor-default items-center rounded-control bg-surface-2 px-2 text-caption text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-none"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, transition: exit }}
-                  transition={enter}
-                >
-                  +{more}
-                </motion.li>
-              )}
-            </AnimatePresence>
-          </ul>
-
-          <motion.div layout="position" transition={enter} className={"flex flex-1 " + (atMax ? "min-w-1" : "min-w-[8ch]")}>
-            <input
-              ref={inputRef}
-              id={inputId}
-              type="text"
-              value={draft}
-              placeholder={value.length === 0 ? placeholder : undefined}
-              disabled={disabled}
-              readOnly={atMax}
-              autoComplete="off"
-              autoCapitalize="none"
-              spellCheck={false}
-              aria-invalid={invalid || undefined}
-              aria-describedby={note ? noteId : undefined}
-              className={
-                "box-content h-6 min-w-0 flex-1 bg-transparent pl-2 text-field-ink outline-none placeholder:text-field-ink-subtle " +
-                "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:placeholder:text-fg-disabled"
-              }
-              onChange={(e) => {
-                const text = e.target.value;
-                if (SEPARATOR.test(inserted(draft, text))) return commit(text); // a typed comma, or a paste the browser kept whole
-                setDraft(text);
-                setRejection(null);
-              }}
-              onKeyDown={onInputKeyDown}
-              onPaste={onPaste}
-            />
-          </motion.div>
-        </div>
-
-        {name && value.map((v) => <input key={v} type="hidden" name={name} value={v} disabled={disabled} />)}
-      </div>
-
-      {note && (
-        <p id={noteId} className={"text-small " + (invalid ? "text-danger" : "text-fg-subtle")}>
-          {note}
-        </p>
-      )}
-
-      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
-        {said}
-      </div>
-    </div>
+        },
+      }}
+      list={list}
+      input={
+        <motion.div layout={switches ? false : "position"} transition={itemEnter} className={"flex flex-1 " + (atMax ? "min-w-1" : "min-w-[8ch]")}>
+          <input
+            ref={inputRef}
+            id={inputId}
+            type="text"
+            value={draft}
+            placeholder={value.length === 0 ? placeholder : undefined}
+            disabled={disabled}
+            readOnly={atMax}
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            aria-invalid={invalid || undefined}
+            aria-describedby={note ? noteId : undefined}
+            className={
+              "box-content h-6 min-w-0 flex-1 bg-transparent pl-2 text-field-ink outline-none placeholder:text-field-ink-subtle " +
+              "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:placeholder:text-fg-disabled"
+            }
+            onChange={(e) => {
+              const text = e.target.value;
+              if (SEPARATOR.test(inserted(draft, text))) return commit(text); // a typed comma, or a paste the browser kept whole
+              setDraft(text);
+              setRejection(null);
+            }}
+            onKeyDown={onInputKeyDown}
+            onPaste={onPaste}
+          />
+        </motion.div>
+      }
+      hidden={name && value.map((v) => <input key={v} type="hidden" name={name} value={v} disabled={disabled} />)}
+      said={said}
+    />
   );
 }

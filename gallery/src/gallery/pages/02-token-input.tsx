@@ -2,6 +2,9 @@ import { useState } from "react";
 import { TextField } from "@/components/input";
 import { Tag } from "@/components/tag";
 import { TokenInput } from "@/components/token-input";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -12,7 +15,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["type"],
   summary:
-    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's cut field with raised tags inside, blocks you can lift back out: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
+    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's field with tokens inside, each a block you can lift out under Press, a darker grey pill under Flat and a lit cell under Device: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
   tiers: ["instant", "responsive"],
 };
 
@@ -130,6 +133,29 @@ function TagsDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <TokenInput label="Mail from" defaultValue={["@stripe.com", "ramp.com", "brex.com"]} placeholder="Add a sender" hint="Press Enter or a comma to add one." />
+              <TokenInput label="Project tags" defaultValue={["landing"]} error="Use lowercase letters and dashes." />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 /* ---------- the overview's tile ---------- */
 
 function SendersTile() {
@@ -152,7 +178,7 @@ export default function TokenInputPage() {
       <Stage
         title="Senders"
         tier="responsive"
-        caption="A mail rule. The field shows the first sender and a flat +N chip for the rest, and opens to all of them when you focus it. Each sender is a raised tag standing up out of the field. The tokens that appear fade in and slide, and they fold back when focus leaves."
+        caption="A mail rule. The field shows the first sender and a bare +N for the rest, and opens to all of them when you focus it. Each sender is a token with its own remove button. The tokens that appear fade in and slide, and they fold back when focus leaves."
         code="SendersDemo"
       >
         <SendersDemo />
@@ -174,6 +200,16 @@ export default function TokenInputPage() {
         code="TagsDemo"
       >
         <TagsDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="responsive"
+        align="start"
+        caption="One token input, one contract, three bodies. Press is the Input's cut, its top wall in shade and its lower wall catching the light, with each token a block standing out of it and a small block on the token that removes it. Flat is a grey pill field with each token a darker grey pill and a cross, and the +N bare words. Device is the Input's glass in a bezel well with each token an inverted cell of lit mono words and a small key to remove it, switching in place in steps. Each is drawn here whatever look the page is in; the label, the roving remove buttons, Backspace, the paste and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );
