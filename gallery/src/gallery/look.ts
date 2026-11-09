@@ -7,26 +7,30 @@
  * run it alone under Node. index.html keeps a hand copy of the link's grammar for the first paint, and test-look runs
  * that copy against this one.
  */
-export type Accent = "mono" | "blue4" | "pink";
+/** "world" is the world's own accent (proposals/worlds.md, decision 14): Blue 4 on Press, the ink on Flat, orange on
+    Device, tokens.css with no data-accent. The others ask for one accent in any world. */
+export type Accent = "world" | "blue4" | "mono" | "pink";
 /** The depth ladder said in press (raised blocks in sunken trays, lit from the top), flat (fill alone, on greys) or device
     (keys, wells and LCD glass on an aluminium body, proposals/device.md). */
 export type Material = "press" | "flat" | "device";
 export type Look = { readonly accent: Accent; readonly material: Material; readonly fun: boolean };
-/** A look as a link names it: the accent, then -flat or -device, then -fun. One spelling per look, and no character URLSearchParams encodes. */
-export type LookSlug = `${Accent}${"" | "-flat" | "-device"}${"" | "-fun"}`;
+/** A look as a link names it: the world alone for its own accent (flat), else the accent, then -flat or -device (pink-flat;
+    a look without a material is press), then -fun. One spelling per look, and no character URLSearchParams encodes. */
+export type LookSlug = `${Material | `${Exclude<Accent, "world">}${"" | "-flat" | "-device"}`}${"" | "-fun"}`;
 export type AccentInfo = {
   id: Accent;
   name: string;
   short?: string;
   note: string;
-  /** The data-accent value tokens.css answers; null for Blue 4, which is tokens.css with no attribute. */
-  attribute: "mono" | "pink" | null;
+  /** The data-accent value tokens.css answers; null for the world's own, which is tokens.css with no attribute. */
+  attribute: "blue" | "mono" | "pink" | null;
 };
 
-/** The accents in the order every picker shows them, each said in words (R5). */
+/** The accents a look can ask for, each said in words (R5). The world's own comes first and is named by its world. */
 export const ACCENTS: readonly AccentInfo[] = [
-  { id: "mono", name: "Monochrome", short: "Mono", note: "The primary action in the ink", attribute: "mono" },
-  { id: "blue4", name: "Blue 4", note: "Litt's cobalt, as the registry ships it", attribute: null },
+  { id: "world", name: "The world's own", note: "Blue 4 on Press, the ink on Flat, orange on Device", attribute: null },
+  { id: "blue4", name: "Blue 4", note: "Litt's cobalt, Press's own", attribute: "blue" },
+  { id: "mono", name: "Monochrome", short: "Mono", note: "The primary action in the ink, Flat's own", attribute: "mono" },
   { id: "pink", name: "Pink", note: "A hot raspberry at Blue 4's weight", attribute: "pink" },
 ];
 export const accentOf = (id: Accent) => ACCENTS.find((a) => a.id === id)!;
@@ -48,6 +52,13 @@ export type MaterialInfo = {
   note: string;
   /** The data-material value tokens.css answers; null for Press, which is tokens.css with no attribute. */
   attribute: "flat" | "device" | null;
+  /** The world's own accent, which it shows with no data-accent: an accent a look can ask for, or null for one only
+      this world has (Device's orange). Asking for it in this world is the same as asking for nothing. */
+  ownAccent: Exclude<Accent, "world"> | null;
+  /** The own accent's name, said wherever the world's own is picked. */
+  accentName: string;
+  /** The world's own face, which it sets with no face chosen (typeface.ts has the stacks). */
+  face: string;
   /** The world's one line, under its name on its page and on the home's hero. */
   tagline: string;
   /** Who the world is for, as the lede under the tagline. */
@@ -70,12 +81,15 @@ export const MATERIALS: readonly MaterialInfo[] = [
     name: "Press",
     note: "Raised blocks in sunken trays, lit from the top",
     attribute: null,
+    ownAccent: "blue4",
+    accentName: "Blue 4",
+    face: "Helvetica Neue",
     tagline: "Lit from above. Objects you can hold.",
     audience: "Product UI, settings and dashboards. What the registry installs.",
     hero: "dashboard",
     foundations: {
-      color: "Warm stone neutrals at one hue, Blue 4 as the one accent, or monochrome or pink.",
-      type: "Geist in three weights by role: text 400, titles 500, 12px labels 600. Nothing above 18px.",
+      color: "Warm stone neutrals at one hue, and Blue 4, its own accent, as the one fill. A project may ask for monochrome or pink.",
+      type: "Helvetica Neue in three weights by role: text 400, titles 500, 12px labels 600. Nothing above 18px.",
       light: "One light from the top. Blocks rise from sunken trays, caps ride in slots, glass floats over the page.",
       shape: "Controls 4px, surfaces 8px, pills only for avatars and icon-only buttons, every corner concentric.",
       motion: "Things have weight. A set settles into place from above on the expressive spring; an overlay rises and settles. Nothing flies.",
@@ -92,12 +106,15 @@ export const MATERIALS: readonly MaterialInfo[] = [
     name: "Flat",
     note: "Grey fills and hairlines, nothing casts",
     attribute: "flat",
+    ownAccent: "mono",
+    accentName: "Monochrome",
+    face: "Geist",
     tagline: "Grey is the object. Nothing casts.",
     audience: "Sites, portfolios and reading. What the gallery opens in.",
     hero: "case-study",
     foundations: {
-      color: "The same neutrals at chroma 0: neutral grey, nothing warm. The accent and the data hues are unchanged.",
-      type: "Geist in three weights by role, as Press.",
+      color: "The same neutrals at chroma 0: neutral grey, nothing warm. Its own accent is the ink, so the primary action is black on white. A project may ask for Blue 4 or pink; the data hues are unchanged.",
+      type: "Geist in three weights by role: text 400, titles 500, 12px labels 600. Nothing above 18px.",
       light: "None. The depth ladder is said by fill alone: grey is the object, a hairline is the place.",
       shape: "As Press: 4px, 8px and the pill, concentric.",
       motion: "Things come from where you touched them. A set deals out of what opened it and gathers back; an overlay grows from its opener.",
@@ -114,11 +131,14 @@ export const MATERIALS: readonly MaterialInfo[] = [
     name: "Device",
     note: "Keys and dark LCD screens on an aluminium body, full mono, an orange accent",
     attribute: "device",
+    ownAccent: null,
+    accentName: "Orange",
+    face: "Geist Mono",
     tagline: "Hardware. Keys, wells and LCD glass, every word in the mono.",
     audience: "Agents, terminals and tools.",
     hero: "agent",
     foundations: {
-      color: "A cool aluminium body, dark LCD screens for panels and overlays, an orange accent, the hues retuned to the body.",
+      color: "A cool aluminium body, dark LCD screens for panels and overlays, orange as its own accent, the hues retuned to the body. A project may ask for Blue 4, monochrome or pink.",
       type: "Geist Mono for every word, in the three role weights. 12px labels are engraved capitals.",
       light: "Hardware. Plates on the body, wells cut into it, keys on a 2px skirt that sink the whole 2px, fields behind glass.",
       shape: "As Press: 4px, 8px and the pill, concentric.",
@@ -133,17 +153,26 @@ export const MATERIALS: readonly MaterialInfo[] = [
   },
 ];
 export const materialOf = (id: Material) => MATERIALS.find((m) => m.id === id)!;
-/** An accent's name in a material: Device answers the no-attribute accent with its own orange, so Blue 4 reads "Orange" there. */
-export const accentName = (accent: Accent, material: Material, short = false) =>
-  accent === "blue4" && material === "device" ? "Orange" : short ? (accentOf(accent).short ?? accentOf(accent).name) : accentOf(accent).name;
+/** One spelling per look: the world's own accent asked for by name is the world's own. */
+export const canonicalAccent = (accent: Accent, material: Material): Accent => (accent === materialOf(material).ownAccent ? "world" : accent);
+/** An accent's name in a material: the world's own is named by its world (Blue 4, Monochrome, Orange). */
+export const accentName = (accent: Accent, material: Material, short = false) => {
+  const a = canonicalAccent(accent, material);
+  if (a === "world") return materialOf(material).accentName;
+  return short ? (accentOf(a).short ?? accentOf(a).name) : accentOf(a).name;
+};
+/** The accents a picker offers in a material, the world's own first, then every other it can ask for. */
+export const accentsIn = (material: Material): readonly AccentInfo[] => ACCENTS.filter((a) => a.id !== materialOf(material).ownAccent);
+/** The data-accent a look puts on <html>: none for the world's own. */
+export const accentAttribute = (accent: Accent, material: Material) => accentOf(canonicalAccent(accent, material)).attribute;
 
-/** What the gallery opens in, and what Reset goes back to: a visitor meets the material before the color. */
-export const GALLERY_LOOK: Look = { accent: "mono", material: "flat", fun: false };
-/** What the registry installs: tokens.css with no attribute, and no <FunMode>. */
-export const REGISTRY_LOOK: Look = { accent: "blue4", material: "press", fun: false };
-/** Every look, in picker order: accent, then material, then motion. */
-export const LOOKS: readonly Look[] = ACCENTS.flatMap((a) =>
-  MATERIALS.flatMap((m) => [
+/** What the gallery opens in, and what Reset goes back to: Flat's own, so a visitor meets the material before the color. */
+export const GALLERY_LOOK: Look = { accent: "world", material: "flat", fun: false };
+/** What the registry installs: tokens.css with no attribute (Press, Blue 4), and no <FunMode>. */
+export const REGISTRY_LOOK: Look = { accent: "world", material: "press", fun: false };
+/** Every look, in picker order: material, then its accents (its own first), then motion. */
+export const LOOKS: readonly Look[] = MATERIALS.flatMap((m) =>
+  accentsIn(m.id).flatMap((a) => [
     { accent: a.id, material: m.id, fun: false },
     { accent: a.id, material: m.id, fun: true },
   ]),
@@ -151,11 +180,24 @@ export const LOOKS: readonly Look[] = ACCENTS.flatMap((a) =>
 /** The link's query parameter. Never one of the Table page's (status, q, sort, site, time). */
 export const LOOK_PARAM = "look";
 
-export const sameLook = (a: Look, b: Look) => a.accent === b.accent && a.material === b.material && a.fun === b.fun;
-export const encodeLook = (look: Look): LookSlug =>
-  `${look.accent}${look.material === "press" ? "" : `-${look.material}`}${look.fun ? "-fun" : ""}` as LookSlug;
-/** Strict, because it reads the address: anything but a LookSlug is null, and the caller ignores it. */
-export const decodeLook = (raw: string | null | undefined): Look | null => LOOKS.find((l) => encodeLook(l) === raw) ?? null;
+/** The same look on screen: Monochrome asked for on Flat is Flat's own. */
+export const sameLook = (a: Look, b: Look) =>
+  a.material === b.material && a.fun === b.fun && canonicalAccent(a.accent, a.material) === canonicalAccent(b.accent, b.material);
+export const encodeLook = (look: Look): LookSlug => {
+  const accent = canonicalAccent(look.accent, look.material);
+  const head = accent === "world" ? look.material : `${accent}${look.material === "press" ? "" : `-${look.material}`}`;
+  return `${head}${look.fun ? "-fun" : ""}` as LookSlug;
+};
+/** The link's grammar. index.html keeps a hand copy for the first paint, and test-look runs it against this one. */
+const SLUG = /^(?:(press|flat|device)|(blue4|mono|pink)(?:-(flat|device))?)(-fun)?$/;
+/** Strict, because it reads the address: anything but the grammar is null, and the caller ignores it. A link from before
+    decision 14 still reads: blue4 is press, mono-flat is flat, each the world's own. */
+export const decodeLook = (raw: string | null | undefined): Look | null => {
+  const m = SLUG.exec(raw ?? "");
+  if (!m) return null;
+  const material = (m[1] ?? m[3] ?? "press") as Material;
+  return { accent: canonicalAccent((m[2] ?? "world") as Accent, material), material, fun: !!m[4] };
+};
 export const lookFromSearch = (search: string) => decodeLook(new URLSearchParams(search).get(LOOK_PARAM));
 
 /** The query a new page entry keeps (route.ts): the look, and nothing else. */
@@ -179,8 +221,8 @@ export function withLook(href: string, look: Look | null): string {
  * anything else that sets its own theme spreads these.
  */
 export function lookAttributes(look: Pick<Look, "accent" | "material">, dark: boolean) {
-  const out: { "data-theme": "light" | "dark"; "data-accent"?: "mono" | "pink"; "data-material"?: "flat" | "device" } = { "data-theme": dark ? "dark" : "light" };
-  const accent = accentOf(look.accent).attribute, material = materialOf(look.material).attribute;
+  const out: { "data-theme": "light" | "dark"; "data-accent"?: "blue" | "mono" | "pink"; "data-material"?: "flat" | "device" } = { "data-theme": dark ? "dark" : "light" };
+  const accent = accentAttribute(look.accent, look.material), material = materialOf(look.material).attribute;
   if (accent) out["data-accent"] = accent;
   if (material) out["data-material"] = material;
   return out;
@@ -191,13 +233,13 @@ const materialWords = (material: Material) => `${material} material`;
 /** In words (R5): "Pink, flat material, fun motion", "Monochrome, press material, calm motion". */
 export const lookWords = (look: Look) => `${accentName(look.accent, look.material)}, ${materialWords(look.material)}, ${motionWords(look.fun)}`;
 
-const REGISTRY_WORDS = `${accentOf(REGISTRY_LOOK.accent).name}, ${materialWords(REGISTRY_LOOK.material)} and ${motionWords(REGISTRY_LOOK.fun)}`;
+const REGISTRY_WORDS = `${accentName(REGISTRY_LOOK.accent, REGISTRY_LOOK.material)} in ${materialOf(REGISTRY_LOOK.material).face}, ${materialWords(REGISTRY_LOOK.material)} and ${motionWords(REGISTRY_LOOK.fun)}`;
 const COUNT = ["no things", "one thing", "two things", "three things"];
 
 /** The edits a look asks for, one per choice that differs from the registry's, as numbered setup steps. */
 function edits(look: Look): string[] {
   const out: string[] = [];
-  const attribute = accentOf(look.accent).attribute;
+  const attribute = accentAttribute(look.accent, look.material);
   if (attribute) {
     const attr = `data-accent="${attribute}"`;
     out.push(
@@ -217,8 +259,8 @@ function edits(look: Look): string[] {
         `The material: ${attr} on <html>.`,
         `   Next.js, app/layout.tsx: <html lang="en" ${attr}>    Vite, index.html: <html lang="en" ${attr}>`,
         material === "flat"
-          ? `   Flat says the depth ladder by fill alone, on neutral greys: nothing casts and nothing catches the light. Never set it from an effect.`
-          : `   Device says the depth ladder in hardware: an aluminium body, keys that sink 2px, dark LCD screens for panels and overlays, an orange accent, and every word in Geist Mono (load it at 400, 500 and 600). Never set it from an effect.`,
+          ? `   Flat says the depth ladder by fill alone, on neutral greys: nothing casts and nothing catches the light. Its own accent is the ink and its face Geist (load it at 400, 500 and 600). Never set it from an effect.`
+          : `   Device says the depth ladder in hardware: an aluminium body, keys that sink 2px, dark LCD screens for panels and overlays, orange as its own accent, and every word in Geist Mono (load it at 400, 500 and 600). Never set it from an effect.`,
         `   An element that sets its own theme (class="dark", class="light" or data-theme) needs ${attr} too.`,
       ].join("\n"),
     );
@@ -240,7 +282,7 @@ const installLine = (items: string[], site: string) => `npx shadcn@latest add ${
 
 /** The Customize panel's one line: what a project changes for this look. */
 export function lookInApp(look: Look): string {
-  const attributes = [accentOf(look.accent).attribute, materialOf(look.material).attribute]
+  const attributes = [accentAttribute(look.accent, look.material), materialOf(look.material).attribute]
     .map((value, i) => value && `data-${i ? "material" : "accent"}="${value}"`)
     .filter(Boolean);
   const changes = [attributes.length && `${attributes.join(" and ")} on <html>`, look.fun && "<FunMode> around the app"].filter(Boolean);
@@ -251,7 +293,7 @@ export function lookInApp(look: Look): string {
 export function lookNote(look: Look): string | null {
   if (sameLook(look, REGISTRY_LOOK)) return null;
   const instead = [
-    look.accent !== REGISTRY_LOOK.accent && accentOf(REGISTRY_LOOK.accent).name,
+    accentName(look.accent, look.material) !== accentName(REGISTRY_LOOK.accent, REGISTRY_LOOK.material) && accentName(REGISTRY_LOOK.accent, REGISTRY_LOOK.material),
     look.material !== REGISTRY_LOOK.material && materialWords(REGISTRY_LOOK.material),
     look.fun !== REGISTRY_LOOK.fun && motionWords(REGISTRY_LOOK.fun),
   ].filter(Boolean);
@@ -291,11 +333,10 @@ export function looksDoc(site: string): string {
       `Read the look from the link's text and make its edits. The gallery is a single-page app, so fetching the link returns no look. ` +
       `The registry installs \`${encodeLook(REGISTRY_LOOK)}\`, ${materialWords(REGISTRY_LOOK.material)}, ${motionWords(REGISTRY_LOOK.fun)}. The gallery opens in \`${encodeLook(GALLERY_LOOK)}\`.`,
     [
-      `- The link: \`${LOOK_PARAM}=<accent>\`, then \`-flat\` or \`-device\` for the material, then \`-fun\` for fun mode, in that order (\`pink-flat-fun\`, \`mono-device\`). Anything else is not a look, and a look without a material is press.`,
-      ...ACCENTS.map(
-        (a) =>
-          `- \`${a.id}\`, ${a.name} (${a.note[0]!.toLowerCase() + a.note.slice(1)}): ` +
-          (a.attribute ? `\`data-accent="${a.attribute}"\` on \`<html>\`.` : "no attribute. It is what tokens.css ships."),
+      `- The link: the world alone for its own accent (\`flat\`, \`device-fun\`), or \`${LOOK_PARAM}=<accent>\`, then \`-flat\` or \`-device\` for the material, then \`-fun\` for fun mode, in that order (\`pink-flat-fun\`, \`mono-device\`). Anything else is not a look, and an accent without a material is press.`,
+      `- Each world has its own accent and face, with no attribute: ${MATERIALS.map((m) => `${m.name} is ${m.accentName} in ${m.face}`).join(", ")}. An accent asked for wins in every world.`,
+      ...ACCENTS.filter((a) => a.attribute).map(
+        (a) => `- \`${a.id}\`, ${a.name} (${a.note[0]!.toLowerCase() + a.note.slice(1)}): \`data-accent="${a.attribute}"\` on \`<html>\`, except in the world whose own it is, which needs nothing.`,
       ),
       ...MATERIALS.map(
         (m) =>

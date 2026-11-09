@@ -43,6 +43,13 @@
  *               and restates the focus ring and the data tints; pink and monochrome are restated on Device after it; reduced
  *               motion stills the key; the glass sets the mono, its ink reaches 7:1 and its placeholder 4.5:1, and the
  *               field's edge 3:1 on the body. Check 5 runs every pair again under Device, and check 8 holds its shadows.
+ * 13. Worlds:  each world's own accent and face (proposals/worlds.md, decision 14). With no attribute Press is Blue 4 in
+ *               Helvetica Neue, Flat the ink in Geist and Device orange in Geist Mono: Press's face is on every theme
+ *               root, the flat block restates monochrome's, and each face reads --font-choice first, so a chosen face
+ *               wins, and nothing in litt declares it. data-accent="blue" asks for Blue 4 anywhere: its block, and
+ *               Blue 4 and pink restated after Flat as after Device, match their own blocks. An element that sets a
+ *               theme or a material sets the family again (tailwind.css). Check 5 runs every Flat pair with the ink as
+ *               the accent, and every Blue 4 pair in every world.
  *
  * Exits 1 if anything fails.
  */
@@ -105,9 +112,47 @@ const decls = (body) => {
   }
   return map;
 };
-const light = decls(block(/:root,\s*\[data-theme="light"\]\s*\{/));
-const dark = decls(block(/\n\[data-theme="dark"\]\s*\{/));
+const rawLight = decls(block(/:root,\s*\[data-theme="light"\]\s*\{/));
+const rawDark = decls(block(/\n\[data-theme="dark"\]\s*\{/));
 const darkMedia = decls(block(/:root:not\(\[data-theme="light"\]\)\s*\{/));
+/* A theme token may name another in the same block (--accent is var(--accent-blue), Press's own): the checks read the value. */
+const resolve = (map) => {
+  const out = new Map(map);
+  for (const [k, v] of out) {
+    let x = v;
+    for (let i = 0; i < 4 && /^var\((--[\w-]+)\)$/.test(x) && out.has(/^var\((--[\w-]+)\)$/.exec(x)[1]); i++) x = out.get(/^var\((--[\w-]+)\)$/.exec(x)[1]);
+    out.set(k, x);
+  }
+  return out;
+};
+const light = resolve(rawLight), dark = resolve(rawDark);
+const rgb = (h) => { h = h.replace("#", ""); if (h.length === 3) h = [...h].map((c) => c + c).join(""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
+const lum = (h) => { const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+const toLab = (h) => {
+  const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s];
+};
+const fromLab = ([L, a, bb]) => {
+  const l = (L + 0.3963377774 * a + 0.2158037573 * bb) ** 3, m = (L - 0.1055613458 * a - 0.0638541728 * bb) ** 3, s = (L - 0.0894841775 * a - 1.291485548 * bb) ** 3;
+  const lin = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s];
+  return "#" + lin.map((c) => Math.min(1, Math.max(0, c))).map((c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)).map((c) => Math.round(c * 255).toString(16).padStart(2, "0")).join("");
+};
+/* Monochrome's tones (the ink as the accent), mixed in OKLab as tokens.css's color-mix does. Flat's own accent. */
+const mixHex = (a, b, t) => { const [A, B] = [toLab(a), toLab(b)]; return fromLab(A.map((v, i) => v * (1 - t) + B[i] * t)); };
+const inkAccent = (out) => {
+  const fg = out.get("--fg"), canvas = out.get("--canvas");
+  out.set("--accent", fg);
+  out.set("--accent-hover", mixHex(fg, canvas, 0.18));
+  out.set("--accent-fg", canvas);
+  out.set("--accent-text", fg);
+  out.set("--accent-tint", mixHex(canvas, fg, 0.07));
+  out.set("--focus", fg);
+  return out;
+};
 
 /* Flat (proposals/flat.md): data-material="flat" maps each neutral onto its --flat-* mirror, which every theme block
    declares. A theme under Flat is that theme's map with the mirrors swapped in, and the fills Flat gives the press
@@ -123,7 +168,7 @@ const flatOf = (theme, map) => {
   out.set("--block", out.get("--surface-3"));
   out.set("--cut", out.get("--surface-1"));
   out.set("--tray", out.get("--canvas"));
-  return out;
+  return inkAccent(out); // Flat's own accent is the ink (decision 14); Blue 4 and pink run as --accent-blue and --accent-pink
 };
 // Device maps each token onto its --device-* twin (proposals/device.md), the hues included.
 const deviceOf = (map) => {
@@ -152,10 +197,10 @@ if (!driftFails) ok("no hex values outside tokens.css");
 // 3. Parity ---------------------------------------------------------------
 console.log("Dark-block parity");
 const diff = [];
-for (const k of new Set([...dark.keys(), ...darkMedia.keys()])) {
-  if (dark.get(k) !== darkMedia.get(k)) diff.push(`${k}: [data-theme=dark]=${dark.get(k)} vs media=${darkMedia.get(k)}`);
+for (const k of new Set([...rawDark.keys(), ...darkMedia.keys()])) {
+  if (rawDark.get(k) !== darkMedia.get(k)) diff.push(`${k}: [data-theme=dark]=${dark.get(k)} vs media=${darkMedia.get(k)}`);
 }
-diff.length ? diff.forEach((d) => fail(`dark blocks differ: ${d}`)) : ok(`${dark.size} dark declarations match in both blocks`);
+diff.length ? diff.forEach((d) => fail(`dark blocks differ: ${d}`)) : ok(`${rawDark.size} dark declarations match in both blocks`);
 
 // 4. Coverage -------------------------------------------------------------
 console.log("Theme coverage (R2)");
@@ -166,9 +211,6 @@ missing.length ? missing.forEach((k) => fail(`${k} is defined in only one theme`
 console.log("Contrast");
 // Every pair runs in each theme, then again under Flat and under Device (checks 11 and 12 hold the mirrors themselves).
 const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)], ["device light", deviceOf(light)], ["device dark", deviceOf(dark)], ["device screen", screenOf(light)]];
-const rgb = (h) => { h = h.replace("#", ""); if (h.length === 3) h = [...h].map((c) => c + c).join(""); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255); };
-const lum = (h) => { const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
-const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 const pairs = [
   // [foreground, backgrounds, minimum, note]
   ["--fg", ["--canvas", "--well", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
@@ -185,6 +227,10 @@ const pairs = [
   ["--accent-pink-fg", ["--accent-pink", "--accent-pink-hover"], 4.5, "text on the pink accent"],
   ["--accent-pink-text", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--accent-pink-tint"], 4.5, "the pink accent as link text, on every surface"],
   ["--accent-pink", ["--canvas", "--surface-1"], 3, "the pink fill against the page"],
+  ["--focus-blue", ["--canvas", "--surface-1", "--surface-2"], 3, "focus ring, Blue 4 asked for (data-accent=blue)"],
+  ["--accent-blue-fg", ["--accent-blue", "--accent-blue-hover"], 4.5, "text on Blue 4"],
+  ["--accent-blue-text", ["--canvas", "--surface-1", "--surface-2", "--surface-3", "--accent-blue-tint"], 4.5, "Blue 4 as link text, on every surface"],
+  ["--accent-blue", ["--canvas", "--surface-1"], 3, "the Blue 4 fill against the page"],
   ["--success", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--warning", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--danger", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
@@ -206,18 +252,6 @@ for (const [theme, map] of THEMES) {
   }
 }
 // A hue's -text tone on its own tint. The tint is color-mix(in oklab, hue N%, surface-1), so mix it here the same way.
-const toLab = (h) => {
-  const [r, g, b] = rgb(h).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
-  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
-  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
-  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
-  return [0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s, 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s];
-};
-const fromLab = ([L, a, bb]) => {
-  const l = (L + 0.3963377774 * a + 0.2158037573 * bb) ** 3, m = (L - 0.1055613458 * a - 0.0638541728 * bb) ** 3, s = (L - 0.0894841775 * a - 1.291485548 * bb) ** 3;
-  const lin = [4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s, -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s];
-  return "#" + lin.map((c) => Math.min(1, Math.max(0, c))).map((c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055)).map((c) => Math.round(c * 255).toString(16).padStart(2, "0")).join("");
-};
 for (const [theme, map] of THEMES) {
   const t = parseFloat(map.get("--tint-strength")) / 100;
   if (!(t > 0)) { fail(`${theme}: --tint-strength is missing or not a percentage`); continue; }
@@ -236,7 +270,7 @@ const apart = (a, b) => { const [A, B] = [toLab(a), toLab(b)]; return Math.hypot
 let apartChecks = 0, apartFails = 0;
 for (const [theme, map] of THEMES) {
   for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
-    for (const [ours, theirs] of [["--accent", `--data-${h}`], ["--accent-text", `--data-${h}-text`], ["--accent-pink", `--data-${h}`], ["--accent-pink-text", `--data-${h}-text`]]) {
+    for (const [ours, theirs] of [["--accent", `--data-${h}`], ["--accent-text", `--data-${h}-text`], ["--accent-pink", `--data-${h}`], ["--accent-pink-text", `--data-${h}-text`], ["--accent-blue", `--data-${h}`], ["--accent-blue-text", `--data-${h}-text`]]) {
       const a = map.get(ours), b = map.get(theirs);
       if (![a, b].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { fail(`${theme}: ${ours} or ${theirs} is not a six-digit hex`); continue; }
       apartChecks++;
@@ -555,7 +589,7 @@ else {
   if (flatAt < css.search(/:root\[data-accent="mono"\],\s*\[data-accent="mono"\]\s*\{/)) flatFails.push("the flat block comes before monochrome; it goes last, so it wins on order");
   for (const n of FLAT_NEUTRALS) if (flat.get(n) !== `var(${flatName(n)})`) flatFails.push(`the flat block maps ${n} to ${flat.get(n) ?? "nothing"}, not var(${flatName(n)})`);
   for (const [k, v] of flat) {
-    if (/(^|[\s,(])none($|[\s,)])/.test(v)) flatFails.push(`flat: ${k} is "${v}" (an empty shadow is 0 0 0 0 transparent; none voids a comma list)`);
+    if (k !== "--light" && /(^|[\s,(])none($|[\s,)])/.test(v)) flatFails.push(`flat: ${k} is "${v}" (an empty shadow is 0 0 0 0 transparent; none voids a comma list)`);
     if (!/^--(?:highlight|[\w-]+-(?:shade|lift|press))$/.test(k)) continue;
     // Nothing casts and nothing is lit: every layer has no offset and no blur, so it is empty or a ring.
     for (const layer of splitLayers(v)) {
@@ -578,7 +612,7 @@ const devFails = [];
 const DEVICE_MAPPED = [...FLAT_NEUTRALS, "--highlight", "--tray", "--tray-shade", "--cut", "--cut-shade", "--block", "--block-lift", "--block-press",
   "--key-lift", "--slot", "--slot-shade", "--slot-fill", "--slot-fill-shade", "--plate-lift", "--cap", "--cap-held", "--cap-lift", "--cap-press",
   "--cap-grip", "--field", "--field-ink", "--field-ink-subtle", "--field-line", "--field-shade"];
-const DEVICE_HUES = ["--accent", "--accent-hover", "--accent-text", "--accent-pink", "--accent-pink-text", "--focus", "--focus-pink", "--success", "--warning", "--danger",
+const DEVICE_HUES = ["--accent", "--accent-hover", "--accent-text", "--accent-pink", "--accent-pink-text", "--accent-blue", "--accent-blue-hover", "--accent-blue-text", "--focus", "--focus-pink", "--focus-blue", "--success", "--warning", "--danger",
   ...["blue", "amber", "teal", "violet", "rose"].flatMap((h) => [`--data-${h}`, `--data-${h}-text`])];
 const devName = (n) => `--device-${n.slice(2)}`;
 for (const n of DEVICE_MAPPED) for (const [theme, map] of [["light", light], ["dark", dark]]) if (!map.has(devName(n))) devFails.push(`${theme}: ${devName(n)} is missing`);
@@ -598,7 +632,7 @@ else {
   for (const h of ["blue", "amber", "teal", "violet", "rose"])
     if (!/var\(--surface-1\)/.test(dev.get(`--data-${h}-tint`) || "")) devFails.push(`device: --data-${h}-tint is not restated over var(--surface-1)`);
 }
-for (const accent of ["pink", "mono"]) {
+for (const accent of ["blue", "pink", "mono"]) {
   const re = new RegExp(`:root\\[data-material="device"\\]\\[data-accent="${accent}"\\],\\s*\\[data-material="device"\\]\\[data-accent="${accent}"\\]\\s*\\{`);
   const at = css.search(re);
   if (at < 0 || at < devAt) devFails.push(`${accent} is not restated on Device after the device block, so Device's hues would beat it on <html>`);
@@ -628,9 +662,48 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
     for (const k of names) if (scr.get(`--${k.slice(16)}`) !== `var(${k})`) devFails.push(`the screen block maps --${k.slice(16)} to ${scr.get(`--${k.slice(16)}`) ?? "nothing"}`);
     for (const k of names) if (light.get(k) !== dark.get(k)) devFails.push(`${k} differs between the themes; a screen is the same in each`);
   }
-  if ((decls(block(devRe)).get("--font-sans") || "") !== "var(--font-mono)") devFails.push("device: --font-sans must be var(--font-mono), Device's full mono");
+  if ((decls(block(devRe)).get("--font-sans") || "") !== "var(--font-choice, var(--font-mono))") devFails.push("device: --font-sans must be var(--font-choice, var(--font-mono)), Device's full mono unless a face is chosen");
 }
-devFails.length ? devFails.forEach(fail) : ok(`device: ${DEVICE_MAPPED.length} tokens mapped in both themes, after Flat, pink and mono restated, a 2px key, glass at 7:1 in the mono`);
+devFails.length ? devFails.forEach(fail) : ok(`device: ${DEVICE_MAPPED.length} tokens mapped in both themes, after Flat, Blue 4, pink and mono restated, a 2px key, glass at 7:1 in the mono`);
+
+// 13. Worlds ----------------------------------------------------------------
+console.log("Worlds (each world's own accent and face)");
+{
+  const worldFails = [];
+  const blockOf = (sel) => decls(block(new RegExp(sel.replace(/[[\]()".]/g, (c) => "\\" + c).replace(/, /g, ",\\s*") + "\\s*\\{")));
+  const FACES = [
+    ["Press", ":root, [data-theme]", 'var(--font-choice, "Helvetica Neue", Helvetica, Arial, sans-serif)'],
+    ["Flat", ':root[data-material="flat"], [data-material="flat"]', 'var(--font-choice, "Geist", "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
+  ];
+  for (const [world, sel, want] of FACES) {
+    const got = blockOf(sel).get("--font-sans");
+    if (got !== want) worldFails.push(`${world}: --font-sans is ${got ?? "unset"}, must be ${want}`);
+  }
+  const fontSans = [...strip(css).matchAll(/--font-sans\s*:/g)].length;
+  if (fontSans !== 3) worldFails.push(`tokens.css declares --font-sans ${fontSans} times; only Press's theme roots, Flat and Device set a face`);
+  if (/--font-choice\s*:/.test(strip(css))) worldFails.push("tokens.css declares --font-choice; it is the project's or the reader's, so litt never sets it");
+  const mono = blockOf(':root[data-accent="mono"], [data-accent="mono"]'), flat = blockOf(':root[data-material="flat"], [data-material="flat"]');
+  for (const [k, v] of mono) if (k !== "--focus-ring" && flat.get(k) !== v) worldFails.push(`flat: ${k} is ${flat.get(k) ?? "unset"}, not ${v} as monochrome's block (Flat's own accent is the ink)`);
+  const flatAt = css.search(/:root\[data-material="flat"\],\s*\[data-material="flat"\]\s*\{/);
+  for (const accent of ["blue", "pink"]) {
+    const own = blockOf(`:root[data-accent="${accent}"], [data-accent="${accent}"]`);
+    if (!own.size) { worldFails.push(`tokens.css has no :root[data-accent="${accent}"], [data-accent="${accent}"] block`); continue; }
+    const re = new RegExp(`:root\\[data-material="flat"\\]\\[data-accent="${accent}"\\],\\s*\\[data-material="flat"\\]\\[data-accent="${accent}"\\]\\s*\\{`);
+    const at = css.search(re);
+    if (at < 0 || at < flatAt) { worldFails.push(`${accent} is not restated on Flat after the flat block, so Flat's ink would beat it on <html>`); continue; }
+    const restated = decls(block(re));
+    for (const [k, v] of own) if (restated.get(k) !== v) worldFails.push(`flat ${accent}: ${k} is ${restated.get(k) ?? "missing"}, not ${v} as ${accent}'s own block`);
+  }
+  for (const [theme, map] of [["light", rawLight], ["dark", rawDark]])
+    for (const n of ["--accent", "--accent-hover", "--accent-fg", "--accent-text", "--accent-tint"]) {
+      const want = `var(${n.replace("--accent", "--accent-blue")})`;
+      if (map.get(n) !== want) worldFails.push(`${theme}: ${n} is ${map.get(n)}, must be ${want} (Press's own accent is Blue 4)`);
+    }
+  for (const [theme, map] of [["light", rawLight], ["dark", rawDark]]) if (map.get("--focus") !== "var(--focus-blue)") worldFails.push(`${theme}: --focus must be var(--focus-blue)`);
+  if (!/\[data-theme\],\s*\[data-material\]\s*\{\s*font-family:\s*var\(--font-sans\);/.test(strip(read("assets/tailwind.css"))))
+    worldFails.push("tailwind.css: [data-theme], [data-material] must set font-family: var(--font-sans), so a nested world takes its face");
+  worldFails.length ? worldFails.forEach(fail) : ok("Press is Blue 4 in Helvetica Neue, Flat the ink in Geist, Device orange in the mono; Blue 4 and pink restated after Flat, a chosen face wins");
+}
 
 console.log(failures.length ? `\n${failures.length} check(s) failed.` : `\nAll checks passed${warnings.length ? ` (${warnings.length} warning(s))` : ""}.`);
 process.exit(failures.length ? 1 : 0);

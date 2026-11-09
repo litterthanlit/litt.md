@@ -524,7 +524,14 @@ function buildBaseStylesCss() {
   const layer = {};
   layer.html = {};
   const tokensBase = split.base[0] ?? fail("tokens.css: @layer base not found");
-  const rules = [...tokensBase.nodes.filter((n) => n.k === "rule"), { k: "rule", selector: "html", nodes: htmlDecls }];
+  /* tailwind.css's nested-world rule: an element that sets a theme or a material sets the family again, so a part shown
+     in another world takes that world's face. A host's .dark and .light set a theme too. */
+  const nested = twBase.nodes.find((n) => n.k === "rule" && /^\[data-theme\],\s*\[data-material\]$/.test(n.selector)) ?? fail("tailwind.css: @layer base [data-theme], [data-material] rule not found");
+  const rules = [
+    ...tokensBase.nodes.filter((n) => n.k === "rule"),
+    { k: "rule", selector: "html", nodes: htmlDecls },
+    { k: "rule", selector: "[data-theme], [data-material], .dark, .light", nodes: nested.nodes.filter((d) => d.k === "decl") },
+  ];
   for (const r of rules) {
     const decls = toCssObject(r.nodes.map((d) => ({ ...d, prop: renameVars(d.prop), value: renameVars(d.value) })), `@layer base ${r.selector}`);
     layer[r.selector] = { ...(layer[r.selector] ?? {}), ...decls };
@@ -1698,6 +1705,9 @@ async function loadShadcnSchema() {
 /* ===================================================================== the verifier */
 
 const ALLOWED_FOREIGN_VARS = [/^--radix-/, /^--tw-/];
+/* Read by litt and set by the caller, never declared: a dialog's glass shadow, and the face a project chooses, which every
+   world's --litt-font-sans reads first (tokens.css, proposals/worlds.md decision 14). */
+const CALLER_VARS = new Set(["--litt-glass-shadow", "--litt-font-choice"]);
 
 function verify(items, targets, transformed, shadcn) {
   const errs = [];
@@ -1735,7 +1745,7 @@ function verify(items, targets, transformed, shadcn) {
     for (const m of v.matchAll(/var\(\s*(--[\w-]+)/g)) read.add(m[1]);
   }
   const inputs = new Set([...read].filter((v) => !declared.has(v))); // read, never defined: set by the caller
-  for (const v of inputs) if (!ALLOWED_FOREIGN_VARS.some((re) => re.test(v)) && v !== "--litt-glass-shadow") bad("litt", `reads ${v}, which nothing defines`);
+  for (const v of inputs) if (!ALLOWED_FOREIGN_VARS.some((re) => re.test(v)) && !CALLER_VARS.has(v)) bad("litt", `reads ${v}, which nothing defines`);
 
   const themeShape = new RegExp(`^--(?:${THEME_NS.join("|")})-litt(?:-|$)`);
   for (const name of declared) {
@@ -1835,7 +1845,7 @@ function verify(items, targets, transformed, shadcn) {
       for (const n of names) {
         if (ALLOWED_FOREIGN_VARS.some((re) => re.test(n))) continue;
         if (local.has(n)) continue;
-        if (!declared.has(n) && n !== "--litt-glass-shadow") bad(where, `uses ${n}, which the shipped CSS does not define`);
+        if (!declared.has(n) && !CALLER_VARS.has(n)) bad(where, `uses ${n}, which the shipped CSS does not define`);
       }
       const left = survivors(text, file.target);
       if (left.length) bad(where, `unprefixed litt utility survives: ${[...new Set(left)].join(", ")}`);

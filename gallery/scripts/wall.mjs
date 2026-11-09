@@ -6,11 +6,11 @@
  *   node scripts/wall.mjs --dist dist
  *
  * It fails when:
- * It runs in Blue 4 and in pink, set before the page loads: the gallery opens in monochrome, where the accent is the
- * ink that checkboxes and switches fill with too, so only a colored accent can tell an accent fill apart. It runs
- * under each material too (Press, Flat and Device, saved in the same way before the page loads), since a material
- * changes what a tile draws. Flat, the gallery's own look, runs in both accents; Press and Device run in Blue 4 only,
- * because all six material and accent pairs take about four minutes and the accent never changes what a material draws.
+ * It runs in a colored accent, set before the page loads: the gallery opens in Flat, whose own accent is the ink that
+ * checkboxes and switches fill with too, so only a colored accent can tell an accent fill apart. It runs under each
+ * material too (Press, Flat and Device, saved in the same way before the page loads), since a material changes what a
+ * tile draws. Flat, the gallery's own look, runs in Blue 4 and pink; Press and Device run in their own accent only
+ * (Blue 4, orange), because every material and accent pair takes minutes and the accent never changes what a material draws.
  *
  * - the wall shows more than one accent fill (R6: one per view). Each tile is its page's `tile`, one object with no
  *   accent fill, and the Button tile carries the one. A page whose first demo ends in a primary button needs a tile.
@@ -118,7 +118,9 @@ const browser = await chromium.launch();
 const problems = [];
 let count = 0;
 const ATTRIBUTE = { press: undefined, flat: "flat", device: "device" };
-const RUNS = [["press", "blue4"], ["flat", "blue4"], ["flat", "pink"], ["device", "blue4"]];
+/* Flat's own accent is the ink, which checkboxes and switches fill with too, so Flat runs in Blue 4 and pink; Press
+   and Device run in their own (Blue 4, orange: decision 14). */
+const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"]];
 for (const [material, accent] of RUNS) for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
   for (const theme of ["light", "dark"]) {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
@@ -168,4 +170,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, Press, Flat and Device (Flat in Blue 4 and pink, the others in Blue 4), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall: ${count} tiles, Press, Flat and Device (Flat in Blue 4 and pink, Press and Device in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);

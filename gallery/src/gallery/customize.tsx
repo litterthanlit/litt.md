@@ -26,7 +26,7 @@ import { Switch } from "@/components/switch";
 import { useCustomize, useDark } from "./customize-state";
 import { CopyButton } from "./docs/copy";
 import { SITE } from "./docs/copy-prompt";
-import { accentName, ACCENTS, lookAttributes, lookSetup, lookWords, materialOf, MATERIALS, withLook } from "./look";
+import { accentName, accentsIn, canonicalAccent, lookAttributes, lookSetup, lookWords, materialOf, MATERIALS, withLook } from "./look";
 import { loadTypeface } from "./typeface";
 
 /** The shape slider's stops, one per shape. */
@@ -80,7 +80,7 @@ function CustomizePanel() {
   const { typefaces, typeface, setTypeface, radius, lockedRadius, setRadius, look, setLook, modified, reset } = useCustomize();
   const dark = useDark();
   const [said, setSaid] = useState("");
-  const type = { name: typeface.name, stack: typeface.stack, locked: typefaces[0].name };
+  const type = { name: typeface.id === "locked" ? typefaces[0].name : typeface.name, stack: typeface.stack, locked: typefaces[0].name };
   const snippet = customizeSnippet(radius, lockedRadius, type);
 
   /* Every face draws its own "Aa", so each loads once the panel opens. */
@@ -91,8 +91,8 @@ function CustomizePanel() {
       const rest = all.filter((x) => x !== now);
       return rest[Math.floor(Math.random() * rest.length)];
     };
-    const a = other(ACCENTS.map((x) => x.id), look.accent);
     const m = other(MATERIALS.map((x) => x.id), look.material);
+    const a = other(accentsIn(m).map((x) => x.id), canonicalAccent(look.accent, m));
     const r = other(SHAPES, radius);
     const f = other(typefaces, typeface);
     const feel = Math.random() < 0.5;
@@ -107,9 +107,9 @@ function CustomizePanel() {
       <section aria-label="Look" className="grid gap-6">
         <Swatches
           legend="Accent"
-          value={look.accent}
+          value={canonicalAccent(look.accent, look.material)}
           onValueChange={(accent) => setLook({ accent })}
-          options={ACCENTS.map((a) => ({
+          options={accentsIn(look.material).map((a) => ({
             value: a.id,
             label: accentName(a.id, look.material, true),
             attrs: lookAttributes({ accent: a.id, material: look.material }, dark),
