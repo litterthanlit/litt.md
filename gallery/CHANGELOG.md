@@ -24,6 +24,19 @@ Later the same day, wave one of the worlds (`proposals/worlds.md`, Three directi
 - **changed** `slide-confirm`: Press is a gripped cap ridden along a slot cut into a plate to a raised end stop, the words in the slot's floor. Flat is a grey pill with a plain ink circle; confirmed, the whole pill turns ink. Device is a latch key pushed along a well to a stop, the words on an LCD strip and a lamp at the stop that lights once confirmed; let go short and it goes home in steps.
 - **changed** `option-picker`: Press is values as blocks in a tray, the chosen one raised and lit, a sold-out one a cut lying flat. Flat is words in grey pills, the chosen one an ink pill, sold out struck through and said. Device is a row of latching keys with engraved legends, the chosen one down with its lamp lit; a sold-out key lies flat and says so.
 
+Later still, wave two of the worlds: ten more parts. Seven a hand presses get a body in each world, and Switch, Button and Slider, which had three bodies already, have their Press and Flat pushed to their extremes. **Under Press these ten look different from before.** Nothing in your code changes.
+
+- **changed** `switch`: wave two's Press and Flat bodies.
+- **changed** `button`: wave two's Press and Flat bodies.
+- **changed** `slider`: wave two's Press and Flat bodies.
+- **changed** `card-picker`: a body per material.
+- **changed** `token-input`: a body per material.
+- **changed** `composer`: a body per material.
+- **changed** `file-drop`: a body per material.
+- **changed** `legend`: a body per material.
+- **changed** `pagination`: a body per material.
+- **changed** `tag`: a body per material.
+
 ## 2026-11-08 · Device goes deeper: its own parts, and Only here
 
 A world goes deeper by parts and abilities that exist in it alone (`proposals/worlds.md`, Depth). A part names its worlds in its page's `meta.worlds`; the wall, the nav and the other world pages hide it, and its world page lists it under Only here. Device gets the first four, brought home from the studies on litt.design: each needs `data-material="device"` on `<html>` and says so in its install notes.
