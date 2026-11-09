@@ -43,6 +43,9 @@
  *   caller keeps it above the on-screen keyboard (useVisibleScreen from @/motion sizes the chat frame).
  * - Motion: only instant color and edge fades, and the chips' responsive entrance and exit. Send and Stop swap at
  *   once.
+ * - Bodies (proposals/worlds.md): this file resolves the state once into ComposerBodyProps and FileChipBodyProps and
+ *   renders the body the material picks (byWorld). Press, here, is the cut box above. Flat and Device live in
+ *   bodies/composer.flat.tsx and bodies/composer.device.tsx and draw the same contract their own way.
  */
 import {
   useCallback,
@@ -57,11 +60,15 @@ import {
   type MouseEvent,
   type ReactNode,
   type Ref,
+  type ComponentPropsWithRef,
+  type TextareaHTMLAttributes,
 } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Button } from "@/components/button";
 import { ArrowUpIcon, FileIcon, PaperclipIcon, StopIcon, XIcon } from "@/components/icons";
-import { useDevice, useExit, useTransition } from "@/motion";
+import { byWorld, useDevice, useExit, useMaterial, useTransition } from "@/motion";
+import { ComposerFlatBody, FileChipFlatBody } from "./bodies/composer.flat";
+import { ComposerDeviceBody, FileChipDeviceBody } from "./bodies/composer.device";
 
 /** A file shown as a chip above the text. The caller owns the list: add it when a file is picked, update its progress, remove it in onRemoveFile. */
 export type ComposerFile = {
@@ -104,6 +111,22 @@ export type FileChipProps = {
   className?: string;
 };
 
+/** What a file chip body gets from the contract: the resolved wording and state. A body adds its look and its data-body. */
+export type FileChipBodyProps = {
+  name: string;
+  /** The formatted size, or null when there is none to show. */
+  sizeText: string | null;
+  /** True while the upload is below 100. */
+  uploading: boolean;
+  /** The rounded percent, 0 to 100. */
+  percent: number;
+  /** The remove handler; undefined for a file that was already sent, which has no button. */
+  onRemove: ((event: MouseEvent<HTMLButtonElement>) => void) | undefined;
+  /** True on a coarse pointer: the remove button's target grows to 44px. */
+  coarse: boolean;
+  className: string;
+};
+
 const REMOVE =
   "relative grid size-6 shrink-0 cursor-pointer place-items-center rounded-control text-fg-subtle " +
   "transition-[color] duration-(--dur-instant) ease-litt hover:text-fg " +
@@ -111,20 +134,14 @@ const REMOVE =
   /* An invisible 44px target around the 24px button on a finger. */
   "pointer-coarse:before:absolute pointer-coarse:before:-inset-2.5";
 
-/**
- * A file as a chip: an icon, the name, the size or the upload percent, and a remove button named
- * "Remove brief.pdf". With onRemove it is a raised block, a file you can lift out of the composer. With no
- * onRemove it lies flat, a plain label for the files of a message already sent.
- */
-export function FileChip({ name, size, progress, onRemove, className = "" }: FileChipProps) {
-  const { coarse } = useDevice();
-  const uploading = progress !== undefined && progress < 100;
-  const percent = Math.round(Math.min(100, Math.max(0, progress ?? 100)));
+/** Press, the chip: a raised block while it can be removed, a plain label when it cannot. */
+function ChipPressBody({ name, sizeText, uploading, percent, onRemove, coarse, className }: FileChipBodyProps) {
   return (
     <span
+      data-body="press"
       className={[
         "inline-flex h-8 max-w-full min-w-0 items-center gap-2 rounded-control pl-2 font-normal text-fg",
-        onRemove ? "bg-block pr-1 shadow-(--block-lift) forced-colors:border in-[[data-material=flat]]:bg-surface-1" : "bg-surface-1 pr-2 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)] in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none",
+        onRemove ? "bg-block pr-1 shadow-(--block-lift) forced-colors:border" : "bg-surface-1 pr-2 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]",
         className,
       ].join(" ")}
     >
@@ -138,10 +155,10 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
           </span>
         </>
       ) : (
-        size !== undefined && (
+        sizeText !== null && (
           <>
             <span className="sr-only">, </span>
-            <span className="shrink-0 text-caption tabular-nums font-normal text-fg-subtle">{formatSize(size)}</span>
+            <span className="shrink-0 text-caption tabular-nums font-normal text-fg-subtle">{sizeText}</span>
           </>
         )
       )}
@@ -156,6 +173,28 @@ export function FileChip({ name, size, progress, onRemove, className = "" }: Fil
         </button>
       )}
     </span>
+  );
+}
+
+/**
+ * A file as a chip: an icon, the name, the size or the upload percent, and a remove button named
+ * "Remove brief.pdf". With onRemove it is a raised block, a file you can lift out of the composer. With no
+ * onRemove it lies flat, a plain label for the files of a message already sent.
+ */
+export function FileChip({ name, size, progress, onRemove, className = "" }: FileChipProps) {
+  const { coarse } = useDevice();
+  const Body = byWorld(useMaterial(), { press: ChipPressBody, flat: FileChipFlatBody, device: FileChipDeviceBody });
+  const percent = Math.round(Math.min(100, Math.max(0, progress ?? 100)));
+  return (
+    <Body
+      name={name}
+      sizeText={size !== undefined ? formatSize(size) : null}
+      uploading={progress !== undefined && progress < 100}
+      percent={percent}
+      onRemove={onRemove}
+      coarse={coarse}
+      className={className}
+    />
   );
 }
 
@@ -208,6 +247,49 @@ export type ComposerProps = {
   ref?: Ref<HTMLTextAreaElement>;
 };
 
+/** What a body gets from the contract: everything resolved, and the handlers. A body adds its look, its layout and its data-body, and nothing about what the composer does. */
+export type ComposerBodyProps = {
+  /** The caller's className, for the body's root. */
+  className: string;
+  disabled: boolean;
+  /** True while files are dragged over the box. */
+  dragging: boolean;
+  /** A coarse pointer. */
+  coarse: boolean;
+  /** A coarse pointer or a compact screen: the toolbar's buttons grow to 44px. */
+  big: boolean;
+  /** The suggestion buttons above the box, or null. */
+  suggestions: ReactNode;
+  /** The drag handlers for the box. */
+  drop: Pick<ComponentPropsWithRef<"div">, "onDragEnter" | "onDragOver" | "onDragLeave" | "onDrop">;
+  /** The chips' motion items, for the body to set in its list. */
+  chips: ReactNode;
+  /** The visually hidden label's text and the field's id. */
+  label: string;
+  areaId: string;
+  /** Everything the text area needs, ref and handlers included, but not its look. */
+  area: TextareaHTMLAttributes<HTMLTextAreaElement> & { ref: (el: HTMLTextAreaElement | null) => void };
+  /** The Attach button's pieces, or null when onFiles is not set: the hidden file input and what the button does. */
+  attach: { picker: ReactNode; onClick: () => void } | null;
+  /** The caller's toolbar controls. */
+  tools: ReactNode;
+  /** The character count once 80% is used, or null. */
+  count: { id: string; used: string; max: string; full: boolean } | null;
+  /** The Send and Stop button: one element, so the swap is at once and focus stays on it. */
+  send: {
+    ref: Ref<HTMLButtonElement>;
+    streaming: boolean;
+    disabled: boolean;
+    onFocus: () => void;
+    onBlur: () => void;
+    onClick: () => void;
+  };
+  /** The hint line under the box, or null. */
+  hint: { id: string; content: ReactNode } | null;
+  /** The two polite live regions, for the body to set last. */
+  status: ReactNode;
+};
+
 /* The box: the Input's cut (floor, line, shade) and its focus and disabled looks, on the surface radius. The ring
    follows the text area. */
 const BOX =
@@ -218,8 +300,6 @@ const BOX =
   "data-[dragging]:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade)] " +
   "data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
-  "in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:has-[textarea:focus-visible]:shadow-(--focus-ring) " +
-  "in-[[data-material=flat]]:data-[dragging]:shadow-(--focus-ring) in-[[data-material=flat]]:data-[disabled]:shadow-none " +
   "forced-colors:border forced-colors:has-[textarea:focus-visible]:outline-2 forced-colors:has-[textarea:focus-visible]:outline-solid forced-colors:has-[textarea:focus-visible]:outline-offset-2";
 
 const AREA =
@@ -232,6 +312,79 @@ const DROP =
   "pointer-events-none absolute inset-px bg-field font-field px-[calc(var(--control-pad-md)-1px)] py-[calc(var(--space-3)-1px)] text-body text-field-ink-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) opacity-0 transition-opacity duration-(--dur-instant) ease-litt " +
   "group-data-[dragging]/box:opacity-100";
+
+/** Press's body: the Input's cut at the surface radius, the chips above the text and a toolbar row under it. */
+function PressBody({ className, disabled, dragging, big, suggestions, drop, chips, label, areaId, area, attach, tools, count, send, hint, status, coarse }: ComposerBodyProps) {
+  const grow = "pointer-coarse:h-control-md pointer-coarse:w-control-md max-sm:h-control-md max-sm:w-control-md";
+  return (
+    <div data-body="press" className={["flex min-w-0 flex-col gap-2 max-sm:pb-[env(safe-area-inset-bottom)]", className].join(" ")}>
+      {suggestions}
+
+      <div data-dragging={dragging ? "" : undefined} data-disabled={disabled ? "" : undefined} className={BOX} {...drop}>
+        <ul role="list" aria-label="Attached files" className={"hidden flex-wrap has-[li]:flex has-[li]:px-2 has-[li]:pt-2 " + (coarse ? "gap-3" : "gap-2")}>
+          <AnimatePresence initial={false}>{chips}</AnimatePresence>
+        </ul>
+
+        <div className="relative">
+          <label htmlFor={areaId} className="sr-only">
+            {label}
+          </label>
+          <textarea id={areaId} rows={1} className={AREA} {...area} />
+          <span aria-hidden="true" className={DROP}>
+            Drop to attach
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 p-2">
+          {attach && (
+            <>
+              {attach.picker}
+              <Button variant="ghost" size={big ? "md" : "sm"} iconOnly aria-label="Attach files" disabled={disabled} className={grow} onClick={attach.onClick}>
+                <PaperclipIcon />
+              </Button>
+            </>
+          )}
+          {tools && <div className="flex min-w-0 items-center gap-2">{tools}</div>}
+          <div className="min-w-0 flex-1" />
+          {count && (
+            <span
+              id={count.id}
+              className={
+                "shrink-0 px-1 text-caption font-normal tabular-nums transition-colors duration-(--dur-instant) ease-litt " +
+                (count.full ? "text-danger" : "text-field-ink-subtle")
+              }
+            >
+              <span className="sr-only">Characters used: </span>
+              {count.used} / {count.max}
+            </span>
+          )}
+          <Button
+            ref={send.ref}
+            variant={send.streaming ? "secondary" : "primary"}
+            size={big ? "md" : "sm"}
+            iconOnly
+            aria-label={send.streaming ? "Stop" : "Send"}
+            disabled={send.disabled}
+            className={grow}
+            onFocus={send.onFocus}
+            onBlur={send.onBlur}
+            onClick={send.onClick}
+          >
+            {send.streaming ? <StopIcon /> : <ArrowUpIcon />}
+          </Button>
+        </div>
+      </div>
+
+      {hint && (
+        <p id={hint.id} className="px-control-pad-md text-caption font-normal text-fg-subtle">
+          {hint.content}
+        </p>
+      )}
+
+      {status}
+    </div>
+  );
+}
 
 /** A file in the clipboard is pasted as an attachment only when the clipboard holds no text of its own (a copied file's text is just its name). */
 function pastedFiles(data: DataTransfer): File[] {
@@ -461,171 +614,125 @@ export function Composer({
 
   const shown = (suggestions ?? []).slice(0, MAX_SUGGESTIONS);
   const describedBy = [hint ? hintId : "", near ? countId : ""].filter(Boolean).join(" ") || undefined;
-  const grow = "pointer-coarse:h-control-md pointer-coarse:w-control-md max-sm:h-control-md max-sm:w-control-md";
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: ComposerFlatBody, device: ComposerDeviceBody });
 
   return (
-    <div className={["flex min-w-0 flex-col gap-2 max-sm:pb-[env(safe-area-inset-bottom)]", className].join(" ")}>
-      {shown.length > 0 && (
-        <div role="group" aria-label="Suggestions" className="flex flex-wrap gap-2 pb-1">
-          {shown.map((text) => (
-            <Button
-              key={text}
-              size={coarse ? "md" : "sm"}
-              disabled={disabled}
-              className="max-w-full pointer-coarse:h-control-md [&>span]:min-w-0 [&>span>span]:truncate [&>span>span]:py-[0.25em]"
-              onClick={() => {
-                caretAtEnd.current = true;
-                setValue(text);
-                area.current?.focus();
-              }}
-            >
-              {text}
-            </Button>
-          ))}
-        </div>
-      )}
-
-      <div
-        data-dragging={dragging ? "" : undefined}
-        data-disabled={disabled ? "" : undefined}
-        className={BOX}
-        onDragEnter={onDragEnter}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
-      >
-        <ul role="list" aria-label="Attached files" className={"hidden flex-wrap has-[li]:flex has-[li]:px-2 has-[li]:pt-2 " + (coarse ? "gap-3" : "gap-2")}>
-          <AnimatePresence initial={false}>
-            {files.map((file) => (
-              <motion.li
-                key={file.id}
-                layout="position"
-                ref={(el: HTMLLIElement | null) => {
-                  if (el) chips.current.set(file.id, el);
-                  else chips.current.delete(file.id);
-                }}
-                className="flex max-w-full min-w-0"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, transition: exit }}
-                transition={enter}
-              >
-                <FileChip
-                  name={file.name}
-                  size={file.size}
-                  progress={file.progress}
-                  onRemove={onRemoveFile && !disabled ? (e) => removeFile(file, e.detail === 0 ? "key" : "pointer") : undefined}
-                />
-              </motion.li>
-            ))}
-          </AnimatePresence>
-        </ul>
-
-        <div className="relative">
-          <label htmlFor={areaId} className="sr-only">
-            {label}
-          </label>
-          <textarea
-            ref={setArea}
-            id={areaId}
-            rows={1}
-            value={value}
-            placeholder={placeholder}
-            disabled={disabled}
-            maxLength={maxLength}
-            enterKeyHint={enterSends ? "send" : "enter"}
-            aria-describedby={describedBy}
-            className={AREA}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={onKeyDown}
-            onPaste={onPaste}
-          />
-          <span aria-hidden="true" className={DROP}>
-            Drop to attach
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2 p-2">
-          {onFiles && (
-            <>
-              <input
-                ref={picker}
-                type="file"
-                multiple
-                accept={accept}
-                hidden
-                tabIndex={-1}
-                aria-hidden="true"
-                onChange={(e) => {
-                  const picked = Array.from(e.target.files ?? []);
-                  e.target.value = ""; // so the same file can be picked again
-                  if (picked.length) onFiles(picked);
-                }}
-              />
+    <Body
+      className={className}
+      disabled={disabled}
+      dragging={dragging}
+      coarse={coarse}
+      big={big}
+      suggestions={
+        shown.length > 0 && (
+          <div role="group" aria-label="Suggestions" className="flex flex-wrap gap-2 pb-1">
+            {shown.map((text) => (
               <Button
-                variant="ghost"
-                size={big ? "md" : "sm"}
-                iconOnly
-                aria-label="Attach files"
+                key={text}
+                size={coarse ? "md" : "sm"}
                 disabled={disabled}
-                className={grow}
-                onClick={() => picker.current?.click()}
+                className="max-w-full pointer-coarse:h-control-md [&>span]:min-w-0 [&>span>span]:truncate [&>span>span]:py-[0.25em]"
+                onClick={() => {
+                  caretAtEnd.current = true;
+                  setValue(text);
+                  area.current?.focus();
+                }}
               >
-                <PaperclipIcon />
+                {text}
               </Button>
-            </>
-          )}
-          {tools && <div className="flex min-w-0 items-center gap-2">{tools}</div>}
-          <div className="min-w-0 flex-1" />
-          {near && (
-            <span
-              id={countId}
-              className={
-                "shrink-0 px-1 text-caption font-normal tabular-nums transition-colors duration-(--dur-instant) ease-litt " +
-                (full ? "text-danger" : "text-field-ink-subtle")
-              }
-            >
-              <span className="sr-only">Characters used: </span>
-              {group(value.length)} / {group(maxLength)}
-            </span>
-          )}
-          <Button
-            ref={action}
-            variant={streaming ? "secondary" : "primary"}
-            size={big ? "md" : "sm"}
-            iconOnly
-            aria-label={streaming ? "Stop" : "Send"}
-            disabled={streaming ? disabled : !canSend}
-            className={grow}
-            onFocus={() => {
-              actionFocused.current = true;
-            }}
-            onBlur={() => {
-              actionFocused.current = false;
-            }}
-            onClick={() => {
-              if (streaming) onStop?.();
-              else send();
-              area.current?.focus();
-            }}
-          >
-            {streaming ? <StopIcon /> : <ArrowUpIcon />}
-          </Button>
-        </div>
-      </div>
-
-      {hint && (
-        <p id={hintId} className="px-control-pad-md text-caption font-normal text-fg-subtle">
-          {hint}
-        </p>
-      )}
-
-      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
-        {said}
-      </div>
-      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
-        {limitSaid}
-      </div>
-    </div>
+            ))}
+          </div>
+        )
+      }
+      drop={{ onDragEnter, onDragOver, onDragLeave, onDrop }}
+      chips={files.map((file) => (
+        <motion.li
+          key={file.id}
+          layout="position"
+          ref={(el: HTMLLIElement | null) => {
+            if (el) chips.current.set(file.id, el);
+            else chips.current.delete(file.id);
+          }}
+          className="flex max-w-full min-w-0"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, transition: exit }}
+          transition={enter}
+        >
+          <FileChip
+            name={file.name}
+            size={file.size}
+            progress={file.progress}
+            onRemove={onRemoveFile && !disabled ? (e) => removeFile(file, e.detail === 0 ? "key" : "pointer") : undefined}
+          />
+        </motion.li>
+      ))}
+      label={label}
+      areaId={areaId}
+      area={{
+        ref: setArea,
+        value,
+        placeholder,
+        disabled,
+        maxLength,
+        enterKeyHint: enterSends ? "send" : "enter",
+        "aria-describedby": describedBy,
+        onChange: (e) => setValue(e.target.value),
+        onKeyDown,
+        onPaste,
+      }}
+      attach={
+        onFiles
+          ? {
+              onClick: () => picker.current?.click(),
+              picker: (
+                <input
+                  ref={picker}
+                  type="file"
+                  multiple
+                  accept={accept}
+                  hidden
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  onChange={(e) => {
+                    const picked = Array.from(e.target.files ?? []);
+                    e.target.value = ""; // so the same file can be picked again
+                    if (picked.length) onFiles(picked);
+                  }}
+                />
+              ),
+            }
+          : null
+      }
+      tools={tools}
+      count={near ? { id: countId, used: group(value.length), max: group(maxLength), full } : null}
+      send={{
+        ref: action,
+        streaming,
+        disabled: streaming ? disabled : !canSend,
+        onFocus: () => {
+          actionFocused.current = true;
+        },
+        onBlur: () => {
+          actionFocused.current = false;
+        },
+        onClick: () => {
+          if (streaming) onStop?.();
+          else send();
+          area.current?.focus();
+        },
+      }}
+      hint={hint ? { id: hintId, content: hint } : null}
+      status={
+        <>
+          <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+            {said}
+          </div>
+          <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+            {limitSaid}
+          </div>
+        </>
+      }
+    />
   );
 }

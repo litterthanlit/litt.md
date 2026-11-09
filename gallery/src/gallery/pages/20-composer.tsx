@@ -1,7 +1,10 @@
 import { useEffect, useId, useRef, useState } from "react";
+import { Button } from "@/components/button";
 import { Composer, type ComposerFile } from "@/components/composer";
 import { Select } from "@/components/select";
-import { DeviceProvider, useDevice } from "@/motion";
+import { DeviceProvider, MaterialProvider, useDevice } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -282,6 +285,52 @@ function PhoneDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center rounded-surface bg-canvas p-4 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <ThreeBodiesComposer />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+function ThreeBodiesComposer() {
+  const [files, setFiles] = useState<ComposerFile[]>([
+    { id: "brief", name: "northwind-brief.pdf", size: 2516582 },
+    { id: "moodboard", name: "atlas-moodboard.png", progress: 64 },
+  ]);
+  return (
+    <Composer
+      label="Message to Litt"
+      placeholder="Message Litt"
+      hint="Litt can be wrong. Check what matters."
+      defaultValue="Draft the launch note for Northwind."
+      files={files}
+      onFiles={(picked) => setFiles((all) => [...all, ...picked.map((f) => ({ id: `three-${++uploads}`, name: f.name, size: f.size }))])}
+      onRemoveFile={(file) => setFiles((all) => all.filter((f) => f.id !== file.id))}
+      tools={
+        <>
+          <Button size="sm">Web</Button>
+          <Button size="sm">Think</Button>
+        </>
+      }
+    />
+  );
+}
+
 export default function ComposerPage() {
   const [empty, replayEmpty] = useReplay();
   return (
@@ -325,6 +374,15 @@ export default function ComposerPage() {
         caption="On a phone Attach, the model picker and Send all grow to 44px, the text is 16px and the chip's remove button has a 44px target. The soft keyboard has no Shift, so Return adds a line and Send sends. The caller keeps the composer above the keyboard with useVisibleScreen. A long file name is cut with an ellipsis."
       >
         <PhoneDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One composer, one contract, three bodies. Press is a text field cut into the page, its files raised blocks, with a toolbar row under the text and Send the round accent key. Flat is the same layout as a grey field with no outline and Send the round ink key. Device is a prompt line on LCD glass in a bezel, its files lit cells, its tools and Send a row of keys under the glass with Send the one key in the accent. Each is drawn here whatever look the page is in; the keys, the files, the limits and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );
