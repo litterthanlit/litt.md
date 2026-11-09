@@ -15,7 +15,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["type"],
   summary:
-    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's cut field with raised tags inside, blocks you can lift back out: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
+    "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's field with tokens inside, each a block you can lift out under Press, a darker grey pill under Flat and a lit cell under Device: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",
   tiers: ["instant", "responsive"],
 };
 
@@ -178,7 +178,7 @@ export default function TokenInputPage() {
       <Stage
         title="Senders"
         tier="responsive"
-        caption="A mail rule. The field shows the first sender and a flat +N chip for the rest, and opens to all of them when you focus it. Each sender is a raised tag standing up out of the field. The tokens that appear fade in and slide, and they fold back when focus leaves."
+        caption="A mail rule. The field shows the first sender and a bare +N for the rest, and opens to all of them when you focus it. Each sender is a token with its own remove button. The tokens that appear fade in and slide, and they fold back when focus leaves."
         code="SendersDemo"
       >
         <SendersDemo />
@@ -206,7 +206,7 @@ export default function TokenInputPage() {
         title="Three bodies"
         tier="responsive"
         align="start"
-        caption="One token input, one contract, three bodies. Press is the Input's cut with each token a raised block standing out of it. Flat is a grey field with each token a bubble on it. Device is the Input's glass with each token a lit cell and a small key to remove it. Each is drawn here whatever look the page is in; the label, the roving remove buttons, Backspace, the paste and what a screen reader hears are the same in all three."
+        caption="One token input, one contract, three bodies. Press is the Input's cut, its top wall in shade and its lower wall catching the light, with each token a block standing out of it and a small block on the token that removes it. Flat is a grey pill field with each token a darker grey pill and a cross, and the +N bare words. Device is the Input's glass in a bezel well with each token an inverted cell of lit mono words and a small key to remove it, switching in place in steps. Each is drawn here whatever look the page is in; the label, the roving remove buttons, Backspace, the paste and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
