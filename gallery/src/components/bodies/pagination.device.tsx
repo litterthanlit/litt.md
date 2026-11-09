@@ -53,9 +53,12 @@ function Step({ end, word }: { end: PaginationEnd; word: string }) {
   );
 }
 
+/* A pane's corners are a key's, so they stay concentric with the well. Seven-segment's own radius gives way. */
+const PANE = "px-1.5! py-1! rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))]! [font-size:calc(var(--text-caption)*0.66)]";
+
 /** One pane of glass: a figure in seven segments, as wide as the total's digits. */
 function Pane({ value, digits }: { value: number; digits: number }) {
-  return <SevenSegment value={value} digits={digits} className="px-1.5! py-1! [font-size:calc(var(--text-caption)*0.66)]" />;
+  return <SevenSegment value={value} digits={digits} className={PANE} />;
 }
 
 /** Device, the machine: the range in segments on an LCD panel, step keys at the ends of a row of page keys. */

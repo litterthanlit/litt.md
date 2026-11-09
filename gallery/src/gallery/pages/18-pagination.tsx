@@ -14,7 +14,7 @@ export const meta: PageMeta = {
   order: 17.1, group: "Data",
   verbs: ["press"],
   summary:
-    "Previous and next for a table that shows one page of many. The range comes first, in words and tabular figures. Page numbers sit in a tray when the row is wide enough, and the current page is the raised block in it. The button at either end disables and lies flat. Nothing about it moves; the rows it pages are the table's job.",
+    "Previous and next for a table that shows one page of many. The range comes first, in words and tabular figures. Under Press the range sits on a raised face and one tray holds Previous and Next as blocks at its ends with the page numbers between; under Flat the range is a line of words with grey pills; under Device it is seven segments on an LCD panel with step keys. The numbers show when the row is wide enough. The button at either end disables and lies flat. Nothing about it moves; the rows it pages are the table's job.",
   tiers: ["instant"],
 };
 
@@ -56,9 +56,9 @@ const rows = deploys.slice((page - 1) * 20, page * 20);
   a11y: [
     "It is a nav with its own name, so a page with two tables can have two paginations and a screen reader tells them apart.",
     "The range is a polite live region: after a page change a screen reader hears \"21 to 40 of 143\" without moving focus.",
-    "The current page number has aria-current=\"page\" and stands raised in its tray, so it does not rely on color. In forced colors the tray and the block each keep a border. Each number is named \"Page 3\".",
+    "The current page number has aria-current=\"page\" and stands raised, in a grey bubble or latched down by its world, so it does not rely on color. In forced colors the tray, the pills, the keys and the current page each keep a border. Each number is named \"Page 3\". Device draws the range in segments that a screen reader skips; the same range is said in words in the live region.",
     "An end button that is pressed and becomes disabled hands its focus to the other one, so focus never drops to the page.",
-    "Previous, Next and the tray are 32px, and 44px on a touch screen, where a page number is 40px square inside the tray. The numbered pages are hidden under 36rem, which is a width and not a device, so a narrow frame on a desktop gets the same bar as a phone.",
+    "Previous, Next and the pages are 32px tall, and 44px on a touch screen, where a page number is 40px wide. The numbered pages are hidden under 36rem, which is a width and not a device, so a narrow frame on a desktop gets the same bar as a phone.",
     "Under reduced motion nothing changes: pagination has no motion of its own.",
   ],
 };
@@ -186,7 +186,7 @@ export default function PaginationPage() {
         code="DeploysDemo"
         onReplay={reset}
         replayLabel="Reset"
-        caption="Five rows to a page, 23 deploys in all. The range says where you are, and Previous is disabled on the first page. Press Next to the end and Next is disabled while focus moves to Previous, so a keyboard user is never dropped. The page numbers show because the row is wide enough. The page numbers sit in a sunken tray, and the current page stands up in it as a raised block, the same as a selected segment. Previous and Next are blocks of their own; at either end one lies flat."
+        caption="Five rows to a page, 23 deploys in all. The range says where you are, and Previous is disabled on the first page. Press Next to the end and Next is disabled while focus moves to Previous, so a keyboard user is never dropped. The page numbers show because the row is wide enough. Under Press the range is on a raised face and the control is one sunken tray: Previous and Next are blocks at its ends, the current page a block between them, and at either end a block lies flat in its socket."
       >
         <DeploysDemo key={key} />
       </Stage>
@@ -195,7 +195,7 @@ export default function PaginationPage() {
         title="A long run"
         tier="instant"
         code="LongRunDemo"
-        caption="62 pages fold to the first, the last and the neighbours of the current page, with an ellipsis for the gaps. The current page is the raised block and carries aria-current. Move to page 3 or page 60 and the run reshapes at the end."
+        caption="62 pages fold to the first, the last and the neighbours of the current page, with an ellipsis for the gaps. The current page is the raised block (a grey bubble under Flat, a latched key under Device) and carries aria-current. Move to page 3 or page 60 and the run reshapes at the end."
       >
         <LongRunDemo />
       </Stage>
@@ -213,7 +213,7 @@ export default function PaginationPage() {
         title="Three bodies"
         tier="instant"
         align="start"
-        caption="One pagination, one contract, three bodies. Press is the range in type with Previous and Next as raised blocks and the pages in a sunken tray. Flat is the range in words with grey pills. Device is the range in seven segments on an LCD panel with TO and OF engraved, step keys at the ends and the pages as keys, the current one latched. Each is drawn here whatever look the page is in; the buttons, the live range, the focus handoff at either end and what a screen reader hears are the same in all three."
+        caption="One pagination, one contract, three bodies. Press is the range on a raised face with one sunken tray: Previous and Next are blocks at its ends and the current page a block between them. Flat is the range in ink words with grey word pills and bare numbers, no tray and no shadow. Device is the range in seven segments on an LCD panel with TO and OF engraved, step keys at the ends and the pages as keys, the current one latched. Each is drawn here whatever look the page is in; the buttons, the live range, the focus handoff at either end and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
