@@ -353,7 +353,8 @@ function PressBody({ className, disabled, dragging, big, suggestions, drop, chip
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Too narrow for the whole rail, Send wraps to its own row at the right rather than running into the tools. */}
+        <div className="flex flex-wrap items-center gap-2">
           {attach && (
             <>
               {attach.picker}
@@ -381,7 +382,7 @@ function PressBody({ className, disabled, dragging, big, suggestions, drop, chip
             icon={send.streaming ? <StopIcon /> : <ArrowUpIcon />}
             aria-label={send.streaming ? "Stop" : "Send"}
             disabled={send.disabled}
-            className={grow}
+            className={grow + " ml-auto"}
             style={END}
             onFocus={send.onFocus}
             onBlur={send.onBlur}
