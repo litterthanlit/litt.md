@@ -34,8 +34,8 @@
  *   the cap --surface-2 with a hairline. The label dims to --fg-disabled; the value and the end words stay at
  *   --fg-subtle, because they are still read.
  * - Bodies (proposals/worlds.md, Bodies): this file is the contract (the props, the Radix root and thumbs, the label and
- *   value words, the marks and home, the hand, the keys, the range form) and the Press body, which is the default. Flat
- *   (proposals/flat-pill.md: a thin track, an ink fill, a round knob) lives in bodies/slider.flat.tsx and Device (a
+ *   value words, the marks and home, the hand, the keys, the range form) and the Press body, which is the default: a deep slot with notches that light, and the value on a raised face that rides over the cap (a single slider with a value stands 68px tall for it). Flat
+ *   (proposals/flat-pill.md: a pill track, an ink fill, a round knob, the value at the track's end) lives in bodies/slider.flat.tsx and Device (a
  *   fader: a well, engraved ticks, a key for a cap, the value on an LCD) in bodies/slider.device.tsx. Each takes
  *   SliderBodyProps and carries data-body on its root. The travel's inset is --sl-pad: the body's root sets it, and
  *   padOf reads it back as the root's left padding.
@@ -150,21 +150,26 @@ export type RangeSliderProps = {
   ref?: Ref<HTMLSpanElement>;
 };
 
-/* The plate: raised, the control's height, at the control radius (R3: --block, --plate-lift). It is the hit area and,
-   for a single slider, carries the focus ring. Disabled, it lies flat. */
+/* The plate: raised, at the control radius (R3: --block, --plate-lift). It is the hit area and, for a single slider,
+   carries the focus ring. Disabled, it lies flat. With a value to carry it is 68px tall, so the face that says the
+   value rides above the cap (tall); without, it is the control's height (44, md). Its --sl-pad is the cap's inset. */
 const plateBase =
-  "group relative block h-control-md w-full cursor-grab touch-pan-y select-none rounded-control bg-block shadow-(--plate-lift) " +
-  "[--sl-pad:max(14px,min(var(--radius-control),calc(var(--control-md)/2)))] pl-(--sl-pad) " +
-  "data-held:cursor-grabbing " +
+  "group relative block w-full cursor-grab touch-pan-y select-none rounded-control bg-block shadow-(--plate-lift) " +
+  "pl-(--sl-pad) data-held:cursor-grabbing " +
   "data-disabled:cursor-not-allowed data-disabled:bg-surface-2 data-disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border";
+const plateShort = " h-control-md [--sl-pad:max(14px,min(var(--radius-control),calc(var(--control-md)/2)))]";
+const plateTall = " h-17 [--sl-pad:max(14px,min(var(--radius-control),34px))]";
 const plateRing = "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus";
 
-/* The slot: 8px outside the cap's travel at each end (6px in from the plate's ends at small radii), 16px down and 12px
-   tall, its corners the control radius less 2px. It clips the fill. Disabled, it is a flat --surface-3. */
+/* The slot: cut deep, 16px tall and 8px outside the cap's travel at each end, its corners the control radius less 2px.
+   Its top wall shades the floor and its lower wall catches the light (--slot-shade). It clips the fill. Disabled, it is
+   a flat --surface-3. */
 const slot =
-  "pointer-events-none absolute top-4 h-3 overflow-hidden rounded-[calc(var(--radius-control)-2px)] bg-slot shadow-(--slot-shade) " +
+  "pointer-events-none absolute h-4 overflow-hidden rounded-[calc(var(--radius-control)-2px)] bg-slot shadow-(--slot-shade) " +
   "group-data-disabled:bg-surface-3 group-data-disabled:shadow-none forced-colors:border";
+const slotShort = " top-3.5";
+const slotTall = " top-10";
 
 /* The cap's travel: inset (see inset) from each end of the plate, which is 8px in from the slot's ends. A rail as wide
    as the travel moves by translate, with the cap on its right edge, so the cap and the fill move by transform only. */
@@ -176,14 +181,25 @@ const fillLook =
 /* The glide: a jump of the cap (a key, or a press on the slot) settles on the responsive spring. A drag follows 1:1. */
 const glides = " transition-transform duration-(--dur-responsive) ease-responsive";
 
-/* The cap: 8px wide and 36px tall, 4px from the plate's top, centered on its rail's right edge. It leans from its foot
-   and sinks while held, on the responsive spring. */
-const capBox = "absolute top-1 -right-1 h-9 w-2 origin-bottom transition-transform duration-(--dur-responsive) ease-responsive";
+/* The cap: 8px wide, standing proud of the slot (36px tall, 4px from the plate's top, or 28px tall in the tall plate),
+   centered on its rail's right edge. It leans from its foot and sinks while held, on the responsive spring. */
+const capBoxBase = "absolute -right-1 w-2 origin-bottom transition-transform duration-(--dur-responsive) ease-responsive";
+const capBox = capBoxBase + " top-1 h-9";
+const capBoxTall = capBoxBase + " top-8.5 h-7";
 const capFace = (held: boolean) =>
   "absolute inset-0 rounded-[calc(var(--radius-control)-2px)] forced-colors:border forced-colors:bg-[Highlight] " +
   (held ? "bg-cap-held shadow-(--cap-press) " : "bg-cap shadow-(--cap-lift) ") +
   "group-data-disabled:bg-surface-2 group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)]";
 const capGrip = "absolute inset-y-3 left-1/2 w-px -translate-x-1/2 bg-cap-grip group-data-disabled:bg-line";
+
+/* The value's face: a small block raised on the plate above the cap (--block, --block-lift) that rides with it. Its
+   edge over the cap's center slides from its left (value at the start) to its right (value at the end), so it stays
+   over the cap and clear of the plate's ends. Held, it sinks with the cap. Disabled, it lies flat. */
+const faceBox =
+  "absolute top-2.5 right-0 flex h-5.5 min-w-11 items-center justify-center rounded-[calc(var(--radius-control)-2px)] px-2 " +
+  "text-small tabular-nums transition-colors duration-(--dur-instant) ease-litt forced-colors:border " +
+  "group-data-disabled:bg-surface-2 group-data-disabled:text-fg-subtle group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)]";
+const faceLook = (held: boolean) => (held ? "bg-block text-fg shadow-(--block-press) " : "bg-block text-fg-muted shadow-(--block-lift) ");
 
 /* Radix's thumb holds the role, the keys and the value. The cap you see is drawn above it, so the thumb is invisible
    and as wide as the cap, which keeps it on the same travel. */
@@ -241,14 +257,16 @@ const along = (x: number, m: Measure) => Math.min(1, Math.max(0, (x - m.pad) / (
 /** A rail as wide as the travel, moved so its right edge sits p of the way along. */
 const railAt = (p: number): CSSProperties => ({ transform: `translateX(${((p - 1) * 100).toFixed(3)}%)` });
 
-/** A notch under the slot, p of the way along. Home's is longer and darker. */
-function Notch({ p, home }: { p: number; home: boolean }) {
+/** A notch in the slot, p of the way along, lit once the cap has pulled the fill past it. Home's is longer and always lit. */
+function Notch({ p, home, lit, tall }: { p: number; home: boolean; lit: boolean; tall: boolean }) {
+  const y = tall ? (home ? "top-10.5 h-3" : "top-11 h-2") : home ? "top-4 h-3" : "top-[18px] h-2";
   return (
     <span
       aria-hidden="true"
       className={
-        "pointer-events-none absolute w-px -translate-x-1/2 group-data-disabled:hidden forced-colors:bg-[CanvasText] " +
-        (home ? "top-7 h-2 bg-notch-home" : "top-8 h-1 bg-notch")
+        "pointer-events-none absolute w-px -translate-x-1/2 transition-colors duration-(--dur-instant) ease-litt group-data-disabled:hidden forced-colors:bg-[CanvasText] " +
+        y +
+        (home || lit ? " bg-notch-home" : " bg-notch")
       }
       style={{ left: `calc(${inset()} + (100% - 2 * ${inset()}) * ${p.toFixed(4)})` }}
     />
@@ -292,11 +310,20 @@ function useLean() {
   };
 }
 
-/** One cap on its rail: the face, the grip line, the sink while held and the lean. The ring is drawn when `ring` is on. */
-function Cap({ p, held, lean, glide, ring = false }: { p: number; held: boolean; lean: number; glide: boolean; ring?: boolean }) {
+/** One cap on its rail: the face, the grip line, the sink while held and the lean. The ring is drawn when `ring` is on. In the tall plate it carries the value's face, which rides with it. */
+function Cap({ p, held, lean, glide, ring = false, shown }: { p: number; held: boolean; lean: number; glide: boolean; ring?: boolean; shown?: string }) {
+  const sink = held ? "var(--press-depth)" : "0px";
   return (
     <span aria-hidden="true" className={capTravel + (glide ? glides : "")} style={{ ...insetX(), ...railAt(p) }}>
-      <span className={capBox} style={{ transform: `translateY(${held ? "var(--press-depth)" : "0px"}) rotate(${lean}deg)` }}>
+      {shown !== undefined && (
+        <span
+          className={faceBox + " " + faceLook(held) + (glide ? glides : "")}
+          style={{ transform: `translate(${((1 - p) * 100).toFixed(3)}%, ${sink})` }}
+        >
+          {shown}
+        </span>
+      )}
+      <span className={shown !== undefined ? capBoxTall : capBox} style={{ transform: `translateY(${sink}) rotate(${lean}deg)` }}>
         <span className={capFace(held) + (ring ? " outline-2 outline-offset-2 outline-focus" : "")} />
         <span className={capGrip} />
       </span>
@@ -326,6 +353,8 @@ export type SliderBodyProps = {
   /** A hand holds a cap. */
   held: boolean;
   disabled: boolean;
+  /** The value as words, for a body that carries it itself (Press on a face that rides with the cap, Flat at the end of the track). Left out when showValue is off, for a range, and for Device, whose label row sets it on an LCD. */
+  shown?: string;
   /** The root's ref, which the hand measures. Its left padding is the travel's inset. */
   plateRef: Ref<HTMLSpanElement>;
   /** The Radix root's props: the values, the range, the form name and the hand's handlers. */
@@ -401,20 +430,28 @@ function Field({ labelId, label, shown, held = false, helpId, help, minLabel, ma
   );
 }
 
-/** The Press body: a raised plate, a slot cut into it and a cap riding in the slot that casts. */
-function SliderPress({ range, caps, fill, notches, glide, held, plateRef, root, thumbs }: SliderBodyProps) {
+/** The Press body: a raised plate, a deep slot cut into it with notches that light as the fill passes them, a cap riding in the slot that casts, and the value on a small raised face that rides over the cap. */
+function SliderPress({ range, caps, fill, notches, glide, held, shown, plateRef, root, thumbs }: SliderBodyProps) {
+  const tall = shown !== undefined;
   return (
-    <RadixSlider.Root ref={plateRef} {...root} data-body="press" data-no-drag="" data-held={held ? "" : undefined} className={range ? plateBase : plateBase + " " + plateRing}>
-      <span aria-hidden="true" className={slot} style={insetX(8)}>
+    <RadixSlider.Root
+      ref={plateRef}
+      {...root}
+      data-body="press"
+      data-no-drag=""
+      data-held={held ? "" : undefined}
+      className={plateBase + (tall ? plateTall : plateShort) + (range ? "" : " " + plateRing)}
+    >
+      <span aria-hidden="true" className={slot + (tall ? slotTall : slotShort)} style={insetX(8)}>
         <span className={fillTravel + (range ? " origin-left" : "") + (glide ? glides : "")} style={fill}>
           <span className={(range ? "absolute inset-0 " : "absolute inset-y-0 right-0 w-[calc(100%+0.5rem)] ") + fillLook} />
         </span>
       </span>
       {notches.map((n) => (
-        <Notch key={n.p} p={n.p} home={n.home} />
+        <Notch key={n.p} p={n.p} home={n.home} lit={!range && n.p <= (caps[0]?.p ?? 0) + 1e-6} tall={tall} />
       ))}
       {caps.map((cap, i) => (
-        <Cap key={i} p={cap.p} held={cap.held} lean={cap.lean} glide={glide} ring={cap.ring} />
+        <Cap key={i} p={cap.p} held={cap.held} lean={cap.lean} glide={glide} ring={cap.ring} shown={shown} />
       ))}
       <RadixSlider.Track className={thumbTrack} style={insetX(4)}>
         {thumbs.map(({ key, ...thumb }) => (
@@ -537,13 +574,15 @@ export function Slider({
     ...(home !== null && home >= min && home <= max ? [{ p: (home - min) / span, home: true }] : []),
   ];
   const { Body, material } = useBody();
+  /* Press and Flat carry the value in the body (a face, or the end of the track); Device's label row sets it on an LCD. */
+  const inBody = material !== "device";
 
   return (
     <Field
       lcd={material === "device"}
       labelId={labelId}
       label={label}
-      shown={showValue ? text : undefined}
+      shown={showValue && !inBody ? text : undefined}
       held={held}
       helpId={helpId}
       help={help}
@@ -561,6 +600,7 @@ export function Slider({
         glide={glide}
         held={held}
         disabled={disabled}
+        shown={showValue && inBody ? text : undefined}
         root={{
           /* The cap runs from the left and the hand is measured from the left, so Radix places the thumb from the left too, under any DirectionProvider. */
           dir: "ltr",
