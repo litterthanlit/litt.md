@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/button";
 import { SlideConfirm } from "@/components/slide-confirm";
-import { useMotionDial } from "@/motion";
+import { MaterialProvider, useMotionDial } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -16,7 +18,7 @@ export const meta: PageMeta = {
   fun: "Throw the thumb: with enough speed it coasts to the end, squashes against it and confirms.",
   tiers: ["responsive"],
   mechanism:
-    "Press the thumb and it follows the finger one to one, with no easing, while the words fade by its position and the part it has passed fills at fg 6%. Let go early and it springs home on the responsive tier, 200ms with no bounce. Reach the end and it confirms once: a check replaces the chevron and the words change. Enter and Space confirm too. Under Flat the tray is a grey pill and the thumb an ink circle. Under Device the thumb is a key in a well. Reduced motion snaps the thumb back.",
+    "Press the cap and it follows the finger one to one, with no easing, while the words fade by its position and the part it has passed fills at fg 6%. Let go early and it springs home on the responsive tier, 200ms with no bounce. Reach the end and it confirms once: a check replaces the chevron and the words change. Enter and Space confirm too. Each world has its own body. Under Press a gripped cap rides in a slot cut into a plate, its words in the slot's floor, to a raised end stop. Under Flat the track is a grey pill and the thumb a plain ink circle, with the words in ink; once confirmed the whole pill turns ink. Under Device the thumb is a latch key pushed along a well to an end stop: the words sit on an LCD strip in the well, a lamp at the stop lights once it confirms, and a key let go short goes home in three steps on the instant tier, never a spring, though under your hand it still follows 1:1. Reduced motion snaps the thumb back in every body.",
 };
 
 export const docs: PageDocs = {
@@ -84,11 +86,11 @@ export const study: PageStudy = {
     </div>
   ),
   parts: [
-    { name: "The tray", selector: "[data-no-drag]" },
-    { name: "The passed part", selector: "[data-no-drag] > span:first-child" },
+    { name: "The track", selector: "[data-no-drag]" },
+    { name: "The slot", selector: "[data-no-drag] > span:first-child" },
     { name: "The words", selector: "[data-no-drag] > span:nth-child(2)" },
     { name: "The thumb", selector: "[data-no-drag] > button" },
-    { name: "The chevron", selector: "[data-no-drag] > button svg" },
+    { name: "The grip", selector: "[data-no-drag] > button > span" },
   ],
   states: {
     default: (
@@ -190,6 +192,29 @@ function PublishDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" />
+              <SlideConfirm label="Slide to cancel the Studio plan" disabled />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function SlideConfirmPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -221,6 +246,15 @@ export default function SlideConfirmPage() {
         caption="lg is 56 tall; md is 44, and grows to 56 on a coarse pointer, because a finger does the sliding. Disabled is flat, skipped by Tab and ignores the pointer; its words stay readable, because they still say what it would do."
       >
         <PublishDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One track, one contract, three bodies. Press is a plate with a slot cut into it: a gripped cap rides in the slot to a raised end stop, its words in the slot's floor. Flat is a plain ink circle in a grey pill with its words in ink, and the whole pill turns ink once it confirms. Device is a latch key pushed along a well to an end stop, its words on an LCD strip and a lamp at the stop that lights once it confirms; let go short and the key goes home in three steps, not on a spring. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="SlideConfirm" component={SlideConfirm} props={{ label: "Slide to delete Atelier Nord", confirmedLabel: "Deleting Atelier Nord", className: "max-w-sm" }} controls={["label", "confirmedLabel", "confirmText", "size", "disabled"]} />

@@ -11,8 +11,11 @@
  *   sans at the body size, in tabular figures. Six cells split three and three
  *   with a wider gap, so the code reads in halves. The label sits above at the title weight and a hint or an error
  *   below, as on a TextField.
- * - Flat (proposals/flat-pill.md): a grey pill per cell with no outline, the ink ring on the current one and the
- *   danger ring on every cell with an error.
+ * - Press, the instrument: one raised plate (--block, --plate-lift) holds the cells, each a cut into it (--cut,
+ *   --cut-shade); a typed character's cut catches the light on its lower wall (--highlight turned over).
+ * - Flat, the page (proposals/flat-pill.md): one grey pill per character parted by space, the empty ones the lighter
+ *   grey (--surface-2), a typed one --block with its character in ink at the title weight, the ink ring on the current
+ *   one and the danger ring on every cell with an error.
  * - Focus: the cell the next character goes into takes the focus line and ring, and an empty one shows a still 1px
  *   caret. Nothing blinks.
  * - Typing: only what the code can hold gets in (digits, or letters and digits in capitals); the rest is dropped, so a
@@ -21,8 +24,19 @@
  * - Error: every cell takes the --danger line, and the message under them says what to do. Disabled lies flat:
  *   --surface-2, the plain --line hairline, no shade and --fg-disabled, as the Input.
  * - Motion: the lines fade on the instant tier, and the box never moves.
+ * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the one real input
+ *   over the cells, the label and the note, the typing and the completion. It resolves the code into CodeInputBodyProps
+ *   and renders the body the material picks (byWorld). PressBody, above, is the default; bodies/code-input.flat.tsx and
+ *   bodies/code-input.device.tsx draw the cells for the other two.
+ * - Device, bodies/code-input.device.tsx: one pane of LCD glass per character, showing the dim ghost of an eight on a
+ *   seven-segment display until its character is typed, then the character lit in segments (digits; a letter of an
+ *   alphanumeric code is set in the mono). A character only lights when typed (R4), and a change switches in place in
+ *   steps on the instant tier.
  */
 import { useId, useRef, useState, type ChangeEvent, type ReactNode } from "react";
+import { byWorld, useMaterial } from "@/motion";
+import { CodeInputDeviceBody } from "./bodies/code-input.device";
+import { CodeInputFlatBody } from "./bodies/code-input.flat";
 
 export type CodeInputSize = "md" | "lg";
 
@@ -59,10 +73,75 @@ const cellHeights: Record<CodeInputSize, string> = {
   md: "h-control-md",
   lg: "h-control-lg",
 };
+/** What a body draws: the cells, from the code so far. The input, the label and the note are the contract's, above. */
+export type CodeInputBodyProps = {
+  length: number;
+  /** The cell's height class on the control scale. */
+  cellHeight: string;
+  /** The cleaned code so far. */
+  code: string;
+  /** The cell the next character goes into. */
+  at: number;
+  focused: boolean;
+  disabled: boolean;
+  error: boolean;
+  type: "numeric" | "alphanumeric";
+};
+
 const cellWidths: Record<CodeInputSize, string> = {
   md: "var(--control-md)",
   lg: "var(--control-lg)",
 };
+
+/** Press, the instrument: one raised plate (--block, --plate-lift) holds the cells, each a cut into it (--cut,
+ *  --cut-shade). A typed character's cut catches the light on its lower wall: a lit top edge (--highlight) turned over. */
+function PressBody({ length, cellHeight, code, at, focused, disabled, error }: CodeInputBodyProps) {
+  return (
+    <div
+      aria-hidden="true"
+      data-body="press"
+      className={
+        "flex w-full gap-2 rounded-surface p-1 forced-colors:border " +
+        (disabled ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]" : "bg-block shadow-(--plate-lift)")
+      }
+    >
+      {Array.from({ length }, (_, i) => {
+        const char = code[i] ?? "";
+        const current = focused && !disabled && i === at;
+        return (
+          <span
+            key={i}
+            className={
+              "relative grid min-w-7 flex-1 basis-0 place-items-center rounded-[calc(var(--radius-surface)-4px)] text-body tabular-nums font-normal " +
+              "transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border " +
+              cellHeight +
+              /* six cells read as two halves of three */
+              (length === 6 && i === 3 ? " ml-2" : "") +
+              /* Forced colors drop the ring (a box-shadow), so the current cell takes an outline there. */
+              (current ? " forced-colors:outline-2 forced-colors:outline-offset-2 forced-colors:outline-[Highlight]" : "") +
+              (disabled
+                ? " bg-surface-3 text-fg-disabled"
+                : " bg-cut font-field text-field-ink " +
+                  (current
+                    ? error
+                      ? "shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade),var(--focus-ring)]"
+                      : "shadow-[inset_0_0_0_1px_var(--focus),var(--cut-shade),var(--focus-ring)]"
+                    : error
+                      ? "shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)]"
+                      : "shadow-(--cut-shade)"))
+            }
+          >
+            {char ||
+              (current ? <span className="h-5 w-px bg-field-ink forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" /> : null)}
+            {char && !disabled && (
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0 rotate-180 rounded-[calc(var(--radius-surface)-4px)] shadow-(--highlight)" />
+            )}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
 
 /** One field for a short code, drawn as one cell per character. Paste and one-time-code autofill work as in any field. */
 export function CodeInput({
@@ -81,6 +160,7 @@ export function CodeInput({
   autoFocus,
   className = "",
 }: CodeInputProps) {
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: CodeInputFlatBody, device: CodeInputDeviceBody });
   const id = useId();
   const noteId = useId();
   const input = useRef<HTMLInputElement>(null);
@@ -113,46 +193,7 @@ export function CodeInput({
         {label}
       </label>
       <div className="relative w-full" style={{ maxWidth: full }}>
-        <div aria-hidden="true" className="flex w-full gap-2">
-          {Array.from({ length }, (_, i) => {
-            const char = code[i] ?? "";
-            const current = focused && !disabled && i === at;
-            return (
-              <span
-                key={i}
-                className={
-                  "grid min-w-8 flex-1 basis-0 place-items-center rounded-control text-body tabular-nums font-normal " +
-                  "transition-[box-shadow] duration-(--dur-instant) ease-litt forced-colors:border " +
-                  cellHeights[size] +
-                  /* six cells read as two halves of three */
-                  (length === 6 && i === 3 ? " ml-2" : "") +
-                  /* Forced colors drop the ring (a box-shadow), so the current cell takes an outline there. */
-                  (current ? " forced-colors:outline-2 forced-colors:outline-offset-2 forced-colors:outline-[Highlight]" : "") +
-                  /* Flat: no outline on a cell; the ink ring marks the current one, the danger ring an error. */
-                  (disabled
-                    ? " in-[[data-material=flat]]:shadow-none"
-                    : error
-                      ? " in-[[data-material=flat]]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)]"
-                      : current
-                        ? " in-[[data-material=flat]]:shadow-(--focus-ring)"
-                        : " in-[[data-material=flat]]:shadow-none") +
-                  (disabled
-                    ? " bg-surface-2 text-fg-disabled shadow-[inset_0_0_0_1px_var(--line)]"
-                    : " bg-field font-field text-field-ink " +
-                      (current
-                        ? error
-                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)]"
-                          : "shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)]"
-                        : error
-                          ? "shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)]"
-                          : "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)]"))
-                }
-              >
-                {char || (current ? <span className="h-5 w-px bg-field-ink forced-colors:bg-[CanvasText] forced-colors:[forced-color-adjust:none]" /> : null)}
-              </span>
-            );
-          })}
-        </div>
+        <Body length={length} cellHeight={cellHeights[size]} code={code} at={at} focused={focused} disabled={disabled} error={!!error} type={type} />
         <input
           ref={input}
           id={id}

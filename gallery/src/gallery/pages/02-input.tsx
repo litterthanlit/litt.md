@@ -1,6 +1,9 @@
 import { useId, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/button";
 import { Input, TextField, Textarea } from "@/components/input";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -19,6 +22,9 @@ export const docs: PageDocs = {
   components: ["input"],
   exports: ["TextField", "Input", "Textarea"],
   usage: `import { Input, TextField, Textarea } from "@/components/input";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Button } from "@/components/button";
 
 <TextField label="Project name" help="Shown in the dashboard." value={name} onChange={(e) => setName(e.target.value)} />
@@ -188,6 +194,29 @@ function BriefDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center gap-5 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <TextField label="Project name" defaultValue="Halo site" help="Shown in the dashboard." />
+              <TextField label="Custom domain" defaultValue="halo studio" error="Use letters, numbers and dots only." />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 /* ---------- the overview's tile ---------- */
 
 function ProjectNameTile() {
@@ -235,6 +264,15 @@ export default function InputPage() {
         code="BriefDemo"
       >
         <BriefDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One field, one contract, three bodies. Press is the instrument: the field is a cut sunk into the surface it sits on, its top wall in shade and its lower wall catching the light, the label on the surface above and the hint or error under. Flat is the page: no plate, the label in ink above a grey pill, the hint plain grey words, and an error as words in danger with the pill's fill tinting, no ring. Device is LCD glass in a bezel well, the label engraved above it, the hint a dim LCD line and the error its words beside a lamp in danger. Each is drawn here whatever look the page is in; the input, its label, aria-invalid and aria-describedby are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="TextField" component={TextField} props={{ label: "Site name", help: "Shown in the browser tab.", error: "", placeholder: "Atelier Nord" }} controls={["label", "help", "error", "size", "mono", { name: "placeholder", type: "text" }, { name: "disabled", type: "boolean" }]} />

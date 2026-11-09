@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { Checkbox, CheckboxGroup, Radio, RadioGroup } from "@/components/checkbox";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -11,7 +14,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["press"],
   summary:
-    "Real checkboxes and radios, drawn as a small cut, like a field: a 20px box at the control radius, or a ring for a radio. On, the mark stands flush in it: the box fills with the ink around its tick, and a chosen radio fills with the ink and holds a small raised bead. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
+    "Real checkboxes and radios, drawn as a small cut, like a field: a 20px box at the control radius, or a cup for a radio. On, an ink block sits flush in the cut around its tick, and a chosen radio takes a small raised bead. In Flat the same inputs are an outline that fills with ink. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
   fun: "Check a box: it pops and draws its tick.",
   tiers: ["instant"],
 };
@@ -188,6 +191,34 @@ function AppearanceDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center justify-items-start gap-1 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <Checkbox label="Include motion study" defaultChecked />
+              <Checkbox label="Select all pages" indeterminate />
+              <Checkbox label="Send me the template" />
+              <RadioGroup legend="Deploy to" defaultValue="preview" className="mt-2">
+                <Radio value="production" label="Production" />
+                <Radio value="preview" label="Preview" />
+              </RadioGroup>
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 /* ---------- the overview's tile ---------- */
 
 function DeliverablesTile() {
@@ -233,10 +264,19 @@ export default function CheckboxPage() {
       <Stage
         title="Drawn and native"
         tier="instant"
-        caption="Drawn is the default: the 20px chip is a cut, with the control line, the control radius and the ink fill, the same in every browser. Native is the spec's other option, the browser's own 16px box in the foreground color. Both are real inputs with the same label."
+        caption="Drawn is the default: the 20px chip is the material's own box (a cut in Press, an outline in Flat), with the control line and the control radius, the same in every browser. Native is the spec's other option, the browser's own 16px box in the foreground color. Both are real inputs with the same label."
         code="AppearanceDemo"
       >
         <AppearanceDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        caption="One contract, three bodies. Press is a cut in the plate with an ink block seated flush in it when checked, and a radio is a cup that takes a raised bead; a press sinks the block. Flat is ink on paper: an outline when off, a plain ink fill when on with no ring round the mark, and an ink dash when mixed. Device is a square key in a well that latches down and lights its lamp when checked, half lights it when mixed; a radio group there is a row of the same keys, interlocked, so pressing one lets the last one up. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="Checkbox" component={Checkbox} props={{ label: "Send the invoice to Marlow Labs", description: "A PDF goes to billing@marlowlabs.com." }} controls={["label", "description", "appearance", "indeterminate", "invalid", { name: "disabled", type: "boolean" }]} />

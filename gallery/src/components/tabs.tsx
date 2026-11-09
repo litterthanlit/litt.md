@@ -14,17 +14,20 @@
  *   the flow while it leaves (popLayout), so the two never stack and the page
  *   below does not jump. Give panels a shared min-height to keep it still when
  *   their content differs.
- * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the underline stretches to the new tab. Its
- *   leading edge goes on fun mode's glide spring and its trailing edge follows on the slower swap spring, so it
- *   reaches out and gathers itself under the tab. While it travels, one line drawn across the list does the moving
- *   (x and a scale from its start, transform only); at rest the tab's own indicator is back, so it rests exactly as
- *   it does without fun mode. The segmented fill glides on the glide spring, as Segmented's surface does. Reduced
- *   motion turns it off.
- * - Corners: rounded-control on tabs. The segmented track is a sunken tray (R3: --tray, --tray-shade) at the
- *   control radius, clipped with overflow-hidden, and its fill is the raised block (--block, --block-lift), concentric
- *   inside the 2px inset: selected is raised, as in Segmented and the Switch.
- * - Flat (proposals/flat-pill.md): no hairline and no track. The chosen tab is a grey bubble (--block) at the control radius, the
- *   others are --fg-muted words, for both variants. Under forced colors the bubble is an outline, as the segmented fill is.
+ * - Fun mode (motion/fun.tsx, a trial, off unless a <FunMode> is on): the chosen face (Press's raised tab or block, Flat's
+ *   bubble) glides on fun mode's glide spring instead of the responsive one. It rests exactly as it does without fun
+ *   mode. Reduced motion turns it off.
+ * - Bodies (proposals/worlds.md): this file keeps the contract (value, variant, size, direction, the roles, the roving
+ *   focus and arrow keys, which Radix supplies) and Press's body. It resolves each piece into TabsListBodyProps and
+ *   TabsTriggerBodyProps and picks a body by the material on <html> (byWorld, useMaterial).
+ *   - Press, the instrument. Underline is folder tabs cut from the top edge of a plate: the panel is the plate
+ *     (--block, --plate-lift), the chosen tab stands forward in the plate's own face, lit on its top edge and open at its
+ *     foot, so it and the panel are one lit surface; the others sit lower in --tray, seated, a shade darker. Segmented is
+ *     blocks in a tray (--tray, --tray-shade): the others seated flush, the chosen one raised (--block, --block-lift) and
+ *     gliding. A tab under the hand sinks --press-depth (--block-press).
+ *   - Flat's words with a grey pill behind the chosen one is bodies/tabs.flat.tsx; Device's engraved legends, a lamp under
+ *     the current one that switches on in place (and, segmented, a row of keys on one skirt with the current one latched
+ *     down) is bodies/tabs.device.tsx. Only Press's and Flat's faces glide.
  * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
  *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
  *   is off so the two do not double. Small tabs grow to the control-md height on a coarse
@@ -37,7 +40,6 @@ import {
   useContext,
   useEffect,
   useId,
-  useLayoutEffect,
   useRef,
   useState,
   type ComponentPropsWithoutRef,
@@ -45,8 +47,10 @@ import {
   type RefObject,
 } from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-import { animate, AnimatePresence, LayoutGroup, motion, useMotionValue, useTransform, type Variants } from "motion/react";
-import { useExit, useFun, useTransition, useTravel } from "@/motion";
+import { AnimatePresence, LayoutGroup, motion, type Variants } from "motion/react";
+import { byWorld, useExit, useFun, useMaterial, useTransition, useTravel } from "@/motion";
+import { TabsListFlatBody, TabsTriggerFlatBody } from "./bodies/tabs.flat";
+import { TabsListDeviceBody, TabsTriggerDeviceBody } from "./bodies/tabs.device";
 
 export type TabsVariant = "underline" | "segmented";
 export type TabsSize = "sm" | "md";
@@ -58,10 +62,6 @@ type Ctx = {
   /** +1 when the newest tab sits after the previous one, -1 before it. */
   dir: 1 | -1;
   register: (value: string, el: HTMLElement | null) => void;
-  /** Fun mode: the tab the underline is leaving, while it travels, and where it is going. Null at rest. */
-  travel: { from: string; to: string } | null;
-  /** Fun mode: the underline has arrived. */
-  arrived: () => void;
   triggers: RefObject<Map<string, HTMLElement>>;
 };
 const TabsContext = createContext<Ctx | null>(null);
@@ -113,22 +113,15 @@ export function Tabs({
      the new value, whether the value is controlled or not. */
   const [seen, setSeen] = useState(value);
   const [dir, setDir] = useState<1 | -1>(1);
-  /* Fun mode's underline: set in the same pass as the new value, so the tab's own indicator never shows at the new tab
-     before the travelling line has started from the old one. */
-  const fun = useFun();
-  const [travel, setTravel] = useState<{ from: string; to: string } | null>(null);
-  const arrived = useCallback(() => setTravel(null), []);
-  if (travel && !fun) setTravel(null); // fun mode turned off mid-travel: nothing is travelling any more
   if (seen !== value) {
     setSeen(value);
     const from = triggers.current.get(seen);
     const to = triggers.current.get(value);
     if (from && to) setDir(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING ? 1 : -1);
-    if (fun && variant === "underline" && from && to) setTravel({ from: travel?.from ?? seen, to: value });
   }
 
   return (
-    <TabsContext.Provider value={{ value, variant, size, dir, register, travel, arrived, triggers }}>
+    <TabsContext.Provider value={{ value, variant, size, dir, register, triggers }}>
       <LayoutGroup id={group}>
         <TabsPrimitive.Root
           value={value}
@@ -145,131 +138,70 @@ export function Tabs({
   );
 }
 
-/**
- * Fun mode's travelling underline: one line across the list, from the tab it leaves to the tab it goes to. The edge on
- * the side it is going leads on the glide spring and the other trails on the swap spring. It is drawn only while it
- * travels; when both edges arrive it hands back to the tab's own indicator.
- */
-function TravellingLine({ list }: { list: RefObject<HTMLDivElement | null> }) {
-  const { travel, arrived, triggers } = useTabs();
-  const fun = useFun();
-  const start = useMotionValue(0);
-  const end = useMotionValue(0);
-  const scaleX = useTransform(() => end.get() - start.get());
-  const from = useRef<{ start: number; end: number } | null>(null);
+/** What a list body gets from the contract: the variant and size, the extra classes, and the tablist's own attributes. A body adds its look and its data-body, and nothing else about what the list is. */
+export type TabsListBodyProps = {
+  variant: TabsVariant;
+  size: TabsSize;
+  className: string;
+  rootProps: ComponentPropsWithoutRef<typeof TabsPrimitive.List>;
+};
 
-  /* Where a tab's indicator sits, in the list's own coordinates (it scrolls with the tabs). */
-  const span = (el: HTMLElement) => {
-    const box = list.current!.getBoundingClientRect();
-    const r = el.getBoundingClientRect();
-    const left = r.left - box.left - list.current!.clientLeft + list.current!.scrollLeft;
-    return { start: left, end: left + r.width };
-  };
-
-  useLayoutEffect(() => {
-    if (!travel || !fun || !list.current) return;
-    const a = triggers.current.get(travel.from);
-    const b = triggers.current.get(travel.to);
-    if (!a || !b) return arrived();
-    /* Caught mid-travel: carry on from where the line is now. */
-    const was = from.current ?? span(a);
-    if (!from.current) {
-      start.jump(was.start);
-      end.jump(was.end);
-    }
-    const to = span(b);
-    from.current = to;
-    const forward = to.start > start.get();
-    const s = animate(start, to.start, forward ? fun.swap : fun.glide);
-    const e = animate(end, to.end, forward ? fun.glide : fun.swap);
-    let live = true;
-    void Promise.all([s, e]).then(() => {
-      if (!live) return;
-      from.current = null;
-      arrived();
-    });
-    return () => {
-      live = false;
-      s.stop();
-      e.stop();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs for each new destination
-  }, [travel?.to]);
-
-  if (!travel || !fun) return null;
-  return <motion.span aria-hidden="true" className="in-[[data-material=flat]]:hidden pointer-events-none absolute bottom-0 left-0 z-10 h-0.5 w-px origin-left bg-fg" style={{ x: start, scaleX }} />;
-}
-
-/** The row of tabs. It is a named group, so give it an aria-label. */
-export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
-  const { variant, size } = useTabs();
-  const fun = useFun();
-  const list = useRef<HTMLDivElement>(null);
+/** Press's list: the row of folder tabs standing on the plate's top edge (underline), or a tray of blocks (segmented). */
+function PressListBody({ variant, size, className, rootProps }: TabsListBodyProps) {
   if (variant === "underline") {
-    /* The hairline lives on the wrapper. The list overlaps it by 1px, so the
-       2px indicator covers the hairline and nothing is clipped by the scroll. */
+    /* The row sits 1px into the plate (-mb-px), above it (z-10), so the chosen tab's face, which runs to the row's foot,
+       covers the plate's lit top edge and ring under it: tab and plate are one surface. The 1px of padding keeps the
+       tab's ring from being clipped by the scroll. */
     return (
-      <div className="border-b border-line in-[[data-material=flat]]:border-b-0">
-        {fun ? (
-          /* Fun mode: the list is the travelling line's box, and holds it after the tabs. */
-          <TabsPrimitive.List
-            ref={list}
-            className={"relative -mb-px flex w-full overflow-x-auto pb-px in-[[data-material=flat]]:gap-1 [scrollbar-width:none] " + className}
-            {...rest}
-          >
-            {rest.children}
-            <TravellingLine list={list} />
-          </TabsPrimitive.List>
-        ) : (
-          <TabsPrimitive.List
-            className={"-mb-px flex w-full overflow-x-auto pb-px in-[[data-material=flat]]:gap-1 [scrollbar-width:none] " + className}
-            {...rest}
-          />
-        )}
+      <div data-body="press" className="relative z-10 -mb-px">
+        <TabsPrimitive.List
+          className={"-mx-px flex w-[calc(100%+2px)] items-end gap-0.5 overflow-x-auto px-px pt-px [scrollbar-width:none] " + className}
+          {...rootProps}
+        />
       </div>
     );
   }
   return (
     <TabsPrimitive.List
+      data-body="press"
       className={
-        "inline-flex w-fit max-w-full overflow-x-auto overflow-y-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) [scrollbar-width:none] " +
+        "inline-flex w-fit max-w-full gap-0.5 overflow-x-auto overflow-y-hidden rounded-control bg-tray p-0.5 shadow-(--tray-shade) forced-colors:border [scrollbar-width:none] " +
         (size === "sm" ? "h-control-sm pointer-coarse:h-control-md " : "h-control-md ") +
         className
       }
-      {...rest}
+      {...rootProps}
     />
   );
+}
+
+/** The row of tabs. It is a named group, so give it an aria-label. */
+export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
+  const { variant, size } = useTabs();
+  const Body = byWorld(useMaterial(), { press: PressListBody, flat: TabsListFlatBody, device: TabsListDeviceBody });
+  return <Body variant={variant} size={size} className={className} rootProps={rest} />;
 }
 
 /** Concentric with the track: control radius minus the 2px inset. */
 const FILL_RADIUS = "rounded-[calc(var(--radius-control)-2px)]"; // litt-allow: concentric inside the segmented track's 2px inset
 
-/* What a finger holding a tab shows: the fg 6% fill that rows and segments share, and the hover text color.
-   `enabled:` keeps a disabled tab dead. The indicator sits above this fill, so a selected tab's surface covers it. */
-const PRESS =
-  "[-webkit-tap-highlight-color:transparent] " +
-  "enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] enabled:pointer-coarse:active:text-fg";
-
-/* Flat: the words are --fg-muted until chosen. */
-const F_MUTED = "in-[[data-material=flat]]:text-fg-muted in-[[data-material=flat]]:hover:text-fg in-[[data-material=flat]]:data-[state=active]:text-fg";
-
-/* isolate: the indicator sits at -z-10 inside the tab, behind the label and the focus ring. */
+/* isolate: the faces sit at -z-10 inside the tab, behind the label and the focus ring. The chosen tab is above its
+   neighbours (z-10), so its face glides over them whichever way it goes. */
 const triggerBase =
-  "litt-target relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-title " +
-  "text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg data-[state=active]:text-fg " +
-  F_MUTED + " " +
-  PRESS + " " +
+  "litt-target group/tab relative isolate inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap select-none font-title " +
+  "text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg data-[state=active]:z-10 data-[state=active]:text-fg " +
+  "[-webkit-tap-highlight-color:transparent] enabled:pointer-coarse:active:text-fg " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
+/* The radius is the body's: Press's tab is cut square at its foot, its segment is concentric with the tray. */
 const triggerShape: Record<TabsVariant, Record<TabsSize, string>> = {
   underline: {
-    md: "h-control-md rounded-control px-control-pad-md text-body",
-    sm: "h-control-sm pointer-coarse:h-control-md rounded-control px-control-pad-sm text-small",
+    md: "h-control-md px-control-pad-md text-body",
+    sm: "h-control-sm pointer-coarse:h-control-md px-control-pad-sm text-small",
   },
   segmented: {
-    md: "h-full px-control-pad-md text-small " + FILL_RADIUS,
-    sm: "h-full px-control-pad-sm text-caption pointer-coarse:text-small " + FILL_RADIUS,
+    md: "h-full px-control-pad-md text-small",
+    sm: "h-full px-control-pad-sm text-caption pointer-coarse:text-small",
   },
 };
 
@@ -278,6 +210,65 @@ type TabsTriggerProps = ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger> &
   value: string;
 };
 
+/** What a trigger body gets from the contract: the tab's value, its geometry on the control scale (without a radius), whether the sliding face belongs on this tab, and the button's attributes. A body adds its look, its radius and its data-body; the selected state is Radix's (aria-selected, data-state). */
+export type TabsTriggerBodyProps = {
+  value: string;
+  variant: TabsVariant;
+  size: TabsSize;
+  /** The size and padding classes the control scale gives this variant and size. */
+  shapeClass: string;
+  /** Whether the sliding face (Press's raised tab or block, Flat's bubble) belongs on this tab: it is the selected one. */
+  active: boolean;
+  /** The spring the face slides on. */
+  enter: ReturnType<typeof useTransition>;
+  className: string;
+  triggerRef: (el: HTMLButtonElement | null) => void;
+  rootProps: Omit<ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>, "value" | "className" | "children">;
+  children: ReactNode;
+};
+
+/* A segment under the hand sinks the --press-depth with the pressed cast; on touch the held tab shows it too. */
+const SINK = "group-active/tab:translate-y-(--press-depth) group-active/tab:shadow-(--block-press)";
+
+/** Press's tab: a folder tab cut from the plate's top edge (underline) or a block seated in the tray (segmented). */
+function PressTriggerBody({ value, variant, shapeClass, active, enter, className, triggerRef, rootProps, children }: TabsTriggerBodyProps) {
+  const underline = variant === "underline";
+  return (
+    <TabsPrimitive.Trigger
+      ref={triggerRef}
+      value={value}
+      data-body="press"
+      className={[triggerBase, shapeClass, underline ? "rounded-t-control" : FILL_RADIUS, className].join(" ")}
+      {...rootProps}
+    >
+      {/* Every tab has its seated face: a tab a shade darker and lower than the plate, or a block flush with the tray. */}
+      <span
+        aria-hidden="true"
+        className={
+          (underline
+            ? "absolute inset-x-0 top-1 bottom-0.5 -z-10 rounded-t-control bg-tray shadow-(--tray-shade) forced-colors:border group-hover/tab:bg-[color-mix(in_oklab,var(--tray),var(--fg)_4%)] group-active/tab:translate-y-(--press-depth) "
+            : "absolute inset-0 -z-10 bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] group-hover/tab:bg-[color-mix(in_oklab,var(--block),var(--tray)_30%)] " + FILL_RADIUS + " ") +
+          "transition-colors duration-(--dur-instant) ease-litt"
+        }
+      />
+      {active && (
+        <motion.span
+          layoutId="tabs-indicator"
+          transition={enter}
+          aria-hidden="true"
+          className={
+            underline
+              ? /* Standing forward: the plate's own face, lit on its top edge, open at its foot (the cast below is clipped). */
+                "absolute inset-x-0 top-0 bottom-0 -z-10 rounded-t-control bg-block shadow-(--plate-lift) [clip-path:inset(-4px_-4px_0_-4px)] forced-colors:border forced-colors:border-b-0 forced-colors:border-[Highlight] forced-colors:[forced-color-adjust:none]"
+              : "absolute inset-0 -z-10 bg-block [box-shadow:var(--highlight),var(--block-lift)] forced-colors:border forced-colors:border-[Highlight] " + FILL_RADIUS + " " + SINK
+          }
+        />
+      )}
+      <span className={"litt-trim relative" + (underline && !active ? " translate-y-0.5" : "")}>{children}</span>
+    </TabsPrimitive.Trigger>
+  );
+}
+
 /** One tab. Its label only changes color, so the tab never moves or resizes. */
 export function TabsTrigger({
   value,
@@ -285,39 +276,30 @@ export function TabsTrigger({
   children,
   ...rest
 }: TabsTriggerProps) {
-  const { value: current, variant, size, register, travel } = useTabs();
+  const { value: current, variant, size, register } = useTabs();
   const responsive = useTransition("responsive");
-  /* Fun mode: the segmented fill glides on the glide spring; the underline is drawn by the travelling line until it
-     arrives, and has no layoutId, so it never animates on its own when it comes back. */
+  const material = useMaterial();
+  /* Fun mode: the chosen face glides on the glide spring. */
   const fun = useFun();
   const enter = fun ? fun.glide : responsive;
-  const line = fun && variant === "underline";
-  const active = current === value && !(line && travel);
+  const active = current === value;
   const ref = useCallback((el: HTMLButtonElement | null) => register(value, el), [register, value]);
+  const Body = byWorld(material, { press: PressTriggerBody, flat: TabsTriggerFlatBody, device: TabsTriggerDeviceBody });
 
   return (
-    <TabsPrimitive.Trigger
-      ref={ref}
+    <Body
       value={value}
-      className={[triggerBase, triggerShape[variant][size], className].join(" ")}
-      {...rest}
+      variant={variant}
+      size={size}
+      shapeClass={triggerShape[variant][size]}
+      active={active}
+      enter={enter}
+      className={className}
+      triggerRef={ref}
+      rootProps={rest}
     >
-      {active && (
-        <motion.span
-          layoutId={line ? undefined : "tabs-indicator"}
-          transition={enter}
-          aria-hidden="true"
-          className={
-            variant === "underline"
-              ? "absolute inset-x-0 -bottom-px -z-10 h-0.5 bg-fg forced-colors:bg-[Highlight] forced-colors:[forced-color-adjust:none] " +
-              /* Flat: the line becomes a grey bubble; under forced colors it is a Highlight outline, not a fill. */
-              "in-[[data-material=flat]]:inset-y-0 in-[[data-material=flat]]:h-auto in-[[data-material=flat]]:rounded-control in-[[data-material=flat]]:bg-block in-[[data-material=flat]]:forced-colors:bg-transparent in-[[data-material=flat]]:forced-colors:border-2 in-[[data-material=flat]]:forced-colors:border-[Highlight]"
-              : "absolute inset-0 -z-10 bg-block shadow-(--block-lift) forced-colors:border " + FILL_RADIUS
-          }
-        />
-      )}
-      <span className="litt-trim relative">{children}</span>
-    </TabsPrimitive.Trigger>
+      {children}
+    </Body>
   );
 }
 
@@ -331,7 +313,18 @@ export function TabsPanels({
   /** The TabsPanel for each tab. */
   children: ReactNode;
 }) {
-  return <div className={"relative " + className}>{children}</div>;
+  const { variant } = useTabs();
+  /* Press's underline tabs stand on a plate: the panel box is that plate (the chosen tab joins it), square at the corner
+     the first tab stands on. Every other body, and the segmented variant, leaves the panel bare. */
+  const plate = useMaterial() === "press" && variant === "underline";
+  return (
+    <div
+      data-body={plate ? "press" : undefined}
+      className={"relative " + (plate ? "rounded-surface rounded-tl-none bg-block pb-4 shadow-(--plate-lift) forced-colors:border " : "") + className}
+    >
+      {children}
+    </div>
+  );
 }
 
 /** The content for one tab. Only the selected panel is mounted, so state inside the others resets when you leave them. */
