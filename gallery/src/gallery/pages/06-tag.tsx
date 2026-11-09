@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   lede: "A small label that names, files or reports.",
   order: 6, group: "Controls",
   summary:
-    "A small flat label at the control radius that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, is a raised tag. Nothing about it moves.",
+    "A small label (a raised block in Press, a grey pill in Flat, an engraved plate in Device) that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, is a raised tag. Nothing about it moves.",
   tiers: [],
 };
 
@@ -58,7 +58,7 @@ export const docs: PageDocs = {
   a11y: [
     "A tag is a plain span of text, so a screen reader reads its label like any other text.",
     "The status is the word, never the color alone. Write \"Failed\", not \"Red\", and check that the label would still make sense in grayscale.",
-    "Every status color reaches 4.5:1 on the tag's surface-1 fill in light and dark, so the caption text is readable.",
+    "Every status color reaches 4.5:1 on the tag's block in light and dark, so the caption text is readable.",
     "A hue tag's text is the hue's text tone, which reaches 4.5:1 on its own tint in light and dark (check.mjs checks every pair). The category is in the word, so the hue is never the only signal.",
     "At 24px a tag is too small to be a touch target. If it must be pressed, build a chip or a Button at 32 or 44px.",
     "Nothing moves, so there is nothing to reduce under reduced motion.",
@@ -212,7 +212,7 @@ export default function TagPage() {
     <Page meta={meta} docs={docs}>
       <Stage
         title="Labels"
-        caption="A plain tag is 24px tall at the control radius: flat, a surface-1 fill with an inset hairline and the top highlight, and the sans at the caption size and the label weight in fg-muted. It names a kind or a platform and never asks to be pressed. Nothing moves."
+        caption="A plain tag is 24px tall at the control radius: in Press a small block with a lit top edge, its word on the face, in the sans at the caption size and the label weight in fg-muted; in Flat the word in a grey pill; in Device the word engraved in capitals on a small plate. It names a kind or a platform and never asks to be pressed. Nothing moves."
         align="start"
         code="LabelsDemo"
       >
@@ -221,7 +221,7 @@ export default function TagPage() {
 
       <Stage
         title="Status"
-        caption="Only the text takes the status color. The fill stays surface-1, so a row of tags stays calm. There is no dot: every tag says its state in words, and neutral Draft and Idea differ by theirs."
+        caption="Only the text takes the status color. The fill stays the tag's own, so a row of tags stays calm. Device adds a lamp in the status color, but every tag says its state in words, and neutral Draft and Idea differ by theirs."
         code="StatusDemo"
       >
         <StatusDemo />
