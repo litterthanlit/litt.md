@@ -14,7 +14,7 @@
  *   hue's tint as the fill, its -text tone for the label (4.5:1 on the tint, checked by
  *   check.mjs), and a hairline of the hue under the top highlight. One hue means one category
  *   in a view. A hue is never a status: a tag that says how something stands takes `status`.
- * - Raised (R3): a value you can lift out of a field (Token input's tokens, Combobox's picks) is
+ * - Raised (R3): a value you can lift out of a field (Combobox's picks) is
  *   the press material's block, --block with --block-lift, in --fg like the text typed beside it.
  *   It sits inside the field's control radius, so its corners are that radius less 2px. Forced
  *   colors drops the lift, so it keeps a 1px border. A hue tag files a category and never rises.
@@ -63,7 +63,7 @@ export type TagProps = HTMLAttributes<HTMLSpanElement> & {
   status?: TagStatus;
   /** Files the thing under a category with one of the five data hues: a tinted fill and the hue's text tone. Use one hue per category in a view, and never for a status. */
   hue?: TagHue;
-  /** Draws a plain tag as a raised block, for a tag you can lift out of a field: Token input and Combobox use it for their values. Ignored with a hue. */
+  /** Draws a plain tag as a raised block, for a tag you can lift out of a field: Combobox uses it for its picks. Ignored with a hue. */
   raised?: boolean;
   /** The label. Keep it to a word or two, because a tag never wraps. */
   children: ReactNode;

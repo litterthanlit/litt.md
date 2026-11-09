@@ -36,7 +36,7 @@ export const docs: PageDocs = {
 <Tag hue="amber">Finance</Tag>
 <Tag hue="blue">Clients</Tag>
 
-// A value in a field that you can lift back out: a raised block. Token input and Combobox draw theirs this way.
+// A value in a field that you can lift back out: a raised block. Combobox draws its picks this way.
 <Tag raised>Identity</Tag>`,
   use: [
     "A short word names what something is: a kind (Framer, Landing), a client or a platform.",
@@ -190,7 +190,10 @@ function ThreeBodiesDemo() {
               <div className="flex flex-wrap gap-2">
                 <Tag>Framer</Tag>
                 <Tag hue="amber">Finance</Tag>
-                <Tag raised>Identity</Tag>
+                {/* A raised tag is a value in a field, so it sits in a cut here, as in a Combobox. */}
+                <span className="inline-flex rounded-control bg-cut p-0.5 shadow-(--cut-shade)">
+                  <Tag raised>Identity</Tag>
+                </span>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Tag status="success">Live</Tag>
@@ -238,7 +241,7 @@ export default function TagPage() {
 
       <Stage
         title="Raised, in a field"
-        caption="A value someone put in a field and can lift back out is the raised block: the block's fill and its lift, the label in fg, and corners 2px tighter than the field's so they sit concentric inside it. Token input and Combobox draw their values this way, standing up out of the cut. A disabled field lays them flat again."
+        caption="A value someone put in a field and can lift back out is the raised block: the block's fill and its lift, the label in fg, and corners 2px tighter than the field's so they sit concentric inside it. Combobox draws its picks this way, standing up out of the cut. A disabled field lays them flat again."
         align="start"
         code="RaisedDemo"
       >

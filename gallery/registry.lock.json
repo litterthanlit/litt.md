@@ -48,7 +48,7 @@
     },
     "button": {
       "version": "2026.11.09",
-      "hash": "94dda5010d8b9e08"
+      "hash": "cc1dd02e399158d8"
     },
     "callout": {
       "version": "2026.11.06",
@@ -60,7 +60,7 @@
     },
     "card-picker": {
       "version": "2026.11.09",
-      "hash": "11c18fa1132172cd"
+      "hash": "a36871c2419c225e"
     },
     "carousel": {
       "version": "2026.11.06",
@@ -112,7 +112,7 @@
     },
     "composer": {
       "version": "2026.11.09",
-      "hash": "49fe1cd8075b4e56"
+      "hash": "f4775ca70349847a"
     },
     "context-menu": {
       "version": "2026.11.05",
@@ -156,7 +156,7 @@
     },
     "file-drop": {
       "version": "2026.11.09",
-      "hash": "6205e526b093cea4"
+      "hash": "f7a75d31ff85df7c"
     },
     "form": {
       "version": "2026.11.06",
@@ -216,7 +216,7 @@
     },
     "legend": {
       "version": "2026.11.09",
-      "hash": "0871686c71f7ae19"
+      "hash": "0a6515aaad23188b"
     },
     "lightbox": {
       "version": "2026.11.05",
@@ -268,7 +268,7 @@
     },
     "pagination": {
       "version": "2026.11.09",
-      "hash": "8556fc1405f6c19a"
+      "hash": "023a9ec16de5f387"
     },
     "plan": {
       "version": "2026.11.06",
@@ -360,7 +360,7 @@
     },
     "slider": {
       "version": "2026.11.09",
-      "hash": "ef7474d45905e683"
+      "hash": "7c649923fac82874"
     },
     "sources": {
       "version": "2026.11.06",
@@ -392,7 +392,7 @@
     },
     "switch": {
       "version": "2026.11.09",
-      "hash": "e23b5bb0aa284f43"
+      "hash": "c09a7a2e5c0ed3a3"
     },
     "table": {
       "version": "2026.11.06",
@@ -408,7 +408,7 @@
     },
     "tag": {
       "version": "2026.11.09",
-      "hash": "b927073b2566def4"
+      "hash": "7f0c9e694490c270"
     },
     "tape-progress": {
       "version": "2026.11.08",
@@ -436,7 +436,7 @@
     },
     "token-input": {
       "version": "2026.11.09",
-      "hash": "25126a85f96041fd"
+      "hash": "8e2e44832e0f7456"
     },
     "tool-call": {
       "version": "2026.11.06",

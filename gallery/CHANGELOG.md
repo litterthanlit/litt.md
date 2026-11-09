@@ -26,16 +26,16 @@ Later the same day, wave one of the worlds (`proposals/worlds.md`, Three directi
 
 Later still, wave two of the worlds: ten more parts. Seven a hand presses get a body in each world, and Switch, Button and Slider, which had three bodies already, have their Press and Flat pushed to their extremes. **Under Press these ten look different from before.** Nothing in your code changes.
 
-- **changed** `switch`: wave two's Press and Flat bodies.
-- **changed** `button`: wave two's Press and Flat bodies.
-- **changed** `slider`: wave two's Press and Flat bodies.
-- **changed** `card-picker`: a body per material.
-- **changed** `token-input`: a body per material.
-- **changed** `composer`: a body per material.
-- **changed** `file-drop`: a body per material.
-- **changed** `legend`: a body per material.
-- **changed** `pagination`: a body per material.
-- **changed** `tag`: a body per material.
+- **changed** `switch`: Press is now a thick block thrown along a deep tray to a stop, uncovering On or Off set in the tray's floor. Flat is a small ink pill with a canvas knob when on and an outline pill when off, its word in type beside it. Device stays the toggle key with its word on LCD.
+- **changed** `button`: Press is now a thick block seated in its own plate, with a lit top edge and a wall at its foot, sinking into the plate when pressed; the primary keeps the accent and its glow, and a ghost has no plate. Flat is a pill whatever the shape, the primary in ink (or the accent) with no glow, a ghost words alone. Device stays the key on its skirt.
+- **changed** `slider`: Press is now a cap in a deep slot cut into a plate, notches lighting as the fill passes, the value on a small raised face that rides with the cap. Flat is a bare pill track with an ink fill, a round ink knob and the value in words at its end. Device stays the fader. `SliderBodyProps` gains `shown`.
+- **changed** `card-picker`: a body per material. Press is plates in a tray, the picked plate raised and lit. Flat is pictures and words, the picked one in a grey bubble with an ink tick. Device is a bank of keys in a well, the picked one set down with its lamp lit.
+- **changed** `token-input`: a body per material. Press is a cut with each token a raised block and a small block to remove it. Flat is a grey pill field with darker grey token pills and a bare cross. Device is LCD glass with each token an inverted cell of lit words and a small key to remove it. Tokens no longer use Tag's `raised`.
+- **changed** `composer`: a body per material. Press is a deep well cut into a plate, its tools a rail of blocks and Send the one lit block. Flat is a grey capsule that grows with the text, its tools as grey words and Send an ink circle. Device is LCD glass behind a prompt mark, files as lit cells, the tools a row of keys and Send the accent key.
+- **changed** `file-drop`: a body per material. Press is a deep tray in a plate whose lower wall lights while a file is over it, each file a slat. Flat is a grey sheet with one sentence, "Drop files or choose", ringed in ink while a file is over it, each file a line of words. Device is an engraved legend over LCD glass with a Choose key, each file a glass line whose upload lights in segments.
+- **changed** `legend`: a body per material. Press is blocks in a tray with hue chips, a hidden series sunk flush and saying Hidden. Flat is words with a hue dot, a hidden one grey with an outline dot. Device is latching keys whose lamps light in the series' data hue.
+- **changed** `pagination`: a body per material. Press is the range on a raised face and Previous and Next as blocks at the ends of a tray. Flat is the range in words and Previous and Next as grey word pills. Device is the range in seven-segment panes with step keys at its ends; a screen reader still hears the range in words.
+- **changed** `tag`: a body per material. Press is a small raised block with a lit top edge. Flat is the word in a grey pill. Device is the word engraved in capitals on a small plate, a status tag adding a lamp in its status color.
 
 ## 2026-11-08 · Device goes deeper: its own parts, and Only here
 
