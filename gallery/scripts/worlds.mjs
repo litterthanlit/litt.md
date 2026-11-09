@@ -30,6 +30,9 @@
  *   than all three (read from src/gallery/pages, so no list is written here): a part missing, or a part of another world,
  * - the sidebar on a component page, under each material, does not list every world-only page of that material, or lists
  *   one that is another world's alone (zero world-only pages is a pass: it asserts what the sidebar and the sources hold),
+ * - the Systems page (#systems) is not three cards linking #press, #flat and #device in order, each named by the
+ *   system and its line from look.ts, beside its cover scene, inert and hidden, the link the card's one stop, or it
+ *   scrolls sideways,
  * - public/llms.txt lacks a Worlds section with Press, Flat and Device, or lists a world page as a component's docs.
  *
  * Not here: nothing moving under reduced motion on a world page. reduced-motion.mjs (test:motion) opens every file in
@@ -307,6 +310,29 @@ for (const world of WORLDS) {
     };
   });
   claim("the phone menu lists Worlds with three rows (#press, #flat, #device) before any component group", menu.hrefs.join(",") === "#press,#flat,#device" && menu.before && menu.groupsAbove === 0 ? null : `menu: ${JSON.stringify(menu)}`);
+  await ctx.close();
+}
+
+/* ---------- the Systems page ---------- */
+for (const size of SIZES) {
+  const { ctx, pg, errors } = await open("systems", { ...size });
+  await pg.locator("main ul[aria-label=Systems] > li").first().waitFor();
+  await pg.waitForLoadState("networkidle");
+  await pg.waitForFunction(() => [...document.querySelectorAll("main ul[aria-label=Systems] [inert]")].filter((c) => c.querySelector("button, input, [role]")).length === 3, null, { timeout: 5000 }).catch(() => {});
+  const r = await pg.evaluate(() => ({
+    cards: [...document.querySelectorAll("main ul[aria-label=Systems] > li")].map((li) => ({
+      href: li.querySelector(":scope > a")?.getAttribute("href"),
+      name: li.querySelector(":scope > a")?.textContent.trim(),
+      cover: !!li.querySelector(":scope > [inert][aria-hidden=true] :is(button, input, [role])"),
+      focusables: [...li.querySelectorAll("button, input, select, textarea, a[href], [tabindex]")].filter((e) => !e.closest("[inert]")).length,
+    })),
+    wide: document.documentElement.scrollWidth > innerWidth,
+  }));
+  const want = WORLDS.map((w) => `#${w.id}`);
+  const ok = r.cards.map((c) => c.href).join(",") === want.join(",") && r.cards.every((c, i) => c.name.startsWith(WORLDS[i].name) && c.name.includes(WORLDS[i].line) && c.cover && c.focusables === 1);
+  claim("the Systems page is three cards, Press, Flat and Device, each a link to its page named by the system and its line, over its cover scene out of reach", ok ? null : `${size.label}: ${JSON.stringify(r.cards)}`);
+  claim("the Systems page does not scroll sideways", r.wide ? `${size.label}: the page scrolls sideways` : null);
+  for (const e of errors) claim("the Systems page throws nothing", `${size.label}: ${e}`);
   await ctx.close();
 }
 

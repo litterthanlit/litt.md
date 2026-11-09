@@ -63,6 +63,8 @@ export type MaterialInfo = {
   tagline: string;
   /** Who the world is for, as the lede under the tagline. */
   audience: string;
+  /** The world as a system, in one line: what it is like, then who it is for. Under its card on the Systems page. */
+  line: string;
   /** The block page (src/gallery/pages/30-*.tsx, meta.block) the world opens on, live at real size. */
   hero: string;
   /** Its motion language in one line (foundations.md, Motion languages). */
@@ -86,6 +88,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "Helvetica Neue",
     tagline: "Lit from above. Objects you can hold.",
     audience: "Product UI, settings and dashboards. What the registry installs.",
+    line: "Lit and solid, for product UI, settings and dashboards",
     hero: "dashboard",
     foundations: {
       color: "Warm stone neutrals at one hue, and Blue 4, its own accent, as the one fill. A project may ask for monochrome or pink.",
@@ -111,6 +114,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "Geist",
     tagline: "Grey is the object. Nothing casts.",
     audience: "Sites, portfolios and reading. What the gallery opens in.",
+    line: "Grey and quiet, for sites, portfolios and reading",
     hero: "case-study",
     foundations: {
       color: "The same neutrals at chroma 0: neutral grey, nothing warm. Its own accent is the ink, so the primary action is black on white. A project may ask for Blue 4 or pink; the data hues are unchanged.",
@@ -136,6 +140,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "Geist Mono",
     tagline: "Hardware. Keys, wells and LCD glass, every word in the mono.",
     audience: "Agents, terminals and tools.",
+    line: "Keys and glass, for agents, terminals and tools",
     hero: "agent",
     foundations: {
       color: "A cool aluminium body, dark LCD screens for panels and overlays, orange as its own accent, the hues retuned to the body. A project may ask for Blue 4, monochrome or pink.",

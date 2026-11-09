@@ -414,7 +414,7 @@ export default function Overview() {
   const list = pages.filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world && inWorld(p, look.material));
   const wall = [...LEAD.map((id) => list.find((p) => p.id === id)).filter((p): p is PageEntry => !!p), ...list.filter((p) => !LEAD.includes(p.id))];
   const blocks = pages.filter((p) => p.group === "Blocks" && !p.world && inWorld(p, look.material));
-  const site = pages.filter((p) => !p.group && !p.wall && !p.world);
+  const site = pages.filter((p) => !p.group && p.id !== meta.id && !p.world);
   const count = WORDS[list.length] ?? String(list.length);
   return (
     <article aria-labelledby="page-overview" className="grid gap-12 pb-24">
