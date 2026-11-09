@@ -13,7 +13,7 @@ export const meta: PageMeta = {
   group: "Controls",
   verbs: ["drag", "press"],
   summary:
-    "An area to drop files on or choose them from, cut into the page like a field, as a row: an up arrow, what it takes and a Choose files button. While files are over it the line turns to the focus color and the words say what a drop will do. It turns away files of the wrong type or size and says which and why, and the rows below show each file uploading on a Progress rail, with Retry for one that failed.",
+    "An area to drop files on or choose them from. Press is a deep tray in a plate with an arrow block, the words and a Choose files button; Flat is a grey sheet with one sentence, \"Drop files or choose\"; Device is a slot with an engraved legend and a Choose key. While files are over it the area changes and the words say what a drop will do. It turns away files of the wrong type or size and says which and why, and the list below shows each file uploading, with Retry for one that failed.",
   tiers: ["instant"],
 };
 
@@ -124,7 +124,7 @@ function ThreeBodiesDemo() {
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-w-0 content-start items-start gap-6 rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line md:grid-cols-2"
+            className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start items-start gap-6 rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line md:grid-cols-2"
           >
             <MaterialProvider material={m.id}>
               <FileDrop label={`Project files, ${m.name}`} accept={[".pdf", ".zip"]} hint="PDF or ZIP, up to 10 MB" onFiles={() => {}} />
@@ -150,7 +150,7 @@ export default function FileDropPage() {
         tier="instant"
         align="start"
         code="UploadDemo"
-        caption="Drag files from your desktop over the area: the line turns to the focus color and the words say what a drop will do. Drop them, or press Choose files. A file of another type or over 10 MB is turned away with a sentence under the area. Each file that gets in uploads on its own Progress rail; the fourth one stops partway and offers Retry. Remove cancels an upload or takes a file away."
+        caption="Drag files from your desktop over the area: it deepens (or is ringed in ink, or lights its lamp, by the look) and the words say what a drop will do. Drop them, or press Choose files. A file of another type or over 10 MB is turned away with a sentence under the area. Each file that gets in uploads on its own rail; the fourth one stops partway and offers Retry. Remove cancels an upload or takes a file away."
       >
         <UploadDemo />
       </Stage>
@@ -160,7 +160,7 @@ export default function FileDropPage() {
         tier="instant"
         align="start"
         code="StatesDemo"
-        caption="multiple={false} takes one file and says so on its button. Disabled lies flat on surface-2 with a plain hairline, muted words, no drop and no tab stop; its hint says when it opens again."
+        caption="multiple={false} takes one file and says so on its button. Disabled lies flat (surface-2, muted words), with no drop and no tab stop; its hint says when it opens again."
       >
         <StatesDemo />
       </Stage>
@@ -168,7 +168,7 @@ export default function FileDropPage() {
       <Stage
         title="Three bodies"
         tier="instant"
-        caption="One contract, three bodies. Press is the Input's cut at the surface radius, with each file a row under it. Flat is a grey sheet with no line, the files as rows with no rule. Device is a slot: an engraved legend over LCD glass in a bezel, a Choose key beside it, and each file a line of glass with its upload as segments that light in steps. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
+        caption="One contract, three bodies. Press is a plate that stands with a deep tray cut into it: an arrow on a raised block, the words and Choose files, the tray going deeper and its lower wall catching the light while a file is over it; each file is a slat, a raised block in a tray of its own, with its rail cut into it. Flat is a grey sheet with one sentence, Drop files or choose, ringed in ink while a file is over it; each file is a line of words, with Retry and Remove as words. Device is a slot: an engraved legend over LCD glass in a bezel, a Choose key beside it, and each file a line of glass whose upload lights segments in steps. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />

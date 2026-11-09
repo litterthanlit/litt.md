@@ -38,7 +38,7 @@ export function FileDropDeviceBody({ area, words, hint, hintId, dragging, disabl
     <div
       {...area}
       data-body="device"
-      className={"grid gap-2 " + (disabled ? "cursor-not-allowed" : "cursor-pointer")}
+      className={"grid grid-cols-[minmax(0,1fr)] gap-2 " + (disabled ? "cursor-not-allowed" : "cursor-pointer")}
     >
       <p className={"litt-legend text-caption font-title " + (disabled ? "text-fg-subtle" : "text-fg")} style={stepped}>
         {words}
@@ -98,10 +98,10 @@ export function FileRowDeviceBody({ name, size, progress, error, uploading, onRe
   const lit = Math.round(share * SEGMENTS);
   const reading = error ? "Failed" : `${Math.round(share * 100)}%`;
   return (
-    <li data-body="device" className="grid gap-1.5">
+    <li data-body="device" className="grid grid-cols-[minmax(0,1fr)] gap-1.5">
       <div className="flex items-start gap-2">
         <div className="flex min-h-8 min-w-0 flex-1 items-center gap-3 rounded-control bg-field px-4 font-field text-caption text-field-ink shadow-(--field-shade) forced-colors:border pointer-coarse:min-h-11">
-          <FileIcon className="shrink-0 text-field-ink-subtle" />
+          <FileIcon className="hidden shrink-0 text-field-ink-subtle sm:block" />
           <span className="min-w-0 flex-1 truncate">{name}</span>
           {showing && (
             <>
@@ -114,7 +114,7 @@ export function FileRowDeviceBody({ name, size, progress, error, uploading, onRe
                 aria-valuemax={100}
                 aria-valuenow={Math.round(share * 100)}
                 aria-valuetext={reading}
-                className="grid h-2 w-16 shrink-0 grid-flow-col auto-cols-fr gap-px sm:w-24"
+                className="grid h-2 w-14 shrink-0 grid-flow-col auto-cols-fr gap-px sm:w-24"
               >
                 {Array.from({ length: SEGMENTS }, (_, i) => (
                   <span
@@ -130,7 +130,7 @@ export function FileRowDeviceBody({ name, size, progress, error, uploading, onRe
               </div>
             </>
           )}
-          <span className="shrink-0 text-right tabular-nums text-field-ink-subtle">{showing ? reading : size !== undefined ? formatSize(size) : ""}</span>
+          <span className="shrink-0 text-right tabular-nums text-field-ink-subtle">{showing ? error ? <span className="hidden sm:inline">Failed</span> : reading : size !== undefined ? formatSize(size) : ""}</span>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {error && onRetry && (
