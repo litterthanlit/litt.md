@@ -170,7 +170,7 @@ function inserted(before: string, after: string): string {
   return after.slice(start, after.length - end);
 }
 
-/** A 16px cross, drawn smaller than the 24px button so it sits with the caption-size label. */
+/** A 16px cross, sitting with the caption-size label. */
 function RemoveIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" aria-hidden="true" focusable="false">

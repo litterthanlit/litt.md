@@ -392,7 +392,7 @@
     },
     "switch": {
       "version": "2026.11.09",
-      "hash": "c09a7a2e5c0ed3a3"
+      "hash": "e08928364e242b30"
     },
     "table": {
       "version": "2026.11.06",
@@ -436,7 +436,7 @@
     },
     "token-input": {
       "version": "2026.11.09",
-      "hash": "8e2e44832e0f7456"
+      "hash": "93fa775131a17b61"
     },
     "tool-call": {
       "version": "2026.11.06",

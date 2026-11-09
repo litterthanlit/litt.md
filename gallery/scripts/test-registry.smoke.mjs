@@ -1762,12 +1762,20 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("the switch did not start on");
           const look = () =>
             sw.evaluate((el) => {
-              const block = el.firstElementChild;
-              return { word: (block?.textContent ?? "").trim(), x: Math.round((block?.getBoundingClientRect().left ?? 0) - el.getBoundingClientRect().left), tray: getComputedStyle(el).backgroundColor };
+              // The block is the thumb, the last child; the word it says is the one in the floor it leaves uncovered.
+              const block = el.lastElementChild;
+              const b = block?.getBoundingClientRect();
+              const open = [...el.children].filter((w) => w !== block && w.textContent?.trim()).find((w) => {
+                const r = w.getBoundingClientRect();
+                const mid = r.left + r.width / 2;
+                return !b || mid < b.left || mid > b.right;
+              });
+              return { word: (open?.textContent ?? "").trim(), x: Math.round((b?.left ?? 0) - el.getBoundingClientRect().left), tray: getComputedStyle(el).backgroundColor };
             });
           const tray = await page.evaluate(() => {
             const probe = document.createElement("span");
-            probe.style.backgroundColor = "var(--litt-tray)";
+            // The Press switch's tray is a slot, cut deeper than a group's tray.
+            probe.style.backgroundColor = "var(--litt-slot)";
             document.body.append(probe);
             const c = getComputedStyle(probe).backgroundColor;
             probe.remove();
@@ -1775,7 +1783,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           });
           const on = await look();
           if (on.word !== "On") throw new Error(`an on switch's block says "${on.word}", not On`);
-          if (on.tray !== tray) throw new Error(`the tray is ${on.tray}, not --litt-tray (${tray})`);
+          if (on.tray !== tray) throw new Error(`the tray is ${on.tray}, not --litt-slot (${tray})`);
           await sw.click();
           await page.waitForTimeout(600);
           if ((await sw.getAttribute("aria-checked")) !== "false") throw new Error("a click did not turn it off");
@@ -1785,7 +1793,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.keyboard.press("Space");
           await page.waitForTimeout(600);
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("Space did not turn it back on");
-          return `On at ${on.x}px, Off at ${off.x}px, on --litt-tray`;
+          return `On at ${on.x}px, Off at ${off.x}px, on --litt-slot`;
         });
       }
       if (has("accordion")) {
@@ -2995,10 +3003,19 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const box = await field.boundingBox();
           const tokenH = await field.locator("li").first().evaluate((el) => Math.round(el.getBoundingClientRect().height));
           const x = await form.getByRole("button", { name: "Remove @stripe.com" }).boundingBox();
-          if (Math.round(box.height) !== 44 || tokenH !== 24 || Math.round(x.width) !== 24) throw new Error(`field ${box.height}px, token ${tokenH}px, remove button ${x.width}px: expected 44, 24 and 24`);
+          // Press's remove button is a 20px block on the token (a 44px target on a finger, through its ::before).
+          if (Math.round(box.height) !== 44 || tokenH !== 24 || Math.round(x.width) !== 20) throw new Error(`field ${box.height}px, token ${tokenH}px, remove button ${x.width}px: expected 44, 24 and 20`);
+          // Its edge is the Input's cut: the slot's shaded top wall and the field's lit lower wall, no drawn line.
           const edge = await field.evaluate((el) => getComputedStyle(el).boxShadow);
-          const line = await color("--litt-line-control");
-          if (!edge.includes(line)) throw new Error(`the field edge is "${edge}", not --litt-line-control (${line})`);
+          const cut = await page.evaluate(() => {
+            const probe = document.createElement("span");
+            probe.style.boxShadow = "var(--litt-slot-shade),var(--litt-field-shade)";
+            document.body.append(probe);
+            const c = getComputedStyle(probe).boxShadow;
+            probe.remove();
+            return c;
+          });
+          if (!edge.endsWith(cut)) throw new Error(`the field edge is "${edge}", not the cut of --litt-slot-shade and --litt-field-shade ("${cut}")`);
           await field.click({ position: { x: box.width - 20, y: box.height / 2 } });
           await page.waitForTimeout(500);
           if ((await field.locator("li").count()) !== 3) throw new Error("focusing the field should open it to all three tokens");
@@ -3029,7 +3046,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if ((await posted()) !== "ramp.com|brex.com") throw new Error(`the x should remove @stripe.com; the form posts "${await posted()}"`);
           await page.screenshot({ path: path.join(shotsDir, `${tag}-${theme}-token-input.png`) });
           await page.evaluate(() => document.activeElement?.blur());
-          return "+2, 44/24/24px, comma, validate, keys, posted values";
+          return "+2, 44/24/20px, the cut, comma, validate, keys, posted values";
         });
       }
       if (has("heatmap")) {
@@ -3611,12 +3628,14 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           const send = box.getByRole("button", { name: "Send" });
           if (!(await send.isDisabled())) throw new Error("Send should be disabled while the field is empty");
           if ((await fill(send)) === (await probe("backgroundColor", "--litt-accent"))) throw new Error("a disabled Send must not be an accent fill");
+          // Press's box is a plate that stands (--litt-plate-lift), and the text sits in a well cut into it, which takes the ring.
           const rest = await frame.evaluate((el) => getComputedStyle(el).boxShadow);
-          const line = await probe("color", "--litt-line-control");
-          if (!rest.includes(line)) throw new Error(`the resting edge is "${rest}", not --litt-line-control (${line})`);
+          const plate = await probe("boxShadow", "--litt-plate-lift");
+          if (!rest.endsWith(plate)) throw new Error(`the resting box is "${rest}", not a plate (--litt-plate-lift: "${plate}")`);
+          const well = field.locator("xpath=ancestor::div[contains(@class,'has-[textarea:focus-visible]')][1]");
           await field.click();
           await page.waitForTimeout(400); // the edge fades on the instant tier
-          const ring = await frame.evaluate((el) => getComputedStyle(el).boxShadow);
+          const ring = await well.evaluate((el) => getComputedStyle(el).boxShadow);
           const focus = await probe("color", "--litt-focus");
           if (!ring.includes(focus)) throw new Error(`the focused edge has no --litt-focus: "${ring}"`);
           await page.keyboard.type("Why did the Halo build fail?");

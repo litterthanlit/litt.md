@@ -166,10 +166,12 @@ const blockDisabled = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 function PressBody({ shown, disabled, x, tone, words, motion, root, className }: SwitchBodyProps) {
   const block = blockBase + " " + (disabled ? blockDisabled : shown ? blockOn[tone] : blockOff);
   const word = floorWord + (disabled ? " text-fg-disabled" : "");
+  /* The word under the block is out of sight, so it is out of the page too: a contrast check never reads it through the block. */
+  const covered = " opacity-0";
   return (
     <SwitchPrimitive.Root {...root} data-body="press" className={tray + className}>
-      <span aria-hidden="true" className={word + " left-0"}>{words[1]}</span>
-      <span aria-hidden="true" className={word + " right-0"}>{words[0]}</span>
+      <span aria-hidden="true" className={word + " left-0" + (shown ? "" : covered)}>{words[1]}</span>
+      <span aria-hidden="true" className={word + " right-0" + (shown ? covered : "")}>{words[0]}</span>
       <SwitchPrimitive.Thumb className={block} style={{ ...motion, translate: `${x} 0` }} />
     </SwitchPrimitive.Root>
   );

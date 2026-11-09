@@ -2,7 +2,7 @@
  * The gallery shell: glass header, page list and the page. Only the Playground
  * tunes motion; the header's Customize panel tunes type and shape on every page.
  */
-import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { MotionDialProvider, useDevice, useFun } from "@/motion";
 import { funPages, inWorld, pageRuns, pages, prefetchPages, settled, worlds, type PageEntry } from "./registry";
 import { useRoute } from "./route";
@@ -31,12 +31,23 @@ const LanguageCanvas = lazy(() => import("../canvas/canvas"));
  * the panel the moment it lands. The stand-in is swapped for the real button only after a press or at rest, never on
  * hover: a swap under the pointer, between press and release, loses the click.
  */
+/* Mounted with each copy of the stand-in: Suspense swaps it for its fallback copy before the real button arrives, and
+   a copy that mounts while the one before it held focus takes it back. */
+function TakeBackFocus({ had }: { had: RefObject<boolean> }) {
+  useLayoutEffect(() => {
+    if (had.current && (document.activeElement === document.body || document.activeElement === null))
+      document.getElementById("customize-trigger")?.focus({ preventScroll: true });
+  }, [had]);
+  return null;
+}
+
 function CustomizeSlot() {
   const { compact } = useDevice();
   const [wanted, setWanted] = useState(false);
   const [open, setOpen] = useState(false);
-  /* Whether the stand-in held focus (the look notice's Keep sends it here). Removing a focused element fires no blur,
-     so this stays true through the swap, and the real button takes focus back if it fell to the page. */
+  /* Whether the stand-in held focus (the look notice's Keep sends it here), so the next copy of the button (the
+     Suspense fallback's, then the real one) takes focus back if it fell to the page in the swap. Chrome may fire a blur as it removes the focused stand-in, so a blur only counts once
+     it is clear the button is still on the page. */
   const hadFocus = useRef(false);
   useEffect(() => {
     void settled().then(() => setWanted(true));
@@ -58,8 +69,11 @@ function CustomizeSlot() {
         hadFocus.current = true;
         warm();
       }}
-      onBlur={() => {
-        hadFocus.current = false;
+      onBlur={(e) => {
+        const el = e.currentTarget;
+        queueMicrotask(() => {
+          if (el.isConnected) hadFocus.current = false;
+        });
       }}
       onClick={() => {
         setWanted(true);
@@ -69,9 +83,15 @@ function CustomizeSlot() {
       {compact ? <SlidersIcon /> : "Customize"}
     </Button>
   );
-  if (!wanted) return standIn;
+  const standInFocus = (
+    <>
+      {standIn}
+      <TakeBackFocus had={hadFocus} />
+    </>
+  );
+  if (!wanted) return standInFocus;
   return (
-    <Suspense fallback={standIn}>
+    <Suspense fallback={standInFocus}>
       <Customize defaultOpen={open} takeFocus={hadFocus} />
     </Suspense>
   );
