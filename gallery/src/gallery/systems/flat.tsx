@@ -8,7 +8,6 @@ import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { SelectField } from "@/components/select";
 import { Media } from "@/components/media";
-import { Pagination } from "@/components/pagination";
 import { Segmented } from "@/components/segmented";
 import { Tag } from "@/components/tag";
 import { TextField, Textarea } from "@/components/input";
@@ -24,7 +23,7 @@ const FACTS = [
 
 function CaseStudy() {
   return (
-    <article className="grid gap-5">
+    <div className="grid gap-5">
       <Media alt="" ratio={2.4} radius="surface">
         <div className="grid size-full place-items-center bg-surface-3 text-caption text-fg-muted">Hero, Bakehouse Nord</div>
       </Media>
@@ -50,7 +49,7 @@ function CaseStudy() {
       <div>
         <Button variant="secondary">Read the full study</Button>
       </div>
-    </article>
+    </div>
   );
 }
 
@@ -177,10 +176,15 @@ function Contact() {
 
 /* ------------------------------------------------------------------ reading */
 
+/* The essays either side of this one, as words: an article reads on to the next one, it is not a page of rows. */
+const AROUND = [
+  { dir: "Previous", title: "The case for slow type" },
+  { dir: "Next", title: "Margins are content" },
+];
+
 function Reading() {
-  const [page, setPage] = useState(3);
   return (
-    <article className="grid gap-4">
+    <div className="grid gap-4">
       <div className="flex items-center gap-3">
         <Avatar name="Ines Duarte" size="md" decorative />
         <div className="grid min-w-0">
@@ -191,11 +195,27 @@ function Reading() {
         </div>
       </div>
       <h3 className="text-h3 font-title text-fg text-balance">The grid is a promise to the reader</h3>
-      <p className="text-body font-label text-fg-muted">Every layout makes a quiet bargain about where the eye will land next. Most of our work is keeping it.</p>
+      <p className="text-body text-fg-muted">Every layout makes a quiet bargain about where the eye will land next. Most of our work is keeping it.</p>
       <p className="text-small text-fg">When a page repeats itself well, nobody notices. Margins hold, captions sit where captions sit, and the reader spends their attention on the words.</p>
       <p className="text-small text-fg">Break the pattern once, on purpose, and it speaks. Break it by accident and it only apologises.</p>
-      <Pagination label="Essays" page={page} pageSize={1} total={3} onPageChange={setPage} />
-    </article>
+      <div className="mt-2 grid grid-cols-2 gap-4">
+        {AROUND.map((a) => (
+          <a
+            key={a.dir}
+            href="#flat"
+            onClick={(e) => e.preventDefault()}
+            className={
+              "grid min-w-0 gap-1 rounded-control text-small " +
+              (a.dir === "Next" ? "justify-items-end text-right " : "") +
+              "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+            }
+          >
+            <span className="text-caption text-fg-muted">{a.dir} essay</span>
+            <span className="text-fg underline decoration-transparent underline-offset-4 transition-colors duration-(--dur-instant) ease-litt hover:decoration-line">{a.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
   );
 }
 
