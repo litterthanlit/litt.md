@@ -7,7 +7,6 @@ export const meta: PageMeta = {
   lede: "Lit from above. Objects you can hold.",
   order: 0.1,
   group: "Worlds",
-  wall: true,
   world: "press",
   summary: "Product UI, settings and dashboards, and what the registry installs. Things have weight: a set settles into place from above and nothing flies.",
   tiers: [],
