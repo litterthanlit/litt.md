@@ -716,7 +716,7 @@ for (const [width, height] of [[1440, 900], [320, 700]]) {
     const fail = (why) => { bad++; console.error(`${width}px ${world}: ${why}`); };
     if (r.material !== world) fail(`the page is in ${r.material}`);
     if (r.own < 3) fail(`only ${r.own} bar charts in the ${world} body`);
-    if (r.others !== WORLDS.filter((w) => w !== world).join(",")) fail(`other bodies on the page are "${r.others}", expected one of each other world, in the Three bodies stage`);
+    if (r.others !== WORLDS.filter((w) => w !== world).sort().join(",")) fail(`other bodies on the page are "${r.others}", expected one of each other world, in the Three bodies stage`);
     if (r.unbodied !== 0) fail("a line or stacked chart carries a body");
     if (r.lineCharts < 1) fail("no line chart found: data-chart is missing");
     if (world === "press" && (r.wells !== r.own || r.gridlines < 3)) fail(`Press: ${r.wells} of ${r.own} have a well, fewest gridlines ${r.gridlines}`);
