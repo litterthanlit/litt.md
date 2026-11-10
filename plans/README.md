@@ -8,7 +8,7 @@ honor its STOP conditions, and update your row when done.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (reviewed 2026-11-10; commits `7eff2ef`, `62ae140` on branch `worktree-agent-afa2202e74ba99d34`, not yet merged) |
+| 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
