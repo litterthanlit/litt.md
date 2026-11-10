@@ -9,14 +9,30 @@ honor its STOP conditions, and update your row when done.
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
 | 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10) |
+| 002  | [Stat shows its figure three ways, one body per world, and the data wave comes next](002-stat-three-bodies.md) | P1 | M | — | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
+## What Nick asked for most
+
+Nick, 2026-11-10: "What I mostly wanna see is each world display data in their own way." So data parts come first. `proposals/worlds.md` already says what each data part is in each world; what was missing was the order and the building. The data wave, each line its own plan:
+
+| Order | Parts | Plan |
+|---|---|---|
+| 1 | Stat (the pattern: code, page, spec, changelog, registry) | 002 |
+| 2 | Progress, Rolling number, Gauge | not written |
+| 3 | Bar list, Breakdown, Funnel, Spread, Sparkline | not written |
+| 4 | Chart, Dot plot, Heatmap, Range chart (builds Press's lit well and Device's dot matrix) | not written |
+| 5 | Table, Cohort grid, Timeline | not written |
+
 ## Dependency notes
 
+- 002 is independent of 001. It is the first of the data wave; the later data plans copy its steps.
+- The plan that applies Flat's scale ("Space") is now 003 or later, and is still unwritten; see the notes below.
+
 - 001 recorded a decision: Nick chose Space on 2026-11-10 (a 5px spacing unit for Flat, 14px text on a 24px line; type sizes and control heights unchanged).
-- The follow-on plan ("apply Flat's scale", 002) is not written yet. It waits on one answer from Nick: in an app that installs litt, does Flat's unit apply to everything inside a `data-material="flat"` element, or not ship at all. It changes `tokens.css`, the taste profile (through `skills/litt-md/workflows/evolve.md`), the registry generator and changelog.
-- Known cost for 002, measured on the live gallery with Space applied in the browser: at 320px, eight more pages scroll sideways (code-input, date-picker, color-picker, tooltip, funnel, pagination, run-list, cart), because fixed widths such as `w-64` grow with the unit. `test:reflow` fails on any of these, so 002 must fix them. `test:corners` under the new unit has not been measured.
+- The follow-on plan ("apply Flat's scale") is not written yet. It waits on one answer from Nick: in an app that installs litt, does Flat's unit apply to everything inside a `data-material="flat"` element, or not ship at all. It changes `tokens.css`, the taste profile (through `skills/litt-md/workflows/evolve.md`), the registry generator and changelog.
+- Known cost for that plan, measured on the live gallery with Space applied in the browser: at 320px, eight more pages scroll sideways (code-input, date-picker, color-picker, tooltip, funnel, pagination, run-list, cart), because fixed widths such as `w-64` grow with the unit. `test:reflow` fails on any of these, so that plan must fix them. `test:corners` under the new unit has not been measured.
 - Device's scale follows Flat's.
 
 ## Audit findings not yet planned
