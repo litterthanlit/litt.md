@@ -10,7 +10,7 @@ honor its STOP conditions, and update your row when done.
 |------|-------|----------|--------|------------|--------|
 | 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10) |
 | 002  | [Stat shows its figure three ways, one body per world, and the data wave comes next](002-stat-three-bodies.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only, its Next.js host template would not install in the review environment) |
-| 003  | [BarChart draws its data three ways: a sunken well in Press, today's chart in Flat, a dot-matrix screen in Device](003-bar-chart-three-bodies.md) | P1 | L | — | IN PROGRESS |
+| 003  | [BarChart draws its data three ways: a sunken well in Press, today's chart in Flat, a dot-matrix screen in Device](003-bar-chart-three-bodies.md) | P1 | L | — | DONE (executed and reviewed 2026-11-10; commit `042347c` on branch `worktree-agent-a52c05bb984e685c8`, not yet merged) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -23,7 +23,7 @@ One rule for every data part, from Nick on 2026-11-10: "current ones are good, w
 | Order | Parts | On these screens | Plan |
 |---|---|---|---|
 | 1 | Stat | Dashboard, Growth, Usage | 002, done (its Flat figure grew to 18px before the rule above; Nick has seen it) |
-| 2 | Chart: BarChart | Dashboard, Growth, Usage, Insights | 003 |
+| 2 | Chart: BarChart | Dashboard, Growth, Usage, Insights | 003, done |
 | 3 | Chart: LineChart and StackedBarChart | the same four | not written; builds on 003's split |
 | 4 | Sparkline, Table | Growth, Usage; Dashboard | not written |
 | 5 | Gauge, Heatmap | Insights | not written |
