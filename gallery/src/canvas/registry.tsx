@@ -18,6 +18,8 @@ import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { AccentBlues } from "./blues";
 import { PICK, accentVars } from "./accents";
+import { CaseStudy } from "@/blocks/case-study";
+import { SCALES, ScaleFrame } from "./scale";
 import {
   BlockButton,
   ButtonBlocks,
@@ -160,6 +162,8 @@ const PANELS = 520;
 const C1 = 0;
 const C2 = 1000;
 const ROW = { a: 1290, b: 1600, c: 1920, d: 2320 };
+/* Flat's scale candidates (scale.tsx), under the pairs: the settings panel four times, then the case study four times. */
+const SCALE_ROW = { settings: 2720, caseStudy: 3760 };
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
@@ -200,4 +204,32 @@ export const ITEMS: CanvasItem[] = [
       </div>
     ),
   },
+  ...SCALES.flatMap((scale, i): CanvasItem[] => [
+    {
+      id: `scale-${scale.id}-settings`,
+      name: `Flat scale · ${scale.name} · settings`,
+      x: i * 640,
+      y: SCALE_ROW.settings,
+      width: 560,
+      height: 760,
+      render: () => (
+        <ScaleFrame scale={scale}>
+          <SettingsToday />
+        </ScaleFrame>
+      ),
+    },
+    {
+      id: `scale-${scale.id}-case-study`,
+      name: `Flat scale · ${scale.name} · case study`,
+      x: i * 1160,
+      y: SCALE_ROW.caseStudy,
+      width: 1080,
+      height: 1200,
+      render: () => (
+        <ScaleFrame scale={scale}>
+          <CaseStudy />
+        </ScaleFrame>
+      ),
+    },
+  ]),
 ];

@@ -221,7 +221,7 @@ export A11Y_TOOLS="${TMPDIR:-/tmp}/a11y"
 
 Run `npm ci --prefix gallery`, then `npm run verify --prefix gallery`, then `npm run build --prefix gallery`.
 
-**Verify**: all three exit 0. Then `grep -c 'var(--spacing)' gallery/dist/assets/*.css | awk -F: '{s+=$2} END {print s}'` → a number greater than 100. (This proves numeric utilities read `--spacing`. If it prints 0, STOP.)
+**Verify**: all three exit 0. Then `grep -o 'var(--spacing)' gallery/dist/assets/*.css | wc -l` → a number greater than 100. (This proves numeric utilities read `--spacing`. If it prints 0, STOP.)
 
 ### Step 2: Create `gallery/src/canvas/scale.tsx`
 
@@ -465,14 +465,15 @@ At the planned commit these print 539, 187, 55, 1158 and 0.
 Then create `proposals/world-scale.md` with the content below. Replace each
 `<…>` with your measured value: the five counts, and for each candidate the
 `overflowing` number from Step 4's table for its settings row and its case-study
-row. Change nothing else; in particular do not fill in the Decision column.
+row. Change nothing else. The Decision column is already filled with what Nick
+decided on 2026-11-10; copy it exactly as written and leave row 6 empty.
 
 ```markdown
 # Per-world scale, starting with Flat
 
 Written 2026-11-10 for Nick. Nick, on the three worlds: "I want each system to not look like the other, and play on its strengths", "flat be like airy, easy to use". The worlds differ today in color, material, face, corner radius and the bodies of 19 controls. They do not differ in size: every world has the same type sizes, control heights and spacing unit, which is why Flat reads as Press without its borders.
 
-This is a proposal, not a build. No token, rule or component changes here. Three candidate scales for Flat are live on the canvas (`#canvas`, the Flat scale rows; `gallery/src/canvas/scale.tsx`), each around the same settings panel and the same case study, beside Flat as it ships. Open `?look=flat#canvas` to compare them. The decisions at the end wait for Nick.
+This is a proposal, not a build. No token, rule or component changes here. Three candidate scales for Flat are live on the canvas (`#canvas`, the Flat scale rows; `gallery/src/canvas/scale.tsx`), each around the same settings panel and the same case study, beside Flat as it ships. Open `?look=flat#canvas` to compare them. Nick saw the same four applied to the live gallery on 2026-11-10 and chose Space; the table at the end records it.
 
 ## What was measured
 
@@ -505,11 +506,11 @@ No spacing unit between 4px and 8px keeps every step on the 8px grid. So "Flat h
 
 | # | Question | Suggested | Decision |
 |---|---|---|---|
-| 1 | Does Flat take its own scale at all, as it took its own shape (v1.9) and its own face and accent (v1.11)? | Yes. Size and space are what a visitor reads first, before material. | |
-| 2 | Which candidate is closest to "airy, easy to use"? | Space. It is how litt.design gets its air, and it keeps R8's sizes. | |
-| 3 | If space: Flat's own unit (5px, so a 10px grid), or the 4px unit with air built into Flat's bodies and blocks one at a time? | The unit, if the overflow counts stay near Today's: it reaches every part at once, and 68 parts have no Flat body yet. | |
-| 4 | Does Flat's text grow to 16? | No. Keep 14 on a 24px line; rank stays with weight and ink (R8). | |
-| 5 | Do Flat's md controls grow to 48? | No. 44 is the touch target, and the 28px pill is exact up to 56. | |
+| 1 | Does Flat take its own scale at all, as it took its own shape (v1.9) and its own face and accent (v1.11)? | Yes. Size and space are what a visitor reads first, before material. | **Yes**, by choosing Space. |
+| 2 | Which candidate is closest to "airy, easy to use"? | Space. It is how litt.design gets its air, and it keeps R8's sizes. | **Space.** Nick, 2026-11-10: "go with space". |
+| 3 | If space: Flat's own unit (5px, so a 10px grid), or the 4px unit with air built into Flat's bodies and blocks one at a time? | The unit, if the overflow counts stay near Today's: it reaches every part at once, and 68 parts have no Flat body yet. | **The unit**, as Space was shown: 5px. |
+| 4 | Does Flat's text grow to 16? | No. Keep 14 on a 24px line; rank stays with weight and ink (R8). | **No**, as Space was shown. |
+| 5 | Do Flat's md controls grow to 48? | No. 44 is the touch target, and the 28px pill is exact up to 56. | **No**, as Space was shown. |
 | 6 | Which world next? | Device, tighter, once Flat's is in and seen. | |
 
 ## After the decision
@@ -546,7 +547,7 @@ Machine-checkable. ALL must hold:
 - [ ] `node gallery/.agent-shots/check-scale.mjs` exits 0 and prints `All 8 frames apply their candidate.`
 - [ ] `git diff --exit-code 3854567 -- gallery/registry.lock.json gallery/CHANGELOG.md skills/ gallery/src/components gallery/src/blocks gallery/src/motion` exits 0 (nothing shipped changed)
 - [ ] `git diff --stat 3854567 -- gallery/src/canvas` lists exactly `registry.tsx` and `scale.tsx`
-- [ ] `proposals/world-scale.md` exists, `grep -c '<' proposals/world-scale.md` prints 0, and its Decision column is empty
+- [ ] `proposals/world-scale.md` exists, `grep -c '<' proposals/world-scale.md` prints 0, and `grep -c 'go with space' proposals/world-scale.md` prints 1 (rows 1 to 5 of the Decision column are as the plan gives them; row 6 is empty)
 - [ ] `plans/README.md` status row updated
 
 ## STOP conditions
@@ -559,11 +560,11 @@ Stop and report back (do not improvise) if:
 - Step 4 fails after you have re-checked that `scale.tsx` matches Step 2 exactly. Report the table it printed. Do not change the `EXPECT` values to make it pass.
 - Step 4 reports a page error from `CaseStudy` rendered four times. Report it; do not edit the block.
 - Any step seems to need a change to a file outside the in-scope list.
-- You are tempted to fill in the Decision column, or to add the candidate values to `tokens.css`. Those are Nick's to decide.
+- You are tempted to change the Decision column from the text this plan gives, to fill in row 6, or to add the candidate values to `tokens.css`. The decisions are Nick's, and applying them is the follow-on plan.
 
 ## Maintenance notes
 
-- **This plan ends at a decision.** The follow-on plan ("apply Flat's scale") can only be written once the Decision column in `proposals/world-scale.md` is filled. It will touch `tokens.css` (the Flat block), `taste/profile.md` (Fixed decisions; R8 or R9, with Nick approving the diff and a `taste:` commit), `system/foundations.md`, Flat's `foundations` lines in `gallery/src/gallery/look.ts` (asserted by `test:worlds`), `gallery/CHANGELOG.md` (a `litt` line) and `gallery/registry.lock.json`, and it removes `scale.tsx` and its registry entries.
+- **This plan records a decision and stops.** Nick chose Space on 2026-11-10. The follow-on plan ("apply Flat's scale", `plans/002-*.md`) puts it into the tokens. It will touch `tokens.css` (the Flat block), `taste/profile.md` (Fixed decisions; R8 or R9, with Nick approving the diff and a `taste:` commit), `system/foundations.md`, Flat's `foundations` lines in `gallery/src/gallery/look.ts` (asserted by `test:worlds`), `gallery/CHANGELOG.md` (a `litt` line) and `gallery/registry.lock.json`, and it removes `scale.tsx` and its registry entries.
 - **If the unit changes**, three things need care in that follow-on plan: the 55 control-sized boxes set by number (`h-8`, `size-11`) should move to control tokens first; `gallery/src/motion/rules.ts` (`SPACE_SCALE`) and the lint's `INSETS` mirror the spacing scale and are checked by `test:rules`; and `test:reflow` (320px), `test:text-zoom` and `test:corners` must be re-run under Flat, since a larger unit changes what fits.
 - **Flat's pill assumes controls up to 56px** (`--radius-control: 28px`). Any candidate that raises `--control-lg` above 56 would stop being a pill.
 - **Reviewer**: confirm no file under `skills/`, `gallery/src/components`, `gallery/src/blocks` or `gallery/src/motion` changed, and that the proposal's numbers match Step 4's table and the five counts.
