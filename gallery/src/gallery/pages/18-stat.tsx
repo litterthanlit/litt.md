@@ -1,5 +1,8 @@
 import { Sparkline } from "@/components/sparkline";
 import { Stat, StatGroup } from "@/components/stat";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -147,6 +150,29 @@ function NarrowDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <Stat label="Deploys this week" value={38} delta="Up 12% on last week" tone="good" />
+              <Stat label="Uptime" value="99.98" unit="%" delta="Same as last week" />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 /* ---------- the overview's tile ---------- */
 
 const TILE_DEPLOYS = [5, 7, 4, 9, 6, 1, 0, 6, 8, 5, 9, 7, 2, 1];
@@ -199,6 +225,14 @@ export default function StatPage() {
         caption="The group measures its own width, not the window's. At 22rem it stays two across, and under 20rem it drops to one. The same group works in a phone-wide frame, beside a sidebar and on a full page. Four across needs 40rem."
       >
         <NarrowDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        caption="One contract, three bodies. Press is a plate with the figure on a raised face set into it. Flat is the figure in ink on the page, with no box. Device is a plate with the label engraved above an LCD window that shows the figure in seven segments."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
 
       <TryIt of="Stat" component={Stat} props={{ label: "Median build", value: "41", unit: "s", delta: "Down 6 s on last week" }} />

@@ -2,10 +2,12 @@
  * Stat: a number tile for one figure that tells you how things stand, such as active projects or the
  * median build time. Compose a row of them in a StatGroup.
  *
- * - Flat: no box at all (no fill, no hairline); the figure sits on the page and space parts the tiles.
- * - Surface (components.md, Stat): `.litt-raised`, so the surface radius, surface-1, an inset hairline and the
- *   top highlight, and no outer shadow (R3). Never glass (R3), never an accent rail. Padding is space-4 in a narrow
- *   group and space-6 once the group is 48rem wide. A tile links nowhere, so it has no hover and no motion.
+ * - Bodies (proposals/worlds.md): this file resolves the state once into StatBodyProps and renders the body the
+ *   material picks (byWorld). Press, here, is a plate (--block, --plate-lift) with the label along its top and the
+ *   figure on a raised face set into it (--block, --block-lift). Flat (bodies/stat.flat.tsx) is the figure in ink on
+ *   the page with no box. Device (bodies/stat.device.tsx) is a plate with the label engraved above an LCD window that
+ *   shows the figure in seven segments. Never glass (R3), never an accent rail. A tile links nowhere, so it has no
+ *   hover and no motion.
  * - Type: the label is the small size in fg-subtle, the value is the h3 size in fg in the sans with tabular
  *   numbers (a figure that updates does not wobble), and a unit follows the value at the same size in fg-subtle.
  *   The value carries the title weight that comes with the h3 step, and the label stays at the text weight (R8).
@@ -26,7 +28,9 @@
  *   arrive together. While it counts, screen readers get the value itself. At rest it is the static tile exactly.
  */
 import { createContext, useContext, type ReactNode } from "react";
-import { useFun, useFunValue } from "@/motion";
+import { byWorld, useFun, useFunValue, useMaterial } from "@/motion";
+import { StatFlatBody } from "./bodies/stat.flat";
+import { StatDeviceBody } from "./bodies/stat.device";
 
 /** Whether a change is good news, bad news or neither. It sets the delta's color, and a hidden word for screen readers. */
 export type StatTone = "good" | "bad" | "neutral";
@@ -57,6 +61,45 @@ export type StatProps = {
   className?: string;
 };
 
+/** What a body draws: the contract's resolved state (proposals/worlds.md, Bodies). */
+export type StatBodyProps = {
+  label: string;
+  /** The value as given, for a body that draws the figure itself (Device's segments). */
+  value: ReactNode;
+  /** The value as it shows now: the given one, or fun mode's count while it moves. */
+  figure: ReactNode;
+  unit?: string;
+  delta?: string;
+  /** The delta's color class: success, danger or the subtle ink. */
+  toneClass: string;
+  /** Hidden words after the delta: ", good news", ", bad news" or nothing. */
+  toneWord: string;
+  trend?: ReactNode;
+  className: string;
+};
+
+/** Press: a plate, the label along its top, the figure on a raised face set into it. */
+function PressBody({ label, figure, unit, delta, toneClass, toneWord, trend, className }: StatBodyProps) {
+  return (
+    <div data-body="press" className={"flex h-full min-w-0 flex-col gap-3 rounded-surface bg-block p-4 shadow-(--plate-lift) forced-colors:border @min-[48rem]:p-6 " + className}>
+      <dt className="text-small text-fg-subtle">{label}</dt>
+      <dd className="m-0 flex flex-1 flex-col gap-2">
+        <span className="w-fit rounded-control bg-block px-3 py-2 text-h3 tabular-nums text-fg shadow-(--block-lift) forced-colors:border">
+          {figure}
+          {unit && <span className="text-fg-subtle">{unit}</span>}
+        </span>
+        {delta && (
+          <span className={"text-caption " + toneClass}>
+            {delta}
+            <span className="sr-only">{toneWord}</span>
+          </span>
+        )}
+        {trend ? <div className="mt-auto pt-3">{trend}</div> : null}
+      </dd>
+    </div>
+  );
+}
+
 /** One number tile. Put it in a StatGroup, or on its own. */
 export function Stat({ label, value, unit, delta, tone = "neutral", trend, className = "" }: StatProps) {
   const grouped = useContext(InGroup);
@@ -64,6 +107,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", trend, class
   const fun = useFun();
   const numeric = typeof value === "number";
   const counted = useFunValue(numeric ? value : 0, { kind: "draw" });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: StatFlatBody, device: StatDeviceBody });
   const figure =
     fun && numeric && counted.moving ? (
       <>
@@ -74,26 +118,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", trend, class
       value
     );
   const tile = (
-    <div
-      className={
-        "litt-raised in-[[data-material=flat]]:bg-transparent in-[[data-material=flat]]:shadow-none flex h-full min-w-0 flex-col gap-2 rounded-surface p-4 @min-[48rem]:p-6 " + className
-      }
-    >
-      <dt className="text-small text-fg-subtle">{label}</dt>
-      <dd className="m-0 flex flex-1 flex-col gap-1">
-        <span className="text-h3 tabular-nums text-fg">
-          {figure}
-          {unit && <span className="text-fg-subtle">{unit}</span>}
-        </span>
-        {delta && (
-          <span className={"text-caption " + TONE[tone]}>
-            {delta}
-            <span className="sr-only">{TONE_WORD[tone]}</span>
-          </span>
-        )}
-        {trend ? <div className="mt-auto pt-3">{trend}</div> : null}
-      </dd>
-    </div>
+    <Body label={label} value={value} figure={figure} unit={unit} delta={delta} toneClass={TONE[tone]} toneWord={TONE_WORD[tone]} trend={trend} className={className} />
   );
   return grouped ? tile : <dl className="@container">{tile}</dl>;
 }
