@@ -221,7 +221,7 @@ export A11Y_TOOLS="${TMPDIR:-/tmp}/a11y"
 
 Run `npm ci --prefix gallery`, then `npm run verify --prefix gallery`, then `npm run build --prefix gallery`.
 
-**Verify**: all three exit 0. Then `grep -c 'var(--spacing)' gallery/dist/assets/*.css | awk -F: '{s+=$2} END {print s}'` → a number greater than 100. (This proves numeric utilities read `--spacing`. If it prints 0, STOP.)
+**Verify**: all three exit 0. Then `grep -o 'var(--spacing)' gallery/dist/assets/*.css | wc -l` → a number greater than 100. (This proves numeric utilities read `--spacing`. If it prints 0, STOP.)
 
 ### Step 2: Create `gallery/src/canvas/scale.tsx`
 

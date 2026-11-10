@@ -8,13 +8,16 @@ honor its STOP conditions, and update your row when done.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | IN PROGRESS |
+| 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (reviewed 2026-11-10; commits `7eff2ef`, `62ae140` on branch `worktree-agent-afa2202e74ba99d34`, not yet merged) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
 ## Dependency notes
 
-- 001 ends at a decision. A follow-on plan ("apply Flat's scale") is written only after Nick fills the Decision column in `proposals/world-scale.md`; it changes `tokens.css`, the taste profile (through `skills/litt-md/workflows/evolve.md`) and the registry changelog. Device's scale follows Flat's.
+- 001 recorded a decision: Nick chose Space on 2026-11-10 (a 5px spacing unit for Flat, 14px text on a 24px line; type sizes and control heights unchanged).
+- The follow-on plan ("apply Flat's scale", 002) is not written yet. It waits on one answer from Nick: in an app that installs litt, does Flat's unit apply to everything inside a `data-material="flat"` element, or not ship at all. It changes `tokens.css`, the taste profile (through `skills/litt-md/workflows/evolve.md`), the registry generator and changelog.
+- Known cost for 002, measured on the live gallery with Space applied in the browser: at 320px, eight more pages scroll sideways (code-input, date-picker, color-picker, tooltip, funnel, pagination, run-list, cart), because fixed widths such as `w-64` grow with the unit. `test:reflow` fails on any of these, so 002 must fix them. `test:corners` under the new unit has not been measured.
+- Device's scale follows Flat's.
 
 ## Audit findings not yet planned
 
