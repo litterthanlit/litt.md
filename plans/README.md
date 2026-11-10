@@ -10,6 +10,7 @@ honor its STOP conditions, and update your row when done.
 |------|-------|----------|--------|------------|--------|
 | 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10) |
 | 002  | [Stat shows its figure three ways, one body per world, and the data wave comes next](002-stat-three-bodies.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only, its Next.js host template would not install in the review environment) |
+| 003  | [BarChart draws its data three ways: a sunken well, ink on grey, a dot-matrix screen](003-bar-chart-three-bodies.md) | P1 | L | — | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -22,12 +23,13 @@ Nick, 2026-11-10: "What I mostly wanna see is each world display data in their o
 | 1 | Stat (the pattern: code, page, spec, changelog, registry) | 002 |
 | 2 | Progress, Rolling number, Gauge | not written |
 | 3 | Bar list, Breakdown, Funnel, Spread, Sparkline | not written |
-| 4 | Chart, Dot plot, Heatmap, Range chart (builds Press's lit well and Device's dot matrix) | not written |
+| 4 | Chart, Dot plot, Heatmap, Range chart (builds Press's lit well and Device's dot matrix) | 003 covers BarChart only, brought forward because it is what Nick most wants to see; LineChart, StackedBarChart and the rest are not written |
 | 5 | Table, Cohort grid, Timeline | not written |
 
 ## Dependency notes
 
 - 002 is independent of 001. It is the first of the data wave; the later data plans copy its steps.
+- 003 follows 002's pattern but does not need it merged. It restructures `chart.tsx` for BarChart only and builds Device's dot matrix; the plans for LineChart and StackedBarChart will build on its split (bars resolved once, a body per world).
 - The plan that applies Flat's scale ("Space") is now 003 or later, and is still unwritten; see the notes below.
 
 - 001 recorded a decision: Nick chose Space on 2026-11-10 (a 5px spacing unit for Flat, 14px text on a 24px line; type sizes and control heights unchanged).
