@@ -10,21 +10,28 @@ honor its STOP conditions, and update your row when done.
 |------|-------|----------|--------|------------|--------|
 | 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10) |
 | 002  | [Stat shows its figure three ways, one body per world, and the data wave comes next](002-stat-three-bodies.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only, its Next.js host template would not install in the review environment) |
-| 003  | [BarChart draws its data three ways: a sunken well, ink on grey, a dot-matrix screen](003-bar-chart-three-bodies.md) | P1 | L | — | TODO |
+| 003  | [BarChart draws its data three ways: a sunken well in Press, today's chart in Flat, a dot-matrix screen in Device](003-bar-chart-three-bodies.md) | P1 | L | — | IN PROGRESS |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
 ## What Nick asked for most
 
-Nick, 2026-11-10: "What I mostly wanna see is each world display data in their own way." So data parts come first. `proposals/worlds.md` already says what each data part is in each world; what was missing was the order and the building. The data wave, each line its own plan:
+Nick, 2026-11-10: "What I mostly wanna see is each world display data in their own way", and then: "what I meant by data was the dashboards etc". So the data parts come first, in the order the dashboard screens use them, so that whole screens (Dashboard, Growth, Usage, Insights) read differently in each world as early as possible.
 
-| Order | Parts | Plan |
-|---|---|---|
-| 1 | Stat (the pattern: code, page, spec, changelog, registry) | 002 |
-| 2 | Progress, Rolling number, Gauge | not written |
-| 3 | Bar list, Breakdown, Funnel, Spread, Sparkline | not written |
-| 4 | Chart, Dot plot, Heatmap, Range chart (builds Press's lit well and Device's dot matrix) | 003 covers BarChart only, brought forward because it is what Nick most wants to see; LineChart, StackedBarChart and the rest are not written |
-| 5 | Table, Cohort grid, Timeline | not written |
+One rule for every data part, from Nick on 2026-11-10: "current ones are good, we should save them for flat". **Today's look of a data part is Flat's body and does not change.** The new bodies are Press's and Device's. Where `proposals/worlds.md` describes a different Flat for a data part, that line is superseded.
+
+| Order | Parts | On these screens | Plan |
+|---|---|---|---|
+| 1 | Stat | Dashboard, Growth, Usage | 002, done (its Flat figure grew to 18px before the rule above; Nick has seen it) |
+| 2 | Chart: BarChart | Dashboard, Growth, Usage, Insights | 003 |
+| 3 | Chart: LineChart and StackedBarChart | the same four | not written; builds on 003's split |
+| 4 | Sparkline, Table | Growth, Usage; Dashboard | not written |
+| 5 | Gauge, Heatmap | Insights | not written |
+| 6 | Breakdown, Spread, Funnel, Cohort grid | Usage; Growth | not written |
+| 7 | Bar list, Dot plot, Timeline | Insights | not written |
+| 8 | Progress, Rolling number, Range chart | none of the four | not written |
+
+The screens themselves are not redesigned per world: they are built from these parts and change as each part gets its bodies.
 
 ## Dependency notes
 

@@ -1,4 +1,4 @@
-# Plan 003: BarChart draws its data three ways: a sunken well, ink on grey, a dot-matrix screen
+# Plan 003: BarChart draws its data three ways: a sunken well in Press, today's chart in Flat, a dot-matrix screen in Device
 
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
@@ -8,7 +8,7 @@
 > maintain the index.
 >
 > **Drift check (run first)**:
-> `git diff --stat 84f3844..HEAD -- gallery/src/components/chart.tsx gallery/src/components/bodies/chart.flat.tsx gallery/src/components/bodies/chart.device.tsx gallery/src/components/seven-segment.tsx gallery/src/gallery/pages/18-chart.tsx gallery/src/motion/deal.ts gallery/src/motion/index.tsx skills/litt-md/system/components.md`
+> `git diff --stat 84f3844..HEAD -- gallery/src/components/chart.tsx gallery/src/components/bodies/chart.device.tsx gallery/src/components/seven-segment.tsx gallery/src/gallery/pages/18-chart.tsx gallery/src/motion/deal.ts gallery/src/motion/index.tsx skills/litt-md/system/components.md`
 > If any of these changed since this plan was written, compare the
 > "Current state" excerpts against the live code before proceeding; on a
 > mismatch, treat it as a STOP condition. (`gallery/CHANGELOG.md` and
@@ -35,6 +35,11 @@ already decides what a chart is in each world:
 |---|---|---|---|
 | Chart (`chart`) | Marks in a sunken well, its grid as grooves lit from the top, the axis on a raised rail | Ink marks on grey, no axes and no gridlines, each value set in type beside its mark | A dot-matrix screen: bars as columns of lit dots, a line as a trace of dots, the reading in segments |
 
+Nick then looked at the data parts as they are today and said: "current ones are
+good, we should save them for flat". So **Flat keeps today's bar chart exactly**
+(the hairline grid, the value axis, the bars), and the new bodies are Press's
+and Device's. The Flat column of the table above is superseded for this part.
+
 This plan builds that for **BarChart only**. LineChart, StackedBarChart and
 Meter live in the same file and stay exactly as they are; they get their own
 plans. Keeping the scope to one kind of mark is what makes this reviewable.
@@ -44,7 +49,7 @@ plans. Keeping the scope to one kind of mark is what makes this reviewable.
 ### Files and their roles
 
 - `gallery/src/components/chart.tsx` (906 lines) — `BarChart`, `LineChart`, `StackedBarChart` and `Meter`. The first three are thin wrappers over one private `Chart()` function.
-- `gallery/src/components/bodies/` — Flat and Device bodies of bodied parts. No `chart.*` files yet.
+- `gallery/src/components/bodies/` — Flat and Device bodies of bodied parts. No `chart.*` files yet. This plan adds only a Device one; Flat's body is today's chart and stays in `chart.tsx`, beside Press's, because both draw the same grid and bars.
 - `gallery/src/components/seven-segment.tsx` — `SevenSegment`, a figure in seven-segment digits behind LCD glass, sized by its font size.
 - `gallery/src/gallery/pages/18-chart.tsx` — the Chart page. `DeploysDemo` (line 112) is its single-series BarChart.
 - `gallery/src/gallery/pages/17-legend.tsx` — the exemplar of a "Three bodies" stage (`ThreeBodiesDemo`).
@@ -188,12 +193,14 @@ that: a ground behind the plot, the labels, and the bars.
 
 | | Press | Flat | Device |
 |---|---|---|---|
-| Ground | A sunken well at the plot (`bg-tray`, `shadow-(--tray-shade)`), and a raised rail under it for the category labels (`bg-block`, `shadow-(--block-lift)`) | A grey sheet from the top of the box to the baseline (`bg-block`, which is grey under Flat) | LCD glass at the plot (`bg-field` with the field line and shade), and the bezel above it |
-| Grid and value axis | Today's hairline grid and value labels | None | None |
-| Bars | Today's bars, standing on the well's floor | Today's bars in ink, each labelled category's value in type above its bar | Columns of lit dots on a matrix of unlit dots |
-| Reading | The tooltip | The values beside the marks, and the tooltip | The emphasised value in seven segments on the bezel, and the tooltip |
-| Room | Value axis on the left, 8px above the plot | No left axis, 24px above for the values | No left axis, 44px above for the readout |
+| Ground | A sunken well at the plot (`bg-tray`, `shadow-(--tray-shade)`), and a raised rail under it for the category labels (`bg-block`, `shadow-(--block-lift)`) | None, as today | LCD glass at the plot (`bg-field` with the field line and shade), and the bezel above it |
+| Grid and value axis | Today's hairline grid and value labels | Today's hairline grid and value labels | None |
+| Bars | Today's bars, standing on the well's floor | Today's bars | Columns of lit dots on a matrix of unlit dots |
+| Reading | The tooltip | The tooltip | The emphasised value in seven segments on the bezel, and the tooltip |
+| Room | Value axis on the left, 8px above the plot | The same as Press: today's | No left axis, 44px above for the readout |
 | Entrance | Bars grow from the baseline (as today) | Bars grow from the baseline (as today) | None: the dots are simply lit |
+
+Under Flat a BarChart must look exactly as it does before this plan: same marks, same positions, same colors.
 
 Press's "grid as grooves lit from the top" needs a lit-edge color that no
 token provides yet, so this plan keeps Press's grid as hairlines inside the
@@ -201,7 +208,7 @@ well. That is recorded in Maintenance notes; do not invent a token.
 
 ### Conventions to match (from the bodied parts already in the repo)
 
-- The part's file keeps the contract and the Press body. Flat's and Device's bodies live in `gallery/src/components/bodies/<part>.flat.tsx` and `<part>.device.tsx`.
+- The part's file keeps the contract and the Press body; other bodies live in `gallery/src/components/bodies/<part>.flat.tsx` and `<part>.device.tsx`. Here Flat's body is today's chart, so it stays in `chart.tsx` too, and only Device gets a file.
 - A body file imports only **types** from the part (`import type { … } from "../chart"`). Packages and other components are imported normally.
 - The drawn root carries `data-body="press" | "flat" | "device"`.
 - Each body file opens with a comment that says what the body is made of.
@@ -246,7 +253,6 @@ export A11Y_TOOLS="${TMPDIR:-/tmp}/a11y"
 
 **In scope** (the only files you should modify or create):
 - `gallery/src/components/chart.tsx`
-- `gallery/src/components/bodies/chart.flat.tsx` (create)
 - `gallery/src/components/bodies/chart.device.tsx` (create)
 - `gallery/src/gallery/pages/18-chart.tsx`
 - `skills/litt-md/system/components.md` (one bullet under `## Chart`)
@@ -280,7 +286,6 @@ Run `npm ci --prefix gallery`, `npm run verify --prefix gallery`, `npm run build
 1. Add to the `@/motion` import: `byWorld` and `useMaterial`. Add below it:
 
 ```tsx
-import { ChartFlatBody } from "./bodies/chart.flat";
 import { ChartDeviceBody } from "./bodies/chart.device";
 ```
 
@@ -292,7 +297,7 @@ type World = "press" | "flat" | "device";
 type Frame = { axis: boolean; top: number };
 const FRAME: Record<World, Frame> = {
   press: { axis: true, top: TOP },
-  flat: { axis: false, top: 24 }, // a value is set above the tallest bar
+  flat: { axis: true, top: TOP }, // today's chart
   device: { axis: false, top: 44 }, // the readout sits on the bezel above the screen
 };
 ```
@@ -306,7 +311,7 @@ const FRAME: Record<World, Frame> = {
 
 **Verify**: `npm run typecheck --prefix gallery` → exit 0 (nothing uses the new parameter yet, so nothing else changes).
 
-### Step 3: Resolve the bars once, and add the Press body, in `chart.tsx`
+### Step 3: Resolve the bars once, and add the Press and Flat bodies, in `chart.tsx`
 
 1. Replace the whole `Bars` function (from `function Bars(` to its closing brace) with the code below. Keep the `MarksProps` type above it: `Rails` and `Lines` still use it.
 
@@ -397,6 +402,40 @@ function barMarks(g: Geometry, series: ChartSeries[], paint: Paint[], n: number,
   return { bars, ringOf };
 }
 
+/** The bars as Press and Flat draw them: the series' paint, growing from the baseline on the responsive tier, and the focus ring. */
+function BarRects({ bars, ring, entrance, enter }: Pick<ChartBodyProps, "bars" | "ring" | "entrance" | "enter">) {
+  return (
+    <g aria-hidden="true">
+      {bars.map((b) => (
+        <motion.rect
+          key={b.key}
+          x={b.x}
+          y={b.y}
+          width={b.width}
+          height={b.height}
+          initial={entrance ? { scaleY: 0 } : false}
+          animate={{ scaleY: 1, transition: enter }}
+          style={{ originX: 0.5, originY: 1 }}
+          strokeWidth={1}
+          className={"transition-[fill] duration-(--dur-instant) ease-litt " + b.fill + (b.edge ? " " + EDGE : " stroke-transparent")}
+        />
+      ))}
+      {ring && <rect {...ring} fill="none" strokeWidth={2} className="stroke-focus" />}
+    </g>
+  );
+}
+
+/** Flat: the chart as it has always been. A hairline grid, the value axis and the bars, on the page with no ground. */
+function FlatBody({ width, height, text, g, labels, fmt, bars, ring, band, entrance, enter }: ChartBodyProps) {
+  return (
+    <svg width={width} height={height} role="img" aria-label={text} className="block overflow-visible">
+      <Grid g={g} labels={labels} fmt={fmt} />
+      {band && <rect {...band} className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]" />}
+      <BarRects bars={bars} ring={ring} entrance={entrance} enter={enter} />
+    </svg>
+  );
+}
+
 /** Press: the plot is a sunken well, the bars stand on its floor, and the category labels sit on a raised rail under it. */
 function PressBody({ width, height, text, g, labels, fmt, bars, ring, band, entrance, enter }: ChartBodyProps) {
   return (
@@ -406,23 +445,7 @@ function PressBody({ width, height, text, g, labels, fmt, bars, ring, band, entr
       <svg width={width} height={height} role="img" aria-label={text} className="block overflow-visible">
         <Grid g={g} labels={labels} fmt={fmt} />
         {band && <rect {...band} className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]" />}
-        <g aria-hidden="true">
-          {bars.map((b) => (
-            <motion.rect
-              key={b.key}
-              x={b.x}
-              y={b.y}
-              width={b.width}
-              height={b.height}
-              initial={entrance ? { scaleY: 0 } : false}
-              animate={{ scaleY: 1, transition: enter }}
-              style={{ originX: 0.5, originY: 1 }}
-              strokeWidth={1}
-              className={"transition-[fill] duration-(--dur-instant) ease-litt " + b.fill + (b.edge ? " " + EDGE : " stroke-transparent")}
-            />
-          ))}
-          {ring && <rect {...ring} fill="none" strokeWidth={2} className="stroke-focus" />}
-        </g>
+        <BarRects bars={bars} ring={ring} entrance={entrance} enter={enter} />
       </svg>
     </>
   );
@@ -436,7 +459,7 @@ function PressBody({ width, height, text, g, labels, fmt, bars, ring, band, entr
 
 ```tsx
   const marks = body ? barMarks(g, series, paint, n, emphasis, fmt) : null;
-  const Body = byWorld(world, { press: PressBody, flat: ChartFlatBody, device: ChartDeviceBody });
+  const Body = byWorld(world, { press: PressBody, flat: FlatBody, device: ChartDeviceBody });
 ```
 
    - Change the root element to `<div data-chart={kind} data-body={body ?? undefined} className={"w-full " + className}>`.
@@ -481,89 +504,16 @@ function PressBody({ width, height, text, g, labels, fmt, bars, ring, band, entr
 ```
  * - Bodies (proposals/worlds.md): for BarChart this file resolves every bar once (barMarks) and renders the body the
  *   material picks (byWorld). Press, here, is a sunken well (--tray, --tray-shade) with the bars standing on its floor
- *   and the category labels on a raised rail (--block, --block-lift). Flat (bodies/chart.flat.tsx) is ink bars on a
- *   grey sheet with no axis and no gridlines, each labelled value set above its bar. Device (bodies/chart.device.tsx)
- *   is a dot-matrix screen: bars as columns of lit dots, the emphasised value in seven segments above it. LineChart,
- *   StackedBarChart and Meter have no bodies yet and draw as before in every world.
+ *   and the category labels on a raised rail (--block, --block-lift). Flat, also here, is the chart as it has always
+ *   been: the hairline grid, the value axis and the bars, with no ground (Nick, 2026-11-10: the current data parts
+ *   are Flat's). Device (bodies/chart.device.tsx) is a dot-matrix screen: bars as columns of lit dots, the emphasised
+ *   value in seven segments above it. LineChart, StackedBarChart and Meter have no bodies yet and draw as before in
+ *   every world.
 ```
 
-**Verify**: typecheck fails only because the two body files do not exist yet. Continue.
+**Verify**: typecheck fails only because the Device body file does not exist yet. Continue.
 
-### Step 4: Create the Flat body, `gallery/src/components/bodies/chart.flat.tsx`
-
-```tsx
-/**
- * BarChart, the Flat body (proposals/worlds.md, Bodies): ink marks on grey, each value set in type beside its mark.
- *
- * - The ground is one grey sheet (--block, the surface radius) from the top of the chart to the baseline. No value
- *   axis and no gridlines: the numbers are on the marks.
- * - Bars are the series' own paint, as in every body. For a single series, each labelled category's value sits above
- *   its bar at the caption size in the subtle ink, and the emphasised bar's in the ink; a value that would crowd the
- *   emphasised one steps aside. With several series the legend and the tooltip carry the values.
- * - Category labels stay under the baseline, thinned as the chart thins them. The entrance grows the bars from the
- *   baseline on the responsive tier, as in Press.
- */
-import { motion } from "motion/react";
-import type { ChartBodyProps } from "../chart";
-
-const FIGURE = 7.2; // advance of a 12px tabular figure, as the chart measures labels
-const EDGE = "stroke-[color-mix(in_oklab,var(--fg)_55%,transparent)]";
-
-/** Flat: ink on a grey sheet. */
-export function ChartFlatBody({ width, height, text, g, labels, bars, ring, band, entrance, enter }: ChartBodyProps) {
-  const n = labels.length;
-  const single = !bars.some((b) => b.series > 0);
-  const strong = bars.find((b) => b.strong)?.index ?? null;
-  return (
-    <>
-      <div aria-hidden="true" className="absolute -z-10 rounded-surface bg-block" style={{ left: g.left, top: 0, width: g.plotW, height: g.base }} />
-      <svg width={width} height={height} role="img" aria-label={text} className="block overflow-visible">
-        {band && <rect {...band} className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]" />}
-        <g aria-hidden="true">
-          {bars.map((b) => (
-            <motion.rect
-              key={b.key}
-              x={b.x}
-              y={b.y}
-              width={b.width}
-              height={b.height}
-              initial={entrance ? { scaleY: 0 } : false}
-              animate={{ scaleY: 1, transition: enter }}
-              style={{ originX: 0.5, originY: 1 }}
-              strokeWidth={1}
-              className={"transition-[fill] duration-(--dur-instant) ease-litt " + b.fill + (b.edge ? " " + EDGE : " stroke-transparent")}
-            />
-          ))}
-          <g className="text-caption font-normal tabular-nums">
-            {single &&
-              bars.map((b) => {
-                const crowded = strong !== null && b.index !== strong && Math.abs(b.index - strong) < g.step;
-                if (!(b.strong || (b.labelled && !crowded))) return null;
-                return (
-                  <text key={b.key} data-value="" x={b.x + b.width / 2} y={b.y - 6} textAnchor="middle" className={b.strong ? "fill-fg" : "fill-fg-subtle"}>
-                    {b.text}
-                  </text>
-                );
-              })}
-            {labels.map((l, i) => {
-              if ((n - 1 - i) % g.step !== 0) return null;
-              const last = i === n - 1 && g.cx(i) + (l.length * FIGURE) / 2 > g.width;
-              return (
-                <text key={i} x={last ? g.width : g.cx(i)} y={g.base + 20} textAnchor={last ? "end" : "middle"} className="fill-fg-subtle">
-                  {l}
-                </text>
-              );
-            })}
-          </g>
-          {ring && <rect {...ring} fill="none" strokeWidth={2} className="stroke-focus" />}
-        </g>
-      </svg>
-    </>
-  );
-}
-```
-
-### Step 5: Create the Device body, `gallery/src/components/bodies/chart.device.tsx`
+### Step 4: Create the Device body, `gallery/src/components/bodies/chart.device.tsx`
 
 ```tsx
 /**
@@ -659,9 +609,9 @@ export function ChartDeviceBody({ width, height, text, g, labels, bars, ring, re
 
 **Verify**: `npm run typecheck --prefix gallery` → exit 0. `npm run lint:litt --prefix gallery` → exit 0. `grep -c 'function Bars(' gallery/src/components/chart.tsx` → `0`.
 
-If the typecheck or the lint rejects a line of this plan's own code, fix only what the tool names, in the smallest way that keeps the design table above true and stays inside the three chart files, and describe the change precisely in your report. If that is not enough, STOP.
+If the typecheck or the lint rejects a line of this plan's own code, fix only what the tool names, in the smallest way that keeps the design table above true and stays inside `chart.tsx` and the Device body file, and describe the change precisely in your report. If that is not enough, STOP.
 
-### Step 6: Add the "Three bodies" stage to `gallery/src/gallery/pages/18-chart.tsx`
+### Step 5: Add the "Three bodies" stage to `gallery/src/gallery/pages/18-chart.tsx`
 
 1. Open `gallery/src/gallery/pages/17-legend.tsx`, read its `ThreeBodiesDemo` and its import lines for `useCustomize`, `useDark`, `lookAttributes`, `MATERIALS` and `MaterialProvider`. Copy those import lines exactly into `18-chart.tsx`.
 2. Add a `ThreeBodiesDemo` function next to the page's other demo functions. Copy the Legend page's function, and make two changes only: in the frame's `className`, replace `justify-items-start` with nothing (the chart must take the frame's width); and replace the two `<Legend … />` elements with one `<BarChart … />` that has the **same props as the BarChart in this page's `DeploysDemo`**, without any `key` and with `entrance={false}`.
@@ -670,7 +620,7 @@ If the typecheck or the lint rejects a line of this plan's own code, fix only wh
 ```tsx
       <Stage
         title="Three bodies"
-        caption="One contract, three bodies. Press is a sunken well, the bars standing on its floor and the labels on a raised rail. Flat is ink on a grey sheet with no axis and no gridlines, each value set above its bar. Device is a dot-matrix screen: bars are columns of lit dots, and the current value shows in seven segments above it. Lines and stacked rails follow in a later release."
+        caption="One contract, three bodies. Press is a sunken well, the bars standing on its floor and the labels on a raised rail. Flat is the chart on the page: a hairline grid, the value axis and the bars, with no ground. Device is a dot-matrix screen: bars are columns of lit dots, and the current value shows in seven segments above it. Lines and stacked rails follow in a later release."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
@@ -679,12 +629,12 @@ If the typecheck or the lint rejects a line of this plan's own code, fix only wh
 
 **Verify**: `npm run verify --prefix gallery` fails **only** with a message that the `chart` item changed without a changelog line. Any other failure: fix it if it is a typo against this plan, otherwise STOP.
 
-### Step 7: The spec line, the changelog line and the lock
+### Step 6: The spec line, the changelog line and the lock
 
 1. In `skills/litt-md/system/components.md`, under `## Chart`, add one bullet at the end of that section's list:
 
 ```
-- **Bodies:** BarChart has a body per material; LineChart, StackedBarChart and Meter do not yet and draw the same in every world. Press is a sunken well at the plot (`--tray`, `--tray-shade`), today's hairline grid inside it, the bars standing on its floor and the category labels on a raised rail under it (`--block`, `--block-lift`). Flat, bodies/chart.flat.tsx: ink bars on one grey sheet (`--block`, the surface radius) with no value axis and no gridlines; for a single series each labelled category's value is set above its bar at the caption size, the emphasised one in `--fg`. Device, bodies/chart.device.tsx: LCD glass (`--field`) covered by a matrix of unlit dots, one every 6px; a bar is its columns' dots lit up to its height in `--field-ink` (the emphasised bar full, the others 55%; a hue series in its hue), the category labels engraved under the screen (`litt-legend`), and the emphasised value in seven segments above it (the Seven-segment part). Nothing in Device's body grows or fades in.
+- **Bodies:** BarChart has a body per material; LineChart, StackedBarChart and Meter do not yet and draw the same in every world. Press is a sunken well at the plot (`--tray`, `--tray-shade`), today's hairline grid inside it, the bars standing on its floor and the category labels on a raised rail under it (`--block`, `--block-lift`). Flat is the chart as specified above, on the page with no ground: the current chart is Flat's. Device, bodies/chart.device.tsx: LCD glass (`--field`) covered by a matrix of unlit dots, one every 6px; a bar is its columns' dots lit up to its height in `--field-ink` (the emphasised bar full, the others 55%; a hue series in its hue), the category labels engraved under the screen (`litt-legend`), and the emphasised value in seven segments above it (the Seven-segment part). Nothing in Device's body grows or fades in.
 ```
 
 2. Open `gallery/CHANGELOG.md`, read the two newest releases for the exact format, and get today's date with `date +%F`. If the newest heading is already today's date, add the line below to that release's list. Otherwise add a new release directly above the newest one:
@@ -692,14 +642,14 @@ If the typecheck or the lint rejects a line of this plan's own code, fix only wh
 ```
 ## <today> · Data, a body per world: the bar chart
 
-- **changed** `chart`: BarChart has a body per material. Press is a sunken well with the bars standing on its floor and the labels on a raised rail. Flat is ink bars on a grey sheet with no axis and no gridlines, each value set above its bar. Device is a dot-matrix screen, bars as columns of lit dots and the current value in seven segments, so the item now installs `seven-segment` with it. LineChart, StackedBarChart and Meter are unchanged, and so are the props.
+- **changed** `chart`: BarChart has a body per material. Press is a sunken well with the bars standing on its floor and the labels on a raised rail. Flat is the chart as it was. Device is a dot-matrix screen, bars as columns of lit dots and the current value in seven segments, so the item now installs `seven-segment` with it. LineChart, StackedBarChart and Meter are unchanged, and so are the props.
 ```
 
 3. Run `npm run verify --prefix gallery`.
 
 **Verify**: `verify` exits 0; `node skills/litt-md/scripts/check.mjs` ends with `All checks passed.`; `git status --short` lists `gallery/registry.lock.json` as modified. If `verify` names any item other than `chart` as changed without a changelog line, STOP.
 
-### Step 8: Prove each world draws its own bar chart
+### Step 7: Prove each world draws its own bar chart
 
 Run `npm run build --prefix gallery`. Save the script below as `gallery/.agent-shots/check-chart.mjs` (`.agent-shots` is gitignored; create the folder) and run `node gallery/.agent-shots/check-chart.mjs`.
 
@@ -753,7 +703,6 @@ for (const [width, height] of [[1440, 900], [320, 700]]) {
         lineCharts: document.querySelectorAll('main [data-chart="line"]').length,
         wells: own.filter((c) => count(c, "[data-well]") === 1).length,
         gridlines: Math.min(...own.map((c) => count(c, "svg line"))),
-        values: Math.max(0, ...own.map((c) => count(c, "svg text[data-value]"))),
         dots: Math.min(...own.map((c) => count(c, "svg circle[data-dot]"))),
         patterns: own.filter((c) => count(c, "svg pattern") === 1).length,
         segments: Math.max(0, ...own.map((c) => count(c, "[data-seg]"))),
@@ -771,7 +720,7 @@ for (const [width, height] of [[1440, 900], [320, 700]]) {
     if (r.unbodied !== 0) fail("a line or stacked chart carries a body");
     if (r.lineCharts < 1) fail("no line chart found: data-chart is missing");
     if (world === "press" && (r.wells !== r.own || r.gridlines < 3)) fail(`Press: ${r.wells} of ${r.own} have a well, fewest gridlines ${r.gridlines}`);
-    if (world === "flat" && (r.gridlines !== 0 || r.values < 1)) fail(`Flat: ${r.gridlines} gridlines (expected 0), ${r.values} values above bars`);
+    if (world === "flat" && (r.gridlines < 3 || r.wells !== 0 || r.patterns !== 0)) fail(`Flat: fewest gridlines ${r.gridlines} (expected today's grid), ${r.wells} wells and ${r.patterns} matrices (expected none)`);
     if (world === "device" && (r.dots < 10 || r.patterns !== r.own || r.gridlines !== 0 || r.segments < 7)) fail(`Device: fewest dots ${r.dots}, ${r.patterns} of ${r.own} have the matrix, ${r.gridlines} gridlines, ${r.segments} segments`);
     if (r.sideways > 1) fail(`scrolls ${r.sideways}px sideways`);
     if (errors.length) fail(`page errors: ${errors[0]}`);
@@ -786,9 +735,9 @@ process.exit(bad ? 1 : 0);
 
 **Verify**: exit 0, last line `BarChart draws its own body in every world.`, six rows. Keep the table for your report. The screenshots `gallery/.agent-shots/chart-press.png`, `chart-flat.png`, `chart-device.png` are for the reviewer; do not commit them.
 
-If the script fails only on `own < 3` because the Chart page has fewer than three bar charts outside the Three bodies stage, do not change the page: report the number and continue.
+If the script fails only on `only N bar charts` because the Chart page has fewer than three bar charts outside the Three bodies stage, do not change the page: report the number and continue.
 
-### Step 9: The repo's own checks
+### Step 8: The repo's own checks
 
 Each must exit 0:
 
@@ -803,15 +752,15 @@ npm run test:worlds --prefix gallery
 npm run test:study --prefix gallery
 ```
 
-If `test:corners` names the well, the rail, the grey sheet or the glass of a bar chart, remove the `rounded-control` or `rounded-surface` class from that one ground element (a square corner is always allowed), rebuild, and re-run; report that you did. For any other failure that names a bar chart, try one fix inside the three chart files; if it still fails, STOP and report the output. If a check fails on something that is not a bar chart, report it as not caused by this plan and continue.
+If `test:corners` names the well, the rail or the glass of a bar chart, remove the `rounded-control` or `rounded-surface` class from that one ground element (a square corner is always allowed), rebuild, and re-run; report that you did. For any other failure that names a bar chart, try one fix inside `chart.tsx` or the Device body file; if it still fails, STOP and report the output. If a check fails on something that is not a bar chart, report it as not caused by this plan and continue.
 
 Then the install test, from the repo root: `node gallery/scripts/test-registry.mjs --app vite --items chart,seven-segment --scenarios each,seq`.
 
 **Verify**: last lines include `all steps passed`. If it cannot reach the network, say so in your report; that is not a STOP. If it fails on `chart`, STOP and report.
 
-### Step 10: Commit and final checks
+### Step 9: Commit and final checks
 
-`git add gallery/src/components/chart.tsx gallery/src/components/bodies/chart.flat.tsx gallery/src/components/bodies/chart.device.tsx gallery/src/gallery/pages/18-chart.tsx skills/litt-md/system/components.md gallery/CHANGELOG.md gallery/registry.lock.json`, then commit with the message `gallery: the bar chart's three bodies`.
+`git add gallery/src/components/chart.tsx gallery/src/components/bodies/chart.device.tsx gallery/src/gallery/pages/18-chart.tsx skills/litt-md/system/components.md gallery/CHANGELOG.md gallery/registry.lock.json`, then commit with the message `gallery: the bar chart's three bodies`.
 
 Run `npm run verify --prefix gallery`, `npm run build --prefix gallery`, `node gallery/.agent-shots/check-chart.mjs`, `git status --short`.
 
@@ -820,7 +769,7 @@ Run `npm run verify --prefix gallery`, `npm run build --prefix gallery`, `node g
 ## Test plan
 
 - The repo has no unit-test framework; its tests are the generators, the lint and the Playwright page checks.
-- New behavioural proof: Step 8's script. In each world, at 1440px and 320px: every BarChart on the Chart page draws that world's body; the Three bodies stage shows the other two; line and stacked charts carry no body; Press has a well and gridlines; Flat has no gridlines and has values above bars; Device has the matrix, lit dots, no gridlines and a seven-segment reading; the page does not scroll sideways; no page errors.
+- New behavioural proof: Step 8's script. In each world, at 1440px and 320px: every BarChart on the Chart page draws that world's body; the Three bodies stage shows the other two; line and stacked charts carry no body; Press has a well and gridlines; Flat has today's gridlines and neither a well nor a matrix; Device has the matrix, lit dots, no gridlines and a seven-segment reading; the page does not scroll sideways; no page errors.
 - Regression: reflow, text zoom, corners, gaps and reduced motion on the Chart page and on every page or block that uses BarChart (`dot-plot`, `legend`, `dashboard`, `growth`); the wall, the worlds and the study checks across the gallery; the install test for `chart` in a fresh Vite app.
 - `verify` proves the version gate: only `chart` moved.
 
@@ -831,9 +780,9 @@ Machine-checkable. ALL must hold:
 - [ ] `npm run verify --prefix gallery` and `npm run build --prefix gallery` exit 0
 - [ ] `node skills/litt-md/scripts/check.mjs` ends with `All checks passed.`
 - [ ] `node gallery/.agent-shots/check-chart.mjs` exits 0 and prints `BarChart draws its own body in every world.`
-- [ ] Every command in Step 9 exits 0, or the report names the one that did not and why it is not this plan's
+- [ ] Every command in Step 8 exits 0, or the report names the one that did not and why it is not this plan's
 - [ ] `grep -c 'function Bars(' gallery/src/components/chart.tsx` prints 0, and `grep -c 'function barMarks(' gallery/src/components/chart.tsx` prints 1
-- [ ] `grep -n 'from "../chart"' gallery/src/components/bodies/chart.flat.tsx gallery/src/components/bodies/chart.device.tsx` shows only `import type` lines
+- [ ] `grep -n 'from "../chart"' gallery/src/components/bodies/chart.device.tsx` shows only an `import type` line
 - [ ] `git diff <starting commit> -- gallery/src/components/chart.tsx | grep -E '^[-+].*(function Lines|function Rails|function Meter|export type (BarChartProps|LineChartProps|StackedBarChartProps|ChartSeries|MeterProps))'` prints nothing (those declarations are untouched)
 - [ ] `git diff --stat <starting commit>` lists only the in-scope files
 - [ ] The install test printed `all steps passed`, or the report says plainly that it could not run and why
@@ -843,17 +792,18 @@ Machine-checkable. ALL must hold:
 
 Stop and report back (do not improvise) if:
 
-- The drift check shows changes and the excerpts in "Current state" no longer match, or `bodies/chart.flat.tsx` or `bodies/chart.device.tsx` already exists.
+- The drift check shows changes and the excerpts in "Current state" no longer match, or `bodies/chart.device.tsx` already exists.
 - Making BarChart work seems to need a change to `Lines`, `Rails`, `Legend`, `Tip`, `Meter` or any public props type.
-- `verify` fails with an error that is not a typo against this plan and that the one-fix allowance in Step 5 does not cover. Do not weaken the lint, add `litt-allow`, or change another component.
+- `verify` fails with an error that is not a typo against this plan and that the one-fix allowance in Step 4 does not cover. Do not weaken the lint, add `litt-allow`, or change another component.
 - `verify` says an item other than `chart` changed without a changelog line.
-- Step 8's script still fails after you have checked your files against Steps 2 to 6. Report its table. Do not change the script's expectations, except as Step 8 itself allows.
-- A Step 9 check fails on a bar chart after the fix that step allows.
+- Step 7's script still fails after you have checked your files against Steps 2 to 5. Report its table. Do not change the script's expectations, except as Step 7 itself allows.
+- A Step 8 check fails on a bar chart after the fix that step allows.
 - A fix seems to need a new token or a change to `seven-segment.tsx`.
 
 ## Maintenance notes
 
-- **These bodies are a first pass for Nick's eye.** The checks prove structure, not taste. The reviewer must look at `gallery/.agent-shots/chart-press.png`, `chart-flat.png` and `chart-device.png`, and at the dashboard and growth blocks in each world, in light and dark. Expect a revision round on: the room above Flat's bars (24px) and Device's screen (44px); the dot pitch (6px) and unlit strength (10%); whether Flat's values crowd on a 14-bar chart; and whether the seven-segment readout sits clear of the screen.
+- **These bodies are a first pass for Nick's eye.** The checks prove structure, not taste. The reviewer must look at `gallery/.agent-shots/chart-press.png`, `chart-flat.png` and `chart-device.png`, and at the dashboard and growth blocks in each world, in light and dark. Expect a revision round on: the room above Device's screen (44px); the dot pitch (6px) and unlit strength (10%); how Press's well and rail read; and whether the seven-segment readout sits clear of the screen.
+- **Flat is today's chart, by Nick's decision of 2026-11-10** ("current ones are good, we should save them for flat"). `proposals/worlds.md` still describes a different Flat chart (ink on grey, no axes); that row is superseded for the data parts and should be corrected when the data wave's section is next edited. Under Flat nothing about a BarChart may change; the reviewer should compare the Chart page in Flat before and after.
 - **Press's grid is still hairlines, not "grooves lit from the top".** A groove needs a lit-edge color for both themes that no token provides. Adding one is a token change (through `skills/litt-md/workflows/evolve.md`), so it is left for Nick to decide.
 - **Device's data hues on LCD glass** have not been checked for contrast by `check.mjs`, which checks them on the body and the screens' surfaces. A hue bar chart under Device is worth a look, and possibly a new pair in check 5.
 - **LineChart and StackedBarChart are next**, on the same split: the contract already resolves geometry, so each needs its marks resolved once (as `barMarks` does) and a body per world. Device's line is "a trace of dots" on the same matrix.
