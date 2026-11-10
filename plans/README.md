@@ -8,7 +8,7 @@ honor its STOP conditions, and update your row when done.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | TODO |
+| 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | IN PROGRESS |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
