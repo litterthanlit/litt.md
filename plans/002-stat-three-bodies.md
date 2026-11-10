@@ -536,12 +536,13 @@ for (const [width, height] of [[1440, 900], [320, 700]]) {
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(800);
     const r = await page.evaluate(() => {
-      const count = (w) => document.querySelectorAll(`main [data-body="${w}"]`).length;
+      /* A Stat's body sits in a description list; other parts on the page have bodies too, so count only those. */
+      const count = (w) => document.querySelectorAll(`main dl [data-body="${w}"]`).length;
       return {
         material: document.documentElement.getAttribute("data-material") ?? "press",
         press: count("press"), flat: count("flat"), device: count("device"),
-        segments: document.querySelectorAll('main [data-body="device"] [data-seg]').length,
-        terms: document.querySelectorAll("main [data-body] dt").length,
+        segments: document.querySelectorAll('main dl [data-body="device"] [data-seg]').length,
+        terms: document.querySelectorAll("main dl [data-body] > dt").length,
         sideways: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       };
     });
