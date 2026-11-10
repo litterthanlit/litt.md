@@ -9,14 +9,39 @@ honor its STOP conditions, and update your row when done.
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
 | 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10) |
+| 002  | [Stat shows its figure three ways, one body per world, and the data wave comes next](002-stat-three-bodies.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only, its Next.js host template would not install in the review environment) |
+| 003  | [BarChart draws its data three ways: a sunken well in Press, today's chart in Flat, a dot-matrix screen in Device](003-bar-chart-three-bodies.md) | P1 | L | — | IN PROGRESS |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
+## What Nick asked for most
+
+Nick, 2026-11-10: "What I mostly wanna see is each world display data in their own way", and then: "what I meant by data was the dashboards etc". So the data parts come first, in the order the dashboard screens use them, so that whole screens (Dashboard, Growth, Usage, Insights) read differently in each world as early as possible.
+
+One rule for every data part, from Nick on 2026-11-10: "current ones are good, we should save them for flat". **Today's look of a data part is Flat's body and does not change.** The new bodies are Press's and Device's. Where `proposals/worlds.md` describes a different Flat for a data part, that line is superseded.
+
+| Order | Parts | On these screens | Plan |
+|---|---|---|---|
+| 1 | Stat | Dashboard, Growth, Usage | 002, done (its Flat figure grew to 18px before the rule above; Nick has seen it) |
+| 2 | Chart: BarChart | Dashboard, Growth, Usage, Insights | 003 |
+| 3 | Chart: LineChart and StackedBarChart | the same four | not written; builds on 003's split |
+| 4 | Sparkline, Table | Growth, Usage; Dashboard | not written |
+| 5 | Gauge, Heatmap | Insights | not written |
+| 6 | Breakdown, Spread, Funnel, Cohort grid | Usage; Growth | not written |
+| 7 | Bar list, Dot plot, Timeline | Insights | not written |
+| 8 | Progress, Rolling number, Range chart | none of the four | not written |
+
+The screens themselves are not redesigned per world: they are built from these parts and change as each part gets its bodies.
+
 ## Dependency notes
 
+- 002 is independent of 001. It is the first of the data wave; the later data plans copy its steps.
+- 003 follows 002's pattern but does not need it merged. It restructures `chart.tsx` for BarChart only and builds Device's dot matrix; the plans for LineChart and StackedBarChart will build on its split (bars resolved once, a body per world).
+- The plan that applies Flat's scale ("Space") is now 003 or later, and is still unwritten; see the notes below.
+
 - 001 recorded a decision: Nick chose Space on 2026-11-10 (a 5px spacing unit for Flat, 14px text on a 24px line; type sizes and control heights unchanged).
-- The follow-on plan ("apply Flat's scale", 002) is not written yet. It waits on one answer from Nick: in an app that installs litt, does Flat's unit apply to everything inside a `data-material="flat"` element, or not ship at all. It changes `tokens.css`, the taste profile (through `skills/litt-md/workflows/evolve.md`), the registry generator and changelog.
-- Known cost for 002, measured on the live gallery with Space applied in the browser: at 320px, eight more pages scroll sideways (code-input, date-picker, color-picker, tooltip, funnel, pagination, run-list, cart), because fixed widths such as `w-64` grow with the unit. `test:reflow` fails on any of these, so 002 must fix them. `test:corners` under the new unit has not been measured.
+- The follow-on plan ("apply Flat's scale") is not written yet. It waits on one answer from Nick: in an app that installs litt, does Flat's unit apply to everything inside a `data-material="flat"` element, or not ship at all. It changes `tokens.css`, the taste profile (through `skills/litt-md/workflows/evolve.md`), the registry generator and changelog.
+- Known cost for that plan, measured on the live gallery with Space applied in the browser: at 320px, eight more pages scroll sideways (code-input, date-picker, color-picker, tooltip, funnel, pagination, run-list, cart), because fixed widths such as `w-64` grow with the unit. `test:reflow` fails on any of these, so that plan must fix them. `test:corners` under the new unit has not been measured.
 - Device's scale follows Flat's.
 
 ## Audit findings not yet planned

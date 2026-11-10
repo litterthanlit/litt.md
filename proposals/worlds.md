@@ -324,6 +324,17 @@ Every wave builds all three bodies of each of its parts, one PR per wave, with `
 
 After wave 10 come the world-only parts (Depth, above): Press's knob, meter bank and instrument panel, and Flat's work slider, large cover, editorial layout and photo essay.
 
+### The data wave comes next
+
+Written 2026-11-10. Nick: "What I mostly wanna see is each world display data in their own way." So the data parts move ahead of waves 3 to 5. The inventory above already says what each one is in each world; only the order changes.
+
+1. **Figures:** Stat (built first, as the pattern), then Progress, Rolling number and Gauge. They reuse pieces that exist: the plate, the raised face, the cap in a slot, the segments and the Chase.
+2. **Rows of marks:** Bar list, Breakdown, Funnel, Spread and Sparkline. They build Flat's ink mark on grey and Press's fill in a slot cut into a slat.
+3. **Charts:** Chart, Dot plot, Heatmap and Range chart. They build Press's lit well and Device's dot matrix, which wave 3 was to build.
+4. **Tables:** Table, Cohort grid and Timeline, on the tray of slats, the ink row and the lamp row from wave 1.
+
+Each part lands with all three bodies, a Three bodies stage on its page, a Bodies line in `components.md` and a changelog line, as Stat did. Waves 3 to 5 (what a hand drags, opens over the page and opens in place) follow the data wave, less the pieces it has already built.
+
 ### Counts
 
 Of the 95 parts:
