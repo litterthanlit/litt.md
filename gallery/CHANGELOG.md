@@ -9,6 +9,7 @@ To update an item, read the entries since your version, then reinstall it with `
 Each world shows data in its own way (`proposals/worlds.md`, decision 15). Stat is the first data part with a body per material; the others follow.
 
 - **changed** `stat`: a body per material. Press is a plate with the figure on a raised face set into it. Flat is the figure in ink on the page at 18px, with no box. Device is a plate with the label engraved above an LCD window that shows the figure in seven segments, so the item now installs `seven-segment` with it. Props are unchanged.
+- **changed** `chart`: BarChart has a body per material. Press is a sunken well with the bars standing on its floor and the labels on a raised rail. Flat is the chart as it was. Device is a dot-matrix screen, bars as columns of lit dots and the current value in seven segments, so the item now installs `seven-segment` with it. LineChart, StackedBarChart and Meter are unchanged, and so are the props.
 
 ## 2026-11-09 · Each world has its own color and type
 
