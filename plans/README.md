@@ -14,7 +14,7 @@ honor its STOP conditions, and update your row when done.
 | 004  | [LineChart and StackedBarChart get Press's well and Device's dot matrix, and stay as they are in Flat](004-line-and-stacked-chart-bodies.md) | P1 | M | 003 | DONE (executed and reviewed 2026-11-11; commit `6e50729` on the local `claude/bold-babbage-o26t56`, not yet pushed) |
 | 005  | [CI runs on Ubuntu 24.04 again, so the pinned Playwright can install its browser](005-pin-ci-runner.md) | P1 | S | — | DONE (executed and reviewed 2026-11-11; proven only when the next Gallery run on GitHub gets past the browser install) |
 | 006  | [Five bokashi skies drift on the canvas, with the rule wording Nick must approve before they ship](006-bokashi-skies-on-the-canvas.md) | P2 | M | — | DONE (executed and reviewed 2026-11-11; commits `a476d41` and `29f5425` on the local `claude/bold-babbage-o26t56`, not yet pushed; the skies look the same in light and dark, which is one of the questions in the proposal) |
-| 007  | [Nick's long exposures stream on the canvas, beside the bokashi skies, as Flat's second candidate picture](007-long-exposures-on-the-canvas.md) | P2 | S | 006 | TODO |
+| 007  | [Nick's long exposures stream on the canvas, beside the bokashi skies, as Flat's second candidate picture](007-long-exposures-on-the-canvas.md) | P2 | S | 006 | DONE (executed and reviewed 2026-11-11; commits `5858e91` and `a909523` on the local `claude/bold-babbage-o26t56`, not yet pushed) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
