@@ -12,6 +12,7 @@ honor its STOP conditions, and update your row when done.
 | 002  | [Stat shows its figure three ways, one body per world, and the data wave comes next](002-stat-three-bodies.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only, its Next.js host template would not install in the review environment) |
 | 003  | [BarChart draws its data three ways: a sunken well in Press, today's chart in Flat, a dot-matrix screen in Device](003-bar-chart-three-bodies.md) | P1 | L | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only) |
 | 004  | [LineChart and StackedBarChart get Press's well and Device's dot matrix, and stay as they are in Flat](004-line-and-stacked-chart-bodies.md) | P1 | M | 003 | TODO |
+| 005  | [CI runs on Ubuntu 24.04 again, so the pinned Playwright can install its browser](005-pin-ci-runner.md) | P1 | S | — | IN PROGRESS |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
