@@ -11,9 +11,10 @@ honor its STOP conditions, and update your row when done.
 | 001  | [Flat's scale candidates are live on the canvas, with a proposal Nick can decide from](001-flat-scale-on-the-canvas.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10) |
 | 002  | [Stat shows its figure three ways, one body per world, and the data wave comes next](002-stat-three-bodies.md) | P1 | M | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only, its Next.js host template would not install in the review environment) |
 | 003  | [BarChart draws its data three ways: a sunken well in Press, today's chart in Flat, a dot-matrix screen in Device](003-bar-chart-three-bodies.md) | P1 | L | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only) |
-| 004  | [LineChart and StackedBarChart get Press's well and Device's dot matrix, and stay as they are in Flat](004-line-and-stacked-chart-bodies.md) | P1 | M | 003 | DONE (executed and reviewed 2026-11-11; commit `c63648a` on branch `worktree-agent-ac65102334f984594`, not yet merged) |
+| 004  | [LineChart and StackedBarChart get Press's well and Device's dot matrix, and stay as they are in Flat](004-line-and-stacked-chart-bodies.md) | P1 | M | 003 | DONE (executed and reviewed 2026-11-11; commit `6e50729` on the local `claude/bold-babbage-o26t56`, not yet pushed) |
 | 005  | [CI runs on Ubuntu 24.04 again, so the pinned Playwright can install its browser](005-pin-ci-runner.md) | P1 | S | — | DONE (executed and reviewed 2026-11-11; proven only when the next Gallery run on GitHub gets past the browser install) |
-| 006  | [Five bokashi skies drift on the canvas, with the rule wording Nick must approve before they ship](006-bokashi-skies-on-the-canvas.md) | P2 | M | — | DONE (executed and reviewed 2026-11-11; commits `d85b2c7` and `d465462` on branch `worktree-agent-a9a0c2525f087f5d8`, not yet merged; the skies look the same in light and dark, which is one of the questions in the proposal) |
+| 006  | [Five bokashi skies drift on the canvas, with the rule wording Nick must approve before they ship](006-bokashi-skies-on-the-canvas.md) | P2 | M | — | DONE (executed and reviewed 2026-11-11; commits `a476d41` and `29f5425` on the local `claude/bold-babbage-o26t56`, not yet pushed; the skies look the same in light and dark, which is one of the questions in the proposal) |
+| 007  | [Nick's long exposures stream on the canvas, beside the bokashi skies, as Flat's second candidate picture](007-long-exposures-on-the-canvas.md) | P2 | S | 006 | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -50,6 +51,8 @@ The screens themselves are not redesigned per world: they are built from these p
 - 004 needs 003's code (done). It adds a before-and-after picture comparison so that Flat provably does not move; later data plans should reuse that step.
 
 - 006 is separate from the data wave. Nick asked for Japanese moving gradients in Flat's pictures and chose bokashi skies, and an exception to R2 and R4 for pictures. 006 builds them on the canvas and proposes the rule wording; the plan that ships them into Flat waits on Nick's answers in `proposals/bokashi.md`.
+
+- 007 follows Nick's reply to the skies, 2026-11-11: "Take inspo from my components repo". That repo's Gradient Keys draws long exposures in Japanese palettes with a WebGL shader; 007 puts the same shader on the canvas under the skies and adds decisions 8 to 12 to the proposal. Its code was tested in a scratch copy before the plan was written, so the plan carries the files whole and the executor places them by script. The skies and the long exposures are rivals: the plan that ships a picture into Flat takes whichever Nick picks.
 
 ## Audit findings not yet planned
 
