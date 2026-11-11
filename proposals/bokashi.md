@@ -40,6 +40,43 @@ The colors are CSS named colors for now, as the Case study's drawn pictures are,
 | 6 | Are the colors named colors, or new picture tokens? | Named colors while they are stand-ins. If the skies become a part people install, give each pigment a token so both themes and the registry can carry it. | |
 | 7 | Is a sky a part of its own, only in Flat? | Yes: Flat has no part of its own yet, and a sky is one that is wrong in Press and Device. It would be Flat's first Only here. | |
 
+## A second candidate: long exposures
+
+Nick, on seeing the skies, 2026-11-11: "Take inspo from my components repo". That repo (`litterthanlit/components`) has Gradient Keys: a launcher whose screen shows a long exposure, "a camera swung through foliage with the shutter open, in a traditional Japanese palette". It is a shader, not layers. Streaks fan from a point below and left of the frame, the fan turns slowly while the streaks flow along it, soft masses of light and dark drift behind, and thin glints pick out a few blades, in five stops from dark to light under a fine grain.
+
+It is live on the canvas under the skies ("Long exposure · five palettes, streaming" and "Long exposure · Flat's hero, today and as a long exposure"; `gallery/src/canvas/streaks.tsx`). The two shaders are copied from Gradient Keys unchanged.
+
+| Palette | From | What it is |
+|---|---|---|
+| Wakatake | Gradient Keys | young bamboo greens |
+| Ai | Gradient Keys | indigo, fading to asagi |
+| Sakura | Gradient Keys | cherry, fading to gofun, the shell white |
+| Sumi | new here | ink, from full to paper |
+| Fuji | new here | wisteria |
+
+What it has that the skies lack:
+
+- It is Nick's own picture, already drawn and tuned.
+- It has no sun. The components repo's `DESIGN.md` asks artwork to stay "clear of red, orange and the accent so it never reads as a signal"; Dawn's and Evening's suns do not.
+- A new palette sweeps in over 600ms without the picture restarting, and one field fills a frame of any shape.
+
+What it costs that the skies do not:
+
+- **It is WebGL.** Each picture is a canvas with a context of its own, and browsers allow about sixteen at once. A screen with a hero and a few covers is fine; a wall of them is not. Without WebGL it is a still gradient of its palette.
+- **The gradient itself moves, and so does the grain.** The skies move layers by transform, so the R2 wording above ("by transform only, and its grain stays still") does not cover this. For long exposures R2's sentence would be: "A picture is content, not material: a picture that is itself a gradient (Flat's long exposures) may stream, grain included." R4's exception stands with "by transform only" removed.
+- **Under a hand.** In Gradient Keys a hand lights the field under it and quickens it, and a press sends a ring. R2 says a gradient never follows the cursor, and the exception Nick chose covers a picture moving on its own. On the canvas the pictures only stream; the hero's Follow the hand button turns the rest on, so both can be felt.
+- **Hex values.** A shader takes numbers, so the palettes are hex, marked as candidates. Picked palettes move into `tokens.css` as picture tokens (decision 6 becomes a yes).
+
+| # | Question | Suggested | Decision |
+|---|---|---|---|
+| 8 | Skies, long exposures, or both? | Long exposures: they are Nick's already, and they suit Flat's airy look without a sun. Keep the skies on the canvas until this is settled, then remove the one not picked. | |
+| 9 | Which palettes go in? | Sakura for the hero, with Ai and Wakatake. Sumi matches Flat's ink accent but is the least Japanese in colour; Fuji is optional. | |
+| 10 | Does a picture answer a hand? | Not in Flat: it only streams. Try Follow the hand on the hero before deciding. | |
+| 11 | The R2 wording for a streaming gradient, above | Approve or edit, with decision 4. | |
+| 12 | Is the stream the right speed? | It runs at Gradient Keys' resting speed. If it is busy behind text, slow it before dimming it. | |
+
+Whichever candidate is picked, the plan after the decision ships that one and removes the other from the canvas.
+
 ## After the decision
 
 A second plan ships the skies: the picked skies as Flat's pictures (the hero on Flat's system page, the Case study and Collection screens), the pause control, the rule wording in the profile and in `foundations.md`, the scenes' contract, a changelog line, and this canvas experiment removed.
