@@ -16,6 +16,7 @@ honor its STOP conditions, and update your row when done.
 | 006  | [Five bokashi skies drift on the canvas, with the rule wording Nick must approve before they ship](006-bokashi-skies-on-the-canvas.md) | P2 | M | — | DONE (executed and reviewed 2026-11-11; commits `a476d41` and `29f5425` on the local `claude/bold-babbage-o26t56`, not yet pushed; the skies look the same in light and dark, which is one of the questions in the proposal) |
 | 007  | [Nick's long exposures stream on the canvas, beside the bokashi skies, as Flat's second candidate picture](007-long-exposures-on-the-canvas.md) | P2 | S | 006 | DONE (executed and reviewed 2026-11-11; commits `5858e91` and `a909523` on the local `claude/bold-babbage-o26t56`, not yet pushed) |
 | 008  | [The long exposures get stronger and more diverse: five kinds of field, a dozen palettes, one shared WebGL context](008-stronger-more-diverse-exposures.md) | P2 | L | 007 | DONE (executed and reviewed 2026-11-11; commits `f18bd9b`, `be51f2c` and `adc7a89` on the local `claude/bold-babbage-o26t56`, not yet pushed; the reviewer's own check agreed: 23 pictures, 5 fields, 12 palettes, one WebGL context, still under reduced motion) |
+| 009  | [Only the long exposure stays, and it varies: more bold palettes, two-palette pictures, and new cuts of the fan](009-long-exposure-variations.md) | P2 | L | 008 | IN PROGRESS |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -56,6 +57,8 @@ The screens themselves are not redesigned per world: they are built from these p
 - 007 follows Nick's reply to the skies, 2026-11-11: "Take inspo from my components repo". That repo's Gradient Keys draws long exposures in Japanese palettes with a WebGL shader; 007 puts the same shader on the canvas under the skies and adds decisions 8 to 12 to the proposal. Its code was tested in a scratch copy before the plan was written, so the plan carries the files whole and the executor places them by script. The skies and the long exposures are rivals: the plan that ships a picture into Flat takes whichever Nick picks.
 
 - 008 follows Nick's reply to 007, 2026-11-11: "I like this! let's make it stronger tho and more diverse, deploy opus". It is a brief, not a script: the executor (the stronger model Nick asked for) draws four new kinds of field beside Nick's fan, at least seven new palettes and a strength control, on one shared WebGL context, and works by eye in rounds. The reviewer checks it with a script of their own, not the executor's.
+
+- 009 follows Nick's reply to the preview of 008, 2026-11-11: "I only like long exposure, especially the ones of the bottom, if we could variate from them would be sick." So the skies (006) and the four other fields (008) come off the canvas, and the long exposure varies three ways: more palettes like the bottom row (full-strength pigments and journeys), pictures in two palettes, and cuts (the same shader framed differently). `proposals/bokashi.md` becomes `proposals/long-exposures.md`; plans 006 to 008 keep the old names.
 
 ## Audit findings not yet planned
 
