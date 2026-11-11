@@ -44,36 +44,59 @@ The colors are CSS named colors for now, as the Case study's drawn pictures are,
 
 Nick, on seeing the skies, 2026-11-11: "Take inspo from my components repo". That repo (`litterthanlit/components`) has Gradient Keys: a launcher whose screen shows a long exposure, "a camera swung through foliage with the shutter open, in a traditional Japanese palette". It is a shader, not layers. Streaks fan from a point below and left of the frame, the fan turns slowly while the streaks flow along it, soft masses of light and dark drift behind, and thin glints pick out a few blades, in five stops from dark to light under a fine grain.
 
-It is live on the canvas under the skies ("Long exposure · five palettes, streaming" and "Long exposure · Flat's hero, today and as a long exposure"; `gallery/src/canvas/streaks.tsx`). The two shaders are copied from Gradient Keys unchanged.
+Nick, on seeing it on the canvas, the same day: "I like this! let's make it stronger tho and more diverse". So there are now five kinds of field, twelve palettes, and a strength.
 
-| Palette | From | What it is |
+It is live on the canvas under the skies, in four pieces: "Long exposure · as in Gradient Keys" (the fan as it was, the first five palettes), "Long exposure · five fields", "Long exposure · twelve palettes" (with buttons that switch the field for the whole wall) and "Long exposure · Flat's hero, today and as a long exposure" (any field, any palette, any strength). The code is `gallery/src/canvas/streaks.tsx` and the `streaks-*.ts` files beside it. The fan's shader is Gradient Keys', cut into shared parts and otherwise unchanged.
+
+| Field | Japanese | What it is |
 |---|---|---|
-| Wakatake | Gradient Keys | young bamboo greens |
-| Ai | Gradient Keys | indigo, fading to asagi |
-| Sakura | Gradient Keys | cherry, fading to gofun, the shell white |
-| Sumi | new here | ink, from full to paper |
-| Fuji | new here | wisteria |
+| Nagashi | 流し, the pan (as in nagashi-dori, a panned shot) | Nick's long exposure from Gradient Keys: a camera swung through foliage |
+| Suminagashi | 墨流し, floating ink | ink dropped on water and combed: nested rings, bent by currents, a new ring always rising in each drop |
+| Kasumi | 霞, mist | a sky deepening toward the top, two ranges of hills, and broken bands of mist sliding across their feet |
+| Komorebi | 木漏れ日, light through leaves | large out-of-focus discs of light over dark foliage, in three depths, drifting and slowly swelling |
+| Ame | 雨, rain | fine rain falling at a slant over a soft gradation, after a woodblock print: pale far streaks, dark near ones |
+
+| Palette | Group | What it is |
+|---|---|---|
+| Wakatake 若竹 | soft | young bamboo greens; from Gradient Keys |
+| Ai 藍 | soft | indigo, fading to asagi; from Gradient Keys |
+| Sakura 桜 | soft | cherry, fading to gofun, the shell white; from Gradient Keys |
+| Sumi 墨 | soft | ink, from full to paper |
+| Fuji 藤 | soft | wisteria |
+| Ruri 瑠璃 | pigment | lapis lazuli: a deep, vivid blue |
+| Beni 紅 | pigment | safflower crimson |
+| Yamabuki 山吹 | pigment | kerria gold |
+| Yūyake 夕焼け | journey | sunset: indigo, violet, coral, gold |
+| Ajisai 紫陽花 | journey | hydrangea: blue, violet, pink |
+| Momiji 紅葉 | journey | autumn maples: deep green, rust, gold |
+| Hotaru 蛍 | journey | fireflies: night blue to a yellow-green glow |
+
+Every palette is five stops, dark to light. A pigment is one colour at full strength, deeper than the soft five; a journey passes through more than one hue.
 
 What it has that the skies lack:
 
-- It is Nick's own picture, already drawn and tuned.
-- It has no sun. The components repo's `DESIGN.md` asks artwork to stay "clear of red, orange and the accent so it never reads as a signal"; Dawn's and Evening's suns do not.
-- A new palette sweeps in over 600ms without the picture restarting, and one field fills a frame of any shape.
+- It is Nick's own picture, already drawn and tuned, and the four new fields are drawn the same way, so they sit together.
+- It has no sun. The components repo's `DESIGN.md` asks artwork to stay "clear of red, orange and the accent so it never reads as a signal"; Dawn's and Evening's suns do not. (The warm palettes below break this, and say so.)
+- A new palette sweeps in over 600ms, and a new field fades in over the same, without the picture restarting; one field fills a frame of any shape.
 
 What it costs that the skies do not:
 
-- **It is WebGL.** Each picture is a canvas with a context of its own, and browsers allow about sixteen at once. A screen with a hero and a few covers is fine; a wall of them is not. Without WebGL it is a still gradient of its palette.
-- **The gradient itself moves, and so does the grain.** The skies move layers by transform, so the R2 wording above ("by transform only, and its grain stays still") does not cover this. For long exposures R2's sentence would be: "A picture is content, not material: a picture that is itself a gradient (Flat's long exposures) may stream, grain included." R4's exception stands with "by transform only" removed.
+- **It is WebGL.** One shared context serves every picture on a page: a single hidden WebGL canvas draws each field in turn and copies it into the field's own 2D canvas. A wall of twenty-three pictures costs one context, where a browser allows about sixteen. Each picture draws at its size on screen, so a zoomed-out canvas is cheap. Without WebGL, or if the context is lost, each picture is a still gradient of its palette.
+- **The gradient itself moves, and so does the grain.** The skies move layers by transform, so the R2 wording above ("by transform only, and its grain stays still") does not cover this. For long exposures R2's sentence would be: "A picture is content, not material: a picture that is itself a gradient (Flat's long exposures) may stream, grain included." R4's exception stands with "by transform only" removed. Nothing flashes: in twenty seconds of every field, in Sumi at full strength, no quarter of the frame changes its brightness by more than about 2% in a third of a second (WCAG 2.3.1 draws the line at 10%).
+- **Strength is one number.** From 0 to 1: a steeper tone curve, a deeper darkest stop, richer middle stops (in linear light, in the ramp, not a filter), and brighter, a few more, glints. It changes no speed. At 0 the fan is Gradient Keys' picture exactly.
+- **Warm palettes are for Flat only.** Beni, Yamabuki, Yūyake and Momiji are warm. Flat's accent is the ink, so a warm picture there is only a picture; in Device (orange) or Press (blue) a picture near the accent would read as a signal.
 - **Under a hand.** In Gradient Keys a hand lights the field under it and quickens it, and a press sends a ring. R2 says a gradient never follows the cursor, and the exception Nick chose covers a picture moving on its own. On the canvas the pictures only stream; the hero's Follow the hand button turns the rest on, so both can be felt.
 - **Hex values.** A shader takes numbers, so the palettes are hex, marked as candidates. Picked palettes move into `tokens.css` as picture tokens (decision 6 becomes a yes).
 
 | # | Question | Suggested | Decision |
 |---|---|---|---|
 | 8 | Skies, long exposures, or both? | Long exposures: they are Nick's already, and they suit Flat's airy look without a sun. Keep the skies on the canvas until this is settled, then remove the one not picked. | |
-| 9 | Which palettes go in? | Sakura for the hero, with Ai and Wakatake. Sumi matches Flat's ink accent but is the least Japanese in colour; Fuji is optional. | |
+| 9 | Which palettes go in? | Sakura for the hero, with Ai and Wakatake, as before; add Ruri and Yūyake, the strongest of the new ones, and Momiji for autumn. Sumi suits Suminagashi best. Hotaru and Beni are the loudest; drop them first if the set is too many. | |
 | 10 | Does a picture answer a hand? | Not in Flat: it only streams. Try Follow the hand on the hero before deciding. | |
 | 11 | The R2 wording for a streaming gradient, above | Approve or edit, with decision 4. | |
 | 12 | Is the stream the right speed? | It runs at Gradient Keys' resting speed. If it is busy behind text, slow it before dimming it. | |
+| 13 | Which fields go in? | Nagashi and Kasumi first: the fan is Nick's, and Kasumi reads as a landscape in every palette. Ame is the most like a print and the calmest behind text. Komorebi is lovely in the warm palettes but nearest to a screensaver; Suminagashi is the busiest, best in Sumi or Ai only. | |
+| 14 | What strength does Flat ship at? | 1 for a hero or a cover, where the picture is the point; about 0.5 behind text. The strength is one number per picture, so both can ship. | |
 
 Whichever candidate is picked, the plan after the decision ships that one and removes the other from the canvas.
 
