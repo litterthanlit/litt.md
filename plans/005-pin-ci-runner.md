@@ -72,7 +72,7 @@ and each installs the browser with:
 
 | Purpose | Command | Expected on success |
 |---|---|---|
-| Count the old label | `grep -c 'ubuntu-latest' .github/workflows/gallery.yml` | `0` after the change |
+| Count the old label | `grep -c 'runs-on: ubuntu-latest' .github/workflows/gallery.yml` | `0` after the change |
 | Count the new label | `grep -c 'runs-on: ubuntu-24.04' .github/workflows/gallery.yml` | `2` after the change |
 | The file still parses | `python3 -c "import yaml,sys; d=yaml.safe_load(open('.github/workflows/gallery.yml')); print(sorted(d['jobs']), [d['jobs'][j]['runs-on'] for j in sorted(d['jobs'])])"` | `['check', 'wcag'] ['ubuntu-24.04', 'ubuntu-24.04']` |
 
@@ -115,7 +115,7 @@ In `.github/workflows/gallery.yml`:
     runs-on: ubuntu-24.04 # pinned with the Playwright version; see the check job
 ```
 
-**Verify**: `grep -c 'ubuntu-latest' .github/workflows/gallery.yml` → `0`; `grep -c 'runs-on: ubuntu-24.04' .github/workflows/gallery.yml` → `2`; the parse command prints `['check', 'wcag'] ['ubuntu-24.04', 'ubuntu-24.04']`.
+**Verify**: `grep -c 'runs-on: ubuntu-latest' .github/workflows/gallery.yml` → `0`; `grep -c 'runs-on: ubuntu-24.04' .github/workflows/gallery.yml` → `2`; the parse command prints `['check', 'wcag'] ['ubuntu-24.04', 'ubuntu-24.04']`.
 
 ### Step 2: Commit
 
@@ -130,7 +130,7 @@ In `.github/workflows/gallery.yml`:
 
 ## Done criteria
 
-- [ ] `grep -c 'ubuntu-latest' .github/workflows/gallery.yml` prints 0
+- [ ] `grep -c 'runs-on: ubuntu-latest' .github/workflows/gallery.yml` prints 0
 - [ ] `grep -c 'runs-on: ubuntu-24.04' .github/workflows/gallery.yml` prints 2
 - [ ] `grep -c 'playwright@1.56.1' .github/workflows/gallery.yml` prints 2 (unchanged)
 - [ ] `git diff --stat <starting commit> HEAD` lists only `.github/workflows/gallery.yml`
