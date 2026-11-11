@@ -27,6 +27,8 @@ type Settings = {
   /** Fifteen floats: the five stops as 0–1 RGB, dark to light. */
   stops: number[];
   seed: number;
+  /** 0 draws the field as designed for Gradient Keys; 1 gives it more presence. */
+  strength: number;
   paused: boolean;
   reduced: boolean;
 };
@@ -54,7 +56,7 @@ type Field = Settings & {
 
 type Program = { program: WebGLProgram; u: Record<string, WebGLUniformLocation | null> };
 
-const UNIFORMS = ["uRes", "uTime", "uMouse", "uHover", "uRipple", "uSeed", "uFrom", "uTo", "uMix"];
+const UNIFORMS = ["uRes", "uTime", "uMouse", "uHover", "uRipple", "uSeed", "uFrom", "uTo", "uMix", "uStrength"];
 
 const fields = new Set<Field>();
 let glCanvas: HTMLCanvasElement | null = null;
@@ -142,6 +144,7 @@ function drawKind(g: WebGLRenderingContext, f: Field, kind: FieldKind) {
   g.uniform3fv(u.uFrom!, f.from);
   g.uniform3fv(u.uTo!, f.to);
   g.uniform1f(u.uMix!, f.mix);
+  g.uniform1f(u.uStrength!, f.strength);
   g.drawArrays(g.TRIANGLES, 0, 3);
   return true;
 }
@@ -306,6 +309,7 @@ export function attach(host: HTMLElement, canvas: HTMLCanvasElement, settings: S
         f.fade = f.reduced || next.reduced ? 1 : 0;
       }
       if (next.seed !== undefined) f.seed = next.seed;
+      if (next.strength !== undefined) f.strength = next.strength;
       if (next.paused !== undefined) f.paused = next.paused;
       if (next.reduced !== undefined) f.reduced = next.reduced;
       if (f.reduced) {
