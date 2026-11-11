@@ -16,7 +16,9 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04 on 2026-11-11, where Playwright 1.56.1 (below) cannot install Chromium.
+    # Move this and the Playwright version together, and re-run every page check when you do.
+    runs-on: ubuntu-24.04
     # axe over every page, light and dark, desktop and phone, takes about half an hour on GitHub's runner.
     timeout-minutes: 50
     steps:
@@ -61,7 +63,7 @@ jobs:
   # worlds, the studies, reduced motion) run beside the main job, on their own build, so neither job nears its time
   # limit: axe alone takes the main job about half an hour.
   wcag:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # pinned with the Playwright version; see the check job
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4

@@ -1,4 +1,7 @@
 import { BarChart, LineChart, Meter, StackedBarChart } from "@/components/chart";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -286,6 +289,35 @@ function NarrowDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <BarChart
+                label="Deploys per day, last 14 days"
+                labels={DAYS}
+                series={[{ name: "Deploys", values: DEPLOYS }]}
+                unit={["deploy", "deploys"]}
+                xTitle="Day"
+                entrance={false}
+              />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function ChartPage() {
   const [deploys, replayDeploys] = useReplay();
   const [build, replayBuild] = useReplay();
@@ -397,6 +429,14 @@ export default function ChartPage() {
         caption="The chart fills its container, so on a phone it takes the width of the screen less its margins. Fourteen labels do not fit, so only some show, counted back from today so the last day is always named. Labels never overlap, and nothing scrolls sideways. Touch the plot and drag along it: the bar under your finger shows its tooltip, which stays until you touch elsewhere."
       >
         <NarrowDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        caption="One contract, three bodies. Press is a sunken well, the bars standing on its floor and the labels on a raised rail. Flat is the chart on the page: a hairline grid, the value axis and the bars, with no ground. Device is a dot-matrix screen: bars are columns of lit dots, and the current value shows in seven segments above it. Lines and stacked rails follow in a later release."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );

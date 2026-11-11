@@ -8,6 +8,13 @@
  *   step down the foreground, 100%, 55% and 30%, with a legend. At 30% a mark is under 3:1 against a card, so the
  *   third series' bars carry a 1px edge at 55% and its line is dashed. Colors come from CSS variables, so both
  *   themes work.
+ * - Bodies (proposals/worlds.md): for BarChart this file resolves every bar once (barMarks) and renders the body the
+ *   material picks (byWorld). Press, here, is a sunken well (--tray, --tray-shade) with the bars standing on its floor
+ *   and the category labels on a raised rail (--block, --block-lift). Flat, also here, is the chart as it has always
+ *   been: the hairline grid, the value axis and the bars, with no ground (Nick, 2026-11-10: the current data parts
+ *   are Flat's). Device (bodies/chart.device.tsx) is a dot-matrix screen: bars as columns of lit dots, the emphasised
+ *   value in seven segments above it. LineChart, StackedBarChart and Meter have no bodies yet and draw as before in
+ *   every world.
  * - Data hues (R7, v0.11): a series may carry one of the five data hues (`hue` on the series), and `hues` gives
  *   every series without one the next hue in the fixed order. Color follows the series, never its place, so a
  *   filter that drops a series never repaints the others. A hue series rests in the hue's mark tone (3:1 on every
@@ -49,7 +56,8 @@
  */
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { animate, AnimatePresence, motion, useMotionValueEvent, useTransform } from "motion/react";
-import { countText, useExit, useFun, useFunValue, useTransition, useTravel } from "@/motion";
+import { byWorld, countText, useExit, useFun, useFunValue, useMaterial, useTransition, useTravel } from "@/motion";
+import { ChartDeviceBody } from "./bodies/chart.device";
 
 /* ----------------------------------------------------------------- types */
 
@@ -106,6 +114,14 @@ const AXIS = 28; // room under the plot for the category labels
 const LABEL_GAP = 6; // between a value label and the plot
 const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const MAX_BAR = 32;
+type World = "press" | "flat" | "device";
+/** The room a body keeps around the plot: a value axis on the left or none, and the space above the plot. */
+type Frame = { axis: boolean; top: number };
+const FRAME: Record<World, Frame> = {
+  press: { axis: true, top: TOP },
+  flat: { axis: true, top: TOP }, // today's chart
+  device: { axis: false, top: 44 }, // the readout sits on the bezel above the screen
+};
 const MAX_RAIL = 8; // a stacked column: a rail, not a block
 const RAIL_GAP = 2; // air between the segments of a stacked column, the Breakdown's
 
@@ -183,11 +199,12 @@ type Geometry = {
   cx: (index: number) => number; // x of a slot's centre
   step: number; // show every nth category label
 };
+export type ChartGeometry = Geometry;
 
 /** A category's stacked total: the sum of its non-negative values. */
 const stackTotal = (series: ChartSeries[], i: number) => series.reduce((sum, s) => sum + Math.max(0, s.values[i] ?? 0), 0);
 
-function layout(width: number, height: number, labels: string[], series: ChartSeries[], fmt: (v: number) => string, stacked = false): Geometry {
+function layout(width: number, height: number, labels: string[], series: ChartSeries[], fmt: (v: number) => string, stacked = false, frame: Frame = FRAME.press): Geometry {
   const n = labels.length;
   const max = stacked
     ? Math.max(0, ...labels.map((_, i) => stackTotal(series, i)))
@@ -195,15 +212,15 @@ function layout(width: number, height: number, labels: string[], series: ChartSe
   const ticks = niceTicks(max);
   const top = ticks[ticks.length - 1]!;
   const valueChars = Math.max(...ticks.map((t) => fmt(t).length));
-  const left = Math.ceil(valueChars * FIGURE) + LABEL_GAP;
+  const left = frame.axis ? Math.ceil(valueChars * FIGURE) + LABEL_GAP : 0;
   const plotW = Math.max(0, width - left);
-  const plotH = Math.max(0, height - TOP - AXIS);
+  const plotH = Math.max(0, height - frame.top - AXIS);
   const slotW = n > 0 ? plotW / n : 0;
   const labelChars = Math.max(1, ...labels.map((l) => l.length));
   /* The last label may be pushed in from the right edge, which shortens its gap to the one before it. Allow for that. */
   const hang = Math.max(0, (labelChars * FIGURE) / 2 - slotW / 2);
   const step = slotW > 0 ? Math.max(1, Math.ceil((labelChars * FIGURE + 12 + hang) / slotW)) : 1;
-  const base = TOP + plotH;
+  const base = frame.top + plotH;
   return {
     width,
     height,
@@ -212,7 +229,7 @@ function layout(width: number, height: number, labels: string[], series: ChartSe
     plotH,
     slotW,
     ticks,
-    top: TOP,
+    top: frame.top,
     base,
     y: (v) => base - (Math.max(0, v) / top) * plotH,
     cx: (i) => left + (i + 0.5) * slotW,
@@ -262,8 +279,13 @@ function Chart({
   const stacked = kind === "stack";
   const many = series.length > 1;
   const paint = useMemo(() => paints(series, hues || stacked), [series, hues, stacked]);
+  const world: World = useMaterial();
+  const body: World | null = kind === "bar" ? world : null;
   const [boxRef, width] = useWidth();
-  const g = useMemo(() => layout(width, height, labels, series, fmt, stacked), [width, height, labels, series, fmt, stacked]);
+  const g = useMemo(
+    () => layout(width, height, labels, series, fmt, stacked, body ? FRAME[body] : FRAME.press),
+    [width, height, labels, series, fmt, stacked, body],
+  );
   const value = (s: ChartSeries, i: number) => s.values[i] ?? 0;
   const unitFor = (v: number) => (Array.isArray(unit) ? (v === 1 ? unit[0] : unit[1]) : unit);
   const withUnit = (v: number) => fmt(v) + (unit ? ` ${unitFor(v)}` : "");
@@ -343,32 +365,49 @@ function Chart({
 
   const enter = useTransition("responsive");
   const empty = n === 0 || series.length === 0;
+  const marks = body ? barMarks(g, series, paint, n, emphasis, fmt) : null;
+  const Body = byWorld(world, { press: PressBody, flat: FlatBody, device: ChartDeviceBody });
 
   return (
-    <div className={"w-full " + className}>
+    <div data-chart={kind} data-body={body ?? undefined} className={"w-full " + className}>
       {many && legend && <Legend series={series} kind={kind} paint={paint} />}
-      <div ref={boxRef} className="relative w-full" style={{ height }}>
+      <div ref={boxRef} className="relative isolate w-full" style={{ height }}>
         {width > 0 && !empty && (
           <>
-            <svg width={width} height={height} role="img" aria-label={text} className="block overflow-visible">
-              <Grid g={g} labels={labels} fmt={fmt} />
-              {many && active !== null && (
-                <rect
-                  x={g.left + active * g.slotW}
-                  y={g.top}
-                  width={g.slotW}
-                  height={g.plotH}
-                  className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]"
-                />
-              )}
-              {kind === "stack" ? (
-                <Rails g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
-              ) : kind === "bar" ? (
-                <Bars g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
-              ) : (
-                <Lines g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
-              )}
-            </svg>
+            {marks ? (
+              <Body
+                width={width}
+                height={height}
+                text={text}
+                g={g}
+                labels={labels}
+                fmt={fmt}
+                bars={marks.bars}
+                ring={ring !== null ? marks.ringOf(ring) : null}
+                band={many && active !== null ? { x: g.left + active * g.slotW, y: g.top, width: g.slotW, height: g.plotH } : null}
+                reading={!many && emphasis !== null ? fmt(value(series[0]!, emphasis)) : null}
+                entrance={entrance}
+                enter={enter}
+              />
+            ) : (
+              <svg width={width} height={height} role="img" aria-label={text} className="block overflow-visible">
+                <Grid g={g} labels={labels} fmt={fmt} />
+                {many && active !== null && (
+                  <rect
+                    x={g.left + active * g.slotW}
+                    y={g.top}
+                    width={g.slotW}
+                    height={g.plotH}
+                    className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]"
+                  />
+                )}
+                {kind === "stack" ? (
+                  <Rails g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
+                ) : (
+                  <Lines g={g} series={series} paint={paint} n={n} emphasis={emphasis} ring={ring} entrance={entrance} enter={enter} />
+                )}
+              </svg>
+            )}
 
             {/* One layer takes the pointer, so the target is the whole plot and not a 20px column. Columns on a phone
                 are narrower than a finger, so a touch scrubs: the mark under the finger is the pinned one. */}
@@ -520,57 +559,138 @@ type MarksProps = {
   enter: ReturnType<typeof useTransition>;
 };
 
-function Bars({ g, series, paint, n, emphasis, ring, entrance, enter }: MarksProps) {
+/** One bar as every body draws it: where it stands, how it is painted and what it says. */
+export type ChartBar = {
+  key: string;
+  /** Its category and its series, by index. */
+  index: number;
+  series: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** The fill class for its state: the series' rest paint, or its strong one on the emphasised category. */
+  fill: string;
+  /** A 1px edge, for a third series too faint to stand alone. */
+  edge: boolean;
+  /** The emphasised category of a single series: the current, hovered or focused one. */
+  strong: boolean;
+  /** The series carries a data hue. */
+  hue: boolean;
+  /** The value as text, and whether its category shows its label (every nth does on a narrow chart). */
+  text: string;
+  labelled: boolean;
+};
+type Box = { x: number; y: number; width: number; height: number };
+
+/** What a body draws (proposals/worlds.md, Bodies): the contract's resolved state for a bar chart. */
+export type ChartBodyProps = {
+  width: number;
+  height: number;
+  /** The image's summary, for the svg's aria-label. */
+  text: string;
+  g: ChartGeometry;
+  labels: string[];
+  fmt: (v: number) => string;
+  bars: ChartBar[];
+  /** The focus ring's box, while a category has keyboard focus. */
+  ring: Box | null;
+  /** The faint band behind the active category, when there are several series. */
+  band: Box | null;
+  /** The emphasised category's value as text, for a single series; null when nothing is emphasised. */
+  reading: string | null;
+  entrance: boolean;
+  enter: ReturnType<typeof useTransition>;
+};
+
+/** Every bar's box and paint, and the focus ring's box for a category. */
+function barMarks(g: Geometry, series: ChartSeries[], paint: Paint[], n: number, emphasis: number | null, fmt: (v: number) => string) {
   const k = series.length;
   const gap = 2;
   const group = k === 1 ? Math.min(MAX_BAR, Math.floor(g.slotW * 0.6)) : Math.min(k * MAX_BAR + gap * (k - 1), Math.floor(g.slotW * 0.7));
   const bw = Math.max(2, Math.floor((group - gap * (k - 1)) / k));
   const span = bw * k + gap * (k - 1);
   const baseline = g.y(0);
+  const bars: ChartBar[] = [];
+  for (let i = 0; i < n; i++) {
+    const x0 = g.left + i * g.slotW + (g.slotW - span) / 2;
+    series.forEach((s, j) => {
+      const v = s.values[i] ?? 0;
+      const h = v > 0 ? Math.max(2, baseline - g.y(v)) : 0;
+      if (h === 0) return;
+      /* One series rests (fg 55% or the hue's mark tone) and the emphasised bar is strong. Several series keep their own paint. */
+      const p = paint[j]!;
+      const strong = k === 1 && emphasis === i;
+      bars.push({
+        key: `${s.name}-${i}`,
+        index: i,
+        series: j,
+        x: x0 + j * (bw + gap),
+        y: baseline - h,
+        width: bw,
+        height: h,
+        fill: strong ? p.strong : p.rest,
+        edge: p.edge,
+        strong,
+        hue: p.rest.startsWith("fill-data-"),
+        text: fmt(v),
+        labelled: (n - 1 - i) % g.step === 0,
+      });
+    });
+  }
+  const ringOf = (i: number): Box => {
+    const top = Math.min(...series.map((s) => g.y(s.values[i] ?? 0)));
+    return { x: g.left + i * g.slotW + (g.slotW - span) / 2 - 4, y: top - 4, width: span + 8, height: baseline - top + 8 };
+  };
+  return { bars, ringOf };
+}
+
+/** The bars as Press and Flat draw them: the series' paint, growing from the baseline on the responsive tier, and the focus ring. */
+function BarRects({ bars, ring, entrance, enter }: Pick<ChartBodyProps, "bars" | "ring" | "entrance" | "enter">) {
   return (
     <g aria-hidden="true">
-      {Array.from({ length: n }, (_, i) => {
-        const x0 = g.left + i * g.slotW + (g.slotW - span) / 2;
-        return series.map((s, j) => {
-          const v = s.values[i] ?? 0;
-          const top = g.y(v);
-          const h = v > 0 ? Math.max(2, baseline - top) : 0;
-          if (h === 0) return null;
-          /* One series rests (fg 55% or the hue's mark tone) and the emphasised bar is strong. Several series keep their own paint. */
-          const p = paint[j]!;
-          const fill = k === 1 && emphasis === i ? p.strong : p.rest;
-          return (
-            <motion.rect
-              key={`${s.name}-${i}`}
-              x={x0 + j * (bw + gap)}
-              y={baseline - h}
-              width={bw}
-              height={h}
-              initial={entrance ? { scaleY: 0 } : false}
-              animate={{ scaleY: 1, transition: enter }}
-              style={{ originX: 0.5, originY: 1 }}
-              strokeWidth={1}
-              className={
-                "transition-[fill] duration-(--dur-instant) ease-litt " +
-                fill +
-                (p.edge ? " " + EDGE : " stroke-transparent")
-              }
-            />
-          );
-        });
-      })}
-      {ring !== null && (
-        <rect
-          x={g.left + ring * g.slotW + (g.slotW - span) / 2 - 4}
-          y={Math.min(...series.map((s) => g.y(s.values[ring] ?? 0))) - 4}
-          width={span + 8}
-          height={baseline - Math.min(...series.map((s) => g.y(s.values[ring] ?? 0))) + 8}
-          fill="none"
-          strokeWidth={2}
-          className="stroke-focus"
+      {bars.map((b) => (
+        <motion.rect
+          key={b.key}
+          x={b.x}
+          y={b.y}
+          width={b.width}
+          height={b.height}
+          initial={entrance ? { scaleY: 0 } : false}
+          animate={{ scaleY: 1, transition: enter }}
+          style={{ originX: 0.5, originY: 1 }}
+          strokeWidth={1}
+          className={"transition-[fill] duration-(--dur-instant) ease-litt " + b.fill + (b.edge ? " " + EDGE : " stroke-transparent")}
         />
-      )}
+      ))}
+      {ring && <rect {...ring} fill="none" strokeWidth={2} className="stroke-focus" />}
     </g>
+  );
+}
+
+/** Flat: the chart as it has always been. A hairline grid, the value axis and the bars, on the page with no ground. */
+function FlatBody({ width, height, text, g, labels, fmt, bars, ring, band, entrance, enter }: ChartBodyProps) {
+  return (
+    <svg width={width} height={height} role="img" aria-label={text} className="block overflow-visible">
+      <Grid g={g} labels={labels} fmt={fmt} />
+      {band && <rect {...band} className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]" />}
+      <BarRects bars={bars} ring={ring} entrance={entrance} enter={enter} />
+    </svg>
+  );
+}
+
+/** Press: the plot is a sunken well, the bars stand on its floor, and the category labels sit on a raised rail under it. */
+function PressBody({ width, height, text, g, labels, fmt, bars, ring, band, entrance, enter }: ChartBodyProps) {
+  return (
+    <>
+      <div aria-hidden="true" data-well="" className="absolute -z-10 rounded-control bg-tray shadow-(--tray-shade)" style={{ left: g.left, top: g.top, width: g.plotW, height: g.plotH }} />
+      <div aria-hidden="true" className="absolute -z-10 rounded-control bg-block shadow-(--block-lift)" style={{ left: g.left, top: g.base + 6, width: g.plotW, height: AXIS - 8 }} />
+      <svg width={width} height={height} role="img" aria-label={text} className="block overflow-visible">
+        <Grid g={g} labels={labels} fmt={fmt} />
+        {band && <rect {...band} className="fill-[color-mix(in_oklab,var(--fg)_4%,transparent)]" />}
+        <BarRects bars={bars} ring={ring} entrance={entrance} enter={enter} />
+      </svg>
+    </>
   );
 }
 
