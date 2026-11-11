@@ -13,7 +13,7 @@ honor its STOP conditions, and update your row when done.
 | 003  | [BarChart draws its data three ways: a sunken well in Press, today's chart in Flat, a dot-matrix screen in Device](003-bar-chart-three-bodies.md) | P1 | L | — | DONE (executed and reviewed 2026-11-10; the install test passed for Vite only) |
 | 004  | [LineChart and StackedBarChart get Press's well and Device's dot matrix, and stay as they are in Flat](004-line-and-stacked-chart-bodies.md) | P1 | M | 003 | DONE (executed and reviewed 2026-11-11; commit `c63648a` on branch `worktree-agent-ac65102334f984594`, not yet merged) |
 | 005  | [CI runs on Ubuntu 24.04 again, so the pinned Playwright can install its browser](005-pin-ci-runner.md) | P1 | S | — | DONE (executed and reviewed 2026-11-11; proven only when the next Gallery run on GitHub gets past the browser install) |
-| 006  | [Five bokashi skies drift on the canvas, with the rule wording Nick must approve before they ship](006-bokashi-skies-on-the-canvas.md) | P2 | M | — | TODO |
+| 006  | [Five bokashi skies drift on the canvas, with the rule wording Nick must approve before they ship](006-bokashi-skies-on-the-canvas.md) | P2 | M | — | DONE (executed and reviewed 2026-11-11; commits `d85b2c7` and `d465462` on branch `worktree-agent-a9a0c2525f087f5d8`, not yet merged; the skies look the same in light and dark, which is one of the questions in the proposal) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
