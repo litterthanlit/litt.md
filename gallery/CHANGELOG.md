@@ -4,6 +4,10 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-11 · Data, a body per world: the line and stacked charts
+
+- **changed** `chart`: BarChart, LineChart and StackedBarChart have a body per material. Press is a sunken well with the marks standing on its floor and the labels on a raised rail. Flat is the chart as it was. Device is a dot-matrix screen: bars and stacks as columns of lit dots, a line as a trace of dots, and the current value in seven segments, so the item installs `seven-segment` with it. Meter is unchanged, and so are the props.
+
 ## 2026-11-10 · Data, a body per world: Stat
 
 Each world shows data in its own way (`proposals/worlds.md`, decision 15). Stat is the first data part with a body per material; the others follow.

@@ -309,6 +309,23 @@ function ThreeBodiesDemo() {
                 xTitle="Day"
                 entrance={false}
               />
+              <LineChart
+                label="Median build time, last 14 days"
+                labels={DAYS}
+                series={[{ name: "Build time", values: BUILD }]}
+                formatValue={(v) => `${v} s`}
+                xTitle="Day"
+                entrance={false}
+              />
+              <StackedBarChart
+                label="Storage added per day, last 14 days"
+                labels={DAYS}
+                series={ADDED}
+                formatValue={(v) => `${+v.toFixed(1)} GB`}
+                xTitle="Day"
+                height={256}
+                entrance={false}
+              />
             </MaterialProvider>
           </div>
           <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
@@ -433,7 +450,7 @@ export default function ChartPage() {
 
       <Stage
         title="Three bodies"
-        caption="One contract, three bodies. Press is a sunken well, the bars standing on its floor and the labels on a raised rail. Flat is the chart on the page: a hairline grid, the value axis and the bars, with no ground. Device is a dot-matrix screen: bars are columns of lit dots, and the current value shows in seven segments above it. Lines and stacked rails follow in a later release."
+        caption="One contract, three bodies. Press is a sunken well, the marks standing on its floor and the labels on a raised rail. Flat is the chart on the page: a hairline grid, the value axis and the marks, with no ground. Device is a dot-matrix screen: bars and stacks are columns of lit dots, a line is a trace of them, and the current value shows in seven segments above it."
         code="ThreeBodiesDemo"
       >
         <ThreeBodiesDemo />
