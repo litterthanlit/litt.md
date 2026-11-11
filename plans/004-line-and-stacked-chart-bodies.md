@@ -301,13 +301,16 @@ const server = http.createServer((req, res) => {
   fs.createReadStream(p).pipe(res);
 }).listen(0);
 
-/* The Chart page grows at its foot (the Three bodies stage), so only its first 9000px are compared. */
-const PAGES = [["chart", 9000], ["dashboard", 0], ["growth", 0], ["usage", 0], ["insights", 0]];
+/* The Chart page's Three bodies stage grows in this plan, and it sits in the middle of the page (the docs follow it),
+   so that page is compared only down to where that stage's frames begin. The other pages are compared whole. */
+const PAGES = ["chart", "dashboard", "growth", "usage", "insights"];
 const sizes = mode === "after" ? JSON.parse(fs.readFileSync(path.join(here, "flat-sizes.json"), "utf8")) : {};
 const browser = await chromium.launch();
 let differ = 0;
 for (const theme of ["light", "dark"]) {
-  for (const [id, cap] of PAGES) {
+  for (const id of PAGES) {
+   let same = false;
+   for (let attempt = 1; attempt <= (mode === "after" ? 3 : 1) && !same; attempt++) {
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, colorScheme: theme, reducedMotion: "reduce" });
     await page.goto(`http://localhost:${server.address().port}/index.html#${id}`, { waitUntil: "networkidle" });
     await page.waitForSelector("main h1", { timeout: 20000 });
@@ -320,16 +323,21 @@ for (const theme of ["light", "dark"]) {
     const material = await page.evaluate(() => document.documentElement.getAttribute("data-material"));
     if (material !== "flat") { console.error(`${id}: the gallery opened in ${material}, not Flat`); process.exit(2); }
     const key = `${id}-${theme}`;
-    if (mode === "before") sizes[key] = cap || (await page.evaluate(() => document.documentElement.scrollHeight));
+    if (mode === "before")
+      sizes[key] = await page.evaluate(() => {
+        const frame = document.querySelector("main figure [data-chart]")?.closest("figure");
+        return frame ? Math.floor(frame.getBoundingClientRect().top + scrollY) - 16 : document.documentElement.scrollHeight;
+      });
     const shot = await page.screenshot({ fullPage: true, clip: { x: 0, y: 0, width: 1440, height: sizes[key] } });
     await page.close();
     const file = path.join(here, `flat-${mode}-${key}.png`);
     fs.writeFileSync(file, shot);
-    if (mode === "after") {
-      const same = fs.readFileSync(path.join(here, `flat-before-${key}.png`)).equals(shot);
-      console.log(`${key}: ${same ? "identical" : "DIFFERENT"}`);
-      if (!same) differ++;
-    }
+    if (mode !== "after") break;
+    /* A picture that matches on any of three attempts is unchanged; one that never matches has moved. */
+    same = fs.readFileSync(path.join(here, `flat-before-${key}.png`)).equals(shot);
+    if (same || attempt === 3) console.log(`${key}: ${same ? "identical" : "DIFFERENT"}${attempt > 1 ? ` (attempt ${attempt})` : ""}`);
+   }
+   if (mode === "after" && !same) differ++;
   }
 }
 await browser.close();
@@ -394,6 +402,9 @@ export type ChartBodyProps = {
   /** The emphasised category (the current, hovered or focused one), and the active one (hovered, focused or pinned). */
   emphasis: number | null;
   active: number | null;
+  /** For the bars Press and Flat draw (BarRects reads these from this type). */
+  entrance: boolean;
+  enter: ReturnType<typeof useTransition>;
 };
 ```
 
@@ -512,6 +523,8 @@ function PressBody({ width, height, text, g, labels, fmt, marks, band }: ChartBo
               }
               emphasis={emphasis}
               active={active}
+              entrance={entrance}
+              enter={enter}
             />
 ```
 
@@ -858,7 +871,7 @@ Run `npm run verify --prefix gallery`, `npm run build --prefix gallery`, `node g
 ## Test plan
 
 - The repo has no unit-test framework; its tests are the generators, the lint and the Playwright page checks.
-- **Flat unchanged** (Step 6): ten pictures (the Chart page's first 9000px and the four dashboard screens, light and dark) byte-identical before and after. Step 1 proves the comparison is stable before it is relied on.
+- **Flat unchanged** (Step 6): ten pictures (the Chart page down to its Three bodies stage, and the four dashboard screens whole, light and dark) byte-identical before and after, each allowed three attempts because one screen was seen to render differently once with nothing changed. Step 1 proves the comparison is stable before it is relied on.
 - **Each world its own** (Step 7): for bar, line and stack, at 1440px and 320px in each world: the world's body is drawn; the Three bodies stage shows the other two; Press has wells and gridlines; Flat has gridlines and neither well nor matrix; Device has the matrix, lit dots, no gridlines, no line path, and a seven-segment reading for bars and lines; no sideways scroll; no page errors.
 - Regression: reflow, text zoom, corners, gaps and reduced motion on the Chart page and the four dashboard screens; the wall, the worlds and the study checks; the install test for `chart` in a fresh Vite app.
 
