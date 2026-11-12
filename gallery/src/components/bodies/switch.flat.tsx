@@ -19,7 +19,8 @@ const root =
   "disabled:cursor-not-allowed " +
   focusRing;
 
-/* The pill: an outline when off. Its fill when on is pillOn's, by tone. */
+/* The pill: an outline when off. Disabled and on it is the ink in either tone, as a disabled switch drops the accent
+   in every world; that fill also asks for :disabled, so it outweighs a tone's own. */
 const pill =
   "relative inline-flex h-6.5 w-11 shrink-0 items-center overflow-hidden rounded-control p-[3px] " +
   "bg-transparent shadow-[inset_0_0_0_1.5px_var(--line-control)] group-data-[state=checked]/pill:shadow-none " +
@@ -27,11 +28,11 @@ const pill =
   "group-disabled/pill:bg-surface-2 group-disabled/pill:opacity-40 group-disabled/pill:shadow-[inset_0_0_0_1px_var(--line)] group-disabled/pill:group-data-[state=checked]/pill:bg-fg group-disabled/pill:group-data-[state=checked]/pill:shadow-none " +
   "forced-colors:border forced-colors:p-px"; // the border is real, so the padding gives it back its px
 
-/* On, the pill fills: the ink, or the accent for tone="accent". One tone's fills or the other's, never both on the pill:
-   two fills under one variant have the same specificity, so Tailwind's order would pick between them, not this file's. */
+/* The pill's fill when on, at rest and under the pointer: one tone's or the other's, never both. Two fills of the same
+   weight on one element are settled by their order in the stylesheet, not by the order they are written here. */
 const pillOn: Record<SwitchTone, string> = {
-  neutral: "group-data-[state=checked]/pill:bg-fg group-enabled/pill:group-hover/switch:group-data-[state=checked]/pill:bg-[color-mix(in_oklab,var(--fg)_86%,var(--canvas))]",
-  accent: "group-data-[state=checked]/pill:bg-accent group-enabled/pill:group-hover/switch:group-data-[state=checked]/pill:bg-accent-hover",
+  neutral: " group-data-[state=checked]/pill:bg-fg group-enabled/pill:group-hover/switch:group-data-[state=checked]/pill:bg-[color-mix(in_oklab,var(--fg)_86%,var(--canvas))]",
+  accent: " group-data-[state=checked]/pill:bg-accent group-enabled/pill:group-hover/switch:group-data-[state=checked]/pill:bg-accent-hover",
 };
 
 /* The knob keeps the control radius less 2px, as the Press block does. */
@@ -48,7 +49,7 @@ const wordCell = "grid select-none text-small font-normal leading-none whitespac
 export function SwitchFlatBody({ shown, disabled, x, tone, words, motion, root: rootProps, className }: SwitchBodyProps) {
   return (
     <SwitchPrimitive.Root {...rootProps} data-body="flat" className={root + className}>
-      <span className={pill + " " + pillOn[tone]}>
+      <span className={pill + pillOn[tone]}>
         {/* The empty child is not decoration: without it Chromium rasters the pill and knob edges a shade differently. */}
         <SwitchPrimitive.Thumb className={knob + " " + (disabled || !shown ? knobOff : knobOn)} style={{ ...motion, translate: `${x} 0` }}><span aria-hidden="true" className="hidden" /></SwitchPrimitive.Thumb>
       </span>
