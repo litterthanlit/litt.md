@@ -36,7 +36,7 @@ jobs:
       - name: Install
         run: npm ci --prefix gallery
 
-      - name: Verify (tokens, docs data, registry and its versions, agent docs, typecheck, lint, lint self-test)
+      - name: Verify (tokens, docs data, registry and its versions, agent docs, typecheck, lint, lint self-test, class collisions)
         run: npm run verify --prefix gallery
 
       # verify rewrites registry.lock.json when an item changed and CHANGELOG.md names it. The lock must be committed

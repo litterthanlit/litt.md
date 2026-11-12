@@ -14,6 +14,8 @@
     "typecheck": "tsc --noEmit -p .",
     "lint:litt": "node scripts/lint-litt.mjs",
     "test:lint": "node scripts/lint-litt.mjs --self-test",
+    "lint:collisions": "node scripts/collisions.mjs",
+    "test:collisions": "node scripts/collisions.mjs --self-test",
     "sync:tokens": "node scripts/sync-tokens.mjs",
     "gen:docs": "node scripts/gen-docs.mjs",
     "gen:registry": "node scripts/gen-registry.mjs",
@@ -38,7 +40,7 @@
     "test:study": "node scripts/study.mjs",
     "test:look": "node scripts/test-look.mjs",
     "test:rules": "node scripts/test-rules.mjs",
-    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s gen:llms && npm run -s typecheck && npm run -s lint:litt && npm run -s test:lint && npm run -s test:check && npm run -s test:look && npm run -s test:rules",
+    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s gen:llms && npm run -s typecheck && npm run -s lint:litt && npm run -s test:lint && npm run -s lint:collisions && npm run -s test:collisions && npm run -s test:check && npm run -s test:look && npm run -s test:rules",
     "test:check": "node ../skills/litt-md/scripts/litt-check.mjs --self-test"
   },
   "dependencies": {

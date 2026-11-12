@@ -11,9 +11,12 @@ import type { NumberFieldBodyProps } from "../number-field";
 const pill =
   "relative flex w-full min-w-0 items-center rounded-pill bg-field p-1 font-field text-field-ink " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "shadow-none has-[input:focus-visible]:shadow-(--focus-ring) " +
+  "has-[input:focus-visible]:shadow-(--focus-ring) " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled " +
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
+/* The pill's edge at rest: none, or the danger ring on an error. One or the other, never both on the pill: two shadows
+   under no variant have the same specificity, so Tailwind's order would pick between them, not this file's. */
+const pillRest = " shadow-none";
 const pillInvalid = " shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)]";
 
 /* A word on the pill: a round target, no fill until the pointer is over it. At its bound it is grey and light. */
@@ -31,7 +34,7 @@ export function NumberFieldFlatBody({ sz, invalid, disabled, unit, input, inputR
       data-body="flat"
       data-invalid={invalid ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
-      className={pill + (invalid && !disabled ? pillInvalid : "") + " " + sz.field}
+      className={pill + (invalid && !disabled ? pillInvalid : pillRest) + " " + sz.field}
       onClick={onFieldClick}
     >
       <button {...minus} className={word + " order-1 " + sz.step + " " + type}>
