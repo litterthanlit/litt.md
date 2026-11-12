@@ -4,12 +4,14 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-12 · Flat's accent switch and error ring
+## 2026-11-12 · Flat's accent switch and error ring; data, a body per world: Sparkline and Table
 
 Two classes on one element that set the same property under the same variant have the same specificity, so Tailwind's order picks the winner, not the order they are written in. Two Flat bodies lost a state that way, and the gallery now checks its class lists for it.
 
 - **fixed** `switch`: under Flat (`data-material="flat"`) a `tone="accent"` switch fills with the accent when it is on. It filled with the ink, which showed only once you asked for an accent (`data-accent="blue"` or `"pink"`), since Flat's own accent is the ink. The pill carried the ink's fill and the accent's at the same weight, and the ink's came later in the stylesheet; each tone now carries only its own. Flat's own look, Press and Device are unchanged, and so are the props.
 - **fixed** `number-field`: under Flat, an error shows the danger ring on the pill. The pill's own `shadow-none` beat it, so the ring never showed.
+- **changed** `sparkline`: a body per material. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the line as it was. Device is a row of lit dots on LCD glass, the latest column the strongest. The box keeps the caller's height in every world. Props are unchanged.
+- **changed** `table`: a dress per material. Press is slats in a tray: the header a raised rail along its top, each row a slat drawn inside the row, the one under the hand or selected lifted. Flat is the table as it was. Device is a screen of mono columns on LCD glass, the header engraved on a plate, a lamp at the start of each row that lights under the hand, the keyboard or a selection; in Device rows never travel or fade, they appear. Row heights, props and semantics are unchanged. Flat's table now follows the material the part is in (`useMaterial`: the nearest `MaterialProvider`, else `data-material` on `<html>`), not CSS on any ancestor, so a subtree that sets `data-material="flat"` without a `MaterialProvider` gets the page's table, and a server-rendered Flat page paints Press's table until it hydrates.
 
 ## 2026-11-11 · Data, a body per world: the line and stacked charts
 
