@@ -1,6 +1,9 @@
 import { Sparkline } from "@/components/sparkline";
 import { Stat, StatGroup } from "@/components/stat";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -175,6 +178,30 @@ function GoalLineDemo() {
   );
 }
 
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <Sparkline label="Page views per day, last 14 days" values={VIEWS} />
+              <Sparkline label="Median build time, last 14 days" values={BUILD} hue="blue" formatValue={seconds} baseline={45} />
+              <Sparkline label="Deploys per day, last 14 days" values={DEPLOYS} height={24} />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 function QuietAndHueDemo() {
   return (
     <div className="grid w-full max-w-xl gap-x-12 gap-y-8 sm:grid-cols-2">
@@ -223,6 +250,14 @@ export default function SparklinePage() {
         caption="The same page views twice. The quiet default is the foreground at 55% with a full-strength dot, right when the line is the only series in view. A hue is for when the color says which quantity this is elsewhere on the page. The line takes the hue's mark tone and the dot its stronger text tone. The shape is the same either way."
       >
         <QuietAndHueDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        caption="One contract, three bodies, and the box is the same height in each. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the thin line on the page with its dot, as it has always been. Device is a row of lit dots on LCD glass, one in every column, with the latest column the strongest. The quiet one, the blue one with a baseline and the 24px one are the same in all three."
+        code="ThreeBodiesDemo"
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );
