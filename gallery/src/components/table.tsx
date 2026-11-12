@@ -83,6 +83,7 @@ import { byWorld, useExit, useMaterial, useStagger, useTransition, useTravel } f
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { AlertIcon, RetryIcon } from "@/components/icons";
+import { tableDeviceDress } from "./bodies/table.device";
 import { tableFlatDress } from "./bodies/table.flat";
 
 /** The entrance cascade stops counting at this many rows, so a long table never drags. */
@@ -137,7 +138,7 @@ const SLAT =
 /** Press: slats in a tray under a raised rail. */
 const pressDress: TableDress = {
   /* The tray: the region's ground, its shade drawn inside a clear 1px border so the box keeps today's size. */
-  region: "rounded-surface border border-transparent bg-tray bg-clip-padding shadow-(--tray-shade)",
+  region: "rounded-surface border border-transparent bg-tray bg-clip-padding shadow-(--tray-shade) forced-colors:border-[CanvasText]",
   /* The rail: each header cell is the tray (opaque, so rows pass under it) with the rail's face 4px in from its top and
      its foot, standing on --block-lift. The cell clips the face's ends, as a slat's. */
   head:
@@ -271,7 +272,7 @@ export function Table({
   const [stickyStart, setStickyStart] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
   const material = useMaterial();
-  const dress = byWorld(material, { press: pressDress, flat: tableFlatDress });
+  const dress = byWorld(material, { press: pressDress, flat: tableFlatDress, device: tableDeviceDress });
 
   /* The widths the header cells have now, to freeze before the first resize. */
   const measureColumns = useCallback(() => {
