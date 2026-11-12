@@ -7,6 +7,7 @@ To update an item, read the entries since your version, then reinstall it with `
 ## 2026-11-12 · Data, a body per world: Sparkline
 
 - **changed** `sparkline`: a body per material. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the line as it was. Device is a row of lit dots on LCD glass, the latest column the strongest. The box keeps the caller's height in every world. Props are unchanged.
+- **changed** `table`: its looks are a dress per material, picked from the material the page is in (`useMaterial`), not from CSS. Flat is the table as it was. Props are unchanged.
 
 ## 2026-11-11 · Data, a body per world: the line and stacked charts
 

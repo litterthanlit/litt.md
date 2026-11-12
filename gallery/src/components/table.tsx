@@ -79,13 +79,90 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 import { AnimatePresence, motion, type HTMLMotionProps } from "motion/react";
-import { useExit, useStagger, useTransition, useTravel } from "@/motion";
+import { byWorld, useExit, useMaterial, useStagger, useTransition, useTravel } from "@/motion";
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { AlertIcon, RetryIcon } from "@/components/icons";
+import { tableFlatDress } from "./bodies/table.flat";
 
 /** The entrance cascade stops counting at this many rows, so a long table never drags. */
 const CASCADE_CAP = 6;
+
+/** What a world dresses: the class strings each part of the table takes, and whether rows travel. Tailwind only builds
+    classes it can read, so every string is written out whole. Press's dress is below; Flat's and Device's live in
+    bodies/table.flat.tsx and bodies/table.device.tsx. */
+export type TableDress = {
+  /** The scroll region: its corners, frame and ground. */
+  region: string;
+  /** A header cell: its ground, its rule and the label type. */
+  head: string;
+  /** More for the select-all header cell. */
+  selectHead: string;
+  /** A body row: its fill under the hand, held and selected. */
+  row: string;
+  /** A body cell (TableCell and TableSelectCell): its rule, and whatever draws the row in it. */
+  cell: string;
+  /** The color of the row's name, and of every other cell. */
+  primary: string;
+  secondary: string;
+  /** A skeleton row's cell, and the bar in it. */
+  skeleton: string;
+  bar: string;
+  /** The failed page's cell, the color of its words, and the variant of its Retry button. */
+  error: string;
+  alert: string;
+  retry: "ghost" | "secondary";
+  /** The color of the empty row's sentence. */
+  empty: string;
+  /** Sticky columns, one or two: the cells stick to the start edge with an opaque fill that follows the row's hover and
+      selection, the header's corner cells sit above both, and the edge cell draws a hairline once something is
+      scrolled under it. */
+  sticky1: string;
+  sticky2: string;
+  /** Whether rows travel and fade (entrance, animateChanges), or appear where they stand. */
+  travels: boolean;
+};
+
+/** Press: the table as a hairline box with ruled rows, an fg fill under the hand. */
+const pressDress: TableDress = {
+  region: "rounded-surface border border-line bg-surface-1",
+  head: "border-b border-line bg-surface-1 text-caption font-label litt-legend",
+  selectHead: "",
+  row:
+    "group/row transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
+    "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " +
+    "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+    /* A selected row keeps the press fill, hovered or not. The box says it in words; the fill only helps the eye. */
+    "data-selected:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
+  cell: "border-b border-line",
+  primary: "text-fg",
+  secondary: "text-fg-subtle",
+  skeleton: "border-b border-line",
+  bar: "rounded-control bg-surface-2",
+  error: "border-b border-line",
+  alert: "text-fg-subtle",
+  retry: "ghost",
+  empty: "text-fg-muted",
+  sticky1: [
+    "[&_tr>*:first-child]:sticky [&_tr>*:first-child]:start-0",
+    "[&_thead_tr>*:first-child]:z-20 [&_tbody_tr>*:first-child]:z-1 [&_tbody_tr>*:first-child]:bg-surface-1",
+    "[&_tbody_tr>*:first-child]:transition-[background-color] [&_tbody_tr>*:first-child]:duration-(--dur-instant) [&_tbody_tr>*:first-child]:ease-litt",
+    "[&_tbody_tr:hover>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
+    "[&_tbody_tr[data-selected]>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
+    "[&_tr>*:first-child]:after:pointer-events-none [&_tr>*:first-child]:after:absolute [&_tr>*:first-child]:after:inset-y-0 [&_tr>*:first-child]:after:end-0",
+    "[&_tr>*:first-child]:after:w-px [&_tr>*:first-child]:after:bg-line [&_tr>*:first-child]:after:opacity-0 data-scrolled:[&_tr>*:first-child]:after:opacity-100",
+  ].join(" "),
+  sticky2: [
+    "[&_tr>*:nth-child(-n+2)]:sticky [&_tr>*:first-child]:start-0 [&_tr>*:nth-child(2)]:start-(--sticky-2)",
+    "[&_thead_tr>*:nth-child(-n+2)]:z-20 [&_tbody_tr>*:nth-child(-n+2)]:z-1 [&_tbody_tr>*:nth-child(-n+2)]:bg-surface-1",
+    "[&_tbody_tr>*:nth-child(-n+2)]:transition-[background-color] [&_tbody_tr>*:nth-child(-n+2)]:duration-(--dur-instant) [&_tbody_tr>*:nth-child(-n+2)]:ease-litt",
+    "[&_tbody_tr:hover>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
+    "[&_tbody_tr[data-selected]>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
+    "[&_tr>*:nth-child(2)]:after:pointer-events-none [&_tr>*:nth-child(2)]:after:absolute [&_tr>*:nth-child(2)]:after:inset-y-0 [&_tr>*:nth-child(2)]:after:end-0",
+    "[&_tr>*:nth-child(2)]:after:w-px [&_tr>*:nth-child(2)]:after:bg-line [&_tr>*:nth-child(2)]:after:opacity-0 data-scrolled:[&_tr>*:nth-child(2)]:after:opacity-100",
+  ].join(" "),
+  travels: true,
+};
 
 type TableState = {
   entrance: boolean;
@@ -105,8 +182,11 @@ type TableState = {
   setLoadingMore: (loading: boolean) => void;
   /** Checks whether the region has something to scroll, so it is focusable from the commit that makes it scroll. */
   measureScroll: () => void;
+  /** The world's dress, which every part reads its classes from. */
+  dress: TableDress;
 };
 const TableContext = createContext<TableState>({
+  dress: pressDress,
   entrance: false,
   animateChanges: false,
   ready: true,
@@ -149,30 +229,6 @@ export type TableProps = {
   children: ReactNode;
 };
 
-/* Sticky columns. Tailwind only builds classes it can read, so each count is written out. The cells stick to the start
-   edge with an opaque fill that follows the row's hover and selection (fg mixed into surface-1), the header's corner
-   cells sit above both, and the edge cell draws a hairline once something is scrolled under it. */
-const STICKY_1 = [
-  "[&_tr>*:first-child]:sticky [&_tr>*:first-child]:start-0",
-  "[&_thead_tr>*:first-child]:z-20 [&_tbody_tr>*:first-child]:z-1 [&_tbody_tr>*:first-child]:bg-surface-1",
-  "[&_tbody_tr>*:first-child]:transition-[background-color] [&_tbody_tr>*:first-child]:duration-(--dur-instant) [&_tbody_tr>*:first-child]:ease-litt",
-  "[&_tbody_tr:hover>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
-  "[&_tbody_tr[data-selected]>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
-  "in-[[data-material=flat]]:[&_tbody_tr:hover>*:first-child]:bg-surface-3 in-[[data-material=flat]]:[&_tbody_tr[data-selected]>*:first-child]:bg-surface-3",
-  "[&_tr>*:first-child]:after:pointer-events-none [&_tr>*:first-child]:after:absolute [&_tr>*:first-child]:after:inset-y-0 [&_tr>*:first-child]:after:end-0",
-  "[&_tr>*:first-child]:after:w-px [&_tr>*:first-child]:after:bg-line [&_tr>*:first-child]:after:opacity-0 data-scrolled:[&_tr>*:first-child]:after:opacity-100",
-].join(" ");
-const STICKY_2 = [
-  "[&_tr>*:nth-child(-n+2)]:sticky [&_tr>*:first-child]:start-0 [&_tr>*:nth-child(2)]:start-(--sticky-2)",
-  "[&_thead_tr>*:nth-child(-n+2)]:z-20 [&_tbody_tr>*:nth-child(-n+2)]:z-1 [&_tbody_tr>*:nth-child(-n+2)]:bg-surface-1",
-  "[&_tbody_tr>*:nth-child(-n+2)]:transition-[background-color] [&_tbody_tr>*:nth-child(-n+2)]:duration-(--dur-instant) [&_tbody_tr>*:nth-child(-n+2)]:ease-litt",
-  "[&_tbody_tr:hover>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
-  "[&_tbody_tr[data-selected]>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
-  "in-[[data-material=flat]]:[&_tbody_tr:hover>*:nth-child(-n+2)]:bg-surface-3 in-[[data-material=flat]]:[&_tbody_tr[data-selected]>*:nth-child(-n+2)]:bg-surface-3",
-  "[&_tr>*:nth-child(2)]:after:pointer-events-none [&_tr>*:nth-child(2)]:after:absolute [&_tr>*:nth-child(2)]:after:inset-y-0 [&_tr>*:nth-child(2)]:after:end-0",
-  "[&_tr>*:nth-child(2)]:after:w-px [&_tr>*:nth-child(2)]:after:bg-line [&_tr>*:nth-child(2)]:after:opacity-0 data-scrolled:[&_tr>*:nth-child(2)]:after:opacity-100",
-].join(" ");
-
 /* Once resized, every cell clips to its column and ends in an ellipsis. */
 const FIXED = "table-fixed [&_td]:overflow-hidden [&_td]:text-ellipsis [&_th]:overflow-hidden [&_th]:text-ellipsis";
 
@@ -203,6 +259,8 @@ export function Table({
   const [scrolledX, setScrolledX] = useState(false);
   const [stickyStart, setStickyStart] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
+  const material = useMaterial();
+  const dress = byWorld(material, { press: pressDress, flat: tableFlatDress });
 
   /* The widths the header cells have now, to freeze before the first resize. */
   const measureColumns = useCallback(() => {
@@ -299,16 +357,18 @@ export function Table({
 
   return (
     <TableContext.Provider
-      value={{ entrance, animateChanges, ready, region, table, widths, resizeColumn, settleColumns, freezeColumns, setLoadingMore, measureScroll }}
+      value={{ entrance, animateChanges, ready, region, table, widths, resizeColumn, settleColumns, freezeColumns, setLoadingMore, measureScroll, dress }}
     >
       <motion.div
         ref={region}
         layoutScroll
+        data-body={material}
         {...(scrolls ? { role: "group", "aria-labelledby": captionId, tabIndex: 0 } : {})}
         aria-busy={busy || undefined}
         className={
-          "relative w-full overflow-auto rounded-surface border border-line bg-surface-1 in-[[data-material=flat]]:border-transparent " +
-          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
+          "relative w-full overflow-auto " +
+          dress.region +
+          " focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
           className
         }
       >
@@ -318,7 +378,7 @@ export function Table({
           className={[
             "border-separate border-spacing-0 contain-paint text-left text-small",
             widths ? FIXED + (frozenBy === "auto" ? " min-w-full" : "") : "w-full min-w-max",
-            stickyColumns === 1 ? STICKY_1 : stickyColumns === 2 ? STICKY_2 : "",
+            stickyColumns === 1 ? dress.sticky1 : stickyColumns === 2 ? dress.sticky2 : "",
           ].join(" ")}
           style={{
             ...(widths ? { width: widths.reduce((a, b) => a + b, 0) } : {}),
@@ -370,7 +430,7 @@ export type TableBodyProps = {
 
 /** The body section. It numbers its rows for the entrance cascade and hosts the leaving rows. */
 export function TableBody({ children }: TableBodyProps) {
-  const { entrance, animateChanges } = useContext(TableContext);
+  const { entrance, animateChanges, dress } = useContext(TableContext);
   // Each row learns its place through context, so a row can be your own component and still be counted.
   const rows = Children.toArray(children).map((child, i) =>
     isValidElement(child) ? (
@@ -387,7 +447,7 @@ export function TableBody({ children }: TableBodyProps) {
       <tbody className="[&>tr:last-child>*]:border-b-0">
         {/* Its own AnimatePresence gives the rows a presence of their own. It hosts the leaving rows, and it keeps an
             ancestor's initial={false} (the Tabs panel has one) from swallowing the entrance cascade. */}
-        {entrance || animateChanges ? <AnimatePresence>{rows}</AnimatePresence> : rows}
+        {dress.travels && (entrance || animateChanges) ? <AnimatePresence>{rows}</AnimatePresence> : rows}
       </tbody>
     </SectionContext.Provider>
   );
@@ -443,7 +503,7 @@ export function TableVirtualBody({
   total,
   skeleton,
 }: TableVirtualBodyProps) {
-  const { region, table, freezeColumns, setLoadingMore, measureScroll } = useContext(TableContext);
+  const { region, table, freezeColumns, setLoadingMore, measureScroll, dress } = useContext(TableContext);
   const body = useRef<HTMLTableSectionElement>(null);
 
   const [height, setHeight] = useState(ROW_HEIGHT);
@@ -559,14 +619,14 @@ export function TableVirtualBody({
         {spacer((count - end) * height, "after")}
         {loadError ? (
           <tr>
-            <td colSpan={columns} className="h-control-md border-b border-line in-[[data-material=flat]]:border-transparent px-4 py-1 align-middle">
+            <td colSpan={columns} className={"h-control-md px-4 py-1 align-middle " + dress.error}>
               {/* Sticky, so the words and Retry stay in view in a table scrolled sideways. */}
-              <div role="alert" className="sticky start-4 flex w-max items-center gap-3 text-small text-fg-subtle">
+              <div role="alert" className={"sticky start-4 flex w-max items-center gap-3 text-small " + dress.alert}>
                 <span className="text-danger">
                   <AlertIcon />
                 </span>
                 {loadError}
-                <Button size="sm" variant="ghost" icon={<RetryIcon />} onClick={retry}>
+                <Button size="sm" variant={dress.retry} icon={<RetryIcon />} onClick={retry}>
                   Retry
                 </Button>
               </div>
@@ -658,7 +718,7 @@ export function useRowSelection(shown: readonly string[], initial: Iterable<stri
 /** Whether Shift was held for this change: a click's, or the key's on Space. */
 const shifted = (e: ChangeEvent<HTMLInputElement>) => (e.nativeEvent as MouseEvent).shiftKey === true;
 
-const selectCell = "w-12 in-[[data-material=flat]]:group-hover/row:bg-surface-3 in-[[data-material=flat]]:group-data-selected/row:bg-surface-3 in-[[data-material=flat]]:first:rounded-l-control in-[[data-material=flat]]:last:rounded-r-control border-b border-line in-[[data-material=flat]]:border-transparent py-0 pr-0 pl-4 align-middle [&>div]:py-0";
+const selectCell = "w-12 py-0 pr-0 pl-4 align-middle [&>div]:py-0";
 
 export type TableSelectHeadProps = {
   /** All, some or none of the rows shown are selected: useRowSelection's `head`. */
@@ -671,8 +731,9 @@ export type TableSelectHeadProps = {
 
 /** The select-all box, as the first header cell. Mixed while some of the rows shown are selected. */
 export function TableSelectHead({ state, onToggle, label = "Select every row shown" }: TableSelectHeadProps) {
+  const { dress } = useContext(TableContext);
   return (
-    <th scope="col" className={head + " " + selectCell}>
+    <th scope="col" className={[head, dress.head, selectCell, dress.selectHead].join(" ")}>
       <Checkbox
         label={<span className="sr-only">{label}</span>}
         checked={state === "all"}
@@ -694,8 +755,9 @@ export type TableSelectCellProps = {
 
 /** The row's box, as the first cell. Shift-press selects the range from the last box pressed. */
 export function TableSelectCell({ checked, onToggle, label }: TableSelectCellProps) {
+  const { dress } = useContext(TableContext);
   return (
-    <td className={selectCell + " h-control-md"}>
+    <td className={[selectCell, dress.cell, "h-control-md"].join(" ")}>
       <Checkbox label={<span className="sr-only">{label}</span>} checked={checked} onChange={(e) => onToggle(shifted(e))} />
     </td>
   );
@@ -704,15 +766,6 @@ export function TableSelectCell({ checked, onToggle, label }: TableSelectCellPro
 /* -------------------------------------------------------------------------- */
 /* TableRow                                                                   */
 /* -------------------------------------------------------------------------- */
-
-const rowHover =
-  "group/row transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " +
-  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
-  /* A selected row keeps the press fill, hovered or not. The box says it in words; the fill only helps the eye. */
-  "data-selected:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
-  /* Flat: the bubble is painted on the cells so its ends can round; the row itself stays clear. */
-  "in-[[data-material=flat]]:hover:bg-transparent in-[[data-material=flat]]:pointer-coarse:active:bg-transparent in-[[data-material=flat]]:data-selected:bg-transparent";
 
 export type TableRowProps = Omit<ComponentProps<"tr">, "ref"> & {
   /** Fills the row fg 6%, for a row whose TableSelectCell is checked. */
@@ -726,12 +779,12 @@ export type TableRowProps = Omit<ComponentProps<"tr">, "ref"> & {
 /** A row. In the body it gets the hover fill, and the entrance or change motion when the Table asks for it. */
 export function TableRow({ selected = false, className = "", children, ...rest }: TableRowProps) {
   const section = useContext(SectionContext);
-  const { entrance, animateChanges } = useContext(TableContext);
+  const { entrance, animateChanges, dress } = useContext(TableContext);
   const virtualIndex = useContext(VirtualIndexContext);
   const marks = { "data-selected": selected || undefined, "aria-rowindex": virtualIndex ?? undefined };
-  if (section === "head" || virtualIndex !== null || !(entrance || animateChanges)) {
+  if (section === "head" || virtualIndex !== null || !dress.travels || !(entrance || animateChanges)) {
     return (
-      <tr className={(section === "head" ? "" : rowHover + " ") + className} {...marks} {...rest}>
+      <tr className={(section === "head" ? "" : dress.row + " ") + className} {...marks} {...rest}>
         {children}
       </tr>
     );
@@ -744,7 +797,7 @@ export function TableRow({ selected = false, className = "", children, ...rest }
 }
 
 function MotionRow({ className = "", children, ...rest }: TableRowProps) {
-  const { entrance, animateChanges, ready } = useContext(TableContext);
+  const { entrance, animateChanges, ready, dress } = useContext(TableContext);
   const index = useContext(RowIndexContext);
   const enter = useTransition("expressive");
   const settle = useTransition("responsive");
@@ -763,7 +816,7 @@ function MotionRow({ className = "", children, ...rest }: TableRowProps) {
       initial={cascade ? { opacity: 0, y: travel } : inserted ? { opacity: 0, y: travel / 2 } : false}
       animate={{ opacity: 1, y: 0, transition: cascade ? { ...enter, delay: wait } : settle }}
       exit={animateChanges ? { opacity: 0, transition: leave } : undefined}
-      className={rowHover + " " + className}
+      className={dress.row + " " + className}
       {...(rest as HTMLMotionProps<"tr">)}
     >
       {children}
@@ -775,8 +828,8 @@ function MotionRow({ className = "", children, ...rest }: TableRowProps) {
 /* TableHead                                                                  */
 /* -------------------------------------------------------------------------- */
 
-const head =
-  "group/head sticky top-0 z-10 h-control-md border-b border-line in-[[data-material=flat]]:border-transparent bg-surface-1 text-caption font-label whitespace-nowrap litt-legend";
+/* Every header cell; its ground, rule and type are the dress's. */
+const head = "group/head sticky top-0 z-10 h-control-md whitespace-nowrap";
 
 /** How far one press of ← or → moves a column's edge, in px; Shift moves four times as far. */
 const COLUMN_STEP = 16;
@@ -949,6 +1002,7 @@ export function TableHead({
   children,
   ...rest
 }: TableHeadProps) {
+  const { dress } = useContext(TableContext);
   const align = numeric ? "text-right" : "text-left";
   const handle = resizable ? <ColumnHandle name={typeof children === "string" ? children : "this"} minWidth={minWidth} /> : null;
   /* With a filter the cell is a row of two: the label (or the sort button) and the filter's button. Over numbers the
@@ -962,7 +1016,7 @@ export function TableHead({
   if (!onSort) {
     const label = filter ? <span className={"block px-4 " + align}>{children}</span> : children;
     return (
-      <th scope="col" className={[head, align, filter ? "p-0 text-fg-subtle" : "px-4 py-3 text-fg-subtle", className].join(" ")} {...rest}>
+      <th scope="col" className={[head, dress.head, align, filter ? "p-0 text-fg-subtle" : "px-4 py-3 text-fg-subtle", className].join(" ")} {...rest}>
         {filter ? withFilter(label) : label}
         {handle}
       </th>
@@ -987,7 +1041,7 @@ export function TableHead({
     </button>
   );
   return (
-    <th scope="col" aria-sort={sort} className={[head, align, "p-0", className].join(" ")} {...rest}>
+    <th scope="col" aria-sort={sort} className={[head, dress.head, align, "p-0", className].join(" ")} {...rest}>
       {filter ? withFilter(button) : button}
       {handle}
     </th>
@@ -1011,11 +1065,13 @@ export type TableCellProps = Omit<ComponentProps<"td">, "ref" | "scope"> & {
 
 /** A body cell. fg-subtle by default; `primary` makes it the row's name, and `numeric` sets tabular figures. */
 export function TableCell({ numeric = false, primary = false, className = "", children, ...rest }: TableCellProps) {
+  const { dress } = useContext(TableContext);
   const cls = [
     // font-normal because a <th> is bold by default, and a host app may not reset it.
-    "h-control-md border-b border-line in-[[data-material=flat]]:border-transparent px-4 py-3 align-middle font-normal whitespace-nowrap in-[[data-material=flat]]:group-hover/row:bg-surface-3 in-[[data-material=flat]]:group-data-selected/row:bg-surface-3 in-[[data-material=flat]]:first:rounded-l-control in-[[data-material=flat]]:last:rounded-r-control",
+    "h-control-md px-4 py-3 align-middle font-normal whitespace-nowrap",
+    dress.cell,
     numeric ? "text-right text-caption font-normal tabular-nums" : "text-left text-small",
-    primary ? "text-fg" : "text-fg-subtle",
+    primary ? dress.primary : dress.secondary,
     className,
   ].join(" ");
   return primary ? (
@@ -1044,10 +1100,11 @@ export type TableEmptyProps = {
 
 /** The empty body row: one sentence and one action, left-aligned, with no illustration. It is announced as a status. */
 export function TableEmpty({ columns, children, action }: TableEmptyProps) {
+  const { dress } = useContext(TableContext);
   return (
     <tr>
       <td colSpan={columns} className="px-4 py-8 text-left align-top">
-        <p role="status" className="max-w-[20rem] text-small text-fg-muted">
+        <p role="status" className={"max-w-[20rem] text-small " + dress.empty}>
           {children}
         </p>
         {action && <div className="mt-4">{action}</div>}
@@ -1073,13 +1130,14 @@ export type TableSkeletonProps = {
 
 /** Placeholder rows at the real row height: surface-2 bars, static, and hidden from screen readers. Pair it with `busy` on the Table. */
 export function TableSkeleton({ columns, rows = 4 }: TableSkeletonProps) {
+  const { dress } = useContext(TableContext);
   return (
     <>
       {Array.from({ length: rows }, (_, row) => (
         <tr key={row} aria-hidden="true">
           {columns.map((kind, col) => (
-            <td key={col} className="h-control-md border-b border-line in-[[data-material=flat]]:border-transparent px-4 py-3 align-middle">
-              <span className={"block rounded-control bg-surface-2 " + skeletonBar[kind]} />
+            <td key={col} className={"h-control-md px-4 py-3 align-middle " + dress.skeleton}>
+              <span className={"block " + dress.bar + " " + skeletonBar[kind]} />
             </td>
           ))}
         </tr>
