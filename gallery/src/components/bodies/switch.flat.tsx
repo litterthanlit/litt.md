@@ -7,7 +7,7 @@
  * is 18px (--sw-travel). The accent fills the pill only for tone="accent", the one main switch (R6).
  */
 import * as SwitchPrimitive from "@radix-ui/react-switch";
-import type { SwitchBodyProps } from "../switch";
+import type { SwitchBodyProps, SwitchTone } from "../switch";
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
@@ -19,16 +19,20 @@ const root =
   "disabled:cursor-not-allowed " +
   focusRing;
 
-/* The pill: an outline when off, ink when on. */
+/* The pill: an outline when off. Its fill when on is pillOn's, by tone. */
 const pill =
   "relative inline-flex h-6.5 w-11 shrink-0 items-center overflow-hidden rounded-control p-[3px] " +
-  "bg-transparent shadow-[inset_0_0_0_1.5px_var(--line-control)] group-data-[state=checked]/pill:bg-fg group-data-[state=checked]/pill:shadow-none " +
+  "bg-transparent shadow-[inset_0_0_0_1.5px_var(--line-control)] group-data-[state=checked]/pill:shadow-none " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "group-enabled/pill:group-hover/switch:group-data-[state=checked]/pill:bg-[color-mix(in_oklab,var(--fg)_86%,var(--canvas))] " +
   "group-disabled/pill:bg-surface-2 group-disabled/pill:opacity-40 group-disabled/pill:shadow-[inset_0_0_0_1px_var(--line)] group-disabled/pill:group-data-[state=checked]/pill:bg-fg group-disabled/pill:group-data-[state=checked]/pill:shadow-none " +
   "forced-colors:border forced-colors:p-px"; // the border is real, so the padding gives it back its px
 
-const pillAccent = " group-data-[state=checked]/pill:bg-accent group-enabled/pill:group-hover/switch:group-data-[state=checked]/pill:bg-accent-hover";
+/* On, the pill fills: the ink, or the accent for tone="accent". One tone's fills or the other's, never both on the pill:
+   two fills under one variant have the same specificity, so Tailwind's order would pick between them, not this file's. */
+const pillOn: Record<SwitchTone, string> = {
+  neutral: "group-data-[state=checked]/pill:bg-fg group-enabled/pill:group-hover/switch:group-data-[state=checked]/pill:bg-[color-mix(in_oklab,var(--fg)_86%,var(--canvas))]",
+  accent: "group-data-[state=checked]/pill:bg-accent group-enabled/pill:group-hover/switch:group-data-[state=checked]/pill:bg-accent-hover",
+};
 
 /* The knob keeps the control radius less 2px, as the Press block does. */
 const knob =
@@ -44,7 +48,7 @@ const wordCell = "grid select-none text-small font-normal leading-none whitespac
 export function SwitchFlatBody({ shown, disabled, x, tone, words, motion, root: rootProps, className }: SwitchBodyProps) {
   return (
     <SwitchPrimitive.Root {...rootProps} data-body="flat" className={root + className}>
-      <span className={pill + (tone === "accent" ? pillAccent : "")}>
+      <span className={pill + " " + pillOn[tone]}>
         {/* The empty child is not decoration: without it Chromium rasters the pill and knob edges a shade differently. */}
         <SwitchPrimitive.Thumb className={knob + " " + (disabled || !shown ? knobOff : knobOn)} style={{ ...motion, translate: `${x} 0` }}><span aria-hidden="true" className="hidden" /></SwitchPrimitive.Thumb>
       </span>

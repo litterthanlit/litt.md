@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.11",
+  "latest": "2026.11.12",
   "items": {
     "accordion": {
       "version": "2026.11.06",
@@ -255,8 +255,8 @@
       "hash": "f3b7f7e74e6be3f4"
     },
     "number-field": {
-      "version": "2026.11.09",
-      "hash": "7e2baffff5b22896"
+      "version": "2026.11.12",
+      "hash": "8ee262507432f6a5"
     },
     "option-picker": {
       "version": "2026.11.09",
@@ -391,8 +391,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "switch": {
-      "version": "2026.11.09",
-      "hash": "e08928364e242b30"
+      "version": "2026.11.12",
+      "hash": "b38e2dffe0c39943"
     },
     "table": {
       "version": "2026.11.06",
