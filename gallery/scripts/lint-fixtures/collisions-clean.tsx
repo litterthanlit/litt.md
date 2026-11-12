@@ -45,13 +45,15 @@ export function Clean({ tone, on, off, picked, size, active, hidden, n, classNam
       <span className={"flex " + sizes[size]} />
       <span className={row(active)} />
       <span className={lamp(on)} />
+      {/* The same call read twice returns the same thing both times. */}
+      <span className={lamp(on) + " " + lamp(on)} />
       {/* Another variant chain is another selector. */}
       <span className="bg-surface-1 hover:bg-surface-2 data-[state=open]:bg-surface-3 hover:data-[state=open]:bg-surface-2" />
       {/* !important on one side wins on its own. */}
       <span className="bg-fg bg-accent!" />
       {/* The same class twice, and a class glued to a value that is not known. */}
       <span className={cx("flex", active && "flex")} />
-      <span className={`gap-${n} gap-2 ${className}`} />
+      <span className={`text-fg-subtle text-fg${n} ${className}`} />
       <span className={"flex " + (hidden ? "hidden" : "")} /* litt-allow: a fixture line, to show the exemption */ />
     </div>
   );

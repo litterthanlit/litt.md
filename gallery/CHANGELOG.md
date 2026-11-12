@@ -6,7 +6,7 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-11-12 · Flat's accent switch and error ring
 
-Two classes on one element that set the same property under the same variant have the same specificity, so Tailwind's order picks the winner, not the order they are written in. Two Flat bodies lost a state that way, and the gallery now checks every class list for it.
+Two classes on one element that set the same property under the same variant have the same specificity, so Tailwind's order picks the winner, not the order they are written in. Two Flat bodies lost a state that way, and the gallery now checks its class lists for it.
 
 - **fixed** `switch`: under Flat, `tone="accent"` fills the pill with the accent when on. It showed the ink, which only looked right while the accent was the ink (Flat's own): with `data-accent="blue"` or `"pink"` the accent never showed.
 - **fixed** `number-field`: under Flat, an error shows the danger ring on the pill. The pill's own `shadow-none` beat it, so the ring never showed.

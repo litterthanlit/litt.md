@@ -29,15 +29,21 @@
  *     Tailwind orders these by design;
  *   - `!important` on one side only.
  *
- * Out of sight: a class list that reaches the element through a prop (`className={base + className}`), a `let`, or a
- * function's parameter. Put `litt-allow` on either class's line (in a comment) to exempt a pair, with a reason.
+ * Variants count in any order: `hover:focus:bg-fg` and `focus:hover:bg-accent` collide.
  *
- * Collisions not yet fixed sit in KNOWN, each with the class that wins today. They print and do not fail the run, but
- * one that is gone, or whose winner has changed, does: the list pins today's picture and only shrinks.
+ * Out of sight: a class list that reaches the element through a prop (`className={base + className}`), a `let`, or a
+ * function's parameter. Each word of a string is read as a whole class, so a class glued from pieces
+ * (`"hover:" + "bg-fg"`) is misread; Tailwind's own scanner does not see such a class either. Put `litt-allow` on a
+ * line (in a comment, with a reason) to exempt every class written on that line.
+ *
+ * Collisions not yet fixed sit in KNOWN, each with the class that wins today and the number of places it is in.
+ * They print and do not fail the run, but one that is gone, whose winner has changed, or that is in more or fewer
+ * places does: the list pins today's picture and only shrinks.
  *
  * The self-test lints lint-fixtures/collisions-dirty.tsx, where every line that ends in `// expect: collision` must
  * fail and no other line may, and collisions-clean.tsx, which must be clean. The dirty fixture holds the old switch
- * pill, and the self-test fails if the check stops naming its two fills.
+ * pill, and the self-test fails if the check stops naming its two fills. It also runs the KNOWN rules on made-up
+ * findings: a known pair passes, and one that is gone, has a new winner or is in one more place fails.
  *
  * Exit codes: 0 clean, 1 collisions (or a self-test problem), 2 usage error.
  */
@@ -65,6 +71,18 @@ async function loadTailwind() {
       return { path: file, base: path.dirname(file), content: fs.readFileSync(file, "utf8") };
     },
   });
+}
+
+/** A class's variants and its utility: `hover:data-[state=open]:bg-fg` is ["hover", "data-[state=open]"] and "bg-fg". */
+function splitVariants(cls) {
+  const parts = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < cls.length; i++) {
+    if (cls[i] === "[" || cls[i] === "(") depth++;
+    else if (cls[i] === "]" || cls[i] === ")") depth--;
+    else if (cls[i] === ":" && depth === 0) { parts.push(cls.slice(start, i)); start = i + 1; }
+  }
+  return { variants: parts, utility: cls.slice(start) };
 }
 
 const unescapeIdent = (s) => s.replace(/\\([0-9a-fA-F]{1,6}) ?|\\(.)/g, (_, hex, ch) => (hex ? String.fromCodePoint(parseInt(hex, 16)) : ch));
@@ -116,8 +134,12 @@ function classReader(tailwind) {
   const known = new Map();
   const rulesOf = (cls) => {
     if (!known.has(cls)) {
-      const css = tailwind.candidatesToCss([cls])[0];
-      known.set(cls, css ? parseRules(css, cls) : null);
+      /* Read with its variants in one order: `hover:focus:` and `focus:hover:` match the same states with the same
+         specificity, and Tailwind nests them as written, so only a sorted class compares. */
+      const { variants, utility } = splitVariants(cls);
+      const sorted = [...variants.sort(), utility].join(":");
+      const [ordered, written] = tailwind.candidatesToCss([sorted, cls]);
+      known.set(cls, ordered ? parseRules(ordered, sorted) : written ? parseRules(written, cls) : null);
     }
     return known.get(cls);
   };
@@ -152,7 +174,8 @@ function classReader(tailwind) {
 /* ====================================================================== what lands on an element */
 
 /* Guards: Map<subject, { bool?, eq?, neq? }>, the conditions a class sits under. A subject is a condition's text with
-   the declaration of its first name, so `tone` in two components is two subjects. */
+   the declaration of each name in it, so `tone` in two components is two subjects, and a function's parameter is
+   one subject per call. */
 
 /** The guards with one more condition, or null when the two can never hold together. */
 function guard(guards, subject, add) {
@@ -185,7 +208,8 @@ const PASS_THROUGH = new Set(["join", "filter", "concat", "trim", "flat", "toStr
 /** Reads the classes of every `className` in a program's files: [{ cls, file, pos, line, guards }] per element. */
 function elementReader(program) {
   const checker = program.getTypeChecker();
-  let calls = 0;
+  const calls = new Map(); // a function with its arguments → that call's name: the same call read twice is one call
+  const reading = new Map(); // a function being read at a call → that call's name
 
   const unwrap = (e) => {
     while (ts.isParenthesizedExpression(e) || ts.isAsExpression(e) || ts.isNonNullExpression(e) || ts.isSatisfiesExpression(e)) e = e.expression;
@@ -201,11 +225,17 @@ function elementReader(program) {
     return d && ts.isVariableDeclaration(d) && d.initializer && d.parent.flags & ts.NodeFlags.Const ? d : null;
   };
   const subject = (e) => {
-    let first = null;
-    const visit = (n) => { if (!first) { if (ts.isIdentifier(n)) first = n; else n.forEachChild(visit); } };
+    const names = [];
+    const visit = (n) => { if (ts.isIdentifier(n)) names.push(n); else n.forEachChild(visit); };
     visit(e);
-    const d = first && declarationOf(first);
-    return `${e.getText().replace(/\s+/g, " ")}@${d ? `${d.getSourceFile().fileName}:${d.pos}` : e.getSourceFile().fileName}`;
+    const where = names.map((name) => {
+      const d = declarationOf(name);
+      if (!d) return "?";
+      let fn = d.parent;
+      while (fn && !ts.isFunctionLike(fn)) fn = fn.parent;
+      return `${d.getSourceFile().fileName}:${d.pos}${(fn && reading.get(fn)) ?? ""}`;
+    });
+    return `${e.getText().replace(/\s+/g, " ")}@${where.length ? where.join(",") : e.getSourceFile().fileName}`;
   };
   const literal = (e) => (ts.isStringLiteralLike(e) || ts.isNumericLiteral(e) ? e.text
     : e.kind === ts.SyntaxKind.TrueKeyword ? "true" : e.kind === ts.SyntaxKind.FalseKeyword ? "false" : e.kind === ts.SyntaxKind.NullKeyword ? "null" : undefined);
@@ -223,8 +253,8 @@ function elementReader(program) {
         const left = assume(cond.left, truth, whole);
         return left && assume(cond.right, truth, left);
       }
-      const equal = op === ts.SyntaxKind.EqualsEqualsEqualsToken || op === ts.SyntaxKind.EqualsEqualsToken;
-      if (equal || op === ts.SyntaxKind.ExclamationEqualsEqualsToken || op === ts.SyntaxKind.ExclamationEqualsToken) {
+      const equal = op === ts.SyntaxKind.EqualsEqualsEqualsToken;
+      if (equal || op === ts.SyntaxKind.ExclamationEqualsEqualsToken) {
         const l = unwrap(cond.left), r = unwrap(cond.right);
         const value = literal(r) ?? literal(l);
         if (value !== undefined) return guard(guards, subject(literal(r) !== undefined ? l : r), equal === truth ? { eq: value } : { neq: value });
@@ -248,17 +278,23 @@ function elementReader(program) {
     });
   }
 
+  /** What `read` makes of the const a name stands for: a const in scope, or one imported by name or as `ns.name`. */
+  function follow(name, seen, read) {
+    const d = constInit(name);
+    if (!d || seen.has(d)) return [];
+    seen.add(d);
+    try { return read(d.initializer); } finally { seen.delete(d); }
+  }
+
   /** The object literals an expression can be, each with its guards. */
   function objects(e, guards, seen) {
     e = unwrap(e);
     if (ts.isObjectLiteralExpression(e)) return [{ node: e, guards }];
-    if (ts.isIdentifier(e)) {
-      const d = constInit(e);
-      if (!d || seen.has(d)) return [];
-      seen.add(d);
-      try { return objects(d.initializer, guards, seen); } finally { seen.delete(d); }
+    if (ts.isIdentifier(e)) return follow(e, seen, (init) => objects(init, guards, seen));
+    if (ts.isPropertyAccessExpression(e) || ts.isElementAccessExpression(e)) {
+      const found = members(e, guards, seen).flatMap((m) => objects(m.value, m.guards, seen));
+      return found.length || !ts.isPropertyAccessExpression(e) ? found : follow(e.name, seen, (init) => objects(init, guards, seen));
     }
-    if (ts.isPropertyAccessExpression(e) || ts.isElementAccessExpression(e)) return members(e, guards, seen).flatMap((m) => objects(m.value, m.guards, seen));
     if (ts.isConditionalExpression(e)) return branches(e, guards).flatMap((b) => objects(b.value, b.guards, seen));
     return [];
   }
@@ -283,8 +319,8 @@ function elementReader(program) {
     return [yes && { value: e.whenTrue, guards: yes }, no && { value: e.whenFalse, guards: no }].filter(Boolean);
   }
 
-  /** What a function can return, each return under its own guard: a call returns once. */
-  function returns(fn, guards) {
+  /** What a call of a function can return, each return under its own guard: a call returns once. */
+  function returns(fn, call, guards) {
     if (!fn.body) return [];
     const found = [];
     if (ts.isBlock(fn.body)) {
@@ -295,8 +331,7 @@ function elementReader(program) {
       };
       fn.body.forEachChild(visit);
     } else found.push(fn.body);
-    const call = `call ${++calls}`;
-    return found.map((value, i) => ({ value, guards: guard(guards, call, { eq: String(i) }) }));
+    return found.map((value, i) => ({ value, guards: guard(guards, `returns${call}`, { eq: String(i) }) })).filter((r) => r.guards);
   }
 
   /** Every class an expression can put on the element. */
@@ -321,13 +356,11 @@ function elementReader(program) {
       return [];
     }
     if (ts.isConditionalExpression(e)) return all(branches(e, guards));
-    if (ts.isIdentifier(e)) {
-      const d = constInit(e);
-      if (!d || seen.has(d)) return [];
-      seen.add(d);
-      try { return classes(d.initializer, guards, seen); } finally { seen.delete(d); }
+    if (ts.isIdentifier(e)) return follow(e, seen, (init) => classes(init, guards, seen));
+    if (ts.isPropertyAccessExpression(e) || ts.isElementAccessExpression(e)) {
+      const found = members(e, guards, seen);
+      return found.length || !ts.isPropertyAccessExpression(e) ? all(found) : follow(e.name, seen, (init) => classes(init, guards, seen));
     }
-    if (ts.isPropertyAccessExpression(e) || ts.isElementAccessExpression(e)) return all(members(e, guards, seen));
     if (ts.isArrayLiteralExpression(e)) return e.elements.flatMap((x) => classes(ts.isSpreadElement(x) ? x.expression : x, guards, seen));
     if (ts.isObjectLiteralExpression(e)) { // cx({ "bg-surface-2": active })
       return e.properties.flatMap((p) => {
@@ -345,8 +378,11 @@ function elementReader(program) {
       const d = declarationOf(callee);
       const fn = d && (ts.isFunctionDeclaration(d) ? d : ts.isVariableDeclaration(d) && d.initializer && (ts.isArrowFunction(unwrap(d.initializer)) || ts.isFunctionExpression(unwrap(d.initializer))) ? unwrap(d.initializer) : null);
       if (!fn || seen.has(fn)) return [];
+      const key = `${fn.getSourceFile().fileName}:${fn.pos}(${e.arguments.map(subject).join(", ")})`;
+      if (!calls.has(key)) calls.set(key, ` in call ${calls.size + 1}`);
       seen.add(fn);
-      try { return all(returns(fn, guards).filter((r) => r.guards)); } finally { seen.delete(fn); }
+      reading.set(fn, calls.get(key));
+      try { return all(returns(fn, calls.get(key), guards)); } finally { seen.delete(fn); reading.delete(fn); }
     }
     return [];
   }
@@ -368,38 +404,47 @@ function elementReader(program) {
 
 /* ==================================================================================== the check */
 
-const variantsOf = (cls) => {
-  let depth = 0, cut = -1;
-  for (let i = 0; i < cls.length; i++) {
-    if (cls[i] === "[" || cls[i] === "(") depth++;
-    else if (cls[i] === "]" || cls[i] === ")") depth--;
-    else if (cls[i] === ":" && depth === 0) cut = i;
-  }
-  return cut < 0 ? "" : cls.slice(0, cut + 1);
-};
-
 /* Collisions the check knows about and has not fixed yet. `wins` is the class Tailwind emits last today, `loses` the
-   one it beats on the same element. Most are right only by that order: the class joined on for the narrower case
-   happens to sort last. Two are not, and say so: the class joined on is the one that loses, so it does nothing. */
+   one it beats on the same element, `sites` the number of places in the file where the two meet. Most are right only
+   by that order: the class joined on for the narrower case happens to sort last. Two are not, and say so: the class
+   joined on is the one that loses, so it does nothing. */
 const KNOWN = [
-  { file: "src/components/agent-indicator.tsx", wins: "rounded-surface", loses: "rounded-control", why: "the reel's window joins the surface radius onto the LCD's own control radius" },
-  { file: "src/components/agent-indicator.tsx", wins: "flex", loses: "block", why: "the empty layer writes block before the LCD's flex, and block does nothing" },
-  { file: "src/components/bodies/card-picker.device.tsx", wins: "forced-colors:border-2", loses: "forced-colors:border", why: "a latched plate joins its 2px forced-colors border onto the 1px every plate has" },
-  { file: "src/components/bodies/input.device.tsx", wins: "font-mono", loses: "font-field", why: "mono joins font-mono onto the glass's font-field" },
-  { file: "src/components/bodies/legend.device.tsx", wins: "forced-colors:border-2", loses: "forced-colors:border", why: "a shown key joins its 2px forced-colors border onto the 1px every key has" },
-  { file: "src/components/bodies/number-field.device.tsx", wins: "shadow-[inset_0_0_0_1px_var(--danger),var(--tray-shade)]", loses: "shadow-(--tray-shade)", why: "an error joins the danger line onto the well's shade" },
-  { file: "src/components/bodies/option-picker.device.tsx", wins: "forced-colors:border-2", loses: "forced-colors:border", why: "the chosen key joins its 2px forced-colors border onto the 1px every key has" },
-  { file: "src/components/bodies/switch.device.tsx", wins: "bg-surface-2", loses: "bg-block", why: "disabled joins the flat key's fill onto the standing key's" },
-  { file: "src/components/bodies/switch.device.tsx", wins: "shadow-[inset_0_0_0_1px_var(--line)]", loses: "shadow-(--key-lift)", why: "disabled joins the flat key's line onto the standing key's lift" },
-  { file: "src/components/option-picker.tsx", wins: "forced-colors:border-2", loses: "forced-colors:border", why: "the chosen swatch joins its 2px forced-colors border onto the 1px every swatch has" },
-  { file: "src/components/slider.tsx", wins: "transition-transform", loses: "transition-colors", why: "a glide joins its transform transition onto the face's color fade, so the face does not fade while it glides" },
-  { file: "src/components/slider.tsx", wins: "duration-(--dur-responsive)", loses: "duration-(--dur-instant)", why: "the glide's duration joined onto the face's fade" },
-  { file: "src/components/slider.tsx", wins: "ease-responsive", loses: "ease-litt", why: "the glide's ease joined onto the face's fade" },
-  { file: "src/components/switch.tsx", wins: "text-fg-disabled", loses: "text-fg", why: "disabled joins its ink onto the floor word's" },
-  { file: "src/components/steps.tsx", wins: "pb-6", loses: "pb-0", why: "the last step joins pb-0 onto pb-6 and loses, so it keeps its 24px foot; whether it should is a look call" },
-  { file: "src/components/button.tsx", wins: "bg-clip-padding", loses: "bg-clip-border", why: "ghost joins bg-clip-border onto the base's bg-clip-padding and loses, so its hover fill stops inside the 3px plate; whether it should is a look call" },
+  { file: "src/components/agent-indicator.tsx", wins: "rounded-surface", loses: "rounded-control", sites: 1, why: "the reel's window joins the surface radius onto the LCD's own control radius" },
+  { file: "src/components/agent-indicator.tsx", wins: "flex", loses: "block", sites: 1, why: "the empty layer writes block before the LCD's flex, and block does nothing" },
+  { file: "src/components/bodies/card-picker.device.tsx", wins: "forced-colors:border-2", loses: "forced-colors:border", sites: 1, why: "a latched plate joins its 2px forced-colors border onto the 1px every plate has" },
+  { file: "src/components/bodies/input.device.tsx", wins: "font-mono", loses: "font-field", sites: 2, why: "mono joins font-mono onto the glass's font-field" },
+  { file: "src/components/bodies/legend.device.tsx", wins: "forced-colors:border-2", loses: "forced-colors:border", sites: 2, why: "a shown key joins its 2px forced-colors border onto the 1px every key has" },
+  { file: "src/components/bodies/number-field.device.tsx", wins: "shadow-[inset_0_0_0_1px_var(--danger),var(--tray-shade)]", loses: "shadow-(--tray-shade)", sites: 1, why: "an error joins the danger line onto the well's shade" },
+  { file: "src/components/bodies/option-picker.device.tsx", wins: "forced-colors:border-2", loses: "forced-colors:border", sites: 1, why: "the chosen key joins its 2px forced-colors border onto the 1px every key has" },
+  { file: "src/components/bodies/switch.device.tsx", wins: "bg-surface-2", loses: "bg-block", sites: 1, why: "disabled joins the flat key's fill onto the standing key's" },
+  { file: "src/components/bodies/switch.device.tsx", wins: "shadow-[inset_0_0_0_1px_var(--line)]", loses: "shadow-(--key-lift)", sites: 1, why: "disabled joins the flat key's line onto the standing key's lift" },
+  { file: "src/components/option-picker.tsx", wins: "forced-colors:border-2", loses: "forced-colors:border", sites: 1, why: "the chosen swatch joins its 2px forced-colors border onto the 1px every swatch has" },
+  { file: "src/components/slider.tsx", wins: "transition-transform", loses: "transition-colors", sites: 1, why: "a glide joins its transform transition onto the face's color fade, so the face does not fade while it glides" },
+  { file: "src/components/slider.tsx", wins: "duration-(--dur-responsive)", loses: "duration-(--dur-instant)", sites: 1, why: "the glide's duration joined onto the face's fade" },
+  { file: "src/components/slider.tsx", wins: "ease-responsive", loses: "ease-litt", sites: 1, why: "the glide's ease joined onto the face's fade" },
+  { file: "src/components/switch.tsx", wins: "text-fg-disabled", loses: "text-fg", sites: 1, why: "disabled joins its ink onto the floor word's" },
+  { file: "src/components/steps.tsx", wins: "pb-6", loses: "pb-0", sites: 1, why: "the last step joins pb-0 onto pb-6 and loses, so it keeps its 24px foot; whether it should is a look call" },
+  { file: "src/components/button.tsx", wins: "bg-clip-padding", loses: "bg-clip-border", sites: 1, why: "ghost joins bg-clip-border onto the base's bg-clip-padding and loses, so its hover fill stops inside the 3px plate; whether it should is a look call" },
 ];
-const knownFor = (f) => KNOWN.find((k) => k.file === f.file && k.wins === f.wins && f.classes.includes(k.loses));
+
+/**
+ * Settles a run against the known list: { fails, lines, known }. A finding no entry names fails. An entry (for a file
+ * that was linted) prints while its pair is in exactly `sites` places with the same winner, and fails when the pair is
+ * gone, the winner has changed (the finding no longer matches it), or the places are more or fewer.
+ */
+function settle(found, known, linted) {
+  const entryFor = (f) => known.find((k) => k.file === f.file && k.wins === f.wins && f.classes.includes(k.loses));
+  const fails = found.filter((f) => !entryFor(f)), lines = [];
+  let count = 0;
+  for (const k of known.filter((k) => linted.has(k.file))) {
+    const hits = found.filter((f) => entryFor(f) === k);
+    const what = `${k.wins} over ${k.loses}`, at = [...new Set(hits.map((f) => f.line))].join(",");
+    if (hits.length === k.sites) { count += hits.length; lines.push(`  · known ${k.file}:${at}  ${what}: ${k.why}.`); }
+    else if (!hits.length) fails.push({ file: k.file, line: 0, message: `the known collision is gone, or ${k.loses} now wins (${what}: ${k.why}). Take it out of KNOWN, or look at what changed` });
+    else fails.push({ file: k.file, line: hits[0].line, message: `${what} is known in ${k.sites} place(s) and is now in ${hits.length} (lines ${at}). A new place is a new collision, so fix it; if one was fixed, lower its sites in KNOWN` });
+  }
+  return { fails, lines, known: count };
+}
 
 /** Lint files. Returns [{ file, line, rule: "collision", message, classes, wins }], one per pair of places in the source. */
 function lint(files, { tailwind, options, rel }) {
@@ -428,7 +473,7 @@ function lint(files, { tailwind, options, rel }) {
           if (hit.narrower && hit.wins === meant.cls) continue; // the narrower class, written last, wins as Tailwind means it to
           const key = [`${meant.file}:${meant.pos}`, `${other.file}:${other.pos}`].sort().join("|");
           if (fails.has(key)) continue;
-          const under = variantsOf(meant.cls);
+          const under = splitVariants(meant.cls).variants.map((v) => `${v}:`).join("");
           const where = other.file === meant.file ? `line ${other.line}` : `${rel(other.file)}:${other.line}`;
           fails.set(key, {
             file: rel(meant.file), line: meant.line, rule: "collision", classes: [meant.cls, other.cls], wins: hit.wins,
@@ -466,16 +511,8 @@ async function run(argv) {
   if (missing) { console.error(`collisions: no such file: ${missing}`); return 2; }
   const files = named.length ? named : walk(path.join(root, "src"));
   const rel = (f) => path.relative(root, f).split(path.sep).join("/");
-  const found = lint(files, { tailwind, options, rel });
-  const fails = found.filter((f) => !knownFor(f));
-  const linted = new Set(files.map(rel));
-  let known = 0;
-  for (const k of KNOWN.filter((k) => linted.has(k.file))) {
-    const hits = found.filter((f) => knownFor(f) === k);
-    known += hits.length;
-    if (hits.length) console.log(`  · known ${k.file}:${[...new Set(hits.map((f) => f.line))].join(",")}  ${k.wins} over ${k.loses}: ${k.why}.`);
-    else fails.push({ file: k.file, line: 0, message: `the known collision is gone, or ${k.loses} now wins (${k.wins} over ${k.loses}: ${k.why}). Take it out of KNOWN, or look at what changed` });
-  }
+  const { fails, lines, known } = settle(lint(files, { tailwind, options, rel }), KNOWN, new Set(files.map(rel)));
+  lines.forEach((l) => console.log(l));
   fails.forEach((f) => console.log(`  ✗ ${f.file}${f.line ? `:${f.line}` : ""}  ${f.message}`));
   console.log(fails.length ? `\n${fails.length} class collision problem(s) in ${files.length} files.` : `\nclass collisions: ${files.length} files, no two classes fight over a property${known ? ` but the ${known} known` : ""}.`);
   return fails.length ? 1 : 0;
@@ -508,13 +545,27 @@ function runSelfTest(tailwind, options) {
   if (!switchBug) problems.push(`collisions-dirty.tsx: the old switch bug (${fills.join(" with ")}) was not caught`);
   else if (!switchBug.message.includes(`emits ${fills[1]} last`)) problems.push("collisions-dirty.tsx: the old switch bug no longer says the ink wins, so Tailwind's order has changed or the check misreads it");
 
+  /* The known list's rules, on made-up findings: one known pair in one place. */
+  const entry = { file: "a.tsx", wins: "flex", loses: "block", sites: 1, why: "made up" };
+  const hit = (line, wins = "flex") => ({ file: "a.tsx", line, classes: ["flex", "block"], wins, message: "made up" });
+  const settled = (found) => settle(found, [entry], new Set(["a.tsx"])).fails.length;
+  const claims = [
+    ["a known pair in its one place passes", settled([hit(3)]) === 0],
+    ["a known pair that is gone fails", settled([]) === 1],
+    ["a known pair in one more place fails", settled([hit(3), hit(9)]) === 1],
+    ["a known pair whose winner changed fails, as the finding and as the entry", settled([hit(3, "block")]) === 2],
+    ["a finding no entry names fails", settle([hit(3)], [], new Set(["a.tsx"])).fails.length === 1],
+  ];
+  for (const [claim, holds] of claims) if (!holds) problems.push(`the known list: ${claim} (it does not)`);
+  lines.push(`the known list: ${claims.length} claims`);
+
   lines.forEach((l) => console.log(`  ${l}`));
   if (problems.length) {
     problems.forEach((p) => console.log(`  ✗ ${p}`));
     console.log(`\ncollisions self-test: ${problems.length} problem(s).`);
     return 1;
   }
-  console.log("\ncollisions self-test: the old switch bug is caught, every dirty line fails, the clean fixture is clean.");
+  console.log("\ncollisions self-test: the old switch bug is caught, every dirty line fails, the clean fixture is clean, the known list holds.");
   return 0;
 }
 

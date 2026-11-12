@@ -4,6 +4,8 @@
  * that ends in `// expect: collision` must fail, and no other line may. The line is the one of the class meant to
  * win, the one joined on later.
  */
+import { lift } from "./collisions-parts";
+
 type Tone = "neutral" | "accent";
 declare function cx(...parts: unknown[]): string;
 
@@ -28,6 +30,7 @@ const fieldInvalid = " shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)]"
 
 const sizes = { sm: "h-control-sm text-small", md: "h-control-md text-body" }; // expect: collision
 const row = (active: boolean) => "flex items-center " + (active ? "text-fg" : "text-fg-muted");
+const lamp = (lit: boolean) => (lit ? "bg-fg" : "bg-surface-3"); // expect: collision
 
 export function Dirty({ invalid, last, size, hidden, mono, active }: { invalid: boolean; last: boolean; size: "sm" | "md"; hidden: boolean; mono: boolean; active: boolean }) {
   return (
@@ -58,6 +61,16 @@ export function Dirty({ invalid, last, size, hidden, mono, active }: { invalid: 
       />
       <span
         className="bg-fg bg-accent" // expect: collision
+      />
+      {/* Two calls of one function with different arguments: each can return either fill. */}
+      <span className={lamp(active) + " " + lamp(hidden)} />
+      {/* The same variants in another order are the same selector. */}
+      <span
+        className="data-[state=open]:hover:bg-surface-2 hover:data-[state=open]:bg-surface-3" // expect: collision
+      />
+      {/* A constant from another file. */}
+      <span
+        className={lift + " shadow-none"} // expect: collision
       />
     </div>
   );
