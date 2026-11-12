@@ -39,7 +39,7 @@ export const tableDeviceDress: TableDress = {
     "forced-colors:first:before:[forced-color-adjust:none] forced-colors:first:before:border forced-colors:first:before:border-[CanvasText] forced-colors:first:before:bg-transparent " +
     "forced-colors:group-hover/row:first:before:bg-[Highlight] forced-colors:group-has-[:focus-visible]/row:first:before:bg-[Highlight] forced-colors:group-data-selected/row:first:before:bg-[Highlight]",
   primary: "text-field-ink",
-  secondary: "text-field-ink-subtle",
+  secondary: "text-field-ink-subtle group-data-selected/row:text-field-ink pointer-coarse:group-active/row:text-field-ink",
   skeleton: "border-b border-[color-mix(in_oklab,var(--field-ink)_12%,transparent)]",
   bar: "rounded-control bg-[color-mix(in_oklab,var(--field-ink)_14%,transparent)]",
   error: "border-b border-[color-mix(in_oklab,var(--field-ink)_12%,transparent)] font-field",
