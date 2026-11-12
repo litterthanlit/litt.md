@@ -20,6 +20,8 @@ import { AccentBlues } from "./blues";
 import { PICK, accentVars } from "./accents";
 import { CaseStudy } from "@/blocks/case-study";
 import { SCALES, ScaleFrame } from "./scale";
+import { LOOKS } from "./flat-look-data";
+import { FlatLookFrame } from "./flat-look";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
   BlockButton,
@@ -167,6 +169,10 @@ const ROW = { a: 1290, b: 1600, c: 1920, d: 2320 };
 const SCALE_ROW = { settings: 2720, caseStudy: 3760 };
 /* Long exposures (streaks.tsx), candidate pictures for Flat: out to the left, clear of everything else. */
 const PICTURES_X = -2600;
+/* Flat's candidate looks (flat-look.tsx, proposals/flat-colour.md): a block of their own, out to the right of the scale
+   rows, three across and two down, Today first. */
+const LOOKS_X = 4800;
+const LOOK = { width: 1120, height: 2320, gap: 120 };
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
@@ -240,4 +246,15 @@ export const ITEMS: CanvasItem[] = [
   { id: "streaks-pairs", name: "Long exposure · eight pairs", x: PICTURES_X, y: 2880, width: 1240, height: 900, render: () => <StreakPairs /> },
   { id: "streaks-cuts", name: "Long exposure · five cuts", x: PICTURES_X, y: 4030, width: 1240, height: 420, render: () => <StreakCuts /> },
   { id: "streaks-hero", name: "Long exposure · Flat's hero, today and as a long exposure", x: PICTURES_X, y: 4700, width: 1040, height: 520, render: () => <StreakHero /> },
+  ...LOOKS.map(
+    (look, i): CanvasItem => ({
+      id: `flat-look-${look.id}`,
+      name: `Flat look · ${look.name}`,
+      x: LOOKS_X + (i % 3) * (LOOK.width + LOOK.gap),
+      y: Math.floor(i / 3) * (LOOK.height + LOOK.gap),
+      width: LOOK.width,
+      height: LOOK.height,
+      render: () => <FlatLookFrame look={look} />,
+    }),
+  ),
 ];
