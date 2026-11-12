@@ -4,28 +4,32 @@
  * one render loop. Each field is an ordinary 2D canvas: the renderer draws the field into the GL canvas's corner
  * (through the viewport, so the GL canvas only grows) and copies that corner across with drawImage.
  *
- * - One program per kind of field, compiled on first use and kept.
+ * - One program, compiled on first use and kept.
  * - The loop runs only while some field streams or settles. A field streams while it is on screen, not paused, and
- *   motion is allowed. Under reduced motion a field is drawn once, and again when its palette, kind or strength
+ *   motion is allowed. Under reduced motion a field is drawn once, and again when its palette, pair, cut or strength
  *   changes. Paused, it holds its frame.
+ * - A new palette, or a new pair, runs out along the streaks over 600ms; a new cut dissolves in over the same.
  * - A field's size follows its box on screen, which follows the language canvas's zoom, capped at its layout box
  *   times 1.5 and a density of 1.5. A transform fires no ResizeObserver, so the loop re-checks, and a slow poll does
  *   while nothing streams.
  * - Without WebGL, or once the context is lost, a field draws nothing and its host's still gradient shows. A
  *   restored context recompiles on the next frame.
  */
-import { VERTEX, fragment, type FieldKind } from "./streaks-shaders";
+import type { Cut } from "./streaks-cuts";
+import { FRAGMENT, VERTEX, ZOOM } from "./streaks-shaders";
 
-const SWEEP = 0.6; // seconds for a new palette, or a new kind of field, to come in
+const SWEEP = 0.6; // seconds for a new palette, pair or cut to come in
 const RATE = 0.35; // field time per second of real time, at rest
 const QUICKEN = 1.1; // added to the rate under a hand
 const DENSITY = 1.5; // the most pixels a field draws per CSS pixel
 const POLL = 500; // ms between size checks while nothing streams
 
 type Settings = {
-  kind: FieldKind;
-  /** Fifteen floats: the five stops as 0–1 RGB, dark to light. */
+  /** Fifteen floats: the five stops as 0–1 RGB, dark to light. For a pair, the palette at the fan's root. */
   stops: number[];
+  /** The palette at the fan's tips: the same as `stops` for one palette, another for a pair. */
+  tips: number[];
+  cut: Cut;
   seed: number;
   /** 0 draws the field as designed for Gradient Keys; 1 gives it more presence. */
   strength: number;
@@ -37,12 +41,13 @@ type Field = Settings & {
   host: HTMLElement;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D | null;
-  /** The kind it is leaving, while a new one fades in. */
-  was: FieldKind | null;
-  fade: number;
   from: number[];
+  fromTips: number[];
   to: number[];
   mix: number;
+  /** The cut it is leaving, while the new one dissolves in. */
+  was: Cut | null;
+  fade: number;
   time: number;
   hover: number;
   hoverTarget: number;
@@ -56,14 +61,14 @@ type Field = Settings & {
 
 type Program = { program: WebGLProgram; u: Record<string, WebGLUniformLocation | null> };
 
-const UNIFORMS = ["uRes", "uTime", "uMouse", "uHover", "uRipple", "uSeed", "uFrom", "uTo", "uMix", "uStrength"];
+const UNIFORMS = ["uRes", "uTime", "uMouse", "uHover", "uRipple", "uSeed", "uFrom", "uFromTip", "uTo", "uToTip", "uMix", "uPair", "uStrength", "uRoot", "uCut", "uSweep"];
 
 const fields = new Set<Field>();
 let glCanvas: HTMLCanvasElement | null = null;
 let gl: WebGLRenderingContext | null = null;
 let failed = false; // no WebGL here: every field keeps its gradient
 let lost = false;
-let programs = new Map<FieldKind, Program | null>();
+let made: Program | null | undefined; // undefined until compiled; null if it would not
 let raf = 0;
 let last = 0;
 let poll = 0;
@@ -73,6 +78,7 @@ function blend(from: number[], to: number[], m: number) {
   return from.map((c, i) => Math.pow(Math.pow(c, 2.2) * (1 - m) + Math.pow(to[i] ?? c, 2.2) * m, 1 / 2.2));
 }
 const smooth = (x: number) => x * x * (3 - 2 * x);
+const same = (a: number[], b: number[]) => a.join() === b.join();
 
 function context() {
   if (failed) return null;
@@ -90,7 +96,7 @@ function context() {
   });
   glCanvas.addEventListener("webglcontextrestored", () => {
     lost = false;
-    programs = new Map();
+    made = undefined;
     setup(gl!);
     for (const f of fields) f.dirty = true;
     wake();
@@ -107,10 +113,10 @@ function setup(g: WebGLRenderingContext) {
   g.vertexAttribPointer(0, 2, g.FLOAT, false, 0, 0);
 }
 
-function program(g: WebGLRenderingContext, kind: FieldKind) {
-  if (programs.has(kind)) return programs.get(kind)!;
+function program(g: WebGLRenderingContext) {
+  if (made !== undefined) return made;
   const p = g.createProgram()!;
-  for (const [type, source] of [[g.VERTEX_SHADER, VERTEX], [g.FRAGMENT_SHADER, fragment(kind)]] as const) {
+  for (const [type, source] of [[g.VERTEX_SHADER, VERTEX], [g.FRAGMENT_SHADER, FRAGMENT]] as const) {
     const shader = g.createShader(type)!;
     g.shaderSource(shader, source);
     g.compileShader(shader);
@@ -118,23 +124,22 @@ function program(g: WebGLRenderingContext, kind: FieldKind) {
   }
   g.bindAttribLocation(p, 0, "aPos");
   g.linkProgram(p);
-  let made: Program | null = null;
+  made = null;
   if (g.getProgramParameter(p, g.LINK_STATUS)) {
     made = { program: p, u: Object.fromEntries(UNIFORMS.map((name) => [name, g.getUniformLocation(p, name)])) };
   } else if (!g.isContextLost()) {
-    console.warn(`streaks: the ${kind} field did not compile`, g.getProgramInfoLog(p));
+    console.warn("streaks: the long exposure did not compile", g.getProgramInfoLog(p));
   }
-  programs.set(kind, made);
   return made;
 }
 
-/** Draws one kind of field into the GL canvas's bottom-left corner. */
-function drawKind(g: WebGLRenderingContext, f: Field, kind: FieldKind) {
-  const made = program(g, kind);
-  if (!made) return false;
-  const { u } = made;
+/** Draws a field in one cut into the GL canvas's bottom-left corner. */
+function draw(g: WebGLRenderingContext, prog: Program, f: Field, cut: Cut) {
+  const { u } = prog;
   const { width, height } = f.canvas;
-  g.useProgram(made.program);
+  // A cut may set its root from a corner of the frame, so it stays just outside it whatever the frame's shape.
+  const half = (0.5 * ZOOM) / Math.min(width, height);
+  const [cx, cy] = cut.corner ?? [0, 0];
   g.uniform2f(u.uRes!, width, height);
   g.uniform1f(u.uTime!, f.time);
   g.uniform2fv(u.uMouse!, f.mouse);
@@ -142,16 +147,24 @@ function drawKind(g: WebGLRenderingContext, f: Field, kind: FieldKind) {
   g.uniform3fv(u.uRipple!, f.ripple);
   g.uniform1f(u.uSeed!, f.seed);
   g.uniform3fv(u.uFrom!, f.from);
+  g.uniform3fv(u.uFromTip!, f.fromTips);
   g.uniform3fv(u.uTo!, f.to);
+  g.uniform3fv(u.uToTip!, f.tips);
   g.uniform1f(u.uMix!, f.mix);
+  g.uniform1f(u.uPair!, same(f.from, f.fromTips) && same(f.to, f.tips) ? 0 : 1);
   g.uniform1f(u.uStrength!, f.strength);
+  g.uniform2f(u.uRoot!, cut.root[0] + cx * half * width, cut.root[1] + cy * half * height);
+  g.uniform4f(u.uCut!, cut.across, cut.along, cut.turn, cut.flow);
+  g.uniform2f(u.uSweep!, cut.sweep[0], cut.sweep[1]);
   g.drawArrays(g.TRIANGLES, 0, 3);
-  return true;
 }
 
+/** Draws a field into the GL canvas's bottom-left corner, then copies that corner into the field's own canvas. */
 function render(f: Field) {
   const g = context();
   if (!g || !f.ctx) return;
+  const prog = program(g);
+  if (!prog) return;
   const { width, height } = f.canvas;
   const c = glCanvas!;
   if (c.width < width || c.height < height) {
@@ -159,14 +172,17 @@ function render(f: Field) {
     c.height = Math.max(c.height, height);
   }
   g.viewport(0, 0, width, height);
+  g.useProgram(prog.program);
   // The corner the viewport drew, in the GL canvas's own top-down coordinates.
   const copy = () => f.ctx!.drawImage(c, 0, c.height - height, width, height, 0, 0, width, height);
   f.ctx.globalAlpha = 1;
   if (f.was && f.fade < 1) {
-    if (drawKind(g, f, f.was)) copy();
+    draw(g, prog, f, f.was);
+    copy();
     f.ctx.globalAlpha = smooth(f.fade);
   }
-  if (drawKind(g, f, f.kind)) copy();
+  draw(g, prog, f, f.cut);
+  copy();
   f.ctx.globalAlpha = 1;
 }
 
@@ -266,11 +282,12 @@ export function attach(host: HTMLElement, canvas: HTMLCanvasElement, settings: S
     host,
     canvas,
     ctx: canvas.getContext("2d"),
-    was: null,
-    fade: 1,
     from: settings.stops,
+    fromTips: settings.tips,
     to: settings.stops,
     mix: 1,
+    was: null,
+    fade: 1,
     time: 0,
     hover: 0,
     hoverTarget: 0,
@@ -297,15 +314,19 @@ export function attach(host: HTMLElement, canvas: HTMLCanvasElement, settings: S
 
   return {
     update(next) {
-      if (next.stops && next.stops.join() !== f.to.join()) {
-        // A new palette sweeps in from wherever the last change had got to.
+      const stops = next.stops ?? f.to;
+      const tips = next.tips ?? f.tips;
+      if (!same(stops, f.to) || !same(tips, f.tips)) {
+        // A new palette or pair sweeps in from wherever the last change had got to.
         f.from = blend(f.from, f.to, smooth(f.mix));
-        f.to = next.stops;
+        f.fromTips = blend(f.fromTips, f.tips, smooth(f.mix));
+        f.to = stops;
+        f.tips = tips;
         f.mix = f.reduced || next.reduced ? 1 : 0;
       }
-      if (next.kind && next.kind !== f.kind) {
-        f.was = f.kind;
-        f.kind = next.kind;
+      if (next.cut && next.cut.id !== f.cut.id) {
+        f.was = f.cut;
+        f.cut = next.cut;
         f.fade = f.reduced || next.reduced ? 1 : 0;
       }
       if (next.seed !== undefined) f.seed = next.seed;
