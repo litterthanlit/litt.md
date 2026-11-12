@@ -18,7 +18,7 @@ honor its STOP conditions, and update your row when done.
 | 008  | [The long exposures get stronger and more diverse: five kinds of field, a dozen palettes, one shared WebGL context](008-stronger-more-diverse-exposures.md) | P2 | L | 007 | DONE (executed and reviewed 2026-11-11; commits `f18bd9b`, `be51f2c` and `adc7a89` on the local `claude/bold-babbage-o26t56`, not yet pushed; the reviewer's own check agreed: 23 pictures, 5 fields, 12 palettes, one WebGL context, still under reduced motion) |
 | 009  | [Only the long exposure stays, and it varies: more bold palettes, two-palette pictures, and new cuts of the fan](009-long-exposure-variations.md) | P2 | L | 008 | DONE (executed and reviewed 2026-11-12; on `claude/bold-babbage-o26t56`, in PR #98; the reviewer's own check agreed: 43 pictures, all the long exposure, 24 palettes, 8 pairs, 5 cuts, one WebGL context, still under reduced motion) |
 | 010  | [Sparkline draws its trend three ways: a groove in Press, today's line in Flat, a row of lit dots in Device](010-sparkline-three-bodies.md) | P1 | M | — | DONE (executed and reviewed 2026-11-12; commit `fc63821`; the reviewer re-ran the Flat comparison, 10 pictures identical, and the three-bodies check; the install test passed for Vite only) |
-| 011  | [Table dresses per world: slats in a tray in Press, today's quiet rows in Flat, a screen of mono columns in Device](011-table-three-bodies.md) | P1 | L | — (run after 010: both touch the changelog and the lock) | IN PROGRESS |
+| 011  | [Table dresses per world: slats in a tray in Press, today's quiet rows in Flat, a screen of mono columns in Device](011-table-three-bodies.md) | P1 | L | — (run after 010: both touch the changelog and the lock) | DONE (executed and reviewed 2026-11-12; four commits on `claude/bold-babbage-o26t56`, in PR #98; the reviewer re-ran the Flat comparison, 16 pictures identical, and the three-bodies check; rows keep today's heights, which are 45px and 49px, not the 44px this plan assumed; the install test passed for Vite only) |
 | 012  | [Flat with colour, lightness and a snappier hand: candidate looks on the canvas, after two references from Nick](012-flat-colour-and-lightness-on-the-canvas.md) | P1 | L | — | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
@@ -34,7 +34,7 @@ One rule for every data part, from Nick on 2026-11-10: "current ones are good, w
 | 1 | Stat | Dashboard, Growth, Usage | 002, done (its Flat figure grew to 18px before the rule above; Nick has seen it) |
 | 2 | Chart: BarChart | Dashboard, Growth, Usage, Insights | 003, done |
 | 3 | Chart: LineChart and StackedBarChart | the same four | 004, done |
-| 4 | Sparkline, Table | Growth, Usage; Dashboard | 010, done; 011, in progress |
+| 4 | Sparkline, Table | Growth, Usage; Dashboard | 010 and 011, done |
 | 5 | Gauge, Heatmap | Insights | not written |
 | 6 | Breakdown, Spread, Funnel, Cohort grid | Usage; Growth | not written |
 | 7 | Bar list, Dot plot, Timeline | Insights | not written |
