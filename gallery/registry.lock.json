@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.10",
+  "latest": "2026.11.11",
   "items": {
     "accordion": {
       "version": "2026.11.06",
@@ -75,8 +75,8 @@
       "hash": "4e68d0dafadb811b"
     },
     "chart": {
-      "version": "2026.11.10",
-      "hash": "4f38acc97322489a"
+      "version": "2026.11.11",
+      "hash": "339933c7184fc7a3"
     },
     "checkbox": {
       "version": "2026.11.09",

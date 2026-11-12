@@ -17,9 +17,11 @@ import { SlideConfirm } from "@/components/slide-confirm";
 import { Slider } from "@/components/slider";
 import { Switch } from "@/components/switch";
 import { AccentBlues } from "./blues";
+import { BokashiHero, BokashiSkies } from "./bokashi";
 import { PICK, accentVars } from "./accents";
 import { CaseStudy } from "@/blocks/case-study";
 import { SCALES, ScaleFrame } from "./scale";
+import { StreakFields, StreakHero, StreakPalettes, StreakPrints } from "./streaks";
 import {
   BlockButton,
   ButtonBlocks,
@@ -164,6 +166,8 @@ const C2 = 1000;
 const ROW = { a: 1290, b: 1600, c: 1920, d: 2320 };
 /* Flat's scale candidates (scale.tsx), under the pairs: the settings panel four times, then the case study four times. */
 const SCALE_ROW = { settings: 2720, caseStudy: 3760 };
+/* Bokashi skies (bokashi.tsx), candidate pictures for Flat: out to the left, clear of everything else. */
+const BOKASHI_X = -2600;
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
@@ -232,4 +236,10 @@ export const ITEMS: CanvasItem[] = [
       ),
     },
   ]),
+  { id: "bokashi-skies", name: "Bokashi · five skies, drifting", x: BOKASHI_X, y: 0, width: 1240, height: 420, render: () => <BokashiSkies /> },
+  { id: "bokashi-hero", name: "Bokashi · Flat's hero, today and as a sky", x: BOKASHI_X, y: 620, width: 1040, height: 320, render: () => <BokashiHero /> },
+  { id: "streaks-prints", name: "Long exposure · as in Gradient Keys", x: BOKASHI_X, y: 1140, width: 1240, height: 420, render: () => <StreakPrints /> },
+  { id: "streaks-fields", name: "Long exposure · five fields", x: BOKASHI_X, y: 1800, width: 1240, height: 460, render: () => <StreakFields /> },
+  { id: "streaks-palettes", name: "Long exposure · twelve palettes", x: BOKASHI_X, y: 2500, width: 1240, height: 640, render: () => <StreakPalettes /> },
+  { id: "streaks-hero", name: "Long exposure · Flat's hero, today and as a long exposure", x: BOKASHI_X, y: 3420, width: 1040, height: 520, render: () => <StreakHero /> },
 ];
