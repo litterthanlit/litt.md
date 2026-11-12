@@ -123,47 +123,58 @@ export type TableDress = {
   travels: boolean;
 };
 
-/** Press: the table as a hairline box with ruled rows, an fg fill under the hand. */
+/* Press's slat, drawn in every body cell so the row keeps its height: the cell stays clear (the tray shows through it) and
+   a ::before is the slat's face, 2px in from the row's top and from the rule under it, so 4px of tray part two slats.
+   The first cell's face starts 4px in and the last ends 4px in. Every face is rounded to the tray's radius less those
+   4px (concentric), and every end that is not the row's runs 16px past its cell, which clips it: the faces meet square,
+   with their corners cut away, and a lifted slat's shadow never falls across its neighbour's face. */
+const SLAT =
+  "relative overflow-hidden border-b border-transparent " +
+  "before:absolute before:-z-1 before:top-0.5 before:bottom-px before:-start-4 before:-end-4 before:rounded-[calc(var(--radius-surface)-4px)] before:bg-block " +
+  "first:before:start-1 last:before:end-1 only:before:start-1 only:before:end-1 " +
+  "before:transition-[box-shadow] before:duration-(--dur-instant) before:ease-litt forced-colors:before:border";
+
+/** Press: slats in a tray under a raised rail. */
 const pressDress: TableDress = {
-  region: "rounded-surface border border-line bg-surface-1",
-  head: "border-b border-line bg-surface-1 text-caption font-label litt-legend",
+  /* The tray: the region's ground, its shade drawn inside a clear 1px border so the box keeps today's size. */
+  region: "rounded-surface border border-transparent bg-tray bg-clip-padding shadow-(--tray-shade)",
+  /* The rail: each header cell is the tray (opaque, so rows pass under it) with the rail's face 4px in from its top and
+     its foot, standing on --block-lift. The cell clips the face's ends, as a slat's. */
+  head:
+    "overflow-hidden border-b border-transparent bg-tray text-caption font-label litt-legend " +
+    "before:absolute before:-z-1 before:top-1 before:bottom-1 before:-start-4 before:-end-4 before:rounded-[calc(var(--radius-surface)-4px)] before:bg-block before:shadow-(--block-lift) " +
+    "first:before:start-1 last:before:end-1 only:before:start-1 only:before:end-1 forced-colors:before:border",
   selectHead: "",
-  row:
-    "group/row transition-[background-color] duration-(--dur-instant) ease-litt [-webkit-tap-highlight-color:transparent] " +
-    "hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " +
-    "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
-    /* A selected row keeps the press fill, hovered or not. The box says it in words; the fill only helps the eye. */
-    "data-selected:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
-  cell: "border-b border-line",
+  /* The row draws nothing itself: its slat is in its cells, and lifts under the hand, held and selected. */
+  row: "group/row [-webkit-tap-highlight-color:transparent]",
+  cell:
+    SLAT +
+    " group-hover/row:before:shadow-[var(--highlight),var(--block-lift)] pointer-coarse:group-active/row:before:shadow-[var(--highlight),var(--block-lift)]" +
+    " group-data-selected/row:before:shadow-[var(--highlight),var(--block-lift)]",
   primary: "text-fg",
   secondary: "text-fg-subtle",
-  skeleton: "border-b border-line",
+  /* A loading row is a slat too, its bars on the face. */
+  skeleton: SLAT,
   bar: "rounded-control bg-surface-2",
-  error: "border-b border-line",
+  error: SLAT,
   alert: "text-fg-subtle",
   retry: "ghost",
   empty: "text-fg-muted",
+  /* Sticky cells are the tray, opaque, with their slat's face on it as every cell's; the edge cell's hairline is ::after. */
   sticky1: [
     "[&_tr>*:first-child]:sticky [&_tr>*:first-child]:start-0",
-    "[&_thead_tr>*:first-child]:z-20 [&_tbody_tr>*:first-child]:z-1 [&_tbody_tr>*:first-child]:bg-surface-1",
-    "[&_tbody_tr>*:first-child]:transition-[background-color] [&_tbody_tr>*:first-child]:duration-(--dur-instant) [&_tbody_tr>*:first-child]:ease-litt",
-    "[&_tbody_tr:hover>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
-    "[&_tbody_tr[data-selected]>*:first-child]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
+    "[&_thead_tr>*:first-child]:z-20 [&_tbody_tr>*:first-child]:z-1 [&_tbody_tr>*:first-child]:bg-tray",
     "[&_tr>*:first-child]:after:pointer-events-none [&_tr>*:first-child]:after:absolute [&_tr>*:first-child]:after:inset-y-0 [&_tr>*:first-child]:after:end-0",
     "[&_tr>*:first-child]:after:w-px [&_tr>*:first-child]:after:bg-line [&_tr>*:first-child]:after:opacity-0 data-scrolled:[&_tr>*:first-child]:after:opacity-100",
   ].join(" "),
   sticky2: [
     "[&_tr>*:nth-child(-n+2)]:sticky [&_tr>*:first-child]:start-0 [&_tr>*:nth-child(2)]:start-(--sticky-2)",
-    "[&_thead_tr>*:nth-child(-n+2)]:z-20 [&_tbody_tr>*:nth-child(-n+2)]:z-1 [&_tbody_tr>*:nth-child(-n+2)]:bg-surface-1",
-    "[&_tbody_tr>*:nth-child(-n+2)]:transition-[background-color] [&_tbody_tr>*:nth-child(-n+2)]:duration-(--dur-instant) [&_tbody_tr>*:nth-child(-n+2)]:ease-litt",
-    "[&_tbody_tr:hover>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_4%,var(--surface-1))]",
-    "[&_tbody_tr[data-selected]>*:nth-child(-n+2)]:bg-[color-mix(in_oklab,var(--fg)_6%,var(--surface-1))]",
+    "[&_thead_tr>*:nth-child(-n+2)]:z-20 [&_tbody_tr>*:nth-child(-n+2)]:z-1 [&_tbody_tr>*:nth-child(-n+2)]:bg-tray",
     "[&_tr>*:nth-child(2)]:after:pointer-events-none [&_tr>*:nth-child(2)]:after:absolute [&_tr>*:nth-child(2)]:after:inset-y-0 [&_tr>*:nth-child(2)]:after:end-0",
     "[&_tr>*:nth-child(2)]:after:w-px [&_tr>*:nth-child(2)]:after:bg-line [&_tr>*:nth-child(2)]:after:opacity-0 data-scrolled:[&_tr>*:nth-child(2)]:after:opacity-100",
   ].join(" "),
   travels: true,
 };
-
 type TableState = {
   entrance: boolean;
   animateChanges: boolean;
