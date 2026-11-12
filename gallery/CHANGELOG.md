@@ -4,10 +4,10 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-12 · Data, a body per world: Sparkline
+## 2026-11-12 · Data, a body per world: Sparkline and Table
 
 - **changed** `sparkline`: a body per material. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the line as it was. Device is a row of lit dots on LCD glass, the latest column the strongest. The box keeps the caller's height in every world. Props are unchanged.
-- **changed** `table`: its looks are a dress per material, picked from the material the page is in (`useMaterial`), not from CSS. Flat is the table as it was. Props are unchanged.
+- **changed** `table`: a dress per material. Press is slats in a tray: the header a raised rail along its top, each row a slat drawn inside the row, the one under the hand or selected lifted. Flat is the table as it was. Device is a screen of mono columns on LCD glass, the header engraved on a plate, a lamp at the start of each row that lights under the hand, the keyboard or a selection; in Device rows never travel or fade, they appear. Row heights, props and semantics are unchanged. Flat's table now follows the material the part is in (`useMaterial`: the nearest `MaterialProvider`, else `data-material` on `<html>`), not CSS on any ancestor, so a subtree that sets `data-material="flat"` without a `MaterialProvider` gets the page's table, and a server-rendered Flat page paints Press's table until it hydrates.
 
 ## 2026-11-11 · Data, a body per world: the line and stacked charts
 

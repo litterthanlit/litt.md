@@ -31,7 +31,7 @@ export const tableDeviceDress: TableDress = {
     "data-selected:bg-[color-mix(in_oklab,var(--field-ink)_16%,var(--field))]",
   cell:
     "border-b border-[color-mix(in_oklab,var(--field-ink)_12%,transparent)] font-field " +
-    "first:relative first:before:absolute first:before:inset-y-0 first:before:start-1 first:before:my-auto first:before:size-1.5 first:before:rounded-pill first:before:bg-field-line " +
+    "first:relative first:before:absolute first:before:inset-y-0 first:before:start-1 first:before:my-auto first:before:size-1.5 first:before:rounded-pill first:before:bg-[color-mix(in_oklab,var(--field-ink)_28%,transparent)] " +
     "group-hover/row:first:before:bg-field-ink group-hover/row:first:before:shadow-[0_0_6px_var(--field-ink)] " +
     "group-has-[:focus-visible]/row:first:before:bg-field-ink group-has-[:focus-visible]/row:first:before:shadow-[0_0_6px_var(--field-ink)] " +
     "group-data-selected/row:first:before:bg-field-ink group-data-selected/row:first:before:shadow-[0_0_6px_var(--field-ink)] " +

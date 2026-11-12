@@ -3,13 +3,25 @@
  * Table, TableHeader, TableBody, TableRow, TableHead and TableCell. TableEmpty and TableSkeleton
  * are the empty and loading rows.
  *
- * - Look: rows are separated by a 1px line; cells pad space-3 and space-4 and use the small size. The primary
- *   cell is fg and the rest are fg-subtle. Numbers and dates are caption size, right-aligned, with tabular
- *   figures. Hover is an fg-4% fill on the instant tier and never moves anything. On a coarse pointer
- *   there is no hover, so a row held down fills instead (fg 6%, same tier, color only), and so does a
- *   sortable header; the OS tap flash is off so the two do not double. The header row is sticky,
- *   caption size at the label weight (R8), fg-subtle, sentence case; figures stay at 400. The box is a
- *   hairline at the surface radius (Flat: no frame, no header rule, no row lines; a row is a grey bubble under the pointer, its first and last cell rounded), filled surface-1 so the sticky header can cover the rows that scroll under it.
+ * - One contract, three dresses (proposals/worlds.md, Bodies). This file is the contract: the markup, the semantics,
+ *   the virtual body, sticky and resizable columns, selection and motion. What differs per world is only classes, so
+ *   each world is a TableDress (the class strings every part takes, and whether rows travel), picked with
+ *   byWorld(useMaterial()) in Table and read by every part from the table's context. The Table's region carries
+ *   data-body. Every dress keeps the row's height: cells pad space-3 and space-4 with a 1px rule under them (drawn
+ *   or clear), so a row is the same height in every world, and a world draws its row inside it.
+ * - Every world: cells use the small size; numbers and dates are caption size, right-aligned, with tabular figures. The
+ *   header row is sticky and opaque, caption size at the label weight (R8), fg-subtle, through litt-legend. Hover
+ *   never moves anything, and on a coarse pointer a held row shows what hover would; the OS tap flash is off.
+ * - Press, below: slats in a tray. The region is a tray (--tray, --tray-shade, the surface radius, drawn inside a clear
+ *   1px border so the box keeps its size); the header a raised rail (--block, --block-lift) 4px in along its top;
+ *   each row a slat, a ::before in every cell, 2px clear of the row's top and of its rule. The cell clips its face, so
+ *   faces meet square and a lifted slat's shadow never crosses its neighbour. The slat under the hand, held or
+ *   selected lifts (--highlight, --block-lift) on the instant tier.
+ * - Flat (bodies/table.flat.tsx): the table on the page. No frame, no rules; a row is a grey bubble (surface-3) under
+ *   the pointer and when selected, its first and last cell rounded.
+ * - Device (bodies/table.device.tsx): a screen of mono columns. LCD glass, the cells the mono in the glass's ink, the
+ *   header engraved on a plate strip, and a lamp at the start of each row (a ::before in the first cell's padding) lit
+ *   for the row under the pointer, the keyboard or a selection, with a tint of the ink behind it.
  * - Semantics: a <table> with a hidden <caption>, <th scope="col"> headers and a <th scope="row"> for each primary
  *   cell, so a screen reader announces the row's name with every value. A sortable header holds a real button and
  *   sets aria-sort on its th.
@@ -24,10 +36,12 @@
  *   moment. `animateChanges` adds the responsive tier for rows that are added, removed or re-ordered after
  *   the table has mounted: position only (Motion layout), so text never stretches; rows that leave fade, with no travel.
  *   Both are off by default, so a plain table is plain HTML with a hover fill. Under reduced motion every row
- *   simply appears, because the hooks return zero.
+ *   simply appears, because the hooks return zero. In Device rows never travel or fade (R4: Device switches where
+ *   it stands): with either on, they appear.
  * - paint containment on the <table> clips a row that is travelling, so the cascade never makes the region
- *   grow a scrollbar for a moment.
- * - Corners: the region is rounded-surface, and clips the hover fill of the first and last row to it.
+ *   grow a scrollbar for a moment. It also makes the table a stacking context, so a Press slat's face (z -1) sits
+ *   above the tray and under the cell's words.
+ * - Corners: the region is rounded-surface in every world, and clips what reaches its first and last row to it.
  * - Sorting is a small, accessible step, not a data layer: the header says which way it is sorted and reports
  *   the press; you sort your rows and keep them keyed, and `animateChanges` moves them.
  *
@@ -45,15 +59,17 @@
  *   status. A failed page is one row in words with Retry, which asks again. `total`, when the server knows it, makes
  *   aria-rowcount true; without it, while more can come, it is -1, which says the size is not known yet.
  * - Sticky columns: `stickyColumns` keeps the first one or two columns (a box and the row's name) in view while the table
- *   scrolls sideways. They take an opaque fill that follows the row's hover and selection, and a 1px --line hairline
- *   appears at their edge once anything is scrolled under them. No shadow: depth comes from the hairline (R3).
+ *   scrolls sideways. They take an opaque fill that follows the row's hover and selection (the tray with its slat in
+ *   Press, the glass in Device), and a 1px hairline appears at their edge once anything is scrolled under them. No
+ *   shadow: depth comes from the hairline (R3).
  * - Resizable columns: `resizable` on a TableHead puts a handle at its end edge. The first drag freezes the widths the
  *   columns have, so nothing jumps, and the table becomes fixed-layout: each column then keeps the width it is given,
  *   and what no longer fits ends in an ellipsis. The handle follows the pointer one to one, ← and → move it 16px (Shift
  *   64), Home gives it its minimum, and a double click fits the column to its widest cell. `columnsId` keeps the widths
  *   in the browser. Its hairline shows under the pointer and on focus, as the Resizable's does.
  * - Selection: TableSelectHead and TableSelectCell are the select-all and per-row boxes (the Checkbox, its label
- *   hidden and named for the row), and `selected` on a TableRow fills it fg 6%. useRowSelection holds the selected ids
+ *   hidden and named for the row), and `selected` on a TableRow marks it as its world does (Press lifts the slat, Flat
+ *   the bubble, Device lights the lamp). useRowSelection holds the selected ids
  *   in a Set, so a check is constant time at any size: Shift selects the range from the last box pressed, the head
  *   box selects or clears the rows shown, and it counts what is selected for an ActionBar.
  */

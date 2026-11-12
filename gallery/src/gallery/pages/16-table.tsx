@@ -19,6 +19,9 @@ import {
 } from "@/components/table";
 import { TableFilter, useUrlFilter, useUrlParam } from "@/components/table-filter";
 import { Tag } from "@/components/tag";
+import { MaterialProvider } from "@/motion";
+import { useCustomize, useDark } from "../customize-state";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -799,6 +802,58 @@ function NarrowDemo() {
   );
 }
 
+/* ---------- (e) Three bodies ---------- */
+
+const PLANS = ACCOUNTS.map((a) => ({ id: a.id, name: a.name, monthly: a.monthly }));
+
+/** The same small table in one world: a sortable number column and the second row selected (Marlow Labs). */
+function WorldTable() {
+  const [sort, setSort] = useState<"none" | "ascending" | "descending">("none");
+  const rows = sort === "none" ? PLANS : [...PLANS].sort((a, b) => (sort === "ascending" ? a.monthly - b.monthly : b.monthly - a.monthly));
+  return (
+    <Table label="Plans">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Client</TableHead>
+          <TableHead numeric sort={sort} onSort={() => setSort((s) => (s === "none" ? "ascending" : s === "ascending" ? "descending" : "none"))}>
+            Monthly
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {rows.map((r) => (
+          <TableRow key={r.id} selected={r.id === "a2"}>
+            <TableCell primary>{r.name}</TableCell>
+            <TableCell numeric>{EUR.format(r.monthly)}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+function ThreeBodiesDemo() {
+  const { look } = useCustomize();
+  const dark = useDark();
+  return (
+    <div className="grid w-full gap-6 xl:grid-cols-3">
+      {MATERIALS.map((m) => (
+        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
+          <div
+            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
+            className="grid min-w-0 content-center rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line"
+          >
+            <MaterialProvider material={m.id}>
+              <WorldTable />
+            </MaterialProvider>
+          </div>
+          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
+
 export default function TablePage() {
   const [deployKey, replayDeploys] = useReplay();
   const [invoiceKey, resetInvoices] = useReplay();
@@ -875,6 +930,17 @@ export default function TablePage() {
         caption="The table keeps the width its columns need and scrolls inside its own region, so the page never scrolls sideways. Tab to the region and the arrow keys scroll it. It only takes focus when there is something to scroll, and it carries the table's name."
       >
         <NarrowDemo />
+      </Stage>
+
+      <Stage
+        title="Three bodies"
+        tier="instant"
+        size="lg"
+        align="start"
+        code="ThreeBodiesDemo"
+        caption="One contract, three bodies, and every row is the same height in each. Press is slats in a tray: the header a raised rail along its top, each row a slat with the tray between, the one under your hand or selected lifted. Flat is the table on the page, as it has always been: no frame, no rules, a grey bubble under the hand. Device is a screen of mono columns on LCD glass, the header engraved on a plate above it, each row starting with a lamp that lights under your hand or when the row is selected. Press Monthly to sort; in Press and Flat nothing travels unless the table asks, and in Device rows never do."
+      >
+        <ThreeBodiesDemo />
       </Stage>
     </Page>
   );
