@@ -20,7 +20,7 @@ import { AccentBlues } from "./blues";
 import { PICK, accentVars } from "./accents";
 import { CaseStudy } from "@/blocks/case-study";
 import { SCALES, ScaleFrame } from "./scale";
-import { StreakHero, StreakPalettes, StreakPrints } from "./streaks";
+import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
   BlockButton,
   ButtonBlocks,
@@ -236,6 +236,8 @@ export const ITEMS: CanvasItem[] = [
     },
   ]),
   { id: "streaks-prints", name: "Long exposure · as in Gradient Keys", x: PICTURES_X, y: 0, width: 1240, height: 420, render: () => <StreakPrints /> },
-  { id: "streaks-palettes", name: "Long exposure · twelve palettes", x: PICTURES_X, y: 660, width: 1240, height: 640, render: () => <StreakPalettes /> },
-  { id: "streaks-hero", name: "Long exposure · Flat's hero, today and as a long exposure", x: PICTURES_X, y: 1580, width: 1040, height: 520, render: () => <StreakHero /> },
+  { id: "streaks-palettes", name: "Long exposure · twenty-four palettes", x: PICTURES_X, y: 660, width: 1240, height: 1800, render: () => <StreakPalettes /> },
+  { id: "streaks-pairs", name: "Long exposure · eight pairs", x: PICTURES_X, y: 2880, width: 1240, height: 900, render: () => <StreakPairs /> },
+  { id: "streaks-cuts", name: "Long exposure · five cuts", x: PICTURES_X, y: 4030, width: 1240, height: 420, render: () => <StreakCuts /> },
+  { id: "streaks-hero", name: "Long exposure · Flat's hero, today and as a long exposure", x: PICTURES_X, y: 4700, width: 1040, height: 520, render: () => <StreakHero /> },
 ];

@@ -6,25 +6,30 @@
  *
  * - One program, compiled on first use and kept.
  * - The loop runs only while some field streams or settles. A field streams while it is on screen, not paused, and
- *   motion is allowed. Under reduced motion a field is drawn once, and again when its palette or strength changes.
- *   Paused, it holds its frame.
+ *   motion is allowed. Under reduced motion a field is drawn once, and again when its palette, pair, cut or strength
+ *   changes. Paused, it holds its frame.
+ * - A new palette, or a new pair, runs out along the streaks over 600ms; a new cut dissolves in over the same.
  * - A field's size follows its box on screen, which follows the language canvas's zoom, capped at its layout box
  *   times 1.5 and a density of 1.5. A transform fires no ResizeObserver, so the loop re-checks, and a slow poll does
  *   while nothing streams.
  * - Without WebGL, or once the context is lost, a field draws nothing and its host's still gradient shows. A
  *   restored context recompiles on the next frame.
  */
-import { FRAGMENT, VERTEX } from "./streaks-shaders";
+import type { Cut } from "./streaks-cuts";
+import { FRAGMENT, VERTEX, ZOOM } from "./streaks-shaders";
 
-const SWEEP = 0.6; // seconds for a new palette to come in
+const SWEEP = 0.6; // seconds for a new palette, pair or cut to come in
 const RATE = 0.35; // field time per second of real time, at rest
 const QUICKEN = 1.1; // added to the rate under a hand
 const DENSITY = 1.5; // the most pixels a field draws per CSS pixel
 const POLL = 500; // ms between size checks while nothing streams
 
 type Settings = {
-  /** Fifteen floats: the five stops as 0–1 RGB, dark to light. */
+  /** Fifteen floats: the five stops as 0–1 RGB, dark to light. For a pair, the palette at the fan's root. */
   stops: number[];
+  /** The palette at the fan's tips: the same as `stops` for one palette, another for a pair. */
+  tips: number[];
+  cut: Cut;
   seed: number;
   /** 0 draws the field as designed for Gradient Keys; 1 gives it more presence. */
   strength: number;
@@ -37,8 +42,12 @@ type Field = Settings & {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D | null;
   from: number[];
+  fromTips: number[];
   to: number[];
   mix: number;
+  /** The cut it is leaving, while the new one dissolves in. */
+  was: Cut | null;
+  fade: number;
   time: number;
   hover: number;
   hoverTarget: number;
@@ -52,7 +61,7 @@ type Field = Settings & {
 
 type Program = { program: WebGLProgram; u: Record<string, WebGLUniformLocation | null> };
 
-const UNIFORMS = ["uRes", "uTime", "uMouse", "uHover", "uRipple", "uSeed", "uFrom", "uTo", "uMix", "uStrength"];
+const UNIFORMS = ["uRes", "uTime", "uMouse", "uHover", "uRipple", "uSeed", "uFrom", "uFromTip", "uTo", "uToTip", "uMix", "uPair", "uStrength", "uRoot", "uCut", "uSweep"];
 
 const fields = new Set<Field>();
 let glCanvas: HTMLCanvasElement | null = null;
@@ -69,6 +78,7 @@ function blend(from: number[], to: number[], m: number) {
   return from.map((c, i) => Math.pow(Math.pow(c, 2.2) * (1 - m) + Math.pow(to[i] ?? c, 2.2) * m, 1 / 2.2));
 }
 const smooth = (x: number) => x * x * (3 - 2 * x);
+const same = (a: number[], b: number[]) => a.join() === b.join();
 
 function context() {
   if (failed) return null;
@@ -123,13 +133,38 @@ function program(g: WebGLRenderingContext) {
   return made;
 }
 
+/** Draws a field in one cut into the GL canvas's bottom-left corner. */
+function draw(g: WebGLRenderingContext, prog: Program, f: Field, cut: Cut) {
+  const { u } = prog;
+  const { width, height } = f.canvas;
+  // A cut may set its root from a corner of the frame, so it stays just outside it whatever the frame's shape.
+  const half = (0.5 * ZOOM) / Math.min(width, height);
+  const [cx, cy] = cut.corner ?? [0, 0];
+  g.uniform2f(u.uRes!, width, height);
+  g.uniform1f(u.uTime!, f.time);
+  g.uniform2fv(u.uMouse!, f.mouse);
+  g.uniform1f(u.uHover!, f.hover);
+  g.uniform3fv(u.uRipple!, f.ripple);
+  g.uniform1f(u.uSeed!, f.seed);
+  g.uniform3fv(u.uFrom!, f.from);
+  g.uniform3fv(u.uFromTip!, f.fromTips);
+  g.uniform3fv(u.uTo!, f.to);
+  g.uniform3fv(u.uToTip!, f.tips);
+  g.uniform1f(u.uMix!, f.mix);
+  g.uniform1f(u.uPair!, same(f.from, f.fromTips) && same(f.to, f.tips) ? 0 : 1);
+  g.uniform1f(u.uStrength!, f.strength);
+  g.uniform2f(u.uRoot!, cut.root[0] + cx * half * width, cut.root[1] + cy * half * height);
+  g.uniform4f(u.uCut!, cut.across, cut.along, cut.turn, cut.flow);
+  g.uniform2f(u.uSweep!, cut.sweep[0], cut.sweep[1]);
+  g.drawArrays(g.TRIANGLES, 0, 3);
+}
+
 /** Draws a field into the GL canvas's bottom-left corner, then copies that corner into the field's own canvas. */
 function render(f: Field) {
   const g = context();
   if (!g || !f.ctx) return;
   const prog = program(g);
   if (!prog) return;
-  const { u } = prog;
   const { width, height } = f.canvas;
   const c = glCanvas!;
   if (c.width < width || c.height < height) {
@@ -138,19 +173,17 @@ function render(f: Field) {
   }
   g.viewport(0, 0, width, height);
   g.useProgram(prog.program);
-  g.uniform2f(u.uRes!, width, height);
-  g.uniform1f(u.uTime!, f.time);
-  g.uniform2fv(u.uMouse!, f.mouse);
-  g.uniform1f(u.uHover!, f.hover);
-  g.uniform3fv(u.uRipple!, f.ripple);
-  g.uniform1f(u.uSeed!, f.seed);
-  g.uniform3fv(u.uFrom!, f.from);
-  g.uniform3fv(u.uTo!, f.to);
-  g.uniform1f(u.uMix!, f.mix);
-  g.uniform1f(u.uStrength!, f.strength);
-  g.drawArrays(g.TRIANGLES, 0, 3);
   // The corner the viewport drew, in the GL canvas's own top-down coordinates.
-  f.ctx.drawImage(c, 0, c.height - height, width, height, 0, 0, width, height);
+  const copy = () => f.ctx!.drawImage(c, 0, c.height - height, width, height, 0, 0, width, height);
+  f.ctx.globalAlpha = 1;
+  if (f.was && f.fade < 1) {
+    draw(g, prog, f, f.was);
+    copy();
+    f.ctx.globalAlpha = smooth(f.fade);
+  }
+  draw(g, prog, f, f.cut);
+  copy();
+  f.ctx.globalAlpha = 1;
 }
 
 /** Sizes each visible field from its box on screen. Reads every box first, then writes. */
@@ -211,6 +244,10 @@ function frame(now: number) {
         f.mix = Math.min(1, f.mix + dt / SWEEP);
         moving = true;
       }
+      if (f.fade < 1) {
+        f.fade = Math.min(1, f.fade + dt / SWEEP);
+        moving = true;
+      }
     }
     if (moving || f.dirty) {
       render(f);
@@ -246,8 +283,11 @@ export function attach(host: HTMLElement, canvas: HTMLCanvasElement, settings: S
     canvas,
     ctx: canvas.getContext("2d"),
     from: settings.stops,
+    fromTips: settings.tips,
     to: settings.stops,
     mix: 1,
+    was: null,
+    fade: 1,
     time: 0,
     hover: 0,
     hoverTarget: 0,
@@ -274,11 +314,20 @@ export function attach(host: HTMLElement, canvas: HTMLCanvasElement, settings: S
 
   return {
     update(next) {
-      if (next.stops && next.stops.join() !== f.to.join()) {
-        // A new palette sweeps in from wherever the last change had got to.
+      const stops = next.stops ?? f.to;
+      const tips = next.tips ?? f.tips;
+      if (!same(stops, f.to) || !same(tips, f.tips)) {
+        // A new palette or pair sweeps in from wherever the last change had got to.
         f.from = blend(f.from, f.to, smooth(f.mix));
-        f.to = next.stops;
+        f.fromTips = blend(f.fromTips, f.tips, smooth(f.mix));
+        f.to = stops;
+        f.tips = tips;
         f.mix = f.reduced || next.reduced ? 1 : 0;
+      }
+      if (next.cut && next.cut.id !== f.cut.id) {
+        f.was = f.cut;
+        f.cut = next.cut;
+        f.fade = f.reduced || next.reduced ? 1 : 0;
       }
       if (next.seed !== undefined) f.seed = next.seed;
       if (next.strength !== undefined) f.strength = next.strength;
@@ -286,6 +335,7 @@ export function attach(host: HTMLElement, canvas: HTMLCanvasElement, settings: S
       if (next.reduced !== undefined) f.reduced = next.reduced;
       if (f.reduced) {
         f.mix = 1;
+        f.fade = 1;
         f.hover = f.hoverTarget;
         f.ripple[2] = -1;
       }
