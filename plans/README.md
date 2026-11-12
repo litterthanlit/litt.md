@@ -17,6 +17,8 @@ honor its STOP conditions, and update your row when done.
 | 007  | [Nick's long exposures stream on the canvas, beside the bokashi skies, as Flat's second candidate picture](007-long-exposures-on-the-canvas.md) | P2 | S | 006 | DONE (executed and reviewed 2026-11-11; commits `5858e91` and `a909523` on the local `claude/bold-babbage-o26t56`, not yet pushed) |
 | 008  | [The long exposures get stronger and more diverse: five kinds of field, a dozen palettes, one shared WebGL context](008-stronger-more-diverse-exposures.md) | P2 | L | 007 | DONE (executed and reviewed 2026-11-11; commits `f18bd9b`, `be51f2c` and `adc7a89` on the local `claude/bold-babbage-o26t56`, not yet pushed; the reviewer's own check agreed: 23 pictures, 5 fields, 12 palettes, one WebGL context, still under reduced motion) |
 | 009  | [Only the long exposure stays, and it varies: more bold palettes, two-palette pictures, and new cuts of the fan](009-long-exposure-variations.md) | P2 | L | 008 | IN PROGRESS |
+| 010  | [Sparkline draws its trend three ways: a groove in Press, today's line in Flat, a row of lit dots in Device](010-sparkline-three-bodies.md) | P1 | M | — | TODO |
+| 011  | [Table dresses per world: slats in a tray in Press, today's quiet rows in Flat, a screen of mono columns in Device](011-table-three-bodies.md) | P1 | L | — (run after 010: both touch the changelog and the lock) | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
@@ -31,7 +33,7 @@ One rule for every data part, from Nick on 2026-11-10: "current ones are good, w
 | 1 | Stat | Dashboard, Growth, Usage | 002, done (its Flat figure grew to 18px before the rule above; Nick has seen it) |
 | 2 | Chart: BarChart | Dashboard, Growth, Usage, Insights | 003, done |
 | 3 | Chart: LineChart and StackedBarChart | the same four | 004, done |
-| 4 | Sparkline, Table | Growth, Usage; Dashboard | not written |
+| 4 | Sparkline, Table | Growth, Usage; Dashboard | 010 and 011, written |
 | 5 | Gauge, Heatmap | Insights | not written |
 | 6 | Breakdown, Spread, Funnel, Cohort grid | Usage; Growth | not written |
 | 7 | Bar list, Dot plot, Timeline | Insights | not written |
@@ -55,6 +57,8 @@ The screens themselves are not redesigned per world: they are built from these p
 - 006 is separate from the data wave. Nick asked for Japanese moving gradients in Flat's pictures and chose bokashi skies, and an exception to R2 and R4 for pictures. 006 builds them on the canvas and proposes the rule wording; the plan that ships them into Flat waits on Nick's answers in `proposals/bokashi.md`.
 
 - 007 follows Nick's reply to the skies, 2026-11-11: "Take inspo from my components repo". That repo's Gradient Keys draws long exposures in Japanese palettes with a WebGL shader; 007 puts the same shader on the canvas under the skies and adds decisions 8 to 12 to the proposal. Its code was tested in a scratch copy before the plan was written, so the plan carries the files whole and the executor places them by script. The skies and the long exposures are rivals: the plan that ships a picture into Flat takes whichever Nick picks.
+
+- 010 and 011 are step 4 of the data wave, one plan each because Table is far larger and riskier than Sparkline. 010 can go to the usual executor. 011 is a brief for a strong executor: Table's Flat look is already in its class strings (the `in-[[data-material=flat]]:` variant), so its three looks become a dress of classes per world, not three components, and Flat is proved unmoved before Press or Device is drawn. 011 also changes how Flat's table finds its world (from CSS to `useMaterial()`), which its maintenance notes spell out.
 
 - 008 follows Nick's reply to 007, 2026-11-11: "I like this! let's make it stronger tho and more diverse, deploy opus". It is a brief, not a script: the executor (the stronger model Nick asked for) draws four new kinds of field beside Nick's fan, at least seven new palettes and a strength control, on one shared WebGL context, and works by eye in rounds. The reviewer checks it with a script of their own, not the executor's.
 
