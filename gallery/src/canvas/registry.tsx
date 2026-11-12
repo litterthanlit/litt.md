@@ -22,6 +22,7 @@ import { CaseStudy } from "@/blocks/case-study";
 import { SCALES, ScaleFrame } from "./scale";
 import { LOOKS } from "./flat-look-data";
 import { FlatLookFrame } from "./flat-look";
+import { FlatHand } from "./flat-look-hand";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
   BlockButton,
@@ -170,9 +171,10 @@ const SCALE_ROW = { settings: 2720, caseStudy: 3760 };
 /* Long exposures (streaks.tsx), candidate pictures for Flat: out to the left, clear of everything else. */
 const PICTURES_X = -2600;
 /* Flat's candidate looks (flat-look.tsx, proposals/flat-colour.md): a block of their own, out to the right of the scale
-   rows, three across and two down, Today first. */
+   rows, three across and two down, Today first; the hand, today and snappy, under them. */
 const LOOKS_X = 4800;
 const LOOK = { width: 1120, height: 2320, gap: 120 };
+const HAND_Y = 2 * (LOOK.height + LOOK.gap) + 80;
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
@@ -257,4 +259,5 @@ export const ITEMS: CanvasItem[] = [
       render: () => <FlatLookFrame look={look} />,
     }),
   ),
+  { id: "flat-look-hand", name: "Flat · the hand, today and snappy", x: LOOKS_X, y: HAND_Y, width: 1120, height: 720, render: () => <FlatHand /> },
 ];
