@@ -12,9 +12,17 @@
  *   really renders on (Radix data-side, read after collision flipping).
  *   transform-origin is Radix's trigger-side origin. The exit is useExit, a
  *   quiet fade, run by AnimatePresence on a force-mounted Radix portal.
+ * - Only a cold open plays that entrance: hover after the 200ms delay, or the
+ *   touch hold. A tooltip that opens inside the skip window, or on keyboard
+ *   focus (the trigger is focused and :focus-visible as it opens), appears in
+ *   place with no entrance, so sweeping across a toolbar or tabbing through it
+ *   never waits on motion. That is decided once per opening and holds when a
+ *   collision flip remounts the surface. Exits never change.
  * - Delays are interaction, not animation: 200ms of hover intent, then a 300ms
- *   window in which the next tooltip opens at once. Keyboard focus opens
- *   instantly (Radix does this on its own; a click never opens one).
+ *   window after one closes in which the next opens at once, without the delay
+ *   and without the entrance. The window is shared by every tooltip under one
+ *   TooltipProvider. Keyboard focus opens instantly (Radix does this on its own;
+ *   a click never opens one).
  * - Touch (foundations.md section 6): Radix never opens on touch, and a tap is
  *   the button's own action, so a tap no longer shows a label. A press and hold
  *   of 500ms does (an interaction delay like the 200ms above, not a motion
@@ -45,7 +53,9 @@ const HOLD_DELAY = 500; // ms of press and hold before a tooltip opens on touch 
 const HOLD_SLOP = 10; // px a finger may drift during the hold before it counts as a scroll or a drag
 const CLICK_WINDOW = 500; // ms after a hold ends in which the click it may leave behind is swallowed
 
-const HasProvider = createContext(false);
+/* When a tooltip under this provider last closed. The next one to open inside SKIP_WINDOW of it opens with no entrance. */
+type Clock = { closedAt: number };
+const SharedClock = createContext<Clock | null>(null);
 
 /**
  * Mount once near the root so every tooltip shares the skip window. Without it each
@@ -57,12 +67,13 @@ export function TooltipProvider({
   /** Your app, or the part of it that holds tooltips. */
   children: ReactNode;
 }) {
+  const [clock] = useState<Clock>(() => ({ closedAt: -Infinity }));
   return (
-    <HasProvider.Provider value>
+    <SharedClock.Provider value={clock}>
       <TooltipPrimitive.Provider delayDuration={OPEN_DELAY} skipDelayDuration={SKIP_WINDOW}>
         {children}
       </TooltipPrimitive.Provider>
-    </HasProvider.Provider>
+    </SharedClock.Provider>
   );
 }
 
@@ -98,11 +109,28 @@ export function Tooltip({
   onOpenChange,
   children,
 }: TooltipProps) {
-  const hasProvider = useContext(HasProvider);
+  const shared = useContext(SharedClock);
+  const [own] = useState<Clock>(() => ({ closedAt: -Infinity }));
+  const clock = shared ?? own;
   const overlayRoot = useOverlayRoot();
   const { coarse } = useDevice();
   const [inner, setInner] = useState(defaultOpen);
   const open = openProp ?? inner;
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  /* Decided as it opens and kept for the whole opening, so a later render (a flip, a new label) cannot replay the entrance. */
+  const [opening, setOpening] = useState({ open, instant: false });
+  if (opening.open !== open) {
+    const trigger = triggerRef.current;
+    const focused = trigger !== null && trigger === document.activeElement && trigger.matches(":focus-visible");
+    setOpening({ open, instant: open && (focused || performance.now() - clock.closedAt < SKIP_WINDOW) });
+  }
+  useLayoutEffect(() => {
+    if (!open) return;
+    return () => {
+      clock.closedAt = performance.now();
+    };
+  }, [open, clock]);
 
   const change = (next: boolean) => {
     setInner(next);
@@ -135,6 +163,7 @@ export function Tooltip({
   const tree = (
     <TooltipPrimitive.Root open={open} onOpenChange={change}>
       <TooltipPrimitive.Trigger
+        ref={triggerRef}
         asChild
         className="pointer-coarse:select-none pointer-coarse:[-webkit-touch-callout:none]"
         onPointerDown={(e) => {
@@ -185,14 +214,14 @@ export function Tooltip({
       <AnimatePresence>
         {open && (
           <TooltipPrimitive.Portal container={overlayRoot} key="tooltip" forceMount>
-            <TooltipSurface side={side} align={align} content={content} shortcut={coarse ? undefined : shortcut} />
+            <TooltipSurface side={side} align={align} content={content} shortcut={coarse ? undefined : shortcut} instant={opening.instant} />
           </TooltipPrimitive.Portal>
         )}
       </AnimatePresence>
     </TooltipPrimitive.Root>
   );
 
-  return hasProvider ? tree : <TooltipProvider>{tree}</TooltipProvider>;
+  return shared ? tree : <TooltipProvider>{tree}</TooltipProvider>;
 }
 
 function TooltipSurface({
@@ -200,7 +229,8 @@ function TooltipSurface({
   align,
   content,
   shortcut,
-}: Pick<TooltipProps, "content" | "shortcut" | "align"> & { side: TooltipSide }) {
+  instant,
+}: Pick<TooltipProps, "content" | "shortcut" | "align"> & { side: TooltipSide; instant: boolean }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [side, setSide] = useState<TooltipSide>(requested);
   /* The material's motion language (@/motion/deal): it grows from om.grow, and under Device it switches on and off
@@ -245,7 +275,7 @@ function TooltipSurface({
       <motion.div
         key={side}
         className="flex max-w-60 origin-(--radix-tooltip-content-transform-origin) items-center gap-3 rounded-control bg-surface-3 px-2 py-1.5 text-small text-fg shadow-tooltip inset-shadow-highlight in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:inset-shadow-none in-[[data-material=flat]]:px-3 in-[[data-material=flat]]:[&_kbd]:bg-transparent in-[[data-material=flat]]:[&_kbd]:text-canvas in-[[data-material=flat]]:[&_kbd]:opacity-70 in-[[data-material=flat]]:[&_kbd]:shadow-none"
-        initial={{ opacity: 0, scale: om.grow, ...toward }}
+        initial={instant ? false : { opacity: 0, scale: om.grow, ...toward }}
         animate={{ opacity: 1, scale: 1, x: 0, y: 0, transition: enter }}
         exit={{ opacity: 0, scale: om.grow, transition: exit }}
       >

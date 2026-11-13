@@ -404,8 +404,8 @@ Where someone is in a flow of three to six steps, such as setting up a studio. N
 
 ## Tooltip
 Solid, not glass, with `--shadow-tooltip`, `--radius-control` and small type in `--fg`.
-- **Delay:** opens after a 200ms hover delay, and at once on focus.
-- **Motion:** responsive tier. Under Flat it grows from the trigger from 0.9 and travels in a quarter of `--travel` from the side it renders on. Each material moves its own way (foundations, Motion languages): under Press it grows from `--press-scale` (0.98), and under Device it switches on in three steps where it stands, with no growth or slide.
+- **Delay:** opens after a 200ms hover delay, and at once on focus. Once one has shown, the next opens at once for 300ms after it closes (the skip window), so a sweep across a toolbar never waits.
+- **Motion:** only a cold open moves: hover after the delay, or the touch hold. A tooltip that opens inside the skip window, or on keyboard focus, appears in place with no entrance, because once one tooltip has shown its neighbours are expected and keyboard-initiated UI never animates. A cold open is on the responsive tier. Under Flat it grows from the trigger from 0.9 and travels in a quarter of `--travel` from the side it renders on. Each material moves its own way (foundations, Motion languages): under Press it grows from `--press-scale` (0.98), and under Device it switches on in three steps where it stands, with no growth or slide.
 - **Exit:** `--dur-exit-responsive` with `--ease-out`.
 - **On touch** a tooltip opens on a press and hold of 500ms, not on a tap, so a tap only does what the button does. (500ms is an interaction delay, like the 200ms hover delay, not a motion token.) It closes on the next touch anywhere. Shortcut chips are hidden on coarse screens. The label that matters must also be the button's `aria-label`, or visible text.
 
