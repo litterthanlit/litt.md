@@ -40,7 +40,7 @@
  *   and a removed one fades out on the exit token. The edge and the ring fade on the instant tier.
  * - Compact screens (useDevice().compact): the list stays anchored, never a sheet, because a sheet would cover the
  *   field. Once placed, its height is the visible screen on its side of the field less --space-2, read from the
- *   visual viewport (useVisibleScreen), so no option hides behind the keyboard.
+ *   visual viewport (useVisibleScreen), so no option hides behind the keyboard; inside an OverlayRoot, from the frame.
  * - Coarse pointers: a tap on the chevron opens the list without focusing the field, so the keyboard stays shut
  *   while a person browses.
  * - hideLabel keeps the label for screen readers only, where the row around the field already says what it holds (the
@@ -65,7 +65,7 @@ import {
 } from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useIsPresent, useMotionValue } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel, useVisibleScreen } from "@/motion";
+import { useDevice, useExit, useOverlayRoot, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronDownIcon } from "@/components/icons";
 import { Tag } from "@/components/tag";
@@ -291,6 +291,7 @@ export function Combobox<Multiple extends boolean = false>({
 
   const { coarse } = useDevice();
   const enter = useTransition("responsive");
+  const overlayRoot = useOverlayRoot();
   const exit = useExit("responsive");
 
   const sections = useMemo(() => sectionsOf(options), [options]);
@@ -622,7 +623,7 @@ export function Combobox<Multiple extends boolean = false>({
           </div>
         </PopoverPrimitive.Anchor>
 
-        <PopoverPrimitive.Portal forceMount>
+        <PopoverPrimitive.Portal container={overlayRoot} forceMount>
           <AnimatePresence>
             {open && (
               <Panel
@@ -723,6 +724,8 @@ function Panel(props: PanelProps) {
   latest.current = enter;
   const { compact } = useDevice();
   const screen = useVisibleScreen(compact);
+  /* Inside an OverlayRoot the visible screen is the frame, measured from its own top edge. */
+  const overlayRoot = useOverlayRoot();
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -763,8 +766,9 @@ function Panel(props: PanelProps) {
     const read = () => {
       const r = field.current?.getBoundingClientRect();
       if (!r) return;
-      const top = screen ? screen.top : 0;
-      const bottom = screen ? screen.top + screen.height : window.innerHeight;
+      const origin = overlayRoot ? overlayRoot.getBoundingClientRect().top : 0;
+      const top = origin + (screen ? screen.top : 0);
+      const bottom = screen ? origin + screen.top + screen.height : window.innerHeight;
       setRoom(Math.max(0, Math.floor(placed === "top" ? r.top - top - GAP : bottom - r.bottom - GAP)));
     };
     read();
@@ -774,7 +778,7 @@ function Panel(props: PanelProps) {
       window.removeEventListener("scroll", read, { capture: true });
       window.removeEventListener("resize", read);
     };
-  }, [compact, placed, screen, field]);
+  }, [compact, placed, screen, field, overlayRoot]);
 
   /** Scrolls the list (never the page) so a row, and its group label above it, are in view. */
   const reveal = (index: number, center = false) => {

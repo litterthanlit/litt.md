@@ -215,12 +215,16 @@ const RECIPES = {
     top: [
       `const CARD_PLANS = [{ value: "free", label: "Free", description: "Your trial has ended.", detail: "$0", disabled: true }, { value: "pro", label: "Pro", description: "Unlimited projects and previews.", detail: "$12 a month" }, { value: "team", label: "Team", description: "Roles, an audit log and SSO.", detail: "$40 a month" }];`,
     ],
+    /* The 720px picker sits in its own scroller: a fixed width in the page's grid would widen the page's one track past a
+       phone's screen, and the app shell's menu button (and every other step on a phone) would sit off it. */
     jsx: `<div className="grid gap-6" data-testid="litt-card-picker">
           <form data-testid="card-picker-form" onSubmit={(e) => e.preventDefault()} style={{ width: 360 }}>
             <CardPicker legend="Plan" name="plan" defaultValue="pro" options={CARD_PLANS} />
           </form>
-          <div data-testid="card-picker-wide" style={{ width: 720 }}>
-            <CardPicker legend="Plan, wide" name="plan-wide" defaultValue="pro" options={CARD_PLANS} />
+          <div style={{ overflowX: "auto" }}>
+            <div data-testid="card-picker-wide" style={{ width: 720 }}>
+              <CardPicker legend="Plan, wide" name="plan-wide" defaultValue="pro" options={CARD_PLANS} />
+            </div>
           </div>
           <div data-testid="card-picker-sm" style={{ width: 320 }}>
             <CardPicker size="sm" legend="Layout" defaultValue="list" options={["List", "Grid", "Board"].map((l) => ({ value: l.toLowerCase(), label: l, picture: <span data-testid="card-picker-picture" style={{ display: "block", width: 16, height: 16, background: "currentColor" }} /> }))} />
@@ -2289,7 +2293,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
         });
       }
       if (has("sparkline")) {
-        await attempt("sparkline reads its summary, draws a 2px line and a dot in the data hue, a dashed baseline, and a Stat's trend slot", async () => {
+        await attempt("sparkline reads its summary, draws each world's body (Press's bead in a groove, Flat's 2px line and dot, Device's lit dots) in the data hue, and a Stat's trend slot", async () => {
           const box = item("sparkline").locator("[data-testid=litt-sparklines]");
           const quiet = box.locator("[data-testid=spark-quiet] svg[role=img]");
           await quiet.waitFor({ state: "visible", timeout: 8000 });
@@ -2298,60 +2302,182 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           if (said !== want) throw new Error(`the summary reads "${said}", not "${want}"`);
           const stops = await box.locator("button, a, input, [tabindex]").count();
           if (stops) throw new Error(`a sparkline is not interactive, yet ${stops} focusable element(s) are inside`);
-          const colorOf = (v) =>
-            page.evaluate((value) => {
-              const probe = document.createElement("span");
-              probe.style.color = value;
-              document.body.append(probe);
-              const c = getComputedStyle(probe).color;
-              probe.remove();
-              return c;
-            }, v);
-          const [blue, blueText, accent, lineStrong, fg55] = [
-            await colorOf("var(--litt-data-blue)"),
-            await colorOf("var(--litt-data-blue-text)"),
-            await colorOf("var(--litt-accent)"),
-            await colorOf("var(--litt-line-strong)"),
-            await colorOf("color-mix(in oklab, var(--litt-fg) 55%, transparent)"),
-          ];
           const hued = box.locator("[data-testid=spark-blue] svg[role=img]");
           if ((await hued.getAttribute("aria-label")) !== "Deploys per day: from 5 to 9, low 4, high 9") throw new Error(`the hued summary reads "${await hued.getAttribute("aria-label")}"`);
-          const marks = (loc) =>
+          /* The tokens as the world's own page resolves them: Flat's greys and ink are not Press's. */
+          const palette = async (p) => {
+            const of = (v) =>
+              p.evaluate((value) => {
+                const probe = document.createElement("span");
+                probe.style.color = value;
+                document.body.append(probe);
+                const c = getComputedStyle(probe).color;
+                probe.remove();
+                return c;
+              }, v);
+            return {
+              blue: await of("var(--litt-data-blue)"),
+              blueText: await of("var(--litt-data-blue-text)"),
+              accent: await of("var(--litt-accent)"),
+              lineStrong: await of("var(--litt-line-strong)"),
+              fg55: await of("color-mix(in oklab, var(--litt-fg) 55%, transparent)"),
+              fg: await of("var(--litt-fg)"),
+              fieldInk: await of("var(--litt-field-ink)"),
+            };
+          };
+          /* The three bodies (proposals/worlds.md, Bodies): the host's markup picks one with data-material on <html>, and
+             the registry ships Press, so the installed app with no attribute draws Press's. Flat's and Device's run in a
+             page of their own that loads with the attribute already set, as a host's markup would set it. */
+          const inMaterial = async (material, body, run) => {
+            let own = null;
+            try {
+              let p = page;
+              if (material) {
+                const dark = await page.evaluate(() => document.documentElement.classList.contains("dark"));
+                own = await browser.newContext({ viewport: { width: 1280, height: 1100 }, colorScheme: "light", deviceScaleFactor: 1 });
+                // An init script runs before <html> exists, so it sets the attribute the moment the element is there.
+                await own.addInitScript((m) => {
+                  const set = () => document.documentElement?.setAttribute("data-material", m);
+                  set();
+                  if (!document.documentElement) new MutationObserver((_, mo) => document.documentElement && (set(), mo.disconnect())).observe(document, { childList: true });
+                }, material);
+                p = await own.newPage();
+                p.setDefaultTimeout(12000);
+                await p.goto(url, { waitUntil: "load", timeout: 30000 });
+                await p.waitForSelector("[data-testid=smoke]", { timeout: 15000 });
+                await p.evaluate(() => document.fonts.ready);
+                if (dark) await p.evaluate(() => document.documentElement.classList.add("dark"));
+                await p.waitForTimeout(400);
+              }
+              const sparks = itemOn(p, "sparkline").locator("[data-testid=litt-sparklines]");
+              await sparks.scrollIntoViewIfNeeded();
+              await sparks.locator(`[data-testid=spark-blue] [data-body=${body}] svg[role=img]`).waitFor({ state: "visible", timeout: 8000 });
+              await sparks.locator(`[data-testid=spark-quiet] [data-body=${body}] svg[role=img]`).waitFor({ state: "visible", timeout: 8000 });
+              return await run({ colors: await palette(p), hued: sparks.locator("[data-testid=spark-blue] svg[role=img]"), quiet: sparks.locator("[data-testid=spark-quiet] svg[role=img]") });
+            } finally {
+              await own?.close();
+            }
+          };
+          const baselineOf = (loc) =>
+            loc.evaluate((svg) => {
+              const line = svg.querySelector("line");
+              const s = line && getComputedStyle(line);
+              return line && { stroke: s.stroke, width: s.strokeWidth, dash: s.strokeDasharray, span: Number(line.getAttribute("x2")) - Number(line.getAttribute("x1")), drawn: svg.getBoundingClientRect().width };
+            });
+          const checkBaseline = (baseline, lineStrong) => {
+            if (!baseline || baseline.stroke !== lineStrong || baseline.width !== "1px" || baseline.dash === "none") throw new Error(`the baseline is ${JSON.stringify(baseline)}, not a dashed 1px --litt-line-strong line`);
+            if (Math.abs(baseline.span - baseline.drawn) > 1) throw new Error(`the baseline spans ${baseline.span}px of ${baseline.drawn}px`);
+          };
+          const lineMarks = (loc) =>
             loc.evaluate((svg) => {
               const path = svg.querySelector("path");
-              const circles = [...svg.querySelectorAll("circle")];
               const s = path && getComputedStyle(path);
+              return { line: s?.stroke, width: s?.strokeWidth, cap: s?.strokeLinecap, join: s?.strokeLinejoin, fill: s?.fill, circles: svg.querySelectorAll("circle").length };
+            });
+          const checkLine = (m, want, which) => {
+            if (m.line !== want) throw new Error(`the ${which} line is ${m.line}, not ${want}`);
+            if (m.width !== "2px" || m.cap !== "round" || m.join !== "round" || m.fill !== "none") throw new Error(`the ${which} line is ${m.width} with ${m.cap} caps and ${m.join} joins, fill ${m.fill}`);
+          };
+
+          /* Press: a line in a groove. A sunken well the size of the box, the line along its floor and a raised bead on the
+             latest value, its core in the hue's -text tone (the foreground when quiet). No dot in the drawing. */
+          const pressMarks = (loc) =>
+            loc.evaluate((svg) => {
+              const root = svg.closest("[data-body=press]");
+              const well = root.querySelector("[data-well]");
+              const bead = root.querySelector("div[aria-hidden=true]:not([data-well])");
+              const core = bead?.querySelector("span");
+              const rect = (el) => {
+                const r = el.getBoundingClientRect();
+                return { w: r.width, h: r.height, l: r.left, t: r.top, r: r.right, b: r.bottom };
+              };
+              const rw = rect(well);
+              const rb = bead && rect(bead);
               return {
-                line: s?.stroke,
-                width: s?.strokeWidth,
-                cap: s?.strokeLinecap,
-                join: s?.strokeLinejoin,
-                fill: s?.fill,
+                well: rw,
+                box: rect(root),
+                svg: rect(svg),
+                shade: getComputedStyle(well).boxShadow,
+                bead: rb,
+                core: core && { w: core.getBoundingClientRect().width, color: getComputedStyle(core).backgroundColor },
+                inWell: !!rb && rb.l >= rw.l - 0.5 && rb.r <= rw.r + 0.5 && rb.t >= rw.t - 0.5 && rb.b <= rw.b + 0.5,
+              };
+            });
+          const press = await inMaterial(null, "press", async ({ colors, hued, quiet }) => {
+            const { blue, blueText, accent, lineStrong, fg55, fg, fieldInk } = colors;
+            const h = await lineMarks(hued);
+            checkLine(h, blue, "hued");
+            if (h.line === accent) throw new Error("a mark is the accent");
+            const hp = await pressMarks(hued);
+            if (h.circles) throw new Error(`Press draws ${h.circles} circle(s) in its svg; its bead is a raised piece beside the line`);
+            if (!hp.bead || !hp.core) throw new Error("Press has no raised bead on the latest value");
+            if (hp.core.color !== blueText) throw new Error(`the bead's core is ${hp.core.color}, not --litt-data-blue-text (${blueText})`);
+            if (Math.abs(hp.bead.w - 10) > 0.5 || Math.abs(hp.bead.h - 10) > 0.5 || Math.abs(hp.core.w - 6) > 0.5) throw new Error(`the bead is ${hp.bead.w}px with a ${hp.core.w}px core, not 10px and 6px`);
+            if (!hp.inWell) throw new Error("the bead is outside the groove");
+            if (Math.abs(hp.well.w - hp.box.w) > 1 || Math.abs(hp.well.h - hp.box.h) > 1) throw new Error(`the groove is ${hp.well.w}x${hp.well.h}px in a ${hp.box.w}x${hp.box.h}px box`);
+            if (!hp.shade || hp.shade === "none") throw new Error("the groove is not sunken (no shade)");
+            if (Math.abs(hp.svg.w - (hp.box.w - 8)) > 1 || Math.abs(hp.svg.h - (hp.box.h - 8)) > 1) throw new Error(`the drawing is ${hp.svg.w}x${hp.svg.h}px in a ${hp.box.w}x${hp.box.h}px groove, not 4px in all round`);
+            const q = await lineMarks(quiet);
+            checkLine(q, fg55, "quiet");
+            const qp = await pressMarks(quiet);
+            if (!qp.core || qp.core.color !== fg) throw new Error(`the quiet bead's core is ${qp.core?.color}, not the foreground (${fg})`);
+            checkBaseline(await baselineOf(quiet), lineStrong);
+            return `Press: line ${h.line}, bead core ${hp.core.color}, ${hp.well.w}x${hp.well.h} groove`;
+          });
+
+          /* Flat: the trend as it has always been, drawn on the page: a 2px line, a 4px dot over a 2px ring, a dashed baseline. */
+          const marks = (loc) =>
+            loc.evaluate((svg) => {
+              const circles = [...svg.querySelectorAll("circle")];
+              return {
                 radii: circles.map((c) => c.getAttribute("r")),
                 dot: circles.length ? getComputedStyle(circles[circles.length - 1]).fill : null,
                 svg: svg.getBoundingClientRect().width,
                 box: svg.parentElement.getBoundingClientRect().width,
               };
             });
-          const h = await marks(hued);
-          if (h.line !== blue || h.dot !== blueText) throw new Error(`the hued line is ${h.line} and its dot ${h.dot}, not --litt-data-blue (${blue}) and --litt-data-blue-text (${blueText})`);
-          if ([h.line, h.dot].includes(accent)) throw new Error("a mark is the accent");
-          if (h.width !== "2px" || h.cap !== "round" || h.join !== "round" || h.fill !== "none") throw new Error(`the line is ${h.width} with ${h.cap} caps and ${h.join} joins, fill ${h.fill}`);
-          if (h.radii.join() !== "6,4") throw new Error(`the ring and the dot have radii ${h.radii.join()}, not 6,4`);
-          if (Math.abs(h.svg - h.box) > 1) throw new Error(`the drawing is ${h.svg}px wide in a ${h.box}px box`);
-          const q = await marks(quiet);
-          if (q.line !== fg55) throw new Error(`the quiet line is ${q.line}, not the foreground at 55% (${fg55})`);
-          const baseline = await quiet.evaluate((svg) => {
-            const line = svg.querySelector("line");
-            const s = line && getComputedStyle(line);
-            return line && { stroke: s.stroke, width: s.strokeWidth, dash: s.strokeDasharray, span: Number(line.getAttribute("x2")) - Number(line.getAttribute("x1")), drawn: svg.getBoundingClientRect().width };
+          const flat = await inMaterial("flat", "flat", async ({ colors, hued, quiet }) => {
+            const { blue, blueText, accent, lineStrong, fg55, fg, fieldInk } = colors;
+            const h = { ...(await lineMarks(hued)), ...(await marks(hued)) };
+            if (h.line !== blue || h.dot !== blueText) throw new Error(`the hued line is ${h.line} and its dot ${h.dot}, not --litt-data-blue (${blue}) and --litt-data-blue-text (${blueText})`);
+            if ([h.line, h.dot].includes(accent)) throw new Error("a mark is the accent");
+            checkLine(h, blue, "hued");
+            if (h.radii.join() !== "6,4") throw new Error(`the ring and the dot have radii ${h.radii.join()}, not 6,4`);
+            if (Math.abs(h.svg - h.box) > 1) throw new Error(`the drawing is ${h.svg}px wide in a ${h.box}px box`);
+            const q = await lineMarks(quiet);
+            if (q.line !== fg55) throw new Error(`the quiet line is ${q.line}, not the foreground at 55% (${fg55})`);
+            checkBaseline(await baselineOf(quiet), lineStrong);
+            return `Flat: line ${h.line}, dot ${h.dot}`;
           });
-          if (!baseline || baseline.stroke !== lineStrong || baseline.width !== "1px" || baseline.dash === "none") throw new Error(`the baseline is ${JSON.stringify(baseline)}, not a dashed 1px --litt-line-strong line`);
-          if (Math.abs(baseline.span - baseline.drawn) > 1) throw new Error(`the baseline spans ${baseline.span}px of ${baseline.drawn}px`);
+
+          /* Device: a row of lit dots on LCD glass: no path, a lit dot per column, today's strongest, the hue on the lit dots. */
+          const deviceMarks = (loc) =>
+            loc.evaluate((svg) => {
+              const dots = [...svg.querySelectorAll("circle[data-dot]")];
+              const of = (d) => ({ fill: getComputedStyle(d).fill, opacity: d.getAttribute("opacity") });
+              return { path: svg.querySelectorAll("path").length, lit: dots.map(of), svg: svg.getBoundingClientRect().width, box: svg.closest("[data-body=device]").getBoundingClientRect().width };
+            });
+          const device = await inMaterial("device", "device", async ({ colors, hued, quiet }) => {
+            const { blue, blueText, accent, lineStrong, fg55, fg, fieldInk } = colors;
+            const h = await deviceMarks(hued);
+            if (h.path) throw new Error("Device draws a path; it lights dots");
+            if (!h.lit.length) throw new Error("Device lit no dots");
+            if (Math.abs(h.svg - h.box) > 1) throw new Error(`the glass drawing is ${h.svg}px wide in a ${h.box}px box`);
+            const off = h.lit.filter((d) => d.fill !== blue);
+            if (off.length) throw new Error(`a hued trace has lit dots in ${off[0].fill}, not --litt-data-blue (${blue})`);
+            const strong = h.lit.filter((d) => d.opacity === "1").length;
+            const trace = h.lit.filter((d) => d.opacity === "0.75").length;
+            /* Today is the dot at the line's height with the one above and the one below, fewer when it sits on the top or bottom row. */
+            if (strong < 2 || strong > 3 || !trace) throw new Error(`a hued trace has ${strong} dot(s) at full strength and ${trace} at 75%, not two or three and some`);
+            const q = await deviceMarks(quiet);
+            if (!q.lit.some((d) => d.opacity === "0.3" && d.fill === fieldInk)) throw new Error("the baseline is not lit at 30% in the glass's ink");
+            return `Device: ${h.lit.length} lit dots in ${blue}`;
+          });
+
           const empty = box.locator("[data-testid=spark-empty] svg[role=img]");
           const emptyShape = await empty.evaluate((svg) => ({ label: svg.getAttribute("aria-label"), marks: svg.querySelectorAll("path, circle, line").length }));
           if (emptyShape.label !== "Visits per day: no data" || emptyShape.marks) throw new Error(`an empty sparkline reads ${JSON.stringify(emptyShape)}`);
-          let detail = `line ${h.line}, dot ${h.dot}`;
+          let detail = `${press}; ${flat}; ${device}`;
           if (has("stat")) {
             const dd = item("stat").locator("[data-testid=litt-stats] dd").nth(1);
             const term = await item("stat").locator("[data-testid=litt-stats] dt").nth(1).innerText();

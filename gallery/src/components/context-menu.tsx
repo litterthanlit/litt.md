@@ -42,7 +42,7 @@ import {
 } from "react";
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
 import { AnimatePresence } from "motion/react";
-import { useDevice } from "@/motion";
+import { useDevice, useOverlayRoot } from "@/motion";
 import { MenuPanel, type MenuParts } from "./menu";
 
 const HOLD_DELAY = 500; // ms of press and hold before it opens on touch: the tooltip's hold (an interaction delay, not animation)
@@ -201,6 +201,7 @@ export type ContextMenuProps = {
 export function ContextMenu({ trigger, label, backLabel = "Back", children }: ContextMenuProps) {
   const [open, setOpen] = useState(false);
   const { coarse } = useDevice();
+  const overlayRoot = useOverlayRoot();
 
   /* While it is open, the browser's own menu stays shut: no native menu stacks on top of this one. */
   useEffect(() => {
@@ -219,7 +220,7 @@ export function ContextMenu({ trigger, label, backLabel = "Back", children }: Co
       </ContextMenuPrimitive.Trigger>
       <AnimatePresence>
         {open && (
-          <ContextMenuPrimitive.Portal forceMount key="menu">
+          <ContextMenuPrimitive.Portal container={overlayRoot} forceMount key="menu">
             <MenuPanel parts={CONTEXT_PARTS} label={label} backLabel={backLabel}>
               {children}
             </MenuPanel>

@@ -90,6 +90,9 @@ export function MaterialProvider({ material, children }: { material: Material; c
   return createElement(MaterialContext.Provider, { value: material }, children);
 }
 
+/* OverlayRoot is defined in device.ts, whose useVisibleScreen reads it (device.ts cannot import this file). */
+export { OverlayRoot, useOverlayRoot } from "./device";
+
 /** The material: the nearest MaterialProvider's, else the one on <html>, kept current when it changes (the gallery's Customize panel). Press on the server. */
 export function useMaterial(): Material {
   const framed = useContext(MaterialContext);

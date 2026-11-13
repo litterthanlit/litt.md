@@ -46,7 +46,7 @@ import {
 } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel, useVisibleScreen } from "@/motion";
+import { useDevice, useExit, useOverlayRoot, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { GROW, useGrowFrom, useOverlayMotion } from "@/motion/deal";
 import { Button } from "./button";
 import { SearchIcon } from "./icons";
@@ -343,9 +343,10 @@ function Body({
   const grow = useGrowFrom<HTMLDivElement>(true, !compact);
   /* Under Device the panel switches on and off where it stands (@/motion/deal, the motion languages). */
   const om = useOverlayMotion();
+  const overlayRoot = useOverlayRoot();
 
   return (
-    <Dialog.Portal forceMount>
+    <Dialog.Portal container={overlayRoot} forceMount>
       <Dialog.Overlay asChild>
         <motion.div
           className="fixed inset-0 z-50 bg-[color-mix(in_oklab,var(--canvas)_55%,transparent)]"

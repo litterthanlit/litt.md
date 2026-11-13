@@ -33,7 +33,7 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactElement, type ReactNode } from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { AnimatePresence, motion } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useOverlayRoot, useTransition, useTravel } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 import { Kbd } from "./kbd";
 
@@ -99,6 +99,7 @@ export function Tooltip({
   children,
 }: TooltipProps) {
   const hasProvider = useContext(HasProvider);
+  const overlayRoot = useOverlayRoot();
   const { coarse } = useDevice();
   const [inner, setInner] = useState(defaultOpen);
   const open = openProp ?? inner;
@@ -183,7 +184,7 @@ export function Tooltip({
       </TooltipPrimitive.Trigger>
       <AnimatePresence>
         {open && (
-          <TooltipPrimitive.Portal key="tooltip" forceMount>
+          <TooltipPrimitive.Portal container={overlayRoot} key="tooltip" forceMount>
             <TooltipSurface side={side} align={align} content={content} shortcut={coarse ? undefined : shortcut} />
           </TooltipPrimitive.Portal>
         )}

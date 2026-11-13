@@ -63,7 +63,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
-import { useDevice, useFun, useSheetOpen, useTransition, useTravel } from "@/motion";
+import { useDevice, useFun, useOverlayRoot, useSheetOpen, useTransition, useTravel } from "@/motion";
 import { useDismissDrag, type DismissInfo } from "@/motion/drag";
 import { Button } from "@/components/button";
 import { XIcon } from "@/components/icons";
@@ -167,6 +167,7 @@ export function Toaster({
 
 function ToasterRoot({ children }: { children?: ReactNode }) {
   const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
+  const overlayRoot = useOverlayRoot();
   const [items, setItems] = useState<ToastItem[]>([]);
   const counter = useRef(0);
 
@@ -191,7 +192,7 @@ function ToasterRoot({ children }: { children?: ReactNode }) {
   return (
     <ToastContext value={api}>
       {children}
-      {mounted && createPortal(<ToastRegion items={items} dismiss={dismiss} />, document.body)}
+      {mounted && createPortal(<ToastRegion items={items} dismiss={dismiss} />, overlayRoot ?? document.body)}
     </ToastContext>
   );
 }

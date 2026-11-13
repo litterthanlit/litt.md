@@ -131,6 +131,11 @@ jobs:
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
 
+      - name: Playground (the phone wears the world picked, its sheet, menus, tooltip, toasts and command menu open inside it, one accent fill per screen, a world switch keeps the state)
+        run: npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test
+        env:
+          A11Y_TOOLS: ${{ runner.temp }}/a11y
+
       - name: Study (every study page has its sections, anatomy parts resolve, the material frame is the Anatomy object pixel for pixel, nothing opens on its own, source and docs)
         run: npm run test:study --prefix gallery && npm run test:study --prefix gallery -- --self-test
         env:

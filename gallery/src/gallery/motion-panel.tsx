@@ -8,7 +8,7 @@
  * Customize panel, on every page (customize.tsx).
  */
 import { useId, useState } from "react";
-import { PRESET_LABEL, TRAVELS, useMotionDial, type DeviceMode, type PresetName } from "@/motion";
+import { PRESET_LABEL, TRAVELS, useMotionDial, type PresetName } from "@/motion";
 import { curve, overshoot, toCss, type Spring } from "@/motion/spring";
 import { checkRules, diffFromLocked, tokensSnippet } from "@/motion/rules";
 import { Button } from "@/components/button";
@@ -81,21 +81,21 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
-/** The Device switch: what the demos on the Playground think the screen is. */
-const DEVICES: { mode: DeviceMode; label: string }[] = [
-  { mode: "auto", label: "Auto" },
-  { mode: "phone", label: "Phone" },
-  { mode: "desktop", label: "Desktop" },
+/** The Frame switch: what the Playground shows its parts in. The frame is the device, so there is no Auto. */
+export type PlayFrameSize = "phone" | "desktop";
+const FRAMES: { size: PlayFrameSize; label: string; note: string }[] = [
+  { size: "phone", label: "Phone", note: "The app on a phone." },
+  { size: "desktop", label: "Desktop", note: "The parts on a desktop." },
 ];
 
 const ms = (v: number) => `${Math.round(v)}ms`;
 const sec = (v: number) => `${Math.round(v * 1000)}ms`;
 const pct = (v: number) => v.toFixed(2);
 
-export function MotionPanel({ device, onDeviceChange }: {
-  /** Which device the demos are forced to, or "auto" for the real screen. The Playground owns it, so leaving the page resets it. */
-  device: DeviceMode;
-  onDeviceChange: (mode: DeviceMode) => void;
+export function MotionPanel({ frame, onFrameChange }: {
+  /** What the Playground shows: the app on a phone, or the parts on a desktop. The page owns it, so leaving the page resets it. */
+  frame: PlayFrameSize;
+  onFrameChange: (size: PlayFrameSize) => void;
 }) {
   const { dial, locked, presets, preset, setPreset, update, reset, slow, setSlow, reducedPreview, setReducedPreview, reduced } = useMotionDial();
   const [open, setOpen] = useState(false);
@@ -141,7 +141,7 @@ export function MotionPanel({ device, onDeviceChange }: {
             variant="ghost"
             onClick={() => {
               reset();
-              onDeviceChange("auto");
+              onFrameChange("phone");
             }}
             className="-ml-3"
           >
@@ -151,11 +151,6 @@ export function MotionPanel({ device, onDeviceChange }: {
         {reduced && (
           <p className="text-caption font-normal text-warning">
             {reducedPreview ? "Previewing reduced motion: everything is instant." : "Your system asks for reduced motion, so every component is instant."}
-          </p>
-        )}
-        {device !== "auto" && (
-          <p className="text-caption font-normal text-warning">
-            {device === "phone" ? "Previewing a phone: the narrow-screen paths are on." : "Previewing a desktop: the narrow-screen paths are off."}
           </p>
         )}
       </header>
@@ -208,17 +203,18 @@ export function MotionPanel({ device, onDeviceChange }: {
       <Group title="Playback" use="For looking, not for shipping">
         <Toggle label="Slow motion ×4" checked={slow === 4} onChange={(b) => setSlow(b ? 4 : 1)} />
         <Toggle label="Preview reduced motion" checked={reducedPreview} onChange={setReducedPreview} />
-        <div className="grid gap-2">
-          <span className="text-small text-fg-muted" id="device-label">Device</span>
-          <div className={segmented + " grid-cols-3"} role="group" aria-labelledby="device-label" aria-describedby="device-note">
-            {DEVICES.map(({ mode, label }) => (
-              <button key={mode} type="button" aria-pressed={device === mode} onClick={() => onDeviceChange(mode)} className={segment + " px-2 text-small font-title"}>
+        {/* Below sm the reader is on a phone already, and the page shows the phone: there is nothing to switch. */}
+        <div className="grid gap-2 max-sm:hidden">
+          <span className="text-small text-fg-muted" id="frame-label">Frame</span>
+          <div className={segmented + " grid-cols-2"} role="group" aria-labelledby="frame-label" aria-describedby="frame-note">
+            {FRAMES.map(({ size, label }) => (
+              <button key={size} type="button" aria-pressed={frame === size} onClick={() => onFrameChange(size)} className={segment + " px-2 text-small font-title"}>
                 {label}
               </button>
             ))}
           </div>
-          <p id="device-note" className="text-caption font-normal text-fg-subtle">
-            Auto follows your screen. Phone lets a desktop try the sheet, the menu drill-down and the command menu at the top edge. Input details on touch, such as 44px targets and pressed fills, follow your real pointer, not this switch.
+          <p id="frame-note" className="text-caption font-normal text-fg-subtle">
+            {FRAMES.find((f) => f.size === frame)?.note} Input details on touch, such as 44px targets and pressed fills, follow your real pointer, not this switch.
           </p>
         </div>
       </Group>
