@@ -3,7 +3,13 @@ import { startTransition, useEffect, useLayoutEffect, useRef, useState } from "r
 import { lookSearch } from "./look";
 import { pages } from "./registry";
 
-/** The page id in the URL hash, or the first page. A malformed hash falls back instead of throwing. */
+/** The page a visit with no hash opens: the one the path ends in, so litt.design/systems/ opens Systems, or the first. */
+function homePage(): string {
+  const last = location.pathname.split("/").filter(Boolean).pop();
+  return pages.find((p) => p.id === last)?.id ?? pages[0]?.id ?? "";
+}
+
+/** The page id in the URL hash, or the home page. A malformed hash falls back instead of throwing. */
 export function readHash(): string {
   let raw = location.hash.replace(/^#/, "");
   try {
@@ -11,7 +17,7 @@ export function readHash(): string {
   } catch {
     raw = "";
   }
-  return raw || pages[0]?.id || "";
+  return raw || homePage();
 }
 
 /* A page's query string (the Table page keeps its filters there) belongs to that page's history entry. A link to

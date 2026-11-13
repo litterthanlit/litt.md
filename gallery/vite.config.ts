@@ -76,8 +76,8 @@ const PAGES = here("./src/gallery/pages/");
 
 // The page a visit opens is named by the hash, and its chunk is asked for only once the main chunk has run, so on a
 // slow phone it downloads after it. This writes each page's chunk files into index.html with a script that preloads
-// the current page's, so the two download together. No hash, or one that names no page, opens the first page, as
-// the app does. Dev serves modules as they are asked for and has no bundle, so it gets nothing.
+// the current page's, so the two download together. No hash, or one that names no page, opens the page the path ends
+// in or else the first page, as the app does (route.ts). Dev serves modules as they are asked for and has no bundle, so it gets nothing.
 function pagePreload(): Plugin {
   let base = "/";
   return {
@@ -118,7 +118,7 @@ function pagePreload(): Plugin {
           return f.slice(dir.length, -3);
         };
         const names = Object.fromEntries(Object.entries(files).map(([id, own]) => [id, own.map(name)]));
-        const script = `(function(){var m=${JSON.stringify(names)};var h="";try{h=decodeURIComponent(location.hash.slice(1))}catch(e){}(m[h]||m[${JSON.stringify(first.id)}]).forEach(function(f){var l=document.createElement("link");l.rel="modulepreload";l.crossOrigin="";l.href=${JSON.stringify(base + dir)}+f+".js";document.head.appendChild(l)})})();`;
+        const script = `(function(){var m=${JSON.stringify(names)};var h="";try{h=decodeURIComponent(location.hash.slice(1))}catch(e){}(m[h]||m[location.pathname.split("/").filter(Boolean).pop()]||m[${JSON.stringify(first.id)}]).forEach(function(f){var l=document.createElement("link");l.rel="modulepreload";l.crossOrigin="";l.href=${JSON.stringify(base + dir)}+f+".js";document.head.appendChild(l)})})();`;
         /* Before the first stylesheet: a script after one waits for it, and the fonts' is a round trip to Google. */
         const at = /<link\b[^>]*rel="stylesheet"/.exec(html)?.index ?? html.indexOf("</head>");
         return `${html.slice(0, at)}<script>${script}</script>\n${html.slice(at)}`;
@@ -127,10 +127,11 @@ function pagePreload(): Plugin {
   };
 }
 
-// base "/": the gallery is served from the root of its Vercel deployment and
-// routes by hash, so there is no nested path to get wrong.
+// base "./": the gallery routes by hash, so every URL it loads is relative to its one document. That lets the same
+// build serve the root of its Vercel deployment and litt.design/systems/, a zone of Nick's site (a trailing slash
+// there, so "./assets/" lands under it).
 export default defineConfig({
-  base: "/",
+  base: "./",
   plugins: [pageMeta(), pagePreload(), react(), tailwindcss()],
   resolve: { alias: { "@": here("./src") } },
   build: {
