@@ -17,10 +17,11 @@
  * Two helpers for the phone overlays live here too, because more than one component needs them:
  * - useVisibleScreen: the part of the screen a person can see, which shrinks when the on-screen keyboard opens.
  *   The command menu and the bottom sheet size themselves to it, so the keyboard never covers a row or a footer.
+ *   Inside an OverlayRoot (defined here, so useVisibleScreen can read it; deal.ts re-exports it) it is the frame.
  * - useSheetOpen and useSheetPresence: whether a bottom sheet is open, so a toast can move to the top edge
  *   instead of covering the sheet's buttons.
  */
-import { createContext, createElement, useContext, useEffect, useLayoutEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, createElement, useContext, useEffect, useLayoutEffect, useState, useSyncExternalStore, type ReactElement, type ReactNode } from "react";
 
 export type Device = { compact: boolean; coarse: boolean };
 export type DeviceMode = "auto" | "phone" | "desktop";
@@ -72,22 +73,51 @@ export function useDevice(): Device {
 /** The part of the screen a person can see: its top edge and height, in layout pixels. */
 export type VisibleScreen = { top: number; height: number };
 
+const OverlayContext = createContext<HTMLElement | null>(null);
+
+/**
+ * Where overlays portal to, for what is inside: a frame that shows an app (a phone, a window) passes its own element,
+ * and its sheets, menus and toasts open in it. Without one they go to document.body, as they always have. The element
+ * must be a containing block for fixed boxes (contain: layout, or a transform), or they still fill the window. Inside
+ * one, useVisibleScreen is the element's box, so a bottom sheet or a phone command menu sizes itself to the frame.
+ */
+export function OverlayRoot({ container, children }: { container: HTMLElement | null; children: ReactNode }): ReactElement {
+  return createElement(OverlayContext.Provider, { value: container }, children);
+}
+
+/** The nearest OverlayRoot's element, or undefined (Radix reads it as document.body) when there is none or it is not mounted yet. */
+export function useOverlayRoot(): HTMLElement | undefined {
+  return useContext(OverlayContext) ?? undefined;
+}
+
 /**
  * The visible screen, from window.visualViewport. It shrinks when the on-screen keyboard opens and moves when the
  * page is panned to keep a field in view; the layout viewport, `fixed inset-0` and 100dvh do not always follow it.
+ * Inside an OverlayRoot it is the root's element instead, `{ top: 0, height }` of its box, kept current as it
+ * resizes: what opens there is drawn in the frame, not the window (a frame's height does not follow a keyboard).
  * Null while disabled, on the server, before the first read, or with no visual viewport: fall back to 100dvh then.
  *
  * @param enabled - Read and follow it only while this is true, such as while a sheet is on a compact screen.
  */
 export function useVisibleScreen(enabled: boolean): VisibleScreen | null {
   const [screen, setScreen] = useState<VisibleScreen | null>(null);
+  const root = useContext(OverlayContext);
   useLayoutEffect(() => {
+    if (!enabled) return;
+    const keep = (next: VisibleScreen) => setScreen((prev) => (prev && prev.top === next.top && prev.height === next.height ? prev : next));
+    if (root) {
+      const read = () => keep({ top: 0, height: Math.round(root.clientHeight) });
+      read();
+      const ro = new ResizeObserver(read);
+      ro.observe(root);
+      return () => {
+        ro.disconnect();
+        setScreen(null);
+      };
+    }
     const vv = typeof window === "undefined" ? null : window.visualViewport;
-    if (!enabled || !vv) return;
-    const read = () => {
-      const next = { top: Math.round(vv.offsetTop), height: Math.round(vv.height) };
-      setScreen((prev) => (prev && prev.top === next.top && prev.height === next.height ? prev : next));
-    };
+    if (!vv) return;
+    const read = () => keep({ top: Math.round(vv.offsetTop), height: Math.round(vv.height) });
     read();
     vv.addEventListener("resize", read);
     vv.addEventListener("scroll", read);
@@ -96,7 +126,7 @@ export function useVisibleScreen(enabled: boolean): VisibleScreen | null {
       vv.removeEventListener("scroll", read);
       setScreen(null);
     };
-  }, [enabled]);
+  }, [enabled, root]);
   return enabled ? screen : null;
 }
 

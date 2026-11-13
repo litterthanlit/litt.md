@@ -4,6 +4,11 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-13 · Inside a frame, a sheet measures the frame
+
+- **changed** `motion`: inside an `OverlayRoot`, `useVisibleScreen` is the root element's box (`{ top: 0, height }`, kept current as it resizes), not the window's visible part, so a bottom sheet and the phone's command menu fill the frame they open in and the sheet's bottom is the frame's. Without an `OverlayRoot` it reads `window.visualViewport` as before. `OverlayRoot` and `useOverlayRoot` now live in `device.ts`; `deal.ts` and the engine's index export them as before.
+- **changed** `combobox`: on a compact screen inside an `OverlayRoot`, the list's height is the room in the frame beside the field, so it no longer passes the frame's top or bottom edge. Without one, unchanged. Props are unchanged.
+
 ## 2026-11-12 · Flat's accent switch and error ring; data, a body per world: Sparkline and Table; overlays open inside a frame
 
 Two classes on one element that set the same property under the same variant have the same specificity, so Tailwind's order picks the winner, not the order they are written in. Two Flat bodies lost a state that way, and the gallery now checks its class lists for it.

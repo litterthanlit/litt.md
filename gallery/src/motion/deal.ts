@@ -37,7 +37,7 @@
  * says where the press that opened it happened, read at the press, so it still answers once the trigger is gone (a
  * menu row that opened a dialog).
  */
-import { createContext, createElement, useCallback, useContext, useEffect, useRef, useSyncExternalStore, type ReactElement, type ReactNode } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import type { Transition } from "motion/react";
 import { useMotionDial } from "./index";
 import { toCss } from "./spring";
@@ -90,21 +90,8 @@ export function MaterialProvider({ material, children }: { material: Material; c
   return createElement(MaterialContext.Provider, { value: material }, children);
 }
 
-const OverlayContext = createContext<HTMLElement | null>(null);
-
-/**
- * Where overlays portal to, for what is inside: a frame that shows an app (a phone, a window) passes the element its
- * sheets, menus and toasts should open in. Without one they go to document.body, as they always have. The element must
- * be a containing block for fixed boxes (contain: layout, or a transform), or they still fill the window.
- */
-export function OverlayRoot({ container, children }: { container: HTMLElement | null; children: ReactNode }): ReactElement {
-  return createElement(OverlayContext.Provider, { value: container }, children);
-}
-
-/** The nearest OverlayRoot's element, or undefined (Radix reads it as document.body) when there is none or it is not mounted yet. */
-export function useOverlayRoot(): HTMLElement | undefined {
-  return useContext(OverlayContext) ?? undefined;
-}
+/* OverlayRoot is defined in device.ts, whose useVisibleScreen reads it (device.ts cannot import this file). */
+export { OverlayRoot, useOverlayRoot } from "./device";
 
 /** The material: the nearest MaterialProvider's, else the one on <html>, kept current when it changes (the gallery's Customize panel). Press on the server. */
 export function useMaterial(): Material {
