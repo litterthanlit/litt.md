@@ -58,7 +58,7 @@ import {
 import * as RadixDialog from "@radix-ui/react-dialog";
 import * as RadixPopover from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useMotionValue } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useOverlayRoot, useTransition, useTravel } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 import { Button } from "@/components/button";
 import { DialogSheet } from "@/components/dialog";
@@ -166,6 +166,7 @@ export function PopoverContent({
 }: PopoverContentProps) {
   const { open } = useContext(PopoverState);
   const { compact } = useDevice();
+  const overlayRoot = useOverlayRoot();
   if (compact) {
     return (
       <Sheet open={open} label={label} padded={padded} solid={solid}>
@@ -174,7 +175,7 @@ export function PopoverContent({
     );
   }
   return (
-    <RadixPopover.Portal forceMount>
+    <RadixPopover.Portal container={overlayRoot} forceMount>
       <AnimatePresence>
         {open && (
           <Surface

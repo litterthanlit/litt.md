@@ -59,7 +59,7 @@
 import { createContext, useCallback, useContext, useLayoutEffect, useRef, useState, type ReactNode, type Ref } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useTransform } from "motion/react";
-import { useDevice, useExit, useMotionDial, useSheetPresence, useTransition, useTravel, useVisibleScreen } from "@/motion";
+import { useDevice, useExit, useMotionDial, useOverlayRoot, useSheetPresence, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { useDismissDrag } from "@/motion/drag";
 import { GROW, useGrowFrom, useOverlayMotion } from "@/motion/deal";
 import { Button } from "@/components/button";
@@ -167,8 +167,9 @@ export type DialogSheetProps = {
  */
 export function DialogSheet({ open, ...rest }: DialogSheetProps) {
   useSheetPresence(open);
+  const overlayRoot = useOverlayRoot();
   return (
-    <RadixDialog.Portal forceMount>
+    <RadixDialog.Portal container={overlayRoot} forceMount>
       <AnimatePresence>{open && <SheetLayer key="layer" {...rest} />}</AnimatePresence>
     </RadixDialog.Portal>
   );
@@ -285,6 +286,7 @@ export function DialogContent({
   /* Under Device the panel switches on and off where it stands (@/motion/deal, the motion languages). */
   const om = useOverlayMotion();
   const switches = om.switches && !sheet;
+  const overlayRoot = useOverlayRoot();
   const panelRef = (el: HTMLDivElement | null) => {
     ref.current = el;
     grow.ref(el);
@@ -377,7 +379,7 @@ export function DialogContent({
   }
 
   return (
-    <RadixDialog.Portal forceMount>
+    <RadixDialog.Portal container={overlayRoot} forceMount>
       <AnimatePresence>
         {open && (
           <div

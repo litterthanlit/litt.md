@@ -65,7 +65,7 @@ import {
 } from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useIsPresent, useMotionValue } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel, useVisibleScreen } from "@/motion";
+import { useDevice, useExit, useOverlayRoot, useTransition, useTravel, useVisibleScreen } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronDownIcon } from "@/components/icons";
 import { Tag } from "@/components/tag";
@@ -291,6 +291,7 @@ export function Combobox<Multiple extends boolean = false>({
 
   const { coarse } = useDevice();
   const enter = useTransition("responsive");
+  const overlayRoot = useOverlayRoot();
   const exit = useExit("responsive");
 
   const sections = useMemo(() => sectionsOf(options), [options]);
@@ -622,7 +623,7 @@ export function Combobox<Multiple extends boolean = false>({
           </div>
         </PopoverPrimitive.Anchor>
 
-        <PopoverPrimitive.Portal forceMount>
+        <PopoverPrimitive.Portal container={overlayRoot} forceMount>
           <AnimatePresence>
             {open && (
               <Panel

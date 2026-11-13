@@ -329,4 +329,4 @@ export function useStagger(): number {
 }
 
 /* One contract, three bodies (proposals/worlds.md, Bodies): a part picks its body by the material on <html>. */
-export { byWorld, MaterialProvider, useMaterial } from "./deal";
+export { byWorld, MaterialProvider, OverlayRoot, useMaterial, useOverlayRoot } from "./deal";

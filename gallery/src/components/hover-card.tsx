@@ -34,7 +34,7 @@ import {
 } from "react";
 import * as RadixPopover from "@radix-ui/react-popover";
 import { AnimatePresence, animate, motion, useMotionValue } from "motion/react";
-import { useExit, useTransition, useTravel } from "@/motion";
+import { useExit, useOverlayRoot, useTransition, useTravel } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 
 type Side = "top" | "right" | "bottom" | "left";
@@ -161,9 +161,10 @@ export type HoverCardContentProps = {
 /** The card. Render it inside a HoverCard, next to the HoverCardTrigger. */
 export function HoverCardContent({ side = "bottom", align = "start", sideOffset = 8, size = "sm", solid, children }: HoverCardContentProps) {
   const ctx = useContext(HoverCardContext);
+  const overlayRoot = useOverlayRoot();
   if (!ctx) throw new Error("HoverCardContent must sit inside a HoverCard.");
   return (
-    <RadixPopover.Portal forceMount>
+    <RadixPopover.Portal container={overlayRoot} forceMount>
       <AnimatePresence>
         {ctx.open && (
           <Surface key="card" ctx={ctx} side={side} align={align} sideOffset={sideOffset} size={size} solid={solid}>

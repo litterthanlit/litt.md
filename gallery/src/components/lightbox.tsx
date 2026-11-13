@@ -30,7 +30,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useOverlayRoot, useTransition, useTravel } from "@/motion";
 import { useDismissDrag, type DismissInfo } from "@/motion/drag";
 import { GROW, useGrowFrom, useOverlayMotion } from "@/motion/deal";
 import { Button } from "@/components/button";
@@ -72,6 +72,7 @@ const ROUND = "pointer-coarse:h-control-md pointer-coarse:w-control-md";
 /** A set of images at the size of the screen, one at a time, opened from a Media and closed with Esc or Close. */
 export function Lightbox({ label, items, index, onIndexChange, tier = "expressive", returnFocus }: LightboxProps) {
   const open = index !== null && items.length > 0;
+  const overlayRoot = useOverlayRoot();
   /* While it leaves, the lightbox keeps showing the image it closed on. */
   const [shown, setShown] = useState(0);
   const at = open ? Math.max(0, Math.min(items.length - 1, index)) : Math.min(shown, Math.max(0, items.length - 1));
@@ -84,7 +85,7 @@ export function Lightbox({ label, items, index, onIndexChange, tier = "expressiv
         if (!next) onIndexChange(null);
       }}
     >
-      <RadixDialog.Portal forceMount>
+      <RadixDialog.Portal container={overlayRoot} forceMount>
         <AnimatePresence>
           {open && (
             <Layer

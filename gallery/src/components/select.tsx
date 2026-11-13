@@ -57,7 +57,7 @@ import {
 } from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { animate, motion, useMotionValue, type AnimationPlaybackControls, type HTMLMotionProps } from "motion/react";
-import { byWorld, useExit, useMaterial, useTransition, useTravel } from "@/motion";
+import { byWorld, useExit, useMaterial, useOverlayRoot, useTransition, useTravel } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronsUpDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
@@ -485,6 +485,7 @@ export function Select({
   onOpenChange,
 }: SelectProps) {
   const [innerValue, setInnerValue] = useState(defaultValue ?? "");
+  const overlayRoot = useOverlayRoot();
   const value = valueProp ?? innerValue;
   const pick = (next: string) => {
     setInnerValue(next);
@@ -571,7 +572,7 @@ export function Select({
         step={step}
       />
 
-      <SelectPrimitive.Portal>
+      <SelectPrimitive.Portal container={overlayRoot}>
         <SelectPrimitive.Content
           asChild
           position="popper"

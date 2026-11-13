@@ -65,7 +65,7 @@ import {
 import { createPortal } from "react-dom";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, animate, motion, useMotionValue, usePresence } from "motion/react";
-import { useDevice, useExit, useTransition, useTravel } from "@/motion";
+import { useDevice, useExit, useOverlayRoot, useTransition, useTravel } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronRightIcon } from "./icons";
 import { GLIDE_ROW, useGlide, type Glide } from "./glide";
@@ -403,6 +403,7 @@ export function MenuSub({
 /** The wide-screen submenu: a solid panel that flies out beside its row. */
 function FlySub({ icon, label, children }: SubProps) {
   const P = useParts();
+  const overlayRoot = useOverlayRoot();
   const parent = usePanel();
   const { off, glideRow, onMouseDown } = useRowView();
   const [open, setOpen] = useState(false);
@@ -429,7 +430,7 @@ function FlySub({ icon, label, children }: SubProps) {
       </P.SubTrigger>
       <AnimatePresence>
         {open && (
-          <P.Portal forceMount key="sub">
+          <P.Portal container={overlayRoot} forceMount key="sub">
             <MenuPanel sub>{children}</MenuPanel>
           </P.Portal>
         )}
@@ -909,6 +910,7 @@ export function Menu({
   children,
 }: MenuProps) {
   const [open, setOpen] = useState(false);
+  const overlayRoot = useOverlayRoot();
   return (
     /* Not modal: a modal menu locks the page's scroll and stops pointer events on the body, and either one makes the
        browser restyle the whole page as the menu opens, which stalls its first frames. A press outside closes it
@@ -917,7 +919,7 @@ export function Menu({
       <DropdownMenu.Trigger asChild>{trigger}</DropdownMenu.Trigger>
       <AnimatePresence>
         {open && (
-          <DropdownMenu.Portal forceMount key="menu">
+          <DropdownMenu.Portal container={overlayRoot} forceMount key="menu">
             <MenuPanel
               parts={DROPDOWN_PARTS}
               label={label}
