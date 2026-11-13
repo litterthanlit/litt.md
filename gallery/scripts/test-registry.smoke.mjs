@@ -215,12 +215,16 @@ const RECIPES = {
     top: [
       `const CARD_PLANS = [{ value: "free", label: "Free", description: "Your trial has ended.", detail: "$0", disabled: true }, { value: "pro", label: "Pro", description: "Unlimited projects and previews.", detail: "$12 a month" }, { value: "team", label: "Team", description: "Roles, an audit log and SSO.", detail: "$40 a month" }];`,
     ],
+    /* The 720px picker sits in its own scroller: a fixed width in the page's grid would widen the page's one track past a
+       phone's screen, and the app shell's menu button (and every other step on a phone) would sit off it. */
     jsx: `<div className="grid gap-6" data-testid="litt-card-picker">
           <form data-testid="card-picker-form" onSubmit={(e) => e.preventDefault()} style={{ width: 360 }}>
             <CardPicker legend="Plan" name="plan" defaultValue="pro" options={CARD_PLANS} />
           </form>
-          <div data-testid="card-picker-wide" style={{ width: 720 }}>
-            <CardPicker legend="Plan, wide" name="plan-wide" defaultValue="pro" options={CARD_PLANS} />
+          <div style={{ overflowX: "auto" }}>
+            <div data-testid="card-picker-wide" style={{ width: 720 }}>
+              <CardPicker legend="Plan, wide" name="plan-wide" defaultValue="pro" options={CARD_PLANS} />
+            </div>
           </div>
           <div data-testid="card-picker-sm" style={{ width: 320 }}>
             <CardPicker size="sm" legend="Layout" defaultValue="list" options={["List", "Grid", "Board"].map((l) => ({ value: l.toLowerCase(), label: l, picture: <span data-testid="card-picker-picture" style={{ display: "block", width: 16, height: 16, background: "currentColor" }} /> }))} />
