@@ -13,9 +13,11 @@
  *   non-empty query first and closes when it is empty. Every handler returns
  *   early while an IME is composing. Pointer leave keeps the highlight.
  * - Filtering keeps the original order and shows a designed empty state.
- * - Motion, responsive tier: opened by a press (a search button), the panel grows out of it (transform-origin on
- *   the button, from GROW, @/motion/deal); opened by the shortcut, it fades, drops half the travel and scales
- *   0.98 to 1; the overlay fades on opacity only; exits use useExit. Typing
+ * - Motion, responsive tier, only when a pointer opens it: the panel grows out of the button under Flat
+ *   (transform-origin on the button, from GROW, @/motion/deal), rises under Press and switches on under Device;
+ *   the overlay fades on opacity only; exits use useExit. Opened from the keyboard (the shortcut, Enter on the
+ *   trigger), the panel and its overlay appear and leave at once with no animation: a menu opened hundreds of
+ *   times a day by a shortcut must not make you wait. Typing
  *   changes the list instantly and the panel's height is never animated: the
  *   list has a max height and scrolls inside. The gliding highlight is glide.tsx.
  * - The panel body (CommandPanel) renders without the dialog too, for a static preview.
@@ -304,7 +306,7 @@ export type CommandMenuProps = {
   groups: CommandGroup[];
   /** Called with the chosen item, and then the menu closes itself. */
   onSelect: (item: CommandItem) => void;
-  /** Keyboard (the shortcut, Enter on the trigger) or pointer. Decides whether the first row shows the ring at once. */
+  /** Keyboard (the shortcut, Enter on the trigger) or pointer. A keyboard open appears and leaves with no animation and shows the first row's ring at once; a pointer open animates. Pass "pointer" from a button's click (e.detail is 0 for Enter or Space). */
   openedBy?: "keyboard" | "pointer";
 };
 
@@ -339,20 +341,23 @@ function Body({
   const [query, setQuery] = useState("");
   /* There is no Dialog.Trigger (the page owns the button and the shortcut), so give focus back ourselves. */
   const [opener] = useState(() => document.activeElement as HTMLElement | null);
-  /* Opened by a press (the search button), it grows out of it; by the shortcut, it drops in from above. */
+  /* Opened by a press (the search button) under Flat, it grows out of it; under Press it rises. */
   const grow = useGrowFrom<HTMLDivElement>(true, !compact);
   /* Under Device the panel switches on and off where it stands (@/motion/deal, the motion languages). */
   const om = useOverlayMotion();
   const overlayRoot = useOverlayRoot();
+  /* Read once per open: the shortcut that closes a menu a click opened must not make its exit instant. With no exit
+     target, AnimatePresence removes the body as soon as it closes. */
+  const [instant] = useState(openedBy === "keyboard");
 
   return (
     <Dialog.Portal container={overlayRoot} forceMount>
       <Dialog.Overlay asChild>
         <motion.div
           className="fixed inset-0 z-50 bg-[color-mix(in_oklab,var(--canvas)_55%,transparent)]"
-          initial={{ opacity: 0 }}
+          initial={instant ? false : { opacity: 0 }}
           animate={{ opacity: 1, transition: enter }}
-          exit={{ opacity: 0, transition: exit }}
+          exit={instant ? undefined : { opacity: 0, transition: exit }}
         />
       </Dialog.Overlay>
       {/* Desktop: 15dvh down, --space-4 from each side. Compact: the top edge of the visible screen, --space-2 below
@@ -389,9 +394,9 @@ function Body({
               "litt-glass pointer-events-auto w-full max-w-140 origin-top rounded-surface outline-none [--glass-shadow:var(--shadow-modal)] " + FLAT_PANEL +
               (compact ? " flex max-h-full flex-col [--cmd-list-max:none]" : "")
             }
-            initial={om.switches ? { opacity: 0 } : grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: -travel / 2, scale: 0.98 }}
+            initial={instant ? false : om.switches ? { opacity: 0 } : grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: -travel / 2, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1, transition: om.switches ? om.switchIn : enter }}
-            exit={om.switches ? { opacity: 0, transition: om.switchOut } : { opacity: 0, scale: grow.grows ? GROW : 0.98, transition: exit }}
+            exit={instant ? undefined : om.switches ? { opacity: 0, transition: om.switchOut } : { opacity: 0, scale: grow.grows ? GROW : 0.98, transition: exit }}
           >
             <Dialog.Title className="sr-only">Command menu</Dialog.Title>
             <CommandPanel
