@@ -12,7 +12,7 @@ export const meta: PageMeta = {
   order: 8, group: "Overlays",
   verbs: ["hover", "open"],
   summary:
-    "A small solid label for icons, shortcuts and status. It opens after 200ms of hover or at once on focus, then grows from its trigger and travels in from the side it renders on. On touch it opens on a press and hold, so a tap only does what the button does.",
+    "A small solid label for icons, shortcuts and status. It opens after 200ms of hover, then grows from its trigger and travels in from the side it renders on. On focus, or within 300ms of another closing, it opens at once and appears in place. On touch it opens on a press and hold, so a tap only does what the button does.",
   tiers: ["instant", "responsive"],
 };
 
@@ -51,7 +51,7 @@ import { Tooltip, TooltipProvider } from "@/components/tooltip";
     "The control already shows its own label. The tooltip would only repeat it.",
   ],
   keyboard: [
-    [["Tab"], "Moves focus to the trigger and opens its tooltip at once, with no hover wait. Moving focus on closes it."],
+    [["Tab"], "Moves focus to the trigger and opens its tooltip at once, with no hover wait and no entrance. Moving focus on closes it."],
     [["Esc"], "Closes the open tooltip. Focus stays on the trigger."],
     [["Enter", "Space"], "Uses the trigger as usual, and its tooltip closes."],
     [["Press and hold"], "On touch, opens the tooltip after a short hold. A tap does only what the trigger does. The next touch anywhere closes it."],
@@ -196,7 +196,7 @@ export default function TooltipPage() {
         <Stage
           title="Toolbar"
           tier="responsive"
-          caption="Rest on an icon and its tooltip opens after 200ms. Once one has shown, sweep across the bar: the next opens at once, for 300ms after the last one closes. Keyboard focus opens it instantly too. Each one fades and scales in from its trigger."
+          caption="Rest on an icon and its tooltip opens after 200ms. Once one has shown, sweep across the bar: the next opens at once, for 300ms after the last one closes. Keyboard focus opens it instantly too. Only the first one fades and scales in from its trigger; the ones you sweep onto, and the ones focus opens, appear in place."
           code="Toolbar"
         >
           <Toolbar />
