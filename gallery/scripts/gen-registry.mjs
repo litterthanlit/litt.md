@@ -575,7 +575,7 @@ function itemOf(file) {
   const r = norm(path.relative(srcDir, file));
   if (r.startsWith("motion/")) return "motion";
   // A body (proposals/worlds.md, Bodies) ships inside the part it is named after: bodies/switch.flat.tsx is the switch's.
-  const body = /^components\/bodies\/([\w-]+)\.(flat|device)\.tsx$/.exec(r);
+  const body = /^components\/bodies\/([\w-]+)\.(flat|device|rack)\.tsx$/.exec(r);
   if (body) return body[1];
   const m = /^(?:components|blocks)\/([\w-]+)\.tsx$/.exec(r);
   if (!m) return fail(`${rel(file)}: not a component or block file`);
@@ -1443,8 +1443,8 @@ function build(demos = []) {
   const bodiesDir = path.join(componentsDir, "bodies");
   const bodyFiles = fs.existsSync(bodiesDir) ? fs.readdirSync(bodiesDir).filter((f) => f.endsWith(".tsx")).sort().map((f) => path.join(bodiesDir, f)) : [];
   for (const f of bodyFiles) {
-    const m = /^([\w-]+)\.(flat|device)\.tsx$/.exec(path.basename(f));
-    if (!m) fail(`${rel(f)}: a body is named <part>.flat.tsx or <part>.device.tsx`);
+    const m = /^([\w-]+)\.(flat|device|rack)\.tsx$/.exec(path.basename(f));
+    if (!m) fail(`${rel(f)}: a body is named <part>.flat.tsx, <part>.device.tsx or <part>.rack.tsx`);
     if (!stems.includes(m[1])) fail(`${rel(f)}: no component "${m[1]}" for this body to belong to`);
   }
   const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "rules.ts", "device.ts", "drag.ts", "deal.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));

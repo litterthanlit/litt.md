@@ -3,7 +3,7 @@ import { Stat, StatGroup } from "@/components/stat";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -178,12 +178,13 @@ function GoalLineDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
-      {BODY_WORLDS.map((m) => (
+    /* Every world: Sparkline has a body in each, Rack's the clip. */
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -253,11 +254,11 @@ export default function SparklinePage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
-        caption="One contract, three bodies, and the box is the same height in each. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the thin line on the page with its dot, as it has always been. Device is a row of lit dots on LCD glass, one in every column, with the latest column the strongest. The quiet one, the blue one with a baseline and the 24px one are the same in all three."
-        code="ThreeBodiesDemo"
+        title="Four bodies"
+        caption="One contract, four bodies, and the box is the same height in each. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the thin line on the page with its dot, as it has always been. Device is a row of lit dots on LCD glass, one in every column, with the latest column the strongest. Rack is a clip: a block in the hue's own colour with the values as a waveform in it, the latest bar the strongest. The quiet one, the blue one with a baseline and the 24px one are the same in all four."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
     </Page>
   );

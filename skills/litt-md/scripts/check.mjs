@@ -56,7 +56,7 @@
  *               maps every neutral, hue and press token onto its --rack-* twin, comes after Device, sinks nothing, casts
  *               nothing (every raised or sunken step is a zero-offset 1px outline or empty), restates the focus ring and
  *               maps each data tint onto its own --rack-data-*-tint (a clip's fill, which check 5 holds its -text tone
- *               to 4.5:1 on); Blue 4, pink and monochrome are restated on Rack after it. Its yellow is only a fill: its
+ *               to 4.5:1 on, and its mark to 3:1, the clip's waveform); Blue 4, pink and monochrome are restated after it. Its yellow is only a fill: its
  *               links and focus ring are the ink, and a lit key's outline (--block-lift over the body) reaches 3:1 on the
  *               body and the panels, which carries the light fill there. Check 5 runs every pair again under Rack.
  *
@@ -788,6 +788,14 @@ console.log('Rack (data-material="rack")');
       if (theme === "light" && r < 3) rackFails.push(`light: a key's outline on ${bg} is ${r.toFixed(2)}:1, needs 3:1 (it carries the yellow fill)`);
     }
   }
+  /* A clip's waveform is the hue's mark on its own tint (Sparkline's Rack body), so the mark reaches 3:1 on it. */
+  for (const [theme, map] of [["light", light], ["dark", dark]])
+    for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
+      const m = map.get(`--rack-data-${h}`), t = map.get(`--rack-data-${h}-tint`);
+      if (![m, t].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { rackFails.push(`${theme}: --rack-data-${h} or its tint is not a six-digit hex`); continue; }
+      const r = ratio(m, t);
+      if (r < 3) rackFails.push(`${theme}: --rack-data-${h} on its clip is ${r.toFixed(2)}:1, needs 3:1 (a waveform in a clip)`);
+    }
   rackFails.length ? rackFails.forEach(fail) : ok(`rack: ${RACK_MAPPED.length} tokens mapped in both themes, after Device, Blue 4, pink and mono restated, 1px outlines and nothing cast, yellow only a fill`);
 }
 

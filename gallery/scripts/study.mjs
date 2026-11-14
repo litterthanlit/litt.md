@@ -104,8 +104,9 @@ const claim = (name, bad) => {
   if (bad) claims.get(name).push(bad);
 };
 
-/** The body each world's frame draws: its own, or Press's for a world without bodies (look.ts, bodies: false). */
-const BODY_OF = { rack: "press" };
+/** The bodies a world's frame may draw: its own, or Press's where a world without a full set (look.ts, bodies: false)
+    has none of its own for the part yet. */
+const BODY_OF = { rack: ["rack", "press"] };
 const C = {
   sections: "a study page has its sections as h2s in order, one main and one h1, and throws nothing",
   parts: "every anatomy part resolves: as many callout lines (badges on a phone) as items in the parts list, and no selector warning",
@@ -113,7 +114,7 @@ const C = {
   rest: "nothing opens on its own: no open dialog or aria-modal after load, and the Replay stage holds the object at rest",
   replay: "pressing Replay on the Command menu and Dialog pages opens an overlay, and Esc closes it",
   frames: "Under each material shows press, flat, device and rack frames drawn four ways, each with a component in it",
-  bodies: "a part with bodies draws its press body in the press frame, its flat body in the flat frame, its device body in the device frame and Press's in the rack frame, a world without bodies of its own (proposals/worlds.md, Bodies; look.ts, bodies)",
+  bodies: "a part with bodies draws its press body in the press frame, its flat body in the flat frame, its device body in the device frame and in the rack frame its rack body, or Press's where it has none yet (proposals/worlds.md, Bodies; look.ts, bodies)",
   source: "Show source starts collapsed, and a press shows code with `export function` under a heading naming the file and a version",
   docs: "public/docs/<id>.md has `## How it moves` with the page's mechanism, and llms.txt marks the page \"(a study)\"",
   wide: "a study page does not scroll sideways at 390 or 320",
@@ -218,7 +219,7 @@ async function audit(page, size, scheme, look, mutate) {
   claim(C.frames, r.frames.map((f) => f.id).join() === "press,flat,device,rack" && new Set(r.frames.map((f) => f.ground)).size === 4 && r.frames.every((f) => f.named) ? null : `${where}: frames ${JSON.stringify(r.frames)}`);
   /* A part without bodies has no data-body anywhere; one with bodies must show each world its own, and a world with no
      bodies of its own (bodies: false in look.ts) Press's. */
-  if (r.frames.some((f) => f.body)) claim(C.bodies, r.frames.every((f) => f.body === (BODY_OF[f.id] ?? f.id)) ? null : `${where}: the frames hold the bodies ${r.frames.map((f) => `${f.id}:${f.body ?? "none"}`).join(", ")}`);
+  if (r.frames.some((f) => f.body)) claim(C.bodies, r.frames.every((f) => (BODY_OF[f.id] ?? [f.id]).includes(f.body)) ? null : `${where}: the frames hold the bodies ${r.frames.map((f) => `${f.id}:${f.body ?? "none"}`).join(", ")}`);
 
   claim(C.wide, size.width > 640 || r.wide <= 0 ? null : `${where}: ${r.wide}px wider than the screen`);
 

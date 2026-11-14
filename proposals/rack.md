@@ -55,7 +55,7 @@ What this round did not take, and is Nick's call:
 |---|---|---|
 | K7 | Coloured controls (Live's yellow, cyan and orange buttons; the second screenshot's magenta sliders) | **Not yet.** It breaks R6's one accent. Pink as Rack's accent (`?look=pink-rack`) gives the second screenshot's magenta controls today. |
 | K8 | Rounder, as the second screenshot | **Keep Rack square**, as Live is; Customize's shapes still round it. |
-| K9 | A clip body: a coloured block with a waveform in it | **Yes, next**, as Rack's first body of its own. |
+| K9 | A clip body: a coloured block with a waveform in it | **Built** as Sparkline's Rack body (`bodies/sparkline.rack.tsx`): the hue's own tint, the values as a mirrored waveform in the mark tone, the latest bar in the text tone. The Takes scene (the cover) and the Tracks table use it. |
 
 ## Decisions for Nick
 

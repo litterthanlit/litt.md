@@ -9,7 +9,8 @@
  *   (--tray, --tray-shade) with the line along its floor, 4px in from the edge (8px at the two ends, where a round well
  *   curves in), and the latest value a raised bead
  *   (--block, --block-lift) on it. Flat (bodies/sparkline.flat.tsx) is the line as it has always been, on the page.
- *   Device (bodies/sparkline.device.tsx) is a row of lit dots on LCD glass, the latest column the strongest.
+ *   Device (bodies/sparkline.device.tsx) is a row of lit dots on LCD glass, the latest column the strongest. Rack
+ *   (bodies/sparkline.rack.tsx) is a clip: a block in the hue's own tint with the values as a mirrored waveform in it.
  * - Marks (Flat): a 2px line with round joins and caps, and a dot on the latest point so today is the strongest mark, as
  *   in the Chart. The dot is 4px in radius (8px across) on a 2px ring in the surface color, so it reads on a busy row and
  *   the line does not run into it. No area fill, no gradient, no glow (R2). Press keeps the line and swaps the dot for
@@ -42,6 +43,7 @@ import { motion } from "motion/react";
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { SparklineFlatBody } from "./bodies/sparkline.flat";
 import { SparklineDeviceBody } from "./bodies/sparkline.device";
+import { SparklineRackBody } from "./bodies/sparkline.rack";
 
 /** The five data hues, in their fixed order (R7). */
 export type SparklineHue = "blue" | "amber" | "teal" | "violet" | "rose";
@@ -57,20 +59,22 @@ export type SparklineTone = {
   dot: string;
   /** The same tone as a background, for Press's bead core. */
   core: string;
-  /** The fill of Device's lit dots. */
+  /** The fill of Device's lit dots, and of Rack's waveform bars. */
   lit: string;
+  /** Rack's clip: the hue's own tint as a background, or a grey clip. */
+  clip: string;
 };
 
 /* Literal class names, so Tailwind sees them: the line in the mark tone, the dot in the stronger -text tone. */
 const HUE: Record<SparklineHue, SparklineTone> = {
-  blue: { line: "stroke-data-blue", dot: "fill-data-blue-text", core: "bg-data-blue-text", lit: "fill-data-blue" },
-  amber: { line: "stroke-data-amber", dot: "fill-data-amber-text", core: "bg-data-amber-text", lit: "fill-data-amber" },
-  teal: { line: "stroke-data-teal", dot: "fill-data-teal-text", core: "bg-data-teal-text", lit: "fill-data-teal" },
-  violet: { line: "stroke-data-violet", dot: "fill-data-violet-text", core: "bg-data-violet-text", lit: "fill-data-violet" },
-  rose: { line: "stroke-data-rose", dot: "fill-data-rose-text", core: "bg-data-rose-text", lit: "fill-data-rose" },
+  blue: { line: "stroke-data-blue", dot: "fill-data-blue-text", core: "bg-data-blue-text", lit: "fill-data-blue", clip: "bg-data-blue-tint" },
+  amber: { line: "stroke-data-amber", dot: "fill-data-amber-text", core: "bg-data-amber-text", lit: "fill-data-amber", clip: "bg-data-amber-tint" },
+  teal: { line: "stroke-data-teal", dot: "fill-data-teal-text", core: "bg-data-teal-text", lit: "fill-data-teal", clip: "bg-data-teal-tint" },
+  violet: { line: "stroke-data-violet", dot: "fill-data-violet-text", core: "bg-data-violet-text", lit: "fill-data-violet", clip: "bg-data-violet-tint" },
+  rose: { line: "stroke-data-rose", dot: "fill-data-rose-text", core: "bg-data-rose-text", lit: "fill-data-rose", clip: "bg-data-rose-tint" },
 };
 /* The quiet default: the line at fg 55% and the dot at full fg, as the single-series Chart does. */
-const QUIET: SparklineTone = { line: "stroke-[color-mix(in_oklab,var(--fg)_55%,transparent)]", dot: "fill-fg", core: "bg-fg", lit: "fill-field-ink" };
+const QUIET: SparklineTone = { line: "stroke-[color-mix(in_oklab,var(--fg)_55%,transparent)]", dot: "fill-fg", core: "bg-fg", lit: "fill-field-ink", clip: "bg-surface-3" };
 const RING: Record<Surface, string> = { canvas: "fill-canvas", "surface-1": "fill-surface-1", "surface-2": "fill-surface-2" };
 
 const groupDigits = (n: number) => n.toLocaleString("en-GB", { maximumFractionDigits: 2 });
@@ -259,7 +263,7 @@ export function Sparkline({
         : `${label}: from ${fmt(data[0]!)} to ${fmt(data[n - 1]!)}, low ${fmt(Math.min(...data))}, high ${fmt(Math.max(...data))}` +
           (goal === undefined ? "" : `, baseline ${fmt(goal)}`));
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SparklineFlatBody, device: SparklineDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SparklineFlatBody, device: SparklineDeviceBody, rack: SparklineRackBody });
 
   return (
     <Body
