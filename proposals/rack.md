@@ -39,18 +39,36 @@ Emil's first question is how often someone sees an animation, and his answer for
 
 Light: a #c8c8c8 body, #e2e2e2 panels, the grey ink #434343 (the lightest grey that keeps 4.5:1 and APCA Lc 60 on every surface and a hovered key), the control line #6c6c6c (3:1 on the body, panels and the cut). Dark: a #161616 body, #262626 panels, #bebebe grey ink. The yellow is #ffc933 with #111111 words in both themes. The data hues start from Device's (fitted to a grey body) and are toned until every mark reaches 3:1 and every text tone 4.5:1, its tint included; the rose loses a quarter of its chroma so pink stays 0.12 away. Every value was fitted by script against the same maths as check 5.
 
+## Round two: colour (2026-11-14)
+
+Nick, on the first build: "I meant more colorful, check this out", with two screenshots: Live's arrangement view (salmon, blue, cyan, magenta, purple and green clips with dark waveforms on a light grey ground) and a dark music-AI panel (orange waveforms on deep orange clips, magenta controls, near-black panels).
+
+What both have in common is that the colour belongs to what you make, a track or a clip, and the chrome around it stays grey. litt already has that pair: a data hue's tint behind its mark (R7). So round two keeps R6 and R7 and moves the colour there:
+
+- **Five clip colours.** Rack's data hues become clip colours: blue, an orange in amber's slot, a cyan in teal's, a purple in violet's and a green in rose's. Magenta is left out because it would sit on the pink accent; the green is Live's keyboard clip. Each hue's angle was moved until it keeps 0.12 (OKLab) from the yellow, Blue 4 and pink, in both themes.
+- **The tint is its own value.** `--rack-data-*-tint` is a fill you see, not a 12% hint. In light it is a pastel clip with the hue's dark mark and dark words on it, as Live draws clips. In dark it is a deep clip with a bright mark, the dark orange behind the bright orange of the second screenshot. Check 5 holds every text tone to 4.5:1 on its own tint; check 14 requires the tints to be Rack's own.
+- **Scenes in colour.** Each track keeps one colour on the whole page: its name is a chip in the Tracks table, the sections it leads colour the arrangement strip, and its level is a bar in it.
+
+What this round did not take, and is Nick's call:
+
+| # | Question | Suggested |
+|---|---|---|
+| K7 | Coloured controls (Live's yellow, cyan and orange buttons; the second screenshot's magenta sliders) | **Not yet.** It breaks R6's one accent. Pink as Rack's accent (`?look=pink-rack`) gives the second screenshot's magenta controls today. |
+| K8 | Rounder, as the second screenshot | **Keep Rack square**, as Live is; Customize's shapes still round it. |
+| K9 | A clip body: a coloured block with a waveform in it | **Yes, next**, as Rack's first body of its own. |
+
 ## Decisions for Nick
 
 | # | Question | Suggested |
 |---|---|---|
-| R1 | The name | **Rack**, the thing a device chain lives in; no collisions in the code. "Session" is the other good one. |
-| R2 | The accent | **Yellow, only ever a fill**, with links and focus in the ink. Orange is Device's. |
-| R3 | The face | **Inter**, dense and made for small sizes. Hanken Grotesk is the alternative already offered. |
-| R4 | Square | **2px controls in 6px panels**, Rack's own locked shape, as Flat locks the pill. |
-| R5 | No motion to speak of | **The cut and the beat above.** It changes R4's "a set settles" for Rack alone. |
-| R6 | Outlines as the depth ladder | **Yes, under Rack only.** R3 says only raised things cast; Rack casts nothing and draws a 1px edge on raised and sunken alike, the fill telling them apart. |
+| K1 | The name | **Rack**, the thing a device chain lives in; no collisions in the code. "Session" is the other good one. |
+| K2 | The accent | **Yellow, only ever a fill**, with links and focus in the ink. Orange is Device's. |
+| K3 | The face | **Inter**, dense and made for small sizes. Hanken Grotesk is the alternative already offered. |
+| K4 | Square | **2px controls in 6px panels**, Rack's own locked shape, as Flat locks the pill. |
+| K5 | No motion to speak of | **The cut and the beat above.** It changes R4's "a set settles" for Rack alone. |
+| K6 | Outlines as the depth ladder | **Yes, under Rack only.** R3 says only raised things cast; Rack casts nothing and draws a 1px edge on raised and sunken alike, the fill telling them apart. |
 
-R2, R4, R5 and R6 each change a rule (R6's accent, the shape, R4, R3) for Rack alone, so they go through `evolve.md` as Nick's decisions, then the profile, SKILL.md's rules and `components.md` name Rack, committed with `taste:`.
+K2, K4, K5 and K6 each change a rule (R6, the shape, R4, R3) for Rack alone, so they go through `evolve.md` as Nick's decisions, then the profile, SKILL.md's rules and `components.md` name Rack, committed with `taste:`.
 
 ## Next
 

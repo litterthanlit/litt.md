@@ -55,7 +55,8 @@
  * 14. Rack:    data-material="rack" (proposals/rack.md). Every --rack-* value is defined in both themes; the rack block
  *               maps every neutral, hue and press token onto its --rack-* twin, comes after Device, sinks nothing, casts
  *               nothing (every raised or sunken step is a zero-offset 1px outline or empty), restates the focus ring and
- *               the data tints; Blue 4, pink and monochrome are restated on Rack after it. Its yellow is only a fill: its
+ *               maps each data tint onto its own --rack-data-*-tint (a clip's fill, which check 5 holds its -text tone
+ *               to 4.5:1 on); Blue 4, pink and monochrome are restated on Rack after it. Its yellow is only a fill: its
  *               links and focus ring are the ink, and a lit key's outline (--block-lift over the body) reaches 3:1 on the
  *               body and the panels, which carries the light fill there. Check 5 runs every pair again under Rack.
  *
@@ -280,7 +281,9 @@ for (const [theme, map] of THEMES) {
     const hue = map.get(`--data-${h}`), text = map.get(`--data-${h}-text`), s1 = map.get("--surface-1");
     if (![hue, text, s1].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { fail(`${theme}: --data-${h}, its -text or --surface-1 is not a six-digit hex`); continue; }
     const [A, B] = [toLab(hue), toLab(s1)];
-    const tint = fromLab(A.map((v, i) => v * t + B[i] * (1 - t)));
+    /* A world may set its tint as its own value (Rack's clips); otherwise it is the mix. */
+    const own = map.get(`--data-${h}-tint`);
+    const tint = /^#[0-9a-f]{6}$/i.test(own || "") ? own : fromLab(A.map((v, i) => v * t + B[i] * (1 - t)));
     contrastChecks++;
     const r = ratio(text, tint);
     if (r < 4.5) fail(`${theme}: --data-${h}-text on its tint is ${r.toFixed(2)}:1, needs 4.5:1 (a tag or an avatar, R7)`);
@@ -753,7 +756,7 @@ console.log('Rack (data-material="rack")');
     const ring = rack.get("--focus-ring") || "";
     if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) rackFails.push(`rack: --focus-ring must restate the ring with var(--focus) (is "${ring}")`);
     for (const h of ["blue", "amber", "teal", "violet", "rose"])
-      if (!/var\(--surface-1\)/.test(rack.get(`--data-${h}-tint`) || "")) rackFails.push(`rack: --data-${h}-tint is not restated over var(--surface-1)`);
+      if (rack.get(`--data-${h}-tint`) !== `var(--rack-data-${h}-tint)`) rackFails.push(`rack: --data-${h}-tint must be var(--rack-data-${h}-tint), the clip's own fill`);
     if (rack.get("--radius-control") !== "2px" || rack.get("--radius-surface") !== "6px") rackFails.push("rack: opens square, --radius-control 2px in --radius-surface 6px (control + 4)");
   }
   for (const accent of ["blue", "pink", "mono"]) {

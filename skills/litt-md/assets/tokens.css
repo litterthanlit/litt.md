@@ -362,8 +362,8 @@
 
   /* Rack's values (data-material="rack", below; proposals/rack.md): a software instrument's rack, after Ableton Live.
      Flat grey panels sit on a darker grey body, what you set is a light box inside a 1px outline, and a key is a flat
-     fill in an outline that lights the one yellow when it is on. Nothing casts, glows or sinks. Neutral greys, chroma 0;
-     the hues retuned so check 5 passes on the body, the rose less saturated so pink keeps 0.12 from it. */
+     fill in an outline that lights the one yellow when it is on. Nothing casts, glows or sinks. Neutral greys, chroma 0,
+     so the colour is the clips': the data hues below. */
   --rack-canvas: #c8c8c8;
   --rack-well: #e2e2e2;
   --rack-surface-1: #e2e2e2;
@@ -400,16 +400,24 @@
   --rack-success: #00601f;
   --rack-warning: #824200;
   --rack-danger: #a60e1d;
-  --rack-data-blue: #1170b8;
-  --rack-data-blue-text: #005592;
-  --rack-data-amber: #8d6800;
-  --rack-data-amber-text: #655000;
-  --rack-data-teal: #007b75;
-  --rack-data-teal-text: #005d56;
-  --rack-data-violet: #7759cc;
-  --rack-data-violet-text: #5e3cac;
-  --rack-data-rose: #915d80;
-  --rack-data-rose-text: #654968;
+  /* The clips (round two, proposals/rack.md): five of the instrument's track colours, each a pastel clip with a dark
+     mark in it, as an arrangement draws them. The tint is its own value, not a mix: a clip is a fill you see, not a
+     hint. amber is an orange, teal a cyan, violet a purple and rose a green, so pink, Blue 4 and the yellow keep 0.12. */
+  --rack-data-blue: #0072b0;
+  --rack-data-blue-text: #005686;
+  --rack-data-blue-tint: #82d5ff;
+  --rack-data-amber: #b94a00;
+  --rack-data-amber-text: #913200;
+  --rack-data-amber-tint: #ffb687;
+  --rack-data-teal: #007c6d;
+  --rack-data-teal-text: #005d52;
+  --rack-data-teal-tint: #6de2d0;
+  --rack-data-violet: #8455c6;
+  --rack-data-violet-text: #643c9b;
+  --rack-data-violet-tint: #d5baff;
+  --rack-data-rose: #227e00;
+  --rack-data-rose-text: #0d6100;
+  --rack-data-rose-tint: #a4dd98;
   /* The depth ladder in outlines: a 1px edge says raised or sunken, and fill says which. Zero offsets, nothing soft. */
   --rack-highlight: inset 0 0 0 0 transparent;
   --rack-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
@@ -723,16 +731,22 @@
   --rack-success: #4bc680;
   --rack-warning: #e19b1b;
   --rack-danger: #ff756f;
-  --rack-data-blue: #3496ef;
-  --rack-data-blue-text: #69b7ff;
-  --rack-data-amber: #be7900;
-  --rack-data-amber-text: #c3b8a0;
-  --rack-data-teal: #09a198;
-  --rack-data-teal-text: #42b4ab;
-  --rack-data-violet: #8f78df;
-  --rack-data-violet-text: #b4a3fd;
-  --rack-data-rose: #e76c9c;
-  --rack-data-rose-text: #f2879c;
+  /* The clips: a deep fill with a bright mark in it, a waveform lit on its own colour. */
+  --rack-data-blue: #009ded;
+  --rack-data-blue-text: #43c4ff;
+  --rack-data-blue-tint: #013c5a;
+  --rack-data-amber: #e06d00;
+  --rack-data-amber-text: #ff964b;
+  --rack-data-amber-tint: #562b0d;
+  --rack-data-teal: #00ab98;
+  --rack-data-teal-text: #00d6bf;
+  --rack-data-teal-tint: #00433b;
+  --rack-data-violet: #a376e9;
+  --rack-data-violet-text: #c6a1ff;
+  --rack-data-violet-tint: #3e2e59;
+  --rack-data-rose: #51aa3c;
+  --rack-data-rose-text: #7cd06a;
+  --rack-data-rose-tint: #21411a;
   --rack-highlight: inset 0 0 0 0 transparent;
   --rack-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
   --rack-cut-shade: inset 0 0 0 0 transparent;
@@ -1023,16 +1037,22 @@
     --rack-success: #4bc680;
     --rack-warning: #e19b1b;
     --rack-danger: #ff756f;
-    --rack-data-blue: #3496ef;
-    --rack-data-blue-text: #69b7ff;
-    --rack-data-amber: #be7900;
-    --rack-data-amber-text: #c3b8a0;
-    --rack-data-teal: #09a198;
-    --rack-data-teal-text: #42b4ab;
-    --rack-data-violet: #8f78df;
-    --rack-data-violet-text: #b4a3fd;
-    --rack-data-rose: #e76c9c;
-    --rack-data-rose-text: #f2879c;
+    /* The clips: a deep fill with a bright mark in it, a waveform lit on its own colour. */
+    --rack-data-blue: #009ded;
+    --rack-data-blue-text: #43c4ff;
+    --rack-data-blue-tint: #013c5a;
+    --rack-data-amber: #e06d00;
+    --rack-data-amber-text: #ff964b;
+    --rack-data-amber-tint: #562b0d;
+    --rack-data-teal: #00ab98;
+    --rack-data-teal-text: #00d6bf;
+    --rack-data-teal-tint: #00433b;
+    --rack-data-violet: #a376e9;
+    --rack-data-violet-text: #c6a1ff;
+    --rack-data-violet-tint: #3e2e59;
+    --rack-data-rose: #51aa3c;
+    --rack-data-rose-text: #7cd06a;
+    --rack-data-rose-tint: #21411a;
     --rack-highlight: inset 0 0 0 0 transparent;
     --rack-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
     --rack-cut-shade: inset 0 0 0 0 transparent;
@@ -1688,11 +1708,12 @@
   --radius-surface: 6px;
 
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
-  --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
-  --data-amber-tint: color-mix(in oklab, var(--data-amber) var(--tint-strength), var(--surface-1));
-  --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
-  --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
-  --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+  /* A clip is a fill you see: each tint is the rack's own value, a pastel in light and a deep colour in dark. */
+  --data-blue-tint: var(--rack-data-blue-tint);
+  --data-amber-tint: var(--rack-data-amber-tint);
+  --data-teal-tint: var(--rack-data-teal-tint);
+  --data-violet-tint: var(--rack-data-violet-tint);
+  --data-rose-tint: var(--rack-data-rose-tint);
 }
 
 /* Blue 4, pink and monochrome on a Rack element: restated after Rack, so on <html> with both attributes the accent
@@ -1778,11 +1799,6 @@
   :root[data-material="rack"],
   [data-material="rack"] {
     --block-hover: var(--surface-2);
-    --data-blue-tint: var(--surface-2);
-    --data-amber-tint: var(--surface-2);
-    --data-teal-tint: var(--surface-2);
-    --data-violet-tint: var(--surface-2);
-    --data-rose-tint: var(--surface-2);
   }
   :root[data-material="flat"],
   [data-material="flat"] {
