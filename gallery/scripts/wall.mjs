@@ -170,4 +170,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, Press, Flat and Device (Flat in Blue 4 and pink, Press and Device in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall: ${count} tiles, Press, Flat, Device and Rack (Flat in Blue 4 and pink, the others in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
