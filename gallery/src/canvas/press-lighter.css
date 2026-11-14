@@ -1,0 +1,52 @@
+/*
+ * Press, lighter (proposals/press-lighter.md): the candidate, scoped to [data-press-lighter] on a Press frame that sets
+ * its own theme. Nothing in src/components changes for it; if Nick picks it, these values move into tokens.css and the
+ * button rules into button.tsx and the dialog's danger action.
+ *
+ * Both selectors carry two attributes, so they win over the [data-theme] blocks in tokens.css whatever the order.
+ */
+
+/* One cue per job: the near-duplicate recipes become the block's own. */
+[data-press-lighter][data-theme] {
+  --key-lift: var(--block-lift);
+  --plate-lift: var(--block-lift);
+  --cap-press: var(--block-press);
+  --slot-fill-shade: 0 0 0 0 transparent;
+  /* The cap keeps three layers: the top highlight, a contact line and one cast at most 3px down. The inner lower edge and the ring go. */
+  --cap-lift: inset 0 1px 0 rgba(255, 255, 255, 1), 0 1px 1px rgba(17, 15, 13, 0.2), 0 3px 5px -1px rgba(17, 15, 13, 0.24); /* litt-allow: candidate value, from today's light --cap-lift */
+}
+
+[data-press-lighter][data-theme="dark"] {
+  --cap-lift: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 1px 1px rgba(0, 0, 0, 0.7), 0 3px 5px -1px rgba(0, 0, 0, 0.7); /* litt-allow: candidate value, from today's dark --cap-lift */
+}
+
+/* A button is the face, its highlight and its cast: no wall, no plate. The plate was the border (--plate wide), so it
+   goes and the side padding takes its width back, so the button keeps the size it has today; the height is the
+   control's either way. Today the px-control-pad-* class wins over button.tsx's padding that subtracts the plate, so
+   today's outer width is the pad plus the plate, and that is what is matched here. Fields, segments and pickers carry
+   data-body="press" too; only Button's Press body sets --plate in its class list, so that is how these rules find it. */
+[data-press-lighter] button[data-body="press"][class*="--plate:"] {
+  border-width: 0;
+  background-image: none;
+  transition-property: background-color, color, transform;
+  transition-duration: var(--dur-instant);
+  transition-timing-function: var(--ease-out);
+}
+[data-press-lighter] button[data-body="press"][class*="--plate:"].h-control-sm:not(.px-0) {
+  padding-inline: calc(var(--control-pad-sm) + var(--plate));
+}
+[data-press-lighter] button[data-body="press"][class*="--plate:"].h-control-md:not(.px-0) {
+  padding-inline: calc(var(--control-pad-md) + var(--plate));
+}
+[data-press-lighter] button[data-body="press"][class*="--plate:"].h-control-lg:not(.px-0) {
+  padding-inline: calc(var(--button-pad-lg) + var(--plate));
+}
+
+/* The press is one cue: the whole button scales on the instant tween. The label stays put, and the cast still tightens
+   to --block-press at once (button.tsx swaps it on :active). */
+[data-press-lighter] button[data-body="press"][class*="--plate:"]:enabled:not([data-loading]):active {
+  transform: scale(var(--press-scale));
+}
+[data-press-lighter] button[data-body="press"][class*="--plate:"] > span {
+  translate: none;
+}

@@ -130,7 +130,7 @@
 
   /* Instant: a tween. Hover, press, toggles, color fades. */
   --dur-instant: 100ms;
-  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);   /* instant tier and every exit */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);          /* instant tier and every exit */
   --press-scale: 0.98;
   --press-depth: 0.5px;              /* how far a pressed block sinks (R4) */
 

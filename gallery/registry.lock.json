@@ -107,8 +107,8 @@
       "hash": "e59509c870120e3f"
     },
     "command-menu": {
-      "version": "2026.11.12",
-      "hash": "6568356fe06d60ab"
+      "version": "2026.11.13",
+      "hash": "9408f9365607e2d6"
     },
     "composer": {
       "version": "2026.11.09",
@@ -231,8 +231,8 @@
       "hash": "c05d8979d2f10a6c"
     },
     "litt": {
-      "version": "2026.11.09",
-      "hash": "265da607dee6a768"
+      "version": "2026.11.13",
+      "hash": "d4c40c69ee70cc28"
     },
     "log-view": {
       "version": "2026.11.06",
@@ -252,7 +252,7 @@
     },
     "motion": {
       "version": "2026.11.13",
-      "hash": "9ca27ef4d439b302"
+      "hash": "67bd75b559dd3ea0"
     },
     "number-field": {
       "version": "2026.11.12",
@@ -443,8 +443,8 @@
       "hash": "b3b1640ab0f24090"
     },
     "tooltip": {
-      "version": "2026.11.12",
-      "hash": "1804bdeeb2bf5ebb"
+      "version": "2026.11.13",
+      "hash": "c91507487f9d4949"
     },
     "tree": {
       "version": "2026.11.06",

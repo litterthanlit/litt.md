@@ -64,7 +64,7 @@ Never animate these layers (R2).
 ## 5. Motion
 
 - **Save three transition presets.**
-  - Instant: **Tween**, duration `0.1`, bezier `0.25, 0.46, 0.45, 0.94`. Hover, press, toggles.
+  - Instant: **Tween**, duration `0.1`, bezier `0.23, 1, 0.32, 1`. Hover, press, toggles.
   - Responsive: **Spring**, Time `0.2`, Bounce `0`. Menus, tabs, tooltips, the gliding highlight.
   - Expressive: **Spring**, Time `0.35`, Bounce `0.12`. One signature moment per view.
 - **Exits** run at 0.75× the spring's time and never bounce: a Tween with the instant bezier at `0.15` (responsive) or `0.26` (expressive).

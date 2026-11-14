@@ -23,6 +23,7 @@ import { SCALES, ScaleFrame } from "./scale";
 import { LOOKS } from "./flat-look-data";
 import { FlatLookFrame } from "./flat-look";
 import { FlatHand } from "./flat-look-hand";
+import { PressColumnPreview, type PressColumn } from "./press";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
   BlockButton,
@@ -175,6 +176,14 @@ const PICTURES_X = -2600;
 const LOOKS_X = 4800;
 const LOOK = { width: 1120, height: 2320, gap: 120 };
 const HAND_Y = 2 * (LOOK.height + LOOK.gap) + 80;
+/* Press today, Press lighter and Flat (press.tsx, proposals/press-lighter.md): three columns of their own, under
+   everything else (the case studies end near 7600), light over dark in each. */
+const PRESS_Y = 7800;
+const PRESS: { id: PressColumn; name: string }[] = [
+  { id: "today", name: "Press · today" },
+  { id: "lighter", name: "Press · lighter" },
+  { id: "flat", name: "Press · Flat" },
+];
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
@@ -257,6 +266,17 @@ export const ITEMS: CanvasItem[] = [
       width: LOOK.width,
       height: LOOK.height,
       render: () => <FlatLookFrame look={look} />,
+    }),
+  ),
+  ...PRESS.map(
+    (column, i): CanvasItem => ({
+      id: `press-${column.id}`,
+      name: column.name,
+      x: i * 640,
+      y: PRESS_Y,
+      width: 560,
+      height: 1640,
+      render: () => <PressColumnPreview column={column.id} />,
     }),
   ),
   { id: "flat-look-hand", name: "Flat · the hand, today and snappy", x: LOOKS_X, y: HAND_Y, width: 1120, height: 720, render: () => <FlatHand /> },
