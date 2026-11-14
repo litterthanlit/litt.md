@@ -33,7 +33,7 @@ export const meta: PageMeta = {
   fun: "Move through the results: the highlight reaches for each row, then gathers itself there.",
   tiers: ["instant", "responsive"],
   mechanism:
-    "The hand opens it with a press or the shortcut, then types. The field keeps focus the whole time, and the rows only light. One highlight glides to the row you point at or arrow to, and a keyboard move adds a focus ring. Opening is the responsive tier, 200ms with no bounce. Press rises and settles, Flat grows out of the Search button, and Device switches on where it stands, in steps, with the search and rows set in the mono. Typing is instant, and the list never animates its height. Under reduced motion the panel appears at once and the highlight jumps to the row.",
+    "The hand opens it with a press or the shortcut, then types. The field keeps focus the whole time, and the rows only light. One highlight glides to the row you point at or arrow to, and a keyboard move adds a focus ring. Opened by the shortcut, it appears and leaves at once, because something opened hundreds of times a day must not make you wait. Opened by a click, it moves on the responsive tier, 200ms with no bounce: Press rises and settles, Flat grows out of the Search button, and Device switches on where it stands, in steps. Under Device the search and rows are set in the mono. Typing is instant, and the list never animates its height. Under reduced motion the panel appears at once and the highlight jumps to the row.",
 };
 
 export const docs: PageDocs = {
@@ -65,13 +65,25 @@ const groups: CommandGroup[] = [
 
 function Search() {
   const [open, setOpen] = useState(false);
-  useCommandShortcut(() => setOpen((o) => !o));
+  /* A keyboard open appears at once and a pointer open animates. Enter on the button is a click with detail 0. */
+  const [openedBy, setOpenedBy] = useState<"keyboard" | "pointer">("keyboard");
+  useCommandShortcut(() => {
+    setOpenedBy("keyboard");
+    setOpen((o) => !o);
+  });
   return (
     <>
-      <Button icon={<SearchIcon />} iconRight={<Kbd>⌘K</Kbd>} onClick={() => setOpen(true)}>
+      <Button
+        icon={<SearchIcon />}
+        iconRight={<Kbd>⌘K</Kbd>}
+        onClick={(e) => {
+          setOpenedBy(e.detail === 0 ? "keyboard" : "pointer");
+          setOpen(true);
+        }}
+      >
         Search
       </Button>
-      <CommandMenu open={open} onOpenChange={setOpen} groups={groups} onSelect={(item) => run(item.id)} />
+      <CommandMenu open={open} onOpenChange={setOpen} groups={groups} openedBy={openedBy} onSelect={(item) => run(item.id)} />
     </>
   );
 }
@@ -288,7 +300,7 @@ export default function CommandMenuPage() {
       <Stage
         title="Open it"
         tier="responsive"
-        caption="The overlay fades on opacity only. The panel fades, drops half the travel and scales from 0.98, all on the responsive tier, and leaves with the quicker exit. ⌘K or Ctrl+K opens it while this page is open."
+        caption="⌘K or Ctrl+K opens it while this page is open, at once and with no animation, and closes it the same way. A click on Search animates it: the overlay fades on opacity only, the panel arrives in the material's way on the responsive tier and leaves with the quicker exit."
         code="OpenDemo"
       >
         <OpenDemo />
@@ -317,7 +329,7 @@ export default function CommandMenuPage() {
         title="On a phone"
         tier="responsive"
         size="lg"
-        caption="The panel moves to the top edge and follows the visible screen, so the keyboard never covers a row. The key hints and row shortcuts go, a Cancel button sits beside the field, and the field keeps focus because typing is the point. It drops in the same way and is not draggable, because its list scrolls. This stage forces the phone layout on a desktop."
+        caption="The panel moves to the top edge and follows the visible screen, so the keyboard never covers a row. The key hints and row shortcuts go, a Cancel button sits beside the field, and the field keeps focus because typing is the point. Opened by a tap, it drops in from the top and is not draggable, because its list scrolls. This stage forces the phone layout on a desktop."
         code="PhoneDemo"
       >
         <PhoneDemo />
