@@ -35,6 +35,9 @@
 import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { FunMode } from "@/motion";
 import { LIMITS, PILL, SHAPES, shapeSurface } from "@/motion/rules";
+
+/* Rack opens square (tokens.css): its --radius-control, one of SHAPES. */
+const RACK_RADIUS = 2;
 import { accentAttribute, ACCENTS, GALLERY_LOOK, lookFromSearch, materialOf, MATERIALS, sameLook, withLook, type Accent, type Look, type Material } from "./look";
 import { FACES, loadTypeface, useTypefaces, type Typeface } from "./typeface";
 
@@ -142,9 +145,10 @@ export function CustomizeProvider({ children }: { children: ReactNode }) {
   const typefaces = useTypefaces(look.material);
   const chosen = FACES.find((f) => f.id === faceId);
   const typeface = (chosen && typefaces.find((f) => f.id === chosen.id)) ?? typefaces[0];
-  /* Each material locks its own shape: Flat opens at the Pill (tokens.css, proposals/flat-pill.md), Press and Device at
-     litt's control radius. Read from the look, not from <html> at load, so a switch of material moves the default too. */
-  const lockedRadius = look.material === "flat" ? PILL : LIMITS.control;
+  /* Each material locks its own shape: Flat opens at the Pill (tokens.css, proposals/flat-pill.md), Rack square at 2px
+     (proposals/rack.md), Press and Device at litt's control radius. Read from the look, not from <html> at load, so a
+     switch of material moves the default too. */
+  const lockedRadius = look.material === "flat" ? PILL : look.material === "rack" ? RACK_RADIUS : LIMITS.control;
   const radius = radiusTuned ?? lockedRadius;
   const modified = typeface.id !== "locked" || radiusTuned !== null || !sameLook(look, GALLERY_LOOK);
 

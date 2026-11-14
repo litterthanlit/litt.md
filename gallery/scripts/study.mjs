@@ -25,7 +25,7 @@
  *   must open an overlay, and Esc must close it,
  * - a part with bodies (data-body on its root, proposals/worlds.md, Bodies) does not draw its press body in the press
  *   frame, its flat body in the flat frame and its device body in the device frame,
- * - Under each material has no press, flat and device frames, the three do not differ (the frame's ground and every
+ * - Under each material has no press, flat, device and rack frames, the four do not differ (the frame's ground and every
  *   element's background, shadow, radius and colour inside it), or a frame has no component with text (or a name) in it,
  * - Show source is not aria-expanded=false at load, or after a press shows no code with `export function`, or the
  *   Source heading does not name the file and a yyyy.mm.dd version,
@@ -110,7 +110,7 @@ const C = {
   pixels: "the Anatomy object and the Under each material frame of the gallery's current material are the same picture, pixel for pixel",
   rest: "nothing opens on its own: no open dialog or aria-modal after load, and the Replay stage holds the object at rest",
   replay: "pressing Replay on the Command menu and Dialog pages opens an overlay, and Esc closes it",
-  frames: "Under each material shows press, flat and device frames drawn three ways, each with a component in it",
+  frames: "Under each material shows press, flat, device and rack frames drawn four ways, each with a component in it",
   bodies: "a part with bodies draws its press body in the press frame, its flat body in the flat frame and its device body in the device frame (proposals/worlds.md, Bodies)",
   source: "Show source starts collapsed, and a press shows code with `export function` under a heading naming the file and a version",
   docs: "public/docs/<id>.md has `## How it moves` with the page's mechanism, and llms.txt marks the page \"(a study)\"",
@@ -213,7 +213,7 @@ async function audit(page, size, scheme, look, mutate) {
 
   claim(C.rest, r.openDialogs === 0 && r.modal === 0 && r.replayDialog === 0 ? null : `${where}: ${r.openDialogs} open dialogs outside main, ${r.modal} aria-modal, ${r.replayDialog} dialogs in the Replay stage`);
 
-  claim(C.frames, r.frames.map((f) => f.id).join() === "press,flat,device" && new Set(r.frames.map((f) => f.ground)).size === 3 && r.frames.every((f) => f.named) ? null : `${where}: frames ${JSON.stringify(r.frames)}`);
+  claim(C.frames, r.frames.map((f) => f.id).join() === "press,flat,device,rack" && new Set(r.frames.map((f) => f.ground)).size === 4 && r.frames.every((f) => f.named) ? null : `${where}: frames ${JSON.stringify(r.frames)}`);
   /* A part without bodies has no data-body anywhere; one with bodies must show each world its own. */
   if (r.frames.some((f) => f.body)) claim(C.bodies, r.frames.every((f) => f.body === f.id) ? null : `${where}: the frames hold the bodies ${r.frames.map((f) => `${f.id}:${f.body ?? "none"}`).join(", ")}`);
 
@@ -304,7 +304,7 @@ if (selfTest) {
     [C.sections, "the Source section moves above Anatomy", () => run1(SIZES[0], (pg) => pg.evaluate(() => { const s = document.querySelector("section[aria-labelledby^=study-source]"); s.parentElement.prepend(s); }))],
     /* Bodies differ in their markup, not only their paint, so the break copies the press frame into the other two
        before it flattens every frame's colours, shadows and corners. */
-    [C.frames, "the three frames lose what tells them apart", () => run1(SIZES[0], async (pg) => {
+    [C.frames, "the four frames lose what tells them apart", () => run1(SIZES[0], async (pg) => {
       await pg.evaluate(() => {
         const frames = [...document.querySelectorAll("[data-study-material]")];
         const press = frames.find((f) => f.dataset.studyMaterial === "press");

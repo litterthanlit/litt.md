@@ -99,6 +99,25 @@ The same depth ladder said in hardware, after the components studies (journal, 2
 - **Nested themes.** As under Flat, an element that sets its own theme needs `data-material="device"` too.
 - **Never:** ambient motion (no flicker, scanline or blinking caret: R4 holds), texture images, or the accent on chrome.
 
+### 9. Rack: `[data-material="rack"]` (R3, a proposal)
+The same depth ladder as a software instrument's rack, after Ableton Live (`proposals/rack.md`; its decisions wait for Nick, so the profile does not name it yet). Flat grey panels sit on a darker grey body, and an outline says what a thing is: a key or a well has a 1px edge, and its fill says which. Nothing casts, glows, blurs or sinks. A project chooses it with the attribute on `<html>`; Press stays the default.
+
+| Depth | Press | Rack |
+|---|---|---|
+| Sunken: a tray | `--tray`, a hairline and the top wall's shade | a darker grey well in a 1px outline |
+| Sunken: a cut you type into or mark | `--cut` and its top wall's shade | a light box inside the control line, no shade |
+| Sunken: a slot | `--slot`, both walls, the fill a step darker | a darker track in a 1px outline, the fill a dark bar |
+| Flat: canvas and surfaces | a hairline and the top highlight | the grey body; panels a step lighter, no edge |
+| Raised: a block | white or a warm grey, a contact line and a cast | a flat key in a 1px outline; pressed, the outline darkens, and nothing moves down |
+| Raised: a cap and its plate | taller, a cast up to 3px | a light cap in a 1px outline |
+| Floating | glass, a zero-offset glow, a ring | an opaque panel, its glow and a stronger ring |
+
+- **The yellow.** Rack's own accent is a yellow, the light of a switch that is on, with dark words. It is only ever a fill, always inside a key's outline, which reaches 3:1 on the light body and carries it there. Links and the focus ring are the ink, so the yellow never has to read against grey.
+- **The values.** Each theme block declares `--rack-*`: the neutrals at chroma 0, the press tokens as outlines, and the accents, status inks and data hues retuned so every pair passes on the body (the rose less saturated, so pink keeps 0.12 from it). The rack block maps the live names onto them, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Rack (check 14).
+- **Shape and type.** It opens square, 2px controls in 6px panels, and in Inter, dense at small sizes. Labels stay in sentence case.
+- **Nested themes.** As under Flat, an element that sets its own theme needs `data-material="rack"` too.
+- **Never:** a cast, a glow, a gradient or a sink; the yellow as text or as an edge.
+
 ## Glow: `--glow` (R6)
 A 1px accent ring plus a soft, zero-offset accent light around the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (R2).
 

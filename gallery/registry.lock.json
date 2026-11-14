@@ -1,6 +1,6 @@
 {
   "$comment": "Written by scripts/gen-registry.mjs. What each registry item installs, hashed, and the release that last changed it. Commit it with the change.",
-  "latest": "2026.11.13",
+  "latest": "2026.11.14",
   "items": {
     "accordion": {
       "version": "2026.11.06",
@@ -75,8 +75,8 @@
       "hash": "4e68d0dafadb811b"
     },
     "chart": {
-      "version": "2026.11.11",
-      "hash": "339933c7184fc7a3"
+      "version": "2026.11.14",
+      "hash": "bb10485ade83a133"
     },
     "checkbox": {
       "version": "2026.11.09",
@@ -155,8 +155,8 @@
       "hash": "13d06e1887a03add"
     },
     "file-drop": {
-      "version": "2026.11.09",
-      "hash": "f7a75d31ff85df7c"
+      "version": "2026.11.14",
+      "hash": "b6a6a995e85a9cd8"
     },
     "form": {
       "version": "2026.11.06",
@@ -231,8 +231,8 @@
       "hash": "c05d8979d2f10a6c"
     },
     "litt": {
-      "version": "2026.11.09",
-      "hash": "265da607dee6a768"
+      "version": "2026.11.14",
+      "hash": "58ee89abf0f20888"
     },
     "log-view": {
       "version": "2026.11.06",
@@ -251,8 +251,8 @@
       "hash": "0fc4e698b1bfc519"
     },
     "motion": {
-      "version": "2026.11.13",
-      "hash": "9ca27ef4d439b302"
+      "version": "2026.11.14",
+      "hash": "557ba58090d0e371"
     },
     "number-field": {
       "version": "2026.11.12",

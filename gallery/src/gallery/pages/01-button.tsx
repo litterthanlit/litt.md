@@ -4,7 +4,7 @@ import { ArrowUpRightIcon, CopyIcon, MoreIcon, PlusIcon, SettingsIcon, TrashIcon
 import { MaterialProvider, useMotionDial } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
-import { lookAttributes, MATERIALS } from "../look";
+import { lookAttributes, BODY_WORLDS } from "../look";
 
 export const meta: PageMeta = {
   id: "button",
@@ -114,7 +114,7 @@ function ThreeBodiesDemo() {
   const dark = useDark();
   return (
     <div className="grid gap-6 md:grid-cols-3">
-      {MATERIALS.map((m) => (
+      {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <MaterialProvider material={m.id}>
             <div

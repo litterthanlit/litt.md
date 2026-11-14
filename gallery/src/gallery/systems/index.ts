@@ -1,4 +1,4 @@
-/** Each world's scenes load on demand, once: a system page needs its own, the Systems page all three covers. */
+/** Each world's scenes load on demand, once: a system page needs its own, the Systems page every world's cover. */
 import type { Material } from "../look";
 import type { SystemScenes } from "./scene";
 
@@ -6,6 +6,7 @@ const LOADERS: Record<Material, () => Promise<SystemScenes>> = {
   press: () => import("./press").then((m) => m.press),
   flat: () => import("./flat").then((m) => m.flat),
   device: () => import("./device").then((m) => m.device),
+  rack: () => import("./rack").then((m) => m.rack),
 };
 
 const loaded = new Map<Material, Promise<SystemScenes>>();

@@ -4,7 +4,7 @@ import { Checkbox } from "@/components/checkbox";
 import { Switch } from "@/components/switch";
 import { MaterialProvider, useMotionDial } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
+import { lookAttributes, BODY_WORLDS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -205,7 +205,7 @@ function ThreeBodiesDemo() {
   const dark = useDark();
   return (
     <div className="grid w-full gap-6 md:grid-cols-3">
-      {MATERIALS.map((m) => (
+      {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}

@@ -4,7 +4,7 @@ import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components
 import { Tag } from "@/components/tag";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
+import { lookAttributes, BODY_WORLDS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 import { useLoop } from "../tile";
 
@@ -285,7 +285,7 @@ function ThreeBodiesDemo() {
   const dark = useDark();
   return (
     <div className="grid w-full gap-6 md:grid-cols-3">
-      {MATERIALS.map((m) => (
+      {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}

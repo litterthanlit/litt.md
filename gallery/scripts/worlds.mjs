@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The three world pages (Press, Flat, Device), checked from a build: desktop 1440x900 and phone 390x844, light and dark.
+ * The world pages (Press, Flat, Device, Rack: MATERIALS in look.ts), checked from a build: desktop 1440x900 and phone 390x844, light and dark.
  *
  *   npm run build && npm run test:worlds
  *   node scripts/worlds.mjs --dist dist
@@ -23,20 +23,20 @@
  *   line in src/gallery/look.ts (read from that file, so the prose lives once),
  * - the sidebar does not mark the gallery's world on a component page (aria-current="true" on its row under Worlds),
  *   or does not mark the world page you are on (aria-current="page"),
- * - the phone's menu does not list Worlds with its three rows before the first component group,
+ * - the phone's menu does not list Worlds with a row per world before the first component group,
  * - a world page scrolls sideways at 390 or at 320,
  * - a world page has no Only here section (section#only-here[data-only-here]), or its abilities are not the world's
  *   abilities from look.ts, in order, or its parts are not exactly the pages whose meta.worlds is this world and fewer
- *   than all three (read from src/gallery/pages, so no list is written here): a part missing, or a part of another world,
+ *   than all the worlds (read from src/gallery/pages, so no list is written here): a part missing, or a part of another world,
  * - the sidebar on a component page, under each material, does not list every world-only page of that material, or lists
  *   one that is another world's alone (zero world-only pages is a pass: it asserts what the sidebar and the sources hold),
- * - the Systems page (#systems) is not three cards linking #press, #flat and #device in order, each named by the
+ * - the Systems page (#systems) is not a card per world linking #press, #flat, #device and #rack in order, each named by the
  *   system and its line from look.ts, beside its cover scene, inert and hidden, the link the card's one stop, or it
  *   scrolls sideways,
  * - public/llms.txt lacks a Worlds section with Press, Flat and Device, or lists a world page as a component's docs.
  *
  * Not here: nothing moving under reduced motion on a world page. reduced-motion.mjs (test:motion) opens every file in
- * src/gallery/pages, the three worlds included, so a second copy of its frame-by-frame watcher would only repeat it.
+ * src/gallery/pages, the worlds included, so a second copy of its frame-by-frame watcher would only repeat it.
  *
  * Needs Playwright, found as wall.mjs finds it, and the TypeScript that the gallery already has (to read look.ts).
  */
@@ -81,7 +81,7 @@ async function loadLook() {
   }
 }
 const WORLDS = (await loadLook()).MATERIALS;
-/** The pages that belong to fewer than all three worlds, from each page's `export const meta` (as wall.mjs reads it). */
+/** The pages that belong to fewer than all the worlds, from each page's `export const meta` (as wall.mjs reads it). */
 const PAGES_DIR = path.join(here, "..", "src", "gallery", "pages");
 const WORLD_ONLY = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith(".tsx")).flatMap((f) => {
   const meta = /export\s+const\s+meta\b[\s\S]*?\n\};?/.exec(fs.readFileSync(path.join(PAGES_DIR, f), "utf8"))?.[0] ?? "";
@@ -239,7 +239,7 @@ for (const world of WORLDS) for (const size of SIZES) for (const scheme of ["lig
   const r = await audit(world, size, scheme);
   if (size.label === "1440" && scheme === "light") seen.set(world.id, r.frames.join("|"));
 }
-claim("each world opens on its own block (three different hero frames)", new Set(seen.values()).size === WORLDS.length ? null : `hero frames per world: ${JSON.stringify([...seen])}`);
+claim("each world opens on its own block (a different hero frame each)", new Set(seen.values()).size === WORLDS.length ? null : `hero frames per world: ${JSON.stringify([...seen])}`);
 
 /* ---------- 320 wide ---------- */
 for (const world of WORLDS) for (const scheme of ["light", "dark"]) {
@@ -309,7 +309,7 @@ for (const world of WORLDS) {
       groupsAbove: [...el.querySelectorAll("button[id^=menu-group-]")].filter((b) => worlds && b.compareDocumentPosition(worlds) & Node.DOCUMENT_POSITION_FOLLOWING).length,
     };
   });
-  claim("the phone menu lists Worlds with three rows (#press, #flat, #device) before any component group", menu.hrefs.join(",") === "#press,#flat,#device" && menu.before && menu.groupsAbove === 0 ? null : `menu: ${JSON.stringify(menu)}`);
+  claim("the phone menu lists Worlds with a row per world (#press, #flat, #device, #rack) before any component group", menu.hrefs.join(",") === WORLDS.map((w) => `#${w.id}`).join(",") && menu.before && menu.groupsAbove === 0 ? null : `menu: ${JSON.stringify(menu)}`);
   await ctx.close();
 }
 
@@ -318,7 +318,7 @@ for (const size of SIZES) {
   const { ctx, pg, errors } = await open("systems", { ...size });
   await pg.locator("main ul[aria-label=Systems] > li").first().waitFor();
   await pg.waitForLoadState("networkidle");
-  await pg.waitForFunction(() => [...document.querySelectorAll("main ul[aria-label=Systems] [inert]")].filter((c) => c.querySelector("button, input, [role]")).length === 3, null, { timeout: 5000 }).catch(() => {});
+  await pg.waitForFunction((n) => [...document.querySelectorAll("main ul[aria-label=Systems] [inert]")].filter((c) => c.querySelector("button, input, [role]")).length === n, WORLDS.length, { timeout: 5000 }).catch(() => {});
   const r = await pg.evaluate(() => ({
     cards: [...document.querySelectorAll("main ul[aria-label=Systems] > li")].map((li) => ({
       href: li.querySelector(":scope > a")?.getAttribute("href"),
@@ -330,7 +330,7 @@ for (const size of SIZES) {
   }));
   const want = WORLDS.map((w) => `#${w.id}`);
   const ok = r.cards.map((c) => c.href).join(",") === want.join(",") && r.cards.every((c, i) => c.name.startsWith(WORLDS[i].name) && c.name.includes(WORLDS[i].line) && c.cover && c.focusables === 1);
-  claim("the Systems page is three cards, Press, Flat and Device, each a link to its page named by the system and its line, over its cover scene out of reach", ok ? null : `${size.label}: ${JSON.stringify(r.cards)}`);
+  claim("the Systems page is a card per world, Press, Flat, Device and Rack, each a link to its page named by the system and its line, over its cover scene out of reach", ok ? null : `${size.label}: ${JSON.stringify(r.cards)}`);
   claim("the Systems page does not scroll sideways", r.wide ? `${size.label}: the page scrolls sideways` : null);
   for (const e of errors) claim("the Systems page throws nothing", `${size.label}: ${e}`);
   await ctx.close();
@@ -341,9 +341,9 @@ for (const size of SIZES) {
   const text = fs.readFileSync(path.join(dist, "llms.txt"), "utf8");
   const worlds = /^## Worlds\n([\s\S]*?)(?=^## )/m.exec(text)?.[1] ?? "";
   const names = [...worlds.matchAll(/^### (.+)$/gm)].map((m) => m[1]);
-  claim("llms.txt has a Worlds section with Press, Flat and Device", names.join(",") === WORLDS.map((w) => w.name).join(",") ? null : `Worlds section headings: ${JSON.stringify(names)}`);
+  claim("llms.txt has a Worlds section with Press, Flat, Device and Rack", names.join(",") === WORLDS.map((w) => w.name).join(",") ? null : `Worlds section headings: ${JSON.stringify(names)}`);
   const full = fs.existsSync(path.join(dist, "llms-full.txt")) ? fs.readFileSync(path.join(dist, "llms-full.txt"), "utf8") : "";
-  const listed = [...(text + full).matchAll(/\/docs\/(press|flat|device)\.md/g)].map((m) => m[0]);
+  const listed = [...(text + full).matchAll(new RegExp(`/docs/(${WORLDS.map((w) => w.id).join("|")})\\.md`, "g"))].map((m) => m[0]);
   claim("no world page is listed as a component's docs in llms.txt or llms-full.txt", listed.length === 0 ? null : `listed: ${listed.join(", ")}`);
 }
 

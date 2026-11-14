@@ -30,6 +30,10 @@
  *           expressive spring, and an overlay rises and settles from --press-scale, as litt always has. Nothing flies.
  *   Device  things are mechanisms: a set switches on in place in three short steps on the instant tier, one after
  *           another like segments lighting, and an overlay switches on and off with no growth and no slide.
+ *   Rack    things cut in on the beat: a set appears in place column by column, left to right, each column at once
+ *           and a --stagger apart, like a scene launching across tracks, on the instant tier's ease-out; it stops all
+ *           at once, quicker than it came. An overlay cuts in where it stands with no growth and no slide. A tool you
+ *           touch all day answers on the frame (proposals/rack.md).
  * The material is data-material on <html> (useMaterial); Press is no attribute.
  *
  * An overlay that opens out of its trigger (a Menu, a Dialog) grows from it: it scales up from GROW with its
@@ -57,6 +61,8 @@ export type DealMotion = {
   appear: Timing;
   /** The way back: the expressive exit. */
   exit: Timing;
+  /** Rack's way out: the instant tier shortened by --exit, everything at once. */
+  stop: Timing;
   /** Milliseconds between pieces. */
   stagger: number;
   /** The nudge of the light form, in px. */
@@ -67,11 +73,11 @@ export type DealMotion = {
 };
 
 /** litt's materials, each with its own motion language. */
-export type Material = "press" | "flat" | "device";
+export type Material = "press" | "flat" | "device" | "rack";
 
 const readMaterial = (): Material => {
   const m = typeof document === "undefined" ? null : document.documentElement.dataset.material;
-  return m === "flat" || m === "device" ? m : "press";
+  return m === "flat" || m === "device" || m === "rack" ? m : "press";
 };
 const watchMaterial = (change: () => void) => {
   const mo = new MutationObserver(change);
@@ -106,7 +112,7 @@ export function useMaterial(): Material {
  * src/components/bodies/<part>.<material>.tsx and are imported by the part, so the registry ships them in its item.
  * A world without a body of its own falls back to Press, so a part gains bodies one at a time.
  */
-export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T }): T {
+export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T; rack?: T }): T {
   return bodies[material] ?? bodies.press;
 }
 
@@ -131,6 +137,7 @@ export function useDealMotion(): DealMotion {
     settle: spring(dial.responsive),
     appear: { duration: reduced ? 0 : dial.instant * k, easing: out },
     exit: { duration: reduced ? 0 : dial.expressive.time * 1000 * dial.exit * k, easing: out },
+    stop: { duration: reduced ? 0 : dial.instant * dial.exit * k, easing: out },
     stagger: reduced ? 0 : dial.stagger * k,
     travel: reduced ? 0 : dial.travel,
     reduced,
@@ -153,6 +160,16 @@ const done = (anims: Animation[]) =>
 
 type Offset = { x: number; y: number; scale: number };
 const transform = (o: Offset) => `translate(${o.x}px, ${o.y}px) scale(${o.scale})`;
+
+/* Two pieces whose left edges sit closer than this are in the same column. */
+const COLUMN_SLACK = 12;
+/** Each box's column, counted from the left: the beat it launches on. `boxes` are in reading order. */
+function columns(boxes: Box[]): number[] {
+  const lefts = [...boxes.map((b) => b.left)].sort((a, b) => a - b);
+  const starts: number[] = [];
+  for (const x of lefts) if (!starts.length || x - starts[starts.length - 1]! > COLUMN_SLACK) starts.push(x);
+  return boxes.map((b) => starts.filter((x) => x <= b.left + COLUMN_SLACK).length - 1);
+}
 
 /** The k-th card of a small deck on `on`, scaled to about half of it, as an offset from `place`. */
 export function deckOffset(place: Box, on: Box, k: number, n: number): Offset {
@@ -202,6 +219,17 @@ export function deal(pieces: HTMLElement[], from: DealSource, motion: DealMotion
   if (motion.reduced || !pieces.length) return { order, finished: Promise.resolve() };
 
   const anims: Animation[] = [];
+  if (motion.material === "rack") {
+    /* Quantized: a column is the pieces whose left edges sit within a column's slack, and each column launches on its
+       own beat, every piece in it at once. Opacity alone: nothing travels or grows. */
+    const beats = columns(index.map((i) => places[i]!));
+    index.forEach((i, k) => {
+      const piece = pieces[i]!;
+      for (const a of ours(piece)) a.cancel();
+      anims.push(piece.animate([{ opacity: 0 }, { opacity: 1 }], { ...motion.appear, delay: beats[k]! * motion.stagger, fill: "backwards", id: ID }));
+    });
+    return { order, finished: moving(pieces, anims) };
+  }
   if (motion.material !== "flat") {
     index.forEach((i, k) => {
       const piece = pieces[i]!;
@@ -252,6 +280,15 @@ export function gather(
   if (motion.reduced || !order.length) return Promise.resolve();
   const half = motion.exit.duration / 2;
   const anims: Animation[] = [];
+  if (motion.material === "rack") {
+    /* Stop all: every piece goes at once, from wherever it is drawn, quicker than it came. */
+    for (const piece of order) {
+      const opacity = getComputedStyle(piece).opacity;
+      for (const a of ours(piece)) a.cancel();
+      anims.push(piece.animate([{ opacity }, { opacity: 0 }], { ...motion.stop, fill: "both", id: ID }));
+    }
+    return moving(order, anims);
+  }
   if (motion.material !== "flat") {
     for (let j = 0; j < order.length; j++) {
       const piece = order[order.length - 1 - j]!;
@@ -303,11 +340,12 @@ const PRESS_GROW = 0.98;
 /** How an overlay (a menu, a popover, a dialog) enters and leaves under the current material. */
 export type OverlayMotion = {
   material: Material;
-  /** The scale it grows from: 0.9 under Flat, 0.98 under Press, 1 under Device (it does not grow). */
+  /** The scale it grows from: 0.9 under Flat, 0.98 under Press, 1 under Device and Rack (it does not grow). */
   grow: number;
-  /** Whether it slides its quarter of --travel from the side it opens on: not under Device. */
+  /** Whether it slides its quarter of --travel from the side it opens on: not under Device or Rack. */
   slides: boolean;
-  /** Under Device it switches on and off in steps instead: use these as its transitions. */
+  /** Under Device it switches on and off in steps, under Rack it cuts in and out (opacity alone, on the instant tier's
+      ease-out, out quicker than in): use these as its transitions. */
   switches: boolean;
   switchIn: Transition;
   switchOut: Transition;
@@ -315,15 +353,18 @@ export type OverlayMotion = {
 
 export function useOverlayMotion(): OverlayMotion {
   const material = useMaterial();
-  const { dial, reduced, tuning, slow } = useMotionDial();
-  const step: Transition = { duration: reduced ? 0 : (dial.instant / 1000) * (tuning ? slow : 1), ease: stepEase };
+  const { dial, locked, reduced, tuning, slow } = useMotionDial();
+  const instant = reduced ? 0 : (dial.instant / 1000) * (tuning ? slow : 1);
+  const step: Transition = { duration: instant, ease: stepEase };
+  const cut = (duration: number): Transition => ({ duration, ease: locked.easeOut });
+  const still = material === "device" || material === "rack";
   return {
     material,
     grow: material === "flat" ? GROW : material === "press" ? PRESS_GROW : 1,
-    slides: material !== "device",
-    switches: material === "device",
-    switchIn: step,
-    switchOut: step,
+    slides: !still,
+    switches: still,
+    switchIn: material === "rack" ? cut(instant) : step,
+    switchOut: material === "rack" ? cut(instant * dial.exit) : step,
   };
 }
 

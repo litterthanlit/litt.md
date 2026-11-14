@@ -61,10 +61,11 @@ function Replay({ object, replay }: { object: ReactNode; replay: NonNullable<Pag
   );
 }
 
-/* Three frames side by side while the object fits a third of the row; a wider object (a chart, a chat row) stacks them,
-   so it is drawn at the size Anatomy draws it and never shrinks to fit. Frame padding is p-8 (64px across) and the
-   gap is 24px. */
+/* One frame per world side by side while the object fits its share of the row, two to a row while it fits half; a wider
+   object (a chart, a chat row) stacks them, so it is drawn at the size Anatomy draws it and never shrinks to fit. Frame
+   padding is p-8 (64px across) and the gap is 24px. Every world from xl, two to a row from md. */
 const FRAME_PAD = 64, FRAME_GAP = 24;
+const COLUMNS = { all: "md:grid-cols-2 xl:grid-cols-4", two: "md:grid-cols-2" } as const;
 function Materials({ object, objectWidth }: { object: ReactNode; objectWidth: number }) {
   const { look } = useCustomize();
   const dark = useDark();
@@ -77,9 +78,11 @@ function Materials({ object, objectWidth }: { object: ReactNode; objectWidth: nu
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const stacked = width > 0 && objectWidth > (width - 2 * FRAME_GAP) / 3 - FRAME_PAD;
+  /* As many frames to a row as the object fits in: every world, else two, else one. */
+  const fits = (n: number) => width === 0 || objectWidth <= (width - (n - 1) * FRAME_GAP) / n - FRAME_PAD;
+  const columns = fits(MATERIALS.length) ? COLUMNS.all : fits(2) ? COLUMNS.two : "";
   return (
-    <div ref={grid} className={"grid gap-6 " + (stacked ? "" : "md:grid-cols-3")}>
+    <div ref={grid} className={"grid gap-6 " + columns}>
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div

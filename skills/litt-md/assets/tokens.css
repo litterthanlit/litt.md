@@ -360,6 +360,73 @@
   --device-screen-glass-bg-solid: rgba(17, 18, 20, 0.98);
   --device-screen-glass-border: rgba(255, 255, 255, 0.08);
 
+  /* Rack's values (data-material="rack", below; proposals/rack.md): a software instrument's rack, after Ableton Live.
+     Flat grey panels sit on a darker grey body, what you set is a light box inside a 1px outline, and a key is a flat
+     fill in an outline that lights the one yellow when it is on. Nothing casts, glows or sinks. Neutral greys, chroma 0;
+     the hues retuned so check 5 passes on the body, the rose less saturated so pink keeps 0.12 from it. */
+  --rack-canvas: #c8c8c8;
+  --rack-well: #e2e2e2;
+  --rack-surface-1: #e2e2e2;
+  --rack-surface-2: #d7d7d7;
+  --rack-surface-3: #cdcdcd;
+  --rack-line: #b5b5b5;
+  --rack-line-strong: #a2a2a2;
+  --rack-line-control: #6c6c6c;
+  --rack-fg: #111111;
+  --rack-fg-muted: #434343;
+  --rack-fg-subtle: #434343;
+  --rack-fg-disabled: #8a8a8a;
+  --rack-tray: #b9b9b9;
+  --rack-cut: #f3f3f3;
+  --rack-block: #ededed;
+  --rack-slot: #b0b0b0;
+  --rack-slot-fill: #5a5a5a;
+  --rack-cap: #f6f6f6;
+  --rack-cap-held: #e4e4e4;
+  /* One yellow, the light of a switch that is on, with dark words. Links and the focus ring are the ink: yellow is
+     only ever a fill, so it never has to read against the grey (check 14 holds the outline that carries it). */
+  --rack-accent: #ffc933;
+  --rack-accent-hover: #ffd35c;
+  --rack-accent-fg: #111111;
+  --rack-accent-tint: #ebdcb9;
+  --rack-accent-text: #111111;
+  --rack-focus: #111111;
+  --rack-accent-pink: #c0007e;
+  --rack-accent-pink-text: #90005d;
+  --rack-accent-blue: #0957fd;
+  --rack-accent-blue-hover: #0e4ada;
+  --rack-accent-blue-text: #013ae4;
+  --rack-focus-blue: #0957fd;
+  --rack-success: #00601f;
+  --rack-warning: #824200;
+  --rack-danger: #a60e1d;
+  --rack-data-blue: #1170b8;
+  --rack-data-blue-text: #005592;
+  --rack-data-amber: #8d6800;
+  --rack-data-amber-text: #655000;
+  --rack-data-teal: #007b75;
+  --rack-data-teal-text: #005d56;
+  --rack-data-violet: #7759cc;
+  --rack-data-violet-text: #5e3cac;
+  --rack-data-rose: #915d80;
+  --rack-data-rose-text: #654968;
+  /* The depth ladder in outlines: a 1px edge says raised or sunken, and fill says which. Zero offsets, nothing soft. */
+  --rack-highlight: inset 0 0 0 0 transparent;
+  --rack-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  --rack-cut-shade: inset 0 0 0 0 transparent;
+  --rack-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.55);
+  --rack-block-press: 0 0 0 1px rgba(0, 0, 0, 0.75);
+  --rack-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.55);
+  --rack-slot-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  --rack-slot-fill-shade: inset 0 0 0 0 transparent;
+  --rack-plate-lift: 0 0 0 0 transparent;
+  --rack-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --rack-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.8);
+  --rack-cap-grip: rgba(0, 0, 0, 0.35);
+  --rack-glass-bg: rgba(236, 236, 236, 0.98);
+  --rack-glass-bg-solid: rgba(236, 236, 236, 1);
+  --rack-glass-border: rgba(0, 0, 0, 0.4);
+
   /* Accent: Blue 4, Litt's own (v1.0), a bright cobalt that still carries white past 5.5:1, a cool light on the
      warm stone neutrals. Nick's swatch is P3 #2656f4, the same color as this sRGB value. Swap per project, or run
      monochrome ([data-accent="mono"], below). The hover is a step darker here and lighter in dark. The text tone
@@ -621,6 +688,67 @@
   --device-screen-glass-bg-solid: rgba(17, 18, 20, 0.98);
   --device-screen-glass-border: rgba(255, 255, 255, 0.08);
 
+  /* Rack's values (data-material="rack", below; proposals/rack.md). */
+  --rack-canvas: #161616;
+  --rack-well: #262626;
+  --rack-surface-1: #262626;
+  --rack-surface-2: #2d2d2d;
+  --rack-surface-3: #353535;
+  --rack-line: #3a3a3a;
+  --rack-line-strong: #4a4a4a;
+  --rack-line-control: #787878;
+  --rack-fg: #ececec;
+  --rack-fg-muted: #bebebe;
+  --rack-fg-subtle: #bebebe;
+  --rack-fg-disabled: #5c5c5c;
+  --rack-tray: #101010;
+  --rack-cut: #1b1b1b;
+  --rack-block: #3b3b3b;
+  --rack-slot: #101010;
+  --rack-slot-fill: #9a9a9a;
+  --rack-cap: #cfcfcf;
+  --rack-cap-held: #dedede;
+  --rack-accent: #ffc933;
+  --rack-accent-hover: #ffd35c;
+  --rack-accent-fg: #111111;
+  --rack-accent-tint: #443d2e;
+  --rack-accent-text: #ececec;
+  --rack-focus: #ececec;
+  --rack-accent-pink: #d3268e;
+  --rack-accent-pink-text: #feb9db;
+  --rack-accent-blue: #2166fd;
+  --rack-accent-blue-hover: #2569fe;
+  --rack-accent-blue-text: #bcd3fe;
+  --rack-focus-blue: #7084fd;
+  --rack-success: #4bc680;
+  --rack-warning: #e19b1b;
+  --rack-danger: #ff756f;
+  --rack-data-blue: #3496ef;
+  --rack-data-blue-text: #69b7ff;
+  --rack-data-amber: #be7900;
+  --rack-data-amber-text: #c3b8a0;
+  --rack-data-teal: #09a198;
+  --rack-data-teal-text: #42b4ab;
+  --rack-data-violet: #8f78df;
+  --rack-data-violet-text: #b4a3fd;
+  --rack-data-rose: #e76c9c;
+  --rack-data-rose-text: #f2879c;
+  --rack-highlight: inset 0 0 0 0 transparent;
+  --rack-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --rack-cut-shade: inset 0 0 0 0 transparent;
+  --rack-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --rack-block-press: 0 0 0 1px rgba(0, 0, 0, 0.85);
+  --rack-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --rack-slot-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  --rack-slot-fill-shade: inset 0 0 0 0 transparent;
+  --rack-plate-lift: 0 0 0 0 transparent;
+  --rack-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+  --rack-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
+  --rack-cap-grip: rgba(0, 0, 0, 0.35);
+  --rack-glass-bg: rgba(44, 44, 44, 0.98);
+  --rack-glass-bg-solid: rgba(44, 44, 44, 1);
+  --rack-glass-border: rgba(255, 255, 255, 0.12);
+
   --accent-blue: #0957fd;
   --accent-blue-hover: #1e64fe; /* a step lighter in dark */
   --accent-blue-fg: #ffffff;
@@ -859,6 +987,67 @@
     --device-screen-glass-bg: rgba(17, 18, 20, 0.88);
     --device-screen-glass-bg-solid: rgba(17, 18, 20, 0.98);
     --device-screen-glass-border: rgba(255, 255, 255, 0.08);
+
+    /* Rack's values (data-material="rack", below; proposals/rack.md). */
+    --rack-canvas: #161616;
+    --rack-well: #262626;
+    --rack-surface-1: #262626;
+    --rack-surface-2: #2d2d2d;
+    --rack-surface-3: #353535;
+    --rack-line: #3a3a3a;
+    --rack-line-strong: #4a4a4a;
+    --rack-line-control: #787878;
+    --rack-fg: #ececec;
+    --rack-fg-muted: #bebebe;
+    --rack-fg-subtle: #bebebe;
+    --rack-fg-disabled: #5c5c5c;
+    --rack-tray: #101010;
+    --rack-cut: #1b1b1b;
+    --rack-block: #3b3b3b;
+    --rack-slot: #101010;
+    --rack-slot-fill: #9a9a9a;
+    --rack-cap: #cfcfcf;
+    --rack-cap-held: #dedede;
+    --rack-accent: #ffc933;
+    --rack-accent-hover: #ffd35c;
+    --rack-accent-fg: #111111;
+    --rack-accent-tint: #443d2e;
+    --rack-accent-text: #ececec;
+    --rack-focus: #ececec;
+    --rack-accent-pink: #d3268e;
+    --rack-accent-pink-text: #feb9db;
+    --rack-accent-blue: #2166fd;
+    --rack-accent-blue-hover: #2569fe;
+    --rack-accent-blue-text: #bcd3fe;
+    --rack-focus-blue: #7084fd;
+    --rack-success: #4bc680;
+    --rack-warning: #e19b1b;
+    --rack-danger: #ff756f;
+    --rack-data-blue: #3496ef;
+    --rack-data-blue-text: #69b7ff;
+    --rack-data-amber: #be7900;
+    --rack-data-amber-text: #c3b8a0;
+    --rack-data-teal: #09a198;
+    --rack-data-teal-text: #42b4ab;
+    --rack-data-violet: #8f78df;
+    --rack-data-violet-text: #b4a3fd;
+    --rack-data-rose: #e76c9c;
+    --rack-data-rose-text: #f2879c;
+    --rack-highlight: inset 0 0 0 0 transparent;
+    --rack-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+    --rack-cut-shade: inset 0 0 0 0 transparent;
+    --rack-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+    --rack-block-press: 0 0 0 1px rgba(0, 0, 0, 0.85);
+    --rack-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+    --rack-slot-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+    --rack-slot-fill-shade: inset 0 0 0 0 transparent;
+    --rack-plate-lift: 0 0 0 0 transparent;
+    --rack-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+    --rack-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
+    --rack-cap-grip: rgba(0, 0, 0, 0.35);
+    --rack-glass-bg: rgba(44, 44, 44, 0.98);
+    --rack-glass-bg-solid: rgba(44, 44, 44, 1);
+    --rack-glass-border: rgba(255, 255, 255, 0.12);
 
     --accent-blue: #0957fd;
     --accent-blue-hover: #1e64fe;
@@ -1405,6 +1594,154 @@
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
 }
 
+/* --------------------------------------------------------------------------
+   Rack (R3, proposals/rack.md): data-material="rack" on <html> says the depth
+   ladder as a software instrument's rack, after Ableton Live. The canvas is the
+   rack's grey body, surfaces are flat panels on it, a tray is a darker well in a
+   1px outline, a block is a flat key in a 1px outline, and what is on lights the
+   one yellow. Nothing casts, glows, blurs or sinks: an outline says raised or
+   sunken and a fill says which. Square corners, a dense sans, sentence-case
+   labels. Last in the file, after Device; the two never share an element.
+   -------------------------------------------------------------------------- */
+:root[data-material="rack"],
+[data-material="rack"] {
+  --canvas: var(--rack-canvas);
+  --well: var(--rack-well);
+  --surface-1: var(--rack-surface-1);
+  --surface-2: var(--rack-surface-2);
+  --surface-3: var(--rack-surface-3);
+  --line: var(--rack-line);
+  --line-strong: var(--rack-line-strong);
+  --line-control: var(--rack-line-control);
+  --fg: var(--rack-fg);
+  --fg-muted: var(--rack-fg-muted);
+  --fg-subtle: var(--rack-fg-subtle);
+  --fg-disabled: var(--rack-fg-disabled);
+
+  /* The hues, retuned so check 5 passes on the grey body. Blue 4, pink and monochrome are restated below, so they still win. */
+  --accent: var(--rack-accent);
+  --accent-hover: var(--rack-accent-hover);
+  --accent-fg: var(--rack-accent-fg);
+  --accent-tint: var(--rack-accent-tint);
+  --accent-text: var(--rack-accent-text);
+  --accent-pink: var(--rack-accent-pink);
+  --accent-pink-text: var(--rack-accent-pink-text);
+  --accent-blue: var(--rack-accent-blue);
+  --accent-blue-hover: var(--rack-accent-blue-hover);
+  --accent-blue-text: var(--rack-accent-blue-text);
+  --focus-blue: var(--rack-focus-blue);
+  --focus: var(--rack-focus);
+  --success: var(--rack-success);
+  --warning: var(--rack-warning);
+  --danger: var(--rack-danger);
+  --data-blue: var(--rack-data-blue);
+  --data-blue-text: var(--rack-data-blue-text);
+  --data-amber: var(--rack-data-amber);
+  --data-amber-text: var(--rack-data-amber-text);
+  --data-teal: var(--rack-data-teal);
+  --data-teal-text: var(--rack-data-teal-text);
+  --data-violet: var(--rack-data-violet);
+  --data-violet-text: var(--rack-data-violet-text);
+  --data-rose: var(--rack-data-rose);
+  --data-rose-text: var(--rack-data-rose-text);
+  --focus-pink: var(--rack-accent-pink);
+  /* Nothing glows and no light falls: the one primary action is lit by its fill and held by its outline. */
+  --light: none;
+  --glow: var(--block-lift);
+
+  --highlight: var(--rack-highlight);
+  --tray: var(--rack-tray);
+  --tray-shade: var(--rack-tray-shade);
+  --cut: var(--rack-cut);
+  --cut-shade: var(--rack-cut-shade);
+  --block: var(--rack-block);
+  --block-lift: var(--rack-block-lift);
+  --block-press: var(--rack-block-press);
+  --key-lift: var(--rack-key-lift);
+  --slot: var(--rack-slot);
+  --slot-shade: var(--rack-slot-shade);
+  --slot-fill: var(--rack-slot-fill);
+  --slot-fill-shade: var(--rack-slot-fill-shade);
+  --plate-lift: var(--rack-plate-lift);
+  --cap: var(--rack-cap);
+  --cap-held: var(--rack-cap-held);
+  --cap-lift: var(--rack-cap-lift);
+  --cap-press: var(--rack-cap-press);
+  --cap-grip: var(--rack-cap-grip);
+  --glass-bg: var(--rack-glass-bg);
+  --glass-bg-solid: var(--rack-glass-bg-solid);
+  --glass-border: var(--rack-glass-border);
+  /* Nothing sinks: a pressed key answers with its outline and fill, on the frame. */
+  --press-depth: 0px;
+  --block-hover: color-mix(in oklab, var(--block), var(--fg) 6%);
+
+  /* What you type sits in the cut, a light box in the control outline, in the rack's sans. */
+  --field: var(--cut);
+  --field-ink: var(--fg);
+  --field-ink-subtle: var(--fg-subtle);
+  --field-line: var(--line-control);
+  --field-shade: var(--cut-shade);
+  /* A dense grotesque, Inter, for a screen full of small values, unless a face is chosen. */
+  --font-sans: var(--font-choice, "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif);
+  /* Rack opens square: 2px controls in 6px panels (a Customize shape still overrides it). */
+  --radius-control: 2px;
+  --radius-surface: 6px;
+
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+  --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
+  --data-amber-tint: color-mix(in oklab, var(--data-amber) var(--tint-strength), var(--surface-1));
+  --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
+  --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
+  --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+}
+
+/* Blue 4, pink and monochrome on a Rack element: restated after Rack, so on <html> with both attributes the accent
+   still wins (Rack's yellow would otherwise beat them on order). */
+:root[data-material="rack"][data-accent="blue"],
+[data-material="rack"][data-accent="blue"] {
+  --accent: var(--accent-blue);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-blue) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-blue) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-blue) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-blue);
+}
+
+:root[data-material="rack"][data-accent="pink"],
+[data-material="rack"][data-accent="pink"] {
+  --accent: var(--accent-pink);
+  --accent-fg: var(--accent-pink-fg);
+  --accent-hover: var(--accent-pink-hover);
+  --accent-text: var(--accent-pink-text);
+  --accent-tint: var(--accent-pink-tint);
+  --focus: var(--focus-pink);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-pink) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-pink) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-pink) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-pink);
+}
+
+:root[data-material="rack"][data-accent="mono"],
+[data-material="rack"][data-accent="mono"] {
+  --accent: var(--fg);
+  --accent-hover: color-mix(in oklab, var(--fg), var(--canvas) 18%);
+  --accent-fg: var(--canvas);
+  --accent-text: var(--fg);
+  --accent-tint: color-mix(in oklab, var(--fg) 7%, var(--canvas));
+  --focus: var(--fg);
+  --light: none;
+  --glow: var(--block-lift);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
+}
+
 /* Without color-mix: the light goes, the glow is the ring, and every tint, Flat's fills included, is a plain step.
    One block, after Flat, as the registry holds one per level. */
 @supports not (color: color-mix(in oklab, red, blue)) {
@@ -1431,6 +1768,15 @@
   }
   :root[data-material="device"],
   [data-material="device"] {
+    --block-hover: var(--surface-2);
+    --data-blue-tint: var(--surface-2);
+    --data-amber-tint: var(--surface-2);
+    --data-teal-tint: var(--surface-2);
+    --data-violet-tint: var(--surface-2);
+    --data-rose-tint: var(--surface-2);
+  }
+  :root[data-material="rack"],
+  [data-material="rack"] {
     --block-hover: var(--surface-2);
     --data-blue-tint: var(--surface-2);
     --data-amber-tint: var(--surface-2);
@@ -1481,7 +1827,9 @@
   :root[data-material="flat"],
   [data-material="flat"],
   :root[data-material="device"],
-  [data-material="device"] {
+  [data-material="device"],
+  :root[data-material="rack"],
+  [data-material="rack"] {
     --fg-muted: var(--fg);
     --fg-subtle: var(--fg);
     --line: var(--line-control);

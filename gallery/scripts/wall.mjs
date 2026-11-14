@@ -117,10 +117,10 @@ function inspect() {
 const browser = await chromium.launch();
 const problems = [];
 let count = 0;
-const ATTRIBUTE = { press: undefined, flat: "flat", device: "device" };
-/* Flat's own accent is the ink, which checkboxes and switches fill with too, so Flat runs in Blue 4 and pink; Press
-   and Device run in their own (Blue 4, orange: decision 14). */
-const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"]];
+const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", rack: "rack" };
+/* Flat's own accent is the ink, which checkboxes and switches fill with too, so Flat runs in Blue 4 and pink; Press,
+   Device and Rack run in their own (Blue 4, orange, yellow: decision 14). */
+const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["rack", "world"]];
 for (const [material, accent] of RUNS) for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
   for (const theme of ["light", "dark"]) {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
@@ -147,7 +147,7 @@ for (const [material, accent] of RUNS) for (const [width, height, label] of [[14
     if (outside.length) problems.push(`${where}: tiles for pages outside ${material} (meta.worlds): ${outside.join(", ")}`);
     const absent = WALL_PAGES.filter((p) => onWall(p, material) && !r.tileNames.includes(p.id)).map((p) => p.id);
     if (absent.length) problems.push(`${where}: pages in ${material} with no tile: ${absent.join(", ")}`);
-    const worldTiles = r.tileNames.filter((n) => /^(press|flat|device)$/i.test(n));
+    const worldTiles = r.tileNames.filter((n) => Object.hasOwn(ATTRIBUTE, n.toLowerCase()));
     if (worldTiles.length) problems.push(`${where}: the wall holds world tiles (${worldTiles.join(", ")}); a world is a page, not a component`);
     if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, the wall allows one: ${r.fills.join(", ")}`);
     for (const c of r.close) problems.push(`${where}: two accent fills within one screen (R6): ${c}`);

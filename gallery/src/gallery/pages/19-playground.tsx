@@ -40,7 +40,7 @@ export const meta: PageMeta = {
   order: 40,
   tune: true,
   summary:
-    "One small studio app on a phone, in Press, Flat or Device: its sheet, menus, tooltips and toasts open inside the phone and wear its world. Turn the motion dials and the app follows; switch the frame to a desktop to tune the desktop paths. Every other page runs the locked motion from the tokens.",
+    "One small studio app on a phone, in Press, Flat, Device or Rack: its sheet, menus, tooltips and toasts open inside the phone and wear its world. Turn the motion dials and the app follows; switch the frame to a desktop to tune the desktop paths. Every other page runs the locked motion from the tokens.",
   tiers: ["instant", "responsive", "expressive"],
 };
 

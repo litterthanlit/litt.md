@@ -17,7 +17,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap">
 </head>
 <body>
 <script>
@@ -49,7 +49,7 @@
         s.setProperty("--radius-surface", (c.radius === 28 ? 16 : c.radius === 0 ? 0 : c.radius + 4) + "px");
       }
       if (c.accent === "blue4" || c.accent === "mono" || c.accent === "pink") littLook.accent = c.accent;
-      if (c.material === "press" || c.material === "flat" || c.material === "device") littLook.material = c.material;
+      if (c.material === "press" || c.material === "flat" || c.material === "device" || c.material === "rack") littLook.material = c.material;
     } catch (e) {}
   })();
 </script>
@@ -60,18 +60,18 @@
      press. Fun mode has nothing to paint. */
   (function () {
     try {
-      var m = /^(?:(press|flat|device)|(blue4|mono|pink)(?:-(flat|device))?)(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
+      var m = /^(?:(press|flat|device|rack)|(blue4|mono|pink)(?:-(flat|device|rack))?)(-fun)?$/.exec(new URLSearchParams(location.search).get("look") || "");
       if (m) littLook = { accent: m[2] || "world", material: m[1] || m[3] || "press" };
     } catch (e) {}
   })();
 </script>
 <script>
-  /* A world page (#press, #flat, #device) opens in its own material, whatever is saved or linked: arriving there
+  /* A world page (#press, #flat, #device, #rack) opens in its own material, whatever is saved or linked: arriving there
      writes it (src/gallery/world.tsx, proposals/worlds.md decision 1), so the first paint says the same. Then the
      look is painted: no data-accent for the world's own, and none for an accent asked for in the world whose own it
      is (accentAttribute in src/gallery/look.ts). */
   (function () {
-    var w = /^#(press|flat|device)$/.exec(location.hash);
+    var w = /^#(press|flat|device|rack)$/.exec(location.hash);
     if (w) littLook.material = w[1];
     var m = littLook.material, a = littLook.accent;
     a = a === "blue4" ? (m === "press" ? "" : "blue") : a === "mono" ? (m === "flat" ? "" : "mono") : a === "pink" ? "pink" : "";
