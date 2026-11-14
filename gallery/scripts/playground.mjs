@@ -267,4 +267,4 @@ if (bad) {
   console.error(`\nplayground: ${bad} of ${claims.size} claims fail.`);
   process.exit(1);
 }
-console.log(`\nplayground: ${claims.size} claims hold, in Press, Flat and Device on the phone and once on the desktop, at 1440x1000.`);
+console.log(`\nplayground: ${claims.size} claims hold, in ${WORLDS.map(([n]) => n).join(", ")} on the phone and once on the desktop, at 1440x1000.`);
