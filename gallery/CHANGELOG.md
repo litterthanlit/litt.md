@@ -26,6 +26,16 @@ Later the same day, Plain's first bodies, quiet: a control is its words, and the
 - **changed** `segmented`: under Plain the options are grey words in a line, the chosen one in the ink inside corner marks. Props are unchanged.
 - **changed** `tabs`: under Plain the tabs are grey words in a row, the chosen one in the ink inside corner marks, with no rule under the row and no frame around the panel. Props are unchanged.
 
+Later still, Plain's overlays: each is the page again inside one line, and the row under the hand is held in corner marks.
+
+- **changed** `menu`: under Plain the panel and a submenu are the page inside a 1px line, square, with no shadow; rows are grey words, a checked one in the ink, and the row under the hand or the keys is the ink inside four corner marks, with no wash and no ring. The context menu follows. Props are unchanged.
+- **changed** `command-menu`: under Plain the search is one line under the words, rows are grey words, the active one in the ink inside corner marks, and the footer keeps a 1px line. Props are unchanged.
+- **changed** `dialog`: under Plain the panel and the phone's sheet are square, the scrim is a flat 8% wash of the ink with no blur, and the sheet's grabber is a 1px line. Props are unchanged.
+- **changed** `popover`: under Plain the panel is the page inside a 1px line, solid or not. Props are unchanged.
+- **changed** `hover-card`: under Plain the card is the page inside a 1px line, solid or not. Props are unchanged.
+- **changed** `tooltip`: under Plain a tooltip is the page inside a 1px line, words in the ink, a shortcut in the same line with no fill, like a `title`. Props are unchanged.
+- **changed** `toast`: under Plain the description steps down to grey; the toast itself is the page inside its line already. Props are unchanged.
+
 ## 2026-11-13 · Inside a frame, a sheet measures the frame; motion that never makes you wait
 
 - **changed** `motion`: inside an `OverlayRoot`, `useVisibleScreen` is the root element's box (`{ top: 0, height }`, kept current as it resizes), not the window's visible part, so a bottom sheet and the phone's command menu fill the frame they open in and the sheet's bottom is the frame's. Without an `OverlayRoot` it reads `window.visualViewport` as before. `OverlayRoot` and `useOverlayRoot` now live in `device.ts`; `deal.ts` and the engine's index export them as before.

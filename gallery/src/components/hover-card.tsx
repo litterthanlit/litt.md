@@ -11,6 +11,8 @@
  *   to a link inside it, and at once on blur or Esc. Focus never moves into it.
  * - Surface: floating glass at the surface radius with the float shadow, 16px of padding, 256 or 320px wide. Solid
  *   (surface-2) when the trigger sits inside another glass surface, as the Popover is: glass never sits on glass.
+ * - Plain: the page inside a 1px --line-control ring, square, no glass and no cast. The solid card (inside glass) is
+ *   canvas inside that ring too, never a surface fill.
  * - Motion: the Popover's, on the responsive tier. It grows from the trigger and travels a quarter of the travel token
  *   from the side it opens on, and leaves on the exit token. Under reduced motion it appears and goes.
  * - Built on Radix Popover's positioning (collision flipping, the transform origin), without its dialog role or its
@@ -261,7 +263,7 @@ function Surface({
           "relative z-50 max-w-(--radix-popover-content-available-width) rounded-surface outline-none " +
           "origin-(--radix-popover-content-transform-origin) data-[state=closed]:pointer-events-none " +
           WIDTH[size] +
-          (flat ? " bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1" : " litt-glass " + FLAT_PANEL)
+          (flat ? " bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1 in-[[data-material=plain]]:bg-canvas in-[[data-material=plain]]:shadow-[0_0_0_1px_var(--line-control)]" : " litt-glass " + FLAT_PANEL)
         }
         initial={{ opacity: 0, scale: om.grow }}
         animate={{ opacity: placed ? 1 : 0, scale: placed ? 1 : om.grow, transition: enter }}

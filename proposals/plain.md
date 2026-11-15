@@ -49,9 +49,13 @@ Nick picked No UI ("I love it") and asked for the first wave; then, shown it wit
 
 The marks are the word's own color (`currentColor`), eight 1px bars drawn as one background, so they move nothing and follow forced colors. The chosen word keeps the text weight, so picking never reflows the row. On Plain's page the first screen has no accent fill at all, and `test:worlds` expects none there.
 
+## Wave 2 shipped: overlays
+
+Each overlay is the page again inside one 1px `--line-control` line, square, with no shadow, blur or glass (Plain's tokens already make `litt-glass` that, so most panels needed no class). Menu, context menu and command menu rows are grey words; the row under the hand or the keys is the ink inside corner marks, and the glide draws no wash or ring (forced colors keeps its Highlight). The command menu's search is one line under the words. A dialog's scrim is a flat 8% wash of the ink with no blur, and a sheet's grabber a 1px line. A tooltip is a `title`-like box in one line. Built by five parallel agents, one per file set, each adding only `in-[[data-material=plain]]:` classes so Press, Flat and Device are untouched.
+
 ## What is not right yet
 
-The other parts still draw Press's **bodies** in Plain's tokens, so structure Press bakes into a part still shows: a slider sits in a box, a menu is a card, a tag is a chip. Those are waves 2 and 3, as Bodies did for Flat and Device (`worlds.md`, decisions 13 and 15). No check holds the quiet rule yet (one framed thing per group, grey for the rest); it should come with wave 2.
+The other parts still draw Press's **bodies** in Plain's tokens, so structure Press bakes into a part still shows: a slider sits in a box, a card is a grey fill, a tag is a chip. That is wave 3, as Bodies did for Flat and Device (`worlds.md`, decisions 13 and 15). No check holds the quiet rule yet (one framed thing per group, grey for the rest); it should come with wave 3.
 
 ## Next: Plain's bodies, in waves
 

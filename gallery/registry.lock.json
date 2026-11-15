@@ -107,8 +107,8 @@
       "hash": "e59509c870120e3f"
     },
     "command-menu": {
-      "version": "2026.11.13",
-      "hash": "9408f9365607e2d6"
+      "version": "2026.11.15",
+      "hash": "6d1f903397f41ea1"
     },
     "composer": {
       "version": "2026.11.09",
@@ -143,8 +143,8 @@
       "hash": "a474dc20dd0288b5"
     },
     "dialog": {
-      "version": "2026.11.12",
-      "hash": "6c05bc2106df64cc"
+      "version": "2026.11.15",
+      "hash": "8615d3ab119d5ef0"
     },
     "dot-plot": {
       "version": "2026.11.03",
@@ -191,8 +191,8 @@
       "hash": "7951010af01b54ed"
     },
     "hover-card": {
-      "version": "2026.11.12",
-      "hash": "37f1d4850f74cf29"
+      "version": "2026.11.15",
+      "hash": "7bf7fbe15f4bac78"
     },
     "icons": {
       "version": "2026.10.26",
@@ -243,8 +243,8 @@
       "hash": "37d4718106f094ae"
     },
     "menu": {
-      "version": "2026.11.12",
-      "hash": "a107bbef5f6e585c"
+      "version": "2026.11.15",
+      "hash": "fbdadfcf58b7a9f1"
     },
     "message": {
       "version": "2026.11.06",
@@ -275,8 +275,8 @@
       "hash": "d4859621c7f7d3e9"
     },
     "popover": {
-      "version": "2026.11.12",
-      "hash": "bc32ee4702746cdb"
+      "version": "2026.11.15",
+      "hash": "0ab6515e1befac6b"
     },
     "price": {
       "version": "2026.10.24",
@@ -431,8 +431,8 @@
       "hash": "fbab116e5a8bd8e3"
     },
     "toast": {
-      "version": "2026.11.12",
-      "hash": "7c38cfe15badb02b"
+      "version": "2026.11.15",
+      "hash": "b30bfa89cc3a2976"
     },
     "token-input": {
       "version": "2026.11.09",
@@ -443,8 +443,8 @@
       "hash": "b3b1640ab0f24090"
     },
     "tooltip": {
-      "version": "2026.11.13",
-      "hash": "c91507487f9d4949"
+      "version": "2026.11.15",
+      "hash": "e4b624627724b189"
     },
     "tree": {
       "version": "2026.11.06",
