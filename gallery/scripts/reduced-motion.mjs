@@ -5,6 +5,7 @@
  *
  *   npm run build && npm run test:motion
  *   node scripts/reduced-motion.mjs --dist dist --pages menu,dialog
+ *   node scripts/reduced-motion.mjs --shard 1/2       every other page, from the first (CI runs two shards at once)
  *   node scripts/reduced-motion.mjs --self-test       with motion allowed it must see motion (dialog, menu, toast, list)
  *
  * On each page it watches every element's transform and opacity frame by frame while the page loads, then clicks
@@ -32,11 +33,14 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
-const only = (get("pages", "") || "").split(",").filter(Boolean);
+const [shard, shards] = (get("shard", "1/1")).split("/").map(Number);
 const CONCURRENCY = Number(get("concurrency", "4"));
 const MAX_TRIGGERS = Number(get("triggers", "8"));
 /* --self-test runs with motion allowed and must find motion, so a check that has gone blind fails too. */
 const selfTest = args.includes("--self-test");
+/* The self-test judges only the pages where motion is certain, so it loads only those unless --pages says otherwise. */
+const SURE_TO_MOVE = ["dialog", "menu", "toast", "list"];
+const only = (get("pages", "") || (selfTest ? SURE_TO_MOVE.join(",") : "")).split(",").filter(Boolean);
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
 function resolveTool(id) {
@@ -55,7 +59,8 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
 const pages = fs.readdirSync(path.join(here, "../src/gallery/pages"))
   .map((f) => /^\d+-(.+)\.tsx$/.exec(f)?.[1])
   .filter(Boolean)
-  .filter((id) => !only.length || only.includes(id));
+  .filter((id) => !only.length || only.includes(id))
+  .filter((_, i) => i % shards === shard - 1); // dealt round-robin, so the heavy pages spread across shards
 if (!pages.length) { console.error("No pages matched."); process.exit(1); }
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2", ".md": "text/markdown", ".txt": "text/plain" };
@@ -264,7 +269,7 @@ server.close();
 if (selfTest) {
   // Only the frame sampler counts here: every page has instant transitions, so the duration check alone would always "see" motion.
   const moved = new Set(found.filter((f) => / moved through \d+ values$/.test(f.what)).map((f) => f.page));
-  const want = pages.filter((id) => ["dialog", "menu", "toast", "list"].includes(id));
+  const want = pages.filter((id) => SURE_TO_MOVE.includes(id));
   const blind = want.filter((id) => !moved.has(id));
   console.log(`reduced motion self-test: with motion allowed, motion was seen on ${moved.size} of ${pages.length} pages.`);
   if (blind.length) { console.log(`✗ no motion seen on ${blind.join(", ")}, where it is certain: the check has gone blind.`); process.exit(1); }
@@ -272,7 +277,7 @@ if (selfTest) {
 }
 
 if (!found.length) {
-  console.log(`reduced motion: ${pages.length} pages, ${actions} loads and clicks on the desktop and a phone, nothing moved.`);
+  console.log(`reduced motion${shards > 1 ? ` (shard ${shard}/${shards})` : ""}: ${pages.length} pages, ${actions} loads and clicks on the desktop and a phone, nothing moved.`);
   process.exit(0);
 }
 for (const f of found) console.log(`✗ ${f.page} · ${f.viewport} · ${f.when}: ${f.what}`);
