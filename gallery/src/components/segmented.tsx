@@ -28,7 +28,8 @@
  *   that ends where it started changes nothing). A click and the arrow keys stay as they were. Flat
  *   (bodies/segmented.flat.tsx) is words alone with a grey pill bubble sized to the chosen word, and no tray. Device
  *   (bodies/segmented.device.tsx) is a row of keys in one well, the chosen one latched down with its lamp lit, and
- *   nothing glides. The props, the radios and the arrow keys are the same in all three.
+ *   nothing glides. Rack (bodies/segmented.rack.tsx) is one outlined box divided by 1px rules, the chosen option a lit ink key,
+ *   and nothing glides. The props, the radios and the arrow keys are the same in all four.
  * - The legend is visually hidden by default, as the spec says. Pass showLegend in a form.
  */
 import { useId, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent, type ReactNode } from "react";
@@ -36,6 +37,7 @@ import type { Transition } from "motion/react";
 import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { SegmentedFlatBody } from "./bodies/segmented.flat";
 import { SegmentedDeviceBody } from "./bodies/segmented.device";
+import { SegmentedRackBody } from "./bodies/segmented.rack";
 
 export type SegmentedSize = "sm" | "md";
 export type SegmentedOption<T extends string> = {
@@ -297,7 +299,7 @@ export function Segmented<T extends string>({
   const enter = fun ? fun.glide : responsive;
   const [inner, setInner] = useState<T | undefined>(defaultValue ?? options.find((o) => !o.disabled)?.value);
   const value = valueProp ?? inner;
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SegmentedFlatBody, device: SegmentedDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SegmentedFlatBody, device: SegmentedDeviceBody, rack: SegmentedRackBody });
 
   return (
     <Body

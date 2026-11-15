@@ -315,11 +315,11 @@ function PhoneDemo() {
 
 /* ---------- three bodies ---------- */
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -401,12 +401,12 @@ export default function SelectPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="Four bodies"
         tier="instant"
-        caption="One select, one contract, three bodies. Press is a raised block with a window cut into its end, and a glass list with a tray cut into it: the options are slats, and the current slat is lifted out of the tray with a check. Flat is a grey pill and a plain chevron, and a list that is one solid grey sheet with no shadow or ring: words parted by space, the current one in a grey bubble, the title weight and a check. Device is an LCD readout with a pair of real keys at its end that step through the options without opening the list, and a list drawn as a screen: the current row is marked by a lamp, and the highlight switches from row to row with no glide. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One select, one contract, four bodies. Press is a raised block with a window cut into its end, and a glass list with a tray cut into it: the options are slats, and the current slat is lifted out of the tray with a check. Flat is a grey pill and a plain chevron, and a list that is one solid grey sheet with no shadow or ring: words parted by space, the current one in a grey bubble, the title weight and a check. Device is an LCD readout with a pair of real keys at its end that step through the options without opening the list, and a list drawn as a screen: the current row is marked by a lamp, and the highlight switches from row to row with no glide. Rack is a value box in a 1px outline with a small square chevron key at its end, and a list that is an opaque outlined panel: thin rows, the current one filled with a check, there on the frame and gone on the frame. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all four."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
     </Page>
   );
