@@ -457,6 +457,71 @@
   --rack-glass-bg-solid: rgba(236, 236, 236, 1);
   --rack-glass-border: rgba(0, 0, 0, 0.4);
 
+  /* Heat's values (data-material="heat", below; proposals/heat.md): a street-racing front end, after the menus of Need
+     for Speed: Most Wanted (2005). At night (its own) black slabs with cream words; by day the same menu printed on
+     bleached sepia paper. A key is a flat dark cell, nothing casts, and the one amber is the light of what is
+     selected: its words, its brackets and its cell. Warm neutrals; the status and data hues are Rack's (light) and
+     Press's (dark), with amber's slot moved to a brake red so the selection's amber keeps 0.12 from every hue. */
+  --heat-canvas: #e4dfd2;
+  --heat-well: #ece8dd;
+  --heat-surface-1: #f2efe7;
+  --heat-surface-2: #e8e3d7;
+  --heat-surface-3: #ddd7c9;
+  --heat-line: #cdc6b6;
+  --heat-line-strong: #b7af9d;
+  --heat-line-control: #6f6857;
+  --heat-fg: #0d0c0a;
+  --heat-fg-muted: #433e33;
+  --heat-fg-subtle: #433e33;
+  --heat-fg-disabled: #958e7e;
+  --heat-tray: #d3cdbe;
+  --heat-cut: #f7f5ef;
+  --heat-block: #f5f2ea;
+  --heat-slot: #c3bcab;
+  --heat-slot-fill: #4b4537;
+  --heat-cap: #fbfaf6;
+  --heat-cap-held: #ebe6db;
+  --heat-accent: #e4a230;
+  --heat-accent-hover: #d69523;
+  --heat-accent-fg: #0d0c0a;
+  --heat-accent-tint: #ead6ad;
+  --heat-accent-text: #0d0c0a;
+  --heat-focus: #0d0c0a;
+  --heat-accent-pink: #c0007e;
+  --heat-accent-pink-text: #90005d;
+  --heat-accent-blue: #0957fd;
+  --heat-accent-blue-hover: #0e4ada;
+  --heat-accent-blue-text: #013ae4;
+  --heat-focus-blue: #0957fd;
+  --heat-success: #00601f;
+  --heat-warning: #824200;
+  --heat-danger: #a60e1d;
+  --heat-data-blue: #1170b8;
+  --heat-data-blue-text: #005592;
+  --heat-data-amber: #b23a1c;
+  --heat-data-amber-text: #8c2a12;
+  --heat-data-teal: #007b75;
+  --heat-data-teal-text: #005d56;
+  --heat-data-violet: #7759cc;
+  --heat-data-violet-text: #5e3cac;
+  --heat-data-rose: #915d80;
+  --heat-data-rose-text: #654968;
+  --heat-highlight: inset 0 0 0 0 transparent;
+  --heat-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+  --heat-cut-shade: inset 0 0 0 0 transparent;
+  --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.8);
+  --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --heat-slot-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+  --heat-slot-fill-shade: inset 0 0 0 0 transparent;
+  --heat-plate-lift: 0 0 0 0 transparent;
+  --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.65);
+  --heat-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.85);
+  --heat-cap-grip: rgba(0, 0, 0, 0.35);
+  --heat-glass-bg: rgba(242, 239, 231, 0.98);
+  --heat-glass-bg-solid: rgba(242, 239, 231, 1);
+  --heat-glass-border: rgba(0, 0, 0, 0.45);
+
   /* Accent: Blue 4, Litt's own (v1.0), a bright cobalt that still carries white past 5.5:1, a cool light on the
      warm stone neutrals. Nick's swatch is P3 #2656f4, the same color as this sRGB value. Swap per project, or run
      monochrome ([data-accent="mono"], below). The hover is a step darker here and lighter in dark. The text tone
@@ -804,6 +869,67 @@
   --rack-glass-bg-solid: rgba(44, 44, 44, 1);
   --rack-glass-border: rgba(255, 255, 255, 0.12);
 
+  /* Heat's values (data-material="heat", below; proposals/heat.md). */
+  --heat-canvas: #050505;
+  --heat-well: #0c0c0b;
+  --heat-surface-1: #0c0c0b;
+  --heat-surface-2: #141412;
+  --heat-surface-3: #1b1a18;
+  --heat-line: #2a2826;
+  --heat-line-strong: #3a3835;
+  --heat-line-control: #77736a;
+  --heat-fg: #f1ead6;
+  --heat-fg-muted: #c4bca6;
+  --heat-fg-subtle: #c4bca6;
+  --heat-fg-disabled: #55524b;
+  --heat-tray: #000000;
+  --heat-cut: #0a0a09;
+  --heat-block: #2a2927;
+  --heat-slot: #000000;
+  --heat-slot-fill: #a8a294;
+  --heat-cap: #e9e2cc;
+  --heat-cap-held: #f6f1e4;
+  --heat-accent: #e4a230;
+  --heat-accent-hover: #efb24a;
+  --heat-accent-fg: #0a0a09;
+  --heat-accent-tint: #4a3210;
+  --heat-accent-text: #e4a230;
+  --heat-focus: #e4a230;
+  --heat-accent-pink: #c0007e;
+  --heat-accent-pink-text: #feb9db;
+  --heat-accent-blue: #0957fd;
+  --heat-accent-blue-hover: #1e64fe;
+  --heat-accent-blue-text: #6579fd;
+  --heat-focus-blue: #5e78fe;
+  --heat-success: #4bc680;
+  --heat-warning: #e19b1b;
+  --heat-danger: #ff756f;
+  --heat-data-blue: #2c90e8;
+  --heat-data-blue-text: #5aa8f4;
+  --heat-data-amber: #e0533a;
+  --heat-data-amber-text: #f2775f;
+  --heat-data-teal: #09a198;
+  --heat-data-teal-text: #42b4ab;
+  --heat-data-violet: #8f78df;
+  --heat-data-violet-text: #a896ef;
+  --heat-data-rose: #d55c8c;
+  --heat-data-rose-text: #eb81a7;
+  --heat-highlight: inset 0 0 0 0 transparent;
+  --heat-tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --heat-cut-shade: inset 0 0 0 0 transparent;
+  --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+  --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
+  --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+  --heat-slot-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --heat-slot-fill-shade: inset 0 0 0 0 transparent;
+  --heat-plate-lift: 0 0 0 0 transparent;
+  --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+  --heat-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
+  --heat-cap-grip: rgba(0, 0, 0, 0.35);
+  --heat-glass-bg: rgba(12, 12, 11, 0.98);
+  --heat-glass-bg-solid: rgba(12, 12, 11, 1);
+  --heat-glass-border: rgba(255, 255, 255, 0.1);
+
   --accent-blue: #0957fd;
   --accent-blue-hover: #1e64fe; /* a step lighter in dark */
   --accent-blue-fg: #ffffff;
@@ -1128,6 +1254,67 @@
     --rack-glass-bg: rgba(44, 44, 44, 0.98);
     --rack-glass-bg-solid: rgba(44, 44, 44, 1);
     --rack-glass-border: rgba(255, 255, 255, 0.12);
+
+    /* Heat's values (data-material="heat", below; proposals/heat.md). */
+    --heat-canvas: #050505;
+    --heat-well: #0c0c0b;
+    --heat-surface-1: #0c0c0b;
+    --heat-surface-2: #141412;
+    --heat-surface-3: #1b1a18;
+    --heat-line: #2a2826;
+    --heat-line-strong: #3a3835;
+    --heat-line-control: #77736a;
+    --heat-fg: #f1ead6;
+    --heat-fg-muted: #c4bca6;
+    --heat-fg-subtle: #c4bca6;
+    --heat-fg-disabled: #55524b;
+    --heat-tray: #000000;
+    --heat-cut: #0a0a09;
+    --heat-block: #2a2927;
+    --heat-slot: #000000;
+    --heat-slot-fill: #a8a294;
+    --heat-cap: #e9e2cc;
+    --heat-cap-held: #f6f1e4;
+    --heat-accent: #e4a230;
+    --heat-accent-hover: #efb24a;
+    --heat-accent-fg: #0a0a09;
+    --heat-accent-tint: #4a3210;
+    --heat-accent-text: #e4a230;
+    --heat-focus: #e4a230;
+    --heat-accent-pink: #c0007e;
+    --heat-accent-pink-text: #feb9db;
+    --heat-accent-blue: #0957fd;
+    --heat-accent-blue-hover: #1e64fe;
+    --heat-accent-blue-text: #6579fd;
+    --heat-focus-blue: #5e78fe;
+    --heat-success: #4bc680;
+    --heat-warning: #e19b1b;
+    --heat-danger: #ff756f;
+    --heat-data-blue: #2c90e8;
+    --heat-data-blue-text: #5aa8f4;
+    --heat-data-amber: #e0533a;
+    --heat-data-amber-text: #f2775f;
+    --heat-data-teal: #09a198;
+    --heat-data-teal-text: #42b4ab;
+    --heat-data-violet: #8f78df;
+    --heat-data-violet-text: #a896ef;
+    --heat-data-rose: #d55c8c;
+    --heat-data-rose-text: #eb81a7;
+    --heat-highlight: inset 0 0 0 0 transparent;
+    --heat-tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --heat-cut-shade: inset 0 0 0 0 transparent;
+    --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+    --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
+    --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+    --heat-slot-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --heat-slot-fill-shade: inset 0 0 0 0 transparent;
+    --heat-plate-lift: 0 0 0 0 transparent;
+    --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+    --heat-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
+    --heat-cap-grip: rgba(0, 0, 0, 0.35);
+    --heat-glass-bg: rgba(12, 12, 11, 0.98);
+    --heat-glass-bg-solid: rgba(12, 12, 11, 1);
+    --heat-glass-border: rgba(255, 255, 255, 0.1);
 
     --accent-blue: #0957fd;
     --accent-blue-hover: #1e64fe;
@@ -1954,6 +2141,154 @@
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
 }
 
+/* --------------------------------------------------------------------------
+   Heat (R3, proposals/heat.md): data-material="heat" on <html> says the depth
+   ladder as a street-racing front end, after Need for Speed: Most Wanted (2005).
+   Its grammar, not its brand: black slabs (bleached sepia paper by day), cream
+   words, a key as a flat dark cell in a 1px outline, and one amber for what is
+   selected: its words, its corner brackets and its cell. Nothing casts, glows or
+   sinks. Square corners, a bold racing face, and motion that whips in from the
+   side. Last in the file, after Rack; no two materials share an element.
+   -------------------------------------------------------------------------- */
+:root[data-material="heat"],
+[data-material="heat"] {
+  --canvas: var(--heat-canvas);
+  --well: var(--heat-well);
+  --surface-1: var(--heat-surface-1);
+  --surface-2: var(--heat-surface-2);
+  --surface-3: var(--heat-surface-3);
+  --line: var(--heat-line);
+  --line-strong: var(--heat-line-strong);
+  --line-control: var(--heat-line-control);
+  --fg: var(--heat-fg);
+  --fg-muted: var(--heat-fg-muted);
+  --fg-subtle: var(--heat-fg-subtle);
+  --fg-disabled: var(--heat-fg-disabled);
+
+  /* The hues, fitted on the concrete and the asphalt. Blue 4, pink and monochrome are restated below, so they still win. */
+  --accent: var(--heat-accent);
+  --accent-hover: var(--heat-accent-hover);
+  --accent-fg: var(--heat-accent-fg);
+  --accent-tint: var(--heat-accent-tint);
+  --accent-text: var(--heat-accent-text);
+  --accent-pink: var(--heat-accent-pink);
+  --accent-pink-text: var(--heat-accent-pink-text);
+  --accent-blue: var(--heat-accent-blue);
+  --accent-blue-hover: var(--heat-accent-blue-hover);
+  --accent-blue-text: var(--heat-accent-blue-text);
+  --focus-blue: var(--heat-focus-blue);
+  --focus: var(--heat-focus);
+  --success: var(--heat-success);
+  --warning: var(--heat-warning);
+  --danger: var(--heat-danger);
+  --data-blue: var(--heat-data-blue);
+  --data-blue-text: var(--heat-data-blue-text);
+  --data-amber: var(--heat-data-amber);
+  --data-amber-text: var(--heat-data-amber-text);
+  --data-teal: var(--heat-data-teal);
+  --data-teal-text: var(--heat-data-teal-text);
+  --data-violet: var(--heat-data-violet);
+  --data-violet-text: var(--heat-data-violet-text);
+  --data-rose: var(--heat-data-rose);
+  --data-rose-text: var(--heat-data-rose-text);
+  --focus-pink: var(--heat-accent-pink);
+  /* No light falls and nothing glows: what is selected is lit by its amber alone. */
+  --light: none;
+  --glow: var(--block-lift);
+
+  --highlight: var(--heat-highlight);
+  --tray: var(--heat-tray);
+  --tray-shade: var(--heat-tray-shade);
+  --cut: var(--heat-cut);
+  --cut-shade: var(--heat-cut-shade);
+  --block: var(--heat-block);
+  --block-lift: var(--heat-block-lift);
+  --block-press: var(--heat-block-press);
+  --key-lift: var(--heat-key-lift);
+  --slot: var(--heat-slot);
+  --slot-shade: var(--heat-slot-shade);
+  --slot-fill: var(--heat-slot-fill);
+  --slot-fill-shade: var(--heat-slot-fill-shade);
+  --plate-lift: var(--heat-plate-lift);
+  --cap: var(--heat-cap);
+  --cap-held: var(--heat-cap-held);
+  --cap-lift: var(--heat-cap-lift);
+  --cap-press: var(--heat-cap-press);
+  --cap-grip: var(--heat-cap-grip);
+  --glass-bg: var(--heat-glass-bg);
+  --glass-bg-solid: var(--heat-glass-bg-solid);
+  --glass-border: var(--heat-glass-border);
+  /* Nothing sinks: a pressed key answers with its outline and fill, on the frame. */
+  --press-depth: 0px;
+  --block-hover: color-mix(in oklab, var(--block), var(--fg) 6%);
+
+  /* What you type sits in the cut, a slot in the slab. */
+  --field: var(--cut);
+  --field-ink: var(--fg);
+  --field-ink-subtle: var(--fg-subtle);
+  --field-line: var(--line-control);
+  --field-shade: var(--cut-shade);
+  /* A wide, squared face drawn for racing dashboards, Saira, unless a face is chosen. */
+  --font-sans: var(--font-choice, "Saira", "Helvetica Neue", Helvetica, Arial, sans-serif);
+  /* Heat is square: every corner 0, as a cut sheet of metal (a Customize shape still overrides it). */
+  --radius-control: 0px;
+  --radius-surface: 0px;
+
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+  --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
+  --data-amber-tint: color-mix(in oklab, var(--data-amber) var(--tint-strength), var(--surface-1));
+  --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
+  --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
+  --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+}
+
+/* Blue 4, pink and monochrome on a Heat element: restated after Heat, so on <html> with both attributes the accent
+   still wins (Heat's lime would otherwise beat them on order). */
+:root[data-material="heat"][data-accent="blue"],
+[data-material="heat"][data-accent="blue"] {
+  --accent: var(--accent-blue);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-blue) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-blue) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-blue) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-blue);
+}
+
+:root[data-material="heat"][data-accent="pink"],
+[data-material="heat"][data-accent="pink"] {
+  --accent: var(--accent-pink);
+  --accent-fg: var(--accent-pink-fg);
+  --accent-hover: var(--accent-pink-hover);
+  --accent-text: var(--accent-pink-text);
+  --accent-tint: var(--accent-pink-tint);
+  --focus: var(--focus-pink);
+  --light: radial-gradient(120% 70% at 50% -10%,
+           color-mix(in oklab, var(--accent-pink) var(--light-strength), transparent) 0%,
+           transparent 65%);
+  --glow: 0 0 0 1px color-mix(in oklab, var(--accent-pink) 55%, transparent),
+          0 0 24px color-mix(in oklab, var(--accent-pink) var(--glow-strength), transparent);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-pink);
+}
+
+:root[data-material="heat"][data-accent="mono"],
+[data-material="heat"][data-accent="mono"] {
+  --accent: var(--fg);
+  --accent-hover: color-mix(in oklab, var(--fg), var(--canvas) 18%);
+  --accent-fg: var(--canvas);
+  --accent-text: var(--fg);
+  --accent-tint: color-mix(in oklab, var(--fg) 7%, var(--canvas));
+  --focus: var(--fg);
+  --light: none;
+  --glow: var(--block-lift);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
+}
+
 /* Without color-mix: the light goes, the glow is the ring, and every tint, Flat's fills included, is a plain step.
    One block, after Flat, as the registry holds one per level. */
 @supports not (color: color-mix(in oklab, red, blue)) {
@@ -1999,6 +2334,15 @@
   :root[data-material="rack"],
   [data-material="rack"] {
     --block-hover: var(--surface-2);
+  }
+  :root[data-material="heat"],
+  [data-material="heat"] {
+    --block-hover: var(--surface-2);
+    --data-blue-tint: var(--surface-2);
+    --data-amber-tint: var(--surface-2);
+    --data-teal-tint: var(--surface-2);
+    --data-violet-tint: var(--surface-2);
+    --data-rose-tint: var(--surface-2);
   }
   :root[data-material="flat"],
   [data-material="flat"] {
@@ -2047,7 +2391,9 @@
   :root[data-material="plain"],
   [data-material="plain"],
   :root[data-material="rack"],
-  [data-material="rack"] {
+  [data-material="rack"],
+  :root[data-material="heat"],
+  [data-material="heat"] {
     --fg-muted: var(--fg);
     --fg-subtle: var(--fg);
     --line: var(--line-control);

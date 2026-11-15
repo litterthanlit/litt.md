@@ -117,10 +117,10 @@ function inspect() {
 const browser = await chromium.launch();
 const problems = [];
 let count = 0;
-const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", plain: "plain", rack: "rack" };
+const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", plain: "plain", rack: "rack", heat: "heat" };
 /* Flat's own accent is the ink, which checkboxes and switches fill with too, so Flat runs in Blue 4 and pink; Press,
    Device, Plain and Rack run in their own (Blue 4, orange, link blue, yellow: decision 14). */
-const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["plain", "world"], ["rack", "world"]];
+const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["plain", "world"], ["rack", "world"], ["heat", "world"]];
 for (const [material, accent] of RUNS) for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
   for (const theme of ["light", "dark"]) {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
