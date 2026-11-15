@@ -1,5 +1,5 @@
 /**
- * Systems: the four worlds as four design systems, after design.how's systems. Each card is the system at work (its
+ * Systems: the worlds as design systems, after design.how's systems. Each card is the system at work (its
  * cover scene, live in its own world but out of reach), its name and its one line; the card opens the system's page.
  * The page runs the whole width with no sidebar (meta.wall), one column like the index it is.
  */
@@ -13,11 +13,11 @@ import { scenesOf } from "../systems";
 export const meta: PageMeta = {
   id: "systems",
   title: "Systems",
-  lede: "Four worlds, one set of parts.",
+  lede: "Five worlds, one set of parts.",
   order: 0.05,
   wall: true,
   summary:
-    "Press, Flat, Device and Rack, each a design system of its own: its material, its type, its light and its motion, over the same components. Open one to see it at work and install it.",
+    "Press, Flat, Device, Plain and Rack, each a design system of its own: its material, its type, its light and its motion, over the same components. Open one to see it at work and install it.",
   tiers: [],
 };
 

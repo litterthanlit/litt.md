@@ -832,7 +832,7 @@ function WorldTable() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
@@ -933,14 +933,14 @@ export default function TablePage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
         size="lg"
         align="start"
-        code="FourBodiesDemo"
-        caption="One contract, four bodies, and every row is the same height in each. Press is slats in a tray: the header a raised rail along its top, each row a slat with the tray between, the one under your hand or selected lifted. Flat is the table on the page, as it has always been: no frame, no rules, a grey bubble under the hand. Device is a screen of mono columns on LCD glass, the header engraved on a plate above it, each row starting with a lamp that lights under your hand or when the row is selected. Rack is a list in an instrument's browser: one flat panel, a darker header strip and thin rows on hairlines. Press Monthly to sort; in Press and Flat nothing travels unless the table asks, and in Device and Rack rows never do."
+        code="WorldBodiesDemo"
+        caption="One contract, a body per world, and every row is the same height in each. Press is slats in a tray: the header a raised rail along its top, each row a slat with the tray between, the one under your hand or selected lifted. Flat is the table on the page, as it has always been: no frame, no rules, a grey bubble under the hand. Device is a screen of mono columns on LCD glass, the header engraved on a plate above it, each row starting with a lamp that lights under your hand or when the row is selected. Rack is a list in an instrument's browser: one flat panel, a darker header strip and thin rows on hairlines. Press Monthly to sort; in Press and Flat nothing travels unless the table asks, and in Device and Rack rows never do."
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

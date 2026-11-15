@@ -4,6 +4,7 @@
  *
  *   npm run build && npm run test:a11y               # every page in dist/
  *   node scripts/a11y.mjs --dist dist --pages button,menu
+ *   node scripts/a11y.mjs --shard 2/4                every fourth page, from the second (CI runs four shards at once)
  *
  * Runs the WCAG 2.0, 2.1 and 2.2 A and AA rules and exits 1 on any violation, printing each one with
  * its page, theme, viewport and the selectors it hit. Pages come from src/gallery/pages (the file is
@@ -25,6 +26,7 @@ const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
 const only = (get("pages", "") || "").split(",").filter(Boolean);
+const [shard, shards] = (get("shard", "1/1")).split("/").map(Number);
 
 /* Resolve a tool from A11Y_TOOLS, then this package, then a global folder. */
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
@@ -45,7 +47,8 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
 const pages = fs.readdirSync(path.join(here, "../src/gallery/pages"))
   .map((f) => /^\d+-(.+)\.tsx$/.exec(f)?.[1])
   .filter(Boolean)
-  .filter((id) => !only.length || only.includes(id));
+  .filter((id) => !only.length || only.includes(id))
+  .filter((_, i) => i % shards === shard - 1); // dealt round-robin, so the heavy pages spread across shards
 if (!pages.length) { console.error("No pages matched."); process.exit(1); }
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2" };
@@ -116,7 +119,7 @@ await browser.close();
 server.close();
 
 if (!found.length) {
-  console.log(`a11y: ${pages.length} pages, ${runs} runs (light and dark, desktop and phone), no violations.`);
+  console.log(`a11y${shards > 1 ? ` (shard ${shard}/${shards})` : ""}: ${pages.length} pages, ${runs} runs (light and dark, desktop and phone), no violations.`);
   process.exit(0);
 }
 for (const v of found) {

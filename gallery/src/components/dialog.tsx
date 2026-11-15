@@ -15,6 +15,8 @@
  *   already spent its expressive moment, tier="responsive" moves it on that tier.
  * - Exit: useExit(tier), quicker and never bouncing.
  * - Flat: a solid surface-1 card (no glass, no hairline), and the phone sheet loses its footer rule.
+ * - Plain: the page inside one 1px --line-control ring (litt-glass draws it under Plain's tokens), square, no shadow
+ *   or blur. The scrim is a flat 8% wash of --fg with no blur, the grabber is a 1px line, and the footer keeps its rule.
  * - Overlay: a canvas tint that only fades (instant tier). No blur.
  * - Corners: the panel is rounded-surface; the sheet hugs the right edge, so
  *   only its left corners are rounded. .litt-glass carries the surface radius,
@@ -141,7 +143,12 @@ const FLAT_PANEL =
   "in-[[data-material=flat]]:[--glass-bg:var(--surface-1)] in-[[data-material=flat]]:[--glass-border:transparent] " +
   "in-[[data-material=flat]]:[--highlight:0_0_0_0_transparent] in-[[data-material=flat]]:[--glass-blur:0px] ";
 
-const SCRIM = "absolute inset-0 bg-[color-mix(in_oklab,var(--canvas)_55%,transparent)]";
+/** Plain: the panel is square; its ring and lack of shadow or blur come from the tokens. */
+const PLAIN_PANEL = "in-[[data-material=plain]]:rounded-none ";
+
+const SCRIM =
+  "absolute inset-0 bg-[color-mix(in_oklab,var(--canvas)_55%,transparent)] " +
+  "in-[[data-material=plain]]:bg-[color-mix(in_oklab,var(--fg)_8%,transparent)] in-[[data-material=plain]]:backdrop-blur-none";
 
 export type DialogSheetProps = {
   /** Whether the sheet is shown. It drives the rise and the exit, so keep rendering the sheet and flip this. */
@@ -238,7 +245,7 @@ function SheetLayer({ onDismiss, onOpenAutoFocus, described = true, contentRef, 
           className={
             "litt-glass relative grid max-h-full w-full max-w-[40rem] -mb-6 justify-self-center pb-6 " +
             "grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] rounded-t-surface rounded-b-none " +
-            FLAT_PANEL + "[--glass-shadow:var(--shadow-modal)] [--sheet-foot:max(var(--space-6),env(safe-area-inset-bottom,0px))] " +
+            FLAT_PANEL + PLAIN_PANEL + "[--glass-shadow:var(--shadow-modal)] [--sheet-foot:max(var(--space-6),env(safe-area-inset-bottom,0px))] " +
             "focus-visible:outline-none " +
             className
           }
@@ -247,7 +254,10 @@ function SheetLayer({ onDismiss, onOpenAutoFocus, described = true, contentRef, 
           animate={{ y: 0, transition: enter }}
           exit={{ y: "100%", transition: drag.exit }}
         >
-          <span aria-hidden className="pointer-events-none absolute top-2 left-1/2 h-1 w-8 -translate-x-1/2 rounded-pill bg-line-strong" />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute top-2 left-1/2 h-1 w-8 -translate-x-1/2 rounded-pill bg-line-strong in-[[data-material=plain]]:h-px in-[[data-material=plain]]:rounded-none in-[[data-material=plain]]:bg-line-control"
+          />
           {children}
         </motion.div>
       </RadixDialog.Content>
@@ -409,6 +419,7 @@ export function DialogContent({
                 className={
                   "litt-glass grid grid-cols-[minmax(0,1fr)_auto] grid-rows-[auto_minmax(0,1fr)_auto] [--glass-shadow:var(--shadow-modal)] " +
                   FLAT_PANEL +
+                  PLAIN_PANEL +
                   (sheet
                     ? "h-full w-[400px] max-w-[calc(100%-2rem)] rounded-l-surface rounded-r-none "
                     : "max-h-full w-full max-w-[480px] rounded-surface ") +

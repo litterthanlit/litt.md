@@ -117,10 +117,10 @@ function inspect() {
 const browser = await chromium.launch();
 const problems = [];
 let count = 0;
-const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", rack: "rack" };
+const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", plain: "plain", rack: "rack" };
 /* Flat's own accent is the ink, which checkboxes and switches fill with too, so Flat runs in Blue 4 and pink; Press,
-   Device and Rack run in their own (Blue 4, orange, yellow: decision 14). */
-const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["rack", "world"]];
+   Device, Plain and Rack run in their own (Blue 4, orange, link blue, yellow: decision 14). */
+const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["plain", "world"], ["rack", "world"]];
 for (const [material, accent] of RUNS) for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
   for (const theme of ["light", "dark"]) {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
@@ -170,4 +170,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, Press, Flat, Device and Rack (Flat in Blue 4 and pink, the others in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall: ${count} tiles, Press, Flat, Device, Plain and Rack (Flat in Blue 4 and pink, the others in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);

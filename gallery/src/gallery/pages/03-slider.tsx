@@ -541,11 +541,11 @@ export default function SliderPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="responsive"
         size="lg"
         code="BodiesDemo"
-        caption="One contract, four bodies: the same props, keys and screen reader words, a different thing under the hand. Press is a cap in a deep slot on a plate, its notches lit as the fill passes them, the value on a raised face that rides with the cap. Flat is a pill track, a round ink knob and the value in words at its end, with no shadow anywhere. Device is a fader: a key with a line across its face rides over a well, the fill lit like a meter, engraved ticks beneath, the value on an LCD. Rack is a value bar: a box with the value filled from the start and a 2px ink line at it, the value in words at its end. Each frame sets its own look, so all four stand side by side whatever the page is in."
+        caption="One contract, a body per world: the same props, keys and screen reader words, a different thing under the hand. Press is a cap in a deep slot on a plate, its notches lit as the fill passes them, the value on a raised face that rides with the cap. Flat is a pill track, a round ink knob and the value in words at its end, with no shadow anywhere. Device is a fader: a key with a line across its face rides over a well, the fill lit like a meter, engraved ticks beneath, the value on an LCD. Rack is a value bar: a box with the value filled from the start and a 2px ink line at it, the value in words at its end. Each frame sets its own look, so every world stands side by side whatever the page is in."
       >
         <BodiesDemo />
       </Stage>

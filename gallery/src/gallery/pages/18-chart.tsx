@@ -1,7 +1,7 @@
 import { BarChart, LineChart, Meter, StackedBarChart } from "@/components/chart";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -289,12 +289,12 @@ function NarrowDemo() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid w-full gap-6 md:grid-cols-2">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -449,11 +449,11 @@ export default function ChartPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
-        caption="One contract, four bodies. Press is a sunken well, the marks standing on its floor and the labels on a raised rail. Flat is the chart on the page: a hairline grid, the value axis and the marks, with no ground. Device is a dot-matrix screen: bars and stacks are columns of lit dots, a line is a trace of them, and the current value shows in seven segments above it. Rack is an arrangement: a dark well with hairline gridlines, and the data as clips, bars and stacked parts as blocks in the hue's tint with its mark edge and top line, a line over a tint band."
-        code="FourBodiesDemo"
+        title="A body per world"
+        caption="One contract, a body per world. Press is a sunken well, the marks standing on its floor and the labels on a raised rail. Flat is the chart on the page: a hairline grid, the value axis and the marks, with no ground. Device is a dot-matrix screen: bars and stacks are columns of lit dots, a line is a trace of them, and the current value shows in seven segments above it. Rack is an arrangement: a dark well with hairline gridlines, and the data as clips, bars and stacked parts as blocks in the hue's tint with its mark edge and top line, a line over a tint band."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

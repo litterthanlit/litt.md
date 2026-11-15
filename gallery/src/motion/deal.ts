@@ -30,6 +30,8 @@
  *           expressive spring, and an overlay rises and settles from --press-scale, as litt always has. Nothing flies.
  *   Device  things are mechanisms: a set switches on in place in three short steps on the instant tier, one after
  *           another like segments lighting, and an overlay switches on and off with no growth and no slide.
+ *   Plain   nothing moves: a set and an overlay are there at once, as reduced motion has it (useMotionDial is held
+ *           still under Plain, so `reduced` is true).
  *   Rack    things cut in on the beat: a set appears in place column by column, left to right, each column at once
  *           and a --stagger apart, like a scene launching across tracks, on the instant tier's ease-out; it stops all
  *           at once, quicker than it came. An overlay cuts in where it stands with no growth and no slide. A tool you
@@ -73,11 +75,11 @@ export type DealMotion = {
 };
 
 /** litt's materials, each with its own motion language. */
-export type Material = "press" | "flat" | "device" | "rack";
+export type Material = "press" | "flat" | "device" | "plain" | "rack";
 
 const readMaterial = (): Material => {
   const m = typeof document === "undefined" ? null : document.documentElement.dataset.material;
-  return m === "flat" || m === "device" || m === "rack" ? m : "press";
+  return m === "flat" || m === "device" || m === "plain" || m === "rack" ? m : "press";
 };
 const watchMaterial = (change: () => void) => {
   const mo = new MutationObserver(change);
@@ -110,9 +112,10 @@ export function useMaterial(): Material {
  * One contract, three bodies (proposals/worlds.md, Bodies): a part a hand touches keeps one contract and has a body per
  * material, picked here. Press is the default body and lives in the part's own file; Flat's and Device's live in
  * src/components/bodies/<part>.<material>.tsx and are imported by the part, so the registry ships them in its item.
- * A world without a body of its own falls back to Press, so a part gains bodies one at a time.
+ * A world without a body of its own falls back to Press, so a part gains bodies one at a time (Plain has none yet: it
+ * draws Press's bodies in its own tokens, proposals/plain.md).
  */
-export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T; rack?: T }): T {
+export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T; plain?: T; rack?: T }): T {
   return bodies[material] ?? bodies.press;
 }
 
@@ -340,9 +343,9 @@ const PRESS_GROW = 0.98;
 /** How an overlay (a menu, a popover, a dialog) enters and leaves under the current material. */
 export type OverlayMotion = {
   material: Material;
-  /** The scale it grows from: 0.9 under Flat, 0.98 under Press, 1 under Device and Rack (it does not grow). */
+  /** The scale it grows from: 0.9 under Flat, 0.98 under Press, 1 under Device, Plain and Rack (it does not grow). */
   grow: number;
-  /** Whether it slides its quarter of --travel from the side it opens on: not under Device or Rack. */
+  /** Whether it slides its quarter of --travel from the side it opens on: not under Device, Plain or Rack. */
   slides: boolean;
   /** Under Device it switches on and off in steps, under Rack it cuts in and out (opacity alone, on the instant tier's
       ease-out, out quicker than in): use these as its transitions. */
@@ -361,7 +364,7 @@ export function useOverlayMotion(): OverlayMotion {
   return {
     material,
     grow: material === "flat" ? GROW : material === "press" ? PRESS_GROW : 1,
-    slides: !still,
+    slides: !still && material !== "plain",
     switches: still,
     switchIn: material === "rack" ? cut(instant) : step,
     switchOut: material === "rack" ? cut(instant * dial.exit) : step,

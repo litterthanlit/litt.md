@@ -4,7 +4,7 @@ import { CardPicker } from "@/components/card-picker";
 import { CodeIcon, GridIcon, ListIcon, UserIcon, UsersIcon, BuildingIcon } from "@/components/icons";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -208,12 +208,12 @@ function LayoutTile() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid w-full gap-6 md:grid-cols-2">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -281,12 +281,12 @@ export default function CardPickerPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
-        caption="One control, one contract, four bodies. Press is plates seated in a tray, the picked one raised out of it and lit along its top edge. Flat is pictures and words with no tray, the picked one in a grey bubble with an ink tick and its word, the bubble gliding to your pick. Device is a plate with a lamp in its corner: the picked one is set down 2px into a well with its lamp lit, and nothing glides, the change switches in place in three steps. Rack is each card as a flat panel in a 1px outline, the picked one outlined 2px in the ink with its check as a small lit key, and nothing raised. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all four."
-        code="FourBodiesDemo"
+        caption="One control, one contract, a body per world. Press is plates seated in a tray, the picked one raised out of it and lit along its top edge. Flat is pictures and words with no tray, the picked one in a grey bubble with an ink tick and its word, the bubble gliding to your pick. Device is a plate with a lamp in its corner: the picked one is set down 2px into a well with its lamp lit, and nothing glides, the change switches in place in three steps. Rack is each card as a flat panel in a 1px outline, the picked one outlined 2px in the ink with its check as a small lit key, and nothing raised. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

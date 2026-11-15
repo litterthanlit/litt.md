@@ -47,6 +47,7 @@ import { Children, type ButtonHTMLAttributes, type ComponentPropsWithRef, type C
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { ButtonFlatBody } from "./bodies/button.flat";
 import { ButtonDeviceBody } from "./bodies/button.device";
+import { ButtonPlainBody } from "./bodies/button.plain";
 import { ButtonRackBody } from "./bodies/button.rack";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
@@ -92,8 +93,8 @@ const plateSize: Record<ButtonSize, string> = {
 };
 const plateIcon = "[--plate:3px] px-0";
 
-/* The block's thickness is a 2px wall along its foot, drawn in the face's own background. A press sinks the block into its plate: the wall goes. */
-const wall = "[background-image:linear-gradient(to_top,var(--wall)_2px,transparent_2px)] enabled:not-data-loading:active:[background-image:none] disabled:[background-image:none]";
+/* The block's thickness is a wall along its foot (--block-wall, 2px; none under Plain), drawn in the face's own background. A press sinks the block into its plate: the wall goes. */
+const wall = "[background-image:linear-gradient(to_top,var(--wall)_var(--block-wall),transparent_var(--block-wall))] enabled:not-data-loading:active:[background-image:none] disabled:[background-image:none]";
 
 const variants: Record<ButtonVariant, string> = {
   primary:
@@ -222,7 +223,7 @@ export function Button({
         transitionTimingFunction: `var(--ease-out), var(--ease-out), ${fun.press.easing}`,
       } as CSSProperties)
     : undefined;
-  const Body = byWorld(material, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody, rack: ButtonRackBody });
+  const Body = byWorld(material, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody, plain: ButtonPlainBody, rack: ButtonRackBody });
   return (
     <Body
       variant={variant}

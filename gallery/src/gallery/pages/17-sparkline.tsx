@@ -178,7 +178,7 @@ function GoalLineDemo() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
@@ -254,11 +254,11 @@ export default function SparklinePage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
-        caption="One contract, four bodies, and the box is the same height in each. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the thin line on the page with its dot, as it has always been. Device is a row of lit dots on LCD glass, one in every column, with the latest column the strongest. Rack is a clip: a block in the hue's own colour with the values as a waveform in it, the latest bar the strongest. The quiet one, the blue one with a baseline and the 24px one are the same in all four."
-        code="FourBodiesDemo"
+        title="A body per world"
+        caption="One contract, a body per world, and the box is the same height in each. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the thin line on the page with its dot, as it has always been. Device is a row of lit dots on LCD glass, one in every column, with the latest column the strongest. Rack is a clip: a block in the hue's own colour with the values as a waveform in it, the latest bar the strongest. The quiet one, the blue one with a baseline and the 24px one are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

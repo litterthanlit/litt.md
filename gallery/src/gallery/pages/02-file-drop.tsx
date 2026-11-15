@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FileDrop, FileList, FileRow } from "@/components/file-drop";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -115,12 +115,12 @@ function StatesDemo() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid w-full gap-6">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -166,12 +166,12 @@ export default function FileDropPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
-        caption="One contract, four bodies. Press is a plate that stands with a deep tray cut into it: an arrow on a raised block, the words and Choose files, the tray going deeper and its lower wall catching the light while a file is over it; each file is a slat, a raised block in a tray of its own, with its rail cut into it. Flat is a grey sheet with one sentence, Drop files or choose, ringed in ink while a file is over it; each file is a line of words, with Retry and Remove as words. Device is a slot: an engraved legend over LCD glass in a bezel, a Choose key beside it, and each file a line of glass whose upload lights segments in steps. Rack is a well in a dashed edge, the arrow on a small key, the words and Choose files, the edge going solid and lit in the ink while a file is over it; the files are thin rows on one panel, each on a hairline. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all four."
-        code="FourBodiesDemo"
+        caption="One contract, a body per world. Press is a plate that stands with a deep tray cut into it: an arrow on a raised block, the words and Choose files, the tray going deeper and its lower wall catching the light while a file is over it; each file is a slat, a raised block in a tray of its own, with its rail cut into it. Flat is a grey sheet with one sentence, Drop files or choose, ringed in ink while a file is over it; each file is a line of words, with Retry and Remove as words. Device is a slot: an engraved legend over LCD glass in a bezel, a Choose key beside it, and each file a line of glass whose upload lights segments in steps. Rack is a well in a dashed edge, the arrow on a small key, the words and Choose files, the edge going solid and lit in the ink while a file is over it; the files are thin rows on one panel, each on a hairline. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="FileDrop" component={FileDrop} props={{ label: "Project files", hint: "PDF or images, up to 10 MB", onFiles: () => {}, className: "w-full max-w-lg" }} controls={["hint", "multiple", "disabled"]} />

@@ -4,7 +4,7 @@ import { ArrowUpRightIcon, CopyIcon, MoreIcon, PlusIcon, SettingsIcon, TrashIcon
 import { MaterialProvider, useMotionDial } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 
 export const meta: PageMeta = {
   id: "button",
@@ -109,12 +109,12 @@ function VariantsDemo() {
 }
 
 /* The four variants in a frame that sets its own look, as the study's Under each material strip draws a part. */
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <MaterialProvider material={m.id}>
             <div
@@ -197,12 +197,12 @@ export default function ButtonPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
-        caption="One contract, four bodies: the same props, the same real button, the same loading and focus, drawn by the material. Press is a thick block on its own plate, sinking into it. Flat is a pill, fill only, a step darker under the hand, and a ghost is words alone. Device is a key on a 2px skirt that sinks the whole 2px. Rack is a flat key in a 1px outline: the accent fill for the primary, a darker outline for a press, and nothing that moves. Press each one."
-        code="FourBodiesDemo"
+        caption="One contract, a body per world: the same props, the same real button, the same loading and focus, drawn by the material. Press is a thick block on its own plate, sinking into it. Flat is a pill, fill only, a step darker under the hand, and a ghost is words alone. Device is a key on a 2px skirt that sinks the whole 2px. Rack is a flat key in a 1px outline: the accent fill for the primary, a darker outline for a press, and nothing that moves. Press each one."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
 
       <Stage

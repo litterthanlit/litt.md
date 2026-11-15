@@ -38,6 +38,7 @@ import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type Textare
 import { byWorld, useMaterial } from "@/motion";
 import { FieldDeviceBody, InputDeviceBody, TextareaDeviceBody } from "./bodies/input.device";
 import { FieldFlatBody, InputFlatBody, TextareaFlatBody } from "./bodies/input.flat";
+import { FieldPlainBody, InputPlainBody, TextareaPlainBody } from "./bodies/input.plain";
 import { FieldRackBody, InputRackBody, TextareaRackBody } from "./bodies/input.rack";
 
 export type InputSize = "sm" | "md" | "lg";
@@ -126,7 +127,7 @@ function PressInput({ size, invalid, mono, className, control }: InputBodyProps)
  * an aria-label, because a placeholder is not a label. Every other input attribute goes through.
  */
 export function Input({ size = "md", invalid = false, mono = false, className = "", ...rest }: InputProps) {
-  const Body = byWorld(useMaterial(), { press: PressInput, flat: InputFlatBody, device: InputDeviceBody, rack: InputRackBody });
+  const Body = byWorld(useMaterial(), { press: PressInput, flat: InputFlatBody, device: InputDeviceBody, plain: InputPlainBody, rack: InputRackBody });
   return <Body size={size} invalid={invalid} mono={mono} className={className} control={rest} />;
 }
 
@@ -157,7 +158,7 @@ function PressField({ id, noteId, label, note, error, disabled, children }: Fiel
 }
 
 function Field(props: FieldBodyProps) {
-  const Body = byWorld(useMaterial(), { press: PressField, flat: FieldFlatBody, device: FieldDeviceBody, rack: FieldRackBody });
+  const Body = byWorld(useMaterial(), { press: PressField, flat: FieldFlatBody, device: FieldDeviceBody, plain: FieldPlainBody, rack: FieldRackBody });
   return <Body {...props} />;
 }
 
@@ -250,6 +251,6 @@ function PressTextarea({ size, invalid, mono, className, control }: TextareaBody
 }
 
 function TextareaControl(props: TextareaBodyProps) {
-  const Body = byWorld(useMaterial(), { press: PressTextarea, flat: TextareaFlatBody, device: TextareaDeviceBody, rack: TextareaRackBody });
+  const Body = byWorld(useMaterial(), { press: PressTextarea, flat: TextareaFlatBody, device: TextareaDeviceBody, plain: TextareaPlainBody, rack: TextareaRackBody });
   return <Body {...props} />;
 }

@@ -20,6 +20,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useStat
 import { MotionConfig, MotionConfigContext, useReducedMotion, type Transition } from "motion/react";
 import { toCss, type Spring } from "./spring";
 import { readLocked, surfaceRadius, type Dial, type Locked } from "./tokens";
+import { useMaterial } from "./deal";
 
 export { surfaceRadius, type Dial };
 export { countText, FUN_SPRINGS, FunMode, honestCount, useFun, useFunGrab, useFunValue, type FunGrab, type FunMotion, type FunValue } from "./fun";
@@ -254,11 +255,16 @@ function useStandaloneDial(enabled: boolean): Ctx | null {
   }, [enabled, system]);
 }
 
-/** The dial the hooks read. Without a provider it is the locked tokens, so the components work in any app. */
+/**
+ * The dial the hooks read. Without a provider it is the locked tokens, so the components work in any app. Under Plain
+ * (proposals/plain.md) it is held still, as reduced motion holds it: a plain page changes in place, at once.
+ */
 export function useMotionDial(): Ctx {
   const ctx = useContext(DialContext);
   const standalone = useStandaloneDial(ctx === null);
-  return ctx ?? standalone!;
+  const base = ctx ?? standalone!;
+  const plain = useMaterial() === "plain";
+  return useMemo(() => (plain && !base.reduced ? { ...base, reduced: true } : base), [base, plain]);
 }
 
 /* What tokens.css's reduced-motion block sets, for CSS transitions inside StillMotion. */

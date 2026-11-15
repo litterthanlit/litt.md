@@ -53,6 +53,7 @@ import { AnimatePresence, LayoutGroup, motion, type Variants } from "motion/reac
 import { byWorld, useExit, useFun, useMaterial, useTransition, useTravel } from "@/motion";
 import { TabsListFlatBody, TabsTriggerFlatBody } from "./bodies/tabs.flat";
 import { TabsListDeviceBody, TabsTriggerDeviceBody } from "./bodies/tabs.device";
+import { TabsListPlainBody, TabsTriggerPlainBody } from "./bodies/tabs.plain";
 import { TabsListRackBody, TabsTriggerRackBody } from "./bodies/tabs.rack";
 
 export type TabsVariant = "underline" | "segmented";
@@ -180,7 +181,7 @@ function PressListBody({ variant, size, className, rootProps }: TabsListBodyProp
 /** The row of tabs. It is a named group, so give it an aria-label. */
 export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
   const { variant, size } = useTabs();
-  const Body = byWorld(useMaterial(), { press: PressListBody, flat: TabsListFlatBody, device: TabsListDeviceBody, rack: TabsListRackBody });
+  const Body = byWorld(useMaterial(), { press: PressListBody, flat: TabsListFlatBody, device: TabsListDeviceBody, plain: TabsListPlainBody, rack: TabsListRackBody });
   return <Body variant={variant} size={size} className={className} rootProps={rest} />;
 }
 
@@ -287,7 +288,7 @@ export function TabsTrigger({
   const enter = fun ? fun.glide : responsive;
   const active = current === value;
   const ref = useCallback((el: HTMLButtonElement | null) => register(value, el), [register, value]);
-  const Body = byWorld(material, { press: PressTriggerBody, flat: TabsTriggerFlatBody, device: TabsTriggerDeviceBody, rack: TabsTriggerRackBody });
+  const Body = byWorld(material, { press: PressTriggerBody, flat: TabsTriggerFlatBody, device: TabsTriggerDeviceBody, plain: TabsTriggerPlainBody, rack: TabsTriggerRackBody });
 
   return (
     <Body

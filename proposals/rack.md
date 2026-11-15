@@ -1,6 +1,6 @@
-# Rack: a fourth world
+# Rack: a world after Ableton Live
 
-Written 2026-11-14 for Nick. Nick asked for "a fourth world inspired by ableton", with Emil Kowalski's design-engineering rules for the motion. This file says what was built, why, and what waits for Nick. Phase 1 (tokens, the check, the gallery's wiring and the world page) is built; nothing in `taste/` changed, so the decisions below go through `evolve.md` before the profile names Rack.
+Written 2026-11-14 for Nick. Nick asked for "a fourth world inspired by ableton", with Emil Kowalski's design-engineering rules for the motion. This file says what was built, why, and what waits for Nick. Phase 1 (tokens, the check, the gallery's wiring and the world page) is built; nothing in `taste/` changed, so the decisions below go through `evolve.md` before the profile names Rack. Plain (`proposals/plain.md`) became the fourth world on `main` while Rack was in review, so Rack merges as the fifth: its check is 15 and its tokens follow Plain's.
 
 ## What Ableton Live's interface is, and what Rack takes from it
 
@@ -30,7 +30,7 @@ Emil's first question is how often someone sees an animation, and his answer for
 ## What was built (phase 1)
 
 - `skills/litt-md/assets/tokens.css`: `--rack-*` in the light, dark and system-dark blocks; the `[data-material="rack"]` block after Device's; Blue 4, pink and monochrome restated after it; its answers without `color-mix()` and under `prefers-contrast: more`.
-- `skills/litt-md/scripts/check.mjs`: check 5 runs every pair again as "rack light" and "rack dark" (the inks, the hovered block, APCA, the accents' 0.12 from every data hue); check 13 knows Rack's face; new check 14 holds Rack's invariants: every token mapped, after Device, nothing cast (every press token a zero-offset 1px outline or empty), no sink, no light, the ink as links and focus, and a lit key's outline at 3:1 on the light body and panels, which is what lets the yellow fill skip its own 3:1 there.
+- `skills/litt-md/scripts/check.mjs`: check 5 runs every pair again as "rack light" and "rack dark" (the inks, the hovered block, APCA, the accents' 0.12 from every data hue); check 13 knows Rack's face; new check 15 holds Rack's invariants: every token mapped, after Device, nothing cast (every press token a zero-offset 1px outline or empty), no sink, no light, the ink as links and focus, and a lit key's outline at 3:1 on the light body and panels, which is what lets the yellow fill skip its own 3:1 there.
 - The gallery: `look.ts` (the material, its `-rack` slug, its row with foundations and abilities, a `bodies` flag), `motion/deal.ts` (the language above), `index.html` (the pre-paint grammar and Inter), `customize-state.tsx` (Rack's locked shape), the scenes (`systems/rack.tsx`: an effect, the mixer, the arrangement, automation, a filter pad), the world page (`pages/00-rack.tsx`), and every test that listed the worlds (`test-look`, `test:worlds`, `test:wall`, `test:playground`, `test:study`).
 - `chart` and `file-drop` read their per-world tables through `byWorld`, so a world without its own body falls back to Press, as `byWorld` promises.
 - Bodies stages show only worlds that have bodies (`BODY_WORLDS`); "Under each material" on a study shows all four, since it shows tokens, not bodies.
@@ -46,7 +46,7 @@ Nick, on the first build: "I meant more colorful, check this out", with two scre
 What both have in common is that the colour belongs to what you make, a track or a clip, and the chrome around it stays grey. litt already has that pair: a data hue's tint behind its mark (R7). So round two keeps R6 and R7 and moves the colour there:
 
 - **Five clip colours.** Rack's data hues become clip colours: blue, an orange in amber's slot, a cyan in teal's, a purple in violet's and a green in rose's. Magenta is left out because it would sit on the pink accent; the green is Live's keyboard clip. Each hue's angle was moved until it keeps 0.12 (OKLab) from the yellow, Blue 4 and pink, in both themes.
-- **The tint is its own value.** `--rack-data-*-tint` is a fill you see, not a 12% hint. In light it is a pastel clip with the hue's dark mark and dark words on it, as Live draws clips. In dark it is a deep clip with a bright mark, the dark orange behind the bright orange of the second screenshot. Check 5 holds every text tone to 4.5:1 on its own tint; check 14 requires the tints to be Rack's own.
+- **The tint is its own value.** `--rack-data-*-tint` is a fill you see, not a 12% hint. In light it is a pastel clip with the hue's dark mark and dark words on it, as Live draws clips. In dark it is a deep clip with a bright mark, the dark orange behind the bright orange of the second screenshot. Check 5 holds every text tone to 4.5:1 on its own tint; check 15 requires the tints to be Rack's own.
 - **Scenes in colour.** Each track keeps one colour on the whole page: its name is a chip in the Tracks table, the sections it leads colour the arrangement strip, and its level is a bar in it.
 
 What this round did not take, and is Nick's call:

@@ -4,7 +4,7 @@ import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components
 import { Tag } from "@/components/tag";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 import { useLoop } from "../tile";
 
@@ -280,12 +280,12 @@ function KeyboardDemo() {
 
 /* ---------- (d) Three bodies ---------- */
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid w-full gap-6 md:grid-cols-2">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -388,12 +388,12 @@ export default function TabsPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
-        caption="One set of tabs, one contract, four bodies. Press is folder tabs cut from a plate's top edge: the chosen one stands forward in the plate's own lit face and is joined to its panel, the others sit lower and darker, and segmented is blocks in a tray with the chosen one raised. Flat is words with the chosen one in ink on a grey bubble, and nothing under the row; the panel is bare. Device is engraved legends with a lamp under the current one, and a row of keys on one skirt when segmented, the chosen key latched down with its lamp lit; it switches in place and never glides. Rack is square keys along a strip, each in a 1px outline, the chosen one lit in the ink (one outlined box divided by rules when segmented), with no underline to slide. Each is drawn here whatever look the page is in; the roles, the arrow keys and what a screen reader hears are the same in all four."
-        code="FourBodiesDemo"
+        caption="One set of tabs, one contract, a body per world. Press is folder tabs cut from a plate's top edge: the chosen one stands forward in the plate's own lit face and is joined to its panel, the others sit lower and darker, and segmented is blocks in a tray with the chosen one raised. Flat is words with the chosen one in ink on a grey bubble, and nothing under the row; the panel is bare. Device is engraved legends with a lamp under the current one, and a row of keys on one skirt when segmented, the chosen key latched down with its lamp lit; it switches in place and never glides. Rack is square keys along a strip, each in a 1px outline, the chosen one lit in the ink (one outlined box divided by rules when segmented), with no underline to slide. Each is drawn here whatever look the page is in; the roles, the arrow keys and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

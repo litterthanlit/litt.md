@@ -7,7 +7,7 @@
  *   height, as every body does.
  * - The waveform: one 2px bar every 3px across the clip, 4px in from each end, mirrored about the middle, each as tall
  *   as the line is high there (a value at the bottom of the scale is a 2px dot, never nothing, so silence still reads,
- *   as a waveform's quiet passages do). The bars are the hue's mark tone, which reaches 3:1 on its own tint (check 14);
+ *   as a waveform's quiet passages do). The bars are the hue's mark tone, which reaches 3:1 on its own tint (check 15);
  *   with no hue, the ink.
  * - Today is the strongest mark: the last bar takes the hue's -text tone (4.5:1 on its tint), a step stronger.
  * - A baseline is the level it marks on both sides of the middle, a 1px dashed line in the mark tone at 60%.

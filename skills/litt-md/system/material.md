@@ -99,7 +99,25 @@ The same depth ladder said in hardware, after the components studies (journal, 2
 - **Nested themes.** As under Flat, an element that sets its own theme needs `data-material="device"` too.
 - **Never:** ambient motion (no flicker, scanline or blinking caret: R4 holds), texture images, or the accent on chrome.
 
-### 9. Rack: `[data-material="rack"]` (R3, a proposal)
+### 9. Plain: `[data-material="plain"]` (R3)
+The page the way HTML draws one, with almost no UI of its own (`proposals/plain.md`): docs, forms, admin and tools that should just work. White paper and black words in the system's face, link blue as its own accent with links underlined, square corners, and nothing moves.
+
+| Depth | Press | Plain |
+|---|---|---|
+| Sunken: a tray | `--tray`, a hairline and the top wall's shade | nothing: no fill and no frame around a group |
+| Sunken: a cut | `--cut` and its top wall's shade | a white field inside the control line, no shade |
+| Sunken: a slot | `--slot`, both walls, the fill a step darker | a bar inside a 1px control line, the fill the grey ink |
+| Flat: canvas and surfaces | a hairline and the top highlight | white paper and a hairline, no highlight |
+| Raised: a block | white or a warm grey, a contact line and a cast | the page inside one 1px control line, drawn inside the box so it never doubles, and no wall (`--block-wall` is 0); pressed, the line is the ink |
+| Raised: a plate | a lit top edge and a cast | the same line outside it: the current tab, open on its foot, is a folder tab |
+| Floating | glass, a zero-offset glow, a ring | the page again (`--canvas`) inside one control line: no blur, no glow, no shadow |
+
+- **The values.** Each theme block declares `--plain-*`: the neutrals and the accent (`#0000ee`, the blue a browser draws a link in, and a pale blue in dark that keeps 0.12 from every data hue). The plain block maps the live names onto them, sets the radii, the glass, the shadows and the grain to nothing, zeroes the motion tiers, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Plain (check 14).
+- **Links.** `tokens.css` underlines a link inside Plain in the base layer, so a utility that sets a link's decoration still wins.
+- **Bodies.** None yet: a part draws Press's body in Plain's tokens (`byWorld` falls back to Press). A Plain body per part is the next step.
+- **Never:** a shadow, a gradient, a blur, a rounded corner, or motion.
+
+### 10. Rack: `[data-material="rack"]` (R3, a proposal)
 The same depth ladder as a software instrument's rack, after Ableton Live (`proposals/rack.md`; its decisions wait for Nick, so the profile does not name it yet). Flat grey panels sit on a darker grey body, and an outline says what a thing is: a key or a well has a 1px edge, and its fill says which. Nothing casts, glows, blurs or sinks. A project chooses it with the attribute on `<html>`; Press stays the default.
 
 | Depth | Press | Rack |
@@ -114,8 +132,8 @@ The same depth ladder as a software instrument's rack, after Ableton Live (`prop
 
 - **The yellow.** Rack's own accent is a yellow, the light of a switch that is on, with dark words. It is only ever a fill, always inside a key's outline, which reaches 3:1 on the light body and carries it there. Links and the focus ring are the ink, so the yellow never has to read against grey.
 - **The clips.** The greys stay at chroma 0 so the colour is what you make: the five data hues are clip colours (blue, an orange in amber's slot, a cyan in teal's, a purple in violet's and a green in rose's, so pink, Blue 4 and the yellow keep 0.12 from them). Each tint is its own value (`--rack-data-*-tint`), not a mix: in light a pastel clip with the hue's dark mark and text on it, in dark a deep clip with a bright mark, as an arrangement draws them. A colour means one thing everywhere in the view (R7).
-- **The values.** Each theme block declares `--rack-*`: the neutrals at chroma 0, the press tokens as outlines, and the accents, status inks and clip colours fitted so every pair passes on the body. The rack block maps the live names onto them, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Rack (check 14).
-- **Its bodies.** Sparkline is the clip: a block in the hue's tint with the values as a mirrored waveform in it, the mark tone at 3:1 on its tint and the latest bar in the text tone (check 14). Switch is the toggle key: its word on its face, an outline when off, lit when on (the ink, or the accent for the one main switch), nothing sliding. Table is a list in an instrument's browser: one flat panel, a darker header strip, thin rows on hairlines. Every other part draws Press's body in Rack's tokens until it has one.
+- **The values.** Each theme block declares `--rack-*`: the neutrals at chroma 0, the press tokens as outlines, and the accents, status inks and clip colours fitted so every pair passes on the body. The rack block maps the live names onto them, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Rack (check 15).
+- **Its bodies.** Sparkline is the clip: a block in the hue's tint with the values as a mirrored waveform in it, the mark tone at 3:1 on its tint and the latest bar in the text tone (check 15). Switch is the toggle key: its word on its face, an outline when off, lit when on (the ink, or the accent for the one main switch), nothing sliding. Table is a list in an instrument's browser: one flat panel, a darker header strip, thin rows on hairlines. Every other part draws Press's body in Rack's tokens until it has one.
 - **Shape and type.** It opens square, 2px controls in 6px panels, and in Inter, dense at small sizes. Labels stay in sentence case.
 - **Nested themes.** As under Flat, an element that sets its own theme needs `data-material="rack"` too.
 - **Never:** a cast, a glow, a gradient or a sink; the yellow as text or as an edge.

@@ -13,9 +13,11 @@
  *   non-empty query first and closes when it is empty. Every handler returns
  *   early while an IME is composing. Pointer leave keeps the highlight.
  * - Filtering keeps the original order and shows a designed empty state.
- * - Motion, responsive tier: opened by a press (a search button), the panel grows out of it (transform-origin on
- *   the button, from GROW, @/motion/deal); opened by the shortcut, it fades, drops half the travel and scales
- *   0.98 to 1; the overlay fades on opacity only; exits use useExit. Typing
+ * - Motion, responsive tier, only when a pointer opens it: the panel grows out of the button under Flat
+ *   (transform-origin on the button, from GROW, @/motion/deal), rises under Press and switches on under Device;
+ *   the overlay fades on opacity only; exits use useExit. Opened from the keyboard (the shortcut, Enter on the
+ *   trigger), the panel and its overlay appear and leave at once with no animation: a menu opened hundreds of
+ *   times a day by a shortcut must not make you wait. Typing
  *   changes the list instantly and the panel's height is never animated: the
  *   list has a max height and scrolls inside. The gliding highlight is glide.tsx.
  * - The panel body (CommandPanel) renders without the dialog too, for a static preview.
@@ -33,6 +35,9 @@
  *   is the first thing in the dialog that takes it, because typing is the point. Both
  *   signals come from useDevice, so <DeviceProvider mode="phone"> previews them.
  * - Device: under data-material="device" the search and the results set in the mono (font-field) and the group labels are engraved (litt-legend).
+ * - Plain: the panel is the page inside its line (litt-glass). The search has one 1px --line-control rule under the words, drawn
+ *   as a background so the text never moves. Rows are grey words; the row under the keys is --fg with four corner brackets
+ *   round its label, and the glide's wash and ring are removed. The footer keeps a 1px --line top rule.
  */
 import {
   useEffect,
@@ -193,7 +198,8 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
       <div
         className={
           "flex h-13 shrink-0 items-center gap-3 border-b border-[var(--glass-border)] " + (coarse && onCancel ? "pl-4 pr-1" : "px-4") +
-          " in-[[data-material=flat]]:m-1 in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:border-transparent in-[[data-material=flat]]:bg-surface-3"
+          " in-[[data-material=flat]]:m-1 in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:border-transparent in-[[data-material=flat]]:bg-surface-3" +
+          " in-[[data-material=plain]]:border-transparent in-[[data-material=plain]]:bg-[linear-gradient(var(--line-control),var(--line-control))] in-[[data-material=plain]]:bg-[length:100%_1px] in-[[data-material=plain]]:bg-bottom in-[[data-material=plain]]:bg-no-repeat"
         }
       >
         <SearchIcon className="shrink-0 text-fg-subtle" />
@@ -232,7 +238,10 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           ref={glide.ref}
           {...glide.props}
           onMouseDown={(e) => e.preventDefault()}
-          className="relative max-h-[var(--cmd-list-max,min(55dvh,22rem))] min-h-0 overflow-y-auto overscroll-contain p-1 in-[[data-material=flat]]:[&>[data-ring]]:rounded-[calc(var(--radius-surface)-4px)]"
+          className={
+            "relative max-h-[var(--cmd-list-max,min(55dvh,22rem))] min-h-0 overflow-y-auto overscroll-contain p-1 in-[[data-material=flat]]:[&>[data-ring]]:rounded-[calc(var(--radius-surface)-4px)] " +
+            "in-[[data-material=plain]]:[&>[data-ring]]:bg-transparent in-[[data-material=plain]]:[&>[data-ring]]:shadow-none in-[[data-material=plain]]:forced-colors:[&>[data-ring]]:bg-[Highlight]"
+          }
         >
           {glide.highlight}
           {sections.map((s) => (
@@ -250,10 +259,21 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
                   data-active={r.index === current || undefined}
                   {...GLIDE_ROW}
                   onClick={() => !r.disabled && onSelect(r)}
-                  className="relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText] font-field"
+                  className="group/opt relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText] font-field"
                 >
                   {r.icon !== undefined && <span className="grid size-4 shrink-0 place-items-center">{r.icon}</span>}
-                  <span className="min-w-0 truncate">{r.label}</span>
+                  <span className="min-w-0 truncate in-[[data-material=plain]]:overflow-visible">
+                    <span className="relative block max-w-full">
+                      <span
+                        aria-hidden="true"
+                        className={
+                          "hidden in-[[data-material=plain]]:group-data-[active]/opt:block " +
+                          "pointer-events-none absolute -inset-x-2 -inset-y-1.5 bg-no-repeat [background-image:linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor)] [background-size:4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px] [background-position:left_top,left_top,right_top,right_top,left_bottom,left_bottom,right_bottom,right_bottom]"
+                        }
+                      />
+                      <span className="block truncate in-[[data-material=plain]]:overflow-visible in-[[data-material=plain]]:leading-none in-[[data-material=plain]]:[text-box:trim-both_cap_alphabetic]">{r.label}</span>
+                    </span>
+                  </span>
                   {r.shortcut && !coarse && <span className="ml-auto shrink-0 pl-4 text-caption font-normal text-fg-subtle">{r.shortcut}</span>}
                 </div>
               ))}
@@ -272,7 +292,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           Under 24rem the arrow hint goes first, since the Enter hint says what will happen.
           On a touch screen every hint here is a keyboard one, so the whole footer goes. */}
       {!coarse && (
-        <div className="@container shrink-0 border-t border-[var(--glass-border)] in-[[data-material=flat]]:border-transparent">
+        <div className="@container shrink-0 border-t border-[var(--glass-border)] in-[[data-material=flat]]:border-transparent in-[[data-material=plain]]:border-[var(--line)]">
           <div className="flex h-10 items-center gap-4 px-4 text-caption text-fg-subtle">
             <span className="flex @max-sm:hidden">
               <Hint keys="↑↓">to move</Hint>
@@ -304,7 +324,7 @@ export type CommandMenuProps = {
   groups: CommandGroup[];
   /** Called with the chosen item, and then the menu closes itself. */
   onSelect: (item: CommandItem) => void;
-  /** Keyboard (the shortcut, Enter on the trigger) or pointer. Decides whether the first row shows the ring at once. */
+  /** Keyboard (the shortcut, Enter on the trigger) or pointer. A keyboard open appears and leaves with no animation and shows the first row's ring at once; a pointer open animates. Pass "pointer" from a button's click (e.detail is 0 for Enter or Space). */
   openedBy?: "keyboard" | "pointer";
 };
 
@@ -339,20 +359,23 @@ function Body({
   const [query, setQuery] = useState("");
   /* There is no Dialog.Trigger (the page owns the button and the shortcut), so give focus back ourselves. */
   const [opener] = useState(() => document.activeElement as HTMLElement | null);
-  /* Opened by a press (the search button), it grows out of it; by the shortcut, it drops in from above. */
+  /* Opened by a press (the search button) under Flat, it grows out of it; under Press it rises. */
   const grow = useGrowFrom<HTMLDivElement>(true, !compact);
   /* Under Device the panel switches on and off where it stands (@/motion/deal, the motion languages). */
   const om = useOverlayMotion();
   const overlayRoot = useOverlayRoot();
+  /* Read once per open: the shortcut that closes a menu a click opened must not make its exit instant. With no exit
+     target, AnimatePresence removes the body as soon as it closes. */
+  const [instant] = useState(openedBy === "keyboard");
 
   return (
     <Dialog.Portal container={overlayRoot} forceMount>
       <Dialog.Overlay asChild>
         <motion.div
           className="fixed inset-0 z-50 bg-[color-mix(in_oklab,var(--canvas)_55%,transparent)]"
-          initial={{ opacity: 0 }}
+          initial={instant ? false : { opacity: 0 }}
           animate={{ opacity: 1, transition: enter }}
-          exit={{ opacity: 0, transition: exit }}
+          exit={instant ? undefined : { opacity: 0, transition: exit }}
         />
       </Dialog.Overlay>
       {/* Desktop: 15dvh down, --space-4 from each side. Compact: the top edge of the visible screen, --space-2 below
@@ -389,9 +412,9 @@ function Body({
               "litt-glass pointer-events-auto w-full max-w-140 origin-top rounded-surface outline-none [--glass-shadow:var(--shadow-modal)] " + FLAT_PANEL +
               (compact ? " flex max-h-full flex-col [--cmd-list-max:none]" : "")
             }
-            initial={om.switches ? { opacity: 0 } : grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: -travel / 2, scale: 0.98 }}
+            initial={instant ? false : om.switches ? { opacity: 0 } : grow.grows ? { opacity: 0, scale: GROW } : { opacity: 0, y: -travel / 2, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1, transition: om.switches ? om.switchIn : enter }}
-            exit={om.switches ? { opacity: 0, transition: om.switchOut } : { opacity: 0, scale: grow.grows ? GROW : 0.98, transition: exit }}
+            exit={instant ? undefined : om.switches ? { opacity: 0, transition: om.switchOut } : { opacity: 0, scale: grow.grows ? GROW : 0.98, transition: exit }}
           >
             <Dialog.Title className="sr-only">Command menu</Dialog.Title>
             <CommandPanel

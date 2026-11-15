@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tag, type TagStatus } from "@/components/tag";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -152,12 +152,12 @@ function BodiesRow() {
   return <Pagination label="Clients pages" page={page} pageSize={20} total={143} onPageChange={setPage} />;
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid w-full gap-6">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -210,13 +210,13 @@ export default function PaginationPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
         align="start"
-        caption="One pagination, one contract, four bodies. Press is the range on a raised face with one sunken tray: Previous and Next are blocks at its ends and the current page a block between them. Flat is the range in ink words with grey word pills and bare numbers, no tray and no shadow. Device is the range in seven segments on an LCD panel with TO and OF engraved, step keys at the ends and the pages as keys, the current one latched. Rack is the range in ink words with Previous, the pages and Next as square keys in 1px outlines, the current page lit in the ink. Each is drawn here whatever look the page is in; the buttons, the live range, the focus handoff at either end and what a screen reader hears are the same in all four."
-        code="FourBodiesDemo"
+        caption="One pagination, one contract, a body per world. Press is the range on a raised face with one sunken tray: Previous and Next are blocks at its ends and the current page a block between them. Flat is the range in ink words with grey word pills and bare numbers, no tray and no shadow. Device is the range in seven segments on an LCD panel with TO and OF engraved, step keys at the ends and the pages as keys, the current one latched. Rack is the range in ink words with Previous, the pages and Next as square keys in 1px outlines, the current page lit in the ink. Each is drawn here whatever look the page is in; the buttons, the live range, the focus handoff at either end and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

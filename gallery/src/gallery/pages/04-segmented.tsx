@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Segmented } from "@/components/segmented";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -191,12 +191,12 @@ function SizesDemo() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -261,12 +261,12 @@ export default function SegmentedPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
-        caption="One control, one contract, four bodies. Press is blocks in a tray: one raised block over empty bays that you can take and drag along the tray to the nearer option, or click and arrow to. Flat is words alone, set in a line with no tray, and a grey pill bubble that glides and resizes to the chosen word. Device is a row of keys in one well: the chosen key is latched all the way down, its skirt gone and its lamp lit, a press lets the last one up, and nothing glides, the change switches in place in three steps. Rack is one box in a 1px outline divided by 1px rules, the chosen option a filled ink key that changes on the frame, with no gliding highlight. Each is drawn here whatever look the page is in; the props, the arrow keys and what a screen reader hears are the same in all four."
-        code="FourBodiesDemo"
+        caption="One control, one contract, a body per world. Press is blocks in a tray: one raised block over empty bays that you can take and drag along the tray to the nearer option, or click and arrow to. Flat is words alone, set in a line with no tray, and a grey pill bubble that glides and resizes to the chosen word. Device is a row of keys in one well: the chosen key is latched all the way down, its skirt gone and its lamp lit, a press lets the last one up, and nothing glides, the change switches in place in three steps. Rack is one box in a 1px outline divided by 1px rules, the chosen option a filled ink key that changes on the frame, with no gliding highlight. Each is drawn here whatever look the page is in; the props, the arrow keys and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

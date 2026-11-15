@@ -200,7 +200,7 @@ function DisabledDemo() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
@@ -263,12 +263,12 @@ export default function SwitchPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
-        caption="One switch, one contract, four bodies. Press is a thick block thrown along a deep tray, uncovering On or Off set in the floor; the word is revealed by the block's travel, not printed on it. Flat is a small ink pill with a canvas knob when on and an outline pill when off, the word in type beside it in the text weight, so the label never reflows. Device is a toggle key in a well that flips with a detent, its word and a lamp on an LCD beside it. Rack is a toggle key with its word on its face that lights when on, in the ink here and the accent for the one main switch; nothing slides. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all four."
-        code="FourBodiesDemo"
+        caption="One switch, one contract, a body per world. Press is a thick block thrown along a deep tray, uncovering On or Off set in the floor; the word is revealed by the block's travel, not printed on it. Flat is a small ink pill with a canvas knob when on and an outline pill when off, the word in type beside it in the text weight, so the label never reflows. Device is a toggle key in a well that flips with a detent, its word and a lamp on an LCD beside it. Rack is a toggle key with its word on its face that lights when on, in the ink here and the accent for the one main switch; nothing slides. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="Switch" component={Switch} props={{ label: "Email me when a build finishes", description: "One email per build, never a digest." }} />

@@ -4,7 +4,7 @@ import { defaultPicks, findVariant, optionsFor } from "@/components/product-card
 import { Price } from "@/components/price";
 import { MaterialProvider } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 import { PRODUCTS } from "../shop";
 
@@ -116,12 +116,12 @@ function KindsDemo() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -175,12 +175,12 @@ export default function OptionPickerPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
-        caption="One picker, one contract, four bodies. Press is one tray with a block per value: the chosen block is raised and lit, the others sit seated, a sold-out one lies flat as a cut in the floor, and a color is a small block of its own. Flat has no tray: words in grey pills, the chosen in an ink pill, a sold-out one outlined, struck through and said in words, and colors as plain circles with the chosen one ringed in ink. Device is a bank of latching keys with engraved legends: the picked one stays down with its lamp lit, and a sold-out one lies flat with no skirt and says so in words. Rack is flat keys in 1px outlines with the picked one lit in the ink, a sold-out key lying flat and saying so, and colors as square chips, the picked one in a 2px ink outline with its check. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all four."
-        code="FourBodiesDemo"
+        caption="One picker, one contract, a body per world. Press is one tray with a block per value: the chosen block is raised and lit, the others sit seated, a sold-out one lies flat as a cut in the floor, and a color is a small block of its own. Flat has no tray: words in grey pills, the chosen in an ink pill, a sold-out one outlined, struck through and said in words, and colors as plain circles with the chosen one ringed in ink. Device is a bank of latching keys with engraved legends: the picked one stays down with its lamp lit, and a sold-out one lies flat with no skirt and says so in words. Rack is flat keys in 1px outlines with the picked one lit in the ink, a sold-out key lying flat and saying so, and colors as square chips, the picked one in a 2px ink outline with its check. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

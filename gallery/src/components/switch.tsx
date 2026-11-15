@@ -62,6 +62,7 @@ import { byWorld, useFun, useMaterial } from "@/motion";
 import { SwitchDeviceBody } from "./bodies/switch.device";
 import { SwitchRackBody } from "./bodies/switch.rack";
 import { SwitchFlatBody } from "./bodies/switch.flat";
+import { SwitchPlainBody } from "./bodies/switch.plain";
 
 export type SwitchAlign = "start" | "end";
 export type SwitchTone = "neutral" | "accent";
@@ -215,7 +216,7 @@ export function Switch({
   const id = idProp ?? auto;
   const descriptionId = description ? `${id}-description` : undefined;
   const end = align === "end";
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody, rack: SwitchRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody, plain: SwitchPlainBody, rack: SwitchRackBody });
 
   /* The switch keeps its own state when you do not control it, because a drag sets it to a side, not a flip. */
   const [inner, setInner] = useState(defaultChecked ?? false);

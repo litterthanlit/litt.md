@@ -43,6 +43,11 @@
  *               and restates the focus ring and the data tints; pink and monochrome are restated on Device after it; reduced
  *               motion stills the key; the glass sets the mono, its ink reaches 7:1 and its placeholder 4.5:1, and the
  *               field's edge 3:1 on the body. Check 5 runs every pair again under Device, and check 8 holds its shadows.
+ * 14. Plain:   data-material="plain" (proposals/plain.md). Every --plain-* value is defined in both themes; the plain
+ *               block maps every neutral and its accent onto its --plain-* twin, comes after Device, is square, casts,
+ *               blurs and lights nothing (a 1px ring at most), sinks and shrinks nothing, restates the focus ring and the
+ *               data tints, and sets the system face; Blue 4, pink and monochrome are restated after it; it zeroes every
+ *               tier. Check 5 runs every pair again under Plain.
  * 13. Worlds:  each world's own accent and face (proposals/worlds.md, decision 14). With no attribute Press is Blue 4 in
  *               Helvetica Neue, Flat the ink in Geist and Device orange in Geist Mono: Press's face is on every theme
  *               root, the flat block restates monochrome's, and each face reads --font-choice first, so a chosen face
@@ -52,7 +57,7 @@
  *               the accent, and every Blue 4 pair in every world. Device's fill is one orange (v1.13): the light body's
  *               fill, hover and words are the screens', and that fill's 3:1 against the light page is not asked.
  *               Rack is yellow in Inter.
- * 14. Rack:    data-material="rack" (proposals/rack.md). Every --rack-* value is defined in both themes; the rack block
+ * 15. Rack:    data-material="rack" (proposals/rack.md). Every --rack-* value is defined in both themes; the rack block
  *               maps every neutral, hue and press token onto its --rack-* twin, comes after Device, sinks nothing, casts
  *               nothing (every raised or sunken step is a zero-offset 1px outline or empty), restates the focus ring and
  *               maps each data tint onto its own --rack-data-*-tint (a clip's fill, which check 5 holds its -text tone
@@ -198,6 +203,17 @@ const screenOf = (map) => {
   return out;
 };
 
+// Plain maps each neutral and its accent onto its --plain-* twin (proposals/plain.md); a block, a cut and a tray are
+// the page.
+const plainOf = (map) => {
+  const out = new Map(map);
+  for (const [k, v] of map) if (k.startsWith("--plain-")) out.set(`--${k.slice(8)}`, v);
+  out.set("--block", out.get("--canvas"));
+  out.set("--cut", out.get("--canvas"));
+  out.set("--tray", out.get("--canvas"));
+  return out;
+};
+
 // 2. Drift ---------------------------------------------------------------
 console.log("Hex drift");
 const tokenHexes = new Set([...css.matchAll(/#[0-9a-f]{3,8}\b/gi)].map((m) => m[0].toLowerCase()));
@@ -225,7 +241,7 @@ missing.length ? missing.forEach((k) => fail(`${k} is defined in only one theme`
 // 5. Contrast -------------------------------------------------------------
 console.log("Contrast");
 // Every pair runs in each theme, then again under Flat and under Device (checks 11 and 12 hold the mirrors themselves).
-const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)], ["device light", deviceOf(light)], ["device dark", deviceOf(dark)], ["device screen", screenOf(light)], ["rack light", rackOf(light)], ["rack dark", rackOf(dark)]];
+const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)], ["device light", deviceOf(light)], ["device dark", deviceOf(dark)], ["device screen", screenOf(light)], ["plain light", plainOf(light)], ["plain dark", plainOf(dark)], ["rack light", rackOf(light)], ["rack dark", rackOf(dark)]];
 const pairs = [
   // [foreground, backgrounds, minimum, note]
   ["--fg", ["--canvas", "--well", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
@@ -262,7 +278,7 @@ for (const [theme, map] of THEMES) {
          on the light aluminium it is a key whose words and rim carry it, so its 3:1 against the page is not asked.
          check 13 holds it to the screens' orange, and its links and focus ring keep the deep orange's pairs. */
       if (theme === "device light" && fgName === "--accent" && min === 3) continue;
-      /* Rack's yellow is the light of a key that is on, always inside the key's 1px outline; check 14 holds that
+      /* Rack's yellow is the light of a key that is on, always inside the key's 1px outline; check 15 holds that
          outline to 3:1 on the light body and panels, so the fill's own 3:1 there is not asked. */
       if (theme === "rack light" && fgName === "--accent" && min === 3) continue;
       const f = map.get(fgName), b = map.get(bgName);
@@ -312,12 +328,13 @@ const hoverShare = (body) => {
 const pressHover = hoverShare(block(/:root,\s*\[data-theme\]\s*\{/));
 const flatHover = hoverShare(block(/:root\[data-material="flat"\],\s*\[data-material="flat"\]\s*\{/));
 const deviceHover = hoverShare(block(/:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{(?=\s*--canvas)/));
+const plainHover = hoverShare(block(/:root\[data-material="plain"\],\s*\[data-material="plain"\]\s*\{(?=\s*--canvas)/));
 const rackHover = hoverShare(block(/:root\[data-material="rack"\],\s*\[data-material="rack"\]\s*\{(?=\s*--canvas)/));
 if (pressHover === null) fail("tokens.css: --block-hover is not color-mix(in oklab, var(--block), var(--fg) N%) on :root, [data-theme]");
 if (flatHover === null) fail('tokens.css: the flat block does not restate --block-hover as color-mix(in oklab, var(--block), var(--fg) N%)');
 let hoverChecks = 0, hoverFails = 0;
 for (const [theme, map] of THEMES) {
-  const share = theme.startsWith("flat") ? flatHover : theme.startsWith("device") ? deviceHover ?? pressHover : theme.startsWith("rack") ? rackHover ?? pressHover : pressHover;
+  const share = theme.startsWith("flat") ? flatHover : theme.startsWith("device") ? deviceHover ?? pressHover : theme.startsWith("plain") ? plainHover : theme.startsWith("rack") ? rackHover ?? pressHover : pressHover;
   const b = map.get("--block"), f = map.get("--fg");
   if (share === null || ![b, f].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) continue;
   const [B, F] = [toLab(b), toLab(f)];
@@ -484,7 +501,9 @@ const motionFails = [];
 const ms = (v) => (/ms$/.test(v) ? parseFloat(v) : /s$/.test(v) ? parseFloat(v) * 1000 : NaN);
 const tokenCss = strip(css);
 const reducedBlock = (tokenCss.match(/@media \(prefers-reduced-motion: reduce\)\s*\{([\s\S]*?)\n\}/) || [])[1] || "";
-const rootCss = tokenCss.replace(reducedBlock, "");
+/* Plain's block zeroes the tiers like reduced motion (check 14 holds it), so the locked tiers are read without it. */
+const stillBlock = (tokenCss.match(/:root\[data-material="plain"\],\s*\[data-material="plain"\]\s*\{(?=\s*--canvas)[^}]*\}/) || [])[0] || "";
+const rootCss = tokenCss.replace(reducedBlock, "").replace(stillBlock, "");
 const tok = (n) => (rootCss.match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*([^;]+);`)) || [])[1]?.trim();
 const isZero = (n) => new RegExp(`(?<![\\w-])${n}\\s*:\\s*0(?:ms|px|s)?\\s*;`).test(reducedBlock);
 
@@ -691,6 +710,49 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
 }
 devFails.length ? devFails.forEach(fail) : ok(`device: ${DEVICE_MAPPED.length} tokens mapped in both themes, after Flat, Blue 4, pink and mono restated, a 2px key, glass at 7:1 in the mono`);
 
+// 14. Plain ---------------------------------------------------------------
+console.log('Plain (data-material="plain")');
+{
+  const plainFails = [];
+  const PLAIN_MAPPED = [...FLAT_NEUTRALS, "--accent", "--accent-hover", "--accent-fg", "--accent-tint", "--accent-text", "--focus"];
+  const plainName = (n) => `--plain-${n.slice(2)}`;
+  for (const n of PLAIN_MAPPED) for (const [theme, map] of [["light", light], ["dark", dark]]) if (!map.has(plainName(n))) plainFails.push(`${theme}: ${plainName(n)} is missing`);
+  const plainRe = /:root\[data-material="plain"\],\s*\[data-material="plain"\]\s*\{(?=\s*--canvas)/;
+  const plainAt = css.search(plainRe);
+  if (plainAt < 0) plainFails.push('tokens.css has no plain block (:root[data-material="plain"], [data-material="plain"] { --canvas: ... })');
+  else {
+    const pl = decls(block(plainRe));
+    if (plainAt < css.search(devRe)) plainFails.push("the plain block comes before Device; it goes last");
+    for (const n of PLAIN_MAPPED) if (pl.get(n) !== `var(${plainName(n)})`) plainFails.push(`the plain block maps ${n} to ${pl.get(n) ?? "nothing"}, not var(${plainName(n)})`);
+    for (const [k, v] of pl) {
+      if (k !== "--light" && /(^|[\s,(])none($|[\s,)])/.test(v)) plainFails.push(`plain: ${k} is "${v}" (an empty shadow is 0 0 0 0 transparent)`);
+      if (!/shade|lift|-press$|highlight|shadow|glow/.test(k)) continue;
+      for (const layer of splitLayers(v)) {
+        const nums = layer.replace(/var\([^)]*\)|(?:rgba?|color-mix)\([^()]*(\([^()]*\)[^()]*)*\)|\b(?:inset|transparent)\b/g, "").trim().split(/\s+/).filter(Boolean).map(parseFloat);
+        const [x = 0, y = 0, blur = 0, spread = 0] = nums;
+        if (x || y || blur || spread > 1) plainFails.push(`plain: ${k} layer "${layer}" casts, blurs or is more than a 1px line`);
+      }
+    }
+    for (const [k, want] of [["--light", "none"], ["--press-depth", "0px"], ["--press-scale", "1"], ["--radius-control", "0px"], ["--radius-surface", "0px"], ["--glass-blur", "0px"], ["--grain-opacity", "0"], ["--block-wall", "0px"], ["--block", "var(--canvas)"]])
+      if (pl.get(k) !== want) plainFails.push(`plain: ${k} is ${pl.get(k) ?? "unset"}, must be ${want}`);
+    const ring = pl.get("--focus-ring") || "";
+    if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) plainFails.push(`plain: --focus-ring must restate the ring with var(--focus) (is "${ring}")`);
+    for (const h of ["blue", "amber", "teal", "violet", "rose"])
+      if (!/var\(--surface-1\)/.test(pl.get(`--data-${h}-tint`) || "")) plainFails.push(`plain: --data-${h}-tint is not restated over var(--surface-1)`);
+  }
+  const still = decls(stillBlock.replace(/^[^{]*\{/, "{"));
+  for (const n of ["--dur-instant", "--dur-responsive", "--dur-expressive", "--dur-exit-responsive", "--dur-exit-expressive", "--stagger", "--travel"])
+    if (!/^0(ms|px)$/.test(still.get(n) || "")) plainFails.push(`the plain block sets ${n} to ${still.get(n) ?? "nothing"}, not 0`);
+  for (const accent of ["blue", "pink", "mono"]) {
+    const re = new RegExp(`:root\\[data-material="plain"\\]\\[data-accent="${accent}"\\],\\s*\\[data-material="plain"\\]\\[data-accent="${accent}"\\]\\s*\\{`);
+    const at = css.search(re);
+    if (at < 0 || at < plainAt) { plainFails.push(`${accent} is not restated on Plain after the plain block, so link blue would beat it on <html>`); continue; }
+    const restated = decls(block(re)), own = decls(block(new RegExp(`:root\\[data-accent="${accent}"\\],\\s*\\[data-accent="${accent}"\\]\\s*\\{`)));
+    for (const [k, v] of own) if (!["--light", "--glow"].includes(k) && restated.get(k) !== v) plainFails.push(`plain ${accent}: ${k} is ${restated.get(k) ?? "missing"}, not ${v} as ${accent}'s own block`);
+  }
+  plainFails.length ? plainFails.forEach(fail) : ok(`plain: ${PLAIN_MAPPED.length} tokens mapped in both themes, after Device, square, lines only, still, Blue 4, pink and mono restated`);
+}
+
 // 13. Worlds ----------------------------------------------------------------
 console.log("Worlds (each world's own accent and face)");
 {
@@ -699,6 +761,7 @@ console.log("Worlds (each world's own accent and face)");
   const FACES = [
     ["Press", ":root, [data-theme]", 'var(--font-choice, "Helvetica Neue", Helvetica, Arial, sans-serif)'],
     ["Flat", ':root[data-material="flat"], [data-material="flat"]', 'var(--font-choice, "Geist", "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
+    ["Plain", ':root[data-material="plain"], [data-material="plain"]', 'var(--font-choice, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif)'],
     ["Rack", ':root[data-material="rack"], [data-material="rack"]', 'var(--font-choice, "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
   ];
   for (const [world, sel, want] of FACES) {
@@ -706,7 +769,7 @@ console.log("Worlds (each world's own accent and face)");
     if (got !== want) worldFails.push(`${world}: --font-sans is ${got ?? "unset"}, must be ${want}`);
   }
   const fontSans = [...strip(css).matchAll(/--font-sans\s*:/g)].length;
-  if (fontSans !== 4) worldFails.push(`tokens.css declares --font-sans ${fontSans} times; only Press's theme roots, Flat, Device and Rack set a face`);
+  if (fontSans !== 5) worldFails.push(`tokens.css declares --font-sans ${fontSans} times; only Press's theme roots, Flat, Device, Plain and Rack set a face`);
   if (/--font-choice\s*:/.test(strip(css))) worldFails.push("tokens.css declares --font-choice; it is the project's or the reader's, so litt never sets it");
   const mono = blockOf(':root[data-accent="mono"], [data-accent="mono"]'), flat = blockOf(':root[data-material="flat"], [data-material="flat"]');
   for (const [k, v] of mono) if (k !== "--focus-ring" && flat.get(k) !== v) worldFails.push(`flat: ${k} is ${flat.get(k) ?? "unset"}, not ${v} as monochrome's block (Flat's own accent is the ink)`);
@@ -733,7 +796,7 @@ console.log("Worlds (each world's own accent and face)");
   worldFails.length ? worldFails.forEach(fail) : ok("Press is Blue 4 in Helvetica Neue, Flat the ink in Geist, Device orange in the mono, Rack yellow in Inter; Blue 4 and pink restated after Flat, a chosen face wins");
 }
 
-// 14. Rack ----------------------------------------------------------------
+// 15. Rack ----------------------------------------------------------------
 console.log('Rack (data-material="rack")');
 {
   const rackFails = [];

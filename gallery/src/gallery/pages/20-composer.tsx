@@ -4,7 +4,7 @@ import { Composer, type ComposerFile } from "@/components/composer";
 import { Select } from "@/components/select";
 import { DeviceProvider, MaterialProvider, useDevice } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -285,12 +285,12 @@ function PhoneDemo() {
   );
 }
 
-function FourBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
     <div className="grid w-full gap-6 md:grid-cols-2">
-      {BODY_WORLDS.map((m) => (
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -377,12 +377,12 @@ export default function ComposerPage() {
       </Stage>
 
       <Stage
-        title="Four bodies"
+        title="A body per world"
         tier="instant"
-        caption="One composer, one contract, four bodies. Press is a plate with a deep well cut into it for the text, the files raised blocks resting in the well, and a rail of blocks under it with Send the one lit block. Flat is one grey pill that grows with the text, Send an ink circle at the end of the last line, and the tools grey words on a line under it. Device is a prompt line on LCD glass in a bezel, the files lit cells, the tools a row of keys under the glass, and Send the one key in the accent. Rack is a panel field: the text in a light box in a 1px control line on a flat panel, the files small flat keys, and a row of keys under it with Send the one yellow key. Each is drawn here whatever look the page is in; the keys, the files, the limits and what a screen reader hears are the same in all four."
-        code="FourBodiesDemo"
+        caption="One composer, one contract, a body per world. Press is a plate with a deep well cut into it for the text, the files raised blocks resting in the well, and a rail of blocks under it with Send the one lit block. Flat is one grey pill that grows with the text, Send an ink circle at the end of the last line, and the tools grey words on a line under it. Device is a prompt line on LCD glass in a bezel, the files lit cells, the tools a row of keys under the glass, and Send the one key in the accent. Rack is a panel field: the text in a light box in a 1px control line on a flat panel, the files small flat keys, and a row of keys under it with Send the one yellow key. Each is drawn here whatever look the page is in; the keys, the files, the limits and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <FourBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );
