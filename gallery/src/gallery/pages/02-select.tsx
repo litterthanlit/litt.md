@@ -10,8 +10,8 @@ export const meta: PageMeta = {
   id: "select",
   title: "Select",
   lede: "One value from a short list.",
-  order: 2.5,
-  group: "Controls",
+  order: 2.06,
+  group: "Inputs",
   verbs: ["select", "open"],
   summary:
     "One value from a short list. You press the trigger, so it is a raised block, the secondary Button's, and it stays pressed while its list is open. The list is a tray of slats in glass, 44px each, with one gliding highlight, and the current slat lifted with a check. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",

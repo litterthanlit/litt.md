@@ -16,7 +16,7 @@ export const meta: PageMeta = {
   id: "timeline",
   title: "Timeline",
   lede: "The steps of a run, in order.",
-  order: 17.8,
+  order: 9.06,
   group: "Data",
   verbs: ["hover"],
   summary:

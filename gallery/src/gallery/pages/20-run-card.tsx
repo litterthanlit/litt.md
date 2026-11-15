@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   id: "run-card",
   title: "Run card",
   lede: "One agent run, folded to a ring and unfolded to its steps.",
-  order: 18.955,
+  order: 11.08,
   group: "Agents",
   verbs: ["press", "watch"],
   summary:

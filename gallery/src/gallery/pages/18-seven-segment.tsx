@@ -8,8 +8,8 @@ export const meta: PageMeta = {
   id: "seven-segment",
   title: "Seven-segment",
   lede: "A figure on seven-segment digits behind glass.",
-  order: 17.26,
-  group: "Data",
+  order: 8.05,
+  group: "Feedback",
   verbs: ["watch"],
   worlds: ["device"],
   summary:

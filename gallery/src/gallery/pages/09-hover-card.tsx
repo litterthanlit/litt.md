@@ -7,7 +7,7 @@ export const meta: PageMeta = {
   id: "hover-card",
   title: "Hover card",
   lede: "A preview of what a link points at.",
-  order: 9.5,
+  order: 5.03,
   group: "Overlays",
   verbs: ["hover"],
   summary:

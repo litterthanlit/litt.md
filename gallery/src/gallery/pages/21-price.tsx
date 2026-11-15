@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   id: "price",
   title: "Price",
   lede: "One amount, and what it was.",
-  order: 21.1,
+  order: 12.01,
   group: "Commerce",
   summary:
     "One amount at the title weight with tabular figures, formatted from an amount and a currency code in the page's locale. A sale strikes the old price through in the grey with hidden words for screen readers, and can add a neutral tag with the saving. Never red, never the accent. Nothing moves.",

@@ -5,8 +5,8 @@ export const meta: PageMeta = {
   id: "gauge",
   title: "Gauge",
   lede: "One value against a range.",
-  order: 17.5,
-  group: "Data",
+  order: 10.07,
+  group: "Charts",
   summary:
     "One value against a range, drawn as a semicircle of fine ticks with the figure in the opening. The ticks up to the value take the foreground or one data hue, and the last one is longer to mark the value. It is static, like the meter.",
   fun: "The ticks sweep to the value with a needle's weight, and the figure counts with them.",

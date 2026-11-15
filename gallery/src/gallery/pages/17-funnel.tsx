@@ -5,8 +5,8 @@ export const meta: PageMeta = {
   id: "funnel",
   title: "Funnel",
   lede: "How many went on at each step.",
-  order: 17.45,
-  group: "Data",
+  order: 10.06,
+  group: "Charts",
   summary:
     "How many went on at each step, as rows rather than a trapezoid: a thin rail per step filled to its share of the first, in one data hue, with the step-to-step share in words between them. It is static, like the meter.",
   tiers: [],

@@ -28,19 +28,7 @@
 import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useExit, useFun, useTransition, useTravel } from "@/motion";
-import {
-  ArrowUpRightIcon,
-  BagIcon,
-  ChartBarIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  GridIcon,
-  LayersIcon,
-  MessageIcon,
-  SidebarIcon,
-  SlidersIcon,
-  SparkleIcon,
-} from "@/components/icons";
+import { ActivityIcon, ArrowUpRightIcon, BagIcon, ChartBarIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, CursorIcon, EditIcon, GridIcon, LayersIcon, ListIcon, MenuIcon, MessageIcon, SidebarIcon, SlidersIcon, SparkleIcon } from "@/components/icons";
 import { useCustomize } from "./customize-state";
 import { PAGE_GROUPS, type PageGroup } from "./kit";
 import type { MaterialInfo } from "./look";
@@ -97,10 +85,16 @@ type MenuGroup = Exclude<PageGroup, "Worlds"> | "Fun";
 const GROUP_ICON: Record<MenuGroup | "Worlds", ReactNode> = {
   Worlds: <WorldsGlyph />,
   Fun: <SparkleIcon />,
-  Controls: <SlidersIcon />,
+  Actions: <CursorIcon />,
+  Inputs: <EditIcon />,
+  Selection: <CheckCircleIcon />,
+  Tools: <SlidersIcon />,
   Overlays: <LayersIcon />,
+  Navigation: <MenuIcon />,
   Layout: <SidebarIcon />,
-  Data: <ChartBarIcon />,
+  Feedback: <ActivityIcon />,
+  Data: <ListIcon />,
+  Charts: <ChartBarIcon />,
   Agents: <MessageIcon />,
   Commerce: <BagIcon />,
   Blocks: <GridIcon />,

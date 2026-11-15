@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   id: "accordion",
   title: "Accordion",
   lede: "Sections that open in place.",
-  order: 15.25,
+  order: 7.06,
   group: "Layout",
   verbs: ["open"],
   summary:

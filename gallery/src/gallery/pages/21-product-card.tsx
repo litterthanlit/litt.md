@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   id: "product-card",
   title: "Product card",
   lede: "One product in a grid, which opens its page.",
-  order: 21.3,
+  order: 12.03,
   group: "Commerce",
   verbs: ["press"],
   summary:

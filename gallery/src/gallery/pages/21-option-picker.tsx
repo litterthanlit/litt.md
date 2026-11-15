@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   id: "option-picker",
   title: "Option picker",
   lede: "One option of a product, such as its size or its frame.",
-  order: 21.2,
+  order: 12.02,
   group: "Commerce",
   verbs: ["select"],
   summary:

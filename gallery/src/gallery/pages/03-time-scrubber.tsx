@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "time-scrubber",
   title: "Time scrubber",
   lede: "A moment in a run, found by dragging its ruler.",
-  order: 3.97,
-  group: "Controls",
+  order: 4.04,
+  group: "Tools",
   verbs: ["drag", "press"],
   summary:
     "A ruler of time in a well you reach into, sliding under a fixed cap, with what happened along the run marked on it in its status color. Drag it and it follows one to one; let go and it settles on the nearest step, or on an event let go near, on the responsive tier. In fun mode it can be thrown, and coasts to the event its speed reaches. Page Up and Page Down go from event to event.",

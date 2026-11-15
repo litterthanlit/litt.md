@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "progress",
   title: "Progress",
   lede: "How far along the work is, while it happens.",
-  order: 15.42,
-  group: "Layout",
+  order: 8.02,
+  group: "Feedback",
   verbs: ["watch"],
   summary:
     "A slot cut into the page for work that is happening now, such as an upload or an import: the label and a reading above it, the done part in the foreground, filling the channel under its walls on the instant tier. It ends done or failed, said in words and announced once. With no value yet the slot stays empty: nothing sweeps, pulses or shimmers.",

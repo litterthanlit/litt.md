@@ -7,7 +7,7 @@ export const meta: PageMeta = {
   id: "legend",
   title: "Legend",
   lede: "Toggles which series a chart shows.",
-  order: 17.31,
+  order: 9.05,
   group: "Data",
   verbs: ["press"],
   summary:

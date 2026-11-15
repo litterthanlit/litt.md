@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "pad",
   title: "Pad",
   lede: "Two values set at once on one surface.",
-  order: 3.8,
-  group: "Controls",
+  order: 4.01,
+  group: "Tools",
   verbs: ["drag"],
   summary:
     "Two values set at once on one surface, like tone against length. A well cut into the page with a static dot grid on its floor, a round cap with dashed crosshairs, a dashed circle for the default, and a tooltip that says the value in words. The cap follows the pointer and the keys at once, with no easing, and sinks while held. Only the tooltip fades, on the responsive tier.",

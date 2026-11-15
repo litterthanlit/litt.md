@@ -8,8 +8,8 @@ export const meta: PageMeta = {
   id: "code-input",
   title: "Code input",
   lede: "A short one-time code, one cell per character.",
-  order: 2.2,
-  group: "Controls",
+  order: 2.02,
+  group: "Inputs",
   verbs: ["type"],
   summary:
     "A short one-time code, such as the six digits from a sign-in email, drawn as one cell per character, each cut into the page like an Input, but built as one real field, so paste, the browser's one-time-code autofill and screen readers all work as in any field. The next cell takes the focus edge and a still caret, and the last character runs onComplete once. The edges fade on the instant tier.",

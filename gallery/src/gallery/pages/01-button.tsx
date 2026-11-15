@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   id: "button",
   title: "Button",
   lede: "The action, answered without moving its box.",
-  order: 1, group: "Controls",
+  order: 1.01, group: "Actions",
   verbs: ["press"],
   summary: "Roomy and slightly rounded, with the label at the title weight. Under Press, secondary is a thick block on its own plate, and danger is the same block with red words. Hover changes the fill on the instant tier, and a press sinks the block into its plate, so the button answers without ever changing its size.",
   fun: "Press and let go: the button goes deeper and springs back with a little life.",

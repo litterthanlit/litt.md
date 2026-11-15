@@ -7,7 +7,7 @@ export const meta: PageMeta = {
   id: "resizable",
   title: "Resizable",
   lede: "Panels with a line you drag between them.",
-  order: 15.48,
+  order: 7.08,
   group: "Layout",
   verbs: ["drag"],
   summary:

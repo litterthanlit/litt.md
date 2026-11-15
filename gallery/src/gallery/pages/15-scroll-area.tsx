@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   id: "scroll-area",
   title: "Scroll area",
   lede: "A box that scrolls inside the page.",
-  order: 15.45,
+  order: 7.07,
   group: "Layout",
   verbs: ["drag"],
   summary:

@@ -18,7 +18,9 @@ import { Tag } from "@/components/tag";
 /** The sidebar's groups, in the order they appear. */
 /** Blocks come last: whole screens built from the components in the groups above them. */
 /** Worlds first: the materials as pages you arrive on (proposals/worlds.md). The nav and the menu draw that group as the way in, not as a group of components. */
-export const PAGE_GROUPS = ["Worlds", "Controls", "Overlays", "Layout", "Data", "Agents", "Commerce", "Blocks"] as const;
+/* Finer groups, about four to eleven parts each, after design.how's systems (Nick, 2026-11-15): a person chooses a
+   group, then a part, instead of passing ninety in a row. */
+export const PAGE_GROUPS = ["Worlds", "Actions", "Inputs", "Selection", "Tools", "Overlays", "Navigation", "Layout", "Feedback", "Data", "Charts", "Agents", "Commerce", "Blocks"] as const;
 export type PageGroup = (typeof PAGE_GROUPS)[number];
 
 /**

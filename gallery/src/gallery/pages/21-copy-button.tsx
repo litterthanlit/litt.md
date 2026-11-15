@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "copy-button",
   title: "Copy button",
   lede: "A key that copies a command, and the glass that shows it.",
-  order: 1.5,
-  group: "Controls",
+  order: 1.02,
+  group: "Actions",
   verbs: ["press"],
   worlds: ["device"],
   summary:

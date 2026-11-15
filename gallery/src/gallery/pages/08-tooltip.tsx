@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   id: "tooltip",
   title: "Tooltip",
   lede: "A small label that grows from its trigger.",
-  order: 8, group: "Overlays",
+  order: 5.01, group: "Overlays",
   verbs: ["hover", "open"],
   summary:
     "A small solid label for icons, shortcuts and status. It opens after 200ms of hover, then grows from its trigger and travels in from the side it renders on. On focus, or within 300ms of another closing, it opens at once and appears in place. On touch it opens on a press and hold, so a tap only does what the button does.",

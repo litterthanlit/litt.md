@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   id: "sources",
   title: "Sources",
   lede: "Where an answer came from, in the text and under it.",
-  order: 18.945,
+  order: 11.06,
   group: "Agents",
   verbs: ["hover", "open"],
   summary:

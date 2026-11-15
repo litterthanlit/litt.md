@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   id: "thinking",
   title: "Thinking",
   lede: "The agent's reasoning, folded away.",
-  order: 18.93,
+  order: 11.03,
   group: "Agents",
   verbs: ["watch", "open"],
   summary:

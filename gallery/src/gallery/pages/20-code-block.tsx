@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   id: "code-block",
   title: "Code block",
   lede: "Code, quiet and copyable.",
-  order: 18.96,
+  order: 11.10,
   group: "Agents",
   verbs: ["press"],
   summary:

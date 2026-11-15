@@ -6,8 +6,8 @@ export const meta: PageMeta = {
   id: "breakdown",
   title: "Breakdown",
   lede: "One whole, split into its parts.",
-  order: 17.35,
-  group: "Data",
+  order: 10.04,
+  group: "Charts",
   summary:
     "One whole split into its parts: a thin split rail with a segment per part, then a row per part in the Meter's anatomy, or a small legend for a tile. Each part takes a data hue and the words stay neutral. It is static, like the meter.",
   tiers: [],

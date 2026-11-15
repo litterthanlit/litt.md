@@ -8,8 +8,8 @@ export const meta: PageMeta = {
   id: "card-picker",
   title: "Card picker",
   lede: "One choice shown as cards.",
-  order: 4.1,
-  group: "Controls",
+  order: 3.06,
+  group: "Selection",
   verbs: ["select"],
   summary:
     "One choice shown as cards: tiles of a picture over a word, or cards with a title, a line and a price. In Press the cards are plates in a tray and the picked one rises out of it; in Flat the picked one sits in a grey bubble with an ink tick; in Device each plate has a lamp and the picked one is set down into a well.",

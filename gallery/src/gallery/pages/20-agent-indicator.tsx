@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   id: "agent-indicator",
   title: "Agent indicator",
   lede: "What the agent is doing, in hardware.",
-  order: 18.935,
+  order: 11.04,
   group: "Agents",
   worlds: ["device"],
   verbs: ["watch"],

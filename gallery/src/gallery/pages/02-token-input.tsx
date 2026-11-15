@@ -8,8 +8,8 @@ export const meta: PageMeta = {
   id: "token-input",
   title: "Token input",
   lede: "Typed values that turn into tokens.",
-  order: 2.3,
-  group: "Controls",
+  order: 2.04,
+  group: "Inputs",
   verbs: ["type"],
   summary:
     "A field that turns typed or pasted values into removable tokens, such as the senders of a mail rule. It is the Input's field with tokens inside, each a block you can lift out under Press, a darker grey pill under Flat and a lit cell under Device: it grows as tokens wrap, a long list folds into a +N token until you focus it, and tokens fade in and out on the responsive tier while their neighbors slide.",

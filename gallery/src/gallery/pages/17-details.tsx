@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   id: "details",
   title: "Details",
   lede: "The facts about one thing, label by value.",
-  order: 17.22, group: "Data",
+  order: 9.04, group: "Data",
   verbs: ["press"],
   summary:
     "An information card of labelled facts about one thing, such as a deployment or a client: in rows with the labels in one column, or in a grid with each label above its value. A value can be copied, a missing one says so, and a loading card keeps its height. Nothing moves; the copy icon swaps at once.",

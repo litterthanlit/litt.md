@@ -7,7 +7,7 @@ export const meta: PageMeta = {
   id: "run-list",
   title: "Run list",
   lede: "An agent's runs, the ones that need you first.",
-  order: 18.958,
+  order: 11.09,
   group: "Agents",
   verbs: ["press", "select", "watch"],
   summary:

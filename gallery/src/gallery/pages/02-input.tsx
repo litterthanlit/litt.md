@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "input",
   title: "Input",
   lede: "A roomy field that answers in color, not motion.",
-  order: 2,
-  group: "Controls",
+  order: 2.01,
+  group: "Inputs",
   verbs: ["type"],
   summary:
     "A roomy, slightly rounded field cut a hair into the page, on the same 32, 44 and 56 scale as Button: a white floor in light, a step below the surfaces in dark, the control line and the top wall's shade. Focus turns the line to the focus color and adds a ring, and an error turns it to danger, both on the instant tier, so the field answers without ever moving its box.",

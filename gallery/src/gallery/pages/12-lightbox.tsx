@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   id: "lightbox",
   title: "Lightbox",
   lede: "One image of a set, at the size of the screen.",
-  order: 12.5,
+  order: 5.08,
   group: "Overlays",
   verbs: ["open", "drag", "press"],
   summary:

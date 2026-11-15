@@ -6,8 +6,8 @@ export const meta: PageMeta = {
   id: "number-field",
   title: "Number field",
   lede: "A number you set, with − and + in the field.",
-  order: 2.25,
-  group: "Controls",
+  order: 2.03,
+  group: "Inputs",
   verbs: ["type", "press"],
   summary:
     "A labelled number in the Input's cut, with − and + as raised blocks inside the field's end. It steps by the arrow keys, by a press, or by holding a stepper down; what is typed is read in the page's locale when the field is left, kept between its bounds, put on the step and shown formatted. A pressed stepper sinks half a pixel and the line fades on the instant tier, as an Input's does.",

@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   id: "tabs",
   title: "Tabs",
   lede: "Views that slide into place.",
-  order: 5, group: "Controls",
+  order: 3.07, group: "Selection",
   verbs: ["select"],
   summary:
     "Underline or segmented. The chosen face slides between tabs, the label only changes color, and the panel fades in from the side of the tab you picked. Press cuts them as folder tabs on a plate; Flat sets them as words with a grey bubble.",

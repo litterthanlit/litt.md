@@ -6,8 +6,8 @@ export const meta: PageMeta = {
   id: "segmented",
   title: "Segmented control",
   lede: "A short choice in one track.",
-  order: 4,
-  group: "Controls",
+  order: 3.05,
+  group: "Selection",
   verbs: ["select"],
   summary:
     "A short choice in one track. The selected surface glides to your pick on the responsive tier, and color changes are instant, so the control answers without ever resizing.",

@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   id: "kbd",
   title: "Kbd",
   lede: "The key cap for a real shortcut.",
-  order: 7, group: "Controls",
+  order: 1.03, group: "Actions",
   summary:
     "The key cap for a real shortcut: the smallest raised block, 20px tall, in Geist. It is a real <kbd>, it is static, and every shortcut hint in the gallery is this one component.",
   tiers: [],

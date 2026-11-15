@@ -15,7 +15,7 @@ export const meta: PageMeta = {
   id: "shopify",
   title: "Shopify",
   lede: "The store parts on a Shopify store.",
-  order: 21.5,
+  order: 12.05,
   group: "Commerce",
   verbs: ["press", "select", "open"],
   summary:

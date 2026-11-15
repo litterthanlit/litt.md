@@ -11,8 +11,8 @@ export const meta: PageMeta = {
   id: "tune",
   title: "Tune",
   lede: "One line that tunes a component against litt's rules.",
-  order: 4.65,
-  group: "Controls",
+  order: 4.07,
+  group: "Tools",
   verbs: ["drag", "press"],
   summary:
     "One call gives a component typed live values and an Inspector to tune them in. Each builder is a litt rule: a corner is checked against litt's corners, a space against the spacing scale and a spring against its tier, with a Fits or Change row each as you drag. Values come back as litt's own token var()s while they sit on a token, so the shipped component follows the theme. Copy tokens writes them with litt's names, versions keep the takes, and the panels show only in development unless you turn them on. The panel's chevrons turn on the responsive tier; nothing animates a height.",

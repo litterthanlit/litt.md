@@ -8,7 +8,7 @@ export const meta: PageMeta = {
   id: "composer",
   title: "Composer",
   lede: "Where you write to an agent.",
-  order: 18.92,
+  order: 11.02,
   group: "Agents",
   verbs: ["type"],
   summary:

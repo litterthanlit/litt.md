@@ -9,8 +9,8 @@ export const meta: PageMeta = {
   id: "switch",
   title: "Switch",
   lede: "A block thrown along a tray, uncovering On or Off.",
-  order: 3.3,
-  group: "Controls",
+  order: 3.02,
+  group: "Selection",
   verbs: ["press"],
   summary:
     "An on or off setting you can feel. A thick block rides a deep tray with On and Off set in its floor, and the block's travel uncovers the one that is true. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",

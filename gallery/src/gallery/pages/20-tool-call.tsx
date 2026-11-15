@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   id: "tool-call",
   title: "Tool call",
   lede: "What an agent did, one row per call.",
-  order: 18.94,
+  order: 11.05,
   group: "Agents",
   verbs: ["open", "watch"],
   summary:

@@ -9,8 +9,8 @@ export const meta: PageMeta = {
   id: "combobox",
   title: "Combobox",
   lede: "Type to find one value, or several, in a long list.",
-  order: 2.6,
-  group: "Controls",
+  order: 2.07,
+  group: "Inputs",
   verbs: ["type", "select"],
   summary:
     "Type to find one value, or several, in a long list. The Input's cut field with the Menu's glass list under it: the list grows from the field as you type, filters at once with the first match lit, and keeps one gliding highlight. Several picks stand up in the field as raised tokens that fade in and out.",

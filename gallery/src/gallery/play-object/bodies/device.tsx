@@ -40,9 +40,10 @@ const STEP: CSSProperties = {
 
 /* ---------- the tape: the slider over the takes ---------- */
 
-function Tape({ takes, at, selector, pick, className }: Pick<PlayObjectBodyProps, "takes" | "at" | "selector" | "pick"> & { className: string }) {
+function Tape({ takes, shelves, at, selector, pick, className }: Pick<PlayObjectBodyProps, "takes" | "shelves" | "at" | "selector" | "pick"> & { className: string }) {
   const n = takes.length;
   const scrub = useScrub(n, pick);
+  const shelf = at === null ? -1 : shelves.findIndex((s) => at >= s.from && at < s.from + s.count);
   return (
     <div
       {...selector}
@@ -56,8 +57,13 @@ function Tape({ takes, at, selector, pick, className }: Pick<PlayObjectBodyProps
       {/* The baseline, printed on the body the full width. */}
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-line" />
       <svg aria-hidden="true" viewBox={`0 0 ${n} 20`} preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 inset-y-2 h-[calc(100%-1rem)] w-full overflow-visible">
+        {/* A full-height rule where each group starts, so the tape reads as its groups. */}
+        {shelves.slice(1).map((s) => (
+          <line key={s.group} x1={s.from} x2={s.from} y1={-2} y2={22} stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" className="text-fg opacity-30" />
+        ))}
         {takes.map((t, i) => {
           const h = level(t.id) * 9;
+          const mine = shelf >= 0 && i >= shelves[shelf]!.from && i < shelves[shelf]!.from + shelves[shelf]!.count;
           return (
             <line
               key={t.id}
@@ -69,15 +75,17 @@ function Tape({ takes, at, selector, pick, className }: Pick<PlayObjectBodyProps
               strokeWidth={2}
               strokeLinecap="round"
               vectorEffect="non-scaling-stroke"
-              className={i === at ? "text-fg" : "text-fg opacity-35"}
+              className={i === at ? "text-fg" : mine ? "text-fg opacity-60" : "text-fg opacity-25"}
             />
           );
         })}
       </svg>
-      {/* The playhead, on the take showing: it switches where it stands. */}
-      <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-fg forced-colors:bg-[Highlight]" style={{ left: `${((at + 0.5) / n) * 100}%` }}>
-        <span className="absolute -left-0.5 top-0 size-1.5 rounded-pill bg-fg forced-colors:bg-[Highlight]" />
-      </span>
+      {/* The playhead, on the take showing: it switches where it stands. On Home there is none. */}
+      {at !== null && (
+        <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-fg forced-colors:bg-[Highlight]" style={{ left: `${((at + 0.5) / n) * 100}%` }}>
+          <span className="absolute -left-0.5 top-0 size-1.5 rounded-pill bg-fg forced-colors:bg-[Highlight]" />
+        </span>
+      )}
     </div>
   );
 }
@@ -89,7 +97,10 @@ function Readout({ readout, className }: Pick<PlayObjectBodyProps, "readout"> & 
   return (
     <div {...readout.props} className={"rounded-control bg-tray p-0.5 shadow-(--tray-shade) " + className}>
       <div className="flex h-full min-w-0 items-center justify-between gap-4 rounded-[calc(var(--radius-control)-2px)] bg-field px-4 font-field text-field-ink shadow-(--field-shade)">
-        <span className="min-w-0 truncate text-body">{readout.title}</span>
+        <span className="grid min-w-0">
+          {readout.group && <span className="truncate text-caption text-field-ink-subtle">{readout.group}</span>}
+          <span className="truncate text-body">{readout.title}</span>
+        </span>
         <span className="shrink-0 tabular-nums">
           <span className="text-h3">{now}</span> <span className="text-caption text-field-ink-subtle">/ {of}</span>
         </span>
@@ -128,22 +139,29 @@ const DETENT = 15; // degrees of turn per component, as the player's dial clicks
 const side =
   "absolute top-1/4 grid h-1/2 w-1/4 cursor-pointer place-items-center text-fg-muted hover:text-fg " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
+/* The top and bottom of the cap: the previous and next group. */
+const edge =
+  "absolute left-1/4 grid h-1/4 w-1/2 cursor-pointer place-items-center text-fg-muted hover:text-fg " +
+  "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
-function Dial({ at, n, step, turn, play }: { at: number; n: number } & Pick<PlayObjectBodyProps, "step" | "turn" | "play">) {
+function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: number } & Pick<PlayObjectBodyProps, "step" | "stepGroup" | "turn" | "play">) {
   const angle = useMotionValue(0);
   const hand = useHand();
   const settle = useSettle([angle]);
   const cap = useRef<HTMLDivElement>(null);
   /* Where the dial rests, in detents, unbounded: it turns the short way round to the take showing. */
   const rest = useRef(0);
-  const was = useRef(at);
+  const was = useRef<number | null>(at);
   const held = useRef(false);
   const latest = useRef(turn);
   latest.current = turn;
 
   useEffect(() => {
-    let d = at - was.current;
+    const from = was.current;
     was.current = at;
+    /* Home stands the dial where it is: it turns only from one part to another. */
+    if (at === null || from === null) return;
+    let d = at - from;
     if (!d) return;
     if (Math.abs(d) > n / 2) d -= Math.sign(d) * n;
     rest.current += d;
@@ -200,6 +218,7 @@ function Dial({ at, n, step, turn, play }: { at: number; n: number } & Pick<Play
         className={
           "relative size-full touch-none rounded-pill bg-cap shadow-(--cap-lift) select-none " +
           "has-[[data-side]:active]:shadow-(--cap-press) has-[[data-side=prev]:active]:[transform:perspective(600px)_rotateY(-6deg)] has-[[data-side=next]:active]:[transform:perspective(600px)_rotateY(6deg)] " +
+          "has-[[data-side=up]:active]:[transform:perspective(600px)_rotateX(6deg)] has-[[data-side=down]:active]:[transform:perspective(600px)_rotateX(-6deg)] " +
           "forced-colors:border"
         }
       >
@@ -218,6 +237,16 @@ function Dial({ at, n, step, turn, play }: { at: number; n: number } & Pick<Play
             <path d="M12 8 5 13V3z" />
           </svg>
         </button>
+        <button {...stepGroup(-1)} data-side="up" className={edge + " top-0 rounded-t-pill"}>
+          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-2.5 fill-current">
+            <path d="M8 4 13 11H3z" />
+          </svg>
+        </button>
+        <button {...stepGroup(1)} data-side="down" className={edge + " bottom-0 rounded-b-pill"}>
+          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-2.5 fill-current">
+            <path d="M8 12 3 5h10z" />
+          </svg>
+        </button>
         {/* The centre: Play, in a well cut through the cap. */}
         <span className="absolute inset-[30%] rounded-pill bg-tray p-1 shadow-(--tray-shade)" data-play-key="">
           <PlayKey play={play} className="size-full" />
@@ -229,7 +258,7 @@ function Dial({ at, n, step, turn, play }: { at: number; n: number } & Pick<Play
 
 /* ---------- the body ---------- */
 
-function DeviceBody({ takes, at, selector, pick, step, turn, play, readout, screen, compact }: PlayObjectBodyProps) {
+function DeviceBody({ takes, shelves, at, selector, pick, step, stepGroup, turn, play, readout, screen, compact }: PlayObjectBodyProps) {
   if (compact) {
     return (
       <div className={COMPACT_BOX}>
@@ -238,7 +267,7 @@ function DeviceBody({ takes, at, selector, pick, step, turn, play, readout, scre
             <Readout readout={readout} className="h-11 min-w-0 flex-1" />
             <PlayKey play={play} className="size-11 shrink-0" />
           </div>
-          <Tape takes={takes} at={at} selector={selector} pick={pick} className="h-11" />
+          <Tape takes={takes} shelves={shelves} at={at} selector={selector} pick={pick} className="h-11" />
         </div>
         {screen}
       </div>
@@ -247,10 +276,10 @@ function DeviceBody({ takes, at, selector, pick, step, turn, play, readout, scre
   return (
     <div className="flex min-w-0 flex-col rounded-surface bg-surface-3 p-1 shadow-(--plate-lift)">
       <div className="flex min-w-0 flex-col rounded-[calc(var(--radius-surface)-4px)] bg-canvas p-2 shadow-(--highlight)">
-        <Tape takes={takes} at={at} selector={selector} pick={pick} className="order-2 mx-4 mt-3 h-12" />
+        <Tape takes={takes} shelves={shelves} at={at} selector={selector} pick={pick} className="order-2 mx-4 mt-3 h-12" />
         <div className="order-3 flex items-center gap-8 px-4 pt-4 pb-4">
           <Readout readout={readout} className="h-16 min-w-0 flex-1" />
-          <Dial at={at} n={takes.length} step={step} turn={turn} play={play} />
+          <Dial at={at} n={takes.length} step={step} stepGroup={stepGroup} turn={turn} play={play} />
         </div>
         <div className="order-1 flex rounded-[calc(var(--radius-surface)-12px)] bg-field p-1 shadow-(--field-shade)">{screen}</div>
       </div>

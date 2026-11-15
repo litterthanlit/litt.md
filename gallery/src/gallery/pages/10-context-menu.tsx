@@ -20,7 +20,7 @@ export const meta: PageMeta = {
   id: "context-menu",
   title: "Context menu",
   lede: "The menu, right where you clicked.",
-  order: 10.5,
+  order: 5.05,
   group: "Overlays",
   verbs: ["open", "select"],
   summary:

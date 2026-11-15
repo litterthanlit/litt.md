@@ -14,11 +14,12 @@
  *   changed,
  * - the object's root (data-play-object) is not the world's id for a world in OBJECTS, or not "bare" for one that is not,
  * - from Source, Tab does not reach the selector (a slider), then Play, then the screen,
- * - ArrowRight, ArrowLeft, Page Up, End and Home do not move the take, with aria-valuenow and the readout's count
- *   following,
- * - a take (every component in the world, in turn) draws nothing inside the screen's box, or anything in the body (the
- *   object outside its screen) is filled with the accent (R6),
- * - Menu does not open on the screen, in its world, or does not take you to the component picked,
+ * - the screen does not open on Home, an index of every component in at least six groups,
+ * - Right and Left do not step within a group (wrapping inside it), Down and Up do not move a group, End and Home do
+ *   not go to the last part and to Home, with aria-valuenow and the readout's count following,
+ * - a take (every component in the world, a group at a time) draws nothing inside the screen's box, or anything in the
+ *   body (the object outside its screen) is filled with the accent (R6),
+ * - Menu does not go back to Home, or its index does not open the component picked,
  * - what the Dialog, Menu, Popover, Select, Context menu, Toast or Tooltip take opens (from its first button, by a click
  *   or, for the tooltip, a held pointer) is not inside the screen's box, under the screen's world (1px tolerance),
  * - the take changes within 6s with no hand on it (nothing plays on load), Play does not move it within 5s, or a press
@@ -173,15 +174,19 @@ const readout = (pg) => pg.evaluate(() => document.querySelector("[data-play-rea
 const now = (pg) => pg.locator(SLIDER).getAttribute("aria-valuenow").then(Number);
 const pad = (i, n) => String(i).padStart(Math.max(2, String(n).length), "0");
 
-/** Picks a take by name from Menu, as a person would. */
+/** Picks a take by name, as a person would: Menu, back to Home, then its row in the index. False when it is not in the world. */
 async function find(pg, title) {
   await pg.locator("[data-play-object]").getByRole("button", { name: "Menu", exact: true }).click();
+  await pg.waitForTimeout(400);
+  const row = pg.locator(`${FRAME} [data-play-index] button`).filter({ hasText: new RegExp(`^${title}$`) });
+  if (!(await row.count())) return false;
+  await row.first().click();
   await pg.waitForTimeout(500);
-  await pg.keyboard.type(title);
-  await pg.waitForTimeout(200);
-  await pg.keyboard.press("Enter");
-  await pg.waitForTimeout(500);
+  return true;
 }
+
+/** The index on Home: each group and how many parts it holds, in order. */
+const shelvesOn = (pg) => pg.evaluate((F) => [...document.querySelectorAll(`${F} [data-play-index] [data-shelf]`)].map((s) => ({ group: s.dataset.shelf, count: s.querySelectorAll("button").length })), FRAME);
 
 /**
  * --greyscale: each world's object at rest on its first take, in colour, then in greyscale with every word in one
@@ -265,49 +270,55 @@ for (const [world, id, attribute] of WORLDS) {
   claim("from Source, Tab reaches the selector, then Play, then the screen", stops.join(",") === "slider,play,screen" ? null : `${world}: ${stops.join(", ")}`);
 
   const n = Number(await pg.locator(SLIDER).getAttribute("aria-valuemax"));
+
+  /* Home: the world opens on its index, every component on its shelf. */
+  const home = await showing(pg);
+  const shelves = await shelvesOn(pg);
+  const total = shelves.reduce((t, s) => t + s.count, 0);
+  claim(
+    "the screen opens on Home, an index of every component in its groups",
+    home.id === "home" && (await readout(pg))?.includes("Home") && shelves.length >= 6 && total === n ? null : `${world}: showing ${home.id}, ${shelves.length} groups holding ${total} of ${n}`,
+  );
+
+  /* Two levels: Right and Left step within a group and wrap there, Down and Up move a group, End and Home. */
+  const firstShelf = shelves[0]?.count ?? 1;
   await pg.locator(SLIDER).focus();
-  for (const [key, to] of [["ArrowRight", 2], ["ArrowLeft", 1], ["PageUp", 11], ["End", n], ["Home", 1]]) {
+  for (const [key, to] of [["ArrowRight", 1], ["ArrowLeft", firstShelf], ["ArrowRight", 1], ["ArrowDown", firstShelf + 1], ["ArrowUp", 1], ["End", n], ["Home", 0]]) {
     await pg.keyboard.press(key);
     await pg.waitForTimeout(150);
     const v = await now(pg);
     const text = await readout(pg);
     const count = `${pad(to, n)} / ${pad(n, n)}`;
-    claim("the arrows, Page Up, End and Home move the take, and the readout follows", v === to && text?.includes(count) ? null : `${world} · ${key}: at ${v}, readout "${text}", wants ${to} and "${count}"`);
+    claim("Right and Left step within a group, Down and Up move a group, End and Home go to the ends, and the readout follows", v === to && text?.includes(count) ? null : `${world} · ${key}: at ${v}, readout "${text}", wants ${to} and "${count}"`);
   }
 
-  /* Every take draws, and the body is never filled with the accent. */
+  /* Every take draws, and the body is never filled with the accent: a group at a time, as a person goes. */
   claim("every take draws something inside the screen's box", n > 0 ? null : `${world}: no takes`);
   claim("nothing in the object's body is filled with the accent", null);
-  for (let i = 1; i <= n; i++) {
-    if (i > 1) {
-      await pg.keyboard.press("ArrowRight");
+  for (const shelf of shelves) {
+    for (let j = 0; j < shelf.count; j++) {
+      await pg.keyboard.press(j === 0 ? "ArrowDown" : "ArrowRight");
       await pg.waitForTimeout(120);
+      let s = await showing(pg);
+      if (!s.draws) {
+        await pg.waitForTimeout(800);
+        s = await showing(pg);
+      }
+      claim("every take draws something inside the screen's box", s.draws ? null : `${world} · ${shelf.group} ${j + 1}: ${s.id ?? "nothing showing"} draws nothing inside the screen`);
+      const fills = await bodyFills(pg);
+      claim("nothing in the object's body is filled with the accent", fills.length === 0 ? null : `${world} · ${shelf.group} ${j + 1}: ${fills.join(", ")}`);
     }
-    let s = await showing(pg);
-    if (!s.draws) {
-      await pg.waitForTimeout(800);
-      s = await showing(pg);
-    }
-    claim("every take draws something inside the screen's box", s.draws ? null : `${world} · ${i}: ${s.id ?? "nothing showing"} draws nothing inside the screen`);
-    const fills = await bodyFills(pg);
-    claim("nothing in the object's body is filled with the accent", fills.length === 0 ? null : `${world} · ${i}: ${fills.join(", ")}`);
   }
 
-  /* Menu: on the screen, in its world, and it takes you where you pick. */
+  /* Menu: back to Home, and the index takes you where you pick. */
   await inView(pg);
-  await pg.locator("[data-play-object]").getByRole("button", { name: "Menu", exact: true }).click();
-  await pg.waitForTimeout(500);
-  for (const b of await place(pg, "[role=dialog]")) claim("Menu opens on the screen, in its world, and goes where you pick", b.ok ? null : `${world}: ${b.what}`);
-  await pg.keyboard.press("Escape");
-  await pg.waitForTimeout(300);
-  await find(pg, "Dialog");
+  const went = await find(pg, "Dialog");
   const picked = await readout(pg);
-  claim("Menu opens on the screen, in its world, and goes where you pick", picked?.includes("Dialog") ? null : `${world}: after picking Dialog the readout says "${picked}"`);
+  claim("Menu goes back to Home, and its index opens what you pick", went && picked?.includes("Dialog") ? null : `${world}: after picking Dialog from the index the readout says "${picked}"`);
 
   /* What a take opens stays on the screen, in its world. */
   for (const title of OPENERS) {
-    await find(pg, title);
-    if (!(await readout(pg))?.includes(title)) continue; // not in this world
+    if (!(await find(pg, title))) continue; // not in this world
     await inView(pg);
     const button = pg.locator(`${FRAME} [data-play-take] button:visible, ${FRAME} [data-play-take] [role=combobox]:visible`).first();
     if (!(await button.count())) {

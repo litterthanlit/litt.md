@@ -11,8 +11,8 @@ export const meta: PageMeta = {
   id: "slider",
   title: "Slider",
   lede: "A cap you hold, riding in a slot on a raised plate.",
-  order: 3.6,
-  group: "Controls",
+  order: 3.03,
+  group: "Selection",
   verbs: ["drag"],
   summary:
     "One value on a range, such as the default animation speed, or a span, such as the builds that took between 20s and 80s. A raised plate holds a slot, and a cap rides in it: take the cap and it follows your hand 1:1, press the slot and it goes there on the spring. Notches mark steps, and the default holds the cap a little. The label row says the value.",

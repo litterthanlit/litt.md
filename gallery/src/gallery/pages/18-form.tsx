@@ -14,7 +14,7 @@ export const meta: PageMeta = {
   id: "form",
   title: "Forms",
   lede: "Fields that make a page.",
-  order: 15.5,
+  order: 7.09,
   group: "Layout",
   verbs: ["type"],
   summary:

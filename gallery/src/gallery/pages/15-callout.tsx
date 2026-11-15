@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   id: "callout",
   title: "Callout",
   lede: "A note in the page flow.",
-  order: 15.2,
+  order: 7.05,
   group: "Layout",
   verbs: ["press"],
   summary:
