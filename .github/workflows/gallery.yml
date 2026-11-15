@@ -1,5 +1,10 @@
-# The PR check: the same chain Vercel runs (verify, then build), plus the litt.md checks and an
-# axe pass over every gallery page. A preview deploy can fail without marking the PR, so this does.
+# The PR check: the same chain Vercel runs (verify, then build), plus the litt.md checks and every page check from a
+# build (axe, the WCAG regressions, the page checks, reduced motion). A preview deploy can fail without marking the PR,
+# so this does.
+#
+# The page checks run as a matrix of parallel jobs, each on its own build, so the run takes as long as its slowest
+# shard rather than the sum: axe over every page was about 21 minutes alone, reduced motion 9 and the studies 6.
+# A suite that grows past about 7 minutes gets another shard (a11y.mjs and reduced-motion.mjs take --shard k/n).
 name: Gallery
 
 on:
@@ -19,8 +24,7 @@ jobs:
     # Pinned: ubuntu-latest moved to 26.04 on 2026-11-11, where Playwright 1.56.1 (below) cannot install Chromium.
     # Move this and the Playwright version together, and re-run every page check when you do.
     runs-on: ubuntu-24.04
-    # axe over every page, light and dark, desktop and phone, takes about half an hour on GitHub's runner.
-    timeout-minutes: 50
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -47,24 +51,44 @@ jobs:
       - name: Build
         run: npm run build --prefix gallery
 
-      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them.
-      - name: Install Playwright and axe-core
-        run: |
-          npm install --prefix "$RUNNER_TEMP/a11y" --no-save --no-package-lock playwright@1.56.1 axe-core@4.10.3
-          "$RUNNER_TEMP/a11y/node_modules/.bin/playwright" install --with-deps chromium
-
-      - name: Accessibility (axe on every page, light and dark, desktop and phone)
-        run: npm run test:a11y --prefix gallery
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-
-  # The WCAG regression checks, the corners check and the page checks that need no axe (the wall, the home, the
-  # worlds, the studies, reduced motion) run beside the main job, on their own build, so neither job nears its time
-  # limit: axe alone takes the main job about half an hour.
-  wcag:
+  pages:
+    name: ${{ matrix.name }}
     runs-on: ubuntu-24.04 # pinned with the Playwright version; see the check job
-    timeout-minutes: 35
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false # one failing suite should not hide what the others found
+      matrix:
+        include:
+          # axe on every page, light and dark, desktop and phone, dealt round-robin across four shards.
+          - { name: "Accessibility 1/4", run: "npm run test:a11y --prefix gallery -- --shard 1/4" }
+          - { name: "Accessibility 2/4", run: "npm run test:a11y --prefix gallery -- --shard 2/4" }
+          - { name: "Accessibility 3/4", run: "npm run test:a11y --prefix gallery -- --shard 3/4" }
+          - { name: "Accessibility 4/4", run: "npm run test:a11y --prefix gallery -- --shard 4/4" }
+          # Nothing moves on any page or overlay, desktop and phone. The self-test runs with motion allowed and must
+          # see motion, so a check that has gone blind fails too; it loads only the four pages it judges.
+          - { name: "Reduced motion 1/2", run: "npm run test:motion --prefix gallery -- --shard 1/2 && npm run test:motion --prefix gallery -- --self-test" }
+          - { name: "Reduced motion 2/2", run: "npm run test:motion --prefix gallery -- --shard 2/2" }
+          # Reflow at 320px, text zoom at 200%, forced colors, focus never on the body, no gaps between rows, corners.
+          - name: WCAG regressions
+            run: |
+              set -e
+              for t in reflow text-zoom forced-colors focus gaps corners; do
+                echo "::group::$t"
+                npm run test:$t --prefix gallery
+                npm run test:$t --prefix gallery -- --self-test
+                echo "::endgroup::"
+              done
+          # The wall (one accent fill, nothing sideways or empty), the home, the world pages and the Playground's phone.
+          - name: Wall, home, worlds and Playground
+            run: |
+              set -e
+              npm run test:wall --prefix gallery
+              npm run test:home --prefix gallery
+              npm run test:worlds --prefix gallery && npm run test:worlds --prefix gallery -- --self-test
+              npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test
+          # Every study page has its sections, anatomy parts resolve, the material frame matches pixel for pixel.
+          - name: Studies
+            run: npm run test:study --prefix gallery && npm run test:study --prefix gallery -- --self-test
     steps:
       - uses: actions/checkout@v4
 
@@ -80,69 +104,13 @@ jobs:
       - name: Build
         run: npm run build --prefix gallery
 
-      - name: Install Playwright
+      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them.
+      - name: Install Playwright and axe-core
         run: |
           npm install --prefix "$RUNNER_TEMP/a11y" --no-save --no-package-lock playwright@1.56.1 axe-core@4.10.3
           "$RUNNER_TEMP/a11y/node_modules/.bin/playwright" install --with-deps chromium
 
-      - name: Reflow (no page scrolls sideways at 320px)
-        run: npm run test:reflow --prefix gallery && npm run test:reflow --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Text zoom (no lines overlap at 200% text on any page)
-        run: npm run test:text-zoom --prefix gallery && npm run test:text-zoom --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Forced colors (the lit row, selected tab and current code cell stand apart, light and dark)
-        run: npm run test:forced-colors --prefix gallery && npm run test:forced-colors --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Focus (never falls to the body after a route, a submit or a confirm; no layout shift on a slow phone)
-        run: npm run test:focus --prefix gallery && npm run test:focus --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Gaps (no dead space between the rows of a clickable list)
-        run: npm run test:gaps --prefix gallery && npm run test:gaps --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Corners (nothing rubs a rounded box's curve at any shape, sliders at both ends, concentric)
-        run: npm run test:corners --prefix gallery && npm run test:corners --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      # The page checks that need no axe run here too: axe alone takes the main job most of its 30 minutes.
-      - name: Wall (the overview with every tile mounted, one accent fill, nothing sideways or empty)
-        run: npm run test:wall --prefix gallery
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Home (the overview's deck tunes the gallery, Get started reaches the steps, ⌘K search opens one menu)
-        run: npm run test:home --prefix gallery
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Worlds (the Press, Flat and Device pages, arriving writes the look, a live hero, one accent fill, Foundations from look.ts, nav and llms.txt)
-        run: npm run test:worlds --prefix gallery && npm run test:worlds --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Playground (the phone wears the world picked, its sheet, menus, tooltip, toasts and command menu open inside it, one accent fill per screen, a world switch keeps the state)
-        run: npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      - name: Study (every study page has its sections, anatomy parts resolve, the material frame is the Anatomy object pixel for pixel, nothing opens on its own, source and docs)
-        run: npm run test:study --prefix gallery && npm run test:study --prefix gallery -- --self-test
-        env:
-          A11Y_TOOLS: ${{ runner.temp }}/a11y
-
-      # The self-test runs with motion allowed and must see motion, so a check that has gone blind fails too.
-      - name: Reduced motion (nothing moves on any page or overlay, desktop and phone)
-        run: npm run test:motion --prefix gallery && npm run test:motion --prefix gallery -- --self-test
+      - name: ${{ matrix.name }}
+        run: ${{ matrix.run }}
         env:
           A11Y_TOOLS: ${{ runner.temp }}/a11y
