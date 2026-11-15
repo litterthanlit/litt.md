@@ -257,19 +257,21 @@ if (selfTest) {
 /* ---------- every study, in every world: Flat and Device at both sizes and themes, the rest at 1440 light ---------- */
 for (const page of STUDIES) {
   let mechanism = "";
+  /* The page's home: Flat, the gallery's world, or the first world a world-only part is in. */
+  const home = !page.worlds || page.worlds.includes("flat") ? "flat" : page.worlds[0];
   for (const world of WORLDS) {
     if (page.worlds && !page.worlds.includes(world)) continue;
     const full = world === "flat" || world === "device";
     for (const size of full ? SIZES : SIZES.slice(0, 1)) for (const scheme of full ? ["light", "dark"] : ["light"]) {
       const r = await audit(page, size, scheme, world);
-      if (world === "flat" && size.label === "1440" && scheme === "light") mechanism = r.mechanism;
+      if (world === home && size.label === "1440" && scheme === "light") mechanism = r.mechanism;
     }
   }
   await docs(page, mechanism);
 
   /* 320 wide */
   for (const scheme of ["light", "dark"]) {
-    const { ctx, pg } = await open(page, { width: 320, height: 640, scheme, world: "flat", phone: true });
+    const { ctx, pg } = await open(page, { width: 320, height: 640, scheme, world: home, phone: true });
     const wide = await pg.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     claim(C.wide, wide > 0 ? `${page.id} · ${scheme} · 320: the page is ${wide}px wider than the screen` : null);
     await ctx.close();
