@@ -280,11 +280,11 @@ function KeyboardDemo() {
 
 /* ---------- (d) Three bodies ---------- */
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2">
       {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -388,12 +388,12 @@ export default function TabsPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="Four bodies"
         tier="instant"
-        caption="One set of tabs, one contract, three bodies. Press is folder tabs cut from a plate's top edge: the chosen one stands forward in the plate's own lit face and is joined to its panel, the others sit lower and darker, and segmented is blocks in a tray with the chosen one raised. Flat is words with the chosen one in ink on a grey bubble, and nothing under the row; the panel is bare. Device is engraved legends with a lamp under the current one, and a row of keys on one skirt when segmented, the chosen key latched down with its lamp lit; it switches in place and never glides. Each is drawn here whatever look the page is in; the roles, the arrow keys and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One set of tabs, one contract, four bodies. Press is folder tabs cut from a plate's top edge: the chosen one stands forward in the plate's own lit face and is joined to its panel, the others sit lower and darker, and segmented is blocks in a tray with the chosen one raised. Flat is words with the chosen one in ink on a grey bubble, and nothing under the row; the panel is bare. Device is engraved legends with a lamp under the current one, and a row of keys on one skirt when segmented, the chosen key latched down with its lamp lit; it switches in place and never glides. Rack is square keys along a strip, each in a 1px outline, the chosen one lit in the ink (one outlined box divided by rules when segmented), with no underline to slide. Each is drawn here whatever look the page is in; the roles, the arrow keys and what a screen reader hears are the same in all four."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
     </Page>
   );

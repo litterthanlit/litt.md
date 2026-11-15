@@ -191,11 +191,11 @@ function SizesDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -261,12 +261,12 @@ export default function SegmentedPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="Four bodies"
         tier="instant"
-        caption="One control, one contract, three bodies. Press is blocks in a tray: one raised block over empty bays that you can take and drag along the tray to the nearer option, or click and arrow to. Flat is words alone, set in a line with no tray, and a grey pill bubble that glides and resizes to the chosen word. Device is a row of keys in one well: the chosen key is latched all the way down, its skirt gone and its lamp lit, a press lets the last one up, and nothing glides, the change switches in place in three steps. Each is drawn here whatever look the page is in; the props, the arrow keys and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One control, one contract, four bodies. Press is blocks in a tray: one raised block over empty bays that you can take and drag along the tray to the nearer option, or click and arrow to. Flat is words alone, set in a line with no tray, and a grey pill bubble that glides and resizes to the chosen word. Device is a row of keys in one well: the chosen key is latched all the way down, its skirt gone and its lamp lit, a press lets the last one up, and nothing glides, the change switches in place in three steps. Rack is one box in a 1px outline divided by 1px rules, the chosen option a filled ink key that changes on the frame, with no gliding highlight. Each is drawn here whatever look the page is in; the props, the arrow keys and what a screen reader hears are the same in all four."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
     </Page>
   );

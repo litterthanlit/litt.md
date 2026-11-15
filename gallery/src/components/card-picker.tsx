@@ -10,6 +10,7 @@
  * - Flat (proposals/worlds.md): the page. No tray and no card: pictures and words, and the picked one in a grey bubble
  *   (--block) with an ink tick and its word in --fg. Grey means chosen.
  * - Device: a plate with a lamp in its corner, the picked one set down 2px into a well with its lamp lit.
+ * - Rack: each card a flat panel in a 1px outline, the picked one outlined 2px in the ink with a small lit check key.
  * - Every card in a picker has the same size: equal columns, or equal rows when stacked. So a plate or a bubble never
  *   changes shape between picks, and the details (a price) line up across a row.
  * - sm: tiles, a picture over a word in one row of 2 to 5, the label --fg-subtle and the picked one --fg. The tray
@@ -27,7 +28,7 @@
  *   words they are named by) and resolves it once into CardPickerBodyProps. It renders the body the material picks
  *   (byWorld). Press, here, is plates in a tray. Flat (bodies/card-picker.flat.tsx) and Device
  *   (bodies/card-picker.device.tsx) are the same radios in other bodies. The arrow keys and every accessible name are
- *   the same in all three.
+ *   the same in all four.
  * - Motion: nothing glides in Press: a plate rises and sinks where it stands, and colors change on the instant tier. Flat's
  *   bubble glides on the responsive tier (fun mode's glide spring in fun mode) and appears at once on the first pick;
  *   Device switches in place in three steps. Reduced motion turns the glide off. The focus ring is drawn from the
@@ -38,6 +39,7 @@ import type { Transition } from "motion/react";
 import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { CardPickerDeviceBody } from "./bodies/card-picker.device";
 import { CardPickerFlatBody } from "./bodies/card-picker.flat";
+import { CardPickerRackBody } from "./bodies/card-picker.rack";
 
 export type CardPickerSize = "sm" | "lg";
 
@@ -282,7 +284,7 @@ export function CardPicker<T extends string>({
   const value = valueProp !== undefined ? valueProp : inner;
   const note = error ?? help;
   const arrange = ARRANGE[Math.min(Math.max(options.length, 2), 6) as 2 | 3 | 4 | 5 | 6];
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: CardPickerFlatBody, device: CardPickerDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: CardPickerFlatBody, device: CardPickerDeviceBody, rack: CardPickerRackBody });
 
   const cards: CardPickerCard[] = options.map((o, i) => {
     const id = `${auto}-${i}`;
