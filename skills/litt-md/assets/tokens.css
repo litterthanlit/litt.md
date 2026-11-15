@@ -458,35 +458,35 @@
   --rack-glass-border: rgba(0, 0, 0, 0.4);
 
   /* Heat's values (data-material="heat", below; proposals/heat.md): a street-racing front end, after the menus of Need
-     for Speed: Most Wanted (2005). By day the page is pale concrete, at night asphalt; panels are opaque slabs, a key
-     stands on a hard 3px ledge with no blur and sinks onto it when pressed, and the one lime is the light of what is
-     selected. Low chroma, a cool green cast; the status and data hues are Rack's (light) and Press's (dark), which
-     already pass on a body this dark or this pale. */
-  --heat-canvas: #d9dcda;
-  --heat-well: #e6e9e7;
-  --heat-surface-1: #eef0ef;
-  --heat-surface-2: #e3e6e4;
-  --heat-surface-3: #d8dcda;
-  --heat-line: #c3c8c5;
-  --heat-line-strong: #adb3b0;
-  --heat-line-control: #6a716d;
-  --heat-fg: #0b0d0c;
-  --heat-fg-muted: #3d4340;
-  --heat-fg-subtle: #3d4340;
-  --heat-fg-disabled: #8d9490;
-  --heat-tray: #c9cdcb;
-  --heat-cut: #f6f7f6;
-  --heat-block: #f3f5f4;
-  --heat-slot: #b8bdba;
-  --heat-slot-fill: #4a504d;
-  --heat-cap: #fbfcfb;
-  --heat-cap-held: #e8ebe9;
-  --heat-accent: #c6f432;
-  --heat-accent-hover: #b6e61c;
-  --heat-accent-fg: #0b0d0c;
-  --heat-accent-tint: #dde8bd;
-  --heat-accent-text: #0b0d0c;
-  --heat-focus: #0b0d0c;
+     for Speed: Most Wanted (2005). At night (its own) black slabs with cream words; by day the same menu printed on
+     bleached sepia paper. A key is a flat dark cell, nothing casts, and the one amber is the light of what is
+     selected: its words, its brackets and its cell. Warm neutrals; the status and data hues are Rack's (light) and
+     Press's (dark), with amber's slot moved to a brake red so the selection's amber keeps 0.12 from every hue. */
+  --heat-canvas: #e4dfd2;
+  --heat-well: #ece8dd;
+  --heat-surface-1: #f2efe7;
+  --heat-surface-2: #e8e3d7;
+  --heat-surface-3: #ddd7c9;
+  --heat-line: #cdc6b6;
+  --heat-line-strong: #b7af9d;
+  --heat-line-control: #6f6857;
+  --heat-fg: #0d0c0a;
+  --heat-fg-muted: #433e33;
+  --heat-fg-subtle: #433e33;
+  --heat-fg-disabled: #958e7e;
+  --heat-tray: #d3cdbe;
+  --heat-cut: #f7f5ef;
+  --heat-block: #f5f2ea;
+  --heat-slot: #c3bcab;
+  --heat-slot-fill: #4b4537;
+  --heat-cap: #fbfaf6;
+  --heat-cap-held: #ebe6db;
+  --heat-accent: #e4a230;
+  --heat-accent-hover: #d69523;
+  --heat-accent-fg: #0d0c0a;
+  --heat-accent-tint: #ead6ad;
+  --heat-accent-text: #0d0c0a;
+  --heat-focus: #0d0c0a;
   --heat-accent-pink: #c0007e;
   --heat-accent-pink-text: #90005d;
   --heat-accent-blue: #0957fd;
@@ -498,29 +498,29 @@
   --heat-danger: #a60e1d;
   --heat-data-blue: #1170b8;
   --heat-data-blue-text: #005592;
-  --heat-data-amber: #8d6800;
-  --heat-data-amber-text: #655000;
+  --heat-data-amber: #b23a1c;
+  --heat-data-amber-text: #8c2a12;
   --heat-data-teal: #007b75;
   --heat-data-teal-text: #005d56;
   --heat-data-violet: #7759cc;
   --heat-data-violet-text: #5e3cac;
   --heat-data-rose: #915d80;
   --heat-data-rose-text: #654968;
-  --heat-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  --heat-tray-shade: inset 0 1px 0 rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(0, 0, 0, 0.2);
-  --heat-cut-shade: inset 0 1px 0 rgba(0, 0, 0, 0.2);
-  --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 3px 0 rgba(0, 0, 0, 0.8);
-  --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(0, 0, 0, 0.8);
-  --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 3px 0 rgba(0, 0, 0, 0.8);
-  --heat-slot-shade: inset 0 1px 0 rgba(0, 0, 0, 0.3);
+  --heat-highlight: inset 0 0 0 0 transparent;
+  --heat-tray-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+  --heat-cut-shade: inset 0 0 0 0 transparent;
+  --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.8);
+  --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.6);
+  --heat-slot-shade: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
   --heat-slot-fill-shade: inset 0 0 0 0 transparent;
-  --heat-plate-lift: 0 0 0 1px rgba(0, 0, 0, 0.12), 0 3px 0 rgba(0, 0, 0, 0.18);
-  --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 2px 0 rgba(0, 0, 0, 0.8);
-  --heat-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.8);
+  --heat-plate-lift: 0 0 0 0 transparent;
+  --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.65);
+  --heat-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.85);
   --heat-cap-grip: rgba(0, 0, 0, 0.35);
-  --heat-glass-bg: rgba(238, 240, 239, 0.98);
-  --heat-glass-bg-solid: rgba(238, 240, 239, 1);
-  --heat-glass-border: rgba(0, 0, 0, 0.5);
+  --heat-glass-bg: rgba(242, 239, 231, 0.98);
+  --heat-glass-bg-solid: rgba(242, 239, 231, 1);
+  --heat-glass-border: rgba(0, 0, 0, 0.45);
 
   /* Accent: Blue 4, Litt's own (v1.0), a bright cobalt that still carries white past 5.5:1, a cool light on the
      warm stone neutrals. Nick's swatch is P3 #2656f4, the same color as this sRGB value. Swap per project, or run
@@ -870,31 +870,31 @@
   --rack-glass-border: rgba(255, 255, 255, 0.12);
 
   /* Heat's values (data-material="heat", below; proposals/heat.md). */
-  --heat-canvas: #0b0d0c;
-  --heat-well: #111413;
-  --heat-surface-1: #111413;
-  --heat-surface-2: #191c1b;
-  --heat-surface-3: #1c1f1e;
-  --heat-line: #2a302d;
-  --heat-line-strong: #39403c;
-  --heat-line-control: #717a75;
-  --heat-fg: #f2f5f3;
-  --heat-fg-muted: #bac3be;
-  --heat-fg-subtle: #bac3be;
-  --heat-fg-disabled: #4f5652;
-  --heat-tray: #070908;
-  --heat-cut: #0f1211;
-  --heat-block: #2b322e;
-  --heat-slot: #070908;
-  --heat-slot-fill: #9aa39e;
-  --heat-cap: #e6ebe8;
-  --heat-cap-held: #f4f7f5;
-  --heat-accent: #c6f432;
-  --heat-accent-hover: #d3fb5c;
-  --heat-accent-fg: #0b0d0c;
-  --heat-accent-tint: #262f12;
-  --heat-accent-text: #c6f432;
-  --heat-focus: #c6f432;
+  --heat-canvas: #050505;
+  --heat-well: #0c0c0b;
+  --heat-surface-1: #0c0c0b;
+  --heat-surface-2: #141412;
+  --heat-surface-3: #1b1a18;
+  --heat-line: #2a2826;
+  --heat-line-strong: #3a3835;
+  --heat-line-control: #77736a;
+  --heat-fg: #f1ead6;
+  --heat-fg-muted: #c4bca6;
+  --heat-fg-subtle: #c4bca6;
+  --heat-fg-disabled: #55524b;
+  --heat-tray: #000000;
+  --heat-cut: #0a0a09;
+  --heat-block: #2a2927;
+  --heat-slot: #000000;
+  --heat-slot-fill: #a8a294;
+  --heat-cap: #e9e2cc;
+  --heat-cap-held: #f6f1e4;
+  --heat-accent: #e4a230;
+  --heat-accent-hover: #efb24a;
+  --heat-accent-fg: #0a0a09;
+  --heat-accent-tint: #4a3210;
+  --heat-accent-text: #e4a230;
+  --heat-focus: #e4a230;
   --heat-accent-pink: #c0007e;
   --heat-accent-pink-text: #feb9db;
   --heat-accent-blue: #0957fd;
@@ -906,28 +906,28 @@
   --heat-danger: #ff756f;
   --heat-data-blue: #2c90e8;
   --heat-data-blue-text: #5aa8f4;
-  --heat-data-amber: #c07b03;
-  --heat-data-amber-text: #d79540;
+  --heat-data-amber: #e0533a;
+  --heat-data-amber-text: #f2775f;
   --heat-data-teal: #09a198;
   --heat-data-teal-text: #42b4ab;
   --heat-data-violet: #8f78df;
   --heat-data-violet-text: #a896ef;
   --heat-data-rose: #d55c8c;
   --heat-data-rose-text: #eb81a7;
-  --heat-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --heat-tray-shade: inset 0 1px 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(0, 0, 0, 0.5);
-  --heat-cut-shade: inset 0 1px 0 rgba(0, 0, 0, 0.5);
-  --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 3px 0 rgba(0, 0, 0, 0.9);
-  --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(0, 0, 0, 0.9);
-  --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 3px 0 rgba(0, 0, 0, 0.9);
-  --heat-slot-shade: inset 0 1px 0 rgba(0, 0, 0, 0.6);
+  --heat-highlight: inset 0 0 0 0 transparent;
+  --heat-tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --heat-cut-shade: inset 0 0 0 0 transparent;
+  --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+  --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
+  --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+  --heat-slot-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   --heat-slot-fill-shade: inset 0 0 0 0 transparent;
-  --heat-plate-lift: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 3px 0 rgba(0, 0, 0, 0.7);
-  --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 2px 0 rgba(0, 0, 0, 0.9);
+  --heat-plate-lift: 0 0 0 0 transparent;
+  --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
   --heat-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
   --heat-cap-grip: rgba(0, 0, 0, 0.35);
-  --heat-glass-bg: rgba(17, 20, 19, 0.98);
-  --heat-glass-bg-solid: rgba(17, 20, 19, 1);
+  --heat-glass-bg: rgba(12, 12, 11, 0.98);
+  --heat-glass-bg-solid: rgba(12, 12, 11, 1);
   --heat-glass-border: rgba(255, 255, 255, 0.1);
 
   --accent-blue: #0957fd;
@@ -1256,31 +1256,31 @@
     --rack-glass-border: rgba(255, 255, 255, 0.12);
 
     /* Heat's values (data-material="heat", below; proposals/heat.md). */
-    --heat-canvas: #0b0d0c;
-    --heat-well: #111413;
-    --heat-surface-1: #111413;
-    --heat-surface-2: #191c1b;
-    --heat-surface-3: #1c1f1e;
-    --heat-line: #2a302d;
-    --heat-line-strong: #39403c;
-    --heat-line-control: #717a75;
-    --heat-fg: #f2f5f3;
-    --heat-fg-muted: #bac3be;
-    --heat-fg-subtle: #bac3be;
-    --heat-fg-disabled: #4f5652;
-    --heat-tray: #070908;
-    --heat-cut: #0f1211;
-    --heat-block: #2b322e;
-    --heat-slot: #070908;
-    --heat-slot-fill: #9aa39e;
-    --heat-cap: #e6ebe8;
-    --heat-cap-held: #f4f7f5;
-    --heat-accent: #c6f432;
-    --heat-accent-hover: #d3fb5c;
-    --heat-accent-fg: #0b0d0c;
-    --heat-accent-tint: #262f12;
-    --heat-accent-text: #c6f432;
-    --heat-focus: #c6f432;
+    --heat-canvas: #050505;
+    --heat-well: #0c0c0b;
+    --heat-surface-1: #0c0c0b;
+    --heat-surface-2: #141412;
+    --heat-surface-3: #1b1a18;
+    --heat-line: #2a2826;
+    --heat-line-strong: #3a3835;
+    --heat-line-control: #77736a;
+    --heat-fg: #f1ead6;
+    --heat-fg-muted: #c4bca6;
+    --heat-fg-subtle: #c4bca6;
+    --heat-fg-disabled: #55524b;
+    --heat-tray: #000000;
+    --heat-cut: #0a0a09;
+    --heat-block: #2a2927;
+    --heat-slot: #000000;
+    --heat-slot-fill: #a8a294;
+    --heat-cap: #e9e2cc;
+    --heat-cap-held: #f6f1e4;
+    --heat-accent: #e4a230;
+    --heat-accent-hover: #efb24a;
+    --heat-accent-fg: #0a0a09;
+    --heat-accent-tint: #4a3210;
+    --heat-accent-text: #e4a230;
+    --heat-focus: #e4a230;
     --heat-accent-pink: #c0007e;
     --heat-accent-pink-text: #feb9db;
     --heat-accent-blue: #0957fd;
@@ -1292,28 +1292,28 @@
     --heat-danger: #ff756f;
     --heat-data-blue: #2c90e8;
     --heat-data-blue-text: #5aa8f4;
-    --heat-data-amber: #c07b03;
-    --heat-data-amber-text: #d79540;
+    --heat-data-amber: #e0533a;
+    --heat-data-amber-text: #f2775f;
     --heat-data-teal: #09a198;
     --heat-data-teal-text: #42b4ab;
     --heat-data-violet: #8f78df;
     --heat-data-violet-text: #a896ef;
     --heat-data-rose: #d55c8c;
     --heat-data-rose-text: #eb81a7;
-    --heat-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    --heat-tray-shade: inset 0 1px 0 rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(0, 0, 0, 0.5);
-    --heat-cut-shade: inset 0 1px 0 rgba(0, 0, 0, 0.5);
-    --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 3px 0 rgba(0, 0, 0, 0.9);
-    --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(0, 0, 0, 0.9);
-    --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 3px 0 rgba(0, 0, 0, 0.9);
-    --heat-slot-shade: inset 0 1px 0 rgba(0, 0, 0, 0.6);
+    --heat-highlight: inset 0 0 0 0 transparent;
+    --heat-tray-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --heat-cut-shade: inset 0 0 0 0 transparent;
+    --heat-block-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+    --heat-block-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
+    --heat-key-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
+    --heat-slot-shade: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
     --heat-slot-fill-shade: inset 0 0 0 0 transparent;
-    --heat-plate-lift: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 3px 0 rgba(0, 0, 0, 0.7);
-    --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7), 0 2px 0 rgba(0, 0, 0, 0.9);
+    --heat-plate-lift: 0 0 0 0 transparent;
+    --heat-cap-lift: 0 0 0 1px rgba(0, 0, 0, 0.7);
     --heat-cap-press: 0 0 0 1px rgba(0, 0, 0, 0.9);
     --heat-cap-grip: rgba(0, 0, 0, 0.35);
-    --heat-glass-bg: rgba(17, 20, 19, 0.98);
-    --heat-glass-bg-solid: rgba(17, 20, 19, 1);
+    --heat-glass-bg: rgba(12, 12, 11, 0.98);
+    --heat-glass-bg-solid: rgba(12, 12, 11, 1);
     --heat-glass-border: rgba(255, 255, 255, 0.1);
 
     --accent-blue: #0957fd;
@@ -2144,12 +2144,11 @@
 /* --------------------------------------------------------------------------
    Heat (R3, proposals/heat.md): data-material="heat" on <html> says the depth
    ladder as a street-racing front end, after Need for Speed: Most Wanted (2005).
-   Its grammar, not its brand: the canvas is asphalt at night (pale concrete by
-   day), surfaces are opaque slabs, a block is a key standing on a hard 3px ledge
-   with no blur, and pressing it sinks it onto the ledge. What is selected lights
-   the one lime and glows. Square corners, a semi-condensed racing face, and
-   motion that whips in from the side. Last in the file, after Rack; no two
-   materials share an element.
+   Its grammar, not its brand: black slabs (bleached sepia paper by day), cream
+   words, a key as a flat dark cell in a 1px outline, and one amber for what is
+   selected: its words, its corner brackets and its cell. Nothing casts, glows or
+   sinks. Square corners, a bold racing face, and motion that whips in from the
+   side. Last in the file, after Rack; no two materials share an element.
    -------------------------------------------------------------------------- */
 :root[data-material="heat"],
 [data-material="heat"] {
@@ -2193,10 +2192,9 @@
   --data-rose: var(--heat-data-rose);
   --data-rose-text: var(--heat-data-rose-text);
   --focus-pink: var(--heat-accent-pink);
-  /* No light falls from the top: the street is lit by what you select, which glows lime. */
+  /* No light falls and nothing glows: what is selected is lit by its amber alone. */
   --light: none;
-  --glow: 0 0 0 1px color-mix(in oklab, var(--accent) 60%, transparent),
-          0 0 24px color-mix(in oklab, var(--accent) var(--glow-strength), transparent);
+  --glow: var(--block-lift);
 
   --highlight: var(--heat-highlight);
   --tray: var(--heat-tray);
@@ -2220,8 +2218,8 @@
   --glass-bg: var(--heat-glass-bg);
   --glass-bg-solid: var(--heat-glass-bg-solid);
   --glass-border: var(--heat-glass-border);
-  /* A key sinks 2px onto its ledge and lands on it. */
-  --press-depth: 2px;
+  /* Nothing sinks: a pressed key answers with its outline and fill, on the frame. */
+  --press-depth: 0px;
   --block-hover: color-mix(in oklab, var(--block), var(--fg) 6%);
 
   /* What you type sits in the cut, a slot in the slab. */
@@ -2230,8 +2228,8 @@
   --field-ink-subtle: var(--fg-subtle);
   --field-line: var(--line-control);
   --field-shade: var(--cut-shade);
-  /* A semi-condensed face drawn for racing dashboards, Saira Semi Condensed, unless a face is chosen. */
-  --font-sans: var(--font-choice, "Saira Semi Condensed", "Barlow Semi Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif);
+  /* A wide, squared face drawn for racing dashboards, Saira, unless a face is chosen. */
+  --font-sans: var(--font-choice, "Saira", "Helvetica Neue", Helvetica, Arial, sans-serif);
   /* Heat is square: every corner 0, as a cut sheet of metal (a Customize shape still overrides it). */
   --radius-control: 0px;
   --radius-surface: 0px;
@@ -2339,7 +2337,6 @@
   }
   :root[data-material="heat"],
   [data-material="heat"] {
-    --glow: 0 0 0 1px var(--accent);
     --block-hover: var(--surface-2);
     --data-blue-tint: var(--surface-2);
     --data-amber-tint: var(--surface-2);
@@ -2364,9 +2361,7 @@
 @media (prefers-reduced-motion: reduce) {
   :root,
   :root[data-material="device"],
-  [data-material="device"],
-  :root[data-material="heat"],
-  [data-material="heat"] {
+  [data-material="device"] {
     --dur-instant: 0ms;
     --dur-responsive: 0ms;
     --dur-expressive: 0ms;

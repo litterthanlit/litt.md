@@ -56,7 +56,7 @@
  *               theme or a material sets the family again (tailwind.css). Check 5 runs every Flat pair with the ink as
  *               the accent, and every Blue 4 pair in every world. Device's fill is one orange (v1.13): the light body's
  *               fill, hover and words are the screens', and that fill's 3:1 against the light page is not asked.
- *               Rack is yellow in Inter, Heat lime in Saira Semi Condensed.
+ *               Rack is yellow in Inter, Heat amber in Saira.
  * 15. Rack:    data-material="rack" (proposals/rack.md). Every --rack-* value is defined in both themes; the rack block
  *               maps every neutral, hue and press token onto its --rack-* twin, comes after Device, sinks nothing, casts
  *               nothing (every raised or sunken step is a zero-offset 1px outline or empty), restates the focus ring and
@@ -66,12 +66,12 @@
  *               body and the panels, which carries the light fill there. Status words reach 4.5:1 on a Rack key, and
  *               under the hand. Check 5 runs every pair again under Rack.
  * 16. Heat:    data-material="heat" (proposals/heat.md). Every --heat-* value is defined in both themes; the heat block
- *               maps every neutral, hue and press token onto its --heat-* twin, comes after Rack, is square, sinks 2px
- *               (and reduced motion stills it), casts only a hard ledge (a raised step is a 1px outline and a cast
- *               straight down with no blur; a sunken one an inset of at most 1px) and lets no light fall, restates the
- *               focus ring and the data tints; Blue 4, pink and monochrome are restated after it. Its lime is a fill
- *               in daylight: there its links and focus ring are the ink, and a lit key's outline reaches 3:1 on the
- *               concrete and the panels, which carries the light fill. At night the lime is its own link and ring.
+ *               maps every neutral, hue and press token onto its --heat-* twin, comes after Rack, is square, sinks
+ *               nothing, casts and glows nothing (every raised or sunken step is a zero-offset 1px outline or empty) and
+ *               lets no light fall, restates the focus ring and the data tints; Blue 4, pink and monochrome are restated
+ *               after it. Its amber is a fill by day: there its links and focus ring are the ink, and a lit key's
+ *               outline reaches 3:1 on the paper and the panels, which carries the fill. At night the amber is its own
+ *               words and ring, as the selected row's.
  *               Check 5 runs every pair again under Heat.
  *
  * Exits 1 if anything fails.
@@ -296,7 +296,7 @@ for (const [theme, map] of THEMES) {
       /* Rack's yellow is the light of a key that is on, always inside the key's 1px outline; check 15 holds that
          outline to 3:1 on the light body and panels, so the fill's own 3:1 there is not asked. */
       if (theme === "rack light" && fgName === "--accent" && min === 3) continue;
-      /* Heat's lime by day is the same: a lit key inside its outline, which check 16 holds to 3:1 on the concrete. */
+      /* Heat's amber by day is the same: a lit key inside its outline, which check 16 holds to 3:1 on the paper. */
       if (theme === "heat light" && fgName === "--accent" && min === 3) continue;
       const f = map.get(fgName), b = map.get(bgName);
       if (!/^#[0-9a-f]{3,6}$/i.test(f || "") || !/^#[0-9a-f]{3,6}$/i.test(b || "")) { warn(`${theme}: cannot check ${fgName} on ${bgName} (not a plain hex)`); continue; }
@@ -703,7 +703,7 @@ for (const accent of ["blue", "pink", "mono"]) {
     for (const [k, v] of own) if (restated.get(k) !== v) devFails.push(`device ${accent}: ${k} is ${restated.get(k) ?? "missing"}, not ${v} as ${accent}'s own block`);
   }
 }
-if (!/@media \(prefers-reduced-motion: reduce\)\s*\{\s*:root,\s*:root\[data-material="device"\],\s*\[data-material="device"\](?:,\s*:root\[data-material="heat"\],\s*\[data-material="heat"\])?\s*\{/.test(css))
+if (!/@media \(prefers-reduced-motion: reduce\)\s*\{\s*:root,\s*:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{/.test(css))
   devFails.push('reduced motion must restate --press-depth on :root[data-material="device"], [data-material="device"], or a key still sinks');
 for (const [theme, map] of [["light", light], ["dark", dark]]) {
   const g = (n) => map.get(devName(n));
@@ -781,7 +781,7 @@ console.log("Worlds (each world's own accent and face)");
     ["Flat", ':root[data-material="flat"], [data-material="flat"]', 'var(--font-choice, "Geist", "Geist Sans", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
     ["Plain", ':root[data-material="plain"], [data-material="plain"]', 'var(--font-choice, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif)'],
     ["Rack", ':root[data-material="rack"], [data-material="rack"]', 'var(--font-choice, "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
-    ["Heat", ':root[data-material="heat"], [data-material="heat"]', 'var(--font-choice, "Saira Semi Condensed", "Barlow Semi Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif)'],
+    ["Heat", ':root[data-material="heat"], [data-material="heat"]', 'var(--font-choice, "Saira", "Helvetica Neue", Helvetica, Arial, sans-serif)'],
   ];
   for (const [world, sel, want] of FACES) {
     const got = blockOf(sel).get("--font-sans");
@@ -812,7 +812,7 @@ console.log("Worlds (each world's own accent and face)");
     worldFails.push("tailwind.css: [data-theme], [data-material] must set font-family: var(--font-sans), so a nested world takes its face");
   for (const n of ["accent", "accent-hover", "accent-fg"])
     if (rawLight.get(`--device-${n}`) !== rawLight.get(`--device-screen-${n}`)) worldFails.push(`device light: --device-${n} is ${rawLight.get(`--device-${n}`)}, not the screens' ${rawLight.get(`--device-screen-${n}`)} (one orange, v1.13)`);
-  worldFails.length ? worldFails.forEach(fail) : ok("Press is Blue 4 in Helvetica Neue, Flat the ink in Geist, Device orange in the mono, Rack yellow in Inter, Heat lime in Saira; Blue 4 and pink restated after Flat, a chosen face wins");
+  worldFails.length ? worldFails.forEach(fail) : ok("Press is Blue 4 in Helvetica Neue, Flat the ink in Geist, Device orange in the mono, Rack yellow in Inter, Heat amber in Saira; Blue 4 and pink restated after Flat, a chosen face wins");
 }
 
 // 15. Rack ----------------------------------------------------------------
@@ -912,16 +912,15 @@ console.log('Heat (data-material="heat")');
     for (const n of HEAT_MAPPED) if (heat.get(n) !== `var(${heatName(n)})`) heatFails.push(`the heat block maps ${n} to ${heat.get(n) ?? "nothing"}, not var(${heatName(n)})`);
     if (heat.get("--focus-pink") !== "var(--heat-accent-pink)") heatFails.push("the heat block must map --focus-pink to var(--heat-accent-pink)");
     for (const [k, v] of heat) if (/(^|[\s,(])none($|[\s,)])/.test(v) && k !== "--light") heatFails.push(`heat: ${k} is "${v}" (an empty shadow is 0 0 0 0 transparent)`);
-    if (heat.get("--press-depth") !== "2px") heatFails.push(`heat: --press-depth is ${heat.get("--press-depth") ?? "unset"}, must be 2px (a key sinks onto its ledge)`);
-    if (heat.get("--light") !== "none") heatFails.push("heat: --light must be none (the street is lit by what you select)");
+    if (heat.get("--press-depth") !== "0px") heatFails.push(`heat: --press-depth is ${heat.get("--press-depth") ?? "unset"}, must be 0px (nothing sinks)`);
+    if (heat.get("--light") !== "none") heatFails.push("heat: --light must be none (what is selected is lit by its amber alone)");
+    if (heat.get("--glow") !== "var(--block-lift)") heatFails.push("heat: --glow must be var(--block-lift) (nothing glows)");
     const ring = heat.get("--focus-ring") || "";
     if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) heatFails.push(`heat: --focus-ring must restate the ring with var(--focus) (is "${ring}")`);
     for (const h of ["blue", "amber", "teal", "violet", "rose"])
       if (!new RegExp(`^color-mix\\(in oklab, var\\(--data-${h}\\) var\\(--tint-strength\\), var\\(--surface-1\\)\\)$`).test(heat.get(`--data-${h}-tint`) || "")) heatFails.push(`heat: --data-${h}-tint must be restated as the mix on Heat's own surface`);
     if (heat.get("--radius-control") !== "0px" || heat.get("--radius-surface") !== "0px") heatFails.push("heat: is square, --radius-control and --radius-surface 0px");
   }
-  if (!/@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*:root\[data-material="heat"\],\s*\[data-material="heat"\]\s*\{/.test(css))
-    heatFails.push('reduced motion must restate --press-depth on :root[data-material="heat"], [data-material="heat"], or a key still sinks');
   for (const accent of ["blue", "pink", "mono"]) {
     const re = new RegExp(`:root\\[data-material="heat"\\]\\[data-accent="${accent}"\\],\\s*\\[data-material="heat"\\]\\[data-accent="${accent}"\\]\\s*\\{`);
     const at = css.search(re);
@@ -931,30 +930,25 @@ console.log('Heat (data-material="heat")');
       for (const [k, v] of own) if (restated.get(k) !== v) heatFails.push(`heat ${accent}: ${k} is ${restated.get(k) ?? "missing"}, not ${v} as ${accent}'s own block`);
     }
   }
-  /* A hard ledge: a raised step is a zero-offset 1px outline and a cast straight down with no blur; a sunken one an
-     inset of at most 1px with no blur. Nothing is soft. */
-  for (const [theme, map] of [["light", rawLight], ["dark", rawDark]]) {
-    for (const n of ["block-lift", "block-press", "key-lift", "plate-lift", "cap-lift", "cap-press"])
+  /* Nothing casts: every raised or sunken step is a zero-offset 1px outline, or empty. */
+  for (const [theme, map] of [["light", rawLight], ["dark", rawDark]])
+    for (const n of ["highlight", "tray-shade", "cut-shade", "block-lift", "block-press", "key-lift", "slot-shade", "slot-fill-shade", "plate-lift", "cap-lift", "cap-press"])
       for (const layer of splitLayers(map.get(`--heat-${n}`) || ""))
-        if (!/^0 ([0-3]px|0) 0( 1px)? (transparent|rgba\([^)]*\))$/.test(layer)) heatFails.push(`${theme}: --heat-${n} layer "${layer}" is not a 1px outline or a hard cast straight down (no blur on a Heat key)`);
-    for (const n of ["highlight", "tray-shade", "cut-shade", "slot-shade", "slot-fill-shade"])
-      for (const layer of splitLayers(map.get(`--heat-${n}`) || ""))
-        if (!/^inset 0 (0|1px) 0( 0| 1px)? (transparent|rgba\([^)]*\))$/.test(layer)) heatFails.push(`${theme}: --heat-${n} layer "${layer}" is not a hard inset of at most 1px`);
-  }
+        if (!/^(inset )?0 0 0 (0|1px) (transparent|rgba\([^)]*\))$/.test(layer)) heatFails.push(`${theme}: --heat-${n} layer "${layer}" is not a zero-offset 1px outline (nothing casts in Heat)`);
   /* By day the lime is only a fill: words and the ring are the ink, and a lit key's outline carries it on the concrete.
      At night it reads on its own, so it is its own link and ring. */
-  if (light.get("--heat-accent-text") !== light.get("--heat-fg")) heatFails.push("light: --heat-accent-text must be the ink (--heat-fg); by day the lime is only a fill");
+  if (light.get("--heat-accent-text") !== light.get("--heat-fg")) heatFails.push("light: --heat-accent-text must be the ink (--heat-fg); by day the amber is only a fill");
   if (light.get("--heat-focus") !== light.get("--heat-fg")) heatFails.push("light: --heat-focus must be the ink (--heat-fg)");
-  if (dark.get("--heat-accent-text") !== dark.get("--heat-accent") || dark.get("--heat-focus") !== dark.get("--heat-accent")) heatFails.push("dark: --heat-accent-text and --heat-focus must be the lime itself");
+  if (dark.get("--heat-accent-text") !== dark.get("--heat-accent") || dark.get("--heat-focus") !== dark.get("--heat-accent")) heatFails.push("dark: --heat-accent-text and --heat-focus must be the amber itself, as the selected row's words");
   {
     const m = /^0 0 0 1px rgba\(0, 0, 0, ([\d.]+)\)/.exec(light.get("--heat-block-lift") || "");
     if (!m) heatFails.push("light: --heat-block-lift must open with one black 1px outline, 0 0 0 1px rgba(0, 0, 0, a)");
     else for (const bg of ["--heat-canvas", "--heat-surface-1"]) {
       const r = ratio(mixHex(light.get(bg), "#000000", +m[1]), light.get(bg));
-      if (r < 3) heatFails.push(`light: a key's outline on ${bg} is ${r.toFixed(2)}:1, needs 3:1 (it carries the lime fill)`);
+      if (r < 3) heatFails.push(`light: a key's outline on ${bg} is ${r.toFixed(2)}:1, needs 3:1 (it carries the amber fill)`);
     }
   }
-  heatFails.length ? heatFails.forEach(fail) : ok(`heat: ${HEAT_MAPPED.length} tokens mapped in both themes, after Rack, square, hard ledges, sinks 2px, Blue 4, pink and mono restated, lime a fill by day`);
+  heatFails.length ? heatFails.forEach(fail) : ok(`heat: ${HEAT_MAPPED.length} tokens mapped in both themes, after Rack, square, flat outlines, nothing sinks or glows, Blue 4, pink and mono restated, amber a fill by day`);
 }
 
 console.log(failures.length ? `\n${failures.length} check(s) failed.` : `\nAll checks passed${warnings.length ? ` (${warnings.length} warning(s))` : ""}.`);

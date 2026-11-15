@@ -139,23 +139,23 @@ The same depth ladder as a software instrument's rack, after Ableton Live (`prop
 - **Never:** a cast, a glow, a gradient or a sink; the yellow as text or as an edge.
 
 ### 11. Heat: `[data-material="heat"]` (R3, a proposal)
-The same depth ladder as a street-racing front end, after the menus of Need for Speed: Most Wanted (2005) (`proposals/heat.md`; its decisions wait for Nick, so the profile does not name it yet). It takes the game's grammar, not its brand: dark slabs on asphalt, hard edges, one hot light on what is selected, and motion that arrives at speed. A project chooses it with the attribute on `<html>`; Press stays the default.
+The same depth ladder as a street-racing front end, after the menus of Need for Speed: Most Wanted (2005) (`proposals/heat.md`; its decisions wait for Nick, so the profile does not name it yet). It takes the menus' grammar, not the game's brand: black slabs banded in diagonal stripes, cream words set right against their values, the row you are on held in amber corner brackets, levels as rows of dashes, and keycaps along the foot. A project chooses it with the attribute on `<html>`; Press stays the default.
 
 | Depth | Press | Heat |
 |---|---|---|
-| Sunken: a tray | `--tray`, a hairline and the top wall's shade | a darker well, a 1px edge and a hard 1px shade along its top |
-| Sunken: a cut you type into or mark | `--cut` and its top wall's shade | a slot in the slab with a hard 1px shade |
-| Flat: canvas and surfaces | a hairline and the top highlight | asphalt (concrete by day); panels are opaque slabs on a hard ledge |
-| Raised: a block | white or a warm grey, a contact line and a cast | a key in a 1px outline standing on a hard 3px ledge with no blur; pressed, it sinks 2px onto the ledge |
-| Raised: a cap and its plate | taller, a cast up to 3px | a light cap on a 2px ledge |
-| Floating | glass, a zero-offset glow, a ring | an opaque slab, its ledge and a stronger ring |
+| Sunken: a tray | `--tray`, a hairline and the top wall's shade | black, in a faint 1px line |
+| Sunken: a cut you type into or mark | `--cut` and its top wall's shade | a near-black box, no shade |
+| Flat: canvas and surfaces | a hairline and the top highlight | the black slab; panels a step lighter, no edge |
+| Raised: a block | white or a warm grey, a contact line and a cast | a flat dark grey cell in a 1px outline; pressed, the outline darkens, and nothing moves down |
+| Raised: a cap and its plate | taller, a cast up to 3px | a cream cap in a 1px outline |
+| Floating | glass, a zero-offset glow, a ring | an opaque slab and a stronger ring |
 
-- **The lime.** Heat's own accent is a lime, the light of what is selected, with dark words. At night it glows (`--glow` is a lime ring and light) and is its own link and focus ring. By day it is only a fill, inside a key's outline, which reaches 3:1 on the concrete and carries it; links and the ring are the ink.
-- **The values.** Each theme block declares `--heat-*`: greys with a cool green cast, the press tokens as hard ledges, and the accents, status inks and data hues fitted so every pair passes (Rack's on the concrete, Press's on the asphalt). The heat block maps the live names onto them, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Heat and holds its invariants (check 16).
-- **Bodies.** None yet: a part draws Press's body in Heat's tokens. The slant (a selected row as a parallelogram, the game's most recognisable shape) waits for its bodies, so it never fights a part that is not drawn for it.
-- **Shape and type.** Square, every corner 0, and Saira Semi Condensed, a narrow face drawn for racing dashboards.
+- **The amber.** Heat's own accent is an amber, the light of what is selected. At night it is the selected row's words, its brackets and its focus ring, and the picked cell's tint (`--accent-tint`, a dark amber-brown). By day it is only a fill inside a key's outline, which reaches 3:1 on the paper and carries it; links and the ring are the ink. Nothing glows.
+- **The values.** Each theme block declares `--heat-*`: warm neutrals, the press tokens as outlines, and the accents, status inks and data hues fitted so every pair passes (Rack's on the paper, Press's on the black). Amber's data slot is a brake red under Heat, so the selection's amber keeps 0.12 from every hue (R6). The heat block maps the live names onto them, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Heat and holds its invariants (check 16).
+- **Bodies.** None yet: a part draws Press's body in Heat's tokens. The world page's scenes draw the grammar by hand (the striped bands, the frame's corner brackets, the amber brackets on the row you are on, the dashes, the keycaps), and the bodies to come take it from there.
+- **Shape and type.** Square, every corner 0, and Saira, a wide squared face drawn for racing dashboards; labels at the title weight.
 - **Nested themes.** As under Flat, an element that sets its own theme needs `data-material="heat"` too.
-- **Never:** a soft shadow, a rounded corner, a second accent, or the lime as text by day.
+- **Never:** a soft shadow, a glow, a rounded corner, a second accent, or the amber as text by day.
 
 ## Glow: `--glow` (R6)
 A 1px accent ring plus a soft, zero-offset accent light around the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (R2).

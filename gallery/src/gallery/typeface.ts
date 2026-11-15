@@ -34,7 +34,7 @@ export const FACES: readonly Typeface[] = [
   { id: "geist", name: "Geist", stack: `"Geist", "Geist Sans", ${FALLBACK}` },
   { id: "geist-mono", name: "Geist Mono", short: "Mono", stack: '"Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace' },
   { id: "inter", name: "Inter", stack: `"Inter", ${FALLBACK}`, href: `${GOOGLE}family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600` },
-  { id: "saira", name: "Saira Semi Condensed", short: "Saira", stack: `"Saira Semi Condensed", "Barlow Semi Condensed", "Arial Narrow", ${FALLBACK}`, href: `${GOOGLE}family=Saira+Semi+Condensed:wght@400;500;600` },
+  { id: "saira", name: "Saira", stack: `"Saira", ${FALLBACK}`, href: `${GOOGLE}family=Saira:wght@400;500;600` },
   { id: "hanken", name: "Hanken Grotesk", short: "Hanken", stack: `"Hanken Grotesk", ${FALLBACK}`, href: `${GOOGLE}family=Hanken+Grotesk:wght@400;500;600` },
   { id: "system", name: "System", stack: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif' },
 ];
