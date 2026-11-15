@@ -4,7 +4,7 @@
  * - The figure sits in a light box (--cut through --field) in a 1px control line (--line-control), square at the control
  *   radius, no shade, the number in tabular figures at the text weight with its unit after it in --field-ink-subtle.
  *   Focus turns the line to --focus and adds the focus ring, an error the --danger line, both on the instant tier.
- * - − and + are two small flat keys beside the box, 4px from it and from each other, each the box's height square: a
+ * - − and + are two small flat keys beside the box, 4px from it and from each other, each the box's height, 28px wide on a mouse and square on a finger (44px): a
  *   key (--block) in the 1px outline of --block-lift, the sign in the ink. Hover lightens the fill, a press darkens the
  *   outline (--block-press), on the frame; a key never moves or sinks. At a bound its key lies flat, --surface-2 with a
  *   --line hairline and --fg-disabled sign, so the end that cannot move is the quiet one.
@@ -26,7 +26,7 @@ const boxInvalid =
   " data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger)] data-[invalid]:has-[input:focus-visible]:shadow-[inset_0_0_0_1px_var(--danger),var(--focus-ring)]";
 
 const key =
-  "litt-target relative grid h-full aspect-square shrink-0 place-items-center select-none rounded-control [-webkit-tap-highlight-color:transparent] " +
+  "litt-target relative grid h-full w-7 pointer-coarse:w-auto pointer-coarse:aspect-square shrink-0 place-items-center select-none rounded-control [-webkit-tap-highlight-color:transparent] " +
   "transition-[background-color,color,box-shadow] duration-(--dur-instant) ease-litt " +
   "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--block-lift) enabled:forced-colors:border " +
   "enabled:hover:bg-(--block-hover) enabled:active:shadow-(--block-press) " +

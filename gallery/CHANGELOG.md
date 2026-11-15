@@ -9,7 +9,7 @@ To update an item, read the entries since your version, then reinstall it with `
 Every part with a body per world gets Rack's (`data-material="rack"`), drawn as an instrument's controls: flat keys and light boxes in 1px outlines, square at the control radius, lit in the ink (or the accent for the one primary action), nothing cast or sunk. Press, Flat and Device are unchanged.
 
 - **changed** `input`: a Rack body, a light box in a 1px control line with no shade, the line turning to the ink on focus and to danger on an error. Props are unchanged.
-- **changed** `number-field`: a Rack body, a value box with − and + as small flat keys in outlines beside it that lie flat at a bound. Props are unchanged.
+- **changed** `number-field`: a Rack body, a value box with − and + as slim flat keys in outlines beside it (square on a touch screen) that lie flat at a bound. Props are unchanged.
 - **changed** `code-input`: a Rack body, one square light box per character in a 1px control line with the current cell outlined in the ink. Props are unchanged.
 - **changed** `token-input`: a Rack body, a light box holding small flat outlined keys with square remove keys, cutting in place. Props are unchanged.
 - **changed** `composer`: a Rack body, a panel field with a light text box, files as small flat keys, a row of keys under it and Send the one lit key. Props are unchanged.
