@@ -203,10 +203,10 @@ function Dial({ at, n, step, turn, play }: { at: number; n: number } & Pick<Play
           "forced-colors:border"
         }
       >
-        {/* The knurled ring and its mark turn with the hand; the legends on the sides stay put. */}
+        {/* The knurled ring and its mark (a wedge of ink at the top of the ring) turn with the hand; the legends on the
+            sides stay put. */}
         <motion.div aria-hidden="true" style={{ rotate: angle }} className="pointer-events-none absolute inset-0 rounded-pill">
-          <span className="absolute inset-0 rounded-pill [background:repeating-conic-gradient(var(--cap-grip)_0deg_1.5deg,transparent_1.5deg_15deg)] [mask:radial-gradient(circle,transparent_66%,black_68%,black_92%,transparent_94%)]" />
-          <span className="absolute left-1/2 top-1 h-2 w-0.5 -translate-x-1/2 rounded-pill bg-fg-muted" />
+          <span className="absolute inset-0 rounded-pill [background:conic-gradient(var(--fg-muted)_0deg_2deg,transparent_2deg_358deg,var(--fg-muted)_358deg),repeating-conic-gradient(var(--cap-grip)_0deg_1.5deg,transparent_1.5deg_15deg)] [mask:radial-gradient(circle,transparent_66%,black_68%,black_92%,transparent_94%)]" />
         </motion.div>
         <button {...step(-1)} data-side="prev" className={side + " left-0 rounded-l-pill"}>
           <svg aria-hidden="true" viewBox="0 0 16 16" className="size-2.5 fill-current">

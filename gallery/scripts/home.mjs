@@ -93,7 +93,8 @@ const dialogs = (pg) => pg.locator("[role=dialog]").count();
     accent: document.body.dataset.accent ?? null,
     material: document.documentElement.dataset.material ?? null,
     radius: document.body.style.getPropertyValue("--radius-control"),
-    fun: document.querySelectorAll("[data-fun-cue]").length,
+    /* Fun mode on would lead the sidebar with its Fun group; this page is in a world, so look for any page's Fun hint. */
+    fun: document.querySelectorAll("[aria-labelledby=nav-Fun], main p[data-fun-cue] svg").length,
   }));
   check(
     state.accent === null && state.material === "flat" && state.radius === "" && state.fun === 0,
@@ -151,6 +152,8 @@ for (const [look, want] of [["press", 1], ["flat", 0]]) {
   await pg.getByRole("dialog").waitFor({ state: "detached" });
   check((await dialogs(pg)) === 0, "the menu closes when a page is picked");
 
+  /* Slider's page is in Flat's world, which has no gallery search: back to the overview for the header's. */
+  await pg.goto(`http://localhost:${port}/index.html#overview`, { waitUntil: "networkidle" });
   await pg.getByRole("button", { name: "Search" }).first().click();
   await pg.getByRole("dialog").waitFor();
   await pg.keyboard.type("dark theme");
@@ -181,7 +184,8 @@ for (const [look, want] of [["press", 1], ["flat", 0]]) {
 
 /* ---------- search on a phone ---------- */
 {
-  const { ctx, pg, errors } = await open("overview", { phone: true });
+  /* A gallery page with one header (the overview's hero is a header too); a world's pages have no gallery search. */
+  const { ctx, pg, errors } = await open("changelog", { phone: true });
   await pg.locator("header").getByRole("button", { name: "Search" }).tap();
   await pg.getByRole("dialog").waitFor();
   await pg.keyboard.type("toast");
