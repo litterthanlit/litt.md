@@ -12,10 +12,10 @@ Written 2026-11-15 for Nick. Nick: "let's build another world: minimal UI / no U
 | Accent | Blue 4 | The ink | Orange | **Link blue** (`#0000ee`; a pale blue in dark) |
 | Face | Helvetica Neue | Geist | Geist Mono | **The system's** (`system-ui`, nothing to load) |
 | Shape | 4px and 8px | The pill | 4px and 8px | **Square** (0) |
-| Depth | Lit, cast | Fill alone | Hardware | **A 1px line** |
+| Depth | Lit, cast | Fill alone | Hardware | **One 1px line, no fills, no frames** |
 | Motion | Weight | From where you touched | Mechanisms in steps | **None** |
 
-The rule that makes it Plain: **the browser already designed a page that works; Plain keeps it and takes the noise out.** A link is underlined and blue. A control is a 1px line with the button face inside it. A table is lines and a caption. An overlay is the page again inside one line. Nothing moves, so a state changes the moment you ask.
+The rule that makes it Plain: **the browser already designed a page that works; Plain keeps it and takes the noise out.** A link is underlined and blue. A control is one 1px line, with nothing inside it but its words. A table is lines and a caption. An overlay is the page again inside one line. Nothing moves, so a state changes the moment you ask.
 
 ## What shipped in this slice
 
@@ -26,9 +26,13 @@ The rule that makes it Plain: **the browser already designed a page that works; 
 - **The world page** (`00-plain.tsx`, `systems/plain.tsx`): five scenes, a request form, a help page, search, records and preferences, with Settings as its hero block, Foundations and Only here from `look.ts`.
 - **Registry**: `litt`, `base-styles`, `motion`, `chart` and `file-drop` lines in the changelog.
 
+## Stripped further (same day)
+
+Nick, shown the first slice: "strip it down even more". A control has no fill of its own any more (the button face's grey is gone: `--block` is the page), its line is drawn inside its box so the Press plate never shows as a second frame, a group has no frame (`--tray-shade` is empty), the primary action has no glow ring, and a button has no wall along its foot (`--block-wall`, 2px elsewhere and 0 here). The current tab keeps a line on three sides, a folder tab.
+
 ## What is not right yet
 
-Plain draws Press's **bodies** in its own tokens, so structure Press bakes into a part still shows: a button is a block on a plate with a 2px wall along its foot, which reads as a double frame inside Plain's line. That is the work of the next waves, as Bodies did for Flat and Device (`worlds.md`, decisions 13 and 15).
+Plain draws Press's **bodies** in its own tokens, so structure Press bakes into a part still shows: a switch is still a block in a tray with On and Off beside it, and a slider sits in a box. That is the work of the next waves, as Bodies did for Flat and Device (`worlds.md`, decisions 13 and 15).
 
 ## Next: Plain's bodies, in waves
 

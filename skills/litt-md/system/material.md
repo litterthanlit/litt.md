@@ -104,11 +104,12 @@ The page the way HTML draws one, with almost no UI of its own (`proposals/plain.
 
 | Depth | Press | Plain |
 |---|---|---|
-| Sunken: a tray | `--tray`, a hairline and the top wall's shade | a fieldset: no fill, a 1px `--line-strong` |
+| Sunken: a tray | `--tray`, a hairline and the top wall's shade | nothing: no fill and no frame around a group |
 | Sunken: a cut | `--cut` and its top wall's shade | a white field inside the control line, no shade |
 | Sunken: a slot | `--slot`, both walls, the fill a step darker | a bar inside a 1px control line, the fill the grey ink |
 | Flat: canvas and surfaces | a hairline and the top highlight | white paper and a hairline, no highlight |
-| Raised: a block | white or a warm grey, a contact line and a cast | the button face (`--surface-3`) inside a 1px control line; pressed, the line is the ink |
+| Raised: a block | white or a warm grey, a contact line and a cast | the page inside one 1px control line, drawn inside the box so it never doubles, and no wall (`--block-wall` is 0); pressed, the line is the ink |
+| Raised: a plate | a lit top edge and a cast | the same line outside it: the current tab, open on its foot, is a folder tab |
 | Floating | glass, a zero-offset glow, a ring | the page again (`--canvas`) inside one control line: no blur, no glow, no shadow |
 
 - **The values.** Each theme block declares `--plain-*`: the neutrals and the accent (`#0000ee`, the blue a browser draws a link in, and a pale blue in dark that keeps 0.12 from every data hue). The plain block maps the live names onto them, sets the radii, the glass, the shadows and the grain to nothing, zeroes the motion tiers, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Plain (check 14).

@@ -90,8 +90,8 @@ const plateSize: Record<ButtonSize, string> = {
 };
 const plateIcon = "[--plate:3px] px-0";
 
-/* The block's thickness is a 2px wall along its foot, drawn in the face's own background. A press sinks the block into its plate: the wall goes. */
-const wall = "[background-image:linear-gradient(to_top,var(--wall)_2px,transparent_2px)] enabled:not-data-loading:active:[background-image:none] disabled:[background-image:none]";
+/* The block's thickness is a wall along its foot (--block-wall, 2px; none under Plain), drawn in the face's own background. A press sinks the block into its plate: the wall goes. */
+const wall = "[background-image:linear-gradient(to_top,var(--wall)_var(--block-wall),transparent_var(--block-wall))] enabled:not-data-loading:active:[background-image:none] disabled:[background-image:none]";
 
 const variants: Record<ButtonVariant, string> = {
   primary:

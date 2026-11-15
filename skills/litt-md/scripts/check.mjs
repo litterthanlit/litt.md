@@ -189,12 +189,12 @@ const screenOf = (map) => {
   return out;
 };
 
-// Plain maps each neutral and its accent onto its --plain-* twin (proposals/plain.md); a block is the button face
-// (surface-3), a cut and a tray the page.
+// Plain maps each neutral and its accent onto its --plain-* twin (proposals/plain.md); a block, a cut and a tray are
+// the page.
 const plainOf = (map) => {
   const out = new Map(map);
   for (const [k, v] of map) if (k.startsWith("--plain-")) out.set(`--${k.slice(8)}`, v);
-  out.set("--block", out.get("--surface-3"));
+  out.set("--block", out.get("--canvas"));
   out.set("--cut", out.get("--canvas"));
   out.set("--tray", out.get("--canvas"));
   return out;
@@ -713,7 +713,7 @@ console.log('Plain (data-material="plain")');
         if (x || y || blur || spread > 1) plainFails.push(`plain: ${k} layer "${layer}" casts, blurs or is more than a 1px line`);
       }
     }
-    for (const [k, want] of [["--light", "none"], ["--press-depth", "0px"], ["--press-scale", "1"], ["--radius-control", "0px"], ["--radius-surface", "0px"], ["--glass-blur", "0px"], ["--grain-opacity", "0"]])
+    for (const [k, want] of [["--light", "none"], ["--press-depth", "0px"], ["--press-scale", "1"], ["--radius-control", "0px"], ["--radius-surface", "0px"], ["--glass-blur", "0px"], ["--grain-opacity", "0"], ["--block-wall", "0px"], ["--block", "var(--canvas)"]])
       if (pl.get(k) !== want) plainFails.push(`plain: ${k} is ${pl.get(k) ?? "unset"}, must be ${want}`);
     const ring = pl.get("--focus-ring") || "";
     if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) plainFails.push(`plain: --focus-ring must restate the ring with var(--focus) (is "${ring}")`);

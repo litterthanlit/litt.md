@@ -170,15 +170,15 @@ export const MATERIALS: readonly MaterialInfo[] = [
     line: "Lines on paper, for docs, forms and tools that should just work",
     hero: "settings",
     foundations: {
-      color: "White paper and black words, the button face's grey, and link blue as its own accent, the blue a browser draws a link in. A project may ask for Blue 4, monochrome or pink.",
+      color: "White paper and black words, no fills, and link blue as its own accent, the blue a browser draws a link in. A project may ask for Blue 4, monochrome or pink.",
       type: "The system's own face, the one a page with no stylesheet gets, in the three role weights. Links are underlined.",
-      light: "None. Every part a hand uses has a 1px line around it, a button is the grey face inside it, and an overlay is the page again inside one line.",
+      light: "None. Every part a hand uses is one 1px line with nothing inside it but its words, no group has a frame, and an overlay is the page again inside one line.",
       shape: "Square: every corner 0, as a page is.",
       motion: "None. A page changes in place, at once: nothing fades, slides, grows or springs.",
     },
     abilities: [
       "Underlined links: a link looks like a link, in link blue, everywhere.",
-      "One line, no depth: every control is a 1px line with the button face inside it. Nothing casts, lifts or glows.",
+      "One line, no depth: every control is one 1px line around the page. Nothing fills, casts, lifts or glows.",
       "Still: nothing moves, so a state changes the moment you ask, the way reduced motion has it everywhere.",
       "The system's face: no font to load, so the page is the reader's own from the first paint.",
     ],

@@ -47,8 +47,8 @@
       "hash": "1a95da13e9965bf7"
     },
     "button": {
-      "version": "2026.11.09",
-      "hash": "90485a0b1e5ca812"
+      "version": "2026.11.15",
+      "hash": "ff65e686637bfa00"
     },
     "callout": {
       "version": "2026.11.06",
@@ -232,7 +232,7 @@
     },
     "litt": {
       "version": "2026.11.15",
-      "hash": "69672996ccad00a7"
+      "hash": "290f08e5c05a37e1"
     },
     "log-view": {
       "version": "2026.11.06",
