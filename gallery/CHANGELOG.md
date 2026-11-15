@@ -4,6 +4,16 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-15 · Rack, a body per part
+
+Every part with a body per world gets Rack's (`data-material="rack"`), drawn as an instrument's controls: flat keys and light boxes in 1px outlines, square at the control radius, lit in the ink (or the accent for the one primary action), nothing cast or sunk. Press, Flat and Device are unchanged.
+
+- **changed** `input`: a Rack body, a light box in a 1px control line with no shade, the line turning to the ink on focus and to danger on an error. Props are unchanged.
+- **changed** `number-field`: a Rack body, a value box with − and + as small flat keys in outlines beside it that lie flat at a bound. Props are unchanged.
+- **changed** `code-input`: a Rack body, one square light box per character in a 1px control line with the current cell outlined in the ink. Props are unchanged.
+- **changed** `token-input`: a Rack body, a light box holding small flat outlined keys with square remove keys, cutting in place. Props are unchanged.
+- **changed** `composer`: a Rack body, a panel field with a light text box, files as small flat keys, a row of keys under it and Send the one lit key. Props are unchanged.
+
 ## 2026-11-14 · Rack, a fourth world
 
 Rack is a software instrument's rack, after Ableton Live: grey panels on a darker grey body, keys and wells in 1px outlines, square corners, Inter, five bright clip colours for what you make, and one yellow that is only ever a fill, the light of a switch that is on. Nothing casts, glows or sinks. Set `data-material="rack"` on `<html>`, as for Flat and Device (`proposals/rack.md`).
