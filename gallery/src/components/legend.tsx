@@ -35,12 +35,14 @@
  *   "Hidden" in words after its name, in the slot the reading uses, so a press never changes the box's size. Under
  *   the hand a block sinks the --press-depth. The tray's floor is darker than the page, so the words on it keep
  *   --fg and --fg-muted, never --fg-subtle. Flat is words with a hue dot; Device is a bank of latching keys, each
- *   lamp in its series' hue (bodies/).
+ *   lamp in its series' hue (bodies/). Rack is a row of track names, each beside a small clip swatch (the hue's tint in its
+ *   mark edge); a hidden series is an empty outline (bodies/legend.rack.tsx).
  */
 import { useId, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from "react";
 import { byWorld, useMaterial } from "@/motion";
 import { LegendFlatBody } from "./bodies/legend.flat";
 import { LegendDeviceBody } from "./bodies/legend.device";
+import { LegendRackBody } from "./bodies/legend.rack";
 
 /** The five data hues, in their fixed order (R7). The same names as the Chart's and the Breakdown's. */
 export type LegendHue = "blue" | "amber" | "teal" | "violet" | "rose";
@@ -240,7 +242,7 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
     commit([...others, ...items.map((item) => item.name).filter((n) => n !== name)]);
   };
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody, rack: LegendRackBody });
 
   return (
     <Body

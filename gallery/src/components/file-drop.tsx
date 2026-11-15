@@ -14,7 +14,7 @@
  *   it on the instant tier and under forced colors keeps an outline.
  * - Disabled lies flat: no drop and no tab stop. The words stay --fg-subtle, because they still say something (when
  *   it opens again), as a disabled Slide to confirm's do.
- * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the checking, the
+ * - One contract, four bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the checking, the
  *   drag count, the picker and its hidden input, the alert, the list and the row's actions. It resolves them once into
  *   FileDropBodyProps and FileRowBodyProps and renders the body the material picks (byWorld).
  *   - PressBody and PressRowBody, below: a plate that stands (--block, --plate-lift) with a deep tray cut into it
@@ -25,6 +25,8 @@
  *     over it. Each file is a line of words with Retry and Remove as words.
  *   - bodies/file-drop.device.tsx: a slot with an engraved legend over LCD glass and a Choose key; each file a line of
  *     glass whose upload lights segments in steps.
+ *   - bodies/file-drop.rack.tsx: a well (--tray) in a dashed edge, lit in the ink while a file is over it; the files
+ *     are thin rows on one panel, each on a hairline.
  */
 import { useId, useRef, useState, type ComponentProps, type DragEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
@@ -33,6 +35,7 @@ import { Progress } from "@/components/progress";
 import { byWorld, useDevice, useMaterial } from "@/motion";
 import { FileDropDeviceBody, FileRowDeviceBody } from "./bodies/file-drop.device";
 import { FileDropFlatBody, FileRowFlatBody } from "./bodies/file-drop.flat";
+import { FileDropRackBody, FileRowRackBody } from "./bodies/file-drop.rack";
 
 /** 2048 to "2.0 KB": the size in the units people read. */
 export function formatSize(bytes: number): string {
@@ -123,7 +126,7 @@ export function FileDrop({ label, accept, maxSize, multiple = true, onFiles, onR
       if (!disabled && !(e.target as Element).closest("button")) input.current?.click();
     },
   };
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: FileDropFlatBody, device: FileDropDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: FileDropFlatBody, device: FileDropDeviceBody, rack: FileDropRackBody });
 
   return (
     <div className={"grid grid-cols-[minmax(0,1fr)] gap-3 " + className}>
@@ -245,11 +248,12 @@ function PressBody({ area, words, hint, hintId, dragging, disabled, chooseLabel,
 
 /* ------------------------------------------------------------------ FileList and FileRow */
 
-/* Press: the list is a tray, and each file stands in it as a slat. Flat: rows parted by space. Device: lines of glass. */
+/* Press: the list is a tray, and each file stands in it as a slat. Flat: rows parted by space. Device: lines of glass. Rack: one panel of thin rows. */
 const listLook = {
   press: "gap-1 rounded-surface bg-tray p-1 shadow-(--tray-shade) forced-colors:border ",
   flat: "gap-1 ",
   device: "gap-2 ",
+  rack: "overflow-hidden rounded-surface border border-line-strong bg-surface-1 [&>li:last-child]:border-b-0 ",
 };
 
 /** The files that were added, one row each. Name it, so a screen reader knows whose files these are. */
@@ -280,7 +284,7 @@ export type FileRowBodyProps = FileRowProps & { uploading: boolean };
 /** One file in a FileList: its name and size, a Progress rail while it uploads, why it failed, Retry and Remove. */
 export function FileRow(props: FileRowProps) {
   const uploading = props.progress !== undefined && props.progress < 100 && !props.error;
-  const Body = byWorld(useMaterial(), { press: PressRowBody, flat: FileRowFlatBody, device: FileRowDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressRowBody, flat: FileRowFlatBody, device: FileRowDeviceBody, rack: FileRowRackBody });
   return <Body {...props} uploading={uploading} />;
 }
 

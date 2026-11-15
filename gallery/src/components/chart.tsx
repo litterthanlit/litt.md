@@ -15,7 +15,9 @@
  *   are Flat's). Device (bodies/chart.device.tsx) is a dot-matrix screen: bars as columns of lit dots, the emphasised
  *   value in seven segments above it. LineChart and StackedBarChart take the same bodies: Press's well and rail around
  *   today's lines and rails, Flat as it has always been, and on Device a line is a trace of lit dots and a stack a
- *   column of them. Meter has no bodies yet.
+ *   column of them. Rack (bodies/chart.rack.tsx) is an arrangement: a dark well with hairline gridlines and the data as
+ *   clips, bars and stacked parts as blocks in the hue's tint with its mark edge, a line over a tint band. Meter has no
+ *   bodies yet.
  * - Data hues (R7, v0.11): a series may carry one of the five data hues (`hue` on the series), and `hues` gives
  *   every series without one the next hue in the fixed order. Color follows the series, never its place, so a
  *   filter that drops a series never repaints the others. A hue series rests in the hue's mark tone (3:1 on every
@@ -59,6 +61,7 @@ import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useSta
 import { animate, AnimatePresence, motion, useMotionValueEvent, useTransform } from "motion/react";
 import { byWorld, countText, useExit, useFun, useFunValue, useMaterial, useTransition, useTravel } from "@/motion";
 import { ChartDeviceBody } from "./bodies/chart.device";
+import { ChartRackBody } from "./bodies/chart.rack";
 
 /* ----------------------------------------------------------------- types */
 
@@ -115,13 +118,14 @@ const AXIS = 28; // room under the plot for the category labels
 const LABEL_GAP = 6; // between a value label and the plot
 const FIGURE = 7.2; // advance of a 12px tabular figure in Geist (letters run narrower)
 const MAX_BAR = 32;
-type World = "press" | "flat" | "device";
+type World = "press" | "flat" | "device" | "rack";
 /** The room a body keeps around the plot: a value axis on the left or none, and the space above the plot. */
 type Frame = { axis: boolean; top: number };
 const FRAME: Record<World, Frame> = {
   press: { axis: true, top: TOP },
   flat: { axis: true, top: TOP }, // today's chart
   device: { axis: false, top: 44 }, // the readout sits on the bezel above the screen
+  rack: { axis: true, top: TOP },
 };
 const MAX_RAIL = 8; // a stacked column: a rail, not a block
 const RAIL_GAP = 2; // air between the segments of a stacked column, the Breakdown's
@@ -281,7 +285,7 @@ function Chart({
   const many = series.length > 1;
   const paint = useMemo(() => paints(series, hues || stacked), [series, hues, stacked]);
   /* A world with no chart body of its own draws Press's (byWorld). */
-  const body = byWorld<World>(useMaterial(), { press: "press", flat: "flat", device: "device" });
+  const body = byWorld<World>(useMaterial(), { press: "press", flat: "flat", device: "device", rack: "rack" });
   const [boxRef, width] = useWidth();
   const g = useMemo(
     () => layout(width, height, labels, series, fmt, stacked, FRAME[body]),
@@ -367,7 +371,7 @@ function Chart({
   const enter = useTransition("responsive");
   const empty = n === 0 || series.length === 0;
   const bars = kind === "bar" ? barMarks(g, series, paint, n, emphasis, fmt) : null;
-  const Body = byWorld(body, { press: PressBody, flat: FlatBody, device: ChartDeviceBody });
+  const Body = byWorld(body, { press: PressBody, flat: FlatBody, device: ChartDeviceBody, rack: ChartRackBody });
   const marks = bars ? (
     <BarRects bars={bars.bars} ring={ring !== null ? bars.ringOf(ring) : null} entrance={entrance} enter={enter} />
   ) : kind === "stack" ? (
@@ -595,6 +599,10 @@ export type ChartTrace = {
   hue: boolean;
   /** The series is told apart by a dash as well as its color (WCAG 1.4.1). */
   dashed: boolean;
+  /** The line's color and its marker's, as CSS colors, and its dash pattern when it has one (a body that draws a line itself). */
+  stroke: string;
+  marker: string;
+  dash?: string;
 };
 
 /** One category of a stacked chart as Device lights it: its centre, and its parts from the baseline up. */
@@ -684,6 +692,9 @@ function lineTraces(g: Geometry, series: ChartSeries[], paint: Paint[], n: numbe
     fill: paint[j]!.rest,
     hue: paint[j]!.rest.startsWith("fill-data-"),
     dashed: Boolean(paint[j]!.dash),
+    stroke: paint[j]!.stroke,
+    marker: paint[j]!.marker,
+    dash: paint[j]!.dash?.line,
   }));
 }
 

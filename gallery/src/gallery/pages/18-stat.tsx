@@ -150,11 +150,11 @@ function NarrowDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -228,11 +228,11 @@ export default function StatPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
-        caption="One contract, three bodies. Press is a plate with the figure on a raised face set into it. Flat is the figure in ink on the page, with no box. Device is a plate with the label engraved above an LCD window that shows the figure in seven segments."
-        code="ThreeBodiesDemo"
+        title="Four bodies"
+        caption="One contract, four bodies. Press is a plate with the figure on a raised face set into it. Flat is the figure in ink on the page, with no box. Device is a plate with the label engraved above an LCD window that shows the figure in seven segments. Rack is a panel with the figure in a value box, a light cut in the control line, and the delta as a small flat key."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
 
       <TryIt of="Stat" component={Stat} props={{ label: "Median build", value: "41", unit: "s", delta: "Down 6 s on last week" }} />
