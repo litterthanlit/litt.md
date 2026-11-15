@@ -99,6 +99,23 @@ The same depth ladder said in hardware, after the components studies (journal, 2
 - **Nested themes.** As under Flat, an element that sets its own theme needs `data-material="device"` too.
 - **Never:** ambient motion (no flicker, scanline or blinking caret: R4 holds), texture images, or the accent on chrome.
 
+### 9. Plain: `[data-material="plain"]` (R3)
+The page the way HTML draws one, with almost no UI of its own (`proposals/plain.md`): docs, forms, admin and tools that should just work. White paper and black words in the system's face, link blue as its own accent with links underlined, square corners, and nothing moves.
+
+| Depth | Press | Plain |
+|---|---|---|
+| Sunken: a tray | `--tray`, a hairline and the top wall's shade | a fieldset: no fill, a 1px `--line-strong` |
+| Sunken: a cut | `--cut` and its top wall's shade | a white field inside the control line, no shade |
+| Sunken: a slot | `--slot`, both walls, the fill a step darker | a bar inside a 1px control line, the fill the grey ink |
+| Flat: canvas and surfaces | a hairline and the top highlight | white paper and a hairline, no highlight |
+| Raised: a block | white or a warm grey, a contact line and a cast | the button face (`--surface-3`) inside a 1px control line; pressed, the line is the ink |
+| Floating | glass, a zero-offset glow, a ring | the page again (`--canvas`) inside one control line: no blur, no glow, no shadow |
+
+- **The values.** Each theme block declares `--plain-*`: the neutrals and the accent (`#0000ee`, the blue a browser draws a link in, and a pale blue in dark that keeps 0.12 from every data hue). The plain block maps the live names onto them, sets the radii, the glass, the shadows and the grain to nothing, zeroes the motion tiers, and Blue 4, pink and monochrome are restated after it. The check runs every pair again under Plain (check 14).
+- **Links.** `tokens.css` underlines a link inside Plain in the base layer, so a utility that sets a link's decoration still wins.
+- **Bodies.** None yet: a part draws Press's body in Plain's tokens (`byWorld` falls back to Press). A Plain body per part is the next step.
+- **Never:** a shadow, a gradient, a blur, a rounded corner, or motion.
+
 ## Glow: `--glow` (R6)
 A 1px accent ring plus a soft, zero-offset accent light around the element. It is reserved for the one primary action in the view. Never use it on secondary buttons, cards, or more than one element. It does not animate on hover; only the background color changes (R2).
 

@@ -28,6 +28,7 @@ import { scenesOf, type Scene } from "./systems";
 const Dashboard = lazy(() => import("@/blocks/dashboard").then((m) => ({ default: m.Dashboard })));
 const CaseStudy = lazy(() => import("@/blocks/case-study").then((m) => ({ default: m.CaseStudy })));
 const AgentChat = lazy(() => import("@/blocks/agent").then((m) => ({ default: m.AgentChat })));
+const Settings = lazy(() => import("@/blocks/settings").then((m) => ({ default: m.Settings })));
 
 /** A window onto the app, as the Agent page draws it: the page's canvas with a hairline. */
 function AgentFrame({ label, className, children }: { label: string; className: string; children: ReactNode }) {
@@ -53,6 +54,11 @@ const HEROES: Record<string, ComponentType<{ phone: boolean; world: string }>> =
   "case-study": ({ phone, world }) => (
     <AppFrame label={`${world} in use: a case study, ${phone ? "phone" : "desktop"}`} phone={phone}>
       <CaseStudy />
+    </AppFrame>
+  ),
+  settings: ({ phone, world }) => (
+    <AppFrame label={`${world} in use: an account's settings, ${phone ? "phone" : "desktop"}`} phone={phone}>
+      <Settings />
     </AppFrame>
   ),
   agent: ({ phone, world }) =>

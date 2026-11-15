@@ -4,6 +4,16 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-15 · Plain, a fourth world
+
+A world for the page that should just work: docs, forms, admin and internal tools. Plain draws a page the way HTML does, with almost no UI of its own.
+
+- **added** `litt`: Plain, `data-material="plain"` on `<html>`. White paper and black words in the system's own face (nothing to load), link blue as its own accent (`#0000ee`, a pale blue in dark), links underlined, a 1px line around every control with the button face's grey inside it, square corners (`--litt-radius-control` and `--litt-radius-surface` are 0), and no glass, light, cast or grain: an overlay is the page again inside one line. Nothing moves: Plain zeroes every `--litt-dur-*`, `--litt-stagger` and `--litt-travel`, as reduced motion does. `data-accent="blue"`, `"mono"` and `"pink"` still win on a Plain page. Press, Flat and Device are unchanged; nothing in your code has to change.
+- **changed** `base-styles`: under Plain a link with no decoration of its own is underlined, 0.15em under the text. The rule sits in the base layer, so a utility class that sets a link's decoration still wins. Nothing changes outside Plain.
+- **changed** `motion`: under Plain the dial is held still (`useMotionDial().reduced` is `true`), so every part that asks the engine changes in place, at once; `useOverlayMotion` neither grows nor slides there, and `deal` and `gather` resolve at once. `Material` and `byWorld` gain `"plain"`; a part with no Plain body draws Press's. Reinstall it with `litt`.
+- **changed** `chart`: under Plain it draws Press's body. Props are unchanged.
+- **changed** `file-drop`: under Plain its file list is Press's. Props are unchanged.
+
 ## 2026-11-13 · Inside a frame, a sheet measures the frame; motion that never makes you wait
 
 - **changed** `motion`: inside an `OverlayRoot`, `useVisibleScreen` is the root element's box (`{ top: 0, height }`, kept current as it resizes), not the window's visible part, so a bottom sheet and the phone's command menu fill the frame they open in and the sheet's bottom is the frame's. Without an `OverlayRoot` it reads `window.visualViewport` as before. `OverlayRoot` and `useOverlayRoot` now live in `device.ts`; `deal.ts` and the engine's index export them as before.

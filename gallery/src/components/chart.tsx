@@ -280,7 +280,8 @@ function Chart({
   const stacked = kind === "stack";
   const many = series.length > 1;
   const paint = useMemo(() => paints(series, hues || stacked), [series, hues, stacked]);
-  const body: World = useMaterial();
+  /* A world without a chart body of its own (Plain) draws Press's. */
+  const body: World = byWorld<World>(useMaterial(), { press: "press", flat: "flat", device: "device" });
   const [boxRef, width] = useWidth();
   const g = useMemo(
     () => layout(width, height, labels, series, fmt, stacked, FRAME[body]),
