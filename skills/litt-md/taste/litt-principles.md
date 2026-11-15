@@ -1,30 +1,79 @@
 # litt principles
 
-What litt believes, where a world is free, and what every world keeps. The nine rules (`taste/profile.md`) say what to check. This file says why, so that an agent given room inside a world uses it well.
+What litt believes, in two layers: a short floor every world shares, and each world's own principles, written for the people that world is for. The nine rules (`taste/profile.md`) say what to check. This file says why, so that an agent given room inside a world uses it well.
 
 Read it before you build or change a body, a world-only part or a study, and when a critique turns on a world.
 
-> Draft, 2026-11-15, for Nick to confirm. Built from the nine rules (R1 to R9), the decisions in `proposals/worlds.md` (8 and 12 to 15) and the ethos of Nick's components repo (`litterthanlit/components`, `DESIGN.md`), which Nick asked to bring in: "the principles from the components repo, which Im really happy with". A line marked *components* comes from that file. Nothing here is a new value: values live only in `assets/tokens.css`.
+> Draft, 2026-11-15, for Nick to confirm. Nick first asked for the principles of the components repo (`litterthanlit/components`, `DESIGN.md`) to be brought in, then said: "maybe we shouldnt fit all rules through components. each world should have its own, enhancing the experience and usability". So only what holds everywhere is shared, and that repo's ethos lives mostly in Device, the world made after it. Each world's lines are drawn from what it already says about itself (`system/foundations.md`, Motion languages; `system/material.md`; the decisions in `proposals/worlds.md`). A line marked *components* comes from that repo. Nothing here is a new value: values live only in `assets/tokens.css`.
 
-## The principles
+## What every world shares
 
-**1. A world is one object.** Press is an instrument on a bench, Flat a page, Device a machine, Plain a document as HTML draws it; Rack and Heat follow the same rule (`system/material.md`, 6 to 11). Every part in a world is a part of that one thing, built from its materials. An object makes polish legible: "a lit edge, a recess or a 2px base is either right or it isn't" (*components*). So a part is never a card that could sit in any world, and never a second frame inside the frame. R1.
+Six principles. A world's own principles may go further than these, never against them.
 
-**2. A world brings a vocabulary.** An instrument's words arrive with behavior people already know: a detent, a lamp, a tray, a sheet. The interface needs fewer explanations because the vocabulary carries them. "The vocabulary dresses the demo, not the component" (*components*): a body and its demo speak the world's language, while the part's props and name stay general.
+**1. A world is one object.** Every part in a world is a part of one thing, built from its materials, and speaks in that world's words. An object makes polish legible: "a lit edge, a recess or a 2px base is either right or it isn't" (*components*). So a part is never a card that could sit in any world, and never a second frame inside the frame. R1.
 
-**3. A hand always wins.** Motion answers a hand (R4). What a person is touching follows them exactly, can be caught mid-flight, and never waits on an animation. Anything a part does by itself lets go the moment a hand arrives, for good: "a motor lets go of a cap the moment a finger is on it" (*components*). In a product, nothing moves on its own at all; see Open, 1.
+**2. A hand always wins.** What a person is touching follows them exactly, can be caught mid-flight, and never waits on an animation. Anything a part does by itself lets go the moment a hand arrives, for good (*components*). R4.
 
-**4. Physics carry the feel.** Where a part stands in for a mechanism, model the mechanism: a spring that keeps its speed when interrupted, a detent that clicks as it passes, a flick decided by speed and not position. "A duration and a curve can't be interrupted gracefully, can't overshoot from a flick, and can't tie a click to the exact moment a detent passes" (*components*). In litt that is `useHand` and `useSettle` in the motion engine, inside R4's bounds.
+**3. Restraint is subtraction.** Each color only ever means one thing, so it reads at once (R6, R7). Take out whatever repeats something the part already says: "Repeats are taken out, not restyled" (*components*).
 
-**5. Restraint is subtraction.** Color barely appears, and each color only ever means one thing, so it reads at once (R6, R7). Take out whatever repeats something the part already says: "Repeats are taken out, not restyled" (*components*). The work should be the loudest thing on the screen.
+**4. Say it once, in words.** A state is a word, never color, a dot or position alone (R5). A label says what happens: "Copy command", then "Copied".
 
-**6. Say it once, in words.** A state is a word, never color, a dot or position alone (R5). A label says what happens: "Copy command", then "Copied" (*components*). If one place already says it, no other place does.
+**5. Accessibility is native.** "A hardware metaphor is no excuse for a div" (*components*). A part is the real role it looks like. One tab stop per composite. Focus follows the hand without a ring and comes back for the keyboard. A change of state is said once. Reduced motion lands everything at once (`system/foundations.md`, 7).
 
-**7. Accessibility is native.** "A hardware metaphor is no excuse for a div" (*components*). A part is the real role it looks like: a slider, a switch, a listbox, one real field under drawn cells. One tab stop per composite. Focus follows the hand without a ring and comes back for the keyboard. A change of state is said once. Reduced motion stops anything that loops and lands everything at once (`system/foundations.md`, 7).
+**6. The craft speaks for itself.** A part is something teams ship. The world is the polish, the product pattern is the subject (*components*). No debug overlays, no explanatory chrome, no label that points at what to admire.
 
-**8. The craft speaks for itself.** A part is something teams ship: a command menu, a settings switch, a destructive confirm. The world is the polish, the product pattern is the subject (*components*). No debug overlays, no explanatory chrome, no label that points at what to admire. The one exception is a study page's anatomy, which names parts because naming them is its job.
+## Each world's own
 
-**9. Sound answers a hand.** Sound confirms a press faster than sight (*components*). In litt it is an ability a world brings, Device first: synthesized, so nothing loads, and only in answer to a hand, never on arrival or on its own (`proposals/worlds.md`, decision 8). See Open, 2.
+A world's principles say what it does for the person using it. Build a body to its own world's lines first, then check it against the floor above.
+
+### Press, the instrument
+
+For product UI, settings and dashboards.
+
+- **Depth says what a thing does.** What you press is raised and catches the light; what you type into is cut in; what floats is glass. A person knows what a thing is for before touching it.
+- **Things have weight.** A set settles into place from above and lands; an overlay rises and settles. Nothing flies across the screen.
+- **A press is felt.** A pressed block sinks and its cast tightens, so the hand gets its answer where it is.
+
+### Flat, the page
+
+For sites, portfolios and reading.
+
+- **Grey is the object, space is the divider.** Nothing casts and nothing is framed, so the work, the picture and the words lead.
+- **Things come from where you touched them.** A set deals out of what opened it and gathers back; an overlay grows from its opener. A reader never loses where they were.
+- **One shape for the hand.** Every control is a pill, so what can be pressed is known at a glance.
+
+### Device, the machine
+
+For agents, terminals and tools. The components repo's ethos lives here.
+
+- **It uses an instrument's vocabulary.** Keys, wells, LCD glass, lamps, engraved capitals. The words arrive with behavior people already know, so the interface needs fewer explanations. "The vocabulary dresses the demo, not the component" (*components*).
+- **Things are mechanisms.** A part switches where it stands, in steps, and never fades or travels. Where it stands in for a mechanism, model the mechanism: "a duration and a curve can't be interrupted gracefully, can't overshoot from a flick, and can't tie a click to the exact moment a detent passes" (*components*).
+- **The machine shows its work.** Segments, meters and reels move only while the work does, so a glance says whether it is running.
+- **Sound answers a key.** A click confirms a press faster than sight (*components*). Synthesized, silent by default, and only in answer to a hand (`proposals/worlds.md`, decision 8).
+
+### Plain, the document
+
+For docs, forms, admin and internal tools: anything that should just work.
+
+- **No UI.** A control is its words. A link looks like a link. Nothing has to be learned.
+- **Still.** Nothing moves, so a state changes the moment you ask.
+- **The reader's own page.** The system's face and nothing to load, so it is theirs from the first paint.
+
+### Rack, the module
+
+A proposal (`proposals/rack.md`). For creative tools, editors and pro apps: screens full of values touched all day.
+
+- **Every value in reach.** Dense panels of small values, each a box you can set, with its value in words.
+- **Grey to work in.** The color belongs to what the person makes, and one color means one thing everywhere it shows.
+- **On the beat.** A tool used all day answers on the frame: things cut in and stop at once, and nothing travels.
+
+### Heat, the night menu
+
+A proposal (`proposals/heat.md`). For games, sports, racing and live events.
+
+- **Driven by keys.** The row under the keys is held in brackets, and the foot of the screen says what each key does.
+- **Read at a glance.** Black slabs, cream words and one amber on what you pick. A level is a row of segments.
+- **At speed.** Things arrive from the side one after another and are gone at once when you leave.
 
 ## Where a world is free, and what it keeps
 
@@ -47,24 +96,22 @@ A world goes deep by adding leaves, never by splitting the trunk: a shared part 
 
 ## The bar
 
-What a body meets before it ships, after the study bar in the components repo. Each line names its check where there is one; the rest are judged by eye.
+What a body meets before it ships, in any world. Each line names its check where there is one; the rest are judged by eye.
 
 1. **Its world shows in greyscale.** The test above, against its siblings.
-2. **Every state is designed and said.** Default, hover, pressed, focus, disabled, and empty, loading or error (R1), each readable with color and motion hidden (R5). `test:forced-colors`.
-3. **It keeps the contract.** It takes the contract's resolved props and draws; it adds no prop, role or key of its own. `typecheck`, `test:a11y`, `test:focus`.
-4. **It sizes to its container, never the viewport** (*components*). `test:reflow` at 320px, `test:text-zoom` at 200%.
-5. **A hand wins.** A drag follows one to one, can be caught mid-settle and keeps its speed on release. Nothing loops by itself. `test:motion`.
-6. **It draws without React** (*components*). Per-frame work writes a motion value, a CSS variable or an attribute; React hears about commits, not frames.
-7. **It rounds its geometry** (*components*). Coordinates a server may render are rounded to two decimals, so the browser agrees when it hydrates in a Next.js host.
-8. **It is exact.** Only tokens, no hex and no radius off the scale (`lint:litt`); corners concentric (`test:corners`); no dead space between rows (`test:gaps`); no two utilities fighting on one element (`lint:collisions`); one accent fill (`test:wall`).
-9. **It is in its place.** The contract in `components/<part>.tsx`, each body in `components/bodies/<part>.<world>.tsx`, every prop documented with JSDoc in the contract, a changelog line for the item.
-10. **It looks intended in every theme.** Light, dark and forced colors, on a phone and on a desk.
-
-Not carried over, because they belong to the player's stage and that repo's build: the 282 by 332 box, turning without transforms, and its lint rules. "It moves in its first four seconds, untouched" is carried only for studies; see Open, 1.
+2. **It serves its world's people.** Read the world's own lines above and say which one the body carries. A body that only recolors Press carries none.
+3. **Every state is designed and said.** Default, hover, pressed, focus, disabled, and empty, loading or error (R1), each readable with color and motion hidden (R5). `test:forced-colors`.
+4. **It keeps the contract.** It takes the contract's resolved props and draws; it adds no prop, role or key of its own. `typecheck`, `test:a11y`, `test:focus`.
+5. **It sizes to its container, never the viewport** (*components*). `test:reflow` at 320px, `test:text-zoom` at 200%.
+6. **A hand wins.** A drag follows one to one, can be caught mid-settle and keeps its speed on release. Nothing loops by itself. `test:motion`.
+7. **It draws without React** (*components*). Per-frame work writes a motion value, a CSS variable or an attribute; React hears about commits, not frames.
+8. **It rounds its geometry** (*components*). Coordinates a server may render are rounded to two decimals, so the browser agrees when it hydrates in a Next.js host.
+9. **It is exact.** Only tokens, no hex and no radius off the scale (`lint:litt`); corners concentric (`test:corners`); no dead space between rows (`test:gaps`); no two utilities fighting on one element (`lint:collisions`); one accent fill (`test:wall`).
+10. **It is in its place.** The contract in `components/<part>.tsx`, each body in `components/bodies/<part>.<world>.tsx`, every prop documented with JSDoc in the contract, a changelog line for the item.
 
 ## Writing
 
-Plain, precise and quiet. "Write it the way you would say it to someone at the next desk" (*components*).
+Plain, precise and quiet, in every world. "Write it the way you would say it to someone at the next desk" (*components*).
 
 - Sentence case everywhere. Capitals belong to hardware: lettering on a Device body is set in capitals by CSS, and the source and the accessible name keep sentence case.
 - A label says what happens. A description is plain prose about what the part does and how.
@@ -73,9 +120,8 @@ Plain, precise and quiet. "Write it the way you would say it to someone at the n
 
 ## Open, for Nick
 
-The components repo and litt differ in four places. Until Nick says otherwise, litt's own rule holds.
-
-1. **Running by itself.** There, every study moves in its first four seconds, untouched, and then rewards the hand. Here, nothing moves on its own (R2, R4, the rules every body keeps). This draft keeps litt's rule for product parts and allows a self-running rehearsal only on a study page or in a demo, stopped for good by the first touch and never started under reduced motion.
-2. **Sound.** There, every press clicks until the viewer mutes it. Here, decision 8 makes sound a Device ability, silent by default. Keep decision 8, or let other worlds have a voice?
-3. **Spelling.** There, British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
-4. **Values.** Its curves, durations and springs differ from litt's tiers, and one preset bounces past R4's bound. This file brings the principles and no values. A value Nick wants comes in through Propagate (`workflows/evolve.md`, 4).
+1. **Each world's lines.** They are drawn from what each world already says about itself, not from new decisions. Correct any that miss what the world is for.
+2. **Running by itself.** In the components repo every study moves in its first four seconds, untouched. Here nothing moves on its own (R2, R4). With principles per world this is now one world's question: may Device's studies and its object run by themselves, while the others stay still? Until Nick says, none does.
+3. **Sound.** Decision 8 already makes it Device's alone, silent by default. Confirm, or name another world that should have a voice.
+4. **Spelling.** The components repo is British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
+5. **Values.** The components repo's curves and springs differ from litt's tiers, and one preset bounces past R4's bound. This file brings no values. A value Device should take comes in through Propagate (`workflows/evolve.md`, 4).
