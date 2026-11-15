@@ -29,7 +29,7 @@ Skill directory: `${CLAUDE_SKILL_DIR}`. Every path below is relative to it.
 | React to something ("love this", "too much glow") | **log** | Nothing extra. Use the template below, plus `workflows/evolve.md` §1 if unsure where to write. |
 | Turn the journal into rules ("distill", "update my rules") | **distill** | `workflows/evolve.md`, `taste/journal.md`, `taste/profile.md` |
 
-The build and critique modes never need the journal. `system/foundations.md` holds the full type, color, layout and motion spec; read it when a value or usage rule is unclear.
+The build and critique modes never need the journal. `taste/litt-principles.md` holds the reasons behind the rules: the floor every world shares, each world's own principles, where a world is free and what it keeps; read it before you build or change a body, a world-only part or a study, and when a critique turns on a world. `system/foundations.md` holds the full type, color, layout and motion spec; read it when a value or usage rule is unclear.
 
 ## Quick log template
 
