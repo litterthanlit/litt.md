@@ -64,7 +64,14 @@ function Takes() {
       <ul aria-label="Takes" className="grid gap-2">
         {TAKES.map((t) => (
           <li key={t.id} className="grid grid-cols-[auto_1.5rem_minmax(0,1fr)] items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => setPlaying(playing === t.id ? null : t.id)} aria-pressed={playing === t.id}>
+            {/* Rows sit 16px apart; each Play reaches 10px up and down over the gap, past its middle, so a pointer between two is on one (foundations.md, 6). */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="after:absolute after:inset-x-0 after:-inset-y-2.5"
+              onClick={() => setPlaying(playing === t.id ? null : t.id)}
+              aria-pressed={playing === t.id}
+            >
               {playing === t.id ? "Stop" : "Play"}
             </Button>
             <span className="text-small text-fg tabular-nums">{t.id}</span>
