@@ -194,11 +194,11 @@ function BriefDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -267,12 +267,12 @@ export default function InputPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="Four bodies"
         tier="instant"
-        caption="One field, one contract, three bodies. Press is the instrument: the field is a cut sunk into the surface it sits on, its top wall in shade and its lower wall catching the light, the label on the surface above and the hint or error under. Flat is the page: no plate, the label in ink above a grey pill, the hint plain grey words, and an error as words in danger with the pill's fill tinting, no ring. Device is LCD glass in a bezel well, the label engraved above it, the hint a dim LCD line and the error its words beside a lamp in danger. Each is drawn here whatever look the page is in; the input, its label, aria-invalid and aria-describedby are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One field, one contract, four bodies. Press is the instrument: the field is a cut sunk into the surface it sits on, its top wall in shade and its lower wall catching the light, the label on the surface above and the hint or error under. Flat is the page: no plate, the label in ink above a grey pill, the hint plain grey words, and an error as words in danger with the pill's fill tinting, no ring. Device is LCD glass in a bezel well, the label engraved above it, the hint a dim LCD line and the error its words beside a lamp in danger. Rack is the instrument: a light box in a 1px control line, square, with no shade, the line turning to the ink on focus and to danger on an error, the label above and the hint or error under. Each is drawn here whatever look the page is in; the input, its label, aria-invalid and aria-describedby are the same in all four."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
 
       <TryIt of="TextField" component={TextField} props={{ label: "Site name", help: "Shown in the browser tab.", error: "", placeholder: "Atelier Nord" }} controls={["label", "help", "error", "size", "mono", { name: "placeholder", type: "text" }, { name: "disabled", type: "boolean" }]} />

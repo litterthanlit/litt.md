@@ -175,7 +175,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     audience: "Creative tools, editors and pro apps: screens full of parameters you touch all day.",
     line: "Grey panels and coloured clips, for creative tools and pro apps",
     hero: "settings",
-    bodies: false,
+    bodies: true,
     foundations: {
       color: "Neutral greys, so the colour is the music's: five clip colours, a pastel clip with a dark mark in light and a deep clip with a bright mark in dark, each meaning one thing everywhere it shows. Yellow, its own accent, lights a switch that is on; links and the focus ring are the ink. A project may ask for Blue 4, monochrome or pink.",
       type: "Inter in the three role weights, dense and small. 12px labels stay in sentence case. Nothing above 18px.",

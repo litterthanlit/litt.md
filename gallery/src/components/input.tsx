@@ -21,6 +21,8 @@
  *   Press is the cut and its plate, here. Flat is the grey pill (bodies/input.flat.tsx). Device is LCD glass set in a bezel
  *   well, the label engraved on the body above it, the hint and the error dim LCD lines, an error with a lamp in
  *   --danger (bodies/input.device.tsx).
+ * - Rack, the value box: a light box in a 1px control line, square, no shade; focus and an error change only the line
+ *   (bodies/input.rack.tsx).
  * - Press, the instrument: the field is a cut sunk into the surface it sits on, which is the plate already. Its wall is
  *   the shade (--slot-shade), its floor deeper (--field-shade stacked on it) and its lower wall catches the light
  *   (the slot-shade's lit line), never a drawn outline. The label sits on the surface above, the hint or error under.
@@ -36,6 +38,7 @@ import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type Textare
 import { byWorld, useMaterial } from "@/motion";
 import { FieldDeviceBody, InputDeviceBody, TextareaDeviceBody } from "./bodies/input.device";
 import { FieldFlatBody, InputFlatBody, TextareaFlatBody } from "./bodies/input.flat";
+import { FieldRackBody, InputRackBody, TextareaRackBody } from "./bodies/input.rack";
 
 export type InputSize = "sm" | "md" | "lg";
 
@@ -123,7 +126,7 @@ function PressInput({ size, invalid, mono, className, control }: InputBodyProps)
  * an aria-label, because a placeholder is not a label. Every other input attribute goes through.
  */
 export function Input({ size = "md", invalid = false, mono = false, className = "", ...rest }: InputProps) {
-  const Body = byWorld(useMaterial(), { press: PressInput, flat: InputFlatBody, device: InputDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressInput, flat: InputFlatBody, device: InputDeviceBody, rack: InputRackBody });
   return <Body size={size} invalid={invalid} mono={mono} className={className} control={rest} />;
 }
 
@@ -154,7 +157,7 @@ function PressField({ id, noteId, label, note, error, disabled, children }: Fiel
 }
 
 function Field(props: FieldBodyProps) {
-  const Body = byWorld(useMaterial(), { press: PressField, flat: FieldFlatBody, device: FieldDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressField, flat: FieldFlatBody, device: FieldDeviceBody, rack: FieldRackBody });
   return <Body {...props} />;
 }
 
@@ -247,6 +250,6 @@ function PressTextarea({ size, invalid, mono, className, control }: TextareaBody
 }
 
 function TextareaControl(props: TextareaBodyProps) {
-  const Body = byWorld(useMaterial(), { press: PressTextarea, flat: TextareaFlatBody, device: TextareaDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressTextarea, flat: TextareaFlatBody, device: TextareaDeviceBody, rack: TextareaRackBody });
   return <Body {...props} />;
 }

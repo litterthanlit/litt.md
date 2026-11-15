@@ -32,11 +32,14 @@
  *   seven-segment display until its character is typed, then the character lit in segments (digits; a letter of an
  *   alphanumeric code is set in the mono). A character only lights when typed (R4), and a change switches in place in
  *   steps on the instant tier.
+ * - Rack, bodies/code-input.rack.tsx: one square light box per character in a 1px control line, no shade and no plate,
+ *   the current cell outlined in the ink.
  */
 import { useId, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { byWorld, useMaterial } from "@/motion";
 import { CodeInputDeviceBody } from "./bodies/code-input.device";
 import { CodeInputFlatBody } from "./bodies/code-input.flat";
+import { CodeInputRackBody } from "./bodies/code-input.rack";
 
 export type CodeInputSize = "md" | "lg";
 
@@ -160,7 +163,7 @@ export function CodeInput({
   autoFocus,
   className = "",
 }: CodeInputProps) {
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: CodeInputFlatBody, device: CodeInputDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: CodeInputFlatBody, device: CodeInputDeviceBody, rack: CodeInputRackBody });
   const id = useId();
   const noteId = useId();
   const input = useRef<HTMLInputElement>(null);

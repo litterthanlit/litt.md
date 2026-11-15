@@ -8,7 +8,8 @@
  *   token a block standing out of it (--block with --highlight and --key-lift) and a small block on it (--block with
  *   --block-lift) that removes it. Flat is a grey pill field, the tokens darker grey pills with a cross, and the "+N"
  *   bare words. Device is the Input's glass (bodies/token-input.device.tsx), each token an inverted cell of lit mono
- *   words with a small key. The body decides the field, the chip, the remove button and the "+N", through TokenSkin.
+ *   words with a small key. Rack is the Input's light box in a 1px line holding small flat keys in outlines (bodies/token-input.rack.tsx).
+ *   The body decides the field, the chip, the remove button and the "+N", through TokenSkin.
  * - Field: heights are minimums on the shared scale (sm 32, md 44, lg 56), and the 2px focus ring wraps the whole
  *   field while its text input is focus-visible. An invalid field draws a --danger line. Like the Input it has no
  *   hover. Padding sits on the 4px grid, so the field grows by whole token rows (24px tokens, 4px apart) as they wrap.
@@ -41,6 +42,7 @@ import { byWorld, useDevice, useExit, useMaterial, useTransition } from "@/motio
 import { useOverlayMotion } from "@/motion/deal";
 import { TokenInputDeviceBody } from "./bodies/token-input.device";
 import { TokenInputFlatBody } from "./bodies/token-input.flat";
+import { TokenInputRackBody } from "./bodies/token-input.rack";
 
 export type TokenInputProps = {
   /** The label above the field. Required, because a placeholder is not a label. Clicking it focuses the input. */
@@ -400,11 +402,11 @@ export function TokenInput({
 
   const material = useMaterial();
   const om = useOverlayMotion();
-  /* Press and Flat grow and slide their neighbors; Device switches in place and nothing glides. */
-  const switches = material === "device" && om.switches;
+  /* Press and Flat grow and slide their neighbors; Device and Rack switch in place and nothing glides. */
+  const switches = (material === "device" || material === "rack") && om.switches;
   const itemEnter = switches ? om.switchIn : enter;
   const itemExit = switches ? om.switchOut : exit;
-  const Body = byWorld(material, { press: PressBody, flat: TokenInputFlatBody, device: TokenInputDeviceBody });
+  const Body = byWorld(material, { press: PressBody, flat: TokenInputFlatBody, device: TokenInputDeviceBody, rack: TokenInputRackBody });
 
   const list = (skin: TokenSkin) => (
     <ul role="list" aria-labelledby={labelId} className="contents">

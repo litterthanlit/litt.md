@@ -133,11 +133,11 @@ function TagsDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -203,13 +203,13 @@ export default function TokenInputPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="Four bodies"
         tier="responsive"
         align="start"
-        caption="One token input, one contract, three bodies. Press is the Input's cut, its top wall in shade and its lower wall catching the light, with each token a block standing out of it and a small block on the token that removes it. Flat is a grey pill field with each token a darker grey pill and a cross, and the +N bare words. Device is the Input's glass in a bezel well with each token an inverted cell of lit mono words and a small key to remove it, switching in place in steps. Each is drawn here whatever look the page is in; the label, the roving remove buttons, Backspace, the paste and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One token input, one contract, four bodies. Press is the Input's cut, its top wall in shade and its lower wall catching the light, with each token a block standing out of it and a small block on the token that removes it. Flat is a grey pill field with each token a darker grey pill and a cross, and the +N bare words. Device is the Input's glass in a bezel well with each token an inverted cell of lit mono words and a small key to remove it, switching in place in steps. Rack is the Input's light box in a 1px line holding small flat keys in outlines, each with a square remove key, the tokens cutting in place. Each is drawn here whatever look the page is in; the label, the roving remove buttons, Backspace, the paste and what a screen reader hears are the same in all four."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
     </Page>
   );
