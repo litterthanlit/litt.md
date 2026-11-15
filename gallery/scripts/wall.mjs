@@ -119,10 +119,10 @@ function inspect() {
 const browser = await chromium.launch();
 const problems = [];
 let count = 0;
-const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", plain: "plain", rack: "rack" };
+const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", plain: "plain", rack: "rack", heat: "heat" };
 /* Flat's own accent is the ink, which checkboxes and switches fill with too, so Flat runs in Blue 4 and pink; Press,
    Device, Plain and Rack run in their own (Blue 4, orange, link blue, yellow: decision 14). */
-const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["plain", "world"], ["rack", "world"]];
+const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["plain", "world"], ["rack", "world"], ["heat", "world"]];
 /* Every material, size and theme, dealt round-robin across --shard so each shard gets some of each. */
 const COMBOS = RUNS.flatMap(([material, accent]) => [[1440, 900, "desktop"], [390, 844, "phone"]].flatMap(([width, height, label]) =>
   ["light", "dark"].map((theme) => ({ material, accent, width, height, label, theme }))))

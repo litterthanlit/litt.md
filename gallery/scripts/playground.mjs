@@ -64,7 +64,7 @@ const claim = (name, bad) => {
   if (bad) claims.get(name).push(bad);
 };
 
-const WORLDS = [["Press", undefined], ["Flat", "flat"], ["Device", "device"], ["Plain", "plain"], ["Rack", "rack"]];
+const WORLDS = [["Press", undefined], ["Flat", "flat"], ["Device", "device"], ["Plain", "plain"], ["Rack", "rack"], ["Heat", "heat"]];
 const FRAME = "[data-play-frame]";
 const browser = await chromium.launch();
 

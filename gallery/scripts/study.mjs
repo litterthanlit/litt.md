@@ -51,7 +51,7 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 /* Every world, in the order look.ts's MATERIALS lists them and Under each material draws them. */
-const WORLDS = ["press", "flat", "device", "plain", "rack"];
+const WORLDS = ["press", "flat", "device", "plain", "rack", "heat"];
 const BODIES_DIR = path.join(here, "..", "src", "components", "bodies");
 /** The body a part draws under a world: its own where the file exists, else Press's (byWorld). A frame may also show
     its own world's body when it comes from a part inside (a Dialog's Buttons). */
@@ -120,7 +120,7 @@ const C = {
   pixels: "the Anatomy object and the Under each material frame of the gallery's current material are the same picture, pixel for pixel",
   rest: "nothing opens on its own: no open dialog or aria-modal after load, and the Replay stage holds the object at rest",
   replay: "pressing Replay on the Command menu and Dialog pages opens an overlay, and Esc closes it",
-  frames: "Under each material shows a frame per world (press, flat, device, plain, rack), each drawn its own way, each with a component in it",
+  frames: "Under each material shows a frame per world (press, flat, device, plain, rack, heat), each drawn its own way, each with a component in it",
   bodies: "a part with bodies draws each world's own body in that world's frame, and Press's where the world has none (proposals/worlds.md, Bodies)",
   source: "Show source starts collapsed, and a press shows code with `export function` under a heading naming the file and a version",
   docs: "public/docs/<id>.md has `## How it moves` with the page's mechanism, and llms.txt marks the page \"(a study)\"",

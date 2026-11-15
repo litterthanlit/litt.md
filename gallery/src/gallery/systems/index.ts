@@ -8,6 +8,7 @@ const LOADERS: Record<Material, () => Promise<SystemScenes>> = {
   device: () => import("./device").then((m) => m.device),
   plain: () => import("./plain").then((m) => m.plain),
   rack: () => import("./rack").then((m) => m.rack),
+  heat: () => import("./heat").then((m) => m.heat),
 };
 
 const loaded = new Map<Material, Promise<SystemScenes>>();

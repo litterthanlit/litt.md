@@ -8,17 +8,18 @@
  * that copy against this one.
  */
 /** "world" is the world's own accent (proposals/worlds.md, decision 14): Blue 4 on Press, the ink on Flat, orange on
-    Device, yellow on Rack, tokens.css with no data-accent. The others ask for one accent in any world. */
+    Device, yellow on Rack, amber on Heat, tokens.css with no data-accent. The others ask for one accent in any world. */
 export type Accent = "world" | "blue4" | "mono" | "pink";
 /** The depth ladder said in press (raised blocks in sunken trays, lit from the top), flat (fill alone, on greys), device
     (keys, wells and LCD glass on an aluminium body, proposals/device.md), plain (1px lines on white paper, the way HTML
     draws a page, proposals/plain.md) or rack (grey panels in 1px outlines and bright clip colours, what is on lit
-    yellow, after Ableton Live, proposals/rack.md). */
-export type Material = "press" | "flat" | "device" | "plain" | "rack";
+    yellow, after Ableton Live, proposals/rack.md) or heat (black slabs and cream words, what is selected lit amber inside corner
+    brackets, after a street-racing front end, proposals/heat.md). */
+export type Material = "press" | "flat" | "device" | "plain" | "rack" | "heat";
 export type Look = { readonly accent: Accent; readonly material: Material; readonly fun: boolean };
-/** A look as a link names it: the world alone for its own accent (flat), else the accent, then -flat, -device, -plain or -rack (pink-flat;
+/** A look as a link names it: the world alone for its own accent (flat), else the accent, then -flat, -device, -plain, -rack or -heat (pink-flat;
     a look without a material is press), then -fun. One spelling per look, and no character URLSearchParams encodes. */
-export type LookSlug = `${Material | `${Exclude<Accent, "world">}${"" | "-flat" | "-device" | "-plain" | "-rack"}`}${"" | "-fun"}`;
+export type LookSlug = `${Material | `${Exclude<Accent, "world">}${"" | "-flat" | "-device" | "-plain" | "-rack" | "-heat"}`}${"" | "-fun"}`;
 export type AccentInfo = {
   id: Accent;
   name: string;
@@ -30,7 +31,7 @@ export type AccentInfo = {
 
 /** The accents a look can ask for, each said in words (R5). The world's own comes first and is named by its world. */
 export const ACCENTS: readonly AccentInfo[] = [
-  { id: "world", name: "The world's own", note: "Blue 4 on Press, the ink on Flat, orange on Device, link blue on Plain, yellow on Rack", attribute: null },
+  { id: "world", name: "The world's own", note: "Blue 4 on Press, the ink on Flat, orange on Device, link blue on Plain, yellow on Rack, amber on Heat", attribute: null },
   { id: "blue4", name: "Blue 4", note: "Litt's cobalt, Press's own", attribute: "blue" },
   { id: "mono", name: "Monochrome", short: "Mono", note: "The primary action in the ink, Flat's own", attribute: "mono" },
   { id: "pink", name: "Pink", note: "A hot raspberry at Blue 4's weight", attribute: "pink" },
@@ -53,7 +54,7 @@ export type MaterialInfo = {
   name: string;
   note: string;
   /** The data-material value tokens.css answers; null for Press, which is tokens.css with no attribute. */
-  attribute: "flat" | "device" | "plain" | "rack" | null;
+  attribute: "flat" | "device" | "plain" | "rack" | "heat" | null;
   /** The world's own accent, which it shows with no data-accent: an accent a look can ask for, or null for one only
       this world has (Device's orange). Asking for it in this world is the same as asking for nothing. */
   ownAccent: Exclude<Accent, "world"> | null;
@@ -210,6 +211,32 @@ export const MATERIALS: readonly MaterialInfo[] = [
       "On the beat: a set cuts in column by column, all at once per column, and stops all at once.",
     ],
   },
+  {
+    id: "heat",
+    name: "Heat",
+    note: "Black slabs and cream words, what is selected lit amber inside corner brackets",
+    attribute: "heat",
+    ownAccent: null,
+    accentName: "Amber",
+    face: "Saira",
+    tagline: "A night menu. Black slabs, cream words, and amber on what you pick.",
+    audience: "Games, sports, racing and live events: menus you drive with keys and screens that keep score.",
+    line: "Black slabs and one amber, for games and screens that keep score",
+    hero: "usage",
+    foundations: {
+      color: "Black slabs and cream words at night, its own; by day the same menu on bleached sepia paper. Amber, its own accent, is the light of what is selected: its words, its corner brackets and its cell. By day it is only a fill and links are the ink. A project may ask for Blue 4, monochrome or pink.",
+      type: "Saira, a wide squared face drawn for racing dashboards, in the three role weights. Labels in title case, set right against their values.",
+      light: "None, and nothing casts or glows. A key is a flat dark cell in a 1px outline; panels are black slabs banded with diagonal stripes, framed by four corner brackets.",
+      shape: "Square: every corner 0, as a cut sheet of metal.",
+      motion: "Everything arrives at speed. A set whips in from the left, one after another like cars off the line, and leaves to the right all at once, quicker than it came; an overlay slides in from its side and never grows.",
+    },
+    abilities: [
+      "The bracket: the row under the keys is held in four amber corner brackets, its label in amber and ‹ › beside its value.",
+      "Key hints: what each key does, as a row of keycaps along the foot of the screen.",
+      "Gauges in segments: a level is a row of amber dashes, filled up to the value.",
+      "At speed: a set whips in from the side, one after another, and is gone at once when you leave.",
+    ],
+  },
 ];
 export const materialOf = (id: Material) => MATERIALS.find((m) => m.id === id)!;
 /** One spelling per look: the world's own accent asked for by name is the world's own. */
@@ -248,7 +275,7 @@ export const encodeLook = (look: Look): LookSlug => {
   return `${head}${look.fun ? "-fun" : ""}` as LookSlug;
 };
 /** The link's grammar. index.html keeps a hand copy for the first paint, and test-look runs it against this one. */
-const SLUG = /^(?:(press|flat|device|plain|rack)|(blue4|mono|pink)(?:-(flat|device|plain|rack))?)(-fun)?$/;
+const SLUG = /^(?:(press|flat|device|plain|rack|heat)|(blue4|mono|pink)(?:-(flat|device|plain|rack|heat))?)(-fun)?$/;
 /** Strict, because it reads the address: anything but the grammar is null, and the caller ignores it. A link from before
     decision 14 still reads: blue4 is press, mono-flat is flat, each the world's own. */
 export const decodeLook = (raw: string | null | undefined): Look | null => {
@@ -280,7 +307,7 @@ export function withLook(href: string, look: Look | null): string {
  * anything else that sets its own theme spreads these.
  */
 export function lookAttributes(look: Pick<Look, "accent" | "material">, dark: boolean) {
-  const out: { "data-theme": "light" | "dark"; "data-accent"?: "blue" | "mono" | "pink"; "data-material"?: "flat" | "device" | "plain" | "rack" } = { "data-theme": dark ? "dark" : "light" };
+  const out: { "data-theme": "light" | "dark"; "data-accent"?: "blue" | "mono" | "pink"; "data-material"?: "flat" | "device" | "plain" | "rack" | "heat" } = { "data-theme": dark ? "dark" : "light" };
   const accent = accentAttribute(look.accent, look.material), material = materialOf(look.material).attribute;
   if (accent) out["data-accent"] = accent;
   if (material) out["data-material"] = material;
@@ -323,6 +350,8 @@ function edits(look: Look): string[] {
           ? `   Plain draws the page the way HTML does: white paper, black words in the system's own face (nothing to load), link blue for links in running text, which are underlined, controls as words (grey, the main action and the current choice in the ink inside four corner marks), a field as one line under the text, square corners, and no shadow, glass or motion. Never set it from an effect.`
           : material === "rack"
           ? `   Rack says the depth ladder as a software instrument: grey panels on a darker grey body, keys and wells in 1px outlines, square corners, five clip colours for what you make (each a fill you see: a pastel clip with a dark mark in light, a deep clip with a bright mark in dark), yellow as its own accent (only ever a fill, the light of a switch that is on), and Inter (load it at 400, 500 and 600). Never set it from an effect.`
+          : material === "heat"
+          ? `   Heat says the depth ladder as a street-racing front end: black slabs at night and bleached sepia paper by day, keys as flat dark cells in 1px outlines, nothing cast or sunk, square corners, amber as its own accent (the light of what is selected: its words at night, only a fill by day with links in the ink), motion that whips in from the side, and Saira (load it at 400, 500 and 600). Never set it from an effect.`
           : `   Device says the depth ladder in hardware: an aluminium body, keys that sink 2px, dark LCD screens for panels and overlays, orange as its own accent, and every word in Geist Mono (load it at 400, 500 and 600). Never set it from an effect.`,
         `   An element that sets its own theme (class="dark", class="light" or data-theme) needs ${attr} too.`,
       ].join("\n"),
@@ -396,7 +425,7 @@ export function looksDoc(site: string): string {
       `Read the look from the link's text and make its edits. The gallery is a single-page app, so fetching the link returns no look. ` +
       `The registry installs \`${encodeLook(REGISTRY_LOOK)}\`, ${materialWords(REGISTRY_LOOK.material)}, ${motionWords(REGISTRY_LOOK.fun)}. The gallery opens in \`${encodeLook(GALLERY_LOOK)}\`.`,
     [
-      `- The link: the world alone for its own accent (\`flat\`, \`device-fun\`), or \`${LOOK_PARAM}=<accent>\`, then \`-flat\`, \`-device\`, \`-plain\` or \`-rack\` for the material, then \`-fun\` for fun mode, in that order (\`pink-flat-fun\`, \`mono-device\`). Anything else is not a look, and an accent without a material is press.`,
+      `- The link: the world alone for its own accent (\`flat\`, \`device-fun\`), or \`${LOOK_PARAM}=<accent>\`, then \`-flat\`, \`-device\`, \`-plain\`, \`-rack\` or \`-heat\` for the material, then \`-fun\` for fun mode, in that order (\`pink-flat-fun\`, \`mono-device\`). Anything else is not a look, and an accent without a material is press.`,
       `- Each world has its own accent and face, with no attribute: ${MATERIALS.map((m) => `${m.name} is ${m.accentName} in ${m.face}`).join(", ")}. An accent asked for wins in every world.`,
       ...ACCENTS.filter((a) => a.attribute).map(
         (a) => `- \`${a.id}\`, ${a.name} (${a.note[0]!.toLowerCase() + a.note.slice(1)}): \`data-accent="${a.attribute}"\` on \`<html>\`, except in the world whose own it is, which needs nothing.`,
