@@ -30,6 +30,10 @@ The rule that makes it Plain: **the browser already designed a page that works; 
 
 Nick, shown the first slice: "strip it down even more". A control has no fill of its own any more (the button face's grey is gone: `--block` is the page), its line is drawn inside its box so the Press plate never shows as a second frame, a group has no frame (`--tray-shade` is empty), the primary action has no glow ring, and a button has no wall along its foot (`--block-wall`, 2px elsewhere and 0 here). The current tab keeps a line on three sides, a folder tab.
 
+## No UI, a prototype on the canvas
+
+Nick: "what if it was no ui at all". On `#canvas`, below Press's columns, three screens (a request, search, preferences) as Plain ships them beside No UI (`gallery/src/canvas/no-ui.tsx`): nothing drawn but type and the browser's own controls. An action is an underlined word in link blue, the main one with an arrow; a field is one line under what you type; a choice is words, the current one in the ink and the rest underlined; the checkbox and the select are the browser's. The rule that keeps it usable: what a hand can use is underlined or in link blue, and nothing else is (WCAG 1.4.11). Nothing in `src/components` changes for it. If Nick picks it, it becomes Plain's bodies, starting with Button, Input, Switch, Tabs and Segmented, and a check holds the rule.
+
 ## What is not right yet
 
 Plain draws Press's **bodies** in its own tokens, so structure Press bakes into a part still shows: a switch is still a block in a tray with On and Off beside it, and a slider sits in a box. That is the work of the next waves, as Bodies did for Flat and Device (`worlds.md`, decisions 13 and 15).

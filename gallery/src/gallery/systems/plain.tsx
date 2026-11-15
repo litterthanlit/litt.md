@@ -27,7 +27,7 @@ const TOPICS = [
   { value: "other", label: "Something else" },
 ];
 
-function Request() {
+export function Request() {
   const [sent, setSent] = useState(false);
   return (
     <form
@@ -89,7 +89,7 @@ const PAGES = [
   { title: "Keyboard shortcuts", path: "/help/keys", line: "Every shortcut, and how to turn them off." },
 ];
 
-function Search() {
+export function Search() {
   const [q, setQ] = useState("key");
   const hits = PAGES.filter((p) => (p.title + " " + p.line).toLowerCase().includes(q.trim().toLowerCase()));
   return (
@@ -166,7 +166,7 @@ function Records() {
 
 /* -------------------------------------------------------------- preferences */
 
-function Preferences() {
+export function Preferences() {
   const [saved, setSaved] = useState(false);
   return (
     <form
