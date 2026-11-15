@@ -136,7 +136,7 @@ function Loaded({ material, dark, app }: Props) {
   };
 
   return (
-    <div {...lookAttributes({ accent: look.accent, material }, dark)} data-play-object={body.name} className="bg-transparent">
+    <div {...lookAttributes({ accent: look.accent, material }, dark)} data-play-object={body.name} className="min-w-0 bg-transparent">
       <body.Body {...bodyProps} />
       {createPortal(
         <PlayScreen
