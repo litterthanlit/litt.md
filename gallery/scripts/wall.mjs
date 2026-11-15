@@ -4,6 +4,7 @@
  *
  *   npm run build && npm run test:wall
  *   node scripts/wall.mjs --dist dist
+ *   node scripts/wall.mjs --shard 1/2    every other material, size and theme (CI runs two shards at once)
  *
  * It fails when:
  * It runs in a colored accent, set before the page loads: the gallery opens in Flat, whose own accent is the ink that
@@ -40,6 +41,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
+const [shard, shards] = get("shard", "1/1").split("/").map(Number);
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
 function resolveTool(id) {
@@ -121,8 +123,12 @@ const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", plain: "pl
 /* Flat's own accent is the ink, which checkboxes and switches fill with too, so Flat runs in Blue 4 and pink; Press,
    Device, Plain and Rack run in their own (Blue 4, orange, link blue, yellow: decision 14). */
 const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["plain", "world"], ["rack", "world"], ["heat", "world"]];
-for (const [material, accent] of RUNS) for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
-  for (const theme of ["light", "dark"]) {
+/* Every material, size and theme, dealt round-robin across --shard so each shard gets some of each. */
+const COMBOS = RUNS.flatMap(([material, accent]) => [[1440, 900, "desktop"], [390, 844, "phone"]].flatMap(([width, height, label]) =>
+  ["light", "dark"].map((theme) => ({ material, accent, width, height, label, theme }))))
+  .filter((_, i) => i % shards === shard - 1);
+for (const { material, accent, width, height, label, theme } of COMBOS) {
+  {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
     await ctx.addInitScript(([a, m]) => localStorage.setItem("litt-gallery:customize", JSON.stringify({ accent: a, material: m })), [accent, material]);
     const pg = await ctx.newPage();
@@ -170,4 +176,4 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall: ${count} tiles, Press, Flat, Device, Plain and Rack (Flat in Blue 4 and pink, the others in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+console.log(`wall${shards > 1 ? ` (shard ${shard}/${shards}, ${COMBOS.length} of ${RUNS.length * 4} runs)` : ""}: ${count} tiles, Press, Flat, Device, Plain and Rack (Flat in Blue 4 and pink, the others in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
