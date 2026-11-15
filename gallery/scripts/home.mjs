@@ -146,8 +146,8 @@ for (const [look, want] of [["press", 1], ["flat", 0]]) {
   check((await dialogs(pg)) === 1, "Ctrl+K opens one search menu");
   await pg.keyboard.type("slider");
   await pg.keyboard.press("Enter");
-  await pg.waitForFunction(() => location.hash === "#slider");
-  check(true, "typing slider and Enter opens the Slider page");
+  await pg.waitForFunction(() => location.hash === "#flat/slider");
+  check(true, "typing slider and Enter opens the Slider page, in the gallery's world (#flat/slider)");
   await pg.getByRole("dialog").waitFor({ state: "detached" });
   check((await dialogs(pg)) === 0, "the menu closes when a page is picked");
 
@@ -167,7 +167,8 @@ for (const [look, want] of [["press", 1], ["flat", 0]]) {
   check((await dialogs(pg)) === 1, "with the Command menu's tile on screen, ⌘K still opens one menu");
   await pg.keyboard.press("Escape");
 
-  await pg.goto(`http://localhost:${port}/index.html#command-menu`, { waitUntil: "networkidle" });
+  /* In a world there is no gallery search: ⌘K on the Command menu's page opens only the page's demo. */
+  await pg.goto(`http://localhost:${port}/index.html#flat/command-menu`, { waitUntil: "networkidle" });
   await pg.getByRole("heading", { level: 1, name: "Command menu" }).waitFor();
   await pg.keyboard.press("Control+k");
   await pg.getByRole("dialog").first().waitFor();
@@ -180,12 +181,12 @@ for (const [look, want] of [["press", 1], ["flat", 0]]) {
 
 /* ---------- search on a phone ---------- */
 {
-  const { ctx, pg, errors } = await open("button", { phone: true });
+  const { ctx, pg, errors } = await open("overview", { phone: true });
   await pg.locator("header").getByRole("button", { name: "Search" }).tap();
   await pg.getByRole("dialog").waitFor();
   await pg.keyboard.type("toast");
   await pg.keyboard.press("Enter");
-  await pg.waitForFunction(() => location.hash === "#toast");
+  await pg.waitForFunction(() => location.hash === "#flat/toast");
   check(true, "on a phone, the header's search icon opens the menu and a pick opens the page");
   for (const e of errors) problems.push(`phone: ${e}`);
   await ctx.close();

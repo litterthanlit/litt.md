@@ -347,16 +347,15 @@ export function App() {
             <Suspense fallback={null}>
               <LanguageCanvas />
             </Suspense>
+          ) : page?.world ? (
+            /* A world is closed (plans/019): its pages draw no gallery header, sidebar or search, only the world, and
+               the player's Menu finds what is in it. */
+            <Suspense fallback={null}>
+              <page.Component />
+            </Suspense>
           ) : (
             <SearchProvider pageId={page?.id}>
-              {/* A world is closed (plans/019): its pages draw no gallery header or sidebar, only the world. */}
-              {page?.world ? (
-                <Suspense fallback={null}>
-                  <page.Component />
-                </Suspense>
-              ) : (
-                <Shell page={page} />
-              )}
+              <Shell page={page} />
             </SearchProvider>
           )}
         </TooltipProvider>

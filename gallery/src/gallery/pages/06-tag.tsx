@@ -117,7 +117,7 @@ const DEPLOYS: { site: string; env: string; status: TagStatus; label: string; wh
 
 function DeploysDemo() {
   return (
-    <ul aria-label="Recent deploys" className="w-full max-w-2xl rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
+    <ul aria-label="Recent deploys" className="w-full max-w-2xl min-w-0 rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
       {DEPLOYS.map((d) => (
         <li
           key={d.site}

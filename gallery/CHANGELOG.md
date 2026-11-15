@@ -64,6 +64,10 @@ Later the same day, Heat, a sixth world after a street-racing front end (the men
 - **added** `litt`: Heat, `data-material="heat"` on `<html>`. Black slabs and cream words at night, its own (the same menu on bleached sepia paper by day), warm neutrals, a key as a flat dark cell in a 1px outline, and nothing cast, glowing or sunk. Amber is its own accent, the light of what is selected: its words and focus ring at night, only a fill by day, with links and the ring in the ink. The data hues keep 0.12 from it (amber's slot is a brake red under Heat). Square corners (`--litt-radius-control` and `--litt-radius-surface` are 0) and Saira (load it at 400, 500 and 600). `data-accent="blue"`, `"mono"` and `"pink"` still win on a Heat page. Every other world is unchanged; nothing in your code has to change.
 - **changed** `motion`: under Heat a set whips in from the left over `--travel`, one after another on the responsive spring, and `gather` sends every piece to the right at once on the instant tier shortened by `--exit`; `useOverlayMotion` slides and never grows there. `Material` and `byWorld` gain `"heat"`; a part with no Heat body draws Press's. Reinstall it with `litt`.
 
+Later still, a fix the closed worlds' checks found (every world's pages are now checked at 320px):
+
+- **fixed** `run-list`: a run's status line holds its screen-reader pauses inside its own clip, so under Device's wider mono a long line no longer stretches the page sideways at 320px. Nothing changes where the line fits. Props are unchanged.
+
 ## 2026-11-14 · Rack, a world after Ableton Live
 
 Rack is a software instrument's rack, after Ableton Live: grey panels on a darker grey body, keys and wells in 1px outlines, square corners, Inter, five bright clip colours for what you make, and one yellow that is only ever a fill, the light of a switch that is on. Nothing casts, glows or sinks. Set `data-material="rack"` on `<html>`, as for Flat and Device (`proposals/rack.md`).

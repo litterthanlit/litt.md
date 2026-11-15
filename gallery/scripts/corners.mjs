@@ -8,8 +8,9 @@
  *
  * The rule is the one the components keep by hand (components.md: "so the corners stay concentric"): a box drawn
  * inside a rounded box keeps at least as much room from the curve as from the nearest straight side, within a pixel.
- * Square corners hide a break, so the check loads each page at each of SHAPES (src/motion/rules.ts) but Square, with
- * the radius written on <body> as the Customize panel writes it, under reduced motion so everything is at rest.
+ * Square corners hide a break, so the check loads each of the gallery's pages (Flat) at each of SHAPES (src/motion/rules.ts)
+ * but Square, with the radius written on <body> as the Customize panel wrote it, and each page in another world at that
+ * world's own shape, the only one it shows (plans/019), under reduced motion so everything is at rest.
  *
  * In each page's main, an outer box is anything painted (a fill, a shadow or a border) with a corner radius and
  * overflow visible: one that clips draws its contents to its own curve on purpose. An inner box is anything painted
@@ -43,7 +44,7 @@ const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
 const selfTest = args.includes("--self-test");
-const only = (get("pages", selfTest ? "button" : "") || "").split(",").filter(Boolean);
+const only = (get("pages", selfTest ? "flat/button" : "") || "").split(",").filter(Boolean);
 const CONCURRENCY = Number(get("concurrency", "4"));
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
@@ -64,6 +65,14 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
 const bundle = await build({ entryPoints: [path.join(here, "../src/motion/rules.ts")], bundle: true, format: "esm", platform: "neutral", write: false, logLevel: "silent" });
 const { SHAPES, shapeName, shapeSurface } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString("base64")}`);
 const shapes = (get("shapes", "") ? get("shapes").split(",").map(Number) : SHAPES.filter((r) => r > 0));
+/* Each world is closed (plans/019) and shows only its own shape, so a page in a world is checked there; the gallery's
+   own world, Flat, is checked at every shape, as the Customize panel once offered them, since a host can still reshape
+   the tokens. Plain and Heat are square, which hides nothing to check. */
+const OWN = { press: 4, device: 4, rack: 2, plain: 0, heat: 0 };
+const shapesFor = (id) => {
+  const world = id.split("/")[0];
+  return world in OWN ? (OWN[world] > 0 ? [OWN[world]] : []) : shapes;
+};
 if (!shapes.length || shapes.some((r) => !SHAPES.includes(r))) { console.error(`--shapes takes some of ${SHAPES.join(", ")}.`); process.exit(1); }
 
 /* Breaks the check knows about and has not fixed yet: each prints, and none fails the run, but one that no longer happens
@@ -271,7 +280,7 @@ async function checkPage(id) {
       return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
     }, [radius, shapeSurface(radius)]);
     /* The page at rest at every shape first, before any slider moves. */
-    for (const radius of shapes) {
+    for (const radius of shapesFor(id)) {
       await shape(radius);
       for (const what of await pg.evaluate(measure)) failures.push({ id, radius, what });
     }
@@ -281,7 +290,7 @@ async function checkPage(id) {
         await pg.evaluate((n) => document.querySelector(`[data-corners-thumb="${n}"]`).focus({ preventScroll: true }), i);
         await pg.keyboard.press(key);
       }
-      for (const radius of shapes) {
+      for (const radius of shapesFor(id)) {
         await shape(radius);
         for (const what of await pg.evaluate(measure, "data-corners-slider")) failures.push({ id, radius, what: `${what}, at ${key}` });
       }
@@ -294,7 +303,7 @@ async function checkPage(id) {
 
 const started = Date.now();
 const queue = [...pages];
-const runs = pages.length * shapes.length;
+const runs = pages.reduce((n, id) => n + shapesFor(id).length, 0);
 await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
   while (queue.length) await checkPage(queue.shift());
 }));
@@ -306,7 +315,7 @@ const shapeWords = shapes.map((r) => shapeName(r)).join(", ");
 if (selfTest) {
   const kinds = { rub: "the Slider's old cap on a pill", layer: "a 22px row in a 16px group", sharp: "a square cover 4px into a 16px card" };
   const keys = new Set(failures.flatMap((f) => { const m = /^self-test (\w+) /.exec(f.what); return m ? [`${f.id} ${f.radius} ${m[1]}`] : []; }));
-  const missed = pages.flatMap((id) => shapes.flatMap((r) => Object.keys(kinds).map((k) => `${id} ${r} ${k}`))).filter((k) => !keys.has(k));
+  const missed = pages.flatMap((id) => shapesFor(id).flatMap((r) => Object.keys(kinds).map((k) => `${id} ${r} ${k}`))).filter((k) => !keys.has(k));
   const broken = failures.filter((f) => /running the check/.test(f.what));
   for (const [k, words] of Object.entries(kinds)) console.log(`corners self-test: ${words} was caught on ${[...keys].filter((x) => x.endsWith(` ${k}`)).length} of ${runs} runs (${took}).`);
   for (const f of broken) console.log(`✗ ${f.id} at ${shapeName(f.radius)}: ${f.what}`);
