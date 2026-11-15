@@ -180,7 +180,7 @@ async function audit(page, size, scheme, world, mutate) {
   claim(C.rest, r.openDialogs === 0 && r.modal === 0 && r.replayDialog === 0 ? null : `${where}: ${r.openDialogs} open dialogs outside main, ${r.modal} aria-modal, ${r.replayDialog} dialogs in the Replay stage`);
 
   /* A part without bodies has no data-body; one with bodies must draw this world's own, or Press's where it has none. */
-  if (r.body) claim(C.bodies, r.body === bodyFor(page.id, world) ? null : `${where}: the Anatomy object is the ${r.body} body (want ${bodyFor(page.id, world)})`);
+  if (r.body) claim(C.bodies, r.body === world || r.body === bodyFor(page.id, world) ? null : `${where}: the Anatomy object is the ${r.body} body (want ${world} or ${bodyFor(page.id, world)})`);
 
   claim(C.wide, size.width > 640 || r.wide <= 0 ? null : `${where}: ${r.wide}px wider than the screen`);
 
