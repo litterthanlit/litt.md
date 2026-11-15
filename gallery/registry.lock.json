@@ -359,8 +359,8 @@
       "hash": "3559e1a3da32df42"
     },
     "slider": {
-      "version": "2026.11.09",
-      "hash": "7c649923fac82874"
+      "version": "2026.11.14",
+      "hash": "b5de2ada31d5bce3"
     },
     "sources": {
       "version": "2026.11.06",
@@ -391,12 +391,12 @@
       "hash": "eb874003dc2c37b0"
     },
     "switch": {
-      "version": "2026.11.12",
-      "hash": "1de0c27cc6dba0c4"
+      "version": "2026.11.14",
+      "hash": "cedf39c6912ca713"
     },
     "table": {
-      "version": "2026.11.12",
-      "hash": "026d73578d9b00b4"
+      "version": "2026.11.14",
+      "hash": "89ba37e317c9779b"
     },
     "table-filter": {
       "version": "2026.11.02",

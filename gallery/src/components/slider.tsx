@@ -36,7 +36,7 @@
  * - Bodies (proposals/worlds.md, Bodies): this file is the contract (the props, the Radix root and thumbs, the label and
  *   value words, the marks and home, the hand, the keys, the range form) and the Press body, which is the default: a deep slot with notches that light, and the value on a raised face that rides over the cap (a single slider with a value stands 68px tall for it). Flat
  *   (proposals/flat-pill.md: a pill track, an ink fill, a round knob, the value at the track's end) lives in bodies/slider.flat.tsx and Device (a
- *   fader: a well, engraved ticks, a key for a cap, the value on an LCD) in bodies/slider.device.tsx. Each takes
+ *   fader: a well, engraved ticks, a key for a cap, the value on an LCD) in bodies/slider.device.tsx, and Rack (a value bar in a box, a 2px ink line at the value) in bodies/slider.rack.tsx. Each takes
  *   SliderBodyProps and carries data-body on its root. The travel's inset is --sl-pad: the body's root sets it, and
  *   padOf reads it back as the root's left padding.
  * - Forced colors drops box-shadow and background colors, so the plate, the slot and the cap get real borders and
@@ -62,6 +62,7 @@ import { useEffect, useId, useRef, useState, type ComponentProps, type CSSProper
 import * as RadixSlider from "@radix-ui/react-slider";
 import { byWorld, useMaterial } from "@/motion";
 import { SliderDevice } from "./bodies/slider.device";
+import { SliderRack } from "./bodies/slider.rack";
 import { SliderFlat } from "./bodies/slider.flat";
 
 export type SliderProps = {
@@ -465,7 +466,7 @@ function SliderPress({ range, caps, fill, notches, glide, held, shown, plateRef,
 /** The body for the material the slider stands in: the nearest MaterialProvider's, else <html>'s. */
 function useBody() {
   const material = useMaterial();
-  return { Body: byWorld(material, { press: SliderPress, flat: SliderFlat, device: SliderDevice }), material };
+  return { Body: byWorld(material, { press: SliderPress, flat: SliderFlat, device: SliderDevice, rack: SliderRack }), material };
 }
 
 /** One slider: a label above that says the value, a cap riding in a slot on a raised plate, and optional words under its ends. Every value is a number, and a form sends it under name. */
@@ -574,7 +575,7 @@ export function Slider({
     ...(home !== null && home >= min && home <= max ? [{ p: (home - min) / span, home: true }] : []),
   ];
   const { Body, material } = useBody();
-  /* Press and Flat carry the value in the body (a face, or the end of the track); Device's label row sets it on an LCD. */
+  /* Press, Flat and Rack carry the value in the body (a face, or the end of the track or the box); Device's label row sets it on an LCD. */
   const inBody = material !== "device";
 
   return (

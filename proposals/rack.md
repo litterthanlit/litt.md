@@ -72,6 +72,6 @@ K2, K4, K5 and K6 each change a rule (R6, the shape, R4, R3) for Rack alone, so 
 
 ## Next
 
-- **Bodies.** Rack draws Press's body everywhere today. The ones that would say it most: the switch as a flat key that lights yellow with its word on it (Live's toggle), the slider as a thin track with a filled bar, the table as thin rows on one panel (Press's slats read chunky here), the number field as a value you drag.
+- **Bodies.** Built: Sparkline (the clip), Switch (the toggle key, lit in the ink, or the accent for the one main switch) and Table (thin rows on one panel). Next: the slider as a thin track with a filled bar, the number field as a value you drag, the segmented control as Live's chooser.
 - **The survey.** As Device's phase 2: every page shot in Rack against Press, light and dark, one row per page.
 - **Fun mode under Rack.** Nothing yet; the beat is the obvious place.

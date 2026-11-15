@@ -6,7 +6,7 @@ import { RangeSlider, Slider } from "@/components/slider";
 import { Table, TableBody, TableCell, TableEmpty, TableHead, TableHeader, TableRow } from "@/components/table";
 import { DeviceProvider, MaterialProvider, useMotionDial } from "@/motion";
 import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, BODY_WORLDS } from "../look";
+import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -499,8 +499,8 @@ function BodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full min-w-0 gap-6 md:grid-cols-3">
-      {BODY_WORLDS.map((m) => (
+    <div className="grid w-full min-w-0 gap-6 md:grid-cols-2 xl:grid-cols-4">
+      {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 grid-rows-[1fr_auto] gap-3">
           <div
             {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
@@ -541,11 +541,11 @@ export default function SliderPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="Four bodies"
         tier="responsive"
         size="lg"
         code="BodiesDemo"
-        caption="One contract, three bodies: the same props, keys and screen reader words, a different thing under the hand. Press is a cap in a deep slot on a plate, its notches lit as the fill passes them, the value on a raised face that rides with the cap. Flat is a pill track, a round ink knob and the value in words at its end, with no shadow anywhere. Device is a fader: a key with a line across its face rides over a well, the fill lit like a meter, engraved ticks beneath, the value on an LCD. Each frame sets its own look, so all three stand side by side whatever the page is in."
+        caption="One contract, four bodies: the same props, keys and screen reader words, a different thing under the hand. Press is a cap in a deep slot on a plate, its notches lit as the fill passes them, the value on a raised face that rides with the cap. Flat is a pill track, a round ink knob and the value in words at its end, with no shadow anywhere. Device is a fader: a key with a line across its face rides over a well, the fill lit like a meter, engraved ticks beneath, the value on an LCD. Rack is a value bar: a box with the value filled from the start and a 2px ink line at it, the value in words at its end. Each frame sets its own look, so all four stand side by side whatever the page is in."
       >
         <BodiesDemo />
       </Stage>

@@ -41,6 +41,8 @@
  *   44 by 26 and the knob 20, so the crossing is 18px.
  * - Device, bodies/switch.device.tsx: a toggle key in a well that flips with a detent (three steps on the instant
  *   tier, never a spring), and its word on a small LCD beside it in the mono, with a lamp that lights when on.
+ * - Rack, bodies/switch.rack.tsx: a toggle key with its word on its face that lights when on (the ink, or the accent
+ *   for tone="accent"); nothing slides, and it changes on the frame.
  * - Forced colors drops box-shadow and background colors, so the tray and the block get real borders and system
  *   colors mark the on state.
  */
@@ -58,6 +60,7 @@ import {
 import * as SwitchPrimitive from "@radix-ui/react-switch";
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { SwitchDeviceBody } from "./bodies/switch.device";
+import { SwitchRackBody } from "./bodies/switch.rack";
 import { SwitchFlatBody } from "./bodies/switch.flat";
 
 export type SwitchAlign = "start" | "end";
@@ -212,7 +215,7 @@ export function Switch({
   const id = idProp ?? auto;
   const descriptionId = description ? `${id}-description` : undefined;
   const end = align === "end";
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody, rack: SwitchRackBody });
 
   /* The switch keeps its own state when you do not control it, because a drag sets it to a side, not a flip. */
   const [inner, setInner] = useState(defaultChecked ?? false);

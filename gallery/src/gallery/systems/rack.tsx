@@ -7,8 +7,8 @@
 import { useState } from "react";
 import { BarList } from "@/components/bar-list";
 import { CurveEditor, type CubicBezier } from "@/components/curve-editor";
-import { NumberField } from "@/components/number-field";
 import { Segmented } from "@/components/segmented";
+import { Slider } from "@/components/slider";
 import { Sparkline } from "@/components/sparkline";
 import { Switch } from "@/components/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
@@ -149,7 +149,9 @@ function Levels() {
   );
 }
 
-/* D. An effect: an echo on the keys, every value in reach. */
+/* D. An effect: an echo on the keys, every value a bar you can set. */
+
+const pct = (v: number) => `${v}%`;
 
 function Effect() {
   const [sync, setSync] = useState("eighth");
@@ -169,10 +171,10 @@ function Effect() {
           { value: "half", label: "1/2" },
         ]}
       />
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-3">
-        <NumberField label="Feedback" size="sm" defaultValue={0.42} min={0} max={1} step={0.01} format={{ style: "percent" }} />
-        <NumberField label="Dry/wet" size="sm" defaultValue={0.3} min={0} max={1} step={0.01} format={{ style: "percent" }} />
-        <NumberField label="Width" size="sm" defaultValue={1} min={0} max={1} step={0.05} format={{ style: "percent" }} />
+      <div className="grid gap-1">
+        <Slider label="Feedback" defaultValue={42} min={0} max={100} home={50} formatValue={pct} />
+        <Slider label="Dry/wet" defaultValue={30} min={0} max={100} home={50} formatValue={pct} />
+        <Slider label="Width" defaultValue={100} min={0} max={100} formatValue={pct} />
       </div>
       <Switch label="Ping-pong" description="Each repeat answers from the other side." checked={pingPong} onCheckedChange={setPingPong} />
     </div>
@@ -201,7 +203,7 @@ export const rack: SystemScenes = {
     { id: "tracks", title: "Tracks", line: "Each track named in its clip colour with its clip beside it, its level in tabular figures, its state as a tag.", Render: Tracks },
     { id: "arrangement", title: "Arrangement", line: "The song as sections, each in the colour of the track that leads it, and the playhead that settles on them.", Render: Arrangement },
     { id: "levels", title: "Levels", line: "Every track's peak as a bar in the track's own colour.", Render: Levels },
-    { id: "effect", title: "An effect", line: "An echo's values side by side, each a box you can set, and a switch that stays a key.", Render: Effect },
+    { id: "effect", title: "An effect", line: "An echo's values as bars you set by dragging anywhere in them, and a switch that lights.", Render: Effect },
     { id: "automation", title: "Automation", line: "A filter's sweep into the drop, drawn with two handles.", Render: Automation },
   ],
   cover: "takes",
