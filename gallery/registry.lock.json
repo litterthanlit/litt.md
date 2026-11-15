@@ -36,7 +36,7 @@
     },
     "base-styles": {
       "version": "2026.11.15",
-      "hash": "149eafaae5503278"
+      "hash": "c673e6a46ad25cb5"
     },
     "breadcrumb": {
       "version": "2026.11.06",
@@ -48,7 +48,7 @@
     },
     "button": {
       "version": "2026.11.15",
-      "hash": "892001f7672478b8"
+      "hash": "a60def77a25767d7"
     },
     "callout": {
       "version": "2026.11.06",
@@ -328,11 +328,11 @@
     },
     "segmented": {
       "version": "2026.11.15",
-      "hash": "119e6b1f78c2f357"
+      "hash": "ff38bb26e250c14c"
     },
     "select": {
       "version": "2026.11.15",
-      "hash": "630bb5a8afa8cf3b"
+      "hash": "d404f5f3c51ae1ac"
     },
     "settings": {
       "version": "2026.11.03",
@@ -392,7 +392,7 @@
     },
     "switch": {
       "version": "2026.11.15",
-      "hash": "35492818e3da9dac"
+      "hash": "22a6b7ece5e4b08a"
     },
     "table": {
       "version": "2026.11.12",
@@ -404,7 +404,7 @@
     },
     "tabs": {
       "version": "2026.11.15",
-      "hash": "5871483e6071c099"
+      "hash": "0d9ee2d79240c6f1"
     },
     "tag": {
       "version": "2026.11.09",

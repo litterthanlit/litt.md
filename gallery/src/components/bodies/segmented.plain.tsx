@@ -1,12 +1,12 @@
 /**
- * Segmented control, Plain's body (proposals/plain.md, No UI): a choice of words, set in a line.
+ * Segmented control, Plain's body (proposals/plain.md, Quiet): a choice of words, the chosen one held in brackets.
  *
- * - The chosen word is --fg; every other is link blue and underlined (--accent-text), a word to pick. Nothing is
- *   drawn around any of them: no tray, no bubble, no frame. Space parts them, and their hit areas touch, so a pointer
- *   never lands between two.
- * - Under the hand an unchosen word's underline thickens to 2px. Disabled words are --fg-disabled with no underline.
- * - The radios under the words carry the choice, the keys and the name a form sends; a ring around the word shows
- *   keyboard focus.
+ * - The chosen word is --fg inside four 4px corner marks; every other is --fg-muted, and comes to --fg under the hand.
+ *   Nothing else is drawn: no tray, no bubble, no frame, no underline. Space parts the words, and their hit areas
+ *   touch, so a pointer never lands between two.
+ * - Disabled words are --fg-disabled; a disabled chosen word keeps its brackets.
+ * - The radios under the words carry the choice, the keys and the name a form sends; the --focus outline round the
+ *   word shows keyboard focus.
  * - Nothing glides: the choice changes the moment you make it.
  */
 import type { SegmentedBodyProps, SegmentedSize } from "../segmented";
@@ -16,7 +16,14 @@ const sizes: Record<SegmentedSize, { track: string; segment: string }> = {
   md: { track: "h-control-md", segment: "text-small" },
 };
 
-/** Plain, the words: the chosen one in the ink, the rest underlined in link blue. */
+/* Four corner marks, each two 1px bars 4px long, in the word's color. */
+const brackets =
+  "pointer-events-none absolute -inset-x-2 -inset-y-1.5 bg-no-repeat " +
+  "[background-image:linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor)] " +
+  "[background-size:4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px] " +
+  "[background-position:left_top,left_top,right_top,right_top,left_bottom,left_bottom,right_bottom,right_bottom]";
+
+/** Plain, the words: the chosen one in the ink and the brackets, the rest in grey. */
 export function SegmentedPlainBody({ legend, showLegend, name, value, options, size, block, disabled, className, select }: SegmentedBodyProps) {
   const look = sizes[size];
   return (
@@ -30,11 +37,11 @@ export function SegmentedPlainBody({ legend, showLegend, name, value, options, s
             <label
               key={o.value}
               className={
-                "litt-target group/word relative grid h-full select-none place-items-center px-1.5 first:ps-0 last:pe-0 " +
+                "litt-target group/word relative grid h-full select-none place-items-center px-3 " +
                 "[-webkit-tap-highlight-color:transparent] " +
                 (block ? "flex-1 " : "") +
                 look.segment +
-                (off ? " cursor-not-allowed text-fg-disabled" : selected ? " cursor-default text-fg" : " cursor-pointer text-accent-text")
+                (off ? " cursor-not-allowed text-fg-disabled" : selected ? " cursor-default text-fg" : " cursor-pointer text-fg-muted hover:text-fg")
               }
             >
               <input
@@ -48,12 +55,8 @@ export function SegmentedPlainBody({ legend, showLegend, name, value, options, s
                   select(o.value);
                 }}
               />
-              <span
-                className={
-                  "litt-trim peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus " +
-                  (off || selected ? "" : "underline decoration-1 underline-offset-[0.2em] group-hover/word:decoration-2")
-                }
-              >
+              <span className="litt-trim relative peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-focus">
+                {selected && <span aria-hidden="true" className={brackets} />}
                 {o.label}
               </span>
             </label>

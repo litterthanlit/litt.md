@@ -42,8 +42,8 @@ export function Request() {
       <SelectField label="Topic" name="topic" options={TOPICS} placeholder="Choose one" />
       <Textarea label="What happened?" name="message" rows={3} placeholder="What you did, what you expected, what you saw." />
       <Checkbox label="Send me a copy" description="To the email above." />
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" variant="secondary">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <Button type="submit" variant="primary">
           Send
         </Button>
         <span className="text-caption text-fg-muted" role="status">
@@ -183,8 +183,8 @@ export function Preferences() {
         <Switch label="An invoice is ready" defaultChecked onCheckedChange={() => setSaved(false)} />
         <Switch label="There is news" description="About once a month." onCheckedChange={() => setSaved(false)} />
       </fieldset>
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" variant="secondary">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <Button type="submit" variant="primary">
           Save
         </Button>
         <span className="text-caption text-fg-muted" role="status">
@@ -196,11 +196,11 @@ export function Preferences() {
 }
 
 const scenes: Scene[] = [
-  { id: "request", title: "A request", line: "A whole form with no UI: a line under each field, Send as an underlined word, the answer in words.", Render: Request },
+  { id: "request", title: "A request", line: "A whole form with no UI: a line under each field, Send held in four corner marks, the answer in words.", Render: Request },
   { id: "doc", title: "A help page", line: "A doc that reads like a page: a trail of underlined links, steps, the command, and who changed it last.", Render: Doc },
   { id: "search", title: "Search", line: "One field and a list of links, the result count in words, and nothing between you and the answer.", Render: Search },
   { id: "records", title: "Records", line: "A table with a caption and two weights of line: the head's and the rows'.", Render: Records },
-  { id: "preferences", title: "Preferences", line: "Switches as words, On or Off, that change the moment you press them, and a save that says it saved.", Render: Preferences },
+  { id: "preferences", title: "Preferences", line: "Switches as words, the one in effect held in brackets, that change the moment you press them.", Render: Preferences },
 ];
 
 export const plain: SystemScenes = { scenes, cover: "request" };

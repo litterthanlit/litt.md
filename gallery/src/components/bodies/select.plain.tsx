@@ -1,13 +1,13 @@
 /**
- * Select, Plain's body (proposals/plain.md, No UI): a field like the text field, and a list that is the page again.
+ * Select, Plain's body (proposals/plain.md, Quiet): a field like the text field, and a list that is the page again.
  *
  * - The trigger is the input's line: no fill, no frame, no side padding, the value in --fg and a plain chevron after
  *   it, one 1px --line-control rule along its foot. Under the hand the rule goes to --fg; open, it is 2px in --fg;
  *   focus is 2px in --focus, an error 2px in --danger. Disabled thins it to --line.
  * - The list is the page inside one line: --canvas inside a 1px --line-control edge, no glass, no shadow, square.
- * - Rows are words. The current one is in the title weight with a check, so it never rests on weight alone; the row
- *   under the hand or the keys is link blue and underlined, over the glide's faint wash (glide.tsx), which also draws
- *   the keyboard's ring. Forced colors keeps the glide's Highlight.
+ * - Rows are --fg-muted words. The current one is --fg with a check; the row under the hand or the keys is --fg with
+ *   four corner brackets round its word. The glide (glide.tsx) draws no wash and no ring here, the brackets are the highlight; forced
+ *   colors keeps its Highlight.
  * - The contract (props, roles, keys, the highlight's focus, the exit) is select.tsx's.
  */
 import * as SelectPrimitive from "@radix-ui/react-select";
@@ -59,7 +59,7 @@ export function SelectPlainList({ root, glide, children }: SelectListBodyProps) 
     >
       <SelectPrimitive.Viewport
         ref={glide.ref}
-        className="isolate p-px overscroll-contain [&>[data-ring]]:rounded-none [scrollbar-color:var(--line-strong)_transparent]! [scrollbar-width:thin]!"
+        className="isolate p-px overscroll-contain [&>[data-ring]]:rounded-none [&>[data-ring]]:bg-transparent [&>[data-ring]]:shadow-none forced-colors:[&>[data-ring]]:bg-[Highlight] [scrollbar-color:var(--line-strong)_transparent]! [scrollbar-width:thin]!"
       >
         {glide.highlight}
         {children}
@@ -69,20 +69,29 @@ export function SelectPlainList({ root, glide, children }: SelectListBodyProps) 
 }
 
 const row =
-  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 px-3 text-small text-fg outline-none " +
-  "[-webkit-tap-highlight-color:transparent] underline-offset-[0.2em] " +
-  "data-[state=checked]:font-title " +
-  "group-data-[quiet=false]/list:data-[highlighted]:text-accent-text group-data-[quiet=false]/list:data-[highlighted]:underline " +
+  "group/row relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 px-4 text-small text-fg-muted outline-none " +
+  "[-webkit-tap-highlight-color:transparent] " +
+  "data-[state=checked]:text-fg group-data-[quiet=false]/list:data-[highlighted]:text-fg pointer-coarse:active:text-fg " +
   "forced-colors:group-data-[quiet=false]/list:data-[highlighted]:[forced-color-adjust:none] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:text-[HighlightText] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:**:text-[HighlightText] " +
-  "data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
-  "pointer-coarse:active:text-accent-text pointer-coarse:active:underline";
+  "data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled";
 
-/** Plain, a row: words, the current one in the title weight with a check. */
+/* Four corner marks round the row's word, each two 1px bars 4px long, in its color: on the row under the hand or the keys. */
+const brackets =
+  "pointer-events-none absolute -inset-x-2 -inset-y-1.5 hidden bg-no-repeat " +
+  "group-data-[quiet=false]/list:group-data-[highlighted]/row:block pointer-coarse:group-active/row:block " +
+  "[background-image:linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor)] " +
+  "[background-size:4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px] " +
+  "[background-position:left_top,left_top,right_top,right_top,left_bottom,left_bottom,right_bottom,right_bottom]";
+
+/** Plain, a row: a word in grey, the current one in the ink with a check, the one under the hand in brackets. */
 export function SelectPlainRow({ item, option }: SelectRowBodyProps) {
   return (
     <SelectPrimitive.Item {...item} className={row}>
-      <span className="min-w-0 flex-1 truncate">
-        <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
+      <span className="min-w-0 flex-1">
+        <span className="litt-trim relative inline-block max-w-full">
+          <span aria-hidden="true" className={brackets} />
+          <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
+        </span>
       </span>
       <span className="grid size-4 shrink-0 place-items-center">
         <SelectPrimitive.ItemIndicator className="grid place-items-center text-fg">

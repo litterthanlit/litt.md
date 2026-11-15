@@ -15,15 +15,16 @@ A world for the page that should just work: docs, forms, admin and internal tool
 - **changed** `chart`: under Plain it draws Press's body. Props are unchanged.
 - **changed** `file-drop`: under Plain its file list is Press's. Props are unchanged.
 
-Later the same day, Plain's first bodies: what a hand uses is underlined or in link blue, and nothing else is drawn.
+Later the same day, Plain's first bodies, quiet: a control is its words, and the one that matters is held in four corner marks.
 
-- **changed** `button`: under Plain a button is its words, underlined: primary in link blue at the title weight, secondary in link blue, ghost in grey, danger in red. No fill, no line and no side padding, so the words line up with the text around them; the underline thickens under the hand. Props are unchanged.
+- **changed** `base-styles`: under Plain only a link inside running text (`p`, `dd`, `td`, `th`, `figcaption`, `blockquote`, `caption`) is underlined; a link that stands alone, such as a nav row, is left as its words.
+- **changed** `button`: under Plain a button is its words. Primary is the ink at the title weight inside four 6px corner marks; secondary and ghost are grey words that come to the ink, and take the marks, under the hand; danger is red words. No fill, no line and no side padding. Props are unchanged.
 - **changed** `input`: under Plain a field is one 1px line under what you type, with no fill, frame or side padding; focus and an error draw it 2px (`--litt-focus`, `--litt-danger`), and the label sits above at the text weight. `TextField`, `Textarea` and `Field` alike. Props are unchanged.
-- **changed** `select`: under Plain the trigger is the field's line with a chevron, and the list is the page inside one line; the row under the hand or the keys is link blue and underlined, the current one in the title weight with its check. Props are unchanged.
+- **changed** `select`: under Plain the trigger is the field's line with a chevron, and the list is the page inside one line; rows are grey words, the current one in the ink with its check, and the row under the hand or the keys is held in corner marks. Props are unchanged.
 - **changed** `checkbox`: under Plain a checkbox is a square in one line and a radio a circle; checked, the line goes to the ink and an ink tick or dot sits in it, with no fill. Props are unchanged.
-- **changed** `switch`: under Plain a switch is two words, On and Off: the side it is on in the ink, the other underlined in link blue. It is still one `role="switch"` button, and the words are hidden from screen readers. Props are unchanged.
-- **changed** `segmented`: under Plain the options are words in a line, the chosen one in the ink and the rest underlined in link blue, with nothing drawn around them. Props are unchanged.
-- **changed** `tabs`: under Plain the tabs are words in a row, the chosen one in the ink and the rest underlined in link blue, with no rule under the row and no frame around the panel. Props are unchanged.
+- **changed** `switch`: under Plain a switch is two words, On and Off: the side it is on in the ink inside corner marks, the other grey. It is still one `role="switch"` button, and the words are hidden from screen readers. Props are unchanged.
+- **changed** `segmented`: under Plain the options are grey words in a line, the chosen one in the ink inside corner marks. Props are unchanged.
+- **changed** `tabs`: under Plain the tabs are grey words in a row, the chosen one in the ink inside corner marks, with no rule under the row and no frame around the panel. Props are unchanged.
 
 ## 2026-11-13 · Inside a frame, a sheet measures the frame; motion that never makes you wait
 

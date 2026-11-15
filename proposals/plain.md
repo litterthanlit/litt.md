@@ -34,25 +34,24 @@ Nick, shown the first slice: "strip it down even more". A control has no fill of
 
 Nick: "what if it was no ui at all". On `#canvas`, below Press's columns, three screens (a request, search, preferences) as Plain ships them beside No UI (`gallery/src/canvas/no-ui.tsx`): nothing drawn but type and the browser's own controls. An action is an underlined word in link blue, the main one with an arrow; a field is one line under what you type; a choice is words, the current one in the ink and the rest underlined; the checkbox and the select are the browser's. The rule that keeps it usable: what a hand can use is underlined or in link blue, and nothing else is (WCAG 1.4.11). Nothing in `src/components` changes for it. If Nick picks it, it becomes Plain's bodies, starting with Button, Input, Switch, Tabs and Segmented, and a check holds the rule.
 
-## Wave 1 shipped: No UI as Plain's form controls
+## Wave 1 shipped: quiet form controls
 
-Nick picked No UI ("I love it") and asked for the first wave. Seven parts now have a Plain body (`gallery/src/components/bodies/<part>.plain.tsx`), each built on the rule that what a hand can use is underlined or in link blue, and nothing else is drawn:
+Nick picked No UI ("I love it") and asked for the first wave; then, shown it with link-blue underlines on every control, asked for it "more tasteful and simple, a bit like mercuryos.com", with a reference: a column of grey words, the current one in the ink inside four corner marks. So Plain's controls are **quiet**: a control is its words, grey until it matters, and the one that matters (the main action, the current choice, the row under the hand) is the ink held in four corner brackets. Blue is left to links in running text, which stay underlined (WCAG 1.4.1); a link that stands alone is its words.
 
-| Part | Plain body |
+| Part | Plain body (`gallery/src/components/bodies/<part>.plain.tsx`) |
 |---|---|
-| Button | Its words, underlined: primary link blue at the title weight, secondary link blue, ghost grey, danger red. No fill, no line, no side padding; the underline goes 2px under the hand. |
+| Button | Its words. Primary is the ink at the title weight inside four 6px corner marks; secondary and ghost grey, taking the ink and the marks under the hand; danger red. No fill, line or side padding. |
 | Input, Textarea, Field | One 1px `--line-control` rule under what you type, drawn as a background so it never moves the text; 2px in `--focus` on focus, in `--danger` on an error. The label above at the text weight. |
-| Select | The field's rule with a chevron; the list is the page inside one line; the row under the hand is link blue and underlined, the current one in the title weight with its check. |
+| Select | The field's rule with a chevron; the list is the page inside one line; rows are grey, the current one the ink with its check, the row under the hand or the keys in corner marks (no wash, no ring). |
 | Checkbox, radio | A square or circle in one line; checked, the line goes to the ink and an ink tick or dot sits in it, never a fill. |
-| Switch | Two words, On and Off: the side it is on in the ink, the other underlined in link blue. Still one `role="switch"` button. |
-| Segmented | Words in a line, the chosen one in the ink, the rest underlined in link blue. |
-| Tabs | Words in a row, the chosen one in the ink, the rest underlined in link blue; no rule under the row, no frame round the panel. |
+| Switch | Two words, On and Off: the side it is on in the ink inside corner marks, the other grey. Still one `role="switch"` button. |
+| Segmented, Tabs | Grey words in a line, the chosen one in the ink inside corner marks; no rule, tray or frame. |
 
-The chosen word keeps the text weight, so picking never reflows the row (the canvas prototype set it bold). On Plain's page the first screen has no accent fill at all, and `test:worlds` expects none there.
+The marks are the word's own color (`currentColor`), eight 1px bars drawn as one background, so they move nothing and follow forced colors. The chosen word keeps the text weight, so picking never reflows the row. On Plain's page the first screen has no accent fill at all, and `test:worlds` expects none there.
 
 ## What is not right yet
 
-The other parts still draw Press's **bodies** in Plain's tokens, so structure Press bakes into a part still shows: a slider sits in a box, a menu is a card, a tag is a chip. Those are waves 2 and 3, as Bodies did for Flat and Device (`worlds.md`, decisions 13 and 15). No check holds the No UI rule yet; it should come with wave 2.
+The other parts still draw Press's **bodies** in Plain's tokens, so structure Press bakes into a part still shows: a slider sits in a box, a menu is a card, a tag is a chip. Those are waves 2 and 3, as Bodies did for Flat and Device (`worlds.md`, decisions 13 and 15). No check holds the quiet rule yet (one framed thing per group, grey for the rest); it should come with wave 2.
 
 ## Next: Plain's bodies, in waves
 

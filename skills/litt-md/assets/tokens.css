@@ -1713,9 +1713,10 @@
     outline: 2px solid var(--focus);
     outline-offset: 2px;
   }
-  /* Plain underlines its links, as a page does (proposals/plain.md). One attribute's weight, enough to beat a reset's
-     bare `a` and nothing more; in the base layer, so a utility that sets a link's decoration still wins. */
-  :where([data-material="plain"]) a:any-link {
+  /* Plain underlines a link inside running text, as a page does (proposals/plain.md), so it never rests on color
+     alone (WCAG 1.4.1). A link that stands alone, a nav row or a list of results, is left as its words. One
+     attribute's weight, enough to beat a reset's bare `a`; in the base layer, so a utility still wins. */
+  :where([data-material="plain"]) :is(p, dd, td, th, figcaption, blockquote, caption) a:any-link {
     text-decoration-line: underline;
     text-underline-offset: 0.15em;
   }
