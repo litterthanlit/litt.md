@@ -81,10 +81,10 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
-/** The Frame switch: what the Playground shows its parts in. The frame is the device, so there is no Auto. */
+/** The Frame switch: what the Playground shows its parts in, the world's object or a desktop. "phone" stays the value, since DeviceProvider reads it; there is no Auto. */
 export type PlayFrameSize = "phone" | "desktop";
 const FRAMES: { size: PlayFrameSize; label: string; note: string }[] = [
-  { size: "phone", label: "Phone", note: "The app on a phone." },
+  { size: "phone", label: "Object", note: "The app, then the world's scenes, on the world's own object." },
   { size: "desktop", label: "Desktop", note: "The parts on a desktop." },
 ];
 

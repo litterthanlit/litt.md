@@ -1,19 +1,22 @@
 /**
- * The Playground: the one page that can override the locked tokens, and a phone to feel each world on.
+ * The Playground: the one page that can override the locked tokens, and each world's object to feel it on (plans/018).
  *
  * Every other page runs the motion and shape from tokens.css. Here the Tune panel moves them, and "Lock it" prints
  * the tokens to paste back into litt.md. Leaving the page removes every override.
  *
- * The phone (PlayFrame) holds one small studio app (play-app.tsx), worn by the world the World switch picks: the frame
- * carries that world's data-material and a MaterialProvider, and its OverlayRoot keeps the app's sheet, menus,
- * tooltips and toasts inside it, in its world. The gallery around it stays in its own world. The Tune panel's Frame
- * switch swaps the phone for a desktop window that holds the sampler, so the desktop paths (hover tooltips, the
- * flyout submenu, the centred dialog) keep a place to be tuned. The World and Frame switches are page state, so
- * leaving the page puts them back, like every other override.
+ * The object (play-object/contract.tsx) is the world the World switch picks, made a thing you could hold: Device's is
+ * the recorder (bodies/device.tsx), and a world not drawn yet stands on the bare body. Its screen (PlayScreen) runs
+ * takes one at a time, chosen on the object's tablist: the studio app (play-app.tsx) first, the same in every world,
+ * then the world's own scenes. The screen carries that world's data-material and a MaterialProvider, and its
+ * OverlayRoot keeps the sheet, menus, tooltips and toasts inside it, in its world. The gallery around it stays in its
+ * own world. Nothing plays by itself and nothing makes a sound. The Tune panel's Frame switch swaps the object for a
+ * desktop window that holds the sampler, so the desktop paths (hover tooltips, the flyout submenu, the centred dialog)
+ * keep a place to be tuned. The World and Frame switches are page state, so leaving the page puts them back, like
+ * every other override.
  *
  * Type and shape are not here: the header's Customize panel tunes them on every page.
  */
-import { useState, type ReactNode } from "react";
+import { startTransition, useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { CommandMenu, useCommandShortcut, type CommandGroup } from "@/components/command-menu";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
@@ -31,16 +34,17 @@ import { useCustomize, useDark } from "../customize-state";
 import { MATERIALS, type Material } from "../look";
 import { MotionPanel, type PlayFrameSize } from "../motion-panel";
 import { PlayApp, type PlaySettings } from "../play-app";
+import { PlayObject } from "../play-object/contract";
 import { PlayScreen } from "../play-object/screen";
 
 export const meta: PageMeta = {
   id: "playground",
   title: "Playground",
-  lede: "One small app, in each world. Turn the dials and it follows.",
+  lede: "Each world's own object, running one small app and then the world's scenes. Turn the dials and it follows.",
   order: 40,
   tune: true,
   summary:
-    "One small studio app on a phone, in Press, Flat, Device, Plain, Rack or Heat: its sheet, menus, tooltips and toasts open inside the phone and wear its world. Turn the motion dials and the app follows; switch the frame to a desktop to tune the desktop paths. Every other page runs the locked motion from the tokens.",
+    "Each world as an object you could hold, Device's a recorder, its screen running one small studio app and then that world's scenes, one take at a time, in Press, Flat, Device, Plain, Rack or Heat. The app's sheet, menus, tooltips and toasts open inside the screen and wear its world. Turn the motion dials and it follows; switch the frame to a desktop to tune the desktop paths. Every other page runs the locked motion from the tokens.",
   tiers: ["instant", "responsive", "expressive"],
 };
 
@@ -255,21 +259,6 @@ function Sampler() {
 
 /* ---------- the frame ---------- */
 
-/** What makes the frame read as a phone, drawn in litt's own language: a status row and a home bar, both decoration. */
-function Phone({ children }: { children: ReactNode }) {
-  return (
-    <div className="flex h-full flex-col">
-      <div aria-hidden="true" className="flex h-10 shrink-0 items-end px-6 pb-1 font-mono text-caption text-fg tabular-nums">
-        9:41
-      </div>
-      <div className="min-h-0 flex-1">{children}</div>
-      <div aria-hidden="true" className="relative h-5 shrink-0">
-        <span className="absolute bottom-2 left-1/2 h-1 w-32 -translate-x-1/2 rounded-pill bg-fg-subtle" />
-      </div>
-    </div>
-  );
-}
-
 /** The World switch: which world the frame wears. Built like the Tune panel's segmented groups. */
 function WorldSwitch({ value, onChange }: { value: Material; onChange: (m: Material) => void }) {
   return (
@@ -312,7 +301,7 @@ export default function PlaygroundPage() {
       <div className="grid items-start gap-12 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="grid min-w-0 gap-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <WorldSwitch value={material} onChange={setMaterial} />
+            <WorldSwitch value={material} onChange={(m) => startTransition(() => setMaterial(m))} />
             <div className="xl:hidden">
               <Button
                 size="sm"
@@ -324,11 +313,12 @@ export default function PlaygroundPage() {
             </div>
           </div>
           {size === "phone" ? (
-            <PlayScreen key="phone" size="phone" material={material} dark={dark}>
-              <Phone>
-                <PlayApp settings={settings} onSettings={(next) => setSettings((s) => ({ ...s, ...next }))} />
-              </Phone>
-            </PlayScreen>
+            <PlayObject
+              key="object"
+              material={material}
+              dark={dark}
+              app={<PlayApp settings={settings} onSettings={(next) => setSettings((s) => ({ ...s, ...next }))} />}
+            />
           ) : (
             <PlayScreen key="desktop" size="desktop" material={material} dark={dark}>
               <div className="h-full overflow-y-auto overscroll-contain p-8">
