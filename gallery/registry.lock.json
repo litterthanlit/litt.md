@@ -75,8 +75,8 @@
       "hash": "4e68d0dafadb811b"
     },
     "chart": {
-      "version": "2026.11.14",
-      "hash": "bb10485ade83a133"
+      "version": "2026.11.15",
+      "hash": "5faa88b7fce86cf5"
     },
     "checkbox": {
       "version": "2026.11.09",
@@ -155,8 +155,8 @@
       "hash": "13d06e1887a03add"
     },
     "file-drop": {
-      "version": "2026.11.14",
-      "hash": "b6a6a995e85a9cd8"
+      "version": "2026.11.15",
+      "hash": "103c33da9ff4c9da"
     },
     "form": {
       "version": "2026.11.06",
@@ -215,8 +215,8 @@
       "hash": "a6fe723819d955b7"
     },
     "legend": {
-      "version": "2026.11.09",
-      "hash": "0a6515aaad23188b"
+      "version": "2026.11.15",
+      "hash": "69fdef8e4dc8513a"
     },
     "lightbox": {
       "version": "2026.11.12",
@@ -379,8 +379,8 @@
       "hash": "7e37983458b10bd7"
     },
     "stat": {
-      "version": "2026.11.10",
-      "hash": "4194ef8048ed5ba9"
+      "version": "2026.11.15",
+      "hash": "f2f7ed02982a48a1"
     },
     "states": {
       "version": "2026.11.06",
@@ -407,8 +407,8 @@
       "hash": "d59cfb006ee5859c"
     },
     "tag": {
-      "version": "2026.11.09",
-      "hash": "2e39808c53ecd1ec"
+      "version": "2026.11.15",
+      "hash": "eb109c14a7652ec0"
     },
     "tape-progress": {
       "version": "2026.11.08",

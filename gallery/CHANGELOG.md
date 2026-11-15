@@ -18,6 +18,11 @@ Every part with a body per world gets Rack's (`data-material="rack"`), drawn as 
 - **changed** `tabs`: a Rack body, outlined square keys along a strip (or one divided box when segmented), the chosen key lit in the ink, nothing slides. Props are unchanged.
 - **changed** `option-picker`: a Rack body, flat outlined keys with the picked one lit in the ink and square colour chips. Props are unchanged.
 - **changed** `card-picker`: a Rack body, flat outlined panels with the picked card ringed 2px in the ink and a small lit check key. Props are unchanged.
+- **changed** `chart`: a Rack body, a dark well with hairline gridlines and the data as clips (bars and stacked parts as blocks in the hue's tint with its mark edge, a line over a tint band). Props are unchanged.
+- **changed** `stat`: a Rack body, a panel with the figure in a value box and the delta as a small flat key. Props are unchanged.
+- **changed** `legend`: a Rack body, a row of toggles each with a small clip swatch (the hue's tint in its mark edge), a hidden series an empty outline. Props are unchanged.
+- **changed** `tag`: a Rack body, a small square key: a hue tag a clip, a status tag an outlined key, a raised tag a flat key. Props are unchanged.
+- **changed** `file-drop`: a Rack body, a well in a dashed edge that lights in the ink on drag-over, and the files as thin rows on one panel. Props are unchanged.
 
 ## 2026-11-14 · Rack, a fourth world
 
