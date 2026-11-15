@@ -769,9 +769,9 @@
   --rack-accent-blue-hover: #2569fe;
   --rack-accent-blue-text: #bcd3fe;
   --rack-focus-blue: #7084fd;
-  --rack-success: #4bc680;
-  --rack-warning: #e19b1b;
-  --rack-danger: #ff756f;
+  --rack-success: #4dc882;
+  --rack-warning: #eba42b;
+  --rack-danger: #ff948d;
   /* The clips: a deep fill with a bright mark in it, a waveform lit on its own colour. */
   --rack-data-blue: #009ded;
   --rack-data-blue-text: #43c4ff;
@@ -1094,9 +1094,9 @@
     --rack-accent-blue-hover: #2569fe;
     --rack-accent-blue-text: #bcd3fe;
     --rack-focus-blue: #7084fd;
-    --rack-success: #4bc680;
-    --rack-warning: #e19b1b;
-    --rack-danger: #ff756f;
+    --rack-success: #4dc882;
+    --rack-warning: #eba42b;
+    --rack-danger: #ff948d;
     /* The clips: a deep fill with a bright mark in it, a waveform lit on its own colour. */
     --rack-data-blue: #009ded;
     --rack-data-blue-text: #43c4ff;

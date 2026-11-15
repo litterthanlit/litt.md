@@ -63,7 +63,8 @@
  *               maps each data tint onto its own --rack-data-*-tint (a clip's fill, which check 5 holds its -text tone
  *               to 4.5:1 on, and its mark to 3:1, the clip's waveform); Blue 4, pink and monochrome are restated after it. Its yellow is only a fill: its
  *               links and focus ring are the ink, and a lit key's outline (--block-lift over the body) reaches 3:1 on the
- *               body and the panels, which carries the light fill there. Check 5 runs every pair again under Rack.
+ *               body and the panels, which carries the light fill there. Status words reach 4.5:1 on a Rack key, and
+ *               under the hand. Check 5 runs every pair again under Rack.
  *
  * Exits 1 if anything fails.
  */
@@ -850,6 +851,18 @@ console.log('Rack (data-material="rack")');
       const r = ratio(edge, map.get(bg));
       if (theme === "light" && r < 3) rackFails.push(`light: a key's outline on ${bg} is ${r.toFixed(2)}:1, needs 3:1 (it carries the yellow fill)`);
     }
+  }
+  /* A status tone is also words on a Rack key (a danger button, a status tag, a delta): it reaches 4.5:1 on the key and on
+     the key under the hand. */
+  for (const [theme, map] of [["light", light], ["dark", dark]]) {
+    const b = map.get("--rack-block"), f = map.get("--rack-fg");
+    const share = rackHover ?? 0;
+    const hovered = mixHex(b, f, share);
+    for (const n of ["success", "warning", "danger"])
+      for (const [bg, name] of [[b, "a key"], [hovered, "a key under the hand"]]) {
+        const r = ratio(map.get(`--rack-${n}`), bg);
+        if (r < 4.5) rackFails.push(`${theme}: --rack-${n} on ${name} is ${r.toFixed(2)}:1, needs 4.5:1 (status words on a Rack key)`);
+      }
   }
   /* A clip's waveform is the hue's mark on its own tint (Sparkline's Rack body), so the mark reaches 3:1 on it. */
   for (const [theme, map] of [["light", light], ["dark", dark]])

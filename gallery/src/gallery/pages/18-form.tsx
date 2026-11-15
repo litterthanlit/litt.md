@@ -482,7 +482,9 @@ function SignInDemo() {
 function ProfileTile() {
   return (
     <div className="w-full max-w-md">
-      <FormSection title="Profile" description="Shown to the clients you invite to a project." headingLevel={3}>
+      {/* Not "Profile": the wall can sit under the Settings block (Plain's home hero), whose section is named Profile,
+          and two landmarks may not share a name. */}
+      <FormSection title="Your details" description="Shown to the clients you invite to a project." headingLevel={3}>
         <TextField label="Name" autoComplete="name" defaultValue="Ines Ortega" />
         <TextField label="Email" type="email" inputMode="email" autoComplete="email" defaultValue="ines@halo.studio" />
       </FormSection>
