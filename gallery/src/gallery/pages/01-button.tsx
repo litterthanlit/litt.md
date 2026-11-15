@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { ArrowUpRightIcon, CopyIcon, MoreIcon, PlusIcon, SettingsIcon, TrashIcon } from "@/components/icons";
-import { MaterialProvider, useMotionDial } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
+import { useMotionDial } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
-import { lookAttributes, MATERIALS } from "../look";
 
 export const meta: PageMeta = {
   id: "button",
@@ -108,33 +106,6 @@ function VariantsDemo() {
   );
 }
 
-/* The four variants in a frame that sets its own look, as the study's Under each material strip draws a part. */
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <MaterialProvider material={m.id}>
-            <div
-              {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-              data-body-frame={m.id}
-              className="grid min-w-0 content-start justify-items-start gap-4 rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line"
-            >
-              <Button variant="primary">Start a project</Button>
-              <Button variant="secondary">View work</Button>
-              <Button variant="ghost">Cancel</Button>
-              <Button variant="danger">Delete project</Button>
-            </div>
-          </MaterialProvider>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 function DangerDemo() {
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -194,15 +165,6 @@ export default function ButtonPage() {
         code="VariantsDemo"
       >
         <VariantsDemo />
-      </Stage>
-
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One contract, a body per world: the same props, the same real button, the same loading and focus, drawn by the material. Press is a thick block on its own plate, sinking into it. Flat is a pill, fill only, a step darker under the hand, and a ghost is words alone. Device is a key on a 2px skirt that sinks the whole 2px. Rack is a flat key in a 1px outline: the accent fill for the primary, a darker outline for a press, and nothing that moves. Press each one."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
       </Stage>
 
       <Stage

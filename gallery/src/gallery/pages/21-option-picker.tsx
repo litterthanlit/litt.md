@@ -2,9 +2,6 @@ import { useState } from "react";
 import { OptionPicker } from "@/components/option-picker";
 import { defaultPicks, findVariant, optionsFor } from "@/components/product-card";
 import { Price } from "@/components/price";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 import { PRODUCTS } from "../shop";
 
@@ -116,41 +113,6 @@ function KindsDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <OptionPicker
-                name="Paper"
-                values={[{ value: "Matte" }, { value: "Satin" }, { value: "Gloss", available: false }]}
-                defaultValue="Satin"
-              />
-              <OptionPicker
-                name="Color"
-                values={[
-                  { value: "Ink", swatch: { color: "#22262e" } }, // litt-allow: user data, a product's color
-                  { value: "Sand", swatch: { color: "#d8c7a8" } }, // litt-allow: user data
-                  { value: "Rust", swatch: { color: "#a4512f" }, available: false }, // litt-allow: user data
-                ]}
-                defaultValue="Sand"
-              />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function OptionPickerPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -174,14 +136,6 @@ export default function OptionPickerPage() {
         <KindsDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One picker, one contract, a body per world. Press is one tray with a block per value: the chosen block is raised and lit, the others sit seated, a sold-out one lies flat as a cut in the floor, and a color is a small block of its own. Flat has no tray: words in grey pills, the chosen in an ink pill, a sold-out one outlined, struck through and said in words, and colors as plain circles with the chosen one ringed in ink. Device is a bank of latching keys with engraved legends: the picked one stays down with its lamp lit, and a sold-out one lies flat with no skirt and says so in words. Rack is flat keys in 1px outlines with the picked one lit in the ink, a sold-out key lying flat and saying so, and colors as square chips, the picked one in a 2px ink outline with its check. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { CodeInput } from "@/components/code-input";
-import { MaterialProvider, useMotionDial } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
+import { useMotionDial } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -165,29 +163,6 @@ function StatesDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center justify-items-start gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <CodeInput label="Sign-in code" defaultValue="135" />
-              <CodeInput label="Sign-in code" defaultValue="135790" error="That code is not right." />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function CodeInputPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -209,15 +184,6 @@ export default function CodeInputPage() {
         caption="An alphanumeric code of four at lg, with letters in capitals; six cells split three and three, shorter codes do not. An error puts the danger edge on every cell. Disabled is flat and muted, as the Input."
       >
         <StatesDemo />
-      </Stage>
-
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One code field, one contract, a body per world. Press is one raised plate with a cut per character, a filled cut lit on its lower wall. Flat is one grey pill per character parted by space, the empty ones lighter and the typed digits in ink. Device is a pane of LCD glass per character, an unlit seven-segment eight until its digit is typed. Rack is one square light box per character in a 1px control line, no plate, the current one outlined in the ink. Each is drawn here whatever look the page is in; the one real input, the keyboard, paste and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="CodeInput" component={CodeInput} props={{ label: "Sign-in code", help: "We sent six digits to ines@halo.studio.", error: "" }} controls={["label", "length", "type", "size", "help", "error", "disabled"]} />

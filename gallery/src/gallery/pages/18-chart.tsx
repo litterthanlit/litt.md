@@ -1,7 +1,4 @@
 import { BarChart, LineChart, Meter, StackedBarChart } from "@/components/chart";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -289,52 +286,6 @@ function NarrowDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <BarChart
-                label="Deploys per day, last 14 days"
-                labels={DAYS}
-                series={[{ name: "Deploys", values: DEPLOYS }]}
-                unit={["deploy", "deploys"]}
-                xTitle="Day"
-                entrance={false}
-              />
-              <LineChart
-                label="Median build time, last 14 days"
-                labels={DAYS}
-                series={[{ name: "Build time", values: BUILD }]}
-                formatValue={(v) => `${v} s`}
-                xTitle="Day"
-                entrance={false}
-              />
-              <StackedBarChart
-                label="Storage added per day, last 14 days"
-                labels={DAYS}
-                series={ADDED}
-                formatValue={(v) => `${+v.toFixed(1)} GB`}
-                xTitle="Day"
-                height={256}
-                entrance={false}
-              />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function ChartPage() {
   const [deploys, replayDeploys] = useReplay();
   const [build, replayBuild] = useReplay();
@@ -448,13 +399,6 @@ export default function ChartPage() {
         <NarrowDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        caption="One contract, a body per world. Press is a sunken well, the marks standing on its floor and the labels on a raised rail. Flat is the chart on the page: a hairline grid, the value axis and the marks, with no ground. Device is a dot-matrix screen: bars and stacks are columns of lit dots, a line is a trace of them, and the current value shows in seven segments above it. Rack is an arrangement: a dark well with hairline gridlines, and the data as clips, bars and stacked parts as blocks in the hue's tint with its mark edge and top line, a line over a tint band."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

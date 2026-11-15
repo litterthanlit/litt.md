@@ -6,8 +6,8 @@
  * sidebar (meta.wall): the tiles are the way in.
  *
  * Above the wall, after three more references and Nick's "make it intuitive, captivating, fun and easy to use"
- * (2026-10-26, proposals/gallery-wow.md): what litt is in one large line, Get started and search, and the deck
- * (deck.tsx), litt's own controls wired to the whole gallery, so the first thing a hand reaches changes every tile.
+ * (2026-10-26, proposals/gallery-wow.md): what litt is in one large line, Get started and search. The deck that tuned
+ * the wall left with Customize (plans/019): the wall shows the gallery's own look.
  * After the blocks, three steps for building with Claude, which Get started takes focus to.
  *
  * - A tile has no box (Nick, 2026-11-05: "remove the boxes and that icon around the components, leave just the title
@@ -52,7 +52,6 @@ import { Start, toStart } from "../steps";
 import { WorldHero } from "../world";
 import { materialOf } from "../look";
 import { useCustomize } from "../customize-state";
-import { Deck } from "../deck";
 import { MosaicHost, openMosaic, pressTile } from "../mosaic";
 import { arriveFrom } from "../arrival";
 import { SearchButton } from "../search";
@@ -68,7 +67,7 @@ export const meta: PageMeta = {
   wall: true,
 };
 
-/** The current world's block, live at real size, under the hero: the world's name links to its page. Flipping Material on the deck swaps it. */
+/** The current world's block, live at real size, under the hero: the world's name links to its page. */
 function HomeHero() {
   const { look } = useCustomize();
   const world = materialOf(look.material);
@@ -361,13 +360,13 @@ const LEAD = ["gauge", "heatmap", "plan", "slide-confirm", "pad", "time-scrubber
 /* ---------- the hero ---------- */
 
 /**
- * What litt is, then Get started, search and the site's own pages, beside the deck that tunes the wall. The statement
+ * What litt is, then Get started, search and the site's own pages. The statement
  * is the gallery's one line above 18px, as its mobile menu's 28px links are: built as an exception for the gallery's
  * hero and asked of Nick (proposals/gallery-wow.md, 2), not a change to R8. Everything under it keeps the scale.
  */
 function Hero({ count, site }: { count: string; site: PageEntry[] }) {
   return (
-    <header data-arrive="head" className="grid items-center gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+    <header data-arrive="head" className="grid items-center gap-y-12">
       <div className="grid content-center gap-8">
         <div className="grid gap-4">
           <h1
@@ -403,7 +402,6 @@ function Hero({ count, site }: { count: string; site: PageEntry[] }) {
             ))}
         </nav>
       </div>
-      <Deck />
     </header>
   );
 }

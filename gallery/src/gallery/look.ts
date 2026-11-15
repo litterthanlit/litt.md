@@ -262,6 +262,15 @@ export const accentAttribute = (accent: Accent, material: Material) => accentOf(
 
 /** What the gallery opens in, and what Reset goes back to: Flat's own, so a visitor meets the material before the color. */
 export const GALLERY_LOOK: Look = { accent: "world", material: "flat", fun: false };
+/**
+ * The world an address is in (plans/019): each world is closed, so a page in it, #device or #device/button, shows only
+ * Device, in its own accent, face, shape and Calm, whatever was saved or linked. Every other page is the gallery's,
+ * Flat. index.html paints the first frame from a hand copy of this, which test:look runs against it.
+ */
+export function worldOfHash(hash: string): Material {
+  const first = hash.replace(/^#/, "").split("/")[0];
+  return (["press", "flat", "device", "plain", "rack", "heat"] as const).find((m) => m === first) ?? GALLERY_LOOK.material;
+}
 /** What the registry installs: tokens.css with no attribute (Press, Blue 4), and no <FunMode>. */
 export const REGISTRY_LOOK: Look = { accent: "world", material: "press", fun: false };
 /** Every look, in picker order: material, then its accents (its own first), then motion. */

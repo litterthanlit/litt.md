@@ -2,9 +2,6 @@ import { useState } from "react";
 import { Pagination } from "@/components/pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 import { Tag, type TagStatus } from "@/components/tag";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -147,33 +144,6 @@ function PagesTile() {
   );
 }
 
-function BodiesRow() {
-  const [page, setPage] = useState(4);
-  return <Pagination label="Clients pages" page={page} pageSize={20} total={143} onPageChange={setPage} />;
-}
-
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <BodiesRow />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function PaginationPage() {
   const [key, reset] = useReplay();
   return (
@@ -209,15 +179,6 @@ export default function PaginationPage() {
         <NarrowDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        tier="instant"
-        align="start"
-        caption="One pagination, one contract, a body per world. Press is the range on a raised face with one sunken tray: Previous and Next are blocks at its ends and the current page a block between them. Flat is the range in ink words with grey word pills and bare numbers, no tray and no shadow. Device is the range in seven segments on an LCD panel with TO and OF engraved, step keys at the ends and the pages as keys, the current one latched. Rack is the range in ink words with Previous, the pages and Next as square keys in 1px outlines, the current page lit in the ink. Each is drawn here whatever look the page is in; the buttons, the live range, the focus handoff at either end and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

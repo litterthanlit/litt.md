@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { FileDrop, FileList, FileRow } from "@/components/file-drop";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -115,33 +112,6 @@ function StatesDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start items-start gap-6 rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line md:grid-cols-2"
-          >
-            <MaterialProvider material={m.id}>
-              <FileDrop label={`Project files, ${m.name}`} accept={[".pdf", ".zip"]} hint="PDF or ZIP, up to 10 MB" onFiles={() => {}} />
-              <FileList label={`Uploads, ${m.name}`}>
-                <FileRow name="halo-brief.pdf" size={2_516_582} onRemove={() => {}} />
-                <FileRow name="launch-deck.pdf" size={4_404_019} progress={55} onRemove={() => {}} />
-                <FileRow name="brand-fonts.zip" size={6_291_456} progress={64} error="The connection dropped at 64%." onRetry={() => {}} onRemove={() => {}} />
-              </FileList>
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function FileDropPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -163,15 +133,6 @@ export default function FileDropPage() {
         caption="multiple={false} takes one file and says so on its button. Disabled lies flat (surface-2, muted words), with no drop and no tab stop; its hint says when it opens again."
       >
         <StatesDemo />
-      </Stage>
-
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One contract, a body per world. Press is a plate that stands with a deep tray cut into it: an arrow on a raised block, the words and Choose files, the tray going deeper and its lower wall catching the light while a file is over it; each file is a slat, a raised block in a tray of its own, with its rail cut into it. Flat is a grey sheet with one sentence, Drop files or choose, ringed in ink while a file is over it; each file is a line of words, with Retry and Remove as words. Device is a slot: an engraved legend over LCD glass in a bezel, a Choose key beside it, and each file a line of glass whose upload lights segments in steps. Rack is a well in a dashed edge, the arrow on a small key, the words and Choose files, the edge going solid and lit in the ink while a file is over it; the files are thin rows on one panel, each on a hairline. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="FileDrop" component={FileDrop} props={{ label: "Project files", hint: "PDF or images, up to 10 MB", onFiles: () => {}, className: "w-full max-w-lg" }} controls={["hint", "multiple", "disabled"]} />

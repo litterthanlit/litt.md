@@ -178,7 +178,7 @@ function Loaded({ material, dark, lead }: Props) {
               Details
             </Button>
             <a
-              href={`#${take.id}`}
+              href={`#${material}/${take.id}`}
               className="litt-target inline-flex h-control-sm items-center rounded-control px-control-pad-sm text-small font-title text-fg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md"
             >
               Source
@@ -202,7 +202,7 @@ function Loaded({ material, dark, lead }: Props) {
             <section id={`${id}-details`} aria-label={`About ${take.title}`} className="litt-raised absolute inset-x-4 bottom-4 grid gap-2 rounded-surface p-5">
               <h2 className="text-body text-fg">{take.title}</h2>
               <p className="text-small text-fg-muted">{take.lede}</p>
-              <a href={`#${take.id}`} className="text-small text-accent-text underline underline-offset-4">
+              <a href={`#${material}/${take.id}`} className="text-small text-accent-text underline underline-offset-4">
                 Open the {take.title} page
               </a>
             </section>

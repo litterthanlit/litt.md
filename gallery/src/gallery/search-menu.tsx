@@ -7,17 +7,16 @@
  *   a change, never the current state.
  */
 import { CommandMenu, type CommandGroup, type CommandItem } from "@/components/command-menu";
-import { MonitorIcon, MoonIcon, SparkleIcon, SunIcon } from "@/components/icons";
+import { MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
 import { PAGE_GROUPS } from "./kit";
 import { pages } from "./registry";
 import { useCustomize, type ThemeChoice } from "./customize-state";
-import { accentName, accentsIn, canonicalAccent } from "./look";
 import { inWorld } from "./registry";
 
 type Action = { id: string; label: string; icon?: CommandItem["icon"]; run: () => void };
 
 export default function SearchMenu({ open, onOpenChange, openedBy }: { open: boolean; onOpenChange: (open: boolean) => void; openedBy: "keyboard" | "pointer" }) {
-  const { theme, setTheme, look, setLook, modified, reset } = useCustomize();
+  const { theme, setTheme, look } = useCustomize();
 
   const themes: [ThemeChoice, string, CommandItem["icon"]][] = [
     ["light", "Light theme", <SunIcon />],
@@ -25,12 +24,7 @@ export default function SearchMenu({ open, onOpenChange, openedBy }: { open: boo
     ["system", "System theme", <MonitorIcon />],
   ];
   const actions: Action[] = [
-    { id: "do:fun", label: look.fun ? "Turn fun mode off" : "Turn fun mode on", icon: <SparkleIcon />, run: () => setLook({ fun: !look.fun }) },
     ...themes.filter(([t]) => t !== theme).map(([t, label, icon]) => ({ id: `do:theme-${t}`, label, icon, run: () => setTheme(t) })),
-    ...accentsIn(look.material)
-      .filter((a) => a.id !== canonicalAccent(look.accent, look.material))
-      .map((a) => ({ id: `do:accent-${a.id}`, label: `${accentName(a.id, look.material)} accent`, run: () => setLook({ accent: a.id }) })),
-    ...(modified ? [{ id: "do:reset", label: "Reset to defaults", run: reset }] : []),
   ];
 
   const toItem = (p: (typeof pages)[number]): CommandItem => ({ id: p.id, label: p.title });

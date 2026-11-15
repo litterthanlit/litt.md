@@ -6,13 +6,11 @@
  *   node scripts/wall.mjs --dist dist
  *   node scripts/wall.mjs --shard 1/2    every other material, size and theme (CI runs two shards at once)
  *
- * It fails when:
- * It runs in a colored accent, set before the page loads: the gallery opens in Flat, whose own accent is the ink that
- * checkboxes and switches fill with too, so only a colored accent can tell an accent fill apart. It runs under each
- * material too (Press, Flat and Device, saved in the same way before the page loads), since a material changes what a
- * tile draws. Flat, the gallery's own look, runs in Blue 4 and pink; Press and Device run in their own accent only
- * (Blue 4, orange), because every material and accent pair takes minutes and the accent never changes what a material draws.
+ * The wall is the gallery's own, Flat (plans/019: each world shows only itself, on its own pages). Flat's own accent is
+ * the ink that checkboxes and switches fill with too, so it runs in Blue 4 and then pink, written on <body> after the
+ * page loads, so only a colored accent can tell an accent fill apart.
  *
+ * It fails when:
  * - the wall shows more than one accent fill (R6: one per view). Each tile is its page's `tile`, one object with no
  *   accent fill, and the Button tile carries the one. A page whose first demo ends in a primary button needs a tile.
  * - two accent fills anywhere on the page sit within one screen of each other, so a screen could show both. The hero's
@@ -120,9 +118,11 @@ const browser = await chromium.launch();
 const problems = [];
 let count = 0;
 const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", plain: "plain", rack: "rack", heat: "heat" };
-/* Flat's own accent is the ink, which checkboxes and switches fill with too, so Flat runs in Blue 4 and pink; Press,
-   Device, Plain and Rack run in their own (Blue 4, orange, link blue, yellow: decision 14). */
-const RUNS = [["press", "world"], ["flat", "blue4"], ["flat", "pink"], ["device", "world"], ["plain", "world"], ["rack", "world"], ["heat", "world"]];
+/* The wall is the gallery's, and the gallery is Flat (plans/019: nothing is customized, each world shows only itself on
+   its own pages). Flat's own accent is the ink, which checkboxes and switches fill with too, so the check counts fills
+   in Blue 4 and then pink, written on <body> after load as the Customize panel once did. */
+const RUNS = [["flat", "blue4"], ["flat", "pink"]];
+const ACCENT_ATTRIBUTE = { blue4: "blue", pink: "pink" };
 /* Every material, size and theme, dealt round-robin across --shard so each shard gets some of each. */
 const COMBOS = RUNS.flatMap(([material, accent]) => [[1440, 900, "desktop"], [390, 844, "phone"]].flatMap(([width, height, label]) =>
   ["light", "dark"].map((theme) => ({ material, accent, width, height, label, theme }))))
@@ -130,11 +130,11 @@ const COMBOS = RUNS.flatMap(([material, accent]) => [[1440, 900, "desktop"], [39
 for (const { material, accent, width, height, label, theme } of COMBOS) {
   {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
-    await ctx.addInitScript(([a, m]) => localStorage.setItem("litt-gallery:customize", JSON.stringify({ accent: a, material: m })), [accent, material]);
     const pg = await ctx.newPage();
     const errors = [];
     pg.on("pageerror", (e) => errors.push(String(e)));
     await pg.goto(`http://localhost:${port}/index.html#overview`, { waitUntil: "networkidle" });
+    await pg.evaluate((a) => (document.body.dataset.accent = a), ACCENT_ATTRIBUTE[accent]);
     await pg.evaluate(() => document.fonts.ready);
     /* Walk down so every tile mounts (each mounts a screen ahead), then let the last chunks land. */
     let end = await pg.evaluate(() => document.documentElement.scrollHeight);

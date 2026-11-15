@@ -2,9 +2,6 @@ import { useState } from "react";
 import { TextField } from "@/components/input";
 import { Tag } from "@/components/tag";
 import { TokenInput } from "@/components/token-input";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -133,29 +130,6 @@ function TagsDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <TokenInput label="Mail from" defaultValue={["@stripe.com", "ramp.com", "brex.com"]} placeholder="Add a sender" hint="Press Enter or a comma to add one." />
-              <TokenInput label="Project tags" defaultValue={["landing"]} error="Use lowercase letters and dashes." />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 /* ---------- the overview's tile ---------- */
 
 function SendersTile() {
@@ -202,15 +176,6 @@ export default function TokenInputPage() {
         <TagsDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        tier="responsive"
-        align="start"
-        caption="One token input, one contract, a body per world. Press is the Input's cut, its top wall in shade and its lower wall catching the light, with each token a block standing out of it and a small block on the token that removes it. Flat is a grey pill field with each token a darker grey pill and a cross, and the +N bare words. Device is the Input's glass in a bezel well with each token an inverted cell of lit mono words and a small key to remove it, switching in place in steps. Rack is the Input's light box in a 1px line holding small flat keys in outlines, each with a square remove key, the tokens cutting in place. Each is drawn here whatever look the page is in; the label, the roving remove buttons, Backspace, the paste and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

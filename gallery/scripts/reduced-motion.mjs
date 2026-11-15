@@ -28,6 +28,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { routes } from "./routes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -56,10 +57,7 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
   process.exit(1);
 }
 
-const pages = fs.readdirSync(path.join(here, "../src/gallery/pages"))
-  .map((f) => /^\d+-(.+)\.tsx$/.exec(f)?.[1])
-  .filter(Boolean)
-  .filter((id) => !only.length || only.includes(id))
+const pages = routes({ only })
   .filter((_, i) => i % shards === shard - 1); // dealt round-robin, so the heavy pages spread across shards
 if (!pages.length) { console.error("No pages matched."); process.exit(1); }
 

@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/button";
 import { SlideConfirm } from "@/components/slide-confirm";
-import { MaterialProvider, useMotionDial } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
+import { useMotionDial } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -192,29 +190,6 @@ function PublishDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <SlideConfirm label="Slide to delete Atelier Nord" confirmedLabel="Deleting Atelier Nord" />
-              <SlideConfirm label="Slide to cancel the Studio plan" disabled />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function SlideConfirmPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -246,15 +221,6 @@ export default function SlideConfirmPage() {
         caption="lg is 56 tall; md is 44, and grows to 56 on a coarse pointer, because a finger does the sliding. Disabled is flat, skipped by Tab and ignores the pointer; its words stay readable, because they still say what it would do."
       >
         <PublishDemo />
-      </Stage>
-
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One track, one contract, a body per world. Press is a plate with a slot cut into it: a gripped cap rides in the slot to a raised end stop, its words in the slot's floor. Flat is a plain ink circle in a grey pill with its words in ink, and the whole pill turns ink once it confirms. Device is a latch key pushed along a well to an end stop, its words on an LCD strip and a lamp at the stop that lights once it confirms; let go short and the key goes home in three steps, not on a spring. Rack is a track box with a flat key in a 1px outline: the part the key has passed fills as the slot, the key darkens its outline while held, and a confirmed track lights in the ink. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="SlideConfirm" component={SlideConfirm} props={{ label: "Slide to delete Atelier Nord", confirmedLabel: "Deleting Atelier Nord", className: "max-w-sm" }} controls={["label", "confirmedLabel", "confirmText", "size", "disabled"]} />

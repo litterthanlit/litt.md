@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The Playground's objects (#playground/<world>, plans/018), checked from a build at 1440x1000.
+ * Each world's player (#press, #flat, #device, #plain, #rack, #heat; plans/018 and 019), checked from a build at 1440x1000.
  *
  *   npm run build && npm run test:playground
  *   node scripts/playground.mjs --dist dist
@@ -8,7 +8,8 @@
  *   node scripts/playground.mjs --greyscale <dir>   writes each world's object in colour and in greyscale in one font,
  *                                                   light and dark, and a sheet of each; judges nothing (the test of an object)
  *
- * It fails when #playground alone does not open a world's page, and, on each world's page, when:
+ * It fails when the Playground's old addresses (#playground/device, #playground) do not open the players, and, on each
+ * world's player, when:
  * - the screen (data-play-frame) does not wear the world (data-material, none for Press), or the page's <html> material
  *   changed,
  * - the object's root (data-play-object) is not the world's id for a world in OBJECTS, or not "bare" for one that is not,
@@ -23,8 +24,8 @@
  * - the take changes within 6s with no hand on it (nothing plays on load), Play does not move it within 5s, or a press
  *   on the screen does not stop it.
  *
- * --self-test takes the screen's containment away (contain: none) before the Dialog take opens its dialog, so the
- * dialog fills the window, and keeps the recorder's body from loading, so Device draws bare; it fails if the check
+ * --self-test takes the screen's containment away (contain: none) before the Dialog take opens its dialog and scrolls the
+ * page once it is open, so the dialog stays where the window put it and the screen moves away from it, and keeps the recorder's body from loading, so Device draws bare; it fails if the check
  * misses either.
  *
  * Needs Playwright, found as worlds.mjs finds it.
@@ -192,7 +193,7 @@ async function pictures(dir) {
   const shots = { color: { light: [], dark: [] }, grey: { light: [], dark: [] } };
   for (const theme of ["light", "dark"]) {
     for (const [world, id] of WORLDS) {
-      const { ctx, pg } = await open(`playground/${id}`, { theme, scale: 2 });
+      const { ctx, pg } = await open(id, { theme, scale: 2 });
       await pg.waitForTimeout(500);
       await inView(pg);
       await pg.mouse.move(0, 0);
@@ -224,16 +225,16 @@ async function pictures(dir) {
 
 if (greyscale) await pictures(greyscale);
 
-/* #playground alone opens the world your look is in: the gallery's, Flat. */
-{
-  const { ctx, pg } = await open("playground");
+/* The Playground's old addresses open the players (plans/019): #playground/device opens #device, #playground the gallery's. */
+for (const [from, to] of [["playground/device", "#device"], ["playground", "#flat"]]) {
+  const { ctx, pg } = await open(from);
   const hash = await pg.evaluate(() => location.hash);
-  claim("#playground alone opens a world's page", hash === "#playground/flat" ? null : `it stays on ${hash}`);
+  claim("the Playground's old addresses open the players", hash === to ? null : `#${from} stays on ${hash}, wants ${to}`);
   await ctx.close();
 }
 
 for (const [world, id, attribute] of WORLDS) {
-  const { ctx, pg, errors } = await open(`playground/${id}`);
+  const { ctx, pg, errors } = await open(id);
   const htmlBefore = await pg.evaluate(() => document.documentElement.dataset.material ?? null);
   await inView(pg);
   const worn = await pg.evaluate((F) => ({ frame: document.querySelector(F)?.dataset.material ?? null, html: document.documentElement.dataset.material ?? null }), FRAME);
@@ -325,6 +326,9 @@ for (const [world, id, attribute] of WORLDS) {
       await button.click();
       await pg.waitForTimeout(900);
     }
+    /* The break, once open: the page scrolls. A dialog the screen contains moves with it; one placed by the window stays
+       put, and the screen leaves it behind. */
+    if (selfTest && title === "Dialog") await pg.evaluate(() => window.scrollBy(0, 420));
     const opened = await place(pg, OVERLAYS);
     claim("what a take opens stays on the screen, in its world", opened.length ? null : `${world} · ${title}: nothing opened from its first button`);
     for (const b of opened) claim("what a take opens stays on the screen, in its world", b.ok ? null : `${world} · ${title}: ${b.what}`);

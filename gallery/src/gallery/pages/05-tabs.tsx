@@ -2,9 +2,6 @@ import { useState, type ReactNode } from "react";
 import { Kbd } from "@/components/kbd";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
 import { Tag } from "@/components/tag";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 import { useLoop } from "../tile";
 
@@ -278,53 +275,6 @@ function KeyboardDemo() {
   );
 }
 
-/* ---------- (d) Three bodies ---------- */
-
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center justify-items-start gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <Tabs defaultValue="overview" className="w-full">
-                <TabsList aria-label="Atelier Nord">
-                  <TabsTrigger value="overview">Home</TabsTrigger>
-                  <TabsTrigger value="activity">Usage</TabsTrigger>
-                  <TabsTrigger value="logs">Logs</TabsTrigger>
-                </TabsList>
-                <TabsPanels className="px-control-pad-md pt-4">
-                  <TabsPanel value="overview"><p className="text-small text-fg-muted">12,480 visits this week.</p></TabsPanel>
-                  <TabsPanel value="activity"><p className="text-small text-fg-muted">Published 4 min ago.</p></TabsPanel>
-                  <TabsPanel value="logs"><p className="text-small text-fg-muted">Build 5f2e9c1, 42s.</p></TabsPanel>
-                </TabsPanels>
-              </Tabs>
-              <Tabs defaultValue="list" variant="segmented" className="max-w-full">
-                <TabsList aria-label="View">
-                  <TabsTrigger value="list">List</TabsTrigger>
-                  <TabsTrigger value="grid">Grid</TabsTrigger>
-                  <TabsTrigger value="map">Map</TabsTrigger>
-                </TabsList>
-                <TabsPanels className="px-control-pad-md pt-4">
-                  <TabsPanel value="list"><p className="text-small text-fg-muted">12 sites, newest first.</p></TabsPanel>
-                  <TabsPanel value="grid"><p className="text-small text-fg-muted">12 sites, four across.</p></TabsPanel>
-                  <TabsPanel value="map"><p className="text-small text-fg-muted">12 sites in 4 regions.</p></TabsPanel>
-                </TabsPanels>
-              </Tabs>
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 /* ---------- the overview's tile ---------- */
 
 const TILE_TABS = ["Overview", "Activity", "Deploys"];
@@ -387,14 +337,6 @@ export default function TabsPage() {
         <KeyboardDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One set of tabs, one contract, a body per world. Press is folder tabs cut from a plate's top edge: the chosen one stands forward in the plate's own lit face and is joined to its panel, the others sit lower and darker, and segmented is blocks in a tray with the chosen one raised. Flat is words with the chosen one in ink on a grey bubble, and nothing under the row; the panel is bare. Device is engraved legends with a lamp under the current one, and a row of keys on one skirt when segmented, the chosen key latched down with its lamp lit; it switches in place and never glides. Rack is square keys along a strip, each in a 1px outline, the chosen one lit in the ink (one outlined box divided by rules when segmented), with no underline to slide. Each is drawn here whatever look the page is in; the roles, the arrow keys and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

@@ -1,4 +1,4 @@
-import { World } from "../world";
+import { WorldSite } from "../world-site";
 import type { PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -13,5 +13,5 @@ export const meta: PageMeta = {
 };
 
 export default function DevicePage() {
-  return <World material="device" />;
+  return <WorldSite material="device" />;
 }

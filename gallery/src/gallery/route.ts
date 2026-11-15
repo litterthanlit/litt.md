@@ -17,7 +17,24 @@ export function readHash(): string {
   } catch {
     raw = "";
   }
-  return raw || homePage();
+  const route = raw || homePage();
+  const now = canonical(route);
+  if (now !== route) history.replaceState(history.state, "", `${location.pathname}${location.search}#${now}`);
+  return now;
+}
+
+const WORLDS = ["press", "flat", "device", "plain", "rack", "heat"];
+
+/**
+ * Where an older address lives now (plans/019): each world is closed, so a component's page is in a world. #button
+ * opens #flat/button (the gallery's own world), #playground/device opens Device's player, #playground the gallery's.
+ */
+export function canonical(route: string): string {
+  const [first, rest] = route.split(/\/(.*)/s);
+  if (first === "playground") return rest && WORLDS.includes(rest) ? rest : "flat";
+  const page = pages.find((p) => p.id === first);
+  if (page && page.group && page.group !== "Worlds" && !page.world) return `flat/${route}`;
+  return route;
 }
 
 /* A page's query string (the Table page keeps its filters there) belongs to that page's history entry. A link to
@@ -31,6 +48,10 @@ function claimEntry(dropQuery: boolean) {
   history.replaceState({ ...(state && typeof state === "object" ? state : {}), [SEEN]: true }, "", url);
 }
 
+let navigated = false;
+/** Whether this visit has moved from the page it opened on: a page that arrives then takes focus, a first load never. */
+export const hasNavigated = () => navigated;
+
 /** The current route. Navigating scrolls back to the top, as a new page would. */
 export function useRoute(): string {
   const [route, setRoute] = useState(readHash);
@@ -38,6 +59,7 @@ export function useRoute(): string {
     claimEntry(false);
     /* A transition keeps the old page up while the new page's chunk loads. */
     const onHash = () => {
+      navigated = true;
       claimEntry(true);
       startTransition(() => setRoute(readHash()));
     };

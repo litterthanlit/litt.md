@@ -36,6 +36,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
+import { routes } from "./routes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -75,12 +76,10 @@ const KNOWN = [
     why: "at 6px a condition row keeps the control radius and so do the fields 4px inside it, 2px rounder than concentric (at litt's own 4px their corners start where the row's curve ends); fixing it means rows take the surface radius, 8px at the default, which is a taste call",
   },
 ];
-const knownFor = (f) => KNOWN.find((k) => k.page === f.id && k.radius === f.radius && k.what.test(f.what));
+/* A known break is the part's, in whichever world it shows (an address is #<world>/<part>). */
+const knownFor = (f) => KNOWN.find((k) => k.page === f.id.split("/").pop() && k.radius === f.radius && k.what.test(f.what));
 
-const pages = fs.readdirSync(path.join(here, "../src/gallery/pages"))
-  .map((f) => /^\d+-(.+)\.tsx$/.exec(f)?.[1])
-  .filter(Boolean)
-  .filter((id) => !only.length || only.includes(id));
+const pages = routes({ only });
 if (!pages.length) { console.error("No pages matched."); process.exit(1); }
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2" };
@@ -317,7 +316,7 @@ if (selfTest) {
 
 const known = failures.filter(knownFor);
 const fresh = failures.filter((f) => !knownFor(f));
-for (const k of KNOWN.filter((k) => pages.includes(k.page) && shapes.includes(k.radius))) {
+for (const k of KNOWN.filter((k) => pages.some((p) => p.split("/").pop() === k.page) && shapes.includes(k.radius))) {
   const hits = known.filter((f) => knownFor(f) === k).length;
   if (hits) console.log(`· known, ${k.page} at ${shapeName(k.radius)} (${hits}): ${k.why}.`);
   else fresh.push({ id: k.page, radius: k.radius, what: `the known break no longer happens (${k.why}): take it out of KNOWN` });
