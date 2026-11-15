@@ -82,37 +82,37 @@ jobs:
       fail-fast: false # one failing suite should not hide what the others found
       matrix:
         include:
-          # axe on every page, light and dark, desktop and phone, dealt round-robin across six shards.
-          - { name: "Accessibility 1/6", run: "npm run test:a11y --prefix gallery -- --shard 1/6" }
-          - { name: "Accessibility 2/6", run: "npm run test:a11y --prefix gallery -- --shard 2/6" }
-          - { name: "Accessibility 3/6", run: "npm run test:a11y --prefix gallery -- --shard 3/6" }
-          - { name: "Accessibility 4/6", run: "npm run test:a11y --prefix gallery -- --shard 4/6" }
-          - { name: "Accessibility 5/6", run: "npm run test:a11y --prefix gallery -- --shard 5/6" }
-          - { name: "Accessibility 6/6", run: "npm run test:a11y --prefix gallery -- --shard 6/6" }
+          # axe on every page, light and dark, desktop and phone, dealt round-robin across seven shards.
+          - { name: "Accessibility 1/7", run: "npm run test:a11y --prefix gallery -- --shard 1/7" }
+          - { name: "Accessibility 2/7", run: "npm run test:a11y --prefix gallery -- --shard 2/7" }
+          - { name: "Accessibility 3/7", run: "npm run test:a11y --prefix gallery -- --shard 3/7" }
+          - { name: "Accessibility 4/7", run: "npm run test:a11y --prefix gallery -- --shard 4/7" }
+          - { name: "Accessibility 5/7", run: "npm run test:a11y --prefix gallery -- --shard 5/7" }
+          - { name: "Accessibility 6/7", run: "npm run test:a11y --prefix gallery -- --shard 6/7" }
+          - { name: "Accessibility 7/7", run: "npm run test:a11y --prefix gallery -- --shard 7/7" }
           # Nothing moves on any page or overlay, desktop and phone. The self-test runs with motion allowed and must
           # see motion, so a check that has gone blind fails too; it loads only the four pages it judges.
           - { name: "Reduced motion 1/2", run: "npm run test:motion --prefix gallery -- --shard 1/2 && npm run test:motion --prefix gallery -- --self-test" }
           - { name: "Reduced motion 2/2", run: "npm run test:motion --prefix gallery -- --shard 2/2" }
-          # Reflow at 320px, text zoom at 200%, forced colors, focus never on the body, no gaps between rows, corners.
-          - name: WCAG regressions
+          # The WCAG regressions, each with its self-test, in two jobs of about two minutes.
+          - name: Reflow, text zoom and forced colors
             run: |
               set -e
-              for t in reflow text-zoom forced-colors focus gaps corners; do
-                echo "::group::$t"
-                npm run test:$t --prefix gallery
-                npm run test:$t --prefix gallery -- --self-test
-                echo "::endgroup::"
+              for t in reflow text-zoom forced-colors; do
+                npm run test:$t --prefix gallery && npm run test:$t --prefix gallery -- --self-test
+              done
+          - name: Focus, gaps and corners
+            run: |
+              set -e
+              for t in focus gaps corners; do
+                npm run test:$t --prefix gallery && npm run test:$t --prefix gallery -- --self-test
               done
           # The wall: every material, size and theme with every tile mounted, one accent fill, nothing sideways or empty.
           - { name: "Wall 1/2", run: "npm run test:wall --prefix gallery -- --shard 1/2" }
           - { name: "Wall 2/2", run: "npm run test:wall --prefix gallery -- --shard 2/2" }
-          # The home, the world pages and the Playground's phone.
-          - name: Home, worlds and Playground
-            run: |
-              set -e
-              npm run test:home --prefix gallery
-              npm run test:worlds --prefix gallery && npm run test:worlds --prefix gallery -- --self-test
-              npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test
+          # The home and the world pages; the Playground's phone in every world.
+          - { name: "Home and worlds", run: "npm run test:home --prefix gallery && npm run test:worlds --prefix gallery && npm run test:worlds --prefix gallery -- --self-test" }
+          - { name: "Playground", run: "npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test" }
           # Every study page has its sections, anatomy parts resolve, the material frame matches pixel for pixel.
           # The self-test runs unsharded, on the Button study.
           - { name: "Studies 1/3", run: "npm run test:study --prefix gallery -- --shard 1/3 && npm run test:study --prefix gallery -- --self-test" }
