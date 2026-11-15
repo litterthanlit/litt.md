@@ -59,6 +59,11 @@ Later the same day, Rack (a world after Ableton Live, from 2026-11-14) gets a bo
 - **changed** `slide-confirm`: a Rack body, a track box with a flat key in a 1px outline, the passed part filling as the slot and a confirmed track lit in the ink. Props are unchanged.
 - **changed** `pagination`: a Rack body, a row of square keys in 1px outlines with the current page lit in the ink. Props are unchanged.
 
+Later the same day, Heat, a sixth world after a street-racing front end (the menus of Need for Speed: Most Wanted, 2005): its grammar, not its brand.
+
+- **added** `litt`: Heat, `data-material="heat"` on `<html>`. Asphalt at night and pale concrete by day (greys with a cool green cast), opaque slabs for panels, and every key standing on a hard 3px ledge with no blur that sinks 2px onto it when pressed (`--litt-press-depth`; reduced motion stills it). Lime is its own accent: the light of what is selected, which glows at night; by day it is only a fill, with links and the focus ring in the ink. Square corners (`--litt-radius-control` and `--litt-radius-surface` are 0) and Saira Semi Condensed (load it at 400, 500 and 600). `data-accent="blue"`, `"mono"` and `"pink"` still win on a Heat page. Every other world is unchanged; nothing in your code has to change.
+- **changed** `motion`: under Heat a set whips in from the left over `--travel`, one after another on the responsive spring, and `gather` sends every piece to the right at once on the instant tier shortened by `--exit`; `useOverlayMotion` slides and never grows there. `Material` and `byWorld` gain `"heat"`; a part with no Heat body draws Press's. Reinstall it with `litt`.
+
 ## 2026-11-14 · Rack, a world after Ableton Live
 
 Rack is a software instrument's rack, after Ableton Live: grey panels on a darker grey body, keys and wells in 1px outlines, square corners, Inter, five bright clip colours for what you make, and one yellow that is only ever a fill, the light of a switch that is on. Nothing casts, glows or sinks. Set `data-material="rack"` on `<html>`, as for Flat and Device (`proposals/rack.md`).

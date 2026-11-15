@@ -13,11 +13,11 @@ import { scenesOf } from "../systems";
 export const meta: PageMeta = {
   id: "systems",
   title: "Systems",
-  lede: "Five worlds, one set of parts.",
+  lede: "Six worlds, one set of parts.",
   order: 0.05,
   wall: true,
   summary:
-    "Press, Flat, Device, Plain and Rack, each a design system of its own: its material, its type, its light and its motion, over the same components. Open one to see it at work and install it.",
+    "Press, Flat, Device, Plain, Rack and Heat, each a design system of its own: its material, its type, its light and its motion, over the same components. Open one to see it at work and install it.",
   tiers: [],
 };
 

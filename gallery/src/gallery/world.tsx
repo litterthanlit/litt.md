@@ -1,6 +1,6 @@
 /**
  * A world: one material as a page you arrive on (proposals/worlds.md). The world pages (00-press, 00-flat,
- * 00-device, 00-rack) are this component with a different material, so the language is told once and every world is told the
+ * 00-device, 00-rack, 00-heat) are this component with a different material, so the language is told once and every world is told the
  * same way: its name and who it is for, itself in use (the block it opens on, live at real size), its five
  * foundations, where its components are, and how to install it.
  *
@@ -28,6 +28,7 @@ import { scenesOf, type Scene } from "./systems";
 const Dashboard = lazy(() => import("@/blocks/dashboard").then((m) => ({ default: m.Dashboard })));
 const CaseStudy = lazy(() => import("@/blocks/case-study").then((m) => ({ default: m.CaseStudy })));
 const AgentChat = lazy(() => import("@/blocks/agent").then((m) => ({ default: m.AgentChat })));
+const Usage = lazy(() => import("@/blocks/usage").then((m) => ({ default: m.Usage })));
 const Settings = lazy(() => import("@/blocks/settings").then((m) => ({ default: m.Settings })));
 
 /** A window onto the app, as the Agent page draws it: the page's canvas with a hairline. */
@@ -54,6 +55,11 @@ const HEROES: Record<string, ComponentType<{ phone: boolean; world: string }>> =
   "case-study": ({ phone, world }) => (
     <AppFrame label={`${world} in use: a case study, ${phone ? "phone" : "desktop"}`} phone={phone}>
       <CaseStudy />
+    </AppFrame>
+  ),
+  usage: ({ phone, world }) => (
+    <AppFrame label={`${world} in use: a plan's usage, ${phone ? "phone" : "desktop"}`} phone={phone}>
+      <Usage />
     </AppFrame>
   ),
   settings: ({ phone, world }) => (

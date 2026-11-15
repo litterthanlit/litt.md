@@ -36,6 +36,9 @@
  *           and a --stagger apart, like a scene launching across tracks, on the instant tier's ease-out; it stops all
  *           at once, quicker than it came. An overlay cuts in where it stands with no growth and no slide. A tool you
  *           touch all day answers on the frame (proposals/rack.md).
+ *   Heat    things arrive at speed: a set whips in from the left over --travel, one after another in reading order
+ *           on the responsive spring (no bounce), and leaves to the right all at once, quicker than it came. An
+ *           overlay slides in from the side it opens on and never grows (proposals/heat.md).
  * The material is data-material on <html> (useMaterial); Press is no attribute.
  *
  * An overlay that opens out of its trigger (a Menu, a Dialog) grows from it: it scales up from GROW with its
@@ -75,11 +78,11 @@ export type DealMotion = {
 };
 
 /** litt's materials, each with its own motion language. */
-export type Material = "press" | "flat" | "device" | "plain" | "rack";
+export type Material = "press" | "flat" | "device" | "plain" | "rack" | "heat";
 
 const readMaterial = (): Material => {
   const m = typeof document === "undefined" ? null : document.documentElement.dataset.material;
-  return m === "flat" || m === "device" || m === "plain" || m === "rack" ? m : "press";
+  return m === "flat" || m === "device" || m === "plain" || m === "rack" || m === "heat" ? m : "press";
 };
 const watchMaterial = (change: () => void) => {
   const mo = new MutationObserver(change);
@@ -115,7 +118,7 @@ export function useMaterial(): Material {
  * A world without a body of its own falls back to Press, so a part gains bodies one at a time (Plain has none yet: it
  * draws Press's bodies in its own tokens, proposals/plain.md).
  */
-export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T; plain?: T; rack?: T }): T {
+export function byWorld<T>(material: Material, bodies: { press: T; flat?: T; device?: T; plain?: T; rack?: T; heat?: T }): T {
   return bodies[material] ?? bodies.press;
 }
 
@@ -233,6 +236,20 @@ export function deal(pieces: HTMLElement[], from: DealSource, motion: DealMotion
     });
     return { order, finished: moving(pieces, anims) };
   }
+  if (motion.material === "heat") {
+    /* Off the line: each piece whips in from the left over --travel on the responsive spring, the next a --stagger
+       behind, so the set reads as a run of cars rather than one block. */
+    index.forEach((i, k) => {
+      const piece = pieces[i]!;
+      const delay = k * motion.stagger;
+      for (const a of ours(piece)) a.cancel();
+      anims.push(
+        piece.animate([{ transform: `translateX(${-motion.travel}px)` }, { transform: "none" }], { ...motion.settle, delay, fill: "backwards", id: ID }),
+        piece.animate([{ opacity: 0 }, { opacity: 1 }], { ...motion.appear, delay, fill: "backwards", id: ID }),
+      );
+    });
+    return { order, finished: moving(pieces, anims) };
+  }
   if (motion.material !== "flat") {
     index.forEach((i, k) => {
       const piece = pieces[i]!;
@@ -292,6 +309,19 @@ export function gather(
     }
     return moving(order, anims);
   }
+  if (motion.material === "heat") {
+    /* Gone: every piece leaves to the right at once, from wherever it is drawn, on the instant tier shortened by --exit. */
+    for (const piece of order) {
+      const opacity = getComputedStyle(piece).opacity;
+      const drawn = getComputedStyle(piece).transform;
+      for (const a of ours(piece)) a.cancel();
+      anims.push(
+        piece.animate([{ transform: drawn === "none" ? "none" : drawn }, { transform: `translateX(${motion.travel / 2}px)` }], { ...motion.stop, fill: "both", id: ID }),
+        piece.animate([{ opacity }, { opacity: 0 }], { ...motion.stop, fill: "both", id: ID }),
+      );
+    }
+    return moving(order, anims);
+  }
   if (motion.material !== "flat") {
     for (let j = 0; j < order.length; j++) {
       const piece = order[order.length - 1 - j]!;
@@ -343,7 +373,7 @@ const PRESS_GROW = 0.98;
 /** How an overlay (a menu, a popover, a dialog) enters and leaves under the current material. */
 export type OverlayMotion = {
   material: Material;
-  /** The scale it grows from: 0.9 under Flat, 0.98 under Press, 1 under Device, Plain and Rack (it does not grow). */
+  /** The scale it grows from: 0.9 under Flat, 0.98 under Press, 1 under Device, Plain, Rack and Heat (it does not grow). */
   grow: number;
   /** Whether it slides its quarter of --travel from the side it opens on: not under Device, Plain or Rack. */
   slides: boolean;
@@ -363,7 +393,7 @@ export function useOverlayMotion(): OverlayMotion {
   const still = material === "device" || material === "rack";
   return {
     material,
-    grow: material === "flat" ? GROW : material === "press" ? PRESS_GROW : 1,
+    grow: material === "flat" ? GROW : material === "press" ? PRESS_GROW : 1, // Heat slides and never grows
     slides: !still && material !== "plain",
     switches: still,
     switchIn: material === "rack" ? cut(instant) : step,
