@@ -1,60 +1,48 @@
 /**
- * The Playground's screen: the window every object holds (play-object/contract.tsx). It is the frame the Playground
- * had before it had objects, moved here unchanged in what it does.
+ * The object's screen (plans/018): a window in a world of its own. The world's data-material, accent and theme are on
+ * its element and a MaterialProvider inside, so every component on it picks that world's body and motion. The element
+ * is the OverlayRoot's container and a containing block for fixed boxes (contain: layout), so what a take opens (a
+ * dialog, a menu, a tooltip, a toast) stays on the screen, in its world; a take scrolls in a child, never in the
+ * screen, so an overlay is drawn over what you see.
  */
-import { useState, type HTMLAttributes, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { Framed } from "@/components/framed";
 import { Toaster } from "@/components/toast";
-import { DeviceProvider, MaterialProvider, OverlayRoot } from "@/motion";
+import { MaterialProvider, OverlayRoot } from "@/motion";
 import { useCustomize } from "../customize-state";
-import { lookAttributes, materialOf, type Material } from "../look";
-import type { PlayFrameSize } from "../motion-panel";
+import { lookAttributes, type Material } from "../look";
 
-/**
- * A window onto the app, in a world of its own: the world's data-material, accent and theme on its element and a
- * MaterialProvider inside, so the parts pick that world's bodies and motion. The element is the OverlayRoot's
- * container and a containing block for fixed boxes (contain: layout), so what the app opens stays in the frame, in
- * its world; the app scrolls in a child, never in the frame, so an overlay is drawn over what you see.
- *
- * On an object the screen is the takes' tabpanel: `panel` names it after the current take, and the body gives it its
- * `shape` (its size and corners in the body). Without them it is the desktop window.
- */
-export function PlayScreen({ size, material, dark, shape, panel, children }: {
-  size: PlayFrameSize;
+export function PlayScreen({ material, dark, shape, label, children }: {
   material: Material;
   dark: boolean;
-  /** The screen's size, corners and edge, from the object's body. Left out on the desktop. */
-  shape?: string;
-  /** The tabpanel's role, id and name, from the object's contract. Left out on the desktop. */
-  panel?: HTMLAttributes<HTMLDivElement>;
+  /** The screen's size, corners and edge, from the object's body. */
+  shape: string;
+  /** What the screen is called: the take showing, and where. */
+  label: string;
   children: ReactNode;
 }) {
   const { look } = useCustomize();
   const [el, setEl] = useState<HTMLDivElement | null>(null);
-  const world = materialOf(material).name;
   return (
     <div
       ref={setEl}
       {...lookAttributes({ accent: look.accent, material }, dark)}
       role="region"
-      aria-label={panel ? undefined : `The parts in ${world}, on a desktop`}
-      {...panel}
+      aria-label={label}
       tabIndex={0}
-      data-play-frame={size}
+      data-play-frame="screen"
       className={
         "relative overflow-hidden bg-canvas text-fg contain-layout " +
         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
-        (shape ?? "h-176 w-full rounded-surface outline-1 -outline-offset-1 outline-line")
+        shape
       }
     >
       <MaterialProvider material={material}>
-        <DeviceProvider mode={size}>
-          <OverlayRoot container={el}>
-            <Toaster>
-              <Framed>{children}</Framed>
-            </Toaster>
-          </OverlayRoot>
-        </DeviceProvider>
+        <OverlayRoot container={el}>
+          <Toaster>
+            <Framed>{children}</Framed>
+          </Toaster>
+        </OverlayRoot>
       </MaterialProvider>
     </div>
   );

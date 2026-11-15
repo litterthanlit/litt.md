@@ -411,7 +411,8 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
 export function App() {
   const route = useRoute();
-  const page = pages.find((p) => p.id === route) ?? pages[0];
+  /* A page may own the routes under it: #playground/device is the Playground, in Device. */
+  const page = pages.find((p) => p.id === route || route.startsWith(`${p.id}/`)) ?? pages[0];
   /* The other pages' chunks wait until the first page's has landed, so they never slow the page that was asked for. */
   useEffect(() => {
     page?.preload().then(prefetchPages, prefetchPages);

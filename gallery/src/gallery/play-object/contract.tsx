@@ -1,28 +1,35 @@
 /**
- * The object (plans/018): each world's own thing, holding the Playground's screen and running takes on it, one at a
- * time: the studio app, then the world's scenes. One contract, a body per world, as the parts have (proposals/worlds.md,
- * decisions 13 and 15). The contract owns the takes, the roles and keys, and the state; a body (bodies/<world>.tsx)
- * only draws, and a world with no body yet draws bodies/bare.tsx.
+ * The object (plans/018): a world made a thing you could hold, after the player in Nick's components repo. Its screen
+ * runs every component in the world, one take at a time, each its own tile drawn in that world's body. One contract,
+ * a body per world, as the parts have (proposals/worlds.md, decisions 13 and 15): the contract owns the takes, the
+ * roles and keys, Play, Menu, Details and Source, and the state; a body (bodies/<world>.tsx) only draws, and a world
+ * with no body yet, or whose body fails to load, draws bodies/bare.tsx.
  *
- * - The takes are a tablist, one tab stop, and the screen is its tabpanel: arrows, Home and End change the take, and
- *   the change is said once in a polite live region.
- * - The app stays mounted while a scene shows (hidden and inert), so its screen and what was set on it survive a take
- *   change and a world switch. A scene mounts when its take is reached.
- * - The screen is rendered once, into a host element the body's slot adopts, so a world switch that swaps the body
- *   (the recorder for bare) moves the screen's DOM and never remounts the app.
- * - Nothing plays (R4; decision 1 waits on Nick) and nothing makes a sound (decision 2).
+ * - The selector is a slider over the takes, as the player's tape is: one tab stop; the arrows, Page Up and Down, Home
+ *   and End move it, and a hand's change is said once in a polite live region.
+ * - Play is a key the viewer presses (R4: nothing moves on load). Pressed, a take every 4s, wrapping; a press, key,
+ *   wheel or drag on the screen, or any take picked by hand, stops it. A take change is instant in every motion.
+ * - Menu finds a take by name on the screen, Details says what the take is, Source opens its page.
+ * - The screen is rendered once, into a host element the body's slot adopts, so a body that comes or goes never
+ *   remounts what is on the screen. Nothing makes a sound (decision 2).
  */
 import { Suspense, use, useEffect, useId, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { Button } from "@/components/button";
+import { CommandMenu } from "@/components/command-menu";
 import { useDevice } from "@/motion";
 import { useCustomize } from "../customize-state";
+import { PreviewContext } from "../kit";
 import { lookAttributes, materialOf, MATERIALS, type Material } from "../look";
 import { bare } from "./bodies/bare";
-import { OBJECT_HEIGHT, type PlayObjectBody, type PlayObjectBodyProps } from "./body";
+import type { PlayObjectBody, PlayObjectBodyProps } from "./body";
 import { PlayScreen } from "./screen";
 import { takesOf } from "./takes";
 
 export type { PlayObjectBody, PlayObjectBodyProps } from "./body";
+
+/** How long Play holds each take. */
+export const TAKE_MS = 4000;
 
 /** The bodies drawn so far, loaded on demand. A world not here, or one whose body fails to load, draws bare. */
 const BODIES: Partial<Record<Material, () => Promise<PlayObjectBody>>> = {
@@ -35,8 +42,6 @@ function bodyOf(material: Material): Promise<PlayObjectBody> {
   if (!p) bodies.set(material, (p = (BODIES[material]?.() ?? Promise.resolve(bare)).catch(() => bare)));
   return p;
 }
-
-const pad = (n: number) => String(n).padStart(2, "0");
 
 /** The element the screen's host lives in while this body shows. */
 function ScreenSlot({ host }: { host: HTMLElement }) {
@@ -54,115 +59,164 @@ function ScreenSlot({ host }: { host: HTMLElement }) {
 type Props = {
   material: Material;
   dark: boolean;
-  /** The studio app, take 0. */
-  app: ReactNode;
+  /** What leads the object's top row, before Menu, Details and Source: the page's way to the other worlds. */
+  lead?: ReactNode;
 };
 
-/** The world's object. Wrap the world switch that changes `material` in startTransition, so the old object stays up while a new world's body and scenes load. */
+/** The world's object. Key it by world, so each world starts on its first take. */
 export function PlayObject(props: Props) {
   return (
-    <Suspense fallback={<div className={"mx-auto w-full max-w-sm " + OBJECT_HEIGHT} />}>
+    <Suspense fallback={<div className="min-h-[clamp(38rem,calc(100dvh-var(--header-h)-16rem),48rem)]" />}>
       <Loaded {...props} />
     </Suspense>
   );
 }
 
-function Loaded({ material, dark, app }: Props) {
-  const takes = use(takesOf(material));
+function Loaded({ material, dark, lead }: Props) {
   const body = use(bodyOf(material));
+  const takes = takesOf(material);
   const world = materialOf(material);
   const { look } = useCustomize();
   const { compact } = useDevice();
   const id = useId();
-  const [picked, setPicked] = useState(0);
+  const [at, setAt] = useState(0);
+  const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
+  const [menu, setMenu] = useState(false);
+  const [details, setDetails] = useState(false);
   const [host] = useState(() => Object.assign(document.createElement("div"), { className: "contents" }));
-  const refocus = useRef(false);
-  const at = Math.min(picked, takes.length - 1);
   const n = takes.length;
-  const take = takes[at];
-  const tabId = (i: number) => `${id}-take-${i}`;
-  const panelId = `${id}-screen`;
+  const take = takes[at]!;
+  const digits = String(n).length;
+  const pad = (i: number) => String(i).padStart(Math.max(2, digits), "0");
 
-  /* Every world's scenes and body load in the background, so a world switch finds them ready. */
+  /* Every world's body loads in the background, so the next world finds its body ready. */
   useEffect(() => {
-    for (const m of MATERIALS) {
-      void takesOf(m.id);
-      void bodyOf(m.id);
-    }
+    for (const m of MATERIALS) void bodyOf(m.id);
   }, []);
 
-  useLayoutEffect(() => {
-    if (!refocus.current) return;
-    refocus.current = false;
-    document.getElementById(tabId(at))?.focus();
-  });
+  /* Play: the next take every TAKE_MS, wrapping, until a hand stops it. */
+  useEffect(() => {
+    if (!playing) return;
+    const t = setInterval(() => setAt((i) => (i + 1) % n), TAKE_MS);
+    return () => clearInterval(t);
+  }, [playing, n]);
 
-  const go = (to: number, focus = false) => {
+  /* A hand on the screen stops Play: a press, a key, a wheel. */
+  useEffect(() => {
+    if (!playing) return;
+    const stop = () => setPlaying(false);
+    const opts = { capture: true } as const;
+    host.addEventListener("pointerdown", stop, opts);
+    host.addEventListener("keydown", stop, opts);
+    host.addEventListener("wheel", stop, opts);
+    return () => {
+      host.removeEventListener("pointerdown", stop, opts);
+      host.removeEventListener("keydown", stop, opts);
+      host.removeEventListener("wheel", stop, opts);
+    };
+  }, [playing, host]);
+
+  /** A take picked by hand: Play stops, and the change is said. */
+  const go = (to: number) => {
     const next = ((to % n) + n) % n;
+    setPlaying(false);
     if (next === at) return;
-    refocus.current = focus;
-    setPicked(next);
-    setSaid(`${takes[next].title}, take ${next + 1} of ${n}`);
+    setAt(next);
+    setSaid(`${takes[next]!.title}, ${next + 1} of ${n}`);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    const to = { ArrowRight: at + 1, ArrowLeft: at - 1, Home: 0, End: n - 1 }[e.key];
+    const to = { ArrowRight: at + 1, ArrowUp: at + 1, ArrowLeft: at - 1, ArrowDown: at - 1, PageUp: at + 10, PageDown: at - 10, Home: 0, End: n - 1 }[e.key];
     if (to === undefined) return;
     e.preventDefault();
-    go(to, true);
+    /* The slider stops at its ends on Page Up and Down; the arrows wrap, as the dial does. */
+    go(e.key.startsWith("Page") ? Math.min(n - 1, Math.max(0, to)) : to);
   };
+
+  const where = body.name === "bare" ? `in ${world.name}` : `in ${world.name}, on its ${world.object}`;
 
   const bodyProps: PlayObjectBodyProps = {
     world,
     takes,
     at,
-    selector: { role: "tablist", "aria-label": "Takes", onKeyDown },
-    tab: (i) => ({
-      type: "button",
-      role: "tab",
-      id: tabId(i),
-      "aria-label": takes[i].title,
-      "aria-selected": i === at,
-      "aria-controls": panelId,
-      tabIndex: i === at ? 0 : -1,
-      onClick: () => go(i),
-    }),
-    step: (by) => ({ type: "button", tabIndex: -1, "aria-label": by > 0 ? "Next take" : "Previous take", onClick: () => go(at + by) }),
+    selector: {
+      role: "slider",
+      tabIndex: 0,
+      "aria-label": "Components",
+      "aria-valuemin": 1,
+      "aria-valuemax": n,
+      "aria-valuenow": at + 1,
+      "aria-valuetext": `${take.title}, ${at + 1} of ${n}`,
+      "aria-orientation": "horizontal",
+      onKeyDown,
+    },
+    pick: go,
+    step: (by) => ({ type: "button", tabIndex: -1, "aria-label": by > 0 ? "Next component" : "Previous component", onClick: () => go(at + by) }),
     turn: (by) => go(at + by),
+    play: { type: "button", "aria-label": "Play", "aria-pressed": playing, onClick: () => setPlaying((p) => !p) },
     readout: { count: `${pad(at + 1)} / ${pad(n)}`, title: take.title, props: { "data-play-readout": "", "aria-hidden": true } },
     screen: <ScreenSlot host={host} />,
     compact,
   };
 
+  const open = (to: boolean, set: (b: boolean) => void) => {
+    setPlaying(false);
+    set(to);
+  };
+
   return (
-    <div {...lookAttributes({ accent: look.accent, material }, dark)} data-play-object={body.name} className="min-w-0 bg-transparent">
+    <div {...lookAttributes({ accent: look.accent, material }, dark)} data-play-object={body.name} className="grid min-w-0 gap-4 bg-transparent">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        {lead}
+        {!compact && (
+          <div className="flex items-center gap-1">
+            <Button size="sm" variant="ghost" aria-haspopup="dialog" onClick={() => open(true, setMenu)}>
+              Menu
+            </Button>
+            <Button size="sm" variant="ghost" aria-expanded={details} aria-controls={`${id}-details`} onClick={() => open(!details, setDetails)}>
+              Details
+            </Button>
+            <a
+              href={`#${take.id}`}
+              className="litt-target inline-flex h-control-sm items-center rounded-control px-control-pad-sm text-small font-title text-fg-muted hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md"
+            >
+              Source
+            </a>
+          </div>
+        )}
+      </div>
       <body.Body {...bodyProps} />
       {createPortal(
-        <PlayScreen
-          size="phone"
-          material={material}
-          dark={dark}
-          shape={body.shape(compact)}
-          panel={{ role: "tabpanel", id: panelId, "aria-labelledby": `${tabId(at)} ${id}-where` }}
-        >
-          {/* The app keeps the 40px the phone's clock row gave it, so a tooltip over Search opens inside the screen. */}
-          <div data-play-take="studio" hidden={at !== 0} inert={at !== 0} className="flex h-full flex-col pt-10">
-            {app}
-          </div>
-          {take.kind === "scene" && (
-            <div key={take.id} data-play-take={take.id} className="h-full overflow-y-auto overscroll-contain px-4 py-8">
-              <div className="mx-auto grid max-w-md">
-                <take.Render />
-              </div>
+        <PlayScreen material={material} dark={dark} shape={body.shape(compact)} label={`${take.title} ${where}`}>
+          <div key={take.id} data-play-take={take.id} className="grid h-full overflow-auto overscroll-contain p-6 sm:p-10">
+            <div className="m-auto grid w-full max-w-2xl min-w-0 justify-items-center">
+              <PreviewContext.Provider value="tile">
+                <Suspense fallback={null}>
+                  <take.Component />
+                </Suspense>
+              </PreviewContext.Provider>
             </div>
+          </div>
+          {details && (
+            <section id={`${id}-details`} aria-label={`About ${take.title}`} className="litt-raised absolute inset-x-4 bottom-4 grid gap-2 rounded-surface p-5">
+              <h2 className="text-body text-fg">{take.title}</h2>
+              <p className="text-small text-fg-muted">{take.lede}</p>
+              <a href={`#${take.id}`} className="text-small text-accent-text underline underline-offset-4">
+                Open the {take.title} page
+              </a>
+            </section>
           )}
+          <CommandMenu
+            open={menu}
+            onOpenChange={setMenu}
+            openedBy="pointer"
+            groups={[{ id: "components", heading: `${world.name}'s components`, items: takes.map((t) => ({ id: t.id, label: t.title })) }]}
+            onSelect={(item) => go(takes.findIndex((t) => t.id === item.id))}
+          />
         </PlayScreen>,
         host,
       )}
-      <span id={`${id}-where`} hidden>
-        {body.name === "bare" ? `in ${world.name}` : `in ${world.name}, on its ${world.object}`}
-      </span>
       <p role="status" aria-live="polite" aria-atomic className="sr-only">
         {said}
       </p>

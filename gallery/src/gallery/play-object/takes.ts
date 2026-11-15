@@ -1,26 +1,33 @@
 /**
- * What an object runs, one take at a time (plans/018, decision 3): the studio app first, the same in every world so
- * the worlds compare, then the world's own scenes (systems/<world>.tsx) in their page order, so its depth shows.
+ * What an object runs, one take at a time (plans/018, as Nick answered on 2026-11-15): every component in the world,
+ * in the sidebar's order, each drawn as its tile is on the overview's wall (PreviewContext "tile"), live and at real
+ * size, in that world's own body. A world's own parts (meta.worlds) are among them; the Blocks, the world pages and the
+ * site's pages are not.
  */
 import type { ComponentType } from "react";
 import type { Material } from "../look";
-import { scenesOf } from "../systems";
+import { inWorld, pages } from "../registry";
 
-/** The app is take 0, drawn by the page; a scene brings its own Render. */
-export type Take =
-  | { id: "studio"; title: string; kind: "app" }
-  | { id: string; title: string; kind: "scene"; Render: ComponentType };
+export type Take = {
+  /** The component's page id: its anchor in the gallery, #button. */
+  id: string;
+  title: string;
+  /** The page's one line, for Details. */
+  lede: string;
+  /** The page itself, drawn as its tile under PreviewContext "tile". */
+  Component: ComponentType;
+};
 
-export const STUDIO: Take = { id: "studio", title: "Studio", kind: "app" };
+const taken = new Map<Material, Take[]>();
 
-const loaded = new Map<Material, Promise<Take[]>>();
-
-/** The world's takes, one promise per world for the life of the page, so React's use() can read it. */
-export function takesOf(material: Material): Promise<Take[]> {
-  let p = loaded.get(material);
-  if (!p) {
-    p = scenesOf(material).then(({ scenes }) => [STUDIO, ...scenes.map((s): Take => ({ id: s.id, title: s.title, kind: "scene", Render: s.Render }))]);
-    loaded.set(material, p);
+/** The world's takes, the same array for the life of the page. */
+export function takesOf(material: Material): Take[] {
+  let list = taken.get(material);
+  if (!list) {
+    list = pages
+      .filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world && inWorld(p, material))
+      .map((p) => ({ id: p.id, title: p.title, lede: p.lede, Component: p.Component }));
+    taken.set(material, list);
   }
-  return p;
+  return list;
 }
