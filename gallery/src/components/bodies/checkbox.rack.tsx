@@ -2,7 +2,8 @@
  * Checkbox and radio, the Rack body (proposals/rack.md): a small well that fills with the ink, as an instrument's
  * toggles do.
  *
- * - Off is a well: --slot inside --slot-shade's 1px outline, 20px, at the control radius. On is the ink (--fg) filled
+ * - Off is a well: --slot inside a 1px --line-control edge (3:1 on every surface, so an empty box is never lost on a
+ *   dark panel), 20px, at the control radius. On is the ink (--fg) filled
  *   with the tick in --canvas, in the 1px outline of --block-lift, on the frame; never the accent (R6). Mixed keeps
  *   the well and sets an ink dash in it. A radio is a round well that fills with the ink, with no dot, because ink
  *   means on, as in Flat.
@@ -20,7 +21,7 @@ const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-
    click area (z-1), so a click on the box itself still lands on the input. */
 const box =
   "peer relative z-1 col-start-1 row-start-1 m-0 size-5 shrink-0 cursor-pointer appearance-none self-start " +
-  "bg-slot shadow-(--slot-shade) " +
+  "bg-slot shadow-[inset_0_0_0_1px_var(--line-control)] " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
   "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +

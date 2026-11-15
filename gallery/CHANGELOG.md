@@ -23,6 +23,10 @@ Every part with a body per world gets Rack's (`data-material="rack"`), drawn as 
 - **changed** `legend`: a Rack body, a row of toggles each with a small clip swatch (the hue's tint in its mark edge), a hidden series an empty outline. Props are unchanged.
 - **changed** `tag`: a Rack body, a small square key: a hue tag a clip, a status tag an outlined key, a raised tag a flat key. Props are unchanged.
 - **changed** `file-drop`: a Rack body, a well in a dashed edge that lights in the ink on drag-over, and the files as thin rows on one panel. Props are unchanged.
+- **changed** `button`: a Rack body, a flat key in a 1px outline, the accent fill for the primary and a darker outline for a press, nothing that moves. Props are unchanged.
+- **changed** `checkbox`: a Rack body, a small well in the control line that fills with the ink when checked, with an ink dash when mixed and a round well for a radio. Props are unchanged.
+- **changed** `slide-confirm`: a Rack body, a track box with a flat key in a 1px outline, the passed part filling as the slot and a confirmed track lit in the ink. Props are unchanged.
+- **changed** `pagination`: a Rack body, a row of square keys in 1px outlines with the current page lit in the ink. Props are unchanged.
 
 ## 2026-11-14 · Rack, a fourth world
 
