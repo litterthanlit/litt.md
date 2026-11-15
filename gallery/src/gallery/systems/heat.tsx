@@ -5,7 +5,7 @@
  * amber and ‹ › beside its value; a level is a row of dashes, lit up to the value; what each key does runs along the
  * foot as keycaps. Amber is words, brackets and marks here, never a fill (R6), so the page's one fill stays Install.
  */
-import { useState, type KeyboardEvent, type ReactNode } from "react";
+import { useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { Kbd } from "@/components/kbd";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
@@ -32,7 +32,7 @@ function Panel({ label, head, foot, children }: { label: string; head?: ReactNod
     <div className="grid min-w-0 gap-4">
       <div role="group" aria-label={label} className="relative">
         <span aria-hidden="true" className={FRAME} />
-        <div className="grid bg-canvas">
+        <div className="@container grid bg-canvas">
           <div className={"flex h-8 items-center justify-center bg-surface-1 px-4 text-small text-fg-muted " + STRIPES}>{head}</div>
           <div className="border-y border-line py-2">{children}</div>
           <div aria-hidden="true" className={"h-4 bg-surface-1 " + STRIPES} />
@@ -77,22 +77,39 @@ const SETTINGS: Setting[] = [
 const DEFAULTS: Record<string, number> = { effects: 12, engine: 12, speech: 12, music: 9, interactive: 1, mode: 1 };
 const top = (s: Setting) => (s.kind === "level" ? s.max : s.options.length - 1);
 const say = (s: Setting, v: number) => (s.kind === "level" ? `${v} of ${s.max}` : s.options[v]!);
+/* A level stops at its ends; a choice goes round, as a cycler does. */
+const next = (s: Setting, v: number) => (s.kind === "level" ? Math.max(0, Math.min(s.max, v)) : (v + s.options.length) % s.options.length);
+/* The press answers on the frame, on the locked press scale (1 under reduced motion). */
+const PRESS = "transition-transform duration-(--dur-instant) ease-litt active:scale-[var(--press-scale)]";
+
+/* Moves focus to the k-th row's control in the same list, which makes it the row you are on. */
+const focusRow = (from: Element, k: number, sel: string) => (from.closest("ul")?.children[k]?.querySelector(sel) as HTMLElement | null)?.focus();
 
 function Audio() {
   const [values, setValues] = useState(DEFAULTS);
   const [active, setActive] = useState(0);
-  const set = (s: Setting, v: number) => setValues((all) => ({ ...all, [s.id]: Math.max(0, Math.min(top(s), v)) }));
+  const set = (s: Setting, v: number) => setValues((all) => ({ ...all, [s.id]: next(s, v) }));
   const onKey = (i: number, s: Setting) => (e: KeyboardEvent<HTMLDivElement>) => {
-    const step = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+    const step = { ArrowLeft: -1, ArrowRight: 1, PageDown: -3, PageUp: 3 }[e.key];
     const move = { ArrowUp: -1, ArrowDown: 1 }[e.key];
-    if (step) set(s, values[s.id]! + step);
+    if (step) set(s, s.kind === "level" ? values[s.id]! + step : values[s.id]! + Math.sign(step));
     else if (e.key === "Home") set(s, 0);
     else if (e.key === "End") set(s, top(s));
-    else if (move) {
-      const next = Math.max(0, Math.min(SETTINGS.length - 1, i + move));
-      (e.currentTarget.closest("ul")?.children[next]?.querySelector("[role=slider]") as HTMLElement | null)?.focus();
-    } else return;
+    else if (move) focusRow(e.currentTarget, Math.max(0, Math.min(SETTINGS.length - 1, i + move)), "[role=slider]");
+    else return;
     e.preventDefault();
+  };
+  /* The dashes are a bar you set: press or drag along them, and the value follows the pointer. */
+  const onPointer = (s: Setting) => (e: PointerEvent<HTMLDivElement>) => {
+    if (e.type === "pointermove" && !e.currentTarget.hasPointerCapture(e.pointerId)) return;
+    if (e.type === "pointerdown") {
+      e.currentTarget.setPointerCapture(e.pointerId);
+      e.currentTarget.focus();
+      if (s.kind === "choice") return set(s, values[s.id]! + 1);
+    }
+    if (s.kind !== "level") return;
+    const r = e.currentTarget.getBoundingClientRect();
+    set(s, Math.round(((e.clientX - r.left) / r.width) * s.max));
   };
   return (
     <Panel
@@ -108,22 +125,32 @@ function Audio() {
         </>
       }
     >
+      {/* Side by side once the panel has room, as the menu sets them; narrower, each label sits over its control. */}
       <ul className="grid">
         {SETTINGS.map((s, i) => {
           const on = i === active;
           const v = values[s.id]!;
+          const level = s.kind === "level";
           return (
-            <li key={s.id} className="relative grid grid-cols-[minmax(0,1fr)_1.75rem_minmax(0,9rem)_1.75rem] items-center gap-x-2 px-3 py-1.5" onPointerEnter={() => setActive(i)}>
+            <li
+              key={s.id}
+              className="relative grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-1 px-3 py-1.5 @[24rem]:grid-cols-[minmax(0,1fr)_auto_minmax(5rem,9rem)_auto]"
+              onPointerEnter={(e) => {
+                /* The pointer picks the row; while the keys are in this menu, they follow it there. */
+                if (e.currentTarget.parentElement?.contains(document.activeElement)) focusRow(e.currentTarget, i, "[role=slider]");
+                else setActive(i);
+              }}
+            >
               {on && <span aria-hidden="true" className={SELECTED} />}
-              <span id={`audio-${s.id}`} className={"truncate text-right text-small font-title " + (on ? "text-accent-text" : "text-fg")}>
+              <span id={`audio-${s.id}`} className={"col-span-3 truncate px-7 text-small font-title @[24rem]:col-span-1 @[24rem]:px-0 @[24rem]:text-right " + (on ? "text-accent-text" : "text-fg")}>
                 {s.label}
               </span>
-              <Chevron hidden={!on} label={`Lower ${s.label}`} onClick={() => set(s, v - 1)}>
+              <Chevron hidden={!on} off={level && v === 0} label={`Lower ${s.label}`} onClick={() => set(s, v - 1)}>
                 ‹
               </Chevron>
               <div
                 role="slider"
-                tabIndex={0}
+                tabIndex={on ? 0 : -1}
                 aria-labelledby={`audio-${s.id}`}
                 aria-valuemin={0}
                 aria-valuemax={top(s)}
@@ -131,11 +158,13 @@ function Audio() {
                 aria-valuetext={say(s, v)}
                 onFocus={() => setActive(i)}
                 onKeyDown={onKey(i, s)}
-                className="grid h-control-sm min-w-0 cursor-default place-items-center outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                onPointerDown={onPointer(s)}
+                onPointerMove={onPointer(s)}
+                className="grid h-control-sm min-w-0 cursor-pointer touch-none select-none place-items-center outline-none focus-visible:ring-2 focus-visible:ring-focus"
               >
-                {s.kind === "level" ? <Dashes value={v} of={s.max} /> : <span className="text-small text-fg">{s.options[v]}</span>}
+                {level ? <Dashes value={v} of={s.max} /> : <span className="text-small text-fg">{s.options[v]}</span>}
               </div>
-              <Chevron hidden={!on} label={`Raise ${s.label}`} onClick={() => set(s, v + 1)}>
+              <Chevron hidden={!on} off={level && v === top(s)} label={`Raise ${s.label}`} onClick={() => set(s, v + 1)}>
                 ›
               </Chevron>
             </li>
@@ -146,72 +175,121 @@ function Audio() {
   );
 }
 
-/* The arrows beside the row you are on; the keys do the same, so they take no focus. */
-function Chevron({ hidden, label, onClick, children }: { hidden: boolean; label: string; onClick: () => void; children: ReactNode }) {
+/* The arrows beside the row you are on. The keys do the same, so they take no focus; at an end, one goes quiet. */
+function Chevron({ hidden, off, label, onClick, children }: { hidden: boolean; off: boolean; label: string; onClick: () => void; children: ReactNode }) {
   return (
     <button
       type="button"
       tabIndex={-1}
       aria-label={label}
-      onClick={onClick}
-      className={"grid h-control-sm place-items-center text-h1 text-accent-text " + (hidden ? "invisible" : "")}
+      aria-disabled={off || undefined}
+      onClick={off ? undefined : onClick}
+      className={
+        "grid h-control-sm w-7 place-items-center text-h1 " +
+        (hidden ? "invisible " : "") +
+        (off ? "cursor-default text-fg-disabled" : "text-accent-text " + PRESS)
+      }
     >
       {children}
     </button>
   );
 }
 
-/* ---------- B. Controls: which key does what, each binding a cell you pick ---------- */
+/* ---------- B. Controls: which key does what; pick a cell and press the key you want ---------- */
 
-const BINDINGS: [string, string, string][] = [
-  ["Accelerate", "Up", "W"],
-  ["Brake", "Down", "S"],
-  ["Steer left", "Left", "A"],
-  ["Steer right", "Right", "D"],
-  ["Handbrake", "Space", "–"],
-  ["Boost", "Alt", "X"],
+const ACTIONS = ["Accelerate", "Brake", "Steer left", "Steer right", "Handbrake", "Boost"];
+const KEYS: string[][] = [
+  ["Up", "W"],
+  ["Down", "S"],
+  ["Left", "A"],
+  ["Right", "D"],
+  ["Space", ""],
+  ["Alt", "X"],
 ];
-const COLUMNS = "grid grid-cols-[minmax(0,1fr)_minmax(0,6rem)_minmax(0,6rem)] gap-2";
+const SLOTS = ["Primary", "Secondary"];
+const COLUMNS = "grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2 @[24rem]:grid-cols-[minmax(0,1fr)_minmax(3.5rem,6rem)_minmax(3.5rem,6rem)]";
+/* A key as the menu names it: the arrows by direction, a letter in capitals, the space bar in words. */
+const keyName = (key: string) => (key === " " ? "Space" : key.startsWith("Arrow") ? key.slice(5) : key.length === 1 ? key.toUpperCase() : key);
 
 function Controls() {
-  const [cell, setCell] = useState<[number, 1 | 2]>([0, 1]);
+  const [keys, setKeys] = useState(KEYS);
+  const [cell, setCell] = useState<[number, number]>([0, 0]);
+  const [listening, setListening] = useState(false);
+  const [news, setNews] = useState("");
+  const [row, col] = cell;
+  const bind = (key: string) => {
+    const was = keys.flatMap((r, i) => r.map((k, j) => [k, i, j] as const)).find(([k, i, j]) => key && k === key && (i !== row || j !== col));
+    setKeys((all) => all.map((r, i) => r.map((k, j) => (i === row && j === col ? key : was && i === was[1] && j === was[2] ? "" : k))));
+    setListening(false);
+    setNews(!key ? `${ACTIONS[row]}, ${SLOTS[col]!.toLowerCase()}: cleared` : was ? `${key} moved from ${ACTIONS[was[1]]} to ${ACTIONS[row]}` : `${ACTIONS[row]}, ${SLOTS[col]!.toLowerCase()}: ${key}`);
+  };
+  const onKey = (i: number, j: number) => (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (listening) {
+      e.preventDefault();
+      if (e.key === "Escape") {
+        setListening(false);
+        setNews("Re-map cancelled");
+      } else if (e.key !== "Tab" && e.key !== "Shift") bind(keyName(e.key));
+      return;
+    }
+    const to = { ArrowUp: [i - 1, j], ArrowDown: [i + 1, j], ArrowLeft: [i, j - 1], ArrowRight: [i, j + 1] }[e.key];
+    if (to) {
+      e.preventDefault();
+      const [r, c] = [Math.max(0, Math.min(ACTIONS.length - 1, to[0]!)), Math.max(0, Math.min(1, to[1]!))];
+      (e.currentTarget.closest("ul")?.children[r]?.querySelectorAll("button")[c] as HTMLElement | undefined)?.focus();
+    } else if (e.key === "Backspace" || e.key === "Delete") {
+      e.preventDefault();
+      bind("");
+    }
+  };
   return (
     <Panel
       label="Controls"
       head={
-        <span className={COLUMNS + " w-full text-fg"}>
-          <span />
+        <span aria-hidden="true" className={COLUMNS + " w-full text-fg"}>
+          <span className="hidden @[24rem]:block" />
           <span className="text-center">Primary</span>
           <span className="text-center">Secondary</span>
         </span>
       }
       foot={
         <>
-          <Hint k="↵">Re-map</Hint>
-          <Hint k="esc">Done</Hint>
+          <Hint k="↵">{listening ? "Press a key" : "Re-map"}</Hint>
+          <Hint k="esc">Cancel</Hint>
+          <Hint k="⌫">Clear</Hint>
+          <Button variant="ghost" size="sm" onClick={() => (setKeys(KEYS), setListening(false), setNews("Controls back to their defaults"))}>
+            Defaults
+          </Button>
+          <span role="status" className="sr-only">
+            {news}
+          </span>
         </>
       }
     >
       <ul className="grid">
-        {BINDINGS.map(([action, ...keys], row) => {
-          const on = cell[0] === row;
+        {ACTIONS.map((action, i) => {
+          const on = row === i;
           return (
             <li key={action} className={"relative items-center px-3 py-1 " + COLUMNS}>
               {on && <span aria-hidden="true" className={SELECTED} />}
-              <span className={"truncate text-small font-title " + (on ? "text-accent-text" : "text-fg")}>{action}</span>
-              {keys.map((k, j) => {
-                const col = (j + 1) as 1 | 2;
-                const picked = on && cell[1] === col;
+              <span className={"col-span-2 truncate text-small font-title @[24rem]:col-span-1 " + (on ? "text-accent-text" : "text-fg")}>{action}</span>
+              {keys[i]!.map((k, j) => {
+                const picked = on && col === j;
+                const waiting = picked && listening;
                 return (
                   <button
-                    key={col}
+                    key={j}
                     type="button"
-                    aria-pressed={picked}
-                    aria-label={`${action}, ${col === 1 ? "primary" : "secondary"}: ${k === "–" ? "none" : k}`}
-                    onClick={() => setCell([row, col])}
-                    className={"h-control-sm min-w-0 truncate px-2 text-small text-fg " + (picked ? "bg-accent-tint" : "bg-block hover:bg-block-hover")}
+                    tabIndex={picked ? 0 : -1}
+                    aria-label={`${action}, ${SLOTS[j]!.toLowerCase()}: ${waiting ? "press a key, Escape to cancel" : k || "none"}`}
+                    aria-pressed={waiting}
+                    onFocus={() => setCell([i, j])}
+                    onClick={() => (setCell([i, j]), setListening(!waiting))}
+                    onBlur={() => waiting && setListening(false)}
+                    onKeyDown={onKey(i, j)}
+                    className={"h-control-sm min-w-0 truncate px-2 text-small text-fg " + PRESS + " " + (picked ? "bg-accent-tint" : "bg-block hover:bg-block-hover")}
                   >
-                    {k}
+                    {waiting ? "…" : k || "–"}
                   </button>
                 );
               })}
@@ -270,7 +348,7 @@ function Standings() {
 export const heat: SystemScenes = {
   scenes: [
     { id: "audio", title: "Audio", line: "A settings menu you drive with the arrow keys: the row you are on held in amber brackets, its level a row of dashes, ‹ › to change it.", Render: Audio },
-    { id: "controls", title: "Controls", line: "Which key does what, each binding a dark cell; the one you picked turns amber.", Render: Controls },
+    { id: "controls", title: "Controls", line: "Which key does what: pick a cell, press Enter, then the key you want; a key taken elsewhere moves over.", Render: Controls },
     { id: "standings", title: "Standings", line: "The scoreboard: each team in its own colour, the gaps in tabular figures, the pit and the retired as tags.", Render: Standings },
   ],
   cover: "audio",
