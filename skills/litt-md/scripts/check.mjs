@@ -102,7 +102,7 @@ const fail = (msg) => { failures.push(msg); console.log(`  ✗ ${msg}`); };
 const warn = (msg) => { warnings.push(msg); console.log(`  ! ${msg}`); };
 
 const ruleDocs = [
-  "SKILL.md", "taste/profile.md",
+  "SKILL.md", "taste/profile.md", "taste/litt-principles.md",
   ...fs.readdirSync(path.join(skillDir, "workflows")).map((f) => `workflows/${f}`),
   ...fs.readdirSync(path.join(skillDir, "system")).map((f) => `system/${f}`),
 ].filter((f) => f.endsWith(".md"));

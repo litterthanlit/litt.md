@@ -13,6 +13,7 @@ skills/litt-md/
 ├── SKILL.md            router: which files to read for build / critique / check / interview / audit / log / distill
 ├── taste/              YOURS: changes as your taste develops
 │   ├── profile.md      P# rules with checks, dos and don'ts, open questions, changelog
+│   ├── litt-principles.md  the reasons behind the rules, where a world is free, what every world keeps
 │   ├── journal.md      append-only log of reactions
 │   └── inspirations.md audited references: Steal / Reject
 ├── system/             specs (variable names and reasoning; values live in tokens.css)
