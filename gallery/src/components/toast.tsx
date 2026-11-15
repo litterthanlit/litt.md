@@ -6,6 +6,8 @@
  *   and routes to the Toaster mounted last.
  * - Flat: an ink pill with canvas words and buttons; an error keeps canvas too, since red
  *   would not read on ink.
+ * - Plain: the page inside one line, as it is everywhere else: litt-glass is --canvas inside the 1px --line-control edge
+ *   with no shadow, blur or radius, so the toast needs no class of its own; the description steps down to --fg-muted.
  * - Look: litt-glass (float shadow), rounded-surface, 360px, at least 72px tall and
  *   taller when its words wrap (WCAG 1.4.10 and 1.4.12): the title takes up to two
  *   lines and the description up to four, so a narrow screen or larger text never cuts
@@ -546,7 +548,7 @@ function ToastView({
         >
           <div ref={words} className="min-w-0 flex-1">
             <p className={"line-clamp-2 text-small font-title in-[[data-material=flat]]:text-canvas " + (tone === "error" ? "text-danger" : "text-fg")}>{item.title}</p>
-            {item.description && <p className="line-clamp-4 text-caption font-normal text-fg-subtle in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:opacity-80">{item.description}</p>}
+            {item.description && <p className="line-clamp-4 text-caption font-normal text-fg-subtle in-[[data-material=plain]]:text-fg-muted in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:opacity-80">{item.description}</p>}
           </div>
           {item.action && (
             <Button

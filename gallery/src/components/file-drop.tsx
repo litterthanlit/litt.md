@@ -256,7 +256,7 @@ const listLook = {
 export function FileList({ label, children, className = "" }: { label: string; children: ReactNode; className?: string }) {
   const material = useMaterial();
   return (
-    <ul aria-label={label} className={"grid grid-cols-[minmax(0,1fr)] " + listLook[material] + className}>
+    <ul aria-label={label} className={"grid grid-cols-[minmax(0,1fr)] " + byWorld(material, listLook) + className}>
       {children}
     </ul>
   );

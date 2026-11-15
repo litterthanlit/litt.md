@@ -4,6 +4,8 @@
  *
  * - Flat: a solid surface-1 card (no glass, no hairline), the float shadow; rows are grey bubbles at the panel
  *   radius less its 4px padding, and a separator is a gap, not a line.
+ * - Plain: the page inside one line (litt-glass is --canvas inside a 1px --line-control edge, no shadow); rows are grey
+ *   words, the one under the hand or the keys is --fg in four corner brackets, and the glide draws no wash or ring.
  * - Surface: floating glass (litt-glass, default float shadow), rounded-surface,
  *   p-1 (4px), min width 240. Rows are 44px and rounded-control, which sits
  *   concentric inside the 4px inset. A submenu is opened from a floating
@@ -181,14 +183,40 @@ const FLAT_PANEL =
 /* ------------------------------------------------------------------ rows */
 
 const row =
-  "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] " +
+  "group/row relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-control px-3 text-small outline-none in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] " +
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt data-[disabled]:pointer-events-none data-[disabled]:text-fg-disabled " +
-  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] forced-colors:data-[highlighted]:[forced-color-adjust:none] forced-colors:data-[highlighted]:text-[HighlightText] forced-colors:data-[highlighted]:**:text-[HighlightText]";
-const tone = "text-fg-muted data-[highlighted]:text-fg pointer-coarse:active:text-fg";
+  "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] in-[[data-material=plain]]:pointer-coarse:active:bg-transparent forced-colors:data-[highlighted]:[forced-color-adjust:none] forced-colors:data-[highlighted]:text-[HighlightText] forced-colors:data-[highlighted]:**:text-[HighlightText]";
+const tone =
+  "text-fg-muted data-[highlighted]:text-fg pointer-coarse:active:text-fg in-[[data-material=plain]]:data-[state=checked]:text-fg";
 const toneDanger = "text-danger";
 /** The group label row, and the caption that names a submenu's list. */
 const labelRow = "flex h-control-sm items-center px-3 text-caption text-fg-subtle litt-legend";
+
+/* Plain: four corner marks round the row's word, each two 1px bars 4px long, in its color. Shown only on the row under the
+   hand or the keys (or the one being pressed by a finger). Everywhere else they are hidden. */
+const BRACKETS =
+  "hidden in-[[data-material=plain]]:group-data-[highlighted]/row:block in-[[data-material=plain]]:pointer-coarse:group-active/row:block " +
+  "pointer-events-none absolute -inset-x-2 -inset-y-1.5 bg-no-repeat " +
+  "[background-image:linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor)] " +
+  "[background-size:4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px] " +
+  "[background-position:left_top,left_top,right_top,right_top,left_bottom,left_bottom,right_bottom,right_bottom]";
+
+/**
+ * A row's label. Under Press, Flat and Device it truncates with an ellipsis, as before. Under Plain the label sits in
+ * a relative box that hugs the words, so the brackets can frame them: the box is trimmed to the caps, the words
+ * truncate inside it, and the brackets are siblings of the words, so the truncation does not clip them.
+ */
+function Label({ children }: { children: ReactNode }) {
+  return (
+    <span className="min-w-0 truncate in-[[data-material=plain]]:overflow-visible">
+      <span className="relative in-[[data-material=plain]]:inline-block in-[[data-material=plain]]:max-w-full in-[[data-material=plain]]:leading-none in-[[data-material=plain]]:[text-box:trim-both_cap_alphabetic]">
+        <span aria-hidden="true" className={BRACKETS} />
+        <span className="in-[[data-material=plain]]:block in-[[data-material=plain]]:whitespace-nowrap">{children}</span>
+      </span>
+    </span>
+  );
+}
 
 /** The fixed 16px cell at the start of every row. */
 function Cell({ children }: { children?: ReactNode }) {
@@ -225,7 +253,7 @@ export function MenuItem({ icon, shortcut, destructive, disabled, onSelect, href
   const content = (
     <>
       {icon !== undefined && <Cell>{icon}</Cell>}
-      <span className="min-w-0 truncate">{children}</span>
+      <Label>{children}</Label>
       {shortcut && <Shortcut>{shortcut}</Shortcut>}
     </>
   );
@@ -279,7 +307,7 @@ export function MenuCheckboxItem({ checked, onCheckedChange, shortcut, closeOnSe
       <P.ItemIndicator forceMount className={indicator}>
         <CheckIcon />
       </P.ItemIndicator>
-      <span className="min-w-0 truncate">{children}</span>
+      <Label>{children}</Label>
       {shortcut && <Shortcut>{shortcut}</Shortcut>}
     </P.CheckboxItem>
   );
@@ -335,7 +363,7 @@ export function MenuRadioItem({
       <P.ItemIndicator forceMount className={indicator}>
         <CheckIcon />
       </P.ItemIndicator>
-      <span className="min-w-0 truncate">{children}</span>
+      <Label>{children}</Label>
     </P.RadioItem>
   );
 }
@@ -423,7 +451,7 @@ function FlySub({ icon, label, children }: SubProps) {
         className={row + " " + tone + " data-[state=open]:text-fg"}
       >
         {icon !== undefined && <Cell>{icon}</Cell>}
-        <span className="min-w-0 truncate">{label}</span>
+        <Label>{label}</Label>
         <span className="ml-auto shrink-0 text-fg-subtle">
           <ChevronRightIcon />
         </span>
@@ -475,7 +503,7 @@ function DrillSub({ drill, icon, label, children }: SubProps & { drill: Drill })
         className={row + " " + tone}
       >
         {icon !== undefined && <Cell>{icon}</Cell>}
-        <span className="min-w-0 truncate">{label}</span>
+        <Label>{label}</Label>
         <span className="ml-auto shrink-0 text-fg-subtle">
           <ChevronRightIcon />
         </span>
@@ -524,7 +552,7 @@ function BackItem() {
           <ChevronRightIcon />
         </span>
       </Cell>
-      <span className="min-w-0 truncate">{drill.backLabel}</span>
+      <Label>{drill.backLabel}</Label>
     </P.Item>
   );
 }
@@ -807,6 +835,8 @@ export function MenuPanel({
   };
   const surface =
     "relative z-50 min-w-60 rounded-surface outline-none in-[[data-material=flat]]:[&>[data-ring]]:rounded-[calc(var(--radius-surface)-4px)] " +
+    /* Plain: the glide draws no wash and no focus ring; the brackets on the row are the highlight (forced colors keeps its Highlight). */
+    "in-[[data-material=plain]]:[&>[data-ring]]:bg-transparent in-[[data-material=plain]]:[&>[data-ring]]:shadow-none in-[[data-material=plain]]:forced-colors:[&>[data-ring]]:bg-[Highlight] " +
     P.origin +
     " data-[state=closed]:pointer-events-none " +
     (drilling ? "" : "p-1 ");
@@ -816,7 +846,11 @@ export function MenuPanel({
   const body = drill ? (
     <div
       ref={setScroller}
-      className={"relative " + P.fit + " overflow-x-hidden overflow-y-auto overscroll-contain rounded-surface"}
+      className={
+        "relative " +
+        P.fit +
+        " overflow-x-hidden overflow-y-auto overscroll-contain rounded-surface in-[[data-material=plain]]:[&>[data-ring]]:bg-transparent in-[[data-material=plain]]:[&>[data-ring]]:shadow-none in-[[data-material=plain]]:forced-colors:[&>[data-ring]]:bg-[Highlight]"
+      }
     >
       {glide.highlight}
       <DrillView current={stack.length === 0}>
@@ -844,7 +878,10 @@ export function MenuPanel({
             loop
             {...placedProp}
           >
-            <motion.div {...motionProps} className={surface + "bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1"}>
+            <motion.div {...motionProps} className={
+              surface +
+              "bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1 in-[[data-material=plain]]:bg-canvas in-[[data-material=plain]]:shadow-[0_0_0_1px_var(--line-control)]"
+            }>
               {body}
             </motion.div>
           </P.SubContent>

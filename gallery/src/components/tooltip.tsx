@@ -4,6 +4,8 @@
  * - Radix Tooltip is the accessibility layer (aria-describedby, Escape, hover
  *   intent, the skip window). Everything visual is ours.
  * - Flat: an ink pill with canvas text, no highlight.
+ * - Plain: the page inside a 1px --line-control ring, text in --fg, no highlight, no cast. The shortcut cap is the same
+ *   ring with no fill.
  * - Look: a solid surface-3 chip with shadow-tooltip. It is too small for glass
  *   to read. rounded-control, text-small, 6px by 8px, 240px at most. A shortcut
  *   is the shared Kbd chip (kbd.tsx).
@@ -274,7 +276,7 @@ function TooltipSurface({
     >
       <motion.div
         key={side}
-        className="flex max-w-60 origin-(--radix-tooltip-content-transform-origin) items-center gap-3 rounded-control bg-surface-3 px-2 py-1.5 text-small text-fg shadow-tooltip inset-shadow-highlight in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:inset-shadow-none in-[[data-material=flat]]:px-3 in-[[data-material=flat]]:[&_kbd]:bg-transparent in-[[data-material=flat]]:[&_kbd]:text-canvas in-[[data-material=flat]]:[&_kbd]:opacity-70 in-[[data-material=flat]]:[&_kbd]:shadow-none"
+        className="flex max-w-60 origin-(--radix-tooltip-content-transform-origin) items-center gap-3 rounded-control bg-surface-3 px-2 py-1.5 text-small text-fg shadow-tooltip inset-shadow-highlight in-[[data-material=flat]]:bg-fg in-[[data-material=flat]]:text-canvas in-[[data-material=flat]]:inset-shadow-none in-[[data-material=flat]]:px-3 in-[[data-material=flat]]:[&_kbd]:bg-transparent in-[[data-material=flat]]:[&_kbd]:text-canvas in-[[data-material=flat]]:[&_kbd]:opacity-70 in-[[data-material=flat]]:[&_kbd]:shadow-none in-[[data-material=plain]]:bg-canvas in-[[data-material=plain]]:shadow-[0_0_0_1px_var(--line-control)] in-[[data-material=plain]]:inset-shadow-none in-[[data-material=plain]]:[&_kbd]:text-fg-muted in-[[data-material=plain]]:[&_kbd]:shadow-[0_0_0_1px_var(--line-control)]"
         initial={instant ? false : { opacity: 0, scale: om.grow, ...toward }}
         animate={{ opacity: 1, scale: 1, x: 0, y: 0, transition: enter }}
         exit={{ opacity: 0, scale: om.grow, transition: exit }}

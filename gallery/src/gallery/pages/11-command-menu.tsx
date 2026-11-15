@@ -202,7 +202,7 @@ function OpenDemo() {
 function PanelDemo({ initialQuery = "" }: { initialQuery?: string }) {
   const [query, setQuery] = useState(initialQuery);
   return (
-    <div className="w-full min-w-0 max-w-140 rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]">
+    <div className="w-full min-w-0 max-w-140 rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=plain]]:bg-canvas in-[[data-material=plain]]:shadow-[inset_0_0_0_1px_var(--line-control)]">
       <CommandPanel groups={GROUPS} query={query} onQueryChange={setQuery} onSelect={() => {}} initialSource="pointer" />
     </div>
   );

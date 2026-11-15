@@ -24,6 +24,8 @@
  *   data-autofocus, else the first focusable control, else the panel itself.
  *   Closing returns it to the trigger. Opened with the pointer, a button gets no
  *   ring (:focus-visible), a text field always does.
+ * - Plain: the page inside a 1px --line-control ring, square, no glass and no cast. The solid panel (inside glass) is
+ *   canvas inside that ring too, never a surface fill.
  * - Sizes sit on the 8px grid: 256, 320, 384. The panel never grows past the room
  *   on screen, and scrolls inside when it is taller than the room.
  *
@@ -227,7 +229,7 @@ function Sheet({
       }}
       described={false}
       contentRef={panel}
-      className={(flat ? "[--glass-bg:var(--surface-2)] [--glass-shadow:var(--shadow-float)] " : "") + FLAT_PANEL}
+      className={(flat ? "[--glass-bg:var(--surface-2)] [--glass-shadow:var(--shadow-float)] in-[[data-material=plain]]:[--glass-bg:var(--canvas)] " : "") + FLAT_PANEL}
     >
       <SheetParts label={label} padded={padded ?? true} onFloating={setOverFloating}>
         {children}
@@ -357,7 +359,7 @@ function Surface({
     "relative z-50 max-w-(--radix-popover-content-available-width) rounded-surface p-1 outline-none " +
     "origin-(--radix-popover-content-transform-origin) data-[state=closed]:pointer-events-none " +
     WIDTH[size] +
-    (flat ? " bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1" : " litt-glass " + FLAT_PANEL);
+    (flat ? " bg-surface-2 shadow-float in-[[data-material=flat]]:bg-surface-1 in-[[data-material=plain]]:bg-canvas in-[[data-material=plain]]:shadow-[0_0_0_1px_var(--line-control)]" : " litt-glass " + FLAT_PANEL);
 
   return (
     <RadixPopover.Content

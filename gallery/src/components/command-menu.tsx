@@ -35,6 +35,9 @@
  *   is the first thing in the dialog that takes it, because typing is the point. Both
  *   signals come from useDevice, so <DeviceProvider mode="phone"> previews them.
  * - Device: under data-material="device" the search and the results set in the mono (font-field) and the group labels are engraved (litt-legend).
+ * - Plain: the panel is the page inside its line (litt-glass). The search has one 1px --line-control rule under the words, drawn
+ *   as a background so the text never moves. Rows are grey words; the row under the keys is --fg with four corner brackets
+ *   round its label, and the glide's wash and ring are removed. The footer keeps a 1px --line top rule.
  */
 import {
   useEffect,
@@ -195,7 +198,8 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
       <div
         className={
           "flex h-13 shrink-0 items-center gap-3 border-b border-[var(--glass-border)] " + (coarse && onCancel ? "pl-4 pr-1" : "px-4") +
-          " in-[[data-material=flat]]:m-1 in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:border-transparent in-[[data-material=flat]]:bg-surface-3"
+          " in-[[data-material=flat]]:m-1 in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:border-transparent in-[[data-material=flat]]:bg-surface-3" +
+          " in-[[data-material=plain]]:border-transparent in-[[data-material=plain]]:bg-[linear-gradient(var(--line-control),var(--line-control))] in-[[data-material=plain]]:bg-[length:100%_1px] in-[[data-material=plain]]:bg-bottom in-[[data-material=plain]]:bg-no-repeat"
         }
       >
         <SearchIcon className="shrink-0 text-fg-subtle" />
@@ -234,7 +238,10 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           ref={glide.ref}
           {...glide.props}
           onMouseDown={(e) => e.preventDefault()}
-          className="relative max-h-[var(--cmd-list-max,min(55dvh,22rem))] min-h-0 overflow-y-auto overscroll-contain p-1 in-[[data-material=flat]]:[&>[data-ring]]:rounded-[calc(var(--radius-surface)-4px)]"
+          className={
+            "relative max-h-[var(--cmd-list-max,min(55dvh,22rem))] min-h-0 overflow-y-auto overscroll-contain p-1 in-[[data-material=flat]]:[&>[data-ring]]:rounded-[calc(var(--radius-surface)-4px)] " +
+            "in-[[data-material=plain]]:[&>[data-ring]]:bg-transparent in-[[data-material=plain]]:[&>[data-ring]]:shadow-none in-[[data-material=plain]]:forced-colors:[&>[data-ring]]:bg-[Highlight]"
+          }
         >
           {glide.highlight}
           {sections.map((s) => (
@@ -252,10 +259,21 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
                   data-active={r.index === current || undefined}
                   {...GLIDE_ROW}
                   onClick={() => !r.disabled && onSelect(r)}
-                  className="relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText] font-field"
+                  className="group/opt relative flex h-control-md scroll-mt-8 scroll-mb-1 cursor-pointer items-center gap-3 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] px-3 text-small text-fg-muted transition-colors duration-(--dur-instant) ease-litt data-[active]:text-fg aria-disabled:cursor-not-allowed aria-disabled:text-fg-disabled forced-colors:data-[active]:[forced-color-adjust:none] forced-colors:data-[active]:text-[HighlightText] forced-colors:data-[active]:**:text-[HighlightText] font-field"
                 >
                   {r.icon !== undefined && <span className="grid size-4 shrink-0 place-items-center">{r.icon}</span>}
-                  <span className="min-w-0 truncate">{r.label}</span>
+                  <span className="min-w-0 truncate in-[[data-material=plain]]:overflow-visible">
+                    <span className="relative block max-w-full">
+                      <span
+                        aria-hidden="true"
+                        className={
+                          "hidden in-[[data-material=plain]]:group-data-[active]/opt:block " +
+                          "pointer-events-none absolute -inset-x-2 -inset-y-1.5 bg-no-repeat [background-image:linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor),linear-gradient(currentColor,currentColor)] [background-size:4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px,4px_1px,1px_4px] [background-position:left_top,left_top,right_top,right_top,left_bottom,left_bottom,right_bottom,right_bottom]"
+                        }
+                      />
+                      <span className="block truncate in-[[data-material=plain]]:overflow-visible in-[[data-material=plain]]:leading-none in-[[data-material=plain]]:[text-box:trim-both_cap_alphabetic]">{r.label}</span>
+                    </span>
+                  </span>
                   {r.shortcut && !coarse && <span className="ml-auto shrink-0 pl-4 text-caption font-normal text-fg-subtle">{r.shortcut}</span>}
                 </div>
               ))}
@@ -274,7 +292,7 @@ export function CommandPanel({ groups, query, onQueryChange, onSelect, initialSo
           Under 24rem the arrow hint goes first, since the Enter hint says what will happen.
           On a touch screen every hint here is a keyboard one, so the whole footer goes. */}
       {!coarse && (
-        <div className="@container shrink-0 border-t border-[var(--glass-border)] in-[[data-material=flat]]:border-transparent">
+        <div className="@container shrink-0 border-t border-[var(--glass-border)] in-[[data-material=flat]]:border-transparent in-[[data-material=plain]]:border-[var(--line)]">
           <div className="flex h-10 items-center gap-4 px-4 text-caption text-fg-subtle">
             <span className="flex @max-sm:hidden">
               <Hint keys="↑↓">to move</Hint>

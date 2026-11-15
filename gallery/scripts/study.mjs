@@ -23,10 +23,12 @@
  * - anything opens on its own: after load and 1.5s, a dialog is open outside main, anything has aria-modal, or the
  *   Replay stage shows a dialog instead of the object at rest. Pressing Replay on the Command menu and Dialog pages
  *   must open an overlay, and Esc must close it,
- * - a part with bodies (data-body on its root, proposals/worlds.md, Bodies) does not draw its press body in the press
- *   frame, its flat body in the flat frame and its device body in the device frame,
- * - Under each material has no press, flat and device frames, the three do not differ (the frame's ground and every
- *   element's background, shadow, radius and colour inside it), or a frame has no component with text (or a name) in it,
+ * - a part with bodies (data-body on its root, proposals/worlds.md, Bodies) does not draw each world's own body in that
+ *   world's frame, where src/components/bodies/<part>.<world>.tsx exists, and Press's body where it does not (byWorld's
+ *   fallback: Plain has bodies for only some parts),
+ * - Under each material has no frame per world (WORLDS, in look.ts's order), the frames do not all differ (the frame's
+ *   ground and every element's background, shadow, radius and colour inside it), or a frame has no component with text
+ *   (or a name) in it,
  * - Show source is not aria-expanded=false at load, or after a press shows no code with `export function`, or the
  *   Source heading does not name the file and a yyyy.mm.dd version,
  * - public/docs/<id>.md lacks `## How it moves` with the page's mechanism, or llms.txt does not mark the page
@@ -47,6 +49,12 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+/* Every world, in the order look.ts's MATERIALS lists them and Under each material draws them. */
+const WORLDS = ["press", "flat", "device", "plain"];
+const BODIES_DIR = path.join(here, "..", "src", "components", "bodies");
+/** The body a part draws under a world: its own where the file exists, else Press's (byWorld). A frame may also show
+    its own world's body when it comes from a part inside (a Dialog's Buttons). */
+const bodyFor = (part, world) => (world === "press" || fs.existsSync(path.join(BODIES_DIR, `${part}.${world}.tsx`)) ? world : "press");
 const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
@@ -110,8 +118,8 @@ const C = {
   pixels: "the Anatomy object and the Under each material frame of the gallery's current material are the same picture, pixel for pixel",
   rest: "nothing opens on its own: no open dialog or aria-modal after load, and the Replay stage holds the object at rest",
   replay: "pressing Replay on the Command menu and Dialog pages opens an overlay, and Esc closes it",
-  frames: "Under each material shows press, flat and device frames drawn three ways, each with a component in it",
-  bodies: "a part with bodies draws its press body in the press frame, its flat body in the flat frame and its device body in the device frame (proposals/worlds.md, Bodies)",
+  frames: "Under each material shows a frame per world (press, flat, device, plain), each drawn its own way, each with a component in it",
+  bodies: "a part with bodies draws each world's own body in that world's frame, and Press's where the world has none (proposals/worlds.md, Bodies)",
   source: "Show source starts collapsed, and a press shows code with `export function` under a heading naming the file and a version",
   docs: "public/docs/<id>.md has `## How it moves` with the page's mechanism, and llms.txt marks the page \"(a study)\"",
   wide: "a study page does not scroll sideways at 390 or 320",
@@ -213,9 +221,9 @@ async function audit(page, size, scheme, look, mutate) {
 
   claim(C.rest, r.openDialogs === 0 && r.modal === 0 && r.replayDialog === 0 ? null : `${where}: ${r.openDialogs} open dialogs outside main, ${r.modal} aria-modal, ${r.replayDialog} dialogs in the Replay stage`);
 
-  claim(C.frames, r.frames.map((f) => f.id).join() === "press,flat,device" && new Set(r.frames.map((f) => f.ground)).size === 3 && r.frames.every((f) => f.named) ? null : `${where}: frames ${JSON.stringify(r.frames)}`);
+  claim(C.frames, r.frames.map((f) => f.id).join() === WORLDS.join() && new Set(r.frames.map((f) => f.ground)).size === WORLDS.length && r.frames.every((f) => f.named) ? null : `${where}: frames ${JSON.stringify(r.frames)}`);
   /* A part without bodies has no data-body anywhere; one with bodies must show each world its own. */
-  if (r.frames.some((f) => f.body)) claim(C.bodies, r.frames.every((f) => f.body === f.id) ? null : `${where}: the frames hold the bodies ${r.frames.map((f) => `${f.id}:${f.body ?? "none"}`).join(", ")}`);
+  if (r.frames.some((f) => f.body)) claim(C.bodies, r.frames.every((f) => f.body === f.id || f.body === bodyFor(page.id, f.id)) ? null : `${where}: the frames hold the bodies ${r.frames.map((f) => `${f.id}:${f.body ?? "none"}`).join(", ")} (want ${r.frames.map((f) => `${f.id}:${bodyFor(page.id, f.id)}`).join(", ")})`);
 
   claim(C.wide, size.width > 640 || r.wide <= 0 ? null : `${where}: ${r.wide}px wider than the screen`);
 
@@ -304,7 +312,7 @@ if (selfTest) {
     [C.sections, "the Source section moves above Anatomy", () => run1(SIZES[0], (pg) => pg.evaluate(() => { const s = document.querySelector("section[aria-labelledby^=study-source]"); s.parentElement.prepend(s); }))],
     /* Bodies differ in their markup, not only their paint, so the break copies the press frame into the other two
        before it flattens every frame's colours, shadows and corners. */
-    [C.frames, "the three frames lose what tells them apart", () => run1(SIZES[0], async (pg) => {
+    [C.frames, "the frames lose what tells them apart", () => run1(SIZES[0], async (pg) => {
       await pg.evaluate(() => {
         const frames = [...document.querySelectorAll("[data-study-material]")];
         const press = frames.find((f) => f.dataset.studyMaterial === "press");

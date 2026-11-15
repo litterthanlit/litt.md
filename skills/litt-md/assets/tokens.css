@@ -133,6 +133,7 @@
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);          /* instant tier and every exit */
   --press-scale: 0.98;
   --press-depth: 0.5px;              /* how far a pressed block sinks (R4) */
+  --block-wall: 2px;                 /* a raised button's thickness, the wall along its foot (Plain has none) */
 
   /* Responsive: bounce 0. Menus, tabs, tooltips, the gliding highlight. */
   --spring-responsive: 200ms 0;      /* visual time, bounce */
@@ -359,6 +360,28 @@
   --device-screen-glass-bg: rgba(17, 18, 20, 0.88);
   --device-screen-glass-bg-solid: rgba(17, 18, 20, 0.98);
   --device-screen-glass-border: rgba(255, 255, 255, 0.08);
+
+  /* Plain's values (data-material="plain", below; proposals/plain.md): a page the way HTML draws one. White paper, black
+     words, link blue, 1px lines and no fills, nothing raised, nothing lit, nothing moving. */
+  --plain-canvas: #ffffff;
+  --plain-well: #ffffff;
+  --plain-surface-1: #ffffff;
+  --plain-surface-2: #f6f6f6;
+  --plain-surface-3: #efefef;
+  --plain-line: #d6d6d6;
+  --plain-line-strong: #a8a8a8;
+  --plain-line-control: #767676;
+  --plain-fg: #000000;
+  --plain-fg-muted: #545454;
+  --plain-fg-subtle: #545454;
+  --plain-fg-disabled: #a3a3a3;
+  /* Link blue, Plain's own accent: the blue a browser draws an unvisited link in. */
+  --plain-accent: #0000ee;
+  --plain-accent-hover: #0000b0;
+  --plain-accent-fg: #ffffff;
+  --plain-accent-tint: #ebebff;
+  --plain-accent-text: #0000ee;
+  --plain-focus: #0000ee;
 
   /* Accent: Blue 4, Litt's own (v1.0), a bright cobalt that still carries white past 5.5:1, a cool light on the
      warm stone neutrals. Nick's swatch is P3 #2656f4, the same color as this sRGB value. Swap per project, or run
@@ -621,6 +644,26 @@
   --device-screen-glass-bg-solid: rgba(17, 18, 20, 0.98);
   --device-screen-glass-border: rgba(255, 255, 255, 0.08);
 
+  /* Plain's values (data-material="plain", below; proposals/plain.md). */
+  --plain-canvas: #0b0b0b;
+  --plain-well: #111111;
+  --plain-surface-1: #111111;
+  --plain-surface-2: #191919;
+  --plain-surface-3: #1e1e1e;
+  --plain-line: #2e2e2e;
+  --plain-line-strong: #474747;
+  --plain-line-control: #858585;
+  --plain-fg: #ffffff;
+  --plain-fg-muted: #c4c4c4;
+  --plain-fg-subtle: #c4c4c4;
+  --plain-fg-disabled: #666666;
+  --plain-accent: #b3c7ff;
+  --plain-accent-hover: #ccd8ff;
+  --plain-accent-fg: #000000;
+  --plain-accent-tint: #1a1f33;
+  --plain-accent-text: #b3c7ff;
+  --plain-focus: #b3c7ff;
+
   --accent-blue: #0957fd;
   --accent-blue-hover: #1e64fe; /* a step lighter in dark */
   --accent-blue-fg: #ffffff;
@@ -859,6 +902,26 @@
     --device-screen-glass-bg: rgba(17, 18, 20, 0.88);
     --device-screen-glass-bg-solid: rgba(17, 18, 20, 0.98);
     --device-screen-glass-border: rgba(255, 255, 255, 0.08);
+
+    /* Plain's values (data-material="plain", below; proposals/plain.md). */
+    --plain-canvas: #0b0b0b;
+    --plain-well: #111111;
+    --plain-surface-1: #111111;
+    --plain-surface-2: #191919;
+    --plain-surface-3: #1e1e1e;
+    --plain-line: #2e2e2e;
+    --plain-line-strong: #474747;
+    --plain-line-control: #858585;
+    --plain-fg: #ffffff;
+    --plain-fg-muted: #c4c4c4;
+    --plain-fg-subtle: #c4c4c4;
+    --plain-fg-disabled: #666666;
+    --plain-accent: #b3c7ff;
+    --plain-accent-hover: #ccd8ff;
+    --plain-accent-fg: #000000;
+    --plain-accent-tint: #1a1f33;
+    --plain-accent-text: #b3c7ff;
+    --plain-focus: #b3c7ff;
 
     --accent-blue: #0957fd;
     --accent-blue-hover: #1e64fe;
@@ -1405,6 +1468,137 @@
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
 }
 
+/* --------------------------------------------------------------------------
+   Plain (R3, proposals/plain.md): data-material="plain" on <html> draws the
+   page the way HTML does. White paper and black words in the system's own
+   face, link blue as its own accent, links underlined, a 1px line around
+   everything a hand can use and no fill inside it, no frame around a group, square
+   corners, no glass, no light, no cast and no motion: a state changes in place,
+   at once. Last in the file, after Device; the two never share an element.
+   -------------------------------------------------------------------------- */
+:root[data-material="plain"],
+[data-material="plain"] {
+  --canvas: var(--plain-canvas);
+  --well: var(--plain-well);
+  --surface-1: var(--plain-surface-1);
+  --surface-2: var(--plain-surface-2);
+  --surface-3: var(--plain-surface-3);
+  --line: var(--plain-line);
+  --line-strong: var(--plain-line-strong);
+  --line-control: var(--plain-line-control);
+  --fg: var(--plain-fg);
+  --fg-muted: var(--plain-fg-muted);
+  --fg-subtle: var(--plain-fg-subtle);
+  --fg-disabled: var(--plain-fg-disabled);
+
+  /* Plain's own accent is link blue. data-accent on the same element wins, restated after this block. */
+  --accent: var(--plain-accent);
+  --accent-hover: var(--plain-accent-hover);
+  --accent-fg: var(--plain-accent-fg);
+  --accent-tint: var(--plain-accent-tint);
+  --accent-text: var(--plain-accent-text);
+  --focus: var(--plain-focus);
+  --light: none;
+  --glow: 0 0 0 0 transparent;
+  /* The system's own face, the one a page with no stylesheet asks for. */
+  --font-sans: var(--font-choice, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+
+  /* Square, as a page is: the Customize shapes still override it. */
+  --radius-control: 0px;
+  --radius-surface: 0px;
+
+  /* Nothing floats: an overlay is the page again, inside one line. */
+  --glass-bg: var(--canvas);
+  --glass-bg-solid: var(--canvas);
+  --glass-border: var(--line-control);
+  --glass-blur: 0px;
+  --glass-saturate: 100%;
+  --shadow-tooltip: 0 0 0 0 transparent;
+  --shadow-float: 0 0 0 0 transparent;
+  --shadow-modal: 0 0 0 0 transparent;
+  --grain-opacity: 0;
+
+  /* The depth ladder as one line: nothing has a fill of its own and nothing frames a group. A block (a button, the
+     chosen segment) is the page inside one 1px control line, and a plate (the current tab, open on its foot) the same line outside it, drawn inside its box so it never doubles; pressed,
+     the line is the ink. A cut is a white field (its control line is the component's), a slot a bordered bar. Nothing
+     casts, catches light, sinks or has a wall. */
+  --highlight: inset 0 0 0 0 transparent;
+  --tray: transparent;
+  --tray-shade: inset 0 0 0 0 transparent;
+  --cut: var(--canvas);
+  --cut-shade: inset 0 0 0 0 transparent;
+  --block: var(--canvas);
+  --block-lift: inset 0 0 0 1px var(--line-control);
+  --block-press: inset 0 0 0 1px var(--fg);
+  --key-lift: inset 0 0 0 1px var(--line-control);
+  --slot: var(--canvas);
+  --slot-shade: inset 0 0 0 1px var(--line-control);
+  --slot-fill: var(--fg-muted);
+  --slot-fill-shade: inset 0 0 0 0 transparent;
+  --plate-lift: 0 0 0 1px var(--line-control);
+  --cap: var(--canvas);
+  --cap-held: var(--surface-2);
+  --cap-lift: inset 0 0 0 1px var(--line-control);
+  --cap-press: inset 0 0 0 1px var(--fg);
+  --cap-grip: var(--line-control);
+  --press-depth: 0px;
+  --press-scale: 1;
+  --block-wall: 0px;
+  --block-hover: color-mix(in oklab, var(--block), var(--fg) 5%);
+
+  /* Still: a page changes in place, at once, as reduced motion has it everywhere. The motion check reads the locked
+     tiers without this block and holds it to zeroing every one (check 14). */
+  --dur-instant: 0ms;
+  --dur-responsive: 0ms;
+  --dur-expressive: 0ms;
+  --dur-exit-responsive: 0ms;
+  --dur-exit-expressive: 0ms;
+  --stagger: 0ms;
+  --travel: 0px;
+
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
+  --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
+  --data-amber-tint: color-mix(in oklab, var(--data-amber) var(--tint-strength), var(--surface-1));
+  --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
+  --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
+  --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+}
+
+/* Blue 4, pink and monochrome on a Plain element: restated after Plain, so on <html> with both attributes the accent
+   still wins. The light and the glow stay Plain's: nothing is lit. */
+:root[data-material="plain"][data-accent="blue"],
+[data-material="plain"][data-accent="blue"] {
+  --accent: var(--accent-blue);
+  --accent-fg: var(--accent-blue-fg);
+  --accent-hover: var(--accent-blue-hover);
+  --accent-text: var(--accent-blue-text);
+  --accent-tint: var(--accent-blue-tint);
+  --focus: var(--focus-blue);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-blue);
+}
+
+:root[data-material="plain"][data-accent="pink"],
+[data-material="plain"][data-accent="pink"] {
+  --accent: var(--accent-pink);
+  --accent-fg: var(--accent-pink-fg);
+  --accent-hover: var(--accent-pink-hover);
+  --accent-text: var(--accent-pink-text);
+  --accent-tint: var(--accent-pink-tint);
+  --focus: var(--focus-pink);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus-pink);
+}
+
+:root[data-material="plain"][data-accent="mono"],
+[data-material="plain"][data-accent="mono"] {
+  --accent: var(--fg);
+  --accent-hover: color-mix(in oklab, var(--fg), var(--canvas) 18%);
+  --accent-fg: var(--canvas);
+  --accent-text: var(--fg);
+  --accent-tint: color-mix(in oklab, var(--fg) 7%, var(--canvas));
+  --focus: var(--fg);
+  --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--fg);
+}
+
 /* Without color-mix: the light goes, the glow is the ring, and every tint, Flat's fills included, is a plain step.
    One block, after Flat, as the registry holds one per level. */
 @supports not (color: color-mix(in oklab, red, blue)) {
@@ -1431,6 +1625,15 @@
   }
   :root[data-material="device"],
   [data-material="device"] {
+    --block-hover: var(--surface-2);
+    --data-blue-tint: var(--surface-2);
+    --data-amber-tint: var(--surface-2);
+    --data-teal-tint: var(--surface-2);
+    --data-violet-tint: var(--surface-2);
+    --data-rose-tint: var(--surface-2);
+  }
+  :root[data-material="plain"],
+  [data-material="plain"] {
     --block-hover: var(--surface-2);
     --data-blue-tint: var(--surface-2);
     --data-amber-tint: var(--surface-2);
@@ -1481,7 +1684,9 @@
   :root[data-material="flat"],
   [data-material="flat"],
   :root[data-material="device"],
-  [data-material="device"] {
+  [data-material="device"],
+  :root[data-material="plain"],
+  [data-material="plain"] {
     --fg-muted: var(--fg);
     --fg-subtle: var(--fg);
     --line: var(--line-control);
@@ -1507,6 +1712,13 @@
   :focus-visible {
     outline: 2px solid var(--focus);
     outline-offset: 2px;
+  }
+  /* Plain underlines a link inside running text, as a page does (proposals/plain.md), so it never rests on color
+     alone (WCAG 1.4.1). A link that stands alone, a nav row or a list of results, is left as its words. One
+     attribute's weight, enough to beat a reset's bare `a`; in the base layer, so a utility still wins. */
+  :where([data-material="plain"]) :is(p, dd, td, th, figcaption, blockquote, caption) a:any-link {
+    text-decoration-line: underline;
+    text-underline-offset: 0.15em;
   }
 }
 

@@ -53,6 +53,7 @@ import { byWorld, useFun, useMaterial } from "@/motion";
 import { CheckIcon } from "@/components/icons";
 import { ChoiceDeviceBody } from "./bodies/checkbox.device";
 import { ChoiceFlatBody } from "./bodies/checkbox.flat";
+import { ChoicePlainBody } from "./bodies/checkbox.plain";
 
 export type ChoiceAppearance = "drawn" | "native";
 
@@ -224,7 +225,7 @@ function Choice({
     });
   };
 
-  const Body = byWorld(material, { press: PressBody, flat: ChoiceFlatBody, device: ChoiceDeviceBody });
+  const Body = byWorld(material, { press: PressBody, flat: ChoiceFlatBody, device: ChoiceDeviceBody, plain: ChoicePlainBody });
   const device = material === "device";
   const inputProps: ComponentProps<"input"> = {
     ref: setRef,

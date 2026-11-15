@@ -36,13 +36,16 @@ const check = (ok, claim) => (ok ? passed : problems).push(claim);
 const SITE = "https://littmd.vercel.app";
 
 /* ---------- the link ---------- */
-check(L.LOOKS.length === 20 && new Set(L.LOOKS.map(L.encodeLook)).size === 20, `twenty looks, twenty spellings (${L.LOOKS.map(L.encodeLook).join(", ")})`);
+check(L.LOOKS.length === 28 && new Set(L.LOOKS.map(L.encodeLook)).size === 28, `twenty-eight looks, twenty-eight spellings (${L.LOOKS.map(L.encodeLook).join(", ")})`);
 check(L.encodeLook(L.GALLERY_LOOK) === "flat" && L.encodeLook(L.REGISTRY_LOOK) === "press", "the gallery opens in flat, the registry installs press, each the world's own accent");
 check(L.sameLook(L.decodeLook("pink-fun"), { accent: "pink", material: "press", fun: true }), "a link from before Flat reads as press");
 check(L.encodeLook(L.decodeLook("blue4")) === "press" && L.encodeLook(L.decodeLook("mono-flat")) === "flat" && L.encodeLook(L.decodeLook("mono-flat-fun")) === "flat-fun", "a link from before decision 14 reads as the world's own: blue4 is press, mono-flat is flat");
 check(L.encodeLook(L.decodeLook("blue4-flat")) === "blue4-flat" && L.encodeLook(L.decodeLook("blue4-device")) === "blue4-device", "Blue 4 asked for on Flat or Device is its own look");
 check(L.sameLook({ accent: "mono", material: "flat", fun: false }, L.GALLERY_LOOK) && !L.sameLook({ accent: "mono", material: "press", fun: false }, L.REGISTRY_LOOK), "Monochrome asked for on Flat is Flat's own, and on Press is not");
-check(L.accentName("world", "press") === "Blue 4" && L.accentName("world", "flat") === "Monochrome" && L.accentName("world", "device") === "Orange", "each world names its own accent");
+check(L.accentName("world", "press") === "Blue 4" && L.accentName("world", "flat") === "Monochrome" && L.accentName("world", "device") === "Orange" && L.accentName("world", "plain") === "Link blue", "each world names its own accent");
+check(L.accentsIn("plain").map((a) => a.id).join() === "world,blue4,mono,pink", "Plain offers link blue first, then every other accent");
+check(L.encodeLook({ accent: "pink", material: "plain", fun: false }) === "pink-plain" && L.encodeLook(L.decodeLook("plain")) === "plain", "Plain spells -plain, and alone for link blue");
+check(JSON.stringify(L.lookAttributes({ accent: "world", material: "plain" }, false)) === JSON.stringify({ "data-theme": "light", "data-material": "plain" }), "Plain's own link blue is the material and nothing else");
 check(L.accentsIn("press").map((a) => a.id).join() === "world,mono,pink" && L.accentsIn("flat").map((a) => a.id).join() === "world,blue4,pink" && L.accentsIn("device").map((a) => a.id).join() === "world,blue4,mono,pink", "a picker offers the world's own first, then every other accent");
 check(L.decodeLook("pink-fun-flat") === null, "the material comes before the motion in a slug");
 check(L.decodeLook("pink-fun-device") === null && L.decodeLook("pink-flat-device") === null, "one material per slug, before the motion");
@@ -91,7 +94,7 @@ const modelOf = (search, saved, hash = "") => {
     accent: L.ACCENTS.some((a) => a.id === saved?.accent) ? saved.accent : L.GALLERY_LOOK.accent,
     material: L.MATERIALS.some((m) => m.id === saved?.material) ? saved.material : L.GALLERY_LOOK.material,
   };
-  const material = /^#(press|flat|device)$/.exec(hash)?.[1] ?? look.material;
+  const material = /^#(press|flat|device|plain)$/.exec(hash)?.[1] ?? look.material;
   return `${L.accentAttribute(look.accent, material) ?? "none"}/${material}`;
 };
 const firstPaint = [
@@ -130,6 +133,8 @@ for (const [search, saved, hash, want] of [
   ["", { accent: "mono" }, "#device", "mono/device"],
   ["", { accent: "mono" }, "#press", "mono/press"],
   ["", null, "#device", "none/device"],
+  ["", null, "#plain", "none/plain"],
+  ["", { accent: "mono" }, "#plain", "mono/plain"],
   ["", { accent: "blue4", material: "flat" }, "#press", "none/press"],
   ["?look=pink-flat", null, "#device", "pink/device"],
 ]) {

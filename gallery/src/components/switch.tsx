@@ -59,6 +59,7 @@ import * as SwitchPrimitive from "@radix-ui/react-switch";
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { SwitchDeviceBody } from "./bodies/switch.device";
 import { SwitchFlatBody } from "./bodies/switch.flat";
+import { SwitchPlainBody } from "./bodies/switch.plain";
 
 export type SwitchAlign = "start" | "end";
 export type SwitchTone = "neutral" | "accent";
@@ -212,7 +213,7 @@ export function Switch({
   const id = idProp ?? auto;
   const descriptionId = description ? `${id}-description` : undefined;
   const end = align === "end";
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody, plain: SwitchPlainBody });
 
   /* The switch keeps its own state when you do not control it, because a drag sets it to a side, not a flip. */
   const [inner, setInner] = useState(defaultChecked ?? false);

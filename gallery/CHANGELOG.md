@@ -4,6 +4,38 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-15 · Plain, a fourth world
+
+A world for the page that should just work: docs, forms, admin and internal tools. Plain draws a page the way HTML does, with almost no UI of its own.
+
+- **added** `litt`: Plain, `data-material="plain"` on `<html>`. White paper and black words in the system's own face (nothing to load), link blue as its own accent (`#0000ee`, a pale blue in dark), links underlined, one 1px line around every control and no fill of its own (a pressed one takes the ink's line), no frame around a group, square corners (`--litt-radius-control` and `--litt-radius-surface` are 0), and no glass, light, cast or grain: an overlay is the page again inside one line. Nothing moves: Plain zeroes every `--litt-dur-*`, `--litt-stagger` and `--litt-travel`, as reduced motion does. `data-accent="blue"`, `"mono"` and `"pink"` still win on a Plain page. Press, Flat and Device are unchanged; nothing in your code has to change.
+- **changed** `base-styles`: under Plain a link with no decoration of its own is underlined, 0.15em under the text. The rule sits in the base layer, so a utility class that sets a link's decoration still wins. Nothing changes outside Plain.
+- **changed** `motion`: under Plain the dial is held still (`useMotionDial().reduced` is `true`), so every part that asks the engine changes in place, at once; `useOverlayMotion` neither grows nor slides there, and `deal` and `gather` resolve at once. `Material` and `byWorld` gain `"plain"`; a part with no Plain body draws Press's. Reinstall it with `litt`.
+- **changed** `button`: the wall along a raised button's foot reads `--litt-block-wall` (2px, as before; 0 under Plain), so a Plain button is one rectangle in one line. Props are unchanged; reinstall it with `litt`.
+- **changed** `chart`: under Plain it draws Press's body. Props are unchanged.
+- **changed** `file-drop`: under Plain its file list is Press's. Props are unchanged.
+
+Later the same day, Plain's first bodies, quiet: a control is its words, and the one that matters is held in four corner marks.
+
+- **changed** `base-styles`: under Plain only a link inside running text (`p`, `dd`, `td`, `th`, `figcaption`, `blockquote`, `caption`) is underlined; a link that stands alone, such as a nav row, is left as its words.
+- **changed** `button`: under Plain a button is its words. Primary is the ink at the title weight inside four 6px corner marks; secondary and ghost are grey words that come to the ink, and take the marks, under the hand; danger is red words. No fill, no line and no side padding. Props are unchanged.
+- **changed** `input`: under Plain a field is one 1px line under what you type, with no fill, frame or side padding; focus and an error draw it 2px (`--litt-focus`, `--litt-danger`), and the label sits above at the text weight. `TextField`, `Textarea` and `Field` alike. Props are unchanged.
+- **changed** `select`: under Plain the trigger is the field's line with a chevron, and the list is the page inside one line; rows are grey words, the current one in the ink with its check, and the row under the hand or the keys is held in corner marks. Props are unchanged.
+- **changed** `checkbox`: under Plain a checkbox is a square in one line and a radio a circle; checked, the line goes to the ink and an ink tick or dot sits in it, with no fill. Props are unchanged.
+- **changed** `switch`: under Plain a switch is two words, On and Off: the side it is on in the ink inside corner marks, the other grey. It is still one `role="switch"` button, and the words are hidden from screen readers. Props are unchanged.
+- **changed** `segmented`: under Plain the options are grey words in a line, the chosen one in the ink inside corner marks. Props are unchanged.
+- **changed** `tabs`: under Plain the tabs are grey words in a row, the chosen one in the ink inside corner marks, with no rule under the row and no frame around the panel. Props are unchanged.
+
+Later still, Plain's overlays: each is the page again inside one line, and the row under the hand is held in corner marks.
+
+- **changed** `menu`: under Plain the panel and a submenu are the page inside a 1px line, square, with no shadow; rows are grey words, a checked one in the ink, and the row under the hand or the keys is the ink inside four corner marks, with no wash and no ring. The context menu follows. Props are unchanged.
+- **changed** `command-menu`: under Plain the search is one line under the words, rows are grey words, the active one in the ink inside corner marks, and the footer keeps a 1px line. Props are unchanged.
+- **changed** `dialog`: under Plain the panel and the phone's sheet are square, the scrim is a flat 8% wash of the ink with no blur, and the sheet's grabber is a 1px line. Props are unchanged.
+- **changed** `popover`: under Plain the panel is the page inside a 1px line, solid or not. Props are unchanged.
+- **changed** `hover-card`: under Plain the card is the page inside a 1px line, solid or not. Props are unchanged.
+- **changed** `tooltip`: under Plain a tooltip is the page inside a 1px line, words in the ink, a shortcut in the same line with no fill, like a `title`. Props are unchanged.
+- **changed** `toast`: under Plain the description steps down to grey; the toast itself is the page inside its line already. Props are unchanged.
+
 ## 2026-11-13 · Inside a frame, a sheet measures the frame; motion that never makes you wait
 
 - **changed** `motion`: inside an `OverlayRoot`, `useVisibleScreen` is the root element's box (`{ top: 0, height }`, kept current as it resizes), not the window's visible part, so a bottom sheet and the phone's command menu fill the frame they open in and the sheet's bottom is the frame's. Without an `OverlayRoot` it reads `window.visualViewport` as before. `OverlayRoot` and `useOverlayRoot` now live in `device.ts`; `deal.ts` and the engine's index export them as before.
