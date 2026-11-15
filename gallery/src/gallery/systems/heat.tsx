@@ -6,6 +6,7 @@
  */
 import { useState } from "react";
 import { BarList } from "@/components/bar-list";
+import { Button } from "@/components/button";
 import { Gauge } from "@/components/gauge";
 import { Segmented } from "@/components/segmented";
 import { Slider } from "@/components/slider";
@@ -29,9 +30,10 @@ const GRID: Driver[] = [
 const lap = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toFixed(3).padStart(6, "0")}`;
 const STATE_TAG = { Pit: "warning", Out: "danger" } as const;
 
-/* A. Standings: the order, the gap to the leader, the best lap, and who is in the pit or out. */
+/* A. Standings: the order, the gap to the leader, the best lap, who is in the pit or out, and the driver you follow. */
 
 function Standings() {
+  const [followed, setFollowed] = useState<string | null>("vale");
   return (
     <Table label="Standings, lap 14 of 20">
       <TableHeader>
@@ -40,6 +42,7 @@ function Standings() {
           <TableHead>Driver</TableHead>
           <TableHead numeric>Gap</TableHead>
           <TableHead numeric>Best lap</TableHead>
+          <TableHead>Camera</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -55,6 +58,11 @@ function Standings() {
             </TableCell>
             <TableCell numeric>{d.state === "Out" ? "–" : d.gap === null ? "Leader" : `+${d.gap.toFixed(3)}`}</TableCell>
             <TableCell numeric>{lap(d.best)}</TableCell>
+            <TableCell>
+              <Button variant="ghost" size="sm" aria-pressed={followed === d.id} aria-label={`Follow ${d.name}`} onClick={() => setFollowed(followed === d.id ? null : d.id)}>
+                Follow
+              </Button>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -131,7 +139,7 @@ function Splits() {
 
 export const heat: SystemScenes = {
   scenes: [
-    { id: "standings", title: "Standings", line: "The order on hard slabs: each team in its own colour, the gaps in tabular figures, the pit and the retired as tags.", Render: Standings },
+    { id: "standings", title: "Standings", line: "The order on hard slabs: each team in its own colour, the gaps in tabular figures, the pit and the retired as tags, and the driver the camera follows.", Render: Standings },
     { id: "telemetry", title: "Telemetry", line: "The needle and the figures beside it, read at a glance.", Render: Telemetry },
     { id: "garage", title: "Garage", line: "A class to race in and a tune you set, every key standing on its ledge until you press it down onto it.", Render: Garage },
     { id: "splits", title: "Splits", line: "Each team's best sector against the fastest, and the leader's laps falling.", Render: Splits },
