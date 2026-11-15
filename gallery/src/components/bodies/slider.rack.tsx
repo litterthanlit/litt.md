@@ -1,6 +1,6 @@
 /**
  * The Slider's Rack body (proposals/rack.md): a value bar, as an instrument draws one. A 24px box cut into the panel
- * (--slot inside --slot-shade's 1px outline) at the control radius, the value filled from the start as a solid bar
+ * (--slot inside --slot-shade's 1px outline), square at every shape as a meter is, the value filled from the start as a solid bar
  * (--slot-fill, never the accent: a form holds many sliders, R6), and the cap a 2px ink line the height of the box at
  * the value. Nothing to grab or sink: the hand takes the box anywhere, and the line and the bar follow it (the hand is
  * the contract's). The marks are 1px ticks under the box, home's longer. The value is said in words at the box's end,
@@ -17,7 +17,7 @@ const rootLook =
   "[--sl-pad:1px] pl-(--sl-pad) " +
   "data-disabled:cursor-not-allowed forced-colors:border";
 const box =
-  "pointer-events-none absolute top-2.5 h-6 overflow-hidden rounded-control bg-slot shadow-(--slot-shade) " +
+  "pointer-events-none absolute top-2.5 h-6 overflow-hidden rounded-none bg-slot shadow-(--slot-shade) " +
   "group-data-disabled:bg-surface-2 group-data-disabled:shadow-[inset_0_0_0_1px_var(--line)] forced-colors:border";
 const fillTravel = "absolute inset-y-0 left-px right-px";
 const fillLook = "bg-slot-fill group-data-disabled:bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] forced-colors:bg-[Highlight]";
