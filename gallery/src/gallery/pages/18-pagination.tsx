@@ -152,7 +152,7 @@ function BodiesRow() {
   return <Pagination label="Clients pages" page={page} pageSize={20} total={143} onPageChange={setPage} />;
 }
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
@@ -210,13 +210,13 @@ export default function PaginationPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="Four bodies"
         tier="instant"
         align="start"
-        caption="One pagination, one contract, three bodies. Press is the range on a raised face with one sunken tray: Previous and Next are blocks at its ends and the current page a block between them. Flat is the range in ink words with grey word pills and bare numbers, no tray and no shadow. Device is the range in seven segments on an LCD panel with TO and OF engraved, step keys at the ends and the pages as keys, the current one latched. Each is drawn here whatever look the page is in; the buttons, the live range, the focus handoff at either end and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One pagination, one contract, four bodies. Press is the range on a raised face with one sunken tray: Previous and Next are blocks at its ends and the current page a block between them. Flat is the range in ink words with grey word pills and bare numbers, no tray and no shadow. Device is the range in seven segments on an LCD panel with TO and OF engraved, step keys at the ends and the pages as keys, the current one latched. Rack is the range in ink words with Previous, the pages and Next as square keys in 1px outlines, the current page lit in the ink. Each is drawn here whatever look the page is in; the buttons, the live range, the focus handoff at either end and what a screen reader hears are the same in all four."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
     </Page>
   );

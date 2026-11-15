@@ -31,7 +31,8 @@
  *   default (the cut above). bodies/checkbox.flat.tsx is Flat's recipe, an outline when off and the ink when on.
  *   bodies/checkbox.device.tsx is Device's: a square key in a well that latches down and lights its lamp when checked,
  *   and half lights it when mixed. A radio group there is a row of the same keys, interlocked, so pressing one lets the
- *   last one up. The "native" look is the browser's own box in every world. A frame that sets its own look draws its
+ *   last one up. bodies/checkbox.rack.tsx is Rack's: a small well that fills with the ink when checked, with the tick in the canvas, and an
+ *   ink dash when mixed, all in 1px outlines on the frame. The "native" look is the browser's own box in every world. A frame that sets its own look draws its
  *   own body, not <html>'s.
  */
 import {
@@ -53,6 +54,7 @@ import { byWorld, useFun, useMaterial } from "@/motion";
 import { CheckIcon } from "@/components/icons";
 import { ChoiceDeviceBody } from "./bodies/checkbox.device";
 import { ChoiceFlatBody } from "./bodies/checkbox.flat";
+import { ChoiceRackBody } from "./bodies/checkbox.rack";
 
 export type ChoiceAppearance = "drawn" | "native";
 
@@ -224,7 +226,7 @@ function Choice({
     });
   };
 
-  const Body = byWorld(material, { press: PressBody, flat: ChoiceFlatBody, device: ChoiceDeviceBody });
+  const Body = byWorld(material, { press: PressBody, flat: ChoiceFlatBody, device: ChoiceDeviceBody, rack: ChoiceRackBody });
   const device = material === "device";
   const inputProps: ComponentProps<"input"> = {
     ref: setRef,

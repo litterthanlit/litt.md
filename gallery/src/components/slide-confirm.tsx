@@ -31,6 +31,7 @@
  *   slot and cap above). bodies/slide-confirm.flat.tsx is the grey pill with an ink circle. bodies/slide-confirm.device.tsx
  *   is a latch key pushed along a well to an end stop: the words sit on an LCD strip in the well, a lamp at the stop
  *   lights once confirmed, and a key let go short goes home in three steps on the instant tier, not on a spring.
+ *   bodies/slide-confirm.rack.tsx is a track box with a flat key in a 1px outline: the part the key has passed fills as the slot's own fill, the key darkens its outline while held, and a confirmed track lights in the ink.
  * - Touch: the thumb owns the drag (touch-action none, data-no-drag), so a sheet never moves under it.
  * - Disabled: the track at fg 3%, the thumb --surface-2 with a --line edge, no pointer, no tab stop. The words stay
  *   --fg-subtle, because they still say what it would do, as a disabled Slider's end words do.
@@ -51,6 +52,7 @@ import { TextField } from "@/components/input";
 import { Button } from "@/components/button";
 import { SlideConfirmDeviceBody } from "./bodies/slide-confirm.device";
 import { SlideConfirmFlatBody } from "./bodies/slide-confirm.flat";
+import { SlideConfirmRackBody } from "./bodies/slide-confirm.rack";
 
 export type SlideConfirmSize = "md" | "lg";
 
@@ -188,7 +190,7 @@ const SLACK = 4;
 /** A track with a thumb to slide to the end. The thumb is also a button: Enter, Space or a screen reader confirms. */
 export function SlideConfirm({ label, confirmedLabel = "Done", onConfirm, confirmText, size = "md", disabled = false, className = "" }: SlideConfirmProps) {
   const material = useMaterial();
-  const Body = byWorld(material, { press: PressBody, flat: SlideConfirmFlatBody, device: SlideConfirmDeviceBody });
+  const Body = byWorld(material, { press: PressBody, flat: SlideConfirmFlatBody, device: SlideConfirmDeviceBody, rack: SlideConfirmRackBody });
   const springHome = useTransition("responsive");
   /* Device's key goes home in three steps on the instant tier, as the Switch's detent does: no spring. */
   const instant = useTransition("instant");
