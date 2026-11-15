@@ -172,13 +172,13 @@ export const MATERIALS: readonly MaterialInfo[] = [
     foundations: {
       color: "White paper and black words, no fills, and link blue as its own accent, the blue a browser draws a link in. A project may ask for Blue 4, monochrome or pink.",
       type: "The system's own face, the one a page with no stylesheet gets, in the three role weights. Links are underlined.",
-      light: "None. Every part a hand uses is one 1px line with nothing inside it but its words, no group has a frame, and an overlay is the page again inside one line.",
+      light: "None. What a hand uses is underlined or in link blue and nothing else is: a button is its words, a field one line under what you type, a choice words. No group has a frame, and an overlay is the page again inside one line.",
       shape: "Square: every corner 0, as a page is.",
       motion: "None. A page changes in place, at once: nothing fades, slides, grows or springs.",
     },
     abilities: [
       "Underlined links: a link looks like a link, in link blue, everywhere.",
-      "One line, no depth: every control is one 1px line around the page. Nothing fills, casts, lifts or glows.",
+      "No UI: what you can use is underlined or link blue, a field is one line under the text. Nothing fills, casts, lifts or glows.",
       "Still: nothing moves, so a state changes the moment you ask, the way reduced motion has it everywhere.",
       "The system's face: no font to load, so the page is the reader's own from the first paint.",
     ],
@@ -293,7 +293,7 @@ function edits(look: Look): string[] {
         material === "flat"
           ? `   Flat says the depth ladder by fill alone, on neutral greys: nothing casts and nothing catches the light. Its own accent is the ink and its face Geist (load it at 400, 500 and 600). Never set it from an effect.`
           : material === "plain"
-          ? `   Plain draws the page the way HTML does: white paper, black words in the system's own face (nothing to load), link blue as its own accent with links underlined, 1px lines around every control, square corners, and no shadow, glass or motion. Never set it from an effect.`
+          ? `   Plain draws the page the way HTML does: white paper, black words in the system's own face (nothing to load), link blue as its own accent with links underlined, buttons, switches, tabs and segmented controls as underlined words, a field as one line under the text, square corners, and no shadow, glass or motion. Never set it from an effect.`
           : `   Device says the depth ladder in hardware: an aluminium body, keys that sink 2px, dark LCD screens for panels and overlays, orange as its own accent, and every word in Geist Mono (load it at 400, 500 and 600). Never set it from an effect.`,
         `   An element that sets its own theme (class="dark", class="light" or data-theme) needs ${attr} too.`,
       ].join("\n"),

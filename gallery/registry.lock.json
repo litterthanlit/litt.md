@@ -48,7 +48,7 @@
     },
     "button": {
       "version": "2026.11.15",
-      "hash": "ff65e686637bfa00"
+      "hash": "892001f7672478b8"
     },
     "callout": {
       "version": "2026.11.06",
@@ -79,8 +79,8 @@
       "hash": "440e317f0c2dcb29"
     },
     "checkbox": {
-      "version": "2026.11.09",
-      "hash": "4599a5302b6096c5"
+      "version": "2026.11.15",
+      "hash": "b3b562f2276fa800"
     },
     "code-block": {
       "version": "2026.11.06",
@@ -199,8 +199,8 @@
       "hash": "92ffc0cb458467b6"
     },
     "input": {
-      "version": "2026.11.09",
-      "hash": "f35175c63f722a70"
+      "version": "2026.11.15",
+      "hash": "2347352cb0ae3b06"
     },
     "insights": {
       "version": "2026.10.26",
@@ -327,12 +327,12 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "segmented": {
-      "version": "2026.11.09",
-      "hash": "bd35043d326ee7f8"
+      "version": "2026.11.15",
+      "hash": "119e6b1f78c2f357"
     },
     "select": {
-      "version": "2026.11.12",
-      "hash": "69d7c0752e8cdd0d"
+      "version": "2026.11.15",
+      "hash": "630bb5a8afa8cf3b"
     },
     "settings": {
       "version": "2026.11.03",
@@ -391,8 +391,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "switch": {
-      "version": "2026.11.12",
-      "hash": "1de0c27cc6dba0c4"
+      "version": "2026.11.15",
+      "hash": "35492818e3da9dac"
     },
     "table": {
       "version": "2026.11.12",
@@ -403,8 +403,8 @@
       "hash": "20ddca6bee9f812e"
     },
     "tabs": {
-      "version": "2026.11.09",
-      "hash": "4e71e726fa2d51c1"
+      "version": "2026.11.15",
+      "hash": "5871483e6071c099"
     },
     "tag": {
       "version": "2026.11.09",

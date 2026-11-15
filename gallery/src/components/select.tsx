@@ -63,6 +63,7 @@ import { CheckIcon, ChevronsUpDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
 import { SelectDeviceList, SelectDeviceRow, SelectDeviceTrigger } from "./bodies/select.device";
 import { SelectFlatList, SelectFlatRow, SelectFlatTrigger } from "./bodies/select.flat";
+import { SelectPlainList, SelectPlainRow, SelectPlainTrigger } from "./bodies/select.plain";
 
 export type SelectSize = "sm" | "md" | "lg";
 
@@ -235,7 +236,7 @@ function PressRow({ item, option }: SelectRowBodyProps) {
 
 function Row({ option }: { option: SelectOption }) {
   const ctx = useContext(ListCtx);
-  const Body = byWorld(useMaterial(), { press: PressRow, flat: SelectFlatRow, device: SelectDeviceRow });
+  const Body = byWorld(useMaterial(), { press: PressRow, flat: SelectFlatRow, device: SelectDeviceRow, plain: SelectPlainRow });
   if (!ctx) return null;
   const { glide, quiet, touch } = ctx;
   return (
@@ -424,7 +425,7 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
   };
   const ctx: ListContext = { glide, quiet: quietRef, touch };
 
-  const List = byWorld(useMaterial(), { press: PressList, flat: SelectFlatList, device: SelectDeviceList });
+  const List = byWorld(useMaterial(), { press: PressList, flat: SelectFlatList, device: SelectDeviceList, plain: SelectPlainList });
   const root: SelectListBodyProps["root"] = {
     ...rest,
     ref: setNode,
@@ -527,7 +528,7 @@ export function Select({
   const done = useCallback(() => setLeaving(false), []);
 
   /* The step keys (Device): the neighbour among the options a hand can pick. Nothing picked, either key picks the first. */
-  const Trigger = byWorld(useMaterial(), { press: PressTrigger, flat: SelectFlatTrigger, device: SelectDeviceTrigger });
+  const Trigger = byWorld(useMaterial(), { press: PressTrigger, flat: SelectFlatTrigger, device: SelectDeviceTrigger, plain: SelectPlainTrigger });
   const pickable = options.filter((o) => !o.disabled);
   const at = pickable.findIndex((o) => o.value === value);
   const step = {

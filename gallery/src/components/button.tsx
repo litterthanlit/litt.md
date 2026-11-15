@@ -46,6 +46,7 @@ import { Children, type ButtonHTMLAttributes, type ComponentPropsWithRef, type C
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { ButtonFlatBody } from "./bodies/button.flat";
 import { ButtonDeviceBody } from "./bodies/button.device";
+import { ButtonPlainBody } from "./bodies/button.plain";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -220,7 +221,7 @@ export function Button({
         transitionTimingFunction: `var(--ease-out), var(--ease-out), ${fun.press.easing}`,
       } as CSSProperties)
     : undefined;
-  const Body = byWorld(material, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody });
+  const Body = byWorld(material, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody, plain: ButtonPlainBody });
   return (
     <Body
       variant={variant}

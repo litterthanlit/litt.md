@@ -36,6 +36,7 @@ import type { Transition } from "motion/react";
 import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { SegmentedFlatBody } from "./bodies/segmented.flat";
 import { SegmentedDeviceBody } from "./bodies/segmented.device";
+import { SegmentedPlainBody } from "./bodies/segmented.plain";
 
 export type SegmentedSize = "sm" | "md";
 export type SegmentedOption<T extends string> = {
@@ -297,7 +298,7 @@ export function Segmented<T extends string>({
   const enter = fun ? fun.glide : responsive;
   const [inner, setInner] = useState<T | undefined>(defaultValue ?? options.find((o) => !o.disabled)?.value);
   const value = valueProp ?? inner;
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SegmentedFlatBody, device: SegmentedDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SegmentedFlatBody, device: SegmentedDeviceBody, plain: SegmentedPlainBody });
 
   return (
     <Body

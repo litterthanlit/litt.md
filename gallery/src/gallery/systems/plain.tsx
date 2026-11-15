@@ -196,11 +196,11 @@ export function Preferences() {
 }
 
 const scenes: Scene[] = [
-  { id: "request", title: "A request", line: "A whole form as HTML draws one: a line around each field and around Send, the answer in words.", Render: Request },
+  { id: "request", title: "A request", line: "A whole form with no UI: a line under each field, Send as an underlined word, the answer in words.", Render: Request },
   { id: "doc", title: "A help page", line: "A doc that reads like a page: a trail of underlined links, steps, the command, and who changed it last.", Render: Doc },
   { id: "search", title: "Search", line: "One field and a list of links, the result count in words, and nothing between you and the answer.", Render: Search },
   { id: "records", title: "Records", line: "A table with a caption and two weights of line: the head's and the rows'.", Render: Records },
-  { id: "preferences", title: "Preferences", line: "Switches that change the moment you press them, and a save that says it saved.", Render: Preferences },
+  { id: "preferences", title: "Preferences", line: "Switches as words, On or Off, that change the moment you press them, and a save that says it saved.", Render: Preferences },
 ];
 
 export const plain: SystemScenes = { scenes, cover: "request" };
