@@ -165,11 +165,11 @@ function StatesDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function FourBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2">
       {BODY_WORLDS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -212,12 +212,12 @@ export default function CodeInputPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="Four bodies"
         tier="instant"
-        caption="One code field, one contract, three bodies. Press is one raised plate with a cut per character, a filled cut lit on its lower wall. Flat is one grey pill per character parted by space, the empty ones lighter and the typed digits in ink. Device is a pane of LCD glass per character, an unlit seven-segment eight until its digit is typed. Each is drawn here whatever look the page is in; the one real input, the keyboard, paste and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One code field, one contract, four bodies. Press is one raised plate with a cut per character, a filled cut lit on its lower wall. Flat is one grey pill per character parted by space, the empty ones lighter and the typed digits in ink. Device is a pane of LCD glass per character, an unlit seven-segment eight until its digit is typed. Rack is one square light box per character in a 1px control line, no plate, the current one outlined in the ink. Each is drawn here whatever look the page is in; the one real input, the keyboard, paste and what a screen reader hears are the same in all four."
+        code="FourBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <FourBodiesDemo />
       </Stage>
 
       <TryIt of="CodeInput" component={CodeInput} props={{ label: "Sign-in code", help: "We sent six digits to ines@halo.studio.", error: "" }} controls={["label", "length", "type", "size", "help", "error", "disabled"]} />
