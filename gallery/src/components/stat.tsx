@@ -6,7 +6,8 @@
  *   material picks (byWorld). Press, here, is a plate (--block, --plate-lift) with the label along its top and the
  *   figure on a raised face set into it (--block, --block-lift). Flat (bodies/stat.flat.tsx) is the figure in ink on
  *   the page with no box. Device (bodies/stat.device.tsx) is a plate with the label engraved above an LCD window that
- *   shows the figure in seven segments. Never glass (R3), never an accent rail. A tile links nowhere, so it has no
+ *   shows the figure in seven segments. Rack (bodies/stat.rack.tsx) is a panel with a value box (a light cut in the
+ *   control line) for the figure and the delta as a small flat key. Never glass (R3), never an accent rail. A tile links nowhere, so it has no
  *   hover and no motion.
  * - Type: the label is the small size in fg-subtle, the value is the h3 size in fg in the sans with tabular
  *   numbers (a figure that updates does not wobble), and a unit follows the value at the same size in fg-subtle.
@@ -31,6 +32,7 @@ import { createContext, useContext, type ReactNode } from "react";
 import { byWorld, useFun, useFunValue, useMaterial } from "@/motion";
 import { StatFlatBody } from "./bodies/stat.flat";
 import { StatDeviceBody } from "./bodies/stat.device";
+import { StatRackBody } from "./bodies/stat.rack";
 
 /** Whether a change is good news, bad news or neither. It sets the delta's color, and a hidden word for screen readers. */
 export type StatTone = "good" | "bad" | "neutral";
@@ -107,7 +109,7 @@ export function Stat({ label, value, unit, delta, tone = "neutral", trend, class
   const fun = useFun();
   const numeric = typeof value === "number";
   const counted = useFunValue(numeric ? value : 0, { kind: "draw" });
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: StatFlatBody, device: StatDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: StatFlatBody, device: StatDeviceBody, rack: StatRackBody });
   const figure =
     fun && numeric && counted.moving ? (
       <>
