@@ -6,6 +6,7 @@
  *   npm run build && npm run test:study
  *   node scripts/study.mjs --dist dist
  *   node scripts/study.mjs --only slide-confirm   one study page
+ *   node scripts/study.mjs --shard 1/3        every third study page, from the first (CI runs three shards at once)
  *   node scripts/study.mjs --self-test        breaks claims on purpose and fails if the check misses them
  *
  * A study page is a page file in src/gallery/pages that exports `study`. The list is read from those sources (the
@@ -89,7 +90,8 @@ const PAGES = fs.readdirSync(pagesDir).filter((f) => f.endsWith(".tsx")).map((f)
   };
 }).filter((p) => p.id);
 const only = get("only");
-const STUDIES = PAGES.filter((p) => p.study && (!only || p.id === only));
+const [shard, shards] = get("shard", "1/1").split("/").map(Number);
+const STUDIES = PAGES.filter((p) => p.study && (!only || p.id === only)).filter((_, i) => i % shards === shard - 1);
 if (!STUDIES.length) { console.error("No page exports `study` in src/gallery/pages."); process.exit(1); }
 const OVERLAYS = ["command-menu", "dialog"];
 
@@ -376,4 +378,4 @@ if (bad) {
   console.error(`\nstudy: ${bad} of ${claims.size} claims fail.`);
   process.exit(1);
 }
-console.log(`\nstudy: ${claims.size} claims hold, on ${STUDIES.length} study pages at 1440, 390 and 320, light and dark, in the gallery's look and in Device.`);
+console.log(`\nstudy${shards > 1 ? ` (shard ${shard}/${shards})` : ""}: ${claims.size} claims hold, on ${STUDIES.length} study pages at 1440, 390 and 320, light and dark, in the gallery's look and in Device.`);
