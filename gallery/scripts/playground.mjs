@@ -24,8 +24,8 @@
  * - the take changes within 6s with no hand on it (nothing plays on load), Play does not move it within 5s, or a press
  *   on the screen does not stop it.
  *
- * --self-test takes the screen's containment away (contain: none) before the Dialog take opens its dialog and scrolls the
- * page once it is open, so the dialog stays where the window put it and the screen moves away from it, and keeps the recorder's body from loading, so Device draws bare; it fails if the check
+ * --self-test moves the Dialog take's open dialog out to <body>, as a portal that missed the screen's OverlayRoot would,
+ * so it leaves the screen and its world, and keeps the recorder's body from loading, so Device draws bare; it fails if the check
  * misses either.
  *
  * Needs Playwright, found as worlds.mjs finds it.
@@ -314,7 +314,6 @@ for (const [world, id, attribute] of WORLDS) {
       claim("what a take opens stays on the screen, in its world", `${world} · ${title}: no button to open it with`);
       continue;
     }
-    if (selfTest && title === "Dialog") await pg.evaluate((F) => (document.querySelector(F).style.contain = "none"), FRAME);
     if (title === "Tooltip") {
       const b = await button.boundingBox();
       await pg.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
@@ -326,13 +325,15 @@ for (const [world, id, attribute] of WORLDS) {
       await button.click();
       await pg.waitForTimeout(900);
     }
-    /* The break, once open: the page scrolls. A dialog the screen contains moves with it; one placed by the window stays
-       put, and the screen leaves it behind. */
-    if (selfTest && title === "Dialog") await pg.evaluate(() => window.scrollBy(0, 420));
+    /* The break, once open: the dialog escapes to <body>, as a portal that missed the screen's OverlayRoot would. */
+    if (selfTest && title === "Dialog")
+      await pg.evaluate((F) => {
+        const d = document.querySelector(`${F} [role=dialog]`);
+        if (d) Object.assign(document.body.appendChild(d).style, { position: "fixed", left: "0", top: "0" });
+      }, FRAME);
     const opened = await place(pg, OVERLAYS);
     claim("what a take opens stays on the screen, in its world", opened.length ? null : `${world} · ${title}: nothing opened from its first button`);
     for (const b of opened) claim("what a take opens stays on the screen, in its world", b.ok ? null : `${world} · ${title}: ${b.what}`);
-    if (selfTest && title === "Dialog") await pg.evaluate((F) => (document.querySelector(F).style.contain = ""), FRAME);
     await pg.mouse.move(0, 0);
     await pg.keyboard.press("Escape");
     await pg.keyboard.press("Escape");
@@ -373,10 +374,10 @@ for (const [name, fails] of claims) {
 if (selfTest) {
   const caught = (claims.get("what a take opens stays on the screen, in its world") ?? []).some((f) => / · Dialog: /.test(f));
   const bareCaught = (claims.get("the object is the world's own, or bare for a world not drawn yet") ?? []).some((f) => f.startsWith("Device:"));
-  if (!caught) console.error("playground --self-test: the Dialog take's dialog filled the window with the screen's containment gone, and the check missed it.");
+  if (!caught) console.error("playground --self-test: the Dialog take's dialog escaped to <body>, and the check missed it.");
   if (!bareCaught) console.error("playground --self-test: Device drew bare with the recorder kept from loading, and the check missed it.");
   if (!caught || !bareCaught) process.exit(1);
-  console.log("playground --self-test: with the screen's containment gone the dialog leaves the screen, and with the recorder kept from loading Device draws bare; the check catches both.");
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, and with the recorder kept from loading Device draws bare; the check catches both.");
   process.exit(0);
 }
 if (bad) {
