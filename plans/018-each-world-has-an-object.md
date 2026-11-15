@@ -80,11 +80,11 @@ desktop. So the code and the docs say **object**, after the first principle ("A 
 ## Decisions for Nick
 
 Built as recommended unless Nick says otherwise (the convention in `proposals/worlds.md`). The first two are the open
-questions 1 and 2 in `taste/litt-principles.md`.
+questions 2 and 3 in `taste/litt-principles.md`.
 
 | # | Question | Recommendation | Why |
 |---|---|---|---|
-| 1 | Does the object play by itself, as the player does? | **Only after a hand presses Play.** Never on load. A touch on the screen stops it. | R4 says nothing moves on its own; a viewer who presses Play asked for it. If Nick wants it to run on arrival, as the player does, that is a change to R4 for this page, and phase 3 flips one default. |
+| 1 | Does the object play by itself, as the player does? | **Only after a hand presses Play.** Never on load. A touch on the screen stops it. | R4 says nothing moves on its own; a viewer who presses Play asked for it. If Nick wants it to run on arrival, as the player does, that is a change to R4 for this page, and phase 3 flips one default. It may differ by world: Plain, which is still, would have no Play at all. |
 | 2 | Does it make sound? | **Not in this plan.** | Decision 8 keeps sound to Device, silent by default, and litt has no sound engine yet. It is its own plan. |
 | 3 | What does it run? | **The studio app first, then the world's own scenes.** | The app is the same in every world, so it compares them; the scenes are each world's own, so they show its depth. That is the player's tape: one thing at a time. |
 | 4 | The six objects | **The table below.** | Each is what its world already says it is. |
@@ -216,7 +216,7 @@ Only after Nick answers Decision 1. As recommended:
 ### Phase 4. Finish
 
 - [ ] `OBJECTS` holds all six, and the check fails if a world in it draws `bare`. `bare` stays for a seventh world.
-- [ ] `skills/litt-md/taste/litt-principles.md`, principle 1: one line naming each world's object, through
+- [ ] `skills/litt-md/taste/litt-principles.md`, Each world's own: one line in each world's section naming its object, through
       `workflows/evolve.md` (a `taste:` commit, shown to Nick first).
 - [ ] The row in `plans/README.md`.
 
@@ -254,6 +254,6 @@ rewrites the lock, something in `src/components` or `src/motion` moved: undo it.
 
 - **Sound**, as Device's ability first (decision 8): a small engine in the motion folder, silent by default.
 - **The object on each world's page** and on `#systems`, in place of the cover scene.
-- **A page per world, written as the components repo writes `DESIGN.md`**: the object, its materials in order, its
-  mechanisms, its voice, its bar.
+- **A page per world, in its own terms**: its object, its materials in order, its mechanisms and its voice, grown
+  from its section of `taste/litt-principles.md`. Not every world written through the components repo's `DESIGN.md`.
 - **The object as a registry block**, so a project can show its own app on it.
