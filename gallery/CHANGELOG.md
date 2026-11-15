@@ -13,6 +13,11 @@ Every part with a body per world gets Rack's (`data-material="rack"`), drawn as 
 - **changed** `code-input`: a Rack body, one square light box per character in a 1px control line with the current cell outlined in the ink. Props are unchanged.
 - **changed** `token-input`: a Rack body, a light box holding small flat outlined keys with square remove keys, cutting in place. Props are unchanged.
 - **changed** `composer`: a Rack body, a panel field with a light text box, files as small flat keys, a row of keys under it and Send the one lit key. Props are unchanged.
+- **changed** `segmented`: a Rack body, one box in a 1px outline divided by rules, the chosen option a filled ink key, nothing glides. Props are unchanged.
+- **changed** `select`: a Rack body, a value box with a square chevron key and an opaque outlined list panel with a filled current row. Props are unchanged.
+- **changed** `tabs`: a Rack body, outlined square keys along a strip (or one divided box when segmented), the chosen key lit in the ink, nothing slides. Props are unchanged.
+- **changed** `option-picker`: a Rack body, flat outlined keys with the picked one lit in the ink and square colour chips. Props are unchanged.
+- **changed** `card-picker`: a Rack body, flat outlined panels with the picked card ringed 2px in the ink and a small lit check key. Props are unchanged.
 
 ## 2026-11-14 · Rack, a fourth world
 

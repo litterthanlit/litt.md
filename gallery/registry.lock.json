@@ -59,8 +59,8 @@
       "hash": "d2ea971a6a651e96"
     },
     "card-picker": {
-      "version": "2026.11.09",
-      "hash": "a36871c2419c225e"
+      "version": "2026.11.15",
+      "hash": "5513a8fd125ce3c8"
     },
     "carousel": {
       "version": "2026.11.06",
@@ -259,8 +259,8 @@
       "hash": "ea0ad410a1b2b802"
     },
     "option-picker": {
-      "version": "2026.11.09",
-      "hash": "958557758cb3d723"
+      "version": "2026.11.15",
+      "hash": "23c29d041653e4a2"
     },
     "pad": {
       "version": "2026.10.26",
@@ -327,12 +327,12 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "segmented": {
-      "version": "2026.11.09",
-      "hash": "bd35043d326ee7f8"
+      "version": "2026.11.15",
+      "hash": "ce2b06ebd2711942"
     },
     "select": {
-      "version": "2026.11.12",
-      "hash": "69d7c0752e8cdd0d"
+      "version": "2026.11.15",
+      "hash": "abba5249c0b08816"
     },
     "settings": {
       "version": "2026.11.03",
@@ -403,8 +403,8 @@
       "hash": "20ddca6bee9f812e"
     },
     "tabs": {
-      "version": "2026.11.09",
-      "hash": "4e71e726fa2d51c1"
+      "version": "2026.11.15",
+      "hash": "d59cfb006ee5859c"
     },
     "tag": {
       "version": "2026.11.09",
