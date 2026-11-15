@@ -1,6 +1,6 @@
 /**
- * A world: one material as a page you arrive on (proposals/worlds.md). The three world pages (00-press, 00-flat,
- * 00-device) are this component with a different material, so the language is told once and every world is told the
+ * A world: one material as a page you arrive on (proposals/worlds.md). The world pages (00-press, 00-flat,
+ * 00-device, 00-rack) are this component with a different material, so the language is told once and every world is told the
  * same way: its name and who it is for, itself in use (the block it opens on, live at real size), its five
  * foundations, where its components are, and how to install it.
  *

@@ -115,7 +115,7 @@ function StatesDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
@@ -166,12 +166,12 @@ export default function FileDropPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="A body per world"
         tier="instant"
-        caption="One contract, three bodies. Press is a plate that stands with a deep tray cut into it: an arrow on a raised block, the words and Choose files, the tray going deeper and its lower wall catching the light while a file is over it; each file is a slat, a raised block in a tray of its own, with its rail cut into it. Flat is a grey sheet with one sentence, Drop files or choose, ringed in ink while a file is over it; each file is a line of words, with Retry and Remove as words. Device is a slot: an engraved legend over LCD glass in a bezel, a Choose key beside it, and each file a line of glass whose upload lights segments in steps. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One contract, a body per world. Press is a plate that stands with a deep tray cut into it: an arrow on a raised block, the words and Choose files, the tray going deeper and its lower wall catching the light while a file is over it; each file is a slat, a raised block in a tray of its own, with its rail cut into it. Flat is a grey sheet with one sentence, Drop files or choose, ringed in ink while a file is over it; each file is a line of words, with Retry and Remove as words. Device is a slot: an engraved legend over LCD glass in a bezel, a Choose key beside it, and each file a line of glass whose upload lights segments in steps. Rack is a well in a dashed edge, the arrow on a small key, the words and Choose files, the edge going solid and lit in the ink while a file is over it; the files are thin rows on one panel, each on a hairline. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="FileDrop" component={FileDrop} props={{ label: "Project files", hint: "PDF or images, up to 10 MB", onFiles: () => {}, className: "w-full max-w-lg" }} controls={["hint", "multiple", "disabled"]} />

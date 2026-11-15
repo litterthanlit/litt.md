@@ -116,11 +116,11 @@ function KindsDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -175,12 +175,12 @@ export default function OptionPickerPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="A body per world"
         tier="instant"
-        caption="One picker, one contract, three bodies. Press is one tray with a block per value: the chosen block is raised and lit, the others sit seated, a sold-out one lies flat as a cut in the floor, and a color is a small block of its own. Flat has no tray: words in grey pills, the chosen in an ink pill, a sold-out one outlined, struck through and said in words, and colors as plain circles with the chosen one ringed in ink. Device is a bank of latching keys with engraved legends: the picked one stays down with its lamp lit, and a sold-out one lies flat with no skirt and says so in words. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One picker, one contract, a body per world. Press is one tray with a block per value: the chosen block is raised and lit, the others sit seated, a sold-out one lies flat as a cut in the floor, and a color is a small block of its own. Flat has no tray: words in grey pills, the chosen in an ink pill, a sold-out one outlined, struck through and said in words, and colors as plain circles with the chosen one ringed in ink. Device is a bank of latching keys with engraved legends: the picked one stays down with its lamp lit, and a sold-out one lies flat with no skirt and says so in words. Rack is flat keys in 1px outlines with the picked one lit in the ink, a sold-out key lying flat and saying so, and colors as square chips, the picked one in a 2px ink outline with its check. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

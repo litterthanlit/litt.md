@@ -17,7 +17,8 @@
  *   they stay concentric. Pressed, a block sinks --press-depth and its cast tightens (--block-press) at once (R2,
  *   R4). At an end a block lies flat in its socket (--slot, --tray-shade, --fg-disabled). The tray is 32px (44 on a
  *   coarse pointer), and a finger's press on another page fills it (fg 6%), as on a segment.
- * - Flat, the page: bodies/pagination.flat.tsx. Device, the machine: bodies/pagination.device.tsx.
+ * - Flat, the page: bodies/pagination.flat.tsx. Device, the machine: bodies/pagination.device.tsx. Rack, the keys:
+ *   bodies/pagination.rack.tsx, a row of square keys in 1px outlines with the current page lit in the ink.
  * - Bodies: Pagination resolves the range, the run of pages and the two ends once, into PaginationBodyProps, and renders the
  *   body the material picks (byWorld). Each body carries data-body on its nav and never changes a prop, the order of the
  *   tab stops, the live range or the focus handoff.
@@ -26,6 +27,7 @@ import { useRef, type RefObject } from "react";
 import { byWorld, useMaterial } from "@/motion";
 import { PaginationDeviceBody } from "./bodies/pagination.device";
 import { PaginationFlatBody } from "./bodies/pagination.flat";
+import { PaginationRackBody } from "./bodies/pagination.rack";
 
 export type PaginationProps = {
   /** The nav's name, which says what is paged: "Deploys pages". Give each pagination on a page its own. */
@@ -180,7 +182,7 @@ export function Pagination({ label, page, pageSize, total, onPageChange, classNa
     if (from === "next" && to >= count) requestAnimationFrame(() => previous.current?.focus());
   };
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: PaginationFlatBody, device: PaginationDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: PaginationFlatBody, device: PaginationDeviceBody, rack: PaginationRackBody });
   return (
     <Body
       label={label}

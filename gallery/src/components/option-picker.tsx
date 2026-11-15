@@ -22,7 +22,8 @@
  *   (bodies/option-picker.flat.tsx) is the page: words in grey pills, the chosen in an ink pill, a sold-out value
  *   outlined, struck through and said in words, and colors as plain circles with the chosen one ringed in ink. Device
  *   (bodies/option-picker.device.tsx) is a row of latching keys, each with a lamp. The radios, the arrow keys and every
- *   accessible name are the same in all three.
+ *   accessible name are the same in all four. Rack (bodies/option-picker.rack.tsx) is flat keys in 1px outlines, the picked one lit in
+ *   the ink, and colours as square chips.
  * - Motion: nothing glides in Press or Flat; a block rises and sinks where it stands, and colors change on the instant tier.
  */
 import { useEffect, useId, useState } from "react";
@@ -30,6 +31,7 @@ import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { CheckIcon } from "@/components/icons";
 import { OptionPickerDeviceBody } from "./bodies/option-picker.device";
 import { OptionPickerFlatBody } from "./bodies/option-picker.flat";
+import { OptionPickerRackBody } from "./bodies/option-picker.rack";
 
 /** One value of an option, as a product lists it. */
 export type OptionValue = {
@@ -245,7 +247,7 @@ export function OptionPicker({
   const responsive = useTransition("responsive");
   const fun = useFun();
   const glide = fun ? fun.glide : responsive;
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: OptionPickerFlatBody, device: OptionPickerDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: OptionPickerFlatBody, device: OptionPickerDeviceBody, rack: OptionPickerRackBody });
   const [inner, setInner] = useState<string | undefined>(defaultValue ?? values[0]?.value);
   const value = valueProp ?? inner;
   const picked = values.find((v) => v.value === value);

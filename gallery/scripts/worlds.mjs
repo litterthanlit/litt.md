@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The four world pages (Press, Flat, Device, Plain), checked from a build: desktop 1440x900 and phone 390x844, light and dark.
+ * The world pages (Press, Flat, Device, Plain, Rack: MATERIALS in look.ts), checked from a build: desktop 1440x900 and phone 390x844, light and dark.
  *
  *   npm run build && npm run test:worlds
  *   node scripts/worlds.mjs --dist dist
@@ -31,7 +31,7 @@
  *   than all of them (read from src/gallery/pages, so no list is written here): a part missing, or a part of another world,
  * - the sidebar on a component page, under each material, does not list every world-only page of that material, or lists
  *   one that is another world's alone (zero world-only pages is a pass: it asserts what the sidebar and the sources hold),
- * - the Systems page (#systems) is not a card per world linking #press, #flat, #device and #plain in order, each named by the
+ * - the Systems page (#systems) is not a card per world linking #press, #flat, #device, #plain and #rack in order, each named by the
  *   system and its line from look.ts, beside its cover scene, inert and hidden, the link the card's one stop, or it
  *   scrolls sideways,
  * - public/llms.txt lacks a Worlds section with Press, Flat and Device, or lists a world page as a component's docs.
@@ -311,7 +311,7 @@ for (const world of WORLDS) {
       groupsAbove: [...el.querySelectorAll("button[id^=menu-group-]")].filter((b) => worlds && b.compareDocumentPosition(worlds) & Node.DOCUMENT_POSITION_FOLLOWING).length,
     };
   });
-  claim("the phone menu lists Worlds with a row per world (#press, #flat, #device, #plain) before any component group", menu.hrefs.join(",") === WORLDS.map((w) => `#${w.id}`).join(",") && menu.before && menu.groupsAbove === 0 ? null : `menu: ${JSON.stringify(menu)}`);
+  claim("the phone menu lists Worlds with a row per world (#press, #flat, #device, #plain, #rack) before any component group", menu.hrefs.join(",") === WORLDS.map((w) => `#${w.id}`).join(",") && menu.before && menu.groupsAbove === 0 ? null : `menu: ${JSON.stringify(menu)}`);
   await ctx.close();
 }
 
@@ -345,7 +345,7 @@ for (const size of SIZES) {
   const names = [...worlds.matchAll(/^### (.+)$/gm)].map((m) => m[1]);
   claim("llms.txt has a Worlds section with every world", names.join(",") === WORLDS.map((w) => w.name).join(",") ? null : `Worlds section headings: ${JSON.stringify(names)}`);
   const full = fs.existsSync(path.join(dist, "llms-full.txt")) ? fs.readFileSync(path.join(dist, "llms-full.txt"), "utf8") : "";
-  const listed = [...(text + full).matchAll(/\/docs\/(press|flat|device|plain)\.md/g)].map((m) => m[0]);
+  const listed = [...(text + full).matchAll(new RegExp(`/docs/(${WORLDS.map((w) => w.id).join("|")})\\.md`, "g"))].map((m) => m[0]);
   claim("no world page is listed as a component's docs in llms.txt or llms-full.txt", listed.length === 0 ? null : `listed: ${listed.join(", ")}`);
 }
 

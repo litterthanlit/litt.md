@@ -33,13 +33,14 @@
  *   never takes focus, so nothing stays lit after it.
  * - On compact screens the list stays anchored, like a dropdown menu. It is not a sheet.
  * - Closing returns focus to the trigger at once, not when the exit has finished.
- * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, Radix's roles and keys,
+ * - One contract, four bodies (proposals/worlds.md, Bodies). This file is the contract: the props, Radix's roles and keys,
  *   the value, the open state, the exit and the highlight's focus. It resolves them into SelectTriggerBodyProps,
  *   SelectListBodyProps and SelectRowBodyProps and renders the body the material picks (byWorld). The Press bodies are
  *   below, the default. bodies/select.flat.tsx is the grey pill and the solid card. bodies/select.device.tsx is an LCD
  *   readout with a pair of step keys at its end (a pointer extra: they are out of the tab order and out of the
  *   accessibility tree, and the keyboard stays Radix's) and a list drawn as a screen, its current row a lit lamp and its
- *   highlight switching row to row with no glide.
+ *   highlight switching row to row with no glide. bodies/select.rack.tsx is a value box in a 1px outline with a square chevron key,
+ *   and a list drawn as an opaque outlined panel, its current row filled and its highlight switching in place.
  */
 import {
   createContext,
@@ -62,6 +63,7 @@ import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronsUpDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
 import { SelectDeviceList, SelectDeviceRow, SelectDeviceTrigger } from "./bodies/select.device";
+import { SelectRackList, SelectRackRow, SelectRackTrigger } from "./bodies/select.rack";
 import { SelectFlatList, SelectFlatRow, SelectFlatTrigger } from "./bodies/select.flat";
 import { SelectPlainList, SelectPlainRow, SelectPlainTrigger } from "./bodies/select.plain";
 
@@ -236,7 +238,7 @@ function PressRow({ item, option }: SelectRowBodyProps) {
 
 function Row({ option }: { option: SelectOption }) {
   const ctx = useContext(ListCtx);
-  const Body = byWorld(useMaterial(), { press: PressRow, flat: SelectFlatRow, device: SelectDeviceRow, plain: SelectPlainRow });
+  const Body = byWorld(useMaterial(), { press: PressRow, flat: SelectFlatRow, device: SelectDeviceRow, plain: SelectPlainRow, rack: SelectRackRow });
   if (!ctx) return null;
   const { glide, quiet, touch } = ctx;
   return (
@@ -425,7 +427,7 @@ function Surface({ ref, options, open, leaving, flat, input, onExited, style, ..
   };
   const ctx: ListContext = { glide, quiet: quietRef, touch };
 
-  const List = byWorld(useMaterial(), { press: PressList, flat: SelectFlatList, device: SelectDeviceList, plain: SelectPlainList });
+  const List = byWorld(useMaterial(), { press: PressList, flat: SelectFlatList, device: SelectDeviceList, plain: SelectPlainList, rack: SelectRackList });
   const root: SelectListBodyProps["root"] = {
     ...rest,
     ref: setNode,
@@ -528,7 +530,7 @@ export function Select({
   const done = useCallback(() => setLeaving(false), []);
 
   /* The step keys (Device): the neighbour among the options a hand can pick. Nothing picked, either key picks the first. */
-  const Trigger = byWorld(useMaterial(), { press: PressTrigger, flat: SelectFlatTrigger, device: SelectDeviceTrigger, plain: SelectPlainTrigger });
+  const Trigger = byWorld(useMaterial(), { press: PressTrigger, flat: SelectFlatTrigger, device: SelectDeviceTrigger, plain: SelectPlainTrigger, rack: SelectRackTrigger });
   const pickable = options.filter((o) => !o.disabled);
   const at = pickable.findIndex((o) => o.value === value);
   const step = {

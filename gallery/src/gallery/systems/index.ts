@@ -7,6 +7,7 @@ const LOADERS: Record<Material, () => Promise<SystemScenes>> = {
   flat: () => import("./flat").then((m) => m.flat),
   device: () => import("./device").then((m) => m.device),
   plain: () => import("./plain").then((m) => m.plain),
+  rack: () => import("./rack").then((m) => m.rack),
 };
 
 const loaded = new Map<Material, Promise<SystemScenes>>();

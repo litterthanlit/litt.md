@@ -208,11 +208,11 @@ function LayoutTile() {
   );
 }
 
-function ThreeBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2">
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -281,12 +281,12 @@ export default function CardPickerPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="A body per world"
         tier="instant"
-        caption="One control, one contract, three bodies. Press is plates seated in a tray, the picked one raised out of it and lit along its top edge. Flat is pictures and words with no tray, the picked one in a grey bubble with an ink tick and its word, the bubble gliding to your pick. Device is a plate with a lamp in its corner: the picked one is set down 2px into a well with its lamp lit, and nothing glides, the change switches in place in three steps. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One control, one contract, a body per world. Press is plates seated in a tray, the picked one raised out of it and lit along its top edge. Flat is pictures and words with no tray, the picked one in a grey bubble with an ink tick and its word, the bubble gliding to your pick. Device is a plate with a lamp in its corner: the picked one is set down 2px into a well with its lamp lit, and nothing glides, the change switches in place in three steps. Rack is each card as a flat panel in a 1px outline, the picked one outlined 2px in the ink with its check as a small lit key, and nothing raised. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

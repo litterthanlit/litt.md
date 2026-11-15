@@ -41,12 +41,14 @@
  *   by the material on <html> (byWorld, useMaterial). Flat's pill is bodies/button.flat.tsx; Device's key on its 2px
  *   skirt is bodies/button.device.tsx. A frame that sets its own material (a study strip, a side-by-side preview)
  *   wraps its buttons in a MaterialProvider to draw that body.
+ *   Rack's flat key in a 1px outline is bodies/button.rack.tsx: the accent fill for the primary, a darker outline for a press, nothing that moves.
  */
 import { Children, type ButtonHTMLAttributes, type ComponentPropsWithRef, type CSSProperties, type ReactNode } from "react";
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { ButtonFlatBody } from "./bodies/button.flat";
 import { ButtonDeviceBody } from "./bodies/button.device";
 import { ButtonPlainBody } from "./bodies/button.plain";
+import { ButtonRackBody } from "./bodies/button.rack";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -221,7 +223,7 @@ export function Button({
         transitionTimingFunction: `var(--ease-out), var(--ease-out), ${fun.press.easing}`,
       } as CSSProperties)
     : undefined;
-  const Body = byWorld(material, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody, plain: ButtonPlainBody });
+  const Body = byWorld(material, { press: PressBody, flat: ButtonFlatBody, device: ButtonDeviceBody, plain: ButtonPlainBody, rack: ButtonRackBody });
   return (
     <Body
       variant={variant}

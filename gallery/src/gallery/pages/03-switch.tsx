@@ -200,11 +200,11 @@ function DisabledDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -263,12 +263,12 @@ export default function SwitchPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="A body per world"
         tier="instant"
-        caption="One switch, one contract, three bodies. Press is a thick block thrown along a deep tray, uncovering On or Off set in the floor; the word is revealed by the block's travel, not printed on it. Flat is a small ink pill with a canvas knob when on and an outline pill when off, the word in type beside it in the text weight, so the label never reflows. Device is a toggle key in a well that flips with a detent, its word and a lamp on an LCD beside it. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One switch, one contract, a body per world. Press is a thick block thrown along a deep tray, uncovering On or Off set in the floor; the word is revealed by the block's travel, not printed on it. Flat is a small ink pill with a canvas knob when on and an outline pill when off, the word in type beside it in the text weight, so the label never reflows. Device is a toggle key in a well that flips with a detent, its word and a lamp on an LCD beside it. Rack is a toggle key with its word on its face that lights when on, in the ink here and the accent for the one main switch; nothing slides. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="Switch" component={Switch} props={{ label: "Email me when a build finishes", description: "One email per build, never a digest." }} />

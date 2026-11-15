@@ -34,7 +34,8 @@
  *   NumberFieldBodyProps and renders the body the material picks (byWorld). Press is the cut with its rocker, above.
  *   Flat is the one grey pill with the figure and − and + set as words. Device is an LCD readout (glass in a bezel
  *   well, the number in the mono) with − and + as keys on their 2px skirts beside the glass, not inside it; a key sinks
- *   the whole --press-depth, and a held one repeats as above. The label and the hint stay the component's own; each
+ *   the whole --press-depth, and a held one repeats as above. Rack is a value box (a light box in a 1px control line)
+ *   with − and + as small flat keys in outlines beside it, flat at a bound (bodies/number-field.rack.tsx). The label and the hint stay the component's own; each
  *   body carries data-body on its field and never changes a prop, a key or what a screen reader hears.
  * - Accessibility: the input is a spinbutton named by the label, with aria-valuenow, -valuemin, -valuemax and the
  *   formatted value and unit as aria-valuetext. The steppers are named "Decrease seats" and "Increase seats".
@@ -45,6 +46,7 @@ import { byWorld, useFun, useMaterial } from "@/motion";
 import { MinusIcon, PlusIcon } from "@/components/icons";
 import { NumberFieldDeviceBody } from "./bodies/number-field.device";
 import { NumberFieldFlatBody } from "./bodies/number-field.flat";
+import { NumberFieldRackBody } from "./bodies/number-field.rack";
 
 export type NumberFieldSize = "sm" | "md" | "lg";
 
@@ -433,7 +435,7 @@ export function NumberField({
     };
   };
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: NumberFieldFlatBody, device: NumberFieldDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: NumberFieldFlatBody, device: NumberFieldDeviceBody, rack: NumberFieldRackBody });
   const valueText = value === null ? undefined : `${show(value)}${unit ? ` ${unit}` : ""}`;
 
   return (

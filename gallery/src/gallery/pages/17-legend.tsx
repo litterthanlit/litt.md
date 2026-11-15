@@ -149,11 +149,11 @@ function LastOneDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -219,12 +219,12 @@ export default function LegendPage() {
         <LastOneDemo />
       </Stage>
       <Stage
-        title="Three bodies"
+        title="A body per world"
         tier="instant"
-        caption="One contract, three bodies. Press is blocks in a tray: a shown series is a block with its hue chip, and a hidden one sinks flush with the tray and says Hidden. Flat is words with a hue dot, a hidden one in grey with an outline dot. Device is a bank of latching keys: a shown series is a key down with its lamp lit in its hue, a hidden one stands up with a dim ring. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in all three."
-        code="ThreeBodiesDemo"
+        caption="One contract, a body per world. Press is blocks in a tray: a shown series is a block with its hue chip, and a hidden one sinks flush with the tray and says Hidden. Flat is words with a hue dot, a hidden one in grey with an outline dot. Device is a bank of latching keys: a shown series is a key down with its lamp lit in its hue, a hidden one stands up with a dim ring. Rack is a row of track names, each beside a small clip swatch, the hue's tint in its mark edge, and a hidden one an empty outline. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

@@ -178,11 +178,12 @@ function GoalLineDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    /* Every world: Sparkline has a body in each, Rack's the clip. */
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -253,11 +254,11 @@ export default function SparklinePage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
-        caption="One contract, three bodies, and the box is the same height in each. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the thin line on the page with its dot, as it has always been. Device is a row of lit dots on LCD glass, one in every column, with the latest column the strongest. The quiet one, the blue one with a baseline and the 24px one are the same in all three."
-        code="ThreeBodiesDemo"
+        title="A body per world"
+        caption="One contract, a body per world, and the box is the same height in each. Press is a line in a groove: a sunken well with the line along its floor and the latest value a raised bead. Flat is the thin line on the page with its dot, as it has always been. Device is a row of lit dots on LCD glass, one in every column, with the latest column the strongest. Rack is a clip: a block in the hue's own colour with the values as a waveform in it, the latest bar the strongest. The quiet one, the blue one with a baseline and the 24px one are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

@@ -832,11 +832,11 @@ function WorldTable() {
   );
 }
 
-function ThreeBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 xl:grid-cols-3">
+    <div className="grid w-full gap-6 xl:grid-cols-2">
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -933,14 +933,14 @@ export default function TablePage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
+        title="A body per world"
         tier="instant"
         size="lg"
         align="start"
-        code="ThreeBodiesDemo"
-        caption="One contract, three bodies, and every row is the same height in each. Press is slats in a tray: the header a raised rail along its top, each row a slat with the tray between, the one under your hand or selected lifted. Flat is the table on the page, as it has always been: no frame, no rules, a grey bubble under the hand. Device is a screen of mono columns on LCD glass, the header engraved on a plate above it, each row starting with a lamp that lights under your hand or when the row is selected. Press Monthly to sort; in Press and Flat nothing travels unless the table asks, and in Device rows never do."
+        code="WorldBodiesDemo"
+        caption="One contract, a body per world, and every row is the same height in each. Press is slats in a tray: the header a raised rail along its top, each row a slat with the tray between, the one under your hand or selected lifted. Flat is the table on the page, as it has always been: no frame, no rules, a grey bubble under the hand. Device is a screen of mono columns on LCD glass, the header engraved on a plate above it, each row starting with a lamp that lights under your hand or when the row is selected. Rack is a list in an instrument's browser: one flat panel, a darker header strip and thin rows on hairlines. Press Monthly to sort; in Press and Flat nothing travels unless the table asks, and in Device and Rack rows never do."
       >
-        <ThreeBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
     </Page>
   );

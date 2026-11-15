@@ -21,7 +21,9 @@
  * - Flat, bodies/tag.flat.tsx (proposals/flat-pill.md): the word in a grey pill (--surface-3), nothing raised and no
  *   hairline. A hue tag keeps its tint as a pill, and a raised tag is a --surface-1 pill, so it stands out of the grey
  *   field it sits in.
- * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props and the plain span with
+ * - Rack, bodies/tag.rack.tsx: a small square key. A hue tag is a clip (the tint, its text tone and a 1px edge of its mark
+ *   tone at 40%), a status tag a flat outlined key with the status words, a raised tag the key itself.
+ * - One contract, four bodies (proposals/worlds.md, Bodies). This file is the contract: the props and the plain span with
  *   its label. It resolves them once into TagBodyProps and renders the body the material picks (byWorld). PressBody, below,
  *   is the default; bodies/tag.flat.tsx and bodies/tag.device.tsx are the other two, each drawing its own span with data-body.
  * - Device, bodies/tag.device.tsx: the word engraved in capitals on a small plate; a status tag adds a lamp in its status
@@ -33,6 +35,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { byWorld, useMaterial } from "@/motion";
 import { TagDeviceBody } from "./bodies/tag.device";
 import { TagFlatBody } from "./bodies/tag.flat";
+import { TagRackBody } from "./bodies/tag.rack";
 
 export type TagStatus = "success" | "warning" | "danger" | "neutral";
 
@@ -105,7 +108,7 @@ function PressBody({ status, hue, raised, label, rest, className }: TagBodyProps
 
 /** A 24px label at the control radius, in the sans at the label weight. Add `status` to color its text, `hue` to file it under a category, or `raised` for a value in a field. */
 export function Tag({ status, hue, raised = false, children, className = "", ...rest }: TagProps) {
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: TagFlatBody, device: TagDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: TagFlatBody, device: TagDeviceBody, rack: TagRackBody });
   const label = typeof children === "string" || typeof children === "number" ? <span className="min-w-0 truncate">{children}</span> : children;
   return <Body status={status} hue={hue} raised={raised} label={label} rest={rest} className={className} />;
 }

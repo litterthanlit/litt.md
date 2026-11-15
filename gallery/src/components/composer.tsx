@@ -50,8 +50,9 @@
  * - Motion: only instant color and edge fades, and the chips' responsive entrance and exit. Send and Stop swap at
  *   once.
  * - Bodies (proposals/worlds.md): this file resolves the state once into ComposerBodyProps and FileChipBodyProps and
- *   renders the body the material picks (byWorld). Press, here, is the cut box above. Flat and Device live in
- *   bodies/composer.flat.tsx and bodies/composer.device.tsx and draw the same contract their own way.
+ *   renders the body the material picks (byWorld). Press, here, is the cut box above. Flat, Device and Rack live in
+ *   bodies/composer.flat.tsx, bodies/composer.device.tsx and bodies/composer.rack.tsx and draw the same contract their own
+ *   way. Rack is a panel field: a light box in a 1px control line with a row of keys under it, and a chip a small flat key.
  */
 import {
   useCallback,
@@ -74,8 +75,10 @@ import { AnimatePresence, motion } from "motion/react";
 import { Button } from "@/components/button";
 import { ArrowUpIcon, FileIcon, PaperclipIcon, StopIcon, XIcon } from "@/components/icons";
 import { byWorld, useDevice, useExit, useMaterial, useTransition } from "@/motion";
+import { useOverlayMotion } from "@/motion/deal";
 import { ComposerFlatBody, FileChipFlatBody } from "./bodies/composer.flat";
 import { ComposerDeviceBody, FileChipDeviceBody } from "./bodies/composer.device";
+import { ComposerRackBody, FileChipRackBody } from "./bodies/composer.rack";
 
 /** A file shown as a chip above the text. The caller owns the list: add it when a file is picked, update its progress, remove it in onRemoveFile. */
 export type ComposerFile = {
@@ -190,7 +193,7 @@ function ChipPressBody({ name, sizeText, uploading, percent, onRemove, coarse, c
  */
 export function FileChip({ name, size, progress, onRemove, className = "" }: FileChipProps) {
   const { coarse } = useDevice();
-  const Body = byWorld(useMaterial(), { press: ChipPressBody, flat: FileChipFlatBody, device: FileChipDeviceBody });
+  const Body = byWorld(useMaterial(), { press: ChipPressBody, flat: FileChipFlatBody, device: FileChipDeviceBody, rack: FileChipRackBody });
   const percent = Math.round(Math.min(100, Math.max(0, progress ?? 100)));
   return (
     <Body
@@ -453,8 +456,14 @@ export function Composer({
   const { compact, coarse } = useDevice();
   const big = compact || coarse;
   const enterSends = enterSendsProp ?? !coarse;
-  const enter = useTransition("responsive");
-  const exit = useExit("responsive");
+  const material = useMaterial();
+  const om = useOverlayMotion();
+  /* Rack cuts a chip in and out in place (opacity alone on the instant tier); the other worlds grow it and slide its neighbors. */
+  const cuts = material === "rack" && om.switches;
+  const grows = useTransition("responsive");
+  const leaves = useExit("responsive");
+  const enter = cuts ? om.switchIn : grows;
+  const exit = cuts ? om.switchOut : leaves;
 
   const area = useRef<HTMLTextAreaElement | null>(null);
   const setArea = useCallback(
@@ -630,7 +639,7 @@ export function Composer({
 
   const shown = (suggestions ?? []).slice(0, MAX_SUGGESTIONS);
   const describedBy = [hint ? hintId : "", near ? countId : ""].filter(Boolean).join(" ") || undefined;
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: ComposerFlatBody, device: ComposerDeviceBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: ComposerFlatBody, device: ComposerDeviceBody, rack: ComposerRackBody });
 
   return (
     <Body
@@ -664,13 +673,13 @@ export function Composer({
       chips={files.map((file) => (
         <motion.li
           key={file.id}
-          layout="position"
+          layout={cuts ? false : "position"}
           ref={(el: HTMLLIElement | null) => {
             if (el) chips.current.set(file.id, el);
             else chips.current.delete(file.id);
           }}
           className="flex max-w-full min-w-0"
-          initial={{ opacity: 0, scale: 0.98 }}
+          initial={{ opacity: 0, scale: cuts ? 1 : 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, transition: exit }}
           transition={enter}

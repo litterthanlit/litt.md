@@ -175,11 +175,11 @@ function CategoriesDemo() {
   );
 }
 
-function ThreeBodiesDemo() {
+function WorldBodiesDemo() {
   const { look } = useCustomize();
   const dark = useDark();
   return (
-    <div className="grid w-full gap-6 md:grid-cols-3">
+    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
       {MATERIALS.map((m) => (
         <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
           <div
@@ -254,11 +254,11 @@ export default function TagPage() {
       </Stage>
 
       <Stage
-        title="Three bodies"
-        caption="One tag, one contract, three bodies. Press is a small raised block with a lit top edge, its word on the face. Flat is the word in a grey pill, nothing raised. Device is the word engraved in capitals on a small plate, and a status tag adds a lamp in its status color. Each is drawn here whatever look the page is in; the words, and what a screen reader hears, are the same in all three."
-        code="ThreeBodiesDemo"
+        title="A body per world"
+        caption="One tag, one contract, a body per world. Press is a small raised block with a lit top edge, its word on the face. Flat is the word in a grey pill, nothing raised. Device is the word engraved in capitals on a small plate, and a status tag adds a lamp in its status color. Rack is a small square key: a hue tag is a clip, the tint with a mark edge and its text tone, and a status tag an outlined key with the status words. Each is drawn here whatever look the page is in; the words, and what a screen reader hears, are the same in every world."
+        code="WorldBodiesDemo"
       >
-        <ThreeBodiesDemo />
+        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="Tag" component={Tag} props={{ children: "In review" }} />

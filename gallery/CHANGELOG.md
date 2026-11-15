@@ -4,7 +4,7 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
-## 2026-11-15 · Plain, a fourth world
+## 2026-11-15 · Plain, a fourth world; Rack, a body per part
 
 A world for the page that should just work: docs, forms, admin and internal tools. Plain draws a page the way HTML does, with almost no UI of its own.
 
@@ -35,6 +35,42 @@ Later still, Plain's overlays: each is the page again inside one line, and the r
 - **changed** `hover-card`: under Plain the card is the page inside a 1px line, solid or not. Props are unchanged.
 - **changed** `tooltip`: under Plain a tooltip is the page inside a 1px line, words in the ink, a shortcut in the same line with no fill, like a `title`. Props are unchanged.
 - **changed** `toast`: under Plain the description steps down to grey; the toast itself is the page inside its line already. Props are unchanged.
+
+Later the same day, Rack (a world after Ableton Live, from 2026-11-14) gets a body for every part. Every part with a body per world gets Rack's (`data-material="rack"`), drawn as an instrument's controls: flat keys and light boxes in 1px outlines, square at the control radius, lit in the ink (or the accent for the one primary action), nothing cast or sunk. Press, Flat and Device are unchanged.
+
+- **changed** `litt`: under Rack in dark, success, warning and danger are a step lighter, so their words keep 4.5:1 on a key and on a key under the hand (a danger button, a status tag).
+- **changed** `input`: a Rack body, a light box in a 1px control line with no shade, the line turning to the ink on focus and to danger on an error. Props are unchanged.
+- **changed** `number-field`: a Rack body, a value box with − and + as slim flat keys in outlines beside it (square on a touch screen) that lie flat at a bound. Props are unchanged.
+- **changed** `code-input`: a Rack body, one square light box per character in a 1px control line with the current cell outlined in the ink. Props are unchanged.
+- **changed** `token-input`: a Rack body, a light box holding small flat outlined keys with square remove keys, cutting in place. Props are unchanged.
+- **changed** `composer`: a Rack body, a panel field with a light text box, files as small flat keys, a row of keys under it and Send the one lit key. Props are unchanged.
+- **changed** `segmented`: a Rack body, one box in a 1px outline divided by rules, the chosen option a filled ink key, nothing glides. Props are unchanged.
+- **changed** `select`: a Rack body, a value box with a square chevron key and an opaque outlined list panel with a filled current row. Props are unchanged.
+- **changed** `tabs`: a Rack body, outlined square keys along a strip (or one divided box when segmented), the chosen key lit in the ink, nothing slides. Props are unchanged.
+- **changed** `option-picker`: a Rack body, flat outlined keys with the picked one lit in the ink and square colour chips. Props are unchanged.
+- **changed** `card-picker`: a Rack body, flat outlined panels with the picked card ringed 2px in the ink and a small lit check key. Props are unchanged.
+- **changed** `chart`: a Rack body, a dark well with hairline gridlines and the data as clips (bars and stacked parts as blocks in the hue's tint with its mark edge, a line over a tint band). Props are unchanged.
+- **changed** `stat`: a Rack body, a panel with the figure in a value box and the delta as a small flat key. Props are unchanged.
+- **changed** `legend`: a Rack body, a row of toggles each with a small clip swatch (the hue's tint in its mark edge), a hidden series an empty outline. Props are unchanged.
+- **changed** `tag`: a Rack body, a small square key: a hue tag a clip, a status tag an outlined key, a raised tag a flat key. Props are unchanged.
+- **changed** `file-drop`: a Rack body, a well in a dashed edge that lights in the ink on drag-over, and the files as thin rows on one panel. Props are unchanged.
+- **changed** `button`: a Rack body, a flat key in a 1px outline, the accent fill for the primary and a darker outline for a press, nothing that moves. Props are unchanged.
+- **changed** `checkbox`: a Rack body, a small well in the control line that fills with the ink when checked, with an ink dash when mixed and a round well for a radio. Props are unchanged.
+- **changed** `slide-confirm`: a Rack body, a track box with a flat key in a 1px outline, the passed part filling as the slot and a confirmed track lit in the ink. Props are unchanged.
+- **changed** `pagination`: a Rack body, a row of square keys in 1px outlines with the current page lit in the ink. Props are unchanged.
+
+## 2026-11-14 · Rack, a world after Ableton Live
+
+Rack is a software instrument's rack, after Ableton Live: grey panels on a darker grey body, keys and wells in 1px outlines, square corners, Inter, five bright clip colours for what you make, and one yellow that is only ever a fill, the light of a switch that is on. Nothing casts, glows or sinks. Set `data-material="rack"` on `<html>`, as for Flat and Device (`proposals/rack.md`).
+
+- **changed** `litt`: `data-material="rack"` and the `--litt-rack-*` values it maps, in light, dark and the system setting, with answers for `prefers-contrast: more` and browsers without `color-mix()`. Its own accent is yellow with dark words; its links and focus ring are the ink. Its data hues are clip colours (blue, an orange, a cyan, a purple and a green, in the five hue slots), and each tint is its own value: a pastel clip with a dark mark in light, a deep clip with a bright mark in dark, so a tag, an avatar or a bar reads as a coloured clip. Blue 4, monochrome and pink win on it when asked for. It opens square (2px controls in 6px panels) and in Inter; load Inter at 400, 500 and 600. Nothing changes without the attribute.
+- **changed** `motion`: Rack's motion language. Under `data-material="rack"`, `deal` brings a set in column by column, each column at once and `--stagger` apart, by opacity alone on the instant tier, and `gather` takes every piece out at once, quicker than it came; `useOverlayMotion` cuts an overlay in and out where it stands (`switches` is true, with an ease-out cut in place of Device's steps). `byWorld` takes a `rack` body, and falls back to Press's without one. Press, Flat and Device are unchanged.
+- **changed** `sparkline`: a Rack body, the clip. Under `data-material="rack"` a sparkline is a block in its hue's own tint (a grey clip with no hue) with the values drawn in it as a mirrored waveform, one 2px bar every 3px, the latest bar in the hue's stronger text tone. A baseline is a dashed level on both sides of the middle. The box keeps the caller's height, and Press, Flat and Device are unchanged, as are the props.
+- **changed** `switch`: a Rack body, the toggle key. Under `data-material="rack"` a switch is a 48 by 24 key with its word on its face, an outline when off, lit when on: the ink with canvas words, or the accent with its own words for `tone="accent"`. Nothing slides, and a drag across it still flips it. Props are unchanged.
+- **changed** `slider`: a Rack body, the value bar. Under `data-material="rack"` a slider is a 24px box in a 1px outline, square at every shape as a meter is, with the value filled from the start (the slot's fill, never the accent) and a 2px ink line at the value; the hand takes it anywhere in the box. The value sits in words at the box's end, and a range's band fills between its two lines. Props, keys and screen-reader words are unchanged.
+- **changed** `table`: a Rack dress. Under `data-material="rack"` the table is one flat panel in a 1px edge, a darker header strip and thin rows on hairlines, grey under the hand and when selected; rows appear where they stand. Row heights and props are unchanged.
+- **changed** `chart`: under a world with no chart body of its own (Rack), the chart draws Press's body. Props are unchanged.
+- **changed** `file-drop`: under a world with no file list of its own (Rack), the list is Press's. Props are unchanged.
 
 ## 2026-11-13 · Inside a frame, a sheet measures the frame; motion that never makes you wait
 

@@ -28,6 +28,8 @@
  *   - Flat's words with a grey pill behind the chosen one is bodies/tabs.flat.tsx; Device's engraved legends, a lamp under
  *     the current one that switches on in place (and, segmented, a row of keys on one skirt with the current one latched
  *     down) is bodies/tabs.device.tsx. Only Press's and Flat's faces glide.
+ *   - Rack's square keys (bodies/tabs.rack.tsx): a strip of outlined keys over a rule (underline), or one outlined box divided
+ *     by rules (segmented), the chosen key lit in the ink; nothing glides.
  * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
  *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
  *   is off so the two do not double. Small tabs grow to the control-md height on a coarse
@@ -52,6 +54,7 @@ import { byWorld, useExit, useFun, useMaterial, useTransition, useTravel } from 
 import { TabsListFlatBody, TabsTriggerFlatBody } from "./bodies/tabs.flat";
 import { TabsListDeviceBody, TabsTriggerDeviceBody } from "./bodies/tabs.device";
 import { TabsListPlainBody, TabsTriggerPlainBody } from "./bodies/tabs.plain";
+import { TabsListRackBody, TabsTriggerRackBody } from "./bodies/tabs.rack";
 
 export type TabsVariant = "underline" | "segmented";
 export type TabsSize = "sm" | "md";
@@ -178,7 +181,7 @@ function PressListBody({ variant, size, className, rootProps }: TabsListBodyProp
 /** The row of tabs. It is a named group, so give it an aria-label. */
 export function TabsList({ className = "", ...rest }: ComponentPropsWithoutRef<typeof TabsPrimitive.List>) {
   const { variant, size } = useTabs();
-  const Body = byWorld(useMaterial(), { press: PressListBody, flat: TabsListFlatBody, device: TabsListDeviceBody, plain: TabsListPlainBody });
+  const Body = byWorld(useMaterial(), { press: PressListBody, flat: TabsListFlatBody, device: TabsListDeviceBody, plain: TabsListPlainBody, rack: TabsListRackBody });
   return <Body variant={variant} size={size} className={className} rootProps={rest} />;
 }
 
@@ -285,7 +288,7 @@ export function TabsTrigger({
   const enter = fun ? fun.glide : responsive;
   const active = current === value;
   const ref = useCallback((el: HTMLButtonElement | null) => register(value, el), [register, value]);
-  const Body = byWorld(material, { press: PressTriggerBody, flat: TabsTriggerFlatBody, device: TabsTriggerDeviceBody, plain: TabsTriggerPlainBody });
+  const Body = byWorld(material, { press: PressTriggerBody, flat: TabsTriggerFlatBody, device: TabsTriggerDeviceBody, plain: TabsTriggerPlainBody, rack: TabsTriggerRackBody });
 
   return (
     <Body
