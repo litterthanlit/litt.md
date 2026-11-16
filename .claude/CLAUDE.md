@@ -48,7 +48,8 @@ The repo root is the plugin root, and the skill lives in `skills/litt-md/`.
 
 - `skills/litt-md/assets/tokens.css` is the only place hex values live. Markdown names variables (`--accent`, `--surface-2`) and explains the reasoning.
 - `taste/` is Nick's. Change it only through the protocol in `skills/litt-md/workflows/evolve.md`.
-- Commit taste changes with a `taste:` prefix. Never push without asking.
+- Commit taste changes with a `taste:` prefix.
+- Agents may push their own working branch and open a pull request once the work is committed and its checks pass. Never push to `main`, force-push a shared branch or merge without asking.
 - Refer to Nick by name or as "you". Never use gendered pronouns.
 
 ## Checks before committing
