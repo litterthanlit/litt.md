@@ -47,8 +47,8 @@
       "hash": "1a95da13e9965bf7"
     },
     "button": {
-      "version": "2026.11.15",
-      "hash": "d1265d802e82c638"
+      "version": "2026.11.16",
+      "hash": "e8090b5cc91d7b10"
     },
     "callout": {
       "version": "2026.11.06",
@@ -176,7 +176,7 @@
     },
     "device-button": {
       "version": "2026.11.16",
-      "hash": "07a98167cadf283a"
+      "hash": "985405fa3fbc953a"
     },
     "device-callout": {
       "version": "2026.11.16",
@@ -456,7 +456,7 @@
     },
     "device-sparkline": {
       "version": "2026.11.16",
-      "hash": "e4e89efc31d1d6df"
+      "hash": "9ef772baac83a621"
     },
     "device-spread": {
       "version": "2026.11.16",
@@ -584,7 +584,7 @@
     },
     "flat-button": {
       "version": "2026.11.16",
-      "hash": "b89ed9a0459006a8"
+      "hash": "543ffa6c79654fb8"
     },
     "flat-callout": {
       "version": "2026.11.16",
@@ -856,7 +856,7 @@
     },
     "flat-sparkline": {
       "version": "2026.11.16",
-      "hash": "1b8968292f612018"
+      "hash": "4d101dec7a25c7af"
     },
     "flat-spread": {
       "version": "2026.11.16",
@@ -992,7 +992,7 @@
     },
     "heat-button": {
       "version": "2026.11.16",
-      "hash": "797d73d18a214b30"
+      "hash": "d499af39070865dd"
     },
     "heat-callout": {
       "version": "2026.11.16",
@@ -1264,7 +1264,7 @@
     },
     "heat-sparkline": {
       "version": "2026.11.16",
-      "hash": "e69ebd60190268e7"
+      "hash": "7e61b28ade7b789f"
     },
     "heat-spread": {
       "version": "2026.11.16",
@@ -1456,7 +1456,7 @@
     },
     "plain-button": {
       "version": "2026.11.16",
-      "hash": "23456b3cad440b62"
+      "hash": "677458f5a01ebabc"
     },
     "plain-callout": {
       "version": "2026.11.16",
@@ -1728,7 +1728,7 @@
     },
     "plain-sparkline": {
       "version": "2026.11.16",
-      "hash": "e69ebd60190268e7"
+      "hash": "7e61b28ade7b789f"
     },
     "plain-spread": {
       "version": "2026.11.16",
@@ -1844,7 +1844,7 @@
     },
     "press-button": {
       "version": "2026.11.16",
-      "hash": "797d73d18a214b30"
+      "hash": "92d977c16133ddc2"
     },
     "press-callout": {
       "version": "2026.11.16",
@@ -2116,7 +2116,7 @@
     },
     "press-sparkline": {
       "version": "2026.11.16",
-      "hash": "e69ebd60190268e7"
+      "hash": "7e61b28ade7b789f"
     },
     "press-spread": {
       "version": "2026.11.16",
@@ -2244,7 +2244,7 @@
     },
     "rack-button": {
       "version": "2026.11.16",
-      "hash": "a3c957fe90156a14"
+      "hash": "ec1456c7b7ca7872"
     },
     "rack-callout": {
       "version": "2026.11.16",
@@ -2516,7 +2516,7 @@
     },
     "rack-sparkline": {
       "version": "2026.11.16",
-      "hash": "4f4270f59c4f2afa"
+      "hash": "a679e2ebfa9899ef"
     },
     "rack-spread": {
       "version": "2026.11.16",
@@ -2663,8 +2663,8 @@
       "hash": "72c5bf8906cc9d51"
     },
     "sparkline": {
-      "version": "2026.11.14",
-      "hash": "46be811980999b64"
+      "version": "2026.11.16",
+      "hash": "a60adb84e9a30b2a"
     },
     "spread": {
       "version": "2026.10.26",

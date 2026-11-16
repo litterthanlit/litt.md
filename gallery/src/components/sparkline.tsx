@@ -38,7 +38,7 @@
  *   hands over to the plain mark, so at rest it is the static Sparkline exactly. Reduced motion turns it off. Device
  *   switches where it stands (R4): nothing draws itself or fades in.
  */
-import { useLayoutEffect, useRef, useState, type RefObject } from "react";
+import { useLayoutEffect, useState, type RefCallback } from "react";
 import { motion } from "motion/react";
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { SparklineFlatBody } from "@/worlds/flat/sparkline";
@@ -79,12 +79,14 @@ const RING: Record<Surface, string> = { canvas: "fill-canvas", "surface-1": "fil
 
 const groupDigits = (n: number) => n.toLocaleString("en-GB", { maximumFractionDigits: 2 });
 
-/** The container's width, measured before paint and kept current. 0 until the first measure. */
+/** The container's width, measured before paint and kept current. 0 until the first measure.
+ *  The box is each body's root, so it is a new element whenever the body changes (a server-rendered page hydrates
+ *  Press's, then swaps in the material on <html>): the ref is a callback that follows the element, and the observer
+ *  moves with it. Observing the first element only, its removal reads 0 and nothing measures the new one. */
 function useWidth() {
-  const ref = useRef<HTMLDivElement>(null);
+  const [el, ref] = useState<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(0);
   useLayoutEffect(() => {
-    const el = ref.current;
     if (!el) return;
     const read = () => setWidth(Math.floor(el.getBoundingClientRect().width));
     read();
@@ -92,7 +94,7 @@ function useWidth() {
     const ro = new ResizeObserver(read);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [el]);
   return [ref, width] as const;
 }
 
@@ -124,7 +126,7 @@ export type SparklineProps = {
 /** What a body draws (proposals/worlds.md, Bodies): the contract's resolved state. */
 export type SparklineBodyProps = {
   /** The box's ref: the body puts it on its root so the width can be measured. */
-  boxRef: RefObject<HTMLDivElement | null>;
+  boxRef: RefCallback<HTMLDivElement>;
   /** The box's measured width; 0 until the first measure, when a body draws its ground only. */
   width: number;
   /** The caller's height, which every body's box keeps. */

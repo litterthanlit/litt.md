@@ -4051,12 +4051,17 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await live.waitFor({ state: "visible", timeout: 3000 });
           if ((await live.getAttribute("aria-expanded")) !== "true") throw new Error("a live thought is not open");
           const clock = () => live.locator("span[aria-hidden=true]").first().textContent();
+          /* The clock reads "59s", then "1m 1s" (formatClock): the smoke page can be open past a minute when this runs. */
+          const seconds = (t) => {
+            const m = /^(?:(\d+)m)?(?: ?(\d+)s)?$/.exec(t ?? "");
+            return m && (m[1] || m[2]) ? Number(m[1] ?? 0) * 60 + Number(m[2] ?? 0) : NaN;
+          };
           const first = await clock();
-          if (!/^\d+s$/.test(first ?? "")) throw new Error(`the live clock reads "${first}"`);
+          if (Number.isNaN(seconds(first))) throw new Error(`the live clock reads "${first}"`);
           const before = await live.boundingBox();
           await page.waitForTimeout(2300);
           const later = await clock();
-          if (Number.parseInt(later) < Number.parseInt(first) + 2) throw new Error(`the clock went from ${first} to ${later} in 2.3 seconds`);
+          if (!(seconds(later) >= seconds(first) + 2)) throw new Error(`the clock went from ${first} to ${later} in 2.3 seconds`);
           const after = await live.boundingBox();
           if (before.x !== after.x || before.y !== after.y || before.height !== after.height) throw new Error("the row moved while the clock counted");
           const loops = await page.evaluate(() => document.getAnimations().filter((a) => a.effect?.getComputedTiming().iterations === Infinity).length);
