@@ -142,6 +142,402 @@
       "version": "2026.11.06",
       "hash": "a474dc20dd0288b5"
     },
+    "device-accordion": {
+      "version": "2026.11.16",
+      "hash": "22973b4e870e05c5"
+    },
+    "device-action-bar": {
+      "version": "2026.11.16",
+      "hash": "09c6dfea8cc66216"
+    },
+    "device-agent-indicator": {
+      "version": "2026.11.16",
+      "hash": "43cc430b8c4e8159"
+    },
+    "device-app-shell": {
+      "version": "2026.11.16",
+      "hash": "db759722a42893f7"
+    },
+    "device-avatar": {
+      "version": "2026.11.16",
+      "hash": "09d98f9ff76d2f66"
+    },
+    "device-bar-list": {
+      "version": "2026.11.16",
+      "hash": "5c58cd236d48fa00"
+    },
+    "device-breadcrumb": {
+      "version": "2026.11.16",
+      "hash": "8a5b08b686c7051c"
+    },
+    "device-breakdown": {
+      "version": "2026.11.16",
+      "hash": "1a95da13e9965bf7"
+    },
+    "device-button": {
+      "version": "2026.11.16",
+      "hash": "07a98167cadf283a"
+    },
+    "device-callout": {
+      "version": "2026.11.16",
+      "hash": "c0a2f7eb8cb1ebb8"
+    },
+    "device-card": {
+      "version": "2026.11.16",
+      "hash": "d2ea971a6a651e96"
+    },
+    "device-card-picker": {
+      "version": "2026.11.16",
+      "hash": "7c1ea0c96d040dd3"
+    },
+    "device-carousel": {
+      "version": "2026.11.16",
+      "hash": "1ed989a6d72ae8b0"
+    },
+    "device-cart": {
+      "version": "2026.11.16",
+      "hash": "83eb858b4546db26"
+    },
+    "device-chart": {
+      "version": "2026.11.16",
+      "hash": "8050d0038f63c452"
+    },
+    "device-checkbox": {
+      "version": "2026.11.16",
+      "hash": "42a61ed823254371"
+    },
+    "device-code-block": {
+      "version": "2026.11.16",
+      "hash": "941606ce76eb027f"
+    },
+    "device-code-input": {
+      "version": "2026.11.16",
+      "hash": "e11c3faacaef5d1e"
+    },
+    "device-cohort-grid": {
+      "version": "2026.11.16",
+      "hash": "69853aa6d7e8b6b3"
+    },
+    "device-color-picker": {
+      "version": "2026.11.16",
+      "hash": "126b02f9c5a8f4d9"
+    },
+    "device-combobox": {
+      "version": "2026.11.16",
+      "hash": "e59509c870120e3f"
+    },
+    "device-command-menu": {
+      "version": "2026.11.16",
+      "hash": "6d1f903397f41ea1"
+    },
+    "device-composer": {
+      "version": "2026.11.16",
+      "hash": "e4b85cad46f97337"
+    },
+    "device-context-menu": {
+      "version": "2026.11.16",
+      "hash": "c1a658e43874c0f3"
+    },
+    "device-copy-button": {
+      "version": "2026.11.16",
+      "hash": "c15f59e2c204cc14"
+    },
+    "device-curve-editor": {
+      "version": "2026.11.16",
+      "hash": "bb2b40e9c5cad2cd"
+    },
+    "device-date-picker": {
+      "version": "2026.11.16",
+      "hash": "599e168a69af434f"
+    },
+    "device-details": {
+      "version": "2026.11.16",
+      "hash": "a474dc20dd0288b5"
+    },
+    "device-dialog": {
+      "version": "2026.11.16",
+      "hash": "8615d3ab119d5ef0"
+    },
+    "device-dot-plot": {
+      "version": "2026.11.16",
+      "hash": "2daa045705db87cf"
+    },
+    "device-file-changes": {
+      "version": "2026.11.16",
+      "hash": "13d06e1887a03add"
+    },
+    "device-file-drop": {
+      "version": "2026.11.16",
+      "hash": "2008d0b22a48144e"
+    },
+    "device-form": {
+      "version": "2026.11.16",
+      "hash": "a5a6761e96876358"
+    },
+    "device-framed": {
+      "version": "2026.11.16",
+      "hash": "4e6ae75229c48c9d"
+    },
+    "device-funnel": {
+      "version": "2026.11.16",
+      "hash": "21d1efc2ba25379b"
+    },
+    "device-gauge": {
+      "version": "2026.11.16",
+      "hash": "e60d1628ae7a95aa"
+    },
+    "device-glide": {
+      "version": "2026.11.16",
+      "hash": "6797b412974aa4ba"
+    },
+    "device-header": {
+      "version": "2026.11.16",
+      "hash": "36890aac1240c896"
+    },
+    "device-heatmap": {
+      "version": "2026.11.16",
+      "hash": "7951010af01b54ed"
+    },
+    "device-hover-card": {
+      "version": "2026.11.16",
+      "hash": "7bf7fbe15f4bac78"
+    },
+    "device-icons": {
+      "version": "2026.11.16",
+      "hash": "92ffc0cb458467b6"
+    },
+    "device-input": {
+      "version": "2026.11.16",
+      "hash": "cdbb76c17d05d196"
+    },
+    "device-inspector": {
+      "version": "2026.11.16",
+      "hash": "17b1c571481f44cc"
+    },
+    "device-kbd": {
+      "version": "2026.11.16",
+      "hash": "a6fe723819d955b7"
+    },
+    "device-legend": {
+      "version": "2026.11.16",
+      "hash": "2c7728408f70b213"
+    },
+    "device-lightbox": {
+      "version": "2026.11.16",
+      "hash": "aff81fa2348884dc"
+    },
+    "device-list": {
+      "version": "2026.11.16",
+      "hash": "93a52568fe0a8cac"
+    },
+    "device-list-cover": {
+      "version": "2026.11.16",
+      "hash": "c05d8979d2f10a6c"
+    },
+    "device-litt": {
+      "version": "2026.11.16",
+      "hash": "9d87b6468fadc104"
+    },
+    "device-log-view": {
+      "version": "2026.11.16",
+      "hash": "4efe0d6d3ce76434"
+    },
+    "device-media": {
+      "version": "2026.11.16",
+      "hash": "37d4718106f094ae"
+    },
+    "device-menu": {
+      "version": "2026.11.16",
+      "hash": "fbdadfcf58b7a9f1"
+    },
+    "device-message": {
+      "version": "2026.11.16",
+      "hash": "0fc4e698b1bfc519"
+    },
+    "device-motion": {
+      "version": "2026.11.16",
+      "hash": "ef289afc9233777b"
+    },
+    "device-number-field": {
+      "version": "2026.11.16",
+      "hash": "8832400c29261fff"
+    },
+    "device-option-picker": {
+      "version": "2026.11.16",
+      "hash": "ba67a4bbfc913a7b"
+    },
+    "device-pad": {
+      "version": "2026.11.16",
+      "hash": "93e06b2d83651151"
+    },
+    "device-pagination": {
+      "version": "2026.11.16",
+      "hash": "36eb406550c7bc62"
+    },
+    "device-plan": {
+      "version": "2026.11.16",
+      "hash": "d4859621c7f7d3e9"
+    },
+    "device-popover": {
+      "version": "2026.11.16",
+      "hash": "0ab6515e1befac6b"
+    },
+    "device-price": {
+      "version": "2026.11.16",
+      "hash": "07931a630f63729d"
+    },
+    "device-product-card": {
+      "version": "2026.11.16",
+      "hash": "9d8b30626009a796"
+    },
+    "device-progress": {
+      "version": "2026.11.16",
+      "hash": "33b8707405e8f11a"
+    },
+    "device-range-chart": {
+      "version": "2026.11.16",
+      "hash": "3b510b0be4606ccd"
+    },
+    "device-resizable": {
+      "version": "2026.11.16",
+      "hash": "946f01201b087b18"
+    },
+    "device-rolling-number": {
+      "version": "2026.11.16",
+      "hash": "b586cbb15698859e"
+    },
+    "device-rule-builder": {
+      "version": "2026.11.16",
+      "hash": "4a25f2ab928361a0"
+    },
+    "device-run-card": {
+      "version": "2026.11.16",
+      "hash": "0fa2708926ed2507"
+    },
+    "device-run-list": {
+      "version": "2026.11.16",
+      "hash": "803190ce5ea8b47d"
+    },
+    "device-scroll-area": {
+      "version": "2026.11.16",
+      "hash": "9d6e7d1ba7b86f41"
+    },
+    "device-segmented": {
+      "version": "2026.11.16",
+      "hash": "8e282c8235cc2902"
+    },
+    "device-select": {
+      "version": "2026.11.16",
+      "hash": "510db2a2363a3fc5"
+    },
+    "device-seven-segment": {
+      "version": "2026.11.16",
+      "hash": "2f68f09a637387cc"
+    },
+    "device-shopify": {
+      "version": "2026.11.16",
+      "hash": "18bfba74da1d4e27"
+    },
+    "device-shopify-cart": {
+      "version": "2026.11.16",
+      "hash": "737cb6f880409b60"
+    },
+    "device-slide-confirm": {
+      "version": "2026.11.16",
+      "hash": "ff5c2635aa96439f"
+    },
+    "device-slider": {
+      "version": "2026.11.16",
+      "hash": "31dd07ba36c38300"
+    },
+    "device-sources": {
+      "version": "2026.11.16",
+      "hash": "72c5bf8906cc9d51"
+    },
+    "device-sparkline": {
+      "version": "2026.11.16",
+      "hash": "e4e89efc31d1d6df"
+    },
+    "device-spread": {
+      "version": "2026.11.16",
+      "hash": "520a17ad30ad6dbd"
+    },
+    "device-spring-editor": {
+      "version": "2026.11.16",
+      "hash": "7e37983458b10bd7"
+    },
+    "device-stat": {
+      "version": "2026.11.16",
+      "hash": "ef537258ea7ea509"
+    },
+    "device-states": {
+      "version": "2026.11.16",
+      "hash": "60cce481822e4444"
+    },
+    "device-steps": {
+      "version": "2026.11.16",
+      "hash": "eb874003dc2c37b0"
+    },
+    "device-switch": {
+      "version": "2026.11.16",
+      "hash": "bb3d9c98741c184b"
+    },
+    "device-table": {
+      "version": "2026.11.16",
+      "hash": "647b8542233ed021"
+    },
+    "device-table-filter": {
+      "version": "2026.11.16",
+      "hash": "20ddca6bee9f812e"
+    },
+    "device-tabs": {
+      "version": "2026.11.16",
+      "hash": "cdf0f920cb5478f5"
+    },
+    "device-tag": {
+      "version": "2026.11.16",
+      "hash": "cd4af77ca7937972"
+    },
+    "device-tape-progress": {
+      "version": "2026.11.16",
+      "hash": "f072118b4919c762"
+    },
+    "device-thinking": {
+      "version": "2026.11.16",
+      "hash": "d37bf136b8e3216e"
+    },
+    "device-time-scrubber": {
+      "version": "2026.11.16",
+      "hash": "29ad1d730d452e84"
+    },
+    "device-timeline": {
+      "version": "2026.11.16",
+      "hash": "fbab116e5a8bd8e3"
+    },
+    "device-toast": {
+      "version": "2026.11.16",
+      "hash": "b30bfa89cc3a2976"
+    },
+    "device-token-input": {
+      "version": "2026.11.16",
+      "hash": "e13eac464727fbb0"
+    },
+    "device-tool-call": {
+      "version": "2026.11.16",
+      "hash": "b3b1640ab0f24090"
+    },
+    "device-tooltip": {
+      "version": "2026.11.16",
+      "hash": "e4b624627724b189"
+    },
+    "device-tree": {
+      "version": "2026.11.16",
+      "hash": "76d264c7857cff66"
+    },
+    "device-tune": {
+      "version": "2026.11.16",
+      "hash": "6ec7bcdc63744065"
+    },
     "dialog": {
       "version": "2026.11.15",
       "hash": "8615d3ab119d5ef0"
@@ -157,6 +553,386 @@
     "file-drop": {
       "version": "2026.11.15",
       "hash": "103c33da9ff4c9da"
+    },
+    "flat-accordion": {
+      "version": "2026.11.16",
+      "hash": "22973b4e870e05c5"
+    },
+    "flat-action-bar": {
+      "version": "2026.11.16",
+      "hash": "09c6dfea8cc66216"
+    },
+    "flat-app-shell": {
+      "version": "2026.11.16",
+      "hash": "db759722a42893f7"
+    },
+    "flat-avatar": {
+      "version": "2026.11.16",
+      "hash": "09d98f9ff76d2f66"
+    },
+    "flat-bar-list": {
+      "version": "2026.11.16",
+      "hash": "5c58cd236d48fa00"
+    },
+    "flat-breadcrumb": {
+      "version": "2026.11.16",
+      "hash": "8a5b08b686c7051c"
+    },
+    "flat-breakdown": {
+      "version": "2026.11.16",
+      "hash": "1a95da13e9965bf7"
+    },
+    "flat-button": {
+      "version": "2026.11.16",
+      "hash": "b89ed9a0459006a8"
+    },
+    "flat-callout": {
+      "version": "2026.11.16",
+      "hash": "c0a2f7eb8cb1ebb8"
+    },
+    "flat-card": {
+      "version": "2026.11.16",
+      "hash": "d2ea971a6a651e96"
+    },
+    "flat-card-picker": {
+      "version": "2026.11.16",
+      "hash": "4caab6617728f1f3"
+    },
+    "flat-carousel": {
+      "version": "2026.11.16",
+      "hash": "1ed989a6d72ae8b0"
+    },
+    "flat-cart": {
+      "version": "2026.11.16",
+      "hash": "83eb858b4546db26"
+    },
+    "flat-chart": {
+      "version": "2026.11.16",
+      "hash": "562df27d30fd38ae"
+    },
+    "flat-checkbox": {
+      "version": "2026.11.16",
+      "hash": "63112b05fe73c604"
+    },
+    "flat-code-block": {
+      "version": "2026.11.16",
+      "hash": "941606ce76eb027f"
+    },
+    "flat-code-input": {
+      "version": "2026.11.16",
+      "hash": "13f581552a63073c"
+    },
+    "flat-cohort-grid": {
+      "version": "2026.11.16",
+      "hash": "69853aa6d7e8b6b3"
+    },
+    "flat-color-picker": {
+      "version": "2026.11.16",
+      "hash": "126b02f9c5a8f4d9"
+    },
+    "flat-combobox": {
+      "version": "2026.11.16",
+      "hash": "e59509c870120e3f"
+    },
+    "flat-command-menu": {
+      "version": "2026.11.16",
+      "hash": "6d1f903397f41ea1"
+    },
+    "flat-composer": {
+      "version": "2026.11.16",
+      "hash": "512ee5ac9a9da5c0"
+    },
+    "flat-context-menu": {
+      "version": "2026.11.16",
+      "hash": "c1a658e43874c0f3"
+    },
+    "flat-curve-editor": {
+      "version": "2026.11.16",
+      "hash": "bb2b40e9c5cad2cd"
+    },
+    "flat-date-picker": {
+      "version": "2026.11.16",
+      "hash": "599e168a69af434f"
+    },
+    "flat-details": {
+      "version": "2026.11.16",
+      "hash": "a474dc20dd0288b5"
+    },
+    "flat-dialog": {
+      "version": "2026.11.16",
+      "hash": "8615d3ab119d5ef0"
+    },
+    "flat-dot-plot": {
+      "version": "2026.11.16",
+      "hash": "2daa045705db87cf"
+    },
+    "flat-file-changes": {
+      "version": "2026.11.16",
+      "hash": "13d06e1887a03add"
+    },
+    "flat-file-drop": {
+      "version": "2026.11.16",
+      "hash": "a1d82aaeb81222c4"
+    },
+    "flat-form": {
+      "version": "2026.11.16",
+      "hash": "a5a6761e96876358"
+    },
+    "flat-framed": {
+      "version": "2026.11.16",
+      "hash": "4e6ae75229c48c9d"
+    },
+    "flat-funnel": {
+      "version": "2026.11.16",
+      "hash": "21d1efc2ba25379b"
+    },
+    "flat-gauge": {
+      "version": "2026.11.16",
+      "hash": "e60d1628ae7a95aa"
+    },
+    "flat-glide": {
+      "version": "2026.11.16",
+      "hash": "6797b412974aa4ba"
+    },
+    "flat-header": {
+      "version": "2026.11.16",
+      "hash": "36890aac1240c896"
+    },
+    "flat-heatmap": {
+      "version": "2026.11.16",
+      "hash": "7951010af01b54ed"
+    },
+    "flat-hover-card": {
+      "version": "2026.11.16",
+      "hash": "7bf7fbe15f4bac78"
+    },
+    "flat-icons": {
+      "version": "2026.11.16",
+      "hash": "92ffc0cb458467b6"
+    },
+    "flat-input": {
+      "version": "2026.11.16",
+      "hash": "6ab66d3f58249d17"
+    },
+    "flat-inspector": {
+      "version": "2026.11.16",
+      "hash": "17b1c571481f44cc"
+    },
+    "flat-kbd": {
+      "version": "2026.11.16",
+      "hash": "a6fe723819d955b7"
+    },
+    "flat-legend": {
+      "version": "2026.11.16",
+      "hash": "7317a78595adba1a"
+    },
+    "flat-lightbox": {
+      "version": "2026.11.16",
+      "hash": "aff81fa2348884dc"
+    },
+    "flat-list": {
+      "version": "2026.11.16",
+      "hash": "93a52568fe0a8cac"
+    },
+    "flat-list-cover": {
+      "version": "2026.11.16",
+      "hash": "c05d8979d2f10a6c"
+    },
+    "flat-litt": {
+      "version": "2026.11.16",
+      "hash": "33bc7b0a749395e9"
+    },
+    "flat-log-view": {
+      "version": "2026.11.16",
+      "hash": "4efe0d6d3ce76434"
+    },
+    "flat-media": {
+      "version": "2026.11.16",
+      "hash": "37d4718106f094ae"
+    },
+    "flat-menu": {
+      "version": "2026.11.16",
+      "hash": "fbdadfcf58b7a9f1"
+    },
+    "flat-message": {
+      "version": "2026.11.16",
+      "hash": "0fc4e698b1bfc519"
+    },
+    "flat-motion": {
+      "version": "2026.11.16",
+      "hash": "ef289afc9233777b"
+    },
+    "flat-number-field": {
+      "version": "2026.11.16",
+      "hash": "eaba7e65acd2431a"
+    },
+    "flat-option-picker": {
+      "version": "2026.11.16",
+      "hash": "0d9caf855398dae0"
+    },
+    "flat-pad": {
+      "version": "2026.11.16",
+      "hash": "93e06b2d83651151"
+    },
+    "flat-pagination": {
+      "version": "2026.11.16",
+      "hash": "51cb577541230a68"
+    },
+    "flat-plan": {
+      "version": "2026.11.16",
+      "hash": "d4859621c7f7d3e9"
+    },
+    "flat-popover": {
+      "version": "2026.11.16",
+      "hash": "0ab6515e1befac6b"
+    },
+    "flat-price": {
+      "version": "2026.11.16",
+      "hash": "07931a630f63729d"
+    },
+    "flat-product-card": {
+      "version": "2026.11.16",
+      "hash": "9d8b30626009a796"
+    },
+    "flat-progress": {
+      "version": "2026.11.16",
+      "hash": "33b8707405e8f11a"
+    },
+    "flat-range-chart": {
+      "version": "2026.11.16",
+      "hash": "3b510b0be4606ccd"
+    },
+    "flat-resizable": {
+      "version": "2026.11.16",
+      "hash": "946f01201b087b18"
+    },
+    "flat-rolling-number": {
+      "version": "2026.11.16",
+      "hash": "b586cbb15698859e"
+    },
+    "flat-rule-builder": {
+      "version": "2026.11.16",
+      "hash": "4a25f2ab928361a0"
+    },
+    "flat-run-card": {
+      "version": "2026.11.16",
+      "hash": "0fa2708926ed2507"
+    },
+    "flat-run-list": {
+      "version": "2026.11.16",
+      "hash": "803190ce5ea8b47d"
+    },
+    "flat-scroll-area": {
+      "version": "2026.11.16",
+      "hash": "9d6e7d1ba7b86f41"
+    },
+    "flat-segmented": {
+      "version": "2026.11.16",
+      "hash": "e5c6a8c03019deb3"
+    },
+    "flat-select": {
+      "version": "2026.11.16",
+      "hash": "03b963e676eb60f0"
+    },
+    "flat-shopify": {
+      "version": "2026.11.16",
+      "hash": "18bfba74da1d4e27"
+    },
+    "flat-shopify-cart": {
+      "version": "2026.11.16",
+      "hash": "737cb6f880409b60"
+    },
+    "flat-slide-confirm": {
+      "version": "2026.11.16",
+      "hash": "812cd24790ed7356"
+    },
+    "flat-slider": {
+      "version": "2026.11.16",
+      "hash": "72e411ad3a785ad4"
+    },
+    "flat-sources": {
+      "version": "2026.11.16",
+      "hash": "72c5bf8906cc9d51"
+    },
+    "flat-sparkline": {
+      "version": "2026.11.16",
+      "hash": "1b8968292f612018"
+    },
+    "flat-spread": {
+      "version": "2026.11.16",
+      "hash": "520a17ad30ad6dbd"
+    },
+    "flat-spring-editor": {
+      "version": "2026.11.16",
+      "hash": "7e37983458b10bd7"
+    },
+    "flat-stat": {
+      "version": "2026.11.16",
+      "hash": "a7a881890af53c8b"
+    },
+    "flat-states": {
+      "version": "2026.11.16",
+      "hash": "60cce481822e4444"
+    },
+    "flat-steps": {
+      "version": "2026.11.16",
+      "hash": "eb874003dc2c37b0"
+    },
+    "flat-switch": {
+      "version": "2026.11.16",
+      "hash": "7b3d67990e73a037"
+    },
+    "flat-table": {
+      "version": "2026.11.16",
+      "hash": "ab97c738ea2e94e1"
+    },
+    "flat-table-filter": {
+      "version": "2026.11.16",
+      "hash": "20ddca6bee9f812e"
+    },
+    "flat-tabs": {
+      "version": "2026.11.16",
+      "hash": "ccb00afcbf2dec4b"
+    },
+    "flat-tag": {
+      "version": "2026.11.16",
+      "hash": "c4887d9f33e6e1d9"
+    },
+    "flat-thinking": {
+      "version": "2026.11.16",
+      "hash": "d37bf136b8e3216e"
+    },
+    "flat-time-scrubber": {
+      "version": "2026.11.16",
+      "hash": "29ad1d730d452e84"
+    },
+    "flat-timeline": {
+      "version": "2026.11.16",
+      "hash": "fbab116e5a8bd8e3"
+    },
+    "flat-toast": {
+      "version": "2026.11.16",
+      "hash": "b30bfa89cc3a2976"
+    },
+    "flat-token-input": {
+      "version": "2026.11.16",
+      "hash": "fd5550b03c6c06d6"
+    },
+    "flat-tool-call": {
+      "version": "2026.11.16",
+      "hash": "b3b1640ab0f24090"
+    },
+    "flat-tooltip": {
+      "version": "2026.11.16",
+      "hash": "e4b624627724b189"
+    },
+    "flat-tree": {
+      "version": "2026.11.16",
+      "hash": "76d264c7857cff66"
+    },
+    "flat-tune": {
+      "version": "2026.11.16",
+      "hash": "6ec7bcdc63744065"
     },
     "form": {
       "version": "2026.11.06",
@@ -185,6 +961,386 @@
     "header": {
       "version": "2026.11.06",
       "hash": "36890aac1240c896"
+    },
+    "heat-accordion": {
+      "version": "2026.11.16",
+      "hash": "22973b4e870e05c5"
+    },
+    "heat-action-bar": {
+      "version": "2026.11.16",
+      "hash": "09c6dfea8cc66216"
+    },
+    "heat-app-shell": {
+      "version": "2026.11.16",
+      "hash": "db759722a42893f7"
+    },
+    "heat-avatar": {
+      "version": "2026.11.16",
+      "hash": "09d98f9ff76d2f66"
+    },
+    "heat-bar-list": {
+      "version": "2026.11.16",
+      "hash": "5c58cd236d48fa00"
+    },
+    "heat-breadcrumb": {
+      "version": "2026.11.16",
+      "hash": "8a5b08b686c7051c"
+    },
+    "heat-breakdown": {
+      "version": "2026.11.16",
+      "hash": "1a95da13e9965bf7"
+    },
+    "heat-button": {
+      "version": "2026.11.16",
+      "hash": "797d73d18a214b30"
+    },
+    "heat-callout": {
+      "version": "2026.11.16",
+      "hash": "c0a2f7eb8cb1ebb8"
+    },
+    "heat-card": {
+      "version": "2026.11.16",
+      "hash": "d2ea971a6a651e96"
+    },
+    "heat-card-picker": {
+      "version": "2026.11.16",
+      "hash": "4d6aba9df4f76884"
+    },
+    "heat-carousel": {
+      "version": "2026.11.16",
+      "hash": "1ed989a6d72ae8b0"
+    },
+    "heat-cart": {
+      "version": "2026.11.16",
+      "hash": "83eb858b4546db26"
+    },
+    "heat-chart": {
+      "version": "2026.11.16",
+      "hash": "f62d59ae9f472b41"
+    },
+    "heat-checkbox": {
+      "version": "2026.11.16",
+      "hash": "6c4a372bfe832c97"
+    },
+    "heat-code-block": {
+      "version": "2026.11.16",
+      "hash": "941606ce76eb027f"
+    },
+    "heat-code-input": {
+      "version": "2026.11.16",
+      "hash": "df3a48dce47e961e"
+    },
+    "heat-cohort-grid": {
+      "version": "2026.11.16",
+      "hash": "69853aa6d7e8b6b3"
+    },
+    "heat-color-picker": {
+      "version": "2026.11.16",
+      "hash": "126b02f9c5a8f4d9"
+    },
+    "heat-combobox": {
+      "version": "2026.11.16",
+      "hash": "e59509c870120e3f"
+    },
+    "heat-command-menu": {
+      "version": "2026.11.16",
+      "hash": "6d1f903397f41ea1"
+    },
+    "heat-composer": {
+      "version": "2026.11.16",
+      "hash": "7881b8cb5db916cd"
+    },
+    "heat-context-menu": {
+      "version": "2026.11.16",
+      "hash": "c1a658e43874c0f3"
+    },
+    "heat-curve-editor": {
+      "version": "2026.11.16",
+      "hash": "bb2b40e9c5cad2cd"
+    },
+    "heat-date-picker": {
+      "version": "2026.11.16",
+      "hash": "599e168a69af434f"
+    },
+    "heat-details": {
+      "version": "2026.11.16",
+      "hash": "a474dc20dd0288b5"
+    },
+    "heat-dialog": {
+      "version": "2026.11.16",
+      "hash": "8615d3ab119d5ef0"
+    },
+    "heat-dot-plot": {
+      "version": "2026.11.16",
+      "hash": "2daa045705db87cf"
+    },
+    "heat-file-changes": {
+      "version": "2026.11.16",
+      "hash": "13d06e1887a03add"
+    },
+    "heat-file-drop": {
+      "version": "2026.11.16",
+      "hash": "eefddfc5e35fb70e"
+    },
+    "heat-form": {
+      "version": "2026.11.16",
+      "hash": "a5a6761e96876358"
+    },
+    "heat-framed": {
+      "version": "2026.11.16",
+      "hash": "4e6ae75229c48c9d"
+    },
+    "heat-funnel": {
+      "version": "2026.11.16",
+      "hash": "21d1efc2ba25379b"
+    },
+    "heat-gauge": {
+      "version": "2026.11.16",
+      "hash": "e60d1628ae7a95aa"
+    },
+    "heat-glide": {
+      "version": "2026.11.16",
+      "hash": "6797b412974aa4ba"
+    },
+    "heat-header": {
+      "version": "2026.11.16",
+      "hash": "36890aac1240c896"
+    },
+    "heat-heatmap": {
+      "version": "2026.11.16",
+      "hash": "7951010af01b54ed"
+    },
+    "heat-hover-card": {
+      "version": "2026.11.16",
+      "hash": "7bf7fbe15f4bac78"
+    },
+    "heat-icons": {
+      "version": "2026.11.16",
+      "hash": "92ffc0cb458467b6"
+    },
+    "heat-input": {
+      "version": "2026.11.16",
+      "hash": "c4575e7b82a09b4c"
+    },
+    "heat-inspector": {
+      "version": "2026.11.16",
+      "hash": "17b1c571481f44cc"
+    },
+    "heat-kbd": {
+      "version": "2026.11.16",
+      "hash": "a6fe723819d955b7"
+    },
+    "heat-legend": {
+      "version": "2026.11.16",
+      "hash": "fd4ba0cca8d4e680"
+    },
+    "heat-lightbox": {
+      "version": "2026.11.16",
+      "hash": "aff81fa2348884dc"
+    },
+    "heat-list": {
+      "version": "2026.11.16",
+      "hash": "93a52568fe0a8cac"
+    },
+    "heat-list-cover": {
+      "version": "2026.11.16",
+      "hash": "c05d8979d2f10a6c"
+    },
+    "heat-litt": {
+      "version": "2026.11.16",
+      "hash": "87f52e4f7471fe62"
+    },
+    "heat-log-view": {
+      "version": "2026.11.16",
+      "hash": "4efe0d6d3ce76434"
+    },
+    "heat-media": {
+      "version": "2026.11.16",
+      "hash": "37d4718106f094ae"
+    },
+    "heat-menu": {
+      "version": "2026.11.16",
+      "hash": "fbdadfcf58b7a9f1"
+    },
+    "heat-message": {
+      "version": "2026.11.16",
+      "hash": "0fc4e698b1bfc519"
+    },
+    "heat-motion": {
+      "version": "2026.11.16",
+      "hash": "ef289afc9233777b"
+    },
+    "heat-number-field": {
+      "version": "2026.11.16",
+      "hash": "55f91ef611821e6d"
+    },
+    "heat-option-picker": {
+      "version": "2026.11.16",
+      "hash": "895d73afb747d5fa"
+    },
+    "heat-pad": {
+      "version": "2026.11.16",
+      "hash": "93e06b2d83651151"
+    },
+    "heat-pagination": {
+      "version": "2026.11.16",
+      "hash": "f7476300865d12f0"
+    },
+    "heat-plan": {
+      "version": "2026.11.16",
+      "hash": "d4859621c7f7d3e9"
+    },
+    "heat-popover": {
+      "version": "2026.11.16",
+      "hash": "0ab6515e1befac6b"
+    },
+    "heat-price": {
+      "version": "2026.11.16",
+      "hash": "07931a630f63729d"
+    },
+    "heat-product-card": {
+      "version": "2026.11.16",
+      "hash": "9d8b30626009a796"
+    },
+    "heat-progress": {
+      "version": "2026.11.16",
+      "hash": "33b8707405e8f11a"
+    },
+    "heat-range-chart": {
+      "version": "2026.11.16",
+      "hash": "3b510b0be4606ccd"
+    },
+    "heat-resizable": {
+      "version": "2026.11.16",
+      "hash": "946f01201b087b18"
+    },
+    "heat-rolling-number": {
+      "version": "2026.11.16",
+      "hash": "b586cbb15698859e"
+    },
+    "heat-rule-builder": {
+      "version": "2026.11.16",
+      "hash": "4a25f2ab928361a0"
+    },
+    "heat-run-card": {
+      "version": "2026.11.16",
+      "hash": "0fa2708926ed2507"
+    },
+    "heat-run-list": {
+      "version": "2026.11.16",
+      "hash": "803190ce5ea8b47d"
+    },
+    "heat-scroll-area": {
+      "version": "2026.11.16",
+      "hash": "9d6e7d1ba7b86f41"
+    },
+    "heat-segmented": {
+      "version": "2026.11.16",
+      "hash": "a5c4ecf18728bcd4"
+    },
+    "heat-select": {
+      "version": "2026.11.16",
+      "hash": "7742fa0fe9e7bb6e"
+    },
+    "heat-shopify": {
+      "version": "2026.11.16",
+      "hash": "18bfba74da1d4e27"
+    },
+    "heat-shopify-cart": {
+      "version": "2026.11.16",
+      "hash": "737cb6f880409b60"
+    },
+    "heat-slide-confirm": {
+      "version": "2026.11.16",
+      "hash": "a581a2f09b7fd384"
+    },
+    "heat-slider": {
+      "version": "2026.11.16",
+      "hash": "e212708a6a9eca22"
+    },
+    "heat-sources": {
+      "version": "2026.11.16",
+      "hash": "72c5bf8906cc9d51"
+    },
+    "heat-sparkline": {
+      "version": "2026.11.16",
+      "hash": "e69ebd60190268e7"
+    },
+    "heat-spread": {
+      "version": "2026.11.16",
+      "hash": "520a17ad30ad6dbd"
+    },
+    "heat-spring-editor": {
+      "version": "2026.11.16",
+      "hash": "7e37983458b10bd7"
+    },
+    "heat-stat": {
+      "version": "2026.11.16",
+      "hash": "eb373e3c3fc672b0"
+    },
+    "heat-states": {
+      "version": "2026.11.16",
+      "hash": "60cce481822e4444"
+    },
+    "heat-steps": {
+      "version": "2026.11.16",
+      "hash": "eb874003dc2c37b0"
+    },
+    "heat-switch": {
+      "version": "2026.11.16",
+      "hash": "ac56d35801b606bd"
+    },
+    "heat-table": {
+      "version": "2026.11.16",
+      "hash": "48199b0061ba62ad"
+    },
+    "heat-table-filter": {
+      "version": "2026.11.16",
+      "hash": "20ddca6bee9f812e"
+    },
+    "heat-tabs": {
+      "version": "2026.11.16",
+      "hash": "53062a120151c579"
+    },
+    "heat-tag": {
+      "version": "2026.11.16",
+      "hash": "c482475ad31b3562"
+    },
+    "heat-thinking": {
+      "version": "2026.11.16",
+      "hash": "d37bf136b8e3216e"
+    },
+    "heat-time-scrubber": {
+      "version": "2026.11.16",
+      "hash": "29ad1d730d452e84"
+    },
+    "heat-timeline": {
+      "version": "2026.11.16",
+      "hash": "fbab116e5a8bd8e3"
+    },
+    "heat-toast": {
+      "version": "2026.11.16",
+      "hash": "b30bfa89cc3a2976"
+    },
+    "heat-token-input": {
+      "version": "2026.11.16",
+      "hash": "ae3aba43cb5d81c8"
+    },
+    "heat-tool-call": {
+      "version": "2026.11.16",
+      "hash": "b3b1640ab0f24090"
+    },
+    "heat-tooltip": {
+      "version": "2026.11.16",
+      "hash": "e4b624627724b189"
+    },
+    "heat-tree": {
+      "version": "2026.11.16",
+      "hash": "76d264c7857cff66"
+    },
+    "heat-tune": {
+      "version": "2026.11.16",
+      "hash": "6ec7bcdc63744065"
     },
     "heatmap": {
       "version": "2026.10.26",
@@ -270,6 +1426,386 @@
       "version": "2026.11.15",
       "hash": "ce4971eebe474c4b"
     },
+    "plain-accordion": {
+      "version": "2026.11.16",
+      "hash": "22973b4e870e05c5"
+    },
+    "plain-action-bar": {
+      "version": "2026.11.16",
+      "hash": "09c6dfea8cc66216"
+    },
+    "plain-app-shell": {
+      "version": "2026.11.16",
+      "hash": "db759722a42893f7"
+    },
+    "plain-avatar": {
+      "version": "2026.11.16",
+      "hash": "09d98f9ff76d2f66"
+    },
+    "plain-bar-list": {
+      "version": "2026.11.16",
+      "hash": "5c58cd236d48fa00"
+    },
+    "plain-breadcrumb": {
+      "version": "2026.11.16",
+      "hash": "8a5b08b686c7051c"
+    },
+    "plain-breakdown": {
+      "version": "2026.11.16",
+      "hash": "1a95da13e9965bf7"
+    },
+    "plain-button": {
+      "version": "2026.11.16",
+      "hash": "23456b3cad440b62"
+    },
+    "plain-callout": {
+      "version": "2026.11.16",
+      "hash": "c0a2f7eb8cb1ebb8"
+    },
+    "plain-card": {
+      "version": "2026.11.16",
+      "hash": "d2ea971a6a651e96"
+    },
+    "plain-card-picker": {
+      "version": "2026.11.16",
+      "hash": "4d6aba9df4f76884"
+    },
+    "plain-carousel": {
+      "version": "2026.11.16",
+      "hash": "1ed989a6d72ae8b0"
+    },
+    "plain-cart": {
+      "version": "2026.11.16",
+      "hash": "83eb858b4546db26"
+    },
+    "plain-chart": {
+      "version": "2026.11.16",
+      "hash": "f62d59ae9f472b41"
+    },
+    "plain-checkbox": {
+      "version": "2026.11.16",
+      "hash": "336521b27a4bbc47"
+    },
+    "plain-code-block": {
+      "version": "2026.11.16",
+      "hash": "941606ce76eb027f"
+    },
+    "plain-code-input": {
+      "version": "2026.11.16",
+      "hash": "df3a48dce47e961e"
+    },
+    "plain-cohort-grid": {
+      "version": "2026.11.16",
+      "hash": "69853aa6d7e8b6b3"
+    },
+    "plain-color-picker": {
+      "version": "2026.11.16",
+      "hash": "126b02f9c5a8f4d9"
+    },
+    "plain-combobox": {
+      "version": "2026.11.16",
+      "hash": "e59509c870120e3f"
+    },
+    "plain-command-menu": {
+      "version": "2026.11.16",
+      "hash": "6d1f903397f41ea1"
+    },
+    "plain-composer": {
+      "version": "2026.11.16",
+      "hash": "7881b8cb5db916cd"
+    },
+    "plain-context-menu": {
+      "version": "2026.11.16",
+      "hash": "c1a658e43874c0f3"
+    },
+    "plain-curve-editor": {
+      "version": "2026.11.16",
+      "hash": "bb2b40e9c5cad2cd"
+    },
+    "plain-date-picker": {
+      "version": "2026.11.16",
+      "hash": "599e168a69af434f"
+    },
+    "plain-details": {
+      "version": "2026.11.16",
+      "hash": "a474dc20dd0288b5"
+    },
+    "plain-dialog": {
+      "version": "2026.11.16",
+      "hash": "8615d3ab119d5ef0"
+    },
+    "plain-dot-plot": {
+      "version": "2026.11.16",
+      "hash": "2daa045705db87cf"
+    },
+    "plain-file-changes": {
+      "version": "2026.11.16",
+      "hash": "13d06e1887a03add"
+    },
+    "plain-file-drop": {
+      "version": "2026.11.16",
+      "hash": "eefddfc5e35fb70e"
+    },
+    "plain-form": {
+      "version": "2026.11.16",
+      "hash": "a5a6761e96876358"
+    },
+    "plain-framed": {
+      "version": "2026.11.16",
+      "hash": "4e6ae75229c48c9d"
+    },
+    "plain-funnel": {
+      "version": "2026.11.16",
+      "hash": "21d1efc2ba25379b"
+    },
+    "plain-gauge": {
+      "version": "2026.11.16",
+      "hash": "e60d1628ae7a95aa"
+    },
+    "plain-glide": {
+      "version": "2026.11.16",
+      "hash": "6797b412974aa4ba"
+    },
+    "plain-header": {
+      "version": "2026.11.16",
+      "hash": "36890aac1240c896"
+    },
+    "plain-heatmap": {
+      "version": "2026.11.16",
+      "hash": "7951010af01b54ed"
+    },
+    "plain-hover-card": {
+      "version": "2026.11.16",
+      "hash": "7bf7fbe15f4bac78"
+    },
+    "plain-icons": {
+      "version": "2026.11.16",
+      "hash": "92ffc0cb458467b6"
+    },
+    "plain-input": {
+      "version": "2026.11.16",
+      "hash": "981b0fcc00709235"
+    },
+    "plain-inspector": {
+      "version": "2026.11.16",
+      "hash": "17b1c571481f44cc"
+    },
+    "plain-kbd": {
+      "version": "2026.11.16",
+      "hash": "a6fe723819d955b7"
+    },
+    "plain-legend": {
+      "version": "2026.11.16",
+      "hash": "fd4ba0cca8d4e680"
+    },
+    "plain-lightbox": {
+      "version": "2026.11.16",
+      "hash": "aff81fa2348884dc"
+    },
+    "plain-list": {
+      "version": "2026.11.16",
+      "hash": "93a52568fe0a8cac"
+    },
+    "plain-list-cover": {
+      "version": "2026.11.16",
+      "hash": "c05d8979d2f10a6c"
+    },
+    "plain-litt": {
+      "version": "2026.11.16",
+      "hash": "2979a2b00f2c8a96"
+    },
+    "plain-log-view": {
+      "version": "2026.11.16",
+      "hash": "4efe0d6d3ce76434"
+    },
+    "plain-media": {
+      "version": "2026.11.16",
+      "hash": "37d4718106f094ae"
+    },
+    "plain-menu": {
+      "version": "2026.11.16",
+      "hash": "fbdadfcf58b7a9f1"
+    },
+    "plain-message": {
+      "version": "2026.11.16",
+      "hash": "0fc4e698b1bfc519"
+    },
+    "plain-motion": {
+      "version": "2026.11.16",
+      "hash": "ef289afc9233777b"
+    },
+    "plain-number-field": {
+      "version": "2026.11.16",
+      "hash": "55f91ef611821e6d"
+    },
+    "plain-option-picker": {
+      "version": "2026.11.16",
+      "hash": "895d73afb747d5fa"
+    },
+    "plain-pad": {
+      "version": "2026.11.16",
+      "hash": "93e06b2d83651151"
+    },
+    "plain-pagination": {
+      "version": "2026.11.16",
+      "hash": "f7476300865d12f0"
+    },
+    "plain-plan": {
+      "version": "2026.11.16",
+      "hash": "d4859621c7f7d3e9"
+    },
+    "plain-popover": {
+      "version": "2026.11.16",
+      "hash": "0ab6515e1befac6b"
+    },
+    "plain-price": {
+      "version": "2026.11.16",
+      "hash": "07931a630f63729d"
+    },
+    "plain-product-card": {
+      "version": "2026.11.16",
+      "hash": "9d8b30626009a796"
+    },
+    "plain-progress": {
+      "version": "2026.11.16",
+      "hash": "33b8707405e8f11a"
+    },
+    "plain-range-chart": {
+      "version": "2026.11.16",
+      "hash": "3b510b0be4606ccd"
+    },
+    "plain-resizable": {
+      "version": "2026.11.16",
+      "hash": "946f01201b087b18"
+    },
+    "plain-rolling-number": {
+      "version": "2026.11.16",
+      "hash": "b586cbb15698859e"
+    },
+    "plain-rule-builder": {
+      "version": "2026.11.16",
+      "hash": "4a25f2ab928361a0"
+    },
+    "plain-run-card": {
+      "version": "2026.11.16",
+      "hash": "0fa2708926ed2507"
+    },
+    "plain-run-list": {
+      "version": "2026.11.16",
+      "hash": "803190ce5ea8b47d"
+    },
+    "plain-scroll-area": {
+      "version": "2026.11.16",
+      "hash": "9d6e7d1ba7b86f41"
+    },
+    "plain-segmented": {
+      "version": "2026.11.16",
+      "hash": "f3df47f0f2c49188"
+    },
+    "plain-select": {
+      "version": "2026.11.16",
+      "hash": "4b9a6ef10511dea9"
+    },
+    "plain-shopify": {
+      "version": "2026.11.16",
+      "hash": "18bfba74da1d4e27"
+    },
+    "plain-shopify-cart": {
+      "version": "2026.11.16",
+      "hash": "737cb6f880409b60"
+    },
+    "plain-slide-confirm": {
+      "version": "2026.11.16",
+      "hash": "a581a2f09b7fd384"
+    },
+    "plain-slider": {
+      "version": "2026.11.16",
+      "hash": "e212708a6a9eca22"
+    },
+    "plain-sources": {
+      "version": "2026.11.16",
+      "hash": "72c5bf8906cc9d51"
+    },
+    "plain-sparkline": {
+      "version": "2026.11.16",
+      "hash": "e69ebd60190268e7"
+    },
+    "plain-spread": {
+      "version": "2026.11.16",
+      "hash": "520a17ad30ad6dbd"
+    },
+    "plain-spring-editor": {
+      "version": "2026.11.16",
+      "hash": "7e37983458b10bd7"
+    },
+    "plain-stat": {
+      "version": "2026.11.16",
+      "hash": "eb373e3c3fc672b0"
+    },
+    "plain-states": {
+      "version": "2026.11.16",
+      "hash": "60cce481822e4444"
+    },
+    "plain-steps": {
+      "version": "2026.11.16",
+      "hash": "eb874003dc2c37b0"
+    },
+    "plain-switch": {
+      "version": "2026.11.16",
+      "hash": "4decbce6892d615b"
+    },
+    "plain-table": {
+      "version": "2026.11.16",
+      "hash": "48199b0061ba62ad"
+    },
+    "plain-table-filter": {
+      "version": "2026.11.16",
+      "hash": "20ddca6bee9f812e"
+    },
+    "plain-tabs": {
+      "version": "2026.11.16",
+      "hash": "adb0c12fceda1f8b"
+    },
+    "plain-tag": {
+      "version": "2026.11.16",
+      "hash": "c482475ad31b3562"
+    },
+    "plain-thinking": {
+      "version": "2026.11.16",
+      "hash": "d37bf136b8e3216e"
+    },
+    "plain-time-scrubber": {
+      "version": "2026.11.16",
+      "hash": "29ad1d730d452e84"
+    },
+    "plain-timeline": {
+      "version": "2026.11.16",
+      "hash": "fbab116e5a8bd8e3"
+    },
+    "plain-toast": {
+      "version": "2026.11.16",
+      "hash": "b30bfa89cc3a2976"
+    },
+    "plain-token-input": {
+      "version": "2026.11.16",
+      "hash": "ae3aba43cb5d81c8"
+    },
+    "plain-tool-call": {
+      "version": "2026.11.16",
+      "hash": "b3b1640ab0f24090"
+    },
+    "plain-tooltip": {
+      "version": "2026.11.16",
+      "hash": "e4b624627724b189"
+    },
+    "plain-tree": {
+      "version": "2026.11.16",
+      "hash": "76d264c7857cff66"
+    },
+    "plain-tune": {
+      "version": "2026.11.16",
+      "hash": "6ec7bcdc63744065"
+    },
     "plan": {
       "version": "2026.11.06",
       "hash": "d4859621c7f7d3e9"
@@ -277,6 +1813,386 @@
     "popover": {
       "version": "2026.11.15",
       "hash": "0ab6515e1befac6b"
+    },
+    "press-accordion": {
+      "version": "2026.11.16",
+      "hash": "22973b4e870e05c5"
+    },
+    "press-action-bar": {
+      "version": "2026.11.16",
+      "hash": "09c6dfea8cc66216"
+    },
+    "press-app-shell": {
+      "version": "2026.11.16",
+      "hash": "db759722a42893f7"
+    },
+    "press-avatar": {
+      "version": "2026.11.16",
+      "hash": "09d98f9ff76d2f66"
+    },
+    "press-bar-list": {
+      "version": "2026.11.16",
+      "hash": "5c58cd236d48fa00"
+    },
+    "press-breadcrumb": {
+      "version": "2026.11.16",
+      "hash": "8a5b08b686c7051c"
+    },
+    "press-breakdown": {
+      "version": "2026.11.16",
+      "hash": "1a95da13e9965bf7"
+    },
+    "press-button": {
+      "version": "2026.11.16",
+      "hash": "797d73d18a214b30"
+    },
+    "press-callout": {
+      "version": "2026.11.16",
+      "hash": "c0a2f7eb8cb1ebb8"
+    },
+    "press-card": {
+      "version": "2026.11.16",
+      "hash": "d2ea971a6a651e96"
+    },
+    "press-card-picker": {
+      "version": "2026.11.16",
+      "hash": "4d6aba9df4f76884"
+    },
+    "press-carousel": {
+      "version": "2026.11.16",
+      "hash": "1ed989a6d72ae8b0"
+    },
+    "press-cart": {
+      "version": "2026.11.16",
+      "hash": "83eb858b4546db26"
+    },
+    "press-chart": {
+      "version": "2026.11.16",
+      "hash": "f62d59ae9f472b41"
+    },
+    "press-checkbox": {
+      "version": "2026.11.16",
+      "hash": "6c4a372bfe832c97"
+    },
+    "press-code-block": {
+      "version": "2026.11.16",
+      "hash": "941606ce76eb027f"
+    },
+    "press-code-input": {
+      "version": "2026.11.16",
+      "hash": "df3a48dce47e961e"
+    },
+    "press-cohort-grid": {
+      "version": "2026.11.16",
+      "hash": "69853aa6d7e8b6b3"
+    },
+    "press-color-picker": {
+      "version": "2026.11.16",
+      "hash": "126b02f9c5a8f4d9"
+    },
+    "press-combobox": {
+      "version": "2026.11.16",
+      "hash": "e59509c870120e3f"
+    },
+    "press-command-menu": {
+      "version": "2026.11.16",
+      "hash": "6d1f903397f41ea1"
+    },
+    "press-composer": {
+      "version": "2026.11.16",
+      "hash": "7881b8cb5db916cd"
+    },
+    "press-context-menu": {
+      "version": "2026.11.16",
+      "hash": "c1a658e43874c0f3"
+    },
+    "press-curve-editor": {
+      "version": "2026.11.16",
+      "hash": "bb2b40e9c5cad2cd"
+    },
+    "press-date-picker": {
+      "version": "2026.11.16",
+      "hash": "599e168a69af434f"
+    },
+    "press-details": {
+      "version": "2026.11.16",
+      "hash": "a474dc20dd0288b5"
+    },
+    "press-dialog": {
+      "version": "2026.11.16",
+      "hash": "8615d3ab119d5ef0"
+    },
+    "press-dot-plot": {
+      "version": "2026.11.16",
+      "hash": "2daa045705db87cf"
+    },
+    "press-file-changes": {
+      "version": "2026.11.16",
+      "hash": "13d06e1887a03add"
+    },
+    "press-file-drop": {
+      "version": "2026.11.16",
+      "hash": "eefddfc5e35fb70e"
+    },
+    "press-form": {
+      "version": "2026.11.16",
+      "hash": "a5a6761e96876358"
+    },
+    "press-framed": {
+      "version": "2026.11.16",
+      "hash": "4e6ae75229c48c9d"
+    },
+    "press-funnel": {
+      "version": "2026.11.16",
+      "hash": "21d1efc2ba25379b"
+    },
+    "press-gauge": {
+      "version": "2026.11.16",
+      "hash": "e60d1628ae7a95aa"
+    },
+    "press-glide": {
+      "version": "2026.11.16",
+      "hash": "6797b412974aa4ba"
+    },
+    "press-header": {
+      "version": "2026.11.16",
+      "hash": "36890aac1240c896"
+    },
+    "press-heatmap": {
+      "version": "2026.11.16",
+      "hash": "7951010af01b54ed"
+    },
+    "press-hover-card": {
+      "version": "2026.11.16",
+      "hash": "7bf7fbe15f4bac78"
+    },
+    "press-icons": {
+      "version": "2026.11.16",
+      "hash": "92ffc0cb458467b6"
+    },
+    "press-input": {
+      "version": "2026.11.16",
+      "hash": "c4575e7b82a09b4c"
+    },
+    "press-inspector": {
+      "version": "2026.11.16",
+      "hash": "17b1c571481f44cc"
+    },
+    "press-kbd": {
+      "version": "2026.11.16",
+      "hash": "a6fe723819d955b7"
+    },
+    "press-legend": {
+      "version": "2026.11.16",
+      "hash": "fd4ba0cca8d4e680"
+    },
+    "press-lightbox": {
+      "version": "2026.11.16",
+      "hash": "aff81fa2348884dc"
+    },
+    "press-list": {
+      "version": "2026.11.16",
+      "hash": "93a52568fe0a8cac"
+    },
+    "press-list-cover": {
+      "version": "2026.11.16",
+      "hash": "c05d8979d2f10a6c"
+    },
+    "press-litt": {
+      "version": "2026.11.16",
+      "hash": "98b7a0d325c37428"
+    },
+    "press-log-view": {
+      "version": "2026.11.16",
+      "hash": "4efe0d6d3ce76434"
+    },
+    "press-media": {
+      "version": "2026.11.16",
+      "hash": "37d4718106f094ae"
+    },
+    "press-menu": {
+      "version": "2026.11.16",
+      "hash": "fbdadfcf58b7a9f1"
+    },
+    "press-message": {
+      "version": "2026.11.16",
+      "hash": "0fc4e698b1bfc519"
+    },
+    "press-motion": {
+      "version": "2026.11.16",
+      "hash": "ef289afc9233777b"
+    },
+    "press-number-field": {
+      "version": "2026.11.16",
+      "hash": "55f91ef611821e6d"
+    },
+    "press-option-picker": {
+      "version": "2026.11.16",
+      "hash": "895d73afb747d5fa"
+    },
+    "press-pad": {
+      "version": "2026.11.16",
+      "hash": "93e06b2d83651151"
+    },
+    "press-pagination": {
+      "version": "2026.11.16",
+      "hash": "f7476300865d12f0"
+    },
+    "press-plan": {
+      "version": "2026.11.16",
+      "hash": "d4859621c7f7d3e9"
+    },
+    "press-popover": {
+      "version": "2026.11.16",
+      "hash": "0ab6515e1befac6b"
+    },
+    "press-price": {
+      "version": "2026.11.16",
+      "hash": "07931a630f63729d"
+    },
+    "press-product-card": {
+      "version": "2026.11.16",
+      "hash": "9d8b30626009a796"
+    },
+    "press-progress": {
+      "version": "2026.11.16",
+      "hash": "33b8707405e8f11a"
+    },
+    "press-range-chart": {
+      "version": "2026.11.16",
+      "hash": "3b510b0be4606ccd"
+    },
+    "press-resizable": {
+      "version": "2026.11.16",
+      "hash": "946f01201b087b18"
+    },
+    "press-rolling-number": {
+      "version": "2026.11.16",
+      "hash": "b586cbb15698859e"
+    },
+    "press-rule-builder": {
+      "version": "2026.11.16",
+      "hash": "4a25f2ab928361a0"
+    },
+    "press-run-card": {
+      "version": "2026.11.16",
+      "hash": "0fa2708926ed2507"
+    },
+    "press-run-list": {
+      "version": "2026.11.16",
+      "hash": "803190ce5ea8b47d"
+    },
+    "press-scroll-area": {
+      "version": "2026.11.16",
+      "hash": "9d6e7d1ba7b86f41"
+    },
+    "press-segmented": {
+      "version": "2026.11.16",
+      "hash": "a5c4ecf18728bcd4"
+    },
+    "press-select": {
+      "version": "2026.11.16",
+      "hash": "7742fa0fe9e7bb6e"
+    },
+    "press-shopify": {
+      "version": "2026.11.16",
+      "hash": "18bfba74da1d4e27"
+    },
+    "press-shopify-cart": {
+      "version": "2026.11.16",
+      "hash": "737cb6f880409b60"
+    },
+    "press-slide-confirm": {
+      "version": "2026.11.16",
+      "hash": "a581a2f09b7fd384"
+    },
+    "press-slider": {
+      "version": "2026.11.16",
+      "hash": "e212708a6a9eca22"
+    },
+    "press-sources": {
+      "version": "2026.11.16",
+      "hash": "72c5bf8906cc9d51"
+    },
+    "press-sparkline": {
+      "version": "2026.11.16",
+      "hash": "e69ebd60190268e7"
+    },
+    "press-spread": {
+      "version": "2026.11.16",
+      "hash": "520a17ad30ad6dbd"
+    },
+    "press-spring-editor": {
+      "version": "2026.11.16",
+      "hash": "7e37983458b10bd7"
+    },
+    "press-stat": {
+      "version": "2026.11.16",
+      "hash": "eb373e3c3fc672b0"
+    },
+    "press-states": {
+      "version": "2026.11.16",
+      "hash": "60cce481822e4444"
+    },
+    "press-steps": {
+      "version": "2026.11.16",
+      "hash": "eb874003dc2c37b0"
+    },
+    "press-switch": {
+      "version": "2026.11.16",
+      "hash": "ac56d35801b606bd"
+    },
+    "press-table": {
+      "version": "2026.11.16",
+      "hash": "48199b0061ba62ad"
+    },
+    "press-table-filter": {
+      "version": "2026.11.16",
+      "hash": "20ddca6bee9f812e"
+    },
+    "press-tabs": {
+      "version": "2026.11.16",
+      "hash": "53062a120151c579"
+    },
+    "press-tag": {
+      "version": "2026.11.16",
+      "hash": "c482475ad31b3562"
+    },
+    "press-thinking": {
+      "version": "2026.11.16",
+      "hash": "d37bf136b8e3216e"
+    },
+    "press-time-scrubber": {
+      "version": "2026.11.16",
+      "hash": "29ad1d730d452e84"
+    },
+    "press-timeline": {
+      "version": "2026.11.16",
+      "hash": "fbab116e5a8bd8e3"
+    },
+    "press-toast": {
+      "version": "2026.11.16",
+      "hash": "b30bfa89cc3a2976"
+    },
+    "press-token-input": {
+      "version": "2026.11.16",
+      "hash": "ae3aba43cb5d81c8"
+    },
+    "press-tool-call": {
+      "version": "2026.11.16",
+      "hash": "b3b1640ab0f24090"
+    },
+    "press-tooltip": {
+      "version": "2026.11.16",
+      "hash": "e4b624627724b189"
+    },
+    "press-tree": {
+      "version": "2026.11.16",
+      "hash": "76d264c7857cff66"
+    },
+    "press-tune": {
+      "version": "2026.11.16",
+      "hash": "6ec7bcdc63744065"
     },
     "price": {
       "version": "2026.10.24",
@@ -297,6 +2213,386 @@
     "projects": {
       "version": "2026.11.03",
       "hash": "ba0d61f1ea516b76"
+    },
+    "rack-accordion": {
+      "version": "2026.11.16",
+      "hash": "22973b4e870e05c5"
+    },
+    "rack-action-bar": {
+      "version": "2026.11.16",
+      "hash": "09c6dfea8cc66216"
+    },
+    "rack-app-shell": {
+      "version": "2026.11.16",
+      "hash": "db759722a42893f7"
+    },
+    "rack-avatar": {
+      "version": "2026.11.16",
+      "hash": "09d98f9ff76d2f66"
+    },
+    "rack-bar-list": {
+      "version": "2026.11.16",
+      "hash": "5c58cd236d48fa00"
+    },
+    "rack-breadcrumb": {
+      "version": "2026.11.16",
+      "hash": "8a5b08b686c7051c"
+    },
+    "rack-breakdown": {
+      "version": "2026.11.16",
+      "hash": "1a95da13e9965bf7"
+    },
+    "rack-button": {
+      "version": "2026.11.16",
+      "hash": "a3c957fe90156a14"
+    },
+    "rack-callout": {
+      "version": "2026.11.16",
+      "hash": "c0a2f7eb8cb1ebb8"
+    },
+    "rack-card": {
+      "version": "2026.11.16",
+      "hash": "d2ea971a6a651e96"
+    },
+    "rack-card-picker": {
+      "version": "2026.11.16",
+      "hash": "62ccaf0c9ee5786e"
+    },
+    "rack-carousel": {
+      "version": "2026.11.16",
+      "hash": "1ed989a6d72ae8b0"
+    },
+    "rack-cart": {
+      "version": "2026.11.16",
+      "hash": "83eb858b4546db26"
+    },
+    "rack-chart": {
+      "version": "2026.11.16",
+      "hash": "f27679ab2148a159"
+    },
+    "rack-checkbox": {
+      "version": "2026.11.16",
+      "hash": "df137430c912c98d"
+    },
+    "rack-code-block": {
+      "version": "2026.11.16",
+      "hash": "941606ce76eb027f"
+    },
+    "rack-code-input": {
+      "version": "2026.11.16",
+      "hash": "b6d827966c649152"
+    },
+    "rack-cohort-grid": {
+      "version": "2026.11.16",
+      "hash": "69853aa6d7e8b6b3"
+    },
+    "rack-color-picker": {
+      "version": "2026.11.16",
+      "hash": "126b02f9c5a8f4d9"
+    },
+    "rack-combobox": {
+      "version": "2026.11.16",
+      "hash": "e59509c870120e3f"
+    },
+    "rack-command-menu": {
+      "version": "2026.11.16",
+      "hash": "6d1f903397f41ea1"
+    },
+    "rack-composer": {
+      "version": "2026.11.16",
+      "hash": "70a14d9b989f94a3"
+    },
+    "rack-context-menu": {
+      "version": "2026.11.16",
+      "hash": "c1a658e43874c0f3"
+    },
+    "rack-curve-editor": {
+      "version": "2026.11.16",
+      "hash": "bb2b40e9c5cad2cd"
+    },
+    "rack-date-picker": {
+      "version": "2026.11.16",
+      "hash": "599e168a69af434f"
+    },
+    "rack-details": {
+      "version": "2026.11.16",
+      "hash": "a474dc20dd0288b5"
+    },
+    "rack-dialog": {
+      "version": "2026.11.16",
+      "hash": "8615d3ab119d5ef0"
+    },
+    "rack-dot-plot": {
+      "version": "2026.11.16",
+      "hash": "2daa045705db87cf"
+    },
+    "rack-file-changes": {
+      "version": "2026.11.16",
+      "hash": "13d06e1887a03add"
+    },
+    "rack-file-drop": {
+      "version": "2026.11.16",
+      "hash": "e1edaab907311be6"
+    },
+    "rack-form": {
+      "version": "2026.11.16",
+      "hash": "a5a6761e96876358"
+    },
+    "rack-framed": {
+      "version": "2026.11.16",
+      "hash": "4e6ae75229c48c9d"
+    },
+    "rack-funnel": {
+      "version": "2026.11.16",
+      "hash": "21d1efc2ba25379b"
+    },
+    "rack-gauge": {
+      "version": "2026.11.16",
+      "hash": "e60d1628ae7a95aa"
+    },
+    "rack-glide": {
+      "version": "2026.11.16",
+      "hash": "6797b412974aa4ba"
+    },
+    "rack-header": {
+      "version": "2026.11.16",
+      "hash": "36890aac1240c896"
+    },
+    "rack-heatmap": {
+      "version": "2026.11.16",
+      "hash": "7951010af01b54ed"
+    },
+    "rack-hover-card": {
+      "version": "2026.11.16",
+      "hash": "7bf7fbe15f4bac78"
+    },
+    "rack-icons": {
+      "version": "2026.11.16",
+      "hash": "92ffc0cb458467b6"
+    },
+    "rack-input": {
+      "version": "2026.11.16",
+      "hash": "d9eb21f291d55880"
+    },
+    "rack-inspector": {
+      "version": "2026.11.16",
+      "hash": "17b1c571481f44cc"
+    },
+    "rack-kbd": {
+      "version": "2026.11.16",
+      "hash": "a6fe723819d955b7"
+    },
+    "rack-legend": {
+      "version": "2026.11.16",
+      "hash": "71259dcf42159124"
+    },
+    "rack-lightbox": {
+      "version": "2026.11.16",
+      "hash": "aff81fa2348884dc"
+    },
+    "rack-list": {
+      "version": "2026.11.16",
+      "hash": "93a52568fe0a8cac"
+    },
+    "rack-list-cover": {
+      "version": "2026.11.16",
+      "hash": "c05d8979d2f10a6c"
+    },
+    "rack-litt": {
+      "version": "2026.11.16",
+      "hash": "79f2998c8ff9ef16"
+    },
+    "rack-log-view": {
+      "version": "2026.11.16",
+      "hash": "4efe0d6d3ce76434"
+    },
+    "rack-media": {
+      "version": "2026.11.16",
+      "hash": "37d4718106f094ae"
+    },
+    "rack-menu": {
+      "version": "2026.11.16",
+      "hash": "fbdadfcf58b7a9f1"
+    },
+    "rack-message": {
+      "version": "2026.11.16",
+      "hash": "0fc4e698b1bfc519"
+    },
+    "rack-motion": {
+      "version": "2026.11.16",
+      "hash": "ef289afc9233777b"
+    },
+    "rack-number-field": {
+      "version": "2026.11.16",
+      "hash": "3bbf47bc5c408ea4"
+    },
+    "rack-option-picker": {
+      "version": "2026.11.16",
+      "hash": "4323444820dc454d"
+    },
+    "rack-pad": {
+      "version": "2026.11.16",
+      "hash": "93e06b2d83651151"
+    },
+    "rack-pagination": {
+      "version": "2026.11.16",
+      "hash": "55bf158aa5db096d"
+    },
+    "rack-plan": {
+      "version": "2026.11.16",
+      "hash": "d4859621c7f7d3e9"
+    },
+    "rack-popover": {
+      "version": "2026.11.16",
+      "hash": "0ab6515e1befac6b"
+    },
+    "rack-price": {
+      "version": "2026.11.16",
+      "hash": "07931a630f63729d"
+    },
+    "rack-product-card": {
+      "version": "2026.11.16",
+      "hash": "9d8b30626009a796"
+    },
+    "rack-progress": {
+      "version": "2026.11.16",
+      "hash": "33b8707405e8f11a"
+    },
+    "rack-range-chart": {
+      "version": "2026.11.16",
+      "hash": "3b510b0be4606ccd"
+    },
+    "rack-resizable": {
+      "version": "2026.11.16",
+      "hash": "946f01201b087b18"
+    },
+    "rack-rolling-number": {
+      "version": "2026.11.16",
+      "hash": "b586cbb15698859e"
+    },
+    "rack-rule-builder": {
+      "version": "2026.11.16",
+      "hash": "4a25f2ab928361a0"
+    },
+    "rack-run-card": {
+      "version": "2026.11.16",
+      "hash": "0fa2708926ed2507"
+    },
+    "rack-run-list": {
+      "version": "2026.11.16",
+      "hash": "803190ce5ea8b47d"
+    },
+    "rack-scroll-area": {
+      "version": "2026.11.16",
+      "hash": "9d6e7d1ba7b86f41"
+    },
+    "rack-segmented": {
+      "version": "2026.11.16",
+      "hash": "487e45ab8501018b"
+    },
+    "rack-select": {
+      "version": "2026.11.16",
+      "hash": "75ab400d7c3e0fbd"
+    },
+    "rack-shopify": {
+      "version": "2026.11.16",
+      "hash": "18bfba74da1d4e27"
+    },
+    "rack-shopify-cart": {
+      "version": "2026.11.16",
+      "hash": "737cb6f880409b60"
+    },
+    "rack-slide-confirm": {
+      "version": "2026.11.16",
+      "hash": "1b1652519033c573"
+    },
+    "rack-slider": {
+      "version": "2026.11.16",
+      "hash": "45c130c874292096"
+    },
+    "rack-sources": {
+      "version": "2026.11.16",
+      "hash": "72c5bf8906cc9d51"
+    },
+    "rack-sparkline": {
+      "version": "2026.11.16",
+      "hash": "4f4270f59c4f2afa"
+    },
+    "rack-spread": {
+      "version": "2026.11.16",
+      "hash": "520a17ad30ad6dbd"
+    },
+    "rack-spring-editor": {
+      "version": "2026.11.16",
+      "hash": "7e37983458b10bd7"
+    },
+    "rack-stat": {
+      "version": "2026.11.16",
+      "hash": "c67cf96c7c7c988f"
+    },
+    "rack-states": {
+      "version": "2026.11.16",
+      "hash": "60cce481822e4444"
+    },
+    "rack-steps": {
+      "version": "2026.11.16",
+      "hash": "eb874003dc2c37b0"
+    },
+    "rack-switch": {
+      "version": "2026.11.16",
+      "hash": "4affa1170fe1d7d2"
+    },
+    "rack-table": {
+      "version": "2026.11.16",
+      "hash": "f45568fdb7c9f17f"
+    },
+    "rack-table-filter": {
+      "version": "2026.11.16",
+      "hash": "20ddca6bee9f812e"
+    },
+    "rack-tabs": {
+      "version": "2026.11.16",
+      "hash": "276d2e5532eba40e"
+    },
+    "rack-tag": {
+      "version": "2026.11.16",
+      "hash": "a1e95049fd1aaa9e"
+    },
+    "rack-thinking": {
+      "version": "2026.11.16",
+      "hash": "d37bf136b8e3216e"
+    },
+    "rack-time-scrubber": {
+      "version": "2026.11.16",
+      "hash": "29ad1d730d452e84"
+    },
+    "rack-timeline": {
+      "version": "2026.11.16",
+      "hash": "fbab116e5a8bd8e3"
+    },
+    "rack-toast": {
+      "version": "2026.11.16",
+      "hash": "b30bfa89cc3a2976"
+    },
+    "rack-token-input": {
+      "version": "2026.11.16",
+      "hash": "44f9de14d607ece5"
+    },
+    "rack-tool-call": {
+      "version": "2026.11.16",
+      "hash": "b3b1640ab0f24090"
+    },
+    "rack-tooltip": {
+      "version": "2026.11.16",
+      "hash": "e4b624627724b189"
+    },
+    "rack-tree": {
+      "version": "2026.11.16",
+      "hash": "76d264c7857cff66"
+    },
+    "rack-tune": {
+      "version": "2026.11.16",
+      "hash": "6ec7bcdc63744065"
     },
     "range-chart": {
       "version": "2026.11.06",

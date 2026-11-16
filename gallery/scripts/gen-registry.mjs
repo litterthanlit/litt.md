@@ -28,6 +28,9 @@
  *   <stem>        registry:ui     one per src/components/*.tsx that has a page
  *   <block>       registry:block  one per src/blocks/*.tsx: a whole screen built from the components, named after its page
  *   <stem>-demo   registry:example  the first demo on the component's page, as a working component (see EXAMPLES)
+ *   <world>/...   each world's own install beside all of the above, which stays as it is: r/<world>/<part>.json (named
+ *                 <world>-<part>) for every part in the world and every engine, its byWorld cut to that world's body,
+ *                 and r/<world>/litt.json with :root and that world's tokens alone (see "one world's install")
  *
  * WHY THE FILES ARE TRANSFORMED (nothing in src/, tokens.css or tailwind.css is edited)
  *   tokens.css declares --accent, --font-sans, --radius-control and friends globally, and its
@@ -1445,6 +1448,43 @@ const SCHEMA_URL = "https://ui.shadcn.com/schema/registry-item.json";
 const urlOf = (name) => `${origin}/r/${name}.json`;
 const ITEM_TYPE = { motion: "registry:lib", glide: "registry:lib", shopify: "registry:lib", "shopify-cart": "registry:lib" };
 
+/**
+ * An item made of source files: its dependencies come from what the files import. `urlOfDep` turns another item's
+ * name (or "litt") into the URL the item depends on.
+ */
+function fileItem({ name, type, block = false, files, transformed, targets, urlOfDep, copy, docs }) {
+  const deps = new Set();
+  const pkgs = new Set();
+  let usesLitt = false;
+  for (const f of files) {
+    const t = transformed.get(f);
+    usesLitt ||= t.usesLitt;
+    for (const imp of t.imports) {
+      if (imp.file) { if (!files.includes(imp.file)) deps.add(itemOf(imp.file)); }
+      else if (!["react", "react-dom"].includes(packageOf(imp.spec))) pkgs.add(packageOf(imp.spec));
+    }
+  }
+  const registryDependencies = [...(usesLitt ? ["litt"] : []), ...[...deps].sort()].map(urlOfDep);
+  return {
+    $schema: SCHEMA_URL,
+    name,
+    type,
+    title: copy.title,
+    description: copy.description,
+    ...(pkgs.size ? { dependencies: [...pkgs].sort() } : {}),
+    ...(registryDependencies.length ? { registryDependencies } : {}),
+    files: files.map((f) => ({
+      // registry/litt/ui/button.tsx, registry/litt/lib/motion/index.tsx, registry/litt/blocks/dashboard.tsx
+      path: `registry/litt/${type === "registry:lib" ? "lib/" : block ? "" : "ui/"}${targets.get(f).replace(/^(?:components|lib)\/litt\//, "")}`,
+      // A block's file is a component in shadcn's terms; the block is the item that brings it with its dependencies.
+      type: block ? "registry:component" : type,
+      content: transformed.get(f).text,
+      target: targets.get(f),
+    })),
+    docs,
+  };
+}
+
 function build(demos = []) {
   // 1. Which files ship, and where.
   const componentFiles = stems.map((s) => path.join(componentsDir, `${s}.tsx`));
@@ -1530,35 +1570,15 @@ function build(demos = []) {
   // components, engines and blocks
   for (const name of itemNames) {
     const block = blockNames.includes(name);
-    const type = ITEM_TYPE[name] ?? (block ? "registry:block" : "registry:ui");
-    const files = itemFiles.get(name);
-    const deps = new Set();
-    const pkgs = new Set();
-    let usesLitt = false;
-    for (const f of files) {
-      const t = transformed.get(f);
-      usesLitt ||= t.usesLitt;
-      for (const imp of t.imports) {
-        if (imp.file) { if (itemOf(imp.file) !== name) deps.add(itemOf(imp.file)); }
-        else if (!["react", "react-dom"].includes(packageOf(imp.spec))) pkgs.add(packageOf(imp.spec));
-      }
-    }
-    const registryDependencies = [...(usesLitt ? ["litt"] : []), ...[...deps].sort()].map(urlOf);
-    items.push(base({
+    items.push(fileItem({
       name,
-      type,
-      title: COPY[name].title,
-      description: COPY[name].description,
-      ...(pkgs.size ? { dependencies: [...pkgs].sort() } : {}),
-      ...(registryDependencies.length ? { registryDependencies } : {}),
-      files: files.map((f) => ({
-        // registry/litt/ui/button.tsx, registry/litt/lib/motion/index.tsx, registry/litt/blocks/dashboard.tsx
-        path: `registry/litt/${type === "registry:lib" ? "lib/" : block ? "" : "ui/"}${targets.get(f).replace(/^(?:components|lib)\/litt\//, "")}`,
-        // A block's file is a component in shadcn's terms; the block is the item that brings it with its dependencies.
-        type: block ? "registry:component" : type,
-        content: transformed.get(f).text,
-        target: targets.get(f),
-      })),
+      type: ITEM_TYPE[name] ?? (block ? "registry:block" : "registry:ui"),
+      block,
+      files: itemFiles.get(name),
+      transformed,
+      targets,
+      urlOfDep: urlOf,
+      copy: COPY[name],
       docs: block ? `${COPY[name].docs} See it live at ${PRODUCTION_ORIGIN}/#${name}.` : COPY[name].docs,
     }));
   }
@@ -1588,8 +1608,274 @@ function build(demos = []) {
       meta: { of: demo.stem },
     }));
   }
-  return { items, targets, transformed };
+  return { items, targets, transformed, itemFiles };
 }
+
+/* ====================================================================== one world's install */
+
+/*
+ * Beside every item above, each world gets an install of its own: r/<world>/<part>.json for every part in the world,
+ * named <world>-<part>, and r/<world>/litt.json with :root and that world's tokens alone (plan 019, phase 4, shape A).
+ * Nothing in src changes for it: the contract's byWorld map keeps the world's own body (or Press's, where byWorld
+ * would fall back to it), and whatever only the other bodies used is dropped, imports included. The engines (motion,
+ * glide, shopify, shopify-cart) ship the same files in every world, but each world has its own copy that depends on
+ * r/<world>/litt.json, so nothing a world installs brings another world's tokens.
+ */
+
+/** Every world, in look.ts's order, with its name and the data-material it needs on <html> (Press needs none). */
+async function loadWorlds() {
+  const src = read(path.join(srcDir, "gallery", "look.ts"));
+  const js = ts.transpileModule(src, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "litt-registry-"));
+  const tmp = path.join(dir, "look.mjs");
+  fs.writeFileSync(tmp, js);
+  try {
+    const { MATERIALS } = await import(pathToFileURL(tmp).href);
+    const worlds = MATERIALS.map((m) => ({ id: m.id, name: m.name, attribute: m.attribute }));
+    for (const w of worlds) if (w.id !== "press" && !BODY_WORLDS.includes(w.id)) fail(`look.ts has the world "${w.id}", which BODY_WORLDS in gen-registry.mjs does not know`);
+    return worlds;
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+const parseTsx = (file, text) => ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+
+/** An exported `const name = { ... }` of a page, as its top-level properties' nodes. */
+function pageObject(sf, name) {
+  for (const st of sf.statements) {
+    if (!ts.isVariableStatement(st) || !st.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) continue;
+    for (const d of st.declarationList.declarations) {
+      if (ts.isIdentifier(d.name) && d.name.text === name && d.initializer && ts.isObjectLiteralExpression(d.initializer)) {
+        return new Map(d.initializer.properties.filter(ts.isPropertyAssignment).map((p) => [p.name.getText(sf), p.initializer]));
+      }
+    }
+  }
+  return null;
+}
+const stringsOf = (node, where) => {
+  if (!ts.isArrayLiteralExpression(node) || !node.elements.every(ts.isStringLiteral)) fail(`${where}: expected an array of strings`);
+  return node.elements.map((e) => e.text);
+};
+
+/** The parts each world holds: a part is in a world when a page that documents it is (meta.worlds absent, or naming it). */
+function partsByWorld(worlds) {
+  const out = new Map(worlds.map((w) => [w.id, new Set()]));
+  for (const f of fs.readdirSync(pagesDir).filter((x) => x.endsWith(".tsx")).sort()) {
+    const file = path.join(pagesDir, f);
+    const sf = parseTsx(file, read(file));
+    const docsOf = pageObject(sf, "docs")?.get("components");
+    if (!docsOf) continue;
+    const metaWorlds = pageObject(sf, "meta")?.get("worlds");
+    const pageWorlds = metaWorlds ? stringsOf(metaWorlds, `${rel(file)} meta.worlds`) : worlds.map((w) => w.id);
+    for (const stem of stringsOf(docsOf, `${rel(file)} docs.components`)) {
+      if (!stems.includes(stem)) fail(`${rel(file)}: docs.components names "${stem}", which is not a component`);
+      for (const w of pageWorlds) (out.get(w) ?? fail(`${rel(file)}: meta.worlds names "${w}", which look.ts does not have`)).add(stem);
+    }
+  }
+  return out;
+}
+
+const WORLD_KEYS = new Set(["press", ...BODY_WORLDS]);
+
+/**
+ * A contract as one world draws it. Every byWorld(material, map) keeps one entry, the world's own or Press's where the
+ * map has none (byWorld's own fallback, motion/deal.ts), written `{ press: <it> }`: the call still type-checks and
+ * returns it under any material. The map is an object literal of world keys, or a top-level const in the same file
+ * that is used only as byWorld maps; anything else fails, so a new shape is taught here, not shipped half rewritten.
+ * Then whatever only the dropped entries used goes (dropUnused).
+ */
+function oneWorld(file, text, world) {
+  const sf = parseTsx(file, text);
+  const at = (node) => `${rel(file)}:${sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1}`;
+  const refuse = (node, why) => fail(`${at(node)}: the per-world rewrite does not understand this byWorld (${why}). Write it as byWorld(material, { press: X, flat: Y, ... }), or teach oneWorld() in gen-registry.mjs the new shape.`);
+  const calls = [];
+  const named = new Map(); // identifier text -> its Identifier nodes
+  (function walk(node) {
+    if (ts.isIdentifier(node)) named.set(node.text, [...(named.get(node.text) ?? []), node]);
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "byWorld") calls.push(node);
+    ts.forEachChild(node, walk);
+  })(sf);
+  for (const id of named.get("byWorld") ?? []) {
+    const p = id.parent;
+    const callee = ts.isCallExpression(p) && p.expression === id;
+    const imported = ts.isImportSpecifier(p) && !p.propertyName;
+    if (!callee && !imported) refuse(id, "byWorld is used as a value, not called");
+  }
+  const maps = new Set();
+  const isMapArg = (node) => ts.isCallExpression(node.parent) && node.parent.arguments[1] === node && calls.includes(node.parent);
+  for (const call of calls) {
+    if (call.arguments.length !== 2) refuse(call, `${call.arguments.length} arguments`);
+    let map = call.arguments[1];
+    if (ts.isIdentifier(map)) {
+      const decl = sf.statements.filter(ts.isVariableStatement).flatMap((s) => s.declarationList.declarations).find((d) => ts.isIdentifier(d.name) && d.name.text === map.text);
+      if (!decl || !(decl.parent.flags & ts.NodeFlags.Const)) refuse(call, `${map.text} is not a top-level const of this file`);
+      if (!decl.initializer || !ts.isObjectLiteralExpression(decl.initializer)) refuse(call, `${map.text} is not an object literal`);
+      const elsewhere = (named.get(map.text) ?? []).filter((n) => n !== decl.name && !isMapArg(n));
+      if (elsewhere.length) refuse(elsewhere[0], `${map.text} is also used outside byWorld, so rewriting it would change that use`);
+      map = decl.initializer;
+    }
+    if (!ts.isObjectLiteralExpression(map)) refuse(call, "the map is not an object literal or a const naming one");
+    maps.add(map);
+  }
+  const edits = [];
+  for (const map of maps) {
+    const entries = new Map();
+    for (const p of map.properties) {
+      if (ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && WORLD_KEYS.has(p.name.text)) entries.set(p.name.text, p.initializer.getText(sf));
+      else if (ts.isShorthandPropertyAssignment(p) && WORLD_KEYS.has(p.name.text)) entries.set(p.name.text, p.name.text);
+      else refuse(p, `"${p.getText(sf).slice(0, 40)}" is not a world's entry`);
+    }
+    if (!entries.has("press")) refuse(map, "the map has no press entry to fall back on");
+    edits.push([map.getStart(sf), map.getEnd(), `{ press: ${entries.get(world) ?? entries.get("press")} }`]);
+  }
+  if (!edits.length) return text;
+  return dropUnused(file, text, applyEdits(text, edits));
+}
+
+/**
+ * Drop what a rewrite left unused, as noUnusedLocals would flag it in a host: a top-level declaration (not exported)
+ * or an imported name that `before` used and `after` no longer does. Repeats until nothing more goes, since a body
+ * that goes can leave its own helpers unused.
+ */
+function dropUnused(file, before, after) {
+  const uses = (sf) => {
+    const decls = new Set();
+    for (const st of sf.statements) for (const d of declared(st)) decls.add(d.name);
+    const count = new Map();
+    (function walk(node) {
+      if (ts.isIdentifier(node) && !decls.has(node) && !isMemberName(node)) count.set(node.text, (count.get(node.text) ?? 0) + 1);
+      ts.forEachChild(node, walk);
+    })(sf);
+    return count;
+  };
+  /* A name that is a member, not a reference: Math.round's round, an object's key, a JSX attribute. Shadowing is not
+     resolved, so a local with an outer name's text keeps that name: the drop can keep too much, never too little. */
+  const isMemberName = (node) => {
+    const p = node.parent;
+    if (ts.isPropertyAccessExpression(p) || ts.isQualifiedName(p)) return (p.name ?? p.right) === node;
+    if (ts.isPropertyAssignment(p) || ts.isPropertySignature(p) || ts.isPropertyDeclaration(p) || ts.isMethodDeclaration(p) || ts.isMethodSignature(p) || ts.isGetAccessor(p) || ts.isSetAccessor(p) || ts.isEnumMember(p) || ts.isJsxAttribute(p)) return p.name === node;
+    if (ts.isBindingElement(p) || ts.isImportSpecifier(p) || ts.isExportSpecifier(p)) return p.propertyName === node;
+    return false;
+  };
+  const wasUsed = uses(parseTsx(file, before));
+  for (;;) {
+    const sf = parseTsx(file, after);
+    const now = uses(sf);
+    const gone = (name) => wasUsed.has(name.text) && !now.has(name.text);
+    const edits = [];
+    const lineEnd = (end) => (after[end] === "\n" ? end + 1 : end);
+    for (const st of sf.statements) {
+      const names = declared(st);
+      if (!names.length || !names.some((d) => gone(d.name))) continue;
+      if (ts.isImportDeclaration(st)) {
+        const keep = names.filter((d) => !gone(d.name));
+        if (!keep.length) edits.push([st.getStart(sf), lineEnd(st.getEnd()), ""]);
+        else {
+          const clause = st.importClause;
+          if (clause.name || !clause.namedBindings || !ts.isNamedImports(clause.namedBindings)) fail(`${rel(file)}: dropping part of "${st.getText(sf)}" is not taught to dropUnused()`);
+          const b = clause.namedBindings;
+          edits.push([b.getStart(sf), b.getEnd(), `{ ${keep.map((d) => d.node.getText(sf)).join(", ")} }`]);
+        }
+      } else if (names.length === 1) {
+        edits.push([st.getFullStart(), st.getEnd(), ""]);
+      } else fail(`${rel(file)}: "${st.getText(sf).slice(0, 60)}" declares several names and some went unused; dropUnused() removes whole statements only`);
+    }
+    if (!edits.length) return after;
+    after = applyEdits(after, edits);
+  }
+}
+
+/** The names a top-level statement declares that a rewrite may leave unused: [{ name: Identifier, node }]. Exports are kept. */
+function declared(st) {
+  if (st.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword || m.kind === ts.SyntaxKind.DeclareKeyword)) return [];
+  if (ts.isImportDeclaration(st)) {
+    const c = st.importClause;
+    if (!c) return [];
+    const out = [];
+    if (c.name) out.push({ name: c.name, node: c.name });
+    if (c.namedBindings && ts.isNamespaceImport(c.namedBindings)) out.push({ name: c.namedBindings.name, node: c.namedBindings });
+    if (c.namedBindings && ts.isNamedImports(c.namedBindings)) for (const e of c.namedBindings.elements) out.push({ name: e.name, node: e });
+    return out;
+  }
+  if ((ts.isFunctionDeclaration(st) || ts.isClassDeclaration(st) || ts.isTypeAliasDeclaration(st) || ts.isInterfaceDeclaration(st) || ts.isEnumDeclaration(st)) && st.name) return [{ name: st.name, node: st }];
+  if (ts.isVariableStatement(st)) return st.declarationList.declarations.filter((d) => ts.isIdentifier(d.name)).map((d) => ({ name: d.name, node: d }));
+  return [];
+}
+
+/** Where one world's item lives: r/<world>/<part>.json. */
+const worldUrlOf = (world, name) => `${origin}/r/${world}/${name}.json`;
+
+/** :root and one world's tokens: every rule for another world's data-material goes, and what it leaves empty. */
+function worldCss(world) {
+  const others = [...BODY_WORLDS].filter((w) => w !== world);
+  const drop = (selector) => others.some((w) => selector.includes(`data-material="${w}"`));
+  const keep = (nodes) => nodes.filter((n) => !(n.k === "rule" && drop(n.selector))).map((n) => (n.nodes && n.k !== "rule" ? { ...n, nodes: keep(n.nodes) } : n));
+  return toCssObject(prune(keep(sharedCss)), `tokens.css for ${world}`);
+}
+
+/**
+ * Every world's items, named <world>-<part> (and <world>-litt), each with the files it ships. A world holds its parts
+ * (partsByWorld) and any item they import, so its items only ever depend on its own.
+ */
+function buildWorlds(worlds, { targets, transformed, itemFiles }) {
+  const parts = partsByWorld(worlds);
+  return worlds.map((w) => {
+    const out = [];
+    const attr = w.attribute ? `data-material="${w.attribute}"` : null;
+    out.push({
+      $schema: SCHEMA_URL,
+      name: `${w.id}-litt`,
+      type: "registry:style",
+      title: `litt tokens, ${w.name}`,
+      description: `${COPY.litt.description.replace(/ Every name starts with litt.*$/, "")} ${w.name}'s alone: the defaults (:root) and ${attr ? `${w.name}'s own tokens, under ${attr}` : "nothing for another world"}. Every name starts with litt, so none of it touches your own.`,
+      cssVars: { theme: themeVars },
+      css: worldCss(w.id),
+      docs: `Added to your global CSS: --litt-* variables and Tailwind names such as bg-litt-surface-1, with ${w.name}'s tokens and no other world's. ${attr ? `Put ${attr} on <html> for ${w.name} to draw. ` : ""}Dark follows .dark, [data-theme="dark"] or the system setting. Install ${w.name}'s parts from ${origin}/r/${w.id}/<part>.json.`,
+    });
+    const queue = [...parts.get(w.id)].sort();
+    const done = new Set();
+    while (queue.length) {
+      const stem = queue.shift();
+      if (done.has(stem)) continue;
+      done.add(stem);
+      /* The files: the item's own (the contract, an engine's modules), each as this world draws it, and the bodies they
+         still import. A body of another world left behind is a bug here. */
+      const mine = itemFiles.get(stem);
+      const local = new Map(transformed);
+      const files = mine.filter((f) => !BODY_FILE.test(norm(path.relative(srcDir, f))));
+      /* The engine defines byWorld and draws no body: only a component is cut to one world. */
+      for (const f of files) if (f.startsWith(componentsDir + path.sep)) local.set(f, transformFile(f, targets, oneWorld(f, read(f), w.id)));
+      for (let i = 0; i < files.length; i++) {
+        for (const imp of local.get(files[i]).imports) if (imp.file && mine.includes(imp.file) && !files.includes(imp.file)) files.push(imp.file);
+      }
+      for (const f of files) {
+        const body = BODY_FILE.exec(norm(path.relative(srcDir, f)));
+        if (body && body[1] !== w.id) fail(`${w.id}-${stem}: ships ${rel(f)}, ${body[1]}'s body`);
+      }
+      const item = fileItem({
+        name: `${w.id}-${stem}`,
+        type: ITEM_TYPE[stem] ?? "registry:ui",
+        files,
+        transformed: local,
+        targets,
+        urlOfDep: (dep) => worldUrlOf(w.id, dep),
+        copy: { title: `${COPY[stem].title}, ${w.name}`, description: `${COPY[stem].description} ${w.name}'s install: ${w.name}'s body alone.` },
+        docs: `${COPY[stem].docs}${attr && !COPY[stem].docs.includes(attr) ? ` Draws ${w.name}: put ${attr} on <html>.` : ""}`,
+      });
+      out.push(item);
+      for (const url of item.registryDependencies ?? []) {
+        const m = new RegExp(`/r/${w.id}/([\\w-]+)\\.json$`).exec(url);
+        if (!m) fail(`${w.id}-${stem}: depends on ${url}, outside ${w.id}`);
+        if (m[1] !== "litt" && !done.has(m[1])) queue.push(m[1]);
+      }
+    }
+    return { world: w.id, items: out };
+  });
+}
+
+/** A world's item by the name its file has under r/<world>/: device-button is button.json. */
+const bareName = (world, name) => name.slice(world.length + 1);
 
 /* ========================================================================= versions */
 
@@ -1724,7 +2010,17 @@ const ALLOWED_FOREIGN_VARS = [/^--radix-/, /^--tw-/];
    world's --litt-font-sans reads first (tokens.css, proposals/worlds.md decision 14). */
 const CALLER_VARS = new Set(["--litt-glass-shadow", "--litt-font-choice"]);
 
-function verify(items, targets, transformed, shadcn) {
+/** The variables a shipped file declares for itself: an arbitrary property ([--cmd-list-max:none]) or a style key ("--x": ...). */
+const localVars = (text) =>
+  [...text.matchAll(/\[(--[a-zA-Z][\w-]*):/g), ...text.matchAll(/["'](--[a-zA-Z][\w-]*)["']\s*:/g)].map((m) => m[1]).filter((n) => !n.startsWith("--litt-"));
+
+/**
+ * Check items as a host sees them. A world's view (main) also passes `littUrl`, its own tokens item; `anotherWorld`, the
+ * custom properties only another world's tokens declare, which its CSS may read behind a var() fallback (font-field
+ * reads Device's --field-font, else the sans); and `inherited`, per item, the local variables of the all-worlds item it
+ * is cut from, so it is held to that item's standard and no lower.
+ */
+function verify(items, targets, transformed, shadcn, { littUrl = urlOf("litt"), anotherWorld = new Set(), inherited = new Map() } = {}) {
   const errs = [];
   const byName = new Map(items.map((i) => [i.name, i]));
   const bad = (where, m) => errs.push(`${where}: ${m}`);
@@ -1741,12 +2037,19 @@ function verify(items, targets, transformed, shadcn) {
   const litt = byName.get("litt");
   const declared = new Set(); // custom properties the shipped CSS defines
   const read = new Set(); // custom properties it reads
+  const bareRead = new Set(); // ...of which these are read somewhere with no fallback
+  const reads = (v) => {
+    for (const m of v.matchAll(/var\(\s*(--[\w-]+)\s*(,)?/g)) {
+      read.add(m[1]);
+      if (!m[2]) bareRead.add(m[1]);
+    }
+  };
   const selectors = [];
   const walkCss = (obj, trail) => {
     for (const [k, v] of Object.entries(obj)) {
       if (typeof v === "string") {
         if (k.startsWith("--")) declared.add(k);
-        for (const m of v.matchAll(/var\(\s*(--[\w-]+)/g)) read.add(m[1]);
+        reads(v);
         selectors.push({ trail, decl: k, value: v });
       } else {
         if (!k.startsWith("@")) selectors.push({ trail, selector: k });
@@ -1757,9 +2060,9 @@ function verify(items, targets, transformed, shadcn) {
   walkCss(litt.css, []);
   for (const [k, v] of Object.entries(litt.cssVars.theme)) {
     declared.add(`--${k}`);
-    for (const m of v.matchAll(/var\(\s*(--[\w-]+)/g)) read.add(m[1]);
+    reads(v);
   }
-  const inputs = new Set([...read].filter((v) => !declared.has(v))); // read, never defined: set by the caller
+  const inputs = new Set([...read].filter((v) => !declared.has(v) && !(anotherWorld.has(v) && !bareRead.has(v)))); // read, never defined: set by the caller
   for (const v of inputs) if (!ALLOWED_FOREIGN_VARS.some((re) => re.test(v)) && !CALLER_VARS.has(v)) bad("litt", `reads ${v}, which nothing defines`);
 
   const themeShape = new RegExp(`^--(?:${THEME_NS.join("|")})-litt(?:-|$)`);
@@ -1797,7 +2100,7 @@ function verify(items, targets, transformed, shadcn) {
       } else stylesWalk(v);
     }
   };
-  stylesWalk(styles.css);
+  if (styles) stylesWalk(styles.css);
 
   // ---- the shipped files
   const shippedTargets = new Set([...targets.values()]);
@@ -1832,8 +2135,6 @@ function verify(items, targets, transformed, shadcn) {
   // ([--cmd-list-max:none]) or a style key ("--x": ...). Another file may read them when its item depends on the
   // declaring item, so the host always has both (the popover reads the dialog's --sheet-foot). Litt tokens are not
   // local: they must come from the shipped CSS.
-  const localVars = (text) =>
-    [...text.matchAll(/\[(--[a-zA-Z][\w-]*):/g), ...text.matchAll(/["'](--[a-zA-Z][\w-]*)["']\s*:/g)].map((m) => m[1]).filter((n) => !n.startsWith("--litt-"));
   const itemByName = new Map(items.map((i) => [i.name, i]));
   const depsOf = (item, seen = new Set()) => {
     if (seen.has(item.name)) return seen;
@@ -1847,7 +2148,7 @@ function verify(items, targets, transformed, shadcn) {
   const localsOf = (item) => new Set([...depsOf(item)].flatMap((n) => (itemByName.get(n).files ?? []).flatMap((f) => localVars(f.content))));
 
   for (const item of items) {
-    const local = localsOf(item);
+    const local = new Set([...localsOf(item), ...(inherited.get(item.name) ?? [])]);
     for (const file of item.files ?? []) {
       const where = `${item.name} ${file.target}`;
       const text = file.content;
@@ -1903,7 +2204,7 @@ function verify(items, targets, transformed, shadcn) {
           if (!have.has(pkg)) bad(where, `imports ${pkg}, which neither the item nor its dependencies declare`);
         }
       }
-      if (!(item.registryDependencies ?? []).includes(urlOf("litt")) && (text.match(/--litt-|-litt-|litt-(glass|raised|trim|lit|grain)/))) {
+      if (!(item.registryDependencies ?? []).includes(littUrl) && (text.match(/--litt-|-litt-|litt-(glass|raised|trim|lit|grain)/))) {
         bad(where, "uses litt names but the item does not depend on litt");
       }
     }
@@ -1959,7 +2260,7 @@ async function tailwindCrossCheck(items) {
 
   // Candidates: every whitespace-separated word of every original string literal, with its renamed twin.
   const pairs = new Map();
-  for (const f of [componentsDir, motionDir, blocksDir].filter((d) => fs.existsSync(d)).flatMap((d) => fs.readdirSync(d).map((x) => path.join(d, x)))) {
+  for (const f of [componentsDir, motionDir, blocksDir, ...BODY_WORLDS.map((w) => path.join(worldsDir, w))].filter((d) => fs.existsSync(d)).flatMap((d) => fs.readdirSync(d).map((x) => path.join(d, x)))) {
     if (!/\.tsx?$/.test(f)) continue;
     const sf = ts.createSourceFile(f, read(f), ts.ScriptTarget.Latest, true, f.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
     const take = (s) => { for (const tok of s.split(/\s+/)) if (/[a-z]/.test(tok)) pairs.set(tok, renameText(tok, "class")); };
@@ -2003,20 +2304,21 @@ async function tailwindCrossCheck(items) {
 
 /* ===================================================================== write it out */
 
-function serialize(items) {
+/** One registry directory's files: an item per <bare name>.json and its registry.json index. */
+function serialize(items, { dir = "", bare = (name) => name, name = "litt", homepage = PRODUCTION_ORIGIN } = {}) {
   const files = new Map();
-  for (const item of items) files.set(`${item.name}.json`, JSON.stringify(item, null, 2) + "\n");
+  for (const item of items) files.set(`${dir}${bare(item.name)}.json`, JSON.stringify(item, null, 2) + "\n");
   const index = {
     $schema: "https://ui.shadcn.com/schema/registry.json",
-    name: "litt",
-    homepage: PRODUCTION_ORIGIN,
+    name,
+    homepage,
     items: items.map((i) => {
       const { $schema, files: fs_, ...rest } = i;
       void $schema;
       return { ...rest, ...(fs_ ? { files: fs_.map(({ path: p, type, target }) => ({ path: p, type, target })) } : {}) };
     }),
   };
-  files.set("registry.json", JSON.stringify(index, null, 2) + "\n");
+  files.set(`${dir}registry.json`, JSON.stringify(index, null, 2) + "\n");
   return files;
 }
 
@@ -2024,14 +2326,30 @@ async function main() {
   const shadcn = await loadShadcnSchema();
   const { extractDemo } = await loadExtract();
   const { demos, skipped } = collectDemos(extractDemo);
-  const { items, targets, transformed } = build(demos);
-  const versioned = versionItems(items);
+  const built = build(demos);
+  const { items, targets, transformed } = built;
+  const worlds = await loadWorlds();
+  const worldItems = buildWorlds(worlds, built);
+  const versioned = versionItems([...items, ...worldItems.flatMap((w) => w.items)]);
   if (versioned.errs.length) {
     console.error(`gen-registry: ${versioned.errs.length} version problem${versioned.errs.length === 1 ? "" : "s"}:`);
     for (const e of versioned.errs) console.error(`  - ${e}`);
     process.exit(1);
   }
   const errs = verify(items, targets, transformed, shadcn);
+  /* A world's items are verified as the registry a host sees through r/<world>/, under their bare names, so every
+     dependency and every token must resolve inside that world. */
+  const rootItem = new Map(items.map((i) => [i.name, i]));
+  const anotherWorld = new Set();
+  (function walk(obj) {
+    for (const [k, v] of Object.entries(obj)) if (typeof v === "string") { if (k.startsWith("--")) anotherWorld.add(k); } else walk(v);
+  })(rootItem.get("litt").css);
+  for (const { world, items: own } of worldItems) {
+    const view = own.map((i) => ({ ...i, name: bareName(world, i.name) }));
+    const shipped = new Map(view.flatMap((i) => (i.files ?? []).map((f) => [f.target, f.target])));
+    const inherited = new Map(view.map((i) => [i.name, (rootItem.get(i.name)?.files ?? []).flatMap((f) => localVars(f.content))]));
+    errs.push(...verify(view, shipped, transformed, shadcn, { littUrl: worldUrlOf(world, "litt"), anotherWorld, inherited }).map((e) => `${world}: ${e}`));
+  }
   const cross = await tailwindCrossCheck(items);
   errs.push(...cross.errs);
   if (errs.length) {
@@ -2041,6 +2359,9 @@ async function main() {
   }
 
   const files = serialize(items);
+  for (const { world, items: own } of worldItems) {
+    for (const [k, v] of serialize(own, { dir: `${world}/`, bare: (n) => bareName(world, n), name: `litt-${world}`, homepage: `${PRODUCTION_ORIGIN}/#${world}` })) files.set(k, v);
+  }
   const lockText = JSON.stringify(versioned.lock, null, 2) + "\n";
   const lockStale = !fs.existsSync(lockFile) || read(lockFile) !== lockText;
   if (check && lockStale) {
@@ -2064,7 +2385,10 @@ async function main() {
     const next = `${outDir}.next-${process.pid}`;
     fs.rmSync(next, { recursive: true, force: true });
     fs.mkdirSync(next, { recursive: true });
-    for (const [name, text] of files) fs.writeFileSync(path.join(next, name), text);
+    for (const [name, text] of files) {
+      fs.mkdirSync(path.dirname(path.join(next, name)), { recursive: true });
+      fs.writeFileSync(path.join(next, name), text);
+    }
     fs.rmSync(outDir, { recursive: true, force: true });
     fs.renameSync(next, outDir);
   }
@@ -2072,7 +2396,7 @@ async function main() {
   if (flag("--explain")) for (const sk of skipped) console.log(`  no example: ${sk.page}: ${sk.why}`);
   const fileCount = items.reduce((n, i) => n + (i.files?.length ?? 0), 0);
   console.log(
-    `gen-registry: ${items.length} items, ${fileCount} files -> ${path.relative(root, outDir) || "."} ` +
+    `gen-registry: ${items.length} items, ${fileCount} files, and ${worldItems.map((w) => `${w.items.length} in ${w.world}/`).join(", ")} -> ${path.relative(root, outDir) || "."} ` +
       `(${demos.length} examples, ${skipped.length} pages without one; origin ${origin}, ${cross.count} classes cross-checked${shadcn ? ", shadcn schema ok" : ""}, release ${versioned.lock.latest}${lockStale && !check && !option("--out") ? ", registry.lock.json updated" : ""})`,
   );
 }
