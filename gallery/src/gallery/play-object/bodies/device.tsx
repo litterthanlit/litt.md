@@ -56,13 +56,14 @@ function Tape({ takes, shelves, at, selector, pick, className }: Pick<PlayObject
     >
       {/* The baseline, printed on the body the full width. */}
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-line" />
-      <svg aria-hidden="true" viewBox={`0 0 ${n} 20`} preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 inset-y-2 h-[calc(100%-1rem)] w-full overflow-visible">
-        {/* A full-height rule where each group starts, so the tape reads as its groups. */}
-        {shelves.slice(1).map((s) => (
-          <line key={s.group} x1={s.from} x2={s.from} y1={-2} y2={22} stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" className="text-fg opacity-30" />
+      <svg aria-hidden="true" viewBox={`0 0 ${n} 20`} preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 inset-y-3 h-[calc(100%-1.5rem)] w-full overflow-visible">
+        {/* A taller tick where each group starts, so the tape reads as its groups. */}
+        {shelves.map((s) => (
+          <line key={s.group} x1={s.from + 0.5} x2={s.from + 0.5} y1={1} y2={19} stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" className={s.from <= (at ?? -1) && (at ?? -1) < s.from + s.count ? "text-fg" : "text-fg opacity-40"} />
         ))}
         {takes.map((t, i) => {
-          const h = level(t.id) * 9;
+          if (shelves.some((s) => s.from === i)) return null;
+          const h = 2 + level(t.id) * 4;
           const mine = shelf >= 0 && i >= shelves[shelf]!.from && i < shelves[shelf]!.from + shelves[shelf]!.count;
           return (
             <line
@@ -72,18 +73,17 @@ function Tape({ takes, shelves, at, selector, pick, className }: Pick<PlayObject
               y1={10 - h}
               y2={10 + h}
               stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
+              strokeWidth={1}
               vectorEffect="non-scaling-stroke"
-              className={i === at ? "text-fg" : mine ? "text-fg opacity-60" : "text-fg opacity-25"}
+              className={mine ? "text-fg opacity-70" : "text-fg opacity-30"}
             />
           );
         })}
       </svg>
-      {/* The playhead, on the take showing: it switches where it stands. On Home there is none. */}
+      {/* The playhead, in the signal red, on the take showing: it switches where it stands. On Home there is none. */}
       {at !== null && (
-        <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-fg forced-colors:bg-[Highlight]" style={{ left: `${((at + 0.5) / n) * 100}%` }}>
-          <span className="absolute -left-0.5 top-0 size-1.5 rounded-pill bg-fg forced-colors:bg-[Highlight]" />
+        <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-px -translate-x-1/2 bg-signal forced-colors:bg-[Highlight]" style={{ left: `${((at + 0.5) / n) * 100}%` }}>
+          <span className="absolute -left-0.5 top-0 size-1.5 rounded-pill bg-signal forced-colors:bg-[Highlight]" />
         </span>
       )}
     </div>
@@ -92,35 +92,37 @@ function Tape({ takes, shelves, at, selector, pick, className }: Pick<PlayObject
 
 /* ---------- the readout: an LCD in a well ---------- */
 
-function Readout({ readout, className }: Pick<PlayObjectBodyProps, "readout"> & { className: string }) {
+function Readout({ readout, playing, className }: Pick<PlayObjectBodyProps, "readout"> & { playing: boolean; className: string }) {
   const [now, of] = readout.count.split(" / ");
   return (
-    <div {...readout.props} className={"rounded-control bg-tray p-0.5 shadow-(--tray-shade) " + className}>
-      <div className="flex h-full min-w-0 items-center justify-between gap-4 rounded-[calc(var(--radius-control)-2px)] bg-field px-4 font-field text-field-ink shadow-(--field-shade)">
-        <span className="grid min-w-0">
-          {readout.group && <span className="truncate text-caption text-field-ink-subtle">{readout.group}</span>}
-          <span className="truncate text-body">{readout.title}</span>
-        </span>
-        <span className="shrink-0 tabular-nums">
-          <span className="text-h3">{now}</span> <span className="text-caption text-field-ink-subtle">/ {of}</span>
-        </span>
-      </div>
+    <div {...readout.props} className={"flex min-w-0 items-center justify-between gap-6 " + className}>
+      <span className="grid min-w-0 gap-1">
+        <span className="truncate text-caption litt-legend text-fg-subtle">{readout.group ?? "Index"}</span>
+        <span className="truncate text-h1 text-fg">{readout.title}</span>
+      </span>
+      <span className="flex shrink-0 items-baseline gap-2 tabular-nums">
+        {/* A light that fires while Play runs; at rest, a dim ring. */}
+        <span className={"size-1.5 self-center rounded-pill " + (playing ? "bg-signal" : "shadow-[inset_0_0_0_1px_var(--line-strong)]")} />
+        <span className="text-display text-fg">{now}</span> <span className="text-small text-fg-subtle">/ {of}</span>
+      </span>
     </div>
   );
 }
 
 /* ---------- Play: a key that latches down while it plays ---------- */
 
-function PlayKey({ play, className }: { play: PlayObjectBodyProps["play"]; className: string }) {
+function PlayKey({ play, className, onDial = false }: { play: PlayObjectBodyProps["play"]; className: string; onDial?: boolean }) {
   const on = play["aria-pressed"];
   return (
     <button
       {...play}
       style={STEP}
       className={
-        "grid cursor-pointer place-items-center rounded-pill bg-block text-fg shadow-(--key-lift) " +
-        "active:[transform:translateY(var(--press-depth))] active:shadow-(--block-press) " +
-        "aria-pressed:[transform:translateY(var(--press-depth))] aria-pressed:bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] aria-pressed:shadow-(--tray-shade) " +
+        "grid cursor-pointer place-items-center rounded-pill " +
+        (onDial
+          ? "bg-dial text-dial-ink shadow-(--dial-lift) active:shadow-(--dial-press) aria-pressed:shadow-(--dial-press) "
+          : "bg-block text-fg shadow-(--key-lift) active:shadow-(--block-press) aria-pressed:shadow-(--tray-shade) aria-pressed:bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] ") +
+        "active:[transform:translateY(var(--press-depth))] aria-pressed:[transform:translateY(var(--press-depth))] " +
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus forced-colors:border forced-colors:aria-pressed:border-[Highlight] " +
         className
       }
@@ -137,11 +139,11 @@ function PlayKey({ play, className }: { play: PlayObjectBodyProps["play"]; class
 const DETENT = 15; // degrees of turn per component, as the player's dial clicks
 
 const side =
-  "absolute top-1/4 grid h-1/2 w-1/4 cursor-pointer place-items-center text-fg-muted hover:text-fg " +
+  "absolute top-1/4 grid h-1/2 w-1/4 cursor-pointer place-items-center text-dial-ink opacity-80 hover:opacity-100 " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 /* The top and bottom of the cap: the previous and next group. */
 const edge =
-  "absolute left-1/4 grid h-1/4 w-1/2 cursor-pointer place-items-center text-fg-muted hover:text-fg " +
+  "absolute left-1/4 grid h-1/4 w-1/2 cursor-pointer place-items-center text-dial-ink opacity-80 hover:opacity-100 " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: number } & Pick<PlayObjectBodyProps, "step" | "stepGroup" | "turn" | "play">) {
@@ -210,14 +212,14 @@ function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: nu
   };
 
   return (
-    <div data-part="recorder-dial" className="relative size-32 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade)">
+    <div data-part="recorder-dial" className="relative size-36 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade)">
       <div
         ref={cap}
         onPointerDown={onPointerDown}
         style={STEP}
         className={
-          "relative size-full touch-none rounded-pill bg-cap shadow-(--cap-lift) select-none " +
-          "has-[[data-side]:active]:shadow-(--cap-press) has-[[data-side=prev]:active]:[transform:perspective(600px)_rotateY(-6deg)] has-[[data-side=next]:active]:[transform:perspective(600px)_rotateY(6deg)] " +
+          "relative size-full touch-none rounded-pill bg-dial shadow-(--dial-lift) select-none " +
+          "has-[[data-side]:active]:shadow-(--dial-press) has-[[data-side=prev]:active]:[transform:perspective(600px)_rotateY(-6deg)] has-[[data-side=next]:active]:[transform:perspective(600px)_rotateY(6deg)] " +
           "has-[[data-side=up]:active]:[transform:perspective(600px)_rotateX(6deg)] has-[[data-side=down]:active]:[transform:perspective(600px)_rotateX(-6deg)] " +
           "forced-colors:border"
         }
@@ -225,7 +227,7 @@ function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: nu
         {/* The knurled ring and its mark (a wedge of ink at the top of the ring) turn with the hand; the legends on the
             sides stay put. */}
         <motion.div aria-hidden="true" style={{ rotate: angle }} className="pointer-events-none absolute inset-0 rounded-pill">
-          <span className="absolute inset-0 rounded-pill [background:conic-gradient(var(--fg-muted)_0deg_2deg,transparent_2deg_358deg,var(--fg-muted)_358deg),repeating-conic-gradient(var(--cap-grip)_0deg_1.5deg,transparent_1.5deg_15deg)] [mask:radial-gradient(circle,transparent_66%,black_68%,black_92%,transparent_94%)]" />
+          <span className="absolute inset-0 rounded-pill [background:conic-gradient(var(--dial-ink)_0deg_2deg,transparent_2deg_358deg,var(--dial-ink)_358deg),repeating-conic-gradient(color-mix(in_oklab,var(--dial-ink)_22%,transparent)_0deg_1deg,transparent_1deg_15deg)] [mask:radial-gradient(circle,transparent_66%,black_68%,black_92%,transparent_94%)]" />
         </motion.div>
         <button {...step(-1)} data-side="prev" className={side + " left-0 rounded-l-pill"}>
           <svg aria-hidden="true" viewBox="0 0 16 16" className="size-2.5 fill-current">
@@ -248,8 +250,8 @@ function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: nu
           </svg>
         </button>
         {/* The centre: Play, in a well cut through the cap. */}
-        <span className="absolute inset-[30%] rounded-pill bg-tray p-1 shadow-(--tray-shade)" data-play-key="">
-          <PlayKey play={play} className="size-full" />
+        <span className="absolute inset-[30%] rounded-pill p-1 shadow-(--dial-recess)" data-play-key="">
+          <PlayKey play={play} onDial className="size-full" />
         </span>
       </div>
     </div>
@@ -259,12 +261,13 @@ function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: nu
 /* ---------- the body ---------- */
 
 function DeviceBody({ takes, shelves, at, selector, pick, step, stepGroup, turn, play, readout, screen, compact }: PlayObjectBodyProps) {
+  const playing = play["aria-pressed"];
   if (compact) {
     return (
       <div className={COMPACT_BOX}>
-        <div className="grid shrink-0 gap-2 border-b border-line bg-canvas px-gutter py-2 shadow-(--highlight)">
-          <div className="flex items-center gap-2">
-            <Readout readout={readout} className="h-11 min-w-0 flex-1" />
+        <div className="grid shrink-0 gap-2 border-b border-line bg-canvas px-gutter py-3 shadow-(--highlight)">
+          <div className="flex items-center gap-3">
+            <Readout readout={readout} playing={playing} className="min-w-0 flex-1" />
             <PlayKey play={play} className="size-11 shrink-0" />
           </div>
           <Tape takes={takes} shelves={shelves} at={at} selector={selector} pick={pick} className="h-11" />
@@ -273,15 +276,17 @@ function DeviceBody({ takes, shelves, at, selector, pick, step, stepGroup, turn,
       </div>
     );
   }
+  /* The frame (machined, a shade off the body, lit along its top) holds the body: the aluminium plate with its grain.
+     The screen is set into the plate; under it the tape, then the deck: the readout and the dial. */
   return (
-    <div className="flex min-w-0 flex-col rounded-surface bg-surface-3 p-1 shadow-(--plate-lift)">
-      <div className="flex min-w-0 flex-col rounded-[calc(var(--radius-surface)-4px)] bg-canvas p-2 shadow-(--highlight)">
-        <Tape takes={takes} shelves={shelves} at={at} selector={selector} pick={pick} className="order-2 mx-4 mt-3 h-12" />
-        <div className="order-3 flex items-center gap-8 px-4 pt-4 pb-4">
-          <Readout readout={readout} className="h-16 min-w-0 flex-1" />
+    <div className="mx-auto flex w-full max-w-6xl min-w-0 flex-col rounded-[var(--object-radius)] bg-surface-3 p-1 shadow-[var(--highlight),var(--object-cast)]">
+      <div className="litt-grain relative isolate flex min-w-0 flex-col rounded-[calc(var(--object-radius)-4px)] bg-canvas p-3 shadow-(--highlight) [--grain-opacity:var(--object-grain)]">
+        <Tape takes={takes} shelves={shelves} at={at} selector={selector} pick={pick} className="order-2 mx-3 mt-4 h-10" />
+        <div className="order-3 flex items-center gap-10 px-6 pt-4 pb-5">
+          <Readout readout={readout} playing={playing} className="min-w-0 flex-1" />
           <Dial at={at} n={takes.length} step={step} stepGroup={stepGroup} turn={turn} play={play} />
         </div>
-        <div className="order-1 flex rounded-[calc(var(--radius-surface)-12px)] bg-field p-1 shadow-(--field-shade)">{screen}</div>
+        <div className="order-1 flex">{screen}</div>
       </div>
     </div>
   );
@@ -289,6 +294,6 @@ function DeviceBody({ takes, shelves, at, selector, pick, step, stepGroup, turn,
 
 export const device: PlayObjectBody = {
   name: "device",
-  shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[calc(var(--radius-surface)-16px)]"),
+  shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[calc(var(--object-radius)-16px)] shadow-(--tray-shade)"),
   Body: DeviceBody,
 };

@@ -70,7 +70,7 @@ type Props = {
 /** The world's object. Key it by world, so each world starts on its first take. */
 export function PlayObject(props: Props) {
   return (
-    <Suspense fallback={<div className="min-h-[clamp(38rem,calc(100dvh-var(--header-h)-16rem),48rem)]" />}>
+    <Suspense fallback={<div className="min-h-[clamp(30rem,calc(100dvh-22rem),46rem)]" />}>
       <Loaded {...props} />
     </Suspense>
   );
@@ -221,13 +221,16 @@ function Loaded({ material, dark, lead }: Props) {
       {createPortal(
         <PlayScreen material={material} dark={dark} shape={body.shape(compact)} label={`${take ? take.title : "Home"} ${where}`}>
           {take ? (
-            <div key={take.id} data-play-take={take.id} className="grid h-full overflow-auto overscroll-contain p-6 sm:p-10">
-              <div className="m-auto grid w-full max-w-2xl min-w-0 justify-items-center">
-                <PreviewContext.Provider value="tile">
-                  <Suspense fallback={null}>
-                    <take.Component />
-                  </Suspense>
-                </PreviewContext.Provider>
+            <div className="flex h-full min-h-0">
+              {!compact && <Rail material={material} takes={takes} shelves={shelves} at={at!} open={go} />}
+              <div key={take.id} data-play-take={take.id} className="grid h-full min-w-0 flex-1 overflow-auto overscroll-contain p-6 sm:p-10">
+                <div className="m-auto grid w-full max-w-2xl min-w-0 justify-items-center">
+                  <PreviewContext.Provider value="tile">
+                    <Suspense fallback={null}>
+                      <take.Component />
+                    </Suspense>
+                  </PreviewContext.Provider>
+                </div>
               </div>
             </div>
           ) : (
@@ -261,6 +264,53 @@ function Cover({ material }: { material: Material }) {
     <div inert aria-hidden="true" className="pointer-events-none min-w-0 origin-top">
       <scene.Render />
     </div>
+  );
+}
+
+const RAIL_ROW =
+  "litt-target flex h-control-sm w-full cursor-pointer items-center rounded-control px-2 text-left text-small " +
+  "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
+
+/**
+ * The menu, always there while a part shows (Nick, 2026-11-16): a slim rail on the screen's left, its groups in the
+ * quiet ink and the group you are in open to its parts, the one showing in the ink. Under the hand or the keys it comes
+ * to the full ink. A group's name opens its first part.
+ */
+function Rail({ material, takes, shelves, at, open }: { material: Material; takes: Take[]; shelves: Shelf[]; at: number; open: (i: number) => void }) {
+  const world = materialOf(material);
+  const here = shelfOf(shelves, at);
+  return (
+    <nav
+      aria-label={`Every group in ${world.name}`}
+      data-play-rail=""
+      className="w-48 shrink-0 overflow-auto overscroll-contain border-r border-line px-2 py-4 text-fg-subtle hover:text-fg-muted focus-within:text-fg-muted"
+    >
+      <ul className="grid">
+        {shelves.map((s, k) => (
+          <li key={s.group}>
+            <button type="button" aria-current={k === here ? "true" : undefined} className={RAIL_ROW + (k === here ? " text-fg" : "")} onClick={() => open(s.from)}>
+              {s.group}
+            </button>
+            {k === here && (
+              <ul className="grid">
+                {takes.slice(s.from, s.from + s.count).map((t, j) => (
+                  <li key={t.id}>
+                    <button
+                      type="button"
+                      aria-current={s.from + j === at ? "page" : undefined}
+                      className={RAIL_ROW + " pl-5 " + (s.from + j === at ? "text-fg" : "")}
+                      onClick={() => open(s.from + j)}
+                    >
+                      {t.title}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
 

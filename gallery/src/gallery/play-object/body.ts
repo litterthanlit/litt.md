@@ -47,8 +47,9 @@ export type PlayObjectBody = {
   Body: ComponentType<PlayObjectBodyProps>;
 };
 
-/** How tall a landscape screen stands: the window less the deck, as the player is, and never so short that a command menu or a dropdown a take opens runs off it. */
-export const SCREEN_HEIGHT = "h-[clamp(38rem,calc(100dvh-var(--header-h)-16rem),48rem)]";
+/** How tall a landscape screen stands: the window less the top row, the tape and the deck, so the whole object fits the
+    window as the components player does, and never under 30rem, where a take's command menu still fits. */
+export const SCREEN_HEIGHT = "h-[clamp(30rem,calc(100dvh-22rem),46rem)]";
 /** Below sm the object is the page under the header: the strip, then the screen. */
 export const COMPACT_BOX = "-mx-gutter flex h-[calc(100dvh-var(--header-h))] flex-col";
 /** Below sm the screen fills what the strip leaves, edge to edge. */
