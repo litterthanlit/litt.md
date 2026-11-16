@@ -23,6 +23,7 @@ import { SCALES, ScaleFrame } from "./scale";
 import { LOOKS } from "./flat-look-data";
 import { FlatLookFrame } from "./flat-look";
 import { FlatHand } from "./flat-look-hand";
+import { FlatBounceExpressive, FlatBounceResponsive } from "./flat-bounce";
 import { PressColumnPreview, type PressColumn } from "./press";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
@@ -177,6 +178,10 @@ const PICTURES_X = -2600;
 const LOOKS_X = 4800;
 const LOOK = { width: 1120, height: 2320, gap: 120 };
 const HAND_Y = 2 * (LOOK.height + LOOK.gap) + 80;
+/* Flat bounces more (flat-bounce.tsx, plans/023): to the right of the hand, the other motion experiment for Flat. The
+   expressive grid first, then the responsive pair. */
+const BOUNCE_X = LOOKS_X + LOOK.width + LOOK.gap;
+const BOUNCE = { width: 1420, height: 1640, responsiveWidth: 940, gap: 120 };
 /* Press today, Press lighter and Flat (press.tsx, proposals/press-lighter.md): three columns of their own, under
    everything else (the case studies end near 7600), light over dark in each. */
 const PRESS_Y = 7800;
@@ -288,6 +293,16 @@ export const ITEMS: CanvasItem[] = [
     }),
   ),
   { id: "flat-look-hand", name: "Flat · the hand, today and snappy", x: LOOKS_X, y: HAND_Y, width: 1120, height: 720, render: () => <FlatHand /> },
+  { id: "flat-bounce-expressive", name: "Flat bounce · expressive, ten candidates", x: BOUNCE_X, y: HAND_Y, width: BOUNCE.width, height: BOUNCE.height, render: () => <FlatBounceExpressive /> },
+  {
+    id: "flat-bounce-responsive",
+    name: "Flat bounce · responsive, today and 0.08",
+    x: BOUNCE_X + BOUNCE.width + BOUNCE.gap,
+    y: HAND_Y,
+    width: BOUNCE.responsiveWidth,
+    height: 420,
+    render: () => <FlatBounceResponsive />,
+  },
   ...NO_UI.flatMap((row, i) =>
     (["plain", "none"] as NoUiColumn[]).map(
       (column, j): CanvasItem => ({
