@@ -4,6 +4,7 @@
  *
  *   npm run build && npm run test:playground
  *   node scripts/playground.mjs --dist dist
+ *   node scripts/playground.mjs --shard 1/2         every other world's player, from the first (CI runs two shards at once)
  *   node scripts/playground.mjs --self-test         breaks the screen and the object on purpose; fails if the check misses either
  *   node scripts/playground.mjs --greyscale <dir>   writes each world's object in colour and in greyscale in one font,
  *                                                   light and dark, and a sheet of each; judges nothing (the test of an object)
@@ -262,7 +263,15 @@ for (const [from, to] of [["playground/device", "#device"], ["playground", "#fla
   await ctx.close();
 }
 
-for (const [world, id, attribute] of WORLDS) {
+/* The players this run opens. --shard deals the worlds round-robin. --self-test opens only the worlds its breaks land
+   in (Device's bare object and missing tile, and a world whose set holds the Dialog take), since the set claim above
+   reads every world without a browser. */
+const [shard, shards] = get("shard", "1/1").split("/").map(Number);
+const dialogWorld = WORLDS.find(([, id]) => id === "device" && SETS.device?.includes("dialog")) ?? WORLDS.find(([, id]) => SETS[id]?.includes("dialog"));
+const RUN = selfTest
+  ? WORLDS.filter((w) => w[1] === "device" || w === dialogWorld)
+  : WORLDS.filter((_, i) => i % shards === shard - 1);
+for (const [world, id, attribute] of RUN) {
   const { ctx, pg, errors } = await open(id);
   const htmlBefore = await pg.evaluate(() => document.documentElement.dataset.material ?? null);
   await inView(pg);
@@ -460,4 +469,4 @@ if (bad) {
   console.error(`\nplayground: ${bad} of ${claims.size} claims fail.`);
   process.exit(1);
 }
-console.log(`\nplayground: ${claims.size} claims hold, on the objects of ${WORLDS.map(([n]) => n).join(", ")}, at 1440x1000.`);
+console.log(`\nplayground${shards > 1 ? ` (shard ${shard}/${shards})` : ""}: ${claims.size} claims hold, on the objects of ${RUN.map(([n]) => n).join(", ")}, at 1440x1000.`);

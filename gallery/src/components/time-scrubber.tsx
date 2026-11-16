@@ -303,7 +303,7 @@ export function TimeScrubber({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <div className="flex items-baseline justify-between gap-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <span id={labelId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
           {label}
         </span>

@@ -4,7 +4,8 @@
  *
  *   npm run build && npm run test:a11y               # every page in dist/
  *   node scripts/a11y.mjs --dist dist --pages button,menu
- *   node scripts/a11y.mjs --shard 2/4                every fourth page, from the second (CI runs four shards at once)
+ *   node scripts/a11y.mjs --shard 2/4                every fourth page, from the second (CI runs several shards at once)
+ *   node scripts/a11y.mjs --concurrency 2            pages checked at once in each theme and size (default 4)
  *
  * Runs the WCAG 2.0, 2.1 and 2.2 A and AA rules and exits 1 on any violation, printing each one with
  * its page, theme, viewport and the selectors it hit. Pages come from src/gallery/pages (the file is
@@ -28,6 +29,7 @@ const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i
 const dist = path.resolve(get("dist", "dist"));
 const only = (get("pages", "") || "").split(",").filter(Boolean);
 const [shard, shards] = (get("shard", "1/1")).split("/").map(Number);
+const CONCURRENCY = Number(get("concurrency", "4"));
 
 /* Resolve a tool from A11Y_TOOLS, then this package, then a global folder. */
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
@@ -88,28 +90,39 @@ const quiet = ({ still, most }) =>
 const browser = await chromium.launch();
 const found = [];
 let runs = 0;
+/* One page in a tab of its own, loaded once: a fresh tab carries nothing over from the last page (a hash change alone
+   would keep its state), so no reload is needed, and several tabs check pages at once. */
+async function check(ctx, id, theme, label) {
+  const pg = await ctx.newPage();
+  const errors = [];
+  pg.on("pageerror", (e) => errors.push(String(e)));
+  try {
+    await pg.goto(`http://localhost:${port}/index.html#${id}`, { waitUntil: "networkidle" });
+    await pg.evaluate(() => document.fonts.ready);
+    await pg.waitForSelector("h1", { timeout: 10_000 });
+    await pg.waitForTimeout(400); // let entrances settle, so axe reads the resting colors
+    await pg.evaluate(quiet, QUIET);
+    await pg.addScriptTag({ content: axeSource });
+    const violations = await pg.evaluate(async (tags) => {
+      const r = await window.axe.run(document, { runOnly: { type: "tag", values: tags }, resultTypes: ["violations"] });
+      return r.violations.map((v) => ({ id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.map((n) => n.target.join(" ")) }));
+    }, TAGS);
+    runs++;
+    for (const v of violations) found.push({ page: id, theme, viewport: label, ...v });
+  } catch (e) {
+    found.push({ page: id, theme, viewport: label, id: "check-error", impact: "critical", help: String(e.message || e).split("\n")[0], nodes: [] });
+  }
+  for (const e of errors) found.push({ page: id, theme, viewport: label, id: "page-error", impact: "critical", help: e, nodes: [] });
+  await pg.close();
+}
+
 for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
   for (const theme of ["light", "dark"]) {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
-    const pg = await ctx.newPage();
-    const errors = [];
-    pg.on("pageerror", (e) => errors.push(String(e)));
-    for (const id of pages) {
-      await pg.goto(`http://localhost:${port}/index.html#${id}`, { waitUntil: "networkidle" });
-      await pg.reload({ waitUntil: "networkidle" }); // a hash change alone keeps the last page's state
-      await pg.evaluate(() => document.fonts.ready);
-      await pg.waitForSelector("h1", { timeout: 10_000 });
-      await pg.waitForTimeout(400); // let entrances settle, so axe reads the resting colors
-      await pg.evaluate(quiet, QUIET);
-      await pg.addScriptTag({ content: axeSource });
-      const violations = await pg.evaluate(async (tags) => {
-        const r = await window.axe.run(document, { runOnly: { type: "tag", values: tags }, resultTypes: ["violations"] });
-        return r.violations.map((v) => ({ id: v.id, impact: v.impact, help: v.help, nodes: v.nodes.map((n) => n.target.join(" ")) }));
-      }, TAGS);
-      runs++;
-      for (const v of violations) found.push({ page: id, theme, viewport: label, ...v });
-      for (const e of errors.splice(0)) found.push({ page: id, theme, viewport: label, id: "page-error", impact: "critical", help: e, nodes: [] });
-    }
+    const queue = [...pages];
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
+      while (queue.length) await check(ctx, queue.shift(), theme, label);
+    }));
     await ctx.close();
   }
 }

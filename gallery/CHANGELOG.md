@@ -7,6 +7,7 @@ To update an item, read the entries since your version, then reinstall it with `
 ## 2026-11-16 · Device's recorder
 
 - **added** `litt`: tokens for a world's object, the thing the gallery's Playground draws (plans/018). Every world gets `--object-radius`, `--object-cast`, `--object-grain`, `--dial`, `--dial-ink`, `--dial-lift`, `--dial-press`, `--dial-recess` and `--signal`, naming its surface, its cap and its danger hue, so nothing changes outside Device. Under Device they are the recorder's own: a dial in the body's opposite finish (black on the light body, silver on the dark), a signal red for a light that fires (never a fill), a deep cast straight down, 28px corners and the plate's grain. Tailwind gains `bg-dial`, `text-dial-ink` and `bg-signal`. Nothing in your code has to change.
+- **changed** `time-scrubber`: the label row wraps, so on a narrow screen the reading drops under the label instead of pushing the row past its container (WCAG 1.4.10, reflow at 320px). Props are unchanged.
 
 Later the same day, an install per world. Each world has a folder of its own under r/, with every part in that world and its tokens. A part installed from it ships its contract with that world's body alone, and its engines (`motion`, `glide`) depend on that world's tokens, so nothing of another world lands in your project.
 
