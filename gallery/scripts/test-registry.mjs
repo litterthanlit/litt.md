@@ -10,7 +10,7 @@
  *   --registry   a built registry directory (default gallery/public/r); a deployed registry URL such as
  *                https://littmd.vercel.app/r (no local server, no snapshot: the post-deploy check); or
  *                "shadcn" to run the same steps against shadcn's own registry (badge, input, card), which proves the harness
- *   --scenarios  comma list of: each, seq, all, bare, ns, base, look   (default all)
+ *   --scenarios  comma list of: each, seq, all, bare, ns, base, look, worlds   (default all)
  *                  each  every item alone, in a fresh app: add, tsc, production build
  *                  seq   items added one command at a time into one app; CSS must not duplicate, and adding an
  *                        item that is already there must leave the global CSS byte for byte the same
@@ -26,7 +26,10 @@
  *                        dark and in a node outside the app, follow a runtime flip to mono and back to Blue 4, and (next)
  *                        are pink with JavaScript off; the canvas and the secondary Button are Flat's in all three
  *                        themes, casting nothing, and Press comes back when the attribute goes
- *   --base       the component library `shadcn init` sets the host up with: base (default, what
+ *                  worlds  one app per world: r/<world>/litt.json and every part in r/<world>/ in one add command
+ *                        (--items narrows it); the world step fails if the install brought another world's body or
+ *                        tokens. All six worlds in both hosts add about six minutes
+ *   --base      the component library `shadcn init` sets the host up with: base (default, what
  *                `init -d` picks: Base UI, where the CLI rewrites a written asChild into a render prop) or radix
  *   --keep       keep the temp apps (failed scenarios are always kept)
  *   --fresh      rebuild the cached host templates
@@ -49,7 +52,9 @@
  *   css    the global stylesheet has no litt block twice after any add
  *   files  no existing host file changed except the global CSS, package.json and the lockfile, and no
  *          host dependency changed version (so litt cannot overwrite shadcn's own Button)
- *   page   the smoke page imports every installed component by the exports the install wrote
+ *   world  (worlds) no file the install wrote is another world's body (bodies/<part>.<other>.tsx) or names what one
+ *          exports, and the global CSS has no rule for another world's data-material
+ *   page  the smoke page imports every installed component by the exports the install wrote
  *   tsc    `tsc --noEmit` passes under the host's own strict tsconfig
  *   build  the production build passes
  *   rsc    (next) each component module can be imported from a Server Component, so "use client" is there
@@ -106,7 +111,7 @@ const PINS = {
   tailwind: "4.3.3", //            2026-07-16 (tailwindcss, @tailwindcss/vite, @tailwindcss/postcss)
   createNextApp: "16.3.6", //      2026-09-22 (scaffolds next@16.3.6)
 };
-const TEMPLATE_VERSION = 2; // bump when the template steps below change
+const TEMPLATE_VERSION = 3; // bump when the template steps below change
 const MEASURE_VERSION = 2; // bump when what the smoke module measures changes (the baseline is re-measured)
 
 /* ------------------------------------------------------------------ paths and args */
@@ -124,7 +129,7 @@ function parseArgs(argv) {
     fresh: false,
     serial: false,
     registry: path.join(galleryDir, "public", "r"),
-    scenarios: "each,seq,all,bare,ns,base,look",
+    scenarios: "each,seq,all,bare,ns,base,look,worlds",
     work: null,
     shots: null,
     report: null,
@@ -443,7 +448,34 @@ async function describeRegistry(opts, componentRecipeNames) {
   if (missing.length)
     throw new Error(`registry.json lists items that have no ${missing.map((m) => m.name + ".json").join(", ")} in ${opts.registry}`);
   const hash = sha(items.map((i) => fs.readFileSync(path.join(opts.registry, `${i.name}.json`), "utf8")).join("\n")).slice(0, 8);
-  return describeItems(opts, items, componentRecipeNames, { dir: opts.registry, hash });
+  return { ...describeItems(opts, items, componentRecipeNames, { dir: opts.registry, hash }), ...describeWorlds(opts.registry, items) };
+}
+
+/**
+ * Each world's own registry, r/<world>/registry.json: its parts under their bare names (button for device-button).
+ * And what every world's bodies are called, read from the all-worlds items (a body ships at bodies/<part>.<world>.tsx),
+ * so the worlds scenario can tell when an install brought another world's.
+ */
+function describeWorlds(dir, items) {
+  const worlds = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((e) => e.isDirectory() && fs.existsSync(path.join(dir, e.name, "registry.json")))
+    .map((e) => {
+      const own = readJson(path.join(dir, e.name, "registry.json")).items ?? [];
+      const bare = (n) => (n.startsWith(`${e.name}-`) ? n.slice(e.name.length + 1) : n);
+      return { id: e.name, parts: own.filter((i) => COMPONENT_TYPES.has(i.type)).map((i) => bare(i.name)), all: own.map((i) => bare(i.name)) };
+    });
+  const bodies = new Map(); // world -> [{ file, names }]
+  for (const i of items) {
+    if (!COMPONENT_TYPES.has(i.type)) continue;
+    for (const f of readJson(path.join(dir, `${i.name}.json`)).files ?? []) {
+      const m = /(?:^|\/)bodies\/([\w-]+)\.([\w-]+)\.tsx$/.exec(f.target);
+      if (!m) continue;
+      const names = [...f.content.matchAll(/^export\s+(?:function|const|class)\s+(\w+)/gm)].map((x) => x[1]);
+      bodies.set(m[2], [...(bodies.get(m[2]) ?? []), { file: path.posix.basename(f.target), names }]);
+    }
+  }
+  return { worlds, bodies };
 }
 
 function describeItems(opts, items, componentRecipeNames, { dir, hash }) {
@@ -587,6 +619,10 @@ async function buildTemplate(app, ctx, { cache, dir, ready, log, logFile }) {
         o(cache),
       ),
     );
+    /* create-next-app can leave Tailwind's WebAssembly fallback (an optional package with its own node_modules) in
+       place, and npm 10 then fails the pin below with ENOENT while it swaps that package. It is for another platform;
+       the pin puts back whatever this one needs. */
+    rmrf(path.join(dir, "node_modules", "@tailwindcss", "oxide-wasm32-wasi"));
     await must(
       "pin tailwind",
       run(
@@ -764,7 +800,7 @@ const depsOf = (dir) => {
 
 /* ------------------------------------------------------------------ results */
 
-const STEPS = ["add", "css", "files", "page", "tsc", "build", "rsc", "smoke"];
+const STEPS = ["add", "css", "files", "world", "page", "tsc", "build", "rsc", "smoke"];
 
 class Scenario {
   constructor(app, id) {
@@ -860,7 +896,33 @@ function planScenarios(app, reg, opts) {
     plan.push({ id: "base-styles", adds: [[reg.baseStyles]], items: [], baseStyles: true, browser: !opts.noBrowser });
   if (want.has("look") && reg.kind === "litt" && LOOK_ITEMS.every((i) => reg.all.includes(i)))
     plan.push({ id: "look", adds: [LOOK_ITEMS], items: LOOK_ITEMS, look: "pink", browser: !opts.noBrowser });
+  if (want.has("worlds"))
+    for (const w of reg.worlds ?? []) {
+      const items = opts.items ? w.parts.filter((p) => opts.items.includes(p)) : w.parts;
+      plan.push({ id: `world:${w.id}`, adds: [["litt", ...items].map((p) => `${w.id}/${p}`)], items, world: w.id, browser: false });
+    }
   return plan;
+}
+
+/**
+ * What a world's install brought of other worlds: a body file of theirs, a name one of their bodies exports, or a rule
+ * for their data-material in the global CSS. `own` counts the world's own body files, so a pass is not an empty install.
+ */
+function otherWorlds(world, bodies, files, css) {
+  const problems = [];
+  let own = 0;
+  for (const f of files) {
+    const m = /(?:^|\/)bodies\/[\w-]+\.([\w-]+)\.tsx$/.exec(f.rel);
+    if (m && m[1] === world) own++;
+    else if (m) problems.push(`${f.rel}: ${m[1]}'s body file`);
+    if (!/\.tsx?$/.test(f.rel)) continue;
+    for (const [other, list] of bodies) {
+      if (other === world) continue;
+      for (const { file, names } of list) for (const n of names) if (new RegExp(`\\b${n}\\b`).test(f.content)) problems.push(`${f.rel}: names ${n}, from ${other}'s ${file}`);
+    }
+  }
+  for (const other of bodies.keys()) if (other !== world && css.includes(`data-material="${other}"`)) problems.push(`the global CSS has ${other}'s tokens ([data-material="${other}"])`);
+  return { problems, own };
 }
 
 async function runScenario(app, sc, plan, ctx) {
@@ -956,8 +1018,17 @@ async function runScenario(app, sc, plan, ctx) {
     };
   });
 
-  // page: the smoke page, from the exports the install wrote
   const fileObjs = files.map((rel) => ({ rel, content: fs.readFileSync(path.join(dir, rel), "utf8") }));
+
+  // world: a world's install brings that world alone
+  await step(sc, "world", async () => {
+    if (!plan.world) return { status: "skip", detail: "worlds scenario only" };
+    const { problems, own } = otherWorlds(plan.world, reg.bodies, fileObjs, fs.readFileSync(path.join(dir, cssFile), "utf8"));
+    if (problems.length) throw new Error(`the ${plan.world} install brought another world:\n${problems.slice(0, 12).join("\n")}`);
+    return { detail: `no other world's body or tokens in ${fileObjs.length} files; ${own} of ${plan.world}'s own bodies` };
+  });
+
+  // page: the smoke page, from the exports the install wrote
   let rendered = [];
   let pageBuilt = false;
   let smokeBlocked = false;
