@@ -101,10 +101,12 @@ const pressIconSizes: Record<ButtonSize, string> = { sm: "h-control-sm text-smal
 /* A raised block has no line of its own, so forced colors (which drops the cast) draws this one as its edge. */
 const edge = "outline-1 outline-solid outline-transparent ";
 
-/* For a person who asks their system for more contrast (prefers-contrast: more), the secondary block also takes a 1px
+/* For a person who asks their system for more contrast (prefers-contrast: more), the secondary and danger blocks also take a 1px
    inset --line-control ring, so its edge reaches 3:1 against the surface (WCAG 1.4.11). Everyone else sees the block
    raised once, by its cast. The ring is its own shadow layer, so the cast and the press stay as they are. */
 const moreContrast = "contrast-more:enabled:inset-ring contrast-more:enabled:inset-ring-line-control";
+/* The danger block wears the same ring, but not as a dialog's confirm, where it is a red fill with an edge of its own. */
+const moreContrastDanger = "not-in-[[data-dialog-footer]]:contrast-more:enabled:inset-ring not-in-[[data-dialog-footer]]:contrast-more:enabled:inset-ring-line-control";
 
 const variants: Record<ButtonVariant, string> = {
   primary:
@@ -118,7 +120,7 @@ const variants: Record<ButtonVariant, string> = {
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
   danger:
     edge + "bg-block text-danger shadow-(--block-lift) enabled:not-data-loading:active:shadow-(--block-press) " +
-    "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " +
+    "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " + moreContrastDanger + " " +
     /* A dialog's confirm. These rules sort after the block's, so they win its ties (active, a finger's press). */
     "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
     "in-[[data-dialog-footer]]:enabled:shadow-none in-[[data-dialog-footer]]:enabled:active:shadow-none " +
