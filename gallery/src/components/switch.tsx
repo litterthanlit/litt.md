@@ -32,16 +32,16 @@
  * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the Radix root with
  *   its role and aria-checked, the hidden input, the label and description, the hand (press, drag, keys) and the state.
  *   It resolves them once into SwitchBodyProps and renders the body the material picks (byWorld). PressBody, above, is
- *   the default. bodies/switch.flat.tsx and bodies/switch.device.tsx are the other two; each draws its own root
+ *   the default. worlds/flat/switch.tsx and worlds/device/switch.tsx are the other two; each draws its own root
  *   element, and its own --sw-travel, which a drag measures. A frame that sets its own look (a study's strip, a
  *   preview inside a MaterialProvider) draws its own body, not <html>'s.
- * - Flat (R1 to R3, proposals/flat-pill.md), bodies/switch.flat.tsx: a small ink pill with a canvas knob when on and an
+ * - Flat (R1 to R3, proposals/flat-pill.md), worlds/flat/switch.tsx: a small ink pill with a canvas knob when on and an
  *   outline pill (the 1.5px --line-control edge, a --line-control knob) when off, the accent only for tone="accent".
  *   The word sits in type beside it in the text weight, both words in one cell so the row never reflows. The pill is
  *   44 by 26 and the knob 20, so the crossing is 18px.
- * - Device, bodies/switch.device.tsx: a toggle key in a well that flips with a detent (three steps on the instant
+ * - Device, worlds/device/switch.tsx: a toggle key in a well that flips with a detent (three steps on the instant
  *   tier, never a spring), and its word on a small LCD beside it in the mono, with a lamp that lights when on.
- * - Rack, bodies/switch.rack.tsx: a toggle key with its word on its face that lights when on (the ink, or the accent
+ * - Rack, worlds/rack/switch.tsx: a toggle key with its word on its face that lights when on (the ink, or the accent
  *   for tone="accent"); nothing slides, and it changes on the frame.
  * - Forced colors drops box-shadow and background colors, so the tray and the block get real borders and system
  *   colors mark the on state.
@@ -59,10 +59,10 @@ import {
 } from "react";
 import * as SwitchPrimitive from "@radix-ui/react-switch";
 import { byWorld, useFun, useMaterial } from "@/motion";
-import { SwitchDeviceBody } from "./bodies/switch.device";
-import { SwitchRackBody } from "./bodies/switch.rack";
-import { SwitchFlatBody } from "./bodies/switch.flat";
-import { SwitchPlainBody } from "./bodies/switch.plain";
+import { SwitchDeviceBody } from "@/worlds/device/switch";
+import { SwitchRackBody } from "@/worlds/rack/switch";
+import { SwitchFlatBody } from "@/worlds/flat/switch";
+import { SwitchPlainBody } from "@/worlds/plain/switch";
 
 export type SwitchAlign = "start" | "end";
 export type SwitchTone = "neutral" | "accent";

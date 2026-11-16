@@ -35,8 +35,8 @@
  *   --fg-subtle, because they are still read.
  * - Bodies (proposals/worlds.md, Bodies): this file is the contract (the props, the Radix root and thumbs, the label and
  *   value words, the marks and home, the hand, the keys, the range form) and the Press body, which is the default: a deep slot with notches that light, and the value on a raised face that rides over the cap (a single slider with a value stands 68px tall for it). Flat
- *   (proposals/flat-pill.md: a pill track, an ink fill, a round knob, the value at the track's end) lives in bodies/slider.flat.tsx and Device (a
- *   fader: a well, engraved ticks, a key for a cap, the value on an LCD) in bodies/slider.device.tsx, and Rack (a value bar in a box, a 2px ink line at the value) in bodies/slider.rack.tsx. Each takes
+ *   (proposals/flat-pill.md: a pill track, an ink fill, a round knob, the value at the track's end) lives in worlds/flat/slider.tsx and Device (a
+ *   fader: a well, engraved ticks, a key for a cap, the value on an LCD) in worlds/device/slider.tsx, and Rack (a value bar in a box, a 2px ink line at the value) in worlds/rack/slider.tsx. Each takes
  *   SliderBodyProps and carries data-body on its root. The travel's inset is --sl-pad: the body's root sets it, and
  *   padOf reads it back as the root's left padding.
  * - Forced colors drops box-shadow and background colors, so the plate, the slot and the cap get real borders and
@@ -61,9 +61,9 @@
 import { useEffect, useId, useRef, useState, type ComponentProps, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref, type RefObject } from "react";
 import * as RadixSlider from "@radix-ui/react-slider";
 import { byWorld, useMaterial } from "@/motion";
-import { SliderDevice } from "./bodies/slider.device";
-import { SliderRack } from "./bodies/slider.rack";
-import { SliderFlat } from "./bodies/slider.flat";
+import { SliderDevice } from "@/worlds/device/slider";
+import { SliderRack } from "@/worlds/rack/slider";
+import { SliderFlat } from "@/worlds/flat/slider";
 
 export type SliderProps = {
   /** The label above the slider. Required, because it names the thumb for screen readers. */

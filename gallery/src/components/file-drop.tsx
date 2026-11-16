@@ -21,11 +21,11 @@
  *     (--tray, --tray-shade) that holds a raised arrow block (--block, --block-lift), the words and Choose files. While
  *     files are over it the tray goes deeper (--slot, --slot-shade) and its lower wall catches the light. The list is
  *     a tray of slats: each file a raised block with its name, size and a Progress rail cut into it.
- *   - bodies/file-drop.flat.tsx: a grey sheet with one sentence, "Drop files or choose", ringed in ink while a file is
+ *   - worlds/flat/file-drop.tsx: a grey sheet with one sentence, "Drop files or choose", ringed in ink while a file is
  *     over it. Each file is a line of words with Retry and Remove as words.
- *   - bodies/file-drop.device.tsx: a slot with an engraved legend over LCD glass and a Choose key; each file a line of
+ *   - worlds/device/file-drop.tsx: a slot with an engraved legend over LCD glass and a Choose key; each file a line of
  *     glass whose upload lights segments in steps.
- *   - bodies/file-drop.rack.tsx: a well (--tray) in a dashed edge, lit in the ink while a file is over it; the files
+ *   - worlds/rack/file-drop.tsx: a well (--tray) in a dashed edge, lit in the ink while a file is over it; the files
  *     are thin rows on one panel, each on a hairline.
  */
 import { useId, useRef, useState, type ComponentProps, type DragEvent, type ReactNode } from "react";
@@ -33,9 +33,9 @@ import { Button } from "@/components/button";
 import { ArrowUpIcon, FileIcon, RetryIcon, XIcon } from "@/components/icons";
 import { Progress } from "@/components/progress";
 import { byWorld, useDevice, useMaterial } from "@/motion";
-import { FileDropDeviceBody, FileRowDeviceBody } from "./bodies/file-drop.device";
-import { FileDropFlatBody, FileRowFlatBody } from "./bodies/file-drop.flat";
-import { FileDropRackBody, FileRowRackBody } from "./bodies/file-drop.rack";
+import { FileDropDeviceBody, FileRowDeviceBody } from "@/worlds/device/file-drop";
+import { FileDropFlatBody, FileRowFlatBody } from "@/worlds/flat/file-drop";
+import { FileDropRackBody, FileRowRackBody } from "@/worlds/rack/file-drop";
 
 /** 2048 to "2.0 KB": the size in the units people read. */
 export function formatSize(bytes: number): string {

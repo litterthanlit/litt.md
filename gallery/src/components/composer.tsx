@@ -13,7 +13,7 @@
  *   disabled look), a removable chip a white bubble, and Attach and the tools grey words on a line under the text.
  *   Focus is the ink ring.
  * - Device: a prompt line (">") on LCD glass in the mono (--field tokens) set in a --tray bezel, the files lit cells,
- *   the tools a row of keys under the glass and Send the one key in the accent (bodies/composer.device.tsx).
+ *   the tools a row of keys under the glass and Send the one key in the accent (worlds/device/composer.tsx).
  * - Text: the body size (16px on coarse pointers, so iOS never zooms) in --fg, the placeholder in --fg-subtle,
  *   side padding as the Input's md. It starts one line tall and grows a line at a time up to `maxRows` (8), then
  *   scrolls inside. The height is set in a layout effect, so it snaps with the text and is never animated. A
@@ -51,7 +51,7 @@
  *   once.
  * - Bodies (proposals/worlds.md): this file resolves the state once into ComposerBodyProps and FileChipBodyProps and
  *   renders the body the material picks (byWorld). Press, here, is the cut box above. Flat, Device and Rack live in
- *   bodies/composer.flat.tsx, bodies/composer.device.tsx and bodies/composer.rack.tsx and draw the same contract their own
+ *   worlds/flat/composer.tsx, worlds/device/composer.tsx and worlds/rack/composer.tsx and draw the same contract their own
  *   way. Rack is a panel field: a light box in a 1px control line with a row of keys under it, and a chip a small flat key.
  */
 import {
@@ -76,9 +76,9 @@ import { Button } from "@/components/button";
 import { ArrowUpIcon, FileIcon, PaperclipIcon, StopIcon, XIcon } from "@/components/icons";
 import { byWorld, useDevice, useExit, useMaterial, useTransition } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
-import { ComposerFlatBody, FileChipFlatBody } from "./bodies/composer.flat";
-import { ComposerDeviceBody, FileChipDeviceBody } from "./bodies/composer.device";
-import { ComposerRackBody, FileChipRackBody } from "./bodies/composer.rack";
+import { ComposerFlatBody, FileChipFlatBody } from "@/worlds/flat/composer";
+import { ComposerDeviceBody, FileChipDeviceBody } from "@/worlds/device/composer";
+import { ComposerRackBody, FileChipRackBody } from "@/worlds/rack/composer";
 
 /** A file shown as a chip above the text. The caller owns the list: add it when a file is picked, update its progress, remove it in onRemoveFile. */
 export type ComposerFile = {

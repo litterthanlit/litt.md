@@ -38,17 +38,17 @@
  *   round (pill) and need an aria-label.
  * - Bodies (proposals/worlds.md): this file is the contract (props, the real <button>, aria-busy and aria-disabled,
  *   the sizes, the label, the spinner) and Press's body. It resolves them once into ButtonBodyProps and picks a body
- *   by the material on <html> (byWorld, useMaterial). Flat's pill is bodies/button.flat.tsx; Device's key on its 2px
- *   skirt is bodies/button.device.tsx. A frame that sets its own material (a study strip, a side-by-side preview)
+ *   by the material on <html> (byWorld, useMaterial). Flat's pill is worlds/flat/button.tsx; Device's key on its 2px
+ *   skirt is worlds/device/button.tsx. A frame that sets its own material (a study strip, a side-by-side preview)
  *   wraps its buttons in a MaterialProvider to draw that body.
- *   Rack's flat key in a 1px outline is bodies/button.rack.tsx: the accent fill for the primary, a darker outline for a press, nothing that moves.
+ *   Rack's flat key in a 1px outline is worlds/rack/button.tsx: the accent fill for the primary, a darker outline for a press, nothing that moves.
  */
 import { Children, type ButtonHTMLAttributes, type ComponentPropsWithRef, type CSSProperties, type ReactNode } from "react";
 import { byWorld, useFun, useMaterial } from "@/motion";
-import { ButtonFlatBody } from "./bodies/button.flat";
-import { ButtonDeviceBody } from "./bodies/button.device";
-import { ButtonPlainBody } from "./bodies/button.plain";
-import { ButtonRackBody } from "./bodies/button.rack";
+import { ButtonFlatBody } from "@/worlds/flat/button";
+import { ButtonDeviceBody } from "@/worlds/device/button";
+import { ButtonPlainBody } from "@/worlds/plain/button";
+import { ButtonRackBody } from "@/worlds/rack/button";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";

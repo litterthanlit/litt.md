@@ -8,7 +8,7 @@ import { ArrowUpRightIcon } from "@/components/icons";
 import type { PageDocs, PageMeta } from "../kit";
 import { useCustomize } from "../customize-state";
 import { componentDoc } from "../docs-data";
-import { lookStep, materialOf } from "../look";
+import { lookStep, materialOf, worldPageOf } from "../look";
 import { pages } from "../registry";
 import { useRoute } from "../route";
 import { CopyButton, ghostSm } from "./copy";
@@ -39,7 +39,10 @@ function Actions({ meta, docs }: { meta: Pick<PageMeta, "id" | "title" | "summar
   const components = useMemo(() => docs.components.map(componentDoc), [docs]);
   const { look } = useCustomize();
   /* Built during render, so the click handler already holds the text. It must not await. */
-  const prompt = useMemo(() => buildPrompt({ meta, docs, components, lookStep: lookStep(look, SITE) }), [meta, docs, components, look]);
+  const prompt = useMemo(
+    () => buildPrompt({ meta, docs, components, lookStep: lookStep(look, SITE), world: worldPageOf(location.hash) }),
+    [meta, docs, components, look],
+  );
 
   return (
     <div className="flex flex-wrap items-center gap-3">

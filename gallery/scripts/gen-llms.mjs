@@ -162,6 +162,7 @@ function pageMarkdown(page, cp, look) {
     "## Install",
     "```bash\n" + cp.installCommands(comps) + "\n```",
     ...(own ? [own.attribute ? `Needs \`data-material="${own.attribute}"\` on \`<html>\`.` : "Needs no data-material attribute: Press is the default."] : []),
+    worldInstalls(meta, first, look),
     `Every token it brings is prefixed with litt (\`--litt-accent\`, \`bg-litt-surface-1\`), so nothing in the project changes. With ${code(cp.REGISTRIES_ENTRY)} in components.json the same install is \`npx shadcn@latest add @litt/${first}\`. For litt's fonts, heading weights and focus ring across the whole app, also add ${code(cp.registryUrl("base-styles"))}.`,
     "## Usage",
     "```tsx\n" + cp.usageSnippet(docs, comps) + "\n```",
@@ -185,6 +186,12 @@ function pageMarkdown(page, cp, look) {
   return parts.join("\n\n") + "\n";
 }
 
+/** A part's install per world (gen-registry.mjs): r/<world>/<part>.json, with that world's body alone. */
+function worldInstalls(meta, first, look) {
+  const worlds = look.MATERIALS.filter((m) => !meta.worlds || meta.worlds.includes(m.id));
+  return `Each world ${worlds.length === 1 ? "it belongs to" : "it is in"} has its own install, with that world's body alone and that world's tokens: ${worlds.map((m) => `${m.name} \`${ORIGIN}/r/${m.id}/${first}.json\``).join(", ")}.${worlds.some((m) => m.attribute) ? ` Put that world's data-material on \`<html>\`${worlds.some((m) => !m.attribute) ? " (Press needs none)" : ""}.` : ""}`;
+}
+
 /** Each material is a world: a page in the gallery with one line, an audience and five foundations (look.ts owns the words). */
 function worldsDoc(look, pages) {
   const foundations = (f) =>
@@ -196,6 +203,7 @@ function worldsDoc(look, pages) {
         `### ${m.name}`,
         `${m.tagline} ${m.audience}`,
         `${m.attribute ? `\`data-material="${m.attribute}"\` on \`<html>\`.` : "No attribute. It is what tokens.css ships."} Gallery: ${ORIGIN}/#${m.id}`,
+        `Install: \`npx shadcn@latest add ${ORIGIN}/r/${m.id}/<part>.json\` brings a part with ${m.name}'s body alone, and \`${ORIGIN}/r/${m.id}/litt.json\` ${m.name}'s tokens alone. Index: ${ORIGIN}/r/${m.id}/registry.json.`,
         foundations(m.foundations),
         `Only here:\n\n${bullets([...m.abilities, ...pages.filter((p) => p.meta.worlds?.length === 1 && p.meta.worlds[0] === m.id).map((p) => `[${p.meta.title}](${ORIGIN}/#${p.meta.id}): ${p.meta.summary}`)])}`,
       ].join("\n\n"),
@@ -217,6 +225,7 @@ function llmsTxt(pages, cp, look) {
       'Or add `"registries": { "@litt": "https://littmd.vercel.app/r/{name}.json" }` to components.json once, then `npx shadcn@latest add @litt/button`.',
       bullets([
         "Needs a shadcn project (a components.json) with Tailwind CSS v4.",
+        `One world only: every world has its own install, \`npx shadcn@latest add ${ORIGIN}/r/<world>/button.json\`, which brings that world's body alone and its tokens from \`${ORIGIN}/r/<world>/litt.json\` (worlds: ${look.MATERIALS.map((m) => m.id).join(", ")}; each has an index at r/<world>/registry.json). The items above bring every world's body.`,
         "Optional: `npx shadcn@latest add https://littmd.vercel.app/r/base-styles.json` for litt's fonts, heading weights and focus ring across the whole app.",
         `Every installed file names its release in its first lines (\`// @litt/button ${lock.latest}\`). To update, read the changelog since then and install again with \`--overwrite\`.`,
         "In an AI tool: with the @litt registry in components.json, shadcn's MCP server (`npx shadcn@latest mcp init --client claude`, or cursor, vscode, codex) can search litt, read each item and its `<name>-demo` example (`npx shadcn@latest view @litt/button-demo`), and install it. Setup for each tool: " + `${ORIGIN}/#ai.`,

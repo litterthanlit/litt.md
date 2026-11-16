@@ -28,10 +28,10 @@
  * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the drag and its
  *   thresholds, the keyboard confirm, the typing path, the confirmed state and the reset. It resolves them once into
  *   SlideConfirmBodyProps and renders the body the material picks (byWorld). PressBody, below, is the default (the plate,
- *   slot and cap above). bodies/slide-confirm.flat.tsx is the grey pill with an ink circle. bodies/slide-confirm.device.tsx
+ *   slot and cap above). worlds/flat/slide-confirm.tsx is the grey pill with an ink circle. worlds/device/slide-confirm.tsx
  *   is a latch key pushed along a well to an end stop: the words sit on an LCD strip in the well, a lamp at the stop
  *   lights once confirmed, and a key let go short goes home in three steps on the instant tier, not on a spring.
- *   bodies/slide-confirm.rack.tsx is a track box with a flat key in a 1px outline: the part the key has passed fills as the slot's own fill, the key darkens its outline while held, and a confirmed track lights in the ink.
+ *   worlds/rack/slide-confirm.tsx is a track box with a flat key in a 1px outline: the part the key has passed fills as the slot's own fill, the key darkens its outline while held, and a confirmed track lights in the ink.
  * - Touch: the thumb owns the drag (touch-action none, data-no-drag), so a sheet never moves under it.
  * - Disabled: the track at fg 3%, the thumb --surface-2 with a --line edge, no pointer, no tab stop. The words stay
  *   --fg-subtle, because they still say what it would do, as a disabled Slider's end words do.
@@ -50,9 +50,9 @@ import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
 import { CheckIcon, ChevronRightIcon } from "@/components/icons";
 import { TextField } from "@/components/input";
 import { Button } from "@/components/button";
-import { SlideConfirmDeviceBody } from "./bodies/slide-confirm.device";
-import { SlideConfirmFlatBody } from "./bodies/slide-confirm.flat";
-import { SlideConfirmRackBody } from "./bodies/slide-confirm.rack";
+import { SlideConfirmDeviceBody } from "@/worlds/device/slide-confirm";
+import { SlideConfirmFlatBody } from "@/worlds/flat/slide-confirm";
+import { SlideConfirmRackBody } from "@/worlds/rack/slide-confirm";
 
 export type SlideConfirmSize = "md" | "lg";
 

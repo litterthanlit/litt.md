@@ -18,24 +18,24 @@
  *   the press material's block, --block with --block-lift, in --fg like the text typed beside it.
  *   It sits inside the field's control radius, so its corners are that radius less 2px. Forced
  *   colors drops the lift, so it keeps a 1px border. A hue tag files a category and never rises.
- * - Flat, bodies/tag.flat.tsx (proposals/flat-pill.md): the word in a grey pill (--surface-3), nothing raised and no
+ * - Flat, worlds/flat/tag.tsx (proposals/flat-pill.md): the word in a grey pill (--surface-3), nothing raised and no
  *   hairline. A hue tag keeps its tint as a pill, and a raised tag is a --surface-1 pill, so it stands out of the grey
  *   field it sits in.
- * - Rack, bodies/tag.rack.tsx: a small square key. A hue tag is a clip (the tint, its text tone and a 1px edge of its mark
+ * - Rack, worlds/rack/tag.tsx: a small square key. A hue tag is a clip (the tint, its text tone and a 1px edge of its mark
  *   tone at 40%), a status tag a flat outlined key with the status words, a raised tag the key itself.
  * - One contract, four bodies (proposals/worlds.md, Bodies). This file is the contract: the props and the plain span with
  *   its label. It resolves them once into TagBodyProps and renders the body the material picks (byWorld). PressBody, below,
- *   is the default; bodies/tag.flat.tsx and bodies/tag.device.tsx are the other two, each drawing its own span with data-body.
- * - Device, bodies/tag.device.tsx: the word engraved in capitals on a small plate; a status tag adds a lamp in its status
+ *   is the default; worlds/flat/tag.tsx and worlds/device/tag.tsx are the other two, each drawing its own span with data-body.
+ * - Device, worlds/device/tag.tsx: the word engraved in capitals on a small plate; a status tag adds a lamp in its status
  *   color, and the word still says the status.
  * - Static: no motion and no states. A tag is a label, not a control, so it never takes
  *   focus. If you need something to press, use Button or a chip.
  */
 import type { HTMLAttributes, ReactNode } from "react";
 import { byWorld, useMaterial } from "@/motion";
-import { TagDeviceBody } from "./bodies/tag.device";
-import { TagFlatBody } from "./bodies/tag.flat";
-import { TagRackBody } from "./bodies/tag.rack";
+import { TagDeviceBody } from "@/worlds/device/tag";
+import { TagFlatBody } from "@/worlds/flat/tag";
+import { TagRackBody } from "@/worlds/rack/tag";
 
 export type TagStatus = "success" | "warning" | "danger" | "neutral";
 

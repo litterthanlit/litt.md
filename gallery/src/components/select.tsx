@@ -13,7 +13,7 @@
  *   --fg-subtle, and at its end a window cut into the block (--cut, --cut-shade, 4px in) holding a 16px up and down mark that never turns. Focus is the 2px --focus outline at a 2px offset,
  *   as on every button. An error draws a 1px --danger edge inside the block and keeps its cast; disabled,
  *   it lies flat on --surface-2 with the hairline. A long value truncates with an ellipsis.
- * - Flat (bodies/select.flat.tsx): a grey pill and a solid grey sheet; the current row is a grey bubble, the title weight and a check.
+ * - Flat (worlds/flat/select.tsx): a grey pill and a solid grey sheet; the current row is a grey bubble, the title weight and a check.
  * - List (Press): glass at the surface radius with a tray cut into it 4px in (--tray, --tray-shade), 44px slats in the tray
  *   with 12px side padding, one gliding highlight (glide.tsx), and the current slat lifted: a block face behind it (z -10, so
  *   the highlight and its ring show over it) and a 16px check in a fixed cell at its end. It is at least as wide as the trigger and never taller
@@ -36,10 +36,10 @@
  * - One contract, four bodies (proposals/worlds.md, Bodies). This file is the contract: the props, Radix's roles and keys,
  *   the value, the open state, the exit and the highlight's focus. It resolves them into SelectTriggerBodyProps,
  *   SelectListBodyProps and SelectRowBodyProps and renders the body the material picks (byWorld). The Press bodies are
- *   below, the default. bodies/select.flat.tsx is the grey pill and the solid card. bodies/select.device.tsx is an LCD
+ *   below, the default. worlds/flat/select.tsx is the grey pill and the solid card. worlds/device/select.tsx is an LCD
  *   readout with a pair of step keys at its end (a pointer extra: they are out of the tab order and out of the
  *   accessibility tree, and the keyboard stays Radix's) and a list drawn as a screen, its current row a lit lamp and its
- *   highlight switching row to row with no glide. bodies/select.rack.tsx is a value box in a 1px outline with a square chevron key,
+ *   highlight switching row to row with no glide. worlds/rack/select.tsx is a value box in a 1px outline with a square chevron key,
  *   and a list drawn as an opaque outlined panel, its current row filled and its highlight switching in place.
  */
 import {
@@ -62,10 +62,10 @@ import { byWorld, useExit, useMaterial, useOverlayRoot, useTransition, useTravel
 import { useOverlayMotion } from "@/motion/deal";
 import { CheckIcon, ChevronsUpDownIcon } from "@/components/icons";
 import { GLIDE_ROW, useGlide, type Glide } from "@/components/glide";
-import { SelectDeviceList, SelectDeviceRow, SelectDeviceTrigger } from "./bodies/select.device";
-import { SelectRackList, SelectRackRow, SelectRackTrigger } from "./bodies/select.rack";
-import { SelectFlatList, SelectFlatRow, SelectFlatTrigger } from "./bodies/select.flat";
-import { SelectPlainList, SelectPlainRow, SelectPlainTrigger } from "./bodies/select.plain";
+import { SelectDeviceList, SelectDeviceRow, SelectDeviceTrigger } from "@/worlds/device/select";
+import { SelectRackList, SelectRackRow, SelectRackTrigger } from "@/worlds/rack/select";
+import { SelectFlatList, SelectFlatRow, SelectFlatTrigger } from "@/worlds/flat/select";
+import { SelectPlainList, SelectPlainRow, SelectPlainTrigger } from "@/worlds/plain/select";
 
 export type SelectSize = "sm" | "md" | "lg";
 
