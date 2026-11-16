@@ -18,15 +18,17 @@
  *   Under Device (data-material="device") the field is LCD glass in the mono, through the --field tokens.
  * - Bodies (proposals/worlds.md): the contract below (the input, its label, aria-invalid, aria-describedby) resolves once
  *   into InputBodyProps, TextareaBodyProps and FieldBodyProps, and the body the material picks (byWorld) draws them.
- *   Press is the cut and its plate, here. Flat is the grey pill (worlds/flat/input.tsx). Device is LCD glass set in a bezel
+ *   Press is the cut, here. Flat is the grey pill (worlds/flat/input.tsx). Device is LCD glass set in a bezel
  *   well, the label engraved on the body above it, the hint and the error dim LCD lines, an error with a lamp in
  *   --danger (worlds/device/input.tsx).
  * - Rack, the value box: a light box in a 1px control line, square, no shade; focus and an error change only the line
  *   (worlds/rack/input.tsx).
- * - Press, the instrument: the field is a cut sunk into the surface it sits on, which is the plate already. Its wall is
- *   the shade (--slot-shade), its floor deeper (--field-shade stacked on it) and its lower wall catches the light
- *   (the slot-shade's lit line), never a drawn outline. The label sits on the surface above, the hint or error under.
+ * - Press, the instrument (the boards of 26 October 2026): the field is the cut above, sunk a hair into the surface it
+ *   sits on, inside the 3:1 control line. Under Press the --field tokens are the cut's: --field is --cut, --field-line
+ *   is --line-control and --field-shade is --cut-shade. The label sits on the surface above, the hint or error under.
  *   A host's className (a width) lands on the cut.
+ * - Heat keeps the deeper cut Press had until 2026-11-16 (--slot-shade with --field-shade stacked on it), in
+ *   worlds/heat/input.tsx.
  * - Flat, the page: a grey pill with nothing standing and no frame; the label in ink, the hint plain grey words, an
  *   error words in --danger with the pill's fill tinting (worlds/flat/input.tsx).
  * - Typed text at the text weight and the label at the title weight (R8). The edge fades on the
@@ -40,6 +42,7 @@ import { FieldDeviceBody, InputDeviceBody, TextareaDeviceBody } from "@/worlds/d
 import { FieldFlatBody, InputFlatBody, TextareaFlatBody } from "@/worlds/flat/input";
 import { FieldPlainBody, InputPlainBody, TextareaPlainBody } from "@/worlds/plain/input";
 import { FieldRackBody, InputRackBody, TextareaRackBody } from "@/worlds/rack/input";
+import { InputHeatBody, TextareaHeatBody } from "@/worlds/heat/input";
 
 export type InputSize = "sm" | "md" | "lg";
 
@@ -47,11 +50,11 @@ export type InputSize = "sm" | "md" | "lg";
 const field =
   "w-full min-w-0 rounded-control bg-field font-normal text-field-ink placeholder:text-field-ink-subtle " +
   "pointer-coarse:text-(length:--control-text-lg) " +
-  "shadow-[var(--slot-shade),var(--field-shade)] " +
+  "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
-  "focus-visible:outline-none focus-visible:shadow-[var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
-  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--slot-shade),var(--field-shade)] " +
-  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--slot-shade),var(--field-shade),var(--focus-ring)] " +
+  "focus-visible:outline-none focus-visible:shadow-[inset_0_0_0_1px_var(--focus),var(--field-shade),var(--focus-ring)] " +
+  "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
+  "aria-invalid:focus-visible:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade),var(--focus-ring)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:text-fg-disabled disabled:placeholder:text-fg-disabled " +
   "disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   /* Forced colors (Windows high contrast) drops box-shadow, so the edge becomes a real border and focus gets an outline. */
@@ -127,7 +130,7 @@ function PressInput({ size, invalid, mono, className, control }: InputBodyProps)
  * an aria-label, because a placeholder is not a label. Every other input attribute goes through.
  */
 export function Input({ size = "md", invalid = false, mono = false, className = "", ...rest }: InputProps) {
-  const Body = byWorld(useMaterial(), { press: PressInput, flat: InputFlatBody, device: InputDeviceBody, plain: InputPlainBody, rack: InputRackBody });
+  const Body = byWorld(useMaterial(), { press: PressInput, flat: InputFlatBody, device: InputDeviceBody, plain: InputPlainBody, rack: InputRackBody, heat: InputHeatBody });
   return <Body size={size} invalid={invalid} mono={mono} className={className} control={rest} />;
 }
 
@@ -251,6 +254,6 @@ function PressTextarea({ size, invalid, mono, className, control }: TextareaBody
 }
 
 function TextareaControl(props: TextareaBodyProps) {
-  const Body = byWorld(useMaterial(), { press: PressTextarea, flat: TextareaFlatBody, device: TextareaDeviceBody, plain: TextareaPlainBody, rack: TextareaRackBody });
+  const Body = byWorld(useMaterial(), { press: PressTextarea, flat: TextareaFlatBody, device: TextareaDeviceBody, plain: TextareaPlainBody, rack: TextareaRackBody, heat: TextareaHeatBody });
   return <Body {...props} />;
 }
