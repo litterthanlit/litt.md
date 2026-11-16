@@ -456,7 +456,7 @@
     },
     "device-sparkline": {
       "version": "2026.11.16",
-      "hash": "e4e89efc31d1d6df"
+      "hash": "9ef772baac83a621"
     },
     "device-spread": {
       "version": "2026.11.16",
@@ -856,7 +856,7 @@
     },
     "flat-sparkline": {
       "version": "2026.11.16",
-      "hash": "1b8968292f612018"
+      "hash": "4d101dec7a25c7af"
     },
     "flat-spread": {
       "version": "2026.11.16",
@@ -1264,7 +1264,7 @@
     },
     "heat-sparkline": {
       "version": "2026.11.16",
-      "hash": "e69ebd60190268e7"
+      "hash": "7e61b28ade7b789f"
     },
     "heat-spread": {
       "version": "2026.11.16",
@@ -1728,7 +1728,7 @@
     },
     "plain-sparkline": {
       "version": "2026.11.16",
-      "hash": "e69ebd60190268e7"
+      "hash": "7e61b28ade7b789f"
     },
     "plain-spread": {
       "version": "2026.11.16",
@@ -2116,7 +2116,7 @@
     },
     "press-sparkline": {
       "version": "2026.11.16",
-      "hash": "e69ebd60190268e7"
+      "hash": "7e61b28ade7b789f"
     },
     "press-spread": {
       "version": "2026.11.16",
@@ -2516,7 +2516,7 @@
     },
     "rack-sparkline": {
       "version": "2026.11.16",
-      "hash": "4f4270f59c4f2afa"
+      "hash": "a679e2ebfa9899ef"
     },
     "rack-spread": {
       "version": "2026.11.16",
@@ -2663,8 +2663,8 @@
       "hash": "72c5bf8906cc9d51"
     },
     "sparkline": {
-      "version": "2026.11.14",
-      "hash": "46be811980999b64"
+      "version": "2026.11.16",
+      "hash": "a60adb84e9a30b2a"
     },
     "spread": {
       "version": "2026.10.26",
