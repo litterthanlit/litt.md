@@ -17,12 +17,12 @@
  *   each row a slat, a ::before in every cell, 2px clear of the row's top and of its rule. The cell clips its face, so
  *   faces meet square and a lifted slat's shadow never crosses its neighbour. The slat under the hand, held or
  *   selected lifts (--highlight, --block-lift) on the instant tier.
- * - Flat (bodies/table.flat.tsx): the table on the page. No frame, no rules; a row is a grey bubble (surface-3) under
+ * - Flat (worlds/flat/table.tsx): the table on the page. No frame, no rules; a row is a grey bubble (surface-3) under
  *   the pointer and when selected, its first and last cell rounded.
- * - Device (bodies/table.device.tsx): a screen of mono columns. LCD glass, the cells the mono in the glass's ink, the
+ * - Device (worlds/device/table.tsx): a screen of mono columns. LCD glass, the cells the mono in the glass's ink, the
  *   header engraved on a plate strip, and a lamp at the start of each row (a ::before in the first cell's padding) lit
  *   for the row under the pointer, the keyboard or a selection, with a tint of the ink behind it.
- * - Rack (bodies/table.rack.tsx): a list in an instrument's browser. One flat panel in a 1px edge, a darker header
+ * - Rack (worlds/rack/table.tsx): a list in an instrument's browser. One flat panel in a 1px edge, a darker header
  *   strip, thin rows on 1px rules, grey under the hand and when selected; rows appear where they stand.
  * - Semantics: a <table> with a hidden <caption>, <th scope="col"> headers and a <th scope="row"> for each primary
  *   cell, so a screen reader announces the row's name with every value. A sortable header holds a real button and
@@ -101,16 +101,16 @@ import { byWorld, useExit, useMaterial, useStagger, useTransition, useTravel } f
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { AlertIcon, RetryIcon } from "@/components/icons";
-import { tableDeviceDress } from "./bodies/table.device";
-import { tableRackDress } from "./bodies/table.rack";
-import { tableFlatDress } from "./bodies/table.flat";
+import { tableDeviceDress } from "@/worlds/device/table";
+import { tableRackDress } from "@/worlds/rack/table";
+import { tableFlatDress } from "@/worlds/flat/table";
 
 /** The entrance cascade stops counting at this many rows, so a long table never drags. */
 const CASCADE_CAP = 6;
 
 /** What a world dresses: the class strings each part of the table takes, and whether rows travel. Tailwind only builds
     classes it can read, so every string is written out whole. Press's dress is below; Flat's and Device's live in
-    bodies/table.flat.tsx and bodies/table.device.tsx. */
+    worlds/flat/table.tsx and worlds/device/table.tsx. */
 export type TableDress = {
   /** The scroll region: its corners, frame and ground. */
   region: string;

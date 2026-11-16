@@ -12,10 +12,10 @@
  *   material picks (byWorld). Press, here, is a sunken well (--tray, --tray-shade) with the bars standing on its floor
  *   and the category labels on a raised rail (--block, --block-lift). Flat, also here, is the chart as it has always
  *   been: the hairline grid, the value axis and the bars, with no ground (Nick, 2026-11-10: the current data parts
- *   are Flat's). Device (bodies/chart.device.tsx) is a dot-matrix screen: bars as columns of lit dots, the emphasised
+ *   are Flat's). Device (worlds/device/chart.tsx) is a dot-matrix screen: bars as columns of lit dots, the emphasised
  *   value in seven segments above it. LineChart and StackedBarChart take the same bodies: Press's well and rail around
  *   today's lines and rails, Flat as it has always been, and on Device a line is a trace of lit dots and a stack a
- *   column of them. Rack (bodies/chart.rack.tsx) is an arrangement: a dark well with hairline gridlines and the data as
+ *   column of them. Rack (worlds/rack/chart.tsx) is an arrangement: a dark well with hairline gridlines and the data as
  *   clips, bars and stacked parts as blocks in the hue's tint with its mark edge, a line over a tint band. Meter has no
  *   bodies yet.
  * - Data hues (R7, v0.11): a series may carry one of the five data hues (`hue` on the series), and `hues` gives
@@ -60,8 +60,8 @@
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent, type ReactNode } from "react";
 import { animate, AnimatePresence, motion, useMotionValueEvent, useTransform } from "motion/react";
 import { byWorld, countText, useExit, useFun, useFunValue, useMaterial, useTransition, useTravel } from "@/motion";
-import { ChartDeviceBody } from "./bodies/chart.device";
-import { ChartRackBody } from "./bodies/chart.rack";
+import { ChartDeviceBody } from "@/worlds/device/chart";
+import { ChartRackBody } from "@/worlds/rack/chart";
 
 /* ----------------------------------------------------------------- types */
 

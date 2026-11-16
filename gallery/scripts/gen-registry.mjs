@@ -557,6 +557,15 @@ const stems = Object.keys(docs).sort();
 /** The blocks: every file in src/blocks, each a whole screen that imports only components and the motion engine. */
 const blockNames = fs.existsSync(blocksDir) ? fs.readdirSync(blocksDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort() : [];
 
+/** The worlds that can have a body of their own (Press's lives in the contract), and a body's path under src/. */
+const BODY_WORLDS = ["flat", "device", "plain", "rack", "heat"];
+const BODY_FILE = new RegExp(`^worlds\\/(${BODY_WORLDS.join("|")})\\/([\\w-]+)\\.tsx$`);
+const worldsDir = path.join(srcDir, "worlds");
+
+/** A comment names a body by its source path (worlds/flat/button.tsx); in a host it is bodies/button.flat.tsx. */
+const hostBodyPaths = (text) =>
+  text.replace(/(?<![\w/])(src\/)?worlds\/([\w-]+|<\w+>)\/([\w-]+|<\w+>)\.tsx/g, (_, src, world, part) => `${src ? "src/components/" : ""}bodies/${part}.${world}.tsx`);
+
 /** Where a source file lands in a host, relative to the host's src/ (or root). */
 function targetOf(file) {
   const r = norm(path.relative(srcDir, file));
@@ -565,6 +574,9 @@ function targetOf(file) {
   if (r === "components/shopify.tsx") return "lib/litt/shopify.ts";
   if (r === "components/shopify-cart.tsx") return "lib/litt/shopify-cart.tsx";
   if (r.startsWith("blocks/")) return `components/litt-blocks/${r.slice("blocks/".length)}`;
+  // A world's body (src/worlds/<world>/<part>.tsx) lands where it always has in a host: components/litt/bodies/<part>.<world>.tsx.
+  const body = BODY_FILE.exec(r);
+  if (body) return `components/litt/bodies/${body[2]}.${body[1]}.tsx`;
   if (r.startsWith("components/")) return `components/litt/${r.slice("components/".length)}`;
   if (r.startsWith("motion/")) return `lib/litt/motion/${r.slice("motion/".length)}`;
   return fail(`${rel(file)}: only src/components, src/blocks and src/motion can be shipped`);
@@ -574,9 +586,9 @@ function targetOf(file) {
 function itemOf(file) {
   const r = norm(path.relative(srcDir, file));
   if (r.startsWith("motion/")) return "motion";
-  // A body (proposals/worlds.md, Bodies) ships inside the part it is named after: bodies/switch.flat.tsx is the switch's.
-  const body = /^components\/bodies\/([\w-]+)\.(flat|device|plain|rack|heat)\.tsx$/.exec(r);
-  if (body) return body[1];
+  // A body (proposals/worlds.md, Bodies) ships inside the part it is named after: worlds/flat/switch.tsx is the switch's.
+  const body = BODY_FILE.exec(r);
+  if (body) return body[2];
   const m = /^(?:components|blocks)\/([\w-]+)\.tsx$/.exec(r);
   if (!m) return fail(`${rel(file)}: not a component or block file`);
   return m[1];
@@ -714,7 +726,7 @@ function transformFile(file, targets, source) {
 
   for (const [start, end, mode] of textPieces(sf, specNodes)) {
     const before = sf.text.slice(start, end);
-    const after = renameText(before, mode, stats);
+    const after = renameText(mode === "prose" ? hostBodyPaths(before) : before, mode, stats);
     if (after !== before) edits.push([start, end, after]);
   }
 
@@ -1439,13 +1451,16 @@ function build(demos = []) {
   for (const f of componentFiles) if (!fs.existsSync(f)) fail(`docs.json lists "${path.basename(f, ".tsx")}", but ${rel(f)} does not exist. Run npm run gen:docs.`);
   const onDisk = fs.readdirSync(componentsDir).filter((f) => f.endsWith(".tsx")).map((f) => f.slice(0, -4)).sort();
   if (onDisk.join() !== stems.join()) fail(`docs.json is stale: it has [${stems}] and src/components has [${onDisk}]. Run npm run gen:docs.`);
-  // A part's bodies (src/components/bodies/<part>.<material>.tsx) ship inside its item at components/litt/bodies/.
-  const bodiesDir = path.join(componentsDir, "bodies");
-  const bodyFiles = fs.existsSync(bodiesDir) ? fs.readdirSync(bodiesDir).filter((f) => f.endsWith(".tsx")).sort().map((f) => path.join(bodiesDir, f)) : [];
+  // A part's bodies (src/worlds/<world>/<part>.tsx) ship inside its item at components/litt/bodies/<part>.<world>.tsx.
+  const bodyFiles = (fs.existsSync(worldsDir) ? fs.readdirSync(worldsDir) : []).sort().flatMap((w) => {
+    const dir = path.join(worldsDir, w);
+    if (!BODY_WORLDS.includes(w)) fail(`${rel(dir)}: a world folder is one of ${BODY_WORLDS.join(", ")} (Press's bodies live in the contracts)`);
+    return fs.readdirSync(dir).sort().map((f) => path.join(dir, f));
+  });
   for (const f of bodyFiles) {
-    const m = /^([\w-]+)\.(flat|device|plain|rack|heat)\.tsx$/.exec(path.basename(f));
-    if (!m) fail(`${rel(f)}: a body is named <part>.flat.tsx, <part>.device.tsx, <part>.plain.tsx, <part>.rack.tsx or <part>.heat.tsx`);
-    if (!stems.includes(m[1])) fail(`${rel(f)}: no component "${m[1]}" for this body to belong to`);
+    const m = BODY_FILE.exec(norm(path.relative(srcDir, f)));
+    if (!m) fail(`${rel(f)}: a body is src/worlds/<world>/<part>.tsx`);
+    if (!stems.includes(m[2])) fail(`${rel(f)}: no component "${m[2]}" for this body to belong to`);
   }
   const motionFiles = ["index.tsx", "spring.ts", "tokens.ts", "rules.ts", "device.ts", "drag.ts", "deal.ts", "hand.ts", "fun.tsx"].map((f) => path.join(motionDir, f));
   for (const f of motionFiles) if (!fs.existsSync(f)) fail(`${rel(f)} is missing`);

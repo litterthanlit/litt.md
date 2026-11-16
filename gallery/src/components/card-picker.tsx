@@ -26,8 +26,8 @@
  *   controlled picker empty.
  * - Bodies (proposals/worlds.md): this file keeps the contract (the fieldset, the legend, the radios, the pick and the
  *   words they are named by) and resolves it once into CardPickerBodyProps. It renders the body the material picks
- *   (byWorld). Press, here, is plates in a tray. Flat (bodies/card-picker.flat.tsx) and Device
- *   (bodies/card-picker.device.tsx) are the same radios in other bodies. The arrow keys and every accessible name are
+ *   (byWorld). Press, here, is plates in a tray. Flat (worlds/flat/card-picker.tsx) and Device
+ *   (worlds/device/card-picker.tsx) are the same radios in other bodies. The arrow keys and every accessible name are
  *   the same in all four.
  * - Motion: nothing glides in Press: a plate rises and sinks where it stands, and colors change on the instant tier. Flat's
  *   bubble glides on the responsive tier (fun mode's glide spring in fun mode) and appears at once on the first pick;
@@ -37,9 +37,9 @@
 import { useId, useState, type ReactNode } from "react";
 import type { Transition } from "motion/react";
 import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
-import { CardPickerDeviceBody } from "./bodies/card-picker.device";
-import { CardPickerFlatBody } from "./bodies/card-picker.flat";
-import { CardPickerRackBody } from "./bodies/card-picker.rack";
+import { CardPickerDeviceBody } from "@/worlds/device/card-picker";
+import { CardPickerFlatBody } from "@/worlds/flat/card-picker";
+import { CardPickerRackBody } from "@/worlds/rack/card-picker";
 
 export type CardPickerSize = "sm" | "lg";
 
