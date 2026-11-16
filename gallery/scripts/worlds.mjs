@@ -18,8 +18,8 @@
  *   checkboxes and switches fill with too),
  * - Foundations is not five cards labelled Color, Type, Light, Shape and Motion, or a card's text is not the world's
  *   line in src/gallery/look.ts (read from that file, so the prose lives once),
- * - a page in a world (#<world>, #<world>/about, #<world>/button) links to another world, has no Home link
- *   (litt.design/systems/), draws the gallery's sidebar, or wears another world,
+ * - a page in a world (#<world>, #<world>/about, #<world>/components, #<world>/button) links to another world, has no
+ *   Home link (litt.design/systems/), draws the gallery's sidebar, or wears another world,
  * - the phone's menu does not list Worlds with a row per world before the first component group,
  * - a world page scrolls sideways at 390 or at 320,
  * - a world page has no Only here section (section#only-here[data-only-here]), or its abilities are not the world's
@@ -244,7 +244,7 @@ for (const world of WORLDS) for (const scheme of ["light", "dark"]) {
 
 /* ---------- a world is closed: no link from its pages to another world's ---------- */
 for (const world of WORLDS) {
-  for (const sub of ["", "/about", "/button"]) {
+  for (const sub of ["", "/about", "/components", "/button"]) {
     const { ctx, pg, errors } = await open(`${world.id}${sub}`, { width: 1440, height: 900 });
     await pg.locator("main h1").first().waitFor({ state: "attached" });
     await pg.waitForLoadState("networkidle");
