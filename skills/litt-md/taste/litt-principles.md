@@ -41,7 +41,7 @@ For sites, portfolios and reading. Nick, 2026-11-16: "I want it light, easy to u
 - **Light, airy and easy.** No complications: one clear thing at a time, room around it, nothing to work out.
 - **Bold, simple shapes on grey.** Grey is the ground. What sits on it is a pill, a circle or a rounded square in the ink or in white, with no outline and nothing cast, and a small pop of color only where it says something.
 - **Things come from where you touched them.** A set deals out of what opened it and gathers back; an overlay grows from its opener. A reader never loses where they were.
-- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap. How much is chosen by eye and is not set yet (Open, 1).
+- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap, picked by eye on the canvas (Nick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good"): where something arrives on the expressive spring it bounces 0.28, where every other world keeps 0.12. Small moves and exits never bounce.
 
 ### Device, the machine
 
@@ -123,7 +123,7 @@ Plain, precise and quiet, in every world. "Write it the way you would say it to 
 
 ## Open, for Nick
 
-1. **Flat's bounce and size.** Nick said Flat should bounce more. The value is not picked: it needs candidates to judge by eye, then `assets/tokens.css`, the bound in `scripts/check.mjs` and `gallery/src/motion/rules.ts`, and R4's wording, through Propagate (`workflows/evolve.md`, 4). Still unanswered: Nick's references for Flat have figures larger than 18px. May Flat set type above 18px (R8)?
+1. **Flat's bounce and size.** The bounce is answered (2026-11-16): the expressive spring at 0.28, the responsive at 0, in R4. Still unanswered: Nick's references for Flat have figures larger than 18px. May Flat set type above 18px (R8)?
 2. **Device's sound.** Answered: it starts on. Not built yet; litt has no sound engine.
 3. **Running by itself.** In the components repo every study moves in its first four seconds, untouched. Here nothing moves on its own (R2, R4). May Device's studies and its object run by themselves, while the other worlds stay still? Until Nick says, none does.
 4. **Spelling.** The components repo is British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
