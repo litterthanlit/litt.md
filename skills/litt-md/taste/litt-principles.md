@@ -41,7 +41,7 @@ For sites, portfolios and reading. Nick, 2026-11-16: "I want it light, easy to u
 - **Light, airy and easy.** No complications: one clear thing at a time, room around it, nothing to work out.
 - **Bold, simple shapes on grey.** Grey is the ground. What sits on it is a pill, a circle or a rounded square in the ink or in white, with no outline and nothing cast, and a small pop of color only where it says something.
 - **Things come from where you touched them.** A set deals out of what opened it and gathers back; an overlay grows from its opener. A reader never loses where they were.
-- **Fun, and it moves that way.** Motion is quick and playful, to match. How far it may go is open (Open, 1).
+- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap. How much is chosen by eye and is not set yet (Open, 1).
 
 ### Device, the machine
 
@@ -51,7 +51,7 @@ For agents, terminals and tools. Nick, 2026-11-16: "tactile, actual device feeli
 - **It uses an instrument's vocabulary.** Keys, wells, LCD glass, lamps, engraved capitals. The words arrive with behavior people already know, so the interface needs fewer explanations. "The vocabulary dresses the demo, not the component" (*components*).
 - **Things are mechanisms.** A part switches where it stands, in steps, and never fades or travels. Where it stands in for a mechanism, model the mechanism: "a duration and a curve can't be interrupted gracefully, can't overshoot from a flick, and can't tie a click to the exact moment a detent passes" (*components*).
 - **The machine shows its work.** Segments, meters and reels move only while the work does, so a glance says whether it is running.
-- **Sound answers a key.** A click confirms a press faster than sight (*components*). Synthesized, and only in answer to a hand. Whether it starts silent is open (Open, 2).
+- **Sound answers a key.** A click confirms a press faster than sight (*components*). Synthesized, and only in answer to a hand. It starts with sound on, and the viewer can mute it (Nick, 2026-11-16: "start with sound for device"), which replaces decision 8's silent start. A browser plays nothing before the first press, so it is quiet until then.
 
 ### Plain, the document
 
@@ -123,8 +123,8 @@ Plain, precise and quiet, in every world. "Write it the way you would say it to 
 
 ## Open, for Nick
 
-1. **Flat's fun.** Nick's references for Flat have large figures and playful motion. Today nothing is set above 18px (R8) and a spring bounces at most 0.12 (R4). May Flat go past either, as its own exception?
-2. **Device's sound.** Nick: "yes we can have sound." Decision 8 starts it silent, with a Sound choice; the components repo starts it on until the viewer mutes it. Which?
+1. **Flat's bounce and size.** Nick said Flat should bounce more. The value is not picked: it needs candidates to judge by eye, then `assets/tokens.css`, the bound in `scripts/check.mjs` and `gallery/src/motion/rules.ts`, and R4's wording, through Propagate (`workflows/evolve.md`, 4). Still unanswered: Nick's references for Flat have figures larger than 18px. May Flat set type above 18px (R8)?
+2. **Device's sound.** Answered: it starts on. Not built yet; litt has no sound engine.
 3. **Running by itself.** In the components repo every study moves in its first four seconds, untouched. Here nothing moves on its own (R2, R4). May Device's studies and its object run by themselves, while the other worlds stay still? Until Nick says, none does.
 4. **Spelling.** The components repo is British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
 5. **Values.** The components repo's curves and springs differ from litt's tiers, and one preset bounces past R4's bound. This file brings no values. A value Device should take comes in through Propagate (`workflows/evolve.md`, 4).
