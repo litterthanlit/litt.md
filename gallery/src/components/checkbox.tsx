@@ -15,7 +15,7 @@
  *   (--fg, --block-lift). A press sinks the block --press-depth. Never the accent (R6): the one accent fill is the
  *   primary action's, and a form can hold many checked boxes. An error swaps the edge for --danger and keeps the shade.
  *   Disabled, it lies flat on --surface-2 with the hairline, and so does the block and the bead.
- * - Flat is bodies/checkbox.flat.tsx: ink on paper, an outline when off, the ink when on. At the Pill shape the 20px box is a circle; at other shapes it follows --radius-control, and a
+ * - Flat is worlds/flat/checkbox.tsx: ink on paper, an outline when off, the ink when on. At the Pill shape the 20px box is a circle; at other shapes it follows --radius-control, and a
  *   radio is always round.
  * - The label sits on the right, --space-2 away, at the small size, and the whole row is
  *   clickable. The label is a real <label for>, stretched over the row, so its accessible
@@ -28,10 +28,10 @@
  * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the real <input>
  *   with its role, checked and mixed state, the label and description, the groups and the keys. It resolves them once
  *   into ChoiceBodyProps and renders the body the material picks (byWorld) for the drawn look. PressBody, below, is the
- *   default (the cut above). bodies/checkbox.flat.tsx is Flat's recipe, an outline when off and the ink when on.
- *   bodies/checkbox.device.tsx is Device's: a square key in a well that latches down and lights its lamp when checked,
+ *   default (the cut above). worlds/flat/checkbox.tsx is Flat's recipe, an outline when off and the ink when on.
+ *   worlds/device/checkbox.tsx is Device's: a square key in a well that latches down and lights its lamp when checked,
  *   and half lights it when mixed. A radio group there is a row of the same keys, interlocked, so pressing one lets the
- *   last one up. bodies/checkbox.rack.tsx is Rack's: a small well that fills with the ink when checked, with the tick in the canvas, and an
+ *   last one up. worlds/rack/checkbox.tsx is Rack's: a small well that fills with the ink when checked, with the tick in the canvas, and an
  *   ink dash when mixed, all in 1px outlines on the frame. The "native" look is the browser's own box in every world. A frame that sets its own look draws its
  *   own body, not <html>'s.
  */
@@ -52,10 +52,10 @@ import {
 import { animate } from "motion/react";
 import { byWorld, useFun, useMaterial } from "@/motion";
 import { CheckIcon } from "@/components/icons";
-import { ChoiceDeviceBody } from "./bodies/checkbox.device";
-import { ChoiceFlatBody } from "./bodies/checkbox.flat";
-import { ChoicePlainBody } from "./bodies/checkbox.plain";
-import { ChoiceRackBody } from "./bodies/checkbox.rack";
+import { ChoiceDeviceBody } from "@/worlds/device/checkbox";
+import { ChoiceFlatBody } from "@/worlds/flat/checkbox";
+import { ChoicePlainBody } from "@/worlds/plain/checkbox";
+import { ChoiceRackBody } from "@/worlds/rack/checkbox";
 
 export type ChoiceAppearance = "drawn" | "native";
 

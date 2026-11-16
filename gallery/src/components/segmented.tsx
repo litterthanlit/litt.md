@@ -26,19 +26,19 @@
  *   and a hand can take it and drag it one to one, as the Switch's block does: a press on it sinks it --press-depth on
  *   --block-press, a drag past 4px follows the finger, and it lands on the nearer enabled option when let go (a drag
  *   that ends where it started changes nothing). A click and the arrow keys stay as they were. Flat
- *   (bodies/segmented.flat.tsx) is words alone with a grey pill bubble sized to the chosen word, and no tray. Device
- *   (bodies/segmented.device.tsx) is a row of keys in one well, the chosen one latched down with its lamp lit, and
- *   nothing glides. Rack (bodies/segmented.rack.tsx) is one outlined box divided by 1px rules, the chosen option a lit ink key,
+ *   (worlds/flat/segmented.tsx) is words alone with a grey pill bubble sized to the chosen word, and no tray. Device
+ *   (worlds/device/segmented.tsx) is a row of keys in one well, the chosen one latched down with its lamp lit, and
+ *   nothing glides. Rack (worlds/rack/segmented.tsx) is one outlined box divided by 1px rules, the chosen option a lit ink key,
  *   and nothing glides. The props, the radios and the arrow keys are the same in all four.
  * - The legend is visually hidden by default, as the spec says. Pass showLegend in a form.
  */
 import { useId, useRef, useState, type CSSProperties, type MouseEvent, type PointerEvent, type ReactNode } from "react";
 import type { Transition } from "motion/react";
 import { byWorld, useFun, useMaterial, useTransition } from "@/motion";
-import { SegmentedFlatBody } from "./bodies/segmented.flat";
-import { SegmentedDeviceBody } from "./bodies/segmented.device";
-import { SegmentedPlainBody } from "./bodies/segmented.plain";
-import { SegmentedRackBody } from "./bodies/segmented.rack";
+import { SegmentedFlatBody } from "@/worlds/flat/segmented";
+import { SegmentedDeviceBody } from "@/worlds/device/segmented";
+import { SegmentedPlainBody } from "@/worlds/plain/segmented";
+import { SegmentedRackBody } from "@/worlds/rack/segmented";
 
 export type SegmentedSize = "sm" | "md";
 export type SegmentedOption<T extends string> = {

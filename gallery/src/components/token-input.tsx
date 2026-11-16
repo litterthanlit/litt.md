@@ -7,8 +7,8 @@
  *   Press is the Input's cut (--slot-shade with --field-shade: the top wall shaded, the lower wall lit) with each
  *   token a block standing out of it (--block with --highlight and --key-lift) and a small block on it (--block with
  *   --block-lift) that removes it. Flat is a grey pill field, the tokens darker grey pills with a cross, and the "+N"
- *   bare words. Device is the Input's glass (bodies/token-input.device.tsx), each token an inverted cell of lit mono
- *   words with a small key. Rack is the Input's light box in a 1px line holding small flat keys in outlines (bodies/token-input.rack.tsx).
+ *   bare words. Device is the Input's glass (worlds/device/token-input.tsx), each token an inverted cell of lit mono
+ *   words with a small key. Rack is the Input's light box in a 1px line holding small flat keys in outlines (worlds/rack/token-input.tsx).
  *   The body decides the field, the chip, the remove button and the "+N", through TokenSkin.
  * - Field: heights are minimums on the shared scale (sm 32, md 44, lg 56), and the 2px focus ring wraps the whole
  *   field while its text input is focus-visible. An invalid field draws a --danger line. Like the Input it has no
@@ -40,9 +40,9 @@ import { useEffect, useId, useRef, useState, type ClipboardEvent, type FocusEven
 import { AnimatePresence, motion } from "motion/react";
 import { byWorld, useDevice, useExit, useMaterial, useTransition } from "@/motion";
 import { useOverlayMotion } from "@/motion/deal";
-import { TokenInputDeviceBody } from "./bodies/token-input.device";
-import { TokenInputFlatBody } from "./bodies/token-input.flat";
-import { TokenInputRackBody } from "./bodies/token-input.rack";
+import { TokenInputDeviceBody } from "@/worlds/device/token-input";
+import { TokenInputFlatBody } from "@/worlds/flat/token-input";
+import { TokenInputRackBody } from "@/worlds/rack/token-input";
 
 export type TokenInputProps = {
   /** The label above the field. Required, because a placeholder is not a label. Clicking it focuses the input. */

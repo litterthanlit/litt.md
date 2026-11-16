@@ -19,7 +19,7 @@
  *   Replay stage shows a dialog instead of the object at rest. Pressing Replay on the Command menu and Dialog pages
  *   must open an overlay, and Esc must close it,
  * - a part with bodies (data-body on its root, proposals/worlds.md, Bodies) does not draw, on a world's page, that
- *   world's own body in its Anatomy, where src/components/bodies/<part>.<world>.tsx exists, and Press's body where it
+ *   world's own body in its Anatomy, where src/worlds/<world>/<part>.tsx exists, and Press's body where it
  *   does not (byWorld's fallback),
  * - Show source is not aria-expanded=false at load, or after a press shows no code with `export function`, or the
  *   Source heading does not name the file and a yyyy.mm.dd version,
@@ -41,10 +41,10 @@ import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 /* Every world, in the order look.ts's MATERIALS lists them. */
 const WORLDS = ["press", "flat", "device", "plain", "rack", "heat"];
-const BODIES_DIR = path.join(here, "..", "src", "components", "bodies");
+const WORLDS_DIR = path.join(here, "..", "src", "worlds");
 /** The body a part draws under a world: its own where the file exists, else Press's (byWorld). A frame may also show
     its own world's body when it comes from a part inside (a Dialog's Buttons). */
-const bodyFor = (part, world) => (world === "press" || fs.existsSync(path.join(BODIES_DIR, `${part}.${world}.tsx`)) ? world : "press");
+const bodyFor = (part, world) => (world === "press" || fs.existsSync(path.join(WORLDS_DIR, world, `${part}.tsx`)) ? world : "press");
 const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));

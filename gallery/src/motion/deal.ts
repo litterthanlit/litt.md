@@ -114,7 +114,7 @@ export function useMaterial(): Material {
 /**
  * One contract, three bodies (proposals/worlds.md, Bodies): a part a hand touches keeps one contract and has a body per
  * material, picked here. Press is the default body and lives in the part's own file; Flat's and Device's live in
- * src/components/bodies/<part>.<material>.tsx and are imported by the part, so the registry ships them in its item.
+ * src/worlds/<material>/<part>.tsx and are imported by the part, so the registry ships them in its item.
  * A world without a body of its own falls back to Press, so a part gains bodies one at a time (Plain has none yet: it
  * draws Press's bodies in its own tokens, proposals/plain.md).
  */

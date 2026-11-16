@@ -25,10 +25,10 @@
  *     foot, so it and the panel are one lit surface; the others sit lower in --tray, seated, a shade darker. Segmented is
  *     blocks in a tray (--tray, --tray-shade): the others seated flush, the chosen one raised (--block, --block-lift) and
  *     gliding. A tab under the hand sinks --press-depth (--block-press).
- *   - Flat's words with a grey pill behind the chosen one is bodies/tabs.flat.tsx; Device's engraved legends, a lamp under
+ *   - Flat's words with a grey pill behind the chosen one is worlds/flat/tabs.tsx; Device's engraved legends, a lamp under
  *     the current one that switches on in place (and, segmented, a row of keys on one skirt with the current one latched
- *     down) is bodies/tabs.device.tsx. Only Press's and Flat's faces glide.
- *   - Rack's square keys (bodies/tabs.rack.tsx): a strip of outlined keys over a rule (underline), or one outlined box divided
+ *     down) is worlds/device/tabs.tsx. Only Press's and Flat's faces glide.
+ *   - Rack's square keys (worlds/rack/tabs.tsx): a strip of outlined keys over a rule (underline), or one outlined box divided
  *     by rules (segmented), the chosen key lit in the ink; nothing glides.
  * - Touch: there is no hover, so on a coarse pointer a tab that is held down fills and takes
  *   the --fg text (PRESS, color only, instant tier). The box never moves, and the OS tap flash
@@ -51,10 +51,10 @@ import {
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { AnimatePresence, LayoutGroup, motion, type Variants } from "motion/react";
 import { byWorld, useExit, useFun, useMaterial, useTransition, useTravel } from "@/motion";
-import { TabsListFlatBody, TabsTriggerFlatBody } from "./bodies/tabs.flat";
-import { TabsListDeviceBody, TabsTriggerDeviceBody } from "./bodies/tabs.device";
-import { TabsListPlainBody, TabsTriggerPlainBody } from "./bodies/tabs.plain";
-import { TabsListRackBody, TabsTriggerRackBody } from "./bodies/tabs.rack";
+import { TabsListFlatBody, TabsTriggerFlatBody } from "@/worlds/flat/tabs";
+import { TabsListDeviceBody, TabsTriggerDeviceBody } from "@/worlds/device/tabs";
+import { TabsListPlainBody, TabsTriggerPlainBody } from "@/worlds/plain/tabs";
+import { TabsListRackBody, TabsTriggerRackBody } from "@/worlds/rack/tabs";
 
 export type TabsVariant = "underline" | "segmented";
 export type TabsSize = "sm" | "md";

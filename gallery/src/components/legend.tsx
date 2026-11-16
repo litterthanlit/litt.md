@@ -36,13 +36,13 @@
  *   the hand a block sinks the --press-depth. The tray's floor is darker than the page, so the words on it keep
  *   --fg and --fg-muted, never --fg-subtle. Flat is words with a hue dot; Device is a bank of latching keys, each
  *   lamp in its series' hue (bodies/). Rack is a row of track names, each beside a small clip swatch (the hue's tint in its
- *   mark edge); a hidden series is an empty outline (bodies/legend.rack.tsx).
+ *   mark edge); a hidden series is an empty outline (worlds/rack/legend.tsx).
  */
 import { useId, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from "react";
 import { byWorld, useMaterial } from "@/motion";
-import { LegendFlatBody } from "./bodies/legend.flat";
-import { LegendDeviceBody } from "./bodies/legend.device";
-import { LegendRackBody } from "./bodies/legend.rack";
+import { LegendFlatBody } from "@/worlds/flat/legend";
+import { LegendDeviceBody } from "@/worlds/device/legend";
+import { LegendRackBody } from "@/worlds/rack/legend";
 
 /** The five data hues, in their fixed order (R7). The same names as the Chart's and the Breakdown's. */
 export type LegendHue = "blue" | "amber" | "teal" | "violet" | "rose";

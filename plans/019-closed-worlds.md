@@ -77,17 +77,33 @@ Inside a world nothing links to another world. The only way out is Home.
 
 ## Phase 4. A home per world in the code, and an install per world (STOP before it)
 
-- [ ] `gallery/src/worlds/<world>/`: the world's bodies (from `components/bodies/<part>.<world>.tsx`), its own parts,
+Nick chose A on 2026-11-16 ("A, go ahead"). Done the same day, in four commits: the move, the generator, the test, the docs.
+
+- [x] `gallery/src/worlds/<world>/`: the world's bodies (from `components/bodies/<part>.<world>.tsx`), its own parts,
       its object (`play-object/bodies/<world>.tsx`). Not under `src/gallery`, which gen-docs forbids components to import.
       Updates gen-registry's two body regexes and directory, study.mjs, and the collisions KNOWN paths.
-- [ ] A per-world registry: `r/<world>/<part>.json` with the contract and only that world's body, and `r/<world>/litt.json`
+      Done for the bodies: `src/worlds/<world>/<part>.tsx`, imported as `@/worlds/<world>/<part>`. A body still lands at
+      `components/litt/bodies/<part>.<world>.tsx` in a host, and a comment's source path is turned back into that path,
+      so a registry written before and after the move diffs empty. Two things stayed: the player bodies, because they
+      import the player's gallery code (`body.ts`, `scrub.ts`) and `src/worlds` holds only what ships; and Device's own
+      parts (seven-segment, tape-progress, agent-indicator, copy-button), because gen-docs, the registry and the docs
+      pages all key a part on `src/components/<part>.tsx`, and their pages already say they are Device's (meta.worlds).
+- [x] A per-world registry: `r/<world>/<part>.json` with the contract and only that world's body, and `r/<world>/litt.json`
       with `:root` and that world's tokens. This needs one of two shapes, which is Nick's call:
   - **A. Build-time rewrite.** gen-registry rewrites each contract's `byWorld` map and imports to the one world's body.
     No component changes; the generator grows.
   - **B. One body import.** Each contract imports `./body` and the gallery aliases it per world. Every component
     changes once; the generator stays simple.
-- [ ] Item names and the lock become world-prefixed; CHANGELOG lines per world; `test:registry` installs each world.
+
+  A, in `gen-registry.mjs` ("one world's install"): every `byWorld(material, map)` becomes `{ press: <the world's
+  entry, else Press's> }`, then whatever only the dropped entries used goes (imports, Press's body and its helpers).
+  The engines get a copy per world too, so nothing a world installs depends on `r/litt.json`. Every existing item,
+  `registry.json` and lock entry is unchanged.
+- [x] Item names and the lock become world-prefixed; CHANGELOG lines per world; `test:registry` installs each world.
+      The old names stay beside them (`button` and `device-button`). The `worlds` scenario fails if a world's install
+      brings another world's body or tokens.
 - [ ] `taste/litt-principles.md` points each world's section at its folder (a `taste:` change, through evolve.md).
+      Not done: it is Nick's, through evolve.md. Its line 113 still names `components/bodies/<part>.<world>.tsx`.
 
 ## Checks per phase
 

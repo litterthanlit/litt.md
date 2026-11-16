@@ -8,9 +8,9 @@
  *   every world, so a row of tiles lines up whatever the material. Press, here, is a line in a groove: a sunken well
  *   (--tray, --tray-shade) with the line along its floor, 4px in from the edge (8px at the two ends, where a round well
  *   curves in), and the latest value a raised bead
- *   (--block, --block-lift) on it. Flat (bodies/sparkline.flat.tsx) is the line as it has always been, on the page.
- *   Device (bodies/sparkline.device.tsx) is a row of lit dots on LCD glass, the latest column the strongest. Rack
- *   (bodies/sparkline.rack.tsx) is a clip: a block in the hue's own tint with the values as a mirrored waveform in it.
+ *   (--block, --block-lift) on it. Flat (worlds/flat/sparkline.tsx) is the line as it has always been, on the page.
+ *   Device (worlds/device/sparkline.tsx) is a row of lit dots on LCD glass, the latest column the strongest. Rack
+ *   (worlds/rack/sparkline.tsx) is a clip: a block in the hue's own tint with the values as a mirrored waveform in it.
  * - Marks (Flat): a 2px line with round joins and caps, and a dot on the latest point so today is the strongest mark, as
  *   in the Chart. The dot is 4px in radius (8px across) on a 2px ring in the surface color, so it reads on a busy row and
  *   the line does not run into it. No area fill, no gradient, no glow (R2). Press keeps the line and swaps the dot for
@@ -41,9 +41,9 @@
 import { useLayoutEffect, useRef, useState, type RefObject } from "react";
 import { motion } from "motion/react";
 import { byWorld, useFun, useMaterial } from "@/motion";
-import { SparklineFlatBody } from "./bodies/sparkline.flat";
-import { SparklineDeviceBody } from "./bodies/sparkline.device";
-import { SparklineRackBody } from "./bodies/sparkline.rack";
+import { SparklineFlatBody } from "@/worlds/flat/sparkline";
+import { SparklineDeviceBody } from "@/worlds/device/sparkline";
+import { SparklineRackBody } from "@/worlds/rack/sparkline";
 
 /** The five data hues, in their fixed order (R7). */
 export type SparklineHue = "blue" | "amber" | "teal" | "violet" | "rose";

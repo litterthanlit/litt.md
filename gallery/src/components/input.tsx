@@ -18,17 +18,17 @@
  *   Under Device (data-material="device") the field is LCD glass in the mono, through the --field tokens.
  * - Bodies (proposals/worlds.md): the contract below (the input, its label, aria-invalid, aria-describedby) resolves once
  *   into InputBodyProps, TextareaBodyProps and FieldBodyProps, and the body the material picks (byWorld) draws them.
- *   Press is the cut and its plate, here. Flat is the grey pill (bodies/input.flat.tsx). Device is LCD glass set in a bezel
+ *   Press is the cut and its plate, here. Flat is the grey pill (worlds/flat/input.tsx). Device is LCD glass set in a bezel
  *   well, the label engraved on the body above it, the hint and the error dim LCD lines, an error with a lamp in
- *   --danger (bodies/input.device.tsx).
+ *   --danger (worlds/device/input.tsx).
  * - Rack, the value box: a light box in a 1px control line, square, no shade; focus and an error change only the line
- *   (bodies/input.rack.tsx).
+ *   (worlds/rack/input.tsx).
  * - Press, the instrument: the field is a cut sunk into the surface it sits on, which is the plate already. Its wall is
  *   the shade (--slot-shade), its floor deeper (--field-shade stacked on it) and its lower wall catches the light
  *   (the slot-shade's lit line), never a drawn outline. The label sits on the surface above, the hint or error under.
  *   A host's className (a width) lands on the cut.
  * - Flat, the page: a grey pill with nothing standing and no frame; the label in ink, the hint plain grey words, an
- *   error words in --danger with the pill's fill tinting (bodies/input.flat.tsx).
+ *   error words in --danger with the pill's fill tinting (worlds/flat/input.tsx).
  * - Typed text at the text weight and the label at the title weight (R8). The edge fades on the
  *   instant tier, the box never moves.
  * - No hover state: the spec and the specimen have none, and a text field that shifts
@@ -36,10 +36,10 @@
  */
 import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type TextareaHTMLAttributes } from "react";
 import { byWorld, useMaterial } from "@/motion";
-import { FieldDeviceBody, InputDeviceBody, TextareaDeviceBody } from "./bodies/input.device";
-import { FieldFlatBody, InputFlatBody, TextareaFlatBody } from "./bodies/input.flat";
-import { FieldPlainBody, InputPlainBody, TextareaPlainBody } from "./bodies/input.plain";
-import { FieldRackBody, InputRackBody, TextareaRackBody } from "./bodies/input.rack";
+import { FieldDeviceBody, InputDeviceBody, TextareaDeviceBody } from "@/worlds/device/input";
+import { FieldFlatBody, InputFlatBody, TextareaFlatBody } from "@/worlds/flat/input";
+import { FieldPlainBody, InputPlainBody, TextareaPlainBody } from "@/worlds/plain/input";
+import { FieldRackBody, InputRackBody, TextareaRackBody } from "@/worlds/rack/input";
 
 export type InputSize = "sm" | "md" | "lg";
 

@@ -19,14 +19,23 @@ export const markdownUrl = (pageId: string) => `${SITE}/docs/${pageId}.md`;
 /** The shadcn registry the gallery builds (scripts/gen-registry.mjs): https://littmd.vercel.app/r/<item>.json */
 export const REGISTRY_URL = "https://littmd.vercel.app/r/{name}.json";
 export const registryUrl = (item: string) => REGISTRY_URL.replace("{name}", item);
-/** One component, one command. The stems are the registry's item names. */
-export const installCommand = (stem: string) => `npx shadcn@latest add ${registryUrl(stem)}`;
+/** One world's install (gen-registry.mjs): https://littmd.vercel.app/r/<world>/<item>.json, with that world's body alone. */
+export const worldRegistryUrl = (world: string, item: string) => `${SITE}/r/${world}/${item}.json`;
+/** One component, one command. The stems are the registry's item names; with a world, that world's install. */
+export const installCommand = (stem: string, world?: string) => `npx shadcn@latest add ${world ? worldRegistryUrl(world, stem) : registryUrl(stem)}`;
 /** One line per component, skipping any that another one already brings in as a dependency (Menu brings its icons). */
-export const installCommands = (components: Pick<ComponentDoc, "stem" | "file" | "files">[]) =>
+export const installCommands = (components: Pick<ComponentDoc, "stem" | "file" | "files">[], world?: string) =>
   components
     .filter((c) => !components.some((o) => o !== c && o.files.includes(c.file)))
-    .map((c) => installCommand(c.stem))
+    .map((c) => installCommand(c.stem, world))
     .join("\n");
+
+/** The world a page is installed for: its id, its name and the data-material it needs on <html> (none for Press). */
+export type InstallWorld = { id: string; name: string; attribute: string | null };
+/** What a world's install brings, and what the host does for it, in a sentence. */
+export const worldInstallWords = (w: InstallWorld) =>
+  `This is ${w.name}'s install: ${w.name}'s body alone, with ${w.name}'s tokens from ${worldRegistryUrl(w.id, "litt")}. ` +
+  (w.attribute ? `Put data-material="${w.attribute}" on <html>.` : `${w.name} is the default, so nothing goes on <html>.`);
 /** The components.json entry that turns the URLs into @litt/<item>. */
 export const REGISTRIES_ENTRY = `"registries": { "@litt": "${REGISTRY_URL}" }`;
 
@@ -84,9 +93,11 @@ export type PromptInput = {
   components: ComponentDoc[];
   /** The "Match the look" step's text (look.ts lookStep), for a page shown in a look the registry does not install. */
   lookStep?: string | null;
+  /** A page in a world installs that world's own items, so the look needs no step of its own. */
+  world?: InstallWorld | null;
 };
 
-export function buildPrompt({ meta, docs, components, lookStep }: PromptInput): string {
+export function buildPrompt({ meta, docs, components, lookStep, world }: PromptInput): string {
   const files = filesToCopy(components);
   const packages = packagesToInstall(components);
   const names = documentedExports(docs, components).map((e) => e.name);
@@ -95,14 +106,17 @@ export function buildPrompt({ meta, docs, components, lookStep }: PromptInput): 
   const steps = [
     `Install with shadcn\n` +
       `The project needs shadcn set up (a components.json) and Tailwind CSS v4. Run this in the project root:\n` +
-      `${installCommands(components)}\n` +
+      `${installCommands(components, world?.id)}\n` +
       `It adds the files in components/litt and lib/litt, the npm packages they need, and litt's tokens in the global CSS. ` +
+      (world ? `${worldInstallWords(world)} ` : "") +
       `Every token is prefixed with litt (--litt-accent, bg-litt-surface-1, rounded-litt-control), so none of it collides with the project's own. ` +
       `Nothing else in the project changes. If a command asks to overwrite a file, say no and tell me.\n` +
       `For litt's fonts, heading weights and focus ring across the whole app, also run: npx shadcn@latest add ${registryUrl("base-styles")}\n` +
-      `With ${REGISTRIES_ENTRY} in components.json, the same install is npx shadcn@latest add @litt/${first}.`,
+      (world
+        ? `For every world's body in one install instead: ${installCommand(first)}.`
+        : `With ${REGISTRIES_ENTRY} in components.json, the same install is npx shadcn@latest add @litt/${first}.`),
 
-    ...(lookStep ? [`Match the look\n${lookStep}`] : []),
+    ...(lookStep && !world ? [`Match the look\n${lookStep}`] : []),
 
     `Usage\n\`\`\`tsx\n${usageSnippet(docs, components)}\n\`\`\`\n` +
       `"@/" is the project's own alias. If it has none, import from components/litt with a relative path.`,

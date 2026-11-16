@@ -4,9 +4,9 @@
  *
  * - Bodies (proposals/worlds.md): this file resolves the state once into StatBodyProps and renders the body the
  *   material picks (byWorld). Press, here, is a plate (--block, --plate-lift) with the label along its top and the
- *   figure on a raised face set into it (--block, --block-lift). Flat (bodies/stat.flat.tsx) is the figure in ink on
- *   the page with no box. Device (bodies/stat.device.tsx) is a plate with the label engraved above an LCD window that
- *   shows the figure in seven segments. Rack (bodies/stat.rack.tsx) is a panel with a value box (a light cut in the
+ *   figure on a raised face set into it (--block, --block-lift). Flat (worlds/flat/stat.tsx) is the figure in ink on
+ *   the page with no box. Device (worlds/device/stat.tsx) is a plate with the label engraved above an LCD window that
+ *   shows the figure in seven segments. Rack (worlds/rack/stat.tsx) is a panel with a value box (a light cut in the
  *   control line) for the figure and the delta as a small flat key. Never glass (R3), never an accent rail. A tile links nowhere, so it has no
  *   hover and no motion.
  * - Type: the label is the small size in fg-subtle, the value is the h3 size in fg in the sans with tabular
@@ -30,9 +30,9 @@
  */
 import { createContext, useContext, type ReactNode } from "react";
 import { byWorld, useFun, useFunValue, useMaterial } from "@/motion";
-import { StatFlatBody } from "./bodies/stat.flat";
-import { StatDeviceBody } from "./bodies/stat.device";
-import { StatRackBody } from "./bodies/stat.rack";
+import { StatFlatBody } from "@/worlds/flat/stat";
+import { StatDeviceBody } from "@/worlds/device/stat";
+import { StatRackBody } from "@/worlds/rack/stat";
 
 /** Whether a change is good news, bad news or neither. It sets the delta's color, and a hidden word for screen readers. */
 export type StatTone = "good" | "bad" | "neutral";

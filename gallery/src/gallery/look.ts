@@ -271,6 +271,11 @@ export function worldOfHash(hash: string): Material {
   const first = hash.replace(/^#/, "").split("/")[0];
   return (["press", "flat", "device", "plain", "rack", "heat"] as const).find((m) => m === first) ?? GALLERY_LOOK.material;
 }
+/** The world a page's address is in (#device/button is Device's), or null for a page of the gallery's own. */
+export function worldPageOf(hash: string): MaterialInfo | null {
+  const first = hash.replace(/^#/, "").split("/")[0];
+  return MATERIALS.find((m) => m.id === first) ?? null;
+}
 /** What the registry installs: tokens.css with no attribute (Press, Blue 4), and no <FunMode>. */
 export const REGISTRY_LOOK: Look = { accent: "world", material: "press", fun: false };
 /** Every look, in picker order: material, then its accents (its own first), then motion. */

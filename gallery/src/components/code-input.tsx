@@ -26,20 +26,20 @@
  * - Motion: the lines fade on the instant tier, and the box never moves.
  * - One contract, three bodies (proposals/worlds.md, Bodies). This file is the contract: the props, the one real input
  *   over the cells, the label and the note, the typing and the completion. It resolves the code into CodeInputBodyProps
- *   and renders the body the material picks (byWorld). PressBody, above, is the default; bodies/code-input.flat.tsx and
- *   bodies/code-input.device.tsx draw the cells for the other two.
- * - Device, bodies/code-input.device.tsx: one pane of LCD glass per character, showing the dim ghost of an eight on a
+ *   and renders the body the material picks (byWorld). PressBody, above, is the default; worlds/flat/code-input.tsx and
+ *   worlds/device/code-input.tsx draw the cells for the other two.
+ * - Device, worlds/device/code-input.tsx: one pane of LCD glass per character, showing the dim ghost of an eight on a
  *   seven-segment display until its character is typed, then the character lit in segments (digits; a letter of an
  *   alphanumeric code is set in the mono). A character only lights when typed (R4), and a change switches in place in
  *   steps on the instant tier.
- * - Rack, bodies/code-input.rack.tsx: one square light box per character in a 1px control line, no shade and no plate,
+ * - Rack, worlds/rack/code-input.tsx: one square light box per character in a 1px control line, no shade and no plate,
  *   the current cell outlined in the ink.
  */
 import { useId, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { byWorld, useMaterial } from "@/motion";
-import { CodeInputDeviceBody } from "./bodies/code-input.device";
-import { CodeInputFlatBody } from "./bodies/code-input.flat";
-import { CodeInputRackBody } from "./bodies/code-input.rack";
+import { CodeInputDeviceBody } from "@/worlds/device/code-input";
+import { CodeInputFlatBody } from "@/worlds/flat/code-input";
+import { CodeInputRackBody } from "@/worlds/rack/code-input";
 
 export type CodeInputSize = "md" | "lg";
 
