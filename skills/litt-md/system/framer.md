@@ -66,9 +66,9 @@ Never animate these layers (R2).
 - **Save three transition presets.**
   - Instant: **Tween**, duration `0.1`, bezier `0.23, 1, 0.32, 1`. Hover, press, toggles.
   - Responsive: **Spring**, Time `0.2`, Bounce `0`. Menus, tabs, tooltips, the gliding highlight.
-  - Expressive: **Spring**, Time `0.35`, Bounce `0.12`. One signature moment per view.
+  - Expressive: **Spring**, Time `0.35`, Bounce `0.12` (`0.28` for a Flat site). One signature moment per view.
 - **Exits** run at 0.75× the spring's time and never bounce: a Tween with the instant bezier at `0.15` (responsive) or `0.26` (expressive).
-- The instant tween stays at `0.24` or under. Bounce stays at `0.12` or under, and is `0` on responsive and on every exit.
+- The instant tween stays at `0.24` or under. Bounce stays at `0.12` or under (`0.28` under Flat), and is `0` on responsive and on every exit.
 - Hover variants change fill or color only. Press variants scale to `0.98`.
 - No scroll-triggered Appear effects, scroll transforms, parallax, ticker or marquee. The list entrance is one stagger group on load (`0.04`, Y `16`).
 - Framer respects reduced motion for its own effects. Custom code components must check `useReducedMotion()`.

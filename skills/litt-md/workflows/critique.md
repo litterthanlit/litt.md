@@ -41,7 +41,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] Body text 13px or larger. Long text at a 65ch measure or narrower.
 
 **E. Motion** (`n/a` for static input)
-- [ ] **R4** Three tiers only for a click: instant tween (240ms or less), responsive spring (bounce 0), expressive spring (bounce 0.12 or less). Exits at 0.75× with no bounce.
+- [ ] **R4** Three tiers only for a click: instant tween (240ms or less), responsive spring (bounce 0), expressive spring (bounce 0.12 or less; 0.28 or less under Flat). Exits at 0.75× with no bounce.
 - [ ] **R4** Under a hand, a dragged part follows 1:1 and never jumps under the pointer, then settles on the responsive spring. A press sinks it, at once.
 - [ ] At most one expressive moment per view.
 - [ ] Only transform and opacity animate. Color, fill and the focus ring fade at instant. No layout properties, no `transition: all`.

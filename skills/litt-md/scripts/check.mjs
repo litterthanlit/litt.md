@@ -29,10 +29,12 @@
  *               down and blurs at most 6px, and an inset shade moves at most 1px and blurs at most 2px. The light
  *               comes from the top (R2): a cut thing never lights its top edge, a raised thing never its lower one.
  * 9. Motion:    three tiers (instant tween at most 240ms; springs with visual time at most
- *               350ms, bounce at most 0.12 and 0 on responsive; settle at most 600ms; exits
- *               at visual time x --exit with --ease-out); reduced motion zeroes every --dur-*,
- *               --stagger and --travel; transitions use the tier tokens and animate only
- *               transform, opacity and color fades; no layout properties and no `all`.
+ *               350ms, expressive bounce at most the world's cap (BOUNCE_CAP: Flat 0.28, every
+ *               other world 0.12) and 0 on responsive everywhere; settle at most 600ms; exits
+ *               at visual time x --exit with --ease-out). A world block that sets a spring sets
+ *               its settle and linear() with it, and is named in the reduced-motion block, which
+ *               zeroes every --dur-*, --stagger and --travel; transitions use the tier tokens and
+ *               animate only transform, opacity and color fades; no layout properties and no `all`.
  * 10. Frontmatter: SKILL.md name and description follow the skill rules.
  * 11. Flat:    data-material="flat" (proposals/flat.md). Every --flat-* neutral is its stone twin at chroma 0 and the
  *               same OKLCH lightness, in both themes; the flat block maps every neutral onto its mirror and comes
@@ -538,27 +540,58 @@ for (const n of ["--dur-instant", "--dur-responsive", "--dur-expressive", "--dur
   if (!tok(n)) motionFails.push(`tokens.css: ${n} is missing`);
 const durTokens = new Map();
 for (const m of rootCss.matchAll(/(?<![\w-])(--dur-[\w-]+)\s*:\s*([^;]+);/g)) {
+  if (durTokens.has(m[1])) continue; // the :root value; a world's own (Flat's settle) is read with its spring below
   const v = ms(m[2].trim());
   if (Number.isNaN(v)) motionFails.push(`tokens.css: ${m[1]} must be a plain duration, not "${m[2].trim()}"`);
   else durTokens.set(m[1], v);
 }
 const exit = Number(tok("--exit"));
 if (!(exit > 0 && exit < 1)) motionFails.push("tokens.css: --exit must be between 0 and 1 (exits are quicker than enters)");
+/* R4: the expressive bounce cap is per world. Flat bounces more (plans/023, Nick 2026-11-16: "0.28 at 350ms"); every
+   other world stays at 0.12. Responsive is bounce 0 in every world. gallery/src/motion/rules.ts mirrors this table
+   (EXPRESSIVE_BOUNCE): change both together. EASE_CEIL is how far each cap's linear() may peak (0.28 peaks at 1.0326). */
+const BOUNCE_CAP = { flat: 0.28 }, BOUNCE_DEFAULT = 0.12;
+const EASE_CEIL = { flat: 1.04 }, EASE_DEFAULT = 1.02;
 const springTime = {};
-for (const tier of ["responsive", "expressive"]) {
-  const m = /^([\d.]+)ms\s+([\d.]+)$/.exec(tok(`--spring-${tier}`) || "");
-  if (!m) { motionFails.push(`tokens.css: --spring-${tier} must read "<time>ms <bounce>"`); continue; }
+/* One tier in one scope: :root (every world without its own) or a world's block. `get` reads a token in that scope. */
+const checkSpring = (tier, where, get, world) => {
+  const m = /^([\d.]+)ms\s+([\d.]+)$/.exec(get(`--spring-${tier}`) || "");
+  if (!m) { motionFails.push(`tokens.css: ${where}--spring-${tier} must read "<time>ms <bounce>"`); return; }
   const [time, bounce] = [+m[1], +m[2]];
-  springTime[tier] = time;
-  if (time > 350) motionFails.push(`tokens.css: --spring-${tier} visual time ${time}ms is over 350ms`);
-  if (bounce > 0.12) motionFails.push(`tokens.css: --spring-${tier} bounce ${bounce} is over 0.12`);
-  if (tier === "responsive" && bounce !== 0) motionFails.push("tokens.css: --spring-responsive must have bounce 0");
-  if (time > (durTokens.get(`--dur-${tier}`) ?? 0)) motionFails.push(`tokens.css: --dur-${tier} (settle) is shorter than the spring's visual time`);
-  const pts = ((tok(`--ease-${tier}`) || "").match(/^linear\((.*)\)$/s) || [])[1]?.split(",").map(Number);
-  if (!pts || pts.some(Number.isNaN)) motionFails.push(`tokens.css: --ease-${tier} must be a linear() list of plain numbers`);
+  const cap = BOUNCE_CAP[world] ?? BOUNCE_DEFAULT;
+  if (time > 350) motionFails.push(`tokens.css: ${where}--spring-${tier} visual time ${time}ms is over 350ms`);
+  if (tier === "expressive" && bounce > cap) motionFails.push(`tokens.css: ${where}--spring-${tier} bounce ${bounce} is over ${cap}${world ? ` (${world}'s cap)` : ""}`);
+  if (tier === "responsive" && bounce !== 0) motionFails.push(`tokens.css: ${where}--spring-responsive must have bounce 0`);
+  const settle = ms(get(`--dur-${tier}`) || "");
+  if (!(settle <= 600)) motionFails.push(`tokens.css: ${where}--dur-${tier} is ${get(`--dur-${tier}`)}, over its 600ms bound`);
+  if (!(time <= settle)) motionFails.push(`tokens.css: ${where}--dur-${tier} (settle) is shorter than the spring's visual time`);
+  const pts = ((get(`--ease-${tier}`) || "").match(/^linear\((.*)\)$/s) || [])[1]?.split(",").map(Number);
+  if (!pts || pts.some(Number.isNaN)) motionFails.push(`tokens.css: ${where}--ease-${tier} must be a linear() list of plain numbers`);
   else {
-    if (pts[0] !== 0 || pts.at(-1) !== 1) motionFails.push(`tokens.css: --ease-${tier} must start at 0 and end at 1`);
-    if (Math.max(...pts) > (tier === "responsive" ? 1 : 1.02)) motionFails.push(`tokens.css: --ease-${tier} overshoots to ${Math.max(...pts)}`);
+    if (pts[0] !== 0 || pts.at(-1) !== 1) motionFails.push(`tokens.css: ${where}--ease-${tier} must start at 0 and end at 1`);
+    const ceil = tier === "responsive" ? 1 : (EASE_CEIL[world] ?? EASE_DEFAULT);
+    if (Math.max(...pts) > ceil) motionFails.push(`tokens.css: ${where}--ease-${tier} overshoots to ${Math.max(...pts)}`);
+  }
+  return time;
+};
+for (const tier of ["responsive", "expressive"]) springTime[tier] = checkSpring(tier, "", tok);
+/* Each world's own block (:root[data-material="x"], [data-material="x"] { … }). A world that sets a tier's spring,
+   settle or linear() sets all three, keeps the :root visual time (so the exits stay right), and is named in the
+   reduced-motion block, or its settle would beat the zeros on <html>. */
+const worldSprings = [];
+for (const w of rootCss.matchAll(/:root\[data-material="(\w+)"\],\s*\[data-material="\1"\]\s*\{([^}]*)\}/g)) {
+  const [, world, body] = w;
+  const own = (n) => (body.match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*([^;]+);`)) || [])[1]?.trim();
+  for (const tier of ["responsive", "expressive"]) {
+    const set = [`--spring-${tier}`, `--dur-${tier}`, `--ease-${tier}`].filter((n) => own(n) !== undefined);
+    if (!set.length) continue;
+    const where = `${world}'s `;
+    if (set.length < 3) { motionFails.push(`tokens.css: ${where}block sets ${set.join(", ")} but not all of --spring-${tier}, --dur-${tier} and --ease-${tier}`); continue; }
+    const time = checkSpring(tier, where, own, world);
+    if (time !== undefined && time !== springTime[tier]) motionFails.push(`tokens.css: ${where}--spring-${tier} visual time ${time}ms is not :root's ${springTime[tier]}ms, so --dur-exit-${tier} would be wrong`);
+    const named = new RegExp(`(?:^|,)\\s*\\[data-material="${world}"\\]\\s*(?:,|\\{)`, "m").test(reducedBlock) && reducedBlock.includes(`:root[data-material="${world}"]`);
+    if (!named) motionFails.push(`tokens.css: ${where}block sets --dur-${tier}, but the reduced-motion block does not name :root[data-material="${world}"], [data-material="${world}"]`);
+    worldSprings.push(`${world} ${own(`--spring-${tier}`)}`);
   }
 }
 const BOUND = { "--dur-instant": 240, "--dur-responsive": 600, "--dur-expressive": 600 };
@@ -619,7 +652,7 @@ for (const f of assetFiles) {
       if (!movement.has(d[1]) && !fades.has(d[1])) motionFails.push(`${f}: @keyframes ${k[1]} animates "${d[1]}"`);
   }
 }
-motionFails.length ? motionFails.forEach(fail) : ok(`instant ${durTokens.get("--dur-instant")}ms, springs ${tok("--spring-responsive")} and ${tok("--spring-expressive")}, exits ${durTokens.get("--dur-exit-responsive")}/${durTokens.get("--dur-exit-expressive")}ms; reduced motion zeroes durations, stagger and travel; transitions use tier tokens and only transform, opacity and color fades`);
+motionFails.length ? motionFails.forEach(fail) : ok(`instant ${durTokens.get("--dur-instant")}ms, springs ${tok("--spring-responsive")} and ${tok("--spring-expressive")}${worldSprings.length ? ` (expressive ${worldSprings.join(", ")})` : ""}, exits ${durTokens.get("--dur-exit-responsive")}/${durTokens.get("--dur-exit-expressive")}ms; reduced motion zeroes durations, stagger and travel; transitions use tier tokens and only transform, opacity and color fades`);
 
 // 10. Frontmatter ---------------------------------------------------------
 console.log("SKILL.md frontmatter");
@@ -710,7 +743,7 @@ for (const accent of ["blue", "pink", "mono"]) {
     for (const [k, v] of own) if (restated.get(k) !== v) devFails.push(`device ${accent}: ${k} is ${restated.get(k) ?? "missing"}, not ${v} as ${accent}'s own block`);
   }
 }
-if (!/@media \(prefers-reduced-motion: reduce\)\s*\{\s*:root,\s*:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{/.test(css))
+if (!/@media \(prefers-reduced-motion: reduce\)\s*\{[^{]*:root\[data-material="device"\],\s*\[data-material="device"\]\s*[,{]/.test(css))
   devFails.push('reduced motion must restate --press-depth on :root[data-material="device"], [data-material="device"], or a key still sinks');
 for (const [theme, map] of [["light", light], ["dark", dark]]) {
   const g = (n) => map.get(devName(n));

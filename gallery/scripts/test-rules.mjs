@@ -9,7 +9,10 @@
  * - RADIUS_PILL is not --radius-pill, or LIMITS.control is not --radius-control,
  * - cornerRule turns down 0, the control, the surface or the pill, or accepts a corner check.mjs refuses,
  * - spaceRule turns down a step of the scale, or accepts a value foundations.md calls off the scale,
- *   or names the wrong steps beside it.
+ *   or names the wrong steps beside it,
+ * - EXPRESSIVE_BOUNCE is not check.mjs's per-world cap (BOUNCE_CAP, BOUNCE_DEFAULT), a world's own
+ *   --spring-expressive in tokens.css does not pass springRules in that world, or springRules lets Flat
+ *   past 0.28, any other world past 0.12, or any world bounce on the responsive tier.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -18,6 +21,7 @@ import { build } from "esbuild";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const tokens = fs.readFileSync(path.join(root, "..", "skills", "litt-md", "assets", "tokens.css"), "utf8");
+const checkMjs = fs.readFileSync(path.join(root, "..", "skills", "litt-md", "scripts", "check.mjs"), "utf8");
 
 /* rules.ts imports spring.ts and tokens.ts, so it runs bundled. esbuild comes with Vite. */
 const bundle = await build({ entryPoints: [path.join(root, "src", "motion", "rules.ts")], bundle: true, format: "esm", platform: "neutral", write: false, logLevel: "silent" });
@@ -49,6 +53,36 @@ check(R.spaceRule(0, "Gap").ok, "spaceRule fits no space at all");
 for (const off of [20, 28, 36, 40, 2, 200]) check(!R.spaceRule(off, "Gap").ok, `spaceRule turns down ${off}px`);
 check(R.spaceRule(20, "Padding").text === "Padding on the spacing scale: 20px, use 16px or 24px", `spaceRule names both steps beside 20px: "${R.spaceRule(20, "Padding").text}"`);
 check(R.spaceRule(200, "Gap").text === "Gap on the spacing scale: 200px, use 160px", `spaceRule names the last step past the scale: "${R.spaceRule(200, "Gap").text}"`);
+
+/* R4's bounce cap, per world: rules.ts and check.mjs say the same, and tokens.css keeps to it. */
+const capSrc = /const BOUNCE_CAP = (\{[^}]*\}), BOUNCE_DEFAULT = ([\d.]+);/.exec(checkMjs);
+const caps = capSrc ? Function(`return ${capSrc[1]}`)() : null;
+const fallback = capSrc ? Number(capSrc[2]) : NaN;
+check(!!caps, "check.mjs declares BOUNCE_CAP and BOUNCE_DEFAULT");
+const worlds = Object.keys(R.EXPRESSIVE_BOUNCE);
+for (const w of worlds) {
+  const want = caps?.[w] ?? fallback;
+  check(R.EXPRESSIVE_BOUNCE[w] === want, `EXPRESSIVE_BOUNCE.${w} is check.mjs's cap: ${R.EXPRESSIVE_BOUNCE[w]} (check.mjs: ${want})`);
+}
+for (const w of Object.keys(caps ?? {})) check(w in R.EXPRESSIVE_BOUNCE, `check.mjs's BOUNCE_CAP.${w} is a world in rules.ts`);
+const springOf = (block) => {
+  const m = /(?<![\w-])--spring-expressive\s*:\s*(\d+)ms\s+([\d.]+)\s*;/.exec(block);
+  return m ? { time: Number(m[1]) / 1000, bounce: Number(m[2]) } : null;
+};
+const rootSpring = springOf(rootBlock);
+for (const w of worlds) {
+  const own = new RegExp(`:root\\[data-material="${w}"\\],\\s*\\[data-material="${w}"\\]\\s*\\{([^}]*)\\}`).exec(tokens)?.[1];
+  const spring = (own && springOf(own)) ?? rootSpring;
+  const rows = R.springRules(spring, "expressive", w);
+  check(rows.every((r) => r.ok), `${w}'s expressive spring in tokens.css passes springRules in ${w}: ${spring.time * 1000}ms ${spring.bounce} (${rows.filter((r) => !r.ok).map((r) => r.text).join("; ") || "all fit"})`);
+}
+const bounces = (w, bounce, tier = "expressive") => R.springRules({ time: 0.35, bounce }, tier, w).at(-1).ok;
+check(bounces("flat", 0.28), "springRules lets Flat bounce 0.28");
+check(!bounces("flat", 0.3), "springRules turns down Flat at 0.3");
+check(!bounces("press", 0.2), "springRules turns down Press at 0.2");
+for (const w of worlds.filter((w) => w !== "flat")) check(bounces(w, 0.12) && !bounces(w, 0.13), `springRules holds ${w} at 0.12`);
+for (const w of worlds) check(!bounces(w, 0.08, "responsive"), `springRules turns down a responsive bounce in ${w}`);
+check(R.springRules({ time: 0.35, bounce: 0.3 }, "expressive", "flat").at(-1).text === "Bounce at most 0.28: 0.3", `springRules says Flat's cap in words: "${R.springRules({ time: 0.35, bounce: 0.3 }, "expressive", "flat").at(-1).text}"`);
 
 for (const p of passed) console.log(`✓ ${p}`);
 if (problems.length) {

@@ -8,7 +8,7 @@
  * Customize panel, on every page (customize.tsx).
  */
 import { useId, useState } from "react";
-import { PRESET_LABEL, TRAVELS, useMotionDial, type PresetName } from "@/motion";
+import { PRESET_LABEL, TRAVELS, useMaterial, useMotionDial, type PresetName } from "@/motion";
 import { curve, overshoot, toCss, type Spring } from "@/motion/spring";
 import { checkRules, diffFromLocked, tokensSnippet } from "@/motion/rules";
 import { Button } from "@/components/button";
@@ -90,7 +90,7 @@ export function MotionPanel() {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const checks = checkRules(dial);
+  const checks = checkRules(dial, useMaterial());
   const differs = diffFromLocked(dial, locked);
   const snippet = tokensSnippet(dial);
 

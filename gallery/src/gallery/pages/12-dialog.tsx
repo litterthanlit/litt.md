@@ -17,7 +17,7 @@ export const meta: PageMeta = {
     "The one expressive moment. The panel is placed, not thrown: it rises by the travel token's distance, settles from 0.98 and may bounce slightly. Exits are quicker and never bounce. On a phone it is a bottom sheet you can drag away.",
   tiers: ["instant", "expressive"],
   mechanism:
-    "The hand presses a button and the panel answers. This is the view's one expressive moment, 350ms with a bounce of 0.12 at most. Press rises by the travel distance and settles from the press scale. Flat grows the panel out of the button that opened it, from 0.9, and shrinks it back into it. Device switches it on where it stands, in steps, with no slide. The scrim only fades, on the instant tier. Closing takes 0.75 of the time and never bounces. Focus goes in and returns to the button. Under reduced motion the panel appears and leaves at once.",
+    "The hand presses a button and the panel answers. This is the view's one expressive moment, 350ms with a bounce of 0.12 at most, 0.28 in Flat. Press rises by the travel distance and settles from the press scale. Flat grows the panel out of the button that opened it, from 0.9, overshoots a little as it lands, and shrinks it back into it. Device switches it on where it stands, in steps, with no slide. The scrim only fades, on the instant tier. Closing takes 0.75 of the time and never bounces. Focus goes in and returns to the button. Under reduced motion the panel appears and leaves at once.",
 };
 
 export const docs: PageDocs = {

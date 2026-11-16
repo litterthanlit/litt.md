@@ -13,7 +13,7 @@
  * - Cap: the Pad's round cap, 20px (--cap, --cap-lift); held, --cap-held and --cap-press and it sinks --press-depth.
  *   Never the accent (R6), never a new size.
  * - Tier: pass tier and litt's limits for it are drawn (rules.ts): beyond the visual-time limit and above the bounce
- *   limit the floor is washed with fg at 5%, so the clear corner is where a spring fits. A short plate names each
+ *   limit (the world's own cap: Flat's is 0.28, every other world's 0.12) the floor is washed with fg at 5%, so the clear corner is where a spring fits. A short plate names each
  *   limit. Under the readout, one row per rule says Fits or Change (the Tag's success and warning words), as the
  *   Playground's rows do; checks={false} leaves the rows to a panel that lists them itself.
  * - It says its value (R5): the label row ends with the time and the bounce, and a line under the well says what
@@ -36,9 +36,9 @@
  */
 import { useId, useMemo, useRef, useState, type ChangeEvent, type FocusEvent, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { motion, type Transition } from "motion/react";
-import { useMotionDial, useTransition } from "@/motion";
+import { useMaterial, useMotionDial, useTransition } from "@/motion";
 import { overshoot, simulate, type Spring } from "@/motion/spring";
-import { LIMITS, springRules, type SpringTier } from "@/motion/rules";
+import { bounceCap, LIMITS, springRules, type SpringTier } from "@/motion/rules";
 import { Button } from "@/components/button";
 import { PlayIcon } from "@/components/icons";
 import { Tag } from "@/components/tag";
@@ -165,6 +165,9 @@ export function SpringEditor({
   const defaultId = defaultMark ? `${id}-default` : undefined;
 
   const { dial } = useMotionDial();
+  /* The world it stands in: its own expressive cap (R4), so a Flat editor washes the floor above 0.28. */
+  const material = useMaterial();
+  const cap = bounceCap(material);
   const [inner, setInner] = useState<Spring>(() => defaultValue ?? dial.expressive);
   const value = valueProp ?? inner;
   const { pts, short, effect } = useMemo(() => describe(value), [value]);
@@ -274,8 +277,8 @@ export function SpringEditor({
 
   /* The tier's limits, as fractions of each axis. A limit past the edge is not drawn. */
   const limitX = tier ? LIMITS.springMs / 1000 / maxTime : 1;
-  const limitY = tier ? (tier === "responsive" ? 0 : LIMITS.bounce / maxBounce) : 1;
-  const rules = tier && checks ? springRules(value, tier) : [];
+  const limitY = tier ? (tier === "responsive" ? 0 : cap / maxBounce) : 1;
+  const rules = tier && checks ? springRules(value, tier, material) : [];
 
   const describedBy = [labelId, helpId, effectId, defaultId].filter(Boolean).join(" ");
   const plate = disabled ? "bg-surface-2 text-fg-disabled" : "bg-cut text-fg-subtle";
@@ -379,7 +382,7 @@ export function SpringEditor({
               className={word + " right-1 translate-y-1/2 " + plate}
               style={{ bottom: `calc(${INSET}px + (100% - ${2 * INSET}px) * ${limitY})` }}
             >
-              {num(LIMITS.bounce)}
+              {num(cap)}
             </span>
           )}
 

@@ -139,7 +139,10 @@ const VARS = [
 
 export function MotionDialProvider({ tuning, children }: { tuning: boolean; children: ReactNode }) {
   const system = useReducedMotion() ?? false;
-  const locked = useMemo(() => readLocked(system), [system]);
+  /* The world on <html>: each world may set its own springs (Flat's expressive bounce, R4), so they are read again
+     when it changes. */
+  const world = useMaterial();
+  const locked = useMemo(() => readLocked(system), [system, world]);
   const presets = useMemo(() => makePresets(locked.dial), [locked]);
 
   const [tuned, setTuned] = useState<Dial | null>(readStoredDial);
@@ -230,6 +233,7 @@ export function MotionDialProvider({ tuning, children }: { tuning: boolean; chil
 /** The locked tokens as a dial, for an app that mounts no <MotionDialProvider> (any app but the gallery). */
 function useStandaloneDial(enabled: boolean): Ctx | null {
   const system = useReducedMotion() ?? false;
+  const world = useMaterial();
   return useMemo(() => {
     if (!enabled) return null;
     const locked = readLocked(system);
@@ -252,7 +256,7 @@ function useStandaloneDial(enabled: boolean): Ctx | null {
       radius: locked.radius,
       setRadius: noop,
     };
-  }, [enabled, system]);
+  }, [enabled, system, world]);
 }
 
 /**
