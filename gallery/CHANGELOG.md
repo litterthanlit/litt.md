@@ -40,6 +40,17 @@ Then the rest of Press goes back to its first boards (plans/022): a raised thing
 - **changed** `heat-switch`, `heat-segmented`, `heat-checkbox`, `heat-input`: Heat's part now ships as a body of its own, the one the contract drew for Heat until today, so it looks and presses exactly as before. Props are unchanged.
 - **changed** `heat-button`, `flat-switch`, `flat-segmented`, `flat-checkbox`, `flat-input`, `flat-button`, `device-switch`, `device-segmented`, `device-checkbox`, `device-input`, `device-button`, `plain-switch`, `plain-segmented`, `plain-checkbox`, `plain-input`, `plain-button`, `rack-switch`, `rack-segmented`, `rack-checkbox`, `rack-input`, `rack-button`: the contract's comments describe Press's parts as they are now and name Heat's bodies. Nothing in these worlds changes.
 
+Later the same day, Flat bounces more than the other worlds (plans/023). Nick watched the candidates and picked 0.28 at 350ms, with no bounce on small moves.
+
+- **changed** `litt`: under `data-material="flat"`, `--litt-spring-expressive` is `350ms 0.28` (every other world keeps `350ms 0.12`), with its own `--litt-ease-expressive` (a `linear()` that overshoots 3%) and `--litt-dur-expressive` (579ms, inside the 600ms settle limit). The responsive spring and the exits are unchanged, and the reduced-motion block now names Flat, so it still zeroes Flat's settle. No name changed.
+- **changed** `motion`: the springs are read again when the world on `<html>` changes, so a Flat page's dialog, toast and deal spring at 0.28. `rules.ts` holds the expressive bounce cap per world (`EXPRESSIVE_BOUNCE`, `bounceCap`): Flat 0.28, every other world 0.12. `checkRules` and `springRules` take the world as an optional last argument, Press's by default, and `LIMITS.bounce` stays 0.12, the cap outside Flat.
+- **changed** `spring-editor`: on the expressive tier the floor is washed above the world's own cap, so a Flat editor fits up to 0.28. Props are unchanged.
+- **changed** `tune`: a spring field checks its bounce against the world's own cap. Props are unchanged.
+- **changed** `flat-litt`: the same as `litt`, in Flat's own install: Flat's expressive spring is `350ms 0.28`, with its settle and `linear()`.
+- **changed** `press-litt`, `flat-litt`, `device-litt`, `plain-litt`, `rack-litt`, `heat-litt`: each world's install now ships the reduced-motion block and the more-contrast block, cut to that world's selectors. Until today a block that named another world beside `:root` was left out whole, so under reduced motion every world's install but Device's kept its durations, and none took the more-contrast inks.
+- **changed** `press-motion`, `flat-motion`, `device-motion`, `plain-motion`, `rack-motion`, `heat-motion`: the same change as `motion`, in each world's install.
+- **changed** `press-spring-editor`, `flat-spring-editor`, `device-spring-editor`, `plain-spring-editor`, `rack-spring-editor`, `heat-spring-editor`, `press-tune`, `flat-tune`, `device-tune`, `plain-tune`, `rack-tune`, `heat-tune`: the same changes as `spring-editor` and `tune`, in each world's install. Props are unchanged.
+
 ## 2026-11-15 · Plain, a fourth world; Rack, a body per part
 
 A world for the page that should just work: docs, forms, admin and internal tools. Plain draws a page the way HTML does, with almost no UI of its own.

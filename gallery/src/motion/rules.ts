@@ -10,7 +10,8 @@
  * - instant is a tween of at most 240ms                      -> instantMs
  * - a spring's visual time is at most 350ms                  -> springMs
  * - a spring settles within 600ms                            -> settleMs
- * - bounce is at most 0.12, and exactly 0 on responsive      -> bounce
+ * - expressive bounce is at most the world's cap (Flat 0.28,
+ *   every other world 0.12), and exactly 0 on responsive     -> EXPRESSIVE_BOUNCE, bounceCap
  * - an exit lasts round(visual time x --exit)                -> exit, and tokensSnippet
  * - corners are 0, --radius-control (4), --radius-surface
  *   (control + 4) or the pill, and a block set 2px into a
@@ -40,6 +41,7 @@
  */
 import { toCss, type Spring } from "./spring";
 import { surfaceRadius, type Dial, type Locked } from "./tokens";
+import type { Material } from "./deal";
 
 export const LIMITS = {
   /** The instant tween, in ms. */
@@ -48,13 +50,29 @@ export const LIMITS = {
   springMs: 350,
   /** The time a spring takes to settle, in ms. */
   settleMs: 600,
-  /** Bounce ceiling. Responsive is exactly 0. */
+  /** The expressive bounce cap in every world but Flat. Responsive is exactly 0. bounceCap(world) gives each world's. */
   bounce: 0.12,
   /** Exits run at this fraction of the visual time. */
   exit: 0.75,
   /** --radius-control in px. The surface is this plus the 4px inset. */
   control: 4,
 } as const;
+
+/**
+ * The expressive bounce cap, per world (R4, check.mjs's BOUNCE_CAP). Flat bounces more (plans/023, Nick 2026-11-16:
+ * "0.28 at 350ms, no bounce on small moves looks good"); every other world keeps 0.12. Responsive is exactly 0 in all.
+ */
+export const EXPRESSIVE_BOUNCE: Record<Material, number> = {
+  press: LIMITS.bounce,
+  flat: 0.28,
+  device: LIMITS.bounce,
+  plain: LIMITS.bounce,
+  rack: LIMITS.bounce,
+  heat: LIMITS.bounce,
+};
+
+/** The expressive bounce cap for a world (Press's when none is given). */
+export const bounceCap = (material: Material = "press") => EXPRESSIVE_BOUNCE[material];
 
 export type RuleRow = { ok: boolean; text: string };
 
@@ -76,9 +94,10 @@ export function exitTimes(dial: Dial) {
   return { responsive: round(dial.responsive.time), expressive: round(dial.expressive.time) };
 }
 
-/** One row per hard rule, in the order check.mjs reads them. */
-export function checkRules(dial: Dial): RuleRow[] {
+/** One row per hard rule, in the order check.mjs reads them, against the world's own bounce cap. */
+export function checkRules(dial: Dial, material: Material = "press"): RuleRow[] {
   const settle = settleTimes(dial);
+  const cap = bounceCap(material);
   return [
     {
       ok: dial.instant <= LIMITS.instantMs,
@@ -97,8 +116,8 @@ export function checkRules(dial: Dial): RuleRow[] {
       text: `Responsive bounce is 0: ${num(dial.responsive.bounce)}`,
     },
     {
-      ok: dial.expressive.bounce <= LIMITS.bounce,
-      text: `Expressive bounce at most ${LIMITS.bounce}: ${num(dial.expressive.bounce)}`,
+      ok: dial.expressive.bounce <= cap,
+      text: `Expressive bounce at most ${cap}: ${num(dial.expressive.bounce)}`,
     },
     {
       ok: dial.exit === LIMITS.exit,
@@ -110,8 +129,9 @@ export function checkRules(dial: Dial): RuleRow[] {
 /** The two spring tiers. Instant is a tween, so it has no spring to check. */
 export type SpringTier = "responsive" | "expressive";
 
-/** One spring against its tier: the visual time, the settle and the bounce, the rows checkRules reads for that tier. */
-export function springRules(spring: Spring, tier: SpringTier): RuleRow[] {
+/** One spring against its tier in a world: the visual time, the settle and the bounce, the rows checkRules reads for that tier. */
+export function springRules(spring: Spring, tier: SpringTier, material: Material = "press"): RuleRow[] {
+  const cap = bounceCap(material);
   const settle = toCss(spring).duration;
   return [
     {
@@ -124,7 +144,7 @@ export function springRules(spring: Spring, tier: SpringTier): RuleRow[] {
     },
     tier === "responsive"
       ? { ok: spring.bounce === 0, text: `No bounce on the responsive tier: ${num(spring.bounce)}` }
-      : { ok: spring.bounce <= LIMITS.bounce, text: `Bounce at most ${LIMITS.bounce}: ${num(spring.bounce)}` },
+      : { ok: spring.bounce <= cap, text: `Bounce at most ${cap}: ${num(spring.bounce)}` },
   ];
 }
 

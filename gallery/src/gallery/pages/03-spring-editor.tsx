@@ -158,7 +158,7 @@ export default function SpringEditorPage() {
         tier="instant"
         code="ToastSpringDemo"
         size="lg"
-        caption="Press anywhere in the well, drag, or use the arrow keys. The cap is the Pad's: right is a longer visual time, up is more bounce, and the curve on the floor redraws under your hand at once, with no easing. The dashed line down through the cap is where the curve should look arrived. Let go and the toast above enters on the spring you drew. The floor beyond 350ms and above 0.12 bounce is washed: that is outside litt's expressive tier, and the rows under the words say which rule to change. The dashed circle is litt's own expressive spring, and a double-click goes back to it."
+        caption="Press anywhere in the well, drag, or use the arrow keys. The cap is the Pad's: right is a longer visual time, up is more bounce, and the curve on the floor redraws under your hand at once, with no easing. The dashed line down through the cap is where the curve should look arrived. Let go and the toast above enters on the spring you drew. The floor beyond 350ms and above the world's bounce cap (0.12, or Flat's 0.28) is washed: that is outside litt's expressive tier, and the rows under the words say which rule to change. The dashed circle is litt's own expressive spring, and a double-click goes back to it."
       >
         <ToastSpringDemo />
       </Stage>
