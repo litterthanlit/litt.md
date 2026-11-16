@@ -5,10 +5,10 @@
  *   Space toggles it, and inside a <form> a hidden input sends the value like a checkbox:
  *   the value when on, nothing when off. The hidden input is Radix's, so name, value and
  *   required are passed straight to it.
- * - A thick block thrown along a deep tray (material.md, 6, "Press"). The tray is 92 by 32, cut deep: --slot with
- *   --slot-shade, at the control radius. The block fills half of it, 44 by 28, set 2px in, raised: --block with
- *   --block-lift and a lit top edge (--highlight). Its corners are the control radius less those 2px, so the two
- *   stay concentric at every shape.
+ * - A block in a tray (material.md, 6, "Press"; the boards of 26 October 2026). The tray is 92 by 32, sunken: --tray
+ *   with --tray-shade, at the control radius. The block fills half of it, 44 by 28, set 2px in, raised once, by its
+ *   cast: --block with --block-lift. Its corners are the control radius less those 2px, so the two stay concentric at
+ *   every shape.
  * - The tray's floor says the state: "On" set in the floor's start, "Off" at its end, at the caption size and the
  *   title weight, in --fg. The block carries no word; it covers the word on its side and its travel uncovers the
  *   other. Position and word both change, so color is never the signal.
@@ -41,6 +41,8 @@
  *   44 by 26 and the knob 20, so the crossing is 18px.
  * - Device, worlds/device/switch.tsx: a toggle key in a well that flips with a detent (three steps on the instant
  *   tier, never a spring), and its word on a small LCD beside it in the mono, with a lamp that lights when on.
+ * - Heat, worlds/heat/switch.tsx: the thick block with its lit edge thrown along a deep slot tray, as Press drew it until
+ *   2026-11-16.
  * - Rack, worlds/rack/switch.tsx: a toggle key with its word on its face that lights when on (the ink, or the accent
  *   for tone="accent"); nothing slides, and it changes on the frame.
  * - Forced colors drops box-shadow and background colors, so the tray and the block get real borders and system
@@ -63,6 +65,7 @@ import { SwitchDeviceBody } from "@/worlds/device/switch";
 import { SwitchRackBody } from "@/worlds/rack/switch";
 import { SwitchFlatBody } from "@/worlds/flat/switch";
 import { SwitchPlainBody } from "@/worlds/plain/switch";
+import { SwitchHeatBody } from "@/worlds/heat/switch";
 
 export type SwitchAlign = "start" | "end";
 export type SwitchTone = "neutral" | "accent";
@@ -132,32 +135,32 @@ const SLOP = 4;
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-/* The tray is the button, cut deep into the plate (--slot, --slot-shade). The row's label is stretched over the whole
-   row, so the tray sits above it (z-1) and a press on the tray itself still lands on the button. It clips the block,
-   so a cast never spills past its walls. */
+/* The tray is the button, sunk into the surface (--tray, --tray-shade), as on the boards of 26 October. The row's label
+   is stretched over the whole row, so the tray sits above it (z-1) and a press on the tray itself still lands on the
+   button. It clips the block, so a cast never spills past its walls. */
 const tray =
   "[--sw-travel:44px] " +
   "peer relative z-1 inline-flex h-8 w-23 shrink-0 cursor-pointer touch-pan-y items-center self-start overflow-hidden rounded-control p-0.5 " +
-  "bg-slot shadow-(--slot-shade) " +
+  "bg-tray shadow-(--tray-shade) " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
-  "enabled:group-hover/switch:bg-[color-mix(in_oklab,var(--slot),var(--fg)_4%)] " +
+  "enabled:group-hover/switch:bg-[color-mix(in_oklab,var(--tray),var(--fg)_4%)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border forced-colors:p-px " + // the border is real, so the padding gives it back its px
   focusRing;
 
 /* A word set in the floor, one in each half. The block covers the one on its side and uncovers the other, so travel
-   is what reveals the state. --fg on the --slot floor keeps 4.5:1. */
+   is what reveals the state. --fg on the --tray floor keeps 4.5:1. */
 const floorWord =
   "pointer-events-none absolute inset-y-0 flex w-1/2 select-none items-center justify-center text-caption font-title text-fg " +
   "forced-colors:text-[CanvasText]";
 
-/* The block, thick and bare: a lit top edge (--highlight) over its cast, no word on it. Its corners are the control
-   radius less the 2px it is set in, so they stay concentric with the tray's. */
+/* The block, bare: raised once, by its cast, with no word on it. Its corners are the control radius less the 2px it is
+   set in, so they stay concentric with the tray's. */
 const blockBase =
   "pointer-events-none flex h-7 w-11 shrink-0 rounded-[calc(var(--radius-control)-2px)] " +
   "forced-colors:border";
 
-const blockLift = "shadow-[var(--block-lift),var(--highlight)] group-active/switch:shadow-[var(--block-press),var(--highlight)]";
+const blockLift = "shadow-(--block-lift) group-active/switch:shadow-(--block-press)";
 const blockOff = "bg-block " + blockLift;
 const blockOn: Record<SwitchTone, string> = {
   neutral: "bg-block " + blockLift + " forced-colors:bg-[Highlight]",
@@ -166,7 +169,7 @@ const blockOn: Record<SwitchTone, string> = {
 /* Disabled, the block lies flat: no cast, a hairline. */
 const blockDisabled = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 
-/** Press, the default body: a thick block thrown along a deep tray to a stop, uncovering the word set in the floor. */
+/** Press, the default body: a raised block that slides in a sunken tray to a stop, uncovering the word set in the floor. */
 function PressBody({ shown, disabled, x, tone, words, motion, root, className }: SwitchBodyProps) {
   const block = blockBase + " " + (disabled ? blockDisabled : shown ? blockOn[tone] : blockOff);
   const word = floorWord + (disabled ? " text-fg-disabled" : "");
@@ -216,7 +219,7 @@ export function Switch({
   const id = idProp ?? auto;
   const descriptionId = description ? `${id}-description` : undefined;
   const end = align === "end";
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody, plain: SwitchPlainBody, rack: SwitchRackBody });
+  const Body = byWorld(useMaterial(), { press: PressBody, flat: SwitchFlatBody, device: SwitchDeviceBody, plain: SwitchPlainBody, rack: SwitchRackBody, heat: SwitchHeatBody });
 
   /* The switch keeps its own state when you do not control it, because a drag sets it to a side, not a flip. */
   const [inner, setInner] = useState(defaultChecked ?? false);

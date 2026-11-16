@@ -20,11 +20,16 @@ bounce 0.12, the cap R4 sets and `check.mjs` (check 9) and `gallery/src/motion/r
 
 ## Phase 1. Candidates on the canvas (STOP for Nick's eye)
 
-- [ ] On `#canvas`, five candidates of Flat's expressive spring side by side, each running the same three moves:
+- [x] On `#canvas`, five candidates of Flat's expressive spring side by side, each running the same three moves:
       a mosaic dealing out of a tile, a dialog growing from its opener, a switch's thumb. Bounce 0.12 (today), 0.2,
       0.28, 0.36, 0.45, at 350ms and at 420ms. Values carry `litt-allow` until picked.
-- [ ] One candidate for the responsive spring with a little bounce (0.08) in Flat only, since the switch and
+- [x] One candidate for the responsive spring with a little bounce (0.08) in Flat only, since the switch and
       segmented move on it: Nick judges whether Flat's small moves should bounce too.
+
+Built in `gallery/src/canvas/flat-bounce.tsx`, placed in `registry.tsx` to the right of "Flat · the hand": "Flat bounce
+· expressive, ten candidates" and "Flat bounce · responsive, today and 0.08". Nothing plays until pressed; nothing moves
+under reduced motion. Bounce 0.08 on the responsive spring overshoots under 0.1%: it reads as a slightly quicker settle,
+not a bounce.
 
 **STOP**: Nick picks the values by eye.
 

@@ -48,7 +48,7 @@
     },
     "button": {
       "version": "2026.11.16",
-      "hash": "e8090b5cc91d7b10"
+      "hash": "ca9e1ba03ff537d0"
     },
     "callout": {
       "version": "2026.11.06",
@@ -79,8 +79,8 @@
       "hash": "6e6afc45315f69a9"
     },
     "checkbox": {
-      "version": "2026.11.15",
-      "hash": "a36051fc85c538c4"
+      "version": "2026.11.16",
+      "hash": "a36627b4ebe1ba10"
     },
     "code-block": {
       "version": "2026.11.06",
@@ -176,7 +176,7 @@
     },
     "device-button": {
       "version": "2026.11.16",
-      "hash": "985405fa3fbc953a"
+      "hash": "f98d1144bbebbe6b"
     },
     "device-callout": {
       "version": "2026.11.16",
@@ -204,7 +204,7 @@
     },
     "device-checkbox": {
       "version": "2026.11.16",
-      "hash": "42a61ed823254371"
+      "hash": "89fe7caebc233f80"
     },
     "device-code-block": {
       "version": "2026.11.16",
@@ -308,7 +308,7 @@
     },
     "device-input": {
       "version": "2026.11.16",
-      "hash": "cdbb76c17d05d196"
+      "hash": "7c1c5175b4b511c7"
     },
     "device-inspector": {
       "version": "2026.11.16",
@@ -424,7 +424,7 @@
     },
     "device-segmented": {
       "version": "2026.11.16",
-      "hash": "8e282c8235cc2902"
+      "hash": "1b55fb1f1e7f3def"
     },
     "device-select": {
       "version": "2026.11.16",
@@ -480,7 +480,7 @@
     },
     "device-switch": {
       "version": "2026.11.16",
-      "hash": "bb3d9c98741c184b"
+      "hash": "06957892cee3cf23"
     },
     "device-table": {
       "version": "2026.11.16",
@@ -584,7 +584,7 @@
     },
     "flat-button": {
       "version": "2026.11.16",
-      "hash": "543ffa6c79654fb8"
+      "hash": "7880d6d957952910"
     },
     "flat-callout": {
       "version": "2026.11.16",
@@ -612,7 +612,7 @@
     },
     "flat-checkbox": {
       "version": "2026.11.16",
-      "hash": "63112b05fe73c604"
+      "hash": "6dcb5cdcc86506e1"
     },
     "flat-code-block": {
       "version": "2026.11.16",
@@ -712,7 +712,7 @@
     },
     "flat-input": {
       "version": "2026.11.16",
-      "hash": "6ab66d3f58249d17"
+      "hash": "c9583ec95884df3a"
     },
     "flat-inspector": {
       "version": "2026.11.16",
@@ -828,7 +828,7 @@
     },
     "flat-segmented": {
       "version": "2026.11.16",
-      "hash": "e5c6a8c03019deb3"
+      "hash": "38b31339376b44f1"
     },
     "flat-select": {
       "version": "2026.11.16",
@@ -880,7 +880,7 @@
     },
     "flat-switch": {
       "version": "2026.11.16",
-      "hash": "7b3d67990e73a037"
+      "hash": "ba487862a337426e"
     },
     "flat-table": {
       "version": "2026.11.16",
@@ -992,7 +992,7 @@
     },
     "heat-button": {
       "version": "2026.11.16",
-      "hash": "d499af39070865dd"
+      "hash": "b6669dc9b6886701"
     },
     "heat-callout": {
       "version": "2026.11.16",
@@ -1020,7 +1020,7 @@
     },
     "heat-checkbox": {
       "version": "2026.11.16",
-      "hash": "6c4a372bfe832c97"
+      "hash": "fefb3543fc656fb6"
     },
     "heat-code-block": {
       "version": "2026.11.16",
@@ -1120,7 +1120,7 @@
     },
     "heat-input": {
       "version": "2026.11.16",
-      "hash": "c4575e7b82a09b4c"
+      "hash": "9c84b35e57d37b8f"
     },
     "heat-inspector": {
       "version": "2026.11.16",
@@ -1236,7 +1236,7 @@
     },
     "heat-segmented": {
       "version": "2026.11.16",
-      "hash": "a5c4ecf18728bcd4"
+      "hash": "ef28e2eefc117549"
     },
     "heat-select": {
       "version": "2026.11.16",
@@ -1288,7 +1288,7 @@
     },
     "heat-switch": {
       "version": "2026.11.16",
-      "hash": "ac56d35801b606bd"
+      "hash": "497f3e75d371913d"
     },
     "heat-table": {
       "version": "2026.11.16",
@@ -1355,8 +1355,8 @@
       "hash": "92ffc0cb458467b6"
     },
     "input": {
-      "version": "2026.11.15",
-      "hash": "f9f2d5093f473a48"
+      "version": "2026.11.16",
+      "hash": "71c2f1ca05be3485"
     },
     "insights": {
       "version": "2026.10.26",
@@ -1456,7 +1456,7 @@
     },
     "plain-button": {
       "version": "2026.11.16",
-      "hash": "677458f5a01ebabc"
+      "hash": "de51df162dcccdf6"
     },
     "plain-callout": {
       "version": "2026.11.16",
@@ -1484,7 +1484,7 @@
     },
     "plain-checkbox": {
       "version": "2026.11.16",
-      "hash": "336521b27a4bbc47"
+      "hash": "93d9974af618e3e7"
     },
     "plain-code-block": {
       "version": "2026.11.16",
@@ -1584,7 +1584,7 @@
     },
     "plain-input": {
       "version": "2026.11.16",
-      "hash": "981b0fcc00709235"
+      "hash": "917ac1cfdf1263a5"
     },
     "plain-inspector": {
       "version": "2026.11.16",
@@ -1700,7 +1700,7 @@
     },
     "plain-segmented": {
       "version": "2026.11.16",
-      "hash": "f3df47f0f2c49188"
+      "hash": "4b7ebfa1a60280f3"
     },
     "plain-select": {
       "version": "2026.11.16",
@@ -1752,7 +1752,7 @@
     },
     "plain-switch": {
       "version": "2026.11.16",
-      "hash": "4decbce6892d615b"
+      "hash": "42e0190053d11dbb"
     },
     "plain-table": {
       "version": "2026.11.16",
@@ -1844,7 +1844,7 @@
     },
     "press-button": {
       "version": "2026.11.16",
-      "hash": "92d977c16133ddc2"
+      "hash": "15bea5b30d4f6415"
     },
     "press-callout": {
       "version": "2026.11.16",
@@ -1872,7 +1872,7 @@
     },
     "press-checkbox": {
       "version": "2026.11.16",
-      "hash": "6c4a372bfe832c97"
+      "hash": "262ddf0eee6c3413"
     },
     "press-code-block": {
       "version": "2026.11.16",
@@ -1972,7 +1972,7 @@
     },
     "press-input": {
       "version": "2026.11.16",
-      "hash": "c4575e7b82a09b4c"
+      "hash": "ae10aa6334c8899e"
     },
     "press-inspector": {
       "version": "2026.11.16",
@@ -2088,7 +2088,7 @@
     },
     "press-segmented": {
       "version": "2026.11.16",
-      "hash": "a5c4ecf18728bcd4"
+      "hash": "941d882c433503b7"
     },
     "press-select": {
       "version": "2026.11.16",
@@ -2140,7 +2140,7 @@
     },
     "press-switch": {
       "version": "2026.11.16",
-      "hash": "ac56d35801b606bd"
+      "hash": "ecd38d2064c21193"
     },
     "press-table": {
       "version": "2026.11.16",
@@ -2244,7 +2244,7 @@
     },
     "rack-button": {
       "version": "2026.11.16",
-      "hash": "ec1456c7b7ca7872"
+      "hash": "fd50f591d94fca94"
     },
     "rack-callout": {
       "version": "2026.11.16",
@@ -2272,7 +2272,7 @@
     },
     "rack-checkbox": {
       "version": "2026.11.16",
-      "hash": "df137430c912c98d"
+      "hash": "cebafadff0e0af77"
     },
     "rack-code-block": {
       "version": "2026.11.16",
@@ -2372,7 +2372,7 @@
     },
     "rack-input": {
       "version": "2026.11.16",
-      "hash": "d9eb21f291d55880"
+      "hash": "246a071a006bcbd9"
     },
     "rack-inspector": {
       "version": "2026.11.16",
@@ -2488,7 +2488,7 @@
     },
     "rack-segmented": {
       "version": "2026.11.16",
-      "hash": "487e45ab8501018b"
+      "hash": "2056b00279470677"
     },
     "rack-select": {
       "version": "2026.11.16",
@@ -2540,7 +2540,7 @@
     },
     "rack-switch": {
       "version": "2026.11.16",
-      "hash": "4affa1170fe1d7d2"
+      "hash": "7cae23e138dc3166"
     },
     "rack-table": {
       "version": "2026.11.16",
@@ -2623,8 +2623,8 @@
       "hash": "9d6e7d1ba7b86f41"
     },
     "segmented": {
-      "version": "2026.11.15",
-      "hash": "905155cdfc70da08"
+      "version": "2026.11.16",
+      "hash": "e3f5757a0fcd4309"
     },
     "select": {
       "version": "2026.11.15",
@@ -2687,8 +2687,8 @@
       "hash": "eb874003dc2c37b0"
     },
     "switch": {
-      "version": "2026.11.15",
-      "hash": "1127d27e1e58a92c"
+      "version": "2026.11.16",
+      "hash": "ccbfe3548c5bc089"
     },
     "table": {
       "version": "2026.11.14",

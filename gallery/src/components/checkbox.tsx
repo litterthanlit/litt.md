@@ -8,13 +8,13 @@
  *   checkbox. "native" is the spec's other option: the browser's own 16px box, with accent-color
  *   set to --fg. Drawn is the default because only a drawn box can be a cut and take the control
  *   radius, and it looks the same in every browser. See the Checkbox page.
- * - Press (R3, material.md 6): the drawn box and cup are the cut, what you put a mark into: --cut inside the
- *   --line-control edge with the top wall's shade (--cut-shade) for a checkbox, and a deeper cup (--slot, --slot-shade)
- *   for a radio. The cut itself never fills. On, an ink block (--fg) is seated flush in it, 2px in so a rim of the cut shows,
- *   lit only on its top edge, with the tick or dash in --canvas; a chosen radio takes a bead, a round raised block
- *   (--fg, --block-lift). A press sinks the block --press-depth. Never the accent (R6): the one accent fill is the
- *   primary action's, and a form can hold many checked boxes. An error swaps the edge for --danger and keeps the shade.
- *   Disabled, it lies flat on --surface-2 with the hairline, and so does the block and the bead.
+ * - Press (R3, material.md 6; the boards of 26 October 2026): the drawn box and circle are the cut, what you put a mark
+ *   into: --cut inside the --line-control edge with the top wall's shade (--cut-shade). On, an ink block (--fg) fills
+ *   the box whole, lit only on its top edge, with the tick or dash in --canvas, so the box keeps one edge; a chosen
+ *   radio takes a bead, a round raised block (--fg, --block-lift). A press sinks the block --press-depth. Never the
+ *   accent (R6): the one accent fill is the primary action's, and a form can hold many checked boxes. An error swaps
+ *   the edge for --danger and keeps the shade, and the ink keeps the --danger edge. Disabled, it lies flat on
+ *   --surface-2 with the hairline, and so does the block and the bead.
  * - Flat is worlds/flat/checkbox.tsx: ink on paper, an outline when off, the ink when on. At the Pill shape the 20px box is a circle; at other shapes it follows --radius-control, and a
  *   radio is always round.
  * - The label sits on the right, --space-2 away, at the small size, and the whole row is
@@ -32,7 +32,8 @@
  *   worlds/device/checkbox.tsx is Device's: a square key in a well that latches down and lights its lamp when checked,
  *   and half lights it when mixed. A radio group there is a row of the same keys, interlocked, so pressing one lets the
  *   last one up. worlds/rack/checkbox.tsx is Rack's: a small well that fills with the ink when checked, with the tick in the canvas, and an
- *   ink dash when mixed, all in 1px outlines on the frame. The "native" look is the browser's own box in every world. A frame that sets its own look draws its
+ *   ink dash when mixed, all in 1px outlines on the frame. worlds/heat/checkbox.tsx is Heat's: the ink block seated 2px
+ *   in the cut and the deeper radio cup that Press had until 2026-11-16. The "native" look is the browser's own box in every world. A frame that sets its own look draws its
  *   own body, not <html>'s.
  */
 import {
@@ -56,6 +57,7 @@ import { ChoiceDeviceBody } from "@/worlds/device/checkbox";
 import { ChoiceFlatBody } from "@/worlds/flat/checkbox";
 import { ChoicePlainBody } from "@/worlds/plain/checkbox";
 import { ChoiceRackBody } from "@/worlds/rack/checkbox";
+import { ChoiceHeatBody } from "@/worlds/heat/checkbox";
 
 export type ChoiceAppearance = "drawn" | "native";
 
@@ -70,18 +72,17 @@ const RadioContext = createContext<RadioState | null>(null);
 
 const focusRing = "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-/* Press: the input is the cut, a place you put a mark into. It stays empty and sunk, checked or not. The ink is a separate
-   block seated in it (below). The input sits above the label's stretched click area (z-1), so a click on the chip itself
-   still lands on the input, as test tools expect. A checkbox's cut is a field's cut (--cut, --cut-shade); a radio's is a
-   cup, deeper (--slot, --slot-shade). */
+/* Press: the input is the cut, a place you put a mark into: a field's cut (--cut inside the --line-control edge, with
+   --cut-shade), square for a checkbox and round for a radio. The ink is a separate block that fills it (below). The input
+   sits above the label's stretched click area (z-1), so a click on the chip itself still lands on the input, as test
+   tools expect. */
 const cutBase =
   "peer relative z-1 col-start-1 row-start-1 m-0 size-5 shrink-0 cursor-pointer appearance-none self-start " +
   "aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),var(--cut-shade)] " +
   "disabled:cursor-not-allowed disabled:bg-surface-2 disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border " + // forced colors drops box-shadow, so the edge becomes a real border
   focusRing;
-const squareCut = cutBase + " rounded-control bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]";
-const cupCut = cutBase + " rounded-pill bg-slot shadow-[inset_0_0_0_1px_var(--line-control),var(--slot-shade)]";
+const cut = cutBase + " bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]";
 
 /* Hover and press, as a wash over the cut. It is not tied to the input's own :hover, because the row is the target. */
 const wash =
@@ -90,17 +91,25 @@ const wash =
   "group-hover/choice:opacity-100 group-active/choice:bg-[color-mix(in_oklab,var(--fg)_10%,transparent)] group-active/choice:opacity-100 " +
   "peer-disabled:hidden";
 
-/* The ink block: 16px, seated 2px in the cut so a rim of the cut shows round it, its corners the cut's less those 2px.
-   Lit only on its top edge and casting nothing, because it is flush; under the hand it sinks --press-depth. The mark in it
-   is --canvas. The block is shown by opacity, so it fades on the instant tier and never moves on its own. */
+/* Over a checked or mixed box the wash lies on the ink, where an --fg wash would not show, so there it is --canvas, as on
+   the boards of 26 October. A checkbox only: a radio matches :indeterminate when nothing in its group is picked. */
+const inkWash =
+  " peer-checked:bg-[color-mix(in_oklab,var(--canvas)_12%,transparent)] group-active/choice:peer-checked:bg-[color-mix(in_oklab,var(--canvas)_20%,transparent)]" +
+  " peer-indeterminate:bg-[color-mix(in_oklab,var(--canvas)_12%,transparent)] group-active/choice:peer-indeterminate:bg-[color-mix(in_oklab,var(--canvas)_20%,transparent)]";
+
+/* The ink block: it fills the cut whole, at the cut's corners, so nothing of the cut shows round it and the box has one
+   edge. Lit only on its top edge and casting nothing, because it is flush; an error keeps the --danger edge on it; under
+   the hand it sinks --press-depth. The mark in it is --canvas. The block is shown by opacity, so it fades on the instant
+   tier and never moves on its own. */
 const block =
-  "pointer-events-none relative z-1 col-start-1 row-start-1 m-0.5 grid size-4 place-items-center self-start rounded-[calc(var(--radius-control)-2px)] " +
+  "pointer-events-none relative z-1 col-start-1 row-start-1 grid size-5 place-items-center self-start rounded-control " +
   "bg-fg text-canvas opacity-0 shadow-[inset_0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
+  "peer-aria-invalid:shadow-[inset_0_0_0_1px_var(--danger),inset_0_1px_0_color-mix(in_oklab,white_20%,transparent)] " +
   "transition-[opacity,transform] duration-(--dur-instant) ease-litt " +
   "group-active/choice:translate-y-(--press-depth) " +
   "peer-disabled:bg-surface-3 peer-disabled:text-fg-disabled peer-disabled:shadow-none forced-colors:border";
 
-/* A chosen radio's bead: a round raised block in the cup, with the block's cast (--block-lift), 12px in a 20px cup. */
+/* A chosen radio's bead: a round raised block in the cut, with the block's cast (--block-lift), 12px in a 20px circle. */
 const bead =
   "pointer-events-none relative z-1 col-start-1 row-start-1 m-1 size-3 self-start rounded-pill bg-fg opacity-0 shadow-(--block-lift) " +
   "transition-[opacity,transform] duration-(--dur-instant) ease-litt peer-checked:opacity-100 " +
@@ -127,25 +136,28 @@ export type ChoiceBodyProps = {
   tick: Ref<HTMLSpanElement>;
 };
 
-/** Press, the default body: a cut in the plate. Checked, an ink block sits flush in it; a radio is a cup that takes a bead. */
+/** Press, the default body: a cut. Checked, an ink block fills it; a chosen radio takes a raised ink bead. */
 function PressBody({ kind, input, tick }: ChoiceBodyProps) {
-  const radio = kind === "radio";
+  if (kind === "radio") {
+    return (
+      <>
+        <input {...input} data-body="press" className={cut + " rounded-pill"} />
+        <span aria-hidden="true" className={wash + " rounded-pill"} />
+        <span aria-hidden="true" className={bead} />
+      </>
+    );
+  }
   return (
     <>
-      <input {...input} data-body="press" className={radio ? cupCut : squareCut} />
-      <span aria-hidden="true" className={wash + (radio ? " rounded-pill" : " rounded-control")} />
-      {radio ? (
-        <span aria-hidden="true" className={bead} />
-      ) : (
-        <>
-          <span ref={tick} aria-hidden="true" className={block + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>
-            <CheckIcon />
-          </span>
-          <span aria-hidden="true" className={block + " peer-indeterminate:opacity-100"}>
-            <DashGlyph />
-          </span>
-        </>
-      )}
+      <input {...input} data-body="press" className={cut + " rounded-control"} />
+      <span ref={tick} aria-hidden="true" className={block + " peer-checked:opacity-100 peer-indeterminate:opacity-0"}>
+        <CheckIcon />
+      </span>
+      <span aria-hidden="true" className={block + " peer-indeterminate:opacity-100"}>
+        <DashGlyph />
+      </span>
+      {/* The wash lies over the ink, so a checked box still answers the hand. */}
+      <span aria-hidden="true" className={wash + " rounded-control" + inkWash} />
     </>
   );
 }
@@ -227,7 +239,7 @@ function Choice({
     });
   };
 
-  const Body = byWorld(material, { press: PressBody, flat: ChoiceFlatBody, device: ChoiceDeviceBody, plain: ChoicePlainBody, rack: ChoiceRackBody });
+  const Body = byWorld(material, { press: PressBody, flat: ChoiceFlatBody, device: ChoiceDeviceBody, plain: ChoicePlainBody, rack: ChoiceRackBody, heat: ChoiceHeatBody });
   const device = material === "device";
   const inputProps: ComponentProps<"input"> = {
     ref: setRef,

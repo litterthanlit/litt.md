@@ -13,6 +13,8 @@
  *   (--block-lift); the primary is the accent with its lit top edge and its glow. A press sinks it: the cast tightens
  *   (--block-press), the face takes its hover fill and the label drops --press-depth (half a pixel), all at once, never
  *   faded (R2). Ghost lies flat, and so does a disabled button: --surface-2 inside a 1px --line, nothing to push.
+ * - More contrast (prefers-contrast: more): the secondary block takes a 1px inset --line-control ring, so its edge
+ *   reaches 3:1 against the surface for the people who ask for it. Nobody else sees an outline.
  * - Forced colors drops the cast, so a raised block carries a 1px transparent outline that forced colors draws as its
  *   edge. Focus replaces it with the --focus outline.
  * - Danger (R7): a destructive action is the same raised block with its words in --danger. Inside a dialog's footer
@@ -99,19 +101,26 @@ const pressIconSizes: Record<ButtonSize, string> = { sm: "h-control-sm text-smal
 /* A raised block has no line of its own, so forced colors (which drops the cast) draws this one as its edge. */
 const edge = "outline-1 outline-solid outline-transparent ";
 
+/* For a person who asks their system for more contrast (prefers-contrast: more), the secondary and danger blocks also take a 1px
+   inset --line-control ring, so its edge reaches 3:1 against the surface (WCAG 1.4.11). Everyone else sees the block
+   raised once, by its cast. The ring is its own shadow layer, so the cast and the press stay as they are. */
+const moreContrast = "contrast-more:enabled:inset-ring contrast-more:enabled:inset-ring-line-control";
+/* The danger block wears the same ring, but not as a dialog's confirm, where it is a red fill with an edge of its own. */
+const moreContrastDanger = "not-in-[[data-dialog-footer]]:contrast-more:enabled:inset-ring not-in-[[data-dialog-footer]]:contrast-more:enabled:inset-ring-line-control";
+
 const variants: Record<ButtonVariant, string> = {
   primary:
     edge + "bg-accent text-accent-fg hover:bg-accent-hover enabled:pointer-coarse:active:bg-accent-hover shadow-glow " +
     "inset-shadow-[0_1px_0_color-mix(in_oklab,white_22%,transparent)]",
   secondary:
     edge + "bg-block text-fg shadow-(--block-lift) enabled:not-data-loading:active:shadow-(--block-press) " +
-    "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover)",
+    "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " + moreContrast,
   ghost:
     "bg-transparent text-fg-muted hover:text-fg hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
     "enabled:pointer-coarse:active:text-fg enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]",
   danger:
     edge + "bg-block text-danger shadow-(--block-lift) enabled:not-data-loading:active:shadow-(--block-press) " +
-    "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " +
+    "hover:bg-(--block-hover) enabled:pointer-coarse:active:bg-(--block-hover) " + moreContrastDanger + " " +
     /* A dialog's confirm. These rules sort after the block's, so they win its ties (active, a finger's press). */
     "in-[[data-dialog-footer]]:enabled:bg-danger in-[[data-dialog-footer]]:enabled:text-danger-fg " +
     "in-[[data-dialog-footer]]:enabled:shadow-none in-[[data-dialog-footer]]:enabled:active:shadow-none " +
