@@ -336,7 +336,7 @@
     },
     "device-litt": {
       "version": "2026.11.16",
-      "hash": "9d87b6468fadc104"
+      "hash": "bf1b595aae8a0e00"
     },
     "device-log-view": {
       "version": "2026.11.16",
@@ -356,7 +356,7 @@
     },
     "device-motion": {
       "version": "2026.11.16",
-      "hash": "ef289afc9233777b"
+      "hash": "42f44acc534fa4eb"
     },
     "device-number-field": {
       "version": "2026.11.16",
@@ -464,7 +464,7 @@
     },
     "device-spring-editor": {
       "version": "2026.11.16",
-      "hash": "7e37983458b10bd7"
+      "hash": "cccb6de00c7237f6"
     },
     "device-stat": {
       "version": "2026.11.16",
@@ -536,7 +536,7 @@
     },
     "device-tune": {
       "version": "2026.11.16",
-      "hash": "6ec7bcdc63744065"
+      "hash": "e1ade42f739bae1a"
     },
     "dialog": {
       "version": "2026.11.15",
@@ -740,7 +740,7 @@
     },
     "flat-litt": {
       "version": "2026.11.16",
-      "hash": "33bc7b0a749395e9"
+      "hash": "7cf6c2f017dd5c8d"
     },
     "flat-log-view": {
       "version": "2026.11.16",
@@ -760,7 +760,7 @@
     },
     "flat-motion": {
       "version": "2026.11.16",
-      "hash": "ef289afc9233777b"
+      "hash": "42f44acc534fa4eb"
     },
     "flat-number-field": {
       "version": "2026.11.16",
@@ -864,7 +864,7 @@
     },
     "flat-spring-editor": {
       "version": "2026.11.16",
-      "hash": "7e37983458b10bd7"
+      "hash": "cccb6de00c7237f6"
     },
     "flat-stat": {
       "version": "2026.11.16",
@@ -932,7 +932,7 @@
     },
     "flat-tune": {
       "version": "2026.11.16",
-      "hash": "6ec7bcdc63744065"
+      "hash": "e1ade42f739bae1a"
     },
     "form": {
       "version": "2026.11.06",
@@ -1148,7 +1148,7 @@
     },
     "heat-litt": {
       "version": "2026.11.16",
-      "hash": "87f52e4f7471fe62"
+      "hash": "a229d52a204b62ab"
     },
     "heat-log-view": {
       "version": "2026.11.16",
@@ -1168,7 +1168,7 @@
     },
     "heat-motion": {
       "version": "2026.11.16",
-      "hash": "ef289afc9233777b"
+      "hash": "42f44acc534fa4eb"
     },
     "heat-number-field": {
       "version": "2026.11.16",
@@ -1272,7 +1272,7 @@
     },
     "heat-spring-editor": {
       "version": "2026.11.16",
-      "hash": "7e37983458b10bd7"
+      "hash": "cccb6de00c7237f6"
     },
     "heat-stat": {
       "version": "2026.11.16",
@@ -1340,7 +1340,7 @@
     },
     "heat-tune": {
       "version": "2026.11.16",
-      "hash": "6ec7bcdc63744065"
+      "hash": "e1ade42f739bae1a"
     },
     "heatmap": {
       "version": "2026.10.26",
@@ -1388,7 +1388,7 @@
     },
     "litt": {
       "version": "2026.11.16",
-      "hash": "652717ac2aad3def"
+      "hash": "6c7c58a5990f867d"
     },
     "log-view": {
       "version": "2026.11.06",
@@ -1407,8 +1407,8 @@
       "hash": "0fc4e698b1bfc519"
     },
     "motion": {
-      "version": "2026.11.15",
-      "hash": "ef289afc9233777b"
+      "version": "2026.11.16",
+      "hash": "42f44acc534fa4eb"
     },
     "number-field": {
       "version": "2026.11.15",
@@ -1612,7 +1612,7 @@
     },
     "plain-litt": {
       "version": "2026.11.16",
-      "hash": "2979a2b00f2c8a96"
+      "hash": "15046fc293c55929"
     },
     "plain-log-view": {
       "version": "2026.11.16",
@@ -1632,7 +1632,7 @@
     },
     "plain-motion": {
       "version": "2026.11.16",
-      "hash": "ef289afc9233777b"
+      "hash": "42f44acc534fa4eb"
     },
     "plain-number-field": {
       "version": "2026.11.16",
@@ -1736,7 +1736,7 @@
     },
     "plain-spring-editor": {
       "version": "2026.11.16",
-      "hash": "7e37983458b10bd7"
+      "hash": "cccb6de00c7237f6"
     },
     "plain-stat": {
       "version": "2026.11.16",
@@ -1804,7 +1804,7 @@
     },
     "plain-tune": {
       "version": "2026.11.16",
-      "hash": "6ec7bcdc63744065"
+      "hash": "e1ade42f739bae1a"
     },
     "plan": {
       "version": "2026.11.06",
@@ -2000,7 +2000,7 @@
     },
     "press-litt": {
       "version": "2026.11.16",
-      "hash": "98b7a0d325c37428"
+      "hash": "4c2a10baacce5a3d"
     },
     "press-log-view": {
       "version": "2026.11.16",
@@ -2020,7 +2020,7 @@
     },
     "press-motion": {
       "version": "2026.11.16",
-      "hash": "ef289afc9233777b"
+      "hash": "42f44acc534fa4eb"
     },
     "press-number-field": {
       "version": "2026.11.16",
@@ -2124,7 +2124,7 @@
     },
     "press-spring-editor": {
       "version": "2026.11.16",
-      "hash": "7e37983458b10bd7"
+      "hash": "cccb6de00c7237f6"
     },
     "press-stat": {
       "version": "2026.11.16",
@@ -2192,7 +2192,7 @@
     },
     "press-tune": {
       "version": "2026.11.16",
-      "hash": "6ec7bcdc63744065"
+      "hash": "e1ade42f739bae1a"
     },
     "price": {
       "version": "2026.10.24",
@@ -2400,7 +2400,7 @@
     },
     "rack-litt": {
       "version": "2026.11.16",
-      "hash": "79f2998c8ff9ef16"
+      "hash": "903f74ae2c1ef998"
     },
     "rack-log-view": {
       "version": "2026.11.16",
@@ -2420,7 +2420,7 @@
     },
     "rack-motion": {
       "version": "2026.11.16",
-      "hash": "ef289afc9233777b"
+      "hash": "42f44acc534fa4eb"
     },
     "rack-number-field": {
       "version": "2026.11.16",
@@ -2524,7 +2524,7 @@
     },
     "rack-spring-editor": {
       "version": "2026.11.16",
-      "hash": "7e37983458b10bd7"
+      "hash": "cccb6de00c7237f6"
     },
     "rack-stat": {
       "version": "2026.11.16",
@@ -2592,7 +2592,7 @@
     },
     "rack-tune": {
       "version": "2026.11.16",
-      "hash": "6ec7bcdc63744065"
+      "hash": "e1ade42f739bae1a"
     },
     "range-chart": {
       "version": "2026.11.06",
@@ -2671,8 +2671,8 @@
       "hash": "520a17ad30ad6dbd"
     },
     "spring-editor": {
-      "version": "2026.10.27",
-      "hash": "7e37983458b10bd7"
+      "version": "2026.11.16",
+      "hash": "cccb6de00c7237f6"
     },
     "stat": {
       "version": "2026.11.15",
@@ -2747,8 +2747,8 @@
       "hash": "76d264c7857cff66"
     },
     "tune": {
-      "version": "2026.11.01",
-      "hash": "6ec7bcdc63744065"
+      "version": "2026.11.16",
+      "hash": "e1ade42f739bae1a"
     },
     "usage": {
       "version": "2026.10.26",

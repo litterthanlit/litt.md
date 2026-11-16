@@ -128,7 +128,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
       type: "Geist in three weights by role: text 400, titles 500, 12px labels 600. Nothing above 18px.",
       light: "None. The depth ladder is said by fill alone: grey is the object, a hairline is the place.",
       shape: "As Press: 4px, 8px and the pill, concentric.",
-      motion: "Things come from where you touched them. A set deals out of what opened it and gathers back; an overlay grows from its opener.",
+      motion: "Things come from where you touched them. A set deals out of what opened it and gathers back; an overlay grows from its opener. Where something lands it bounces a little more than in any other world; small moves and exits never bounce.",
     },
     abilities: [
       "Soft focus on a hand: a swap you cause arrives out of focus and settles, never on scroll.",

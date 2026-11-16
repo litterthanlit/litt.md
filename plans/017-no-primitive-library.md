@@ -15,6 +15,7 @@
 ## Status
 
 - **Priority**: P2 (nothing is broken; Nick chose this on 2026-11-15)
+- **Deferred**: 2026-11-16. Nick: "I think we gotta dial in each world first ... let's delay the 017 for now."
 - **Effort**: XL (a check, four engine files, 32 files moved, in six phases)
 - **Risk**: HIGH. Focus, keys, dismissal and placement for eleven overlay parts become litt's to keep right, for good.
   The guards are the recorded baseline (phase 0), the pilot (phase 1) and a screen-reader pass by a person (phase 5).

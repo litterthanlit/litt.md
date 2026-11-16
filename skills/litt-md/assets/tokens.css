@@ -1595,6 +1595,17 @@
   /* A grey block takes a lighter hover than a white one, so the words on it keep 4.5:1 (check 5). */
   --block-hover: color-mix(in oklab, var(--block), var(--fg) 2.5%);
 
+  /* Flat bounces more (R4, plans/023): its expressive spring at bounce 0.28, Flat's own cap, where every other world
+     keeps 0.12. It overshoots 3% and settles in 579ms. The responsive spring and every exit stay as they are, so a
+     small move and a way out never bounce. The reduced-motion block below names Flat, so these still zero there. */
+  --spring-expressive: 350ms 0.28;   /* visual time, bounce */
+  --dur-expressive: 579ms;           /* settle time of the spring above */
+  --ease-expressive: linear(0, 0.0219, 0.0897, 0.1597, 0.2671, 0.3519, 0.4643, 0.5446, 0.6434, 0.7099,
+                       0.7874, 0.8371, 0.8925, 0.9264, 0.9624, 0.9832, 1.004, 1.0151, 1.0249, 1.0294,
+                       1.0322, 1.0326, 1.0318, 1.0295, 1.0272, 1.0237, 1.0209, 1.0173, 1.0147, 1.0115,
+                       1.0093, 1.0068, 1.0052, 1.0034, 1.0023, 1.0012, 1.0005, 0.9998, 0.9995, 0.9992,
+                       1);
+
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
   --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));
   --data-amber-tint: color-mix(in oklab, var(--data-amber) var(--tint-strength), var(--surface-1));
@@ -2411,7 +2422,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* A world block that sets a --dur-* token (Flat's expressive settle) or a press token (Device's) is named here, at
+     its own specificity, or its value would beat these zeros on <html>. */
   :root,
+  :root[data-material="flat"],
+  [data-material="flat"],
   :root[data-material="device"],
   [data-material="device"] {
     --dur-instant: 0ms;

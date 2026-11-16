@@ -1,8 +1,11 @@
 /**
- * Flat bounces more (plans/023, phase 1): candidates for Flat's springs, for Nick's eye. Nothing here is a token yet.
+ * Flat bounces more (plans/023): the candidates for Flat's springs Nick judged, kept as the record of the choice.
+ * Nick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good". So Flat's expressive spring is 350ms at
+ * bounce 0.28 in tokens.css (phase 2), the responsive spring stays at bounce 0, and every other world keeps 0.12. The
+ * picked cell and column say so; the rest stay as they were shown.
  *
- * - FlatBounceExpressive: Flat's expressive spring at five bounces (0.12, today's cap, to 0.45) and two visual times
- *   (350ms, today's, and 420ms), ten cells. Each cell runs the same three moves in Flat's look: a mosaic dealing out of
+ * - FlatBounceExpressive: Flat's expressive spring at five bounces (0.12, every other world's cap, to 0.45) and two
+ *   visual times (350ms, every world's, and 420ms), ten cells; 0.28 at 350ms is the pick. Each cell runs the same three moves in Flat's look: a mosaic dealing out of
  *   its tile (the real deal() from @/motion/deal, handed the candidate spring), a dialog growing out of its opener (a
  *   stand-in that runs the Dialog's own Flat entrance: scale from GROW with its origin on the opener, opacity and
  *   scale on the expressive spring) and the real Flat switch, whose thumb is put on the candidate spring by the CSS
@@ -10,8 +13,8 @@
  * - FlatBounceResponsive: Flat's responsive spring at bounce 0 (today) and 0.08, on the real Flat switch and the Flat
  *   segmented control's body, which takes its glide as a prop.
  *
- * Every value sits in the canvas as a candidate (litt-allow) and moves into tokens.css only once Nick picks it
- * (plan 023, phase 2). Nothing moves on load: a press on a cell, its Replay, a row's or the whole grid's starts it.
+ * Every value sits in the canvas as a candidate (litt-allow), the picked one included: it duplicates the token on
+ * purpose, so the comparison stays as Nick saw it. Nothing moves on load: a press on a cell, its Replay, a row's or the whole grid's starts it.
  * Under reduced motion nothing moves: deal() resolves at once, the dialog skips its entrance, the frames set no
  * variables (so the switch inherits tokens.css's zeros) and the glide takes no time.
  *
@@ -27,12 +30,16 @@ import { MaterialProvider, useMotionDial, useTransition } from "@/motion";
 import { deal, GROW, useDealMotion, type Box, type DealMotion } from "@/motion/deal";
 import { curve, overshoot, toCss, type Spring } from "@/motion/spring";
 
-/** The bounces under comparison, today's first. */
+/** The bounces under comparison, the other worlds' cap first. */
 export const BOUNCES = [0.12, 0.2, 0.28, 0.36, 0.45] as const; // litt-allow: candidate bounces (plans/023, phase 1)
 /** The visual times under comparison, in seconds, today's first. */
 export const TIMES = [0.35, 0.42] as const; // litt-allow: candidate visual times (plans/023, phase 1)
 /** The responsive spring's bounce, today and the candidate. */
 export const RESPONSIVE_BOUNCES = [0, 0.08] as const; // litt-allow: candidate responsive bounce (plans/023, phase 1)
+/** Nick's pick (2026-11-16), now Flat's --spring-expressive: a bounce from BOUNCES at a time from TIMES. */
+export const PICK = { time: 0.35, bounce: 0.28 } as const; // litt-allow: the picked candidate, as tokens.css now has it for Flat
+/** Nick's pick for the responsive spring: no bounce on small moves. */
+export const RESPONSIVE_PICK = 0; // litt-allow: the picked responsive bounce, as tokens.css has it
 
 const ms = (s: number) => `${Math.round(s * 1000)}ms`;
 const pct = (n: number) => (n < 0.0001 ? "not at all" : n < 0.005 ? "under 1%" : `${Math.round(n * 100)}%`);
@@ -113,7 +120,8 @@ function Curve({ spring }: { spring: Spring }) {
 
 const PIECES = 6;
 
-function ExpressiveCell({ spring, tick, today }: { spring: Spring; tick: number; today: boolean }) {
+function ExpressiveCell({ spring, tick, before }: { spring: Spring; tick: number; before: boolean }) {
+  const picked = spring.time === PICK.time && spring.bounce === PICK.bounce;
   const { reduced } = useMotionDial();
   const { css, settle, over } = sayings(spring);
   const tile = useRef<HTMLButtonElement>(null);
@@ -224,7 +232,7 @@ function ExpressiveCell({ spring, tick, today }: { spring: Spring; tick: number;
       <div className="flex items-center justify-between gap-4">
         <p className="text-small text-fg-subtle">
           <span className="font-title text-fg">{words}</span>
-          {today ? ", today" : ""}. Settles in {settle}ms, overshoots {pct(over)}.
+          {picked ? ", Nick's pick, Flat's spring now" : before ? ", every other world's" : ""}. Settles in {settle}ms, overshoots {pct(over)}.
         </p>
         <Button size="sm" variant="ghost" onClick={replay}>
           Replay
@@ -249,9 +257,10 @@ export function FlatBounceExpressive() {
             times side by side, or Replay all to run all ten at once. Press the tile, Open or the switch to run that move alone.
           </p>
           <p className="text-small text-fg-subtle">
-            Today the cap is bounce 0.12 at 350ms, settling within 600ms; a pick past it changes R4 and check 9 (plan 023, phase 2). The
-            switch's thumb crosses on the responsive spring today; here it shows each candidate on a small move. Nothing moves under reduced
-            motion.
+            Nick's pick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good". Flat's expressive spring is now bounce 0.28 at
+            350ms, overshooting 3% and settling in 579ms, inside the 600ms limit; every other world keeps 0.12 (R4, check 9). The switch's
+            thumb crosses on the responsive spring, which stays at bounce 0; here it shows each candidate on a small move. Nothing moves
+            under reduced motion.
           </p>
         </div>
         <Button variant="primary" onClick={() => setAll((n) => n + 1)}>
@@ -263,7 +272,7 @@ export function FlatBounceExpressive() {
         <span />
         {TIMES.map((t, j) => (
           <span key={t} className="text-small font-title text-fg">
-            {ms(t)} visual time{j === 0 ? ", today" : ""}
+            {ms(t)} visual time{j === 0 ? ", every world's" : ""}
           </span>
         ))}
         {BOUNCES.map((b, r) => (
@@ -271,7 +280,9 @@ export function FlatBounceExpressive() {
             <div className="grid content-start gap-3">
               <div className="grid gap-1">
                 <span className="text-h4 font-title text-fg tabular-nums">Bounce {b}</span>
-                <span className="text-small text-fg-subtle">{r === 0 ? "Today, the cap" : `Overshoots ${pct(overshoot({ time: TIMES[0], bounce: b }))}`}</span>
+                <span className="text-small text-fg-subtle">
+                  {r === 0 ? "Every other world's cap" : `Overshoots ${pct(overshoot({ time: TIMES[0], bounce: b }))}${b === PICK.bounce ? ", Nick's pick at 350ms" : ""}`}
+                </span>
               </div>
               <Curve spring={{ time: TIMES[0], bounce: b }} />
               <div>
@@ -281,7 +292,7 @@ export function FlatBounceExpressive() {
               </div>
             </div>
             {TIMES.map((t) => (
-              <ExpressiveCell key={t} spring={{ time: t, bounce: b }} tick={all + rows[r]!} today={r === 0 && t === TIMES[0]} />
+              <ExpressiveCell key={t} spring={{ time: t, bounce: b }} tick={all + rows[r]!} before={r === 0 && t === TIMES[0]} />
             ))}
           </div>
         ))}
@@ -302,6 +313,7 @@ function ResponsiveColumn({ bounce, tick }: { bounce: number; tick: number }) {
   const { dial, reduced } = useMotionDial();
   const spring: Spring = { time: dial.responsive.time, bounce };
   const today = bounce === 0;
+  const picked = bounce === RESPONSIVE_PICK;
   const { settle, over } = sayings(spring);
   const [on, setOn] = useState(false);
   const [view, setView] = useState("board");
@@ -320,7 +332,7 @@ function ResponsiveColumn({ bounce, tick }: { bounce: number; tick: number }) {
     <div className="grid content-start gap-3">
       <div className="grid gap-1">
         <span className="text-h4 font-title text-fg tabular-nums">Bounce {bounce}</span>
-        <span className="text-small text-fg-subtle">{today ? "Today" : "The candidate, in Flat only"}</span>
+        <span className="text-small text-fg-subtle">{picked ? "Nick's pick: no bounce on small moves" : "The candidate, not picked"}</span>
       </div>
       <Stage label={words} className="grid cursor-pointer gap-6" onClick={(e) => !ownJob(e) && replay()}>
         <div style={thumbVars(today ? null : spring, reduced)}>
@@ -360,8 +372,8 @@ export function FlatBounceResponsive() {
     <div className="grid gap-8">
       <div className="flex items-start justify-between gap-8">
         <p className="max-w-(--measure) text-small text-fg-subtle">
-          Flat's small moves: the switch's thumb and the segmented control's bubble ride the responsive spring, bounce 0 in every world today.
-          Should they bounce a little in Flat? Press a frame or Replay to flip the switch and step the bubble on, or Replay both to run the two
+          Flat's small moves: the switch's thumb and the segmented control's bubble ride the responsive spring, bounce 0 in every world.
+          Nick, 2026-11-16: "no bounce on small moves looks good", so it stays at 0 in Flat too. Press a frame or Replay to flip the switch and step the bubble on, or Replay both to run the two
           side by side.
         </p>
         <Button variant="primary" onClick={() => setBoth((n) => n + 1)}>

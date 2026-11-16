@@ -24,9 +24,10 @@
 import { createContext, Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import type { Transition } from "motion/react";
-import { surfaceRadius, useDevice, useMotionDial, useTransition } from "@/motion";
+import { surfaceRadius, useDevice, useMaterial, useMotionDial, useTransition } from "@/motion";
 import { cornerRule, RADIUS_PILL, SPACE_SCALE, spaceRule, springRules, type RuleRow, type SpringTier } from "@/motion/rules";
 import { toCss, type Spring } from "@/motion/spring";
+import type { Material } from "@/motion/deal";
 import type { Locked } from "@/motion/tokens";
 import { Button } from "@/components/button";
 import { CurveEditor, toCubicBezier, type CubicBezier } from "@/components/curve-editor";
@@ -144,7 +145,8 @@ const spec = (kind: Spec["kind"], named: Named | undefined, sig: unknown, bind: 
 });
 const field = <Out,>(s: Spec): TuneField<Out> => ({ spec: s });
 
-function makeKinds(locked: Locked): TuneKinds {
+/** The builders, against the locked tokens and the world's own rules (Flat's expressive bounce cap, R4). */
+function makeKinds(locked: Locked, material: Material): TuneKinds {
   const control = locked.radius;
   const surface = surfaceRadius(locked.radius);
   return {
@@ -234,7 +236,7 @@ function makeKinds(locked: Locked): TuneKinds {
             return {
               raw: s,
               read: ({ reduced, still }) => (reduced ? still : { type: "spring", visualDuration: s.time, bounce: s.bounce }), // litt-allow: the spring being tuned is the caller's value
-              rules: (label) => springRules(s, tier).map((r) => ({ ok: r.ok, text: `${label} ${r.text.charAt(0).toLowerCase()}${r.text.slice(1)}` })),
+              rules: (label) => springRules(s, tier, material).map((r) => ({ ok: r.ok, text: `${label} ${r.text.charAt(0).toLowerCase()}${r.text.slice(1)}` })),
               copy: ({ token }) => {
                 if (onTier) return { css: [`${token}-duration: ${TIER_VARS[tier].duration};`, `${token}-ease: ${TIER_VARS[tier].easing};`] };
                 const out = toCss(s);
@@ -566,8 +568,9 @@ export function useTune<S extends TuneSchema>(name: string, schema: (t: TuneKind
   const root = useContext(TuneContext);
   const store = root.state === "on" ? root.store : null;
   const { locked, reduced } = useMotionDial();
+  const material = useMaterial();
   const still = useTransition("instant");
-  const t = useMemo(() => makeKinds(locked), [locked]);
+  const t = useMemo(() => makeKinds(locked, material), [locked, material]);
   const fresh = schema(t);
   const next = compile(fresh);
   /* The same fields keep the same object, so the effects below run only when the schema really changes. */

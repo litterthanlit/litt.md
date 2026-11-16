@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, type Transition } from "motion/react";
-import { surfaceRadius, useMotionDial, useTransition, useTravel } from "@/motion";
+import { surfaceRadius, useMaterial, useMotionDial, useTransition, useTravel } from "@/motion";
+import type { Material } from "@/motion/deal";
 import { springRules, LIMITS } from "@/motion/rules";
 import { toCss, type Spring } from "@/motion/spring";
 import { Button } from "@/components/button";
@@ -89,13 +90,13 @@ const LIVELY: ToastLook = { radius: 14, padding: 20, float: true, enter: { time:
 const px = (n: number) => `${n}px`;
 const num = (n: number) => String(+n.toFixed(2));
 
-function toastChecks(look: ToastLook, surface: number): InspectorCheck[] {
+function toastChecks(look: ToastLook, surface: number, material: Material): InspectorCheck[] {
   const [x1, y1, x2, y2] = look.exit;
   return [
     { ok: look.radius === surface, text: `Corners on the surface radius, ${surface}px: ${look.radius}px` },
     { ok: look.padding % 4 === 0, text: `Padding on the 4px grid: ${look.padding}px` },
     { ok: look.float, text: `A toast floats, with the float shadow: ${look.float ? "on" : "off"}` },
-    ...springRules(look.enter, "expressive"),
+    ...springRules(look.enter, "expressive", material),
     { ok: y1 >= x1 && y2 >= x2 && [y1, y2].every((y) => y >= 0 && y <= 1), text: `The exit eases out and never passes its end: ${toCubicBezier(look.exit)}` },
   ];
 }
@@ -152,6 +153,7 @@ function TunedToast({ look, run }: { look: ToastLook; run: number }) {
 
 function ToastInspectorDemo() {
   const { locked } = useMotionDial();
+  const material = useMaterial();
   const litt = useLittToast();
   const surface = surfaceRadius(locked.radius);
   const presets: InspectorVersion<ToastLook>[] = [
@@ -181,7 +183,7 @@ function ToastInspectorDemo() {
           }}
           defaultValue={litt}
           presets={presets}
-          checks={(v) => toastChecks(v, surface)}
+          checks={(v) => toastChecks(v, surface, material)}
           tokens={toastTokens}
           className="justify-self-center"
         >

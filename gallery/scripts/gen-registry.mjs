@@ -1809,8 +1809,18 @@ const worldUrlOf = (world, name) => `${origin}/r/${world}/${name}.json`;
 /** :root and one world's tokens: every rule for another world's data-material goes, and what it leaves empty. */
 function worldCss(world) {
   const others = [...BODY_WORLDS].filter((w) => w !== world);
-  const drop = (selector) => others.some((w) => selector.includes(`data-material="${w}"`));
-  const keep = (nodes) => nodes.filter((n) => !(n.k === "rule" && drop(n.selector))).map((n) => (n.nodes && n.k !== "rule" ? { ...n, nodes: keep(n.nodes) } : n));
+  const other = (part) => others.some((w) => part.includes(`data-material="${w}"`));
+  /* A selector list loses only the parts that name another world: the reduced-motion and more-contrast blocks list
+     every world that restates them beside :root, and must still reach this one. A rule goes when nothing is left. */
+  const own = (selector) => splitTop(selector, ",").map((p) => p.trim()).filter((p) => !other(p)).join(", ");
+  const keep = (nodes) =>
+    nodes.flatMap((n) => {
+      if (n.k === "rule") {
+        const selector = own(n.selector);
+        return selector ? [selector === n.selector ? n : { ...n, selector }] : [];
+      }
+      return [n.nodes ? { ...n, nodes: keep(n.nodes) } : n];
+    });
   return toCssObject(prune(keep(sharedCss)), `tokens.css for ${world}`);
 }
 
