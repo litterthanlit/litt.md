@@ -14,20 +14,26 @@
  *   changed,
  * - the object's root (data-play-object) is not the world's id for a world in OBJECTS, or not "bare" for one that is not,
  * - from Source, Tab does not reach the selector (a slider), then Play, then the screen,
- * - the screen does not open on Home, an index of every component in at least six groups,
- * - Right and Left do not step within a group (wrapping inside it), Down and Up do not move a group, End and Home do
- *   not go to the last part and to Home, with aria-valuenow and the readout's count following,
- * - a take (every component in the world, a group at a time) draws nothing inside the screen's box, or anything in the
- *   body (the object outside its screen) is filled with the accent (R6),
- * - Index does not go back to Home, or Home's index does not open the component picked,
- * - what the Dialog, Menu, Popover, Select, Context menu, Toast or Tooltip take opens (from its first button, by a click
+ * - a world's set in play-object/takes.ts is not twelve parts, each a component page in that world, or a page's id is
+ *   components or about, which would hide behind the world's own addresses,
+ * - the screen does not open on Home, the world's set (a row each, as many as the slider runs to and takes.ts lists),
+ * - Right and Down do not go to the next take, Left and Up to the previous, wrapping through Home, or End and Home do
+ *   not go to the last take and to Home, with aria-valuenow and the readout's count following,
+ * - a take (each in the set) draws nothing inside the screen's box, or anything in the body (the object outside its
+ *   screen) is filled with the accent (R6),
+ * - the rail beside a take does not list the set in order with the take showing marked, and a link to
+ *   #<world>/components at its foot,
+ * - Index does not go back to Home, or Home does not open the take picked,
+ * - what the Dialog, Menu, Popover, Select, Context menu, Toast or Tooltip take opens, where the set holds it, (from its first button, by a click
  *   or, for the tooltip, a held pointer) is not inside the screen's box, under the screen's world (1px tolerance),
  * - the take changes within 6s with no hand on it (nothing plays on load), Play does not move it within 5s, or a press
- *   on the screen does not stop it.
+ *   on the screen does not stop it,
+ * - Home's Every component link does not open #<world>/components, or that page does not hold a tile for every
+ *   component in the world (read from src/gallery/pages), or a tile's name does not link to #<world>/<id>.
  *
  * --self-test moves the Dialog take's open dialog out to <body>, as a portal that missed the screen's OverlayRoot would,
- * so it leaves the screen and its world, and keeps the recorder's body from loading, so Device draws bare; it fails if the check
- * misses either.
+ * so it leaves the screen and its world, keeps the recorder's body from loading, so Device draws bare, and takes a tile
+ * out of Device's gallery view, and adds a part Heat does not have to Heat's set; it fails if the check misses any.
  *
  * Needs Playwright, found as worlds.mjs finds it.
  */
@@ -36,6 +42,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { pageMetas } from "./routes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -174,19 +181,36 @@ const readout = (pg) => pg.evaluate(() => document.querySelector("[data-play-rea
 const now = (pg) => pg.locator(SLIDER).getAttribute("aria-valuenow").then(Number);
 const pad = (i, n) => String(i).padStart(Math.max(2, String(n).length), "0");
 
-/** Picks a take by name, as a person would: Index, back to Home, then its row in the index. False when it is not in the world. */
+/** Picks a take by name, as a person would: Index, back to Home, then its row in the set. False when it is not in the set. */
 async function find(pg, title) {
-  await pg.locator("[data-play-object]").getByRole("button", { name: "Index", exact: true }).click();
+  await pg.locator("[data-play-object]").getByRole("button", { name: "Index", exact: true }).first().click();
   await pg.waitForTimeout(400);
-  const row = pg.locator(`${FRAME} [data-play-index] button`).filter({ hasText: new RegExp(`^${title}$`) });
+  const row = pg.locator(`${FRAME} [data-play-index]`).getByRole("button", { name: title, exact: true });
   if (!(await row.count())) return false;
   await row.first().click();
   await pg.waitForTimeout(500);
   return true;
 }
 
-/** The index on Home: each group and how many parts it holds, in order. */
-const shelvesOn = (pg) => pg.evaluate((F) => [...document.querySelectorAll(`${F} [data-play-index] [data-shelf]`)].map((s) => ({ group: s.dataset.shelf, count: s.querySelectorAll("button").length })), FRAME);
+/** The set on Home: each take's title, in order. */
+const setOn = (pg) => pg.evaluate((F) => [...document.querySelectorAll(`${F} [data-play-index] button`)].map((b) => (b.querySelector("span") ?? b).textContent.trim()), FRAME);
+
+/** The component pages in a world, as the world's gallery view holds them (read from src/gallery/pages). */
+const PARTS = pageMetas().filter((p) => p.group && p.group !== "Blocks" && p.group !== "Worlds" && !p.world);
+const partsIn = (world) => PARTS.filter((p) => !p.worlds || p.worlds.includes(world)).map((p) => p.id);
+
+/* Each world's set, read from play-object/takes.ts, so the list lives once. --self-test adds a part Heat does not have. */
+const SETS = Object.fromEntries(
+  [...fs.readFileSync(path.join(here, "..", "src", "gallery", "play-object", "takes.ts"), "utf8").matchAll(/^\s+(\w+): \[([^\]]*)\],$/gm)].map((m) => [m[1], [...m[2].matchAll(/"([^"]+)"/g)].map((x) => x[1])]),
+);
+const shadowed = pageMetas().filter((p) => ["components", "about"].includes(p.id)).map((p) => p.id);
+claim("no page id is components or about, the world's own addresses", shadowed.length ? `pages named ${shadowed.join(", ")}` : null);
+if (selfTest) SETS.heat =[...(SETS.heat ?? []), "seven-segment"];
+for (const [, id] of WORLDS) {
+  const set = SETS[id] ?? [];
+  const missing = set.filter((p) => !partsIn(id).includes(p));
+  claim("every part in a world's set (takes.ts) is in that world, twelve to a set", set.length === 12 && !missing.length ? null : `${id}: ${set.length} in the set${missing.length ? `, not in the world: ${missing.join(", ")}` : ""}`);
+}
 
 /**
  * --greyscale: each world's object at rest on its first take, in colour, then in greyscale with every word in one
@@ -271,50 +295,62 @@ for (const [world, id, attribute] of WORLDS) {
 
   const n = Number(await pg.locator(SLIDER).getAttribute("aria-valuemax"));
 
-  /* Home: the world opens on its index, every component on its shelf. */
+  /* Home: the world opens on its set, a flat list to pick from, and a way to every component. */
   const home = await showing(pg);
-  const shelves = await shelvesOn(pg);
-  const total = shelves.reduce((t, s) => t + s.count, 0);
+  const set = await setOn(pg);
   claim(
-    "the screen opens on Home, an index of every component in its groups",
-    home.id === "home" && (await readout(pg))?.includes("Home") && shelves.length >= 6 && total === n ? null : `${world}: showing ${home.id}, ${shelves.length} groups holding ${total} of ${n}`,
+    "the screen opens on Home, the world's set to pick from",
+    home.id === "home" && (await readout(pg))?.includes("Home") && set.length === n && n === (SETS[id] ?? []).length ? null : `${world}: showing ${home.id}, ${set.length} in the set on Home, the slider runs to ${n}`,
   );
 
-  /* Two levels: Right and Left step within a group and wrap there, Down and Up move a group, End and Home. */
-  const firstShelf = shelves[0]?.count ?? 1;
+  /* One level: Right and Down go on, Left and Up go back, wrapping through Home; End and Home go to the ends. */
   await pg.locator(SLIDER).focus();
-  for (const [key, to] of [["ArrowRight", 1], ["ArrowLeft", firstShelf], ["ArrowRight", 1], ["ArrowDown", firstShelf + 1], ["ArrowUp", 1], ["End", n], ["Home", 0]]) {
+  for (const [key, to] of [["ArrowRight", 1], ["ArrowDown", 2], ["ArrowUp", 1], ["ArrowLeft", 0], ["ArrowLeft", n], ["ArrowRight", 0], ["End", n], ["Home", 0]]) {
     await pg.keyboard.press(key);
     await pg.waitForTimeout(150);
     const v = await now(pg);
     const text = await readout(pg);
     const count = `${pad(to, n)} / ${pad(n, n)}`;
-    claim("Right and Left step within a group, Down and Up move a group, End and Home go to the ends, and the readout follows", v === to && text?.includes(count) ? null : `${world} · ${key}: at ${v}, readout "${text}", wants ${to} and "${count}"`);
+    claim("Right and Down go on, Left and Up go back, wrapping through Home, End and Home go to the ends, and the readout follows", v === to && text?.includes(count) ? null : `${world} · ${key}: at ${v}, readout "${text}", wants ${to} and "${count}"`);
   }
 
-  /* Every take draws, and the body is never filled with the accent: a group at a time, as a person goes. */
+  /* Every take draws, and the body is never filled with the accent: through the set, as a person goes. */
   claim("every take draws something inside the screen's box", n > 0 ? null : `${world}: no takes`);
   claim("nothing in the object's body is filled with the accent", null);
-  for (const shelf of shelves) {
-    for (let j = 0; j < shelf.count; j++) {
-      await pg.keyboard.press(j === 0 ? "ArrowDown" : "ArrowRight");
-      await pg.waitForTimeout(120);
-      let s = await showing(pg);
-      if (!s.draws) {
-        await pg.waitForTimeout(800);
-        s = await showing(pg);
-      }
-      claim("every take draws something inside the screen's box", s.draws ? null : `${world} · ${shelf.group} ${j + 1}: ${s.id ?? "nothing showing"} draws nothing inside the screen`);
-      const fills = await bodyFills(pg);
-      claim("nothing in the object's body is filled with the accent", fills.length === 0 ? null : `${world} · ${shelf.group} ${j + 1}: ${fills.join(", ")}`);
+  for (let j = 0; j < n; j++) {
+    await pg.keyboard.press("ArrowRight");
+    await pg.waitForTimeout(120);
+    let s = await showing(pg);
+    if (!s.draws) {
+      await pg.waitForTimeout(800);
+      s = await showing(pg);
     }
+    claim("every take draws something inside the screen's box", s.draws ? null : `${world} · ${set[j]}: ${s.id ?? "nothing showing"} draws nothing inside the screen`);
+    const fills = await bodyFills(pg);
+    claim("nothing in the object's body is filled with the accent", fills.length === 0 ? null : `${world} · ${set[j]}: ${fills.join(", ")}`);
   }
 
-  /* Index: back to Home, and the index takes you where you pick. */
+  /* The rail, while a take shows: the set in order, the one showing marked, and the way to every component at its foot. */
+  const rail = await pg.evaluate(() => {
+    const r = document.querySelector("[data-play-rail]");
+    return r && {
+      rows: [...r.querySelectorAll("button")].map((b) => b.textContent.trim()),
+      current: [...r.querySelectorAll("button[aria-current=page]")].map((b) => b.textContent.trim()),
+      foot: [...r.querySelectorAll("a[href]")].map((a) => a.getAttribute("href")),
+    };
+  });
+  const title = await readout(pg);
+  claim(
+    "the rail lists the set, marks the take showing, and links to every component",
+    rail && rail.rows.join("|") === set.join("|") && rail.current.length === 1 && title?.includes(rail.current[0]) && rail.foot.join() === `#${id}/components` ? null : `${world}: rail ${JSON.stringify(rail)}, set ${JSON.stringify(set)}, readout "${title}"`,
+  );
+
+  /* Index: back to Home, and Home takes you where you pick. */
   await inView(pg);
-  const went = await find(pg, "Dialog");
+  const last = set[set.length - 1];
+  const went = await find(pg, last);
   const picked = await readout(pg);
-  claim("Index goes back to Home, and its index opens what you pick", went && picked?.includes("Dialog") ? null : `${world}: after picking Dialog from the index the readout says "${picked}"`);
+  claim("Index goes back to Home, and Home opens what you pick", went && picked?.includes(last) ? null : `${world}: after picking ${last} from Home the readout says "${picked}"`);
 
   /* What a take opens stays on the screen, in its world. */
   for (const title of OPENERS) {
@@ -349,15 +385,17 @@ for (const [world, id, attribute] of WORLDS) {
     await pg.keyboard.press("Escape");
     await pg.keyboard.press("Escape");
     await pg.waitForTimeout(400);
+    /* The escaped dialog, once read, is taken away, so it cannot stand over the claims that follow. */
+    if (selfTest) await pg.evaluate(() => document.querySelectorAll("body > [role=dialog]").forEach((d) => d.remove()));
   }
 
   /* Play, only when pressed, and a hand on the screen stops it. */
   await inView(pg);
   const before = await now(pg);
-  await pg.locator("[data-play-object]").getByRole("button", { name: "Play" }).click();
+  await pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true }).click();
   await pg.waitForTimeout(5000);
   const after = await now(pg);
-  const pressed = await pg.locator("[data-play-object]").getByRole("button", { name: "Play" }).getAttribute("aria-pressed");
+  const pressed = await pg.locator("[data-play-object]").getByRole("button", { name: "Play", exact: true }).getAttribute("aria-pressed");
   claim("Play steps through the takes, and a press on the screen stops it", after !== before && pressed === "true" ? null : `${world}: after Play the take went ${before} to ${after}, Play pressed ${pressed}`);
   const sb = await pg.locator(FRAME).boundingBox();
   await pg.mouse.click(sb.x + 8, sb.y + 8);
@@ -365,6 +403,29 @@ for (const [world, id, attribute] of WORLDS) {
   await pg.waitForTimeout(5000);
   const still = await now(pg);
   claim("Play steps through the takes, and a press on the screen stops it", still === held ? null : `${world}: after a press on the screen the take went ${held} to ${still}`);
+
+  /* Home's way to every component: the world's gallery view, a tile for every component in the world, each named by a
+     link to its page in the world. */
+  await find(pg, set[0]);
+  await pg.locator("[data-play-object]").getByRole("button", { name: "Index", exact: true }).first().click();
+  await pg.waitForTimeout(300);
+  await pg.locator(`${FRAME} [data-play-everything]`).click({ timeout: 3000 }).catch(() => {});
+  await pg.waitForFunction(() => document.querySelector("[data-tile]"), null, { timeout: 5000 }).catch(() => {});
+  /* The break: a tile goes missing from the gallery view. */
+  if (selfTest && id === "device") await pg.evaluate(() => document.querySelector("[data-tile]")?.remove());
+  const gallery = await pg.evaluate(() => ({
+    hash: location.hash,
+    tiles: [...document.querySelectorAll("main [data-tile]")].map((t) => ({ id: t.dataset.tile, href: t.querySelector(":scope > :is(h2, h3) a")?.getAttribute("href") ?? null })),
+  }));
+  const parts = partsIn(id);
+  const tileIds = gallery.tiles.map((t) => t.id);
+  const wrongHref = gallery.tiles.filter((t) => t.href !== `#${id}/${t.id}`).map((t) => `${t.id} → ${t.href}`);
+  claim(
+    "Home's Every component opens the world's gallery view: a tile for every component in the world, each naming a link to its page there",
+    gallery.hash === `#${id}/components` && tileIds.length === parts.length && parts.every((w) => tileIds.includes(w)) && !wrongHref.length
+      ? null
+      : `${world}: at ${gallery.hash}, ${tileIds.length} tiles of ${parts.length}${parts.filter((w) => !tileIds.includes(w)).length ? `, missing ${parts.filter((w) => !tileIds.includes(w)).slice(0, 8).join(", ")}` : ""}${wrongHref.length ? `, names linking elsewhere: ${wrongHref.slice(0, 4).join(", ")}` : ""}`,
+  );
 
   for (const e of errors) claim("the page throws nothing", `${world}: ${e}`);
   await ctx.close();
@@ -387,8 +448,12 @@ if (selfTest) {
   const bareCaught = (claims.get("the object is the world's own, or bare for a world not drawn yet") ?? []).some((f) => f.startsWith("Device:"));
   if (!caught) console.error("playground --self-test: the Dialog take's dialog escaped to <body>, and the check missed it.");
   if (!bareCaught) console.error("playground --self-test: Device drew bare with the recorder kept from loading, and the check missed it.");
-  if (!caught || !bareCaught) process.exit(1);
-  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, and with the recorder kept from loading Device draws bare; the check catches both.");
+  const setCaught = (claims.get("every part in a world's set (takes.ts) is in that world, twelve to a set") ?? []).some((f) => f.startsWith("heat:"));
+  if (!setCaught) console.error("playground --self-test: Heat's set named a part Heat does not have, and the check missed it.");
+  const tileCaught = (claims.get("Home's Every component opens the world's gallery view: a tile for every component in the world, each naming a link to its page there") ?? []).some((f) => f.startsWith("Device:"));
+  if (!tileCaught) console.error("playground --self-test: a tile went missing from Device's gallery view, and the check missed it.");
+  if (!caught || !bareCaught || !tileCaught || !setCaught) process.exit(1);
+  console.log("playground --self-test: a dialog escaped to <body> leaves the screen, with the recorder kept from loading Device draws bare, a tile missing from Device's gallery view is seen, and a set naming a part outside its world is seen; the check catches all four.");
   process.exit(0);
 }
 if (bad) {

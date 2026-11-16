@@ -1,19 +1,19 @@
 /**
  * The object (plans/018): a world made a thing you could hold, after the player in Nick's components repo. Its screen
- * runs every component in the world, one take at a time, each its own tile drawn in that world's body. One contract,
- * a body per world, as the parts have (proposals/worlds.md, decisions 13 and 15): the contract owns the takes, the
- * roles and keys, Play, Menu, Details and Source, and the state; a body (bodies/<world>.tsx) only draws, and a world
- * with no body yet, or whose body fails to load, draws bodies/bare.tsx.
+ * runs the world's set, the dozen parts that show it best, one take at a time, each its own tile drawn in that world's
+ * body. Every other part is in the world's gallery view (#<world>/components), one link away. One contract, a body per
+ * world, as the parts have (proposals/worlds.md, decisions 13 and 15): the contract owns the takes, the roles and keys,
+ * Play, Index, Details and Source, and the state. A body (bodies/<world>.tsx) only draws. A world with no body yet, or
+ * whose body fails to load, draws bodies/bare.tsx.
  *
- * - The screen opens on Home: the world's introduction, its core set and an index of every component on its shelf (a
- *   group), after design.how's systems, so a person chooses a group, then a part.
- * - The selector is a slider over Home and the takes, as the player's tape is: one tab stop; Left and Right step within
- *   a group, Up and Down (and Page Up and Down) move a group, Home goes Home and End to the last part, and a hand's
+ * - The screen opens on Home: the world's introduction, the set to pick from, and a link to every component.
+ * - The selector is a slider over Home and the set, as the player's tape is. One tab stop. Right and Down go to the
+ *   next take, Left and Up to the previous, wrapping through Home. Home goes Home and End to the last take. A hand's
  *   change is said once in a polite live region.
- * - Play is a key the viewer presses (R4: nothing moves on load). Pressed, it runs the core set, a part every 4s,
- *   wrapping; a press, key, wheel or drag on the screen, or any take picked by hand, stops it. A take change is instant
- *   in every motion.
- * - Index goes back to Home (a part is called Menu, so the key is not), Details says what the take (or the world) is,
+ * - Play is a key the viewer presses (R4: nothing moves on load). Pressed, it runs the set, a take every 4s, wrapping.
+ *   A press, key, wheel or drag on the screen, or any take picked by hand, stops it. A take change is instant in every
+ *   motion.
+ * - Index goes back to Home (a part is called Menu, so the key is not). Details says what the take (or the world) is.
  *   Source opens its page.
  * - The screen is rendered once, into a host element the body's slot adopts, so a body that comes or goes never
  *   remounts what is on the screen. Nothing makes a sound (decision 2).
@@ -28,8 +28,7 @@ import { lookAttributes, materialOf, MATERIALS, type Material } from "../look";
 import { bare } from "./bodies/bare";
 import type { PlayObjectBody, PlayObjectBodyProps } from "./body";
 import { PlayScreen } from "./screen";
-import { scenesOf } from "../systems";
-import { shelfOf, takesOf, type Shelf, type Take } from "./takes";
+import { shelvesOf, takesOf, type Take } from "./takes";
 
 export type { PlayObjectBody, PlayObjectBodyProps } from "./body";
 
@@ -64,7 +63,7 @@ function ScreenSlot({ host }: { host: HTMLElement }) {
 type Props = {
   material: Material;
   dark: boolean;
-  /** What leads the object's top row, before Menu, Details and Source: the page's way to the other worlds. */
+  /** What leads the object's top row, before Index, Details and Source: the world's own nav. */
   lead?: ReactNode;
 };
 
@@ -79,39 +78,37 @@ export function PlayObject(props: Props) {
 
 function Loaded({ material, dark, lead }: Props) {
   const body = use(bodyOf(material));
-  const { takes, shelves, core } = takesOf(material);
+  const takes = takesOf(material);
+  const shelves = shelvesOf(material);
+  const total = shelves.reduce((t, s) => t + s.pages.length, 0);
   const world = materialOf(material);
   const { look } = useCustomize();
   const { compact } = useDevice();
   const id = useId();
-  /* null is Home: the world's introduction and its index, inside the screen. A world opens there. */
+  /* null is Home: the world's introduction and its set, inside the screen. A world opens there. */
   const [at, setAt] = useState<number | null>(null);
   const [playing, setPlaying] = useState(false);
   const [said, setSaid] = useState("");
   const [details, setDetails] = useState(false);
   const [host] = useState(() => Object.assign(document.createElement("div"), { className: "contents" }));
   const n = takes.length;
-  const S = shelves.length;
   const take = at === null ? null : takes[at]!;
-  const digits = String(n).length;
-  const pad = (i: number) => String(i).padStart(Math.max(2, digits), "0");
+  const pad = (i: number) => String(i).padStart(Math.max(2, String(n).length), "0");
+  const homeText = `Home, ${n} in the set`;
 
   /* Every world's body loads in the background, so the next world finds its body ready. */
   useEffect(() => {
     for (const m of MATERIALS) void bodyOf(m.id);
   }, []);
 
-  /* Play runs the core set: the next core part every TAKE_MS, wrapping, until a hand stops it. */
+  /* Play runs the set: the next take every TAKE_MS, wrapping, until a hand stops it. From Home it starts at the first. */
   useEffect(() => {
-    if (!playing || !core.length) return;
-    const next = (i: number | null) => {
-      const k = i === null ? -1 : core.indexOf(i);
-      return core[(k + 1) % core.length]!;
-    };
-    setAt((i) => next(i));
-    const t = setInterval(() => setAt((i) => next(i)), TAKE_MS);
+    if (!playing || !n) return;
+    const next = (i: number | null) => (i === null ? 0 : (i + 1) % n);
+    setAt(next);
+    const t = setInterval(() => setAt(next), TAKE_MS);
     return () => clearInterval(t);
-  }, [playing, core]);
+  }, [playing, n]);
 
   /* A hand on the screen stops Play: a press, a key, a wheel. */
   useEffect(() => {
@@ -133,28 +130,20 @@ function Loaded({ material, dark, lead }: Props) {
     setPlaying(false);
     if (to === at) return;
     setAt(to);
-    setSaid(to === null ? `Home, ${n} components in ${S} groups` : `${takes[to]!.title}, ${takes[to]!.group}, ${to + 1} of ${n}`);
+    setSaid(to === null ? homeText : `${takes[to]!.title}, ${to + 1} of ${n}`);
   };
-  /** The part `by` along within its group, wrapping inside the group. From Home, the first or the last part. */
-  const within = (by: number) => {
-    if (at === null) return by > 0 ? 0 : n - 1;
-    const s = shelves[shelfOf(shelves, at)]!;
-    return s.from + ((((at - s.from + by) % s.count) + s.count) % s.count);
-  };
-  /** The first part of the group `by` groups along, wrapping. From Home, the first group or the last. */
-  const across = (by: number) => {
-    const k = at === null ? (by > 0 ? -1 : 0) : shelfOf(shelves, at);
-    return shelves[(((k + by) % S) + S) % S]!.from;
+  /** The place `by` along the cycle Home, take 0 … take n-1, wrapping. */
+  const along = (by: number) => {
+    const k = ((((at === null ? 0 : at + 1) + by) % (n + 1)) + n + 1) % (n + 1);
+    return k === 0 ? null : k - 1;
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
     const to: Record<string, number | null> = {
-      ArrowRight: within(1),
-      ArrowLeft: within(-1),
-      ArrowDown: across(1),
-      PageDown: across(1),
-      ArrowUp: across(-1),
-      PageUp: across(-1),
+      ArrowRight: along(1),
+      ArrowDown: along(1),
+      ArrowLeft: along(-1),
+      ArrowUp: along(-1),
       Home: null,
       End: n - 1,
     };
@@ -169,7 +158,6 @@ function Loaded({ material, dark, lead }: Props) {
   const bodyProps: PlayObjectBodyProps = {
     world,
     takes,
-    shelves,
     at,
     selector: {
       role: "slider",
@@ -178,14 +166,15 @@ function Loaded({ material, dark, lead }: Props) {
       "aria-valuemin": 0,
       "aria-valuemax": n,
       "aria-valuenow": at === null ? 0 : at + 1,
-      "aria-valuetext": take ? `${take.title}, ${take.group}, ${at! + 1} of ${n}` : `Home, ${n} components in ${S} groups`,
+      "aria-valuetext": take ? `${take.title}, ${at! + 1} of ${n}` : homeText,
       "aria-orientation": "horizontal",
       onKeyDown,
     },
     pick: go,
-    step: (by) => ({ type: "button", tabIndex: -1, "aria-label": by > 0 ? "Next in the group" : "Previous in the group", onClick: () => go(within(by)) }),
-    stepGroup: (by) => ({ type: "button", tabIndex: -1, "aria-label": by > 0 ? "Next group" : "Previous group", onClick: () => go(across(by)) }),
-    turn: (by) => go(within(by)),
+    step: (by) => ({ type: "button", tabIndex: -1, "aria-label": by > 0 ? "Next" : "Previous", onClick: () => go(along(by)) }),
+    index: { type: "button", tabIndex: -1, "aria-label": "Index", onClick: () => go(null) },
+    everything: { href: `#${material}/components`, tabIndex: -1, "aria-label": `Every component in ${world.name}` },
+    turn: (by) => go(along(by)),
     play: { type: "button", "aria-label": "Play", "aria-pressed": playing, onClick: () => setPlaying((p) => !p) },
     readout: {
       count: `${pad(at === null ? 0 : at + 1)} / ${pad(n)}`,
@@ -223,7 +212,7 @@ function Loaded({ material, dark, lead }: Props) {
         <PlayScreen material={material} dark={dark} shape={body.shape(compact)} label={`${take ? take.title : "Home"} ${where}`}>
           {take ? (
             <div className="flex h-full min-h-0">
-              {!compact && <Rail material={material} takes={takes} shelves={shelves} at={at!} open={go} />}
+              {!compact && <Rail material={material} takes={takes} total={total} at={at!} open={go} />}
               <div key={take.id} data-play-take={take.id} className="grid h-full min-w-0 flex-1 overflow-auto overscroll-contain p-6 sm:p-10">
                 <div className="m-auto grid w-full max-w-2xl min-w-0 justify-items-center">
                   <PreviewContext.Provider value="tile">
@@ -235,7 +224,7 @@ function Loaded({ material, dark, lead }: Props) {
               </div>
             </div>
           ) : (
-            <HomeView material={material} takes={takes} shelves={shelves} core={core} open={go} />
+            <HomeView material={material} takes={takes} total={total} groups={shelves.length} open={go} />
           )}
           {details && (
             <section id={`${id}-details`} aria-label={`About ${take ? take.title : world.name}`} className="litt-raised absolute inset-x-4 bottom-4 grid gap-2 rounded-surface p-5 text-fg">
@@ -256,125 +245,78 @@ function Loaded({ material, dark, lead }: Props) {
   );
 }
 
-/** The world's cover scene (systems/<world>.tsx), as the Systems page shows it: still, out of reach. */
-function Cover({ material }: { material: Material }) {
-  const { scenes, cover } = use(scenesOf(material));
-  const scene = scenes.find((s) => s.id === cover) ?? scenes[0];
-  if (!scene) return null;
-  return (
-    <div inert aria-hidden="true" className="pointer-events-none min-w-0 origin-top">
-      <scene.Render />
-    </div>
-  );
-}
-
 const RAIL_ROW =
   "litt-target flex h-control-sm w-full cursor-pointer items-center rounded-control px-2 text-left text-small " +
   "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
 
 /**
- * The menu, always there while a part shows (Nick, 2026-11-16): a slim rail on the screen's left, its groups in the
- * quiet ink and the group you are in open to its parts, the one showing in the ink. Under the hand or the keys it comes
- * to the full ink. A group's name opens its first part.
+ * The menu, always there while a part shows (Nick, 2026-11-16): a slim rail on the screen's left, the set in the quiet
+ * ink and the one showing in the ink, then a link to every component at its foot. Under the hand or the keys it comes
+ * to the full ink.
  */
-function Rail({ material, takes, shelves, at, open }: { material: Material; takes: Take[]; shelves: Shelf[]; at: number; open: (i: number) => void }) {
+function Rail({ material, takes, total, at, open }: { material: Material; takes: Take[]; total: number; at: number; open: (i: number) => void }) {
   const world = materialOf(material);
-  const here = shelfOf(shelves, at);
   return (
     <nav
-      aria-label={`Every group in ${world.name}`}
+      aria-label={`The set in ${world.name}`}
       data-play-rail=""
-      className="w-48 shrink-0 overflow-auto overscroll-contain border-r border-line px-2 py-4 text-fg-subtle hover:text-fg-muted focus-within:text-fg-muted"
+      className="flex w-48 shrink-0 flex-col gap-4 overflow-auto overscroll-contain border-r border-line px-2 py-4 text-fg-subtle hover:text-fg-muted focus-within:text-fg-muted"
     >
       <ul className="grid">
-        {shelves.map((s, k) => (
-          <li key={s.group}>
-            <button type="button" aria-current={k === here ? "true" : undefined} className={RAIL_ROW + (k === here ? " text-fg" : "")} onClick={() => open(s.from)}>
-              {s.group}
+        {takes.map((t, i) => (
+          <li key={t.id}>
+            <button type="button" aria-current={i === at ? "page" : undefined} className={RAIL_ROW + (i === at ? " text-fg" : "")} onClick={() => open(i)}>
+              {t.title}
             </button>
-            {k === here && (
-              <ul className="grid">
-                {takes.slice(s.from, s.from + s.count).map((t, j) => (
-                  <li key={t.id}>
-                    <button
-                      type="button"
-                      aria-current={s.from + j === at ? "page" : undefined}
-                      className={RAIL_ROW + " pl-5 " + (s.from + j === at ? "text-fg" : "")}
-                      onClick={() => open(s.from + j)}
-                    >
-                      {t.title}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
           </li>
         ))}
       </ul>
+      <a href={`#${material}/components`} className={RAIL_ROW + " mt-auto justify-between gap-2"}>
+        Every component
+        <span className="text-caption tabular-nums">{total}</span>
+      </a>
     </nav>
   );
 }
 
 const ROW =
-  "litt-target flex h-control-sm w-full cursor-pointer items-center rounded-control px-2 text-left text-small text-fg-muted " +
-  "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
+  "litt-target grid w-full cursor-pointer content-center gap-0.5 rounded-control px-3 py-2 text-left " +
+  "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
 /**
- * Home, inside the screen (Nick, 2026-11-15, after design.how's systems): every component on its shelf in a sidebar that
- * is always there, and beside it the world's name and line, the core set to start with and its cover scene. A person
- * chooses a group, then a part. Below md the index follows the introduction.
+ * Home, inside the screen (Nick, 2026-11-15, after design.how's systems): the world's name and line, then the set to
+ * pick from, each part with its one line, then the way to every component in the world.
  */
-function HomeView({ material, takes, shelves, core, open }: { material: Material; takes: Take[]; shelves: Shelf[]; core: number[]; open: (i: number) => void }) {
+function HomeView({ material, takes, total, groups, open }: { material: Material; takes: Take[]; total: number; groups: number; open: (i: number) => void }) {
   const world = materialOf(material);
   return (
-    <div data-play-take="home" className="grid h-full min-h-0 overflow-auto overscroll-contain md:grid-cols-[15rem_minmax(0,1fr)] md:overflow-hidden">
-      <nav
-        aria-label={`Every component in ${world.name}`}
-        data-play-index=""
-        className="order-2 grid content-start gap-6 border-line p-4 md:order-1 md:overflow-auto md:overscroll-contain md:border-r md:py-6"
-      >
-        {shelves.map((s) => (
-          <section key={s.group} data-shelf={s.group} aria-labelledby={`shelf-${material}-${s.group}`} className="grid content-start gap-1">
-            <h3 id={`shelf-${material}-${s.group}`} className="flex items-baseline justify-between px-2 text-small text-fg">
-              {s.group}
-              <span className="text-caption font-normal text-fg-subtle tabular-nums">{s.count}</span>
-            </h3>
-            <ul className="grid">
-              {takes.slice(s.from, s.from + s.count).map((t, k) => (
-                <li key={t.id}>
-                  <button type="button" className={ROW} onClick={() => open(s.from + k)}>
-                    {t.title}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+    <div data-play-take="home" className="grid h-full min-h-0 content-start gap-8 overflow-auto overscroll-contain p-6 sm:p-10">
+      <header className="grid gap-2">
+        <h2 className="text-h3 text-fg">{world.name}</h2>
+        <p className="max-w-[48ch] text-body text-fg-muted">{world.tagline}</p>
+        <p className="max-w-[56ch] text-small text-fg-subtle">{world.audience}</p>
+      </header>
+      <nav aria-label={`The set in ${world.name}`} data-play-index="" className="-mx-3">
+        <ul className="grid gap-x-6 md:grid-cols-2 lg:grid-cols-3">
+          {takes.map((t, i) => (
+            <li key={t.id} className="grid min-w-0">
+              <button type="button" aria-describedby={`set-${material}-${t.id}`} className={ROW} onClick={() => open(i)}>
+                <span className="text-small text-fg">{t.title}</span>
+                <span id={`set-${material}-${t.id}`} aria-hidden="true" className="line-clamp-2 text-caption text-fg-subtle">
+                  {t.lede}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </nav>
-      <div className="order-1 grid min-w-0 content-start gap-8 p-6 md:order-2 md:overflow-auto md:overscroll-contain sm:p-10">
-        <header className="grid gap-2">
-          <h2 className="text-h3 text-fg">{world.name}</h2>
-          <p className="max-w-[48ch] text-body text-fg-muted">{world.tagline}</p>
-          <p className="max-w-[56ch] text-small text-fg-subtle">{world.audience}</p>
-        </header>
-        <section aria-labelledby={`start-${material}`} className="grid gap-3">
-          <h3 id={`start-${material}`} className="text-small text-fg">
-            Start with
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {core.map((i) => (
-              <Button key={takes[i]!.id} size="sm" variant="secondary" onClick={() => open(i)}>
-                {takes[i]!.title}
-              </Button>
-            ))}
-          </div>
-        </section>
-        <div className="max-w-xl">
-          <Suspense fallback={null}>
-            <Cover material={material} />
-          </Suspense>
-        </div>
-      </div>
+      <a
+        href={`#${material}/components`}
+        data-play-everything=""
+        className="justify-self-start rounded-control text-small text-fg underline decoration-line-strong underline-offset-4 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      >
+        Every component, {total} in {groups} groups
+      </a>
     </div>
   );
 }

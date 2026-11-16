@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * The overview's wall, checked from a build: every tile mounted, on the desktop and a phone, in light and dark.
+ * The overview's wall and each world's gallery view (#<world>/components), checked from a build: every tile mounted, on
+ * the desktop and a phone, in light and dark.
  *
  *   npm run build && npm run test:wall
  *   node scripts/wall.mjs --dist dist
- *   node scripts/wall.mjs --shard 1/2    every other material, size and theme (CI runs two shards at once)
+ *   node scripts/wall.mjs --shard 1/2    every other run (CI runs two shards at once)
  *
  * The wall is the gallery's own, Flat (plans/019: each world shows only itself, on its own pages). Flat's own accent is
  * the ink that checkboxes and switches fill with too, so it runs in Blue 4 and then pink, written on <body> after the
@@ -25,6 +26,10 @@
  * - the page has more than one main or h1, two landmarks share a name, or a tile's name is not its h2 (so the headings
  *   inside a component sit under it),
  * - the page throws.
+ *
+ * Each world's gallery view (in the world's own look) fails on the same claims, but for the wall's world tiles: its
+ * tiles are exactly the component pages in the world, each tile's name is its h3 (under its group's h2), no more than one
+ * accent fill, none within a screen of another, nothing sideways or empty, one main and one h1.
  *
  * Needs Playwright, which is not a dependency of the gallery: it looks in A11Y_TOOLS (as CI sets up), then here, then
  * in the global Playwright of Claude's cloud container, as a11y.mjs does.
@@ -77,8 +82,8 @@ const server = http.createServer((req, res) => {
 }).listen(0);
 const port = server.address().port;
 
-/* Read in the page: the accent fills, sideways scroll and empty tiles across every tile. */
-function inspect() {
+/* Read in the page: the accent fills, sideways scroll and empty tiles across every tile. `heading` is a tile name's tag. */
+function inspect(heading) {
   const probe = document.createElement("div");
   probe.style.background = "var(--accent)";
   document.body.append(probe);
@@ -110,7 +115,7 @@ function inspect() {
   const twice = [...new Set(landmarks.filter((n, i) => landmarks.indexOf(n) !== i))];
   const mains = [...document.querySelectorAll("main, [role=main]")].filter(shown).length;
   const h1s = [...document.querySelectorAll("h1")].filter(shown).length;
-  const names = tiles.filter((t) => t.querySelector(":scope > h2") === null).map((t) => name(t));
+  const names = tiles.filter((t) => t.querySelector(`:scope > ${heading}`) === null).map((t) => name(t));
   return { material: document.documentElement.dataset.material, tileNames: tiles.map((t) => t.dataset.tile), count: tiles.length, fills, close, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
 }
 
@@ -123,12 +128,52 @@ const ATTRIBUTE = { press: undefined, flat: "flat", device: "device", plain: "pl
    in Blue 4 and then pink, written on <body> after load as the Customize panel once did. */
 const RUNS = [["flat", "blue4"], ["flat", "pink"]];
 const ACCENT_ATTRIBUTE = { blue4: "blue", pink: "pink" };
-/* Every material, size and theme, dealt round-robin across --shard so each shard gets some of each. */
-const COMBOS = RUNS.flatMap(([material, accent]) => [[1440, 900, "desktop"], [390, 844, "phone"]].flatMap(([width, height, label]) =>
-  ["light", "dark"].map((theme) => ({ material, accent, width, height, label, theme }))))
-  .filter((_, i) => i % shards === shard - 1);
-for (const { material, accent, width, height, label, theme } of COMBOS) {
-  {
+const SIZES = [[1440, 900, "desktop"], [390, 844, "phone"]];
+/* Every run, the wall's and then each world's gallery view, dealt round-robin across --shard so each shard gets some of each. */
+const ALL = [
+  ...RUNS.flatMap(([material, accent]) => SIZES.flatMap(([width, height, label]) => ["light", "dark"].map((theme) => ({ material, accent, width, height, label, theme })))),
+  ...Object.keys(ATTRIBUTE).flatMap((world) => SIZES.flatMap(([width, height, label]) => ["light", "dark"].map((theme) => ({ world, width, height, label, theme })))),
+];
+const COMBOS = ALL.filter((_, i) => i % shards === shard - 1);
+const worldRuns = COMBOS.filter((c) => c.world);
+for (const { world, material, accent, width, height, label, theme } of COMBOS) {
+  if (world) {
+    const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
+    const pg = await ctx.newPage();
+    const errors = [];
+    pg.on("pageerror", (e) => errors.push(String(e)));
+    await pg.goto(`http://localhost:${port}/index.html#${world}/components`, { waitUntil: "networkidle" });
+    /* Flat's own accent is the ink that checkboxes and switches fill with too, so its view is counted in Blue 4, as the
+       wall is. */
+    if (world === "flat") await pg.evaluate(() => (document.body.dataset.accent = "blue"));
+    await pg.evaluate(() => document.fonts.ready);
+    let end = await pg.evaluate(() => document.documentElement.scrollHeight);
+    for (let y = 0; y < end; y += Math.round(height * 0.8)) {
+      await pg.evaluate((y) => scrollTo(0, y), y);
+      await pg.waitForTimeout(120);
+      end = await pg.evaluate(() => document.documentElement.scrollHeight);
+    }
+    await pg.waitForLoadState("networkidle");
+    await pg.waitForTimeout(800);
+    const r = await pg.evaluate(inspect, "h3");
+    const where = `#${world}/components · ${theme} · ${label}`;
+    if (r.material !== ATTRIBUTE[world]) problems.push(`${where}: data-material on <html> is ${r.material ?? "absent"}, expected ${ATTRIBUTE[world] ?? "absent"}`);
+    const outside = r.tileNames.filter((n) => !WALL_PAGES.some((p) => p.id === n && onWall(p, world)));
+    if (outside.length) problems.push(`${where}: tiles for pages outside ${world}: ${outside.join(", ")}`);
+    const absent = WALL_PAGES.filter((p) => onWall(p, world) && !r.tileNames.includes(p.id)).map((p) => p.id);
+    if (absent.length) problems.push(`${where}: pages in ${world} with no tile: ${absent.join(", ")}`);
+    if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, a view allows one: ${r.fills.join(", ")}`);
+    for (const c of r.close) problems.push(`${where}: two accent fills within one screen (R6): ${c}`);
+    if (r.pageWide) problems.push(`${where}: the page scrolls sideways`);
+    if (r.mains !== 1) problems.push(`${where}: ${r.mains} main landmarks`);
+    if (r.h1s !== 1) problems.push(`${where}: ${r.h1s} h1s`);
+    if (r.twice.length) problems.push(`${where}: landmarks share a name: ${r.twice.join(", ")}`);
+    if (r.names.length) problems.push(`${where}: tiles without their name as an h3: ${r.names.join(", ")}`);
+    if (r.sideways.length) problems.push(`${where}: tiles scroll sideways: ${r.sideways.join(", ")}`);
+    if (r.empty.length) problems.push(`${where}: tiles draw nothing: ${r.empty.join(", ")}`);
+    for (const e of errors) problems.push(`${where}: ${e}`);
+    await ctx.close();
+  } else {
     const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
     const pg = await ctx.newPage();
     const errors = [];
@@ -145,7 +190,7 @@ for (const { material, accent, width, height, label, theme } of COMBOS) {
     }
     await pg.waitForLoadState("networkidle");
     await pg.waitForTimeout(800);
-    const r = await pg.evaluate(inspect);
+    const r = await pg.evaluate(inspect, "h2");
     count = r.count;
     const where = `${material} · ${accent} · ${theme} · ${label}`;
     if (r.material !== ATTRIBUTE[material]) problems.push(`${where}: data-material on <html> is ${r.material ?? "absent"}, expected ${ATTRIBUTE[material] ?? "absent"}`);
@@ -176,4 +221,5 @@ if (problems.length) {
   console.error(`\nwall: ${problems.length} problem${problems.length === 1 ? "" : "s"}.`);
   process.exit(1);
 }
-console.log(`wall${shards > 1 ? ` (shard ${shard}/${shards}, ${COMBOS.length} of ${RUNS.length * 4} runs)` : ""}: ${count} tiles, Press, Flat, Device, Plain and Rack (Flat in Blue 4 and pink, the others in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
+if (worldRuns.length) console.log(`wall: ${worldRuns.length} runs of the world gallery views (${[...new Set(worldRuns.map((c) => c.world))].join(", ")}), each in its own look, light and dark, desktop and phone: a tile for every component in the world and none outside it, at most one accent fill and none within a screen of another, nothing sideways or empty, one main and one h1.`);
+console.log(`wall${shards > 1 ? ` (shard ${shard}/${shards}, ${COMBOS.length} of ${ALL.length} runs)` : ""}: ${count} tiles, Press, Flat, Device, Plain and Rack (Flat in Blue 4 and pink, the others in their own), light and dark, desktop and phone: no tile for a page outside its world and a tile for every page in it, one accent fill on the wall and none within a screen of another, no world tile, nothing sideways or empty, one main and one h1, landmarks named apart.`);
