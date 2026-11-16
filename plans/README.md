@@ -26,7 +26,7 @@ honor its STOP conditions, and update your row when done.
 | 016  | [The parts move from Radix to UI SDK, one primitive at a time, after a pilot proves it, and nothing a reader sees changes](016-radix-to-ui-sdk.md) | P2 | L | PR #110 (Rack) merged | REJECTED (approach abandoned 2026-11-15: Nick chose no primitive library at all; 017 replaces it) |
 | 017  | [The parts stand on litt's own hand, with no Radix and no other primitive library, and nothing a reader sees, presses or hears changes](017-no-primitive-library.md) | P2 | XL | — (replaces 016) | TODO (phase 0 records today's behaviour; phase 1 is a pilot, then Nick's go) |
 | 018  | [Each world has an object of its own, and the Playground is that object, running the world](018-each-world-has-an-object.md) | P1 | XL | PR #114 merged (litt-principles) | IN PROGRESS (phase 1 done 2026-11-15: the contract, the bare body and Device's recorder; stopped for Nick's look and Decisions 1 to 4) |
-| 019  | [Six closed worlds, each its own player, docs and install](019-closed-worlds.md) | P1 | XL | 018 phase 1 | IN PROGRESS (phases 1 to 3 are gallery chrome; phase 4 waits on Nick's A or B) |
+| 019  | [Six closed worlds, each its own player, docs and install](019-closed-worlds.md) | P1 | XL | 018 phase 1 | IN PROGRESS (phases 1 to 4 done; phase 4 with shape A on 2026-11-16: a folder per world and an install per world at r/<world>/. Left: the taste line, Nick's through evolve.md) |
 | 020  | [The player shows a world's best, and its gallery shows everything](020-a-set-and-a-shelf.md) | P1 | M | 019 phases 1 to 3 | IN PROGRESS (2026-11-16) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)

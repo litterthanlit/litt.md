@@ -74,8 +74,12 @@ export function Start({ material }: { material?: Material }) {
         <Step
           n={2 + first}
           title="Add any part"
-          text="Every component installs with shadcn, on litt's own tokens, so your theme stays untouched."
-          paste={`npx shadcn@latest add ${ORIGIN}/r/button.json`}
+          text={
+            material
+              ? `Every component installs with shadcn, on litt's own tokens, so your theme stays untouched. From r/${material}/, a part brings ${materialOf(material).name}'s body alone, and ${materialOf(material).name}'s tokens.`
+              : "Every component installs with shadcn, on litt's own tokens, so your theme stays untouched."
+          }
+          paste={`npx shadcn@latest add ${ORIGIN}/r/${material ? `${material}/` : ""}button.json`}
           label="Add a component"
         />
         <Step
