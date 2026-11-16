@@ -63,9 +63,12 @@ const RULES = ["weight", "radius", "shadow", "color", "type", "motion", "other"]
    block sits into a control), such as calc(var(--radius-surface)-4px) for a cover set 4px into a card. */
 const INSETS = [2, 4, 8, 12, 16, 24];
 const concentricInset = (v, prefix) => {
-  const m = new RegExp(`^calc\\(var\\(--${prefix}radius-(?:control|surface)\\)-(\\d+)px\\)$`).exec(v);
+  const m = new RegExp(`^calc\\(var\\(--${prefix}(?:radius-(?:control|surface)|object-radius)\\)-(\\d+)px\\)$`).exec(v);
   return !!m && INSETS.includes(Number(m[1]));
 };
+/* A world's object (the Playground's, plans/018) takes --object-radius, the one radius past the scale (R9), and the
+   boxes set inside it take it less their inset, as above. */
+const objectRadius = (v, prefix) => v === `var(--${prefix}object-radius)`;
 /* Then the caps that keep a box from growing rounder than what it holds or what holds it. */
 const CONCENTRIC = [
   "min(var(--radius-control),calc(var(--control-sm)/2))", // a control that wraps (a field of tokens, a rule row): its
@@ -145,7 +148,7 @@ function lintGallery(files, root) {
       for (const m of line.matchAll(/\brounded(-[\w-]*\[[^\]\s]*\]|-[\w[\]().%-]+)?(?=[\s"'`]|$)/g)) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
-        if (CONCENTRIC.some((c) => v === `rounded-[${c}]`) || concentricInset(v.replace(/^rounded-\[(.*)\]$/, "$1"), "")) continue;
+        if (CONCENTRIC.some((c) => v === `rounded-[${c}]`) || concentricInset(v.replace(/^rounded-\[(.*)\]$/, "$1"), "") || objectRadius(v.replace(/^rounded-\[(.*)\]$/, "$1"), "")) continue;
         if (!/^rounded(-(t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(pill|none|control|surface)$/.test(v)) fail("radius", `${v}: use rounded-control (controls, rows, inputs), rounded-surface (cards, menus, dialogs, toasts) or rounded-pill (avatars, icon-only buttons)`);
       }
       if (/borderRadius\s*:\s*['"]?(?!0\b|999|9999|var\(--radius-(pill|control|surface)\))[\d.]/.test(line)) fail("radius", "borderRadius: use the radius tokens");
@@ -551,7 +554,7 @@ function checkToken(t, scope, add, isClassContext) {
   // radius
   if ((m = RADIUS_RE.exec(b))) {
     const rest = m[2];
-    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || CONCENTRIC_HOST.some((c) => rest === `[${c}]`) || concentricInset(rest.replace(/^\[(.*)\]$/, "$1"), "litt-") || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
+    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || CONCENTRIC_HOST.some((c) => rest === `[${c}]`) || concentricInset(rest.replace(/^\[(.*)\]$/, "$1"), "litt-") || objectRadius(rest.replace(/^\[(.*)\]$/, "$1"), "litt-") || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
     if (!ok && (rest !== undefined || isClassContext())) {
       add("radius", `${b}: ${HOST_ADVICE.radius}${rest === "full" ? ". rounded-full is rounded-litt-pill" : ""}`);
     }

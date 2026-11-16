@@ -3,17 +3,15 @@ import { Button } from "@/components/button";
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from "@/components/dialog";
 import { TextField } from "@/components/input";
 import { Select, SelectField, type SelectOption } from "@/components/select";
-import { DeviceProvider, MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
+import { DeviceProvider,} from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "select",
   title: "Select",
   lede: "One value from a short list.",
-  order: 2.5,
-  group: "Controls",
+  order: 2.06,
+  group: "Inputs",
   verbs: ["select", "open"],
   summary:
     "One value from a short list. You press the trigger, so it is a raised block, the secondary Button's, and it stays pressed while its list is open. The list is a tray of slats in glass, 44px each, with one gliding highlight, and the current slat lifted with a check. The list grows from the trigger and leaves again, and on a phone it stays anchored beside it.",
@@ -313,31 +311,6 @@ function PhoneDemo() {
   );
 }
 
-/* ---------- three bodies ---------- */
-
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-start gap-4 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <SelectField label="Role" options={ROLES} defaultValue="developer" />
-              <SelectField label="Hosting region" options={ROLES} placeholder="Choose a region" />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 /* ---------- the overview's tile ---------- */
 
 function RoleTile() {
@@ -400,14 +373,6 @@ export default function SelectPage() {
         <PhoneDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One select, one contract, a body per world. Press is a raised block with a window cut into its end, and a glass list with a tray cut into it: the options are slats, and the current slat is lifted out of the tray with a check. Flat is a grey pill and a plain chevron, and a list that is one solid grey sheet with no shadow or ring: words parted by space, the current one in a grey bubble, the title weight and a check. Device is an LCD readout with a pair of real keys at its end that step through the options without opening the list, and a list drawn as a screen: the current row is marked by a lamp, and the highlight switches from row to row with no glide. Rack is a value box in a 1px outline with a small square chevron key at its end, and a list that is an opaque outlined panel: thin rows, the current one filled with a check, there on the frame and gone on the frame. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

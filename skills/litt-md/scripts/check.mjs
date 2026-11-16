@@ -42,7 +42,9 @@
  *               device block maps every neutral and press token onto its --device-* twin, comes after Flat, sinks 2px
  *               and restates the focus ring and the data tints; pink and monochrome are restated on Device after it; reduced
  *               motion stills the key; the glass sets the mono, its ink reaches 7:1 and its placeholder 4.5:1, and the
- *               field's edge 3:1 on the body. Check 5 runs every pair again under Device, and check 8 holds its shadows.
+ *               field's edge 3:1 on the body. The recorder's dial ink reaches 4.5:1 on its dial and its signal red 3:1 on
+ *               the body and a plate, and its corners stay at most 32px. Check 5 runs every pair again under Device, and
+ *               check 8 holds its shadows (the object's cast straight down, the one cast past 3px).
  * 14. Plain:   data-material="plain" (proposals/plain.md). Every --plain-* value is defined in both themes; the plain
  *               block maps every neutral and its accent onto its --plain-* twin, comes after Device, is square, casts,
  *               blurs and lights nothing (a 1px ring at most), sinks and shrinks nothing, restates the focus ring and the
@@ -482,13 +484,16 @@ radiusFails.length ? radiusFails.forEach(fail) : ok(`corners are 0, ${rc}px, ${r
 // 8. Shadows: the depth ladder (R3) -----------------------------------------
 console.log("Shadows (the depth ladder)");
 const shadowFails = [];
-const cut = /^--(?:device-|rack-|heat-)?(?:tray-shade|cut-shade|field-shade|slot-shade|slot-fill-shade)$/;
-const raised = /^--(?:device-|rack-|heat-)?(?:block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift)$/;
+const cut = /^--(?:device-|rack-|heat-)?(?:tray-shade|cut-shade|field-shade|slot-shade|slot-fill-shade|dial-recess)$/;
+const raised = /^--(?:device-|rack-|heat-)?(?:block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift|dial-(?:lift|press))$/;
+/* The object's cast (plans/018; Nick, 2026-11-16): the one shadow allowed past R3's 3px, for a world's object alone. It
+   still falls straight down from the light: never sideways, never inset. */
+const objectCast = /^--(?:device-)?object-cast$/;
 const lit = (layer) => /rgba?\(\s*255\s*,\s*255\s*,\s*255\b/.test(layer) || /\bwhite\b/i.test(layer);
 for (const f of assetFiles) {
   const text = strip(read(f));
-  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--(?:device-|rack-|heat-)?(?:highlight|tray-shade|cut-shade|field-shade|slot(?:-fill)?-shade|block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift))\s*:\s*([^;}]+)/g)) {
-    const isCut = cut.test(m[1]), isRaised = raised.test(m[1]), isPress = isCut || isRaised;
+  for (const m of text.matchAll(/(box-shadow|--shadow-[\w-]+|--glow|--(?:device-|rack-|heat-)?(?:highlight|tray-shade|cut-shade|field-shade|slot(?:-fill)?-shade|block-(?:lift|press)|key-lift|cap-(?:lift|press)|plate-lift|dial-(?:lift|press|recess))|--(?:device-)?object-cast)\s*:\s*([^;}]+)/g)) {
+    const isCut = cut.test(m[1]), isRaised = raised.test(m[1]), isPress = isCut || isRaised, isObject = objectCast.test(m[1]);
     for (const layer of splitLayers(m[2])) {
       if (/^var\(/.test(layer) || layer === "none") continue;
       // Strip colors so only lengths remain, then read the first two lengths as x/y offsets.
@@ -497,7 +502,9 @@ for (const f of assetFiles) {
       const inset = lengths[0] === "inset";
       const nums = (inset ? lengths.slice(1) : lengths).map((n) => parseFloat(n));
       const [x = 0, y = 0, blur = 0, spread = 0] = nums;
-      if (isPress) {
+      if (isObject) {
+        if (inset || x !== 0 || y < 0) shadowFails.push(`${f}: the object's cast "${layer}" in ${m[1]} (straight down only: never sideways, up or inset)`);
+      } else if (isPress) {
         const bounded = x === 0 && (inset ? Math.abs(y) <= 1 && blur <= 2 : y >= 0 && y <= 3 && blur <= 6);
         if (!bounded) shadowFails.push(`${f}: ${isCut ? "sunken" : "raised"} layer "${layer}" in ${m[1]} (never sideways; a cast at most 3px down and 6px soft; an inset at most 1px and 2px soft)`);
         if (inset && lit(layer) && (isCut ? y > 0 : y < 0)) shadowFails.push(`${f}: "${layer}" in ${m[1]} lights the ${isCut ? "top edge of something cut" : "lower edge of something raised"} (R2)`);
@@ -725,6 +732,26 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
     for (const k of names) if (light.get(k) !== dark.get(k)) devFails.push(`${k} differs between the themes; a screen is the same in each`);
   }
   if ((decls(block(devRe)).get("--font-sans") || "") !== "var(--font-choice, var(--font-mono))") devFails.push("device: --font-sans must be var(--font-choice, var(--font-mono)), Device's full mono unless a face is chosen");
+}
+/* The recorder (plans/018; Nick, 2026-11-16): its dial in the opposite finish reads, its signal red is seen on the body
+   and on a plate, the device block maps every one, and the object's corners stay soft, not round: at most 32px. */
+{
+  const RECORDER = ["--dial", "--dial-ink", "--dial-lift", "--dial-press", "--dial-recess", "--signal", "--object-cast", "--object-radius", "--object-grain"];
+  const dev = devAt < 0 ? new Map() : decls(block(devRe));
+  for (const n of RECORDER) {
+    for (const [theme, map] of [["light", light], ["dark", dark]]) if (!map.has(devName(n))) devFails.push(`${theme}: ${devName(n)} is missing`);
+    if (dev.get(n) !== `var(${devName(n)})`) devFails.push(`the device block maps ${n} to ${dev.get(n) ?? "nothing"}, not var(${devName(n)})`);
+  }
+  for (const [theme, map] of [["light", light], ["dark", dark]]) {
+    const g = (n) => map.get(devName(n));
+    for (const [f, b, min, note] of [["--dial-ink", "--dial", 4.5, "a legend on the dial"], ["--signal", "--canvas", 3, "the signal light on the body"], ["--signal", "--surface-1", 3, "the signal light on a plate"]]) {
+      if (![g(f), g(b)].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { devFails.push(`${theme}: ${devName(f)} or ${devName(b)} is not a six-digit hex`); continue; }
+      const r = ratio(g(f), g(b));
+      if (r < min) devFails.push(`${theme}: ${devName(f)} on ${devName(b)} is ${r.toFixed(2)}:1, needs ${min}:1 (${note})`);
+    }
+    const radius = parseFloat(g("--object-radius") || "");
+    if (!(radius > 0 && radius <= 32)) devFails.push(`${theme}: --device-object-radius is ${g("--object-radius")}, must be a px length up to 32`);
+  }
 }
 devFails.length ? devFails.forEach(fail) : ok(`device: ${DEVICE_MAPPED.length} tokens mapped in both themes, after Flat, Blue 4, pink and mono restated, a 2px key, glass at 7:1 in the mono`);
 

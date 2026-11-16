@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "color-picker",
   title: "Color picker",
   lede: "One color, picked by eye or typed as hex.",
-  order: 3.9,
-  group: "Controls",
+  order: 2.09,
+  group: "Inputs",
   verbs: ["drag", "type", "select"],
   summary:
     "One color, kept as a hex string. A saturation and brightness area, a hue rail, the hex as text, an eyedropper where the browser has one, and optional swatches. The field opens it in a popover, a bottom sheet on a phone. The thumbs follow the pointer and the keys at once; only the popover moves, on the responsive tier.",

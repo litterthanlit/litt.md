@@ -23,8 +23,8 @@ export const meta: PageMeta = {
   id: "icons",
   title: "Icons",
   lede: "One set, drawn on one grid.",
-  order: 7.5,
-  group: "Controls",
+  order: 1.04,
+  group: "Actions",
   verbs: ["select"],
   summary:
     "Ninety-nine icons and the status mark, solid, drawn by hand on a 16-unit grid in the text color. A shape that encloses something is filled and its details are cut out of it, and a mark that is only a line is a 1.5 stroke with round caps and joins, so an icon weighs what a 14px word weighs. Each one fits one of four keylines, so a circle, a square and a box read the same size in a row. They are still: an icon never spins, pulses or draws itself in.",

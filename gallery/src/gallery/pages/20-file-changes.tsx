@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   id: "file-changes",
   title: "File changes",
   lede: "What an agent changed, to keep or undo file by file.",
-  order: 18.965,
+  order: 11.11,
   group: "Agents",
   verbs: ["press", "open"],
   summary:

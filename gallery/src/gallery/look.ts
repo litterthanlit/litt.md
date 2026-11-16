@@ -66,6 +66,8 @@ export type MaterialInfo = {
   tagline: string;
   /** Who the world is for, as the lede under the tagline. */
   audience: string;
+  /** The object the world is, in a word (plans/018): what the Playground draws round its screen, in the screen's name. */
+  object: string;
   /** The world as a system, in one line: what it is like, then who it is for. Under its card on the Systems page. */
   line: string;
   /** The block page (src/gallery/pages/30-*.tsx, meta.block) the world opens on, live at real size. */
@@ -91,6 +93,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "Helvetica Neue",
     tagline: "Lit from above. Objects you can hold.",
     audience: "Product UI, settings and dashboards. What the registry installs.",
+    object: "instrument",
     line: "Lit and solid, for product UI, settings and dashboards",
     hero: "dashboard",
     foundations: {
@@ -117,6 +120,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "Geist",
     tagline: "Grey is the object. Nothing casts.",
     audience: "Sites, portfolios and reading. What the gallery opens in.",
+    object: "page",
     line: "Grey and quiet, for sites, portfolios and reading",
     hero: "case-study",
     foundations: {
@@ -143,6 +147,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "Geist Mono",
     tagline: "Hardware. Keys, wells and LCD glass, every word in the mono.",
     audience: "Agents, terminals and tools.",
+    object: "recorder",
     line: "Keys and glass, for agents, terminals and tools",
     hero: "agent",
     foundations: {
@@ -169,6 +174,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "System",
     tagline: "No UI. A page that works.",
     audience: "Docs, forms, admin and internal tools: anything that should just work.",
+    object: "document",
     line: "Lines on paper, for docs, forms and tools that should just work",
     hero: "settings",
     foundations: {
@@ -195,6 +201,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "Inter",
     tagline: "An instrument. Grey to work in, and the colour is the music's.",
     audience: "Creative tools, editors and pro apps: screens full of parameters you touch all day.",
+    object: "module",
     line: "Grey panels and coloured clips, for creative tools and pro apps",
     hero: "insights",
     foundations: {
@@ -221,6 +228,7 @@ export const MATERIALS: readonly MaterialInfo[] = [
     face: "Saira",
     tagline: "A night menu. Black slabs, cream words, and amber on what you pick.",
     audience: "Games, sports, racing and live events: menus you drive with keys and screens that keep score.",
+    object: "menu",
     line: "Black slabs and one amber, for games and screens that keep score",
     hero: "usage",
     foundations: {
@@ -254,6 +262,15 @@ export const accentAttribute = (accent: Accent, material: Material) => accentOf(
 
 /** What the gallery opens in, and what Reset goes back to: Flat's own, so a visitor meets the material before the color. */
 export const GALLERY_LOOK: Look = { accent: "world", material: "flat", fun: false };
+/**
+ * The world an address is in (plans/019): each world is closed, so a page in it, #device or #device/button, shows only
+ * Device, in its own accent, face, shape and Calm, whatever was saved or linked. Every other page is the gallery's,
+ * Flat. index.html paints the first frame from a hand copy of this, which test:look runs against it.
+ */
+export function worldOfHash(hash: string): Material {
+  const first = hash.replace(/^#/, "").split("/")[0];
+  return (["press", "flat", "device", "plain", "rack", "heat"] as const).find((m) => m === first) ?? GALLERY_LOOK.material;
+}
 /** What the registry installs: tokens.css with no attribute (Press, Blue 4), and no <FunMode>. */
 export const REGISTRY_LOOK: Look = { accent: "world", material: "press", fun: false };
 /** Every look, in picker order: material, then its accents (its own first), then motion. */

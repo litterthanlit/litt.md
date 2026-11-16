@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   id: "cart",
   title: "Cart",
   lede: "What someone is about to buy, in a sheet.",
-  order: 21.4,
+  order: 12.04,
   group: "Commerce",
   verbs: ["press", "type", "open"],
   summary:

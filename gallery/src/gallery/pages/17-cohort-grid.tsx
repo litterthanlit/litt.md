@@ -5,8 +5,8 @@ export const meta: PageMeta = {
   id: "cohort-grid",
   title: "Cohort grid",
   lede: "Who stayed, week by week.",
-  order: 17.75,
-  group: "Data",
+  order: 10.11,
+  group: "Charts",
   summary:
     "Retention by signup week as a real table: a row per cohort, a column per period since signup, and in every cell the number with a dot in one data hue's four steps. It scrolls sideways inside its own box and never moves.",
   tiers: [],

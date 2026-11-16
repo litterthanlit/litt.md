@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   id: "carousel",
   title: "Carousel",
   lede: "A row of slides that scrolls sideways.",
-  order: 15.07,
+  order: 7.03,
   group: "Layout",
   verbs: ["drag", "press"],
   summary:

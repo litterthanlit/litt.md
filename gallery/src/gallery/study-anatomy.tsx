@@ -15,7 +15,7 @@ import type { PageStudy } from "./kit";
 
 /** The stage box of `Stage`, so the object sits where a stage's demo does. */
 export const STAGE_BOX =
-  "litt-raised relative grid overflow-visible rounded-surface p-4 min-[24rem]:p-8 sm:p-12 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none";
+  "litt-raised relative grid overflow-visible rounded-surface text-fg p-4 min-[24rem]:p-8 sm:p-12 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none";
 
 /** The wrapper every drawing of the object shares, in Anatomy and under each material, so it renders the same. */
 export const OBJECT_WRAP = "relative grid min-w-0 place-items-center";
@@ -118,7 +118,8 @@ export function Anatomy({ object, parts, onObjectWidth }: { object: ReactNode; p
     <div className="grid gap-4">
       <div ref={stage} className={STAGE_BOX + " min-h-72 place-items-center"}>
         <div ref={wrap} className={FILL_WRAP}>{object}</div>
-        {/* The labels hold still and hidden until they are measured. */}
+        {/* The labels hold still and hidden until they are measured. Each carries the panel's own surface, so one placed
+            past the panel's edge still reads (a Device panel is dark glass in a light body). */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 max-sm:hidden">
           {parts.map((p, i) => {
             const c = placed.get(i);
@@ -127,7 +128,7 @@ export function Anatomy({ object, parts, onObjectWidth }: { object: ReactNode; p
                 key={p.name}
                 data-callout-label
                 style={c ? { top: c.ly, left: c.lx, translate: "0 -50%" } : undefined}
-                className={"absolute flex items-baseline gap-2 whitespace-nowrap text-caption text-fg-muted " + (c ? "" : "invisible")}
+                className={"absolute flex items-baseline gap-2 whitespace-nowrap rounded-control bg-surface-1 px-1 text-caption text-fg-muted " + (c ? "" : "invisible")}
               >
                 <span className="tabular-nums text-fg-subtle">{c?.n ?? ""}</span>
                 {p.name}

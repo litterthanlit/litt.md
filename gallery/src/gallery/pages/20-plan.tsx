@@ -10,7 +10,7 @@ export const meta: PageMeta = {
   id: "plan",
   title: "Plan",
   lede: "An agent's steps, ticked off as it works.",
-  order: 18.95,
+  order: 11.07,
   group: "Agents",
   verbs: ["watch"],
   summary:

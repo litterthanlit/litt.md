@@ -1,15 +1,12 @@
 import { Tag, type TagHue, type TagStatus } from "@/components/tag";
 import { TokenInput } from "@/components/token-input";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "tag",
   title: "Tag",
   lede: "A small label that names, files or reports.",
-  order: 6, group: "Controls",
+  order: 3.08, group: "Selection",
   summary:
     "A small label (a raised block in Press, a grey pill in Flat, an engraved plate in Device) that names a thing, files it under a category or reports its state. A status tag colors its text, never the fill, and always says the status in words. A category can take one of the five data hues. A value in a field, one you can lift back out, is a raised tag. Nothing about it moves.",
   tiers: [],
@@ -120,7 +117,7 @@ const DEPLOYS: { site: string; env: string; status: TagStatus; label: string; wh
 
 function DeploysDemo() {
   return (
-    <ul aria-label="Recent deploys" className="w-full max-w-2xl rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
+    <ul aria-label="Recent deploys" className="w-full max-w-2xl min-w-0 rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
       {DEPLOYS.map((d) => (
         <li
           key={d.site}
@@ -175,37 +172,6 @@ function CategoriesDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center justify-items-start gap-4 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <div className="flex flex-wrap gap-2">
-                <Tag>Framer</Tag>
-                <Tag hue="amber">Finance</Tag>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Tag status="success">Live</Tag>
-                <Tag status="warning">In review</Tag>
-                <Tag status="danger">Failed</Tag>
-                <Tag status="neutral">Draft</Tag>
-              </div>
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function TagPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -251,14 +217,6 @@ export default function TagPage() {
         code="DeploysDemo"
       >
         <DeploysDemo />
-      </Stage>
-
-      <Stage
-        title="A body per world"
-        caption="One tag, one contract, a body per world. Press is a small raised block with a lit top edge, its word on the face. Flat is the word in a grey pill, nothing raised. Device is the word engraved in capitals on a small plate, and a status tag adds a lamp in its status color. Rack is a small square key: a hue tag is a clip, the tint with a mark edge and its text tone, and a status tag an outlined key with the status words. Each is drawn here whatever look the page is in; the words, and what a screen reader hears, are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="Tag" component={Tag} props={{ children: "In review" }} />

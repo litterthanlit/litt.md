@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "range-chart",
   title: "Range chart",
   lede: "A stretch of days, brushed by hand and read as one figure.",
-  order: 17.33,
-  group: "Data",
+  order: 10.03,
+  group: "Charts",
   verbs: ["drag", "press"],
   summary:
     "One quantity over time as a barcode of thin bars, its segments and their shares in a tray above, and a range you brush by hand: drag across the bars, drag either cap, or drag the whole span. The edges follow the pointer one to one and settle on a bar or a segment start on the responsive tier; the segment the range matches is raised, and the total of what is brushed rolls as you go, its last group in the quiet ink. In fun mode the span can be thrown, and the bars it sweeps rise.",

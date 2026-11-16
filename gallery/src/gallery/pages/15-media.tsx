@@ -9,7 +9,7 @@ export const meta: PageMeta = {
   id: "media",
   title: "Media",
   lede: "One picture in a frame that keeps its shape.",
-  order: 15.05,
+  order: 7.02,
   group: "Layout",
   verbs: ["press"],
   summary:

@@ -171,6 +171,17 @@
   --glass-blur: 20px;
   --glass-saturate: 140%;
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* A world's object (the Playground's, plans/018): its corners, its cast, its grain, its dial and its signal light.
+     Outside Device the object is a surface like any other; Device's block below gives the recorder its own. */
+  --object-radius: var(--radius-surface);
+  --object-cast: var(--plate-lift);
+  --object-grain: 0;
+  --dial: var(--cap);
+  --dial-ink: var(--fg-muted);
+  --dial-lift: var(--cap-lift);
+  --dial-press: var(--cap-press);
+  --dial-recess: var(--tray-shade);
+  --signal: var(--danger);
 }
 
 @media (min-width: 40rem) {
@@ -290,6 +301,19 @@
   --device-cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.3), 0 0.5px 1px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.14);
   --device-cap-grip: rgba(0, 0, 0, 0.24);
   --device-engrave: 0 1px 0 rgba(255, 255, 255, 0.6);
+  /* Device's object, the recorder (plans/018; Nick, 2026-11-16: "as polished as my components repo"): the dial in the
+     body's opposite finish, black on the light body; a red that only signals (the playhead, a light that fires), never
+     a fill; the object's deep cast and soft corners, an exception to R3's 3px cast and R9's cap for the object alone;
+     and how strongly the plate's grain shows. */
+  --device-dial: #1c1d21;
+  --device-dial-ink: #d6d8dc;
+  --device-dial-lift: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 2px 0 0 rgba(0, 0, 0, 0.85), 0 3px 6px -3px rgba(0, 0, 0, 0.5);
+  --device-dial-press: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 0 0 transparent, 0 1px 2px -1px rgba(0, 0, 0, 0.45);
+  --device-dial-recess: inset 0 1px 2px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(0, 0, 0, 0.5);
+  --device-signal: #d8343a;
+  --device-object-cast: 0 1px 2px rgba(0, 0, 0, 0.1), 0 18px 36px -18px rgba(0, 0, 0, 0.28), 0 60px 100px -50px rgba(0, 0, 0, 0.38);
+  --device-object-radius: 28px;
+  --device-object-grain: 0.07;
   /* Device's screens (proposals/device.md): panels (.litt-raised) and overlays (.litt-glass) are dark LCD screens set into
      the body, the same in every theme. Check 5 runs every pair on them too. */
   --device-screen-canvas: #111214;
@@ -712,6 +736,15 @@
   --device-cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.8), 0 0.5px 1px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
   --device-cap-grip: rgba(255, 255, 255, 0.18);
   --device-engrave: 0 -1px 0 rgba(0, 0, 0, 0.6);
+  --device-dial: #e3e5e9;
+  --device-dial-ink: #26282c;
+  --device-dial-lift: inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 2px 0 0 rgba(0, 0, 0, 0.7), 0 3px 6px -3px rgba(0, 0, 0, 0.8);
+  --device-dial-press: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 0 0 transparent, 0 1px 2px -1px rgba(0, 0, 0, 0.75);
+  --device-dial-recess: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.07);
+  --device-signal: #ff5c62;
+  --device-object-cast: 0 1px 2px rgba(0, 0, 0, 0.5), 0 18px 36px -18px rgba(0, 0, 0, 0.7), 0 60px 100px -50px rgba(0, 0, 0, 0.9);
+  --device-object-radius: 28px;
+  --device-object-grain: 0.06;
   /* Device's screens (proposals/device.md): panels (.litt-raised) and overlays (.litt-glass) are dark LCD screens set into
      the body, the same in every theme. Check 5 runs every pair on them too. */
   --device-screen-canvas: #111214;
@@ -1098,6 +1131,15 @@
     --device-cap-press: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(0, 0, 0, 0.8), 0 0.5px 1px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4);
     --device-cap-grip: rgba(255, 255, 255, 0.18);
     --device-engrave: 0 -1px 0 rgba(0, 0, 0, 0.6);
+    --device-dial: #e3e5e9;
+    --device-dial-ink: #26282c;
+    --device-dial-lift: inset 0 1px 0 rgba(255, 255, 255, 1), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 2px 0 0 rgba(0, 0, 0, 0.7), 0 3px 6px -3px rgba(0, 0, 0, 0.8);
+    --device-dial-press: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 0 0 transparent, 0 1px 2px -1px rgba(0, 0, 0, 0.75);
+    --device-dial-recess: inset 0 1px 2px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(0, 0, 0, 0.07);
+    --device-signal: #ff5c62;
+    --device-object-cast: 0 1px 2px rgba(0, 0, 0, 0.5), 0 18px 36px -18px rgba(0, 0, 0, 0.7), 0 60px 100px -50px rgba(0, 0, 0, 0.9);
+    --device-object-radius: 28px;
+    --device-object-grain: 0.06;
     /* Device's screens (proposals/device.md): panels (.litt-raised) and overlays (.litt-glass) are dark LCD screens set into
        the body, the same in every theme. Check 5 runs every pair on them too. */
     --device-screen-canvas: #111214;
@@ -1680,6 +1722,16 @@
   --label-case: uppercase;
   --label-tracking: 0.08em;
   --engrave: var(--device-engrave);
+  /* The recorder (plans/018): its dial in the opposite finish, its signal red, its deep cast, soft corners and grain. */
+  --dial: var(--device-dial);
+  --dial-ink: var(--device-dial-ink);
+  --dial-lift: var(--device-dial-lift);
+  --dial-press: var(--device-dial-press);
+  --dial-recess: var(--device-dial-recess);
+  --signal: var(--device-signal);
+  --object-cast: var(--device-object-cast);
+  --object-radius: var(--device-object-radius);
+  --object-grain: var(--device-object-grain);
 
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
   --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));

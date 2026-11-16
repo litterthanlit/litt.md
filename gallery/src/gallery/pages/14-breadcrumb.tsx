@@ -9,8 +9,8 @@ export const meta: PageMeta = {
   id: "breadcrumb",
   title: "Breadcrumb",
   lede: "Where a page sits.",
-  order: 14.5,
-  group: "Layout",
+  order: 6.02,
+  group: "Navigation",
   verbs: ["open"],
   summary:
     "Where a page sits, with a slash between the levels and the current page in the foreground. A long trail folds its middle into a menu, and a phone shows the last two levels.",

@@ -8,8 +8,8 @@
  * It fails when:
  * - a look does not survive its own link, or anything but its spellings (and the links from before decision 14) reads as a look,
  * - the address keeps more than the look on a new page entry, or loses another parameter when the look changes,
- * - index.html's scripts before #root paint another accent than look.ts and the saved choices give, for a link, a
- *   saved accent, both or neither,
+ * - index.html's scripts before #root paint anything but the address's world in its own accent (worldOfHash in look.ts),
+ *   whatever is saved or linked (plans/019: each world is closed),
  * - tokens.css answers a data-accent that ACCENTS does not name, or ACCENTS names one tokens.css does not answer,
  * - a look's Copy setup asks for an edit it does not need, or misses one it does.
  */
@@ -92,66 +92,23 @@ function paint(search, saved, hash = "") {
   for (const s of scripts) vm.runInContext(s, context);
   return `${dataset.accent ?? "none"}/${rootDataset.material ?? "press"}`;
 }
-/** What look.ts says the page shows, in paint()'s spelling. */
-const modelOf = (search, saved, hash = "") => {
-  const look = L.lookFromSearch(search) ?? {
-    accent: L.ACCENTS.some((a) => a.id === saved?.accent) ? saved.accent : L.GALLERY_LOOK.accent,
-    material: L.MATERIALS.some((m) => m.id === saved?.material) ? saved.material : L.GALLERY_LOOK.material,
-  };
-  const material = /^#(press|flat|device|plain|rack|heat)$/.exec(hash)?.[1] ?? look.material;
-  return `${L.accentAttribute(look.accent, material) ?? "none"}/${material}`;
-};
-const firstPaint = [
-  ...L.LOOKS.map((l) => [`?look=${L.encodeLook(l)}`, null, `${L.accentAttribute(l.accent, l.material) ?? "none"}/${l.material}`]),
-  ["?look=mono", { accent: "blue4" }, "mono/press"],
-  ["?status=ready&look=pink", { accent: "blue4" }, "pink/press"],
-  ["?look=blue4", { accent: "pink", material: "flat" }, "none/press"],
-  ["?look=press", { accent: "pink", material: "flat" }, "none/press"],
-  ["?look=mono-flat", { accent: "pink" }, "none/flat"],
-  ["?look=blue4-device", null, "blue/device"],
-  ["?look=pink-flat-fun", { material: "press" }, "pink/flat"],
-  ["", { accent: "pink" }, "pink/flat"],
-  ["", { material: "press" }, "none/press"],
-  ["", { accent: "blue4" }, "blue/flat"],
-  ["", { accent: "blue4", material: "press" }, "none/press"],
-  ["", { accent: "mono", material: "press" }, "mono/press"],
-  ["?look=PINK", { accent: "pink" }, "pink/flat"],
-  ["?look=green", { accent: "pink" }, "pink/flat"],
-  ["?look=pink-fun-x", null, "none/flat"],
-  ["?look=pink-device", { material: "flat" }, "pink/device"],
-  ["?look=mono", { material: "device" }, "mono/press"],
-  ["", { material: "device" }, "none/device"],
-  ["", { accent: "mono", material: "device" }, "mono/device"],
-  ["", { accent: "pink", material: "device" }, "pink/device"],
-  ["", { material: "rack" }, "none/rack"],
-  ["", { accent: "blue4", material: "rack" }, "blue/rack"],
-  ["", { material: "heat" }, "none/heat"],
-  ["", { accent: "pink", material: "heat" }, "pink/heat"],
-  ["?look=blue4-flat-device", { material: "device" }, "none/device"],
-  ["", null, "none/flat"],
-];
-check(scripts.length >= 2, `index.html paints with ${scripts.length} scripts before #root`);
-for (const [search, saved, want] of firstPaint) {
-  const got = paint(search, saved);
-  const model = modelOf(search, saved);
-  check(got === want && model === want, `"${search}" with ${saved ? JSON.stringify(saved) : "nothing"} saved paints ${want} (index.html: ${got}, look.ts: ${model})`);
-}
-/* A world page writes its material, and the accent follows the world: asked for stays asked for, the world's own stays its own. */
-for (const [search, saved, hash, want] of [
-  ["", { accent: "mono" }, "#device", "mono/device"],
-  ["", { accent: "mono" }, "#press", "mono/press"],
-  ["", null, "#device", "none/device"],
-  ["", null, "#plain", "none/plain"],
-  ["", { accent: "mono" }, "#plain", "mono/plain"],
-  ["?look=pink-flat", null, "#rack", "pink/rack"],
-  ["?look=heat", null, "", "none/heat"],
-  ["", null, "#heat", "none/heat"],
-  ["", { accent: "blue4", material: "flat" }, "#press", "none/press"],
-  ["?look=pink-flat", null, "#device", "pink/device"],
-]) {
-  const got = paint(search, saved, hash), model = modelOf(search, saved, hash);
-  check(got === want && model === want, `${hash} with "${search}" and ${saved ? JSON.stringify(saved) : "nothing"} saved paints ${want} (index.html: ${got}, look.ts: ${model})`);
-}
+/* Each world is closed (plans/019): whatever was saved or linked, the first paint is the address's world, in its own
+   accent (no data-accent), and every other page the gallery's, Flat. look.ts's worldOfHash says which. */
+const modelOf = (hash) => `none/${L.worldOfHash(hash)}`;
+const saves = [null, { accent: "pink" }, { accent: "blue4", material: "press" }, { accent: "mono", material: "device" }, { material: "heat" }, { radius: 28, face: { id: "x", stack: "serif" } }];
+const links = ["", ...L.LOOKS.map((l) => `?look=${L.encodeLook(l)}`), "?look=blue4", "?look=PINK", "?look=pink-fun-x"];
+const hashes = ["", "#overview", "#press", "#flat", "#device", "#plain", "#rack", "#heat", "#device/button", "#rack/select", "#playground/device", "#button", "#heat-x", "#devices"];
+check(scripts.length >= 1, `index.html paints with ${scripts.length} scripts before #root`);
+let firstPaintOk = 0;
+for (const hash of hashes)
+  for (const saved of saves)
+    for (const search of links) {
+      const got = paint(search, saved, hash), want = modelOf(hash);
+      if (got === want) firstPaintOk++;
+      else check(false, `${hash || "no hash"} with "${search}" and ${saved ? JSON.stringify(saved) : "nothing"} saved paints ${want} (index.html: ${got})`);
+    }
+check(firstPaintOk === hashes.length * saves.length * links.length, `${firstPaintOk} first paints, every one the address's world in its own accent, whatever was saved or linked`);
+check(L.worldOfHash("#device/button") === "device" && L.worldOfHash("#devices") === "flat" && L.worldOfHash("") === "flat" && L.worldOfHash("#press") === "press", "worldOfHash reads the world from the address's first part, and Flat elsewhere");
 
 /* ---------- the accents tokens.css answers ---------- */
 const answered = new Set([...read("../skills/litt-md/assets/tokens.css").matchAll(/\[data-accent="([^"]+)"\]/g)].map((m) => m[1]));

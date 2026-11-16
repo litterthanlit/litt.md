@@ -13,12 +13,11 @@
  * - The rail's links are anchors on the page's own route: the hash is the route here, so a click scrolls and focuses
  *   the section's title and never writes the hash.
  */
-import { lazy, Suspense, use, useEffect, useMemo, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
+import { lazy, Suspense, use, useMemo, useSyncExternalStore, type ComponentType, type ReactNode } from "react";
 import { Button } from "@/components/button";
 import { Framed } from "@/components/framed";
 import { DeviceProvider } from "@/motion";
 import { AppFrame } from "./kit";
-import { useCustomize } from "./customize-state";
 import { lookSetup, materialOf, type Material } from "./look";
 import { onlyIn } from "./registry";
 import { CopyButton } from "./docs/copy";
@@ -159,7 +158,7 @@ function Rail({ material, anchors }: { material: Material; anchors: Anchor[] }) 
             {anchors.map((a) => (
               <li key={a.id}>
                 <a
-                  href={`#${material}`}
+                  href={`#${material}/about`}
                   onClick={(e) => {
                     e.preventDefault();
                     goTo(a);
@@ -215,7 +214,7 @@ function OnlyHere({ material }: { material: Material }) {
         <ul data-only-here-parts aria-label={`Parts of ${world.name}`} className="-mx-3 flex flex-wrap gap-1">
           {parts.map((p) => (
             <li key={p.id}>
-              <a href={`#${p.id}`} className={LINK}>
+              <a href={`#${material}/${p.id}`} className={LINK}>
                 {p.title}
               </a>
             </li>
@@ -313,13 +312,7 @@ function SystemBody({ material, header }: { material: Material; header: ReactNod
  * prompt for a coding agent.
  */
 export function World({ material }: { material: Material }) {
-  const { look, setLook } = useCustomize();
   const world = materialOf(material);
-  useEffect(() => {
-    if (look.material !== material) setLook({ material });
-    // Once per arrival: the page's material is the writer, so a later flip on the deck is left alone.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [material]);
   const header = (
     <header data-arrive="head" className="grid gap-6">
       <div className="grid gap-2">
@@ -334,8 +327,8 @@ export function World({ material }: { material: Material }) {
         <Button variant="primary" onClick={toStart}>
           Install
         </Button>
-        <a href="#systems" className={LINK + " h-control-md"}>
-          All systems
+        <a href={`#${material}`} className={LINK + " h-control-md"}>
+          Open the {world.object}
         </a>
       </div>
     </header>

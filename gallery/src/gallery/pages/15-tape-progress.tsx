@@ -8,8 +8,8 @@ export const meta: PageMeta = {
   id: "tape-progress",
   title: "Tape progress",
   lede: "How far along the work is, as tape moving between two reels.",
-  order: 15.43,
-  group: "Layout",
+  order: 8.03,
+  group: "Feedback",
   verbs: ["watch"],
   worlds: ["device"],
   summary:

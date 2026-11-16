@@ -1,101 +1,23 @@
 /**
- * The gallery shell: glass header, page list and the page. Only the Playground
- * tunes motion; the header's Customize panel tunes type and shape on every page.
+ * The gallery shell: glass header, page list and the page. Nothing is customized (plans/019): each world shows its
+ * own look, and every other page the gallery's.
  */
-import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type RefObject } from "react";
-import { MotionDialProvider, useDevice, useFun } from "@/motion";
-import { funPages, inWorld, pageRuns, pages, prefetchPages, settled, worlds, type PageEntry } from "./registry";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import { MotionDialProvider, useFun } from "@/motion";
+import { funPages, inWorld, pageRuns, pages, prefetchPages, worlds, type PageEntry } from "./registry";
 import { useRoute } from "./route";
 import { Arrival, useLinkOrigins } from "./arrival";
 import { Tooltip, TooltipProvider } from "@/components/tooltip";
 import { Avatar } from "@/components/avatar";
-import { Button } from "@/components/button";
 import { Segmented } from "@/components/segmented";
 import { CustomizeProvider, useCustomize, type ThemeChoice } from "./customize-state";
-import { LookNotice } from "./look-notice";
 import { NavPreview } from "./nav-preview";
 import { MenuButton, MobileMenu } from "./mobile-menu";
 import { SearchButton, SearchProvider } from "./search";
-import { MonitorIcon, MoonIcon, SlidersIcon, SunIcon } from "@/components/icons";
+import { MonitorIcon, MoonIcon, SunIcon } from "@/components/icons";
 
-/* The panel and the popover load on their own; until then the button holds its place. */
-const loadCustomize = () => import("./customize");
-const Customize = lazy(loadCustomize);
 /* The language canvas (#canvas) is not a page: it takes the whole window, and only loads when asked for. */
 const LanguageCanvas = lazy(() => import("../canvas/canvas"));
-
-/**
- * The Customize button, and the panel once it is wanted. The panel's chunk and the pickers it brings (27KB gzipped) are
- * not for the first paint, so they load later: the pointer or focus on the button fetches the chunk, and a press or the
- * visit settling mounts the panel. Until then a stand-in button wears the same name and place, and a press on it opens
- * the panel the moment it lands. The stand-in is swapped for the real button only after a press or at rest, never on
- * hover: a swap under the pointer, between press and release, loses the click.
- */
-/* Mounted with each copy of the stand-in: Suspense swaps it for its fallback copy before the real button arrives, and
-   a copy that mounts while the one before it held focus takes it back. */
-function TakeBackFocus({ had }: { had: RefObject<boolean> }) {
-  useLayoutEffect(() => {
-    if (had.current && (document.activeElement === document.body || document.activeElement === null))
-      document.getElementById("customize-trigger")?.focus({ preventScroll: true });
-  }, [had]);
-  return null;
-}
-
-function CustomizeSlot() {
-  const { compact } = useDevice();
-  const [wanted, setWanted] = useState(false);
-  const [open, setOpen] = useState(false);
-  /* Whether the stand-in held focus (the look notice's Keep sends it here), so the next copy of the button (the
-     Suspense fallback's, then the real one) takes focus back if it fell to the page in the swap. Chrome may fire a blur as it removes the focused stand-in, so a blur only counts once
-     it is clear the button is still on the page. */
-  const hadFocus = useRef(false);
-  useEffect(() => {
-    void settled().then(() => setWanted(true));
-  }, []);
-  const warm = () => void loadCustomize().catch(() => {}); // a miss just loads on the press
-  const standIn = (
-    <Button
-      id="customize-trigger"
-      size="sm"
-      variant="ghost"
-      iconOnly={compact}
-      icon={compact ? undefined : <SlidersIcon />}
-      aria-label={compact ? "Customize" : undefined}
-      aria-haspopup="dialog"
-      aria-expanded={false}
-      aria-busy={open || undefined}
-      onPointerEnter={warm}
-      onFocus={() => {
-        hadFocus.current = true;
-        warm();
-      }}
-      onBlur={(e) => {
-        const el = e.currentTarget;
-        queueMicrotask(() => {
-          if (el.isConnected) hadFocus.current = false;
-        });
-      }}
-      onClick={() => {
-        setWanted(true);
-        setOpen(true);
-      }}
-    >
-      {compact ? <SlidersIcon /> : "Customize"}
-    </Button>
-  );
-  const standInFocus = (
-    <>
-      {standIn}
-      <TakeBackFocus had={hadFocus} />
-    </>
-  );
-  if (!wanted) return standInFocus;
-  return (
-    <Suspense fallback={standInFocus}>
-      <Customize defaultOpen={open} takeFocus={hadFocus} />
-    </Suspense>
-  );
-}
 
 const THEMES = [
   { id: "system", label: "System", Icon: MonitorIcon },
@@ -309,7 +231,6 @@ function Shell({ page }: { page: PageEntry | undefined }) {
           </a>
           <div className="flex items-center gap-1 sm:gap-2">
             <SearchButton place="header" />
-            <CustomizeSlot />
             <Tooltip content="Source on GitHub">
               <a href={REPO} target="_blank" rel="noreferrer" aria-label="litt.md on GitHub" className={iconLink + " max-sm:hidden"}>
                 <GitHubMark />
@@ -330,7 +251,6 @@ function Shell({ page }: { page: PageEntry | undefined }) {
         </div>
       </header>
 
-      <LookNotice inert={menu} />
 
       <MobileMenu
         open={menu}
@@ -411,7 +331,8 @@ function Shell({ page }: { page: PageEntry | undefined }) {
 
 export function App() {
   const route = useRoute();
-  const page = pages.find((p) => p.id === route) ?? pages[0];
+  /* A world owns the routes under it: #device/button is Button's page, in Device. */
+  const page = pages.find((p) => p.id === route || route.startsWith(`${p.id}/`)) ?? pages[0];
   /* The other pages' chunks wait until the first page's has landed, so they never slow the page that was asked for. */
   useEffect(() => {
     page?.preload().then(prefetchPages, prefetchPages);
@@ -425,6 +346,12 @@ export function App() {
           {route === "canvas" ? (
             <Suspense fallback={null}>
               <LanguageCanvas />
+            </Suspense>
+          ) : page?.world ? (
+            /* A world is closed (plans/019): its pages draw no gallery header, sidebar or search, only the world, and
+               the player's Menu finds what is in it. */
+            <Suspense fallback={null}>
+              <page.Component />
             </Suspense>
           ) : (
             <SearchProvider pageId={page?.id}>

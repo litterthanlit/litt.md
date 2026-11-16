@@ -5,8 +5,8 @@ export const meta: PageMeta = {
   id: "heatmap",
   title: "Heatmap",
   lede: "How much, in four steps of one hue.",
-  order: 17.7,
-  group: "Data",
+  order: 10.10,
+  group: "Charts",
   verbs: ["hover"],
   summary:
     "A dot matrix whose depth says how much: usage per day, deploys per week, mail per hour. One data hue in four steps over an empty dot, labels in tabular figures, a tooltip on hover, touch and focus, and a legend from less to more.",

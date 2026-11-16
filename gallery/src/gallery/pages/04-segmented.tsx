@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { Segmented } from "@/components/segmented";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "segmented",
   title: "Segmented control",
   lede: "A short choice in one track.",
-  order: 4,
-  group: "Controls",
+  order: 3.05,
+  group: "Selection",
   verbs: ["select"],
   summary:
     "A short choice in one track. The selected surface glides to your pick on the responsive tier, and color changes are instant, so the control answers without ever resizing.",
@@ -191,45 +188,6 @@ function SizesDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center justify-items-start gap-4 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <Segmented
-                legend="Role"
-                size="md"
-                defaultValue="editor"
-                options={[
-                  { value: "viewer", label: "Viewer" },
-                  { value: "editor", label: "Editor" },
-                ]}
-              />
-              <Segmented
-                legend="Range"
-                size="sm"
-                defaultValue="30d"
-                options={[
-                  { value: "7d", label: "7 days" },
-                  { value: "30d", label: "30 days" },
-                ]}
-              />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function SegmentedPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -260,14 +218,6 @@ export default function SegmentedPage() {
         <SizesDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One control, one contract, a body per world. Press is blocks in a tray: one raised block over empty bays that you can take and drag along the tray to the nearer option, or click and arrow to. Flat is words alone, set in a line with no tray, and a grey pill bubble that glides and resizes to the chosen word. Device is a row of keys in one well: the chosen key is latched all the way down, its skirt gone and its lamp lit, a press lets the last one up, and nothing glides, the change switches in place in three steps. Rack is one box in a 1px outline divided by 1px rules, the chosen option a filled ink key that changes on the frame, with no gliding highlight. Each is drawn here whatever look the page is in; the props, the arrow keys and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

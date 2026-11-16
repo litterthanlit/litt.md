@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The world pages (Press, Flat, Device, Plain, Rack: MATERIALS in look.ts), checked from a build: desktop 1440x900 and phone 390x844, light and dark.
+ * The world pages (#<world>/about for Press, Flat, Device, Plain, Rack and Heat: MATERIALS in look.ts), checked from a build: desktop 1440x900 and phone 390x844, light and dark.
  *
  *   npm run build && npm run test:worlds
  *   node scripts/worlds.mjs --dist dist
@@ -8,12 +8,8 @@
  *
  * A world is a material and the page you arrive on for it (proposals/worlds.md). It fails when:
  * - a world page does not load with one main and one h1, or the page throws,
- * - after arriving, data-material on <html> is not the world's (none for Press), or the saved look (localStorage
- *   litt-gallery:customize) does not hold the world as its material: arriving writes your look (decision 1). Flat is the
- *   gallery's own look, which storage keeps as no choice, so Flat's is the saved material gone. Each page starts from a
- *   saved look in a different material, so a page that wrote nothing is caught,
- * - a link's look for the world (?look=pink-device#device) does not paint Device before the app runs (with scripts
- *   blocked, so the pre-paint script alone decides), or ?look=pink#device does not end up on Device with its page working,
+ * - a world's page (#<world>/about) does not wear the world: data-material on <html> is not the world's (none for
+ *   Press), whatever was once saved (plans/019: each world is closed),
  * - the hero block is not live: section[data-world-hero] has no framed block, nothing in it takes focus, or two worlds
  *   open on the same block,
  * - the first screen does not hold exactly one accent fill (R6; the Install button; none on Plain, whose Install is
@@ -22,15 +18,13 @@
  *   checkboxes and switches fill with too),
  * - Foundations is not five cards labelled Color, Type, Light, Shape and Motion, or a card's text is not the world's
  *   line in src/gallery/look.ts (read from that file, so the prose lives once),
- * - the sidebar does not mark the gallery's world on a component page (aria-current="true" on its row under Worlds),
- *   or does not mark the world page you are on (aria-current="page"),
+ * - a page in a world (#<world>, #<world>/about, #<world>/button) links to another world, has no Home link
+ *   (litt.design/systems/), draws the gallery's sidebar, or wears another world,
  * - the phone's menu does not list Worlds with a row per world before the first component group,
  * - a world page scrolls sideways at 390 or at 320,
  * - a world page has no Only here section (section#only-here[data-only-here]), or its abilities are not the world's
  *   abilities from look.ts, in order, or its parts are not exactly the pages whose meta.worlds is this world and fewer
  *   than all of them (read from src/gallery/pages, so no list is written here): a part missing, or a part of another world,
- * - the sidebar on a component page, under each material, does not list every world-only page of that material, or lists
- *   one that is another world's alone (zero world-only pages is a pass: it asserts what the sidebar and the sources hold),
  * - the Systems page (#systems) is not a card per world linking #press, #flat, #device, #plain, #rack and #heat in order, each named by the
  *   system and its line from look.ts, beside its cover scene, inert and hidden, the link the card's one stop, or it
  *   scrolls sideways,
@@ -113,7 +107,6 @@ const claim = (name, bad) => {
 };
 
 const browser = await chromium.launch();
-const STORE = "litt-gallery:customize";
 
 /* Read in the page: the accent fills (as wall.mjs reads them), how wide the page is, and the hero's way in. */
 function inspect() {
@@ -162,9 +155,8 @@ function inspect() {
   };
 }
 
-async function open(hash, { width, height, scheme = "light", query = "", saved = { accent: "blue4" }, phone = width < 640 } = {}) {
+async function open(hash, { width, height, scheme = "light", query = "", phone = width < 640 } = {}) {
   const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: scheme, hasTouch: phone, isMobile: phone && width >= 390 });
-  if (saved) await ctx.addInitScript(([k, v]) => localStorage.setItem(k, v), [STORE, JSON.stringify(saved)]);
   const pg = await ctx.newPage();
   const errors = [];
   pg.on("pageerror", (e) => errors.push(String(e)));
@@ -176,18 +168,15 @@ async function open(hash, { width, height, scheme = "light", query = "", saved =
 /** One world page at one size and theme. `mutate` runs in the page before it is read, for --self-test. */
 async function audit(world, size, scheme, mutate) {
   const where = `${world.id} · ${scheme} · ${size.label}`;
-  const other = world.id === "press" ? "device" : "press";
-  const { ctx, pg, errors } = await open(world.id, { ...size, scheme, saved: { accent: "blue4", material: other } });
+  const { ctx, pg, errors } = await open(`${world.id}/about`, { ...size, scheme });
   await pg.locator("section[data-world-hero] :is(button, a[href])").first().waitFor();
   await pg.waitForLoadState("networkidle");
   const attr = world.attribute ?? undefined;
-  const settled = await pg.waitForFunction(([a, k, id]) => document.documentElement.dataset.material === (a ?? undefined) && JSON.parse(localStorage.getItem(k) || "{}").material === (id === "flat" ? undefined : id), [attr ?? null, STORE, world.id], { timeout: 3000 }).then(() => true, () => false);
   if (mutate) await pg.evaluate(mutate);
   const r = await pg.evaluate(inspect);
-  const saved = await pg.evaluate((k) => JSON.parse(localStorage.getItem(k) || "{}").material, STORE);
 
   claim("a world page has one main and one h1", r.mains === 1 && r.h1s === 1 ? null : `${where}: ${r.mains} mains, ${r.h1s} h1s`);
-  claim("arriving on a world page puts its data-material on <html> (none for Press) and saves it as your look's material", settled && r.material === attr && saved === (world.id === "flat" ? undefined : world.id) ? null : `${where}: data-material is ${r.material ?? "absent"} (want ${attr ?? "absent"}), saved material is ${saved ?? "unset"} (want ${world.id === "flat" ? "unset: Flat is the gallery's own look and is stored as no choice" : world.id})`);
+  claim("a world's page wears the world: its data-material on <html> (none for Press)", r.material === attr ? null : `${where}: data-material is ${r.material ?? "absent"} (want ${attr ?? "absent"})`);
   claim("the hero block is framed and live: a labelled frame, and a named button or link in it takes focus", r.frames.length > 0 && r.reachable > 0 && r.focusable ? null : `${where}: ${r.frames.length} frames, ${r.reachable} named controls, focus ${r.focusable ? "took" : "did not take"}`);
   const fills = world.id === "plain" ? 0 : 1; // Plain's Install is link-blue words: it has no accent fill to spend.
   claim("the first screen holds exactly one accent fill (the Install button)", r.first.length === fills ? null : `${where}: ${r.first.length} accent fills on the first screen: ${r.first.join(", ") || "none"} (want ${fills})`);
@@ -195,7 +184,7 @@ async function audit(world, size, scheme, mutate) {
   const want = FOUNDATIONS.map(([key, label]) => ({ label, text: world.foundations[key] }));
   const same = r.cards.length === 5 && want.every((w, i) => r.cards[i].label === w.label && r.cards[i].text === w.text);
   claim("Foundations is five cards, Color, Type, Light, Shape, Motion, each with the world's line from look.ts", same ? null : `${where}: cards ${JSON.stringify(r.cards.map((c) => c.label))} (want ${want.map((w) => w.label).join(", ")}), text ${r.cards.every((c, i) => c.text === want[i]?.text) ? "matches" : "differs from look.ts"}`);
-  const parts = ownParts(world).map((id) => `#${id}`);
+  const parts = ownParts(world).map((id) => `#${world.id}/${id}`);
   const got = r.onlyHere;
   const sameSet = got && got.parts.length === parts.length && parts.every((h) => got.parts.includes(h));
   claim("a world page has an Only here section listing the world's abilities from look.ts and exactly its own parts", got && got.abilities.join("|") === world.abilities.join("|") && sameSet ? null : `${where}: ${got ? `abilities ${got.abilities.length} (want ${world.abilities.length}, ${got.abilities.join("|") === world.abilities.join("|") ? "same text" : "text differs from look.ts"}), parts ${JSON.stringify(got.parts)} (want ${JSON.stringify(parts)})` : "no section#only-here[data-only-here]"}`);
@@ -245,7 +234,7 @@ claim("each world opens on its own block (a different hero frame each)", new Set
 
 /* ---------- 320 wide ---------- */
 for (const world of WORLDS) for (const scheme of ["light", "dark"]) {
-  const { ctx, pg } = await open(world.id, { width: 320, height: 640, scheme, phone: true });
+  const { ctx, pg } = await open(`${world.id}/about`, { width: 320, height: 640, scheme, phone: true });
   await pg.locator("section[data-world-hero] :is(button, a[href])").first().waitFor();
   await pg.waitForLoadState("networkidle");
   const wide = await pg.evaluate(() => document.documentElement.scrollWidth - innerWidth);
@@ -253,52 +242,33 @@ for (const world of WORLDS) for (const scheme of ["light", "dark"]) {
   await ctx.close();
 }
 
-/* ---------- a link's look ---------- */
-{
-  const device = WORLDS.find((w) => w.id === "device");
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-  await ctx.route("**/*.js", (r) => r.abort());
-  const pg = await ctx.newPage();
-  await pg.goto(`${base}?look=pink-device#device`, { waitUntil: "load" });
-  const painted = await pg.evaluate(() => [document.documentElement.dataset.material, document.body.dataset.accent]);
-  claim("?look=pink-device#device paints Device and pink before the app runs (scripts blocked)", painted[0] === device.attribute && painted[1] === "pink" ? null : `painted ${JSON.stringify(painted)}`);
-  await ctx.close();
-
-  const { ctx: c2, pg: p2, errors } = await open("device", { width: 1440, height: 900, query: "?look=pink", saved: null });
-  await p2.locator("section[data-world-hero] :is(button, a[href])").first().waitFor();
-  const end = await p2.evaluate(() => ({ m: document.documentElement.dataset.material, h1: document.querySelectorAll("h1").length, name: document.querySelector("h1")?.textContent }));
-  claim("?look=pink#device ends on Device with its page working (one h1, named Device)", end.m === "device" && end.h1 === 1 && end.name === "Device" && errors.length === 0 ? null : `ended ${JSON.stringify(end)}${errors.length ? ", " + errors[0] : ""}`);
-  await c2.close();
-}
-
-/* ---------- the sidebar, on a component page after a world ---------- */
-{
-  const { ctx, pg } = await open("device", { width: 1440, height: 900 });
-  await pg.waitForFunction(([k]) => JSON.parse(localStorage.getItem(k) || "{}").material === "device", [STORE]);
-  const rows = () => pg.locator("[role=group][aria-labelledby=nav-worlds] a").evaluateAll((as) => as.map((a) => [a.textContent.trim().split(/[.\n]/)[0].replace(/(Press|Flat|Device).*/, "$1"), a.getAttribute("aria-current")]));
-  const on = Object.fromEntries(await rows());
-  claim("on a world's own page, the sidebar marks its row aria-current=page", on.Device === "page" ? null : `rows on #device: ${JSON.stringify(on)}`);
-  await pg.evaluate(() => { location.hash = "#button"; });
-  await pg.locator("main h1").filter({ hasText: "Button" }).waitFor();
-  const off = Object.fromEntries(await rows());
-  claim("on a component page, the sidebar marks the gallery's world (Device) aria-current=true and no other row", off.Device === "true" && off.Press == null && off.Flat == null ? null : `rows on #button: ${JSON.stringify(off)}`);
-  await ctx.close();
-}
-
-/* ---------- the sidebar lists a world-only page in its world and in no other ---------- */
+/* ---------- a world is closed: no link from its pages to another world's ---------- */
 for (const world of WORLDS) {
-  const { ctx, pg } = await open("button", { width: 1440, height: 900, saved: { accent: "blue4", material: world.id } });
-  await pg.locator("main h1").filter({ hasText: "Button" }).waitFor();
-  const listed = await pg.evaluate(() => [...document.querySelectorAll("[role=group][aria-labelledby^=nav-]:not([aria-labelledby=nav-worlds]) a[href^='#']")].map((a) => a.getAttribute("href").slice(1)));
-  const missing = WORLD_ONLY.filter((p) => p.worlds.includes(world.id) && !listed.includes(p.id)).map((p) => p.id);
-  const foreign = WORLD_ONLY.filter((p) => !p.worlds.includes(world.id) && listed.includes(p.id)).map((p) => p.id);
-  claim("on a component page the sidebar lists the world-only pages of the gallery's world and none of another's", missing.length === 0 && foreign.length === 0 && listed.includes("button") ? null : `${world.id}: missing ${JSON.stringify(missing)}, from other worlds ${JSON.stringify(foreign)}, Button listed ${listed.includes("button")}`);
-  await ctx.close();
+  for (const sub of ["", "/about", "/button"]) {
+    const { ctx, pg, errors } = await open(`${world.id}${sub}`, { width: 1440, height: 900 });
+    await pg.locator("main h1").first().waitFor({ state: "attached" });
+    await pg.waitForLoadState("networkidle");
+    const r = await pg.evaluate((id) => {
+      const others = ["press", "flat", "device", "plain", "rack", "heat"].filter((w) => w !== id);
+      const hrefs = [...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href"));
+      return {
+        foreign: hrefs.filter((h) => h.startsWith("#") && others.some((w) => h === `#${w}` || h.startsWith(`#${w}/`))),
+        home: hrefs.includes("https://www.litt.design/systems/"),
+        header: !!document.querySelector("header nav[aria-label=Components], [role=group][aria-labelledby=nav-worlds]"),
+        material: document.documentElement.dataset.material ?? "press",
+      };
+    }, world.id);
+    const where = `#${world.id}${sub}`;
+    claim("a world's pages link to no other world, and Home is the way out", r.foreign.length === 0 && r.home ? null : `${where}: links to ${JSON.stringify(r.foreign)}, Home ${r.home ? "present" : "missing"}`);
+    claim("a world's pages draw no gallery sidebar, and wear only their world", !r.header && r.material === world.id ? null : `${where}: gallery nav ${r.header}, material ${r.material}`);
+    for (const e of errors) claim("a world page throws nothing", `${where}: ${e}`);
+    await ctx.close();
+  }
 }
 
 /* ---------- the phone's menu ---------- */
 {
-  const { ctx, pg } = await open("button", { width: 390, height: 844 });
+  const { ctx, pg } = await open("overview", { width: 390, height: 844 });
   await pg.locator("header").getByRole("button", { name: "Menu" }).tap();
   const panel = pg.locator("#gallery-menu");
   await panel.waitFor();

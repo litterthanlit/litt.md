@@ -16,8 +16,8 @@ export const meta: PageMeta = {
   id: "inspector",
   title: "Inspector",
   lede: "A floating panel for tuning one thing live.",
-  order: 4.6,
-  group: "Controls",
+  order: 4.06,
+  group: "Tools",
   verbs: ["drag", "press"],
   summary:
     "A floating glass panel for tuning one thing live, built from litt's own controls: groups that fold, versions you save and go back to, a check against your rules with a Fits or Change row each, and Copy tokens. Put a Slider, a Switch, a Pad, a Spring editor or a Curve editor in each group. The chevrons turn on the responsive tier and a group's body snaps open and fades in; nothing animates a height.",

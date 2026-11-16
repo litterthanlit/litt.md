@@ -1,17 +1,14 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Button } from "@/components/button";
 import { Composer, type ComposerFile } from "@/components/composer";
 import { Select } from "@/components/select";
-import { DeviceProvider, MaterialProvider, useDevice } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
+import { DeviceProvider, useDevice } from "@/motion";
 import { Page, Stage, useReplay, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "composer",
   title: "Composer",
   lede: "Where you write to an agent.",
-  order: 18.92,
+  order: 11.02,
   group: "Agents",
   verbs: ["type"],
   summary:
@@ -285,52 +282,6 @@ function PhoneDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center rounded-surface bg-canvas p-6 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <FourBodiesComposer />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
-function FourBodiesComposer() {
-  const [files, setFiles] = useState<ComposerFile[]>([
-    { id: "brief", name: "northwind-brief.pdf", size: 2516582 },
-    { id: "moodboard", name: "atlas-moodboard.png", progress: 64 },
-  ]);
-  return (
-    <Composer
-      label="Message to Litt"
-      placeholder="Message Litt"
-      hint="Litt can be wrong. Check what matters."
-      defaultValue="Draft the launch note for Northwind."
-      files={files}
-      onFiles={(picked) => setFiles((all) => [...all, ...picked.map((f) => ({ id: `three-${++uploads}`, name: f.name, size: f.size }))])}
-      onRemoveFile={(file) => setFiles((all) => all.filter((f) => f.id !== file.id))}
-      tools={
-        <>
-          <Button size="sm">Web</Button>
-          <Button size="sm">Think</Button>
-        </>
-      }
-    />
-  );
-}
-
 export default function ComposerPage() {
   const [empty, replayEmpty] = useReplay();
   return (
@@ -376,14 +327,6 @@ export default function ComposerPage() {
         <PhoneDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One composer, one contract, a body per world. Press is a plate with a deep well cut into it for the text, the files raised blocks resting in the well, and a rail of blocks under it with Send the one lit block. Flat is one grey pill that grows with the text, Send an ink circle at the end of the last line, and the tools grey words on a line under it. Device is a prompt line on LCD glass in a bezel, the files lit cells, the tools a row of keys under the glass, and Send the one key in the accent. Rack is a panel field: the text in a light box in a 1px control line on a flat panel, the files small flat keys, and a row of keys under it with Send the one yellow key. Each is drawn here whatever look the page is in; the keys, the files, the limits and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

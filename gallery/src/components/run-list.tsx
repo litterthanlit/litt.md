@@ -482,7 +482,8 @@ export function RunList({
                             {run.title}
                           </span>
                           <span className={"flex min-w-0 items-baseline gap-3 text-caption font-normal text-fg-subtle" + lit}>
-                            <span className="min-w-0 truncate">
+                            {/* relative: the line is the containing block of its screen-reader pauses, so its clip holds them too */}
+                            <span className="relative min-w-0 truncate">
                               <Pause />
                               <span className={look.wordLook}>{look.word}</span>
                               {lineParts(run).map((part, i) => (

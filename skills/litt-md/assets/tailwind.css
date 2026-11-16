@@ -43,6 +43,9 @@
   --color-field-ink: var(--field-ink);
   --color-field-ink-subtle: var(--field-ink-subtle);
   --color-field-line: var(--field-line);
+  --color-dial: var(--dial);           /* a world object's dial (plans/018): Device's in the body's opposite finish */
+  --color-dial-ink: var(--dial-ink);
+  --color-signal: var(--signal);       /* a light that fires, never a fill: Device's red */
   --color-block: var(--block);
   /* The slider's post (R3): a slot cut into a plate, its pulled-out fill, the cap and its grip, and the notches. */
   --color-slot: var(--slot);

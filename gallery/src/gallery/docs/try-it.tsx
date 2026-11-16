@@ -220,7 +220,7 @@ function Panel({ of, component: Component, props: start = EMPTY, controls: asked
 
   return (
     <section aria-labelledby="try-it" className="grid gap-6">
-      <div className="litt-raised grid overflow-hidden rounded-surface md:grid-cols-[minmax(0,1fr)_18rem]">
+      <div className="litt-raised grid overflow-hidden rounded-surface text-fg md:grid-cols-[minmax(0,1fr)_18rem]">
         <div className="grid min-h-80 min-w-0 place-items-center p-8 sm:p-12">
           <Component {...shown} />
         </div>

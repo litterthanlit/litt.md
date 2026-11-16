@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "steps",
   title: "Steps",
   lede: "Where someone is in a flow of a few steps.",
-  order: 14.6,
-  group: "Layout",
+  order: 6.03,
+  group: "Navigation",
   verbs: ["press"],
   summary:
     "Where someone is in a flow of a few steps, in the step marks Plan uses: a check for done, a half-filled circle for now, an empty circle for what is left. A row above a form, a column beside one, and in a narrow box \"Step 2 of 4\" with a rail per step. Done steps can be gone back to; nothing animates.",

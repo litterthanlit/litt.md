@@ -4,6 +4,10 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-16 · Device's recorder
+
+- **added** `litt`: tokens for a world's object, the thing the gallery's Playground draws (plans/018). Every world gets `--object-radius`, `--object-cast`, `--object-grain`, `--dial`, `--dial-ink`, `--dial-lift`, `--dial-press`, `--dial-recess` and `--signal`, naming its surface, its cap and its danger hue, so nothing changes outside Device. Under Device they are the recorder's own: a dial in the body's opposite finish (black on the light body, silver on the dark), a signal red for a light that fires (never a fill), a deep cast straight down, 28px corners and the plate's grain. Tailwind gains `bg-dial`, `text-dial-ink` and `bg-signal`. Nothing in your code has to change.
+
 ## 2026-11-15 · Plain, a fourth world; Rack, a body per part
 
 A world for the page that should just work: docs, forms, admin and internal tools. Plain draws a page the way HTML does, with almost no UI of its own.
@@ -63,6 +67,10 @@ Later the same day, Heat, a sixth world after a street-racing front end (the men
 
 - **added** `litt`: Heat, `data-material="heat"` on `<html>`. Black slabs and cream words at night, its own (the same menu on bleached sepia paper by day), warm neutrals, a key as a flat dark cell in a 1px outline, and nothing cast, glowing or sunk. Amber is its own accent, the light of what is selected: its words and focus ring at night, only a fill by day, with links and the ring in the ink. The data hues keep 0.12 from it (amber's slot is a brake red under Heat). Square corners (`--litt-radius-control` and `--litt-radius-surface` are 0) and Saira (load it at 400, 500 and 600). `data-accent="blue"`, `"mono"` and `"pink"` still win on a Heat page. Every other world is unchanged; nothing in your code has to change.
 - **changed** `motion`: under Heat a set whips in from the left over `--travel`, one after another on the responsive spring, and `gather` sends every piece to the right at once on the instant tier shortened by `--exit`; `useOverlayMotion` slides and never grows there. `Material` and `byWorld` gain `"heat"`; a part with no Heat body draws Press's. Reinstall it with `litt`.
+
+Later still, a fix the closed worlds' checks found (every world's pages are now checked at 320px):
+
+- **fixed** `run-list`: a run's status line holds its screen-reader pauses inside its own clip, so under Device's wider mono a long line no longer stretches the page sideways at 320px. Nothing changes where the line fits. Props are unchanged.
 
 ## 2026-11-14 · Rack, a world after Ableton Live
 

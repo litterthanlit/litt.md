@@ -2,17 +2,14 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { CardPicker } from "@/components/card-picker";
 import { CodeIcon, GridIcon, ListIcon, UserIcon, UsersIcon, BuildingIcon } from "@/components/icons";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "card-picker",
   title: "Card picker",
   lede: "One choice shown as cards.",
-  order: 4.1,
-  group: "Controls",
+  order: 3.06,
+  group: "Selection",
   verbs: ["select"],
   summary:
     "One choice shown as cards: tiles of a picture over a word, or cards with a title, a line and a price. In Press the cards are plates in a tray and the picked one rises out of it; in Flat the picked one sits in a grey bubble with an ink tick; in Device each plate has a lamp and the picked one is set down into a well.",
@@ -208,46 +205,6 @@ function LayoutTile() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center gap-6 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <CardPicker
-                legend="Plan"
-                defaultValue="pro"
-                options={[
-                  { value: "free", label: "Free", description: "One project.", detail: "$0" },
-                  { value: "pro", label: "Pro", description: "Unlimited projects.", detail: "$12 a month" },
-                  { value: "team", label: "Team", description: "Roles and SSO.", detail: "$40 a month", disabled: true },
-                ]}
-              />
-              <CardPicker
-                size="sm"
-                legend="Layout"
-                defaultValue="grid"
-                options={[
-                  { value: "list", label: "List", picture: <ListIcon /> },
-                  { value: "grid", label: "Grid", picture: <GridIcon /> },
-                  { value: "code", label: "Code", picture: <CodeIcon /> },
-                ]}
-              />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function CardPickerPage() {
   return (
     <Page meta={meta} docs={docs} tile={<LayoutTile />}>
@@ -280,14 +237,6 @@ export default function CardPickerPage() {
         <SettingsDemo />
       </Stage>
 
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One control, one contract, a body per world. Press is plates seated in a tray, the picked one raised out of it and lit along its top edge. Flat is pictures and words with no tray, the picked one in a grey bubble with an ink tick and its word, the bubble gliding to your pick. Device is a plate with a lamp in its corner: the picked one is set down 2px into a well with its lamp lit, and nothing glides, the change switches in place in three steps. Rack is each card as a flat panel in a 1px outline, the picked one outlined 2px in the ink with its check as a small lit key, and nothing raised. Each is drawn here whatever look the page is in; the radios, the arrow keys and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
-      </Stage>
     </Page>
   );
 }

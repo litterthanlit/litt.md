@@ -6,7 +6,7 @@ export const meta: PageMeta = {
   id: "log-view",
   title: "Log view",
   lede: "A run's output, as it arrives.",
-  order: 17.85,
+  order: 9.07,
   group: "Data",
   verbs: ["watch"],
   summary:

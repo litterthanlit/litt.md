@@ -15,8 +15,8 @@ export const meta: PageMeta = {
   id: "date-picker",
   title: "Date picker",
   lede: "A day or a range, picked from a month.",
-  order: 2.7,
-  group: "Controls",
+  order: 2.08,
+  group: "Inputs",
   verbs: ["select", "open"],
   summary:
     "A day, or a range of days, from a month calendar, kept as YYYY-MM-DD strings. The field opens the calendar in a popover, a bottom sheet on a phone. A new month slides in from the side it comes from, and nothing else moves.",

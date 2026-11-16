@@ -5,8 +5,8 @@ export const meta: PageMeta = {
   id: "spread",
   title: "Spread",
   lede: "How values spread, one rail per row.",
-  order: 17.65,
-  group: "Data",
+  order: 10.09,
+  group: "Charts",
   summary:
     "How values spread, one thin rail per row on a shared scale. The full range is faint, the middle half takes a data hue and the median is a tick, with the median in tabular figures at the end. The rails line up, a goal is a dashed line through every row, and nothing moves.",
   tiers: [],

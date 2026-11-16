@@ -81,22 +81,11 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
-/** The Frame switch: what the Playground shows its parts in. The frame is the device, so there is no Auto. */
-export type PlayFrameSize = "phone" | "desktop";
-const FRAMES: { size: PlayFrameSize; label: string; note: string }[] = [
-  { size: "phone", label: "Phone", note: "The app on a phone." },
-  { size: "desktop", label: "Desktop", note: "The parts on a desktop." },
-];
-
 const ms = (v: number) => `${Math.round(v)}ms`;
 const sec = (v: number) => `${Math.round(v * 1000)}ms`;
 const pct = (v: number) => v.toFixed(2);
 
-export function MotionPanel({ frame, onFrameChange }: {
-  /** What the Playground shows: the app on a phone, or the parts on a desktop. The page owns it, so leaving the page resets it. */
-  frame: PlayFrameSize;
-  onFrameChange: (size: PlayFrameSize) => void;
-}) {
+export function MotionPanel() {
   const { dial, locked, presets, preset, setPreset, update, reset, slow, setSlow, reducedPreview, setReducedPreview, reduced } = useMotionDial();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -139,10 +128,7 @@ export function MotionPanel({ frame, onFrameChange }: {
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => {
-              reset();
-              onFrameChange("phone");
-            }}
+            onClick={reset}
             className="-ml-3"
           >
             Reset to locked
@@ -203,20 +189,6 @@ export function MotionPanel({ frame, onFrameChange }: {
       <Group title="Playback" use="For looking, not for shipping">
         <Toggle label="Slow motion ×4" checked={slow === 4} onChange={(b) => setSlow(b ? 4 : 1)} />
         <Toggle label="Preview reduced motion" checked={reducedPreview} onChange={setReducedPreview} />
-        {/* Below sm the reader is on a phone already, and the page shows the phone: there is nothing to switch. */}
-        <div className="grid gap-2 max-sm:hidden">
-          <span className="text-small text-fg-muted" id="frame-label">Frame</span>
-          <div className={segmented + " grid-cols-2"} role="group" aria-labelledby="frame-label" aria-describedby="frame-note">
-            {FRAMES.map(({ size, label }) => (
-              <button key={size} type="button" aria-pressed={frame === size} onClick={() => onFrameChange(size)} className={segment + " px-2 text-small font-title"}>
-                {label}
-              </button>
-            ))}
-          </div>
-          <p id="frame-note" className="text-caption font-normal text-fg-subtle">
-            {FRAMES.find((f) => f.size === frame)?.note} Input details on touch, such as 44px targets and pressed fills, follow your real pointer, not this switch.
-          </p>
-        </div>
       </Group>
 
       <section className="grid gap-3 border-t border-line pt-6" aria-labelledby="rules-title">

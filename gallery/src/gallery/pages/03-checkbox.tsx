@@ -1,17 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/button";
 import { Checkbox, CheckboxGroup, Radio, RadioGroup } from "@/components/checkbox";
-import { MaterialProvider } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
   id: "checkbox",
   title: "Checkbox and radio",
   lede: "Real checkboxes and radios, filled with ink when on.",
-  order: 3,
-  group: "Controls",
+  order: 3.01,
+  group: "Selection",
   verbs: ["press"],
   summary:
     "Real checkboxes and radios, drawn as a small cut, like a field: a 20px box at the control radius, or a cup for a radio. On, an ink block sits flush in the cut around its tick, and a chosen radio takes a small raised bead. In Flat the same inputs are an outline that fills with ink. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
@@ -191,34 +188,6 @@ function AppearanceDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center justify-items-start gap-1 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <Checkbox label="Include motion study" defaultChecked />
-              <Checkbox label="Select all pages" indeterminate />
-              <Checkbox label="Send me the template" />
-              <RadioGroup legend="Deploy to" defaultValue="preview" className="mt-2">
-                <Radio value="production" label="Production" />
-                <Radio value="preview" label="Preview" />
-              </RadioGroup>
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 /* ---------- the overview's tile ---------- */
 
 function DeliverablesTile() {
@@ -268,15 +237,6 @@ export default function CheckboxPage() {
         code="AppearanceDemo"
       >
         <AppearanceDemo />
-      </Stage>
-
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One contract, a body per world. Press is a cut in the plate with an ink block seated flush in it when checked, and a radio is a cup that takes a raised bead; a press sinks the block. Flat is ink on paper: an outline when off, a plain ink fill when on with no ring round the mark, and an ink dash when mixed. Device is a square key in a well that latches down and lights its lamp when checked, half lights it when mixed; a radio group there is a row of the same keys, interlocked, so pressing one lets the last one up. Rack is a small well that fills with the ink when checked, with an ink dash when mixed and a round well for a radio, all in 1px outlines. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="Checkbox" component={Checkbox} props={{ label: "Send the invoice to Marlow Labs", description: "A PDF goes to billing@marlowlabs.com." }} controls={["label", "description", "appearance", "indeterminate", "invalid", { name: "disabled", type: "boolean" }]} />

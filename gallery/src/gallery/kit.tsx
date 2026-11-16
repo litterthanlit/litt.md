@@ -18,7 +18,9 @@ import { Tag } from "@/components/tag";
 /** The sidebar's groups, in the order they appear. */
 /** Blocks come last: whole screens built from the components in the groups above them. */
 /** Worlds first: the materials as pages you arrive on (proposals/worlds.md). The nav and the menu draw that group as the way in, not as a group of components. */
-export const PAGE_GROUPS = ["Worlds", "Controls", "Overlays", "Layout", "Data", "Agents", "Commerce", "Blocks"] as const;
+/* Finer groups, about four to eleven parts each, after design.how's systems (Nick, 2026-11-15): a person chooses a
+   group, then a part, instead of passing ninety in a row. */
+export const PAGE_GROUPS = ["Worlds", "Actions", "Inputs", "Selection", "Tools", "Overlays", "Navigation", "Layout", "Feedback", "Data", "Charts", "Agents", "Commerce", "Blocks"] as const;
 export type PageGroup = (typeof PAGE_GROUPS)[number];
 
 /**
@@ -473,7 +475,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
   if (code === undefined) {
     return (
       <section data-arrive="stage" className="grid gap-6" aria-label={title}>
-        <div className={"litt-raised relative grid overflow-visible rounded-surface p-4 min-[24rem]:p-8 sm:p-12 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " + place + " " + height}>{children}</div>
+        <div className={"litt-raised relative grid overflow-visible rounded-surface text-fg p-4 min-[24rem]:p-8 sm:p-12 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " + place + " " + height}>{children}</div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           {heading}
           {onReplay && (
@@ -518,7 +520,7 @@ export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", 
             )}
           </div>
         </div>
-        <div className={"litt-raised relative order-1 grid overflow-visible rounded-surface in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " + height}>
+        <div className={"litt-raised relative order-1 grid overflow-visible rounded-surface text-fg in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " + height}>
           <TabsPanels className="grid min-w-0">
             {/* The preview remounts when you come back to it, so a replay always starts clean. */}
             <TabsPanel value="preview" tabIndex={-1} className={"grid p-4 min-[24rem]:p-8 sm:p-12 " + place}>

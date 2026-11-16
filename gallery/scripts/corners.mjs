@@ -8,8 +8,9 @@
  *
  * The rule is the one the components keep by hand (components.md: "so the corners stay concentric"): a box drawn
  * inside a rounded box keeps at least as much room from the curve as from the nearest straight side, within a pixel.
- * Square corners hide a break, so the check loads each page at each of SHAPES (src/motion/rules.ts) but Square, with
- * the radius written on <body> as the Customize panel writes it, under reduced motion so everything is at rest.
+ * Square corners hide a break, so the check loads each of the gallery's pages (Flat) at each of SHAPES (src/motion/rules.ts)
+ * but Square, with the radius written on <body> as the Customize panel wrote it, and each page in another world at that
+ * world's own shape, the only one it shows (plans/019), under reduced motion so everything is at rest.
  *
  * In each page's main, an outer box is anything painted (a fill, a shadow or a border) with a corner radius and
  * overflow visible: one that clips draws its contents to its own curve on purpose. An inner box is anything painted
@@ -36,13 +37,14 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
+import { routes } from "./routes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
 const selfTest = args.includes("--self-test");
-const only = (get("pages", selfTest ? "button" : "") || "").split(",").filter(Boolean);
+const only = (get("pages", selfTest ? "flat/button" : "") || "").split(",").filter(Boolean);
 const CONCURRENCY = Number(get("concurrency", "4"));
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
@@ -63,6 +65,14 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
 const bundle = await build({ entryPoints: [path.join(here, "../src/motion/rules.ts")], bundle: true, format: "esm", platform: "neutral", write: false, logLevel: "silent" });
 const { SHAPES, shapeName, shapeSurface } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString("base64")}`);
 const shapes = (get("shapes", "") ? get("shapes").split(",").map(Number) : SHAPES.filter((r) => r > 0));
+/* Each world is closed (plans/019) and shows only its own shape, so a page in a world is checked there; the gallery's
+   own world, Flat, is checked at every shape, as the Customize panel once offered them, since a host can still reshape
+   the tokens. Plain and Heat are square, which hides nothing to check. */
+const OWN = { press: 4, device: 4, rack: 2, plain: 0, heat: 0 };
+const shapesFor = (id) => {
+  const world = id.split("/")[0];
+  return world in OWN ? (OWN[world] > 0 ? [OWN[world]] : []) : shapes;
+};
 if (!shapes.length || shapes.some((r) => !SHAPES.includes(r))) { console.error(`--shapes takes some of ${SHAPES.join(", ")}.`); process.exit(1); }
 
 /* Breaks the check knows about and has not fixed yet: each prints, and none fails the run, but one that no longer happens
@@ -74,13 +84,24 @@ const KNOWN = [
     what: /in the corner of <div\.@container\.rounded-\[min\(var\(--radius-control\)/,
     why: "at 6px a condition row keeps the control radius and so do the fields 4px inside it, 2px rounder than concentric (at litt's own 4px their corners start where the row's curve ends); fixing it means rows take the surface radius, 8px at the default, which is a taste call",
   },
+  /* Found once each world's pages were checked (plans/019): Press's bodies, never measured while the gallery showed Flat. */
+  {
+    page: "segmented",
+    radius: 4,
+    what: /in the corner of <div\.relative\.touch-pan-y\.grid-flow-col>/,
+    why: "under Press the moving highlight (2px corners, 3px into the 4px track) is 1px rounder than concentric; the track's inset is off the spacing scale, so the fix is a taste call: a 2px or 4px inset, or the highlight at the track's radius less it",
+  },
+  {
+    page: "curve-editor",
+    radius: 4,
+    what: /in the corner of <div\.relative\.touch-pan-y\.grid-flow-col>/,
+    why: "its preset row is Press's Segmented, with the same highlight 1px rounder than concentric",
+  },
 ];
-const knownFor = (f) => KNOWN.find((k) => k.page === f.id && k.radius === f.radius && k.what.test(f.what));
+/* A known break is the part's, in whichever world it shows (an address is #<world>/<part>). */
+const knownFor = (f) => KNOWN.find((k) => k.page === f.id.split("/").pop() && k.radius === f.radius && k.what.test(f.what));
 
-const pages = fs.readdirSync(path.join(here, "../src/gallery/pages"))
-  .map((f) => /^\d+-(.+)\.tsx$/.exec(f)?.[1])
-  .filter(Boolean)
-  .filter((id) => !only.length || only.includes(id));
+const pages = routes({ only });
 if (!pages.length) { console.error("No pages matched."); process.exit(1); }
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2" };
@@ -272,7 +293,7 @@ async function checkPage(id) {
       return new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
     }, [radius, shapeSurface(radius)]);
     /* The page at rest at every shape first, before any slider moves. */
-    for (const radius of shapes) {
+    for (const radius of shapesFor(id)) {
       await shape(radius);
       for (const what of await pg.evaluate(measure)) failures.push({ id, radius, what });
     }
@@ -282,7 +303,7 @@ async function checkPage(id) {
         await pg.evaluate((n) => document.querySelector(`[data-corners-thumb="${n}"]`).focus({ preventScroll: true }), i);
         await pg.keyboard.press(key);
       }
-      for (const radius of shapes) {
+      for (const radius of shapesFor(id)) {
         await shape(radius);
         for (const what of await pg.evaluate(measure, "data-corners-slider")) failures.push({ id, radius, what: `${what}, at ${key}` });
       }
@@ -295,7 +316,7 @@ async function checkPage(id) {
 
 const started = Date.now();
 const queue = [...pages];
-const runs = pages.length * shapes.length;
+const runs = pages.reduce((n, id) => n + shapesFor(id).length, 0);
 await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
   while (queue.length) await checkPage(queue.shift());
 }));
@@ -307,7 +328,7 @@ const shapeWords = shapes.map((r) => shapeName(r)).join(", ");
 if (selfTest) {
   const kinds = { rub: "the Slider's old cap on a pill", layer: "a 22px row in a 16px group", sharp: "a square cover 4px into a 16px card" };
   const keys = new Set(failures.flatMap((f) => { const m = /^self-test (\w+) /.exec(f.what); return m ? [`${f.id} ${f.radius} ${m[1]}`] : []; }));
-  const missed = pages.flatMap((id) => shapes.flatMap((r) => Object.keys(kinds).map((k) => `${id} ${r} ${k}`))).filter((k) => !keys.has(k));
+  const missed = pages.flatMap((id) => shapesFor(id).flatMap((r) => Object.keys(kinds).map((k) => `${id} ${r} ${k}`))).filter((k) => !keys.has(k));
   const broken = failures.filter((f) => /running the check/.test(f.what));
   for (const [k, words] of Object.entries(kinds)) console.log(`corners self-test: ${words} was caught on ${[...keys].filter((x) => x.endsWith(` ${k}`)).length} of ${runs} runs (${took}).`);
   for (const f of broken) console.log(`✗ ${f.id} at ${shapeName(f.radius)}: ${f.what}`);
@@ -317,7 +338,7 @@ if (selfTest) {
 
 const known = failures.filter(knownFor);
 const fresh = failures.filter((f) => !knownFor(f));
-for (const k of KNOWN.filter((k) => pages.includes(k.page) && shapes.includes(k.radius))) {
+for (const k of KNOWN.filter((k) => pages.some((p) => p.split("/").pop() === k.page) && shapes.includes(k.radius))) {
   const hits = known.filter((f) => knownFor(f) === k).length;
   if (hits) console.log(`· known, ${k.page} at ${shapeName(k.radius)} (${hits}): ${k.why}.`);
   else fresh.push({ id: k.page, radius: k.radius, what: `the known break no longer happens (${k.why}): take it out of KNOWN` });

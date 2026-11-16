@@ -7,8 +7,8 @@ export const meta: PageMeta = {
   id: "bar-list",
   title: "Bar list",
   lede: "A ranked list with a thin bar for each share.",
-  order: 17.4,
-  group: "Data",
+  order: 10.05,
+  group: "Charts",
   verbs: ["press"],
   summary:
     "A ranked list where each row carries a thin bar for its share: a label, a bar, a value in tabular figures and a change in words. The bars and values line up across rows, the list measures itself, and nothing about it moves.",

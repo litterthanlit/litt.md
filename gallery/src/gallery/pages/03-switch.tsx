@@ -2,17 +2,15 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { Checkbox } from "@/components/checkbox";
 import { Switch } from "@/components/switch";
-import { MaterialProvider, useMotionDial } from "@/motion";
-import { useCustomize, useDark } from "../customize-state";
-import { lookAttributes, MATERIALS } from "../look";
+import { useMotionDial } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
   id: "switch",
   title: "Switch",
   lede: "A block thrown along a tray, uncovering On or Off.",
-  order: 3.3,
-  group: "Controls",
+  order: 3.02,
+  group: "Selection",
   verbs: ["press"],
   summary:
     "An on or off setting you can feel. A thick block rides a deep tray with On and Off set in its floor, and the block's travel uncovers the one that is true. Press it and it presses down; click, tap or drag it across. Neutral keeps the block white; accent fills it when on, for the one switch that is a view's main choice. The block crosses on the responsive tier, and the tray never moves. The label sits beside it, or the switch sits at the end of a settings row.",
@@ -200,29 +198,6 @@ function DisabledDemo() {
   );
 }
 
-function WorldBodiesDemo() {
-  const { look } = useCustomize();
-  const dark = useDark();
-  return (
-    <div className="grid w-full gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {MATERIALS.map((m) => (
-        <figure key={m.id} className="m-0 grid min-w-0 content-start gap-3">
-          <div
-            {...lookAttributes({ accent: look.accent, material: m.id }, dark)}
-            className="grid min-h-56 min-w-0 content-center justify-items-start gap-2 rounded-surface bg-canvas p-8 text-fg outline-1 -outline-offset-1 outline-line"
-          >
-            <MaterialProvider material={m.id}>
-              <Switch label="Email me about new deploys" defaultChecked />
-              <Switch label="Weekly digest" />
-            </MaterialProvider>
-          </div>
-          <figcaption className="text-caption text-fg-muted">{m.name}</figcaption>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
 export default function SwitchPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -260,15 +235,6 @@ export default function SwitchPage() {
         code="DisabledDemo"
       >
         <DisabledDemo />
-      </Stage>
-
-      <Stage
-        title="A body per world"
-        tier="instant"
-        caption="One switch, one contract, a body per world. Press is a thick block thrown along a deep tray, uncovering On or Off set in the floor; the word is revealed by the block's travel, not printed on it. Flat is a small ink pill with a canvas knob when on and an outline pill when off, the word in type beside it in the text weight, so the label never reflows. Device is a toggle key in a well that flips with a detent, its word and a lamp on an LCD beside it. Rack is a toggle key with its word on its face that lights when on, in the ink here and the accent for the one main switch; nothing slides. Each is drawn here whatever look the page is in; the props, the keyboard and what a screen reader hears are the same in every world."
-        code="WorldBodiesDemo"
-      >
-        <WorldBodiesDemo />
       </Stage>
 
       <TryIt of="Switch" component={Switch} props={{ label: "Email me when a build finishes", description: "One email per build, never a digest." }} />
