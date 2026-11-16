@@ -35,16 +35,16 @@ Worlds stay closed (plan 019): the gallery shows one world, and every link in it
 
 ## The sets
 
-The first version, in `gallery/src/gallery/play-object/takes.ts` (`SET`). Nick changes them by eye.
+Twelve each (Nick, 2026-11-16: "yes lets see it with 12. just pick the ones that present the world the best in their way"), in `gallery/src/gallery/play-object/takes.ts` (`SET`), each picked against the world's lines in `taste/litt-principles.md`: Press leads with what is raised and what is cut in, Flat with pills and what grows from where you touched, Rack with values you set and the things a person makes, Heat with its menu and its levels. `test:playground` fails if an id in a set is not in its world.
 
 | World | Set |
 |---|---|
-| Press | button, input, select, switch, segmented, tabs, dialog, menu, toast, table, chart, stat |
-| Flat | button, media, carousel, card, accordion, header, breadcrumb, tabs, lightbox, input, avatar, toast |
+| Press | button, switch, segmented, slider, input, select, dialog, menu, toast, stat, chart, table |
+| Flat | button, switch, media, carousel, lightbox, card, accordion, avatar, header, tabs, popover, toast |
 | Device | composer, agent-indicator, tool-call, message, seven-segment, tape-progress, switch, slider, gauge, copy-button, button, command-menu |
-| Plain | form, input, select, checkbox, button, table, tabs, breadcrumb, details, callout, pagination, dialog |
-| Rack | slider, curve-editor, spring-editor, pad, time-scrubber, inspector, segmented, number-field, color-picker, range-chart, tabs, button |
-| Heat | menu, tabs, segmented, button, stat, gauge, rolling-number, seven-segment, table, progress, select, toast |
+| Plain | form, input, select, checkbox, button, table, details, callout, breadcrumb, pagination, tabs, dialog |
+| Rack | slider, curve-editor, spring-editor, pad, time-scrubber, inspector, number-field, color-picker, segmented, switch, button, range-chart |
+| Heat | menu, tabs, segmented, button, slider, stat, gauge, rolling-number, progress, table, select, toast |
 
 Device leads with the four parts that exist only in Device (agent indicator, seven segment, tape progress, copy button).
 No other world has parts of its own yet.
@@ -64,5 +64,4 @@ tape, and the shelf sections in Home. The groups live on in the gallery view, wh
 
 ## Open, for Nick
 
-1. **The sets.** Each is a first pick. Name what to swap.
-2. **The size of a set.** Twelve, so Play runs in under a minute. Fewer would make the player a sharper showcase.
+1. **The sets.** Picked on 2026-11-16. Name what to swap.
