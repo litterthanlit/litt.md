@@ -13,7 +13,8 @@
  * - Play is a key the viewer presses (R4: nothing moves on load). Pressed, it runs the core set, a part every 4s,
  *   wrapping; a press, key, wheel or drag on the screen, or any take picked by hand, stops it. A take change is instant
  *   in every motion.
- * - Menu goes back to Home, Details says what the take (or the world) is, Source opens its page.
+ * - Index goes back to Home (a part is called Menu, so the key is not), Details says what the take (or the world) is,
+ *   Source opens its page.
  * - The screen is rendered once, into a host element the body's slot adopts, so a body that comes or goes never
  *   remounts what is on the screen. Nothing makes a sound (decision 2).
  */
@@ -206,7 +207,7 @@ function Loaded({ material, dark, lead }: Props) {
         {!compact && (
           <div className="flex items-center gap-1">
             <Button size="sm" variant="ghost" aria-current={at === null ? "page" : undefined} onClick={() => go(null)}>
-              Menu
+              Index
             </Button>
             <Button size="sm" variant="ghost" aria-expanded={details} aria-controls={`${id}-details`} onClick={() => (setPlaying(false), setDetails((d) => !d))}>
               Details

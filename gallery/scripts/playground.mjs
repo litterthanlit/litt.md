@@ -19,7 +19,7 @@
  *   not go to the last part and to Home, with aria-valuenow and the readout's count following,
  * - a take (every component in the world, a group at a time) draws nothing inside the screen's box, or anything in the
  *   body (the object outside its screen) is filled with the accent (R6),
- * - Menu does not go back to Home, or its index does not open the component picked,
+ * - Index does not go back to Home, or Home's index does not open the component picked,
  * - what the Dialog, Menu, Popover, Select, Context menu, Toast or Tooltip take opens (from its first button, by a click
  *   or, for the tooltip, a held pointer) is not inside the screen's box, under the screen's world (1px tolerance),
  * - the take changes within 6s with no hand on it (nothing plays on load), Play does not move it within 5s, or a press
@@ -174,9 +174,9 @@ const readout = (pg) => pg.evaluate(() => document.querySelector("[data-play-rea
 const now = (pg) => pg.locator(SLIDER).getAttribute("aria-valuenow").then(Number);
 const pad = (i, n) => String(i).padStart(Math.max(2, String(n).length), "0");
 
-/** Picks a take by name, as a person would: Menu, back to Home, then its row in the index. False when it is not in the world. */
+/** Picks a take by name, as a person would: Index, back to Home, then its row in the index. False when it is not in the world. */
 async function find(pg, title) {
-  await pg.locator("[data-play-object]").getByRole("button", { name: "Menu", exact: true }).click();
+  await pg.locator("[data-play-object]").getByRole("button", { name: "Index", exact: true }).click();
   await pg.waitForTimeout(400);
   const row = pg.locator(`${FRAME} [data-play-index] button`).filter({ hasText: new RegExp(`^${title}$`) });
   if (!(await row.count())) return false;
@@ -310,11 +310,11 @@ for (const [world, id, attribute] of WORLDS) {
     }
   }
 
-  /* Menu: back to Home, and the index takes you where you pick. */
+  /* Index: back to Home, and the index takes you where you pick. */
   await inView(pg);
   const went = await find(pg, "Dialog");
   const picked = await readout(pg);
-  claim("Menu goes back to Home, and its index opens what you pick", went && picked?.includes("Dialog") ? null : `${world}: after picking Dialog from the index the readout says "${picked}"`);
+  claim("Index goes back to Home, and its index opens what you pick", went && picked?.includes("Dialog") ? null : `${world}: after picking Dialog from the index the readout says "${picked}"`);
 
   /* What a take opens stays on the screen, in its world. */
   for (const title of OPENERS) {
