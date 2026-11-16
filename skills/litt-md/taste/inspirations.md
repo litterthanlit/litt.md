@@ -70,6 +70,21 @@ Each entry is an audited reference: what to take from it and what to leave. Entr
 
 Entries from `workflows/audit.md` go below this line, newest first.
 
+### Flat's references · two images Nick sent · reference · 2026-11-16
+**What it is:** two boards of small widgets, sent as the direction for Flat: "no direct copy but in that direction". The first is fifteen widgets in black and white on a cool grey ground (a clock, toggles, weather, a player, a battery, a recorder, a compass, a list, a water gauge, a wallet, a calendar). The second is a wall of black rounded cards, each a live status (a flight, a delivery, a timer, a glucose chart, a lap board) drawn in one vivid color.
+**Measured:** unmeasured (screenshots). Seen: in the first, two fills only, black and white, on grey, in 15 of 15 widgets; no outline and no shadow on any; three shapes, the circle, the pill and the rounded square; one color at most per widget, always on its data (the battery's green cells, the water's blue, the calendar's red now-line, the list's pink ticks); the largest figure in a widget is several times its label. In the second, every card is black with one hue for its data and its words; data is drawn as segments, bars, dots and arcs; every card casts a soft shadow.
+**Steal:**
+- Two fills on a grey ground, nothing outlined and nothing cast (→ R3, Flat: fill alone).
+- One family of shapes for what a hand touches: the pill, the circle, the rounded square (→ Flat's pill, `proposals/flat-pill.md`).
+- A state said by a filled half: a tall pill half ink and half white, or an ink pill sliding inside a white one, with its word on it (→ R5).
+- One color per object, on its data and nowhere else (→ R7).
+- Data as simple marks: segments, bars, dots, an arc (→ Flat's charts, ink marks on grey).
+**Reject:**
+- The soft shadows under the second board's cards. Nothing casts in Flat (R3).
+- The glow on the timer's bar. Material is still and does not glow in Flat (R2).
+- A different vivid hue on every card of one view. The five data hues keep their fixed order and one meaning each (R7), and a view has one accent fill (R6).
+**Rule candidate:** in Flat, what sits on the grey is a pill, a circle or a rounded square in the ink or in white, with color only on its data.
+
 ### Fluid Functionalism · fluidfunctionalism.com, github.com/mickadesign/fluid-functionalism · reference · 2026-10-11
 **What it is:** a shadcn/ui component registry by Micka, pitched as "refined UI components with satisfying hover". It ships with its own agent skill and audit scripts. Audited from the source (four parallel passes: motion, tokens, components, tooling) and measured on three live pages.
 
