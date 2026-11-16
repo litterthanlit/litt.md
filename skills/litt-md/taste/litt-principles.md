@@ -4,7 +4,7 @@ What litt believes, in two layers: a short floor every world shares, and each wo
 
 Read it before you build or change a body, a world-only part or a study, and when a critique turns on a world.
 
-> Draft, 2026-11-15, for Nick to confirm. Nick first asked for the principles of the components repo (`litterthanlit/components`, `DESIGN.md`) to be brought in, then said: "maybe we shouldnt fit all rules through components. each world should have its own, enhancing the experience and usability". So only what holds everywhere is shared, and that repo's ethos lives mostly in Device, the world made after it. Each world's lines are drawn from what it already says about itself (`system/foundations.md`, Motion languages; `system/material.md`; the decisions in `proposals/worlds.md`). A line marked *components* comes from that repo. Nothing here is a new value: values live only in `assets/tokens.css`.
+> Draft, for Nick to confirm. Nick first asked for the principles of the components repo (`litterthanlit/components`, `DESIGN.md`) to be brought in, then said on 2026-11-15: "maybe we shouldnt fit all rules through components. each world should have its own, enhancing the experience and usability". So only what holds everywhere is shared. On 2026-11-16 Nick went through each world's lines, and the sections below carry Nick's words from that day. Press and Flat name a direction that is not built yet. A line marked *components* comes from that repo. Nothing here is a new value: values live only in `assets/tokens.css`.
 
 ## What every world shares
 
@@ -28,32 +28,34 @@ A world's principles say what it does for the person using it. Build a body to i
 
 ### Press, the instrument
 
-For product UI, settings and dashboards.
+For product UI, settings and dashboards. Nick, 2026-11-16: "I said it was overdesigned cause I liked the first press better. those outlines on the buttons dont look good."
 
 - **Depth says what a thing does.** What you press is raised and catches the light; what you type into is cut in; what floats is glass. A person knows what a thing is for before touching it.
-- **Things have weight.** A set settles into place from above and lands; an overlay rises and settles. Nothing flies across the screen.
-- **A press is felt.** A pressed block sinks and its cast tightens, so the hand gets its answer where it is.
+- **It feels physical.** Things have weight: a set settles from above and lands, and a pressed block sinks under the hand. Nothing flies across the screen.
+- **The first Press is the measure.** The boards of 26 October 2026 ("Thats really strong! I love it!"). A raised thing says it is raised once, and a button has no outline around it.
 
 ### Flat, the page
 
-For sites, portfolios and reading.
+For sites, portfolios and reading. Nick, 2026-11-16: "I want it light, easy to use, airy, flat - no complications, fun and I want motion that matches that." With two references, "no direct copy but in that direction" (`taste/inspirations.md`, Flat's references).
 
-- **Grey is the object, space is the divider.** Nothing casts and nothing is framed, so the work, the picture and the words lead.
+- **Light, airy and easy.** No complications: one clear thing at a time, room around it, nothing to work out.
+- **Bold, simple shapes on grey.** Grey is the ground. What sits on it is a pill, a circle or a rounded square in the ink or in white, with no outline and nothing cast, and a small pop of color only where it says something.
 - **Things come from where you touched them.** A set deals out of what opened it and gathers back; an overlay grows from its opener. A reader never loses where they were.
-- **One shape for the hand.** Every control is a pill, so what can be pressed is known at a glance.
+- **Fun, and it moves that way.** Motion is quick and playful, to match. How far it may go is open (Open, 1).
 
 ### Device, the machine
 
-For agents, terminals and tools. The components repo's ethos lives here.
+For agents, terminals and tools. Nick, 2026-11-16: "tactile, actual device feeling, apple product etc, my components repo is a perfect representative of how I want it to feel. yes we can have sound."
 
+- **It feels like a device in the hand.** Tactile: a key travels, a dial clicks through its detents, glass sits behind a bezel. The components repo is the measure of the feel, and a well-made product the measure of the finish.
 - **It uses an instrument's vocabulary.** Keys, wells, LCD glass, lamps, engraved capitals. The words arrive with behavior people already know, so the interface needs fewer explanations. "The vocabulary dresses the demo, not the component" (*components*).
 - **Things are mechanisms.** A part switches where it stands, in steps, and never fades or travels. Where it stands in for a mechanism, model the mechanism: "a duration and a curve can't be interrupted gracefully, can't overshoot from a flick, and can't tie a click to the exact moment a detent passes" (*components*).
 - **The machine shows its work.** Segments, meters and reels move only while the work does, so a glance says whether it is running.
-- **Sound answers a key.** A click confirms a press faster than sight (*components*). Synthesized, silent by default, and only in answer to a hand (`proposals/worlds.md`, decision 8).
+- **Sound answers a key.** A click confirms a press faster than sight (*components*). Synthesized, and only in answer to a hand. Whether it starts silent is open (Open, 2).
 
 ### Plain, the document
 
-For docs, forms, admin and internal tools: anything that should just work.
+For docs, forms, admin and internal tools: anything that should just work. Nick, 2026-11-16: "plain is my favorite one right now. I really like the way it is right now." Change nothing in Plain without asking.
 
 - **No UI.** A control is its words. A link looks like a link. Nothing has to be learned.
 - **Still.** Nothing moves, so a state changes the moment you ask.
@@ -61,18 +63,19 @@ For docs, forms, admin and internal tools: anything that should just work.
 
 ### Rack, the module
 
-A proposal (`proposals/rack.md`). For creative tools, editors and pro apps: screens full of values touched all day.
+A proposal (`proposals/rack.md`). For creative tools, editors and pro apps: screens full of values touched all day. Nick, 2026-11-16: "follows ableton, so I want it fun and colorful too but in it's own way".
 
+- **After Live.** It follows Ableton Live: panels, clips, devices, values you set.
 - **Every value in reach.** Dense panels of small values, each a box you can set, with its value in words.
-- **Grey to work in.** The color belongs to what the person makes, and one color means one thing everywhere it shows.
+- **Fun and colorful, in its own way.** The color belongs to what the person makes: a clip, a track, a switch that is on. One color means one thing everywhere it shows. It is Live's kind of fun, not Flat's.
 - **On the beat.** A tool used all day answers on the frame: things cut in and stop at once, and nothing travels.
 
 ### Heat, the night menu
 
-A proposal (`proposals/heat.md`). For games, sports, racing and live events.
+A proposal (`proposals/heat.md`). For games, sports, racing and live events. Nick, 2026-11-16: "just the UI should look like the need for speed references I went. it should be just as usable as any of the other worlds. just make sure it looks like the references."
 
-- **Driven by keys.** The row under the keys is held in brackets, and the foot of the screen says what each key does.
-- **Read at a glance.** Black slabs, cream words and one amber on what you pick. A level is a row of segments.
+- **It looks like the references.** The street-racing game's menus, faithfully: black slabs, cream words, amber on what you pick, corner brackets, striped bands. When a body and the references disagree, the references win.
+- **It works like every other world.** Just as usable, for a pointer, a finger and keys alike. Heat is a look, not a different way to work: it never costs a control its target, its words or its clarity.
 - **At speed.** Things arrive from the side one after another and are gone at once when you leave.
 
 ## Where a world is free, and what it keeps
@@ -120,8 +123,8 @@ Plain, precise and quiet, in every world. "Write it the way you would say it to 
 
 ## Open, for Nick
 
-1. **Each world's lines.** They are drawn from what each world already says about itself, not from new decisions. Correct any that miss what the world is for.
-2. **Running by itself.** In the components repo every study moves in its first four seconds, untouched. Here nothing moves on its own (R2, R4). With principles per world this is now one world's question: may Device's studies and its object run by themselves, while the others stay still? Until Nick says, none does.
-3. **Sound.** Decision 8 already makes it Device's alone, silent by default. Confirm, or name another world that should have a voice.
+1. **Flat's fun.** Nick's references for Flat have large figures and playful motion. Today nothing is set above 18px (R8) and a spring bounces at most 0.12 (R4). May Flat go past either, as its own exception?
+2. **Device's sound.** Nick: "yes we can have sound." Decision 8 starts it silent, with a Sound choice; the components repo starts it on until the viewer mutes it. Which?
+3. **Running by itself.** In the components repo every study moves in its first four seconds, untouched. Here nothing moves on its own (R2, R4). May Device's studies and its object run by themselves, while the other worlds stay still? Until Nick says, none does.
 4. **Spelling.** The components repo is British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
 5. **Values.** The components repo's curves and springs differ from litt's tiers, and one preset bounces past R4's bound. This file brings no values. A value Device should take comes in through Propagate (`workflows/evolve.md`, 4).
