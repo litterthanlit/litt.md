@@ -30,7 +30,7 @@ function Words({ text }: { text: string }) {
     <>
       {parts.map((part, i) =>
         part.startsWith("`") && part.endsWith("`") ? (
-          <code key={i} className="rounded-control bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] px-1 font-mono text-small text-fg">
+          <code key={i} className="rounded-control bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] px-1 font-mono text-small text-fg [overflow-wrap:anywhere]">
             {part.slice(1, -1)}
           </code>
         ) : (
