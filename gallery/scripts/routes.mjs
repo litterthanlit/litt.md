@@ -1,7 +1,7 @@
 /**
  * Every address a page check should visit (plans/019): the gallery's own pages, then each world's player, its About
- * page and every component page in it (#device, #device/about, #device/button …), read from each page's
- * `export const meta` in src/gallery/pages, as wall.mjs reads it. Each world is closed, so a component's page is
+ * page, its gallery view and every component page in it (#device, #device/about, #device/components, #device/button
+ * …), read from each page's `export const meta` in src/gallery/pages, as wall.mjs reads it. Each world is closed, so a component's page is
  * checked once per world it belongs to (meta.worlds), in that world's own bodies.
  *
  *   import { routes } from "./routes.mjs";
@@ -36,7 +36,7 @@ export function routes({ only = [] } = {}) {
   const metas = pageMetas();
   const site = metas.filter((p) => !p.group && !p.world).map((p) => p.id);
   const parts = metas.filter((p) => p.group && p.group !== "Worlds" && !p.world);
-  const inWorld = WORLD_IDS.flatMap((w) => [w, `${w}/about`, ...parts.filter((p) => !p.worlds || p.worlds.includes(w)).map((p) => `${w}/${p.id}`)]);
+  const inWorld = WORLD_IDS.flatMap((w) => [w, `${w}/about`, `${w}/components`, ...parts.filter((p) => !p.worlds || p.worlds.includes(w)).map((p) => `${w}/${p.id}`)]);
   const all = [...site, ...inWorld];
   if (!only.length) return all;
   return all.filter((r) => only.includes(r) || only.includes(r.split("/").pop()) || only.includes(r.split("/")[0]));

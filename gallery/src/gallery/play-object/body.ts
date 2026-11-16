@@ -3,33 +3,35 @@
  * what it is handed and adds no role, key or state of its own (plans/018, Constraints; litt-principles.md, Where a
  * world is free).
  */
-import type { ButtonHTMLAttributes, ComponentType, HTMLAttributes, ReactNode } from "react";
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ComponentType, HTMLAttributes, ReactNode } from "react";
 import type { MaterialInfo } from "../look";
-import type { Shelf, Take } from "./takes";
+import type { Take } from "./takes";
 
 export type PlayObjectBodyProps = {
   world: MaterialInfo;
+  /** The world's set, in order. */
   takes: Take[];
-  /** The takes' groups, in order: a body may draw the selector in segments, one per shelf. */
-  shelves: Shelf[];
   /** The take showing, or null on Home: the world's introduction and its index, inside the screen. */
   at: number | null;
   /** Spread on the element that picks the take, the tape or its stand-in: role="slider" over Home (0) and the takes,
-      its name, value and keys (Left and Right within a group, Up and Down and Page Up and Down between groups, Home
-      for Home, End). One tab stop. */
+      its name, value and keys (Right and Down to the next, Left and Up to the previous, wrapping through Home; Home
+      for Home, End for the last). One tab stop. */
   selector: HTMLAttributes<HTMLElement>;
   /** Take the hand to take i, as a press or drag along the selector does. Stops Play. */
   pick: (i: number) => void;
-  /** Spread on a Previous or Next key, where a body draws one: the next part in the group. Out of the tab order: the
-      selector's arrows do this. */
+  /** Spread on a Previous or Next key, where a body draws one. Out of the tab order: the selector's arrows do this. */
   step: (by: 1 | -1) => ButtonHTMLAttributes<HTMLButtonElement>;
-  /** Spread on a key for the next or previous group, where a body draws one. Out of the tab order. */
-  stepGroup: (by: 1 | -1) => ButtonHTMLAttributes<HTMLButtonElement>;
-  /** A mechanism the hand works, such as a dial, moved this many parts within the group. Stops Play. */
+  /** Spread on a key that goes Home, where a body draws one, as an iPod's Menu does. Out of the tab order: the top row's
+      Index and the selector's Home key do this. */
+  index: ButtonHTMLAttributes<HTMLButtonElement>;
+  /** Spread on a link to the world's gallery view (#<world>/components), where a body draws one. Out of the tab order:
+      Home and the rail link there too. */
+  everything: AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
+  /** A mechanism the hand works, such as a dial, moved this many parts along the set. Stops Play. */
   turn: (by: number) => void;
   /** Spread on the Play key: its name, aria-pressed and onClick. Pressed, the object steps a take every 4s; any hand stops it. */
   play: ButtonHTMLAttributes<HTMLButtonElement> & { "aria-pressed": boolean };
-  /** What the readout says: "02 / 95", the take's group and title ("Home" and no group on Home). Spread `props` on the
+  /** What the readout says: "03 / 12", the take's group and title ("Home" and no group on Home). Spread `props` on the
       readout: it marks it for the checks and hides it from screen readers, since the contract says a hand's change
       once, in a polite live region. */
   readout: { count: string; group: string | null; title: string; props: HTMLAttributes<HTMLElement> & { "data-play-readout": "" } };

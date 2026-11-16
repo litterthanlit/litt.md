@@ -4,18 +4,18 @@
  *
  * - A machined frame (--surface-3, a shade darker than the body in light and lighter in dark) holds the body: the
  *   aluminium plate (--canvas). The screen sits across the top in a black bezel (--field, the LCD glass).
- * - Under it, the tape: every component laid end to end, one bar each (its height seeded from its id, so a take always
- *   prints the same), the current one in the ink with the playhead on it. Press or drag along it to scrub. The playhead
- *   is the ink, not the player's red: Device has no red that means "this is playing", and its accent fills no body (R6).
+ * - Under it, the tape: the set laid end to end, one tick each (its height seeded from its id, so a take always prints
+ *   the same), the current one strong with the playhead on it. Press or drag along it to scrub.
  * - The deck: the readout, an LCD in a well (--tray), with the component's name and its count in the mono; and the
- *   dial, a cap in a collar that turns in 15° detents under the hand, a component a detent, with Previous and Next on
- *   its sides and Play at its centre, a key that latches down while it plays. Keys, a pick and Play turn it too, so it
- *   always stands at the take showing.
+ *   dial, a cap in a collar that turns in 15° detents under the hand, a take a detent, with Previous and Next on its
+ *   sides, Index on top (Home, as an iPod's Menu), Every component below (the world's gallery view) and Play at its
+ *   centre, a key that latches down while it plays. Keys, a pick and Play turn it too, so it always stands at the take
+ *   showing.
  * - Things are mechanisms: the take, the playhead and the readout switch where they stand; only the dial travels, on the
  *   responsive spring (useSettle), and lands at once under reduced motion.
  * - The DOM puts the tape (the slider) and Play before the screen, so the keyboard meets the controls first; order puts
  *   the screen on top.
- * - Left out, as the plan says: sound, the player's Home, Find and Options screens (Menu does Find), and playing on load.
+ * - Left out, as the plan says: sound, the player's Find and Options screens, and playing on load.
  */
 import { useEffect, useRef, type CSSProperties, type PointerEvent } from "react";
 import { motion, useMotionValue } from "motion/react";
@@ -40,10 +40,9 @@ const STEP: CSSProperties = {
 
 /* ---------- the tape: the slider over the takes ---------- */
 
-function Tape({ takes, shelves, at, selector, pick, className }: Pick<PlayObjectBodyProps, "takes" | "shelves" | "at" | "selector" | "pick"> & { className: string }) {
+function Tape({ takes, at, selector, pick, className }: Pick<PlayObjectBodyProps, "takes" | "at" | "selector" | "pick"> & { className: string }) {
   const n = takes.length;
   const scrub = useScrub(n, pick);
-  const shelf = at === null ? -1 : shelves.findIndex((s) => at >= s.from && at < s.from + s.count);
   return (
     <div
       {...selector}
@@ -57,14 +56,8 @@ function Tape({ takes, shelves, at, selector, pick, className }: Pick<PlayObject
       {/* The baseline, printed on the body the full width. */}
       <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-line" />
       <svg aria-hidden="true" viewBox={`0 0 ${n} 20`} preserveAspectRatio="none" className="pointer-events-none absolute inset-x-0 inset-y-3 h-[calc(100%-1.5rem)] w-full overflow-visible">
-        {/* A taller tick where each group starts, so the tape reads as its groups. */}
-        {shelves.map((s) => (
-          <line key={s.group} x1={s.from + 0.5} x2={s.from + 0.5} y1={1} y2={19} stroke="currentColor" strokeWidth={1} vectorEffect="non-scaling-stroke" className={s.from <= (at ?? -1) && (at ?? -1) < s.from + s.count ? "text-fg" : "text-fg opacity-40"} />
-        ))}
         {takes.map((t, i) => {
-          if (shelves.some((s) => s.from === i)) return null;
           const h = 2 + level(t.id) * 4;
-          const mine = shelf >= 0 && i >= shelves[shelf]!.from && i < shelves[shelf]!.from + shelves[shelf]!.count;
           return (
             <line
               key={t.id}
@@ -75,7 +68,7 @@ function Tape({ takes, shelves, at, selector, pick, className }: Pick<PlayObject
               stroke="currentColor"
               strokeWidth={1}
               vectorEffect="non-scaling-stroke"
-              className={mine ? "text-fg opacity-70" : "text-fg opacity-30"}
+              className={i === at ? "text-fg" : "text-fg opacity-40"}
             />
           );
         })}
@@ -141,12 +134,12 @@ const DETENT = 15; // degrees of turn per component, as the player's dial clicks
 const side =
   "absolute top-1/4 grid h-1/2 w-1/4 cursor-pointer place-items-center text-dial-ink opacity-80 hover:opacity-100 " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
-/* The top and bottom of the cap: the previous and next group. */
+/* The top and bottom of the cap: Index and Every component. */
 const edge =
   "absolute left-1/4 grid h-1/4 w-1/2 cursor-pointer place-items-center text-dial-ink opacity-80 hover:opacity-100 " +
   "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
-function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: number } & Pick<PlayObjectBodyProps, "step" | "stepGroup" | "turn" | "play">) {
+function Dial({ at, n, step, index, everything, turn, play }: { at: number | null; n: number } & Pick<PlayObjectBodyProps, "step" | "index" | "everything" | "turn" | "play">) {
   const angle = useMotionValue(0);
   const hand = useHand();
   const settle = useSettle([angle]);
@@ -159,10 +152,11 @@ function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: nu
   latest.current = turn;
 
   useEffect(() => {
+    /* Home stands the dial where it is: it turns from the last part shown to the next one. */
+    if (at === null) return;
     const from = was.current;
     was.current = at;
-    /* Home stands the dial where it is: it turns only from one part to another. */
-    if (at === null || from === null) return;
+    if (from === null) return;
     let d = at - from;
     if (!d) return;
     if (Math.abs(d) > n / 2) d -= Math.sign(d) * n;
@@ -239,16 +233,18 @@ function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: nu
             <path d="M12 8 5 13V3z" />
           </svg>
         </button>
-        <button {...stepGroup(-1)} data-side="up" className={edge + " top-0 rounded-t-pill"}>
-          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-2.5 fill-current">
-            <path d="M8 4 13 11H3z" />
+        {/* Index, printed as the player's menu legend: three short rules. */}
+        <button {...index} data-side="up" className={edge + " top-0 rounded-t-pill"}>
+          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3 fill-current">
+            <path d="M3 4h10v1.5H3zM3 7.25h10v1.5H3zM3 10.5h10V12H3z" />
           </svg>
         </button>
-        <button {...stepGroup(1)} data-side="down" className={edge + " bottom-0 rounded-b-pill"}>
-          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-2.5 fill-current">
-            <path d="M8 12 3 5h10z" />
+        {/* Every component, printed as a grid of four: the world's gallery view. */}
+        <a {...everything} data-side="down" className={edge + " bottom-0 rounded-b-pill"}>
+          <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3 fill-current">
+            <path d="M3 3h4v4H3zM9 3h4v4H9zM3 9h4v4H3zM9 9h4v4H9z" />
           </svg>
-        </button>
+        </a>
         {/* The centre: Play, in a well cut through the cap. */}
         <span className="absolute inset-[30%] rounded-pill p-1 shadow-(--dial-recess)" data-play-key="">
           <PlayKey play={play} onDial className="size-full" />
@@ -260,7 +256,7 @@ function Dial({ at, n, step, stepGroup, turn, play }: { at: number | null; n: nu
 
 /* ---------- the body ---------- */
 
-function DeviceBody({ takes, shelves, at, selector, pick, step, stepGroup, turn, play, readout, screen, compact }: PlayObjectBodyProps) {
+function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, play, readout, screen, compact }: PlayObjectBodyProps) {
   const playing = play["aria-pressed"];
   if (compact) {
     return (
@@ -270,7 +266,7 @@ function DeviceBody({ takes, shelves, at, selector, pick, step, stepGroup, turn,
             <Readout readout={readout} playing={playing} className="min-w-0 flex-1" />
             <PlayKey play={play} className="size-11 shrink-0" />
           </div>
-          <Tape takes={takes} shelves={shelves} at={at} selector={selector} pick={pick} className="h-11" />
+          <Tape takes={takes} at={at} selector={selector} pick={pick} className="h-11" />
         </div>
         {screen}
       </div>
@@ -281,10 +277,10 @@ function DeviceBody({ takes, shelves, at, selector, pick, step, stepGroup, turn,
   return (
     <div className="mx-auto flex w-full max-w-6xl min-w-0 flex-col rounded-[var(--object-radius)] bg-surface-3 p-1 shadow-[var(--highlight),var(--object-cast)]">
       <div className="litt-grain relative isolate flex min-w-0 flex-col rounded-[calc(var(--object-radius)-4px)] bg-canvas p-3 shadow-(--highlight) [--grain-opacity:var(--object-grain)]">
-        <Tape takes={takes} shelves={shelves} at={at} selector={selector} pick={pick} className="order-2 mx-3 mt-4 h-10" />
+        <Tape takes={takes} at={at} selector={selector} pick={pick} className="order-2 mx-3 mt-4 h-10" />
         <div className="order-3 flex items-center gap-10 px-6 pt-4 pb-5">
           <Readout readout={readout} playing={playing} className="min-w-0 flex-1" />
-          <Dial at={at} n={takes.length} step={step} stepGroup={stepGroup} turn={turn} play={play} />
+          <Dial at={at} n={takes.length} step={step} index={index} everything={everything} turn={turn} play={play} />
         </div>
         <div className="order-1 flex">{screen}</div>
       </div>

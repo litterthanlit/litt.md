@@ -22,8 +22,8 @@
  * - One Toaster holds the wall, so the tiles and blocks that bring their own (Toast, Cart, the settings screen) hand
  *   their toasts to it, and the page has one Notifications region rather than one per tile.
  * - The component is the real one at its real size, as one object: the page's `tile` (Page in kit.tsx), drawn through
- *   PreviewContext's "tile" mode, or the page's first demo when it has none. Each page owns its tile; this file only
- *   lays the wall out.
+ *   PreviewContext's "tile" mode, or the page's first demo when it has none. Each page owns its tile, wall-tile.tsx
+ *   draws it (each world's gallery view draws the same), and this file only lays the wall out.
  * - Still until reached for. A tile mounts as it nears the screen, held still (StillMotion), so arriving, scrolling
  *   and filtering never play fifty entrances at once. The pointer coming onto it, a press or focus wakes it in place
  *   (StillMotion active={false}): nothing remounts and nothing replays, and from then on it moves as it does on its
@@ -41,13 +41,12 @@
  * - Blocks are screens, not parts, so they come after the wall in a section of their own: a still picture of each
  *   screen's top (Miniature), which opens its page.
  */
-import { Suspense, useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { StillMotion, useFun } from "@/motion";
+import { useEffect, useId, useRef, useState } from "react";
+import { useFun } from "@/motion";
 import { Toaster } from "@/components/toast";
 import { inWorld, pages, type PageEntry } from "../registry";
 import { Miniature } from "../miniature";
 import { Button } from "@/components/button";
-import { ExpandIcon } from "@/components/icons";
 import { Start, toStart } from "../steps";
 import { WorldHero } from "../world";
 import { materialOf } from "../look";
@@ -55,7 +54,8 @@ import { useCustomize } from "../customize-state";
 import { MosaicHost, openMosaic, pressTile } from "../mosaic";
 import { arriveFrom } from "../arrival";
 import { SearchButton } from "../search";
-import { PreviewContext, VERBS, type PageMeta, type Verb } from "../kit";
+import { VERBS, type PageMeta, type Verb } from "../kit";
+import { TALL, useNear, WallTile } from "../wall-tile";
 
 export const meta: PageMeta = {
   id: "overview",
@@ -100,113 +100,20 @@ const WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eig
 
 /* ---------- the tile ---------- */
 
-/** True once the element has come within a screen of the viewport, and stays true. */
-function useNear<T extends HTMLElement>(ref: React.RefObject<T | null>): boolean {
-  const [near, setNear] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || near) return;
-    const io = new IntersectionObserver((entries) => entries.some((e) => e.isIntersecting) && setNear(true), { rootMargin: "100% 0px" });
-    io.observe(el);
-    return () => io.disconnect();
-  }, [ref, near]);
-  return near;
-}
-
-/**
- * One component on the wall: the real one, live, on its tile, with its name under it and the button that opens its
- * mosaic beside the name. It mounts as it nears the screen and stays out of reach for two frames, so a demo that
- * moves focus as it mounts cannot pull the page. It is held still until the pointer, a press or focus reaches it.
- * A click on the tile's empty ground (data-open-zone: never on the component itself) opens the mosaic too.
- */
-function Tile({ page, children }: { page: PageEntry; children: ReactNode }) {
-  const onOpen = (tile: HTMLElement, button: HTMLElement | null) => openMosaic({ page, tile, returnTo: button });
-  const button = useRef<HTMLButtonElement>(null);
-  const ref = useRef<HTMLDivElement>(null);
-  const near = useNear(ref);
-  const [settled, setSettled] = useState(false);
-  const [awake, setAwake] = useState(false);
-  useEffect(() => {
-    if (!near) return;
-    let next = 0;
-    const first = requestAnimationFrame(() => (next = requestAnimationFrame(() => setSettled(true))));
-    return () => {
-      cancelAnimationFrame(first);
-      cancelAnimationFrame(next);
-    };
-  }, [near]);
-  const wake = () => setAwake(true);
+/** The overview's tile (wall-tile.tsx): it opens its mosaic, and its page opens out of it. */
+function Tile({ page }: { page: PageEntry }) {
   return (
-    <div
-      ref={ref}
-      data-tile={page.id}
-      data-arrive="stage"
-      /* A finger arrives with its press, so a touch, a press or focus wakes the tile only on the component, never on its
-         name or open button: waking can change a component's height (a plan at its first step), which would move them
-         under the tap before its click lands. */
-      onPointerEnter={(e) => e.pointerType !== "touch" && wake()}
-      onPointerDown={(e) => !(e.target as Element).closest("[data-tile-foot]") && wake()}
-      onFocus={(e) => !e.target.closest("[data-tile-foot]") && wake()}
-      onClick={(e) => (e.target as HTMLElement).hasAttribute("data-open-zone") && ref.current && onOpen(ref.current, button.current)}
-      data-open-zone
-      className={
-        "group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-well"
-      }
-    >
-      <div inert={!settled} data-open-zone className="col-span-2 grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
-        {near && (
-          <StillMotion active={!awake}>
-            <div data-open-zone className="grid w-full min-w-0 place-items-center [&>*]:min-w-0">{children}</div>
-          </StillMotion>
-        )}
-      </div>
-      <h2 data-tile-foot className="flex min-w-0 px-4 pb-3 text-small font-normal">
-        <a
-          href={`#${page.id}`}
-          /* The page opens out of this tile, as its mosaic does (arrival.tsx). */
-          onClick={() => {
-            if (!ref.current) return;
-            arriveFrom(page.id, { deck: ref.current.getBoundingClientRect() });
-            /* The page takes a moment to mount, so the tile answers the tap first. */
-            pressTile(ref.current);
-          }}
-          className={
-            "-mx-2 flex h-control-sm items-center rounded-control px-2 text-fg-muted select-none [-webkit-tap-highlight-color:transparent] " +
-            "transition-colors duration-(--dur-instant) ease-litt hover:text-fg group-hover/tile:text-fg pointer-coarse:h-control-md " +
-            "focus-visible:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-          }
-        >
-          {page.title}
-        </a>
-      </h2>
-      <div data-tile-foot className="flex items-start pr-2 pb-2">
-        <Button
-          ref={button}
-          iconOnly
-          variant="ghost"
-          size="sm"
-          aria-haspopup="dialog"
-          aria-label={`Open every ${page.title} demo here`}
-          onClick={() => ref.current && onOpen(ref.current, button.current)}
-          /* Seen only by the keyboard: a pointer opens the mosaic from the tile's ground. */
-          className="text-fg-subtle opacity-0 focus-visible:opacity-100"
-        >
-          <ExpandIcon />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-/** A page's tile, or its first demo when it has none, as its own page draws them without the title or the docs. */
-function PageTile({ page }: { page: PageEntry }) {
-  return (
-    <PreviewContext.Provider value="tile">
-      {/* Holds the tile's room while the page's chunk loads. */}
-      <Suspense fallback={null}>
-        <page.Component />
-      </Suspense>
-    </PreviewContext.Provider>
+    <WallTile
+      page={page}
+      href={`#${page.id}`}
+      onOpen={(tile, button) => openMosaic({ page, tile, returnTo: button })}
+      onFollow={(tile) => {
+        /* The page opens out of this tile, as its mosaic does (arrival.tsx). */
+        arriveFrom(page.id, { deck: tile.getBoundingClientRect() });
+        /* The page takes a moment to mount, so the tile answers the tap first. */
+        pressTile(tile);
+      }}
+    />
   );
 }
 
@@ -270,9 +177,7 @@ function Wall({ list }: { list: PageEntry[] }) {
       <ul className="grid gap-4 md:grid-flow-row-dense md:grid-cols-2">
         {shown.map((p) => (
           <li key={p.id} className={"grid min-w-0 " + (TALL.has(p.id) ? "md:row-span-2" : "")}>
-            <Tile page={p}>
-              <PageTile page={p} />
-            </Tile>
+            <Tile page={p} />
           </li>
         ))}
       </ul>
@@ -345,9 +250,6 @@ function Blocks({ list }: { list: PageEntry[] }) {
     </section>
   );
 }
-
-/** Pages whose tile is two rows tall beside two short ones: their component needs the height. */
-const TALL = new Set(["plan", "app-shell", "list", "action-bar", "timeline", "message", "rule-builder"]);
 
 /**
  * The tiles that open the wall, in this order; every other component follows in the sidebar's order. The deck above
