@@ -22,6 +22,13 @@ Later the same day, a fix for server-rendered hosts.
 
 - **changed** `sparkline`, `press-sparkline`, `flat-sparkline`, `device-sparkline`, `plain-sparkline`, `rack-sparkline`, `heat-sparkline`: in a server-rendered app (Next.js) with `data-material` on `<html>`, the sparkline drew its empty box and never its line. The server renders Press's body, the page then swaps in the world's, and the width was measured on Press's box alone, so the new box stayed at 0. The measure now follows the box when the body changes. `SparklineBodyProps.boxRef` is a callback ref; a body still puts it on its root. Props are unchanged.
 
+Later still, Press goes back to its first boards (plans/022): a button has no outline around it.
+
+- **changed** `button`: under Press a raised button is the block alone, standing on the surface and raised once by its cast. The plate (the 2px or 3px `--litt-slot` border around it), the wall along its foot and the lit top edge on the secondary and danger blocks are gone; the primary keeps its lit top edge and its glow. The plate's width comes back as side padding, so the button keeps its size. A press sinks the label `--litt-press-depth` (half a pixel) and tightens the cast, and a disabled button is `--litt-surface-2` inside a 1px `--litt-line`. A raised block carries a 1px transparent outline, so forced colors still draws its edge. Heat keeps the plate, now in a body of its own (`bodies/button.heat.tsx`). Props are unchanged.
+- **changed** `press-button`: the same change as `button`, in Press's own install: no plate, no wall and no lit top edge on the secondary and danger blocks, the same size, a half-pixel press. Props are unchanged.
+- **changed** `heat-button`: Heat's button now ships as a body of its own (`bodies/button.heat.tsx`), the block on its plate that the contract drew for Heat until today, so a Heat button looks and presses exactly as before. Props are unchanged.
+- **changed** `flat-button`, `device-button`, `plain-button`, `rack-button`: the contract's comments describe Press's new button and name Heat's body. Nothing in these worlds changes.
+
 ## 2026-11-15 · Plain, a fourth world; Rack, a body per part
 
 A world for the page that should just work: docs, forms, admin and internal tools. Plain draws a page the way HTML does, with almost no UI of its own.
