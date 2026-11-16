@@ -5,6 +5,7 @@
 
 ## Status
 
+- **Status**: DONE (2026-11-16). Nick picked 0.28 at 350ms, no bounce on small moves; phase 2 propagated it.
 - **Priority**: P2 (Nick, 2026-11-16, PR #116)
 - **Effort**: M
 - **Risk**: MEDIUM. A rule change (R4) through Propagate; values in `tokens.css`.
@@ -35,10 +36,19 @@ not a bounce.
 
 ## Phase 2. Propagate
 
-- [ ] `tokens.css`: Flat's `--spring-expressive` (and responsive, if picked) under `[data-material="flat"]`.
-- [ ] `check.mjs` check 9 and `rules.ts`: the bounce bound becomes per world (Flat's own cap, the others at 0.12).
-- [ ] `profile.md` R4: Flat's exception, worded with Nick through `evolve.md`; a `taste:` commit; a `litt` CHANGELOG line.
-- [ ] `test:motion` (reduced motion still stills it), `test:rules`.
+Nick, 2026-11-16, after watching the canvas: "0.28 at 350ms, no bounce on small moves looks good", then "go".
+
+- [x] `tokens.css`: Flat's `--spring-expressive: 350ms 0.28`, with its `--ease-expressive` and `--dur-expressive` (579ms),
+      under `[data-material="flat"]`. The responsive spring stays at bounce 0. The reduced-motion block now names Flat,
+      or Flat's settle would beat its zeros on `<html>`.
+- [x] `check.mjs` check 9 and `rules.ts`: the expressive bounce bound is per world (`BOUNCE_CAP` and
+      `EXPRESSIVE_BOUNCE`: Flat 0.28, the others 0.12); responsive 0 everywhere; settle limit unchanged. The Tune panel,
+      the spring editor, the Playground's rows and `test:rules` read it. The motion dial reads the springs again when
+      the world on `<html>` changes.
+- [x] `profile.md` R4: Flat's exception, in Nick's words, in its own `taste:` commit (v1.15), with the journal and the
+      `litt-principles.md` Flat line; `litt`, `motion`, `spring-editor`, `tune` and their world copies in the CHANGELOG.
+      The world installs now keep the reduced-motion and more-contrast blocks (`gen-registry.mjs`, `worldCss`).
+- [x] `test:motion` (reduced motion still stills it), `test:rules`.
 
 ## Open, for Nick
 

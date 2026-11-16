@@ -30,7 +30,7 @@ honor its STOP conditions, and update your row when done.
 | 020  | [The player shows a world's best, and its gallery shows everything](020-a-set-and-a-shelf.md) | P1 | M | 019 phases 1 to 3 | IN PROGRESS (2026-11-16) |
 | 021  | [Device answers a key with a sound, and starts with it on](021-device-has-a-voice.md) | P1 | L | — | TODO (phase 1 ends in a STOP for Nick's ear) |
 | 022  | [Press goes back to its first boards, and a button has no outline](022-press-goes-back-to-its-first-board.md) | P1 | M | — | TODO (phase 1 is read-only, then Nick picks) |
-| 023  | [Flat bounces more than the other worlds](023-flat-bounces-more.md) | P2 | M | — | TODO (phase 1 ends in a STOP for Nick's eye) |
+| 023  | [Flat bounces more than the other worlds](023-flat-bounces-more.md) | P2 | M | — | DONE (0.28 at 350ms in Flat, responsive 0) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 
