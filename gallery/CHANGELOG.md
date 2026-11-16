@@ -4,6 +4,10 @@ Every change to the litt registry at https://littmd.vercel.app/r/, newest first.
 
 To update an item, read the entries since your version, then reinstall it with `--overwrite`. A **breaking** entry says what to change in your code.
 
+## 2026-11-16 · Device's recorder
+
+- **added** `litt`: tokens for a world's object, the thing the gallery's Playground draws (plans/018). Every world gets `--object-radius`, `--object-cast`, `--object-grain`, `--dial`, `--dial-ink`, `--dial-lift`, `--dial-press`, `--dial-recess` and `--signal`, naming its surface, its cap and its danger hue, so nothing changes outside Device. Under Device they are the recorder's own: a dial in the body's opposite finish (black on the light body, silver on the dark), a signal red for a light that fires (never a fill), a deep cast straight down, 28px corners and the plate's grain. Tailwind gains `bg-dial`, `text-dial-ink` and `bg-signal`. Nothing in your code has to change.
+
 ## 2026-11-15 · Plain, a fourth world; Rack, a body per part
 
 A world for the page that should just work: docs, forms, admin and internal tools. Plain draws a page the way HTML does, with almost no UI of its own.
