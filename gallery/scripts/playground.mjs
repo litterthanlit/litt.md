@@ -80,7 +80,7 @@ const claim = (name, bad) => {
 
 const WORLDS = [["Press", "press", undefined], ["Flat", "flat", "flat"], ["Device", "device", "device"], ["Plain", "plain", "plain"], ["Rack", "rack", "rack"], ["Heat", "heat", "heat"]];
 const FRAME = "[data-play-frame]";
-const SLIDER = "[data-play-object] [role=slider]";
+const SLIDER = "[data-play-object] [role=slider][aria-label=Components]";
 /* The takes that open something, and what they open. */
 const OPENERS = ["Dialog", "Menu", "Popover", "Select", "Context menu", "Toast", "Tooltip"];
 const OVERLAYS = "[role=dialog], [role=alertdialog], [role=menu], [role=listbox], [role=tooltip], [data-toast-id]";
