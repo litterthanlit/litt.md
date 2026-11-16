@@ -84,19 +84,6 @@ const KNOWN = [
     what: /in the corner of <div\.@container\.rounded-\[min\(var\(--radius-control\)/,
     why: "at 6px a condition row keeps the control radius and so do the fields 4px inside it, 2px rounder than concentric (at litt's own 4px their corners start where the row's curve ends); fixing it means rows take the surface radius, 8px at the default, which is a taste call",
   },
-  /* Found once each world's pages were checked (plans/019): Press's bodies, never measured while the gallery showed Flat. */
-  {
-    page: "segmented",
-    radius: 4,
-    what: /in the corner of <div\.relative\.touch-pan-y\.grid-flow-col>/,
-    why: "under Press the moving highlight (2px corners, 3px into the 4px track) is 1px rounder than concentric; the track's inset is off the spacing scale, so the fix is a taste call: a 2px or 4px inset, or the highlight at the track's radius less it",
-  },
-  {
-    page: "curve-editor",
-    radius: 4,
-    what: /in the corner of <div\.relative\.touch-pan-y\.grid-flow-col>/,
-    why: "its preset row is Press's Segmented, with the same highlight 1px rounder than concentric",
-  },
 ];
 /* A known break is the part's, in whichever world it shows (an address is #<world>/<part>). */
 const knownFor = (f) => KNOWN.find((k) => k.page === f.id.split("/").pop() && k.radius === f.radius && k.what.test(f.what));
