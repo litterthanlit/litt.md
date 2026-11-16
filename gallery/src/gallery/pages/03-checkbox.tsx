@@ -11,7 +11,7 @@ export const meta: PageMeta = {
   group: "Selection",
   verbs: ["press"],
   summary:
-    "Real checkboxes and radios, drawn as a small cut, like a field: a 20px box at the control radius, or a cup for a radio. On, an ink block sits flush in the cut around its tick, and a chosen radio takes a small raised bead. In Flat the same inputs are an outline that fills with ink. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
+    "Real checkboxes and radios, drawn as a small cut, like a field: a 20px box at the control radius, or a circle for a radio. On, the ink fills the box around its tick, and a chosen radio takes a small raised bead. In Flat the same inputs are an outline that fills with ink. The accent stays for the one primary action. The label sits on the right and the whole row is clickable. Fill, edge and mark fade on the instant tier, and nothing moves.",
   fun: "Check a box: it pops and draws its tick.",
   tiers: ["instant"],
 };
