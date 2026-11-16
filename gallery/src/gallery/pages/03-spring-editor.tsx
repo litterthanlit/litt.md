@@ -115,7 +115,7 @@ function ToastSpringDemo() {
       />
       <div className="flex justify-start">
         <Button size="sm" variant="secondary" disabled={spring.time === home.time && spring.bounce === home.bounce} onClick={() => { setSpring(home); setRun((r) => r + 1); }}>
-          Back to litt's expressive spring
+          Back to litt's spring
         </Button>
       </div>
     </div>
