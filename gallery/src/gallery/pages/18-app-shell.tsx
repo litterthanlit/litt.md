@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { AppShell, SidebarLink, SidebarNav } from "@/components/app-shell";
 import { Card, CardBody, CardDescription, CardTitle } from "@/components/card";
 import { FolderIcon, SettingsIcon, UserIcon } from "@/components/icons";
+import { DatabaseIcon, FileIcon } from "@/components/icons";
 import { DeviceProvider } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
@@ -221,14 +222,141 @@ function ShellTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the recorder's library, its takes and its cards ---------- */
+
+const LIBRARY_PAGES = ["Overview", "Takes", "Cards", "Settings"] as const;
+type LibraryPage = (typeof LIBRARY_PAGES)[number];
+
+const TAKES = [
+  ["take_04.wav", "Scene 12 · 48 kHz · 24 bit · 02M 14S 06F. Circled."],
+  ["take_03.wav", "Scene 12 · 48 kHz · 24 bit · 01M 58S 20F. A car passes at 01M 12S."],
+  ["take_02.wav", "Scene 12 · 48 kHz · 24 bit · 02M 03S 11F. Offloading now."],
+  ["take_01.wav", "Scene 12 · 48 kHz · 24 bit · 00M 42S 11F. Clips at −0.1 dBFS."],
+  ["Room tone · Scene 12", "Boom and Room L · 01M 00S 00F. Recorded after the last take."],
+  ["Wild lines · Ana", "Lav 1 · 6 takes · 03M 40S 02F. Recorded yesterday."],
+];
+
+function LibraryDemoPage({ page, title: Title = "h1" }: { page: LibraryPage; title?: "h1" | "h3" }) {
+  return (
+    <div className="grid gap-6">
+      <Title className="text-h3 text-fg">{page}</Title>
+      <ul className="grid gap-4">
+        {TAKES.map(([name, text]) => (
+          <li key={name}>
+            <Card as="div">
+              <CardBody>
+                <CardTitle as={Title === "h1" ? "h2" : "h4"}>{name}</CardTitle>
+                <CardDescription>{text}</CardDescription>
+              </CardBody>
+            </Card>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+const LIBRARY_ICONS: Record<LibraryPage, ReactNode | undefined> = {
+  Overview: undefined,
+  Takes: <FileIcon />,
+  Cards: <DatabaseIcon />,
+  Settings: <SettingsIcon />,
+};
+
+function LibraryNav({ page, onPage, icons = false }: { page: LibraryPage; onPage: (p: LibraryPage) => void; icons?: boolean }) {
+  return (
+    <SidebarNav label="Main">
+      {LIBRARY_PAGES.map((p) => (
+        <SidebarLink
+          key={p}
+          href={`#${p.toLowerCase()}`}
+          current={p === page}
+          icon={icons ? LIBRARY_ICONS[p] : undefined}
+          onClick={(e) => {
+            e.preventDefault(); // this is a demo: do not move the gallery's own hash
+            onPage(p);
+          }}
+        >
+          {p}
+        </SidebarLink>
+      ))}
+    </SidebarNav>
+  );
+}
+
+function LibraryDemo() {
+  const [page, setPage] = useState<LibraryPage>("Overview");
+  return (
+    <Frame label="Recorder library, desktop" className="[--gutter:var(--space-8)]">
+      <AppShell
+        viewportHeight="34rem"
+        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Library</a>}
+        nav={<LibraryNav page={page} onPage={setPage} />}
+        footer={<p className="px-3 py-2 text-caption text-fg-subtle">Recorder 2 · Card A</p>}
+      >
+        <LibraryDemoPage page={page} />
+      </AppShell>
+    </Frame>
+  );
+}
+
+function LibraryPhoneDemo() {
+  const [page, setPage] = useState<LibraryPage>("Overview");
+  return (
+    <div className="mx-auto w-full max-w-sm">
+      <Frame label="Recorder library, phone" className="[--gutter:var(--space-4)]">
+        <DeviceProvider mode="phone">
+          <AppShell
+            viewportHeight="34rem"
+            wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Library</a>}
+            nav={<LibraryNav page={page} onPage={setPage} />}
+          >
+            <LibraryDemoPage page={page} />
+          </AppShell>
+        </DeviceProvider>
+      </Frame>
+    </div>
+  );
+}
+
+function LibraryIconsDemo() {
+  const [page, setPage] = useState<LibraryPage>("Takes");
+  return (
+    <Frame label="Recorder library, with icons" className="[--gutter:var(--space-8)] h-96">
+      <AppShell viewportHeight="24rem" wordmark={<a href="#overview">Library</a>} nav={<LibraryNav page={page} onPage={setPage} icons />}>
+        <LibraryDemoPage page={page} />
+      </AppShell>
+    </Frame>
+  );
+}
+
+/** The desktop shell, with its page area a div: the gallery's page already has its main landmark, and keeps the one. */
+function LibraryTile() {
+  const [page, setPage] = useState<LibraryPage>("Overview");
+  return (
+    <Frame label="Recorder library, desktop" className="[--gutter:var(--space-8)]">
+      <AppShell
+        viewportHeight="34rem"
+        mainLandmark={false}
+        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Library</a>}
+        nav={<LibraryNav page={page} onPage={setPage} />}
+        footer={<p className="px-3 py-2 text-caption text-fg-subtle">Recorder 2 · Card A</p>}
+      >
+        <LibraryDemoPage page={page} title="h3" />
+      </AppShell>
+    </Frame>
+  );
+}
+
 export default function AppShellPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ShellTile />}>
+    <Page meta={meta} docs={docs} tile={<ShellTile />} tileByWorld={{ device: <LibraryTile /> }}>
       <Stage
         title="Desktop"
         tier="instant"
         size="lg"
         code="ShellDemo"
+        byWorld={{ device: { demo: <LibraryDemo />, code: "LibraryDemo" } }}
         caption="The sidebar is 240px on surface-1 with a hairline on its edge. Scroll the page inside the frame: the main area moves and the sidebar's links stay in view, because its content is sticky and as tall as the window. Its column runs the full height of the page, so on a long page the sidebar still reaches the bottom. The current page is fg on a surface-2 fill, and hover fills a link at fg 6%. Nothing is a dot or an accent."
       >
         <ShellDemo />
@@ -239,6 +367,7 @@ export default function AppShellPage() {
         tier="expressive"
         size="lg"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <LibraryPhoneDemo />, code: "LibraryPhoneDemo" } }}
         caption="On a phone the sidebar is gone and a glass top bar holds the wordmark and a 44px menu button. The button opens the same nav in the bottom sheet that Dialog and Popover use: it rises by its own height on the expressive spring, never uses up the view's one moment, and drags down to close. Picking a link closes it. The sheet covers the whole window, as it would on a phone."
       >
         <PhoneDemo />
@@ -248,6 +377,7 @@ export default function AppShellPage() {
         title="With icons"
         tier="instant"
         code="IconsDemo"
+        byWorld={{ device: { demo: <LibraryIconsDemo />, code: "LibraryIconsDemo" } }}
         caption="A link takes an optional 16px icon. The icon is decorative and stays fg-subtle, so the label still says everything, and the current page is still shown by its fill and brighter text."
       >
         <IconsDemo />

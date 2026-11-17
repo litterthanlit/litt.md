@@ -123,12 +123,55 @@ function NarrowDemo() {
   return <CohortGrid className="w-full max-w-80" label="Retention by signup week, narrow" hue="teal" cohorts={WEEKLY} />;
 }
 
+/* ---------- Device's own (plans/024, phase 3): recorders still in use, by the week they were registered ---------- */
+
+function RecorderWeeklyDemo() {
+  return <CohortGrid className="w-full max-w-3xl" label="Recorders that made a take, by week registered" cohorts={WEEKLY} />;
+}
+
+function RecorderMonthlyDemo() {
+  return (
+    <CohortGrid
+      className="w-full max-w-2xl"
+      label="Recorders that made a take, by month registered"
+      periodLabel="Month"
+      average
+      cohorts={MONTHLY}
+    />
+  );
+}
+
+function RecorderCountsDemo() {
+  return (
+    <CohortGrid
+      className="w-full max-w-3xl"
+      label="Recorders in use by week registered"
+      valueType="count"
+      sizeLabel="Registered"
+      cohorts={WEEKLY_COUNTS}
+    />
+  );
+}
+
+function RecorderNarrowDemo() {
+  return <CohortGrid className="w-full max-w-80" label="Recorders that made a take, by week registered, narrow" cohorts={WEEKLY} />;
+}
+
 export default function CohortGridPage() {
   return (
     <Page meta={meta} docs={docs}>
       <Stage
         title="Weekly retention"
         code="WeeklyDemo"
+        byWorld={{
+          device: {
+            demo: <RecorderWeeklyDemo />,
+            title: "Recorders in use",
+            code: "RecorderWeeklyDemo",
+            caption:
+              "A row per week a batch of recorders was registered, oldest first, and a column per week since: the share of them that made a take that week. Each cell has its share in tabular figures and a dot in front of it in the ink's four steps, so the eye finds where the recorders stay in use without losing the numbers. Younger rows have fewer weeks, so the grid is a triangle and the empty cells draw nothing. Nothing moves.",
+          },
+        }}
         caption="A row per signup week, oldest first, and a column per week since signup. Each cell has its share in tabular figures and a dot in front of it in teal's four steps, so the eye finds where people stay without losing the numbers. Younger cohorts have fewer weeks, so the grid is a triangle and the empty cells draw nothing. Nothing moves."
       >
         <WeeklyDemo />
@@ -137,6 +180,14 @@ export default function CohortGridPage() {
       <Stage
         title="Monthly, with all cohorts"
         code="MonthlyDemo"
+        byWorld={{
+          device: {
+            demo: <RecorderMonthlyDemo />,
+            code: "RecorderMonthlyDemo",
+            caption:
+              "The same grid by month, in the ink. The last row is every batch together: for each month, the share of every recorder that has reached it, so a big batch counts for more than a small one. It sits under a stronger hairline and takes its dots from the same scale.",
+          },
+        }}
         caption="The same grid by month, in violet. The last row is every cohort together: for each month, the share of everyone who has reached it, so a big cohort counts for more than a small one. It sits under a stronger hairline and takes its dots from the same scale."
       >
         <MonthlyDemo />
@@ -145,6 +196,7 @@ export default function CohortGridPage() {
       <Stage
         title="Counts instead of shares"
         code="CountsDemo"
+        byWorld={{ device: { demo: <RecorderCountsDemo />, code: "RecorderCountsDemo" } }}
         caption="With the value type set to count, a cell says how many people were active, grouped by thousands, and the first week is the cohort itself. The dots step on the quartiles of the counts, so a larger cohort reads a step darker. Use shares when cohorts differ in size."
       >
         <CountsDemo />
@@ -153,6 +205,7 @@ export default function CohortGridPage() {
       <Stage
         title="In a narrow box"
         code="NarrowDemo"
+        byWorld={{ device: { demo: <RecorderNarrowDemo />, code: "RecorderNarrowDemo" } }}
         caption="In a box 20rem wide the weeks scroll sideways inside the grid's own box, and the page never does. The cohort column stays put, and a hairline appears at its edge once the weeks pass under it. When there is something to scroll, the box takes one tab stop, so the arrow keys scroll it too."
       >
         <NarrowDemo />

@@ -201,12 +201,111 @@ function RunTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): Litt's runs on a shoot's takes and cards ---------- */
+
+const SHOOT: AgentRun[] = [
+  { id: "mix", title: "Mixing take_04", status: "running", detail: "Step 2 of 3", progress: 0.45, updated: "Just now" },
+  { id: "lavs", title: "Fix the lavs that clip", status: "needs-you", detail: "Approve rec normalize --card A", updated: "1m ago" },
+  { id: "offload", title: "Offload Card A to the library", status: "running", detail: "Step 3 of 5", progress: 0.62, updated: "4m ago" },
+  { id: "stems", title: "Export the Scene 12 stems", status: "failed", detail: "Step 2: Card B is full", updated: "12m ago" },
+  { id: "report", title: "Write the sound report for day 4", status: "done", detail: "24 takes, 3 circled", updated: "1h ago" },
+  { id: "rename", title: "Rename the Scene 9 takes", status: "stopped", detail: "At step 2 of 4", updated: "Yesterday" },
+];
+
+/* What the agent does on its own: the lavs come to need you, the stems fail, the report finishes, the mix moves on a
+   step, and the lavs, once approved, run. */
+const SHOOT_LIVE: AgentRun[][] = [
+  [
+    { id: "mix", title: "Mixing take_04", status: "running", detail: "Step 1 of 3", progress: 0.12, updated: "Just now" },
+    { id: "offload", title: "Offload Card A to the library", status: "running", detail: "Step 3 of 5", progress: 0.62, updated: "1m ago" },
+    { id: "lavs", title: "Fix the lavs that clip", status: "running", detail: "Step 3 of 4", progress: 0.7, updated: "2m ago" },
+    { id: "stems", title: "Export the Scene 12 stems", status: "running", detail: "Step 2 of 3", progress: 0.5, updated: "3m ago" },
+    { id: "report", title: "Write the sound report for day 4", status: "running", detail: "Step 2 of 2", progress: 0.86, updated: "8m ago" },
+  ],
+];
+SHOOT_LIVE.push(change(SHOOT_LIVE[0], "lavs", { status: "needs-you", detail: "Approve rec normalize --card A", progress: undefined, updated: "Just now" }));
+SHOOT_LIVE.push(change(SHOOT_LIVE[1], "stems", { status: "failed", detail: "Step 2: Card B is full", progress: undefined, updated: "Just now" }));
+SHOOT_LIVE.push(change(SHOOT_LIVE[2], "report", { status: "done", detail: "24 takes, 3 circled", progress: undefined, updated: "Just now" }));
+SHOOT_LIVE.push(change(SHOOT_LIVE[3], "mix", { detail: "Step 2 of 3", progress: 0.45 }));
+SHOOT_LIVE.push(change(SHOOT_LIVE[4], "lavs", { status: "running", detail: "Step 4 of 4", progress: 0.9, updated: "Just now" }));
+
+const SHOOT_INBOX: AgentRun[] = [
+  { id: "slate", title: "Write the slate notes from the script supervisor's log", status: "needs-you", detail: "Pick one of two scene numbers", updated: "Just now" },
+  { id: "offload", title: "Offload every card from day 4 to the library", status: "running", detail: "Step 3 of 5, Card C", progress: 0.62, updated: "2m ago" },
+  { id: "stems", title: "Export the Scene 12 stems for the edit", status: "failed", detail: "Step 2: Card B is full, 0.4 GB free", updated: "12m ago" },
+  { id: "report", title: "Write the sound report for day 4", status: "done", detail: "24 takes, 3 circled, 1 clipped", updated: "1h ago" },
+  { id: "rename", title: "Rename the Scene 9 takes to the new slate", status: "stopped", detail: "At step 2 of 4", updated: "Yesterday" },
+];
+
+function ShootSidebarDemo() {
+  const { runs, stop, archive } = useStudio(SHOOT);
+  const [runId, setRunId] = useState("mix");
+  const open = runs.find((r) => r.id === runId);
+  return (
+    <div className="grid w-full max-w-3xl items-start gap-8 md:grid-cols-[18rem_minmax(0,1fr)]">
+      <RunList runs={runs} selectedId={runId} onSelect={(run) => setRunId(run.id)} onStop={stop} onArchive={archive} />
+      <div className="grid min-h-64 content-start gap-1 rounded-surface p-6 shadow-[inset_0_0_0_1px_var(--line)] max-md:hidden">
+        {open ? (
+          <>
+            <p className="text-body font-title text-fg">{open.title}</p>
+            <p className="text-small text-fg-muted">{open.detail}</p>
+          </>
+        ) : (
+          <p className="text-small text-fg-muted">Pick a run to open it here.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ShootLiveDemo() {
+  const frame = useFrame(SHOOT_LIVE.length, 1400);
+  return (
+    <div className="w-full max-w-72">
+      <RunList runs={SHOOT_LIVE[frame]} selectedId="lavs" />
+    </div>
+  );
+}
+
+function ShootInboxDemo() {
+  const { runs, stop, archive } = useStudio(SHOOT_INBOX);
+  const [runId, setRunId] = useState("slate");
+  return (
+    <div className="w-full max-w-64">
+      <RunList label="Inbox" runs={runs} selectedId={runId} onSelect={(run) => setRunId(run.id)} onStop={stop} onArchive={archive} />
+    </div>
+  );
+}
+
+function ShootPhoneDemo() {
+  const { runs, stop, archive } = useStudio(SHOOT);
+  const [runId, setRunId] = useState("lavs");
+  return (
+    <div className="mx-auto w-full max-w-[22.375rem]">
+      <div className="rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line">
+        <DeviceProvider mode="phone">
+          <RunList runs={runs} selectedId={runId} onSelect={(run) => setRunId(run.id)} onStop={stop} onArchive={archive} />
+        </DeviceProvider>
+      </div>
+    </div>
+  );
+}
+
+function ShootRunTile() {
+  const [runId, setRunId] = useState("mix");
+  return (
+    <div className="w-full max-w-72">
+      <RunList runs={SHOOT.slice(0, 2).concat(SHOOT[3])} selectedId={runId} onSelect={(run) => setRunId(run.id)} />
+    </div>
+  );
+}
+
 export default function RunListPage() {
   const [sidebarKey, resetSidebar] = useReplay();
   const [liveKey, replayLive] = useReplay();
   const [inboxKey, resetInbox] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<RunTile />}>
+    <Page meta={meta} docs={docs} tile={<RunTile />} tileByWorld={{ device: <ShootRunTile /> }}>
       <Stage
         title="Runs in a sidebar"
         tier="responsive"
@@ -215,6 +314,18 @@ export default function RunListPage() {
         code="SidebarDemo"
         onReplay={resetSidebar}
         replayLabel="Reset"
+        byWorld={{
+          device: {
+            demo: (
+              <div key={sidebarKey} className="w-full">
+                <ShootSidebarDemo />
+              </div>
+            ),
+            code: "ShootSidebarDemo",
+            caption:
+              "Six runs from the shoot. The lavs that clip wait for your approval, so that run sits above the rest under Needs you, and the others keep the order they came in. Press a run and the raised block glides to it on the responsive tier, while the hover highlight moves from row to row under it. Pick a status in the filter and the rows that stay glide to their new places as the others fade in, on the responsive tier. Stop and Archive show when you point at a row or move to it.",
+          },
+        }}
         caption="Six runs from the studio. The Halo build waits for your approval, so it sits above the rest under Needs you, and the others keep the order they came in. Press a run and the raised block glides to it on the responsive tier, while the hover highlight moves from row to row under it. Pick a status in the filter and the rows that stay glide to their new places as the others fade in, on the responsive tier. Stop and Archive show when you point at a row or move to it."
       >
         <div key={sidebarKey} className="w-full">
@@ -229,6 +340,18 @@ export default function RunListPage() {
         align="start"
         code="LiveDemo"
         onReplay={replayLive}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={liveKey} className="w-full">
+                <ShootLiveDemo />
+              </div>
+            ),
+            code: "ShootLiveDemo",
+            caption:
+              "Here nobody touches the list. The lavs come to need you and jump to the top, the Scene 12 stems fail, the sound report finishes, and once the normalize is approved the lavs drop back among the rest. Each run moves to its new place at once, the open block with it, because motion answers a hand and no hand asked. Marks and words swap at once, tones fade on the instant tier, and a polite status says each run that needs you, failed or is done.",
+          },
+        }}
         caption="Here nobody touches the list. The Halo build comes to need you and jumps to the top, the Northwind move fails, the Cosmos import finishes, and once its deploy is approved the Halo build drops back among the rest. Each run moves to its new place at once, the open block with it, because motion answers a hand and no hand asked. Marks and words swap at once, colors fade on the instant tier, and a polite status says each run that needs you, failed or is done."
       >
         <div key={liveKey} className="w-full">
@@ -243,6 +366,16 @@ export default function RunListPage() {
         code="InboxDemo"
         onReplay={resetInbox}
         replayLabel="Reset"
+        byWorld={{
+          device: {
+            demo: (
+              <div key={inboxKey} className="w-full">
+                <ShootInboxDemo />
+              </div>
+            ),
+            code: "ShootInboxDemo",
+          },
+        }}
         caption="The same list at 16rem, as an inbox. Long titles and status lines are cut at the end, and the updated words never are. Stop a running run and it says where it stopped. Archive a finished one and it leaves at once, and if the button had focus, focus moves to the row that takes its place. The verbs keep a column of their own, so nothing shifts when one shows."
       >
         <div key={inboxKey} className="w-full">
@@ -255,6 +388,7 @@ export default function RunListPage() {
         tier="responsive"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <ShootPhoneDemo />, code: "ShootPhoneDemo" } }}
         caption="On a touch screen there is no hover, so Stop and Archive always show, and they grow to 44px with the filter. A pressed row takes its hover fill, and a tap never leaves the highlight behind. The rows stay 56px, the block still glides to the run you tap, and Archive is a button, not a swipe."
       >
         <PhoneDemo />

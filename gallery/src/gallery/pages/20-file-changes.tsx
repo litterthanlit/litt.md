@@ -297,11 +297,212 @@ function TryFileChanges(props: Omit<FileChangesProps, "changes" | "onDecide">) {
   return <FileChanges {...props} changes={changes} onDecide={decide} />;
 }
 
+/* ---------- Device's own (plans/024, phase 3): Litt fixes the lavs that clip, and reroutes a scene ----------
+
+   The takes on card A clipped because the limiter was off on both lavs. Four files: the field preset, a test that every
+   channel is limited, the old preset gone, and the scene's routing renamed to point at the fixed preset. */
+
+const PRESET_DIFF = `@@ -4,8 +4,8 @@
+   "sampleRate": 48000,
+   "bitDepth": 24,
+   "channels": [
+     { "name": "Boom", "limiter": true },
+-    { "name": "Lav 1", "limiter": false },
+-    { "name": "Lav 2", "limiter": false },
++    { "name": "Lav 1", "limiter": true },
++    { "name": "Lav 2", "limiter": true },
+     { "name": "Room", "limiter": true }`;
+
+const PRESET_TEST_DIFF = `@@ -0,0 +1,9 @@
++import { describe, expect, it } from "vitest";
++import field from "./field.json";
++
++describe("field preset", () => {
++  it("limits every channel at −1 dBFS", () => {
++    for (const channel of field.channels) expect(channel.limiter).toBe(true);
++    expect(field.limiterThreshold).toBe(-1);
++  });
++});`;
+
+const OLD_PRESET_DIFF = `@@ -1,6 +0,0 @@
+-{
+-  "name": "Field (old)",
+-  "sampleRate": 44100,
+-  "bitDepth": 16,
+-  "channels": []
+-}`;
+
+const ROUTING_DIFF = `@@ -1,5 +1,5 @@
+ {
+-  "preset": "./presets/field-old.json",
++  "preset": "./presets/field.json",
+   "scene": 12,
+   "inputs": ["boom", "lav1", "lav2", "room"],
+   "outputs": ["card-a", "card-b"]`;
+
+const PRESET: FileChange = { id: "preset", path: "presets/field.json", kind: "modified", diff: PRESET_DIFF };
+
+const LAVS: FileChange[] = [
+  PRESET,
+  { id: "preset-test", path: "presets/field.test.ts", kind: "added", diff: PRESET_TEST_DIFF },
+  { id: "old-preset", path: "presets/field-old.json", kind: "deleted", diff: OLD_PRESET_DIFF },
+  { id: "routing", path: "routing/scene-12.json", kind: "renamed", from: "routing/scene-12-draft.json", diff: ROUTING_DIFF },
+];
+
+/* Litt has routed Scene 14 through a stereo mix bus, on a branch for review. The counts come with the list, and each
+   diff is fetched when its row first opens. */
+
+const MIX_BUS_DIFFS: Record<string, string> = {
+  bus: `@@ -1,8 +1,10 @@
+ {
+-  "mode": "split",
+-  "left": ["boom", "room.L"],
+-  "right": ["boom", "room.R"],
++  "mode": "bus",
++  "bus": "mix",
++  "inputs": ["boom", "lav1", "lav2", "room.L", "room.R"],
++  "pan": { "room.L": -100, "room.R": 100 },
++  "trim": -3,
+   "record": ["card-a", "card-b"]
+ }`,
+  "bus-ts": `@@ -0,0 +1,9 @@
++import type { Input } from "@recorder/sdk";
++
++export function mixBus(inputs: Input[]) {
++  return {
++    name: "Mix",
++    channels: 2,
++    sources: inputs.map((input) => input.id),
++  };
++}`,
+  split: `@@ -1,7 +0,0 @@
+-import type { Input } from "@recorder/sdk";
+-
+-export function legacySplit(inputs: Input[]) {
+-  return inputs.map((input, i) => ({ ...input, side: i % 2 ? "R" : "L" }));
+-}
+-
+-export default legacySplit;`,
+  scene: `@@ -1,6 +1,6 @@
+ {
+-  "name": "Scene 14 (draft)",
+-  "routing": "../routing/legacy-split.ts",
+-  "takes": 0,
++  "name": "Scene 14",
++  "routing": "../routing/mix-bus.json",
++  "takes": 6,
+   "sampleRate": 48000
+ }`,
+  monitor: `@@ -2,5 +2,5 @@
+   "headphones": {
+-    "source": "split",
++    "source": "mix",
+     "level": -12
+   }`,
+};
+
+const MIX_BUS: FileChange[] = [
+  { id: "bus", path: "routing/mix-bus.json", kind: "modified", added: 5, removed: 3 },
+  { id: "bus-ts", path: "routing/bus.ts", kind: "added", added: 9, removed: 0 },
+  { id: "split", path: "routing/legacy-split.ts", kind: "deleted", added: 0, removed: 7 },
+  { id: "scene", path: "scenes/scene-14.json", kind: "renamed", from: "scenes/scene-14-draft.json", added: 3, removed: 3 },
+  { id: "monitor", path: "presets/monitor.json", kind: "modified", added: 1, removed: 1 },
+];
+
+function LavsTurnDemo() {
+  const [changes, decide] = useReview(LAVS);
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-6">
+      <div className="grid gap-3">
+        <p className="text-body text-fg-muted">
+          The lavs stop clipping now. The limiter was off on both of them in the field preset, so I turned it on, added a test that every channel is
+          limited at −1 dBFS, and removed the old preset the scene still pointed at.
+        </p>
+        <FileChanges changes={changes} onDecide={decide} />
+      </div>
+      <Composer placeholder="Message Litt" label="Message Litt" className="w-full" />
+    </div>
+  );
+}
+
+function PresetCallDemo() {
+  const [changes, decide] = useReview([PRESET]);
+  return (
+    <div className="grid w-full min-w-0 max-w-xl">
+      <ToolCall action="Read" target="presets/field.json" duration={0.1} />
+      <ToolCall
+        action="Edited"
+        target="presets/field.json"
+        result="+2 −2"
+        duration={0.3}
+        defaultOpen
+        details={<FileChanges changes={changes} onDecide={decide} summary={false} defaultOpen />}
+      />
+      <ToolCall action="Ran" target="rec check --preset field" result="Exit 0" duration={6.1} />
+    </div>
+  );
+}
+
+/** Fetches a routing diff when its row first opens, as a review screen would from its server. */
+function useLazyBusDiffs() {
+  const [diffs, setDiffs] = useState<Record<string, string>>({});
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
+  const load: FileChangesProps["onOpenChange"] = (change, open) => {
+    if (!open || diffs[change.id] !== undefined) return;
+    timers.current.push(window.setTimeout(() => setDiffs((all) => ({ ...all, [change.id]: MIX_BUS_DIFFS[change.id] })), 700));
+  };
+  return [diffs, load] as const;
+}
+
+function MixBusReviewDemo() {
+  const [changes, decide] = useReview(MIX_BUS);
+  const [diffs, load] = useLazyBusDiffs();
+  return (
+    <div className="grid w-full min-w-0 max-w-2xl gap-6">
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">Route Scene 14 through the mix bus</p>
+        <p className="text-small text-fg-muted">Litt's branch litt/mix-bus. Nothing reaches the recorder until you keep it.</p>
+      </div>
+      <FileChanges changes={changes.map((c) => ({ ...c, diff: diffs[c.id] }))} onDecide={decide} onOpenChange={load} accent />
+    </div>
+  );
+}
+
+function LavsPhoneDemo() {
+  const [changes, decide] = useReview(LAVS);
+  return (
+    <div className="mx-auto w-full max-w-[22.375rem]">
+      <div className="rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line">
+        <DeviceProvider mode="phone">
+          <div className="grid gap-6">
+            <p className="litt-raised ml-auto max-w-[85%] px-4 py-3 text-body text-fg">The lavs on card A keep clipping. Can you fix it?</p>
+            <div className="grid gap-3">
+              <p className="text-body text-fg-muted">Fixed. Here is what I changed.</p>
+              <FileChanges changes={changes} onDecide={decide} />
+            </div>
+            <Composer placeholder="Message Litt" label="Message Litt" className="w-full" />
+          </div>
+        </DeviceProvider>
+      </div>
+    </div>
+  );
+}
+
+function LavsReviewTile() {
+  const [changes, decide] = useReview(LAVS);
+  return (
+    <div className="w-full max-w-md">
+      <FileChanges changes={changes} onDecide={decide} />
+    </div>
+  );
+}
+
 export default function FileChangesPage() {
   const [turnKey, resetTurn] = useReplay();
   const [reviewKey, resetReview] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<ReviewTile />}>
+    <Page meta={meta} docs={docs} tile={<ReviewTile />} tileByWorld={{ device: <LavsReviewTile /> }}>
       <Stage
         title="The end of a turn"
         tier="responsive"
@@ -310,6 +511,14 @@ export default function FileChangesPage() {
         code="TurnDemo"
         onReplay={resetTurn}
         replayLabel="Reset"
+        byWorld={{
+          device: {
+            demo: <LavsTurnDemo key={turnKey} />,
+            code: "LavsTurnDemo",
+            caption:
+              "Litt stopped the lavs clipping and lists what it changed: one row per file with its kind and its lines added and removed. Press Keep or Undo on a row and it settles at once: the verbs give way to the word, the path steps back on the instant tier, and the count of what is left rolls down on the responsive tier. Keep all and Undo all then say the rest, and act on the files still pending only. When every file is decided the header becomes a receipt. Send stays the view's primary key, so Keep all is a key like the others.",
+          },
+        }}
         caption="Litt fixed the Halo build and lists what it changed: one row per file with its kind and its lines added and removed. Press Keep or Undo on a row and it settles at once: the verbs give way to the word, the path steps back on the instant tier, and the count of what is left rolls down on the responsive tier. Keep all and Undo all then say the rest, and act on the files still pending only. When every file is decided the header becomes a receipt. Send keeps the view's one accent fill, so Keep all is a raised block."
       >
         <TurnDemo key={turnKey} />
@@ -321,6 +530,7 @@ export default function FileChangesPage() {
         size="lg"
         align="start"
         code="EditCallDemo"
+        byWorld={{ device: { demo: <PresetCallDemo />, code: "PresetCallDemo" } }}
         caption="An edit call's details are the one file it changed, with no header: the call's row already says +2 −2. Its diff starts open, and Keep and Undo sit on the row, so the person can decide while the agent works on. Open or close the row and the diff fades in and travels a quarter of the travel token on the responsive tier, and its height snaps."
       >
         <EditCallDemo />
@@ -334,6 +544,7 @@ export default function FileChangesPage() {
         code="ReviewScreenDemo"
         onReplay={resetReview}
         replayLabel="Reset"
+        byWorld={{ device: { demo: <MixBusReviewDemo key={reviewKey} />, code: "MixBusReviewDemo" } }}
         caption="A screen with no composer has no Send, so accent makes Keep all the view's one accent fill. The counts come with the list and each diff is fetched when its row first opens: the row says Loading the diff in words until it arrives, then the diff takes its place at once."
       >
         <ReviewScreenDemo key={reviewKey} />
@@ -344,6 +555,7 @@ export default function FileChangesPage() {
         tier="instant"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <LavsPhoneDemo />, code: "LavsPhoneDemo" } }}
         caption="In a phone-wide turn the kind, the counts and the word drop to a second line under the path, and Keep all and Undo all sit under the header's words. The directory is cut first and the file name never. On a finger the rows, the verbs and the buttons are 44px, and a verb's tooltip opens on a press and hold."
       >
         <PhoneDemo />

@@ -112,6 +112,65 @@ function StatesDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): sending takes from a computer to the recorder's card ---------- */
+
+const TAKES_START: Upload[] = [
+  { id: "take_03", name: "take_03.wav", size: 182_452_224 },
+  { id: "take_04", name: "take_04.wav", size: 241_172_480, progress: 64, error: "The cable came out at 64%." },
+];
+
+/** The same pretend upload, starting from two takes: each climbs at its own pace, and one in four stops partway. */
+function useTakeUploads() {
+  const [uploads, setUploads] = useState<Upload[]>(TAKES_START);
+  const timer = useRef(0);
+  useEffect(() => {
+    timer.current = window.setInterval(() => {
+      setUploads((all) =>
+        !all.some((u) => u.progress !== undefined && !u.error) ? all : all.map((u) => {
+          if (u.progress === undefined || u.error || u.progress >= 100) return u;
+          const step = 6 + (u.name.length % 5) * 3;
+          const next = Math.min(100, u.progress + step);
+          if (u.id.endsWith("-3") && next >= 40) return { ...u, progress: 40, error: "The cable came out at 40%." };
+          return { ...u, progress: next >= 100 ? undefined : next };
+        }),
+      );
+    }, 300);
+    return () => window.clearInterval(timer.current);
+  }, []);
+  return {
+    uploads,
+    add: (files: File[]) =>
+      setUploads((all) => [...all, ...files.map((f, i) => ({ id: `${f.name}-${all.length + i}`, name: f.name, size: f.size, progress: 0 }))]),
+    retry: (id: string) => setUploads((all) => all.map((u) => (u.id === id ? { ...u, id: `${u.id}-again`, progress: 0, error: undefined } : u))),
+    remove: (id: string) => setUploads((all) => all.filter((u) => u.id !== id)),
+  };
+}
+
+function CopyTakesDemo() {
+  const { uploads, add, retry, remove } = useTakeUploads();
+  return (
+    <div className="grid w-full max-w-lg gap-6">
+      <FileDrop label="Takes for card A" accept={[".wav", ".flac"]} maxSize={2 * 1024 * 1024 * 1024} hint="WAV or FLAC, up to 2 GB a take" onFiles={add} />
+      {uploads.length > 0 && (
+        <FileList label="Takes for card A">
+          {uploads.map((u) => (
+            <FileRow key={u.id} name={u.name} size={u.size} progress={u.progress} error={u.error} onRetry={() => retry(u.id)} onRemove={() => remove(u.id)} />
+          ))}
+        </FileList>
+      )}
+    </div>
+  );
+}
+
+function SlatePhotoDemo() {
+  return (
+    <div className="grid w-full max-w-lg gap-6">
+      <FileDrop label="Slate photo" multiple={false} accept={["image/*"]} hint="One photo of the slate, shown beside the take" onFiles={() => {}} />
+      <FileDrop label="Takes for card B" disabled hint="Card B is locked. Slide the switch on its side to write to it." onFiles={() => {}} />
+    </div>
+  );
+}
+
 export default function FileDropPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -121,6 +180,15 @@ export default function FileDropPage() {
         align="start"
         code="UploadDemo"
         caption="Drag files from your desktop over the area: it deepens (or is ringed in ink, or lights its lamp, by the look) and the words say what a drop will do. Drop them, or press Choose files. A file of another type or over 10 MB is turned away with a sentence under the area. Each file that gets in uploads on its own rail; the fourth one stops partway and offers Retry. Remove cancels an upload or takes a file away."
+        byWorld={{
+          device: {
+            demo: <CopyTakesDemo />,
+            title: "Copy takes to the card",
+            code: "CopyTakesDemo",
+            caption:
+              "The recorder, mounted on a computer over USB-C, takes WAVs onto its card. Drag takes over the area and its lamp lights, and the words say what a drop will do. Drop them, or press Choose files. A file of another type or over 2 GB is turned away with a sentence under the area. Each take copies on its own rail; the fourth one stops partway and offers Retry. Remove cancels a copy or takes a file away.",
+          },
+        }}
       >
         <UploadDemo />
       </Stage>
@@ -131,6 +199,13 @@ export default function FileDropPage() {
         align="start"
         code="StatesDemo"
         caption="multiple={false} takes one file and says so on its button. Disabled lies flat (surface-2, muted words), with no drop and no tab stop; its hint says when it opens again."
+        byWorld={{
+          device: {
+            demo: <SlatePhotoDemo />,
+            code: "SlatePhotoDemo",
+            caption: "multiple={false} takes one file and says so on its button. Disabled lies flat, with no drop and no tab stop; its hint says how to open it.",
+          },
+        }}
       >
         <StatesDemo />
       </Stage>

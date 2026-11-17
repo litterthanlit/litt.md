@@ -157,6 +157,58 @@ function LightboxDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the day's takes, each with its waveform ---------- */
+
+/** A take's waveform as its cover, in the ink: the same bars for the same seed, so a screenshot never changes. */
+function Waveform({ seed }: { seed: number }) {
+  const bars = Array.from({ length: 48 }, (_, i) => {
+    const h = 12 + 70 * Math.abs(Math.sin((i + 1) * seed) * Math.cos(i / (3 + seed)));
+    return { x: 16 + i * 6, h };
+  });
+  return (
+    <svg viewBox="0 0 320 200" className="absolute inset-0 size-full" aria-hidden="true" focusable="false">
+      <line x1="16" y1="100" x2="304" y2="100" className="stroke-line" vectorEffect="non-scaling-stroke" />
+      {bars.map((b) => (
+        <rect key={b.x} x={b.x} y={100 - b.h} width="3" height={b.h * 2} className="fill-fg-subtle" />
+      ))}
+    </svg>
+  );
+}
+
+const DAY_TAKES: { id: string; name: string; note: string; seed: number }[] = [
+  { id: "t04", name: "take_04.wav", note: "Scene 12 · 00M 14S 06F · kept.", seed: 1.7 },
+  { id: "t05", name: "take_05.wav", note: "Scene 12 · 00M 22S 11F · clipped on channel 2.", seed: 2.3 },
+  { id: "t06", name: "take_06.wav", note: "Scene 12 · 00M 19S 02F · kept.", seed: 2.9 },
+  { id: "room", name: "room_tone_01.wav", note: "Kitchen · 01M 00S 00F at the scene's levels.", seed: 0.9 },
+  { id: "dawn", name: "dawn_chorus.wav", note: "Field · 12M 40S 03F at 96 kHz.", seed: 3.1 },
+  { id: "mix", name: "Mix · take_04", note: "Bounced at −14 LUFS with 4 stems.", seed: 1.3 },
+];
+
+function TakesStripDemo() {
+  return (
+    <Carousel label="Today's takes" perView="three" className="w-full">
+      <CarouselContent>
+        {DAY_TAKES.map((take) => (
+          <CarouselItem key={take.id} label={take.name}>
+            <Card cover="inset" className="h-full">
+              <CardCover>
+                <Waveform seed={take.seed} />
+              </CardCover>
+              <CardBody>
+                <CardTitle>
+                  <CardLink href="#carousel">{take.name}</CardLink>
+                </CardTitle>
+                <CardDescription>{take.note}</CardDescription>
+              </CardBody>
+            </Card>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselControls />
+    </Carousel>
+  );
+}
+
 export default function CarouselPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -175,6 +227,7 @@ export default function CarouselPage() {
         size="lg"
         align="start"
         code="CardsDemo"
+        byWorld={{ device: { demo: <TakesStripDemo />, title: "A strip of takes", code: "TakesStripDemo" } }}
         caption="Three cards in a wide box, two in a middling one, one and a peek on a phone; the box decides, not the screen. Next moves a whole page, so the first card not wholly in view comes to the start, and the range reads 4 to 6 of 6. At the end Next is disabled and hands its focus to Previous."
       >
         <CardsDemo />

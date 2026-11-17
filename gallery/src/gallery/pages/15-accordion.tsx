@@ -242,6 +242,165 @@ function CardDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the recorder's questions, a channel's settings, a scene's checklist ---------- */
+
+const RECORDER_QUESTIONS = [
+  {
+    id: "battery",
+    q: "What happens if the battery runs out mid-take?",
+    a: "The recorder writes the take to the card every second, so you lose at most the last second. take_04.wav is closed and plays when you power back on.",
+  },
+  {
+    id: "card",
+    q: "How long does a card last?",
+    a: "A 32 GB card holds about 30 hours of two channels at 48 kHz · 24 bit. The card gauge says what is left at the format you are recording.",
+  },
+  {
+    id: "safety",
+    q: "Can I record a safety track?",
+    a: "Yes. Turn on Safety and each channel records a second copy 12 dB lower, so a shout that clips the take is clean in its safety.",
+  },
+  {
+    id: "timecode",
+    q: "How do I stay in sync with the camera?",
+    a: "Jam timecode from the camera at 25 fps, then slate the first take. The library lines every take up by its timecode.",
+  },
+  {
+    id: "rename",
+    q: "Can I rename a take after recording?",
+    a: "Yes, in the library. The file on the card keeps its name, so the sound report still matches the card.",
+  },
+];
+
+function RecorderQuestionsDemo() {
+  return (
+    <Accordion defaultValue="battery" className="w-full max-w-xl">
+      {RECORDER_QUESTIONS.map(({ id, q, a }) => (
+        <AccordionItem key={id} value={id}>
+          <AccordionTrigger>{q}</AccordionTrigger>
+          <AccordionContent>{a}</AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
+  );
+}
+
+const CHANNEL_GROUPS: Record<string, string> = {
+  input: "Input",
+  phantom: "Phantom power",
+  safety: "Safety track",
+  routing: "Routing",
+};
+
+const ROUTES = [
+  ["Channel 2", "Mix left"],
+  ["Channel 2", "Headphones"],
+  ["Channel 2", "take_04_ch2.wav"],
+];
+
+function ChannelSettingsDemo() {
+  const [open, setOpen] = useState<string[]>(["input", "safety"]);
+  const names = Object.keys(CHANNEL_GROUPS)
+    .filter((key) => open.includes(key))
+    .map((key) => CHANNEL_GROUPS[key]);
+
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <p className="text-small font-title text-fg">Settings for channel 2, boom</p>
+      <Accordion type="multiple" value={open} onValueChange={setOpen}>
+        <AccordionItem value="input">
+          <AccordionTrigger>Input</AccordionTrigger>
+          <AccordionContent className="grid gap-3">
+            <p>A condenser mic on the XLR input, with the gain at +42 dB and a low cut at 80 Hz.</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Tag status="success">Signal</Tag>
+              <Tag>Peak −9 dB</Tag>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="phantom">
+          <AccordionTrigger>Phantom power</AccordionTrigger>
+          <AccordionContent className="max-w-none">
+            <Switch align="end" label="48 V phantom power" description="For a condenser mic. Leave it off for a dynamic one." defaultChecked />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="safety">
+          <AccordionTrigger>Safety track</AccordionTrigger>
+          <AccordionContent className="max-w-none">
+            <Switch align="end" label="Record a safety track" description="A second copy 12 dB lower, in case a shout clips." defaultChecked />
+            <Switch align="end" label="Link to channel 1" />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="routing">
+          <AccordionTrigger>Routing</AccordionTrigger>
+          <AccordionContent>
+            <ul className="grid gap-2 font-mono text-small">
+              {ROUTES.map(([from, to]) => (
+                <li key={to} className="flex flex-wrap gap-x-2">
+                  <span className="text-fg">{from}</span>
+                  <span className="text-fg-subtle">to</span>
+                  <span>{to}</span>
+                </li>
+              ))}
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {names.length ? `Open: ${names.join(", ")}` : "All closed"}
+      </p>
+    </div>
+  );
+}
+
+const SCENE_CHECKLIST = [
+  {
+    id: "inputs",
+    title: "Inputs",
+    items: ["Lavalier on channel 1, gain +30 dB", "Boom on channel 2, 48 V on", "Safety tracks on both channels"],
+  },
+  {
+    id: "card",
+    title: "Card",
+    items: ["Card A formatted at 48 kHz · 24 bit", "Card B in the second slot as a mirror", "3H 12M left, enough for the day"],
+  },
+  {
+    id: "timecode",
+    title: "Timecode",
+    items: ["Jammed from camera A at 25 fps", "Slate checked against the LCD", "Drift under one frame at lunch"],
+  },
+  {
+    id: "wrap",
+    title: "Wrap",
+    items: ["A minute of room tone in the kitchen", "Sound report signed and on the card", "Both cards copied to the library"],
+  },
+];
+
+function SceneCardDemo() {
+  return (
+    <Card className="w-full max-w-md">
+      <CardBody>
+        <CardTitle>Scene 12, sound checklist</CardTitle>
+        <CardDescription>Rolls on 18 November.</CardDescription>
+        <Accordion headingLevel={4} defaultValue="card" className="mt-6">
+          {SCENE_CHECKLIST.map(({ id, title, items }) => (
+            <AccordionItem key={id} value={id}>
+              <AccordionTrigger>{title}</AccordionTrigger>
+              <AccordionContent className="text-small">
+                <ul className="grid list-disc gap-2 pl-4">
+                  {items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </CardBody>
+    </Card>
+  );
+}
+
 export default function AccordionPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -251,6 +410,7 @@ export default function AccordionPage() {
         size="lg"
         align="start"
         code="StudioQuestionsDemo"
+        byWorld={{ device: { demo: <RecorderQuestionsDemo />, title: "Recorder questions", code: "RecorderQuestionsDemo" } }}
         caption="Press a question. Its answer snaps into place, then fades in and drops a little, while the questions below slide down by transform and the chevron turns half a turn, all on the responsive tier. Opening another closes this one: its answer fades on the exit token as the rows below rise. No height is animated, so no text stretches and the page never jumps."
       >
         <StudioQuestionsDemo />
@@ -262,6 +422,7 @@ export default function AccordionPage() {
         size="lg"
         align="start"
         code="SiteSettingsDemo"
+        byWorld={{ device: { demo: <ChannelSettingsDemo />, title: "Channel settings", code: "ChannelSettingsDemo" } }}
         caption="With type multiple, several sections stay open and the value is a list. Each one opens and closes with the same motion. The settings inside keep their own: a switch's thumb slides on the instant tier, and the rows around it stay still."
       >
         <SiteSettingsDemo />
@@ -273,6 +434,7 @@ export default function AccordionPage() {
         size="lg"
         align="start"
         code="CardDemo"
+        byWorld={{ device: { demo: <SceneCardDemo />, code: "SceneCardDemo" } }}
         caption="The accordion brings no card, so the page put one around it. Its triggers sit in h4 headings under the card's title. While a section closes, the accordion keeps its height until the content has faded, so the card's edge never cuts across the rows still rising. Then it snaps, as it snapped open."
       >
         <CardDemo />

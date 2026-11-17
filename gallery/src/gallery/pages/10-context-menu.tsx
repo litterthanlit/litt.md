@@ -14,6 +14,8 @@ import {
   MenuSub,
 } from "@/components/menu";
 import { DeviceProvider } from "@/motion";
+import { PlayIcon } from "@/components/icons";
+import { Tag, type TagStatus } from "@/components/tag";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -337,6 +339,182 @@ function FileGridDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a card's takes, and the card's own folder ---------- */
+
+const TAKES: { id: string; name: string; scene: string; status: TagStatus; word: string }[] = [
+  { id: "take_04", name: "take_04.wav", scene: "Scene A · interview", status: "success", word: "Saved" },
+  { id: "take_05", name: "take_05.wav", scene: "Scene A · room tone", status: "warning", word: "Copying" },
+  { id: "take_06", name: "take_06.wav", scene: "Scene B · scratch", status: "neutral", word: "Scratch" },
+  { id: "take_07", name: "take_07.wav", scene: "Scene B · the marsh", status: "success", word: "Saved" },
+];
+const SCENES = ["Scene A", "Scene B", "Scene C", "Archive 2026"];
+
+/** One set of rows for both ways in: the context menu and the row's ⋯ Menu. */
+function TakeActions({ name, pick }: { name: string; pick: (what: string) => void }) {
+  return (
+    <>
+      <MenuItem icon={<PlayIcon />} shortcut="↵" onSelect={() => pick(`Playing ${name}`)}>
+        Play
+      </MenuItem>
+      <MenuItem icon={<EditIcon />} onSelect={() => pick(`Renaming ${name}`)}>
+        Rename
+      </MenuItem>
+      <MenuItem icon={<CopyIcon />} shortcut="⌘D" onSelect={() => pick(`Duplicated ${name}`)}>
+        Duplicate
+      </MenuItem>
+      <MenuSub icon={<FolderIcon />} label="Move to">
+        {SCENES.map((s) => (
+          <MenuItem key={s} icon={<FolderIcon />} onSelect={() => pick(`Moved ${name} to ${s}`)}>
+            {s}
+          </MenuItem>
+        ))}
+      </MenuSub>
+      <MenuSeparator />
+      <MenuItem icon={<ArchiveIcon />} onSelect={() => pick(`Archived ${name}`)}>
+        Archive
+      </MenuItem>
+      <MenuItem icon={<TrashIcon />} destructive onSelect={() => pick(`Deleted ${name}`)}>
+        Delete take
+      </MenuItem>
+    </>
+  );
+}
+
+function TakeRowsDemo() {
+  const [last, setLast] = useState("Nothing picked yet");
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <ul aria-label="Takes on card A" className="w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
+        {TAKES.map((t) => (
+          <ContextMenu
+            key={t.id}
+            label={`${t.name} actions`}
+            trigger={
+              <li className="group h-16 border-b border-line last:border-b-0">
+                <div className={rowFill}>
+                  <button type="button" className={rowButton} onClick={() => setLast(`Playing ${t.name}`)}>
+                    <span className="grid min-w-0 flex-1 gap-1">
+                      <span className="truncate text-body font-title text-fg">{t.name}</span>
+                      <span className="truncate text-caption text-fg-subtle">{t.scene}</span>
+                    </span>
+                    <Tag status={t.status} className="shrink-0">{t.word}</Tag>
+                  </button>
+                  <Menu
+                    label={`${t.name} actions`}
+                    align="end"
+                    trigger={
+                      <Button iconOnly variant="ghost" aria-label={`More actions for ${t.name}`}>
+                        <MoreIcon />
+                      </Button>
+                    }
+                  >
+                    <TakeActions name={t.name} pick={setLast} />
+                  </Menu>
+                </div>
+              </li>
+            }
+          >
+            <TakeActions name={t.name} pick={setLast} />
+          </ContextMenu>
+        ))}
+      </ul>
+      <p role="status" className="text-caption font-normal text-fg-subtle">
+        {last}
+      </p>
+    </div>
+  );
+}
+
+function PhoneTakeRowsDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <div className="mx-auto w-full max-w-sm">
+        <TakeRowsDemo />
+      </div>
+    </DeviceProvider>
+  );
+}
+
+const CARD_FILES: AssetFile[] = [
+  { name: "take_04", ext: "wav", kb: 13000, edited: "2026-10-18" },
+  { name: "take_03", ext: "wav", kb: 9200, edited: "2026-10-18" },
+  { name: "take_02", ext: "wav", kb: 345600, edited: "2026-10-16" },
+  { name: "take_01", ext: "wav", kb: 2100, edited: "2026-10-12" },
+  { name: "take_04_mix", ext: "mp3", kb: 1880, edited: "2026-10-18" },
+  { name: "slate", ext: "jpg", kb: 412, edited: "2026-10-12" },
+  { name: ".index", ext: "db", kb: 88, edited: "2026-10-18", hidden: true },
+  { name: ".trashes", ext: "", kb: 1, edited: "2026-10-01", hidden: true },
+];
+
+function CardFolderDemo() {
+  const [hidden, setHidden] = useState(false);
+  const [extensions, setExtensions] = useState(true);
+  const [sort, setSort] = useState<Sort>("name");
+  const [last, setLast] = useState("Nothing opened yet");
+  const options = (
+    <FolderOptions hidden={hidden} onHidden={setHidden} extensions={extensions} onExtensions={setExtensions} sort={sort} onSort={setSort} />
+  );
+  const files = CARD_FILES.filter((f) => hidden || !f.hidden).sort(ORDER[sort]);
+  const fileName = (f: AssetFile) => (extensions && f.ext ? `${f.name}.${f.ext}` : f.name);
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <ContextMenu
+        label="Card A folder options"
+        trigger={
+          <section aria-label="Card A folder" className="grid gap-4 rounded-surface p-4 shadow-[inset_0_0_0_1px_var(--line)]">
+            <div className="flex items-center justify-between gap-4">
+              <div className="grid min-w-0 gap-1">
+                <h3 className="truncate text-body text-fg">Card A</h3>
+                <p className="truncate text-caption text-fg-subtle">Scene A · {files.length} files</p>
+              </div>
+              <Menu
+                label="View options"
+                align="end"
+                trigger={
+                  <Button size="sm" icon={<SlidersIcon />} iconRight={<ChevronDownIcon />}>
+                    View
+                  </Button>
+                }
+              >
+                {options}
+              </Menu>
+            </div>
+            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {files.map((f) => (
+                <li key={f.name}>
+                  <button
+                    type="button"
+                    onClick={() => setLast(`Opened ${f.name}${f.ext ? "." + f.ext : ""}`)}
+                    className={
+                      "grid w-full cursor-pointer gap-3 rounded-control p-3 text-left [-webkit-tap-highlight-color:transparent] " +
+                      "transition-[background-color] duration-(--dur-instant) ease-litt hover:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " +
+                      "pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+                      "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
+                    }
+                  >
+                    <span className="grid size-10 place-items-center rounded-control bg-surface-2 text-fg-muted">
+                      <FileIcon />
+                    </span>
+                    <span className="grid min-w-0 gap-1">
+                      <span className="truncate text-small font-title text-fg">{fileName(f)}</span>
+                      <span className="tabular-nums text-caption font-normal text-fg-subtle">{size(f.kb)}</span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        }
+      >
+        {options}
+      </ContextMenu>
+      <p role="status" className="text-caption font-normal text-fg-subtle">
+        {last} · {hidden ? "hidden files shown" : "hidden files hidden"} · by {sort === "edited" ? "last edited" : sort}
+      </p>
+    </div>
+  );
+}
+
 export default function ContextMenuPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -347,6 +525,15 @@ export default function ContextMenuPage() {
         align="start"
         code="ProjectRowsDemo"
         caption="Right-click a row, or focus one and press Shift+F10. It is the Menu, opened at the pointer: the same glass and rows, and one highlight that glides between them. It grows from the pointer's corner and slides a quarter of the travel from the side it opens on. Move to opens a solid submenu. The row keeps its fill while its menu is open. Every action is also on the row's ⋯ button, because a context menu is a shortcut that touch and keyboard users may never find."
+        byWorld={{
+          device: {
+            demo: <TakeRowsDemo />,
+            title: "Right-click a take",
+            code: "TakeRowsDemo",
+            caption:
+              "The takes on a recorder's card. Right-click a row, or focus one and press Shift+F10. It is the Menu, opened at the pointer: the same glass and rows, and the chosen row lit. It grows from the pointer's corner and slides a quarter of the travel from the side it opens on. Move to opens a submenu of scenes. The row keeps its fill while its menu is open. Every action is also on the row's ⋯ button, because a context menu is a shortcut that touch and keyboard users may never find.",
+          },
+        }}
       >
         <ProjectRowsDemo />
       </Stage>
@@ -358,6 +545,14 @@ export default function ContextMenuPage() {
         align="start"
         code="PhoneRowsDemo"
         caption="On a touch screen a press and hold opens it at the finger, the same hold that opens a tooltip, and the tap that follows does not also open the project. The browser's callout and text selection stay off on the row. The menu stays beside the finger, and Move to replaces the list in place with a Back row first. This stage forces the phone behavior, so a mouse press and hold stands in for the finger."
+        byWorld={{
+          device: {
+            demo: <PhoneTakeRowsDemo />,
+            code: "PhoneTakeRowsDemo",
+            caption:
+              "On a touch screen a press and hold opens it at the finger, the same hold that opens a tooltip, and the tap that follows does not also play the take. The browser's callout and text selection stay off on the row. The menu stays beside the finger, and Move to replaces the list in place with a Back row first. This stage forces the phone behaviour, so a mouse press and hold stands in for the finger.",
+          },
+        }}
       >
         <PhoneRowsDemo />
       </Stage>
@@ -369,6 +564,15 @@ export default function ContextMenuPage() {
         align="start"
         code="FileGridDemo"
         caption="Right-click anywhere in the folder. The checks sit in a fixed 16px cell, so a label never shifts, and the menu stays open while you change several options. The grid follows at once. The View button holds the same rows, so nothing lives only in the context menu."
+        byWorld={{
+          device: {
+            demo: <CardFolderDemo />,
+            title: "View options on a card",
+            code: "CardFolderDemo",
+            caption:
+              "Right-click anywhere on the card's folder. The checks sit in a fixed 16px cell, so a label never shifts, and the menu stays open while you change several options. The grid follows at once. The View button holds the same rows, so nothing lives only in the context menu.",
+          },
+        }}
       >
         <FileGridDemo />
       </Stage>

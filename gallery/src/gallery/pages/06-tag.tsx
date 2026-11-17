@@ -172,6 +172,115 @@ function CategoriesDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a recorder's takes, their states, labels and exports ---------- */
+
+const TAKES = [
+  { name: "take_04.wav", scene: "Scene A · by the road", tags: ["Interview", "Lavalier"] },
+  { name: "take_03.wav", scene: "Scene A · the kitchen", tags: ["Room tone", "Stereo"] },
+  { name: "take_02.wav", scene: "Scene B · the marsh", tags: ["Ambience", "Stereo", "Dawn"] },
+];
+
+function TakeLabelsDemo() {
+  return (
+    <ul aria-label="Takes" className="grid w-full max-w-3xl gap-8 sm:grid-cols-3">
+      {TAKES.map((t) => (
+        <li key={t.name} className="grid content-start gap-4">
+          <div className="grid gap-1">
+            <span className="text-body font-title text-fg">{t.name}</span>
+            <span className="text-caption text-fg-subtle">{t.scene}</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {t.tags.map((tag) => (
+              <Tag key={tag}>{tag}</Tag>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const TAKE_STATES = [
+  { tag: <Tag status="success">Saved</Tag>, means: "On the card and backed up. Also Exported and Synced." },
+  { tag: <Tag status="warning">Copying</Tag>, means: "Under way. Also Indexing and Queued." },
+  { tag: <Tag status="danger">Failed</Tag>, means: "Needs a hand. Also Clipped and Card full." },
+  { tag: <Tag status="neutral">Scratch</Tag>, means: "Nothing to report. Also Archived." },
+  { tag: <Tag status="neutral">Planned</Tag>, means: "Not recorded yet. The word tells it from Scratch." },
+];
+
+function TakeStatusDemo() {
+  return (
+    <dl className="grid w-full max-w-xl gap-3">
+      {TAKE_STATES.map(({ tag, means }) => (
+        <div key={means} className="grid grid-cols-[7.5rem_1fr] items-center gap-4 border-b border-line pb-3 last:border-b-0 last:pb-0">
+          <dt className="flex">{tag}</dt>
+          <dd className="text-small text-fg-subtle">{means}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+const FILED: { name: string; hue: TagHue; take: string; note: string }[] = [
+  { name: "Interviews", hue: "amber", take: "take_04.wav", note: "Nina, by the road, first question" },
+  { name: "Ambience", hue: "blue", take: "take_02.wav", note: "The marsh at dawn, 20 minutes" },
+  { name: "Room tone", hue: "teal", take: "take_03.wav", note: "The kitchen, with the fridge off" },
+  { name: "Foley", hue: "violet", take: "take_06.wav", note: "Footsteps on gravel, three passes" },
+  { name: "Interviews", hue: "amber", take: "take_05.wav", note: "Nina, the second answer" },
+];
+
+function FiledTakesDemo() {
+  return (
+    <ul aria-label="Takes by label" className="w-full max-w-2xl">
+      {FILED.map((t) => (
+        <li key={t.take} className="flex items-center gap-4 border-b border-line py-3 last:border-b-0">
+          <span className="w-28 shrink-0 truncate text-small text-fg">{t.take}</span>
+          <span className="w-0 min-w-0 flex-1 truncate text-small text-fg-subtle">{t.note}</span>
+          <Tag hue={t.hue}>{t.name}</Tag>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function TakeTagsDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <div className="flex flex-wrap gap-2">
+        <Tag raised>Interview</Tag>
+        <Tag raised>Lavalier</Tag>
+        <Tag raised>Scene A</Tag>
+      </div>
+      <TokenInput label="Take tags" defaultValue={["Interview", "Lavalier", "Scene A"]} placeholder="Add a tag" />
+    </div>
+  );
+}
+
+const EXPORTS: { file: string; to: string; status: TagStatus; label: string; when: string }[] = [
+  { file: "take_04.wav", to: "Card A", status: "success", label: "Saved", when: "2 min ago" },
+  { file: "take_04.mp3", to: "Phone", status: "warning", label: "Copying", when: "Just now" },
+  { file: "take_03.wav", to: "Card B", status: "danger", label: "Failed", when: "1 h ago" },
+];
+
+function ExportsDemo() {
+  return (
+    <ul aria-label="Recent exports" className="w-full max-w-2xl min-w-0 rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
+      {EXPORTS.map((x) => (
+        <li key={x.file} className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line px-4 py-4 last:border-b-0">
+          <span className="min-w-0 basis-full truncate text-body font-title text-fg sm:flex-1 sm:basis-0">{x.file}</span>
+          <span className="flex sm:w-24">
+            <Tag>{x.to}</Tag>
+          </span>
+          <span className="flex sm:w-24">
+            <Tag status={x.status}>{x.label}</Tag>
+          </span>
+          <span className="ml-auto text-right text-caption text-fg-subtle sm:ml-0 sm:w-20">{x.when}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function TagPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -180,6 +289,14 @@ export default function TagPage() {
         caption="A plain tag is 24px tall at the control radius: in Press a small block with a lit top edge, its word on the face, in the sans at the caption size and the label weight in fg-muted; in Flat the word in a grey pill; in Device the word engraved in capitals on a small plate. It names a kind or a platform and never asks to be pressed. Nothing moves."
         align="start"
         code="LabelsDemo"
+        byWorld={{
+          device: {
+            demo: <TakeLabelsDemo />,
+            code: "TakeLabelsDemo",
+            caption:
+              "A recorder's takes, each with the kind of sound and the mic. A plain tag is the word engraved in capitals on a small plate, at the control radius. It names a kind and never asks to be pressed. Nothing moves.",
+          },
+        }}
       >
         <LabelsDemo />
       </Stage>
@@ -188,6 +305,14 @@ export default function TagPage() {
         title="Status"
         caption="Only the text takes the status color. The fill stays the tag's own, so a row of tags stays calm. Device adds a lamp in the status color, but every tag says its state in words, and neutral Draft and Idea differ by theirs."
         code="StatusDemo"
+        byWorld={{
+          device: {
+            demo: <TakeStatusDemo />,
+            code: "TakeStatusDemo",
+            caption:
+              "A take's state, as the chip says it: a glyph before the word, and a fault in red. The fill stays the tag's own, so a row of tags stays calm. Every tag says its state in words, and Scratch and Planned differ by theirs.",
+          },
+        }}
       >
         <StatusDemo />
       </Stage>
@@ -197,6 +322,14 @@ export default function TagPage() {
         caption="A hue tag files mail under a label. Each label keeps one of the five data hues everywhere in the view, so Finance reads as amber at a glance, and the word still says it. The fill is the hue's tint and the text its text tone, so it stays readable in both themes."
         align="start"
         code="CategoriesDemo"
+        byWorld={{
+          device: {
+            demo: <FiledTakesDemo />,
+            code: "FiledTakesDemo",
+            caption:
+              "A hue tag files a take under a label. Device has no data hues, so each label is the body's ink and its word says which it is, the same everywhere in the view.",
+          },
+        }}
       >
         <CategoriesDemo />
       </Stage>
@@ -206,6 +339,7 @@ export default function TagPage() {
         caption="A value someone put in a field and can lift back out is the raised block: the block's fill and its lift, the label in fg, and corners 2px tighter than the field's so they sit concentric inside it. Combobox draws its picks this way, standing up out of the cut. A disabled field lays them flat again."
         align="start"
         code="RaisedDemo"
+        byWorld={{ device: { demo: <TakeTagsDemo />, code: "TakeTagsDemo" } }}
       >
         <RaisedDemo />
       </Stage>
@@ -215,6 +349,14 @@ export default function TagPage() {
         caption="A plain tag says where a build went and a status tag says how it did. Read in grayscale, the words still tell the story."
         align="start"
         code="DeploysDemo"
+        byWorld={{
+          device: {
+            demo: <ExportsDemo />,
+            title: "In a list of exports",
+            code: "ExportsDemo",
+            caption: "A plain tag says where a take went and a status tag says how it did. Read in greyscale, the words still tell the story.",
+          },
+        }}
       >
         <DeploysDemo />
       </Stage>

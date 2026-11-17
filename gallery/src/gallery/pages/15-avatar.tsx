@@ -268,13 +268,176 @@ function AvatarTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the crew on a take, by name ---------- */
+
+const TAKE_ACTIVITY = [
+  { name: "Ines Duarte", did: "Shared take_04.wav", when: "9:41" },
+  { name: "Tomas Berg", did: "Kept Scene 12, take 3", when: "9:12" },
+  { name: "Ava Okafor", did: "Signed the sound report for Card A", when: "Yesterday" },
+  { name: "Rui Matos", did: "Bounced Mix · take_04 at −14 LUFS", when: "Yesterday" },
+  { name: "Lena Voss", did: "Jammed timecode at 25 fps", when: "Mon" },
+];
+
+function TakeActivityDemo() {
+  return (
+    <ul aria-label="Activity on Scene 12" className="w-full max-w-2xl">
+      {TAKE_ACTIVITY.map((m) => (
+        <li key={m.name} className="flex items-center gap-4 border-b border-line py-3 last:border-b-0">
+          <Avatar name={m.name} decorative />
+          <div className="grid min-w-0 flex-1 gap-1 sm:flex sm:items-center sm:gap-4">
+            <span className="truncate text-small font-title text-fg sm:w-28 sm:shrink-0">{m.name}</span>
+            <span className="truncate text-small text-fg-subtle sm:min-w-0 sm:flex-1">{m.did}</span>
+          </div>
+          <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{m.when}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const CREW_HUES: { hue: AvatarHue; name: string }[] = [
+  { hue: "blue", name: "Ines Duarte" },
+  { hue: "amber", name: "Tomas Berg" },
+  { hue: "teal", name: "Ava Okafor" },
+  { hue: "violet", name: "Rui Matos" },
+  { hue: "rose", name: "Lena Voss" },
+  { hue: "neutral", name: "Guest" },
+];
+
+function CrewSizesDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <div className="flex flex-wrap items-end gap-8">
+        {(["sm", "md", "lg"] as const).map((size, i) => (
+          <div key={size} className="grid justify-items-center gap-2">
+            <Avatar name="Ines Duarte" size={size} />
+            <span className="tabular-nums text-caption font-normal text-fg-subtle">{["24", "32", "44"][i]}</span>
+          </div>
+        ))}
+      </div>
+      <ul aria-label="Hues" className="flex flex-wrap gap-8">
+        {CREW_HUES.map(({ hue, name }) => (
+          <li key={hue} className="grid justify-items-center gap-2">
+            <Avatar name={name} hue={hue} size="lg" />
+            <span className="text-caption font-normal text-fg-subtle">{hue}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+const CREW = ["Nick", "Ines Duarte", "Tomas Berg", "Priya Nair", "Eli Brandt", "Ava Okafor", "Hana Ito", "Rui Matos"];
+
+function CrewLooksDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-10">
+      {LOOKS.map(({ look, about }) => (
+        <section key={look} aria-label={look} className="grid gap-4">
+          <div className="grid gap-1">
+            <p className="font-mono text-caption font-normal text-fg">look=&quot;{look}&quot;</p>
+            <p className="text-small text-fg-subtle">{about}</p>
+          </div>
+          <ul aria-label={`Eight names, ${look}`} className="grid grid-cols-4 gap-x-2 gap-y-4 sm:grid-cols-8">
+            {CREW.map((name) => (
+              <li key={name} className="grid min-w-0 justify-items-center gap-2">
+                <Avatar name={name} look={look} size="lg" decorative />
+                <span className="w-full truncate text-center text-caption font-normal text-fg-subtle">{name}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap items-center gap-6">
+            {(["sm", "md"] as const).map((size) => (
+              <div key={size} className="flex items-center gap-2">
+                <Avatar name="Ines Duarte" look={look} size={size} decorative />
+                <span className="text-small text-fg">Ines Duarte</span>
+              </div>
+            ))}
+            <AvatarGroup label={`Sound team, ${look}, 6 people`} total={6}>
+              {TEAM.slice(0, 4).map((name) => (
+                <Avatar key={name} name={name} look={look} />
+              ))}
+            </AvatarGroup>
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function CrewDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <div className="litt-raised flex items-center justify-between gap-4 rounded-surface p-4">
+        <div className="grid min-w-0 gap-1">
+          <span className="truncate text-body font-title text-fg">Scene 12</span>
+          <span className="truncate text-small text-fg-subtle">8 takes, 3 kept</span>
+        </div>
+        <AvatarGroup label="Crew, 26 people" total={26} ring="surface-1" className="shrink-0">
+          {TEAM.map((name) => (
+            <Avatar key={name} name={name} />
+          ))}
+        </AvatarGroup>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {(
+          [
+            { ring: "canvas", tile: "bg-canvas" },
+            { ring: "surface-1", tile: "bg-surface-1" },
+            { ring: "surface-2", tile: "bg-surface-2" },
+          ] as const
+        ).map(({ ring, tile }) => (
+          <div key={ring} className="grid gap-3">
+            <div className={`grid place-items-center rounded-surface p-6 shadow-[inset_0_0_0_1px_var(--line)] ${tile}`}>
+              <AvatarGroup label={`Crew on ${ring}`} ring={ring} max={3}>
+                {TEAM.map((name) => (
+                  <Avatar key={name} name={name} />
+                ))}
+              </AvatarGroup>
+            </div>
+            <span className="text-center font-mono text-caption font-normal text-fg-subtle">ring=&quot;{ring}&quot;</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CrewTile() {
+  return (
+    <div className="grid justify-items-center gap-4">
+      <AvatarGroup label="Crew, 26 people" total={26} ring="surface-1" size="lg">
+        {TILE_TEAM.map((n) => (
+          <Avatar key={n} name={n} />
+        ))}
+      </AvatarGroup>
+      <div className="flex items-center gap-3">
+        <Avatar name="Ines Duarte" decorative />
+        <span className="grid">
+          <span className="text-small font-title text-fg">Ines Duarte</span>
+          <span className="text-caption font-normal text-fg-subtle">Sound recordist</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function AvatarPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<AvatarTile />}>
+    <Page meta={meta} docs={docs} tile={<AvatarTile />} tileByWorld={{ device: <CrewTile /> }}>
       <Stage
         title="Senders in an inbox"
         align="start"
         code="InboxDemo"
+        byWorld={{
+          device: {
+            demo: <TakeActivityDemo />,
+            title: "Who touched the take",
+            code: "TakeActivityDemo",
+            caption:
+              "Who did what to Scene 12, newest first. The name is written beside each avatar, so the avatar is decorative and a screen reader hears the name once. Each person keeps the mark their name gives them, so Ines is the same here as in every other list. Nothing moves.",
+          },
+        }}
         caption="The name is written beside each avatar, so the avatar is decorative and a screen reader hears the name once. Each sender keeps the hue its name gives it, so Stripe is the same color here as in every other list. The hue is who it is, not what the mail is about. Nothing moves."
       >
         <InboxDemo />
@@ -284,6 +447,7 @@ export default function AvatarPage() {
         title="Sizes and hues"
         align="start"
         code="SizesAndHuesDemo"
+        byWorld={{ device: { demo: <CrewSizesDemo />, code: "CrewSizesDemo" } }}
         caption="Small is 24 for dense rows and md is 32 for list rows. Large is 44 for a profile header. Initials step from caption to small to body, always at weight 400. The fill is the hue's tint, the letters are its text tone, and a hairline of the hue edges the circle, like a hue tag. Neutral is for a mark with no identity color."
       >
         <SizesAndHuesDemo />
@@ -293,6 +457,7 @@ export default function AvatarPage() {
         title="Pictures from the name"
         align="start"
         code="LooksDemo"
+        byWorld={{ device: { demo: <CrewLooksDemo />, code: "CrewLooksDemo" } }}
         caption="Instead of initials, a soft field drawn from the name under static grain, like a small photograph: fluid, film or thermal. A hash of the name places everything, so the same name draws the same mark everywhere. The colors are the data hues, read from the light theme in both themes, the way a photo looks the same on a dark page. Fluid and film use the name's hue alone; thermal adds its partner, warm against cool. It never moves."
       >
         <LooksDemo />
@@ -302,6 +467,7 @@ export default function AvatarPage() {
         title="A team stack"
         align="start"
         code="TeamDemo"
+        byWorld={{ device: { demo: <CrewDemo />, title: "A crew stack", code: "CrewDemo" } }}
         caption="Avatars overlap by a quarter of their size with the first on top. Each has a 2px ring in the surface it sits on, drawn as a zero-offset shadow, so the box never changes. The group shows the first few and counts the rest, from the total when only some are passed. Match the ring to the surface, or the cut-out shows."
       >
         <TeamDemo />

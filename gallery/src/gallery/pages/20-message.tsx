@@ -570,6 +570,299 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the Variants, about takes, cards and scenes ---------- */
+
+function TakeStreamDemo({ replayed = false }: { replayed?: boolean }) {
+  const count = total(TAKE_ANSWER);
+  const [started, setStarted] = useState(!replayed);
+  const [shown, setShown] = useState(replayed ? 0 : 1);
+  const streaming = started && shown < count;
+
+  /* On a Replay the turn arrives after a beat, once. Then the words follow, one at a time. */
+  useEffect(() => {
+    if (started) return;
+    const t = window.setTimeout(() => {
+      setShown(1);
+      setStarted(true);
+    }, 700);
+    return () => window.clearTimeout(t);
+  }, []);
+  useEffect(() => {
+    if (!started || shown >= count) return;
+    const t = window.setTimeout(() => setShown(shown + 1), WORD_MS);
+    return () => window.clearTimeout(t);
+  }, [started, shown, count]);
+
+  return (
+    <div className="grid w-full gap-4">
+      <Frame className="h-96">
+        <Conversation label="take_04, streaming reply" busy={streaming} className="flex-1">
+          <Message from="user">Why does take_04 clip at 00M 41S?</Message>
+          {started && (
+            <Message streaming={streaming} actions={<MessageActions copyText={markdownOf(TAKE_ANSWER)} onRetry={noop} />}>
+              <Answer blocks={reveal(TAKE_ANSWER, shown)} />
+            </Message>
+          )}
+        </Conversation>
+      </Frame>
+      <p aria-hidden="true" className="font-mono text-caption font-normal text-fg-subtle">
+        {started ? `aria-busy=${streaming ? "true" : "false"}, ${shown} of ${count} words` : "waiting for the turn"}
+      </p>
+    </div>
+  );
+}
+
+const OFFLOAD: Block[] = [
+  {
+    p: ["Yes. Card A finished offloading at 14:02 on Friday: 24 takes in 2M 14S. The checksums match, and the library answered a check a few minutes ago."],
+  },
+];
+const OFFLOAD_CUT: Block[] = [{ p: ["I checked the offload log for Card A. The last copy finished"] }];
+
+/** `replayed`: the page loads with the turn already streaming; a Replay or a Retry brings it in after a beat. */
+function OffloadErrorDemo({ replayed = false }: { replayed?: boolean }) {
+  const [attempt, setAttempt] = useState(0);
+  const [phase, setPhase] = useState<"waiting" | "streaming" | "stopped" | "done">(replayed ? "waiting" : "streaming");
+  const [shown, setShown] = useState(replayed ? 0 : 1);
+  const blocks = attempt === 0 ? OFFLOAD_CUT : OFFLOAD;
+  const count = total(blocks);
+  const streaming = phase === "streaming";
+
+  /* The first try streams a few words and then the connection drops. Retry streams the whole answer. */
+  useEffect(() => {
+    if (phase !== "waiting") return;
+    const t = window.setTimeout(() => {
+      setShown(1);
+      setPhase("streaming");
+    }, 700);
+    return () => window.clearTimeout(t);
+  }, [phase]);
+  useEffect(() => {
+    if (!streaming) return;
+    if (shown >= count) {
+      setPhase(attempt === 0 ? "stopped" : "done");
+      return;
+    }
+    const t = window.setTimeout(() => setShown(shown + 1), WORD_MS);
+    return () => window.clearTimeout(t);
+  }, [streaming, shown, count, attempt]);
+
+  const retry = () => {
+    setAttempt(1);
+    setShown(1);
+    setPhase("streaming");
+  };
+
+  return (
+    <Frame className="h-80">
+      <Conversation label="Card A offload check" busy={streaming} className="flex-1">
+        <Message from="user">Did Card A finish offloading?</Message>
+        {phase !== "waiting" && (
+          <Message
+            streaming={streaming}
+            error={phase === "stopped" ? "The answer stopped: the connection dropped." : undefined}
+            onRetry={retry}
+            actions={<MessageActions copyText={markdownOf(OFFLOAD)} onRetry={retry} />}
+          >
+            <Answer blocks={reveal(blocks, shown)} />
+          </Message>
+        )}
+      </Conversation>
+    </Frame>
+  );
+}
+
+function TakeProseDemo() {
+  return (
+    <Frame>
+      <Conversation label="take_04 summary">
+        <Message>
+          <MessageText>
+            <h4>What changed in take_04</h4>
+            <p>
+              The take now peaks at <strong>−1.0 dB</strong>, down from +0.0 dB, and nothing <em>clips</em>. The details are in the{" "}
+              <a href="#level-log" onClick={(e) => e.preventDefault()}>
+                level log
+              </a>
+              .
+            </p>
+            <ol>
+              <li>
+                Swapped in the safety track from <code>00M 40S</code> to <code>00M 43S</code>.
+              </li>
+              <li>Marked the swap on the slate.</li>
+              <li>
+                Ran <code>rec normalize take_04</code>.
+              </li>
+            </ol>
+            <pre>
+              <code>{"rec normalize take_04\n✓ peak −1.0 dB\n✓ 6 frames from the safety track"}</code>
+            </pre>
+            <blockquote>
+              <p>A car passing can push a take to 0 dB, so keep the limiter on for every input outdoors.</p>
+            </blockquote>
+            <table>
+              <thead>
+                <tr>
+                  <th>Take</th>
+                  <th>Peak</th>
+                  <th>Length</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>take_04</td>
+                  <td>−1.0 dB</td>
+                  <td>02M 14S 06F</td>
+                </tr>
+                <tr>
+                  <td>take_06</td>
+                  <td>−3.2 dB</td>
+                  <td>01M 49S 02F</td>
+                </tr>
+              </tbody>
+            </table>
+            <hr />
+            <p>
+              Next time, check the peaks before a card leaves the set: <code>rec peaks --card A</code> lists them.
+            </p>
+          </MessageText>
+        </Message>
+      </Conversation>
+    </Frame>
+  );
+}
+
+const TAKE_SUGGESTIONS = ["Why does take_04 clip?", "What did we record for Scene 12 today?", "Which cards are nearly full?"];
+
+function TakeEmptyDemo() {
+  const [picked, setPicked] = useState<string | null>(null);
+  return (
+    <div className="grid w-full gap-4">
+      <Frame className="h-72">
+        <Conversation label="A new conversation with Litt" className="flex-1">
+          <Empty
+            bare
+            action={
+              <div className="flex flex-wrap gap-2">
+                {TAKE_SUGGESTIONS.map((s) => (
+                  <Button key={s} size="sm" onClick={() => setPicked(s)}>
+                    {s}
+                  </Button>
+                ))}
+              </div>
+            }
+          >
+            Ask Litt about a take, a card or a scene, and the answer shows up here.
+          </Empty>
+        </Conversation>
+      </Frame>
+      <p className="min-h-5 text-caption font-normal text-fg-subtle">
+        {picked ? `The Composer's field now holds "${picked}", ready to edit.` : "In the Composer a suggestion fills the field. It never sends."}
+      </p>
+    </div>
+  );
+}
+
+const SHOOT_HISTORY: [string, string][] = [
+  ["What did we record for Scene 12 last week?", "Three days of it: 24 takes on Monday, the pickups on Wednesday and the room tone on Friday. Every take was 48 kHz · 24 bit, and all three cards are in the library."],
+  ["Did any of them clip?", "One. take_04 peaks at +0.0 dB for 6 frames at 00M 41S, when a car passes. The safety track holds the same moment clean at −11.8 dB."],
+  ["How long are the Scene 9 takes now?", "The median is 41 seconds over the last 14 takes, with a long one at 71 seconds on Tuesday. That one ran on because the slate was missed."],
+  ["Can you check the cards before Friday's shoot?", "Yes. I can read every card on Thursday evening and list any with less than 2 hours left at 48 kHz · 24 bit. I will not format anything."],
+  ["Which cards are nearly full?", "Two. Card B has 0.4 GB free and Card C has 3.1 GB. Card B's takes are all in the library, so it is safe to format; Card C still holds 6 takes that are not."],
+  ["Draft a note for Ines about Card C.", "Here is a short draft: Hi, Card C still holds 6 takes from Wednesday that are not in the library. Could you offload it before Friday? It takes about two minutes, and I can check the library afterwards."],
+];
+
+const SHOOT_FOLLOW_UPS: [string, string][] = [
+  ["Which of those takes is longest?", "take_11 from Scene 12, at 04M 06S 18F. Most of it is the walk to the car, which the edit will likely cut. It is also the take most likely to clip again, since the car passes twice. Moving the boom a metre back would take the peak down by about 4 dB."],
+  ["Can you mark the walk for the edit?", "Yes. I would drop a marker at the start and the end of the walk, add a note to the sound report and send the edit a list of the markers, so they can check the cut before it is made. It takes a minute, and nothing on the card changes."],
+  ["Start with the markers, then.", "Starting now. I will mark take_11 first, because the edit asked for it. When the markers are in I will send you the list and the times."],
+];
+
+const shootStart: Turn[] = SHOOT_HISTORY.flatMap(([q, a], i) => [
+  { id: i * 2, from: "user" as const, text: q },
+  { id: i * 2 + 1, from: "agent" as const, text: a },
+]);
+
+function ShootLongDemo() {
+  const [turns, setTurns] = useState<Turn[]>(shootStart);
+  const [busy, setBusy] = useState(false);
+  const asked = useRef(0);
+  const timers = useRef<number[]>([]);
+
+  useEffect(() => {
+    const open = timers.current;
+    return () => open.forEach((t) => window.clearTimeout(t));
+  }, []);
+
+  /* A question from the person, then an answer that arrives a word at a time. */
+  function ask() {
+    const [question, answer] = SHOOT_FOLLOW_UPS[asked.current++ % SHOOT_FOLLOW_UPS.length]!;
+    const id = shootStart.length + asked.current * 2;
+    const words = answer.split(" ");
+    setBusy(true);
+    setTurns((t) => [...t, { id, from: "user", text: question }]);
+    timers.current.push(
+      window.setTimeout(() => {
+        setTurns((t) => [...t, { id: id + 1, from: "agent", text: words[0]! }]);
+        const next = (n: number) => {
+          setTurns((t) => t.map((x) => (x.id === id + 1 ? { ...x, text: words.slice(0, n).join(" ") } : x)));
+          if (n < words.length) timers.current.push(window.setTimeout(() => next(n + 1), WORD_MS));
+          else setBusy(false);
+        };
+        timers.current.push(window.setTimeout(() => next(2), WORD_MS));
+      }, 500),
+    );
+  }
+
+  const last = turns[turns.length - 1]!;
+  return (
+    <div className="grid w-full gap-4">
+      <Frame className="h-112">
+        <Conversation label="Shoot week thread" busy={busy} className="flex-1">
+          {turns.map((t) =>
+            t.from === "user" ? (
+              <Message key={t.id} from="user">
+                {t.text}
+              </Message>
+            ) : (
+              <Message key={t.id} streaming={busy && t.id === last.id} actions={<MessageActions copyText={t.text} onRetry={noop} />}>
+                <MessageText>{t.text}</MessageText>
+              </Message>
+            ),
+          )}
+        </Conversation>
+      </Frame>
+      <div>
+        <Button size="sm" variant="secondary" disabled={busy} onClick={ask}>
+          Stream a reply
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function TakePhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <div className="mx-auto w-full max-w-sm">
+        <Frame className="h-176">
+          <Conversation label="take_04 thread on a phone" className="flex-1">
+            <Message from="user">Why does take_04 clip at 00M 41S?</Message>
+            <Message actions={<MessageActions copyText={markdownOf(TAKE_ANSWER)} onRetry={noop} />}>
+              <Answer blocks={TAKE_ANSWER} />
+            </Message>
+            <Message from="user">Swap in the safety track and normalize it.</Message>
+            <Message actions={<MessageActions copyText={markdownOf(TAKE_DONE)} onRetry={noop} />}>
+              <Answer blocks={TAKE_DONE} />
+            </Message>
+          </Conversation>
+        </Frame>
+      </div>
+    </DeviceProvider>
+  );
+}
+
 export default function MessagePage() {
   const [streamKey, replayStream] = useReplay();
   const [errorKey, resetError] = useReplay();
@@ -594,6 +887,16 @@ export default function MessagePage() {
         size="lg"
         code="StreamDemo"
         onReplay={replayStream}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={streamKey} className="w-full">
+                <TakeStreamDemo replayed={streamKey > 0} />
+              </div>
+            ),
+            code: "TakeStreamDemo",
+          },
+        }}
         caption="Replay it. Litt's turn arrives once, fading in and rising by half of the travel token on the responsive tier. Then the words appear as they come, with no caret, no fade per word and no shimmer, and nothing moves. The region is busy while it streams, and a polite status says the turn started and ended, never the words. The actions appear when the answer ends."
       >
         <div key={streamKey} className="w-full">
@@ -606,6 +909,14 @@ export default function MessagePage() {
         tier="instant"
         size="lg"
         code="ProseDemo"
+        byWorld={{
+          device: {
+            demo: <TakeProseDemo />,
+            code: "TakeProseDemo",
+            caption:
+              "MessageText styles what a markdown renderer produces, with no library. Headings stay at the body size and step to the title weight and fg. Strong text is fg at the title weight, and links are the ink with an underline, since orange is never text under Device. Inline code takes an fg 6% fill at the control radius, a pre is a quiet mono block on surface-2, and a quote has no rail. Nothing is bold.",
+          },
+        }}
         caption="MessageText styles what a markdown renderer produces, with no library. Headings stay at the body size and step to the title weight and fg. Strong text is fg at the title weight, and links are accent text with an underline. Inline code takes an fg 6% fill at the control radius, a pre is a quiet mono block on surface-2, and a quote has no rail. Nothing is bold."
       >
         <ProseDemo />
@@ -616,6 +927,18 @@ export default function MessagePage() {
         tier="responsive"
         code="ErrorDemo"
         onReplay={resetError}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={errorKey} className="w-full">
+                <OffloadErrorDemo replayed={errorKey > 0} />
+              </div>
+            ),
+            code: "OffloadErrorDemo",
+            caption:
+              "Replay it. The answer streams a few words and then the connection drops. The line under the text says so: the alert icon in red, the colour Device keeps for a fault, the words in fg-muted and a Retry button. Only the icon takes the colour, and a polite status says Litt stopped answering. A stopped turn has no actions. Retry streams the answer again, and the actions come back when it ends.",
+          },
+        }}
         caption="Replay it. The answer streams a few words and then the connection drops. The line under the text says so: the alert icon in danger, the words in fg-muted and a Retry button. Only the icon takes the status color, and a polite status says Litt stopped answering. A stopped turn has no actions. Retry streams the answer again, and the actions come back when it ends."
       >
         <div key={errorKey} className="w-full">
@@ -628,6 +951,16 @@ export default function MessagePage() {
         tier="instant"
         code="EmptyDemo"
         onReplay={resetEmpty}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={emptyKey} className="w-full">
+                <TakeEmptyDemo />
+              </div>
+            ),
+            code: "TakeEmptyDemo",
+          },
+        }}
         caption="One sentence on what Litt can do, then suggestions as secondary sm buttons, left-aligned in the column like the Empty state. In the app the Composer owns the suggestions, and a click puts the prompt in its field so it can be edited before it is sent."
       >
         <div key={emptyKey} className="w-full">
@@ -641,6 +974,16 @@ export default function MessagePage() {
         size="lg"
         code="LongDemo"
         onReplay={resetLong}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={longKey} className="w-full">
+                <ShootLongDemo />
+              </div>
+            ),
+            code: "ShootLongDemo",
+          },
+        }}
         caption="The region scrolls on its own and starts at the newest line. Press Stream a reply to add a turn: the person's turn scrolls to the foot, and the answer is followed while it grows. Scroll up while it streams and the following stops. Jump to latest fades in above the foot, jumps at once with no smooth scroll, and the following starts again."
       >
         <div key={longKey} className="w-full">
@@ -653,6 +996,7 @@ export default function MessagePage() {
         tier="instant"
         size="lg"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <TakePhoneDemo />, code: "TakePhoneDemo" } }}
         caption="The column takes the full width and the bubble is 85% of it. A finger cannot hover, so the actions always show under every answer, and they are 44px. Press and hold an icon to read its label. Jump to latest and Retry are 44px too."
       >
         <PhoneDemo />

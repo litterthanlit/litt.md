@@ -242,14 +242,118 @@ export const study: PageStudy = {
   },
 };
 
+/* ---------- Device's own (plans/024, phase 3): a production's takes in the recorder's library ---------- */
+
+const SHOOT_SEGMENTS: RangeChartSegment[] = [
+  { label: "Prep", start: 0 },
+  { label: "The shoot", start: LAUNCH },
+  { label: "Pickups", start: SINCE },
+];
+
+/** Takes recorded per day, 1 Jan to 31 Aug: a few in prep, the shoot's four weeks, then pickups. */
+function takesByDay(): RangeChartBar[] {
+  const rand = seeded(11);
+  const out: RangeChartBar[] = [];
+  let i = 0;
+  for (const [name, days] of MONTHS) {
+    for (let d = 1; d <= days; d++, i++) {
+      const weekday = (i + 4) % 7; // 1 Jan 2026 is a Thursday
+      const weekend = weekday === 0 || weekday === 6 ? 0.3 : 1;
+      let base: number;
+      if (i < LAUNCH) base = 3 + i * 0.03;
+      else if (i < SINCE) base = 64 - (i - LAUNCH) * 0.6;
+      else base = 9 + 3 * Math.sin((i - SINCE) / 11);
+      out.push({ label: `${d} ${name}`, value: Math.round(base * weekend * (0.8 + rand() * 0.4)) });
+    }
+  }
+  return out;
+}
+
+const TAKES = takesByDay();
+
+/** Takes per hour over the shoot's second week: the day's call to wrap, quiet nights, and a Wednesday afternoon of retakes. */
+function takesByHour(): RangeChartBar[] {
+  const rand = seeded(5);
+  const out: RangeChartBar[] = [];
+  for (let d = 0; d < 7; d++) {
+    for (let h = 0; h < 24; h++) {
+      const call = d < 6 && h >= 8 && h < 19;
+      const lunch = h === 13 ? 0.3 : 1;
+      let v = call ? (3 + rand() * 5) * lunch : 0;
+      if (d === 2 && h >= 14 && h < 18) v += 6 + rand() * 5;
+      out.push({ label: `${DAYS[d]} ${String(h).padStart(2, "0")}:00`, value: Math.round(v) });
+    }
+  }
+  return out;
+}
+
+const TAKE_HOURS = takesByHour();
+
+/** Cards filled per month this year. */
+const CARDS: RangeChartBar[] = [2, 3, 2, 9, 11, 4, 3, 5, 2, 6, 3, 1].map((value, m) => ({ label: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][m], value }));
+
+function TakesDemo() {
+  return (
+    <div className="w-full max-w-2xl">
+      <RangeChart label="Takes recorded" unit={["take", "takes"]} bars={TAKES} segments={SHOOT_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} />
+    </div>
+  );
+}
+
+function RetakesDemo() {
+  const [loaded, setLoaded] = useState<[number, number]>(INCIDENT);
+  const count = TAKE_HOURS.slice(loaded[0], loaded[1] + 1).reduce((sum, b) => sum + b.value, 0);
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <RangeChart label="Takes" unit={["take", "takes"]} bars={TAKE_HOURS} axis={DAY_TICKS} defaultValue={INCIDENT} onValueCommit={setLoaded} />
+      <p role="status" className="text-small text-fg-subtle">
+        Loaded {count} {count === 1 ? "take" : "takes"} from {TAKE_HOURS[loaded[0]].label} to {TAKE_HOURS[loaded[1]].label}.
+      </p>
+    </div>
+  );
+}
+
+function CardStatesDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-12">
+      <RangeChart label="Cards filled" unit={["card", "cards"]} bars={CARDS} defaultValue={[3, 4]} height={64} />
+      <RangeChart label="Takes recorded" unit={["take", "takes"]} bars={TAKES} segments={SHOOT_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} height={64} disabled />
+    </div>
+  );
+}
+
+/** The same chart, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
+function TakesPhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <div className="w-full max-w-sm">
+        <RangeChart label="Takes recorded" unit={["take", "takes"]} bars={TAKES} segments={SHOOT_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} height={72} />
+      </div>
+    </DeviceProvider>
+  );
+}
+
+function TakesTile() {
+  return <RangeChart label="Takes" unit={["take", "takes"]} bars={TAKES} segments={SHOOT_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} height={56} className="w-full" />;
+}
+
 export default function RangeChartPage() {
   return (
-    <Page meta={meta} docs={docs} study={study} tile={<VisitorsTile />}>
+    <Page meta={meta} docs={docs} study={study} tile={<VisitorsTile />} tileByWorld={{ device: <TakesTile /> }}>
       <Stage
         title="Visitors to halo.studio"
         tier="responsive"
         align="start"
         code="VisitorsDemo"
+        byWorld={{
+          device: {
+            demo: <TakesDemo />,
+            title: "Takes recorded",
+            code: "TakesDemo",
+            caption:
+              "Drag across the bars and a new range is brushed from where you pressed. Take an edge within a few pixels and it follows your hand exactly, held where you took it; take the fill and the whole span moves. Each bar lights as an edge passes it and the figure rolls, its last group in the quiet ink. Let go and the edges settle on the nearest bar, or on a segment start they are let go near, on the responsive spring, and the segment the range matches rises in the tray. Press Prep, The shoot or Pickups to brush it, or Whole range to let go of all of it.",
+          },
+        }}
         caption="Drag across the bars and a new range is brushed from where you pressed. Take an edge within a few pixels and it follows your hand exactly, held where you took it; take the fill and the whole span moves. Each bar lights as an edge passes it and the figure rolls, its last group in the quiet ink. Let go and the edges settle on the nearest bar, or on a segment start they are let go near, on the responsive spring, and the segment the range matches rises in the tray. Press a segment to brush it, or Whole range to let go of all of it."
       >
         <VisitorsDemo />
@@ -260,6 +364,15 @@ export default function RangeChartPage() {
         tier="responsive"
         align="start"
         code="DeploysDemo"
+        byWorld={{
+          device: {
+            demo: <RetakesDemo />,
+            title: "Takes per hour, and a commit",
+            code: "RetakesDemo",
+            caption:
+              "No segments: a plain barcode of the shoot's second week in hours, with the days under it, and Wednesday afternoon's retakes standing out. onValueChange follows the hand bar by bar, so a reading can roll; onValueCommit fires once the edges have settled, so a query runs once per gesture. The line under the chart is written from the commit. Tab to the sliders: the arrows move one hour, Shift ten, Home and End go to the ends, Escape to the whole week.",
+          },
+        }}
         caption="No segments: a plain barcode of a week in hours, with the days under it. onValueChange follows the hand bar by bar, so a reading can roll; onValueCommit fires once the edges have settled, so a query runs once per gesture. The line under the chart is written from the commit. Tab to the sliders: the arrows move one hour, Shift ten, Home and End go to the ends, Escape to the whole week."
       >
         <DeploysDemo />
@@ -270,6 +383,7 @@ export default function RangeChartPage() {
         tier="responsive"
         align="start"
         code="StatesDemo"
+        byWorld={{ device: { demo: <CardStatesDemo />, code: "CardStatesDemo" } }}
         caption="A dozen bars spread to the width, each at most 6px wide, and the range still settles on bar edges. Disabled lies flat: the slot, the caps, the tray and the words, with no pointer and no tab stop."
       >
         <StatesDemo />
@@ -279,6 +393,7 @@ export default function RangeChartPage() {
         title="On a phone"
         tier="responsive"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <TakesPhoneDemo />, code: "TakesPhoneDemo" } }}
         caption="The same chart on a phone. The bars fold into groups so each keeps its 2px and its air, and nothing scrolls sideways. The rail and the tray grow to 44px, an edge takes 22px of reach each side, and Whole range is a 44px button. A sideways drag is the chart's; up and down still scrolls the page."
       >
         <PhoneDemo />

@@ -112,6 +112,62 @@ function DayDemo() {
   );
 }
 
+
+/* ---------- Device's own (plans/024, phase 3): a take's event log, and a day of takes ---------- */
+/** A time in a take on the ruler, in seconds with its unit; the log keeps the recorder's clock. */
+const seconds = (s: number) => `${s} s`;
+
+/* An interview recorded by a road: what the recorder logged while take_04 ran. */
+const TAKE: (LogLine & { at: number })[] = [
+  { at: 0, time: "00M 00S 00F", text: "REC take_04.wav · 48 kHz · 24 bit" },
+  { at: 0.4, time: "00M 00S 10F", text: "Input 1, lavalier, at −18 dB" },
+  { at: 6.2, time: "00M 06S 05F", text: "Marker 1: first question" },
+  { at: 12.1, time: "00M 12S 03F", text: "Low cut on input 2 at 80 Hz, for the wind" },
+  { at: 18.7, time: "00M 18S 18F", text: "Marker 2: the answer" },
+  { at: 31, time: "00M 31S 00F", level: "error", text: "Input 1 clipped at 0 dB" },
+  { at: 31.2, time: "00M 31S 05F", text: "Safety track, 12 dB lower, kept the peak" },
+  { at: 39.5, time: "00M 39S 13F", text: "Marker 3: room tone" },
+  { at: 44.8, time: "00M 44S 20F", text: "Stop" },
+  { at: 47.3, time: "00M 47S 08F", text: "Saved take_04.wav to card A · 13 MB" },
+];
+
+const TAKE_MARKS: TimeScrubberMark[] = [
+  { at: 6.2, label: "Marker 1" },
+  { at: 18.7, label: "Marker 2" },
+  { at: 31, label: "Input 1 clipped", tone: "danger" },
+  { at: 39.5, label: "Marker 3" },
+  { at: 44.8, label: "Stop" },
+];
+
+function TakeLogDemo() {
+  const [at, setAt] = useState(48);
+  const lines = useMemo(() => TAKE.filter((l) => l.at <= at), [at]);
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <TimeScrubber label="take_04" max={48} value={at} onValueChange={setAt} formatValue={seconds} marks={TAKE_MARKS} />
+      <LogView label="take_04's log, replayed" height="14rem" lines={lines} />
+    </div>
+  );
+}
+
+/* A day of takes, in quarter hours. */
+const TAKES_TODAY: TimeScrubberMark[] = [
+  { at: 9.25, label: "take_01" },
+  { at: 10.5, label: "take_02" },
+  { at: 13.75, label: "take_03, clipped", tone: "danger" },
+  { at: 14, label: "take_04" },
+  { at: 16.5, label: "take_05" },
+];
+
+function TakesTodayDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <TimeScrubber label="Takes today" min={8} max={19} step={0.25} majorEvery={4} defaultValue={13.75} formatValue={clock} marks={TAKES_TODAY} />
+      <TimeScrubber label="take_03, on card B" max={48} defaultValue={31} formatValue={seconds} marks={TAKE_MARKS} disabled />
+    </div>
+  );
+}
+
 export default function TimeScrubberPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -121,6 +177,15 @@ export default function TimeScrubberPage() {
         align="start"
         code="ReplayDemo"
         caption="Drag the ruler and the log shows the run up to the needle. It follows the pointer one to one; let go and it settles on the nearest second, or on an event let go within half a step of it, on the responsive tier. Press the ruler to go to the time under the pointer. Tab to it, then Page Up and Page Down go from the warning to the failure to the deploy."
+        byWorld={{
+          device: {
+            demo: <TakeLogDemo />,
+            title: "Replay a take's log",
+            code: "TakeLogDemo",
+            caption:
+              "Drag the ruler and the log shows what the recorder wrote while the take ran, up to the needle. It follows the pointer one to one; let go and it settles on the nearest second, or on an event let go within half a step of it, on the responsive tier. Press the ruler to go to the time under the pointer. Tab to it, then Page Up and Page Down go from marker to marker, and to the clip.",
+          },
+        }}
       >
         <ReplayDemo />
       </Stage>
@@ -131,6 +196,15 @@ export default function TimeScrubberPage() {
         align="start"
         code="DayDemo"
         caption="Any units: here hours, in quarter-hour steps with a labelled tick every hour, formatted as a clock. Events are marked in their status color, neutral in fg-muted; the needle is the slider's cap, never a color, and an event it lands on slides under it while the label row names it. Disabled lies flat, the well and the cap alike, is skipped by Tab and ignores the pointer."
+        byWorld={{
+          device: {
+            demo: <TakesTodayDemo />,
+            title: "A day of takes, and disabled",
+            code: "TakesTodayDemo",
+            caption:
+              "Any units: here hours, in quarter-hour steps with a labelled tick every hour, formatted as a clock. A take is marked in the ink, and the one that clipped in red, as a fault; the needle is the slider's cap, never a colour, and a take it lands on slides under it while the label row names it. Disabled lies flat, the well and the cap alike, is skipped by Tab and ignores the pointer.",
+          },
+        }}
       >
         <DayDemo />
       </Stage>

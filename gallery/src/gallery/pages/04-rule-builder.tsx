@@ -324,9 +324,225 @@ function PolicyTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): which takes to review, a backup alert, takes for the phone ---------- */
+
+const TAKE_FIELDS: RuleBuilderField[] = [
+  {
+    id: "status",
+    label: "Take status",
+    type: "choice",
+    options: [
+      { value: "recording", label: "Recording" },
+      { value: "stopped", label: "Stopped" },
+      { value: "exported", label: "Exported" },
+    ],
+  },
+  {
+    id: "input",
+    label: "Input",
+    type: "choice",
+    options: [
+      { value: "input-1", label: "Input 1" },
+      { value: "input-2", label: "Input 2" },
+      { value: "both", label: "Both inputs" },
+    ],
+  },
+  {
+    id: "event",
+    label: "Event",
+    type: "choice",
+    options: [
+      { value: "clip", label: "Clip" },
+      { value: "wind", label: "Wind" },
+      { value: "handling", label: "Handling noise" },
+      { value: "marker", label: "Marker" },
+    ],
+  },
+  { id: "location", label: "Location", type: "text" },
+  {
+    id: "format",
+    label: "Format",
+    type: "choice",
+    options: [
+      { value: "wav24", label: "WAV, 24 bit" },
+      { value: "float", label: "WAV, 32 bit float" },
+      { value: "mp3", label: "MP3" },
+    ],
+  },
+  { id: "peak", label: "Peak level in dB", type: "number" },
+];
+
+const REVIEW: RuleBuilderGroup = {
+  kind: "group",
+  id: "review",
+  join: "and",
+  children: [
+    { kind: "condition", id: "trigger", field: "status", operator: "is", value: "stopped", locked: true },
+    { kind: "condition", id: "input", field: "input", operator: "is", value: "input-1" },
+    {
+      kind: "group",
+      id: "trouble",
+      join: "or",
+      children: [
+        { kind: "condition", id: "event", field: "event", operator: "any-of", value: ["clip", "wind"] },
+        { kind: "condition", id: "location", field: "location", operator: "is", value: "By the road" },
+        { kind: "condition", id: "format", field: "format", operator: "is", value: "mp3" },
+      ],
+    },
+  ],
+};
+
+function TakeReviewDemo() {
+  const [rule, setRule] = useState(REVIEW);
+  return (
+    <div className="grid w-full max-w-2xl gap-6">
+      <RuleBuilder label="Takes to review" fields={TAKE_FIELDS} value={rule} onValueChange={setRule} />
+      <p className="max-w-[60ch] text-small text-fg-subtle">A take is marked for review when {reads(rule, TAKE_FIELDS)}.</p>
+    </div>
+  );
+}
+
+const BACKUP_FIELDS: RuleBuilderField[] = [
+  {
+    id: "card",
+    label: "Card",
+    type: "choice",
+    options: [
+      { value: "card-a", label: "Card A" },
+      { value: "card-b", label: "Card B" },
+      { value: "phone", label: "The phone" },
+    ],
+  },
+  { id: "folder", label: "Folder", type: "text" },
+  {
+    id: "status",
+    label: "Copy status",
+    type: "choice",
+    options: [
+      { value: "done", label: "Done" },
+      { value: "failed", label: "Failed" },
+      { value: "cancelled", label: "Cancelled" },
+    ],
+  },
+  { id: "minutes", label: "Copy minutes", type: "number" },
+];
+
+const BACKUP_ALERT: RuleBuilderGroup = {
+  kind: "group",
+  id: "alert",
+  join: "and",
+  children: [
+    { kind: "condition", id: "card", field: "card", operator: "any-of", value: ["card-a", "card-b"] },
+    { kind: "condition", id: "folder", field: "folder", operator: "is", value: "Scene A" },
+    { kind: "condition", id: "minutes", field: "minutes", operator: "more-than", value: null },
+  ],
+};
+
+const BACKUP_ARCHIVED: RuleBuilderGroup = {
+  kind: "group",
+  id: "archived",
+  join: "or",
+  children: [
+    { kind: "condition", id: "failed", field: "status", operator: "is", value: "failed" },
+    { kind: "condition", id: "slow", field: "minutes", operator: "more-than", value: 12 },
+  ],
+};
+
+function BackupAlertDemo() {
+  const [rule, setRule] = useState(BACKUP_ALERT);
+  const errors: Record<string, string> = {};
+  for (const c of rule.children) if (!isGroup(c) && (c.value === null || (Array.isArray(c.value) && !c.value.length))) errors[c.id] = "Enter a value, or remove the condition.";
+  if ("minutes" in errors) errors.minutes = "Enter how many minutes a copy may take.";
+  return (
+    <div className="grid w-full max-w-2xl gap-12">
+      <RuleBuilder label="Backup alert" lead="Light the lamp when" fields={BACKUP_FIELDS} value={rule} onValueChange={setRule} maxDepth={0} errors={errors} />
+      <RuleBuilder label="Archived backup alert" lead="Archived, read only. It lit the lamp when" fields={BACKUP_FIELDS} defaultValue={BACKUP_ARCHIVED} maxDepth={0} disabled />
+    </div>
+  );
+}
+
+const PHONE_FIELDS: RuleBuilderField[] = [
+  {
+    id: "source",
+    label: "Source",
+    type: "choice",
+    options: [
+      { value: "card-a", label: "Card A" },
+      { value: "card-b", label: "Card B" },
+    ],
+  },
+  { id: "length", label: "Length in seconds", type: "number" },
+  {
+    id: "scene",
+    label: "Scene",
+    type: "choice",
+    options: [
+      { value: "a", label: "Scene A" },
+      { value: "b", label: "Scene B" },
+      { value: "c", label: "Scene C" },
+    ],
+  },
+  { id: "name", label: "Name", type: "text" },
+];
+
+const TO_PHONE: RuleBuilderGroup = {
+  kind: "group",
+  id: "to-phone",
+  join: "and",
+  children: [
+    { kind: "condition", id: "source", field: "source", operator: "is", value: "card-a" },
+    { kind: "condition", id: "length", field: "length", operator: "more-than", value: 30 },
+    {
+      kind: "group",
+      id: "which",
+      join: "or",
+      children: [
+        { kind: "condition", id: "scene", field: "scene", operator: "any-of", value: ["a", "b"] },
+        { kind: "condition", id: "name", field: "name", operator: "contains", value: "interview" },
+      ],
+    },
+  ],
+};
+
+function PhoneSyncDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <div className="w-full max-w-sm">
+        <RuleBuilder label="Takes for the phone" fields={PHONE_FIELDS} defaultValue={TO_PHONE} />
+      </div>
+    </DeviceProvider>
+  );
+}
+
+const REVIEW_TILE: RuleBuilderGroup = {
+  kind: "group",
+  id: "tile",
+  join: "and",
+  children: [
+    { kind: "condition", id: "input", field: "input", operator: "is", value: "input-1" },
+    {
+      kind: "group",
+      id: "trouble",
+      join: "or",
+      children: [
+        { kind: "condition", id: "location", field: "location", operator: "is", value: "By the road" },
+        { kind: "condition", id: "format", field: "format", operator: "is", value: "mp3" },
+      ],
+    },
+  ],
+};
+
+function ReviewTile() {
+  return (
+    <div className="w-full max-w-md">
+      <RuleBuilder label="Takes to review" fields={TAKE_FIELDS} defaultValue={REVIEW_TILE} />
+    </div>
+  );
+}
+
 export default function RuleBuilderPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<PolicyTile />}>
+    <Page meta={meta} docs={docs} tile={<PolicyTile />} tileByWorld={{ device: <ReviewTile /> }}>
       <Stage
         title="An expense policy"
         tier="responsive"
@@ -334,6 +550,15 @@ export default function RuleBuilderPage() {
         align="start"
         code="ExpensePolicyDemo"
         caption="Take a row by its handle: it rises into a raised block at once and follows your hand one to one, and the rows it passes make room, each settling on the responsive spring. Let go and it settles into its place; only then does the rule change, once, so the sentence under it changes as the rows come to rest. The first row is the trigger: it is locked, never moves, and nothing passes above it. Rows stay in their own group. With the keys, Space picks a row up, the arrows move it and Space drops it."
+        byWorld={{
+          device: {
+            demo: <TakeReviewDemo />,
+            title: "Takes to review",
+            code: "TakeReviewDemo",
+            caption:
+              "Which takes a recorder marks for review when they stop. Take a row by its handle: it rises at once and follows your hand one to one, and the rows it passes make room, each settling on the responsive spring. Let go and it settles into its place; only then does the rule change, once, so the sentence under it changes as the rows come to rest. The first row is the trigger: it is locked, never moves, and nothing passes above it. Rows stay in their own group. With the keys, Space picks a row up, the arrows move it and Space drops it.",
+          },
+        }}
       >
         <ExpensePolicyDemo />
       </Stage>
@@ -345,6 +570,7 @@ export default function RuleBuilderPage() {
         align="start"
         code="DeployAlertDemo"
         caption="A problem is said in words under its row, and the row's edge turns to the danger color at once; type a number of minutes and both clear. A max depth of 0 makes a flat rule with no Add group. Read only lies flat: the handles stay still, remove is gone and nothing takes Tab."
+        byWorld={{ device: { demo: <BackupAlertDemo />, code: "BackupAlertDemo" } }}
       >
         <DeployAlertDemo />
       </Stage>
@@ -355,6 +581,7 @@ export default function RuleBuilderPage() {
         size="lg"
         code="PhoneDemo"
         caption="Under a 480px row the value wraps under the field and the operator, so nothing scrolls sideways. A handle takes every direction of a touch, so a drag anywhere else scrolls the page, and on a finger every handle, remove and control is 44px."
+        byWorld={{ device: { demo: <PhoneSyncDemo />, code: "PhoneSyncDemo" } }}
       >
         <PhoneDemo />
       </Stage>

@@ -190,12 +190,126 @@ function QuietAndHueDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a recorder's week on the library's dashboard, in the ink ---------- */
+
+/** Takes per day for 14 days. The last seven add up to the 38 on the tile. */
+const TAKES = [5, 6, 4, 7, 6, 2, 4, 3, 1, 8, 5, 7, 9, 5];
+/** The median take's peak per day in dBFS. It came down from −4 to −7, under a ceiling of −6. */
+const PEAK = [-4, -5, -4, -6, -5, -6, -5, -6, -7, -6, -7, -8, -7, -7];
+/** Card A used at the end of each day, in percent. Offloaded and formatted on day 9. */
+const CARD = [12, 21, 30, 41, 48, 51, 58, 66, 4, 15, 27, 38, 52, 62];
+
+/** A true minus, as the LCD writes it. */
+const signed = (v: number) => (v < 0 ? "−" + Math.abs(v) : String(v));
+const dbfs = (v: number) => signed(v) + " dBFS";
+
+type Channel = { name: string; minutes: number[] };
+/** Minutes recorded per day on each channel for 14 days: shoot days busy, rest days quiet. */
+const CHANNELS: Channel[] = [
+  { name: "Boom", minutes: [182, 196, 171, 205, 214, 40, 36, 199, 221, 236, 228, 240, 120, 96] },
+  { name: "Lav 1", minutes: [150, 168, 142, 176, 181, 22, 18, 160, 175, 188, 170, 182, 84, 70] },
+  { name: "Lav 2", minutes: [96, 110, 88, 120, 104, 12, 10, 98, 112, 126, 118, 131, 60, 44] },
+  { name: "Room L", minutes: [60, 58, 64, 70, 62, 30, 28, 66, 71, 75, 68, 80, 40, 32] },
+  { name: "Room R", minutes: [20, 24, 18, 26, 22, 8, 6, 24, 28, 25, 30, 27, 12, 10] },
+];
+
+/** The noise floor per day in dB, over 30 days. The ceiling is −60 dB. */
+const FLOOR = [
+  -64, -62, -59, -57, -61, -63, -65, -66, -63, -58, -56, -58, -61, -63, -64, -66, -63, -60, -57, -59, -62, -64, -65, -67, -64, -61, -59, -62,
+  -64, -66,
+];
+const db = (v: number) => signed(v) + " dB";
+
+function CardWeekDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat label="Takes this week" value={38} delta="Up 12% on last week" tone="good" trend={<Sparkline label="Takes per day, last 14 days" values={TAKES} />} />
+        <Stat
+          label="Median peak"
+          value="−7"
+          unit="dBFS"
+          delta="Down 1 dB on last week"
+          tone="good"
+          trend={<Sparkline label="Median peak per take, last 14 days" values={PEAK} formatValue={dbfs} baseline={-6} />}
+        />
+        <Stat label="Card A used" value={62} unit="%" trend={<Sparkline label="Card A used, last 14 days" values={CARD} formatValue={(v) => v + "%"} min={0} max={100} />} />
+        <Stat label="Scenes" value={12} delta="Up 2 on last week" tone="good" />
+      </StatGroup>
+    </div>
+  );
+}
+
+function ChannelsDemo() {
+  return (
+    <div className="w-full min-w-0 max-w-3xl">
+      <Table label="Minutes recorded per channel, last 14 days">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Channel</TableHead>
+            <TableHead>Minutes per day</TableHead>
+            <TableHead numeric>Last 14 days</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {CHANNELS.map((channel) => (
+            <TableRow key={channel.name}>
+              <TableCell primary>{channel.name}</TableCell>
+              <TableCell>
+                <div className="w-40">
+                  <Sparkline label={`${channel.name} minutes per day, last 14 days`} values={channel.minutes} min={0} max={240} />
+                </div>
+              </TableCell>
+              <TableCell numeric>{channel.minutes.reduce((sum, v) => sum + v, 0).toLocaleString("en-GB")} min</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+function NoiseFloorDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-2">
+      <div className="flex items-baseline justify-between gap-4">
+        <span className="text-small text-fg">Noise floor</span>
+        <span className="text-caption font-normal tabular-nums text-fg-subtle">−66 dB today, ceiling −60 dB</span>
+      </div>
+      <Sparkline label="Noise floor, last 30 days" values={FLOOR} formatValue={db} baseline={-60} height={64} />
+    </div>
+  );
+}
+
+function TakesQuietDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-x-12 gap-y-8 sm:grid-cols-2">
+      <div className="grid gap-2">
+        <p className="text-caption font-normal text-fg-subtle">Quiet, the default</p>
+        <Sparkline label="Takes per day, last 14 days" values={TAKES} height={48} />
+      </div>
+      <div className="grid gap-2">
+        <p className="text-caption font-normal text-fg-subtle">In a hue</p>
+        <Sparkline label="Takes per day, last 14 days" values={TAKES} hue="blue" height={48} />
+      </div>
+    </div>
+  );
+}
+
 export default function SparklinePage() {
   return (
     <Page meta={meta} docs={docs}>
       <Stage
         title="Beside a figure"
         code="BesideAFigureDemo"
+        byWorld={{
+          device: {
+            demo: <CardWeekDemo />,
+            code: "CardWeekDemo",
+            caption:
+              "Three of the four tiles carry a trend in the Stat's trend slot. It sits at the foot of the tile, so the lines stay level even though the card tile has no delta. Every line is the ink, because Device's charts take no hue. The peak has a dashed line at its −6 dBFS ceiling, and the card drops to 4% on the day it was offloaded. The dot on the latest day is the strongest mark, as in the line chart. The figure above each line is the exact reading, because a sparkline shows shape, not values. Nothing moves.",
+          },
+        }}
         caption="Three of the four tiles carry a trend in the Stat's trend slot. It sits at the foot of the tile, so the lines stay level even though the uptime tile has no delta. Deploys are blue and uptime is teal, because each color names one quantity. The build time stays in the foreground, with a dashed line at its 45 s goal. The dot on the latest day is the strongest mark, as in the line chart. The figure above each line is the exact reading, because a sparkline shows shape, not values. Nothing moves."
       >
         <BesideAFigureDemo />
@@ -204,6 +318,14 @@ export default function SparklinePage() {
       <Stage
         title="In a table"
         code="InATableDemo"
+        byWorld={{
+          device: {
+            demo: <ChannelsDemo />,
+            code: "ChannelsDemo",
+            caption:
+              "Minutes recorded per day on each channel, one sparkline per row. Every row shares one scale, from 0 to 240 minutes, so a quiet channel reads as quiet. Without a fixed scale each line would fill its own box and Room R would look as busy as the boom. The total sits in its own column in tabular figures, for the exact figure.",
+          },
+        }}
         caption="Visits per day for each Framer site, one sparkline per row. Every row shares one scale, from 0 to 2,400, so a quiet site reads as quiet. Without a fixed scale each line would fill its own box and Sidebar Weekly would look as lively as Grotta Type. The column measures one thing, so it is one hue. The total sits in its own column in tabular figures, for the exact figure."
       >
         <InATableDemo />
@@ -212,6 +334,15 @@ export default function SparklinePage() {
       <Stage
         title="A goal line"
         code="GoalLineDemo"
+        byWorld={{
+          device: {
+            demo: <NoiseFloorDemo />,
+            title: "A ceiling",
+            code: "NoiseFloorDemo",
+            caption:
+              "One wide sparkline of the noise floor with a dashed baseline at the −60 dB ceiling. The line stays in the foreground, because the point is which side of the ceiling each day falls on, and the dashed line is a neutral line. The default scale includes the baseline, so it never leaves the box. The reading and the ceiling are written beside it, for the same reason as before.",
+          },
+        }}
         caption="One wide sparkline of reply time with a dashed baseline at the 4 h goal. The line stays in the foreground, because the point is which side of the goal each day falls on, and the dashed line is a neutral line, not a hue. The default scale includes the baseline, so it never leaves the box. The reading and the goal are written beside it, for the same reason as before."
       >
         <GoalLineDemo />
@@ -220,6 +351,14 @@ export default function SparklinePage() {
       <Stage
         title="Quiet and in a hue"
         code="QuietAndHueDemo"
+        byWorld={{
+          device: {
+            demo: <TakesQuietDemo />,
+            code: "TakesQuietDemo",
+            caption:
+              "The same takes per day twice. The quiet default is the foreground at 55% with a full-strength dot, right when the line is the only series in view. Device's charts take no hue, so a line given one is drawn in the ink and reads the same: the shape carries it either way.",
+          },
+        }}
         caption="The same page views twice. The quiet default is the foreground at 55% with a full-strength dot, right when the line is the only series in view. A hue is for when the color says which quantity this is elsewhere on the page. The line takes the hue's mark tone and the dot its stronger text tone. The shape is the same either way."
       >
         <QuietAndHueDemo />

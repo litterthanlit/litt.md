@@ -136,13 +136,101 @@ function SetupTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): setting up the recorder before the first take ---------- */
+
+const RECORDER_SETUP: Step[] = [
+  { id: "card", label: "Card" },
+  { id: "inputs", label: "Inputs" },
+  { id: "timecode", label: "Timecode" },
+  { id: "backup", label: "Backup" },
+];
+
+const RECORDER_SAYS = [
+  "Format Card A at 48 kHz · 24 bit.",
+  "Name each channel and set its gain.",
+  "Jam timecode from the camera at 25 fps.",
+  "Pick where a card's takes copy to when it goes in.",
+];
+
+function RecorderSetupDemo() {
+  const [step, setStep] = useState(1);
+  const finished = step >= RECORDER_SETUP.length;
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <Steps label="Set up the recorder" steps={RECORDER_SETUP} current={step} onStepSelect={setStep} />
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">{finished ? "The recorder is ready" : RECORDER_SETUP[step]!.label}</p>
+        <p className="text-small text-fg-muted">{finished ? "Everything is set. You can change any of it in Settings." : RECORDER_SAYS[step]}</p>
+      </div>
+      <div className="flex gap-3">
+        <Button disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          Back
+        </Button>
+        {finished ? (
+          <Button variant="primary" onClick={() => setStep(0)}>
+            Start again
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={() => setStep((s) => s + 1)}>
+            {step === RECORDER_SETUP.length - 1 ? "Finish" : "Continue"}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RecorderChecklistDemo() {
+  return (
+    <div className="grid w-full gap-12 sm:grid-cols-2">
+      <Steps
+        orientation="vertical"
+        label="Before the first take"
+        current={2}
+        steps={[
+          { id: "card", label: "Format a card", description: "Card A, 128 GB, at 48 kHz · 24 bit." },
+          { id: "inputs", label: "Set the inputs", description: "Lavalier on 1, boom on 2 with 48 V." },
+          { id: "timecode", label: "Jam timecode", description: "From the camera at 25 fps, then check the slate." },
+          { id: "backup", label: "Back up every card", description: "Each card copies to the library when it goes in." },
+        ]}
+      />
+      <div className="w-full max-w-xs">
+        <Steps label="Set up the recorder, narrow" steps={RECORDER_SETUP} current={2} />
+      </div>
+    </div>
+  );
+}
+
+function RecorderSetupTile() {
+  const [step, setStep] = useState(1);
+  const finished = step >= RECORDER_SETUP.length;
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <Steps label="Set up the recorder" steps={RECORDER_SETUP} current={step} onStepSelect={setStep} />
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">{finished ? "The recorder is ready" : RECORDER_SETUP[step]!.label}</p>
+        <p className="text-small text-fg-muted">{finished ? "Everything is set." : RECORDER_SAYS[step]}</p>
+      </div>
+      <div className="flex gap-3">
+        <Button size="sm" disabled={step === 0} onClick={() => setStep((s) => Math.max(0, s - 1))}>
+          Back
+        </Button>
+        <Button size="sm" onClick={() => setStep((s) => (s >= RECORDER_SETUP.length ? 0 : s + 1))}>
+          {finished ? "Start again" : "Continue"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function StepsPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SetupTile />}>
+    <Page meta={meta} docs={docs} tile={<SetupTile />} tileByWorld={{ device: <RecorderSetupTile /> }}>
       <Stage
         title="Set up a studio"
         align="start"
         code="SetupDemo"
+        byWorld={{ device: { demo: <RecorderSetupDemo />, title: "Set up the recorder", code: "RecorderSetupDemo" } }}
         caption="Continue moves on and Back moves back; a done step is also a button that goes back to it. The current step is the half-filled mark at the title weight, done ones are checked in the muted ink, and the hairline after a done step turns to the foreground. Nothing animates. Finish marks every step done."
       >
         <SetupDemo />
@@ -152,6 +240,7 @@ export default function StepsPage() {
         title="A checklist, and narrow"
         align="start"
         code="ChecklistDemo"
+        byWorld={{ device: { demo: <RecorderChecklistDemo />, code: "RecorderChecklistDemo" } }}
         caption="Vertical, the hairline runs down between the marks and each step takes a line under it, for a checklist or a side panel. In a box narrower than about 640px the row becomes Step 3 of 4 with the current label and a rail per step. The box decides, not the screen."
       >
         <ChecklistDemo />

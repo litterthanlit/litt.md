@@ -165,12 +165,111 @@ function StatTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a shoot's week in figures ---------- */
+
+function ShootStatsDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat label="Scenes" value={12} delta="Up 2 on last week" tone="good" />
+        <Stat label="Takes this week" value={38} delta="Up 12% on last week" tone="good" />
+        <Stat label="Median take" value={41} unit="s" delta="Down 6 s on last week" tone="good" />
+        <Stat label="Card A left" value={62} unit="%" />
+      </StatGroup>
+    </div>
+  );
+}
+
+function ClipsDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat label="Median take" value={41} unit="s" delta="Down 6 s on last week" tone="good" />
+        <Stat label="Clipped takes" value={3} delta="Up 2 on last week" tone="bad" />
+        <Stat label="Takes this week" value={38} delta="Same as last week" />
+        <Stat label="Cards" value={9} />
+      </StatGroup>
+    </div>
+  );
+}
+
+/** Takes per day for 14 days; the last seven add up to the 38 on the tile. */
+const TAKES = [5, 6, 4, 7, 6, 2, 4, 3, 1, 8, 5, 7, 9, 5];
+/** Median take length per day in seconds, against a goal of 45. */
+const TAKE_LENGTH = [47, 46, 48, 45, 46, 44, 45, 43, 44, 42, 43, 40, 42, 41];
+/** Clipped takes per day; the last seven add up to the 3 on the tile. */
+const CLIPPED = [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 0];
+
+function TakesTrendDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StatGroup>
+        <Stat label="Takes this week" value={38} delta="Up 12% on last week" tone="good" trend={<Sparkline label="Takes per day, last 14 days" values={TAKES} />} />
+        <Stat
+          label="Median take"
+          value={41}
+          unit="s"
+          trend={<Sparkline label="Median take length, last 14 days" values={TAKE_LENGTH} formatValue={(v) => v + " s"} baseline={45} />}
+        />
+        <Stat
+          label="Clipped takes"
+          value={3}
+          delta="Up 2 on last week"
+          tone="bad"
+          trend={<Sparkline label="Clipped takes per day, last 14 days" values={CLIPPED} />}
+        />
+        <Stat label="Cards" value={9} />
+      </StatGroup>
+    </div>
+  );
+}
+
+function ShootNarrowDemo() {
+  return (
+    <div className="grid w-full max-w-3xl items-start gap-8 sm:grid-cols-[22rem_16rem]">
+      <div className="grid gap-2">
+        <p className="text-caption font-normal text-fg-subtle">A group 22rem wide</p>
+        <StatGroup>
+          <Stat label="Scenes" value={12} />
+          <Stat label="Takes this week" value={38} delta="Up 12% on last week" tone="good" />
+          <Stat label="Median take" value={41} unit="s" />
+          <Stat label="Card A left" value={62} unit="%" />
+        </StatGroup>
+      </div>
+      <div className="grid gap-2">
+        <p className="text-caption font-normal text-fg-subtle">A group 16rem wide</p>
+        <StatGroup>
+          <Stat label="Scenes" value={12} />
+          <Stat label="Median take" value={41} unit="s" delta="Down 6 s on last week" tone="good" />
+        </StatGroup>
+      </div>
+    </div>
+  );
+}
+
+function TakesTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <Stat label="Takes this week" value={38} delta="Up 12% on last week" tone="good" trend={<Sparkline label="Takes per day, last 14 days" values={TILE_DEPLOYS} />} />
+    </div>
+  );
+}
+
 export default function StatPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<StatTile />}>
+    <Page meta={meta} docs={docs} tile={<StatTile />} tileByWorld={{ device: <TakesTile /> }}>
       <Stage
         title="The studio this week"
         code="StudioStatsDemo"
+        byWorld={{
+          device: {
+            demo: <ShootStatsDemo />,
+            title: "The shoot this week",
+            code: "ShootStatsDemo",
+            caption:
+              "Four tiles in a group. The label is engraved and quiet, the value is the largest thing on the tile, in seven segments on its LCD, and a delta says what changed in words. The tiles in a row share its height, so the one without a delta stays level with the others. Nothing here moves, and a tile has no hover because it links nowhere.",
+          },
+        }}
         caption="Four tiles in a group. The label is small and quiet, the value is the largest thing on the tile, and a delta says what changed in words. The tiles in a row share its height, so the one without a delta stays level with the others. Nothing here moves, and a tile has no hover because it links nowhere."
       >
         <StudioStatsDemo />
@@ -179,6 +278,14 @@ export default function StatPage() {
       <Stage
         title="Good news, bad news, no news"
         code="NewsDemo"
+        byWorld={{
+          device: {
+            demo: <ClipsDemo />,
+            code: "ClipsDemo",
+            caption:
+              "Device has no green: a change that is good news is the ink, and one that is bad, here takes that clipped, is red, the colour it keeps for a fault, whichever way the number went. A take length that fell is good news, and clipped takes that rose are bad. A change that is neither stays in the subtle grey. The words carry the direction, and a screen reader also hears whether it was good or bad.",
+          },
+        }}
         caption="Green is for a change that is good news and red for one that is bad, whichever way the number went. A build time that fell is green, and failed deploys that rose are red. A change that is neither stays in the subtle gray. The words carry the direction, and a screen reader also hears whether it was good or bad."
       >
         <NewsDemo />
@@ -187,6 +294,14 @@ export default function StatPage() {
       <Stage
         title="A trend at the foot"
         code="TrendDemo"
+        byWorld={{
+          device: {
+            demo: <TakesTrendDemo />,
+            code: "TakesTrendDemo",
+            caption:
+              "A tile can hold a trend: pass a Sparkline as the trend prop. It sits at the very bottom of the tile, under the delta, and fills the tile's width. The median take tile has no delta and the cards tile has no trend, and the lines that exist still sit level, because every tile in a row shares its height and the trend takes the foot. The figure stays above it, since the line shows shape and not values.",
+          },
+        }}
         caption="A tile can hold a trend: pass a Sparkline as the trend prop. It sits at the very bottom of the tile, under the delta, and fills the tile's width. The median build tile has no delta and the clients tile has no trend, and the lines that exist still sit level, because every tile in a row shares its height and the trend takes the foot. The figure stays above it, since the line shows shape and not values."
       >
         <TrendDemo />
@@ -196,6 +311,7 @@ export default function StatPage() {
         title="A narrow group"
         align="start"
         code="NarrowDemo"
+        byWorld={{ device: { demo: <ShootNarrowDemo />, code: "ShootNarrowDemo" } }}
         caption="The group measures its own width, not the window's. At 22rem it stays two across, and under 20rem it drops to one. The same group works in a phone-wide frame, beside a sidebar and on a full page. Four across needs 40rem."
       >
         <NarrowDemo />

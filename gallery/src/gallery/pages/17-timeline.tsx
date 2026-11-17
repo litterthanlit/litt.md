@@ -383,6 +383,276 @@ function RunningDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a card offloaded and a mix exported, step by step ---------- */
+
+const OFFLOAD: DemoPhase[] = [
+  {
+    label: "Copy",
+    hue: "blue",
+    steps: [
+      { label: "Mount Card A", seconds: 2, status: "done" },
+      { label: "Restore the last index", seconds: 0, status: "skipped" },
+      { label: "Copy 24 takes", seconds: 19, status: "done", was: 31 },
+      { label: "Verify checksums", seconds: 3, status: "done" },
+    ],
+  },
+  {
+    label: "Library",
+    hue: "teal",
+    steps: [
+      { label: "Draw waveforms", seconds: 12, status: "done", was: 21 },
+      { label: "Write the slate", seconds: 3, status: "done" },
+      { label: "Sync to the studio", seconds: 3, status: "done" },
+    ],
+  },
+];
+
+const MIX: DemoPhase[] = [
+  {
+    label: "Render",
+    hue: "blue",
+    steps: [
+      { label: "Read take_04.wav", seconds: 2, status: "done" },
+      { label: "Restore the render cache", seconds: 4, status: "done" },
+      { label: "Render the mix", seconds: 27, status: "done" },
+    ],
+  },
+  {
+    label: "Write",
+    hue: "teal",
+    steps: [
+      { label: "Write take_04_mix.wav", seconds: 11, status: "done" },
+      { label: "Verify the file", seconds: 2, status: "done" },
+      { label: "Tag the slate", seconds: 4, status: "done" },
+    ],
+  },
+];
+
+const STEMS: DemoPhase[] = [
+  {
+    label: "Render",
+    hue: "blue",
+    steps: [
+      { label: "Read 4 channels", seconds: 2, status: "done" },
+      { label: "Restore the render cache", seconds: 0, status: "skipped" },
+      { label: "Apply the mix", seconds: 9, status: "done" },
+      { label: "Render stems", seconds: 14, status: "failed" },
+      { label: "Normalize to −1 dB", seconds: 0, status: "pending" },
+    ],
+  },
+  {
+    label: "Write",
+    hue: "teal",
+    steps: [
+      { label: "Write to Card B", seconds: 0, status: "pending" },
+      { label: "Tag the slate", seconds: 0, status: "pending" },
+    ],
+  },
+];
+
+const CARD_C: DemoPhase[] = [
+  {
+    label: "Copy",
+    hue: "blue",
+    steps: [
+      { label: "Mount Card C", seconds: 2, status: "done" },
+      { label: "Restore the last index", seconds: 0, status: "skipped" },
+      { label: "Read the card's index", seconds: 9, status: "done" },
+      { label: "Copy 18 takes", seconds: 7, status: "running" },
+      { label: "Verify checksums", seconds: 0, status: "pending" },
+    ],
+  },
+  {
+    label: "Library",
+    hue: "teal",
+    steps: [
+      { label: "Draw waveforms", seconds: 0, status: "pending" },
+      { label: "Sync to the studio", seconds: 0, status: "pending" },
+    ],
+  },
+];
+
+function OffloadDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">Offload Card A</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">Scene 12 · 24 takes · 18.6 GB</p>
+      </div>
+      <Timeline label="Offload Card A, steps" proportional>
+        {withStarts(OFFLOAD).map((phase) => (
+          <TimelinePhase key={phase.label} label={phase.label} duration={total(phase.steps)} hue={phase.hue}>
+            {phase.steps.map((step) => (
+              <TimelineStep
+                key={step.label}
+                at={step.at}
+                label={step.label}
+                status={step.status}
+                seconds={step.seconds}
+                previousSeconds={step.was}
+              />
+            ))}
+          </TimelinePhase>
+        ))}
+        <TimelineResult tone="success" label="Card A is safe to format" total={runTotal(OFFLOAD)} />
+      </Timeline>
+    </div>
+  );
+}
+
+function MixGlanceDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-8">
+      <div className="flex items-end justify-between gap-6">
+        <div className="grid gap-1">
+          <p className="text-body font-title text-fg">Export Mix · take_04</p>
+          <p className="font-mono text-caption font-normal text-fg-subtle">take_04.wav · 48 kHz · 24 bit</p>
+        </div>
+        <p className="text-h1 tabular-nums text-fg">
+          <span aria-hidden="true">{runTotal(MIX)}s</span>
+          <span className="sr-only">{runTotal(MIX)} seconds in all</span>
+        </p>
+      </div>
+      <TimelineBar label="Export Mix · take_04" phases={MIX} />
+      <Timeline label="Export Mix · take_04, steps">
+        {withStarts(MIX).map((phase) => (
+          <TimelinePhase key={phase.label} label={phase.label} duration={total(phase.steps)} hue={phase.hue}>
+            {phase.steps.map((step) => (
+              <TimelineStep key={step.label} at={step.at} label={step.label} status={step.status} seconds={step.seconds} />
+            ))}
+          </TimelinePhase>
+        ))}
+      </Timeline>
+    </div>
+  );
+}
+
+function StemsFailedDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-8">
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">Export Scene 12 stems</p>
+        <p className="font-mono text-caption font-normal text-fg-subtle">4 channels · 48 kHz · 24 bit</p>
+      </div>
+      <TimelineBar label="Export Scene 12 stems" phases={STEMS} />
+      <Timeline label="Export Scene 12 stems, steps">
+        {withStarts(STEMS).map((phase) => (
+          <TimelinePhase
+            key={phase.label}
+            label={phase.label}
+            duration={total(phase.steps) || undefined}
+            hue={phase.hue}
+          >
+            {phase.steps.map((step) => (
+              <TimelineStep key={step.label} at={step.at} label={step.label} status={step.status} seconds={step.seconds} />
+            ))}
+          </TimelinePhase>
+        ))}
+        <TimelineResult tone="danger" label="Export failed" total={runTotal(STEMS)} />
+      </Timeline>
+    </div>
+  );
+}
+
+/* A live offload, played from its own clock five run seconds to the real one. Its ending is fixed when it starts. */
+const LIVE_OFFLOAD = [
+  { label: "Copy", hue: "blue" as const, steps: [{ label: "Mount Card B", seconds: 2 }, { label: "Read the card's index", seconds: 9 }, { label: "Copy 12 takes", seconds: 19 }] },
+  { label: "Library", hue: "teal" as const, steps: [{ label: "Draw waveforms", seconds: 6 }, { label: "Sync to the studio", seconds: 2 }] },
+];
+
+function LiveOffloadDemo() {
+  const [run, setRun] = useState(0);
+  const [failNext, setFailNext] = useState(false);
+  const [fails, setFails] = useState(false);
+  const flat = LIVE_OFFLOAD.flatMap((p, pi) => p.steps.map((s) => ({ ...s, phase: pi })));
+  let at = 0;
+  const steps = flat.map((s) => ({ ...s, start: (at += s.seconds) - s.seconds, end: at }));
+  const end = at;
+  const failStep = LIVE_OFFLOAD[0]!.steps.length - 1;
+  const failAt = Math.floor(steps[failStep]!.start + steps[failStep]!.seconds * 0.7);
+  const stop = fails ? failAt : end;
+  const [t, setT] = useState(end);
+  useEffect(() => {
+    if (run === 0) return;
+    let frame = 0;
+    const began = performance.now();
+    const tick = (now: number) => {
+      const next = Math.min(stop, Math.floor(((now - began) / 1000) * LIVE_SPEED));
+      setT(next);
+      if (next < stop) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [run, stop]);
+  const statusOf = (i: number): TimelineStatus => {
+    const s = steps[i]!;
+    if (fails && t >= failAt && i === failStep) return "failed";
+    if (fails && t >= failAt && i > failStep) return "skipped";
+    if (t >= s.end) return "done";
+    if (t >= s.start) return "running";
+    return "pending";
+  };
+  const over = t >= stop;
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          size="sm"
+          icon={<RetryIcon />}
+          onClick={() => {
+            setFails(failNext);
+            setT(0);
+            setRun((n) => n + 1);
+          }}
+        >
+          Offload card
+        </Button>
+        <Button size="sm" variant={failNext ? "secondary" : "ghost"} aria-pressed={failNext} onClick={() => setFailNext((v) => !v)}>
+          Fail the copy
+        </Button>
+      </div>
+      <Timeline label="Offload Card B, live steps">
+        {LIVE_OFFLOAD.map((phase, pi) => {
+          const mine = steps.map((s, i) => ({ ...s, i })).filter((s) => s.phase === pi);
+          const finished = mine.every((s) => statusOf(s.i) === "done");
+          return (
+            <TimelinePhase key={phase.label} label={phase.label} hue={phase.hue} duration={finished ? mine.reduce((sum, s) => sum + s.seconds, 0) : undefined}>
+              {mine.map((s) => {
+                const status = statusOf(s.i);
+                const ran = status === "done" || status === "running" || status === "failed";
+                const took = status === "running" ? t - s.start : status === "failed" ? failAt - s.start : s.seconds;
+                return <TimelineStep key={s.label} at={ran ? clock(s.start) : undefined} label={s.label} status={status} seconds={ran ? took : undefined} />;
+              })}
+            </TimelinePhase>
+          );
+        })}
+        {over && (fails ? <TimelineResult tone="danger" label="Copy failed" total={failAt} /> : <TimelineResult tone="success" label="Card B is safe to format" total={end} />)}
+      </Timeline>
+    </div>
+  );
+}
+
+function CardRunningDemo() {
+  return (
+    <div className="w-full max-w-[22.375rem]">
+      <Timeline label="Offload Card C, steps">
+        {withStarts(CARD_C).map((phase) => (
+          <TimelinePhase
+            key={phase.label}
+            label={phase.label}
+            duration={total(phase.steps) ? `${total(phase.steps)}s so far` : undefined}
+            hue={phase.hue}
+          >
+            {phase.steps.map((step) => (
+              <TimelineStep key={step.label} at={step.at} label={step.label} status={step.status} seconds={step.seconds} />
+            ))}
+          </TimelinePhase>
+        ))}
+      </Timeline>
+    </div>
+  );
+}
+
 export default function TimelinePage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -390,6 +660,15 @@ export default function TimelinePage() {
         title="A deploy"
         size="lg"
         code="DeployDemo"
+        byWorld={{
+          device: {
+            demo: <OffloadDemo />,
+            title: "An offload",
+            code: "OffloadDemo",
+            caption:
+              "A card's offload drawn to scale. Each step's row is as tall as its time, and a long step draws that time as a bar on the rail, in its phase's ink: one for the copy, one for the library. The pale bar beside it is the last offload, with its length at its foot, so a faster step reads as shorter at a glance. Short steps keep the thin line, a skipped step says so in words, and the result closes the run. Nothing on the page moves.",
+          },
+        }}
         caption="A run drawn to scale. Each step's row is as tall as its time, and a long step draws that time as a bar on the rail, in the color of its phase: blue for the build, teal for the deploy. The pale bar beside it is the last run, with its length at its foot, so a faster step reads as shorter at a glance. Short steps keep the thin line, a skipped step says so in words, and the result closes the run. Nothing on the page moves."
       >
         <DeployDemo />
@@ -400,6 +679,7 @@ export default function TimelinePage() {
         tier="responsive"
         size="lg"
         code="GlanceDemo"
+        byWorld={{ device: { demo: <MixGlanceDemo />, code: "MixGlanceDemo" } }}
         caption="The whole run as one strip, over the same steps as a plain list. A segment is as wide as its step, the phases are labeled above their spans, and the times at the phase boundaries sit below. The big total is composed here on the page, at the largest heading size. Hover or touch a segment and the tooltip names the step and its time. The strip is a picture, so the list beside it is where the keyboard and a screen reader go."
       >
         <GlanceDemo />
@@ -410,6 +690,15 @@ export default function TimelinePage() {
         tier="instant"
         size="lg"
         code="FailedDemo"
+        byWorld={{
+          device: {
+            demo: <StemsFailedDemo />,
+            title: "A failed export",
+            code: "StemsFailedDemo",
+            caption:
+              "The render stopped at a step, so that step has an x in danger and the steps after it are pending: an empty circle, no time and no start. The write never began, so its phase has no total and takes no room in the strip. The failed segment is the one place a mark takes danger. The result says it in words, in danger, with the time it took to fail.",
+          },
+        }}
         caption="The build stopped at a step, so that step has an x in danger and the steps after it are pending: an empty circle, no time and no start. The deploy never began, so its phase has no total and takes no room in the strip. The failed segment is the one place a mark takes danger. The result says it in words, in danger, with the time it took to fail."
       >
         <FailedDemo />
@@ -421,6 +710,14 @@ export default function TimelinePage() {
         size="lg"
         align="start"
         code="LiveDemo"
+        byWorld={{
+          device: {
+            demo: <LiveOffloadDemo />,
+            code: "LiveOffloadDemo",
+            caption:
+              "Press Offload card and the same timeline follows the offload, five seconds of it to each real one: the running step is a half-filled circle, its time ticks, finished steps take their check, and each phase gets its total as it ends. Each state simply replaces the last; nothing animates a status. Turn on Fail the copy first and the copy stops with an x in danger and the library skipped.",
+          },
+        }}
         caption="Press Run deploy and the same timeline follows the run, five seconds of it to each real one: the running step is a half-filled circle, its time ticks, finished steps take their check, and each phase gets its total as it ends. Each state simply replaces the last; nothing animates a status. Turn on Fail the build first and the build stops with an x in danger and the deploy skipped. With fun mode on (Customize, Motion), the icons pop, the checks draw, the failure shakes once, the totals and the result arrive, and a run that went live scatters a few dots in its phases' colors."
       >
         <LiveDemo />
@@ -431,6 +728,7 @@ export default function TimelinePage() {
         tier="instant"
         align="start"
         code="RunningDemo"
+        byWorld={{ device: { demo: <CardRunningDemo />, code: "CardRunningDemo" } }}
         caption="The list measures its own width, so in a phone-wide column the start column shrinks and the labels wrap. The step that is running is a half-filled circle in the foreground. It does not spin or pulse, and the steps after it wait as empty circles. The phase total says it is so far."
       >
         <RunningDemo />

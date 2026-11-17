@@ -140,15 +140,97 @@ function TuneTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a recorder's backup plan, and a take's card ---------- */
+
+function BackupPlanCard() {
+  const travel = useTravel();
+  const [run, setRun] = useState(0);
+  const card = useTune("Backup card", (t) => ({
+    radius: t.radius(12),
+    padding: t.space(20),
+    size: t.choice(["sm", "md"], "md"),
+    badge: t.toggle(true, { label: "Most picked badge" }),
+    enter: t.spring("expressive", { label: "Entrance" }),
+    replay: t.action("Replay", () => setRun((r) => r + 1)),
+  }));
+  return (
+    <motion.div
+      key={run}
+      initial={run === 0 ? false : { opacity: 0, y: travel }}
+      animate={{ opacity: 1, y: 0, transition: card.enter }}
+      className="grid w-full max-w-xs gap-4 bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]"
+      style={{ borderRadius: card.radius, padding: card.padding }}
+    >
+      <div className="grid gap-1">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-body font-title text-fg">Backup, 200 GB</p>
+          {card.badge && <Tag>Most picked</Tag>}
+        </div>
+        <p className="text-small text-fg-subtle">Every take copied off the card the moment it stops, about 190 hours at 48 kHz.</p>
+      </div>
+      <p className="text-small text-fg-muted">
+        <span className="text-h4 text-fg">€4</span> a month
+      </p>
+      <Button size={card.size} block>
+        Choose Backup
+      </Button>
+    </motion.div>
+  );
+}
+
+function BackupPlanDemo() {
+  const [float, setFloat] = useState(false);
+  return (
+    <div className="@container w-full">
+      <div className="grid w-full items-start gap-6 @2xl:grid-cols-[1fr_auto]">
+        <TuneRoot inline={!float} enabled className={float ? "" : "justify-self-center"}>
+          <div className="grid w-full justify-items-center gap-8 pt-4">
+            <BackupPlanCard />
+            <Switch label="Float it" description="Moves the panel over the page, where it sits in your app." checked={float} onCheckedChange={setFloat} className="w-full max-w-xs" />
+          </div>
+        </TuneRoot>
+      </div>
+    </div>
+  );
+}
+
+function TakeCard() {
+  const card = useTune("Take summary", (t) => ({ radius: t.radius(12), padding: t.space(24) }));
+  return (
+    <div className="grid gap-1 bg-surface-1 shadow-[inset_0_0_0_1px_var(--line),var(--highlight)]" style={{ borderRadius: card.radius, padding: card.padding }}>
+      <p className="text-body font-title text-fg">take_04.wav</p>
+      <p className="text-small text-fg-subtle">Interview by the road · 00M 47S 08F</p>
+    </div>
+  );
+}
+
+function TakeCardTile() {
+  return (
+    <div className="grid w-full max-w-xs gap-3">
+      <TuneRoot inline enabled>
+        <TakeCard />
+      </TuneRoot>
+    </div>
+  );
+}
+
 export default function TunePage() {
   return (
-    <Page meta={meta} docs={docs} tile={<TuneTile />}>
+    <Page meta={meta} docs={docs} tile={<TuneTile />} tileByWorld={{ device: <TakeCardTile /> }}>
       <Stage
         title="Tune a card"
         tier="responsive"
         code="PlanCardDemo"
         size="lg"
         align="start"
+        byWorld={{
+          device: {
+            demo: <BackupPlanDemo />,
+            code: "BackupPlanDemo",
+            caption:
+              "A recorder's backup plan, as its app sells it. One useTune call gives the card its corner, its padding, its button size, its badge and its entrance, and builds the panel beside it. The corner starts at 12px and the padding at 20px, so Rules says 2 to change: drag the radius to 8px and the padding to 24px and every row fits, and the card now holds litt's own surface radius and spacing tokens. The size is a Segmented choice typed as the Button's size, the badge a Switch, and the entrance a Spring editor on the expressive tier; Replay runs it. Copy tokens writes it all with litt's names, and Save keeps a version. Float it moves the panel where TuneRoot puts it in your app.",
+          },
+        }}
         caption="One useTune call gives the card its corner, its padding, its button size, its badge and its entrance, and builds the panel beside it. The corner starts at 12px and the padding at 20px, so Rules says 2 to change: drag the radius to 8px and the padding to 24px and every row fits, and the card now holds litt's own surface radius and spacing tokens. The size is a Segmented choice typed as the Button's size, the badge a Switch, and the entrance a Spring editor on the expressive tier; Replay runs it. Copy tokens writes it all with litt's names, and Save keeps a version. Float it moves the panel where TuneRoot puts it in your app: top right, or across the bottom on a phone, folded."
       >
         <PlanCardDemo />

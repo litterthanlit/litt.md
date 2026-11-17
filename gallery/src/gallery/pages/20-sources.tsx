@@ -320,15 +320,194 @@ function SourcesTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): Litt answers why take_04 clips, from the take, the manual and the report ---------- */
+
+const TAKE_04: Source = {
+  id: "take-04",
+  title: "Card A / take_04.wav",
+  url: "https://library.example.com/card-a/take_04.wav",
+  site: "Library",
+  kind: "file",
+  passage: "Peak +0.0 dBFS at 00M 41S 12F · 32-bit float · limiter off on channels 2 and 3",
+  readAt: "just now",
+};
+const LIMITER: Source = {
+  id: "limiter",
+  title: "The input limiter",
+  url: "https://docs.example.com/recorder/limiter",
+  passage: "The limiter holds each channel under its threshold, −1 dBFS unless you set another. A channel with the limiter off records what reaches the converter, peaks and all.",
+  readAt: "2 minutes ago",
+};
+const FLOAT: Source = {
+  id: "float",
+  title: "Recording in 32-bit float",
+  url: "https://docs.example.com/recorder/32-bit-float",
+  site: "docs.example.com",
+  passage: "A 32-bit float take keeps every peak above 0 dBFS, so a peak that clips on the meter can be brought down in post without distortion.",
+  readAt: "2 minutes ago",
+};
+const REPORT: Source = {
+  id: "report",
+  title: "Sound report, day 4",
+  url: "https://library.example.com/reports/day-4",
+  passage: "Lav 1 and lav 2: limiter off for the wide, to keep the breaths. Back on after Scene 12.",
+  readAt: "a minute ago",
+};
+const GAIN: Source = {
+  id: "gain",
+  title: "Setting input gain",
+  url: "https://docs.example.com/recorder/gain",
+  site: "docs.example.com",
+  passage: "Set the gain so speech peaks near −12 dBFS, which leaves room for a shout.",
+  readAt: "a minute ago",
+};
+const LAV: Source = {
+  id: "lav",
+  title: "Placing a lav",
+  url: "https://docs.example.com/recorder/lav",
+  passage: "Keep the capsule a hand's width below the chin, clear of the collar.",
+  readAt: "a minute ago",
+};
+
+/** Take_04's sources, numbered in this order. */
+const TAKE_SOURCES: Source[] = [TAKE_04, LIMITER, FLOAT, REPORT];
+/** What the search found. The answer cites two of them. */
+const TAKE_FOUND: Source[] = [LIMITER, FLOAT, GAIN, LAV];
+const TAKE_CITED: Source[] = [LIMITER, FLOAT];
+
+/** The answer as the model wrote it: a #cite-<id> link after each claim, and one ordinary link. */
+const TAKE_MARKDOWN = `take_04 clips at 00M 41S because the limiter was off on both lavs [1](#cite-take-04). With it on, the recorder holds each channel under −1 dBFS [2](#cite-limiter).
+
+The take was recorded in 32-bit float [3](#cite-float), so the peak can be brought down in post with nothing lost [3](#cite-float). The sound report says the limiter was switched off for the wide and not put back [4](#cite-report), and the [recorder's manual](https://docs.example.com/recorder) has the rest of the input settings.`;
+
+function TakeCitedDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-3">
+      <p className="text-small text-fg-subtle">Litt is looking into take_04</p>
+      <Sources sources={TAKE_SOURCES}>
+        <MessageText>
+          <p>
+            <code>take_04.wav</code> clips at 00M 41S because the limiter was off on both lavs
+            <Citation source="take-04" />. With it on, the recorder holds each channel under −1 dBFS
+            <Citation source="limiter" />.
+          </p>
+          <p>
+            The take was recorded in 32-bit float
+            <Citation source="float" />, so the peak can be brought down in post with nothing lost
+            <Citation source="float" quote="a peak that clips on the meter can be brought down in post without distortion" />. The sound report says the
+            limiter was switched off for the wide and not put back
+            <Citation source="report" />.
+          </p>
+        </MessageText>
+        <SourceList />
+      </Sources>
+    </div>
+  );
+}
+
+function TakeSearchDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-3">
+      <p className="text-small text-fg-subtle">Litt is looking into take_04</p>
+      <Sources sources={TAKE_CITED}>
+        <ToolCall
+          action="Searched"
+          target={'"limiter off clipping"'}
+          result="4 sources"
+          duration={1.2}
+          defaultOpen
+          details={<SourceList sources={TAKE_FOUND} label="Search results" hideLabel />}
+        />
+        <MessageText>
+          <p>
+            With the limiter on, the recorder holds each channel under −1 dBFS
+            <Citation source="limiter" />. The take is 32-bit float, so the peak keeps its shape above 0 dBFS
+            <Citation source="float" /> and can come down in post.
+          </p>
+        </MessageText>
+        <SourceList />
+      </Sources>
+    </div>
+  );
+}
+
+function TakeMarkdownDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-6">
+      <Message latest actions={<MessageActions copyText={unlinkCitations(TAKE_MARKDOWN)} />}>
+        <Sources sources={TAKE_SOURCES}>
+          <Markdown>{TAKE_MARKDOWN}</Markdown>
+          <SourceList />
+        </Sources>
+      </Message>
+      <CodeBlock lang="text" filename="answer.md" code={TAKE_MARKDOWN} wrap maxHeight="12rem" />
+    </div>
+  );
+}
+
+/** The same turn forced to the phone path, so a desktop can preview it. A real phone needs no wrapper. */
+function TakePhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <div className="w-full min-w-0 max-w-[22.375rem]">
+        <div role="region" aria-label="Litt on a phone" className="grid gap-3 rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line">
+          <Sources sources={TAKE_CITED}>
+            <ToolCall
+              action="Searched"
+              target={'"limiter off clipping"'}
+              result="4 sources"
+              duration={1.2}
+              details={<SourceList sources={TAKE_FOUND} label="Search results" hideLabel />}
+            />
+            <MessageText>
+              <p>
+                With the limiter on, the recorder holds each channel under −1 dBFS
+                <Citation source="limiter" />. The take is 32-bit float, so the peak keeps its shape above 0 dBFS
+                <Citation source="float" /> and can come down in post.
+              </p>
+            </MessageText>
+            <SourceList />
+          </Sources>
+        </div>
+      </div>
+    </DeviceProvider>
+  );
+}
+
+function TakeSourcesTile() {
+  return (
+    <div className="grid w-full max-w-md gap-3">
+      <Sources sources={TAKE_CITED}>
+        <MessageText>
+          <p>
+            The limiter holds each channel under −1 dBFS
+            <Citation source="limiter" />, and a 32-bit float take keeps the peak above 0 dBFS
+            <Citation source="float" />.
+          </p>
+        </MessageText>
+        <SourceList />
+      </Sources>
+    </div>
+  );
+}
+
 export default function SourcesPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SourcesTile />}>
+    <Page meta={meta} docs={docs} tile={<SourcesTile />} tileByWorld={{ device: <TakeSourcesTile /> }}>
       <Stage
         title="An answer and its sources"
         tier="instant"
         size="lg"
         align="start"
         code="CitedDemo"
+        byWorld={{
+          device: {
+            demo: <TakeCitedDemo />,
+            code: "TakeCitedDemo",
+            caption:
+              "Each claim ends in a quiet numbered chip, and the same numbers lead the rows under the answer. Rest on a chip: its row lights, and so does the other chip that cites the same page. Run the pointer down the list and the chips in the text light in turn. The light is a tone only, on the instant tier, and nothing moves. Rest a little longer and the card grows from the chip on the responsive tier: the site, the title, the passage and when Litt read it. The second mark of the 32-bit float page quotes the line that claim leans on. The chip is a link to the source, and so is the row.",
+          },
+        }}
         caption="Each claim ends in a quiet numbered chip, and the same numbers lead the rows under the answer. Rest on a chip: its row lights, and so does the other chip that cites the same page. Run the pointer down the list and the chips in the text light in turn. The light is color only, on the instant tier, and nothing moves. Rest a little longer and the card grows from the chip on the responsive tier: the site, the title, the passage and when Litt read it. The second mark of the geist page quotes the line that claim leans on. The chip is a link to the source, as citations are everywhere, and so is the row."
       >
         <CitedDemo />
@@ -340,6 +519,7 @@ export default function SourcesPage() {
         size="lg"
         align="start"
         code="SearchDemo"
+        byWorld={{ device: { demo: <TakeSearchDemo />, code: "TakeSearchDemo" } }}
         caption="The search call says how many sources it found, and opens to them as a list in its details, with no well around it. The answer cites two of the four, so those two rows wear their numbers, and the others show the globe and say Not cited for a screen reader. One Sources wraps the call, the answer and the list, so the numbers agree everywhere. Rest on a result and the chip it feeds lights in the text below."
       >
         <SearchDemo />
@@ -351,6 +531,7 @@ export default function SourcesPage() {
         size="lg"
         align="start"
         code="MarkdownDemo"
+        byWorld={{ device: { demo: <TakeMarkdownDemo />, code: "TakeMarkdownDemo" } }}
         caption="The model writes a fragment link after each claim, and the page's small renderer turns every link whose id citationId reads into a Citation. An ordinary link stays a link. Copy puts the text on the clipboard with the citation links taken out and the numbers kept, through unlinkCitations, so no fragment leaves the page."
       >
         <MarkdownDemo />
@@ -361,6 +542,7 @@ export default function SourcesPage() {
         tier="instant"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <TakePhoneDemo />, code: "TakePhoneDemo" } }}
         caption="A finger never hovers, so the card never opens and the light never shows. The number pairs the chip with its row instead, and both are links to the source. A chip's hit area grows to 44px tall and 24px wide, the width two chips 4px apart allow, and the rows are 44px. A pressed row takes its hover fill at once."
       >
         <PhoneDemo />

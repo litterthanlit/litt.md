@@ -226,13 +226,103 @@ function HeatmapTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the crew's recording, in the ink ---------- */
+
+/** Minutes the crew's recorders ran per day: shoot days about twice a day off, now and then a long field day. */
+function minutesRow(label: string, month: number, days: number, seed: number): HeatmapRow {
+  const next = seeded(seed);
+  const values = Array.from({ length: 31 }, (_, i) => {
+    const at = Date.UTC(2026, month, i + 1);
+    const dayOff = [0, 6].includes(new Date(at).getUTCDay());
+    const base = dayOff ? 430 : 960;
+    const field = next() < 0.07 ? 1.9 : 1;
+    const v = Math.round(base * (0.62 + next() * 0.76) * field);
+    return i + 1 > days || at > TODAY ? null : v;
+  });
+  const total = values.reduce<number>((sum, v) => sum + (v ?? 0), 0);
+  return { label, values, total: total.toLocaleString("en-GB") };
+}
+
+const MINUTE_ROWS = [minutesRow(MONTH_NAMES[0]!, 7, 31, 11), minutesRow(MONTH_NAMES[1]!, 8, 30, 23), minutesRow(MONTH_NAMES[2]!, 9, 31, 37)];
+const DAYS_OF_MONTH = Array.from({ length: 31 }, (_, i) => `day ${i + 1}`);
+
+/** Takes across a year of shooting: busy shoot days, quiet weekends, a slow late December and a slow August. */
+const TAKE_ROWS: HeatmapRow[] = (() => {
+  const next = seeded(2026);
+  const rows: (number | null)[][] = WEEKDAYS.map(() => []);
+  WEEK_STARTS.forEach((monday, c) => {
+    const month = new Date(monday).getUTCMonth();
+    const date = new Date(monday).getUTCDate();
+    const quiet = (month === 11 && date > 20) || (month === 0 && date < 4) ? 0.15 : month === 7 ? 0.55 : 1;
+    const shoot = 1 + 0.9 * Math.max(0, Math.sin(c / 4.1)) ** 2;
+    WEEKDAYS.forEach((_, r) => {
+      const at = monday + r * DAY;
+      const weekend = r >= 5;
+      const draw = next();
+      const base = weekend ? 1.1 : 6.2;
+      const v = draw < (weekend ? 0.7 : 0.1) ? 0 : Math.round(base * quiet * shoot * (0.3 + next() * 1.4));
+      rows[r]!.push(at > TODAY ? null : v);
+    });
+  });
+  return WEEKDAYS.map((label, r) => ({ label, values: rows[r]! }));
+})();
+
+/** Takes started by hour of the week: a call time to wrap on weekdays, a fraction of it at the weekend. */
+const TAKE_HOUR_ROWS: HeatmapRow[] = (() => {
+  const next = seeded(7);
+  const shape = [1, 0, 0, 0, 0, 1, 3, 8, 18, 34, 41, 38, 26, 31, 40, 37, 29, 22, 12, 8, 6, 4, 3, 2];
+  return WEEKDAYS.map((label, r) => ({
+    label,
+    values: shape.map((v) => Math.round(v * (r >= 5 ? 0.24 : 1) * (0.7 + next() * 0.6))),
+  }));
+})();
+
+function MinutesDemo() {
+  return <Heatmap label="Minutes recorded per day, August to October" rows={MINUTE_ROWS} columns={DAYS_OF_MONTH} cell={12} unit={["minute", "minutes"]} />;
+}
+
+function TakesYearDemo() {
+  return <Heatmap label="Takes per day, last 53 weeks" rows={TAKE_ROWS} columns={WEEK_NAMES} columnTicks={MONTH_TICKS} unit={["take", "takes"]} />;
+}
+
+function TakeHoursDemo() {
+  return <Heatmap label="Takes started by hour of the week" rows={TAKE_HOUR_ROWS} columns={HOURS} columnTicks={HOUR_TICKS} unit={["take", "takes"]} />;
+}
+
+function MinutesTile() {
+  return (
+    <div className="w-full overflow-x-auto">
+      <Heatmap
+        label="Minutes recorded per day"
+        cell={12}
+        columns={TILE_DAYS.map((d) => `day ${d + 1}`)}
+        unit={["minute", "minutes"]}
+        rows={[
+          { label: "August", values: tileRow(1.7), total: "25,998" },
+          { label: "September", values: tileRow(2.3), total: "24,310" },
+          { label: "October", values: tileRow(3.1).map((v, d) => (d > 19 ? null : v)), total: "16,402" },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function HeatmapPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<HeatmapTile />}>
+    <Page meta={meta} docs={docs} tile={<HeatmapTile />} tileByWorld={{ device: <MinutesTile /> }}>
       <Stage
         title="Usage by month"
         tier="responsive"
         code="UsageDemo"
+        byWorld={{
+          device: {
+            demo: <MinutesDemo />,
+            title: "Minutes recorded",
+            code: "MinutesDemo",
+            caption:
+              "One row of dots per month of the crew's recording, with the month's total at the end in tabular figures. The dots are the ink in four steps over an empty dot, and the days still to come draw nothing. Hover a dot, or arrow to it, and a ring and a tooltip name the day and the minutes. The tooltip is the Chart's, and it fades in on the responsive tier.",
+          },
+        }}
         caption="One row of dots per month, with the month's total at the end in tabular figures. The dots are teal in four steps over an empty dot, and the days still to come draw nothing. Hover a dot, or arrow to it, and a ring and a tooltip name the day and the count. The tooltip is the Chart's, and it fades in on the responsive tier."
       >
         <UsageDemo />
@@ -242,6 +332,7 @@ export default function HeatmapPage() {
         title="A year of deploys"
         tier="instant"
         code="DeploysDemo"
+        byWorld={{ device: { demo: <TakesYearDemo />, title: "A year of takes", code: "TakesYearDemo" } }}
         caption="Seven weekday rows by fifty-three weeks, with the month names over the columns they start in. The dots keep their size, so on a narrow screen the grid scrolls sideways inside its own box and starts at the latest week, while the weekday labels stay put. Only every second weekday is written when rows are this close, and a screen reader hears all seven. Arrow keys move in two dimensions, and Ctrl with Home or End jumps to the corners."
       >
         <DeploysDemo />
@@ -251,6 +342,14 @@ export default function HeatmapPage() {
         title="Hours of the week"
         tier="instant"
         code="MailDemo"
+        byWorld={{
+          device: {
+            demo: <TakeHoursDemo />,
+            code: "TakeHoursDemo",
+            caption:
+              "Takes started by hour, in the ink. The scale is the quartiles of the non-zero hours, so the busiest quarter of the week is the full ink wherever it falls. On a touch screen the dot under your finger shows its tooltip, which stays until you touch elsewhere. When the grid fits, a finger scrubs across it. When it scrolls, as it does on a phone, a drag scrolls it and a tap picks a dot.",
+          },
+        }}
         caption="Mail received by hour, in violet. The scale is the quartiles of the non-zero hours, so the busiest quarter of the week is full color wherever it falls. On a touch screen the dot under your finger shows its tooltip, which stays until you touch elsewhere. When the grid fits, a finger scrubs across it. When it scrolls, as it does on a phone, a drag scrolls it and a tap picks a dot."
       >
         <MailDemo />

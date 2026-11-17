@@ -220,13 +220,155 @@ function CodeBlockTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a recorder's scripts, its export log and the fix ---------- */
+
+const SLATE = `import { onTake, type Take } from "@recorder/sdk";
+
+/** Names each take after its scene and number: S12_T04.wav. */
+export function slateName(take: Take) {
+  const scene = String(take.scene).padStart(2, "0");
+  const n = String(take.number).padStart(2, "0");
+  return \`S\${scene}_T\${n}.wav\`;
+}
+
+// Peaks are in dBFS, so -1 is 1 dB under clipping.
+onTake((take) => {
+  take.rename(slateName(take));
+  if (take.peak > -1) take.mark("Check the level");
+});`;
+
+/* The export that stopped on a full card. */
+const EXPORT_LOG = [
+  "$ rec export take_04 --to card-b",
+  "",
+  "Rendering Mix · take_04",
+  "  02M 14S 06F, 4 channels, 48 kHz · 24 bit",
+  "  Writing take_04_mix.wav to Card B ...",
+  "Failed to export.",
+  "",
+  "Card B is full",
+  "  The export needs 2.1 GB and 0.4 GB is free.",
+  "",
+  "> Export failed. Nothing was written to Card B.",
+].join("\n");
+
+/* The fix the agent made. The first character of each line is its sign. */
+const EXPORT_FIX = [
+  "@@ -1,8 +1,8 @@",
+  " import type { ExportConfig } from \"@recorder/sdk\";",
+  " ",
+  " const config: ExportConfig = {",
+  "   format: \"wav\",",
+  "   sampleRate: 48000,",
+  "-  destination: \"card-b\",",
+  "+  destination: \"library\",",
+  "   normalize: -1,",
+  " };",
+].join("\n");
+
+/* recorder.config.ts for a five-channel shoot. */
+const RECORDER_CONFIG = `import type { RecorderConfig } from "@recorder/sdk";
+
+const config: RecorderConfig = {
+  sampleRate: 48000,
+  bitDepth: 24,
+  timecode: { fps: 25, mode: "free-run" },
+  preRoll: 2,
+  inputs: [
+    { channel: 1, name: "Boom", gain: 42, lowCut: 80 },
+    { channel: 2, name: "Lav 1", gain: 30, lowCut: 120 },
+    { channel: 3, name: "Lav 2", gain: 30, lowCut: 120 },
+    { channel: 4, name: "Room L", gain: 36 },
+    { channel: 5, name: "Room R", gain: 36 },
+  ],
+  limiter: { threshold: -1, release: 50 },
+  naming: "S{scene}_T{take}",
+  backup: { card: "b", mode: "mirror" },
+};
+
+export default config;`;
+
+/* One routing line that is wider than any column. */
+const ROUTE_LINE = `const route = "in1:boom -> mix.L,mix.R; in2:lav1 -> mix.C; in3:lav2 -> mix.C; in4:room.L -> mix.L; in5:room.R -> mix.R; mix -> card-a,card-b,usb";`;
+
+function RecorderFilesDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-2xl gap-6">
+      <CodeBlock lang="ts" filename="slate.ts" code={SLATE} />
+      <CodeBlock lang="shell" label="Export output for take_04" code={EXPORT_LOG} />
+    </div>
+  );
+}
+
+function ExportFixDemo() {
+  return (
+    <div className="w-full min-w-0 max-w-2xl">
+      <CodeBlock lang="diff" filename="export.config.ts" label="Fix for the full card in export.config.ts" code={EXPORT_FIX} />
+    </div>
+  );
+}
+
+function RecorderConfigDemo() {
+  const [wrap, setWrap] = useState(false);
+  return (
+    <div className="grid w-full min-w-0 max-w-2xl gap-6">
+      <CodeBlock lang="ts" filename="recorder.config.ts" lineNumbers maxHeight="16rem" code={RECORDER_CONFIG} />
+      <div className="grid min-w-0 gap-3">
+        <div className="flex justify-end">
+          <Button size="sm" aria-pressed={wrap} onClick={() => setWrap((w) => !w)}>
+            {wrap ? "Scroll long lines" : "Wrap long lines"}
+          </Button>
+        </div>
+        <CodeBlock lang="ts" filename="routing.ts" label="A long line from routing.ts" wrap={wrap} code={ROUTE_LINE} />
+      </div>
+    </div>
+  );
+}
+
+function RecorderPhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <div className="mx-auto grid w-full min-w-0 max-w-sm gap-4 rounded-surface bg-canvas p-4 shadow-[inset_0_0_0_1px_var(--line-strong)]">
+        <p className="text-body text-fg-muted">The agent pointed exports at the library. take_04 exports now.</p>
+        <CodeBlock lang="diff" filename="export.config.ts" label="Fix for the full card on a phone" code={EXPORT_FIX} />
+        <CodeBlock lang="ts" filename="routing.ts" label="A long line from routing.ts on a phone" code={ROUTE_LINE} />
+      </div>
+    </DeviceProvider>
+  );
+}
+
+const EXPORT_TILE_CODE = `export function ExportButton({ take }: { take: Take }) {
+  const [busy, setBusy] = useState(false);
+  return (
+    <Button variant="primary" disabled={busy} onClick={() => setBusy(true)}>
+      Export {take.name}
+    </Button>
+  );
+}`;
+
+function ExportCodeTile() {
+  return (
+    <div className="w-full max-w-md">
+      <CodeBlock filename="export-button.tsx" lang="tsx" lineNumbers code={EXPORT_TILE_CODE} />
+    </div>
+  );
+}
+
 export default function CodeBlockPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<CodeBlockTile />}>
+    <Page meta={meta} docs={docs} tile={<CodeBlockTile />} tileByWorld={{ device: <ExportCodeTile /> }}>
       <Stage
         title="A file and a shell session"
         align="start"
         code="FilesDemo"
+        byWorld={{
+          device: {
+            demo: <RecorderFilesDemo />,
+            code: "RecorderFilesDemo",
+            caption:
+              "The recorder's slate script sits on a quiet surface with its file name in the header. Keywords and signs step back to fg-muted and comments to fg-subtle, so the code stays calm and no hue appears. The export log is a shell session, so it shows plain. Nothing moves, and Copy swaps its icon at once.",
+          },
+        }}
         caption="The Halo site's Framer component sits on a quiet surface with its file name in the header. Keywords and signs step back to fg-muted, comments to fg-subtle, and strings take a hint of the accent text, so the code stays calm and no data hue appears. The build log is a shell session, so it shows plain. Nothing moves, and Copy swaps its icon at once."
       >
         <FilesDemo />
@@ -236,6 +378,14 @@ export default function CodeBlockPage() {
         title="The fix, as a diff"
         align="start"
         code="DiffDemo"
+        byWorld={{
+          device: {
+            demo: <ExportFixDemo />,
+            code: "ExportFixDemo",
+            caption:
+              "The export stopped because Card B was full, and the agent pointed exports at the library. The sign carries the status, removed lines step back to fg-subtle, and both kinds sit on a faint band that runs the full width. A screen reader hears Added or Removed before each changed line. Copy gives the diff as it was written.",
+          },
+        }}
         caption="The build failed on a font file that was missing, and Litt swapped it for the Google font. The sign carries the status color, removed lines step back to fg-subtle, and both kinds sit on a faint band that runs the full width. A screen reader hears Added or Removed before each changed line. Copy gives the diff as it was written."
       >
         <DiffDemo />
@@ -246,6 +396,7 @@ export default function CodeBlockPage() {
         align="start"
         size="lg"
         code="LongDemo"
+        byWorld={{ device: { demo: <RecorderConfigDemo />, code: "RecorderConfigDemo" } }}
         caption="Numbers sit in a gutter that cannot be selected and is not copied. The first block stops at its max height and scrolls down. A long line scrolls sideways inside its block, and the button turns that into wrapping. Tab into either block and use the arrow keys, because the scroller takes focus."
       >
         <LongDemo />
@@ -256,6 +407,7 @@ export default function CodeBlockPage() {
         align="start"
         size="lg"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <RecorderPhoneDemo />, code: "RecorderPhoneDemo" } }}
         caption="In a phone-wide frame the block keeps the width of its column, and long lines scroll inside it, so the page never moves sideways. The Copy button lives in the header, so a line never runs under it. On a touch screen the header and the button grow to 44px."
       >
         <PhoneDemo />
