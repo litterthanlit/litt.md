@@ -365,15 +365,279 @@ function ClientTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a field recorder's slate, its tags and its crew ---------- */
+
+const LOCATIONS: ComboboxOption[] = [
+  { value: "studio-b", label: "Studio B, live room", group: "Today" },
+  { value: "kitchen", label: "Kitchen, room tone", group: "Today" },
+  { value: "rooftop", label: "Rooftop, east side", group: "Today" },
+  { value: "stairwell", label: "Stairwell, floor 3", group: "Today" },
+  { value: "car-park", label: "Car park, level 2", group: "Today" },
+  { value: "garden", label: "Garden, by the pond", group: "Today" },
+  { value: "cafe-lumiere", label: "Café Lumière, back room", group: "This week" },
+  { value: "soren-flat", label: "Søren’s flat, hallway", group: "This week" },
+  { value: "angstrom-hall", label: "Ångström Hall, stage left", group: "This week" },
+  { value: "brightwater-pier", label: "Brightwater pier", group: "This week" },
+  { value: "northfold-track", label: "Northfold forest track", group: "This week" },
+  { value: "quarry", label: "Quarry, upper ledge", group: "This week" },
+  { value: "tidewell-beach", label: "Tidewell beach", group: "This week" },
+  { value: "mossgrove-lobby", label: "Mossgrove Hotel, lobby", group: "This week" },
+  { value: "market", label: "Riverside market", group: "This week" },
+  { value: "library", label: "Old library, reading room", group: "This week" },
+  { value: "platform-4", label: "Station, platform 4", group: "This week" },
+  { value: "chapel", label: "Chapel, nave", group: "This week" },
+  { value: "studio-ebene", label: "Studio Ébène, booth 2", group: "This week" },
+  { value: "harbour", label: "Harbour, fish market", group: "This week" },
+  { value: "zurich-opera", label: "Zürich Opera House, rehearsal room", group: "Archive" },
+  { value: "ferry", label: "Ferry deck, crossing", group: "Archive" },
+  { value: "bakery", label: "Bakery at 05:00", group: "Archive" },
+  { value: "underpass", label: "Underpass, ring road", group: "Archive" },
+  { value: "wind-farm", label: "Wind farm, turbine 7", group: "Archive" },
+  { value: "tunnel", label: "Tunnel, north end", group: "Archive" },
+  { value: "valley", label: "Valley, dawn chorus", group: "Archive" },
+  { value: "ice-rink", label: "Ice rink, empty", group: "Archive" },
+  { value: "football", label: "Football ground, half time", group: "Archive" },
+  { value: "bells", label: "Church bells, noon", group: "Archive" },
+];
+
+const TAGS: ComboboxGroup[] = [
+  {
+    label: "Sound",
+    options: [
+      { value: "room-tone", label: "Room tone" },
+      { value: "dialogue", label: "Dialogue" },
+      { value: "ambience", label: "Ambience" },
+      { value: "foley", label: "Foley" },
+      { value: "wildtrack", label: "Wildtrack" },
+    ],
+  },
+  {
+    label: "Place",
+    options: [
+      { value: "interior", label: "Interior" },
+      { value: "exterior", label: "Exterior" },
+      { value: "vehicle", label: "Vehicle" },
+    ],
+  },
+  {
+    label: "To fix",
+    options: [
+      { value: "wind", label: "Wind" },
+      { value: "hum", label: "Hum" },
+      { value: "clipping", label: "Clipping" },
+      { value: "traffic", label: "Traffic" },
+      { value: "handling", label: "Handling noise" },
+    ],
+  },
+];
+
+const CREW: ComboboxGroup[] = [
+  {
+    label: "Sound",
+    options: [
+      { value: "mara", label: "Mara Lindqvist" },
+      { value: "nina", label: "Nina Hart" },
+      { value: "ilse", label: "Ilse Varga, on leave", disabled: true },
+      { value: "sofia", label: "Sofia Russo" },
+    ],
+  },
+  {
+    label: "Camera",
+    options: [
+      { value: "theo", label: "Theo Brandt" },
+      { value: "priya", label: "Priya Raman" },
+      { value: "kenji", label: "Kenji Mori" },
+      { value: "elif", label: "Elif Demir" },
+    ],
+  },
+  {
+    label: "Production",
+    options: [
+      { value: "jonas", label: "Jonas Weber" },
+      { value: "ana", label: "Ana Sousa" },
+    ],
+  },
+];
+
+function SlateDemo() {
+  const [location, setLocation] = useState("");
+  const [sent, setSent] = useState("");
+  const send = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    setSent(`Slated location=${data.get("location") || "(none)"} take=${data.get("take")}`);
+  };
+  return (
+    <form onSubmit={send} className="grid w-full max-w-sm gap-6">
+      <Combobox
+        label="Location"
+        name="location"
+        options={LOCATIONS}
+        value={location}
+        onValueChange={setLocation}
+        placeholder="Search 30 locations"
+        hint="Accents are optional: zurich finds Zürich."
+      />
+      <TextField label="Take name" name="take" mono defaultValue="take_04" spellCheck={false} />
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Slate take
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function TakeTagsDemo() {
+  const [tags, setTags] = useState(["ambience", "interior"]);
+  return (
+    <div className="grid w-full max-w-md gap-3">
+      <Combobox
+        multiple
+        label="Tags for take_04"
+        name="tags"
+        options={TAGS}
+        value={tags}
+        onValueChange={setTags}
+        placeholder="Add a tag"
+        hint="Tag everything you hear. Backspace removes the last one."
+      />
+      <Status>{tags.length ? `Tagged ${tags.map((v) => labelIn(TAGS, v)).join(", ")}` : "No tags yet"}</Status>
+    </div>
+  );
+}
+
+function CrewStatesDemo() {
+  const [boom, setBoom] = useState("");
+  const [error, setError] = useState<string | null>("Choose who holds the boom on scene 12.");
+  return (
+    <div className="grid w-full max-w-2xl gap-x-6 gap-y-8 sm:grid-cols-2">
+      <Combobox
+        label="Boom operator"
+        options={CREW}
+        value={boom}
+        error={error}
+        placeholder="Search the crew"
+        onValueChange={(next) => {
+          setBoom(next);
+          setError(next ? null : "Choose who holds the boom on scene 12.");
+        }}
+      />
+      <Combobox
+        multiple
+        disabled
+        label="Archived tags"
+        options={TAGS}
+        defaultValue={["dialogue", "interior"]}
+        hint="Set when the take was archived, so they cannot change."
+      />
+    </div>
+  );
+}
+
+function ListenDemo() {
+  const [open, setOpen] = useState(false);
+  const [listener, setListener] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState("");
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!listener) {
+      setError("Choose who listens to the take.");
+      e.currentTarget.querySelector("input")?.focus();
+      return;
+    }
+    setOpen(false);
+    setStatus(`take_04.wav sent to ${labelIn(CREW, listener)}.`);
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-4">
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          if (next) {
+            setListener("");
+            setError(null);
+          }
+          setOpen(next);
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button>Ask for a listen</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Ask for a listen"
+          description="They get a link to take_04.wav · 48 kHz · 24 bit."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button variant="primary" type="submit" form="listen-form">
+                Send take
+              </Button>
+            </>
+          }
+        >
+          <form id="listen-form" onSubmit={submit} noValidate className="grid gap-6">
+            <Combobox
+              label="Listener"
+              options={CREW}
+              value={listener}
+              error={error}
+              placeholder="Search the crew"
+              onValueChange={(next) => {
+                setListener(next);
+                if (next) setError(null);
+              }}
+            />
+            <TextField label="Note" placeholder="A car passes at 00M 41S. Keep it?" />
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Status>{status}</Status>
+    </div>
+  );
+}
+
+function LocationTile() {
+  const [location, setLocation] = useState("");
+  return (
+    <div className="w-full max-w-xs">
+      <Combobox
+        label="Location"
+        name="location"
+        options={LOCATIONS}
+        value={location}
+        onValueChange={setLocation}
+        placeholder="Search 30 locations"
+        hint="Accents are optional: zurich finds Zürich."
+      />
+    </div>
+  );
+}
+
 export default function ComboboxPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ClientTile />}>
+    <Page meta={meta} docs={docs} tile={<ClientTile />} tileByWorld={{ device: <LocationTile /> }}>
       <Stage
         title="A client for a new project"
         tier="responsive"
         size="lg"
         align="start"
         code="NewProjectDemo"
+        byWorld={{
+          device: {
+            demo: <SlateDemo />,
+            title: "A location on the slate",
+            code: "SlateDemo",
+            caption:
+              "Thirty locations in three groups, as a recorder keeps them for its slate. Type and the list grows out of the field and slides a quarter of the travel token on the responsive tier, then filters at once, with the first match lit. Accents are optional, so zurich finds Zürich. Enter picks, the glass shows the location, and Slate take sends it with the take's name through the fields' names.",
+          },
+        }}
         caption="Thirty clients in three groups. Type and the list grows out of the field and slides a quarter of the travel token on the responsive tier, then filters at once, with the first match lit and no change of height animated. Accents are optional, so zurich finds Zürich. Enter picks, the field shows the client, and Create project sends it through the field's name."
       >
         <NewProjectDemo />
@@ -385,6 +649,15 @@ export default function ComboboxPage() {
         size="lg"
         align="start"
         code="SiteStackDemo"
+        byWorld={{
+          device: {
+            demo: <TakeTagsDemo />,
+            title: "Tags on a take",
+            code: "TakeTagsDemo",
+            caption:
+              "With multiple, each pick becomes a token before the text, and the list stays open for the next one. A new token comes in while its neighbours slide, and a removed one goes, on the responsive tier. Pick a checked tag again, press its x, or press Backspace in an empty field to remove one.",
+          },
+        }}
         caption="With multiple, each pick becomes a raised token before the text, a block you can lift back out of the field, and the list stays open for the next one. A new token fades in while its neighbors slide, and a removed one fades out, on the responsive tier. Pick a checked framework again, press its x, or press Backspace in an empty field to remove one."
       >
         <SiteStackDemo />
@@ -394,6 +667,7 @@ export default function ComboboxPage() {
         title="Error and disabled"
         tier="instant"
         code="StatesDemo"
+        byWorld={{ device: { demo: <CrewStatesDemo />, code: "CrewStatesDemo" } }}
         caption="The line turns to danger on an error, and to the focus color with a ring on focus, both on the instant tier, and the box never moves. The message says how to fix it and clears on a pick. The disabled field lies flat, muted and skipped by Tab, and its tokens lie flat with it and stay readable."
       >
         <StatesDemo />
@@ -404,6 +678,7 @@ export default function ComboboxPage() {
         tier="responsive"
         align="start"
         code="ReviewDemo"
+        byWorld={{ device: { demo: <ListenDemo />, code: "ListenDemo" } }}
         caption="Glass never sits on glass. The dialog is glass, so the list opens solid: surface 2 with the float shadow. Esc closes only the list, and a second Esc closes the dialog. Ilse is on leave, so the arrows skip her."
       >
         <ReviewDemo />

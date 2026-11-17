@@ -104,6 +104,21 @@ function ShortLineDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the commands that move a take off the card ---------- */
+
+function TakeCommandsDemo() {
+  return (
+    <div className="grid w-full max-w-lg gap-6">
+      <CopyButton
+        text="ffmpeg -i take_04.wav -ar 48000 -c:a pcm_s24le take_04_48k.wav"
+        command="ffmpeg -i take_04.wav … take_04_48k.wav"
+        label="Copy the convert command"
+      />
+      <CopyButton text="rec export --card A --format wav" label="Copy the export command" />
+    </div>
+  );
+}
+
 export default function CopyButtonPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -122,6 +137,7 @@ export default function CopyButtonPage() {
         tier="responsive"
         align="start"
         code="ShortLineDemo"
+        byWorld={{ device: { demo: <TakeCommandsDemo />, code: "TakeCommandsDemo" } }}
         caption="The line can show less than the key copies: pass command for the glass and text for the clipboard. The glass wraps a long command rather than cutting it, and a hidden character keeps its width, so nothing shifts while the wave runs."
       >
         <ShortLineDemo />

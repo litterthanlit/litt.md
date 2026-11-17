@@ -155,6 +155,58 @@ function IconsDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the same keys on a field recorder's export sheet ---------- */
+
+function ExportTakeDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary">Export take</Button>
+      <Button variant="secondary">Add marker</Button>
+      <Button variant="ghost">Cancel</Button>
+      <Button disabled>Arm track</Button>
+    </div>
+  );
+}
+
+function DeleteTakeDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="danger" icon={<TrashIcon />}>Delete take</Button>
+      <Button variant="danger" size="sm">Erase card</Button>
+      <Button variant="danger" disabled>Delete take</Button>
+    </div>
+  );
+}
+
+function SaveSceneDemo() {
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => setLoading(false), 1600);
+    return () => clearTimeout(t);
+  }, [loading]);
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary" loading={loading} onClick={() => setLoading(true)}>Save scene</Button>
+      <Button loading={loading} onClick={() => setLoading(true)}>Export</Button>
+    </div>
+  );
+}
+
+function TakeIconsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button icon={<PlusIcon />}>New take</Button>
+      <Button><CopyIcon /> Copy file name</Button>
+      <Button variant="ghost" iconRight={<ArrowUpRightIcon />}>Open the manual</Button>
+      <Button iconOnly aria-label="Copy file name"><CopyIcon /></Button>
+      <Button iconOnly variant="ghost" aria-label="Settings"><SettingsIcon /></Button>
+      <Button iconOnly variant="ghost" aria-label="More actions"><MoreIcon /></Button>
+      <Button iconOnly variant="ghost" size="sm" aria-label="Delete take"><TrashIcon /></Button>
+    </div>
+  );
+}
+
 export default function ButtonPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -163,6 +215,14 @@ export default function ButtonPage() {
         tier="instant"
         caption="Primary is the one accent fill in a view and carries the glow. Secondary is a block raised once by its cast, with no outline. Ghost and a disabled button lie flat: nothing to push. Hover swaps the fill over the instant duration; a press sinks the block at once: the cast tightens and the label drops half a pixel. To feel other durations, open the Playground."
         code="VariantsDemo"
+        byWorld={{
+          device: {
+            demo: <ExportTakeDemo />,
+            code: "ExportTakeDemo",
+            caption:
+              "The keys of a recorder's export sheet. Export take is the primary, the ink key: on Device orange is a hand on it, never a key's fill. Add marker is a key in the body's grey, Cancel lies flat on the plate until a press sinks it into a well, and Arm track, disabled, lies flat with no skirt. A press sinks the whole face 2px onto its skirt at once.",
+          },
+        }}
       >
         <VariantsDemo />
       </Stage>
@@ -172,6 +232,14 @@ export default function ButtonPage() {
         tier="instant"
         caption="A destructive action is the secondary block with its words in the danger color, so the red word is the only loud thing. It is not filled red and has no glow. Disabled, it lies flat and loses the red. The one red fill is the confirm of the dialog that asks: the same variant, in the dialog's footer. Open the Dialog page to see it light up."
         code="DangerDemo"
+        byWorld={{
+          device: {
+            demo: <DeleteTakeDemo />,
+            code: "DeleteTakeDemo",
+            caption:
+              "A destructive action is the grey key with its words in red, so the word that names the loss is the only loud thing: Delete take, Erase card. It is never filled red. Disabled, it lies flat and loses the red. The one red key is the confirm of the dialog that asks.",
+          },
+        }}
       >
         <DangerDemo />
       </Stage>
@@ -180,11 +248,11 @@ export default function ButtonPage() {
         <SizesDemo />
       </Stage>
 
-      <Stage title="Loading" tier="instant" caption="The label stays mounted at opacity 0 while the spinner shows, so the button keeps its exact width. Press either button." code="LoadingDemo">
+      <Stage title="Loading" tier="instant" caption="The label stays mounted at opacity 0 while the spinner shows, so the button keeps its exact width. Press either button." code="LoadingDemo" byWorld={{ device: { demo: <SaveSceneDemo />, code: "SaveSceneDemo" } }}>
         <LoadingDemo />
       </Stage>
 
-      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo">
+      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo" byWorld={{ device: { demo: <TakeIconsDemo />, code: "TakeIconsDemo" } }}>
         <IconsDemo />
       </Stage>
 

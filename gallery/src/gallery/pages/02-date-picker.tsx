@@ -250,15 +250,154 @@ function LaunchTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a field recorder's timer, its takes and its schedule ---------- */
+
+function TimerDemo() {
+  const today = getToday();
+  const [start, setStart] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState("");
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!start) {
+      setError("Choose the day the recorder starts.");
+      setSent("");
+      e.currentTarget.querySelector<HTMLElement>("[aria-haspopup=dialog]")?.focus();
+      return;
+    }
+    setSent(`Sent timer=${new FormData(e.currentTarget).get("timer")}`);
+  };
+  return (
+    <form onSubmit={submit} noValidate className="grid w-full max-w-sm gap-6">
+      <DatePicker
+        label="Timer start"
+        name="timer"
+        min={today}
+        value={start}
+        onValueChange={(day) => {
+          setStart(day);
+          setError(null);
+        }}
+        hint="The recorder wakes and arms at 05:30 on this day, for the dawn chorus."
+        error={error}
+      />
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Set timer
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function TakesPeriodDemo() {
+  const today = getToday();
+  const presets: DatePreset<"range">[] = [
+    { label: "Last 7 days", value: { start: addDays(today, -6), end: today } },
+    { label: "Last 30 days", value: { start: addDays(today, -29), end: today } },
+    { label: "This month", value: { start: `${today.slice(0, 7)}-01`, end: today } },
+  ];
+  const [period, setPeriod] = useState<DateRange>(presets[0]!.value);
+  const days = length(period);
+  return (
+    <div className="grid w-full max-w-sm gap-3">
+      <DatePicker
+        mode="range"
+        label="Export takes from"
+        name="period"
+        max={today}
+        presets={presets}
+        value={period}
+        onValueChange={setPeriod}
+        hint="Every take on card A in the range, as WAV."
+      />
+      <Status>{`${days} ${days === 1 ? "day" : "days"} of takes`}</Status>
+    </div>
+  );
+}
+
+/** The recorder's week, from today, so the demo always has something near. */
+function sessions(today: string): Map<string, Booking[]> {
+  return new Map([
+    [today, [{ time: "05:30", title: "Dawn chorus in the valley, 2 h" }, { time: "14:30", title: "Room tone, Mossgrove Hotel lobby" }]],
+    [addDays(today, 1), [{ time: "09:30", title: "Foley, footsteps on gravel" }]],
+    [addDays(today, 3), [{ time: "11:00", title: "Dialogue, scene 12, takes 1 to 8" }, { time: "16:00", title: "Mix · take_04" }]],
+    [addDays(today, 7), [{ time: "09:00", title: "Card A to the archive" }]],
+  ]);
+}
+
+function SessionsDemo() {
+  const today = getToday();
+  const [day, setDay] = useState(today);
+  const list = sessions(today).get(day) ?? [];
+  return (
+    <div className="flex w-full max-w-2xl flex-wrap items-start gap-x-12 gap-y-8">
+      <Calendar label="Recording schedule" value={day} onValueChange={setDay} />
+      <div className="grid min-w-56 flex-1 content-start gap-4">
+        <h3 className="text-body text-fg">{spoken(day)}</h3>
+        {list.length ? (
+          <ul className="grid gap-3">
+            {list.map((b) => (
+              <li key={b.time} className="grid grid-cols-[3.5rem_1fr] gap-3 text-small">
+                <span className="tabular-nums text-fg-subtle">{b.time}</span>
+                <span className="text-fg-muted">{b.title}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-small text-fg-subtle">Nothing booked. A day for the mix.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function MixReviewDemo() {
+  const today = getToday();
+  const [day, setDay] = useState<string | null>(null);
+  return (
+    <div className="grid gap-4">
+      <Calendar label="Mix review" min={today} isDisabled={weekend} value={day} onValueChange={setDay} />
+      <Status>{day ? `Mix review of take_04 on ${spoken(day)}.` : "Pick a weekday for the mix review."}</Status>
+    </div>
+  );
+}
+
+function TimerTile() {
+  const [start, setStart] = useState<string | null>(null);
+  return (
+    <div className="w-full max-w-xs">
+      <DatePicker
+        label="Timer start"
+        name="timer"
+        min={getToday()}
+        value={start}
+        onValueChange={setStart}
+        hint="The recorder wakes and arms at 05:30 on this day, for the dawn chorus."
+      />
+    </div>
+  );
+}
+
 export default function DatePickerPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<LaunchTile />}>
+    <Page meta={meta} docs={docs} tile={<LaunchTile />} tileByWorld={{ device: <TimerTile /> }}>
       <Stage
         title="A launch date for a Framer site"
         tier="responsive"
         size="lg"
         align="start"
         code="LaunchDateDemo"
+        byWorld={{
+          device: {
+            demo: <TimerDemo />,
+            title: "A timer for a dawn recording",
+            code: "TimerDemo",
+            caption:
+              "A recorder can wake by itself and arm for a take you will not be awake for. The field holds the date in words, and it stays pressed while the calendar is open. Press it and the calendar opens in a popover, with focus on today. Days before today are dimmed, because a timer cannot start in the past. A pick closes it and focus returns to the field. Set the timer with no date and the error says what to do.",
+          },
+        }}
         caption="The field is the Select's raised trigger with the date in words: you press it, so it is a block, and it stays pressed while the calendar is open. Click it and the calendar grows out of it in a popover, on the responsive tier, with focus on today. Days before today are dimmed, because a launch cannot be in the past. A pick closes it and focus returns to the field. Submit with no date and the error says what to do."
       >
         <LaunchDateDemo />
@@ -270,6 +409,7 @@ export default function DatePickerPage() {
         size="lg"
         align="start"
         code="ReportPeriodDemo"
+        byWorld={{ device: { demo: <TakesPeriodDemo />, title: "Takes to export", code: "TakesPeriodDemo" } }}
         caption="A range takes two picks. The first fills a day, and the band follows the pointer until the second, then the popover closes. The presets sit in a column beside the calendar and pick in one click; on a phone they sit above it as buttons, in a bottom sheet. Days after today are dimmed."
       >
         <ReportPeriodDemo />
@@ -280,6 +420,7 @@ export default function DatePickerPage() {
         tier="responsive"
         align="start"
         code="ScheduleDemo"
+        byWorld={{ device: { demo: <SessionsDemo />, code: "SessionsDemo" } }}
         caption="The calendar on its own. Page with the arrows or PageUp and PageDown, and the new month slides half of the travel token in from the side it comes from as the old one fades, on the responsive tier. Always six weeks, so the list beside it never moves. Today has a hairline ring; the picked day is filled with the foreground, never the accent."
       >
         <ScheduleDemo />
@@ -289,6 +430,7 @@ export default function DatePickerPage() {
         title="Weekdays only"
         tier="instant"
         code="WeekdaysDemo"
+        byWorld={{ device: { demo: <MixReviewDemo />, code: "MixReviewDemo" } }}
         caption="isDisabled rules out weekends and min rules out the past. Those days are dimmed and take no hover, and the arrow keys still reach them, so a screen reader can say why. A day under the pointer fills on the instant tier."
       >
         <WeekdaysDemo />

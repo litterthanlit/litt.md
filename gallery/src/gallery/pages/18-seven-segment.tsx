@@ -115,6 +115,47 @@ export const study: PageStudy = {
   },
 };
 
+/* ---------- Device's own (plans/024, phase 3): takes counted and a level read on the recorder's glass ---------- */
+
+function TakeCounterDemo() {
+  const [takes, setTakes] = useState(38);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <SevenSegment value={takes} digits={4} label="Takes today" />
+      <div className="flex flex-wrap items-center gap-3">
+        <Button size="sm" onClick={() => setTakes((t) => Math.min(9999, t + 1))}>
+          Slate a take
+        </Button>
+        <Button size="sm" onClick={() => setTakes((t) => Math.min(9999, t + 100))}>
+          Add a hundred
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setTakes(0)}>
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function InputLevelDemo() {
+  const [tenths, setTenths] = useState(-120);
+  const text = (tenths / 10).toFixed(1);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <SevenSegment value={text} digits={5} label="Input level in dB" />
+      <div className="flex flex-wrap items-center gap-3">
+        <Button size="sm" onClick={() => setTenths((t) => t - 30)}>
+          Quieter
+        </Button>
+        <Button size="sm" onClick={() => setTenths((t) => t + 30)}>
+          Louder
+        </Button>
+      </div>
+      <p className="text-small text-fg-subtle">A level under 0 dB reads with a minus: the middle bar of the first figure.</p>
+    </div>
+  );
+}
+
 export default function SevenSegmentPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -123,6 +164,15 @@ export default function SevenSegmentPage() {
         tier="instant"
         align="start"
         code="CounterDemo"
+        byWorld={{
+          device: {
+            demo: <TakeCounterDemo />,
+            title: "Takes today",
+            code: "TakeCounterDemo",
+            caption:
+              "Press Slate a take. The new segments light at once and the ones that went out fade behind them, so a figure that changes leaves a short trace. The count is right-aligned in four figures and the glass never changes size. Nothing moves until the value does.",
+          },
+        }}
         caption="Press Deploy. The new segments light at once and the ones that went out fade behind them, so a figure that changes leaves a short trace. The count is right-aligned in four figures and the glass never changes size. Nothing moves until the value does."
       >
         <CounterDemo />
@@ -133,6 +183,15 @@ export default function SevenSegmentPage() {
         tier="instant"
         align="start"
         code="ThermostatDemo"
+        byWorld={{
+          device: {
+            demo: <InputLevelDemo />,
+            title: "A level",
+            code: "InputLevelDemo",
+            caption:
+              "A minus is the middle bar, and a dot lights the point at the foot of the figure before it. Step the level up through 0 dB and watch the minus leave with the figure that changes.",
+          },
+        }}
         caption="A minus is the middle bar, and a dot lights the point at the foot of the figure before it. Step the temperature down through zero and watch the minus arrive with the figure that changes."
       >
         <ThermostatDemo />

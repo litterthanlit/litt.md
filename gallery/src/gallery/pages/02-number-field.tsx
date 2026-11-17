@@ -105,6 +105,55 @@ function SizesDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a field recorder's pre-roll and input settings ---------- */
+
+/** A second of stereo at 48 kHz · 24 bit: 48,000 samples × 3 bytes × 2 channels. */
+const BYTES_A_SECOND = 48000 * 3 * 2;
+
+function PreRollDemo() {
+  const [seconds, setSeconds] = useState<number | null>(2);
+  return (
+    <NumberField
+      label="Pre-roll"
+      unit="s"
+      min={0}
+      max={10}
+      value={seconds}
+      onValueChange={setSeconds}
+      required
+      help={
+        seconds === null
+          ? "Between 0 and 10 s."
+          : seconds === 0
+            ? "Off: a take starts when you press REC."
+            : `Keeps the ${seconds} s before you press REC, ${Math.round((seconds * BYTES_A_SECOND) / 1000)}\u00a0kB a take.`
+      }
+      className="w-full max-w-xs"
+    />
+  );
+}
+
+function InputSettingsDemo() {
+  const [limit, setLimit] = useState<number | null>(120);
+  return (
+    <div className="grid w-full max-w-2xl gap-8 sm:grid-cols-2">
+      <NumberField label="Input gain" unit="dB" format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }} step={0.5} min={0} max={60} defaultValue={32} />
+      <NumberField label="Monitor mix" format={{ style: "percent" }} step={0.05} min={0} max={1} defaultValue={0.5} />
+      <NumberField
+        label="Split takes at"
+        unit="min"
+        step={10}
+        min={10}
+        max={100}
+        value={limit}
+        onValueChange={setLimit}
+        error={limit !== null && limit > 100 ? "This card splits a take at 100 min." : undefined}
+      />
+      <NumberField label="Channels" min={1} max={8} defaultValue={2} disabled help="Set by the input, a stereo pair." />
+    </div>
+  );
+}
+
 export default function NumberFieldPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -113,6 +162,15 @@ export default function NumberFieldPage() {
         tier="instant"
         align="start"
         code="SeatsDemo"
+        byWorld={{
+          device: {
+            demo: <PreRollDemo />,
+            title: "Pre-roll on a recorder",
+            code: "PreRollDemo",
+            caption:
+              "How much the recorder keeps from before you press REC. Press + or −, hold one down to run, or use the arrow keys in the field. Each stepper is a key in the well beside the glass, and it sinks its 2px while you press it. At 0 and at 10 the key that would go past lies flat. Type a number and leave the field: it is kept between the bounds, put on a whole second and shown with its unit. The line under it says what the pre-roll costs on the card at 48 kHz · 24 bit.",
+          },
+        }}
         caption="Press + or −, hold one down to run, or use the arrow keys in the field. Each stepper is a block standing up out of the field, and it sinks while you press it. At 1 and at 50 the stepper that would go past is disabled and lies flat. Type a number and leave the field: it is kept between the bounds, put on a whole seat and shown with its unit. The total under it follows."
       >
         <SeatsDemo />
@@ -123,6 +181,15 @@ export default function NumberFieldPage() {
         tier="instant"
         align="start"
         code="FormatsDemo"
+        byWorld={{
+          device: {
+            demo: <InputSettingsDemo />,
+            title: "Input settings",
+            code: "InputSettingsDemo",
+            caption:
+              "The input gain steps by 0.5 dB and always shows its tenth. The monitor mix holds 0.5 and shows 50%; type 60 and it reads 60%. Split takes at starts past the card's bound, so it says so in red words; one step down brings it back. The channel count is set by the input, so it lies flat with its keys and keeps its value and its hint.",
+          },
+        }}
         caption="A price in euros steps by 0.50 and shows the currency while you are not typing in it. A percent holds 0.15 and shows 15%; type 20 and it reads 20%. The storage limit starts past its bound, so it says so in the danger color; one step down brings it back. A disabled field lies flat with its steppers and keeps its value and its hint."
       >
         <FormatsDemo />

@@ -128,6 +128,47 @@ function SizesDemo() {
   );
 }
 
+/* ---------- Device's own Variants (plans/024, phase 3): the card and the battery, in the ink ---------- */
+
+function CardUsedDemo() {
+  return <Gauge label="Card A" value={42} max={128} valueText="42 of 128 GB used" figure="42 GB" caption="of 128 GB" />;
+}
+
+function BatterySizesDemo() {
+  return (
+    <div className="flex w-full flex-wrap items-end justify-center gap-x-16 gap-y-12">
+      <div className="grid w-full max-w-40 gap-2">
+        <Gauge label="Battery" value={138} max={300} valueText="2 hours 18 minutes of battery left, of 5 hours" figure="2H 18M" size={160} />
+        <p className="tabular-nums text-caption font-normal text-fg-subtle">160 wide</p>
+      </div>
+      <div className="grid w-full max-w-80 gap-2">
+        <Gauge
+          label="Battery left"
+          value={138}
+          max={300}
+          valueText="2 hours 18 minutes of battery left, of 5 hours"
+          figure="2H 18M"
+          caption="of 5H recording at 48 kHz"
+          size={320}
+        />
+        <p className="tabular-nums text-caption font-normal text-fg-subtle">320 wide</p>
+      </div>
+      <div className="grid w-full max-w-[17.5rem] gap-2">
+        <Gauge
+          label="Battery left"
+          value={138}
+          max={300}
+          valueText="2 hours 18 minutes of battery left, of 5 hours"
+          figure="2H 18M"
+          caption="of 5H recording at 48 kHz"
+          size={320}
+        />
+        <p className="tabular-nums text-caption font-normal text-fg-subtle">A 320 gauge in a box 17.5rem wide</p>
+      </div>
+    </div>
+  );
+}
+
 export default function GaugePage() {
   return (
     <Page
@@ -158,6 +199,15 @@ export default function GaugePage() {
       <Stage
         title="Storage"
         code="StorageDemo"
+        byWorld={{
+          device: {
+            demo: <CardUsedDemo />,
+            title: "Card used",
+            code: "CardUsedDemo",
+            caption:
+              "The ticks are the ink, as every gauge is under Device. The figure can read shorter than the value text: it says 42 GB, and a screen reader hears 42 of 128 GB used. The caption carries the card's size.",
+          },
+        }}
         caption="With no hue the ticks are the foreground, the quiet default for a single quantity. The figure can read shorter than the value text: it says 42 GB, and a screen reader hears 42 of 100 GB. The caption carries the limit."
       >
         <StorageDemo />
@@ -166,6 +216,14 @@ export default function GaugePage() {
       <Stage
         title="Sizes"
         code="SizesDemo"
+        byWorld={{
+          device: {
+            demo: <BatterySizesDemo />,
+            code: "BatterySizesDemo",
+            caption:
+              "The width is a prop, and the tick length follows it. The 160 gauge has room for a short label and the figure only. The last one is a 320 gauge in a box 17.5rem wide: the drawing scales down to the box and never passes it, while the text stays at its own size and stays sharp, because it is set in HTML over the SVG.",
+          },
+        }}
         caption="The width is a prop, and the tick length follows it. The 160 gauge has room for a short label and the figure only. The last one is a 320 gauge in a box 17.5rem wide: the drawing scales down to the box and never passes it, while the text stays at its own size and stays sharp, because it is set in HTML over the SVG."
       >
         <SizesDemo />

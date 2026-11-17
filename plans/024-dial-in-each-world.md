@@ -211,6 +211,28 @@ the world!" Open 6 is closed.
 
 **STOP**: Nick looks at the before and after sheet of the sixteen breaches before phase 3 starts.
 
+### Phase 3. Every Device page in the recorder's words (done, 2026-11-17, waiting for Nick)
+
+Nick: "go". Each page keeps its component and contract props and gets Device's own stage through `byWorld` (and
+`tileByWorld` where the page has a `tile`): a product pattern a team ships, told with takes, cards, scenes, REC and real
+units, British with -ize. Every other world draws the shared demo, unchanged.
+
+- [x] The twelve demo strings above, lead stage and tile, and every Variants stage whose words broke the voice:
+      button (Export take), input (take_04), number field (pre-roll, 576 kB a take), select (sample rate), combobox
+      (a location on the slate), date picker (a timer for the dawn chorus), colour picker (a track's colour, clear of
+      red, orange and blue), token input (a routing rule), slider (monitor level in dB), menu, popover and command
+      menu (take_04.wav, Play, Export), gauge's Variants (Card A, Battery left) and composer (ask about a take).
+- [x] Then Device's set: switch (recording settings), seven segment (takes today, a level in dB), copy button's
+      second stage (ffmpeg, rec export), tool call (an agent fixing the takes that clip) and message's lead.
+      Agent indicator and tape progress already spoke it.
+- [x] The registry's `<stem>-demo` items, `docs/*.md`, `llms.txt`, `llms-full.txt` and `docs.json` are byte-identical
+      to main (a diff of the `gen-registry` and `gen-llms` output). A page's Device demo keeps its own imports apart
+      from the shared demo's, so the generated demo does not change.
+- Left: message's later stages, and the rest of `#device/components` whose demos still read as a web studio (listed
+  in the report). No new noun was needed in `taste/`.
+
+**STOP**: Nick looks at the before and after sheet of phase 3 before phase 4 starts.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.

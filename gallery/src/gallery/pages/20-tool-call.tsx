@@ -278,6 +278,182 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): an agent cleaning up a card of takes ---------- */
+
+const PEAK_MATCHES = `take_02.wav   peak  −0.1 dB   clips at 00M 07S
+take_04.wav   peak  +0.0 dB   clips at 00M 41S
+take_06.wav   peak  −0.4 dB`;
+
+const CONVERT_LOG = `$ ffmpeg -i take_04.wav -af loudnorm take_04_norm.wav
+Input #0, wav, from 'take_04.wav':
+  Duration: 00:00:14.24, bitrate: 2304 kb/s
+  Stream #0:0: Audio: pcm_s24le, 48000 Hz, stereo, s32 (24 bit)
+[out#0/wav] Could not write header: Permission denied
+/Volumes/CARD_A/take_04_norm.wav: card is locked
+Conversion failed!`;
+
+const NORMALIZE_LOG = `$ rec normalize --card A --to -1dB
+take_02.wav  −0.1 dB → −1.0 dB
+take_04.wav  +0.0 dB → −1.0 dB
+take_06.wav  −0.4 dB → −1.0 dB
+
+3 takes normalized`;
+
+const CONVERT_LINES: LogLine[] = [
+  { time: "0.0s", text: "$ ffmpeg -i take_04.wav -af loudnorm take_04_norm.wav" },
+  { time: "0.1s", text: "Input #0, wav, from 'take_04.wav'" },
+  { time: "0.1s", text: "Stream #0:0: Audio: pcm_s24le, 48000 Hz, stereo" },
+  { time: "0.3s", level: "error", text: "[out#0/wav] Could not write header: Permission denied" },
+  { time: "0.3s", level: "warn", text: "/Volumes/CARD_A is locked. Slide the card's switch to unlock it." },
+  { time: "0.4s", level: "error", text: "Conversion failed!" },
+];
+
+const SLATE_DIFF = `@@ -1,2 +1,2 @@
+ scene: 12
+-take: 3
++take: 4`;
+
+const CARD_RUN = [
+  { action: "Read", running: "Reading", target: "take_02.wav", seconds: 0.1 },
+  { action: "Read", running: "Reading", target: "take_04.wav", seconds: 0.2 },
+  { action: "Edited", running: "Editing", target: "take_04.slate", seconds: 0.3 },
+  { action: "Ran", running: "Running", target: "rec normalize --card A", seconds: 4.2 },
+];
+
+function TakesRunDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-3">
+      <p className="text-small text-fg-subtle">Litt is fixing the takes that clip on card A</p>
+      <div className="grid">
+        <ToolCall status="done" action="Read" target="take_04.wav" duration={0.2} />
+        <ToolCall
+          status="done"
+          action="Searched"
+          target="peaks over −1 dB"
+          label="the search"
+          duration={0.4}
+          input="every take on card A"
+          output={PEAK_MATCHES}
+        />
+        <ToolCall status="failed" action="Ran" target="ffmpeg -i take_04.wav -af loudnorm" duration={0.4} output={CONVERT_LOG} />
+        <ToolCall status="denied" action="Run" target="rec erase --card A" />
+        <ToolCall status="waiting" action="Run" target="rec normalize --card A --to -1dB" />
+      </div>
+    </div>
+  );
+}
+
+function TakesFoundDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl">
+      <ToolCall
+        status="failed"
+        action="Ran"
+        target="ffmpeg -i take_04.wav"
+        result="Exit 1"
+        duration={0.4}
+        details={<LogView label="ffmpeg -i take_04.wav" lines={CONVERT_LINES} height="12rem" />}
+      />
+      <ToolCall
+        action="Edited"
+        target="take_04.slate"
+        result="+1 −1"
+        duration={0.2}
+        details={<CodeBlock lang="diff" filename="take_04.slate" code={SLATE_DIFF} />}
+      />
+      <ToolCall action="Ran" target="rec normalize --card A" result="Exit 0" duration={6.1} />
+    </div>
+  );
+}
+
+function TakesGroupDemo() {
+  /* The call at this index is the one running. When it passes the end, every call is done. */
+  const [at, setAt] = useState(0);
+  const running = at < CARD_RUN.length;
+  useEffect(() => {
+    if (!running) return;
+    const t = setTimeout(() => setAt((n) => n + 1), 1100);
+    return () => clearTimeout(t);
+  }, [running, at]);
+
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-3">
+      <p className="text-small text-fg-subtle">Litt is fixing the takes that clip on card A</p>
+      <ToolCallGroup running={running} summary={running ? "Working on card A" : "Read 2 takes and normalized the card"} duration={running ? undefined : 4.8}>
+        {CARD_RUN.slice(0, Math.min(at + 1, CARD_RUN.length)).map((call, i) => {
+          const live = i === at;
+          return (
+            <ToolCall
+              key={call.target + i}
+              status={live ? "running" : "done"}
+              action={live ? call.running : call.action}
+              target={call.target}
+              duration={live ? undefined : call.seconds}
+              output={!live && call.action === "Ran" ? NORMALIZE_LOG : undefined}
+            />
+          );
+        })}
+      </ToolCallGroup>
+    </div>
+  );
+}
+
+function CardExportApproval({ decision, setDecision }: { decision: ToolApprovalDecision; setDecision: (d: ToolApprovalDecision) => void }) {
+  return (
+    <ToolApproval
+      command="rec export --card A --to studio-drive"
+      description="Copies the 14 takes on card A to the studio drive."
+      alwaysAllowLabel="Always allow rec export"
+      decision={decision}
+      onAllow={() => setDecision("allowed")}
+      onDeny={() => setDecision("denied")}
+    />
+  );
+}
+
+function ExportApprovalDemo() {
+  const [decision, setDecision] = useState<ToolApprovalDecision>("pending");
+  const waiting = decision === "pending";
+  return (
+    <div className="grid w-full min-w-0 max-w-md gap-6">
+      <CardExportApproval decision={decision} setDecision={setDecision} />
+      <div className="grid gap-2">
+        <div className="flex items-center gap-3 rounded-surface bg-surface-1 py-2 pr-2 pl-4 shadow-[inset_0_0_0_1px_var(--line-control)]">
+          <p className="min-w-0 flex-1 truncate text-body text-fg-subtle">Message Litt</p>
+          <Button iconOnly size="sm" disabled aria-label="Send">
+            <ArrowUpIcon />
+          </Button>
+        </div>
+        <p className="text-caption font-normal text-fg-subtle">{waiting ? "Send is off while Litt waits for your answer." : "Send turns on when there is something to send."}</p>
+      </div>
+    </div>
+  );
+}
+
+function TakesPhoneDemo() {
+  const [decision, setDecision] = useState<ToolApprovalDecision>("pending");
+  return (
+    <div className="w-full min-w-0 max-w-[22.375rem]">
+      <div role="region" aria-label="Litt on a phone" className="grid gap-4 rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line">
+        <div className="grid">
+          <ToolCallGroup summary="Read 2 takes and normalized the card" duration={6}>
+            <ToolCall status="done" action="Read" target="take_04.wav" duration={0.2} />
+            <ToolCall status="done" action="Ran" target="rec normalize --card A" duration={5.8} output={NORMALIZE_LOG} />
+          </ToolCallGroup>
+          <ToolCall status="failed" action="Ran" target="ffmpeg -i take_04.wav -af loudnorm take_04_norm.wav" duration={0.4} defaultOpen output={CONVERT_LOG} />
+        </div>
+        <CardExportApproval decision={decision} setDecision={setDecision} />
+        <div className="flex items-center gap-3 rounded-surface bg-surface-1 py-2 pr-2 pl-4 shadow-[inset_0_0_0_1px_var(--line-control)]">
+          <p className="min-w-0 flex-1 truncate text-body text-fg-subtle">Message Litt</p>
+          <Button iconOnly size="sm" disabled aria-label="Send">
+            <ArrowUpIcon />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ToolCallPage() {
   const [runKey, replayRun] = useReplay();
   const [approvalKey, resetApproval] = useReplay();
@@ -288,6 +464,15 @@ export default function ToolCallPage() {
         tier="responsive"
         size="lg"
         code="RunDemo"
+        byWorld={{
+          device: {
+            demo: <TakesRunDemo />,
+            title: "A run on a card",
+            code: "TakesRunDemo",
+            caption:
+              "An agent fixing the takes that clip on card A. Each call is one row: a mark, the action in words, the target in mono and the time. Failed, denied and waiting say so in words, and done and running say it in hidden text. Nothing spins, because running is a still half circle. Open the failed conversion: its output stays in the ink, since the mark already says it failed. The erase was denied, and the normalize waits for your OK.",
+          },
+        }}
         caption="Each call is one row: a mark, the action in words, the target in mono and the time. Failed, denied and waiting say so in words, and done and running say it in hidden text. Nothing spins, because running is a still half circle. Open the failed build: its output stays in the foreground color, since the mark already says it failed. The chevron turns on the instant tier. The output fades in and travels a quarter of the travel token on the responsive tier, and its height snaps."
       >
         <RunDemo />
@@ -298,6 +483,7 @@ export default function ToolCallPage() {
         tier="responsive"
         size="lg"
         code="FoundDemo"
+        byWorld={{ device: { demo: <TakesFoundDemo />, code: "TakesFoundDemo" } }}
         caption="A call says what it found after its target, and that stays when a long target is cut, so a folded run still reads Exit 1 and +1 −1. Open the build and its log opens as itself, with its own header, lines and Copy: details are drawn as given, never a well inside a well. The edit opens to its diff the same way. The chevron turns on the instant tier and the details travel a quarter of the travel token on the responsive tier."
       >
         <FoundDemo />
@@ -308,6 +494,7 @@ export default function ToolCallPage() {
         tier="responsive"
         onReplay={replayRun}
         code="GroupDemo"
+        byWorld={{ device: { demo: <TakesGroupDemo key={runKey} />, code: "TakesGroupDemo" } }}
         caption="A group folds a run under one line. While any call runs it is open, so you can watch the newest row, and when the last call is done it closes itself and the summary says what happened. Open or close it yourself and it keeps your choice. Its calls fade in on the responsive tier and leave on the exit token."
       >
         <GroupDemo key={runKey} />
@@ -319,6 +506,7 @@ export default function ToolCallPage() {
         onReplay={resetApproval}
         replayLabel="Reset"
         code="ApprovalDemo"
+        byWorld={{ device: { demo: <ExportApprovalDemo key={approvalKey} />, code: "ExportApprovalDemo" } }}
         caption="An approval asks first, in the flow, on a raised panel and never glass. It does not take focus, and a polite live region says what it waits for. Allow is the view's one accent fill, because Send is disabled while Litt waits. Press Allow or Deny and the panel becomes a row that says what you chose. Colors fade on the instant tier and nothing else moves."
       >
         <ApprovalDemo key={approvalKey} />
@@ -330,6 +518,7 @@ export default function ToolCallPage() {
         size="lg"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <TakesPhoneDemo />, code: "TakesPhoneDemo" } }}
         caption="In a phone-wide column a long target is cut with an ellipsis, the output wraps instead of scrolling sideways, the command wraps so all of it can be read, and Allow and Deny stay on one line. On a finger the rows grow to 44px, as the buttons and the checkbox do."
       >
         <PhoneDemo />

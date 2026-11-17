@@ -282,6 +282,174 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): an agent that knows the takes on the card ---------- */
+
+function TakesChatDemo() {
+  const [files, setFiles] = useState<ComposerFile[]>([
+    { id: "take-04", name: "take_04.wav", size: 4101120 },
+    { id: "room-tone", name: "room_tone_kitchen.wav", progress: 64 },
+  ]);
+  const [streaming, setStreaming] = useState(false);
+  const [note, setNote] = useState("Type a message, then press Enter or Send.");
+  const answer = useRef<number | undefined>(undefined);
+  const live = useRef(new Set<string>()); // only files added in this demo keep uploading
+
+  const busy = files.some((f) => live.current.has(f.id) && (f.progress ?? 100) < 100);
+  useEffect(() => {
+    if (!busy) return;
+    const tick = window.setInterval(() => {
+      setFiles((all) =>
+        all.map((f) => (live.current.has(f.id) && (f.progress ?? 100) < 100 ? { ...f, progress: Math.min(100, (f.progress ?? 0) + 8) } : f)),
+      );
+    }, 250);
+    return () => window.clearInterval(tick);
+  }, [busy]);
+  useEffect(() => () => window.clearTimeout(answer.current), []);
+
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <p role="status" className="truncate text-small text-fg-subtle">
+        {note}
+      </p>
+      <Composer
+        placeholder="Message Litt"
+        hint="Litt can be wrong. Listen before you delete a take."
+        streaming={streaming}
+        onSend={(text) => {
+          setStreaming(true);
+          setNote(`Litt is answering: “${text}”`);
+          answer.current = window.setTimeout(() => {
+            setStreaming(false);
+            setNote("Litt answered. Send another message.");
+          }, 4000);
+        }}
+        onStop={() => {
+          window.clearTimeout(answer.current);
+          setStreaming(false);
+          setNote("Stopped. Litt keeps what it had written.");
+        }}
+        files={files}
+        onFiles={(picked) => {
+          const added = picked.map((file): ComposerFile => {
+            const id = `upload-${++uploads}`;
+            live.current.add(id);
+            return { id, name: file.name, size: file.size, progress: 0 };
+          });
+          setFiles((all) => [...all, ...added]);
+        }}
+        onRemoveFile={(file) => setFiles((all) => all.filter((f) => f.id !== file.id))}
+        tools={<ModelSelect />}
+      />
+    </div>
+  );
+}
+
+const TAKE_PROMPTS = [
+  "Why does take_04 clip at 00M 41S?",
+  "Draft the slate notes for scene 12",
+  "Summarize today's takes",
+  "Find the takes with wind",
+];
+
+function EmptyTakesChatDemo() {
+  const [sent, setSent] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-2xl gap-6">
+      {sent ? (
+        <p role="status" className="text-small text-fg-subtle">
+          Sent: “{sent}”. A chat with a turn no longer shows the suggestions.
+        </p>
+      ) : (
+        <p className="text-body text-fg-muted">Ask Litt about a take, a mix or what is on the card.</p>
+      )}
+      <Composer
+        placeholder="Message Litt"
+        hint="Litt can be wrong. Listen before you delete a take."
+        suggestions={sent ? undefined : TAKE_PROMPTS}
+        onSend={setSent}
+        tools={<ModelSelect />}
+      />
+    </div>
+  );
+}
+
+const SLATE_NOTE =
+  "Scene 12, take 4. Kitchen at night, the fridge off and the window shut. Dialogue on the boom, room tone after it. A car passes at 01M 12S, so keep take 3 as the safety. Levels peak at −6 dB and nothing clips. Card A goes to the studio drive before Friday.";
+
+function TakesStatesDemo() {
+  const uid = useId();
+  return (
+    <div className="grid w-full max-w-2xl gap-10">
+      <section aria-labelledby={`${uid}-limit`} className="grid gap-3">
+        <h3 id={`${uid}-limit`} className="text-small text-fg">
+          Near the limit
+        </h3>
+        <Composer
+          label="Slate note"
+          placeholder="Write the slate note"
+          hint="A slate note is 280 characters at most, so it fits the take's metadata."
+          maxLength={280}
+          defaultValue={SLATE_NOTE}
+        />
+      </section>
+      <section aria-labelledby={`${uid}-approval`} className="grid gap-3">
+        <h3 id={`${uid}-approval`} className="text-small text-fg">
+          Waiting for an approval
+        </h3>
+        <Composer
+          placeholder="Message Litt"
+          hint="Litt is waiting for you to approve a command. Send is off until you answer."
+          sendDisabled
+          defaultValue="Then normalize every take on card A to −1 dB."
+        />
+      </section>
+      <section aria-labelledby={`${uid}-disabled`} className="grid gap-3">
+        <h3 id={`${uid}-disabled`} className="text-small text-fg">
+          Disabled
+        </h3>
+        <Composer placeholder="Message Litt" hint="This chat is archived. Start a new one to keep writing." disabled />
+      </section>
+    </div>
+  );
+}
+
+function TakesPhoneChat() {
+  const [files, setFiles] = useState<ComposerFile[]>([
+    { id: "take", name: "scene_12_take_04_dialogue_boom_and_lav.wav", size: 4101120 },
+  ]);
+  return (
+    <div
+      role="group"
+      aria-label="A chat on a phone"
+      className="flex h-136 w-full max-w-sm flex-col overflow-hidden rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line"
+    >
+      <div className="grid flex-1 content-start gap-4 p-4">
+        <p className="litt-raised max-w-[85%] justify-self-end rounded-surface px-4 py-3 text-body text-fg">Take 4 clips again at 00M 41S. Can you look?</p>
+        <p className="text-small text-fg-subtle">Litt's answer appears here.</p>
+      </div>
+      <div className="px-4 pb-4">
+        <Composer
+          placeholder="Message Litt"
+          hint="Return adds a line. Send sends."
+          files={files}
+          onFiles={(picked) => setFiles((all) => [...all, ...picked.map((f) => ({ id: `phone-${++uploads}`, name: f.name, size: f.size }))])}
+          onRemoveFile={(file) => setFiles((all) => all.filter((f) => f.id !== file.id))}
+          tools={<ModelSelect />}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** The same composer, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
+function TakesPhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <TakesPhoneChat />
+    </DeviceProvider>
+  );
+}
+
 export default function ComposerPage() {
   const [empty, replayEmpty] = useReplay();
   return (
@@ -291,6 +459,15 @@ export default function ComposerPage() {
         tier="instant"
         size="lg"
         code="StudioDemo"
+        byWorld={{
+          device: {
+            demo: <TakesChatDemo />,
+            title: "Ask about a take",
+            code: "TakesChatDemo",
+            caption:
+              "A message to Litt about the takes on the card. The box is a prompt line on LCD glass in a bezel, over a row of keys: Attach, the model picker and Send. Each attached file is a lit cell on the glass with its size, and one is still uploading at 64%. Send stays off while the field is empty. Send a message and it becomes Stop for a few seconds, or press Esc in the field to stop it. The two swap at once. Drop or paste a file to add a cell. The field grows a line at a time and snaps, never eases.",
+          },
+        }}
         caption="A message to Litt in the studio. In Press the box is a plate with a deep well cut into it for the text, and each file chip is a raised block you can lift back out of the well. Under it a rail of blocks holds Attach, the model picker and Send. The toolbar holds Attach and a model picker, and one file is still uploading at 64%. Send stays off while the field is empty. Send a message and it becomes Stop for a few seconds, or press Esc in the field to stop it. The two swap at once. Drop or paste a file to add a chip: it fades in with a slight scale on the responsive tier and leaves on the exit token. The field grows a line at a time and snaps, never eases."
       >
         <StudioDemo />
@@ -301,6 +478,7 @@ export default function ComposerPage() {
         tier="instant"
         size="lg"
         code="EmptyChatDemo"
+        byWorld={{ device: { demo: <EmptyTakesChatDemo key={empty} />, code: "EmptyTakesChatDemo" } }}
         onReplay={replayEmpty}
         caption="Before the first turn, one sentence says what Litt can do and four prompts sit above the box. A click puts the prompt in the field and focuses it, and never sends, so the person can edit it first. Send stays the one action. Only colors fade, on the instant tier."
       >
@@ -312,6 +490,7 @@ export default function ComposerPage() {
         tier="instant"
         size="lg"
         code="StatesDemo"
+        byWorld={{ device: { demo: <TakesStatesDemo />, code: "TakesStatesDemo" } }}
         caption="With maxLength, the count shows once 80% is used and turns to the danger color at the limit; keep typing to reach it. While an approval waits, Send is off in the Button's disabled look so the approval's Allow can hold the view's one accent fill, and the hint says why. A disabled composer lies flat on surface-2 with a plain hairline, and its hint gives the reason."
       >
         <StatesDemo />
@@ -322,6 +501,7 @@ export default function ComposerPage() {
         tier="instant"
         size="lg"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <TakesPhoneDemo />, code: "TakesPhoneDemo" } }}
         caption="On a phone Attach, the model picker and Send all grow to 44px, the text is 16px and the chip's remove button has a 44px target. The soft keyboard has no Shift, so Return adds a line and Send sends. The caller keeps the composer above the keyboard with useVisibleScreen. A long file name is cut with an ellipsis."
       >
         <PhoneDemo />

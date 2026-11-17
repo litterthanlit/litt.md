@@ -19,6 +19,8 @@ import {
   SunIcon,
   UserIcon,
 } from "@/components/icons";
+/* Device's own glyphs, apart, so the shared demo's imports stay as they are. */
+import { ActivityIcon, ClockIcon, DownloadIcon, FlagIcon, PlayIcon } from "@/components/icons";
 import { DeviceProvider, useMotionDial } from "@/motion";
 import { Page, Stage, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
@@ -294,6 +296,123 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the recorder's commands, places and takes ---------- */
+
+const TAKE_GROUPS: CommandGroup[] = [
+  {
+    id: "go",
+    heading: "Go to",
+    items: [
+      { id: "library", label: "Library", icon: <FolderIcon /> },
+      { id: "recent", label: "Recent takes", icon: <ClockIcon /> },
+      { id: "exports", label: "Exports", icon: <FolderIcon /> },
+      { id: "settings", label: "Settings", icon: <SettingsIcon />, shortcut: "⌘," },
+    ],
+  },
+  {
+    id: "takes",
+    heading: "Takes",
+    items: [
+      { id: "take-04", label: "take_04.wav", icon: <ActivityIcon /> },
+      { id: "take-03", label: "take_03.wav", icon: <ActivityIcon /> },
+      { id: "take-02", label: "take_02.wav", icon: <ActivityIcon /> },
+      { id: "room-tone", label: "room_tone_kitchen.wav", icon: <ActivityIcon /> },
+    ],
+  },
+  {
+    id: "actions",
+    heading: "Actions",
+    items: [
+      { id: "play", label: "Play last take", icon: <PlayIcon />, shortcut: "Space" },
+      { id: "export", label: "Export take", icon: <DownloadIcon />, shortcut: "⌘E" },
+      { id: "marker", label: "Add marker", icon: <FlagIcon />, shortcut: "M" },
+      { id: "copy", label: "Copy file name", icon: <CopyIcon />, shortcut: "⌘C" },
+      { id: "stems", label: "Export stems", icon: <ArrowUpRightIcon />, disabled: true },
+    ],
+  },
+];
+
+function RecorderOpenDemo() {
+  const [open, setOpen] = useState(false);
+  const [openedBy, setOpenedBy] = useState<"keyboard" | "pointer">("keyboard");
+  const [last, setLast] = useState("Nothing picked yet");
+
+  useCommandShortcut(() => {
+    setOpenedBy("keyboard");
+    setOpen((o) => !o);
+  });
+
+  return (
+    <div className="grid justify-items-center gap-6">
+      <Button
+        icon={<SearchIcon />}
+        iconRight={<Kbd>⌘K</Kbd>}
+        onClick={(e) => {
+          setOpenedBy(e.detail === 0 ? "keyboard" : "pointer");
+          setOpen(true);
+        }}
+      >
+        Search
+      </Button>
+      <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
+      <CommandMenu
+        open={open}
+        onOpenChange={setOpen}
+        groups={TAKE_GROUPS}
+        openedBy={openedBy}
+        onSelect={(item: CommandItem) => setLast(`Picked ${item.label}`)}
+      />
+    </div>
+  );
+}
+
+/* The same panel body, without the dialog. A solid surface: it is not floating here. */
+function RecorderPanelDemo({ initialQuery = "" }: { initialQuery?: string }) {
+  const [query, setQuery] = useState(initialQuery);
+  return (
+    <div className="w-full min-w-0 max-w-140 rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]">
+      <CommandPanel groups={TAKE_GROUPS} query={query} onQueryChange={setQuery} onSelect={() => {}} initialSource="pointer" />
+    </div>
+  );
+}
+
+function RecorderEmptyDemo() {
+  return <RecorderPanelDemo initialQuery="tuba" />;
+}
+
+function RecorderPhoneDemo() {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [last, setLast] = useState("Nothing picked yet");
+  return (
+    <DeviceProvider mode="phone">
+      <div className="grid w-full justify-items-center gap-6">
+        <Button icon={<SearchIcon />} onClick={() => setOpen(true)}>
+          Search
+        </Button>
+        <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
+        <div className="w-full min-w-0 max-w-sm rounded-surface bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]">
+          <CommandPanel
+            groups={TAKE_GROUPS}
+            query={query}
+            onQueryChange={setQuery}
+            onSelect={(item) => setLast(`Picked ${item.label}`)}
+            onCancel={() => setQuery("")}
+            initialSource="pointer"
+          />
+        </div>
+        <CommandMenu
+          open={open}
+          onOpenChange={setOpen}
+          groups={TAKE_GROUPS}
+          openedBy="pointer"
+          onSelect={(item: CommandItem) => setLast(`Picked ${item.label}`)}
+        />
+      </div>
+    </DeviceProvider>
+  );
+}
+
 export default function CommandMenuPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -302,6 +421,7 @@ export default function CommandMenuPage() {
         tier="responsive"
         caption="⌘K or Ctrl+K opens it while this page is open, at once and with no animation, and closes it the same way. A click on Search animates it: the overlay fades on opacity only, the panel arrives in the material's way on the responsive tier and leaves with the quicker exit."
         code="OpenDemo"
+        byWorld={{ device: { demo: <RecorderOpenDemo />, code: "RecorderOpenDemo" } }}
       >
         <OpenDemo />
       </Stage>
@@ -312,6 +432,7 @@ export default function CommandMenuPage() {
         size="lg"
         caption="The first enabled row is always lit. Arrows move and wrap, skipping disabled rows, and Enter fires only on the lit row. Esc clears the query first, then closes. The highlight glides to the row nearest the pointer, or follows the arrow keys with a focus ring. Typing changes the list instantly and the panel never animates its height."
         code="PanelDemo"
+        byWorld={{ device: { demo: <RecorderPanelDemo />, code: "RecorderPanelDemo" } }}
       >
         <PanelDemo />
       </Stage>
@@ -321,6 +442,7 @@ export default function CommandMenuPage() {
         tier="instant"
         caption="Filtering keeps the original order. When nothing matches, the panel says so and the footer drops the Enter hint, since there is nothing to open."
         code="EmptyDemo"
+        byWorld={{ device: { demo: <RecorderEmptyDemo />, code: "RecorderEmptyDemo" } }}
       >
         <EmptyDemo />
       </Stage>
@@ -331,6 +453,7 @@ export default function CommandMenuPage() {
         size="lg"
         caption="The panel moves to the top edge and follows the visible screen, so the keyboard never covers a row. The key hints and row shortcuts go, a Cancel button sits beside the field, and the field keeps focus because typing is the point. Opened by a tap, it drops in from the top and is not draggable, because its list scrolls. This stage forces the phone layout on a desktop."
         code="PhoneDemo"
+        byWorld={{ device: { demo: <RecorderPhoneDemo />, code: "RecorderPhoneDemo" } }}
       >
         <PhoneDemo />
       </Stage>

@@ -198,6 +198,99 @@ function DisabledDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a field recorder's settings ---------- */
+
+function RecordingSettingsDemo() {
+  const [saved, setSaved] = useState("");
+  const note = (setting: string) => (on: boolean) => setSaved(`Saved. ${setting} is ${on ? "on" : "off"}.`);
+
+  return (
+    <div className="grid w-full max-w-lg gap-3">
+      <p className="text-small font-title text-fg">Recording</p>
+      <ul className="divide-y divide-line border-y border-line">
+        <li>
+          <Switch align="end" label="Record a safety track at −12 dB" defaultChecked onCheckedChange={note("The safety track")} />
+        </li>
+        <li>
+          <Switch align="end" label="Split takes at 4 GB" onCheckedChange={note("Splitting")} />
+        </li>
+        <li>
+          <Switch
+            align="end"
+            label="Pre-roll"
+            description="Keeps the 2 s before you press REC, so a first word is never lost."
+            defaultChecked
+            onCheckedChange={note("Pre-roll")}
+          />
+        </li>
+      </ul>
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {saved}
+      </p>
+    </div>
+  );
+}
+
+function PhantomFormDemo() {
+  const [result, setResult] = useState("");
+
+  return (
+    <form
+      className="grid w-full max-w-sm gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const sent = [...new FormData(e.currentTarget).entries()].map(([key, value]) => `${key}=${value}`);
+        setResult(sent.length ? `Sent: ${sent.join(", ")}` : "Sent: nothing, both are off.");
+      }}
+    >
+      <div className="grid justify-items-start">
+        <Switch name="phantom" label="Phantom power" description="48 V on inputs 1 and 2, for condenser mics." />
+        <Checkbox name="checked" label="The mics on inputs 1 and 2 take 48 V" />
+      </div>
+      <div className="grid gap-3">
+        <Button type="submit" variant="primary">
+          Save
+        </Button>
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {result}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+function ArmDemo() {
+  const [armed, setArmed] = useState(true);
+
+  return (
+    <div className="grid w-full max-w-sm gap-3">
+      <Switch
+        tone="accent"
+        align="end"
+        label="Input 1 armed"
+        description={armed ? "The next take records input 1." : "Input 1 is monitored, not recorded."}
+        checked={armed}
+        onCheckedChange={setArmed}
+      />
+    </div>
+  );
+}
+
+function RecorderLockedDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-x-12 gap-y-6 sm:grid-cols-2">
+      <div className="grid content-start gap-2">
+        <p className="text-small text-fg-subtle">Off and disabled</p>
+        <Switch disabled label="Wi-Fi transfer" description="Needs firmware 2.1." />
+      </div>
+      <div className="grid content-start gap-2">
+        <p className="text-small text-fg-subtle">On and disabled</p>
+        <Switch disabled defaultChecked label="Limiter on input 1" description="Set by the scene." />
+      </div>
+    </div>
+  );
+}
+
 export default function SwitchPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -206,6 +299,15 @@ export default function SwitchPage() {
         tier="responsive"
         caption="Click anywhere on a row, press Space on the switch, or take a block and drag it across. Pressing presses the block down, and it crosses on the responsive tier. The switches sit at the row's end, so they line up in one column, and every one is neutral: a list never takes the accent."
         code="SettingsListDemo"
+        byWorld={{
+          device: {
+            demo: <RecordingSettingsDemo />,
+            title: "Recording settings",
+            code: "RecordingSettingsDemo",
+            caption:
+              "Press anywhere on a row, press Space on the switch, or take the cap and drag it across. It snaps through where it stands, and a switch that is on lights its lamp. The switches sit at the row's end, so they line up in one column.",
+          },
+        }}
       >
         <SettingsListDemo />
       </Stage>
@@ -215,6 +317,14 @@ export default function SwitchPage() {
         tier="responsive"
         caption="The default alignment puts the switch first, like the checkbox, so the two stack in one column. Press Save: a form sends the switch as digest=on while it is on and sends nothing while it is off. The checkbox is for the consent, because that choice can be wrong."
         code="DigestFormDemo"
+        byWorld={{
+          device: {
+            demo: <PhantomFormDemo />,
+            code: "PhantomFormDemo",
+            caption:
+              "The default alignment puts the switch first, like the checkbox, so the two stack in one column. Press Save: a form sends the switch as phantom=on while it is on and sends nothing while it is off. The checkbox is for the check, because that choice can be wrong: 48 V can harm a mic that does not take it.",
+          },
+        }}
       >
         <DigestFormDemo />
       </Stage>
@@ -224,6 +334,14 @@ export default function SwitchPage() {
         tier="responsive"
         caption="The accent tone fills the block with the accent when it is on. It is the view's one accent fill, so it belongs to the one switch that is the view's main choice, such as whether a site is live."
         code="LiveDemo"
+        byWorld={{
+          device: {
+            demo: <ArmDemo />,
+            title: "Armed",
+            code: "ArmDemo",
+            caption: "The one switch that is the view's main choice, whether an input is armed. On Device its lamp lights orange when it is on: a hand set it.",
+          },
+        }}
       >
         <LiveDemo />
       </Stage>
@@ -233,6 +351,7 @@ export default function SwitchPage() {
         tier="instant"
         caption="A disabled switch is muted, skipped by Tab and left out of a form. The tray goes flat to surface-2 with a hairline, and the block lies flat in it with no cast. The block stays on its side and uncovers its word, so the state still reads."
         code="DisabledDemo"
+        byWorld={{ device: { demo: <RecorderLockedDemo />, code: "RecorderLockedDemo" } }}
       >
         <DisabledDemo />
       </Stage>
