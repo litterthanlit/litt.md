@@ -24,6 +24,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { openVariants } from "./routes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -107,6 +108,7 @@ const dialogs = (pg) => pg.locator("[role=dialog]").count();
 /* ---------- a hovered Select's placeholder keeps 4.5:1 (R3, --block-hover) ---------- */
 for (const look of ["press", "flat"]) {
   const { ctx, pg, errors } = await open(`${look}/select`);
+  await openVariants(pg); // the placeholder's stage is a variant now, under the page's Variants (plans/024 phase 0)
   const trigger = pg.locator("main").getByRole("combobox").filter({ hasText: "Choose a region" }).first();
   await trigger.hover();
   await pg.waitForTimeout(300); // the fill fades on the instant tier
