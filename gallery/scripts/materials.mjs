@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Device's materials and colour rule (plans/024, Device, phase 2), after the components repo's check:anatomy. From a
- * build, on every #device/* page (scripts/routes.mjs), light and dark, at 1440 by 900, with Variants open.
+ * build, on the player (#device) and every #device/* page (scripts/routes.mjs), light and dark, at 1440 by 900, with Variants open.
  *
  *   npm run build && npm run test:materials
  *   node scripts/materials.mjs --pages device/button,device/tag
@@ -24,7 +24,7 @@
  * inside [data-artwork].
  *
  * KNOWN holds breaks that are not fixed yet: each prints, none fails the run, and one that no longer happens fails it,
- * so the entry goes when the fix lands. The player (#device) is plan 024's phase 4 and is not read here.
+ * so the entry goes when the fix lands. The player (#device) is read too, on Home, as it opens.
  *
  * Needs Playwright, found as the other page checks find it (A11Y_TOOLS, then here, then the cloud container's copy).
  */
@@ -64,8 +64,8 @@ export const KINDS = ["frame", "plate", "well", "slot", "collar", "key", "cap", 
 const KNOWN = [];
 
 const only = (get("pages", selfTest ? "device/button" : "") || "").split(",").filter(Boolean);
-/* #device is the player, plan 024's phase 4 (its recorder and screen are drawn there). */
-const PAGES = (only.length ? only : routes({ only: ["device"] }).filter((r) => r.startsWith("device/")));
+/* #device is the player: the recorder and what its screen shows, read since plan 024's phase 4 drew it in Device's materials. */
+const PAGES = (only.length ? only : routes({ only: ["device"] }).filter((r) => r === "device" || r.startsWith("device/")));
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2", ".md": "text/markdown", ".txt": "text/plain" };
 const server = http.createServer((req, res) => {
@@ -205,8 +205,22 @@ async function check(route, theme, mutate) {
     await pg.mouse.move(0, 0);
     await pg.waitForTimeout(150);
     if (mutate) await pg.evaluate(mutate);
-    const found = await pg.evaluate(read, KINDS);
-    return [...found.map(([rule, what]) => `${route} · ${theme} · ${rule} · ${what}`), ...errors.map((e) => `${route} · ${theme} · error · ${e}`)];
+    const found = (await pg.evaluate(read, KINDS)).map(([rule, what]) => `${route} · ${theme} · ${rule} · ${what}`);
+    /* The player: Home, then every take on its screen, stepped with the tape's keys as a person would. */
+    const slider = pg.locator("[data-play-object] [role=slider][aria-label=Components]");
+    if (route === "device" && !mutate && (await slider.count())) {
+      const n = Number(await slider.getAttribute("aria-valuemax"));
+      for (let k = 1; k <= n; k++) {
+        await slider.focus();
+        await pg.keyboard.press("ArrowRight");
+        await pg.waitForLoadState("networkidle");
+        await pg.waitForTimeout(250);
+        await slider.evaluate((el) => el.blur());
+        const take = await pg.evaluate(() => document.querySelector("[data-play-take]")?.getAttribute("data-play-take"));
+        for (const [rule, what] of await pg.evaluate(read, KINDS)) found.push(`${route} · ${theme} · ${rule} · ${take}: ${what}`);
+      }
+    }
+    return [...new Set(found), ...errors.map((e) => `${route} · ${theme} · error · ${e}`)];
   } finally {
     await ctx.close();
   }
