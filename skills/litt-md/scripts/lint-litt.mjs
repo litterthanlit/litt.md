@@ -77,7 +77,8 @@ const DEVICE_RADII = ["plate", "well", "key", "chip"];
 const deviceRadius = (v, prefix) =>
   new RegExp(`^rounded(?:-(?:t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(?:${prefix}(?:${DEVICE_RADII.join("|")})|\\[calc\\(var\\(--${prefix}radius-(?:${DEVICE_RADII.join("|")})\\)-(?:2|4|8)px\\)\\])$`).test(v);
 const DEVICE_ONLY_PARTS = ["agent-indicator", "tape-progress", "seven-segment", "copy-button"];
-const deviceFile = (f) => /[\\/]worlds[\\/]device[\\/]/.test(f) || /\.device\.tsx$/.test(f) || DEVICE_ONLY_PARTS.includes(path.basename(f).replace(/\.tsx$/, ""));
+/* The recorder, Device's object (plans/024, Device, phase 4), is Device's alone too: its readout is a well and an LCD. */
+const deviceFile = (f) => /[\\/]worlds[\\/]device[\\/]/.test(f) || /[\\/]play-object[\\/]bodies[\\/]device\.tsx$/.test(f) || /\.device\.tsx$/.test(f) || DEVICE_ONLY_PARTS.includes(path.basename(f).replace(/\.tsx$/, ""));
 const DEVICE_VARIANT = /(?:^|:)in-\[\[data-material=device\]\]:/;
 /* Then the caps that keep a box from growing rounder than what it holds or what holds it. */
 const CONCENTRIC = [

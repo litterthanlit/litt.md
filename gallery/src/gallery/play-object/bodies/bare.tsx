@@ -70,5 +70,6 @@ function BareBody(p: PlayObjectBodyProps) {
 export const bare: PlayObjectBody = {
   name: "bare",
   shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-surface outline-1 -outline-offset-1 outline-line"),
+  rail: true,
   Body: BareBody,
 };

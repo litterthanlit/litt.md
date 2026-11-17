@@ -51,7 +51,7 @@
  *               the body and a plate, and its corners stay at most 32px. Check 5 runs every pair again under Device, and
  *               check 8 holds its shadows (the object's cast straight down, the one cast past 3px).
  *               Its color rule (plans/024): a link is the ink, a chart.s hues and the statuses are greys, and its
- *               materials (frame, plate, LCD, chip, bezel, lamps, quiet legend, the selection blue) are mapped, the blue
+ *               materials (frame, plate, LCD, chip, bezel, its glass, lamps, quiet legend, the selection blue) are mapped, the blue
  *               carrying its words at 4.5:1, the quiet legend 4.5:1 and a lit lamp 3:1 on the body.
  * 14. Plain:   data-material="plain" (proposals/plain.md). Every --plain-* value is defined in both themes; the plain
  *               block maps every neutral and its accent onto its --plain-* twin, comes after Device, is square, casts,
@@ -824,7 +824,7 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
       if (Math.hypot(a, b) > 0.02) devFails.push(`${theme}: ${pre}${n} is ${v}, a color; under Device a chart and a status are the ink's greys`);
     }
 }
-for (const n of ["--frame", "--frame-edge", "--plate-face", "--plate-edge", "--plate-grain", "--lcd", "--lcd-edge", "--lcd-dim", "--chip", "--chip-ink", "--bezel", "--bezel-edge", "--lamp-on", "--lamp-off", "--lamp-recess", "--legend-quiet", "--select", "--select-ink"]) {
+for (const n of ["--frame", "--frame-edge", "--plate-face", "--plate-edge", "--plate-grain", "--lcd", "--lcd-edge", "--lcd-dim", "--chip", "--chip-ink", "--bezel", "--bezel-edge", "--lamp-on", "--lamp-off", "--lamp-recess", "--legend-quiet", "--select", "--select-ink", "--glass-sheen"]) {
   for (const [theme, map] of [["light", light], ["dark", dark]]) if (!map.has(devName(n))) devFails.push(`${theme}: ${devName(n)} is missing (Device's materials)`);
   if (devAt >= 0 && decls(block(devRe)).get(n) !== `var(${devName(n)})`) devFails.push(`the device block maps ${n} to ${decls(block(devRe)).get(n) ?? "nothing"}, not var(${devName(n)})`);
 }

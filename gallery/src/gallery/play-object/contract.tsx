@@ -6,7 +6,8 @@
  * Play, Index, Details and Source, and the state. A body (bodies/<world>.tsx) only draws. A world with no body yet, or
  * whose body fails to load, draws bodies/bare.tsx.
  *
- * - The screen opens on Home: the world's introduction, the set to pick from, and a link to every component.
+ * - The screen opens on Home: the world's introduction, the set to pick from, and a link to every component. Beside a
+ *   take, a rail of the set, unless the body's screen holds the take alone (body.rail false: Device's recorder).
  * - The selector is a slider over Home and the set, as the player's tape is. One tab stop. Right and Down go to the
  *   next take, Left and Up to the previous, wrapping through Home. Home goes Home and End to the last take. A hand's
  *   change is said once in a polite live region.
@@ -212,7 +213,7 @@ function Loaded({ material, dark, lead }: Props) {
         <PlayScreen material={material} dark={dark} shape={body.shape(compact)} label={`${take ? take.title : "Home"} ${where}`}>
           {take ? (
             <div className="flex h-full min-h-0">
-              {!compact && <Rail material={material} takes={takes} total={total} at={at!} open={go} />}
+              {!compact && body.rail && <Rail material={material} takes={takes} total={total} at={at!} open={go} />}
               <div key={take.id} data-play-take={take.id} className="grid h-full min-w-0 flex-1 overflow-auto overscroll-contain p-6 sm:p-10">
                 <div className="m-auto grid w-full max-w-2xl min-w-0 justify-items-center">
                   <PreviewContext.Provider value="tile">

@@ -46,6 +46,9 @@ export type PlayObjectBody = {
   name: string;
   /** The screen's size, corners and edge on this body. Compact, it fills what the strip leaves. */
   shape: (compact: boolean) => string;
+  /** Whether the contract draws its rail of the set inside the screen beside a take. A body whose screen holds the take
+      alone (Device's recorder: plans/024, breach 17) says false, and the set stays on Home, behind Index and the dial. */
+  rail: boolean;
   Body: ComponentType<PlayObjectBodyProps>;
 };
 
