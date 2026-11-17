@@ -93,6 +93,99 @@ all no?" A small pass on the chrome first, then world by world. Nothing in `src/
 both gallery views, the overview, Device's Gauge dark) and says whether Variants as one disclosure is right, and
 whether Device's Gauge reads as the way every world's stages should go, before Device's phase 1 starts.
 
+## Device
+
+### Phase 1. Materials, color, voice and part kinds (drafted, waiting for Nick, 2026-11-17)
+
+Nick said "go" to starting Device. Written in `taste/litt-principles.md`, under Device (Device's materials, color and
+voice; Open 6 lists what Nick confirms), commit `d5abc9f`. Read-only on code: nothing in `gallery/` or `tokens.css`.
+
+- [x] Materials, in the order they combine: frame (the object only), plate, well, key, cap and collar, LCD (its chip
+      with it), bezel (glass and window with it), lamp, lettering. Each with its one line, the tokens that draw it
+      today and its radius. Drafted, waiting for Nick.
+- [x] The color rule in one table: monochrome, red for REC, the playhead and a fault, orange for a hand on it (and
+      the focus ring), one blue on the screen for selection, no data hues (charts in the ink at 100, 55 and 30%).
+      Drafted, waiting for Nick.
+- [x] The voice: eleven nouns, five demo strings and the reference's Writing rules. Drafted, waiting for Nick.
+- [x] The `data-part` kinds, below. Drafted, waiting for Nick.
+
+**Token gaps for phase 2** (each through Propagate, never a raw value in a body): a frame token; the plate's gradient
+and grain on a part's plate; the LCD's sheen, its chip and its dim units; a bezel; meter on and off, a lamp recess and
+a lamp glow; a quiet legend ink apart from `--fg-muted`; a selection blue on the glass. And Nick's call on em radii.
+
+**`data-part` kinds.** After `anatomy/parts.ts`, so `test:materials` can read which material a part is. A body marks
+the element that draws the material. Kinds not in this list fail under Device.
+
+| Kind | Material | Tokens today | Where it shows first |
+|---|---|---|---|
+| `frame` | Frame | `--object-radius`, `--object-cast`, `--surface-3` | The recorder |
+| `plate` | Plate | `--canvas`, `--surface-1` to `-3`, `--plate-lift`, `--highlight` | Every stage, the recorder's body |
+| `well` | Well | `--tray`, `--tray-shade` | Readout, number field, checkbox |
+| `slot` | Well, with a lit fill | `--slot`, `--slot-shade`, `--slot-fill` | Slider, slide to confirm |
+| `collar` | Cap and collar | `--tray`, `--tray-shade` | The dial, a knob |
+| `key` | Key | `--block`, `--key-lift`, `--block-press` | Button, copy button, stepper |
+| `cap` | Cap and collar | `--cap`, `--cap-lift`, `--cap-press`, `--dial` | Dial, switch, slider |
+| `lcd` | LCD | `--field`, `--field-ink`, `--field-shade` | Input, seven-segment cells, readout |
+| `chip` | LCD | none yet | Readout, agent indicator |
+| `bezel` | Bezel | none yet (`--field`) | The recorder's screen, code input |
+| `glass` | Bezel | none yet | Over a screen |
+| `window` | Bezel | none yet | Tape progress |
+| `light` | Lamp | `--signal`, `--accent`, `--field-ink`, `--danger` | Switch, file drop, agent indicator |
+| `lettering` | Lettering | `--engrave`, `.litt-legend` | Every label on the body |
+| `screen` | Particular | the dark screens (`--device-screen-*`) | The recorder's screen, command menu |
+| `matrix` | Particular (LCD) | `--field-ink` | Agent indicator, chart, sparkline |
+| `reel`, `tape` | Particular | `--cap`, `--field` | Tape progress, the recorder's tape |
+| `face` | Particular | none | Agent indicator's tuner |
+
+**Phase 2 work: breaches of the materials and the color rule** (audit of 2026-11-16 and the source, 17 found).
+
+1. `#device/button`, and the first tile of `#device/components`: the primary key is filled orange ("Start a project").
+   `src/worlds/device/button.tsx`. The primary becomes the ink key.
+2. `#device/about`: Install is an orange key (`src/gallery/world.tsx`).
+3. `#device/agent-indicator`: the REC light, the tuner's needle and the matrix's head are in the accent, not red or
+   the ink (`src/components/agent-indicator.tsx`, the `data-rec` circle, the needle, the `data-[s=head]` dot).
+4. `#device/tape-progress`: the record light is the accent (`src/components/tape-progress.tsx`). REC is red.
+5. `#device/slider`: the slot's fill lights in the accent (`src/worlds/device/slider.tsx`). A level is the ink.
+6. `#device/gauge`: Device's own stage and tile are the ink, but the Variants' Sizes stage (Minutes, Build minutes) is teal
+   (`src/gallery/pages/17-gauge.tsx`).
+7. `#device/legend`: lamps in the five data hues, glowing (`src/worlds/device/legend.tsx`).
+8. `#device/tag`, and `#device/about`'s Runs: statuses filled green, amber and red, and data-hue tints
+   (`src/worlds/device/tag.tsx`). Status takes the chip's glyphs.
+9. `#device/chart`, `#device/sparkline` and every page that passes a `hue` (16 pages): the Device body lights the hue.
+10. Every Device page: links are orange text (`--device-accent-text`). Orange is never text; a link is the ink,
+    underlined (Nick confirms).
+11. `#device/select`, `#device/menu`, `#device/command-menu`: the chosen row on glass is a lamp in the glass's ink;
+    the one blue for selection is missing (`src/worlds/device/select.tsx`).
+12. `#device/components`, Inputs: input, token input, select, combobox and file drop are black LCD fields with no
+    plate or well round them.
+13. `#device/date-picker`, `#device/color-picker`: white page fields, not glass in a well.
+14. `#device/gauge`, `#device/seven-segment`, `#device/composer`: a stage is a black slab (a panel is a dark screen
+    under Device); the player shows the same parts on the plate. A stage becomes a plate.
+15. `#device/components`, Inputs: lettering is mixed. PROJECT NAME, MAIL FROM and DROP FILES HERE are engraved;
+    Seats, Role, Client, Launch date, Sign-in code and Brand color are not.
+16. `#device/components`, Actions: Kbd and Icons sit on no plate.
+17. `#device` (phase 4): the readout is text on the plate, not an LCD; the screen is a hairline panel in `--field`
+    and `--tray-shade` with no bezel, and holds the web rail.
+
+**Phase 3 work: demo strings that break the voice** (12 found). Each becomes a Device stage in the recorder's words.
+
+1. `#device/button`: "Start a project", "View work", "Cancel" (`01-button.tsx`).
+2. `#device/input`: "Project name", "Halo site", "Shown in the dashboard and the browser tab." (`02-input.tsx`).
+3. `#device/number-field`: "Seats", "€12 a seat, €96 a month" (`02-number-field.tsx`).
+4. `#device/select`: "Role", "Designer", "Sets what you see in the studio." (`02-select.tsx`).
+5. `#device/combobox`: "Client", "Search 30 clients" (`02-combobox.tsx`).
+6. `#device/date-picker`: "Launch date", "The Marlow Labs site goes live at 09:00 on this day." (`02-date-picker.tsx`).
+7. `#device/color-picker`: "Brand color", American where Device's demos are British (`03-color-picker.tsx`).
+8. `#device/token-input`: "Mail from" (`02-token-input.tsx`).
+9. `#device/slider`: "Animation speed" on litt.design (`03-slider.tsx`).
+10. `#device/menu`, `#device/popover`, `#device/command-menu`: "Northwind site · Framer · published 2 days ago"
+    (`10-menu.tsx`, `09-popover.tsx`, `11-command-menu.tsx`).
+11. `#device/gauge`: the Variants, "Storage", "42 GB of 100 GB", "Minutes", "Build minutes"
+    (`17-gauge.tsx`). Device's own stage, "Card left", is the model.
+12. `#device/composer`: "Ask Litt about a build, a deploy or a client site", "Draft the Northwind launch note" (`20-composer.tsx`).
+
+**STOP**: Nick reads Device's materials, color and voice in `litt-principles.md`, and Open 6, before phase 2 starts.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.

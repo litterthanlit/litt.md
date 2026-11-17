@@ -53,6 +53,54 @@ For agents, terminals and tools. Nick, 2026-11-16: "tactile, actual device feeli
 - **The machine shows its work.** Segments, meters and reels move only while the work does, so a glance says whether it is running.
 - **Sound answers a key.** A click confirms a press faster than sight (*components*). Synthesized, and only in answer to a hand. It starts with sound on, and the viewer can mute it (Nick, 2026-11-16: "start with sound for device"), which replaces decision 8's silent start. A browser plays nothing before the first press, so it is quiet until then.
 
+#### Device's materials
+
+Drafted 2026-11-17 for plan 024, phase 1, after the components repo's `DESIGN.md` (Materials, Lights, Lettering) and `anatomy/parts.ts`. Waiting for Nick. It names the tokens that draw each material today and brings no value: where a material has no token, the row says so, and phase 2 brings it through Propagate (`workflows/evolve.md`, 4).
+
+They combine in one order: **plate, then well, then part** (*components*). The frame holds the body, which is the plate. Wells are pressed into a plate. Keys, LCDs and collars sit in wells; caps sit in collars. A lamp sits in a small recess beside its word. A screen sits behind a bezel. Lettering is printed on the plate or a key, never on glass: on glass, words are the LCD's ink. Every part steps in from what holds it, and its corner is the outer radius less the inset (`system/foundations.md`, Concentric; `test:corners`).
+
+| Material | One line | Tokens today | Radius |
+|---|---|---|---|
+| Frame | The machined band that holds the object, a shade off the body and lit on its top edge. The object only. | `--object-radius`, `--object-cast`, `--highlight`; the recorder borrows `--surface-3` for the band. **Gap:** no frame token of its own. | `--object-radius` |
+| Plate | The body: aluminium, lit on its top edge, with fine grain. Every part starts here. | `--canvas` (the body), `--surface-1` to `--surface-3` (plates on it), `--plate-lift`, `--highlight`, `--grain` at `--object-grain`. **Gap:** the reference's bead-blast is a vertical gradient; litt's body is flat, and its grain is on the object only. | The recorder's body: `--object-radius` less its 4px inset. A part's own plate: `--radius-surface`. |
+| Well | Anything pressed into the plate: a shade darker, shaded inside, lit along its lower lip. A slot is a well with a lit fill. | `--tray`, `--tray-shade`; a slot `--slot`, `--slot-shade`, `--slot-fill`, `--slot-fill-shade`. | `--radius-control`, set 4px into a plate. |
+| Key | A face on a 2px skirt. Pressed, it sinks the whole 2px and the skirt is gone. The primary key is the ink key, not the orange one. | `--block`, `--key-lift`, `--block-press`, `--block-hover`, `--press-depth`; the ink key from monochrome's mapping (`--fg` face, `--canvas` words). **Gap:** the reference's face is a gradient; litt's is flat. | `--radius-control`, less 2px when set 2px into a well. |
+| Cap and collar | A round cap lit from above, seated in a collar, a round well; it sinks like a key. The dial is the one part in the body's opposite finish. | Cap `--cap`, `--cap-held`, `--cap-lift`, `--cap-press`, `--cap-grip`; collar `--tray`, `--tray-shade`; dial `--dial`, `--dial-ink`, `--dial-lift`, `--dial-press`, `--dial-recess`. | Round, by its size (`--radius-pill`). |
+| LCD | Black glass with light figures in the mono, sat in a well. Its chip, white on the glass, says the state with a glyph before the word. | `--field`, `--field-ink`, `--field-ink-subtle`, `--field-line`, `--field-shade`, `--field-font`. **Gap:** no sheen (the reference's glass breaks hard at 47%), no chip token, no dim-unit token. | `--radius-control`, less 2px when set into a well. A chip: `--radius-control` less the glass's inset. |
+| Bezel | Black, with a polished edge, round a screen, a row of LCD cells or a dot matrix set into the plate. Glass sits in it. | **Gap:** no token. The recorder's screen uses `--field` with `--tray-shade`. Glass is Press's (`--glass-bg`, `--glass-border`), made for overlays, not a screen's sheen. | The recorder's screen: `--object-radius` less 16px. In a part: `--radius-surface`. |
+| Lamp | A light in a small recess beside its word. It comes on at once and goes out at the exit speed. It never says a state alone. | Red `--signal`; orange `--accent`; lit without a signal `--field-ink` on glass and `--fg` on the body; a fault's words `--danger`. **Gap:** no meter on and off tokens, no lamp recess, and the glow is written by hand (`0 0 6px`) in each body. | Round (`--radius-pill`). |
+| Lettering | Tracked capitals printed into the surface, with a 1px lip on the side away from the light. Set in capitals by CSS; the source and the accessible name keep sentence case. | `--engrave`, `--label-case`, `--label-tracking`, `.litt-legend`, in `--fg` (to read) and `--fg-muted`. **Gap:** `--fg-subtle` equals `--fg-muted`, so there is no quiet legend for what repeats elsewhere. | None. |
+
+The reference nests four radii in em of the plate (plate 1.25, well 1.05, key 0.7, chip 0.4). litt's scale is 0, 4, 8 and the pill (R9), so the four do not all fit inside one 8px plate. Until Nick decides, a part nests on litt's scale with check 7's rule (a block set 2px into a control takes the control radius less 2px).
+
+Panels and overlays under Device are dark screens today (`.litt-raised`, `.litt-glass`), so a part shown alone stands on a black slab. In the reference a part starts from the plate, and glass is only the LCD and the screen. Phase 2 draws a part's stage as a plate.
+
+#### Device's color
+
+Monochrome, and four signals. "Colour is never decoration" (*components*): each signal means one thing, and nothing else gets it.
+
+| Color | Means | Draws it today | Never |
+|---|---|---|---|
+| The body's greys and the ink | Everything else: the body, keys, lettering, the glass and its figures, a lamp lit with no signal, a chart. | The neutrals, `--fg`, `--field-ink` | — |
+| Red | REC, the playhead, a light that fires, a fault (an agent's error, a wrong code). A fault's glyph is the stop's square, so it never reads as a run. | `--signal` (a lamp), `--danger` (a fault's words) | A key's fill, or a decoration. The one red key is a destructive dialog's confirm (R7). |
+| Orange | A hand on it: a cap under a finger, an edited scene, a switch that is on (its lamp), an agent waiting for your OK. On the keyboard, the focus ring. | `--accent` (a lamp), `--focus` (the ring) | The call to action, Install, a key's fill, a link, any text. On the light body it is a light beside a word, never the word. |
+| One blue, on the screen | Selection on glass: the highlight bar, a caret, the chosen row. | **Gap:** no selection token. Blue lives only as the optional accent (`--accent-blue`, `--device-screen-accent-blue`). | The body. A second blue. |
+| Data hues | None under Device. A chart is the glass's ink at three levels (100, 55 and 30%), lit dots against unlit, and its words name each series. A value past its limit lights red, as a fault. | Device's chart body already steps the ink. | Teal, or any of the five hues. A sixth series folds into Other. |
+
+Status follows the chip, not green and amber: Ready is an ink dot, Paused two bars, Stopped a square, Failed a red square, Waiting for you an orange dot, and the word always (R5). A project's own artwork behind glass (a cover) keeps its palette, clear of red, orange and blue (*components*).
+
+#### Device's voice
+
+A product pattern keeps its subject (a run, a deploy, a code) and speaks the recorder's words. "The vocabulary dresses the demo, not the component" (*components*).
+
+- **Nouns:** take, tape, slate, REC, transport, scene, card, mix, detent, readout, channel.
+- **Demo strings:** `Mix · take_04`, `take_04.wav · 48 kHz · 24 bit`, `00M 14S 06F`, `Card left · 3H 12M of 8H`, `Scene A (edited)`.
+- **Plain and quiet.** "Write it the way you would say it to someone at the next desk" (*components*). Say it once: if the screen says it, the LCD does not.
+- **Capitals belong to the hardware.** Lettering on the body and the LCD's chip are capitals by CSS; everything you read along stays in sentence case.
+- **Units and real symbols.** A unit on every number, a true minus, a times sign, a middle dot: `−3.5 dB`, `282 × 332`, `48 kHz · 24 bit`. Clocks read minutes, seconds and frames at 25 fps.
+- **Status in parentheses.** `Fix the build (Running)`, with its lamp.
+- **British, with -ize, in Device's demos.** Colour, centre, dialled; synthesized (*components*). litt's own prose is Open 4.
+
 ### Plain, the document
 
 For docs, forms, admin and internal tools: anything that should just work. Nick, 2026-11-16: "plain is my favorite one right now. I really like the way it is right now." Change nothing in Plain without asking.
@@ -128,3 +176,4 @@ Plain, precise and quiet, in every world. "Write it the way you would say it to 
 3. **Running by itself.** In the components repo every study moves in its first four seconds, untouched. Here nothing moves on its own (R2, R4). May Device's studies and its object run by themselves, while the other worlds stay still? Until Nick says, none does.
 4. **Spelling.** The components repo is British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
 5. **Values.** The components repo's curves and springs differ from litt's tiers, and one preset bounces past R4's bound. This file brings no values. A value Device should take comes in through Propagate (`workflows/evolve.md`, 4).
+6. **Device's phase 1 (plan 024). Closed, 2026-11-17.** Nick: "all yes". The focus ring stays orange, as the keyboard's hand; a link under Device is the ink, underlined; Device's statuses are the chip's glyphs and words, not green and amber; charts are the ink's three levels; a part's stage is a plate, not a dark screen; Device's demos spell British with -ize; a switch that is on lights an orange lamp; and Device takes the reference's em radii (1.25, 1.05, 0.7, 0.4) as an exception to R9, as its object did, which phase 2 carries into R9, check 7 and `rules.ts` through evolve.
