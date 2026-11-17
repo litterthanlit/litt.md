@@ -14,6 +14,8 @@ import { fileURLToPath } from "node:url";
 
 const PAGES_DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "src", "gallery", "pages");
 export const WORLD_IDS = ["press", "flat", "device", "plain", "rack", "heat"];
+/** A world's pages of the gallery's own beside about and components (OWN_PAGES in world-site.tsx): Device's voices. */
+export const OWN_PAGES = { device: ["sound"] };
 
 /** Each page's id, group, world (for a world page) and worlds (for a part in fewer than all), in file order. */
 export function pageMetas() {
@@ -36,7 +38,7 @@ export function routes({ only = [] } = {}) {
   const metas = pageMetas();
   const site = metas.filter((p) => !p.group && !p.world).map((p) => p.id);
   const parts = metas.filter((p) => p.group && p.group !== "Worlds" && !p.world);
-  const inWorld = WORLD_IDS.flatMap((w) => [w, `${w}/about`, `${w}/components`, ...parts.filter((p) => !p.worlds || p.worlds.includes(w)).map((p) => `${w}/${p.id}`)]);
+  const inWorld = WORLD_IDS.flatMap((w) => [w, `${w}/about`, `${w}/components`, ...(OWN_PAGES[w] ?? []).map((p) => `${w}/${p}`), ...parts.filter((p) => !p.worlds || p.worlds.includes(w)).map((p) => `${w}/${p.id}`)]);
   const all = [...site, ...inWorld];
   if (!only.length) return all;
   return all.filter((r) => only.includes(r) || only.includes(r.split("/").pop()) || only.includes(r.split("/")[0]));

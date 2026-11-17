@@ -28,27 +28,49 @@ sound engine.
 | Default | On, with a mute the viewer can reach | Nick, 2026-11-16 |
 | Before the first press | Silent: a browser blocks audio until a gesture, so the first press both unlocks and plays | litt-principles |
 
-## Phase 1. The engine and four sounds (STOP for Nick's ear)
+## Phase 1. The engine and four sounds (done 2026-11-17; STOP for Nick's ear)
 
-- [ ] `gallery/src/motion/sound.ts`: one lazily created `AudioContext`, resumed inside the first gesture; `play(name)`
-      is a no-op unless a pointerdown or keydown happened in the last 300ms; one `useSound()` hook that reads Device
-      (`useMaterial`) and the mute.
-- [ ] Four voices, each a few oscillator and noise envelopes under 80ms: a key's click (Button down), a switch's
+- [x] `gallery/src/motion/sound.ts`: one lazily created `AudioContext`, made and resumed inside the first gesture;
+      `play(name)` is a no-op unless a trusted pointerdown or keydown happened in the last 300ms; one `useSound()` hook
+      that reads Device (`useMaterial`) and the mute (`SoundProvider muted`).
+- [x] Four voices, each a few oscillator and noise envelopes under 80ms: a key's click (Button down, and up), a switch's
       clack, a slider's notch tick, a digit's beep (code input). Values live in `tokens.css` as `--sound-*` (pitch,
-      length, level), so `check.mjs` can bound them (level at most -12 dBFS, length at most 120ms).
-- [ ] The mute: a key on Device's recorder body and in each Device page's top row, `aria-pressed`, stored per viewer
-      (`litt-gallery:sound`). It is gallery chrome; a host app gets `SoundProvider muted`.
-- [ ] `check.mjs` and a new `test:sound` (Playwright, with a stubbed `AudioContext`): nothing plays on load, nothing
+      length, level), and `check.mjs` (check 17) bounds them (level at most -12 dBFS, length at most 120ms).
+- [x] The mute: a key in each Device page's top row (`world-site.tsx`, `mute.tsx`), `aria-pressed`, stored per viewer
+      (`litt-gallery:sound`), on by default, and M where M is no page's own key. It is gallery chrome; a host app gets
+      `SoundProvider muted`. **Not yet on Device's recorder body**: that file was being changed by another plan at the
+      time, so the recorder's own mute key is left for phase 2 (or the recorder's next pass), and M is not bound on the
+      player.
+- [x] `check.mjs` and a new `test:sound` (Playwright, with a stubbed `AudioContext`): nothing plays on load, nothing
       plays without a gesture in the last 300ms, nothing plays outside Device, and mute stops all of it.
-- [ ] A page `#device/sound` to hear the four voices and tune them by ear.
+- [x] A page `#device/sound` to hear the four voices and tune them by ear.
 
-**STOP**: Nick listens. Changes to a voice go into `tokens.css` and nowhere else.
+What was decided on the way:
+
+- **The values** are the components repo's (`src/lib/sound.ts`), measured at its tuned level in an OfflineAudioContext:
+  key down (its `press`) 175 Hz, 46ms, -18 dBFS; key up (`release`) 320 Hz, 13ms, -24; switch (`toggle`) 700 Hz, 25ms,
+  -21; notch (`tick`, at the knob's 0.55) 2900 Hz, 6ms, -27; digit 880 Hz, 53ms, -26 (the reference's code input plays
+  a tick at 0.6; litt's digit adds the triangle beep of the reference's transport, as this plan asks for a beep).
+- **Level is the peak you hear.** Each voice's shape keeps a measured unit peak, so a level token is the voice's peak in
+  dBFS. The bus is dry and linear: no room, and no compressor (Chromium's pulled a -18 key 9 dB down, so the token
+  would not say what you hear). Levels stop at -12 and at most four voices sound at once.
+- **It does not ship yet.** `sound.ts` stays out of the `motion` registry item until a body plays it (phase 2): until
+  then a host would get an engine nothing calls. The tokens ship (`litt`, `device-litt`), under Device alone.
+- Nick's decision ("start with sound for device") already stood here; nothing in this plan needed changing for it.
+
+**STOP**: Nick listens (`#device/sound`, or the WAVs rendered from the same code). Changes to a voice go into
+`tokens.css` and nowhere else.
+
+Nick listened (2026-11-17): "I love notch and switch". Notch and Switch are approved as they are. Key and Digit have
+no verdict yet; ask before phase 2 wires them (the Digit's beep is ours, the reference plays a plain tick).
 
 ## Phase 2. Every Device body that a hand works
 
 - [ ] Wire the voices into the Device bodies (`gallery/src/worlds/device/` after plan 019 phase 4): Button, Switch,
       Slider (per notch), Segmented, Checkbox, Code input, the recorder's dial (per detent) and keys.
-- [ ] CHANGELOG lines for every registry item that gains a sound.
+- [ ] CHANGELOG lines for every registry item that gains a sound, and `sound.ts` joins the `motion` item (and each
+      world's) with the first body that plays it.
+- [ ] The mute key on Device's recorder body, and M on the player.
 
 ## Open, for Nick
 
