@@ -228,8 +228,11 @@ units, British with -ize. Every other world draws the shared demo, unchanged.
 - [x] The registry's `<stem>-demo` items, `docs/*.md`, `llms.txt`, `llms-full.txt` and `docs.json` are byte-identical
       to main (a diff of the `gen-registry` and `gen-llms` output). A page's Device demo keeps its own imports apart
       from the shared demo's, so the generated demo does not change.
-- Left: message's later stages, and the rest of `#device/components` whose demos still read as a web studio (listed
-  in the report). No new noun was needed in `taste/`.
+- [x] Then the rest (Nick: "go"), in three batches: the other 60 pages of `#device/components` and message's later
+      stages, each in the recorder's words (inputs and tools, layout and data, charts and the agent parts). Carousel's
+      lead was already Device's (a photo series). The registry and agent docs stay byte-identical to main.
+- Left: a page's `TryIt` props and `study` objects, which take no per-world demo, keep the shared words. No new noun
+  was needed in `taste/`.
 
 **STOP**: Nick looks at the before and after sheet of phase 3 before phase 4 starts.
 
