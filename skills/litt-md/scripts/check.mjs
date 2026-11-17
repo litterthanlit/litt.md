@@ -22,7 +22,10 @@
  *               utilities), no 600 above the caption size, Google Fonts loads only
  *               400, 500 and 600 (the mono too, for Device's full mono).
  * 7. Radius:    corners are 0, --radius-control (4), --radius-surface (control + 4) or pill, and a block set
- *               2px into a control takes the control radius less 2px.
+ *               2px into a control takes the control radius less 2px. R9's one exception for parts: Device's em
+ *               radii (--radius-plate 1.25em, --radius-well 1.05em, --radius-key 0.7em, --radius-chip 0.4em) are
+ *               declared in Device's block alone, at exactly those values; elsewhere only as an alias of litt's
+ *               scale (var(--radius-control) or var(--radius-surface), every other world's default) and in tailwind.css's map.
  * 8. Shadows:   the depth ladder (R3). Flat and floating things have no offset: an outer shadow is a zero-offset
  *               glow or ring, and an inset is the top highlight or a hairline. The press tokens (material.md, 6)
  *               are the sunken and raised steps, bounded: nothing moves sideways, a raised cast goes at most 3px
@@ -47,6 +50,9 @@
  *               field's edge 3:1 on the body. The recorder's dial ink reaches 4.5:1 on its dial and its signal red 3:1 on
  *               the body and a plate, and its corners stay at most 32px. Check 5 runs every pair again under Device, and
  *               check 8 holds its shadows (the object's cast straight down, the one cast past 3px).
+ *               Its color rule (plans/024): a link is the ink, a chart.s hues and the statuses are greys, and its
+ *               materials (frame, plate, LCD, chip, bezel, lamps, quiet legend, the selection blue) are mapped, the blue
+ *               carrying its words at 4.5:1, the quiet legend 4.5:1 and a lit lamp 3:1 on the body.
  * 14. Plain:   data-material="plain" (proposals/plain.md). Every --plain-* value is defined in both themes; the plain
  *               block maps every neutral and its accent onto its --plain-* twin, comes after Device, is square, casts,
  *               blurs and lights nothing (a 1px ring at most), sinks and shrinks nothing, restates the focus ring and the
@@ -295,7 +301,7 @@ for (const [theme, map] of THEMES) {
     for (const bgName of bgs) {
       /* Device's fill is one bright orange on the body and on its screens (v1.13), with dark words that pass 4.5:1 above;
          on the light aluminium it is a key whose words and rim carry it, so its 3:1 against the page is not asked.
-         check 13 holds it to the screens' orange, and its links and focus ring keep the deep orange's pairs. */
+         check 13 holds it to the screens' orange, and its focus ring keeps the deep orange's pairs (a link is the ink, check 12). */
       if (theme === "device light" && fgName === "--accent" && min === 3) continue;
       /* Rack's yellow is the light of a key that is on, always inside the key's 1px outline; check 15 holds that
          outline to 3:1 on the light body and panels, so the fill's own 3:1 there is not asked. */
@@ -458,6 +464,9 @@ const radiusFails = [];
 const allowedRadius = new Set(["0", "0px", "inherit", "999px", "50%",
   "var(--radius-control)", "var(--radius-surface)", "var(--radius-pill)"]);
 const radiusTokens = new Set(["--radius-control", "--radius-surface", "--radius-pill"]);
+/* R9's exception (Nick, 2026-11-17: "all yes"): Device nests the components repo's em radii, in its own block only. */
+const DEVICE_RADII_EM = { "--radius-plate": 1.25, "--radius-well": 1.05, "--radius-key": 0.7, "--radius-chip": 0.4 };
+const deviceBlockRe = /:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{(?=\s*--canvas)/;
 const tokenPx = (n) => Number((strip(css).match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*(\\d+)px\\s*;`)) || [])[1]);
 const [rc, rs, rp] = [tokenPx("--radius-control"), tokenPx("--radius-surface"), tokenPx("--radius-pill")];
 if (rc !== 4) radiusFails.push(`tokens.css: --radius-control is ${rc || "missing"}, must be 4px`);
@@ -473,15 +482,31 @@ for (const f of assetFiles) {
     const bad = m[1].replace(/!important/, "").trim().split(/\s+/).filter((v) => !allowedRadius.has(v));
     if (bad.length) radiusFails.push(`${f}: border-radius ${m[1].trim()}`);
   }
-  for (const m of text.matchAll(/(--radius-[\w-]+)\s*:/g))
-    if (!radiusTokens.has(m[1])) radiusFails.push(`${f}: defines ${m[1]} (only control, surface and pill exist)`);
+  for (const m of text.matchAll(/(--radius-[\w-]+)\s*:\s*([^;]*);/g)) {
+    if (radiusTokens.has(m[1])) continue;
+    if (m[1] in DEVICE_RADII_EM) {
+      if (f.endsWith("tailwind.css") && m[2].trim() === `var(${m[1]})`) continue;
+      if (f.endsWith("tokens.css")) {
+        const at = text.search(deviceBlockRe);
+        const end = at < 0 ? -1 : text.indexOf("\n}", at);
+        const inside = at >= 0 && m.index > at && m.index < end;
+        /* Outside Device's block, only as an alias of litt's own scale (the default every other world gets). */
+        if (!inside) { if (!/^var\(--radius-(?:control|surface)\)$/.test(m[2].trim())) radiusFails.push(`${f}: defines ${m[1]} as ${m[2].trim()} outside Device's block (R9's em radii are Device's alone; elsewhere it is var(--radius-control) or var(--radius-surface))`); continue; }
+        if (m[2].trim() !== `${DEVICE_RADII_EM[m[1]]}em`) radiusFails.push(`${f}: ${m[1]} is ${m[2].trim()}, R9 gives Device ${DEVICE_RADII_EM[m[1]]}em`);
+        continue;
+      }
+    }
+    radiusFails.push(`${f}: defines ${m[1]} (only control, surface and pill exist, and Device's em radii in its block)`);
+  }
+  if (f.endsWith("tokens.css")) for (const [k, em] of Object.entries(DEVICE_RADII_EM))
+    if (!new RegExp(`${k}\\s*:\\s*${em}em\\s*;`).test(text)) radiusFails.push(`${f}: Device's block lacks ${k}: ${em}em (R9's exception)`);
   for (const [, cls] of text.matchAll(/\bclass(?:Name)?="([^"]*)"/g))
     for (const raw of cls.split(/\s+/)) {
       const c = raw.slice(raw.lastIndexOf(":") + 1);
       if (/^!?rounded(?:-|$)/.test(c) && !okRounded.test(c)) radiusFails.push(`${f}: uses ${raw}`);
     }
 }
-radiusFails.length ? radiusFails.forEach(fail) : ok(`corners are 0, ${rc}px, ${rs}px or pill`);
+radiusFails.length ? radiusFails.forEach(fail) : ok(`corners are 0, ${rc}px, ${rs}px or pill, and Device's em radii (${Object.values(DEVICE_RADII_EM).join(", ")}) in its block alone`);
 
 // 8. Shadows: the depth ladder (R3) -----------------------------------------
 console.log("Shadows (the depth ladder)");
@@ -785,6 +810,33 @@ for (const [theme, map] of [["light", light], ["dark", dark]]) {
     const radius = parseFloat(g("--object-radius") || "");
     if (!(radius > 0 && radius <= 32)) devFails.push(`${theme}: --device-object-radius is ${g("--object-radius")}, must be a px length up to 32`);
   }
+}
+/* Device's color rule (plans/024, phase 2; Nick, 2026-11-17: "all yes"): a link is the ink, and a chart's hues and the
+   statuses are greys (the ink at its levels), on the body and on its screens; orange and red keep their own tokens. */
+for (const [theme, map] of [["light", light], ["dark", dark]]) {
+  if (map.get("--device-accent-text") !== map.get("--device-fg")) devFails.push(`${theme}: --device-accent-text must be the ink (--device-fg); a link under Device is the ink, underlined`);
+  if (map.get("--device-screen-accent-text") !== map.get("--device-screen-fg")) devFails.push(`${theme}: --device-screen-accent-text must be the screen's ink (--device-screen-fg)`);
+  for (const pre of ["--device-", "--device-screen-"])
+    for (const n of ["success", "warning", ...["blue", "amber", "teal", "violet", "rose"].flatMap((h) => [`data-${h}`, `data-${h}-text`])]) {
+      const v = map.get(pre + n);
+      if (!/^#[0-9a-f]{6}$/i.test(v || "")) { devFails.push(`${theme}: ${pre}${n} is not a six-digit hex`); continue; }
+      const [, a, b] = toLab(v);
+      if (Math.hypot(a, b) > 0.02) devFails.push(`${theme}: ${pre}${n} is ${v}, a color; under Device a chart and a status are the ink's greys`);
+    }
+}
+for (const n of ["--frame", "--frame-edge", "--plate-face", "--plate-edge", "--plate-grain", "--lcd", "--lcd-edge", "--lcd-dim", "--chip", "--chip-ink", "--bezel", "--bezel-edge", "--lamp-on", "--lamp-off", "--lamp-recess", "--legend-quiet", "--select", "--select-ink"]) {
+  for (const [theme, map] of [["light", light], ["dark", dark]]) if (!map.has(devName(n))) devFails.push(`${theme}: ${devName(n)} is missing (Device's materials)`);
+  if (devAt >= 0 && decls(block(devRe)).get(n) !== `var(${devName(n)})`) devFails.push(`the device block maps ${n} to ${decls(block(devRe)).get(n) ?? "nothing"}, not var(${devName(n)})`);
+}
+for (const [theme, map] of [["light", light], ["dark", dark]]) {
+  const sel = map.get("--device-select"), ink = map.get("--device-select-ink");
+  if (/^#[0-9a-f]{6}$/i.test(sel || "") && /^#[0-9a-f]{6}$/i.test(ink || "") && ratio(ink, sel) < 4.5) devFails.push(`${theme}: --device-select-ink on --device-select is ${ratio(ink, sel).toFixed(2)}:1, needs 4.5:1 (a chosen row's words)`);
+  const quiet = map.get("--device-legend-quiet");
+  for (const bg of ["--device-canvas", "--device-surface-1", "--device-surface-2"])
+    if (/^#[0-9a-f]{6}$/i.test(quiet || "") && ratio(quiet, map.get(bg)) < 4.5) devFails.push(`${theme}: --device-legend-quiet on ${bg} is ${ratio(quiet, map.get(bg)).toFixed(2)}:1, needs 4.5:1`);
+  const on = map.get("--device-lamp-on");
+  for (const bg of ["--device-canvas", "--device-surface-1"])
+    if (/^#[0-9a-f]{6}$/i.test(on || "") && ratio(on, map.get(bg)) < 3) devFails.push(`${theme}: --device-lamp-on on ${bg} is ${ratio(on, map.get(bg)).toFixed(2)}:1, needs 3:1 (a lamp)`);
 }
 devFails.length ? devFails.forEach(fail) : ok(`device: ${DEVICE_MAPPED.length} tokens mapped in both themes, after Flat, Blue 4, pink and mono restated, a 2px key, glass at 7:1 in the mono`);
 

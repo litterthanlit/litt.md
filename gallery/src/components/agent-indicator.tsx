@@ -8,9 +8,10 @@
  * without throwing, as a dark cut with ink on it.
  *
  * - Window (material.md, 8): the LCD glass. `--field` is the floor, `--field-ink` is every lit segment, bar and dot,
- *   and the edge is `--field-line` with `--field-shade` on the top wall, as an Input's. The one accent is the
- *   record lamp: the tuner's needle and lamp, the chase's playhead and the reels' lamp. Unlit parts are the ink at
- *   8 to 15%, made with color-mix and an opacity, never a second color.
+ *   and the edge is `--field-line` with `--field-shade` on the top wall, as an Input's. Device's color rule
+ *   (plans/024): the one color is red, `--signal`, for REC and the playhead (the reels' record lamp, the chase's head);
+ *   the tuner's needle and its lamp are the glass's ink. Unlit parts are the ink at 8 to 15%, made with color-mix and
+ *   an opacity, never a second color. The glass is `data-part="lcd"`, a lamp `data-part="light"`.
  * - Moves only while tokens arrive (R4): it runs while a phase is set and `paused` is false, which an app ties to its
  *   stream. Paused, it holds the frame it is on. Off screen, an IntersectionObserver stops it. Under reduced motion
  *   it never runs and holds the frame it rolled to.
@@ -173,7 +174,7 @@ function makeSegments(root: HTMLElement): Sim {
 function Segments({ live }: { live: boolean }) {
   const ref = useSim(makeSegments, live);
   return (
-    <div ref={ref} className={LCD + " gap-[0.2em]"}>
+    <div ref={ref} data-part="lcd" className={LCD + " gap-[0.2em]"}>
       {[0, 1].map((fig) => (
         <svg key={fig} viewBox="0 0 43 66" fill="currentColor" className="h-[64%] w-auto">
           <g transform="matrix(1 0 -0.09 1 5.94 0)">
@@ -239,14 +240,14 @@ function makeTuner(root: HTMLElement): Sim {
 function Tuner({ live }: { live: boolean }) {
   const ref = useSim(makeTuner, live);
   return (
-    <div ref={ref} className={LCD}>
+    <div ref={ref} data-part="lcd" className={LCD}>
       <svg viewBox="0 0 56 26" fill="none" className="h-full w-full">
         {TICKS.map((i) => (
           <line key={i} x1={6 + 2.2 * i} x2={6 + 2.2 * i} y1={i % 5 === 0 ? 17.5 : 19.5} y2="22" stroke="currentColor" strokeWidth="0.5" opacity="0.35" />
         ))}
         <line x1="6" x2="50" y1="22" y2="22" stroke="currentColor" strokeWidth="0.4" opacity="0.2" />
         <circle data-lamp cx="50.5" cy="5.5" r="1.4" fill="currentColor" opacity="0.12" style={{ filter: "drop-shadow(0 0 1.2px currentColor)" }} />
-        <line data-needle x1="0" x2="0" y1="3.5" y2="23.5" strokeWidth="0.9" strokeLinecap="round" className="stroke-accent" transform={`translate(${dialX(STATIONS[0]!)} 0)`} />
+        <line data-needle x1="0" x2="0" y1="3.5" y2="23.5" strokeWidth="0.9" strokeLinecap="round" className="stroke-current" transform={`translate(${dialX(STATIONS[0]!)} 0)`} />
       </svg>
     </div>
   );
@@ -315,7 +316,7 @@ function makeMeters(root: HTMLElement): Sim {
 function Meters({ live }: { live: boolean }) {
   const ref = useSim(makeMeters, live);
   return (
-    <div ref={ref} className={LCD + " flex-col gap-[0.45em] px-[0.6em]"}>
+    <div ref={ref} data-part="lcd" className={LCD + " flex-col gap-[0.45em] px-[0.6em]"}>
       {[0, 1].map((i) => (
         <div key={i} className="relative h-[0.48em] w-full shadow-[inset_0_0_0_1px_color-mix(in_oklab,currentColor_15%,transparent)]">
           <div data-fill={i} className="absolute inset-px bg-current" style={{ clipPath: "inset(0 100% 0 0)" }} />
@@ -360,7 +361,7 @@ function makeMatrix(root: HTMLElement): Sim {
 function Matrix({ live }: { live: boolean }) {
   const ref = useSim(makeMatrix, live);
   return (
-    <div ref={ref} className={LCD + " rounded-surface p-[0.16em]"}>
+    <div ref={ref} data-part="lcd" className={LCD + " rounded-surface p-[0.16em]"}>
       <svg viewBox="0 0 55 25" fill="currentColor" className="h-[82%] w-full">
         {DOTS.map((i) => (
           <circle key={i} cx={2.5 + 5 * (i % COLS)} cy={2.5 + 5 * Math.floor(i / COLS)} r="1.55" opacity="0.08" />
@@ -389,12 +390,13 @@ function makeChase(root: HTMLElement): Sim {
 function Chase({ live }: { live: boolean }) {
   const ref = useSim(makeChase, live);
   return (
-    <div ref={ref} className={LCD + " gap-[0.12em]"}>
+    <div ref={ref} data-part="lcd" className={LCD + " gap-[0.12em]"}>
       {WELLS.map((i) => (
         <span key={i} className="grid size-[0.56em] place-items-center rounded-pill [box-shadow:var(--field-shade)]">
           <span
             data-s="off"
-            className="size-[0.3em] rounded-pill bg-[color-mix(in_oklab,currentColor_12%,transparent)] data-[s=head]:bg-accent data-[s=head]:shadow-[0_0_0.4em_var(--accent)] data-[s=on]:bg-current"
+            data-part="light"
+            className="size-[0.3em] rounded-pill bg-[color-mix(in_oklab,currentColor_12%,transparent)] data-[s=head]:bg-signal data-[s=head]:shadow-[0_0_0.4em_var(--signal)] data-[s=on]:bg-current"
           />
         </span>
       ))}
@@ -440,7 +442,7 @@ function makeReels(root: HTMLElement): Sim {
 function Reels({ live }: { live: boolean }) {
   const ref = useSim(makeReels, live);
   return (
-    <div ref={ref} className={LCD}>
+    <div ref={ref} data-part="lcd" className={LCD}>
       <svg viewBox="0 0 56 26" fill="none" className="h-full w-full">
         <path data-tape d="M18 21 L23 23.2 L33 23.2 L38 21" stroke="currentColor" strokeWidth="0.6" opacity="0.3" />
         <rect x="26.5" y="22.4" width="3" height="2" fill="currentColor" opacity="0.25" />
@@ -465,7 +467,7 @@ function Reels({ live }: { live: boolean }) {
             </g>
           </g>
         ))}
-        <circle data-rec cx="51.8" cy="4.2" r="1.1" className="fill-accent" style={{ filter: "drop-shadow(0 0 1px var(--accent))" }} />
+        <circle data-rec data-part="light" cx="51.8" cy="4.2" r="1.1" className="fill-signal" style={{ filter: "drop-shadow(0 0 1px var(--signal))" }} />
       </svg>
     </div>
   );
@@ -497,7 +499,7 @@ const DRAW: Record<AgentPhase, ComponentType<{ live: boolean }>> = {
 
 /* The window every mechanism sits in: LCD glass, as an Input's field is. */
 const LCD =
-  "relative flex h-full w-full items-center justify-center overflow-hidden rounded-control bg-field text-field-ink " +
+  "relative flex h-full w-full items-center justify-center overflow-hidden rounded-control bg-field [background-image:var(--lcd,none)] text-field-ink " +
   "shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)]";
 
 export type AgentIndicatorProps = {

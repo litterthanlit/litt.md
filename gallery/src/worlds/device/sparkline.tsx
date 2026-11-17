@@ -6,8 +6,9 @@
  *   away. At that pitch a 32px box has seven rows and a 24px box five, enough to keep the
  *   line's shape (the Chart's 6px loses it).
  * - The trend is one lit dot in every column, at the line's height there, and the dots between two columns where the
- *   line climbs or falls more than a dot, so the trace never breaks. It is the ink at 60%; with a `hue` it lights in the
- *   hue's mark tone at 75%.
+ *   line climbs or falls more than a dot, so the trace never breaks. It is the glass's ink at 60%, with a `hue` or not:
+ *   under Device's color rule (plans/024) a chart is the ink, never a hue. The glass is `data-part="lcd"`, the dots
+ *   `data-part="matrix"`.
  * - Today is the strongest mark: the latest column's dot is full strength, with the dot above and the dot below it lit
  *   too, as the Chart's marker is stronger than its trace.
  * - A baseline is its row lit at 30% in every other column, in the ink whatever the hue. The trace wins where they meet.
@@ -22,11 +23,10 @@ const DOT = 1.25; // a dot's radius
 const PAD_X = 10; // between the glass's end and the matrix, which round corners curve away from
 const PAD_Y = 2; // between the glass's top or bottom and the matrix
 const TRACE = 0.6;
-const TRACE_HUE = 0.75;
 const BASELINE = 0.3;
 
 /** Device: a row of lit dots on glass. */
-export function SparklineDeviceBody({ boxRef, width, height, text, data, at, goal, hued, tone, className }: SparklineBodyProps) {
+export function SparklineDeviceBody({ boxRef, width, height, text, data, at, goal, className }: SparklineBodyProps) {
   const id = "dots" + useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const n = data.length;
   const cols = Math.max(0, Math.floor((width - 2 * PAD_X) / PITCH));
@@ -47,7 +47,7 @@ export function SparklineDeviceBody({ boxRef, width, height, text, data, at, goa
     };
     /* Today first, so its three dots are the full-strength ones. */
     const rLast = rowOf(at(data[n - 1]!));
-    for (const dr of [0, 1, -1]) light(cols - 1, rLast + dr, tone.lit, 1, "now");
+    for (const dr of [0, 1, -1]) light(cols - 1, rLast + dr, "fill-field-ink", 1, "now");
     /* The trace: each column takes the line's height there, and the dots between where it is steep. */
     let prev: number | null = null;
     for (let c = 0; c < cols; c++) {
@@ -58,16 +58,16 @@ export function SparklineDeviceBody({ boxRef, width, height, text, data, at, goa
       const r = rowOf(t);
       const from = prev === null ? r : r > prev ? prev + 1 : r < prev ? prev - 1 : r;
       prev = r;
-      for (let q = Math.min(from, r); q <= Math.max(from, r); q++) light(c, q, tone.lit, hued ? TRACE_HUE : TRACE, "line");
+      for (let q = Math.min(from, r); q <= Math.max(from, r); q++) light(c, q, "fill-field-ink", TRACE, "line");
     }
     if (goal !== null) for (let c = 0; c < cols; c += 2) light(c, rowOf(goal), "fill-field-ink", BASELINE, "goal");
   }
 
   return (
     <div ref={boxRef} data-body="device" className={"relative w-full min-w-0 " + className} style={{ height }}>
-      <div aria-hidden="true" className="absolute inset-0 rounded-control bg-field shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] forced-colors:border" />
+      <div aria-hidden="true" data-part="lcd" className="absolute inset-0 rounded-control bg-field [background-image:var(--lcd)] shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] forced-colors:border" />
       {width > 0 && (
-        <svg width={width} height={height} role="img" aria-label={text} className="absolute top-0 left-0 block overflow-visible">
+        <svg width={width} height={height} role="img" aria-label={text} data-part="matrix" className="absolute top-0 left-0 block overflow-visible">
           <defs>
             <pattern id={id} patternUnits="userSpaceOnUse" x={x0} y={y0} width={PITCH} height={PITCH}>
               <circle cx={PITCH / 2} cy={PITCH / 2} r={DOT} opacity={0.1} className="fill-field-ink" />

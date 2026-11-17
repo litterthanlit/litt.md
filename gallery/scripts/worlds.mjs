@@ -12,7 +12,8 @@
  *   Press), whatever was once saved (plans/019: each world is closed),
  * - the hero block is not live: section[data-world-hero] has no framed block, nothing in it takes focus, or two worlds
  *   open on the same block,
- * - the first screen does not hold exactly one accent fill (R6; the Install button; none on Plain, whose Install is
+ * - the first screen does not hold exactly one accent fill (R6; the Install button; none on Device, whose Install is
+ *   the ink key, or on Plain, whose Install is
  *   link-blue words), or a second sits less than one
  *   screen below it (the accent is set to Blue 4 before the page loads, since in monochrome it is the ink that
  *   checkboxes and switches fill with too),
@@ -178,7 +179,9 @@ async function audit(world, size, scheme, mutate) {
   claim("a world page has one main and one h1", r.mains === 1 && r.h1s === 1 ? null : `${where}: ${r.mains} mains, ${r.h1s} h1s`);
   claim("a world's page wears the world: its data-material on <html> (none for Press)", r.material === attr ? null : `${where}: data-material is ${r.material ?? "absent"} (want ${attr ?? "absent"})`);
   claim("the hero block is framed and live: a labelled frame, and a named button or link in it takes focus", r.frames.length > 0 && r.reachable > 0 && r.focusable ? null : `${where}: ${r.frames.length} frames, ${r.reachable} named controls, focus ${r.focusable ? "took" : "did not take"}`);
-  const fills = world.id === "plain" ? 0 : 1; // Plain's Install is link-blue words: it has no accent fill to spend.
+  /* Plain's Install is link-blue words, and Device's the ink key (its color rule, plans/024: orange is a hand on it, never
+     a key's fill): neither has an accent fill to spend. */
+  const fills = world.id === "plain" || world.id === "device" ? 0 : 1;
   claim("the first screen holds exactly one accent fill (the Install button)", r.first.length === fills ? null : `${where}: ${r.first.length} accent fills on the first screen: ${r.first.join(", ") || "none"} (want ${fills})`);
   claim("a second accent fill on the page sits at least a screen below the first", r.close.length === 0 ? null : `${where}: accent fills within one screen of another: ${r.close.join(", ")}`);
   const want = FOUNDATIONS.map(([key, label]) => ({ label, text: world.foundations[key] }));

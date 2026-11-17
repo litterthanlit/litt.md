@@ -8,12 +8,15 @@
  *   edge gives way to the shade of a key that is down. Under reduced motion the depth is 0, so the key does not
  *   travel, and the fill still darkens to show the press. Fun mode's deeper sink is not used: a key's travel is its
  *   2px.
- * - Variants: primary is the key in the accent (Device's orange) with --accent-fg words. Secondary is a key in the
+ * - Variants: primary is the ink key, --fg with --canvas words (Device's color rule, plans/024: orange is a hand on it,
+ *   never a key's fill), so in dark it is the light key. Secondary is a key in the
  *   body's grey (--block). Danger is that key with its words in --danger; in a dialog's footer it is the confirm, the
  *   one red key. Ghost is a flat label with no key; pressed, it sinks into a well (--tray with --tray-shade), the
  *   label a half step down.
  * - A disabled button lies flat: no skirt, a hairline, --fg-disabled words. Loading keeps the label mounted at
  *   opacity 0 and puts the spinner behind a small well of LCD glass (--field, --field-ink), so the width holds.
+ * - Corners: the key's own em radius, --radius-key (0.7em of its label's size, R9's exception for Device); an
+ *   icon-only key stays round. The face is `data-part="key"`.
  * - The contract (props, aria-busy, aria-disabled, sizes, label, spinner) is button.tsx's.
  */
 import type { ButtonBodyProps, ButtonVariant } from "@/components/button";
@@ -35,8 +38,8 @@ const keyed =
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    keyed + " text-accent-fg [--key:var(--accent)] hover:[--key:var(--accent-hover)] " +
-    "enabled:active:[--key:color-mix(in_oklab,var(--accent-hover),black_12%)]",
+    keyed + " text-canvas [--key:var(--fg)] hover:[--key:color-mix(in_oklab,var(--fg),var(--canvas)_12%)] " +
+    "enabled:active:[--key:color-mix(in_oklab,var(--fg),var(--canvas)_20%)]",
   secondary:
     keyed + " text-fg [--key:var(--block)] hover:[--key:var(--block-hover)] " +
     "enabled:active:[--key:color-mix(in_oklab,var(--block),var(--fg)_10%)]",
@@ -61,7 +64,7 @@ const downHalf = "group-[:enabled:not([data-loading]):active]:translate-y-[calc(
 export function ButtonDeviceBody({ variant, iconOnly, sizeClass, shapeClass, blockClass, className, children, spinner, loading, rootProps }: ButtonBodyProps) {
   const { style, ...root } = rootProps;
   const ghost = variant === "ghost";
-  const round = iconOnly ? "rounded-pill" : "rounded-control";
+  const round = iconOnly ? "rounded-pill" : "rounded-key";
   return (
     <button
       {...root}
@@ -80,6 +83,7 @@ export function ButtonDeviceBody({ variant, iconOnly, sizeClass, shapeClass, blo
         />
       )}
       <span
+        data-part={ghost ? undefined : "key"}
         className={
           "pointer-events-none absolute inset-0 bg-(--key) shadow-(--key-edge) " + round + " " +
           "transition-[background-color,translate] duration-(--dur-instant) ease-litt " +

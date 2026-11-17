@@ -186,6 +186,10 @@ const FIELD =
   "in-[[data-material=flat]]:data-[invalid]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
   "in-[[data-material=flat]]:data-[invalid]:has-[input:focus-visible]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
   "in-[[data-material=flat]]:data-[disabled]:shadow-none " +
+  /* Device (plans/024): the glass under its sheen, set 4px into a well drawn round it (--tray, a dark rim); focus rings
+     the well. On one line the glass takes Device's well radius less 4px (ONE_FIELD); one that holds tokens keeps the
+     control radius, so the tokens inside stay concentric. */
+  "in-[[data-material=device]]:[background-image:var(--lcd)] in-[[data-material=device]]:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_5px_color-mix(in_oklab,black_10%,transparent)] in-[[data-material=device]]:has-[input:focus-visible]:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_6px_var(--canvas),0_0_0_8px_var(--focus)] in-[[data-material=device]]:data-[invalid]:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_6px_var(--danger)] in-[[data-material=device]]:data-[disabled]:[background-image:none] " +
   /* Forced colors drops box-shadow, so the edge becomes a real border and focus gets an outline. */
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
 
@@ -206,9 +210,9 @@ const TEXT_SIZE: Record<ComboboxSize, string> = {
 
 /* One value: a fixed height, and the text field fills it, so a click anywhere places the caret. */
 const ONE_FIELD: Record<ComboboxSize, string> = {
-  sm: "h-control-sm pointer-coarse:h-control-md",
-  md: "h-control-md",
-  lg: "h-control-lg",
+  sm: "h-control-sm pointer-coarse:h-control-md in-[[data-material=device]]:rounded-[calc(var(--radius-well)-4px)]",
+  md: "h-control-md in-[[data-material=device]]:rounded-[calc(var(--radius-well)-4px)]",
+  lg: "h-control-lg in-[[data-material=device]]:rounded-[calc(var(--radius-well)-4px)]",
 };
 const ONE_INPUT: Record<ComboboxSize, string> = {
   sm: "pl-control-pad-sm",
@@ -526,7 +530,9 @@ export function Combobox<Multiple extends boolean = false>({
 
   return (
     <div className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg") + (hideLabel ? " sr-only" : "")}>
+      <label id={labelId} htmlFor={inputId} className={"text-small font-title " +
+        /* Under Device the label is lettering engraved on the plate, as the Input's is (plans/024): capitals by CSS, tracked, its 1px lip. */
+        "in-[[data-material=device]]:text-caption in-[[data-material=device]]:[text-transform:var(--label-case)] in-[[data-material=device]]:[letter-spacing:var(--label-tracking)] in-[[data-material=device]]:[text-shadow:var(--engrave)] " + (disabled ? "text-fg-disabled" : "text-fg") + (hideLabel ? " sr-only" : "")}>
         {label}
       </label>
 

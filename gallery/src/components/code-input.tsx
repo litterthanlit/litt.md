@@ -192,7 +192,9 @@ export function CodeInput({
 
   return (
     <div className={"grid justify-items-start gap-2 " + className}>
-      <label htmlFor={id} className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label htmlFor={id} className={"text-small font-title " +
+        /* Under Device the label is lettering engraved on the plate, as the Input's is (plans/024): capitals by CSS, tracked, its 1px lip. */
+        "in-[[data-material=device]]:text-caption in-[[data-material=device]]:[text-transform:var(--label-case)] in-[[data-material=device]]:[letter-spacing:var(--label-tracking)] in-[[data-material=device]]:[text-shadow:var(--engrave)] " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
       <div className="relative w-full" style={{ maxWidth: full }}>

@@ -443,7 +443,9 @@ export function NumberField({
       <label
         htmlFor={id}
         onPointerDown={fun && !hideLabel ? scrub : undefined}
-        className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg") + (hideLabel ? " sr-only" : fun && !disabled ? " w-fit cursor-ew-resize touch-pan-y select-none" : "")}
+        className={"text-small font-title " +
+        /* Under Device the label is lettering engraved on the plate, as the Input's is (plans/024): capitals by CSS, tracked, its 1px lip. */
+        "in-[[data-material=device]]:text-caption in-[[data-material=device]]:[text-transform:var(--label-case)] in-[[data-material=device]]:[letter-spacing:var(--label-tracking)] in-[[data-material=device]]:[text-shadow:var(--engrave)] " + (disabled ? "text-fg-disabled" : "text-fg") + (hideLabel ? " sr-only" : fun && !disabled ? " w-fit cursor-ew-resize touch-pan-y select-none" : "")}
       >
         {label}
       </label>

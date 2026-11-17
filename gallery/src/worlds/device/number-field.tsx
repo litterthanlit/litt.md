@@ -1,8 +1,10 @@
 /**
  * NumberField, the Device body (proposals/worlds.md, Bodies; material.md, 8): an LCD readout with keys.
  *
- * - A bezel well (--tray, --tray-shade) the field's height holds three things in a row, 4px in from its walls: a key
- *   for −, the glass, a key for +. The keys are beside the glass, not inside it.
+ * - A well pressed into the plate (`data-part="well"`: --tray, --tray-shade, Device's well radius) the field's height
+ *   holds three things in a row, 4px in from its walls: a key for −, the glass, a key for +, each at the well's radius
+ *   less those 4px. The keys are beside the glass, not inside it. The glass is `data-part="lcd"` under the LCD's sheen,
+ *   a key `data-part="key"`.
  * - The glass (--field, --field-shade, the mono through font-field): the figure at the text size with tabular figures,
  *   right-aligned the way a readout is, its unit after it in --field-ink-subtle. It is the one spinbutton; the text
  *   takes the focus ring on the well, and an error puts the danger line on the well.
@@ -20,7 +22,7 @@ import { MinusIcon, PlusIcon } from "@/components/icons";
 
 /* The bezel is cut into the body. It clips the keys' cast, so nothing spills past its walls. */
 const well =
-  "relative flex w-full min-w-0 items-center gap-1 overflow-hidden rounded-control p-1 " +
+  "relative flex w-full min-w-0 items-center gap-1 overflow-hidden rounded-well p-1 " +
   "bg-tray shadow-(--tray-shade) " +
   "transition-[box-shadow] duration-(--dur-instant) ease-litt " +
   "has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-focus " +
@@ -30,14 +32,14 @@ const wellInvalid = " shadow-[inset_0_0_0_1px_var(--danger),var(--tray-shade)]";
 
 /* The glass, concentric with the well: the same radius as a key. */
 const glass =
-  "flex min-w-0 flex-1 items-center self-stretch rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] " +
-  "bg-field font-field text-field-ink shadow-(--field-shade) " +
-  "has-[input:disabled]:bg-transparent has-[input:disabled]:text-fg-disabled has-[input:disabled]:shadow-none " +
+  "flex min-w-0 flex-1 items-center self-stretch rounded-[calc(var(--radius-well)-4px)] " +
+  "bg-field [background-image:var(--lcd)] font-field text-field-ink shadow-(--field-shade) " +
+  "has-[input:disabled]:bg-transparent has-[input:disabled]:[background-image:none] has-[input:disabled]:text-fg-disabled has-[input:disabled]:shadow-none " +
   "forced-colors:border";
 
 /* A key on its skirt. Its sink and fill step on the instant tier. */
 const key =
-  "litt-target relative grid shrink-0 place-items-center rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] select-none [-webkit-tap-highlight-color:transparent] " +
+  "litt-target relative grid shrink-0 place-items-center rounded-[calc(var(--radius-well)-4px)] select-none [-webkit-tap-highlight-color:transparent] " +
   "transition-[background-color,color,transform,box-shadow] duration-(--dur-instant) ease-litt " +
   "enabled:cursor-pointer enabled:bg-block enabled:text-fg enabled:shadow-(--key-lift) enabled:forced-colors:border " +
   "enabled:hover:bg-(--block-hover) " +
@@ -51,13 +53,14 @@ export function NumberFieldDeviceBody({ sz, invalid, disabled, unit, input, inpu
       data-body="device"
       data-invalid={invalid ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
+      data-part="well"
       className={well + (invalid && !disabled ? wellInvalid : "") + " " + sz.field}
       onClick={onFieldClick}
     >
-      <button {...minus} className={key + " " + sz.step}>
+      <button {...minus} data-part="key" className={key + " " + sz.step}>
         <MinusIcon />
       </button>
-      <span className={glass}>
+      <span data-part="lcd" className={glass}>
         <input
           ref={inputRef}
           {...input}
@@ -75,7 +78,7 @@ export function NumberFieldDeviceBody({ sz, invalid, disabled, unit, input, inpu
           </span>
         )}
       </span>
-      <button {...plus} className={key + " " + sz.step}>
+      <button {...plus} data-part="key" className={key + " " + sz.step}>
         <PlusIcon />
       </button>
     </div>

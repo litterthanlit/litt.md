@@ -160,6 +160,14 @@ export type PageDocs = {
 export const WorldContext = createContext<Material | null>(null);
 
 /**
+ * Device's plate (plans/024, phase 2): under Device a stage and a wall tile are a part's plate, not a dark screen and
+ * not a flat well. The plate's gradient and its lit edge (--plate-face, --plate-edge), its grain behind what stands on it
+ * (--plate-grain) and its em corner (--radius-plate, R9's exception), marked `data-part="plate"` for test:materials.
+ */
+export const DEVICE_PLATE =
+  "litt-grain isolate after:-z-10 [--grain-opacity:var(--plate-grain)] in-[[data-material=device]]:rounded-plate [background:var(--plate-face)] shadow-(--plate-edge)";
+
+/**
  * A stage's demo in one world (Stage's `byWorld`): the same component with the same contract props, in the world's own
  * words. `title` and `caption` replace the stage's where the demo says something else, and `code` names its function
  * in the page file for the Code view, as Stage's `code` does. Whatever is left out is the shared stage's.
@@ -571,8 +579,10 @@ export function Stage(props: StageProps) {
 
   const box = (body: ReactNode, padded: boolean) => (
     <div
+      data-part={world === "device" ? "plate" : undefined}
       className={
-        "litt-raised relative col-span-2 row-start-1 grid overflow-visible rounded-surface text-fg in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " +
+        (world === "device" ? DEVICE_PLATE : "litt-raised rounded-surface in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none") +
+        " relative col-span-2 row-start-1 grid overflow-visible text-fg " +
         (padded ? "p-4 min-[24rem]:p-8 sm:p-12 " + place + " " : "") +
         height
       }
