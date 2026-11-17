@@ -150,15 +150,99 @@ function SpringTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the springs of a recorder app's notices and menus ---------- */
+
+/** The export notice, entering on the spring each time `run` changes. */
+function ExportNoticePreview({ spring, run }: { spring: Spring; run: number }) {
+  const travel = useTravel();
+  const { reduced } = useMotionDial();
+  const still = useTransition("instant");
+  const own: Transition = { type: "spring", visualDuration: spring.time, bounce: spring.bounce }; // litt-allow: the notice enters on the spring being edited
+  return (
+    <motion.div
+      key={run}
+      initial={{ opacity: 0, y: travel }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={reduced ? still : own}
+      className="flex items-center gap-3 rounded-surface bg-surface-1 p-4 shadow-float"
+    >
+      <CheckCircleIcon className="shrink-0 text-fg" />
+      <p className="text-small text-fg">take_04.wav exported to card A.</p>
+    </motion.div>
+  );
+}
+
+function ExportNoticeSpringDemo() {
+  const { locked } = useMotionDial();
+  const home = locked.dial.expressive;
+  const [spring, setSpring] = useState<Spring>(BOUNCY);
+  const [run, setRun] = useState(0);
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <ExportNoticePreview spring={spring} run={run} />
+      <SpringEditor
+        label="Export notice"
+        help="The notice replays on the spring each time you let go."
+        value={spring}
+        onValueChange={setSpring}
+        onValueCommit={() => setRun((r) => r + 1)}
+        tier="expressive"
+        defaultMark={home}
+        preview={false}
+      />
+      <div className="flex justify-start">
+        <Button size="sm" variant="secondary" disabled={spring.time === home.time && spring.bounce === home.bounce} onClick={() => { setSpring(home); setRun((r) => r + 1); }}>
+          Back to litt's spring
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function SceneMenuDemo() {
+  const [spring, setSpring] = useState<Spring>(MENU);
+  return (
+    <div className="w-full max-w-sm">
+      <SpringEditor label="Scene menu open" value={spring} onValueChange={setSpring} tier="responsive" help="The menu answers a press of the menu key, so the responsive tier never bounces." />
+    </div>
+  );
+}
+
+function LockedSpringDemo() {
+  return (
+    <div className="w-full max-w-sm">
+      <SpringEditor disabled label="Delete take dialog" help="Locked while the recorder is recording." defaultValue={DIALOG} />
+    </div>
+  );
+}
+
+function NoticeSpringTile() {
+  const [spring, setSpring] = useState<Spring>(CARD);
+  return (
+    <div className="w-full max-w-sm">
+      <SpringEditor label="Notice entrance" value={spring} onValueChange={setSpring} height={128} />
+    </div>
+  );
+}
+
 export default function SpringEditorPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SpringTile />}>
+    <Page meta={meta} docs={docs} tile={<SpringTile />} tileByWorld={{ device: <NoticeSpringTile /> }}>
       <Stage
         title="A toast's entrance"
         tier="instant"
         code="ToastSpringDemo"
         size="lg"
         caption="Press anywhere in the well, drag, or use the arrow keys. The cap is the Pad's: right is a longer visual time, up is more bounce, and the curve on the floor redraws under your hand at once, with no easing. The dashed line down through the cap is where the curve should look arrived. Let go and the toast above enters on the spring you drew. The floor beyond 350ms and above the world's bounce cap (0.12, or Flat's 0.28) is washed: that is outside litt's expressive tier, and the rows under the words say which rule to change. The dashed circle is litt's own expressive spring, and a double-click goes back to it."
+        byWorld={{
+          device: {
+            demo: <ExportNoticeSpringDemo />,
+            title: "An export notice",
+            code: "ExportNoticeSpringDemo",
+            caption:
+              "The notice a recorder's app shows when a take is exported. Press anywhere in the well, drag, or use the arrow keys: right is a longer visual time, up is more bounce, and the curve on the floor redraws under your hand at once. Let go and the notice above enters on the spring you drew. The floor beyond 350 ms and above Device's bounce cap is washed: that is outside litt's expressive tier, and the rows under the words say which rule to change. The dashed circle is litt's own expressive spring, and a double-click goes back to it.",
+          },
+        }}
       >
         <ToastSpringDemo />
       </Stage>
@@ -168,6 +252,7 @@ export default function SpringEditorPage() {
         tier="instant"
         code="ResponsiveDemo"
         caption="A menu, a tab or a tooltip answers a press, so on the responsive tier a spring never bounces: the whole floor above the baseline is washed, and the bounce row says Change until the cap sits on the line. The dot under the well crosses on the spring when you let go, and crosses back the next time, so it never jumps to a start. Tab once to reach the editor; the arrows change time and bounce, and Shift makes it ten steps."
+        byWorld={{ device: { demo: <SceneMenuDemo />, code: "SceneMenuDemo" } }}
       >
         <ResponsiveDemo />
       </Stage>
@@ -177,6 +262,7 @@ export default function SpringEditorPage() {
         tier="instant"
         code="DisabledDemo"
         caption="The disabled editor lies flat, as the Pad does: the well and the cap on the flat surface with hairline edges, the curve and every word dimmed. Tab skips it and the pointer does nothing. The help text says why it is locked."
+        byWorld={{ device: { demo: <LockedSpringDemo />, code: "LockedSpringDemo" } }}
       >
         <DisabledDemo />
       </Stage>

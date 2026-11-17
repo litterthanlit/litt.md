@@ -124,15 +124,80 @@ function CurveTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the shape of a take's fade, and the meter's needle ---------- */
+
+function FadeOutDemo() {
+  const [curve, setCurve] = useState<CubicBezier>([0.2, 0.7, 0.3, 1]);
+  const preset = PRESETS.find((p) => p.curve.every((n, i) => n === curve[i]));
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Segmented
+        legend="Start from"
+        size="sm"
+        block
+        options={PRESETS.map(({ value, label }) => ({ value, label }))}
+        value={preset?.value ?? ""}
+        onValueChange={(v) => setCurve(PRESETS.find((p) => p.value === v)!.curve)}
+      />
+      <CurveEditor
+        label="Fade out at the end of take_04"
+        help="Takes the last 2 s of the take down to silence."
+        value={curve}
+        onValueChange={setCurve}
+        defaultMark={PRESETS[0].curve}
+        duration={2000}
+      />
+    </div>
+  );
+}
+
+function NeedleDemo() {
+  const [curve, setCurve] = useState<CubicBezier>([0.4, -0.2, 0.5, 1.2]);
+  return (
+    <div className="grid w-full max-w-sm gap-3">
+      <CurveEditor label="Level meter's needle" value={curve} onValueChange={setCurve} height={240} preview />
+      <p className="text-small text-fg-subtle">
+        On the needle: <code className="font-mono text-caption text-fg-muted">transition: rotate 300ms {toCubicBezier(curve)}</code>
+      </p>
+    </div>
+  );
+}
+
+function LockedFadeDemo() {
+  return (
+    <div className="w-full max-w-sm">
+      <CurveEditor disabled label="Fade in on take_05" help="Locked while the recorder is recording." defaultValue={[0.25, 0.1, 0.25, 1]} />
+    </div>
+  );
+}
+
+function FadeTile() {
+  const [curve, setCurve] = useState<CubicBezier>([0.2, 0.7, 0.3, 1]);
+  return (
+    <div className="w-full max-w-sm">
+      <CurveEditor label="Fade out" value={curve} onValueChange={setCurve} height={144} preview={false} />
+    </div>
+  );
+}
+
 export default function CurveEditorPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<CurveTile />}>
+    <Page meta={meta} docs={docs} tile={<CurveTile />} tileByWorld={{ device: <FadeTile /> }}>
       <Stage
         title="A hero's exit"
         tier="instant"
         code="ExitDemo"
         size="lg"
         caption="Take a handle and drag it, or press anywhere and the nearer handle comes to you. The curve, its arms and the CSS under it follow at once, with no easing. The words say what the curve does, and when you let go a dot crosses the rail on it, for 480ms. The dashed curve is the default, and a double-click goes back to it. The Segmented control above sets a starting point; once you move a handle, none of them is picked."
+        byWorld={{
+          device: {
+            demo: <FadeOutDemo />,
+            title: "A take's fade",
+            code: "FadeOutDemo",
+            caption:
+              "The shape of the fade at the end of a take. Take a handle and drag it, or press anywhere and the nearer handle comes to you. The curve, its arms and the CSS under it follow at once, with no easing. The words say what the curve does, and when you let go a dot crosses the rail on it, over the fade's 2 s. The dashed curve is the default, and a double-click goes back to it. The Segmented control above sets a starting point; once you move a handle, none of them is picked.",
+          },
+        }}
       >
         <ExitDemo />
       </Stage>
@@ -142,6 +207,14 @@ export default function CurveEditorPage() {
         tier="instant"
         code="BackDemo"
         caption="The floor shows progress from -0.25 to 1.25, so a handle can pull the curve back before it goes, or past the end before it settles: here it does both, and the words say so. Tab moves between the two handles; the arrows move the focused one, and Shift makes it ten steps."
+        byWorld={{
+          device: {
+            demo: <NeedleDemo />,
+            code: "NeedleDemo",
+            caption:
+              "A meter's needle kicks back before it swings and passes its mark before it settles, so its curve leaves the floor at both ends: the floor shows progress from −0.25 to 1.25, and the words say so. Tab moves between the two handles; the arrows move the focused one, and Shift makes it ten steps.",
+          },
+        }}
       >
         <BackDemo />
       </Stage>
@@ -151,6 +224,7 @@ export default function CurveEditorPage() {
         tier="instant"
         code="DisabledDemo"
         caption="The disabled editor lies flat: the well and both caps on the flat surface with hairline edges, the curve, the CSS and the words dimmed. Tab skips it and the pointer does nothing. The help text says why it is locked."
+        byWorld={{ device: { demo: <LockedFadeDemo />, code: "LockedFadeDemo" } }}
       >
         <DisabledDemo />
       </Stage>

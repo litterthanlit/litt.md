@@ -188,6 +188,137 @@ function SizesDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): an input's type, sharing a take, the meter's hold ---------- */
+
+type InputType = "mic" | "line" | "phantom";
+
+const INPUT_NOTES: Record<InputType, string> = {
+  mic: "Mic level, for a dynamic mic.",
+  line: "Line level, from a mixer or a camera.",
+  phantom: "Mic level with 48 V, for a condenser.",
+};
+
+function InputTypeDemo() {
+  const [input, setInput] = useState<InputType>("mic");
+  return (
+    <div className="grid justify-items-center gap-4">
+      <Segmented
+        legend="Input 1"
+        size="sm"
+        value={input}
+        onValueChange={setInput}
+        options={[
+          { value: "mic", label: "Mic" },
+          { value: "line", label: "Line" },
+          { value: "phantom", label: "Mic + 48 V" },
+        ]}
+      />
+      <p role="status" className="text-small text-fg-subtle">
+        {INPUT_NOTES[input]}
+      </p>
+    </div>
+  );
+}
+
+type Listener = "listener" | "commenter" | "editor";
+
+const LISTENER_NOTES: Record<Listener, string> = {
+  listener: "Listeners can play the take.",
+  commenter: "Commenters can also leave a note at a time in it.",
+  editor: "Editors can trim the take and export it.",
+};
+
+function ShareTakeDemo() {
+  const [visibility, setVisibility] = useState<Visibility>("private");
+  const [role, setRole] = useState<Listener>("commenter");
+  return (
+    <form className="grid w-full max-w-sm gap-6" onSubmit={(e) => e.preventDefault()}>
+      <div className="grid gap-2">
+        <Segmented
+          legend="Visibility"
+          showLegend
+          block
+          name="visibility"
+          value={visibility}
+          onValueChange={setVisibility}
+          options={[
+            { value: "private", label: "Private" },
+            { value: "public", label: "Public" },
+          ]}
+        />
+        <p className="text-small text-fg-subtle">
+          {visibility === "private" ? "Only people you invite can play take_04.wav." : "Anyone with the link can play take_04.wav."}
+        </p>
+      </div>
+      <div className="grid gap-2">
+        <Segmented
+          legend="Role for Nina"
+          showLegend
+          block
+          name="role"
+          value={role}
+          onValueChange={setRole}
+          options={[
+            { value: "listener", label: "Listener" },
+            { value: "commenter", label: "Commenter" },
+            { value: "editor", label: "Editor" },
+          ]}
+        />
+        <p className="text-small text-fg-subtle">{LISTENER_NOTES[role]}</p>
+      </div>
+    </form>
+  );
+}
+
+function MeterHoldDemo() {
+  const [hold, setHold] = useState("1s");
+  return (
+    <div className="grid justify-items-start gap-6">
+      <Segmented
+        legend="Peak hold, small"
+        size="sm"
+        value={hold}
+        onValueChange={setHold}
+        options={[
+          { value: "off", label: "Off" },
+          { value: "1s", label: "1 s" },
+          { value: "3s", label: "3 s" },
+        ]}
+      />
+      <Segmented
+        legend="Peak hold, medium"
+        size="md"
+        value={hold}
+        onValueChange={setHold}
+        options={[
+          { value: "off", label: "Off" },
+          { value: "1s", label: "1 s" },
+          { value: "3s", label: "3 s" },
+        ]}
+      />
+      <Segmented
+        legend="Sample rate"
+        size="md"
+        defaultValue="48"
+        options={[
+          { value: "48", label: "48 kHz" },
+          { value: "96", label: "96 kHz", disabled: true },
+        ]}
+      />
+      <Segmented
+        legend="Export format, unavailable"
+        size="sm"
+        disabled
+        defaultValue="wav"
+        options={[
+          { value: "wav", label: "WAV" },
+          { value: "flac", label: "FLAC" },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function SegmentedPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -196,6 +327,15 @@ export default function SegmentedPage() {
         tier="responsive"
         caption="The small size, as in a header. The legend is hidden, because the options name the control. The selected surface glides to your pick through transform on the responsive tier, and the text color fades on the instant tier. On a touch screen the segment you hold fills."
         code="ThemeDemo"
+        byWorld={{
+          device: {
+            demo: <InputTypeDemo />,
+            title: "An input's type",
+            code: "InputTypeDemo",
+            caption:
+              "The small size, as on a recorder's input strip. The legend is hidden from sight and read to a screen reader as Input 1, because the options name the control. The selected surface moves to your pick through transform on the responsive tier, and the line under it says what the input expects.",
+          },
+        }}
       >
         <ThemeDemo />
       </Stage>
@@ -205,6 +345,7 @@ export default function SegmentedPage() {
         tier="responsive"
         caption="The medium size with the legend shown and the track full width, so it lines up with 44px fields. Segments share one width, so the surface keeps its shape as it moves. Arrow keys move and select, because the options share one name."
         code="FormDemo"
+        byWorld={{ device: { demo: <ShareTakeDemo />, code: "ShareTakeDemo" } }}
       >
         <FormDemo />
       </Stage>
@@ -214,6 +355,14 @@ export default function SegmentedPage() {
         tier="responsive"
         caption="Small is 32 and medium is 44, on the same scale as Button. Both controls share one value, so picking in one moves the other. A disabled option is muted and skipped by the arrow keys, and a disabled control stays readable."
         code="SizesDemo"
+        byWorld={{
+          device: {
+            demo: <MeterHoldDemo />,
+            code: "MeterHoldDemo",
+            caption:
+              "Small is 32 and medium is 44, on the same scale as Button. Both peak holds share one value, so picking in one moves the other. 96 kHz is disabled, muted and skipped by the arrow keys, and a disabled control stays readable.",
+          },
+        }}
       >
         <SizesDemo />
       </Stage>

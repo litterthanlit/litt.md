@@ -200,14 +200,125 @@ function DeliverablesTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a recorder's recording settings and its export sheet ---------- */
+
+function RecordingOptionsDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-x-12 gap-y-6 sm:grid-cols-2">
+      <CheckboxGroup legend="Recording">
+        <Checkbox name="recording" value="safety" label="Record a safety track" description="A second file 12 dB lower, for a take that clips." defaultChecked />
+        <Checkbox name="recording" value="pre-roll" label="Pre-roll 2 s" />
+        <Checkbox name="recording" value="clip-marker" label="Mark the take where it clips" defaultChecked />
+      </CheckboxGroup>
+      <CheckboxGroup legend="With a second card" disabled>
+        <Checkbox label="Mirror to card B" defaultChecked />
+        <Checkbox label="Split files at 4 GB" />
+        <Checkbox label="Back up each take to card B" description="Needs a card in slot B." />
+      </CheckboxGroup>
+    </div>
+  );
+}
+
+const TAKES = ["take_01.wav", "take_02.wav", "take_03.wav", "take_04.wav"];
+
+function ExportTakesDemo() {
+  const [picked, setPicked] = useState<string[]>(["take_01.wav", "take_02.wav"]);
+  const all = picked.length === TAKES.length;
+  const some = picked.length > 0 && !all;
+
+  return (
+    <CheckboxGroup legend="Export scene A" help={`${picked.length} of ${TAKES.length} takes will export.`} className="w-full max-w-xs">
+      <Checkbox label="All takes" checked={all} indeterminate={some} onChange={(e) => setPicked(e.target.checked ? TAKES : [])} />
+      <div className="grid justify-items-start pl-[calc(1.25rem+var(--control-gap))]">
+        {TAKES.map((take) => (
+          <Checkbox
+            key={take}
+            label={take}
+            checked={picked.includes(take)}
+            onChange={(e) => setPicked((p) => (e.target.checked ? [...p, take] : p.filter((x) => x !== take)))}
+          />
+        ))}
+      </div>
+    </CheckboxGroup>
+  );
+}
+
+const DESTINATIONS = [
+  { value: "card A", label: "Card A", description: "The card in the recorder, 3H 12M left." },
+  { value: "the computer", label: "Computer", description: "Over USB-C, as a mounted drive." },
+  { value: "the phone", label: "Phone", description: "The paired app, over Wi-Fi." },
+];
+
+function ExportToDemo() {
+  const [target, setTarget] = useState<string | undefined>();
+  const [error, setError] = useState<string | undefined>();
+  const [status, setStatus] = useState("");
+
+  return (
+    <form
+      noValidate
+      className="grid w-full max-w-sm gap-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!target) {
+          setStatus("");
+          setError("Pick where to export.");
+          e.currentTarget.querySelector("input")?.focus();
+          return;
+        }
+        setError(undefined);
+        setStatus(`Exporting take_04 to ${target}.`);
+      }}
+    >
+      <RadioGroup
+        legend="Export to"
+        value={target}
+        onValueChange={(v) => {
+          setTarget(v);
+          setError(undefined);
+        }}
+        error={error}
+      >
+        {DESTINATIONS.map((d) => (
+          <Radio key={d.value} value={d.value} label={d.label} description={d.description} />
+        ))}
+      </RadioGroup>
+      <div className="flex flex-wrap items-center gap-4">
+        <Button type="submit">Export take_04</Button>
+        <p role="status" className="text-small text-fg-subtle">
+          {status}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+function RecordingTile() {
+  return (
+    <CheckboxGroup legend="Recording">
+      <Checkbox name="recording" value="safety" label="Record a safety track" description="A second file 12 dB lower, for a take that clips." defaultChecked />
+      <Checkbox name="recording" value="pre-roll" label="Pre-roll 2 s" />
+      <Checkbox name="recording" value="clip-marker" label="Mark the take where it clips" defaultChecked />
+    </CheckboxGroup>
+  );
+}
+
 export default function CheckboxPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<DeliverablesTile />}>
+    <Page meta={meta} docs={docs} tile={<DeliverablesTile />} tileByWorld={{ device: <RecordingTile /> }}>
       <Stage
         title="Checkbox"
         tier="instant"
         caption="Click anywhere on a row, not only the chip. Hover and press wash the chip, and the fill, the edge and the check fade together on the instant tier. A description sits under the label, and the disabled group is muted and skipped by Tab."
         code="StatesDemo"
+        byWorld={{
+          device: {
+            demo: <RecordingOptionsDemo />,
+            code: "RecordingOptionsDemo",
+            caption:
+              "A recorder's recording settings. Click anywhere on a row, not only the chip. A description sits under the label. The second card's settings wait for a card in slot B, so the group is muted and skipped by Tab.",
+          },
+        }}
       >
         <StatesDemo />
       </Stage>
@@ -217,6 +328,13 @@ export default function CheckboxPage() {
         tier="instant"
         caption="The parent shows a dash while only some pages are on, and a check when all are. Clicking it sets every page. The state lives in the DOM, so a screen reader hears it as mixed."
         code="SelectAllDemo"
+        byWorld={{
+          device: {
+            demo: <ExportTakesDemo />,
+            code: "ExportTakesDemo",
+            caption: "The parent shows a dash while only some takes are on, and a check when all are. Clicking it sets every take. The state lives in the DOM, so a screen reader hears it as mixed.",
+          },
+        }}
       >
         <SelectAllDemo />
       </Stage>
@@ -226,6 +344,13 @@ export default function CheckboxPage() {
         tier="instant"
         caption="Arrow keys move between the radios and select, because they share one name. Press Deploy with nothing picked: the group gets a danger message, linked to the fieldset, and focus moves in."
         code="DeployTargetDemo"
+        byWorld={{
+          device: {
+            demo: <ExportToDemo />,
+            code: "ExportToDemo",
+            caption: "Arrow keys move between the radios and select, because they share one name. Press Export with nothing picked: the group gets a fault in words, linked to the fieldset, and focus moves in.",
+          },
+        }}
       >
         <DeployTargetDemo />
       </Stage>

@@ -203,6 +203,115 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): what a recorder's app says when a take is saved or a card fills ---------- */
+
+function SceneSavedDemo() {
+  const { toast } = useToast();
+  return (
+    <Launcher>
+      <Button onClick={() => toast({ title: "Scene saved", description: "Scene A is on card A.", tone: "success" })}>
+        Save scene
+      </Button>
+    </Launcher>
+  );
+}
+
+function ExportedDemo() {
+  const { toast } = useToast();
+  const [opened, setOpened] = useState<string | null>(null);
+  return (
+    <Launcher note={opened}>
+      <Button
+        onClick={() => {
+          setOpened(null);
+          toast({
+            title: "Export finished",
+            description: "take_04.wav is on card B.",
+            tone: "success",
+            action: { label: "Show", onClick: () => setOpened("Opened card B at take_04.wav.") },
+          });
+        }}
+      >
+        Export take_04
+      </Button>
+    </Launcher>
+  );
+}
+
+const TAKE_BURST = [
+  { title: "Take saved", description: "take_04.wav, 13 MB.", tone: "success" as const },
+  { title: "Safety track saved", description: "take_04_safety.wav, 12 dB lower.", tone: "success" as const },
+  { title: "Backup queued", description: "Second in line for the phone." },
+];
+
+function TakeBurstDemo({ note = "Hover or tap the stack, or press F8 and Tab through it." }: { note?: ReactNode }) {
+  const { toast, dismissAll } = useToast();
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
+
+  const fire = () => {
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = TAKE_BURST.map((b, i) => window.setTimeout(() => toast(b), i * 180));
+  };
+
+  return (
+    <Launcher note={note}>
+      <Button onClick={fire}>Stop the take</Button>
+      <Button variant="ghost" onClick={dismissAll}>
+        Clear all
+      </Button>
+    </Launcher>
+  );
+}
+
+function CardFullDemo() {
+  const { toast } = useToast();
+  return (
+    <Launcher>
+      <Button
+        onClick={() =>
+          toast({
+            title: "Card A is full: take_05 stopped at 00M 31S",
+            description: "Swap the card, or delete a take, then record again.",
+            tone: "error",
+          })
+        }
+      >
+        Record to a full card
+      </Button>
+    </Launcher>
+  );
+}
+
+function OutOfRangeDemo() {
+  const { toast } = useToast();
+  return (
+    <Launcher>
+      <Button
+        onClick={() =>
+          toast({
+            title: "Couldn't export take_04 to the phone",
+            description: "The phone went out of range of the recorder. Bring it within 10 m, or export over USB-C from Settings.",
+            tone: "error",
+          })
+        }
+      >
+        Export to the phone
+      </Button>
+    </Launcher>
+  );
+}
+
+function PhoneTakeBurstDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <Toaster>
+        <TakeBurstDemo note="Drag a toast sideways to send it away, or tap the stack to pin it open." />
+      </Toaster>
+    </DeviceProvider>
+  );
+}
+
 export default function ToastPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -212,6 +321,15 @@ export default function ToastPage() {
           tier="expressive"
           code="SavedDemo"
           caption="The toast rises from the travel token's distance below its place while it fades in and settles from 0.98, on the expressive tier. It dismisses itself after about five seconds."
+          byWorld={{
+            device: {
+              demo: <SceneSavedDemo />,
+              title: "Scene saved",
+              code: "SceneSavedDemo",
+              caption:
+                "A recorder's app says a scene is saved. The toast rises from the travel token's distance below its place while it fades in and settles from 0.98, on the expressive tier. It dismisses itself after about five seconds.",
+            },
+          }}
         >
           <SavedDemo />
         </Stage>
@@ -221,6 +339,7 @@ export default function ToastPage() {
           tier="expressive"
           code="DeployDemo"
           caption="The action is a small ghost button next to the round close button. Using it dismisses the toast. Hover pauses the clock, and so does keyboard focus or a hidden tab."
+          byWorld={{ device: { demo: <ExportedDemo />, code: "ExportedDemo" } }}
         >
           <DeployDemo />
         </Stage>
@@ -230,6 +349,14 @@ export default function ToastPage() {
           tier="expressive"
           code="BurstDemo"
           caption="Three toasts in a row. The newest sits in front, the others fall back 8px and 16px, smaller and fainter. Hover or tab in and they open into a list with gaps. That is transform only, on the responsive tier. More than three wait out of sight."
+          byWorld={{
+            device: {
+              demo: <TakeBurstDemo />,
+              code: "TakeBurstDemo",
+              caption:
+                "Stopping a take says three things at once: the take, its safety track and the backup. The newest sits in front, the others fall back 8px and 16px, smaller and fainter. Hover or tab in and they open into a list with gaps. That is transform only, on the responsive tier. More than three wait out of sight.",
+            },
+          }}
         >
           <BurstDemo />
         </Stage>
@@ -239,6 +366,7 @@ export default function ToastPage() {
           tier="expressive"
           code="ErrorDemo"
           caption="Errors stay until you dismiss them, and they are announced assertively. Escape dismisses the toast that has focus. The exit slides right by the travel distance and fades, with no bounce. On a phone it drops down instead."
+          byWorld={{ device: { demo: <CardFullDemo />, code: "CardFullDemo" } }}
         >
           <ErrorDemo />
         </Stage>
@@ -248,6 +376,7 @@ export default function ToastPage() {
           tier="expressive"
           code="LongDemo"
           caption="The toast grows to fit its words: the title wraps to two lines and the description to four, so on a narrow screen or with larger text the part that says what to do stays. Toasts behind it peek at its height; open the stack and each takes its own. A height snaps, it never animates."
+          byWorld={{ device: { demo: <OutOfRangeDemo />, code: "OutOfRangeDemo" } }}
         >
           <LongDemo />
         </Stage>
@@ -258,6 +387,7 @@ export default function ToastPage() {
         tier="expressive"
         code="PhoneDemo"
         caption="On a phone the toasts span the page and sit above the bottom edge. While a bottom sheet is open they dock at the top edge instead, so they never cover its buttons. A toast that times out drops by the travel token instead of sliding sideways. A swipe moves it with your finger, and it leaves the way you pulled if you went far enough or fast enough. A short swipe springs back. This preview forces the phone layout, so a mouse drag works too."
+        byWorld={{ device: { demo: <PhoneTakeBurstDemo />, code: "PhoneTakeBurstDemo" } }}
       >
         <PhoneDemo />
       </Stage>

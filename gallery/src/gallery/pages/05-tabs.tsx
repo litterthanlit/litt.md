@@ -306,15 +306,249 @@ function TabsTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a take's tabs, the takes view and a take's steps ---------- */
+
+function ExportResult({ tone }: { tone: "success" | "danger" | "muted" }) {
+  return (
+    <span className="flex w-16 shrink-0">
+      {tone === "success" ? <Tag status="success">Done</Tag> : tone === "danger" ? <Tag status="danger">Failed</Tag> : <Tag status="neutral">Queued</Tag>}
+    </span>
+  );
+}
+
+const TAKE_STATS: [string, string][] = [
+  ["Length", "00M 47S 08F"],
+  ["Format", "48 kHz · 24 bit"],
+  ["Peak", "−1.2 dB"],
+  ["Size", "13 MB"],
+];
+
+const TAKE_MARKERS: [string, string][] = [
+  ["Marker 3: room tone", "00M 39S"],
+  ["Input 1 clipped at 0 dB", "00M 31S"],
+  ["Marker 2: the answer", "00M 18S"],
+  ["Marker 1: first question", "00M 06S"],
+];
+
+const TAKE_EXPORTS: { id: string; format: string; to: string; time: string; tone: "success" | "danger" | "muted" }[] = [
+  { id: "exp-5", format: "WAV", to: "To card A, 48 kHz · 24 bit", time: "4s", tone: "success" },
+  { id: "exp-4", format: "MP3", to: "To the phone, 320 kbps", time: "—", tone: "muted" },
+  { id: "exp-3", format: "WAV", to: "To card B, not in the slot", time: "0s", tone: "danger" },
+  { id: "exp-2", format: "FLAC", to: "To the computer, over USB-C", time: "6s", tone: "success" },
+  { id: "exp-1", format: "WAV", to: "To card A, the first cut", time: "4s", tone: "success" },
+];
+
+const TAKE_SETTINGS: [string, string][] = [
+  ["Scene", "Scene A"],
+  ["Location", "By the road"],
+  ["Input", "Input 1, lavalier"],
+  ["Safety track", "On, 12 dB lower"],
+];
+
+function TakeTabs() {
+  return (
+    <Tabs defaultValue="overview" className="w-full max-w-xl">
+      <TabsList aria-label="take_04.wav">
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="markers">Markers</TabsTrigger>
+        <TabsTrigger value="exports">Exports</TabsTrigger>
+        <TabsTrigger value="settings">Settings</TabsTrigger>
+      </TabsList>
+      <TabsPanels className="min-h-72 px-control-pad-md pt-6">
+        <TabsPanel value="overview">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
+            {TAKE_STATS.map(([label, value]) => (
+              <div key={label} className="grid gap-1">
+                <dt className="text-small text-fg-subtle">{label}</dt>
+                <dd className="text-h3 text-fg">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </TabsPanel>
+        <TabsPanel value="markers">
+          <Rows>
+            {TAKE_MARKERS.map(([what, when]) => (
+              <li key={what} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg">{what}</span>
+                <span className="shrink-0 tabular-nums text-fg-subtle">{when}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="exports">
+          <Rows>
+            {TAKE_EXPORTS.map((x) => (
+              <li key={x.id} className="flex min-h-control-md items-center gap-3 py-2 text-small">
+                <ExportResult tone={x.tone} />
+                <span className="font-mono text-caption font-normal text-fg-subtle">{x.format}</span>
+                <span className="min-w-0 flex-1 truncate text-fg">{x.to}</span>
+                <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{x.time}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="settings">
+          <Rows>
+            {TAKE_SETTINGS.map(([label, value]) => (
+              <li key={label} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg-subtle">{label}</span>
+                <span className="text-fg">{value}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+      </TabsPanels>
+    </Tabs>
+  );
+}
+
+const TAKES: { name: string; kind: string; when: string; time: string }[] = [
+  { name: "take_04.wav", kind: "Interview", when: "4 min ago", time: "09:12" },
+  { name: "take_03.wav", kind: "Room tone", when: "2 h ago", time: "07:40" },
+  { name: "take_02.wav", kind: "Dawn chorus", when: "Yesterday", time: "05:05" },
+  { name: "take_01.wav", kind: "Slate test", when: "3 days ago", time: "11:30" },
+];
+
+function TakesViewSwitch() {
+  return (
+    <Tabs defaultValue="list" variant="segmented" className="grid w-full max-w-md gap-6">
+      <TabsList aria-label="View">
+        <TabsTrigger value="list">List</TabsTrigger>
+        <TabsTrigger value="grid">Grid</TabsTrigger>
+        <TabsTrigger value="timeline">Timeline</TabsTrigger>
+      </TabsList>
+      <TabsPanels className="min-h-64">
+        <TabsPanel value="list">
+          <Rows>
+            {TAKES.map((t) => (
+              <li key={t.name} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg">{t.name}</span>
+                <span className="text-fg-subtle">{t.kind}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="grid">
+          <ul className="grid grid-cols-2 gap-3">
+            {TAKES.map((t) => (
+              <li key={t.name} className="grid h-28 content-between rounded-surface bg-surface-2 p-4">
+                <span className="text-small font-title text-fg">{t.name}</span>
+                <span className="text-caption text-fg-subtle">{t.kind}</span>
+              </li>
+            ))}
+          </ul>
+        </TabsPanel>
+        <TabsPanel value="timeline">
+          <ol className="relative grid gap-5 before:absolute before:top-2 before:bottom-2 before:left-[3px] before:w-px before:bg-line">
+            {TAKES.map((t) => (
+              <li key={t.name} className="relative flex items-center gap-4 text-small">
+                <span aria-hidden="true" className="relative h-px w-2 shrink-0 bg-fg-subtle" />
+                <span className="tabular-nums text-caption font-normal text-fg-subtle">{t.time}</span>
+                <span className="text-fg">{t.name}</span>
+                <span className="text-fg-subtle">{t.when}</span>
+              </li>
+            ))}
+          </ol>
+        </TabsPanel>
+      </TabsPanels>
+    </Tabs>
+  );
+}
+
+const TAKE_STEPS: [string, string][] = [
+  ["slate", "Scene A, take 4, by the road."],
+  ["record", "00M 47S 08F at 48 kHz · 24 bit."],
+  ["review", "Three markers, and one clip at 00M 31S."],
+  ["mix", "Input 1 at −3 dB, with the safety track under the clip."],
+  ["export", "take_04.wav to card A and the phone."],
+];
+
+function TakeStepsDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-8">
+      <Tabs defaultValue="record" size="sm">
+        <TabsList aria-label="Take step">
+          {TAKE_STEPS.map(([id]) => (
+            <TabsTrigger key={id} value={id}>
+              {id[0].toUpperCase() + id.slice(1)}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsPanels className="min-h-20 px-control-pad-sm pt-4">
+          {TAKE_STEPS.map(([id, text]) => (
+            <TabsPanel key={id} value={id}>
+              <p className="text-small text-fg-muted">{text}</p>
+            </TabsPanel>
+          ))}
+        </TabsPanels>
+      </Tabs>
+      <dl className="grid gap-3 text-small text-fg-subtle">
+        {(
+          [
+            [["←", "→"], "Move to the previous or next tab"],
+            [["Home", "End"], "Jump to the first or last tab"],
+            [["Tab"], "Leave the list for the panel"],
+          ] as [string[], string][]
+        ).map(([keys, label]) => (
+          <div key={label} className="flex items-center gap-3">
+            <dt className="flex min-w-24 gap-1">
+              {keys.map((k) => (
+                <Kbd key={k}>{k}</Kbd>
+              ))}
+            </dt>
+            <dd>{label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+const TAKE_TILE_TABS = ["Overview", "Markers", "Exports"];
+const TAKE_TILE_TEXT = ["take_04.wav · 48 kHz · 24 bit, 00M 47S.", "Marker 3, room tone, at 00M 39S.", "Exported to card A in 4 seconds."];
+
+function TakeTabsTile() {
+  const [ref, step] = useLoop<HTMLDivElement>(TAKE_TILE_TABS.length, 2200, 0);
+  const [own, setOwn] = useState<string | null>(null);
+  const value = own ?? TAKE_TILE_TABS[step]!;
+  return (
+    <div ref={ref} className="w-full max-w-sm">
+      <Tabs value={value} onValueChange={setOwn}>
+        <TabsList aria-label="take_04.wav">
+          {TAKE_TILE_TABS.map((t) => (
+            <TabsTrigger key={t} value={t}>{t}</TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsPanels className="min-h-16 px-control-pad-md pt-4">
+          {TAKE_TILE_TABS.map((t, i) => (
+            <TabsPanel key={t} value={t}>
+              <p className="text-small text-fg-muted">{TAKE_TILE_TEXT[i]}</p>
+            </TabsPanel>
+          ))}
+        </TabsPanels>
+      </Tabs>
+    </div>
+  );
+}
+
 export default function TabsPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<TabsTile />}>
+    <Page meta={meta} docs={docs} tile={<TabsTile />} tileByWorld={{ device: <TakeTabsTile /> }}>
       <Stage
         title="Project tabs"
         tier="responsive"
         size="lg"
         caption="Pick a tab. The chosen face (a tab standing on the plate in Press, a grey bubble in Flat) slides to it on the responsive tier while the label only changes color, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way."
         code="ProjectTabs"
+        byWorld={{
+          device: {
+            demo: <TakeTabs />,
+            title: "A take's tabs",
+            code: "TakeTabs",
+            caption:
+              "A take's page in a recorder's app: its overview, its markers, its exports and its settings. Pick a tab. The chosen face slides to it on the responsive tier while the label only changes colour, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way.",
+          },
+        }}
       >
         <ProjectTabs />
       </Stage>
@@ -324,6 +558,7 @@ export default function TabsPage() {
         tier="responsive"
         caption="The segmented style uses the same sliding face as a raised block in a tray (Press) or a bubble behind the word (Flat). Pick a view and the preview crossfades. Labels never change weight or size, so the group keeps its exact box. On a touch screen a tab you hold fills."
         code="ViewSwitch"
+        byWorld={{ device: { demo: <TakesViewSwitch />, code: "TakesViewSwitch" } }}
       >
         <ViewSwitch />
       </Stage>
@@ -333,6 +568,7 @@ export default function TabsPage() {
         tier="responsive"
         caption="Arrow keys move between tabs and select them, Home and End jump to the first and last, and Tab leaves the list for the panel. The indicator and the panel move the same way they do for a click."
         code="KeyboardDemo"
+        byWorld={{ device: { demo: <TakeStepsDemo />, code: "TakeStepsDemo" } }}
       >
         <KeyboardDemo />
       </Stage>
