@@ -61,6 +61,9 @@ What was decided on the way:
 **STOP**: Nick listens (`#device/sound`, or the WAVs rendered from the same code). Changes to a voice go into
 `tokens.css` and nowhere else.
 
+Nick listened (2026-11-17): "I love notch and switch". Notch and Switch are approved as they are. Key and Digit have
+no verdict yet; ask before phase 2 wires them (the Digit's beep is ours, the reference plays a plain tick).
+
 ## Phase 2. Every Device body that a hand works
 
 - [ ] Wire the voices into the Device bodies (`gallery/src/worlds/device/` after plan 019 phase 4): Button, Switch,
