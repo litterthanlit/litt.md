@@ -122,7 +122,7 @@ function Tile({ page }: { page: PageEntry }) {
 const VERB_LABEL: Record<Verb, string> = { press: "Press", type: "Type", select: "Select", drag: "Drag", hover: "Hover", open: "Open", watch: "Watch" };
 
 /** A chip in the filter: a native radio, the selected one in the raised segment's look (R3). */
-function Chip({ name, value, label, count, checked, onPick, cue = false }: { name: string; value: string; label: string; count: number; checked: boolean; onPick: () => void; cue?: boolean }) {
+function Chip({ name, value, label, checked, onPick, cue = false }: { name: string; value: string; label: string; checked: boolean; onPick: () => void; cue?: boolean }) {
   return (
     <label
       data-fun-cue={cue ? "" : undefined}
@@ -136,7 +136,6 @@ function Chip({ name, value, label, count, checked, onPick, cue = false }: { nam
     >
       <input type="radio" name={name} value={value} checked={checked} onChange={onPick} className="peer sr-only" />
       <span className="litt-trim">{label}</span>
-      <span className="text-caption font-normal text-fg-subtle tabular-nums">{count}</span>
       <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-control peer-focus-visible:outline-2 peer-focus-visible:-outline-offset-2 peer-focus-visible:outline-focus" />
     </label>
   );
@@ -161,10 +160,10 @@ function Wall({ list }: { list: PageEntry[] }) {
       <fieldset className="m-0 min-w-0 border-0 p-0">
         <legend className="sr-only">Show the components you</legend>
         <div className="flex flex-wrap gap-1">
-          {fun && funList.length > 0 && <Chip cue name={name} value="fun" label="Fun" count={funList.length} checked={verb === "fun"} onPick={() => setVerb("fun")} />}
-          <Chip name={name} value="all" label="All" count={list.length} checked={verb === "all"} onPick={() => setVerb("all")} />
+          {fun && funList.length > 0 && <Chip cue name={name} value="fun" label="Fun" checked={verb === "fun"} onPick={() => setVerb("fun")} />}
+          <Chip name={name} value="all" label="All" checked={verb === "all"} onPick={() => setVerb("all")} />
           {verbs.map((v) => (
-            <Chip key={v} name={name} value={v} label={VERB_LABEL[v]} count={list.filter((p) => p.verbs?.includes(v)).length} checked={verb === v} onPick={() => setVerb(v)} />
+            <Chip key={v} name={name} value={v} label={VERB_LABEL[v]} checked={verb === v} onPick={() => setVerb(v)} />
           ))}
         </div>
       </fieldset>
@@ -233,12 +232,11 @@ function Screen({ page }: { page: PageEntry }) {
 
 /** The blocks: whole screens made of the components, each installed with one command. */
 function Blocks({ list }: { list: PageEntry[] }) {
-  const count = WORDS[list.length] ?? String(list.length);
   return (
     <section aria-labelledby="blocks-title" className="grid gap-6">
       {/* Focusable from code only, for the skip link before the wall. */}
-      <h2 id="blocks-title" tabIndex={-1} className="max-w-[64ch] text-h2 text-balance outline-none">
-        <span className="text-fg">{count} blocks.</span> <span className="font-normal text-fg-subtle">Whole screens made of them, each one installed with one command.</span>
+      <h2 id="blocks-title" tabIndex={-1} className="text-h2 text-fg outline-none">
+        Blocks
       </h2>
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {list.map((p) => (
@@ -320,8 +318,8 @@ export default function Overview() {
     <article aria-labelledby="page-overview" className="grid gap-12 pb-24">
       <Hero count={count} site={site} />
       <HomeHero />
-      <h2 className="mt-12 max-w-[64ch] text-h2 text-balance">
-        <span className="text-fg">Every one, live.</span> <span className="font-normal text-fg-subtle">{meta.lede}</span>
+      <h2 className="mt-12 text-h2 text-fg">
+        Every one, live.
       </h2>
       {blocks.length > 0 && (
         /* As the shell's "Skip to content": out of sight until it has focus, then at the top left. */

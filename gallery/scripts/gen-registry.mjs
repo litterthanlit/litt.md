@@ -1390,6 +1390,30 @@ async function loadExtract() {
  * One demo per component page: [{ stem, page, name, file, text }] for the examples, and [{ page, why }] for the pages
  * left out. `file` is a path under src/components/examples that does not exist; transformFile gets the text instead.
  */
+/**
+ * The `code` of the first <Stage> in a page that has one, read with the TypeScript compiler, so a prop written before
+ * it (an onReplay arrow, a byWorld map of other worlds' demos) cannot hide it. The example is always the shared demo:
+ * a stage's byWorld alternatives (kit.tsx, WorldDemo) are the gallery's, in a world's words, and never ship.
+ */
+function firstStageCode(src, file) {
+  const sf = ts.createSourceFile(file, src, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let found;
+  const visit = (node) => {
+    if (found !== undefined) return;
+    const tag = ts.isJsxElement(node) ? node.openingElement : ts.isJsxSelfClosingElement(node) ? node : null;
+    if (tag && tag.tagName.getText(sf) === "Stage") {
+      const attr = tag.attributes.properties.find((p) => ts.isJsxAttribute(p) && p.name.getText(sf) === "code");
+      if (attr?.initializer && ts.isStringLiteral(attr.initializer)) {
+        found = attr.initializer.text;
+        return;
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+  return found;
+}
+
 function collectDemos(extractDemo) {
   const demos = [];
   const skipped = [];
@@ -1397,7 +1421,7 @@ function collectDemos(extractDemo) {
     const src = read(path.join(pagesDir, f));
     const stem = /export const docs[^=]*=\s*\{\s*components:\s*\[\s*"([\w-]+)"/.exec(src)?.[1];
     if (!stem || !docs[stem]) continue;
-    const name = /<Stage\b[^>]*?\bcode="(\w+)"/s.exec(src)?.[1];
+    const name = firstStageCode(src, f);
     if (!name) {
       skipped.push({ page: f, why: "its first stages have no code demo" });
       continue;

@@ -227,6 +227,17 @@ async function checkPage(ctx, id, label) {
     report("after load", await pg.evaluate(() => window.__litt.durations()));
     actions++;
 
+    /* A component page holds its variants and Try it under one disclosure (kit.tsx, plans/024 phase 0): open it, watched
+       like any trigger, so their triggers are pressed too. */
+    const variants = pg.locator('main button[data-variants][aria-expanded="false"]');
+    if (await variants.count()) {
+      const opening = pg.evaluate(() => window.__litt.watch(400));
+      await variants.first().click({ timeout: 2000 });
+      report("after Variants", await opening);
+      report("after Variants", await pg.evaluate(() => window.__litt.durations()));
+      actions++;
+    }
+
     const triggers = await triggersOf(pg);
     for (let i = 0; i < triggers.length; i++) {
       const el = pg.locator(`[data-rm-trigger="${i}"]`);

@@ -31,7 +31,7 @@ honor its STOP conditions, and update your row when done.
 | 021  | [Device answers a key with a sound, and starts with it on](021-device-has-a-voice.md) | P1 | L | — | TODO (phase 1 ends in a STOP for Nick's ear) |
 | 022  | [Press goes back to its first boards, and a button has no outline](022-press-goes-back-to-its-first-board.md) | P1 | M | — | TODO (phase 1 is read-only, then Nick picks) |
 | 023  | [Flat bounces more than the other worlds](023-flat-bounces-more.md) | P2 | M | — | DONE (0.28 at 350ms in Flat, responsive 0) |
-| 024  | [Each world is dialled in to the components repo's bar: its materials written, every part built from them, its own studies, then its player body](024-dial-in-each-world.md) | P1 | XL | — | TODO (draft from the audit of 2026-11-16; Device first; STOP after every world) |
+| 024  | [Each world is dialled in to the components repo's bar: its materials written, every part built from them, its own studies, then its player body](024-dial-in-each-world.md) | P1 | XL | — | IN PROGRESS (phase 0, the presentation pass, done; STOP for Nick before Device; STOP after every world) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 

@@ -21,7 +21,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { routes } from "./routes.mjs";
+import { openVariants, routes } from "./routes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -97,6 +97,7 @@ async function checkPage(id) {
     await pg.goto(`http://localhost:${port}/index.html#${id}`, { waitUntil: "domcontentloaded" });
     await pg.waitForSelector("main h1", { timeout: 15_000 });
     await pg.waitForLoadState("networkidle");
+    await openVariants(pg);
     await pg.addStyleTag({ content: selfTest ? ZOOM + OLD_LEADING : ZOOM });
     await pg.evaluate(() => document.fonts.ready);
     await pg.waitForTimeout(200);
