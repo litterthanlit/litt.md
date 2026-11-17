@@ -200,13 +200,145 @@ function BarListTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the recorder's keys, scenes, takes and card, in the ink ---------- */
+
+function RecorderKeysDemo() {
+  return (
+    <BarList
+      className="max-w-xl"
+      label="Most-used keys on the recorder"
+      unit={["press", "presses"]}
+      items={[
+        { label: "Record", value: 412, lead: <Kbd>R</Kbd> },
+        {
+          label: "Previous and next take",
+          value: 388,
+          lead: (
+            <>
+              <Kbd>[</Kbd>
+              <Kbd>]</Kbd>
+            </>
+          ),
+        },
+        { label: "Slate", value: 164, lead: <Kbd>S</Kbd> },
+        { label: "Mark", value: 31, lead: <Kbd>M</Kbd> },
+      ]}
+    />
+  );
+}
+
+/** A slate, for a scene's row. */
+function SlateIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+      className="text-fg-subtle"
+    >
+      <path d="M2.25 6.75h11.5v6.5a1 1 0 0 1-1 1h-9.5a1 1 0 0 1-1-1zM2.25 6.75l.5-3.5 10.5-1.5.5 3.5M6 2.75l1.5 3M10 2.25l1.5 3" />
+    </svg>
+  );
+}
+
+const SCENE_ROWS: BarListItem[] = [
+  { label: "Scene 12", value: 214, lead: <SlateIcon />, delta: "Up 15%", tone: "good" },
+  { label: "Scene 13", value: 168, lead: <SlateIcon />, delta: "Down 27%", tone: "bad" },
+  { label: "Room tone", value: 131, lead: <SlateIcon />, delta: "Up 4%", tone: "good" },
+  { label: "Foley", value: 96, lead: <SlateIcon />, delta: "No change" },
+  { label: "Field", value: 42, lead: <SlateIcon />, delta: "Down 9%", tone: "bad" },
+];
+
+function ScenesDemo() {
+  return <BarList className="max-w-xl" label="Scenes by takes kept" unit={["take", "takes"]} items={SCENE_ROWS} />;
+}
+
+function TakePlaysDemo() {
+  return (
+    <BarList
+      className="max-w-xl"
+      label="Takes by plays in the library"
+      unit={["play", "plays"]}
+      items={[
+        { label: "take_04.wav", value: 1824, href: "#bar-list" },
+        { label: "Mix · take_04", value: 987, href: "#bar-list" },
+        { label: "dawn_chorus.wav", value: 641, href: "#bar-list" },
+        { label: "room_tone_01.wav", value: 410, href: "#bar-list" },
+        { label: "take_05.wav", value: 123, href: "#bar-list" },
+      ]}
+    />
+  );
+}
+
+function ScenesNarrowDemo() {
+  const [opened, setOpened] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-[22.375rem] gap-4">
+      <BarList label="Scenes by takes kept" unit={["take", "takes"]} items={SCENE_ROWS} onSelect={(item) => setOpened(item.label)} />
+      <p aria-live="polite" className="min-h-5 text-caption font-normal text-fg-subtle">
+        {opened ? `Opened ${opened}` : ""}
+      </p>
+    </div>
+  );
+}
+
+function CardKindsDemo() {
+  return (
+    <div className="w-full max-w-md">
+      <BarList
+        label="Card A by kind"
+        items={[
+          { label: "Takes", value: 58 },
+          { label: "Safety tracks", value: 24 },
+          { label: "Stems", value: 9 },
+          { label: "Sound reports", value: 3 },
+        ]}
+        formatValue={(v) => `${v} GB`}
+        max={128}
+      />
+    </div>
+  );
+}
+
+function RecorderKeysTile() {
+  return (
+    <div className="w-full max-w-sm">
+      <BarList
+        label="Most-used keys on the recorder"
+        unit={["press", "presses"]}
+        items={[
+          { label: "Record", value: 412, lead: <Kbd>R</Kbd> },
+          { label: "Slate", value: 164, lead: <Kbd>S</Kbd> },
+          { label: "Mark", value: 31, lead: <Kbd>M</Kbd> },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function BarListPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<BarListTile />}>
+    <Page meta={meta} docs={docs} tile={<BarListTile />} tileByWorld={{ device: <RecorderKeysTile /> }}>
       <Stage
         title="Most-used shortcuts"
         align="start"
         code="ShortcutsDemo"
+        byWorld={{
+          device: {
+            demo: <RecorderKeysDemo />,
+            title: "Most-used keys",
+            code: "RecorderKeysDemo",
+            caption:
+              "Each row is a key cap, a name, a 4px rail and a count of presses this week. The rail is the Meter's: a quiet track with the fill in the ink, as wide as the row's share of the largest count. No hue, because on Device colour is a signal and a count is not one. The key caps sit in a lead column up to 48px wide, so two fit. Every bar starts and ends at the same place, and the counts line up on their right edge.",
+          },
+        }}
         caption="Each row is a key cap, a name, a 4px rail and a count. The rail is the Meter's: a quiet track with the fill in the blue mark tone, as wide as the row's share of the largest count. Blue says these bars count presses and nothing else. The key caps sit in a lead column up to 48px wide, so two fit. Every bar starts and ends at the same place, and the counts line up on their right edge."
       >
         <ShortcutsDemo />
@@ -216,6 +348,15 @@ export default function BarListPage() {
         title="Top repos"
         align="start"
         code="ReposDemo"
+        byWorld={{
+          device: {
+            demo: <ScenesDemo />,
+            title: "Scenes by takes kept",
+            code: "ScenesDemo",
+            caption:
+              "The bars are the ink. A small slate leads each row. The change since last week is a word and a number at the caption size, and the word says whether it is good news, so it never rests on a colour. A hidden good news or bad news says it for screen readers. One row has no news.",
+          },
+        }}
         caption="With no hue the bars are the foreground, the quiet default. A small repo icon leads each row. The change is a word and a number at the caption size. Green is for news that is good and red for news that is bad, whichever way the number went, so a fall in commits on a repo you care about is red. A hidden good news or bad news says it for screen readers. One row has no news and stays gray."
       >
         <ReposDemo />
@@ -225,6 +366,7 @@ export default function BarListPage() {
         title="Pages by visits"
         align="start"
         code="PagesDemo"
+        byWorld={{ device: { demo: <TakePlaysDemo />, title: "Takes by plays", code: "TakePlaysDemo" } }}
         caption="A row with an href is a link. It fills with the foreground at 4% on hover, at the control radius, on the instant tier, and with 6% while a finger holds it. The fill is the only thing that changes, so the row never moves. The focus ring runs inside the row, because the rows are flush."
       >
         <PagesDemo />
@@ -233,6 +375,15 @@ export default function BarListPage() {
       <Stage
         title="Kinds in their hues"
         code="KindsDemo"
+        byWorld={{
+          device: {
+            demo: <CardKindsDemo />,
+            title: "A card by kind",
+            code: "CardKindsDemo",
+            caption:
+              "What fills Card A, kind by kind. On Device a kind takes no hue: the rails are the ink and the words name each kind. The rails are drawn against the whole 128 GB, so the empty track is the free space.",
+          },
+        }}
         caption="When the rows are kinds rather than one measure, each row can keep its own hue, the one that kind has everywhere on the page: video in violet, images in teal. The rails are drawn against the whole plan, so the empty track is the free space. One hue per kind, and the words and the numbers stay neutral."
       >
         <KindsDemo />
@@ -242,6 +393,7 @@ export default function BarListPage() {
         title="A narrow screen"
         align="start"
         code="NarrowDemo"
+        byWorld={{ device: { demo: <ScenesNarrowDemo />, code: "ScenesNarrowDemo" } }}
         caption="The list measures its own width, not the window's. Under 28rem the bar moves under the label at the full width of the row, while the key, the count and the change stay on the first line. A long name truncates. With an onSelect, rows without a link are buttons, at least 44px tall. Press one."
       >
         <NarrowDemo />

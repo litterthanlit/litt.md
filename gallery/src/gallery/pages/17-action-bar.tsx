@@ -96,6 +96,50 @@ function SelectDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): recording projects in the library ---------- */
+
+const RECORDINGS: Project[] = [
+  { id: "harbour", name: "Harbour at dawn", client: "Podcast · episode 12", deploy: "Exported 2 hours ago", status: "live", updated: "2026-10-20", description: "A walk along the harbour at 48 kHz · 24 bit.", tags: ["Mix"] },
+  { id: "scene-12", name: "Scene 12", client: "Short film · day 4", deploy: "Exported 3 days ago", status: "live", updated: "2025-11-04", description: "Kitchen dialogue, two lavaliers and a boom.", tags: ["Dialogue"] },
+  { id: "dawn", name: "Dawn chorus", client: "Field · Hana Ito", deploy: "Preview ready", status: "review", updated: "2026-10-18", description: "12M 40S at 96 kHz for the slowed passages.", tags: ["Field"] },
+  { id: "room-tone", name: "Room tone library", client: "Short film · every room", deploy: "Preview ready", status: "review", updated: "2026-10-15", description: "A minute of every room.", tags: ["Library"] },
+  { id: "foley", name: "Foley, Scene 9", client: "Short film · day 2", deploy: "Not exported yet", status: "draft", updated: "2025-09-12", description: "Footsteps on gravel and a door.", tags: ["Foley"] },
+  { id: "wind", name: "Wind test", client: "Field · Nick", deploy: "Not exported yet", status: "draft", updated: "2026-10-02", description: "Three windshields at 6 m/s.", tags: ["Test"] },
+];
+
+function SelectRecordingsDemo() {
+  const [projects, setProjects] = useState(RECORDINGS);
+  const [selected, setSelected] = useState<string[]>([]);
+  const archive = () => {
+    setProjects((all) => all.filter((p) => !selected.includes(p.id)));
+    setSelected([]);
+  };
+  return (
+    <div className="grid w-full gap-6">
+      <ProjectGrid
+        projects={projects}
+        filter="all"
+        selectedIds={selected}
+        onSelectedChange={(id, on) => setSelected((s) => (on ? [...s, id] : s.filter((x) => x !== id)))}
+        onClearFilter={() => {}}
+      />
+      <ActionBar count={selected.length} noun="projects" onClear={() => setSelected([])}>
+        <Button size="sm" icon={<ArchiveIcon />} onClick={archive}>
+          Archive
+        </Button>
+        <Button size="sm" variant="ghost" icon={<ShareIcon />}>
+          Export
+        </Button>
+      </ActionBar>
+      {projects.length < RECORDINGS.length && (
+        <Button size="sm" variant="ghost" className="justify-self-start" onClick={() => setProjects(RECORDINGS)}>
+          Bring them back
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export default function ActionBarPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -105,6 +149,7 @@ export default function ActionBarPage() {
         size="lg"
         align="start"
         code="SelectDemo"
+        byWorld={{ device: { demo: <SelectRecordingsDemo />, title: "A selection of recordings", code: "SelectRecordingsDemo" } }}
         caption="Tick a card's box. The bar rises by the travel token on the responsive tier and sticks 16px above the bottom of the view while the grid scrolls; at the end of the grid it rests under it, so it never covers a card. Tick more and the count changes in place. Archive acts on all of them, then the selection ends and the bar drops away. Esc in the bar clears it too."
       >
         <SelectDemo />

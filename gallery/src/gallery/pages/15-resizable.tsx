@@ -122,6 +122,74 @@ function ThreeDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a card's folders beside a take's metadata ---------- */
+
+const CARD_FILES: TreeNode[] = [
+  {
+    id: "scene-12",
+    label: "Scene 12",
+    children: [
+      { id: "scene-12/take_04.wav", label: "take_04.wav" },
+      { id: "scene-12/take_05.wav", label: "take_05.wav" },
+    ],
+  },
+  { id: "room-tone", label: "Room tone", children: [{ id: "room-tone/room_tone_01.wav", label: "room_tone_01.wav" }] },
+  { id: "sound_report.csv", label: "sound_report.csv" },
+];
+
+const METADATA: Record<string, string[]> = {
+  "scene-12/take_04.wav": ["48 kHz · 24 bit · 2 channels", "Length    00M 14S 06F", "Timecode  10:42:17:06 at 25 fps", "Scene 12 · take 4 · kept", "Channel 1 Lavalier · Channel 2 Boom"],
+  "scene-12/take_05.wav": ["48 kHz · 24 bit · 2 channels", "Length    00M 22S 11F", "Timecode  10:44:02:19 at 25 fps", "Scene 12 · take 5 · clipped on channel 2", "Channel 1 Lavalier · Channel 2 Boom"],
+  "room-tone/room_tone_01.wav": ["48 kHz · 24 bit · 2 channels", "Length    01M 00S 00F", "Timecode  11:03:40:00 at 25 fps", "Room tone · kitchen"],
+  "sound_report.csv": ["scene,take,length,notes", "12,4,00:00:14:06,kept", "12,5,00:00:22:11,clipped ch2", "RT,1,00:01:00:00,kitchen"],
+};
+
+function CardFilesDemo() {
+  const [file, setFile] = useState("scene-12/take_04.wav");
+  return (
+    <div className="litt-raised h-80 w-full overflow-hidden rounded-surface">
+      <ResizablePanelGroup direction="horizontal" className="h-full">
+        <ResizablePanel defaultSize={32} minSize={20} maxSize={50} className="p-2">
+          <Tree label="Card A" items={CARD_FILES} on="surface-1" defaultExpanded={["scene-12"]} selected={file} onSelect={(id, node) => !node.children && setFile(id)} />
+        </ResizablePanel>
+        <ResizableHandle label="Resize the card's folders" />
+        <ResizablePanel minSize={40} className="grid content-start gap-3 p-4">
+          <p className="font-mono text-caption font-normal text-fg-subtle">{file}</p>
+          <pre className="font-mono text-caption font-normal whitespace-pre-wrap text-fg-muted [overflow-wrap:anywhere]">{METADATA[file]?.join("\n")}</pre>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  );
+}
+
+function LibraryPanesDemo() {
+  return (
+    <div className="litt-raised h-80 w-full overflow-hidden rounded-surface">
+      <ResizablePanelGroup direction="horizontal" autoSaveId="litt-gallery-three-device" className="h-full">
+        <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+          <Pane title="Cards">Card A, Card B, Card C.</Pane>
+        </ResizablePanel>
+        <ResizableHandle label="Resize the cards" />
+        <ResizablePanel defaultSize={35} minSize={25}>
+          <Pane title="Takes">Twelve takes, newest first.</Pane>
+        </ResizablePanel>
+        <ResizableHandle label="Resize the takes" />
+        <ResizablePanel minSize={30}>
+          <ResizablePanelGroup direction="vertical" className="h-full">
+            <ResizablePanel defaultSize={65} minSize={30}>
+              <Pane title="Waveform">The open take. Drag the line under it to give the notes more room.</Pane>
+            </ResizablePanel>
+            <ResizableHandle label="Resize the notes" />
+            <ResizablePanel minSize={20}>
+              <Pane title="Notes">Write here.</Pane>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  );
+}
+
 export default function ResizablePage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -130,6 +198,15 @@ export default function ResizablePage() {
         tier="instant"
         align="start"
         code="SplitDemo"
+        byWorld={{
+          device: {
+            demo: <CardFilesDemo />,
+            title: "A card beside its take",
+            code: "CardFilesDemo",
+            caption:
+              "Drag the hairline between the card's folders and the take's metadata. It turns stronger under the pointer and follows it one to one, and the folders stay between 20% and 50%. Double click it to put it back. Tab to it and the arrow keys move it by 5%, Shift by 20%.",
+          },
+        }}
         caption="Drag the hairline between the tree and the file. It turns stronger under the pointer and follows it one to one, and the tree stays between 20% and 50%. Double click it to put it back. Tab to it and the arrow keys move it by 5%, Shift by 20%."
       >
         <SplitDemo />
@@ -140,6 +217,14 @@ export default function ResizablePage() {
         tier="instant"
         align="start"
         code="ThreeDemo"
+        byWorld={{
+          device: {
+            demo: <LibraryPanesDemo />,
+            code: "LibraryPanesDemo",
+            caption:
+              "A handle only moves the two panels beside it, so the cards keep their width while you resize the take list. The right panel holds a stacked group of its own. This layout is kept in your browser: change it, come back, and it is as you left it.",
+          },
+        }}
         caption="A handle only moves the two panels beside it, so the inboxes keep their width while you resize the thread list. The right panel holds a stacked group of its own. This layout is kept in your browser: change it, come back, and it is as you left it."
       >
         <ThreeDemo />

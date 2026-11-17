@@ -145,12 +145,94 @@ function EdgeDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): from a new recorder to its first backed-up card, in the ink ---------- */
+
+function RecorderAppDemo() {
+  return (
+    <Funnel
+      className="w-full max-w-md"
+      label="Recorder app, this month"
+      steps={[
+        { label: "Installed", value: 18240 },
+        { label: "Paired a recorder", value: 6930 },
+        { label: "Made a take", value: 2840 },
+        { label: "Backed up a card", value: 748 },
+      ]}
+    />
+  );
+}
+
+function FirstTakeDemo() {
+  return (
+    <Funnel
+      className="w-full max-w-md"
+      label="New recorders, last 30 days"
+      unit={["person", "people"]}
+      steps={[
+        { label: "Powered on", value: 3120 },
+        { label: "Formatted a card", value: 2410 },
+        { label: "Set the inputs", value: 1380 },
+        { label: "Jammed timecode", value: 1190 },
+        { label: "Made a first take", value: 412 },
+      ]}
+    />
+  );
+}
+
+function LibraryTrialDemo() {
+  return (
+    <div className="litt-raised w-64 min-w-0 max-w-full rounded-surface p-4">
+      <Funnel
+        label="Library trial to paid"
+        steps={[
+          { label: "Started a trial", value: 420 },
+          { label: "Imported a card", value: 236 },
+          { label: "Shared a take", value: 131 },
+          { label: "Upgraded", value: 81 },
+        ]}
+      />
+    </div>
+  );
+}
+
+function FirmwareEdgeDemo() {
+  return (
+    <div className="grid w-full max-w-3xl gap-12 sm:grid-cols-2">
+      <Funnel
+        label="Store page, counted twice"
+        steps={[
+          { label: "Visited", value: 1200 },
+          { label: "Opened the specs", value: 1450 },
+          { label: "Bought", value: 40 },
+        ]}
+      />
+      <Funnel
+        label="New firmware, out today"
+        steps={[
+          { label: "Downloaded", value: 0 },
+          { label: "Installed", value: 0 },
+          { label: "Made a take", value: 0 },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function FunnelPage() {
   return (
     <Page meta={meta} docs={docs}>
       <Stage
         title="A product funnel"
         code="StoreDemo"
+        byWorld={{
+          device: {
+            demo: <RecorderAppDemo />,
+            title: "From install to a backed-up card",
+            code: "RecorderAppDemo",
+            caption:
+              "Each step is a row in the Meter's anatomy: the label, the count and its share of the first step, and a 4px rail filled to that share. Between two steps a quiet line says how many of the step before went on, in words. The header ends with the overall conversion. The rails are the ink, because on Device colour is a signal and a count is not one. Nothing animates.",
+          },
+        }}
         caption="Each step is a row in the Meter's anatomy: the label, the count and its share of the first step, and a 4px rail filled to that share. Between two steps a quiet line says how many of the step before went on, in words. The header ends with the overall conversion. The whole funnel is one hue, because it is one quantity. Nothing animates."
       >
         <StoreDemo />
@@ -159,6 +241,15 @@ export default function FunnelPage() {
       <Stage
         title="Another hue and a unit"
         code="SignupDemo"
+        byWorld={{
+          device: {
+            demo: <FirstTakeDemo />,
+            title: "A unit",
+            code: "FirstTakeDemo",
+            caption:
+              "The unit is said after every number to screen readers, so a step reads as 2,410 people and not a bare number. Under 10% the shares keep one decimal, so the small end of a funnel still reads.",
+          },
+        }}
         caption="Pick the hue with hue, so the funnel matches the rest of its page. The unit is said after every number to screen readers, so a step reads as 2,410 people and not a bare number. Under 10% the shares keep one decimal, so the small end of a funnel still reads."
       >
         <SignupDemo />
@@ -167,6 +258,7 @@ export default function FunnelPage() {
       <Stage
         title="In a tile"
         code="TileDemo"
+        byWorld={{ device: { demo: <LibraryTrialDemo />, code: "LibraryTrialDemo" } }}
         caption="The same rows in a raised box 16rem wide, as in a dashboard row. A long label truncates and the reading never does, so the numbers always line up at the end."
       >
         <TileDemo />
@@ -175,6 +267,7 @@ export default function FunnelPage() {
       <Stage
         title="When the data is off"
         code="EdgeDemo"
+        byWorld={{ device: { demo: <FirmwareEdgeDemo />, code: "FirmwareEdgeDemo" } }}
         caption="A step larger than the one before still draws, held at 100% of the first, and its line says it is more than the step before rather than calling it a conversion. A funnel with nothing in its first step draws empty rails and no shares, because there is nothing to measure against."
       >
         <EdgeDemo />

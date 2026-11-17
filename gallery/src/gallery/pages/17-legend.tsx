@@ -146,6 +146,75 @@ function LastOneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): takes by kind, minutes by recorder, a card's files, channels ---------- */
+
+const TAKE_KINDS: ChartSeries[] = [
+  { name: "Dialogue", values: [42, 38, 51, 47, 55, 49, 61, 58] },
+  { name: "Room tone", values: [18, 22, 19, 25, 21, 28, 26, 31] },
+  { name: "Foley", values: [9, 11, 8, 12, 10, 14, 13, 15] },
+  { name: "Wild lines", values: [1, 0, 2, 1, 0, 1, 0, 1] },
+];
+
+function TakeKindsDemo() {
+  const items: LegendItem[] = TAKE_KINDS.map((s) => ({ name: s.name }));
+  const hues = legendHues(items);
+  const [hidden, setHidden] = useState<string[]>([]);
+  const shown = TAKE_KINDS.filter((s) => !hidden.includes(s.name)).map((s) => ({ ...s, hue: hues[s.name] }));
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <Legend label="Kinds of take" items={items} hidden={hidden} onHiddenChange={setHidden} />
+      <BarChart label="Takes per week, last 8 weeks" labels={WEEKS} series={shown} unit="takes" xTitle="Week" hues legend={false} />
+    </div>
+  );
+}
+
+function RecorderMinutesDemo() {
+  const minutes: ChartSeries[] = [
+    { name: "Cart recorder", values: [1240, 1310, 1180, 1420, 1510, 1470, 1630, 1580] },
+    { name: "Bag recorder", values: [620, 580, 710, 690, 760, 820, 790, 860] },
+    { name: "Field recorder", values: [310, 340, 290, 360, 410, 380, 450, 470] },
+  ];
+  const items: LegendItem[] = minutes.map((s) => ({ name: s.name, value: `${total(s.values)} min` }));
+  const hues = legendHues(items);
+  const [hidden, setHidden] = useState<string[]>(["Field recorder"]);
+  const shown = minutes.filter((s) => !hidden.includes(s.name)).map((s) => ({ ...s, hue: hues[s.name] }));
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <Legend label="Recorders" items={items} hidden={hidden} onHiddenChange={setHidden} lines />
+      <LineChart label="Minutes recorded per week by recorder" labels={WEEKS} series={shown} unit="minutes" xTitle="Week" hues legend={false} />
+    </div>
+  );
+}
+
+function CardFilesDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-6">
+      <Legend
+        label="Card A by kind"
+        items={[
+          { name: "Takes", value: "58 GB" },
+          { name: "Safety tracks", value: "24 GB" },
+          { name: "Stems", value: "6 GB" },
+          { name: "Sound reports", value: "3 GB" },
+        ]}
+      />
+      <Legend
+        label="Card A this week"
+        defaultHidden={["Stems"]}
+        items={[
+          { name: "Takes", value: "4.2 GB" },
+          { name: "Stems", value: "1.1 GB" },
+          { name: "Sound reports", value: "0.4 GB" },
+        ]}
+      />
+    </div>
+  );
+}
+
+function LastChannelDemo() {
+  return <Legend label="Channels" defaultHidden={["Boom", "Room"]} items={[{ name: "Lavalier" }, { name: "Boom" }, { name: "Room" }]} />;
+}
+
 export default function LegendPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -153,6 +222,14 @@ export default function LegendPage() {
         title="Driving a chart"
         tier="instant"
         code="ChartDemo"
+        byWorld={{
+          device: {
+            demo: <TakeKindsDemo />,
+            code: "TakeKindsDemo",
+            caption:
+              "The Legend holds which kinds of take are hidden, and the page passes the shown ones to the chart. Each kind is a latching key: down while it shows, its lamp lit at its level of the ink. Hide Dialogue, and Room tone keeps its level, because each series keeps what it took from the whole list. A press changes the key in place on the instant tier. The chart redraws at once.",
+          },
+        }}
         caption="The Legend holds which series are hidden, and the page passes the shown ones to the chart. Hide Builds, and Previews stays amber, because each series keeps the hue it took from the whole list. A press changes color only, on the instant tier: the swatch turns to the grey track and the name steps down. The chart redraws at once."
       >
         <ChartDemo />
@@ -162,6 +239,14 @@ export default function LegendPage() {
         title="With totals"
         tier="instant"
         code="TotalsDemo"
+        byWorld={{
+          device: {
+            demo: <RecorderMinutesDemo />,
+            code: "RecorderMinutesDemo",
+            caption:
+              "A reading after each name, in tabular figures, helps you pick: here each recorder's minutes over the eight weeks. The field recorder starts hidden. The reading keeps its ink either way, so the key never changes size.",
+          },
+        }}
         caption="A reading after each name, in tabular figures, helps you pick: here each site's visits over the eight weeks. Shop starts hidden. The reading keeps its ink either way, and only the name and the swatch change color, so the box never changes size."
       >
         <TotalsDemo />
@@ -171,6 +256,15 @@ export default function LegendPage() {
         title="Set hues"
         tier="instant"
         code="PinnedDemo"
+        byWorld={{
+          device: {
+            demo: <CardFilesDemo />,
+            title: "Two banks",
+            code: "CardFilesDemo",
+            caption:
+              "Two banks of keys for one card, the whole of it and this week. Under Device a kind takes no hue: its word names it and its lamp is the ink. These two drive nothing, so each holds its own hidden list.",
+          },
+        }}
         caption="Pin a hue and a kind keeps it across the page. Images are teal in both rows, and the kinds without a pin take the next hues in the fixed order. These two drive nothing, so each holds its own hidden list."
       >
         <PinnedDemo />
@@ -180,6 +274,14 @@ export default function LegendPage() {
         title="The last one stays"
         tier="instant"
         code="LastOneDemo"
+        byWorld={{
+          device: {
+            demo: <LastChannelDemo />,
+            code: "LastChannelDemo",
+            caption:
+              "A chart with nothing on it says nothing, so the last shown channel cannot be hidden. Lavalier is the only one shown: pressing it does nothing, and a screen reader hears why. It keeps its tab stop. Alt with a click, or Alt and Enter, shows only the channel you pressed.",
+          },
+        }}
         caption="A chart with nothing on it says nothing, so the last shown series cannot be hidden. Arcadia is the only one shown: pressing it does nothing, and a screen reader hears why. It keeps its tab stop. Alt with a click, or Alt and Enter, shows only the item you pressed."
       >
         <LastOneDemo />

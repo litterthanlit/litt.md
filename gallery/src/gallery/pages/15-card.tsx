@@ -259,15 +259,164 @@ function CardTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): takes and mixes in the library, with their waveforms ---------- */
+
+/** A take's waveform as its cover, in the ink: the same bars for the same seed, so a screenshot never changes. */
+function Waveform({ seed }: { seed: number }) {
+  const bars = Array.from({ length: 48 }, (_, i) => {
+    const h = 12 + 70 * Math.abs(Math.sin((i + 1) * seed) * Math.cos(i / (3 + seed)));
+    return { x: 16 + i * 6, h };
+  });
+  return (
+    <svg viewBox="0 0 320 200" className="absolute inset-0 size-full" aria-hidden="true" focusable="false">
+      <line x1="16" y1="100" x2="304" y2="100" className="stroke-line" vectorEffect="non-scaling-stroke" />
+      {bars.map((b) => (
+        <rect key={b.x} x={b.x} y={100 - b.h} width="3" height={b.h * 2} className="fill-fg-subtle" />
+      ))}
+    </svg>
+  );
+}
+
+type Take = { id: string; name: string; note: string; seed: number; status: string; tone: "success" | "warning" | "neutral" };
+
+const TAKES: Take[] = [
+  { id: "mix", name: "Mix · take_04", note: "Scene 12, bounced at −14 LUFS with 4 stems.", seed: 1.7, status: "In review", tone: "warning" },
+  { id: "dawn", name: "Dawn chorus", note: "Field, 12M 40S at 96 kHz · 24 bit.", seed: 3.1, status: "Kept", tone: "success" },
+  { id: "room", name: "Room tone, kitchen", note: "A minute of the room at the scene's levels.", seed: 0.9, status: "Not mixed", tone: "neutral" },
+];
+
+function TakeCard({ take }: { take: Take }) {
+  return (
+    <Card as="li" cover="inset">
+      <CardCover>
+        <Waveform seed={take.seed} />
+      </CardCover>
+      <CardBody>
+        <CardTitle>
+          <CardLink href="#card">{take.name}</CardLink>
+        </CardTitle>
+        <CardDescription>{take.note}</CardDescription>
+        <div className="mt-auto flex items-center justify-between pt-4">
+          <Status tone={take.tone}>{take.status}</Status>
+          <a
+            href="#card"
+            className="relative inline-flex h-control-sm items-center gap-1 text-caption text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
+          >
+            Open in library
+            <ArrowUpRightIcon />
+          </a>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
+
+function TakeCardsDemo() {
+  return (
+    <ul className="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      {TAKES.map((take) => (
+        <TakeCard key={take.id} take={take} />
+      ))}
+    </ul>
+  );
+}
+
+function TakeCoverStylesDemo() {
+  return (
+    <ul className="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      <Card as="li" cover="inset">
+        <CardCover>
+          <Waveform seed={1.7} />
+        </CardCover>
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">Inset cover</CardLink>
+          </CardTitle>
+          <CardDescription>Padded by 4px. The cover takes the control radius, so the corners nest.</CardDescription>
+        </CardBody>
+      </Card>
+
+      <Card as="li" cover="bleed">
+        <CardCover>
+          <Waveform seed={2.3} />
+        </CardCover>
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">Full-bleed cover</CardLink>
+          </CardTitle>
+          <CardDescription>Runs to the edges and takes the card's own radius at the top.</CardDescription>
+        </CardBody>
+      </Card>
+
+      <Card as="li">
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">Card A</CardLink>
+          </CardTitle>
+          <CardDescription>128 GB, recording at 48 kHz · 24 bit</CardDescription>
+          <p className="mt-6 text-h4 font-normal tabular-nums text-fg">3H 12M left</p>
+          <div className="mt-auto pt-4">
+            <Status tone="warning">Not backed up</Status>
+          </div>
+        </CardBody>
+      </Card>
+    </ul>
+  );
+}
+
+function TakeLightDemo() {
+  return (
+    <ul className="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      <Card as="li" lit>
+        <CardBody>
+          <CardTitle>Next backup</CardTitle>
+          <CardDescription>Card A, at wrap.</CardDescription>
+          <p className="mt-6 text-h4 font-normal tabular-nums text-fg">42 GB</p>
+          <div className="pt-6">
+            <Button size="sm">Back up now</Button>
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card as="li" cover="inset">
+        <CardCover lit />
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">Scene 12, lit</CardLink>
+          </CardTitle>
+          <CardDescription>The cover carries the light. It falls from the top and never moves.</CardDescription>
+        </CardBody>
+      </Card>
+    </ul>
+  );
+}
+
+function TakeCardTile() {
+  return (
+    <ul className="grid w-full max-w-xs">
+      <TakeCard take={TAKES[0]!} />
+    </ul>
+  );
+}
+
 export default function CardPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<CardTile />}>
+    <Page meta={meta} docs={docs} tile={<CardTile />} tileByWorld={{ device: <TakeCardTile /> }}>
       <Stage
         title="Linked cards"
         tier="instant"
         size="lg"
         align="start"
         code="ClientCardsDemo"
+        byWorld={{
+          device: {
+            demo: <TakeCardsDemo />,
+            title: "Takes in the library",
+            code: "TakeCardsDemo",
+            caption:
+              "Each card is a take or a mix, with its waveform as the cover. Hover a card and its fill moves one step, to surface-2, with the cover stepping to surface-3 so it keeps its edge. Both are colour fades on the instant tier. Nothing lifts, grows or scales. Press Tab: each card is one stop, and the focus ring wraps the whole card. Open in library is a second control, so it sits above the stretched link.",
+          },
+        }}
         caption="Hover a card and its fill moves one step, to surface-2, with the cover stepping to surface-3 so it keeps its edge. Both are color fades on the instant tier. Nothing lifts, grows or scales. Press Tab: each card is one stop, and the focus ring wraps the whole card. Visit site is a second control, so it sits above the stretched link."
       >
         <ClientCardsDemo />
@@ -279,6 +428,7 @@ export default function CardPage() {
         size="lg"
         align="start"
         code="CoverStylesDemo"
+        byWorld={{ device: { demo: <TakeCoverStylesDemo />, code: "TakeCoverStylesDemo" } }}
         caption="A plain card pads 24px. An inset cover pads the card by 4px and gives the cover the control radius, then the text pads 16px above and at the sides and 12px below. A full-bleed cover takes the card's radius at the top and the text pads 24px. Same hover on all three."
       >
         <CoverStylesDemo />
@@ -290,6 +440,7 @@ export default function CardPage() {
         size="lg"
         align="start"
         code="LightDemo"
+        byWorld={{ device: { demo: <TakeLightDemo />, code: "TakeLightDemo" } }}
         caption="A card can carry its own light and grain from the top, on the card or on its cover. It is static, and this gallery's page already has one light, so it is the exception, not the rule. A card with no CardLink is just a surface: no hover, and the button inside is the only target."
       >
         <LightDemo />

@@ -1,7 +1,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { ActionBar } from "@/components/action-bar";
 import { Button } from "@/components/button";
-import { PlusIcon, RetryIcon } from "@/components/icons";
+import { PlusIcon, RetryIcon, ShareIcon } from "@/components/icons";
 import { Input } from "@/components/input";
 import {
   Table,
@@ -799,6 +799,575 @@ function NarrowDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the take log, ten thousand takes, exports, cards and units ---------- */
+
+type LogTake = { id: string; take: string; scene: string; ok: boolean; seconds: number; at: string };
+
+const TAKE_LOG: LogTake[] = [
+  { id: "t1", take: "take_04.wav", scene: "Scene 12", ok: true, seconds: 14, at: "2026-10-10" },
+  { id: "t2", take: "take_05.wav", scene: "Scene 12", ok: false, seconds: 22, at: "2026-10-10" },
+  { id: "t3", take: "take_06.wav", scene: "Scene 12", ok: true, seconds: 19, at: "2026-10-10" },
+  { id: "t4", take: "room_tone_01.wav", scene: "Room tone", ok: true, seconds: 60, at: "2026-10-09" },
+  { id: "t5", take: "take_01.wav", scene: "Scene 13", ok: true, seconds: 41, at: "2026-10-09" },
+  { id: "t6", take: "take_02.wav", scene: "Scene 13", ok: true, seconds: 37, at: "2026-10-09" },
+  { id: "t7", take: "take_03.wav", scene: "Scene 13", ok: false, seconds: 8, at: "2026-10-08" },
+  { id: "t8", take: "dawn_chorus.wav", scene: "Field", ok: true, seconds: 760, at: "2026-10-06" },
+  { id: "t9", take: "wind_test.wav", scene: "Field", ok: true, seconds: 45, at: "2026-10-06" },
+  { id: "t10", take: "take_01.wav", scene: "Scene 11", ok: true, seconds: 52, at: "2026-10-04" },
+];
+
+/** Seconds as the LCD's clock: "00M 14S". */
+const clock = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}M ${String(s % 60).padStart(2, "0")}S`;
+
+function TakeLogDemo() {
+  return (
+    <Table label="Take log" entrance className="max-h-96 max-w-3xl">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Take</TableHead>
+          <TableHead>Scene</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead numeric>Length</TableHead>
+          <TableHead numeric>Recorded</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {TAKE_LOG.map((t) => (
+          <TableRow key={t.id}>
+            <TableCell primary>{t.take}</TableCell>
+            <TableCell>{t.scene}</TableCell>
+            <TableCell>
+              <Status tone={t.ok ? "success" : "danger"}>{t.ok ? "Kept" : "Clipped"}</Status>
+            </TableCell>
+            <TableCell numeric>{clock(t.seconds)}</TableCell>
+            <TableCell numeric>
+              <time dateTime={t.at}>{shortDate(t.at)}</time>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
+type BigTake = { id: string; scene: string; card: string; note: string; recordist: string; ok: boolean; seconds: number; at: string };
+
+const SCENES = ["Scene 9", "Scene 10", "Scene 11", "Scene 12", "Scene 13", "Room tone", "Field", "Foley"];
+const CARD_SLOTS = ["A", "B", "A", "A", "C", "B"];
+const NOTES = [
+  "Kept, the best of the scene",
+  "Plane overhead at the end",
+  "Wild line for the edit",
+  "Boom in shot, sound fine",
+  "Safety track used",
+  "Room tone at the scene's levels",
+  "Slate missed, clap at the head",
+];
+const RECORDISTS = ["Ines Duarte", "Tomas Berg", "Ava Okafor", "Nick"];
+
+/** Ten thousand takes, the same every time: a small seeded generator, so the page fetches nothing. */
+const MANY_TAKES: BigTake[] = (() => {
+  let seed = 7;
+  const next = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const out: BigTake[] = [];
+  let day = Date.UTC(2026, 9, 22);
+  for (let i = 0; i < 10000; i++) {
+    if (next() < 0.3) day -= 86400000;
+    out.push({
+      id: `T${String(10000 - i).padStart(5, "0")}`,
+      scene: SCENES[Math.floor(next() * SCENES.length)]!,
+      card: CARD_SLOTS[Math.floor(next() * CARD_SLOTS.length)]!,
+      note: NOTES[Math.floor(next() * NOTES.length)]!,
+      recordist: RECORDISTS[Math.floor(next() * RECORDISTS.length)]!,
+      ok: next() > 0.08,
+      seconds: 20 + Math.floor(next() * 70),
+      at: new Date(day).toISOString().slice(0, 10),
+    });
+  }
+  return out;
+})();
+
+/* Length in buckets, for the single-choice filter. */
+const LENGTHS = [
+  { value: "short", label: "Under 30 s", test: (s: number) => s < 30 },
+  { value: "usual", label: "30 to 60 s", test: (s: number) => s >= 30 && s <= 60 },
+  { value: "long", label: "Over 60 s", test: (s: number) => s > 60 },
+];
+const LENGTH_VALUES = LENGTHS.map((s) => s.value);
+
+const TAKE_STATUSES = [
+  { value: "kept", label: "Kept" },
+  { value: "clipped", label: "Clipped" },
+];
+const TAKE_STATUS_VALUES = TAKE_STATUSES.map((s) => s.value);
+
+function ManyTakesDemo() {
+  const [search, setSearch] = useUrlParam("q");
+  const [sort, setSort] = useUrlParam("sort");
+  const longFirst = sort === "long";
+  const [statusOn, setStatusOn] = useUrlFilter("status", { values: TAKE_STATUS_VALUES });
+  const [scenesOn, setScenesOn] = useUrlFilter("scene", { values: SCENES });
+  const [lengthOn, setLengthOn] = useUrlFilter("length", { values: LENGTH_VALUES, multiple: false });
+  const query = useDeferredValue(search.trim().toLowerCase());
+  const statusD = useDeferredValue(statusOn);
+  const scenesD = useDeferredValue(scenesOn);
+  const lengthD = useDeferredValue(lengthOn);
+
+  const { shown, counts } = useMemo(() => {
+    const length = LENGTHS.find((b) => b.value === lengthD[0]);
+    const counts = { status: new Map<string, number>(), scene: new Map<string, number>() };
+    const found: BigTake[] = [];
+    for (const t of MANY_TAKES) {
+      if (query && !(t.scene.toLowerCase().includes(query) || t.card.toLowerCase() === query || t.id.toLowerCase().includes(query))) continue;
+      const status = t.ok ? "kept" : "clipped";
+      const byStatus = !statusD.length || statusD.includes(status);
+      const byScene = !scenesD.length || scenesD.includes(t.scene);
+      const byLength = !length || length.test(t.seconds);
+      if (byScene && byLength) counts.status.set(status, (counts.status.get(status) ?? 0) + 1);
+      if (byStatus && byLength) counts.scene.set(t.scene, (counts.scene.get(t.scene) ?? 0) + 1);
+      if (byStatus && byScene && byLength) found.push(t);
+    }
+    return { shown: longFirst ? found.sort((a, b) => b.seconds - a.seconds) : found, counts };
+  }, [query, statusD, scenesD, lengthD, longFirst]);
+  const ids = useMemo(() => shown.map((t) => t.id), [shown]);
+  const selection = useRowSelection(ids);
+  const filtering = statusOn.length + scenesOn.length + lengthOn.length > 0;
+  const clearAll = () => {
+    setStatusOn([]);
+    setScenesOn([]);
+    setLengthOn([]);
+    setSearch("");
+  };
+
+  return (
+    <div className="grid w-full max-w-4xl gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Input
+          size="sm"
+          type="search"
+          aria-label="Search takes"
+          placeholder="Search scene, card or take"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full sm:w-64"
+        />
+        <div className="flex items-center gap-3">
+          <p aria-live="polite" className="text-caption font-normal tabular-nums text-fg-subtle">
+            {shown.length === MANY_TAKES.length ? `${COUNT.format(MANY_TAKES.length)} takes` : `${COUNT.format(shown.length)} of ${COUNT.format(MANY_TAKES.length)} takes`}
+          </p>
+          {(filtering || search) && (
+            <Button size="sm" variant="ghost" onClick={clearAll}>
+              Clear filters
+            </Button>
+          )}
+        </div>
+      </div>
+      <Table label="Takes" className="max-h-[28rem]" stickyColumns={2} columnsId="litt-gallery-takes">
+        <TableHeader>
+          <TableRow>
+            <TableSelectHead state={selection.head} onToggle={selection.toggleAll} label="Select every take shown" />
+            <TableHead>Take</TableHead>
+            <TableHead
+              resizable
+              filter={
+                <TableFilter
+                  column="Scene"
+                  value={scenesOn}
+                  onValueChange={setScenesOn}
+                  options={SCENES.map((scene) => ({ value: scene, label: scene, count: counts.scene.get(scene) ?? 0 }))}
+                />
+              }
+            >
+              Scene
+            </TableHead>
+            <TableHead resizable>Card</TableHead>
+            <TableHead resizable minWidth={120}>
+              Note
+            </TableHead>
+            <TableHead resizable>Recordist</TableHead>
+            <TableHead
+              filter={
+                <TableFilter
+                  column="Status"
+                  value={statusOn}
+                  onValueChange={setStatusOn}
+                  options={TAKE_STATUSES.map((st) => ({ ...st, count: counts.status.get(st.value) ?? 0 }))}
+                />
+              }
+            >
+              Status
+            </TableHead>
+            <TableHead
+              numeric
+              sort={longFirst ? "descending" : "none"}
+              onSort={() => setSort(longFirst ? "" : "long")}
+              filter={<TableFilter column="Length" multiple={false} align="end" value={lengthOn} onValueChange={setLengthOn} options={LENGTHS} allLabel="Any length" />}
+            >
+              Length
+            </TableHead>
+            <TableHead numeric>Recorded</TableHead>
+          </TableRow>
+        </TableHeader>
+        {shown.length ? (
+          <TableVirtualBody count={shown.length} columns={9}>
+            {(i) => {
+              const t = shown[i]!;
+              const on = selection.isSelected(t.id);
+              return (
+                <TableRow key={t.id} selected={on}>
+                  <TableSelectCell label={`Select ${t.id}`} checked={on} onToggle={(range) => selection.toggle(t.id, range)} />
+                  <TableCell primary>
+                    <span className="font-mono text-caption font-normal">{t.id}</span>
+                  </TableCell>
+                  <TableCell>{t.scene}</TableCell>
+                  <TableCell>
+                    <span className="font-mono text-caption font-normal">Card {t.card}</span>
+                  </TableCell>
+                  <TableCell>{t.note}</TableCell>
+                  <TableCell>{t.recordist}</TableCell>
+                  <TableCell>
+                    <Status tone={t.ok ? "success" : "danger"}>{t.ok ? "Kept" : "Clipped"}</Status>
+                  </TableCell>
+                  <TableCell numeric>{t.seconds} s</TableCell>
+                  <TableCell numeric>
+                    <time dateTime={t.at}>{shortDate(t.at)}</time>
+                  </TableCell>
+                </TableRow>
+              );
+            }}
+          </TableVirtualBody>
+        ) : (
+          <TableBody>
+            <TableEmpty columns={9} action={<Button size="sm" onClick={clearAll}>Clear filters</Button>}>
+              No take matches these filters.
+            </TableEmpty>
+          </TableBody>
+        )}
+      </Table>
+      <ActionBar count={selection.count} noun="takes" onClear={selection.clear}>
+        <Button size="sm" icon={<ShareIcon />} onClick={selection.clear}>
+          Export
+        </Button>
+      </ActionBar>
+    </div>
+  );
+}
+
+type TakePage = { rows: BigTake[]; next: number | null; total: number };
+
+/** A stand-in for the library's API: the page of takes after a cursor, most of a second later, or a failure when asked for one. */
+function fetchTakes(cursor: number, fail: boolean): Promise<TakePage> {
+  return new Promise((resolve, reject) => {
+    setTimeout(
+      () => {
+        if (fail) return reject(new Error("The network went away"));
+        const rows = MANY_TAKES.slice(cursor, cursor + PAGE);
+        const next = cursor + rows.length;
+        resolve({ rows, next: next < MANY_TAKES.length ? next : null, total: MANY_TAKES.length });
+      },
+      600 + Math.random() * 300,
+    );
+  });
+}
+
+function ServerTakesDemo() {
+  const [rows, setRows] = useState<BigTake[]>([]);
+  const [cursor, setCursor] = useState<number | null>(0);
+  const [total, setTotal] = useState<number>();
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const [failNext, setFailNext] = useState(false);
+  const live = useRef(true);
+  useEffect(() => {
+    live.current = true;
+    return () => {
+      live.current = false;
+    };
+  }, []);
+
+  const loadMore = useCallback(() => {
+    if (cursor === null) return;
+    setLoading(true);
+    setFailed(false);
+    setFailNext(false);
+    fetchTakes(cursor, failNext).then(
+      (page) => {
+        if (!live.current) return;
+        setRows((all) => [...all, ...page.rows]);
+        setCursor(page.next);
+        setTotal(page.total);
+        setLoading(false);
+      },
+      () => {
+        if (!live.current) return;
+        setFailed(true);
+        setLoading(false);
+      },
+    );
+  }, [cursor, failNext]);
+
+  return (
+    <div className="grid w-full max-w-3xl gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Button size="sm" variant={failNext ? "secondary" : "ghost"} aria-pressed={failNext} onClick={() => setFailNext((v) => !v)}>
+          Fail the next page
+        </Button>
+        <p aria-live="polite" className="text-caption font-normal tabular-nums text-fg-subtle">
+          {total === undefined ? "Loading takes" : `${COUNT.format(rows.length)} of ${COUNT.format(total)} loaded`}
+        </p>
+      </div>
+      <Table label="Takes from the library" busy={total === undefined && !failed} className="max-h-[28rem]">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Take</TableHead>
+            <TableHead>Scene</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead numeric>Length</TableHead>
+            <TableHead numeric>Recorded</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableVirtualBody
+          count={rows.length}
+          columns={5}
+          total={total}
+          hasMore={cursor !== null}
+          loading={loading}
+          onLoadMore={loadMore}
+          loadError={failed ? "The next takes did not load." : undefined}
+          skeleton={["primary", "text", "text", "number", "number"]}
+        >
+          {(i) => {
+            const t = rows[i]!;
+            return (
+              <TableRow key={t.id}>
+                <TableCell primary>
+                  <span className="font-mono text-caption font-normal">{t.id}</span>
+                </TableCell>
+                <TableCell>{t.scene}</TableCell>
+                <TableCell>
+                  <Status tone={t.ok ? "success" : "danger"}>{t.ok ? "Kept" : "Clipped"}</Status>
+                </TableCell>
+                <TableCell numeric>{t.seconds} s</TableCell>
+                <TableCell numeric>
+                  <time dateTime={t.at}>{shortDate(t.at)}</time>
+                </TableCell>
+              </TableRow>
+            );
+          }}
+        </TableVirtualBody>
+      </Table>
+    </div>
+  );
+}
+
+type ExportStatus = "Done" | "Queued" | "Failed" | "Draft";
+type Export = { id: string; take: string; status: ExportStatus; mb: number; at: string };
+
+const EXPORTS: Export[] = [
+  { id: "EXP-0412", take: "Mix · take_04", status: "Queued", mb: 48, at: "2026-10-24" },
+  { id: "EXP-0411", take: "Scene 12 stems", status: "Done", mb: 192, at: "2026-10-15" },
+  { id: "EXP-0410", take: "dawn_chorus.wav", status: "Failed", mb: 436, at: "2026-10-01" },
+  { id: "EXP-0409", take: "Room tone, kitchen", status: "Draft", mb: 17, at: "2026-11-05" },
+  { id: "EXP-0408", take: "Scene 11 stems", status: "Done", mb: 168, at: "2026-09-30" },
+  { id: "EXP-0407", take: "Mix · take_02", status: "Done", mb: 41, at: "2026-09-15" },
+  { id: "EXP-0406", take: "Foley, Scene 9", status: "Failed", mb: 74, at: "2026-09-20" },
+  { id: "EXP-0405", take: "Sound report, Card A", status: "Done", mb: 1, at: "2026-09-01" },
+];
+
+const EXPORT_TONE: Record<ExportStatus, Tone> = { Done: "success", Queued: "neutral", Failed: "danger", Draft: "neutral" };
+const EXPORT_FILTERS = ["All", "Done", "Queued", "Failed"] as const;
+type ExportFilter = (typeof EXPORT_FILTERS)[number];
+type ExportSortKey = "mb" | "at";
+
+function ExportsDemo() {
+  const [exports, setExports] = useState<Export[]>(EXPORTS);
+  const [filter, setFilter] = useState<ExportFilter>("All");
+  const [sort, setSort] = useState<{ key: ExportSortKey; direction: Direction } | null>(null);
+
+  const shown = exports
+    .filter((x) => filter === "All" || x.status === filter)
+    .sort((a, b) => {
+      if (!sort) return 0;
+      const order = sort.key === "mb" ? a.mb - b.mb : a.at.localeCompare(b.at);
+      return sort.direction === "ascending" ? order : -order;
+    });
+
+  const press = (key: ExportSortKey) =>
+    setSort((s) =>
+      s?.key !== key ? { key, direction: "ascending" } : s.direction === "ascending" ? { key, direction: "descending" } : null,
+    );
+  const sortOf = (key: ExportSortKey) => (sort?.key === key ? sort.direction : "none");
+
+  const add = () => {
+    const number = 413 + exports.length - EXPORTS.length;
+    setExports((all) => [{ id: `EXP-0${number}`, take: "Mix · take_06", status: "Draft", mb: 39, at: "2026-11-12" }, ...all]);
+    if (filter !== "All") setFilter("All");
+  };
+
+  return (
+    <div className="grid w-full max-w-3xl gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div role="group" aria-label="Filter exports" className="flex flex-wrap gap-2">
+          {EXPORT_FILTERS.map((name) => (
+            <Button
+              key={name}
+              size="sm"
+              variant={filter === name ? "secondary" : "ghost"}
+              aria-pressed={filter === name}
+              onClick={() => setFilter(name)}
+            >
+              {name}
+            </Button>
+          ))}
+        </div>
+        <div className="flex items-center gap-4">
+          <span aria-live="polite" className="text-small tabular-nums text-fg-subtle">
+            {shown.length} {shown.length === 1 ? "export" : "exports"}
+          </span>
+          <Button variant="primary" size="sm" icon={<PlusIcon />} onClick={add}>
+            New export
+          </Button>
+        </div>
+      </div>
+
+      <Table label="Exports" animateChanges className="max-h-112">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Export</TableHead>
+            <TableHead>Take</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead numeric sort={sortOf("mb")} onSort={() => press("mb")}>
+              Size
+            </TableHead>
+            <TableHead numeric sort={sortOf("at")} onSort={() => press("at")}>
+              Date
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {shown.map((x) => (
+            <TableRow key={x.id}>
+              <TableCell primary>{x.id}</TableCell>
+              <TableCell>{x.take}</TableCell>
+              <TableCell>
+                <Status tone={EXPORT_TONE[x.status]}>{x.status}</Status>
+              </TableCell>
+              <TableCell numeric>{x.mb} MB</TableCell>
+              <TableCell numeric>
+                <time dateTime={x.at}>{shortDate(x.at)}</time>
+              </TableCell>
+            </TableRow>
+          ))}
+          {shown.length === 0 && (
+            <TableEmpty columns={5} action={<Button size="sm" onClick={() => setFilter("All")}>Show all exports</Button>}>
+              No exports match this filter.
+            </TableEmpty>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+type CardRow = { id: string; name: string; format: string; takes: number; gb: number };
+
+const CARD_ROWS: CardRow[] = [
+  { id: "a", name: "Card A", format: "48 kHz · 24 bit", takes: 214, gb: 42 },
+  { id: "b", name: "Card B", format: "48 kHz · 24 bit", takes: 214, gb: 42 },
+  { id: "c", name: "Card C", format: "96 kHz · 24 bit", takes: 12, gb: 9 },
+  { id: "d", name: "Card D", format: "48 kHz · 32 bit float", takes: 0, gb: 0 },
+];
+
+function CardStatesDemo() {
+  const [state, setState] = useState<DataState>("Loading");
+  return (
+    <div className="grid w-full max-w-2xl gap-6">
+      <div role="group" aria-label="Table state" className="flex gap-2">
+        {STATES.map((name) => (
+          <Button
+            key={name}
+            size="sm"
+            variant={state === name ? "secondary" : "ghost"}
+            aria-pressed={state === name}
+            onClick={() => setState(name)}
+          >
+            {name}
+          </Button>
+        ))}
+      </div>
+
+      <Table label="Cards" busy={state === "Loading"} animateChanges>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Card</TableHead>
+            <TableHead>Format</TableHead>
+            <TableHead numeric>Takes</TableHead>
+            <TableHead numeric>Used</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {state === "Loading" && <TableSkeleton columns={["primary", "text", "number", "number"]} rows={4} />}
+          {state === "Loaded" &&
+            CARD_ROWS.map((c) => (
+              <TableRow key={c.id}>
+                <TableCell primary>{c.name}</TableCell>
+                <TableCell>{c.format}</TableCell>
+                <TableCell numeric>{c.takes}</TableCell>
+                <TableCell numeric>{c.gb} GB</TableCell>
+              </TableRow>
+            ))}
+          {state === "Empty" && (
+            <TableEmpty columns={4} action={<Button size="sm">Import card</Button>}>
+              No cards yet. A card appears here once you put it in and its takes back up.
+            </TableEmpty>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
+
+type Unit = { id: string; name: string; location: string; format: string; cards: number; freeGb: number; backup: string };
+
+const UNITS: Unit[] = [
+  { id: "u1", name: "Cart recorder", location: "Oslo", format: "48 kHz · 24 bit", cards: 2, freeGb: 86, backup: "2026-11-01" },
+  { id: "u2", name: "Bag recorder 1", location: "Berlin", format: "48 kHz · 24 bit", cards: 2, freeGb: 41, backup: "2026-11-14" },
+  { id: "u3", name: "Bag recorder 2", location: "Lisbon", format: "96 kHz · 24 bit", cards: 1, freeGb: 112, backup: "2026-12-02" },
+  { id: "u4", name: "Field recorder", location: "Milan", format: "96 kHz · 24 bit", cards: 1, freeGb: 64, backup: "2026-12-19" },
+  { id: "u5", name: "Foley recorder", location: "Madrid", format: "48 kHz · 32 bit float", cards: 1, freeGb: 120, backup: "2027-01-08" },
+];
+
+function UnitsNarrowDemo() {
+  return (
+    <Table label="Recorders" className="max-w-sm">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Recorder</TableHead>
+          <TableHead>Location</TableHead>
+          <TableHead>Format</TableHead>
+          <TableHead numeric>Cards</TableHead>
+          <TableHead numeric>Free</TableHead>
+          <TableHead numeric>Backed up</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {UNITS.map((u) => (
+          <TableRow key={u.id}>
+            <TableCell primary>{u.name}</TableCell>
+            <TableCell>{u.location}</TableCell>
+            <TableCell>{u.format}</TableCell>
+            <TableCell numeric>{u.cards}</TableCell>
+            <TableCell numeric>{u.freeGb} GB</TableCell>
+            <TableCell numeric>
+              <time dateTime={u.backup}>{shortDate(u.backup)}</time>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+
 export default function TablePage() {
   const [deployKey, replayDeploys] = useReplay();
   const [invoiceKey, resetInvoices] = useReplay();
@@ -812,6 +1381,7 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="DeployHistoryDemo"
+        byWorld={{ device: { demo: <TakeLogDemo key={deployKey} />, title: "Take log", code: "TakeLogDemo" } }}
         onReplay={replayDeploys}
         caption="Rows fade in and rise from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token, and the cascade stops counting at six. It is this page's one expressive moment. The header is sticky inside the table's region, so scroll the rows and it stays. Hover fills a row and nothing moves; on a touch screen the row you hold fills instead. Press Replay to watch it again."
       >
@@ -824,6 +1394,15 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="ManyDeploysDemo"
+        byWorld={{
+          device: {
+            demo: <ManyTakesDemo />,
+            title: "Ten thousand takes",
+            code: "ManyTakesDemo",
+            caption:
+              "Ten thousand takes, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Filter by scene, status or length from the funnels in the headers: each value says how many takes it would show, and a column that filters wears the selected segment. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every take shown, and the action bar counts them for Export. Scroll sideways: the box and the take stay put, with a hairline at their edge. Drag the edge of Scene, Card, Note or Recordist to resize it, or double click it to fit; the widths are kept for next time. The filters, the search and the sort are kept in the page address: reload, or send the link, and the same view comes back.",
+          },
+        }}
         caption="Ten thousand rows, and only the forty or so in view are drawn, between two spacers that keep the scrollbar true; scroll as fast as you like. Filter by site, status or build time from the funnels in the headers: each value says how many deploys it would show, and a column that filters wears the selected segment. Type in the search: the field never waits, because the table follows a beat behind. Tick a box, then Shift-tick another to take the range between them; the head box takes every deploy shown, and the action bar counts them. Scroll sideways: the box and the deploy stay put, with a hairline at their edge. Drag the edge of Site, Branch, Commit or Author to resize it, or double click it to fit; the widths are kept for next time. The filters, the search and the sort are kept in the page address: reload, or send the link, and the same view comes back, and Back brings the last one."
       >
         <ManyDeploysDemo />
@@ -835,6 +1414,14 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="ServerDeploysDemo"
+        byWorld={{
+          device: {
+            demo: <ServerTakesDemo key={serverKey} />,
+            code: "ServerTakesDemo",
+            caption:
+              "Fifty takes at a time from a pretend library that takes most of a second. The next page is asked for twenty rows before the end, so a steady scroll rarely reaches it; scroll fast and three skeleton rows wait at the end, still, while the table says it is loading more. Press Fail the next page, then scroll: the last row says the page did not load, with Retry. Reset starts again from nothing.",
+          },
+        }}
         onReplay={resetServer}
         replayLabel="Reset"
         caption="Fifty deploys at a time from a pretend server that takes most of a second. The next page is asked for twenty rows before the end, so a steady scroll rarely reaches it; scroll fast and three skeleton rows wait at the end, still, while the table says it is loading more. Press Fail the next page, then scroll: the last row says the page did not load, with Retry. Reset starts again from nothing."
@@ -848,6 +1435,14 @@ export default function TablePage() {
         size="lg"
         align="start"
         code="InvoicesDemo"
+        byWorld={{
+          device: {
+            demo: <ExportsDemo key={invoiceKey} />,
+            code: "ExportsDemo",
+            caption:
+              "Press Size or Date to sort. Pick a filter, or add an export. Rows slide to their new places on the responsive tier, as position only, so text never stretches. Rows that leave fade with no travel, and a new row fades in from half the travel token. The cascade above already used this page's expressive moment. Sort headers are real buttons with aria-sort.",
+          },
+        }}
         onReplay={resetInvoices}
         replayLabel="Reset"
         caption="Press Amount or Due to sort. Pick a filter, or add an invoice. Rows slide to their new places on the responsive tier, as position only, so text never stretches. Rows that leave fade with no travel, and a new row fades in from half the travel token. The cascade above already used this page's expressive moment. Sort headers are real buttons with aria-sort."
@@ -860,6 +1455,7 @@ export default function TablePage() {
         tier="responsive"
         align="start"
         code="StatesDemo"
+        byWorld={{ device: { demo: <CardStatesDemo key={stateKey} />, code: "CardStatesDemo" } }}
         onReplay={resetStates}
         replayLabel="Reset"
         caption="Loading draws surface-2 bars at the real row height, still, with no shimmer, and the table says it is busy. Loaded rows fade in on the responsive tier. Empty is one sentence and one action, left-aligned, with no illustration."
@@ -872,6 +1468,7 @@ export default function TablePage() {
         tier="instant"
         align="start"
         code="NarrowDemo"
+        byWorld={{ device: { demo: <UnitsNarrowDemo />, code: "UnitsNarrowDemo" } }}
         caption="The table keeps the width its columns need and scrolls inside its own region, so the page never scrolls sideways. Tab to the region and the arrow keys scroll it. It only takes focus when there is something to scroll, and it carries the table's name."
       >
         <NarrowDemo />

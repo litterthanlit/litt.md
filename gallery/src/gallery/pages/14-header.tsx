@@ -377,14 +377,275 @@ function HeaderTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the recorder's library, where a card's takes land ---------- */
+
+const LIBRARY_NAV = [
+  { label: "Takes", href: "/takes" },
+  { label: "Scenes", href: "/scenes" },
+  { label: "Cards", href: "/cards" },
+  { label: "Mixes", href: "/mixes" },
+];
+
+/** The library's main action: the ink key under Device. */
+function ImportButton({ primary = true }: { primary?: boolean }) {
+  return (
+    <Button variant={primary ? "primary" : undefined} size="sm" className="pointer-coarse:h-control-md pointer-coarse:px-control-pad-md">
+      Import card
+    </Button>
+  );
+}
+
+/** The demo router again, over the library's links. */
+function useLibraryRouter(initial: string) {
+  const [path, setPath] = useState(initial);
+  return {
+    links: LIBRARY_NAV.map((l) => ({ ...l, current: l.href === path })),
+    home: (e: MouseEvent) => {
+      e.preventDefault();
+      setPath("/takes");
+    },
+    renderLink: (l: HeaderLink, props: HeaderLinkProps) => (
+      <a
+        href={l.href}
+        {...props}
+        onClick={(e) => {
+          e.preventDefault();
+          setPath(l.href);
+        }}
+      />
+    ),
+    onNavigate: (l: HeaderLink) => setPath(l.href),
+  };
+}
+
+/** A take's waveform as its cover, in the ink: the same bars for the same seed, so a screenshot never changes. */
+function Waveform({ seed }: { seed: number }) {
+  const bars = Array.from({ length: 48 }, (_, i) => {
+    const h = 12 + 70 * Math.abs(Math.sin((i + 1) * seed) * Math.cos(i / (3 + seed)));
+    return { x: 16 + i * 6, h };
+  });
+  return (
+    <svg viewBox="0 0 320 200" className="absolute inset-0 size-full" aria-hidden="true" focusable="false">
+      <line x1="16" y1="100" x2="304" y2="100" className="stroke-line" vectorEffect="non-scaling-stroke" />
+      {bars.map((b) => (
+        <rect key={b.x} x={b.x} y={100 - b.h} width="3" height={b.h * 2} className="fill-fg-subtle" />
+      ))}
+    </svg>
+  );
+}
+
+const TAKES: { name: string; scene: string; seed: number }[] = [
+  { name: "take_04.wav", scene: "Scene 12 · 00M 14S 06F", seed: 1.7 },
+  { name: "take_05.wav", scene: "Scene 12 · 00M 22S 11F", seed: 2.3 },
+  { name: "room_tone_01.wav", scene: "Room tone · 01M 00S 00F", seed: 0.9 },
+  { name: "dawn_chorus.wav", scene: "Field · 12M 40S 03F", seed: 3.1 },
+];
+const SCENES = [
+  ["Scene 12", "Kitchen, two lavaliers and a boom. Eight takes, three kept."],
+  ["Room tone", "A minute of each room, at the levels the scene was recorded at."],
+  ["Field", "Dawn chorus and wind, recorded at 96 kHz for the slowed passages."],
+];
+const CARDS = [
+  ["Card A", "3H 12M left at 48 kHz · 24 bit"],
+  ["Card B", "Full, backed up 2 hours ago"],
+  ["Card C", "Empty, formatted on 14 Nov"],
+];
+
+/** The library's front page, top to bottom. Each section carries the href of the nav link that opens it. */
+function LibraryPage() {
+  return (
+    <div className="grid gap-16 px-gutter pt-16 pb-24">
+      <div className="grid max-w-[46ch] gap-4">
+        <p className="text-caption text-fg-subtle">Synced 2 minutes ago</p>
+        <h3 className="text-h1 text-fg text-balance">Every take from the field, in one library.</h3>
+        <p className="text-reading text-fg-muted">
+          Put a card in and its takes land here, named by scene, with the format they were recorded at.
+        </p>
+      </div>
+
+      <div data-section="/takes" className="grid gap-6">
+        <h3 className="text-h3 text-fg">Latest takes</h3>
+        <ul data-under-glass className="grid gap-6 @min-[32rem]:grid-cols-2 @min-[48rem]:grid-cols-4">
+          {TAKES.map((t) => (
+            <li key={t.name} className="grid gap-3">
+              <div className="litt-raised relative aspect-[8/5] overflow-hidden bg-surface-2">
+                <Waveform seed={t.seed} />
+              </div>
+              <div className="grid gap-1">
+                <p className="text-body font-title text-fg">{t.name}</p>
+                <p className="text-small tabular-nums text-fg-subtle">{t.scene}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div data-section="/scenes" className="grid gap-6">
+        <h3 className="text-h3 text-fg">Scenes</h3>
+        <ul className="grid gap-6 @min-[48rem]:grid-cols-3">
+          {SCENES.map(([title, text]) => (
+            <li key={title} className="grid content-start gap-2 border-t border-line pt-4">
+              <p className="text-body font-title text-fg">{title}</p>
+              <p className="text-small text-fg-subtle">{text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div data-section="/cards" className="grid gap-6">
+        <h3 className="text-h3 text-fg">Cards</h3>
+        <ul>
+          {CARDS.map(([title, left]) => (
+            <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
+              <span className="text-body font-title text-fg">{title}</span>
+              <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{left}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div data-section="/mixes" className="grid max-w-[46ch] gap-4">
+        <h3 className="text-h3 text-fg">Mixes</h3>
+        <p className="text-reading text-fg-muted">Mix · take_04, bounced at −14 LUFS for the edit. The stems sit beside it.</p>
+        <p className="text-small tabular-nums text-fg-subtle">mix_take_04.wav · 48 kHz · 24 bit</p>
+      </div>
+    </div>
+  );
+}
+
+function LibraryDesktopDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useLibraryRouter("/takes");
+  useStartUnderBar(frame);
+  return (
+    <Frame ref={frame} label="Take library page" className="h-120">
+      <Header
+        wordmark={<a href="/takes" onClick={router.home}>Take library</a>}
+        navLabel="Take library"
+        navFrom="sm"
+        links={router.links}
+        renderLink={router.renderLink}
+        onNavigate={router.onNavigate}
+        actions={<ImportButton />}
+      />
+      <LibraryPage />
+    </Frame>
+  );
+}
+
+function LibraryPhoneDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useLibraryRouter("/scenes");
+  useStartUnderBar(frame);
+  return (
+    <div className="mx-auto w-full max-w-sm [--gutter:var(--space-4)]">
+      <Frame ref={frame} label="Take library page, phone" className="h-136">
+        <Header
+          wordmark={<a href="/takes" onClick={router.home}>Take library</a>}
+          navLabel="Take library, phone"
+          links={router.links}
+          onNavigate={router.onNavigate}
+          actions={<ImportButton />}
+        />
+        <LibraryPage />
+      </Frame>
+    </div>
+  );
+}
+
+function LibraryCurrentDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const [path, setPath] = useState("/takes");
+  useStartUnderBar(frame);
+
+  const top = (href: string) => frame.current?.querySelector<HTMLElement>(`[data-section="${href}"]`)?.offsetTop ?? 0;
+  const room = () => parseFloat(getComputedStyle(frame.current!).scrollPaddingTop);
+  const go = (href: string) => frame.current?.scrollTo({ top: top(href) - room() });
+
+  const follow = () => {
+    const box = frame.current!;
+    const atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
+    const passed = LIBRARY_NAV.filter((l) => top(l.href) - room() <= box.scrollTop + 1);
+    setPath(atEnd ? LIBRARY_NAV[LIBRARY_NAV.length - 1]!.href : (passed[passed.length - 1]?.href ?? ""));
+  };
+
+  return (
+    <div className="grid w-full gap-4">
+      <Frame ref={frame} onScroll={follow} label="Take library page, with jump links" className="h-120">
+        <Header
+          wordmark={
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                frame.current?.scrollTo({ top: 0 });
+              }}
+            >
+              Take library
+            </a>
+          }
+          navLabel="Take library, jump links"
+          navFrom="sm"
+          links={LIBRARY_NAV.map((l) => ({ ...l, current: l.href === path }))}
+          renderLink={(l, props) => (
+            <a
+              href={l.href}
+              {...props}
+              onClick={(e) => {
+                e.preventDefault();
+                go(l.href);
+              }}
+            />
+          )}
+          onNavigate={(l) => go(l.href)}
+          actions={<ImportButton />}
+        />
+        <LibraryPage />
+      </Frame>
+      <p role="status" className="text-caption font-normal text-fg-subtle">
+        {path ? `aria-current="page" on ${LIBRARY_NAV.find((l) => l.href === path)?.label}` : "No link is current at the top of the page"}
+      </p>
+    </div>
+  );
+}
+
+function LibraryTile() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useLibraryRouter("/takes");
+  useStartUnderBar(frame);
+  return (
+    <Frame ref={frame} label="Take library page" className="h-80">
+      <Header
+        wordmark={<a href="/takes" onClick={router.home}>Take library</a>}
+        navLabel="Take library"
+        navFrom="sm"
+        links={router.links}
+        renderLink={router.renderLink}
+        onNavigate={router.onNavigate}
+        actions={<ImportButton primary={false} />}
+      />
+      <LibraryPage />
+    </Frame>
+  );
+}
+
 export default function HeaderPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<HeaderTile />}>
+    <Page meta={meta} docs={docs} tile={<HeaderTile />} tileByWorld={{ device: <LibraryTile /> }}>
       <Stage
         title="Desktop"
         tier="instant"
         size="lg"
         code="DesktopDemo"
+        byWorld={{
+          device: {
+            demo: <LibraryDesktopDemo />,
+            title: "Take library",
+            code: "LibraryDesktopDemo",
+            caption:
+              "The take library a recorder syncs to, under a glass bar: the takes blur under it as you scroll. That is the one place glass belongs in a page: it floats over content. Hover a link and it takes an fg fill and brighter text on the instant tier. The glass itself never animates. Four short links, so the nav shows from 640px wide (navFrom sm) and folds below that. Import card is the ink key.",
+          },
+        }}
         caption="The bar is glass, so the page blurs under it as you scroll. That is the one place glass belongs in a page: it floats over content. Hover a link and it takes an fg fill and brighter text on the instant tier. The glass itself never animates. This site has four short links, so the nav shows from 640px wide (navFrom sm) and folds below that."
       >
         <DesktopDemo />
@@ -395,6 +656,16 @@ export default function HeaderPage() {
         tier="responsive"
         size="lg"
         code="PhoneDemo"
+        byWorld={{
+          device: {
+            demo: (
+              <DeviceProvider mode="phone">
+                <LibraryPhoneDemo />
+              </DeviceProvider>
+            ),
+            code: "LibraryPhoneDemo",
+          },
+        }}
         caption="On a phone the nav stays behind the menu button. It does not shrink or wrap, and the button opens litt's Menu beside it, which stays anchored because its rows are already big enough for a finger. The bar stays at the top of the screen, below the safe-area inset on a notched phone, and never hides as the page scrolls. On a touch screen the links and the button are 44px tall and a pressed link fills. A check marks the page you are on, and the action stays in the bar. The header measures the frame, not the window, so this is what a phone sees."
       >
         <DeviceProvider mode="phone">
@@ -407,6 +678,7 @@ export default function HeaderPage() {
         tier="instant"
         size="lg"
         code="CurrentDemo"
+        byWorld={{ device: { demo: <LibraryCurrentDemo />, code: "LibraryCurrentDemo" } }}
         caption="Click a link and the page scrolls to its section, stopping below the bar because the frame sets scroll-padding-top. Scroll by hand and the current link follows. The header stays mounted and only current changes, which is all a router has to pass in. The current link wears the selected segment, a raised fill with a hairline, and the browser hears aria-current. At the very top no link is current. Only the fill and the color change, so no link moves or resizes."
       >
         <CurrentDemo />
