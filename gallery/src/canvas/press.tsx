@@ -27,7 +27,7 @@ const percent = (v: number) => `${v}%`;
 
 /* The gallery opens in Flat, which sets its Pill shape and a zero press depth on <html>. Neither is a theme token, so a
    nested [data-theme] does not take them back: a Press frame restates Press's own, as the registry ships it. */
-const PRESS_OWN = {
+export const PRESS_OWN = {
   "--radius-control": `${LIMITS.control}px`,
   "--radius-surface": `${shapeSurface(LIMITS.control)}px`,
   "--press-depth": "0.5px",
