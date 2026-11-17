@@ -1,21 +1,31 @@
 /**
  * Device's object, the recorder: the components repo's player brought home (litterthanlit/components,
- * src/components/device/), landscape as the player is, drawn only from Device's own tokens and litt's scales (plans/018).
+ * src/components/device/), landscape as the player is, drawn only from Device's materials (taste/litt-principles.md,
+ * Device's materials; plans/018 and plans/024, Device, phase 4). Every part carries its data-part kind.
  *
- * - A machined frame (--surface-3, a shade darker than the body in light and lighter in dark) holds the body: the
- *   aluminium plate (--canvas). The screen sits across the top in a black bezel (--field, the LCD glass).
- * - Under it, the tape: the set laid end to end, one tick each (its height seeded from its id, so a take always prints
- *   the same), the current one strong with the playhead on it. Press or drag along it to scrub.
- * - The deck: the readout, an LCD in a well (--tray), with the component's name and its count in the mono; and the
- *   dial, a cap in a collar that turns in 15° detents under the hand, a take a detent, with Previous and Next on its
- *   sides, Index on top (Home, as an iPod's Menu), Every component below (the world's gallery view) and Play at its
- *   centre, a key that latches down while it plays. Keys, a pick and Play turn it too, so it always stands at the take
- *   showing.
+ * - The frame (`frame`: --frame, lit by --frame-edge, cast by --object-cast) holds the body, the aluminium plate
+ *   (`plate`: --canvas with its grain and --plate-edge).
+ * - The screen sits across the top in a black, polished bezel (`bezel`: --bezel, --bezel-edge), with glass over it
+ *   (`glass`: --glass-sheen, the light catching it). The screen holds the take alone: no rail. The set is on Home, behind
+ *   Index and on the dial (body.rail is false).
+ * - Under it, the tape (`tape`): the set laid end to end, one tick each (its height seeded from its id, so a take always
+ *   prints the same), the current one strong with the red playhead on it. Press or drag along it to scrub.
+ * - The deck: the readout, an LCD (`lcd`: --lcd, --lcd-edge, --field-ink) in a well (`well`: --tray, --tray-shade) that
+ *   reads as a CD player's display: the chip (`chip`: a red lamp and PLAY while the set plays, the stop's square and STOP
+ *   when not), the take's name, and the take as a track number, 05 / 12. And the dial: a cap (`cap`) in a collar
+ *   (`collar`) that turns in 15° detents under the hand, a take a detent, with Previous and Next on its sides, Index on
+ *   top (Home, as an iPod's Menu), Every component below (the world's gallery view) and Play at its centre, a key (`key`)
+ *   in a well cut through the cap, that latches down while it plays. Keys, a pick and Play turn it too, so it always
+ *   stands at the take showing. Radii nest: the well at --radius-well, the glass 4px in, the chip at --radius-chip.
+ * - Orange is nowhere at rest; red is the playhead and the chip's lamp while Play runs.
  * - Things are mechanisms: the take, the playhead and the readout switch where they stand; only the dial travels, on the
  *   responsive spring (useSettle), and lands at once under reduced motion.
  * - The DOM puts the tape (the slider) and Play before the screen, so the keyboard meets the controls first; order puts
  *   the screen on top.
- * - Left out, as the plan says: sound, the player's Find and Options screens, and playing on load.
+ * - Taken out, as repeats (the components repo's subtraction): the rail inside the screen (Home and the dial hold the
+ *   set), the readout's group caption (Details says it) and the ring beside the count (the chip says it).
+ * - Left out, as the plan says: sound (plan 021), the player's Find and Options screens, and playing on load (Decision 6
+ *   is Nick's).
  */
 import { useEffect, useRef, type CSSProperties, type PointerEvent } from "react";
 import { motion, useMotionValue } from "motion/react";
@@ -46,6 +56,7 @@ function Tape({ takes, at, selector, pick, className }: Pick<PlayObjectBodyProps
   return (
     <div
       {...selector}
+      data-part="tape"
       onPointerDown={scrub}
       className={
         "relative cursor-ew-resize touch-pan-y rounded-control select-none " +
@@ -85,19 +96,29 @@ function Tape({ takes, at, selector, pick, className }: Pick<PlayObjectBodyProps
 
 /* ---------- the readout: an LCD in a well ---------- */
 
-function Readout({ readout, playing, className }: Pick<PlayObjectBodyProps, "readout"> & { playing: boolean; className: string }) {
+function Readout({ readout, playing, compact = false, className }: Pick<PlayObjectBodyProps, "readout"> & { playing: boolean; compact?: boolean; className: string }) {
   const [now, of] = readout.count.split(" / ");
   return (
-    <div {...readout.props} className={"flex min-w-0 items-center justify-between gap-6 " + className}>
-      <span className="grid min-w-0 gap-1">
-        <span className="truncate text-caption litt-legend text-fg-subtle">{readout.group ?? "Index"}</span>
-        <span className="truncate text-h1 text-fg">{readout.title}</span>
-      </span>
-      <span className="flex shrink-0 items-baseline gap-2 tabular-nums">
-        {/* A light that fires while Play runs; at rest, a dim ring. */}
-        <span className={"size-1.5 self-center rounded-pill " + (playing ? "bg-signal" : "shadow-[inset_0_0_0_1px_var(--line-strong)]")} />
-        <span className="text-display text-fg">{now}</span> <span className="text-small text-fg-subtle">/ {of}</span>
-      </span>
+    <div {...readout.props} data-part="well" className={"flex min-w-0 rounded-well bg-tray p-1 shadow-(--tray-shade) forced-colors:border " + className}>
+      <div
+        data-part="lcd"
+        className={
+          "flex min-w-0 flex-1 items-center justify-between gap-6 rounded-[calc(var(--radius-well)-4px)] bg-field [background-image:var(--lcd)] text-field-ink shadow-(--lcd-edge) forced-colors:border " +
+          (compact ? "px-3 py-2" : "px-5 py-3")
+        }
+      >
+        <span className="grid min-w-0 justify-items-start gap-1.5">
+          {/* The chip: the state, its glyph before its word. A red lamp while the set plays; the stop's square when not. */}
+          <span data-part="chip" className="inline-flex items-center gap-1.5 rounded-chip bg-chip px-1.5 py-0.5 text-caption font-label text-chip-ink uppercase">
+            {playing ? <span data-part="light" className="size-1.5 rounded-pill bg-signal forced-colors:bg-[CanvasText]" /> : <span className="size-1.5 bg-current" />}
+            {playing ? "Play" : "Stop"}
+          </span>{" "}
+          <span className={"max-w-full truncate " + (compact ? "text-body" : "text-h3")}>{readout.title}</span>
+        </span>{" "}
+        <span className="flex shrink-0 items-baseline gap-2 tabular-nums">
+          <span className={compact ? "text-h3" : "text-display"}>{now}</span> <span className="text-small text-lcd-dim">/ {of}</span>
+        </span>
+      </div>
     </div>
   );
 }
@@ -109,6 +130,7 @@ function PlayKey({ play, className, onDial = false }: { play: PlayObjectBodyProp
   return (
     <button
       {...play}
+      data-part="key"
       style={STEP}
       className={
         "grid cursor-pointer place-items-center rounded-pill " +
@@ -206,9 +228,10 @@ function Dial({ at, n, step, index, everything, turn, play }: { at: number | nul
   };
 
   return (
-    <div data-part="recorder-dial" className="relative size-36 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade)">
+    <div data-part="collar" data-recorder-dial="" className="relative size-36 shrink-0 rounded-pill bg-tray p-2 shadow-(--tray-shade)">
       <div
         ref={cap}
+        data-part="cap"
         onPointerDown={onPointerDown}
         style={STEP}
         className={
@@ -246,7 +269,7 @@ function Dial({ at, n, step, index, everything, turn, play }: { at: number | nul
           </svg>
         </a>
         {/* The centre: Play, in a well cut through the cap. */}
-        <span className="absolute inset-[30%] rounded-pill p-1 shadow-(--dial-recess)" data-play-key="">
+        <span data-part="well" className="absolute inset-[30%] rounded-pill p-1 shadow-(--dial-recess)" data-play-key="">
           <PlayKey play={play} onDial className="size-full" />
         </span>
       </div>
@@ -261,9 +284,9 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
   if (compact) {
     return (
       <div className={COMPACT_BOX}>
-        <div className="grid shrink-0 gap-2 border-b border-line bg-canvas px-gutter py-3 shadow-(--highlight)">
+        <div data-part="plate" className="grid shrink-0 gap-2 border-b border-line bg-canvas px-gutter py-3 shadow-(--plate-edge)">
           <div className="flex items-center gap-3">
-            <Readout readout={readout} playing={playing} className="min-w-0 flex-1" />
+            <Readout readout={readout} playing={playing} compact className="min-w-0 flex-1" />
             <PlayKey play={play} className="size-11 shrink-0" />
           </div>
           <Tape takes={takes} at={at} selector={selector} pick={pick} className="h-11" />
@@ -272,17 +295,21 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
       </div>
     );
   }
-  /* The frame (machined, a shade off the body, lit along its top) holds the body: the aluminium plate with its grain.
-     The screen is set into the plate; under it the tape, then the deck: the readout and the dial. */
+  /* The frame holds the body: the aluminium plate with its grain. The screen is set into the plate behind its bezel and
+     glass; under it the tape, then the deck: the readout and the dial. */
   return (
-    <div className="mx-auto flex w-full max-w-6xl min-w-0 flex-col rounded-[var(--object-radius)] bg-surface-3 p-1 shadow-[var(--highlight),var(--object-cast)]">
-      <div className="litt-grain relative isolate flex min-w-0 flex-col rounded-[calc(var(--object-radius)-4px)] bg-canvas p-3 shadow-(--highlight) [--grain-opacity:var(--object-grain)]">
-        <Tape takes={takes} at={at} selector={selector} pick={pick} className="order-2 mx-3 mt-4 h-10" />
-        <div className="order-3 flex items-center gap-10 px-6 pt-4 pb-5">
-          <Readout readout={readout} playing={playing} className="min-w-0 flex-1" />
+    <div data-part="frame" className="mx-auto flex w-full max-w-6xl min-w-0 flex-col rounded-[var(--object-radius)] p-1 [background:var(--frame)] shadow-[var(--frame-edge),var(--object-cast)] forced-colors:border">
+      <div data-part="plate" className="litt-grain relative isolate flex min-w-0 flex-col rounded-[calc(var(--object-radius)-4px)] bg-canvas p-3 shadow-(--plate-edge) [--grain-opacity:var(--object-grain)]">
+        <Tape takes={takes} at={at} selector={selector} pick={pick} className="order-2 mx-3 mt-3 h-10" />
+        <div className="order-3 flex items-center justify-between gap-10 px-6 pt-3 pb-4">
+          <Readout readout={readout} playing={playing} className="w-full max-w-xl" />
           <Dial at={at} n={takes.length} step={step} index={index} everything={everything} turn={turn} play={play} />
         </div>
-        <div className="order-1 flex">{screen}</div>
+        <div data-part="bezel" className="relative order-1 flex rounded-[calc(var(--object-radius)-16px)] bg-bezel p-2 shadow-(--bezel-edge) forced-colors:border">
+          {screen}
+          {/* The glass over the screen: a sheen where the light catches it. It takes no hand. */}
+          <span aria-hidden="true" data-part="glass" className="pointer-events-none absolute inset-2 rounded-[calc(var(--object-radius)-24px)] [background:var(--glass-sheen)]" />
+        </div>
       </div>
     </div>
   );
@@ -290,6 +317,7 @@ function DeviceBody({ takes, at, selector, pick, step, index, everything, turn, 
 
 export const device: PlayObjectBody = {
   name: "device",
-  shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[calc(var(--object-radius)-16px)] shadow-(--tray-shade)"),
+  shape: (compact) => (compact ? COMPACT_SCREEN : SCREEN_HEIGHT + " w-full rounded-[calc(var(--object-radius)-24px)]"),
+  rail: false,
   Body: DeviceBody,
 };

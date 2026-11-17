@@ -22,7 +22,8 @@
  *   not go to the last take and to Home, with aria-valuenow and the readout's count following,
  * - a take (each in the set) draws nothing inside the screen's box, or anything in the body (the object outside its
  *   screen) is filled with the accent (R6),
- * - the rail beside a take does not list the set in order with the take showing marked, and a link to
+ * - on a world in OBJECTS, a rail shows inside the screen beside a take (the screen holds the take alone, plans/024), or,
+ *   on a bare object, the rail beside a take does not list the set in order with the take showing marked, and a link to
  *   #<world>/components at its foot,
  * - Index does not go back to Home, or Home does not open the take picked,
  * - what the Dialog, Menu, Popover, Select, Context menu, Toast or Tooltip take opens, where the set holds it, (from its first button, by a click
@@ -54,7 +55,7 @@ const greyscale = get("greyscale", null);
 /* The worlds that have an object of their own: one more per object drawn (plans/018, phase 2). */
 const OBJECTS = ["device"];
 /* A string only the recorder's body ships, so --self-test can keep that chunk from loading. */
-const RECORDER_MARK = "recorder-dial";
+const RECORDER_MARK = "data-recorder-dial";
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
 function resolveTool(id) {
@@ -349,7 +350,10 @@ for (const [world, id, attribute] of RUN) {
     };
   });
   const title = await readout(pg);
-  claim(
+  /* A world with an object of its own holds the take alone on its screen (plans/024, breach 17): no rail there, and the
+     set stays on Home, behind Index (claimed below). A bare object keeps the rail. */
+  if (OBJECTS.includes(id)) claim("an object's screen holds the take alone, with no rail inside it", rail === null ? null : `${world}: a rail of ${rail.rows.length} rows inside the screen`);
+  else claim(
     "the rail lists the set, marks the take showing, and links to every component",
     rail && rail.rows.join("|") === set.join("|") && rail.current.length === 1 && title?.includes(rail.current[0]) && rail.foot.join() === `#${id}/components` ? null : `${world}: rail ${JSON.stringify(rail)}, set ${JSON.stringify(set)}, readout "${title}"`,
   );

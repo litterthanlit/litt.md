@@ -236,6 +236,29 @@ units, British with -ize. Every other world draws the shared demo, unchanged.
 
 **STOP**: Nick looks at the before and after sheet of phase 3 before phase 4 starts.
 
+### Phase 4. The recorder's body (done, 2026-11-17)
+
+Nick, on every Device page in the recorder's words: "I love it! keep going. go". The body only (breach 17); plan 021's
+sound is another agent's, and Decision 6 is still Nick's.
+
+- [x] The screen holds the take alone: the contract's rail is out of the recorder's screen (`rail: false` on the body;
+      `bare` keeps it). The set is on Home, behind Index (the top row's and the dial's) and on the dial's Previous and
+      Next. The screen sits in a black, polished bezel (`bezel`) with glass over it (`glass`, `--glass-sheen`, the one
+      token added, through Propagate, with `litt` and `device-litt` lines).
+- [x] The readout is an LCD in a well: the chip (a red lamp and PLAY while the set plays, the stop's square and STOP
+      when not), the take's name, and `05 / 12`, marked `well`, `lcd`, `chip` and `light`.
+- [x] Every part marked: `frame`, `plate`, `bezel`, `glass`, `tape`, `well`, `lcd`, `chip`, `collar`, `cap`, `key`.
+      Orange shows nowhere at rest; red is the playhead and the chip's lamp.
+- [x] Taken out, as repeats: the rail (Home holds the set), the readout's group caption (Details says it), and the
+      ring beside the count (the chip says it).
+- [x] `test:playground`'s rail claim splits: a `bare` object's rail still lists the set; a world in `OBJECTS` has no
+      rail inside its screen. `test:materials` reads the player, Home and every take, light and dark; `KNOWN` stays empty.
+- [x] Decision 6, whether Device's takes run by themselves: Nick, "6 no". Nothing plays until Play is pressed, as in
+      every world.
+
+Nick looked at the before and after sheet (2026-11-17): "6 no, keep the bezel, open the pr". The bezel stays though
+the components repo's screen has none.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
