@@ -246,18 +246,176 @@ function PlanTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): Litt cleans up a card, exports a scene and mixes a take ---------- */
+
+const CARD_A = [
+  { id: "read", label: "Read the takes on Card A" },
+  { id: "peaks", label: "Find the peaks over −1 dBFS" },
+  { id: "normalize", label: "Normalize take_02, take_04 and take_06" },
+  { id: "check", label: "Check them against the boom" },
+  { id: "slate", label: "Write the slate" },
+  { id: "offload", label: "Offload to the library" },
+  { id: "send", label: "Send the sound report to Tom" },
+];
+
+/** Frame 0 has the first step running, and each frame after finishes one more. The last frame has every step done. */
+function cardSteps(frame: number): PlanStep[] {
+  return CARD_A.map((step, i) => ({ ...step, status: i < frame ? "done" : i === frame ? "running" : "pending" }));
+}
+
+const SCENE_12 = [
+  { id: "read", label: "Read the takes of Scene 12" },
+  { id: "lay", label: "Lay up the circled takes" },
+  { id: "denoise", label: "Denoise the room tone" },
+  { id: "render", label: "Render the stems" },
+  { id: "write", label: "Write them to Card B" },
+  { id: "send", label: "Send the stems to Tom" },
+];
+
+/** Scene 12's export uses the same moments as Atlas's: the room tone is skipped, then the render fails. */
+function sceneSteps(frame: number): PlanStep[] {
+  return SCENE_12.map((step, i) => ({
+    ...step,
+    status: ATLAS_FRAMES[frame][i],
+    detail: step.id === "render" && ATLAS_FRAMES[frame][i] === "failed" ? "Export failed: Card B is full" : undefined,
+  }));
+}
+
+/** The mix plan, with the step Litt adds last. It runs on the Halo frames. */
+const MIX = [
+  { id: "read", label: "Read take_04.wav" },
+  { id: "level", label: "Level the boom and the lavs" },
+  { id: "render", label: "Render the mix" },
+  { id: "export", label: "Export Mix · take_04" },
+  { id: "send", label: "Send the mix to Ines" },
+];
+
+function mixSteps(frame: number): PlanStep[] {
+  return HALO_FRAMES[frame].map((status, i) => ({ ...MIX[i], status }));
+}
+
+function CardDemo() {
+  const frame = useFrame(CARD_A.length + 1, 1400);
+  return (
+    <div className="w-full max-w-md">
+      <Plan label="Clean up the takes on Card A" steps={cardSteps(frame)} />
+    </div>
+  );
+}
+
+function SceneFailedDemo() {
+  const frame = useFrame(ATLAS_FRAMES.length, 1400);
+  return (
+    <div className="w-full max-w-md">
+      <Plan label="Export Scene 12 for the edit" steps={sceneSteps(frame)} />
+    </div>
+  );
+}
+
+function MixPanelDemo() {
+  const frame = useFrame(HALO_FRAMES.length, 1600);
+  return (
+    <div className="@container w-full">
+      <div className="grid items-start gap-8 @2xl:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="grid content-start gap-6">
+          <p className="litt-raised ml-auto max-w-[80%] rounded-surface px-4 py-3 text-body text-fg">
+            The director wants take_04 tonight. Level the boom and the lavs and export a mix.
+          </p>
+          <p className="max-w-[68ch] text-body text-fg-muted">
+            On it. The steps are in the panel. If the export needs another one, I will add it there.
+          </p>
+        </div>
+        <div className="litt-raised rounded-surface p-4">
+          <Plan label="Mix take_04 for the director" steps={mixSteps(frame)} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CardPhoneDemo() {
+  return (
+    <div className="mx-auto w-full max-w-[22.375rem]">
+      <div className="rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line">
+        <DeviceProvider mode="phone">
+          <div className="grid gap-6">
+            <p className="litt-raised ml-auto max-w-[85%] rounded-surface px-4 py-3 text-body text-fg">Clean up the takes on Card A.</p>
+            <div className="grid gap-3">
+              <p className="text-body text-fg-muted">Here is the plan. I am on the normalize.</p>
+              <Plan
+                label="Clean up the takes on Card A"
+                steps={[
+                  { id: "read", label: "Read the takes on Card A", status: "done" },
+                  { id: "peaks", label: "Find the peaks over −1 dBFS", status: "done", detail: "3 takes clip" },
+                  { id: "normalize", label: "Normalize take_02, take_04 and take_06 to −1 dBFS", status: "running", detail: "3 takes, 06M 12S" },
+                  { id: "check", label: "Check them against the boom", status: "pending" },
+                  { id: "slate", label: "Write the slate", status: "pending" },
+                  { id: "offload", label: "Offload to the library", status: "pending" },
+                  { id: "send", label: "Send the sound report to Tom", status: "pending" },
+                ]}
+              />
+            </div>
+          </div>
+        </DeviceProvider>
+      </div>
+    </div>
+  );
+}
+
+const CARD_RUN: (Omit<PlanStep, "status"> & { doing: string; did: string; target: string; seconds: number })[] = [
+  { id: "read", label: "Read the takes on Card A", doing: "Reading", did: "Read", target: "take_04.wav", seconds: 0.2 },
+  { id: "peaks", label: "Find the peaks over −1 dBFS", doing: "Searching", did: "Searched", target: "peaks over −1 dBFS", seconds: 1.4 },
+  { id: "normalize", label: "Normalize the takes that clip", doing: "Running", did: "Ran", target: "rec normalize --card A", seconds: 4.2 },
+  { id: "offload", label: "Offload to the library", doing: "Offloading", did: "Offloaded", target: "Card A to the library", seconds: 31 },
+];
+
+/** While the pointer rests on the tile, the plan works through its steps with a tool call for each, holds the finished
+    turn, then starts again. At rest it shows the finished plan. */
+function CardPlanTile() {
+  const total = CARD_RUN.length + 2; // each step, then two beats on the finished plan
+  const [ref, step] = useLoop<HTMLDivElement>(total, 1400, CARD_RUN.length);
+  const steps: PlanStep[] = CARD_RUN.map(({ id, label }, i) => ({ id, label, status: i < step ? "done" : i === step ? "running" : "pending" }));
+  return (
+    <div ref={ref} className="grid w-full max-w-md gap-6">
+      <Plan label="Clean up the takes on Card A" steps={steps} />
+      <div className="grid min-h-44 content-start gap-1 border-t border-line pt-4">
+        {CARD_RUN.slice(0, step + 1).map((s, i) =>
+          i < step ? (
+            <ToolCall key={s.id} status="done" action={s.did} target={s.target} duration={s.seconds} />
+          ) : (
+            <ToolCall key={s.id} status="running" action={s.doing} target={s.target} />
+          ),
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function PlanPage() {
   const [moveKey, replayMove] = useReplay();
   const [failedKey, replayFailed] = useReplay();
   const [panelKey, replayPanel] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<PlanTile />}>
+    <Page meta={meta} docs={docs} tile={<PlanTile />} tileByWorld={{ device: <CardPlanTile /> }}>
       <Stage
         title="Moving a site, step by step"
         tier="instant"
         size="lg"
         code="MoveDemo"
         onReplay={replayMove}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={moveKey} className="w-full">
+                <CardDemo />
+              </div>
+            ),
+            title: "Cleaning up a card, step by step",
+            code: "CardDemo",
+            caption:
+              "Litt works through Card A one step at a time. When a status changes, the mark swaps at once and only its tones fade, on the instant tier. The running step is full strength with a half-filled circle that never spins. A done step steps back to the muted ink with a check, and is never struck through. The count and the rail move together, and the rail jumps with no tween. A screen reader hears the step as it starts.",
+          },
+        }}
         caption="Litt works through the Northwind move one step at a time. When a status changes, the mark swaps at once and only its colors fade, on the instant tier. The running step is full strength with a half-filled circle that never spins. A done step steps back to the muted color with a check, and is never struck through. The count and the rail move together, and the rail jumps with no tween. A screen reader hears the step as it starts."
       >
         <div key={moveKey} className="w-full">
@@ -271,6 +429,18 @@ export default function PlanPage() {
         size="lg"
         code="FailedDemo"
         onReplay={replayFailed}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={failedKey} className="w-full">
+                <SceneFailedDemo />
+              </div>
+            ),
+            code: "SceneFailedDemo",
+            caption:
+              "Litt skips the room tone because Scene 12 has none, then the render fails. A skipped step is a dashed circle with Skipped in words. A failed step has the x in red, the one place Device lets a fault show, keeps its label in the foreground and says Failed, with the reason on a detail line in the label's column. Neither counts as done, so the count stops at 2 of 6. A screen reader hears the failure when it happens.",
+          },
+        }}
         caption="Litt skips the video step because the site has none, then the build fails. A skipped step is a dashed circle with Skipped in words. A failed step has the x in danger, keeps its label in the foreground and says Failed, with the reason on a detail line in the label's column. Neither counts as done, so the count stops at 2 of 6. A screen reader hears the failure when it happens. Status color stays on the icon."
       >
         <div key={failedKey} className="w-full">
@@ -285,6 +455,18 @@ export default function PlanPage() {
         align="start"
         code="PanelDemo"
         onReplay={replayPanel}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={panelKey} className="w-full">
+                <MixPanelDemo />
+              </div>
+            ),
+            code: "MixPanelDemo",
+            caption:
+              "The plan sits in a raised panel next to the chat. The panel is the caller's, and the plan inside it is the same bare list. While the mix exports, Litt adds a last step, so the total goes from 4 to 5. The new step fades in on the responsive tier with a quarter of the travel token, and the steps above it do not move. Steps that were there from the start never animate.",
+          },
+        }}
         caption="The plan sits in a raised panel next to the chat. The panel is the caller's, and the plan inside it is the same bare list. While the preview publishes, Litt adds a last step, so the total goes from 4 to 5. The new step fades in on the responsive tier with a quarter of the travel token, and the steps above it do not move. Steps that were there from the start never animate."
       >
         <div key={panelKey} className="w-full">
@@ -297,6 +479,7 @@ export default function PlanPage() {
         tier="instant"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <CardPhoneDemo />, code: "CardPhoneDemo" } }}
         caption="On a phone the plan sits bare in the agent's turn, with no card of its own. A long label wraps under its first line, and a detail line stays in the label's column. Nothing here takes a tap, so nothing grows on touch."
       >
         <PhoneDemo />

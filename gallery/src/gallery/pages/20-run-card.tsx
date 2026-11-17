@@ -270,16 +270,171 @@ function RunTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): Litt mixes a take, offloads a card and exports a scene ---------- */
+
+const MIX = [
+  { id: "level", label: "Levelling the channels" },
+  { id: "render", label: "Rendering the mix" },
+  { id: "write", label: "Writing take_04_mix.wav" },
+];
+
+/** How far the mix has got at each step: 12% into the first, then on through the others, then done. */
+const MIX_PROGRESS = [0.12, 0.45, 0.78, 1];
+
+function mixSteps(at: number): PlanStep[] {
+  return MIX.map((step, i) => ({ ...step, status: i < at ? "done" : i === at ? "running" : "pending" }));
+}
+
+const CARD_A: PlanStep[] = [
+  { id: "verify", label: "Verify the checksums", status: "done" },
+  { id: "copy", label: "Copy 24 takes to the library", status: "running", detail: "13 of 24" },
+  { id: "sync", label: "Sync to the studio", status: "pending" },
+];
+
+const SCENE_12 = [
+  { id: "read", label: "Read the takes of Scene 12" },
+  { id: "render", label: "Render the stems" },
+  { id: "write", label: "Write them to Card B" },
+];
+
+function sceneSteps(retried: boolean): PlanStep[] {
+  const status: StepStatus[] = retried ? ["done", "running", "pending"] : ["done", "failed", "pending"];
+  return SCENE_12.map((step, i) => ({
+    ...step,
+    status: status[i],
+    detail: !retried && step.id === "render" ? "Export failed: Card B is full" : undefined,
+  }));
+}
+
+/* What the mix has rendered so far: a waveform of 60 bars, drawn up to the share each step has reached. */
+const WAVE = Array.from({ length: 60 }, (_, i) => Math.round((0.18 + 0.8 * Math.abs(Math.sin(i * 0.37) * Math.cos(i * 0.11))) * 100) / 100);
+const WAVE_SHARE = [0.2, 0.55, 0.85, 1];
+const WAVE_SAID = ["the first 20% levelled", "the mix rendered to 55%", "the mix rendered, 85% written", "the whole mix, 02M 14S 06F"];
+
+function MixPreview({ at }: { at: number }) {
+  const drawn = Math.round(WAVE.length * WAVE_SHARE[at]);
+  return (
+    <svg
+      viewBox="0 0 240 150"
+      role="img"
+      aria-label={`Preview of the mix: ${WAVE_SAID[at]}`}
+      className="block h-auto w-full rounded-control bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
+    >
+      <line x1={0} x2={240} y1={75} y2={75} strokeWidth={1} className="stroke-line" />
+      {WAVE.map((a, i) => {
+        const h = Math.round(a * 110 * 100) / 100;
+        return (
+          <rect
+            key={i}
+            x={Math.round((4 + i * 3.87) * 100) / 100}
+            y={Math.round((75 - h / 2) * 100) / 100}
+            width={2}
+            height={h}
+            className={i < drawn ? "fill-fg-muted" : "fill-[color-mix(in_oklab,var(--fg)_14%,transparent)]"}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
+function MixDemo() {
+  const [at, setAt] = useState(0);
+  const finished = at === MIX.length;
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <RunCard title="Mixing take_04" steps={mixSteps(at)} progress={MIX_PROGRESS[at]} preview={<MixPreview at={at} />} />
+      <div>
+        <Button size="sm" onClick={() => setAt(finished ? 0 : at + 1)}>
+          {finished ? "Start again" : "Next step"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function OffloadDockedDemo() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <p className="litt-raised ml-auto max-w-[80%] px-4 py-3 text-body text-fg">Offload Card A once the last take is in.</p>
+      <p className="text-body text-fg-muted">On it. The run sits on the box, so you can keep writing.</p>
+      {/* Writing folds the run away; the block opens it again. */}
+      <div className="grid gap-2" onFocusCapture={(e) => e.target instanceof HTMLTextAreaElement && setOpen(false)}>
+        <RunCard title="Offloading Card A" steps={CARD_A} progress={0.52} open={open} onOpenChange={setOpen} />
+        <Composer placeholder="Message Litt" label="Message Litt" className="w-full" />
+      </div>
+    </div>
+  );
+}
+
+function MixEndingsDemo() {
+  const [retried, setRetried] = useState(false);
+  return (
+    <div className="@container w-full">
+      <div className="grid items-start gap-4 @4xl:grid-cols-2">
+        <RunCard title="Mixing take_04" steps={mixSteps(3)} preview={<MixPreview at={3} />} />
+        <RunCard
+          title="Exporting Scene 12"
+          steps={sceneSteps(retried)}
+          progress={retried ? 0.5 : 0.4}
+          actions={
+            !retried && (
+              <Button variant="ghost" size="sm" onClick={() => setRetried(true)}>
+                Retry
+              </Button>
+            )
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
+function MixPhoneDemo() {
+  return (
+    <div className="mx-auto w-full max-w-[22.375rem]">
+      <div className="rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line">
+        <DeviceProvider mode="phone">
+          <div className="grid gap-6">
+            <p className="litt-raised ml-auto max-w-[85%] px-4 py-3 text-body text-fg">Mix take_04 with the boom up and the lavs under it.</p>
+            <div className="grid gap-3">
+              <p className="text-body text-fg-muted">Here it comes. I am rendering the mix.</p>
+              <RunCard title="Mixing take_04" steps={mixSteps(1)} progress={MIX_PROGRESS[1]} preview={<MixPreview at={1} />} />
+            </div>
+          </div>
+        </DeviceProvider>
+      </div>
+    </div>
+  );
+}
+
+function MixRunTile() {
+  return (
+    <div className="w-full max-w-md">
+      <RunCard title="Mixing take_04" steps={mixSteps(0)} progress={MIX_PROGRESS[0]} />
+    </div>
+  );
+}
+
 export default function RunCardPage() {
   const [endingsKey, resetEndings] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<RunTile />}>
+    <Page meta={meta} docs={docs} tile={<RunTile />} tileByWorld={{ device: <MixRunTile /> }}>
       <Stage
         title="A run in progress"
         tier="responsive"
         size="lg"
         align="start"
         code="WorldDemo"
+        byWorld={{
+          device: {
+            demo: <MixDemo />,
+            code: "MixDemo",
+            caption:
+              "Litt is mixing take_04 in three steps, and the preview draws the waveform as far as it has rendered. Press Next step and the run moves on: the step's mark swaps at once, the figure rolls on the responsive tier, and the ring lights its next ticks at once. Press Hide and the steps leave on the exit token, then the card becomes a raised block: the ring travels from the end of the header to the start of the block, and the title, the words and the figure glide to their seats, on the responsive tier. The height snaps. Press the block and it all goes back, the steps dropping in a quarter of the travel token.",
+          },
+        }}
         caption="Litt is creating a world in three steps. Press Next step and the run moves on: the step's mark swaps at once, the figure rolls on the responsive tier, and the ring lights its next ticks at once. Press Hide and the steps leave on the exit token, then the card becomes a raised block: the ring travels from the end of the header to the start of the block, and the title, the words and the figure glide to their seats, on the responsive tier. The height snaps. Press the block and it all goes back, the steps dropping in a quarter of the travel token."
       >
         <WorldDemo />
@@ -291,6 +446,7 @@ export default function RunCardPage() {
         size="lg"
         align="start"
         code="DockedDemo"
+        byWorld={{ device: { demo: <OffloadDockedDemo />, code: "OffloadDockedDemo" } }}
         caption="The chat holds the card's open state, so it can fold the run away when the person goes to write, and the block opens it again. Folded, the run is one raised block the width of its words, at the control radius, and it sinks half a pixel when pressed, on the instant tier. Open, it is the flat card. The material swaps at once, because a press does, and only the parts glide."
       >
         <DockedDemo />
@@ -303,6 +459,18 @@ export default function RunCardPage() {
         code="EndingsDemo"
         onReplay={resetEndings}
         replayLabel="Reset"
+        byWorld={{
+          device: {
+            demo: (
+              <div key={endingsKey} className="w-full">
+                <MixEndingsDemo />
+              </div>
+            ),
+            code: "MixEndingsDemo",
+            caption:
+              "A finished run says Done and its ring is full. A failed run says which step failed, its lit ticks take the red Device keeps for a fault, as the Plan's x does, and the step gives the reason in its detail line. Retry is the caller's, in the actions slot. When the render runs again, the words go back to Step 2 of 3 at once and the live region says so.",
+          },
+        }}
         caption="A finished run says Done and its ring is full. A failed run says which step failed, its lit ticks take the danger color as the Plan's x does, and the step gives the reason in its detail line. Retry is the caller's, in the actions slot. When the build runs again, the words go back to Step 2 of 3 at once and the live region says so."
       >
         <div key={endingsKey} className="w-full">
@@ -315,6 +483,7 @@ export default function RunCardPage() {
         tier="responsive"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <MixPhoneDemo />, code: "MixPhoneDemo" } }}
         caption="On a narrow card the header takes two rows, the title beside Hide and then the ring, the words and the figure, and the preview moves under the steps. Hide grows to 44px for a finger. Folded, the whole block is the target, 44px tall, and on a phone the word Expand gives its room to the title while the chevron stays. A screen reader still hears Expand."
       >
         <PhoneDemo />

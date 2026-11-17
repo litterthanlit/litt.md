@@ -492,15 +492,387 @@ function ProfileTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a recorder's repair form, its library settings and sign-in ---------- */
+
+const REPAIR_IDS = {
+  name: "repair-name",
+  email: "repair-email",
+  serial: "repair-serial",
+  fault: "repair-fault",
+  detail: "repair-detail",
+  consent: "repair-consent",
+} as const;
+type RepairField = keyof typeof REPAIR_IDS;
+type RepairValues = { name: string; email: string; serial: string; fault: string; detail: string; consent: boolean };
+type RepairErrors = Partial<Record<RepairField, string>>;
+
+const REPAIR_FIELDS = Object.keys(REPAIR_IDS) as RepairField[];
+const NO_REPAIR: RepairValues = { name: "", email: "", serial: "", fault: "", detail: "", consent: false };
+
+/** What is wrong with one field of the repair form, or nothing. Each message says how to fix it. */
+function checkRepair(field: RepairField, v: RepairValues): string | undefined {
+  switch (field) {
+    case "name":
+      return v.name.trim() ? undefined : "Enter your name so we know who to reply to.";
+    case "email":
+      if (!v.email.trim()) return "Enter your email so we can reply.";
+      return EMAIL.test(v.email.trim()) ? undefined : "Use a full address, like ana@example.com.";
+    case "fault":
+      return v.fault ? undefined : "Pick the one that is closest.";
+    case "detail":
+      return v.detail.trim().length >= 40 ? undefined : "Add a little more: what happens, on which input and since when.";
+    case "consent":
+      return v.consent ? undefined : "Tick the box so we know we can reply.";
+    default:
+      return undefined;
+  }
+}
+
+function RepairDemo() {
+  const [values, setValues] = useState<RepairValues>(NO_REPAIR);
+  const [errors, setErrors] = useState<RepairErrors>({});
+  const [failedSubmits, setFailedSubmits] = useState(0);
+  const { saving, save } = useSave(() =>
+    toast({ title: "Report sent", description: "We reply within a working day.", tone: "success" }),
+  );
+
+  /* A field that is already wrong is checked again as it changes, so fixing it clears it. */
+  const change = (key: RepairField, value: string | boolean) => {
+    const next = { ...values, [key]: value };
+    setValues(next);
+    if (errors[key]) setErrors({ ...errors, [key]: checkRepair(key, next) });
+  };
+
+  const send = (e: FormEvent) => {
+    e.preventDefault();
+    if (saving) return;
+    const found: RepairErrors = {};
+    for (const key of REPAIR_FIELDS) {
+      const message = checkRepair(key, values);
+      if (message) found[key] = message;
+    }
+    setErrors(found);
+    if (Object.keys(found).length) return setFailedSubmits((n) => n + 1);
+    save(); // the values stay in the form
+  };
+
+  const summary = REPAIR_FIELDS.filter((key) => errors[key]).map((key) => ({ id: REPAIR_IDS[key], message: errors[key] }));
+
+  return (
+    <form onSubmit={send} noValidate aria-label="Report a fault" className="grid w-full max-w-100 gap-6">
+      <ErrorSummary errors={summary} focusKey={failedSubmits} />
+      <TextField
+        id={REPAIR_IDS.name}
+        label="Name"
+        autoComplete="name"
+        value={values.name}
+        error={errors.name}
+        onChange={(e) => change("name", e.target.value)}
+      />
+      <TextField
+        id={REPAIR_IDS.email}
+        label="Email"
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        value={values.email}
+        error={errors.email}
+        onChange={(e) => change("email", e.target.value)}
+      />
+      <TextField
+        id={REPAIR_IDS.serial}
+        label={
+          <>
+            Serial number
+            <Optional />
+          </>
+        }
+        spellCheck={false}
+        value={values.serial}
+        onChange={(e) => change("serial", e.target.value)}
+      />
+      <RadioGroup
+        legend="What happens"
+        className="my-6"
+        value={values.fault}
+        onValueChange={(v) => change("fault", v)}
+        error={errors.fault}
+      >
+        <Radio id={REPAIR_IDS.fault} value="power" label="It won't power on" />
+        <Radio value="noise" label="Noise on an input" />
+        <Radio value="card" label="Card errors" />
+      </RadioGroup>
+      <Textarea
+        id={REPAIR_IDS.detail}
+        label="The fault"
+        rows={5}
+        help="What happens, on which input and since when."
+        value={values.detail}
+        error={errors.detail}
+        onChange={(e) => change("detail", e.target.value)}
+      />
+      <Checkbox
+        id={REPAIR_IDS.consent}
+        label="The service team may email me about this repair"
+        checked={values.consent}
+        invalid={!!errors.consent}
+        description={errors.consent}
+        onChange={(e) => change("consent", e.target.checked)}
+      />
+      <Button type="submit" variant="primary" block loading={saving}>
+        Send report
+      </Button>
+    </form>
+  );
+}
+
+type LibrarySettings = {
+  name: string;
+  email: string;
+  production: string;
+  notes: string;
+  street: string;
+  city: string;
+  postcode: string;
+  role: string;
+  offloads: boolean;
+  digest: boolean;
+  theme: Theme;
+  hold: number;
+};
+type LibraryTextKey = "name" | "email" | "production" | "notes" | "street" | "city" | "postcode";
+
+const RECORDIST: LibrarySettings = {
+  name: "Ana Ruiz",
+  email: "ana@example.com",
+  production: "The Long Field",
+  notes: "Boom on channel 1, lavs on 2 and 3, room pair on 4 and 5. 48 kHz · 24 bit, 25 fps timecode.",
+  street: "Bryggen 4",
+  city: "Bergen",
+  postcode: "5003",
+  role: "mixer",
+  offloads: true,
+  digest: false,
+  theme: "system",
+  hold: 1,
+};
+
+function LibrarySettingsDemo() {
+  const [saved, setSaved] = useState(RECORDIST);
+  const [values, setValues] = useState(RECORDIST);
+  const { saving, save } = useSave(() => {
+    setSaved(values);
+    toast({ title: "Settings saved", description: "The next sound report uses them.", tone: "success" });
+  });
+
+  /* A change to one setting that keeps the rest. */
+  const set =
+    <K extends keyof LibrarySettings>(key: K) =>
+    (value: LibrarySettings[K]) =>
+      setValues({ ...values, [key]: value });
+
+  /* The props every text field and textarea shares: its value, and a change that keeps the rest. */
+  const text = (key: LibraryTextKey) => ({
+    value: values[key],
+    onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => set(key)(e.target.value),
+  });
+
+  return (
+    <form
+      noValidate
+      aria-label="Library settings"
+      className="w-full max-w-3xl"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!saving) save();
+      }}
+    >
+      <FormSection title="Slate" description="Written on every take's slate and on the sound report.">
+        <TextField label="Recordist" autoComplete="name" {...text("name")} />
+        <TextField label="Email" type="email" inputMode="email" autoComplete="email" {...text("email")} />
+        <SelectField
+          label="Role"
+          name="role"
+          value={values.role}
+          onValueChange={set("role")}
+          options={[
+            { value: "mixer", label: "Production mixer" },
+            { value: "boom", label: "Boom operator" },
+            { value: "assistant", label: "Sound assistant" },
+            { value: "post", label: "Post supervisor" },
+          ]}
+        />
+      </FormSection>
+
+      <FormSection title="Sound report" description="What post reads with every card you hand over.">
+        <TextField label="Production" spellCheck={false} {...text("production")} />
+        <Textarea label="Notes" rows={4} help="Printed at the top of the report. Keep it to the routing and the format." {...text("notes")} />
+        <Fieldset legend="Return address" description="Where post sends the cards back.">
+          <TextField label="Street" autoComplete="address-line1" {...text("street")} />
+          <TextField label="City" autoComplete="address-level2" {...text("city")} />
+          <TextField label="Postcode" autoComplete="postal-code" {...text("postcode")} />
+        </Fieldset>
+      </FormSection>
+
+      <FormSection title="Notifications" description="What we email you about. Each switch takes effect when you save.">
+        {/* rows: the switches carry their own padding, so they sit flush as one list with hairlines between them. */}
+        <Fieldset legend="Email" rows>
+          <Switch
+            align="end"
+            name="offloads"
+            label="Email me when an offload finishes"
+            checked={values.offloads}
+            onCheckedChange={set("offloads")}
+          />
+          <Switch
+            align="end"
+            name="digest"
+            label="Weekly digest"
+            description="A Monday email with the week's takes and cards."
+            checked={values.digest}
+            onCheckedChange={set("digest")}
+          />
+        </Fieldset>
+      </FormSection>
+
+      <FormSection title="Appearance" description="How the library looks to you. It does not change the recorder.">
+        <Segmented
+          legend="Theme"
+          showLegend
+          value={values.theme}
+          onValueChange={set("theme")}
+          options={[
+            { value: "system", label: "System" },
+            { value: "light", label: "Light" },
+            { value: "dark", label: "Dark" },
+          ]}
+        />
+        <Slider
+          label="Peak hold"
+          name="hold"
+          min={0.5}
+          max={2}
+          step={0.1}
+          value={values.hold}
+          onValueChange={set("hold")}
+          minLabel="Shorter"
+          maxLabel="Longer"
+          formatValue={(v) => `${v.toFixed(1)} s`}
+        />
+      </FormSection>
+
+      <FormActions align="fields" className="mt-12">
+        <Button type="submit" variant="primary" loading={saving}>
+          Save changes
+        </Button>
+        <Button variant="ghost" disabled={saving} onClick={() => setValues(saved)}>
+          Cancel
+        </Button>
+      </FormActions>
+    </form>
+  );
+}
+
+/** What is wrong with each field of the library's sign-in. A field with nothing wrong has no message. */
+function checkLibrarySignIn(v: SignIn): Partial<Record<keyof SignIn, string>> {
+  return {
+    email: !v.email.trim() ? "Enter your email." : EMAIL.test(v.email.trim()) ? undefined : "Use a full address, like ana@example.com.",
+    password: v.password ? undefined : "Enter your password.",
+  };
+}
+
+function LibrarySignInDemo() {
+  const form = useRef<HTMLFormElement>(null);
+  const [values, setValues] = useState<SignIn>({ email: "", password: "" });
+  const [errors, setErrors] = useState<Partial<Record<keyof SignIn, string>>>({});
+  const [failedSubmits, setFailedSubmits] = useState(0);
+  const [signedIn, setSignedIn] = useState(false);
+  const { saving, save } = useSave(() => setSignedIn(true));
+
+  /* Two fields are too few for a summary. Once the errors have rendered, focus the first invalid field. */
+  useEffect(() => {
+    if (failedSubmits) focusFirstInvalid(form.current);
+  }, [failedSubmits]);
+
+  const change = (key: keyof SignIn, value: string) => {
+    const next = { ...values, [key]: value };
+    setValues(next);
+    if (errors[key]) setErrors({ ...errors, [key]: checkLibrarySignIn(next)[key] });
+  };
+
+  return (
+    <form
+      ref={form}
+      noValidate
+      aria-label="Sign in"
+      className="grid w-full max-w-100 gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (saving) return;
+        setSignedIn(false);
+        const found = checkLibrarySignIn(values);
+        setErrors(found);
+        if (found.email || found.password) return setFailedSubmits((n) => n + 1);
+        save();
+      }}
+    >
+      <TextField
+        label="Email"
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        value={values.email}
+        error={errors.email}
+        onChange={(e) => change("email", e.target.value)}
+      />
+      <TextField
+        label="Password"
+        type="password"
+        autoComplete="current-password"
+        value={values.password}
+        error={errors.password}
+        onChange={(e) => change("password", e.target.value)}
+      />
+      <Button type="submit" variant="primary" block loading={saving}>
+        Sign in
+      </Button>
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {signedIn ? "Signed in. A real form would open your library now." : ""}
+      </p>
+    </form>
+  );
+}
+
+/** One section of the library's settings: its title and line on one side, its fields on the other. */
+function SlateTile() {
+  return (
+    <div className="w-full max-w-md">
+      <FormSection title="Slate" description="Written on every take's slate and on the sound report." headingLevel={3}>
+        <TextField label="Recordist" autoComplete="name" defaultValue="Ana Ruiz" />
+        <TextField label="Email" type="email" inputMode="email" autoComplete="email" defaultValue="ana@example.com" />
+      </FormSection>
+    </div>
+  );
+}
+
 export default function FormPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ProfileTile />}>
+    <Page meta={meta} docs={docs} tile={<ProfileTile />} tileByWorld={{ device: <SlateTile /> }}>
       <Toaster>
         <Stage
           title="Start a project"
           tier="expressive"
           align="start"
           code="StartProjectDemo"
+          byWorld={{
+            device: {
+              demo: <RepairDemo />,
+              title: "Report a fault",
+              code: "RepairDemo",
+              caption:
+                "A narrow column of md fields, a consent box above a full-width lg submit. Send it empty: each wrong field shows its error under it, and the summary on top takes focus. Its links move focus to the fields. Typing in a wrong field checks it again, so its error and its summary line clear as soon as the value is fine. A good send shows the button's loading state, then a toast, and keeps what you typed.",
+            },
+          }}
           caption="A narrow column of md fields, a consent box above a full-width lg submit. Send it empty: each wrong field shows its error under it, and the summary on top takes focus. Its links move focus to the fields. Typing in a wrong field checks it again, so its error and its summary line clear as soon as the value is fine. A good send shows the button's loading state, then a toast, and keeps what you typed."
         >
           <StartProjectDemo />
@@ -511,6 +883,7 @@ export default function FormPage() {
           tier="instant"
           align="start"
           code="SettingsDemo"
+          byWorld={{ device: { demo: <LibrarySettingsDemo />, code: "LibrarySettingsDemo" } }}
           caption="From 1024 up each section's title and description take the left third and the fields the rest. Below that they stack. A hairline and 48px of air separate sections, and a group of fields sits 48px from its neighbours. The two switches are one list: a Fieldset with rows puts a hairline between them and at both ends. Save is lg and primary, then a ghost Cancel. From 1024 up they line up with the fields. Below 640 they stack full width with Save on top. Cancel puts back every saved value, the select, switches and slider included."
         >
           <SettingsDemo />
@@ -521,6 +894,7 @@ export default function FormPage() {
           tier="instant"
           align="start"
           code="SignInDemo"
+          byWorld={{ device: { demo: <LibrarySignInDemo />, code: "LibrarySignInDemo" } }}
           caption="Two fields are too few for a summary, so the errors stay under the fields and focus lands on the first invalid one. Send it empty and focus goes to Email. Fill in the email and send again, and focus goes to Password."
         >
           <SignInDemo />

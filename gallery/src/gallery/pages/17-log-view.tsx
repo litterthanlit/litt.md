@@ -114,6 +114,62 @@ function FailedDemo() {
   return <LogView label="Deploy log" lines={FAILED} wrap lineNumbers={false} height="auto" className="w-full max-w-3xl" />;
 }
 
+/* ---------- Device's own (plans/024, phase 3): a card offloaded to the library, and an export that stopped ---------- */
+
+const OFFLOAD: LogLine[] = [
+  { text: "Card A mounted: SDXC, 128 GB, 24 takes" },
+  { text: "Read the card's index in 412 ms", level: "debug" },
+  { text: "Copying to Library / Scene 12 (18.6 GB)" },
+  { text: "take_01.wav · 48 kHz · 24 bit · 00M 42S 11F" },
+  { text: "take_02.wav · 48 kHz · 24 bit · 01M 06S 03F" },
+  { text: "take_03.wav · 48 kHz · 24 bit · 00M 58S 20F" },
+  { text: "take_04.wav · 48 kHz · 24 bit · 02M 14S 06F" },
+  { text: "take_05.wav · 48 kHz · 24 bit · 00M 31S 17F" },
+  { text: "take_06.wav · 48 kHz · 24 bit · 01M 49S 02F" },
+  { text: "take_07.wav clips at −0.1 dBFS for 12 ms; copied as it is.", level: "warn" },
+  { text: "take_08.wav · 48 kHz · 24 bit · 00M 27S 09F" },
+  { text: "take_09 to take_24 copied: 16 takes, 11.2 GB" },
+  { text: "Checking checksums ..." },
+  { text: "Checksums match: 24 of 24", level: "debug" },
+  { text: "Slate written: Scene 12, Card A, 17 Nov" },
+  { text: "Waveforms drawn for 24 takes" },
+  { text: "Offload complete in 2M 14S. Card A is safe to format.", level: "success" },
+];
+
+/** A card offloaded to the library: the lines arrive unevenly, as a real copy writes them. */
+function OffloadDemo() {
+  const [lines, setLines] = useState<LogLine[]>([]);
+  useEffect(() => {
+    let i = 0;
+    let at = 3;
+    let timer = 0;
+    const next = () => {
+      const line = OFFLOAD[i];
+      if (!line) return;
+      at += 0.4 + (i % 4) * 0.6;
+      setLines((all) => [...all, { ...line, id: i, time: clock(at) }]);
+      i++;
+      timer = window.setTimeout(next, 180 + (i % 3) * 140);
+    };
+    timer = window.setTimeout(next, 400);
+    return () => window.clearTimeout(timer);
+  }, []);
+  return <LogView label="Offload log" lines={lines} height="16rem" className="w-full max-w-3xl" />;
+}
+
+const STOPPED: LogLine[] = [
+  { time: "+0.0s", text: "Exporting Mix · take_04 to Card B" },
+  { time: "+1.2s", text: "Rendering 02M 14S 06F at 48 kHz · 24 bit" },
+  { time: "+12.1s", level: "warn", text: "Channel 2 peaks at −0.2 dBFS between 01M 12S and 01M 13S. A limiter on the mix would keep it under −1 dB." },
+  { time: "+31.0s", level: "error", text: "Card B is full: the export needs 2.1 GB and 0.4 GB is free." },
+  { time: "+31.0s", level: "error", text: "Stopped at 01M 40S 12F. Nothing was written to Card B." },
+  { time: "+31.1s", level: "error", text: "Export failed. Free 1.7 GB on Card B, or export to Card A, then export again." },
+];
+
+function StoppedDemo() {
+  return <LogView label="Export log" lines={STOPPED} wrap lineNumbers={false} height="auto" className="w-full max-w-3xl" />;
+}
+
 export default function LogViewPage() {
   const [run, replay] = useReplay();
   return (
@@ -123,6 +179,15 @@ export default function LogViewPage() {
         align="start"
         code="BuildDemo"
         onReplay={replay}
+        byWorld={{
+          device: {
+            demo: <OffloadDemo key={run} />,
+            title: "A card as it offloads",
+            code: "OffloadDemo",
+            caption:
+              "The lines arrive unevenly, as a real copy writes them, and the view follows the newest. Scroll up while it runs: it stays where you are, and a button says how many lines came since; press it to go back to the newest and follow again. The warning has an alert mark and a hidden word, and the last line says the card is safe to format in its own words.",
+          },
+        }}
         caption="The lines arrive unevenly, as a real build writes them, and the view follows the newest. Scroll up while it runs: it stays where you are, and a button says how many lines came since; press it to go back to the newest and follow again. The warning is in the warning color, with an alert mark and a hidden word, and the last line says the build is live in its own words."
       >
         <BuildDemo key={run} />
@@ -132,6 +197,15 @@ export default function LogViewPage() {
         title="A failed deploy, wrapped"
         align="start"
         code="FailedDemo"
+        byWorld={{
+          device: {
+            demo: <StoppedDemo />,
+            title: "A stopped export, wrapped",
+            code: "StoppedDemo",
+            caption:
+              "Long lines wrap instead of scrolling sideways, and the line numbers are off. Errors start with a hidden “Error:” and an alert mark, so nothing rests on the ink alone. The view is as tall as its lines, so nothing scrolls.",
+          },
+        }}
         caption="Long lines wrap instead of scrolling sideways, and the line numbers are off. Errors are in the danger color and start with a hidden “Error:”, so a screen reader hears what color says. The view is as tall as its lines, so nothing scrolls."
       >
         <FailedDemo />

@@ -144,10 +144,85 @@ function PagesTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the takes on a card, a page at a time ---------- */
+
+const SCENES = ["Scene 12", "Scene 12", "Scene 12A", "Wild lines", "Scene 11", "Room tone"];
+
+type Take = { id: number; name: string; scene: string; status: "kept" | "offloading" | "clipped"; at: string };
+const TAKES: Take[] = Array.from({ length: 23 }, (_, i) => ({
+  id: i,
+  name: `take_${String(23 - i).padStart(2, "0")}.wav`,
+  scene: SCENES[i % SCENES.length]!,
+  status: i === 1 ? "offloading" : i % 7 === 3 ? "clipped" : "kept",
+  at: ago(i),
+}));
+const TAKE_TONE: Record<Take["status"], TagStatus> = { kept: "success", offloading: "neutral", clipped: "danger" };
+
+function TakesDemo() {
+  const [page, setPage] = useState(1);
+  const size = 5;
+  const rows = TAKES.slice((page - 1) * size, page * size);
+  return (
+    <div className="w-full min-w-0 max-w-3xl">
+      <Table label="Takes on Card A">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Take</TableHead>
+            <TableHead>Scene</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead numeric>Recorded</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((t) => (
+            <TableRow key={t.id}>
+              <TableCell primary>{t.name}</TableCell>
+              <TableCell>{t.scene}</TableCell>
+              <TableCell>
+                <Tag status={TAKE_TONE[t.status]}>{t.status}</Tag>
+              </TableCell>
+              <TableCell numeric>{t.at}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Pagination className="mt-4" label="Takes pages" page={page} pageSize={size} total={TAKES.length} onPageChange={setPage} />
+    </div>
+  );
+}
+
+function LibraryRunDemo() {
+  const [page, setPage] = useState(31);
+  return (
+    <div className="w-full max-w-3xl">
+      <Pagination label="Library pages" page={page} pageSize={20} total={1240} onPageChange={setPage} />
+    </div>
+  );
+}
+
+function TakesNarrowDemo() {
+  const [page, setPage] = useState(2);
+  return (
+    <div className="w-full max-w-sm">
+      <Pagination label="Takes pages" page={page} pageSize={20} total={143} onPageChange={setPage} />
+    </div>
+  );
+}
+
+/** The control alone: where you are in 143 takes, and the way to the next twenty. */
+function TakesPagesTile() {
+  const [page, setPage] = useState(1);
+  return (
+    <div className="w-full max-w-sm">
+      <Pagination label="Takes pages" page={page} pageSize={20} total={143} onPageChange={setPage} />
+    </div>
+  );
+}
+
 export default function PaginationPage() {
   const [key, reset] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<PagesTile />}>
+    <Page meta={meta} docs={docs} tile={<PagesTile />} tileByWorld={{ device: <TakesPagesTile /> }}>
       <Stage
         title="Under a table"
         tier="instant"
@@ -156,6 +231,14 @@ export default function PaginationPage() {
         code="DeploysDemo"
         onReplay={reset}
         replayLabel="Reset"
+        byWorld={{
+          device: {
+            demo: <TakesDemo key={key} />,
+            code: "TakesDemo",
+            caption:
+              "Five takes to a page, 23 on the card in all. The range says where you are, in seven segments on the LCD and in words for a screen reader, and Previous is disabled on the first page. Press Next to the end and Next is disabled while focus moves to Previous, so a keyboard user is never dropped. The page numbers show because the row is wide enough, and the current one is a latched key.",
+          },
+        }}
         caption="Five rows to a page, 23 deploys in all. The range says where you are, and Previous is disabled on the first page. Press Next to the end and Next is disabled while focus moves to Previous, so a keyboard user is never dropped. The page numbers show because the row is wide enough. Under Press the range is on a raised face and the control is one sunken tray: Previous and Next are blocks at its ends, the current page a block between them, and at either end a block lies flat in its socket."
       >
         <DeploysDemo key={key} />
@@ -165,6 +248,14 @@ export default function PaginationPage() {
         title="A long run"
         tier="instant"
         code="LongRunDemo"
+        byWorld={{
+          device: {
+            demo: <LibraryRunDemo />,
+            code: "LibraryRunDemo",
+            caption:
+              "1,240 takes in the library, 62 pages, fold to the first, the last and the neighbours of the current page, with an ellipsis for the gaps. The current page is a latched key and carries aria-current. Move to page 3 or page 60 and the run reshapes at the end.",
+          },
+        }}
         caption="62 pages fold to the first, the last and the neighbours of the current page, with an ellipsis for the gaps. The current page is the raised block (a grey bubble under Flat, a latched key under Device) and carries aria-current. Move to page 3 or page 60 and the run reshapes at the end."
       >
         <LongRunDemo />
@@ -174,6 +265,7 @@ export default function PaginationPage() {
         title="A narrow row"
         tier="instant"
         code="NarrowDemo"
+        byWorld={{ device: { demo: <TakesNarrowDemo />, code: "TakesNarrowDemo" } }}
         caption="The row measures its own width. Under 36rem the page numbers go, and the range with Previous and Next is all there is. That is the phone layout, and a narrow column on a desktop gets it too."
       >
         <NarrowDemo />

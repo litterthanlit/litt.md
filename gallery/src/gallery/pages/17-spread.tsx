@@ -181,6 +181,69 @@ function PaintTimesDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a shoot's takes, cards and inputs, in the ink ---------- */
+
+/* Take lengths in seconds, one set of takes per scene. */
+const TAKE_LENGTHS: SpreadItem[] = [
+  { label: "Scene 9", values: logNormal(31, 48, 41, 0.22, 14, 100) },
+  { label: "Scene 10", values: logNormal(32, 52, 29, 0.28, 14, 100) },
+  { label: "Scene 11", values: logNormal(33, 36, 58, 0.2, 14, 100) },
+  { label: "Scene 12", values: logNormal(34, 44, 37, 0.18, 14, 100) },
+  { label: "Scene 12A", values: logNormal(35, 30, 49, 0.25, 14, 100) },
+  { label: "Wild lines", values: logNormal(36, 56, 23, 0.16, 14, 100) },
+];
+
+/* Minutes from REC to a copy in the library, per card. One card is past the four hour goal. */
+const OFFLOAD_TIMES: SpreadItem[] = [
+  { label: "Card A", values: logNormal(41, 60, 26, 0.8, 2, 2400) },
+  { label: "Card B", values: logNormal(42, 48, 55, 0.9, 2, 2400) },
+  { label: "Card C", values: logNormal(43, 40, 95, 0.85, 2, 2400) },
+  { label: "Recorder 2 · Card A", values: logNormal(44, 36, 150, 0.9, 2, 2400) },
+  { label: "Field kit · Card A", values: logNormal(45, 28, 330, 1, 2, 2400) },
+];
+
+/* Round-trip latency in milliseconds, as the recorder's self-test sends it: five numbers per input. */
+const LATENCY: SpreadItem[] = [
+  { label: "Input 1", min: 0.9, p25: 1.2, median: 1.5, p75: 1.9, max: 2.8 },
+  { label: "Input 2", min: 1.1, p25: 1.6, median: 2, p75: 2.6, max: 4.1 },
+  { label: "Wireless lav", min: 1.4, p25: 2.1, median: 2.7, p75: 3.3, max: 5.2 },
+  { label: "USB return", min: 0.8, p25: 1, median: 1.3, p75: 1.6, max: 2.2 },
+  { label: "Line in", min: 0.7, p25: 0.9, median: 1.1, p75: 1.3, max: 1.9 },
+];
+
+function TakeLengthsDemo() {
+  return (
+    <div className="w-full max-w-xl">
+      <Spread label="Take lengths by scene" items={TAKE_LENGTHS} formatValue={(v) => `${Math.round(v)} s`} />
+    </div>
+  );
+}
+
+function OffloadTimesDemo() {
+  return (
+    <div className="w-full max-w-xl">
+      <Spread
+        label="Time to offload by card"
+        items={OFFLOAD_TIMES}
+        scale="log"
+        domain={[2, 3000]}
+        ticks={REPLY_TICKS}
+        formatValue={duration}
+        goal={240}
+        goalLabel="4 h goal"
+      />
+    </div>
+  );
+}
+
+function LatencyDemo() {
+  return (
+    <div className="w-full max-w-sm">
+      <Spread label="Round-trip latency by input" items={LATENCY} formatValue={(v) => `${v.toFixed(1)} ms`} />
+    </div>
+  );
+}
+
 export default function SpreadPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -188,6 +251,15 @@ export default function SpreadPage() {
         title="Build times by site"
         size="lg"
         code="BuildTimesDemo"
+        byWorld={{
+          device: {
+            demo: <TakeLengthsDemo />,
+            title: "Take lengths by scene",
+            code: "TakeLengthsDemo",
+            caption:
+              "Each row is one scene's takes. The faint rail is its full range, the darker rail over it is the middle half of its takes, and the tick is the median, which is also the number at the end. Every rail sits on the same scale, so a scene of long takes and one of quick pickups read at a glance. The rails start and end at the same place and the medians line up. Nothing moves.",
+          },
+        }}
         caption="Each row is one Framer site. The faint rail is its full range, the blue rail over it is the middle half of its builds, and the tick is the median, which is also the number at the end. Every rail sits on the same scale, so a slow site and a steady one read at a glance. The rails start and end at the same place and the medians line up. Nothing moves."
       >
         <BuildTimesDemo />
@@ -197,6 +269,15 @@ export default function SpreadPage() {
         title="Reply times by client"
         size="lg"
         code="ReplyTimesDemo"
+        byWorld={{
+          device: {
+            demo: <OffloadTimesDemo />,
+            title: "Time to offload by card",
+            code: "OffloadTimesDemo",
+            caption:
+              "The time from REC to a copy in the library runs from minutes to days, so the scale is logarithmic and each order of magnitude gets the same room. The dashed line is the four hour goal, labelled once under the rows. The field kit's median is past it, and its row says so in words, since the ink is the same for every row.",
+          },
+        }}
         caption="Reply times run from minutes to days, so the scale is logarithmic and each order of magnitude gets the same room. The dashed line is the four hour goal, labelled once under the rows. Atlas Studio's median is past it. It keeps its teal, because teal means the reply time and not good or bad, and its row says it is past the goal in words."
       >
         <ReplyTimesDemo />
@@ -205,6 +286,14 @@ export default function SpreadPage() {
       <Stage
         title="From computed numbers"
         code="PaintTimesDemo"
+        byWorld={{
+          device: {
+            demo: <LatencyDemo />,
+            code: "LatencyDemo",
+            caption:
+              "When the recorder's self-test has already worked out the quartiles, pass them as min, p25, median, p75 and max instead of the values. This box is narrower than 28rem, so each label moves above its rail and the rail takes the full width. The scale and its ticks come from the data, rounded out to round numbers.",
+          },
+        }}
         caption="When an API has already worked out the quartiles, pass them as min, p25, median, p75 and max instead of the values. This box is narrower than 28rem, so each label moves above its rail and the rail takes the full width. The scale and its ticks come from the data, rounded out to round numbers."
       >
         <PaintTimesDemo />

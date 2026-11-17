@@ -286,6 +286,166 @@ function NarrowDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a shoot's takes, cards and channels, in the ink ---------- */
+
+const TAKES = [5, 7, 4, 9, 6, 1, 0, 6, 8, 5, 9, 7, 2, 1];
+
+function TakesDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <BarChart label="Takes per day, last 14 days" labels={DAYS} series={[{ name: "Takes", values: TAKES }]} unit={["take", "takes"]} xTitle="Day" />
+    </div>
+  );
+}
+
+function ResultsDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <BarChart
+        label="Takes by result, last 7 days"
+        labels={WEEK}
+        series={[
+          { name: "Kept", values: [4, 3, 6, 5, 7, 2, 1] },
+          { name: "Circled", values: [2, 5, 3, 4, 2, 0, 1] },
+          { name: "Clipped", values: [0, 1, 0, 2, 1, 0, 0] },
+        ]}
+        xTitle="Day"
+        height={256}
+      />
+    </div>
+  );
+}
+
+const LENGTH = [44, 41, 46, 39, 41, 38, 40, 43, 37, 42, 45, 41, 39, 41];
+
+function TakeLengthDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <LineChart label="Median take length, last 14 days" labels={DAYS} series={[{ name: "Take length", values: LENGTH }]} formatValue={(v) => `${v} s`} xTitle="Day" />
+    </div>
+  );
+}
+
+function ScenesDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <LineChart
+        label="Take length by scene, last 7 days"
+        labels={WEEK}
+        series={[
+          { name: "Scene 9", values: [41, 43, 39, 44, 42, 38, 40] },
+          { name: "Scene 12", values: [58, 55, 61, 57, 54, 56, 53] },
+          { name: "Wild lines", values: [28, 30, 27, 29, 26, 28, 27] },
+        ]}
+        formatValue={(v) => `${v} s`}
+        xTitle="Day"
+        height={256}
+      />
+    </div>
+  );
+}
+
+function CardsDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <Meter label="Card A" value={42} max={128} valueText="42 of 128 GB" />
+      <Meter label="Library" value={1380} max={3000} valueText="1,380 of 3,000 GB" />
+      <Meter label="Card B" value={117} max={128} valueText="117 of 128 GB" />
+    </div>
+  );
+}
+
+const CHANNELS = [
+  { name: "Boom", values: [3, 2, 4, 3, 5, 1, 1] },
+  { name: "Lav 1", values: [1, 3, 2, 2, 1, 0, 0] },
+  { name: "Lav 2", values: [0, 1, 1, 2, 2, 1, 0] },
+  { name: "Room", values: [2, 0, 1, 0, 1, 0, 1] },
+];
+
+function ChannelsDemo() {
+  return (
+    <div className="grid w-full max-w-3xl gap-12">
+      <BarChart label="Takes by channel, last 7 days" labels={WEEK} series={CHANNELS} hues xTitle="Day" height={256} />
+      <LineChart
+        label="Minutes recorded, this week against last"
+        labels={["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]}
+        series={[
+          { name: "This week", values: [184, 221, 205, 248, 262, 139, 118], hue: "blue" },
+          { name: "Last week", values: [162, 190, 201, 214, 230, 125, 110] },
+        ]}
+        xTitle="Day"
+        height={224}
+      />
+    </div>
+  );
+}
+
+const WRITTEN = [
+  { name: "Takes", values: [4.2, 3.1, 5.6, 2.4, 6.8, 1.2, 0.6, 3.9, 5.1, 4.4, 7.2, 5.8, 1.6, 0.9] },
+  { name: "Stems", values: [1.8, 2.6, 1.4, 2.9, 2.2, 0.8, 0.4, 2.4, 3.1, 1.9, 2.7, 2.2, 0.7, 0.5] },
+  { name: "Mixes", values: [0.6, 0.4, 0.9, 0.5, 0.7, 0.1, 0.1, 0.8, 0.6, 0.7, 0.9, 0.5, 0.2, 0.1] },
+  { name: "Room tone", values: [0.2, 0, 0.3, 0.1, 0, 0, 0, 0.4, 0.1, 0.2, 0.1, 0.3, 0, 0] },
+];
+
+function WrittenDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <StackedBarChart
+        label="Written to the library per day, last 14 days"
+        labels={DAYS}
+        series={WRITTEN}
+        formatValue={(v) => `${+v.toFixed(1)} GB`}
+        xTitle="Day"
+        height={256}
+      />
+    </div>
+  );
+}
+
+function MarkersDemo() {
+  return (
+    <div className="w-full max-w-3xl">
+      <BarChart
+        label="Markers dropped per day, last 14 days"
+        labels={DAYS}
+        series={[{ name: "Markers", values: [42, 51, 38, 47, 55, 19, 12, 44, 58, 49, 61, 53, 21, 15], hue: "teal" }]}
+        unit={["marker", "markers"]}
+        xTitle="Day"
+        height={200}
+      />
+    </div>
+  );
+}
+
+function LibraryKindsDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <Meter label="Takes" value={24} max={100} valueText="24 GB" hue="teal" />
+      <Meter label="Stems" value={58} max={100} valueText="58 GB" hue="violet" />
+      <Meter label="Mixes" value={3} max={100} valueText="3 GB" hue="amber" />
+    </div>
+  );
+}
+
+function OffloadTargetsDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-6">
+      <Meter label="Library" value={1380} max={3000} valueText="1,380 of 3,000 GB" target={2400} targetText="budget 2,400 GB" hue="blue" />
+      <Meter label="Card B" value={91} valueText="91% used" target={80} targetText="offload at 80%" />
+      <Meter label="Sound report" value={7} max={10} valueText="7 of 10 takes noted" steps={10} hue="teal" />
+      <Meter label="Scenes slated" value={3} max={5} valueText="3 of 5" steps={5} />
+    </div>
+  );
+}
+
+function TakesNarrowDemo() {
+  return (
+    <div className="w-full max-w-[22.375rem]">
+      <BarChart label="Takes per day, last 14 days" labels={DAYS} series={[{ name: "Takes", values: TAKES }]} unit={["take", "takes"]} xTitle="Day" height={200} />
+    </div>
+  );
+}
+
 export default function ChartPage() {
   const [deploys, replayDeploys] = useReplay();
   const [build, replayBuild] = useReplay();
@@ -297,6 +457,15 @@ export default function ChartPage() {
         size="lg"
         code="DeploysDemo"
         onReplay={replayDeploys}
+        byWorld={{
+          device: {
+            demo: <TakesDemo key={deploys} />,
+            title: "Takes per day",
+            code: "TakesDemo",
+            caption:
+              "Each day is a column of lit dots on the LCD's matrix, the ink at 55% and today full, so the eye lands on today, and the readout above the glass shows today's takes in seven segments. Hover or arrow to a day and its column takes the full ink, the readout follows, and a tooltip says its day and its takes. The days are engraved under the glass. Nothing grows or fades in: the dots are lit.",
+          },
+        }}
         caption="Bars are the foreground at 55%, and the last day is full, so the eye lands on today. Hover or arrow to a bar and it takes full color on the instant tier, and a tooltip shows its day and value. Gridlines are hairlines, horizontal only, and the labels are in tabular figures. The bars grow up from the baseline once, on the responsive tier. Replay it to watch."
       >
         <DeploysDemo key={deploys} />
@@ -308,6 +477,7 @@ export default function ChartPage() {
         size="lg"
         code="BuildTimeDemo"
         onReplay={replayBuild}
+        byWorld={{ device: { demo: <TakeLengthDemo key={build} />, code: "TakeLengthDemo" } }}
         caption="A line is the foreground, 2px, with a marker on the current point. It fades in once and never draws itself, because path data does not animate. Hover or arrow along it and the marker follows. The axis and the tooltip take a formatter, here seconds."
       >
         <BuildTimeDemo key={build} />
@@ -318,6 +488,7 @@ export default function ChartPage() {
         tier="instant"
         size="lg"
         code="TargetsDemo"
+        byWorld={{ device: { demo: <ResultsDemo />, code: "ResultsDemo" } }}
         caption="Several series step down the foreground, 100%, 55% and 30%, and get a legend. Three is the most, because that is as many steps as the foreground has. The third series has an edge on its bars, since 30% alone is too faint against a card. Hover a day and the tooltip lists every series, over a faint wash of the column."
       >
         <TargetsDemo />
@@ -328,6 +499,7 @@ export default function ChartPage() {
         tier="instant"
         size="lg"
         code="SitesDemo"
+        byWorld={{ device: { demo: <ScenesDemo />, code: "ScenesDemo" } }}
         caption="The same steps for lines: full, 55%, and a dashed 30% for the third, so it still reads when the tone is faint. Markers show at the hovered or focused day on every line."
       >
         <SitesDemo />
@@ -337,6 +509,14 @@ export default function ChartPage() {
         title="Meter"
         tier="instant"
         code="QuotasDemo"
+        byWorld={{
+          device: {
+            demo: <CardsDemo />,
+            code: "CardsDemo",
+            caption:
+              "One value against a limit: a 4px rail at the control radius, the ink filling it at 12%, and the reading in tabular figures at the end. The fill is the ink, never the accent, and it does not animate. A card that is nearly full says so in its words.",
+          },
+        }}
         caption="One value against a limit: a 4px rail at the control radius, the foreground filling it at 12%, and the reading in tabular figures at the end. The fill is the foreground, never the accent, and it does not animate. A quota that is nearly spent says so in its words."
       >
         <QuotasDemo />
@@ -347,6 +527,15 @@ export default function ChartPage() {
         tier="instant"
         size="lg"
         code="HuesDemo"
+        byWorld={{
+          device: {
+            demo: <ChannelsDemo />,
+            title: "Series given hues",
+            code: "ChannelsDemo",
+            caption:
+              "Series given the data hues. Device's glass lights no hue: each series is one of the ink's levels, and the legend and the tooltip name every channel in words. Colour was never the only signal, so a trace that dashes keeps its dash.",
+          },
+        }}
         caption="When telling series apart is the point, they take the data hues in their fixed order: blue, amber, teal, violet, rose. Up to five, each at 3:1 or more on the card, so no bar needs an edge and no line a dash. A hue belongs to the series, not its place: below, this week is blue and last week stays in the foreground, so the eye goes to now."
       >
         <HuesDemo />
@@ -357,6 +546,14 @@ export default function ChartPage() {
         tier="responsive"
         size="lg"
         code="StackedDemo"
+        byWorld={{
+          device: {
+            demo: <WrittenDemo />,
+            code: "WrittenDemo",
+            caption:
+              "When each day is made of parts, they stack in one column of dots, each part lit at its series' level from the baseline up, one unlit dot between parts. The tallest day sets the scale. Hover or focus a day and the others dim, the readout shows its total, and the tooltip lists takes, stems, mixes and room tone with the total.",
+          },
+        }}
         caption="When each day is made of parts, the parts stack into one thin rail: at most 8px wide, a data hue per series, 2px of air between segments, like the Breakdown's split rail. The tallest day sets the scale. Hover or focus a day and its parts take their text tones over a faint band, and the tooltip lists each part and the total."
       >
         <StackedDemo />
@@ -366,6 +563,14 @@ export default function ChartPage() {
         title="One series in a hue"
         tier="responsive"
         code="OneHueDemo"
+        byWorld={{
+          device: {
+            demo: <MarkersDemo />,
+            code: "MarkersDemo",
+            caption:
+              "A single series given a hue, here the markers dropped each day. The glass lights no hue, so its columns are the ink at 55% and today full, as any one series is. Hover moves the emphasis and the readout with it, on the instant tier.",
+          },
+        }}
         caption="A single series can take a hue when that color means the same thing elsewhere in the view, here inbound mail in teal. The bars rest in the hue's mark tone and today takes its text tone, a step stronger, so the emphasis never fades below 3:1. Hover moves the emphasis, on the instant tier."
       >
         <OneHueDemo />
@@ -375,6 +580,13 @@ export default function ChartPage() {
         title="Meters by kind"
         tier="instant"
         code="StorageDemo"
+        byWorld={{
+          device: {
+            demo: <LibraryKindsDemo />,
+            code: "LibraryKindsDemo",
+            caption: "A storage breakdown of the library: takes, stems and mixes, each a rail of its own. Under Device a meter's hue is drawn in the ink, so the label says what each rail measures. The rail and the reading stay neutral. Nothing animates.",
+          },
+        }}
         caption="A meter takes a hue when its color names the thing it measures, as in a storage breakdown where images, video and fonts keep their hue across the page. The rail and the reading stay neutral. Nothing animates."
       >
         <StorageDemo />
@@ -384,6 +596,14 @@ export default function ChartPage() {
         title="Targets and steps"
         tier="instant"
         code="TargetsDemo2"
+        byWorld={{
+          device: {
+            demo: <OffloadTargetsDemo />,
+            code: "OffloadTargetsDemo",
+            caption:
+              "A target is a 2px tick that crosses the rail, taller than it, in the subtle grey: a line the fill can pass, as Card B has passed the 80% it should be offloaded at. Steps split the rail into equal segments 2px apart for a count of a few, such as seven of ten takes noted on the sound report. Nothing animates.",
+          },
+        }}
         caption="A target is a 2px tick that crosses the rail, taller than it, in the subtle gray: a budget the fill can pass, as bandwidth has. Steps split the rail into equal segments 2px apart for a count of a few, such as seven of ten checks. The hue stays a thread on the neutral track, and nothing animates."
       >
         <TargetsDemo2 />
@@ -394,6 +614,7 @@ export default function ChartPage() {
         tier="instant"
         align="start"
         code="NarrowDemo"
+        byWorld={{ device: { demo: <TakesNarrowDemo />, code: "TakesNarrowDemo" } }}
         caption="The chart fills its container, so on a phone it takes the width of the screen less its margins. Fourteen labels do not fit, so only some show, counted back from today so the last day is always named. Labels never overlap, and nothing scrolls sideways. Touch the plot and drag along it: the bar under your finger shows its tooltip, which stays until you touch elsewhere."
       >
         <NarrowDemo />

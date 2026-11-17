@@ -108,14 +108,82 @@ function DeployTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): takes slated and the card running down ---------- */
+
+function TakesDemo() {
+  const [takes, setTakes] = useState(38);
+  const [minutes, setMinutes] = useState(192);
+  const [said, setSaid] = useState("");
+  const slate = () => {
+    setTakes((t) => t + 1);
+    setMinutes((m) => Math.max(0, m - 3));
+    setSaid(`Slated take_${takes + 1}. 3 minutes of card used.`);
+  };
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <StatGroup>
+        <Stat label="Takes today" value={<RollingNumber value={takes} />} delta="Up 12% on yesterday" tone="good" />
+        <Stat label="Card left" value={<RollingNumber value={minutes} />} unit="min" delta="About 3 min a take" />
+      </StatGroup>
+      <div className="flex flex-wrap items-center gap-4">
+        <Button variant="primary" onClick={slate}>
+          Slate a take
+        </Button>
+        <p role="status" className="text-small text-fg-subtle">
+          {said}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function SalesDemo() {
+  const [cents, setCents] = useState(1248050);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Stat label="Recorder sales, October" value={<RollingNumber value={cents / 100} format={{ style: "currency", currency: "EUR" }} />} />
+      <div className="flex flex-wrap gap-3">
+        <Button size="sm" onClick={() => setCents((c) => c + 89900)}>
+          Sell a recorder, €899
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => setCents((c) => Math.max(0, c - 12500))}>
+          Refund a case, €125
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** One figure and the button that changes it, so the roll is yours to start. */
+function TakesTile() {
+  const [takes, setTakes] = useState(38);
+  return (
+    <div className="grid w-full max-w-xs gap-4">
+      <Stat label="Takes today" value={<RollingNumber value={takes} />} delta="Up 12% on yesterday" tone="good" />
+      <Button size="sm" className="justify-self-start" onClick={() => setTakes((t) => t + 1)}>
+        Slate a take
+      </Button>
+    </div>
+  );
+}
+
 export default function RollingNumberPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<DeployTile />}>
+    <Page meta={meta} docs={docs} tile={<DeployTile />} tileByWorld={{ device: <TakesTile /> }}>
       <Stage
         title="Deploys and credits"
         tier="responsive"
         align="start"
         code="DeploysDemo"
+        byWorld={{
+          device: {
+            demo: <TakesDemo />,
+            title: "Takes and the card",
+            code: "TakesDemo",
+            caption:
+              "Press Slate a take. The take count rises and its last digit rolls up from below; the minutes left on the card fall and their changed digits roll down from above. Only the digits that change move, by half of the travel token, on the responsive tier. The Stat tiles themselves stay still.",
+          },
+        }}
         caption="Press Deploy. The deploy count rises and its last digit rolls up from below; the credits fall and their changed digits roll down from above. Only the digits that change move, by half of the travel token, on the responsive tier. The Stat tiles themselves stay still."
       >
         <DeploysDemo />
@@ -126,6 +194,7 @@ export default function RollingNumberPage() {
         tier="responsive"
         align="start"
         code="RevenueDemo"
+        byWorld={{ device: { demo: <SalesDemo />, code: "SalesDemo" } }}
         caption="Any Intl format rolls: here euros with cents. Characters line up from the right, so when a figure grows a column, the new digit and its comma just appear and the rest roll."
       >
         <RevenueDemo />

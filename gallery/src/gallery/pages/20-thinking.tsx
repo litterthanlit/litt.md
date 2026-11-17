@@ -282,6 +282,133 @@ export const study: PageStudy = {
   },
 };
 
+/* ---------- Device's own (plans/024, phase 3): Litt thinks about an export, a scene and a hum ---------- */
+
+const EXPORT_REASONING = [
+  "The export log stops at the write step. The render finished in 31 seconds and the file was never opened on Card B, which usually means the card is full and the mix is fine.",
+  "Card B has 0.4 GB free, and the mix at 48 kHz · 24 bit is 2.1 GB. The card also holds 38 takes from day 3 that were offloaded yesterday.",
+  "Two fixes would work: export to the library, or format Card B. Formatting erases takes, and that is your call. The first is safe to suggest.",
+  "I will check that the day 3 takes are in the library first, so the answer can say whether Card B is safe to format.",
+];
+
+const EXPORT_ANSWER =
+  "Card B is full: the mix needs 2.1 GB and 0.4 GB is free. Export to the library now, or format Card B, whose 38 takes are all in the library.";
+
+const SCENE_REASONING = [
+  "Scene 12 was slated as two scenes: Scene 12, with 64 takes, and Scene 12A, with 12. The request is to move both into one scene called Scene 12 and keep every take findable in the edit.",
+  "Moving them is easy. Keeping the edit linked is the part that can go wrong. The edit finds a take by its scene and number, so two scenes that become one would break every link unless each old name is mapped.",
+  "I checked the relink list. It has 9 entries, all for the pickups, and none for Scene 12A. The 76 new entries would take it to 85, past the edit's limit of 80, so that route is out.",
+  "There is a cheaper route. One scene can hold takes under two prefixes if each take keeps its own name. The edit keeps finding them as they are, and the relink list stays at 9 entries.",
+  "The catch is the sound report. It would list each take once, under its own prefix, which is right. The stems are exported per scene, so Scene 12's stems would start to include 12A. That needs a filter.",
+  "The 12A takes have a channel for lav 2 that the others do not. Merging means a channel that is empty on 64 takes. The mixer hides empty channels, so the mix is safe, but the take list gets wider.",
+  "The library's search is the last thing to check. It ranks takes by scene, so 12A's takes would rank like Scene 12's. That is probably fine, but worth saying.",
+  "I will recommend the second route, list the three things it touches (the stems filter, the lav 2 channel, the search) and offer to set the filter first, since the edit sees that one.",
+];
+
+const TAKE_HISTORY = [
+  {
+    duration: 12,
+    reasoning: [
+      "take_04 has a hum at 50 Hz on lav 2 from 01M 02S to the end. It starts when the lighting cart is plugged in.",
+      "A notch at 50 Hz and its first two harmonics takes it out without touching the voice, which sits well above 150 Hz.",
+    ],
+    answer: "take_04 picks up a 50 Hz hum on lav 2 from 01M 02S. A notch at 50, 100 and 150 Hz takes it out and leaves the voice as it is.",
+  },
+  {
+    duration: 65,
+    reasoning: [
+      "Searching the library for the old slate, Scene 9, gives 14 takes: 9 on Card A, 3 on Card B and 2 wild lines.",
+      "The Card B takes share one slate file, so one fix covers all three. The 9 on Card A need a look each, because 3 of them are pickups and should keep their own slate.",
+    ],
+    answer: "Six Card A takes still carry the old slate, plus the three on Card B and two wild lines. Three more are pickups that should keep theirs.",
+  },
+  {
+    duration: 0.4,
+    reasoning: ["A plain rename. The file on the card stays as it is, so the edit does not lose it."],
+    answer: "Renamed the take to Scene 12 · take_04. The file on the card did not change.",
+  },
+];
+
+/** A turn about a stuck export: thinks while the reasoning streams in, then stops and lets the answer begin. */
+function ExportTurn() {
+  const { shown, done } = useStream(EXPORT_REASONING, 48);
+  const [thinking, setThinking] = useState(true);
+  useEffect(() => {
+    if (!done) return;
+    const id = setTimeout(() => setThinking(false), 500);
+    return () => clearTimeout(id);
+  }, [done]);
+  return (
+    <div className="grid w-full gap-3">
+      <Thinking active={thinking}>
+        {shown.map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
+        ))}
+      </Thinking>
+      {!thinking && <p className="text-body text-fg-muted">{EXPORT_ANSWER}</p>}
+    </div>
+  );
+}
+
+function ExportThoughtDemo() {
+  return (
+    <div className="w-full max-w-xl">
+      <ExportTurn />
+    </div>
+  );
+}
+
+function TakeHistoryDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-8">
+      {TAKE_HISTORY.map((turn) => (
+        <div key={turn.answer} className="grid gap-3">
+          <Thinking duration={turn.duration}>
+            {turn.reasoning.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </Thinking>
+          <p className="text-body text-fg-muted">{turn.answer}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SceneThoughtDemo() {
+  const [open, setOpen] = useState(true);
+  return (
+    <div className="grid w-full max-w-xl gap-3">
+      <Thinking duration={148} open={open} onOpenChange={setOpen}>
+        {SCENE_REASONING.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+      </Thinking>
+      <p className="text-body text-fg-muted">
+        Merge them into one Scene 12 and keep each take's own name. The edit keeps finding them, and the relink list stays short.
+      </p>
+      <div>
+        <Button size="sm" variant="secondary" onClick={() => setOpen((o) => !o)}>
+          {open ? "Hide reasoning" : "Show reasoning"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** The same turn inside a phone: the row is 44px tall and the reasoning wraps to the narrow column. */
+function ExportPhoneDemo() {
+  return (
+    <div className="mx-auto w-full max-w-sm">
+      <div role="group" aria-label="Chat, phone" className="rounded-surface bg-canvas p-4 outline-1 -outline-offset-1 outline-line">
+        <DeviceProvider mode="phone">
+          <ExportTurn />
+        </DeviceProvider>
+      </div>
+    </div>
+  );
+}
+
 export default function ThinkingPage() {
   const [liveKey, replayLive] = useReplay();
   const [phoneKey, replayPhone] = useReplay();
@@ -294,6 +421,18 @@ export default function ThinkingPage() {
         size="lg"
         code="LiveDemo"
         onReplay={replayLive}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={liveKey} className="w-full">
+                <ExportThoughtDemo />
+              </div>
+            ),
+            code: "ExportThoughtDemo",
+            caption:
+              "Litt thinks about an export that keeps failing. The row reads Thinking with a clock that counts whole seconds, and nothing else moves: no shimmer, no pulse. The reasoning streams in with no fade per word. When the thought ends the clock stops, the row reads Thought for, and the body closes by itself as the answer starts. The body fades in and travels a little on the responsive tier, and its height snaps.",
+          },
+        }}
         caption="Litt thinks about a failed deploy. The row reads Thinking with a clock that counts whole seconds, and nothing else moves: no shimmer, no pulse. The reasoning streams in with no fade per word. When the thought ends the clock stops, the row reads Thought for, and the body closes by itself as the answer starts. The body fades in and travels a little on the responsive tier, and its height snaps."
       >
         <div key={liveKey} className="w-full">
@@ -307,6 +446,7 @@ export default function ThinkingPage() {
         align="start"
         size="lg"
         code="HistoryDemo"
+        byWorld={{ device: { demo: <TakeHistoryDemo />, code: "TakeHistoryDemo" } }}
         caption="A conversation loaded from history. Each thought is closed and says how long it took, from duration. Click a row, or press Enter or Space, to read it. The chevron turns a quarter on the instant tier and the body arrives on the responsive tier. A thought under a second reads Thought for a moment."
       >
         <HistoryDemo />
@@ -318,6 +458,7 @@ export default function ThinkingPage() {
         align="start"
         size="lg"
         code="LongDemo"
+        byWorld={{ device: { demo: <SceneThoughtDemo />, code: "SceneThoughtDemo" } }}
         caption="A long thought is not boxed or scrolled: it is paragraphs in fg-subtle that line up with the label, and the answer sits below. This one is controlled, so a button outside it can open and close it with the same state. The row says Thought for 2m 28s."
       >
         <LongDemo />
@@ -330,6 +471,16 @@ export default function ThinkingPage() {
         size="lg"
         code="PhoneDemo"
         onReplay={replayPhone}
+        byWorld={{
+          device: {
+            demo: (
+              <div key={phoneKey} className="w-full">
+                <ExportPhoneDemo />
+              </div>
+            ),
+            code: "ExportPhoneDemo",
+          },
+        }}
         caption="In a phone the row is 44px tall, and a press on it brightens the label. The reasoning wraps to the narrow column and keeps its indent. The clock is the only live signal here too, and a screen reader hears Thinking once at the start and the finished time in words at the end."
       >
         <div key={phoneKey} className="w-full">

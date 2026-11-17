@@ -300,13 +300,209 @@ function ErrorDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the library's mixes and exports, empty, loading and failed ---------- */
+
+const MIXES: Project[] = [
+  { id: "mix-take-04", name: "Mix · take_04", client: "Scene 12", deploy: "Exported 2 days ago", status: "review", updated: "2026-10-10", description: "02M 14S 06F at 48 kHz · 24 bit.", tags: ["Mix", "Stereo"], cover: "blank" },
+  { id: "mix-take-07", name: "Mix · take_07", client: "Scene 11", deploy: "No export yet", status: "draft", updated: "2026-10-09", description: "Clips at 01M 12S; a limiter to try.", tags: ["Mix"], cover: "blank" },
+  { id: "stems-12", name: "Stems · Scene 12", client: "Scene 12", deploy: "Exported yesterday", status: "review", updated: "2026-10-08", description: "Four stems for the director.", tags: ["Stems"], cover: "blank" },
+  { id: "room-tone-12", name: "Room tone · Scene 12", client: "Scene 12", deploy: "Exported 3 days ago", status: "review", updated: "2026-10-07", description: "One minute, boom and room pair.", tags: ["Room tone"], cover: "blank" },
+  { id: "wild-lines", name: "Wild lines · Ana", client: "Pickups", deploy: "No export yet", status: "draft", updated: "2026-10-06", description: "Six lines on lav 1.", tags: ["Lav"], cover: "blank" },
+  { id: "mix-take-02", name: "Mix · take_02", client: "Scene 9", deploy: "Exported last week", status: "review", updated: "2026-10-02", description: "The circled take.", tags: ["Mix"], cover: "blank" },
+];
+
+/** What "New mix" makes when the list is empty. */
+const FIRST_MIX: Project = {
+  id: "mix-take-01",
+  name: "Mix · take_01",
+  client: "Scene 12",
+  deploy: "No export yet",
+  status: "draft",
+  updated: "2026-10-11",
+  description: "Boom and both lavs, levelled.",
+  tags: ["Mix"],
+  cover: "blank",
+};
+
+function FirstMix() {
+  const [started, setStarted] = useState(false);
+  return (
+    <section aria-label="Mixes" className="grid content-start">
+      {started ? (
+        <ProjectList projects={[FIRST_MIX]} entrance={false} />
+      ) : (
+        <Empty
+          title="No mixes yet."
+          action={
+            <Button variant="primary" icon={<PlusIcon />} onClick={() => setStarted(true)}>
+              New mix
+            </Button>
+          }
+        >
+          A new mix starts as a draft and shows up here.
+        </Empty>
+      )}
+    </section>
+  );
+}
+
+function ExportsCard() {
+  return (
+    <section aria-label="Exports" className="litt-raised grid content-start self-start rounded-surface">
+      <h3 className="border-b border-line px-6 py-4 text-small text-fg">Exports</h3>
+      <div className="p-6">
+        <Empty bare title="No exports yet." action={<Button iconRight={<ArrowUpRightIcon />}>Open the library</Button>}>
+          Export a take from the recorder and each file is listed here.
+        </Empty>
+      </div>
+    </section>
+  );
+}
+
+function MixesEmptyDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-4xl gap-8 md:grid-cols-2">
+      <FirstMix />
+      <ExportsCard />
+    </div>
+  );
+}
+
+function MixesListDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="grid w-full min-w-0 max-w-3xl gap-6">
+      <div>
+        <Button size="sm" disabled={loaded} onClick={() => setLoaded(true)}>
+          Load mixes
+        </Button>
+      </div>
+      {loaded ? (
+        <ProjectList projects={MIXES.slice(0, 5)} />
+      ) : (
+        <Loading label="Loading mixes" className={LIST_BOX}>
+          {MIXES.slice(0, 5).map((m) => (
+            <RowSkeleton key={m.id} />
+          ))}
+        </Loading>
+      )}
+    </div>
+  );
+}
+
+function MixesCardsDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="grid w-full min-w-0 gap-6">
+      <div>
+        <Button size="sm" disabled={loaded} onClick={() => setLoaded(true)}>
+          Load mixes
+        </Button>
+      </div>
+      {loaded ? (
+        <ProjectGrid projects={MIXES} filter="all" />
+      ) : (
+        <Loading label="Loading mixes" className="grid grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+          {MIXES.map((m) => (
+            <CardSkeleton key={m.id} />
+          ))}
+        </Loading>
+      )}
+    </div>
+  );
+}
+
+function ExportFailed() {
+  const [phase, setPhase] = useState<"failed" | "retrying" | "written">("failed");
+  useEffect(() => {
+    if (phase !== "retrying") return;
+    const t = setTimeout(() => setPhase("written"), 1600);
+    return () => clearTimeout(t);
+  }, [phase]);
+
+  if (phase === "failed") {
+    return (
+      <ErrorState title="The export of Mix · take_04 failed." action={<Button onClick={() => setPhase("retrying")}>Retry export</Button>}>
+        Card B is full: the mix needs 2.1 GB and 0.4 GB is free. Free some space on Card B, then retry.
+      </ErrorState>
+    );
+  }
+  // The retry hands over to a status line in the same panel. A Button's loading look would vanish on this surface-2 fill.
+  return (
+    <div role="status" className="flex flex-wrap items-center gap-3 rounded-surface bg-surface-2 p-8 shadow-[inset_0_0_0_1px_var(--line)]">
+      {phase === "retrying" ? (
+        <>
+          <span className="text-fg-subtle">
+            <Spinner />
+          </span>
+          <p className="text-body text-fg-muted">Retrying the export of Mix · take_04</p>
+        </>
+      ) : (
+        <>
+          <Tag status="success">Exported</Tag>
+          <p className="text-body text-fg-muted">take_04_mix.wav written to Card B just now.</p>
+        </>
+      )}
+    </div>
+  );
+}
+
+function StudioSyncFailed() {
+  const [trying, setTrying] = useState(false);
+  const [tries, setTries] = useState(0);
+  useEffect(() => {
+    if (!trying) return;
+    const t = setTimeout(() => {
+      setTrying(false);
+      setTries((n) => n + 1);
+    }, 1200);
+    return () => clearTimeout(t);
+  }, [trying]);
+
+  return (
+    <section aria-label="Studio sync" className="litt-raised grid rounded-surface">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-line px-6 py-4">
+        <h3 className="text-small text-fg">Studio sync</h3>
+        <p className="text-caption text-fg-subtle">Last synced 12 min ago</p>
+      </div>
+      <div className="p-6">
+        <ErrorState
+          bare
+          title={tries ? "The studio still did not answer." : "The studio did not answer."}
+          action={
+            <Button size="sm" loading={trying} onClick={() => setTrying(true)}>
+              Try again
+            </Button>
+          }
+        >
+          Your takes are safe on the card, and they sync once the studio is back. You can keep recording, or try again now.
+        </ErrorState>
+      </div>
+    </section>
+  );
+}
+
+function ExportErrorDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-2xl gap-8">
+      <ExportFailed />
+      <StudioSyncFailed />
+    </div>
+  );
+}
+
 export default function StatesPage() {
   const [emptyKey, resetEmpty] = useReplay();
   const [listKey, resetList] = useReplay();
   const [cardsKey, resetCards] = useReplay();
   const [errorKey, resetError] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<div className="grid w-full max-w-xs"><DeploysCard /></div>}>
+    <Page
+      meta={meta}
+      docs={docs}
+      tile={<div className="grid w-full max-w-xs"><DeploysCard /></div>}
+      tileByWorld={{ device: <div className="grid w-full max-w-xs"><ExportsCard /></div> }}
+    >
       <Stage
         title="Empty"
         size="lg"
@@ -314,6 +510,14 @@ export default function StatesPage() {
         code="EmptyDemo"
         onReplay={resetEmpty}
         replayLabel="Reset"
+        byWorld={{
+          device: {
+            demo: <MixesEmptyDemo key={emptyKey} />,
+            code: "MixesEmptyDemo",
+            caption:
+              "Empty says what will appear in one sentence and gives one action to make it appear. It is left-aligned, with no illustration. The first panel is boxed; the second sits bare in a card that already has its box. New mix fills the list, and the row appears at once, because this state does not move.",
+          },
+        }}
         caption="Empty says what will appear in one sentence and gives one action to make it appear. It is left-aligned, with no illustration. The first panel is boxed; the second sits bare in a card that already has its box. New project fills the list, and the row appears at once, because this state does not move."
       >
         <EmptyDemo key={emptyKey} />
@@ -327,6 +531,14 @@ export default function StatesPage() {
         code="LoadingListDemo"
         onReplay={resetList}
         replayLabel="Reset"
+        byWorld={{
+          device: {
+            demo: <MixesListDemo key={listKey} />,
+            code: "MixesListDemo",
+            caption:
+              "The skeleton rows have the real rows' height, padding and columns, so the list lands without anything moving. The blocks are a static surface-2. The spec allows one short opacity pulse, but no tier token gives a pulse its duration, so they stay still and never shimmer. Press Load mixes and the rows arrive in the page's one expressive cascade.",
+          },
+        }}
         caption="The skeleton rows have the real rows' height, padding and columns, so the list lands without anything moving. The blocks are a static surface-2. The spec allows one short opacity pulse, but no tier token gives a pulse its duration, so they stay still and never shimmer. Press Load projects and the rows arrive in the page's one expressive cascade."
       >
         <LoadingListDemo key={listKey} />
@@ -339,6 +551,7 @@ export default function StatesPage() {
         code="LoadingCardsDemo"
         onReplay={resetCards}
         replayLabel="Reset"
+        byWorld={{ device: { demo: <MixesCardsDemo key={cardsKey} />, code: "MixesCardsDemo" } }}
         caption="Cards load the same way: a cover block at the real 8 to 5 ratio, two lines of text and two tags, in the same grid. The grid has no entrance of its own, so the cards appear in place. Load them and watch the height: it stays the same."
       >
         <LoadingCardsDemo key={cardsKey} />
@@ -352,6 +565,14 @@ export default function StatesPage() {
         code="ErrorDemo"
         onReplay={resetError}
         replayLabel="Reset"
+        byWorld={{
+          device: {
+            demo: <ExportErrorDemo key={errorKey} />,
+            code: "ExportErrorDemo",
+            caption:
+              "An error says what went wrong in plain words, then how to fix it, and its action is the retry. The red is on the icon only, as Device keeps it for a fault, and the words carry the meaning. Retry export hands over to a status line with a spinner, then the second try goes through. The sync error sits bare in a card, and its retry shows the button's own spinner, then fails again, so it says so.",
+          },
+        }}
         caption="An error says what went wrong in plain words, then how to fix it, and its action is the retry. The danger color is on the icon only, and the words carry the meaning. Retry deploy hands over to a status line with a spinner, then the second try goes through. The sync error sits bare in a card, and its retry shows the button's own spinner, then fails again, so it says so."
       >
         <ErrorDemo key={errorKey} />
