@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/button";
 import { CardPicker } from "@/components/card-picker";
 import { CodeIcon, GridIcon, ListIcon, UserIcon, UsersIcon, BuildingIcon } from "@/components/icons";
+import { CloudIcon } from "@/components/icons";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -205,15 +206,151 @@ function LayoutTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a recorder's format, its first question and its takes view ---------- */
+
+type Format = "wav24" | "float" | "mp3";
+
+const FORMATS: { value: Format; label: string; description: string; detail: string }[] = [
+  { value: "wav24", label: "WAV, 24 bit", description: "48 kHz, ready for the edit.", detail: "9H 3M left" },
+  { value: "float", label: "WAV, 32 bit float", description: "Never clips, at a third more space.", detail: "6H 48M left" },
+  { value: "mp3", label: "MP3, 320 kbps", description: "Small, for notes and rough takes.", detail: "65H left" },
+];
+
+function FormatDemo() {
+  const [format, setFormat] = useState<Format>("float");
+  const picked = FORMATS.find((f) => f.value === format);
+  return (
+    <div className="grid w-full max-w-3xl gap-3">
+      <CardPicker legend="Recording format" name="format" value={format} onValueChange={setFormat} options={FORMATS} />
+      <p role="status" className="text-small text-fg-subtle">
+        {picked?.label}: {picked?.detail} on card A.
+      </p>
+    </div>
+  );
+}
+
+type Subject = "interviews" | "meetings" | "rooms" | "outdoors";
+
+function FirstRunDemo() {
+  const [subject, setSubject] = useState<Subject | null>(null);
+  const [error, setError] = useState<string>();
+  const [sent, setSent] = useState("");
+  return (
+    <form
+      noValidate
+      className="grid w-full max-w-xl gap-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!subject) return setError("Pick one to continue.");
+        setSent(`Sent subject=${subject}.`);
+      }}
+    >
+      <CardPicker
+        legend="What will you record most?"
+        name="subject"
+        required
+        value={subject}
+        onValueChange={(v) => {
+          setSubject(v);
+          setError(undefined);
+        }}
+        help="Sets the input levels and the low cut. You can change it later in Settings."
+        error={error}
+        options={[
+          { value: "interviews", label: "Interviews", description: "One voice, close up.", picture: <UserIcon /> },
+          { value: "meetings", label: "Meetings", description: "Several voices round a table.", picture: <UsersIcon /> },
+          { value: "rooms", label: "Rooms", description: "Room tone and ambience.", picture: <BuildingIcon /> },
+          { value: "outdoors", label: "Outdoors", description: "Wind, birds and traffic.", picture: <CloudIcon /> },
+        ]}
+      />
+      <div className="flex items-center gap-3">
+        <Button type="submit">Continue</Button>
+        <p role="status" className="text-small text-fg-subtle">
+          {sent}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+/** A take's waveform, drawn in currentColor. */
+function WaveformPicture() {
+  return (
+    <span className="flex h-5 items-center gap-0.5">
+      <span className="h-1.5 w-0.5 bg-current" />
+      <span className="h-3.5 w-0.5 bg-current" />
+      <span className="h-5 w-0.5 bg-current" />
+      <span className="h-2.5 w-0.5 bg-current" />
+      <span className="h-4 w-0.5 bg-current" />
+      <span className="h-1.5 w-0.5 bg-current" />
+    </span>
+  );
+}
+
+function TakesViewDemo() {
+  return (
+    <div className="grid w-full max-w-xs gap-6">
+      <CardPicker
+        size="sm"
+        legend="Takes view"
+        defaultValue="list"
+        help="Waveforms need the card indexed. Index card A first."
+        options={[
+          { value: "list", label: "List", picture: <ListIcon /> },
+          { value: "grid", label: "Grid", picture: <GridIcon /> },
+          { value: "waveform", label: "Waveform", picture: <WaveformPicture />, disabled: true },
+        ]}
+      />
+      <CardPicker
+        size="sm"
+        legend="Density"
+        disabled
+        defaultValue="roomy"
+        help="Set on the recorder, under Display."
+        options={[
+          { value: "compact", label: "Compact", picture: <DensityPicture gap="gap-0.5" /> },
+          { value: "roomy", label: "Roomy", picture: <DensityPicture gap="gap-1.5" /> },
+        ]}
+      />
+    </div>
+  );
+}
+
+function TakesViewTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <CardPicker
+        size="sm"
+        legend="Takes view"
+        defaultValue="grid"
+        options={[
+          { value: "list", label: "List", picture: <ListIcon /> },
+          { value: "grid", label: "Grid", picture: <GridIcon /> },
+          { value: "waveform", label: "Waveform", picture: <WaveformPicture /> },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function CardPickerPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<LayoutTile />}>
+    <Page meta={meta} docs={docs} tile={<LayoutTile />} tileByWorld={{ device: <TakesViewTile /> }}>
       <Stage
         title="A plan"
         tier="responsive"
         size="lg"
         code="PlanDemo"
         caption="Three plans, each a card with a title, a line and a price. In Press they are plates seated in one tray and the picked one rises out of it, lit along its top edge, never the accent. Every card has the same size, so nothing changes shape between picks and the prices line up. The cards sit in a row while each gets 12rem of the picker's own width, and stack as rows below that, as on a phone."
+        byWorld={{
+          device: {
+            demo: <FormatDemo />,
+            title: "A recording format",
+            code: "FormatDemo",
+            caption:
+              "Three formats, each a card with a title, a line and the time it leaves on the card. The picked one is lit, never the accent. Every card has the same size, so nothing changes shape between picks and the times line up. The cards sit in a row while each gets 12rem of the picker's own width, and stack as rows below that, as on a phone.",
+          },
+        }}
       >
         <PlanDemo />
       </Stage>
@@ -224,6 +361,15 @@ export default function CardPickerPage() {
         size="lg"
         code="OnboardingDemo"
         caption="Nothing is picked until the person answers, because a question must not answer itself. Continue with nothing picked sets the error, which replaces the hint, outlines the tray in the danger color (Flat has no tray, so the words say it) and marks every radio invalid; a pick clears it. Four cards sit two by two once each gets 12rem, and four across from 48rem."
+        byWorld={{
+          device: {
+            demo: <FirstRunDemo />,
+            title: "A first-run question",
+            code: "FirstRunDemo",
+            caption:
+              "The question a recorder's app asks the first time it pairs. Nothing is picked until the person answers, because a question must not answer itself. Continue with nothing picked sets the fault, which replaces the hint, outlines the tray in red and marks every radio invalid; a pick clears it. Four cards sit two by two once each gets 12rem, and four across from 48rem.",
+          },
+        }}
       >
         <OnboardingDemo />
       </Stage>
@@ -233,6 +379,14 @@ export default function CardPickerPage() {
         tier="responsive"
         code="SettingsDemo"
         caption="Size sm draws tiles, a picture over a word, as in the gallery's Customize panel. Pictures draw in currentColor, so the picked one steps up to the stronger ink with its word. Board is disabled and skipped by the arrow keys, and the hint says why. A disabled picker passes it to every tile through the fieldset."
+        byWorld={{
+          device: {
+            demo: <TakesViewDemo />,
+            code: "TakesViewDemo",
+            caption:
+              "Size sm draws tiles, a picture over a word. Pictures draw in currentColor, so the picked one steps up to the stronger ink with its word. Waveform is disabled and skipped by the arrow keys, and the hint says why. A disabled picker passes it to every tile through the fieldset.",
+          },
+        }}
       >
         <SettingsDemo />
       </Stage>

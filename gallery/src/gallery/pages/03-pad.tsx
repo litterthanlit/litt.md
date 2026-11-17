@@ -183,15 +183,125 @@ function VoiceTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a recorder's auto level, and noise reduction on a take ---------- */
+
+/** A level in dB with a true minus. */
+const dB = (v: number) => `${v < 0 ? "−" : ""}${Math.abs(v)} dB`;
+const formatAutoLevel = ({ x, y }: PadValue) => `Peaks near ${dB(y)}, rides in ${x} ms`;
+const AUTO_LEVEL_DEFAULT: PadValue = { x: 300, y: -12 };
+const RIDE_X = { label: "Ride time", min: 50, max: 1000, step: 50, minLabel: "Fast", maxLabel: "Slow" };
+const RIDE_Y = { label: "Target level", min: -24, max: -6, step: 1, minLabel: "−24 dB", maxLabel: "−6 dB" };
+
+/** What the auto level does to take_04, by how fast it rides. */
+const rideOf = (x: number) =>
+  x < 200
+    ? "Rides quickly: a door slam is caught at once, and speech pumps a little."
+    : x < 600
+      ? "Rides gently: speech stays even, and a door slam still comes through."
+      : "Rides slowly: loud and quiet passages keep their shape.";
+
+function AutoLevelDemo() {
+  const [ride, setRide] = useState<PadValue>({ x: 150, y: -9 });
+  const atDefault = ride.x === AUTO_LEVEL_DEFAULT.x && ride.y === AUTO_LEVEL_DEFAULT.y;
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Pad
+        label="Auto level"
+        help="How the recorder rides the input gain while it records."
+        x={RIDE_X}
+        y={RIDE_Y}
+        value={ride}
+        onValueChange={setRide}
+        defaultMark={AUTO_LEVEL_DEFAULT}
+        formatValue={formatAutoLevel}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <p className="text-small text-fg-muted">{formatAutoLevel(ride)}</p>
+        <Button size="sm" variant="secondary" disabled={atDefault} onClick={() => setRide(AUTO_LEVEL_DEFAULT)}>
+          Reset
+        </Button>
+      </div>
+      <div className="grid gap-1 border-t border-line pt-4">
+        <p className="text-small text-fg-subtle">On take_04, an interview by a road</p>
+        <p className="text-small text-fg-muted">{rideOf(ride.x)}</p>
+        <p className="text-caption font-normal tabular-nums text-fg-subtle">Peaks near {dB(ride.y)}</p>
+      </div>
+    </div>
+  );
+}
+
+const NOISE = ["Rumble", "Hum", "Room tone", "Hiss", "Air"];
+const NOISE_X = { label: "Amount", min: -18, max: -3, step: 3, minLabel: "−18 dB", maxLabel: "−3 dB" };
+const NOISE_Y = { label: "Band", min: 0, max: 100, step: 5, minLabel: "Low", maxLabel: "High" };
+const formatNoise = ({ x, y }: PadValue) => `${dB(x)} of ${level(NOISE, y).toLowerCase()}`;
+
+function NoiseReductionDemo() {
+  const [noise, setNoise] = useState<PadValue>({ x: -9, y: 45 });
+  const [saved, setSaved] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Pad
+        label="Noise reduction"
+        help="Takes a band of steady noise out of take_04."
+        x={NOISE_X}
+        y={NOISE_Y}
+        value={noise}
+        onValueChange={setNoise}
+        onValueCommit={(v) => setSaved(`Applied to take_04: ${formatNoise(v)}.`)}
+        defaultMark={{ x: -6, y: 50 }}
+        formatValue={formatNoise}
+      />
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {saved}
+      </p>
+    </div>
+  );
+}
+
+function LockedNoiseDemo() {
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <Pad
+        disabled
+        label="Noise reduction"
+        help="Locked while take_04 exports."
+        x={NOISE_X}
+        y={NOISE_Y}
+        defaultValue={{ x: -9, y: 45 }}
+        defaultMark={{ x: -6, y: 50 }}
+        formatValue={formatNoise}
+      />
+    </div>
+  );
+}
+
+function AutoLevelTile() {
+  const [ride, setRide] = useState<PadValue>({ x: 150, y: -9 });
+  return (
+    <div className="w-full max-w-sm">
+      <Pad label="Auto level" help={formatAutoLevel(ride)} x={RIDE_X} y={RIDE_Y} value={ride} onValueChange={setRide} defaultMark={AUTO_LEVEL_DEFAULT} formatValue={formatAutoLevel} />
+    </div>
+  );
+}
+
 export default function PadPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<VoiceTile />}>
+    <Page meta={meta} docs={docs} tile={<VoiceTile />} tileByWorld={{ device: <AutoLevelTile /> }}>
       <Stage
         title="Your voice"
         tier="responsive"
         code="VoiceDemo"
         size="lg"
         caption="Press anywhere, drag, or use the arrow keys. The thumb, a round cap, and its crosshairs follow at once, with no easing; while you hold it, the cap sinks half a pixel and its cast tightens. The tooltip says the value in words. The dashed circle is the default, and Reset takes the thumb back to it. The words beside Reset say the same thing, and the reply under the pad changes with the tone and shows its length. Only the tooltip fades, on the responsive tier."
+        byWorld={{
+          device: {
+            demo: <AutoLevelDemo />,
+            title: "Auto level",
+            code: "AutoLevelDemo",
+            caption:
+              "A recorder's auto level: how fast it rides the gain, and the level it aims the peaks at. Press anywhere, drag, or use the arrow keys. The cap and its crosshairs follow at once, with no easing. The tooltip says the value in dB and ms. The dashed circle is the default, and Reset takes the cap back to it. The words under the pad say what the ride does to a take. Only the tooltip fades, on the responsive tier.",
+          },
+        }}
       >
         <VoiceDemo />
       </Stage>
@@ -201,6 +311,15 @@ export default function PadPage() {
         tier="responsive"
         code="SectionLookDemo"
         caption="The same pad for a template's look: density from Compact to Airy, contrast from Soft to Strong. Tab once to reach it, then the arrows move the thumb, and Shift makes them ten steps. The note under it is written on release, from onValueCommit. A screen reader gets two sliders, one for each axis."
+        byWorld={{
+          device: {
+            demo: <NoiseReductionDemo />,
+            title: "Noise on a take",
+            code: "NoiseReductionDemo",
+            caption:
+              "The same pad for noise reduction on a take: how much comes out, from −18 dB to −3 dB, and the band it comes out of, from rumble to air. Tab once to reach it, then the arrows move the cap, and Shift makes them ten steps. The note under it is written on release, from onValueCommit. A screen reader gets two sliders, one for each axis.",
+          },
+        }}
       >
         <SectionLookDemo />
       </Stage>
@@ -210,6 +329,7 @@ export default function PadPage() {
         tier="responsive"
         code="DisabledDemo"
         caption="The disabled pad lies flat all the way through: the well and the thumb on the flat surface with hairline edges, fainter dots and crosshairs, and every word dimmed. Tab skips it and the pointer does nothing. The help text says why it is locked."
+        byWorld={{ device: { demo: <LockedNoiseDemo />, code: "LockedNoiseDemo" } }}
       >
         <DisabledDemo />
       </Stage>

@@ -190,6 +190,80 @@ function PublishDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): erasing a card, deleting a scene, updating the firmware ---------- */
+
+function EraseCardDemo() {
+  const [round, setRound] = useState(0);
+  const [said, setSaid] = useState("");
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">Erase card A</p>
+        <p className="text-small text-fg-muted">All 38 takes on the card, 41.2 GB, go for good.</p>
+      </div>
+      <SlideConfirm
+        key={round}
+        label="Slide to erase card A"
+        confirmedLabel="Erasing card A"
+        onConfirm={() => setSaid("onConfirm ran: erasing card A")}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <Status>{said}</Status>
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!said}
+          onClick={() => {
+            setRound((r) => r + 1);
+            setSaid("");
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function TypeSceneDemo() {
+  const [round, setRound] = useState(0);
+  const [said, setSaid] = useState("");
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <SlideConfirm
+        key={round}
+        label="Slide to delete scene A"
+        confirmedLabel="Deleting scene A"
+        confirmText="Scene A"
+        onConfirm={() => setSaid("onConfirm ran: deleting scene A")}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <Status>{said}</Status>
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!said}
+          onClick={() => {
+            setRound((r) => r + 1);
+            setSaid("");
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function FirmwareDemo() {
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <SlideConfirm size="lg" label="Slide to update the firmware to 2.4.1" confirmedLabel="Updating the firmware" />
+      <SlideConfirm label="Slide to erase card B" disabled />
+    </div>
+  );
+}
+
 export default function SlideConfirmPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -199,6 +273,15 @@ export default function SlideConfirmPage() {
         align="start"
         code="DeleteProjectDemo"
         caption="Drag the thumb. It follows the pointer one to one and the words fade as it goes; the part it has passed fills at fg 6%. Let go before the end and it springs back on the responsive tier, with no bounce. Reach the end and it stays there with a check, and onConfirm runs once. Tab to the thumb and press Enter to confirm by key; a mouse click alone does nothing."
+        byWorld={{
+          device: {
+            demo: <EraseCardDemo />,
+            title: "Erase a card",
+            code: "EraseCardDemo",
+            caption:
+              "Erasing a recorder's card takes a slide, not a press. Drag the cap: it follows the pointer one to one and the words fade as it goes. Let go before the end and it springs back on the responsive tier, with no bounce. Reach the end and it stays there with a check, and onConfirm runs once. Tab to the cap and press Enter to confirm by key; a mouse click alone does nothing.",
+          },
+        }}
       >
         <DeleteProjectDemo />
       </Stage>
@@ -209,6 +292,7 @@ export default function SlideConfirmPage() {
         align="start"
         code="TypeDemo"
         caption="confirmText adds a quiet link under the track for anyone who cannot drag. It opens a field labelled with the words to type and a danger button that waits until they match exactly. The button or Enter confirms the same way the slide does: the thumb moves to the end with its check and onConfirm runs once. Esc closes the field."
+        byWorld={{ device: { demo: <TypeSceneDemo />, code: "TypeSceneDemo" } }}
       >
         <TypeDemo />
       </Stage>
@@ -219,6 +303,7 @@ export default function SlideConfirmPage() {
         align="start"
         code="PublishDemo"
         caption="lg is 56 tall; md is 44, and grows to 56 on a coarse pointer, because a finger does the sliding. Disabled is flat, skipped by Tab and ignores the pointer; its words stay readable, because they still say what it would do."
+        byWorld={{ device: { demo: <FirmwareDemo />, code: "FirmwareDemo" } }}
       >
         <PublishDemo />
       </Stage>

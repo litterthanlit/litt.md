@@ -120,6 +120,72 @@ function ProjectsDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): who recorded a take, and each take behind its name ---------- */
+
+function RecordistDemo() {
+  return (
+    <p className="max-w-md text-reading text-fg-muted">
+      take_04.wav was recorded by{" "}
+      <HoverCard>
+        <HoverCardTrigger>
+          <a href="#hover-card" className={link}>
+            Ines Duarte
+          </a>
+        </HoverCardTrigger>
+        <HoverCardContent>
+          <div className="grid gap-4">
+            <div className="flex items-center gap-3">
+              <Avatar name="Ines Duarte" size="lg" decorative />
+              <div className="grid gap-1">
+                <p className="text-small font-title text-fg">Ines Duarte</p>
+                <p className="text-small text-fg-subtle">Sound recordist, scene A</p>
+              </div>
+            </div>
+            <p className="text-small text-fg-muted">Lisbon. Records the interviews and the room tone for the film.</p>
+            <p className="tabular-nums text-caption font-normal text-fg-subtle">Joined March 2024 · 312 takes</p>
+          </div>
+        </HoverCardContent>
+      </HoverCard>{" "}
+      two hours ago, on card A.
+    </p>
+  );
+}
+
+const TAKES = [
+  { id: "take_04", name: "take_04.wav", status: "Saved", tone: "success", note: "Recorded 2 hours ago, by the road.", where: "Card A · 13 MB" },
+  { id: "take_05", name: "take_05.wav", status: "Copying", tone: "warning", note: "Going to the phone, 64% done.", where: "Card A, to the phone" },
+  { id: "take_06", name: "take_06.wav", status: "Scratch", tone: "neutral", note: "Not exported yet.", where: "Card A only" },
+] as const;
+
+function TakesDemo() {
+  return (
+    <ul aria-label="Takes" className="grid w-full max-w-md">
+      {TAKES.map((t) => (
+        <li key={t.id} className="flex items-center justify-between gap-4 border-b border-line py-3 last:border-b-0">
+          <HoverCard>
+            <HoverCardTrigger>
+              <a href="#hover-card" className={link + " text-small"}>
+                {t.name}
+              </a>
+            </HoverCardTrigger>
+            <HoverCardContent side="right" align="center">
+              <div className="grid gap-2">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-small font-title text-fg">{t.name}</p>
+                  <Tag status={t.tone}>{t.status}</Tag>
+                </div>
+                <p className="text-small text-fg-muted">{t.note}</p>
+                <p className="truncate text-caption font-normal text-fg-subtle">{t.where}</p>
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+          <Tag status={t.tone}>{t.status}</Tag>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function HoverCardPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -129,6 +195,15 @@ export default function HoverCardPage() {
         align="start"
         code="PersonDemo"
         caption="Rest the pointer on the name for half a second, or Tab to it. The card grows from the link on the responsive tier and travels a quarter of the travel token from the side it opens on. Move into the card and it stays; leave both and it goes after 200ms. On a phone a tap just follows the link."
+        byWorld={{
+          device: {
+            demo: <RecordistDemo />,
+            title: "Who recorded a take",
+            code: "RecordistDemo",
+            caption:
+              "Rest the pointer on the recordist's name for half a second, or Tab to it. The card grows from the link on the responsive tier and travels a quarter of the travel token from the side it opens on. Move into the card and it stays; leave both and it goes after 200 ms. On a phone a tap just follows the link.",
+          },
+        }}
       >
         <PersonDemo />
       </Stage>
@@ -139,6 +214,15 @@ export default function HoverCardPage() {
         align="start"
         code="ProjectsDemo"
         caption="Each project's card opens to the right, centered on its row, and flips when there is no room. Moving from one name to the next waits out the delay again, so sweeping down the list does not flash every card."
+        byWorld={{
+          device: {
+            demo: <TakesDemo />,
+            title: "A take behind its name",
+            code: "TakesDemo",
+            caption:
+              "Each take's card opens to the right, centred on its row, and flips when there is no room. Moving from one name to the next waits out the delay again, so sweeping down the list does not flash every card.",
+          },
+        }}
       >
         <ProjectsDemo />
       </Stage>

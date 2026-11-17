@@ -163,6 +163,53 @@ function StatesDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): pairing the recorder with the app on a phone ---------- */
+
+function PairRecorderDemo() {
+  const [round, setRound] = useState(0);
+  const [result, setResult] = useState<"idle" | "checking" | "wrong" | "right">("idle");
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <CodeInput
+        key={round}
+        label="Pairing code"
+        help={`Shown on the recorder's screen for 2 minutes. Try ${RIGHT}.`}
+        error={result === "wrong" ? "That is not the code on the recorder. Check its screen, or show a new one." : undefined}
+        onValueChange={() => result === "wrong" && setResult("idle")}
+        onComplete={(code) => {
+          setResult("checking");
+          window.setTimeout(() => setResult(code === RIGHT ? "right" : "wrong"), 500);
+        }}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {result === "checking" ? "Pairing…" : result === "right" ? "Paired with the recorder." : ""}
+        </p>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            setRound((r) => r + 1);
+            setResult("idle");
+          }}
+        >
+          Show a new code
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function PairingStatesDemo() {
+  return (
+    <div className="grid w-full max-w-md gap-8">
+      <CodeInput label="Card code" type="alphanumeric" length={4} size="lg" defaultValue="k7q" help="Printed on the card's label. Letters land in capitals." />
+      <CodeInput label="Pairing code" defaultValue="135790" error="That code has expired. Show a new one on the recorder." />
+      <CodeInput label="Pairing code" defaultValue="2468" disabled help="Wait 30 s to show another code." />
+    </div>
+  );
+}
+
 export default function CodeInputPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -172,6 +219,14 @@ export default function CodeInputPage() {
         align="start"
         code="VerifyDemo"
         caption={`Type or paste six digits; "246 810" pastes as 246810, because spaces and dashes are dropped. The cell the next digit goes into has the focus edge and a still caret. The sixth digit runs onComplete, which checks the code: ${RIGHT} signs in, anything else shows the error under the cells, and typing again clears it.`}
+        byWorld={{
+          device: {
+            demo: <PairRecorderDemo />,
+            title: "Pair the recorder",
+            code: "PairRecorderDemo",
+            caption: `The app on a phone pairs with the recorder: type or paste the six digits on the recorder's screen; "246 810" pastes as 246810. Each digit lights in segments on the glass. The sixth runs onComplete, which checks the code: ${RIGHT} pairs, anything else shows the fault under the cells, and typing again clears it.`,
+          },
+        }}
       >
         <VerifyDemo />
       </Stage>
@@ -182,6 +237,7 @@ export default function CodeInputPage() {
         align="start"
         code="StatesDemo"
         caption="An alphanumeric code of four at lg, with letters in capitals; six cells split three and three, shorter codes do not. An error puts the danger edge on every cell. Disabled is flat and muted, as the Input."
+        byWorld={{ device: { demo: <PairingStatesDemo />, code: "PairingStatesDemo" } }}
       >
         <StatesDemo />
       </Stage>

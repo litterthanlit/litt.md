@@ -188,6 +188,121 @@ function LongText() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a take's toolbar, its notes and the safety track ---------- */
+
+function TakeToolbar() {
+  return (
+    <div role="group" aria-label="Take actions" className="flex flex-wrap items-center justify-center gap-1">
+      <Tooltip content="Copy file name" shortcut="⇧⌘C">
+        <Button iconOnly variant="ghost" aria-label="Copy file name"><CopyIcon /></Button>
+      </Tooltip>
+      <Tooltip content="Share take" shortcut="⇧⌘S">
+        <Button iconOnly variant="ghost" aria-label="Share take"><ShareIcon /></Button>
+      </Tooltip>
+      <Divider />
+      <Tooltip content="Archive take" shortcut="E">
+        <Button iconOnly variant="ghost" aria-label="Archive take"><ArchiveIcon /></Button>
+      </Tooltip>
+      <Tooltip content="Take settings" shortcut="⌘,">
+        <Button iconOnly variant="ghost" aria-label="Take settings"><SettingsIcon /></Button>
+      </Tooltip>
+      <Divider />
+      <Tooltip content="Delete take" shortcut="⌫">
+        <Button iconOnly variant="ghost" aria-label="Delete take"><TrashIcon /></Button>
+      </Tooltip>
+    </div>
+  );
+}
+
+function TakePhoneDemo() {
+  const [last, setLast] = useState("Tap a button, or press and hold it");
+  const actions = [
+    { name: "Copy file name", shortcut: "⇧⌘C", icon: <CopyIcon /> },
+    { name: "Share take", shortcut: "⇧⌘S", icon: <ShareIcon /> },
+    { name: "Archive take", shortcut: "E", icon: <ArchiveIcon /> },
+  ];
+  return (
+    <DeviceProvider mode="phone">
+      <div className="grid justify-items-center gap-6">
+        <div role="group" aria-label="Take actions" className="flex items-center gap-1">
+          {actions.map((a) => (
+            <Tooltip key={a.name} content={a.name} shortcut={a.shortcut}>
+              <Button iconOnly variant="ghost" aria-label={a.name} onClick={() => setLast(`${a.name} ran`)}>
+                {a.icon}
+              </Button>
+            </Tooltip>
+          ))}
+        </div>
+        <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
+      </div>
+    </DeviceProvider>
+  );
+}
+
+const TAKE_SIDES: { side: TooltipSide; label: string; content: string; cell: string }[] = [
+  { side: "top", label: "Top", content: "Recorded 4 minutes ago", cell: "col-start-2 row-start-1" },
+  { side: "left", label: "Left", content: "3 markers", cell: "col-start-1 row-start-2" },
+  { side: "right", label: "Right", content: "Clipped at 00M 31S", cell: "col-start-3 row-start-2" },
+  { side: "bottom", label: "Bottom", content: "Archived in March", cell: "col-start-2 row-start-3" },
+];
+
+function TakeSides({ pinned = false, onPinnedChange }: { pinned?: boolean; onPinnedChange?: (v: boolean) => void }) {
+  return (
+    <div className="grid grid-cols-[auto_auto_auto] justify-center gap-x-6 gap-y-6 sm:gap-x-12">
+      {TAKE_SIDES.map((s) => (
+        <div key={s.side} className={s.cell + " grid place-items-center"}>
+          <Tooltip
+            side={s.side}
+            content={s.content}
+            open={pinned ? true : undefined}
+            onOpenChange={(o) => !o && onPinnedChange?.(false)}
+          >
+            <Button>{s.label}</Button>
+          </Tooltip>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SafetyTrackText() {
+  return (
+    <div className="grid max-w-[48ch] gap-8">
+      <div className="flex items-center gap-2 text-body text-fg-muted">
+        <Tooltip
+          side="top"
+          align="start"
+          content="take_04.wav is on card A and backed up to the phone. Recorded 4 minutes ago, by the road."
+        >
+          <button
+            type="button"
+            aria-label="Take status"
+            className="grid size-6 shrink-0 cursor-help place-items-center rounded-pill text-fg-subtle hover:text-fg"
+          >
+            <InfoIcon />
+          </button>
+        </Tooltip>
+        <span>take_04 is saved</span>
+      </div>
+      <p className="text-body text-fg-muted">
+        Each take keeps a{" "}
+        <Tooltip
+          side="bottom"
+          content="A second file, recorded 12 dB lower at the same time. When the main file clips, the same moment is still clean on the safety track."
+        >
+          <button
+            type="button"
+            className="inline cursor-help rounded-control text-fg underline decoration-fg-subtle decoration-dotted underline-offset-4"
+          >
+            safety track
+          </button>
+        </Tooltip>
+        , so a shout does not cost you the take.
+      </p>
+    </div>
+  );
+}
+
 export default function TooltipPage() {
   const [pinned, setPinned] = useState(false);
   return (
@@ -198,6 +313,13 @@ export default function TooltipPage() {
           tier="responsive"
           caption="Rest on an icon and its tooltip opens after 200ms. Once one has shown, sweep across the bar: the next opens at once, for 300ms after the last one closes. Keyboard focus opens it instantly too. Only the first one fades and scales in from its trigger; the ones you sweep onto, and the ones focus opens, appear in place."
           code="Toolbar"
+          byWorld={{
+            device: {
+              demo: <TakeToolbar />,
+              title: "A take's toolbar",
+              code: "TakeToolbar",
+            },
+          }}
         >
           <Toolbar />
         </Stage>
@@ -209,6 +331,7 @@ export default function TooltipPage() {
           replayLabel="Show all four"
           onReplay={() => setPinned(true)}
           code="Sides"
+          byWorld={{ device: { demo: <TakeSides pinned={pinned} onPinnedChange={setPinned} />, code: "TakeSides" } }}
           caption="The tooltip starts a quarter of the travel distance nearer its trigger and moves out, so top rises and right slides right. It follows the side it really opens on: when there is no room it flips, and the movement flips with it. Narrow the window to see it."
         >
           <Sides pinned={pinned} onPinnedChange={setPinned} />
@@ -219,6 +342,7 @@ export default function TooltipPage() {
           tier="responsive"
           caption="Text wraps at 240px and keeps the same entrance. Use it on an info icon or a dotted term, never to hide something people need. On touch, press and hold to read it."
           code="LongText"
+          byWorld={{ device: { demo: <SafetyTrackText />, code: "SafetyTrackText" } }}
         >
           <LongText />
         </Stage>
@@ -228,6 +352,7 @@ export default function TooltipPage() {
           tier="responsive"
           caption="A tap only does what the button does, so no label is left behind. Press and hold to read it, and touch anywhere else to close it. The shortcut chips go, because a finger has no shortcuts. This stage forces the phone behavior on a desktop, where a mouse press and hold stands in for the finger."
           code="PhoneDemo"
+          byWorld={{ device: { demo: <TakePhoneDemo />, code: "TakePhoneDemo" } }}
         >
           <PhoneDemo />
         </Stage>

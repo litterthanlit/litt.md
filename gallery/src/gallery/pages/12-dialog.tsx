@@ -480,6 +480,285 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): exporting a scene, sharing and deleting a take, settings ---------- */
+
+function ExportSceneDemo() {
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!busy) return;
+    const t = setTimeout(() => {
+      setBusy(false);
+      setOpen(false);
+      setStatus("Exported scene A. Four takes are on card B.");
+    }, 1400);
+    return () => clearTimeout(t);
+  }, [busy]);
+
+  return (
+    <Launcher status={status}>
+      <Dialog open={open} onOpenChange={(o) => !busy && setOpen(o)}>
+        <DialogTrigger asChild>
+          <Button>Export scene A</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Export scene A?"
+          description="Four takes go to card B as WAV. The originals stay on card A."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button disabled={busy}>Cancel</Button>
+              </DialogClose>
+              <Button variant="primary" loading={busy} onClick={() => setBusy(true)} data-autofocus>
+                Export
+              </Button>
+            </>
+          }
+        >
+          <dl className="grid gap-3">
+            <Row label="Takes">4</Row>
+            <Row label="Format">
+              <span className="tabular-nums text-caption font-normal">48 kHz · 24 bit</span>
+            </Row>
+            <Row label="Size">
+              <span className="tabular-nums text-caption font-normal">41.2 MB</span>
+            </Row>
+          </dl>
+        </DialogContent>
+      </Dialog>
+    </Launcher>
+  );
+}
+
+function ShareTakeDemo() {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState<"listener" | "editor">("listener");
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!EMAIL.test(email.trim())) {
+      setError("Enter a full address, like nina@example.com.");
+      e.currentTarget.querySelector("input")?.focus();
+      return;
+    }
+    setOpen(false);
+    setStatus(`take_04.wav shared with ${email.trim()} as ${role}.`);
+  };
+
+  return (
+    <Launcher status={status}>
+      <Dialog
+        open={open}
+        onOpenChange={(o) => {
+          if (o) {
+            setEmail("");
+            setRole("listener");
+            setError(null);
+          }
+          setOpen(o);
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button>Share take_04</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Share take_04.wav"
+          description="They get an email with a link to the take."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button variant="primary" type="submit" form="share-take-form">
+                Share
+              </Button>
+            </>
+          }
+        >
+          <form id="share-take-form" onSubmit={submit} noValidate className="grid gap-6">
+            <TextField
+              label="Email address"
+              type="email"
+              inputMode="email"
+              autoComplete="off"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (error) setError(null);
+              }}
+              error={error}
+            />
+            <div className="grid gap-2">
+              <Segmented
+                legend="Role"
+                showLegend
+                block
+                name="share-role"
+                value={role}
+                onValueChange={setRole}
+                options={[
+                  { value: "listener", label: "Listener" },
+                  { value: "editor", label: "Editor" },
+                ]}
+              />
+              <p className="text-small text-fg-subtle">
+                {role === "listener" ? "Listeners can play the take and leave notes on it." : "Editors can trim the take and export it."}
+              </p>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </Launcher>
+  );
+}
+
+const TAKE_NAME = "take_04";
+
+function DeleteTakeDemo() {
+  const [open, setOpen] = useState(false);
+  const [typed, setTyped] = useState("");
+  const [status, setStatus] = useState<string | null>(null);
+  const ready = typed.trim() === TAKE_NAME;
+
+  return (
+    <Launcher status={status}>
+      <Dialog
+        open={open}
+        onOpenChange={(o) => {
+          if (o) setTyped("");
+          setOpen(o);
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button variant="danger">Delete take</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Delete take_04.wav?"
+          description="This permanently deletes the take, its safety track and its 3 markers. It cannot be undone."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button
+                variant="danger"
+                disabled={!ready}
+                onClick={() => {
+                  setOpen(false);
+                  setStatus("take_04.wav was deleted.");
+                }}
+              >
+                Delete take
+              </Button>
+            </>
+          }
+        >
+          <TextField
+            label={
+              <>
+                Type <span className="font-mono text-caption font-normal text-fg">{TAKE_NAME}</span> to confirm
+              </>
+            }
+            mono
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            placeholder={TAKE_NAME}
+            value={typed}
+            onChange={(e) => setTyped(e.target.value)}
+          />
+        </DialogContent>
+      </Dialog>
+    </Launcher>
+  );
+}
+
+function RecorderSettingsDemo() {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("Field recorder 2");
+  const [rate, setRate] = useState<"48" | "96">("48");
+  const [screen, setScreen] = useState<"system" | "light" | "dark">("system");
+  const [status, setStatus] = useState<string | null>(null);
+
+  return (
+    <Launcher status={status}>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button icon={<SettingsIcon />}>Recorder settings</Button>
+        </DialogTrigger>
+        <DialogContent
+          side="right"
+          title="Recorder settings"
+          description="Changes apply from the next take."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button variant="primary" type="submit" form="recorder-settings-form">
+                Save changes
+              </Button>
+            </>
+          }
+        >
+          <form
+            id="recorder-settings-form"
+            noValidate
+            className="grid gap-6"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setOpen(false);
+              setStatus(`Saved settings for ${name || "this recorder"}.`);
+            }}
+          >
+            <TextField label="Recorder name" spellCheck={false} value={name} onChange={(e) => setName(e.target.value)} />
+            <TextField label="Take name" spellCheck={false} defaultValue="take_" help="Takes are named take_01, take_02 and so on." />
+            <Segmented
+              legend="Sample rate"
+              showLegend
+              block
+              name="settings-rate"
+              value={rate}
+              onValueChange={setRate}
+              options={[
+                { value: "48", label: "48 kHz" },
+                { value: "96", label: "96 kHz" },
+              ]}
+            />
+            <Segmented
+              legend="Screen"
+              showLegend
+              block
+              name="settings-screen"
+              value={screen}
+              onValueChange={setScreen}
+              options={[
+                { value: "system", label: "System" },
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+              ]}
+            />
+          </form>
+        </DialogContent>
+      </Dialog>
+    </Launcher>
+  );
+}
+
+function PhoneSettingsDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <RecorderSettingsDemo />
+    </DeviceProvider>
+  );
+}
+
 export default function DialogPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -488,6 +767,14 @@ export default function DialogPage() {
         tier="expressive"
         code="PublishDemo"
         caption="The panel fades in, rises by the travel token's distance and settles from 0.98 to full size on the expressive tier. The overlay only fades. Closing is quicker and never bounces. Esc, Cancel or a click outside closes it, and focus returns to the button."
+        byWorld={{
+          device: {
+            demo: <ExportSceneDemo />,
+            code: "ExportSceneDemo",
+            caption:
+              "A recorder's app asks before it exports a scene. The panel fades in, rises by the travel token's distance and settles from 0.98 to full size on the expressive tier. The overlay only fades. Closing is quicker and never bounces. Esc, Cancel or a click outside closes it, and focus returns to the button.",
+          },
+        }}
       >
         <PublishDemo />
       </Stage>
@@ -497,6 +784,14 @@ export default function DialogPage() {
         tier="expressive"
         code="InviteDemo"
         caption="Same entrance, with focus landing in the email field. On a touch screen focus lands on the panel instead, so the keyboard does not open during the rise. Inputs are 44px tall and 16px on touch. The role is a native radio group, so arrow keys move between Viewer and Editor. Try sending an invalid address."
+        byWorld={{
+          device: {
+            demo: <ShareTakeDemo />,
+            code: "ShareTakeDemo",
+            caption:
+              "Same entrance, with focus landing in the email field. On a touch screen focus lands on the panel instead, so the keyboard does not open during the rise. Inputs are 44px tall and 16px on touch. The role is a native radio group, so arrow keys move between Listener and Editor. Try sharing with an invalid address.",
+          },
+        }}
       >
         <InviteDemo />
       </Stage>
@@ -506,6 +801,14 @@ export default function DialogPage() {
         tier="expressive"
         code="DeleteDemo"
         caption="On the page, Delete project is a block with red words. In the dialog that asks, the same danger Button is the confirm, and the footer makes it the one red fill. It stays disabled and lies flat until you type the project slug, then it lights. It has no glow: that is the primary's."
+        byWorld={{
+          device: {
+            demo: <DeleteTakeDemo />,
+            code: "DeleteTakeDemo",
+            caption:
+              "On the page, Delete take is a grey key with red words. In the dialog that asks, the same danger Button is the confirm, and the footer makes it the one red key. It stays disabled and lies flat until you type the take's name, then it lights.",
+          },
+        }}
       >
         <DeleteDemo />
       </Stage>
@@ -515,6 +818,7 @@ export default function DialogPage() {
         tier="expressive"
         code="SheetDemo"
         caption="The sheet is 400px wide and full height, but it travels only the travel token's distance on x, never its own width. It fades in at the right edge and settles. The footer stays pinned while the body scrolls. On a phone it becomes the bottom sheet below."
+        byWorld={{ device: { demo: <RecorderSettingsDemo />, code: "RecorderSettingsDemo" } }}
       >
         <SheetDemo />
       </Stage>
@@ -524,6 +828,7 @@ export default function DialogPage() {
         tier="expressive"
         code="PhoneDemo"
         caption="On a phone the dialog is a bottom sheet, and a right sheet becomes the same one. It rises from the bottom edge by its own height on the expressive tier and leaves the same way. Drag it down from the title, the grabber or the body and it follows your finger. Let go far enough, or flick it, and it leaves. Otherwise it springs back without a bounce. Close, Cancel, Esc and a tap on the dimmed page do the same thing as the drag."
+        byWorld={{ device: { demo: <PhoneSettingsDemo />, code: "PhoneSettingsDemo" } }}
       >
         <PhoneDemo />
       </Stage>
