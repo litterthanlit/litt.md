@@ -173,6 +173,99 @@ function EmptyDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): recording projects in the library ---------- */
+
+const RECORDINGS: Project[] = [
+  { id: "harbour", name: "Harbour at dawn", client: "Podcast · episode 12", deploy: "Exported 2 days ago", status: "live", updated: "2026-10-10", description: "A walk along the harbour at 48 kHz · 24 bit.", tags: ["Mix", "Podcast"] },
+  { id: "dawn", name: "Dawn chorus", client: "Field · Hana Ito", deploy: "Not exported yet", status: "review", updated: "2026-10-09", description: "12M 40S at 96 kHz for the slowed passages.", tags: ["Field"] },
+  { id: "scene-12", name: "Scene 12", client: "Short film · day 4", deploy: "Exported 3 days ago", status: "live", updated: "2026-10-08", description: "Kitchen dialogue, two lavaliers and a boom.", tags: ["Dialogue"] },
+  { id: "room-tone", name: "Room tone library", client: "Short film · every room", deploy: "Preview ready", status: "review", updated: "2026-10-06", description: "A minute of every room.", tags: ["Library"] },
+  { id: "foley", name: "Foley, Scene 9", client: "Short film · day 2", deploy: "Not exported yet", status: "draft", updated: "2026-10-04", description: "Footsteps on gravel and a door.", tags: ["Foley"] },
+  { id: "market", name: "Market ambience", client: "Sound library", deploy: "Exported last week", status: "live", updated: "2026-09-28", description: "Two hours of a Saturday market in stereo.", tags: ["Ambience", "Library"] },
+  { id: "wind", name: "Wind test", client: "Field · Nick", deploy: "Not exported yet", status: "draft", updated: "2026-09-21", description: "Three windshields at 6 m/s.", tags: ["Test"] },
+  { id: "interview", name: "Interview, Ines Duarte", client: "Podcast · episode 13", deploy: "Not exported yet", status: "draft", updated: "2026-09-15", description: "Two lavaliers and a room mic.", tags: ["Podcast"] },
+];
+
+const FRESH_RECORDINGS: Pick<Project, "name" | "client" | "description" | "tags">[] = [
+  { name: "Scene 13", client: "Short film · day 5", description: "Stairwell dialogue, one boom.", tags: ["Dialogue"] },
+  { name: "Rain on the roof", client: "Sound library", description: "An hour of rain at 96 kHz.", tags: ["Ambience"] },
+  { name: "Interview, Tomas Berg", client: "Podcast · episode 14", description: "Two lavaliers in a quiet room.", tags: ["Podcast"] },
+  { name: "Foley, Scene 13", client: "Short film · day 5", description: "Keys, a coat and a door.", tags: ["Foley"] },
+];
+
+function RecordingsEntranceDemo() {
+  return <ProjectList projects={RECORDINGS} className="max-w-3xl" />;
+}
+
+function RecordingsCardsDemo() {
+  const [projects, setProjects] = useState<Project[]>(RECORDINGS);
+  const [filter, setFilter] = useState<ProjectFilter>("all");
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const added = projects.length - RECORDINGS.length;
+  const visibleSelected = selected.filter((id) => {
+    const p = projects.find((x) => x.id === id);
+    return p ? matchesFilter(p, filter) : false;
+  });
+
+  const insert = () => {
+    const base = FRESH_RECORDINGS[added % FRESH_RECORDINGS.length];
+    const round = Math.floor(added / FRESH_RECORDINGS.length);
+    const fresh: Project = {
+      ...base,
+      id: `new-${added + 1}`,
+      name: round ? `${base.name} ${round + 1}` : base.name,
+      deploy: "Not exported yet",
+      status: "draft",
+      updated: "2026-10-11",
+    };
+    setProjects((ps) => [fresh, ...ps]);
+    if (filter === "live" || filter === "review") setFilter("all");
+  };
+
+  return (
+    <div className="grid w-full gap-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <ProjectFilters value={filter} onChange={setFilter} />
+        <div className="flex items-center">
+          <span aria-live="polite" className="text-small tabular-nums text-fg-subtle not-empty:mr-4">
+            {visibleSelected.length ? `${visibleSelected.length} selected` : ""}
+          </span>
+          <Button variant="primary" size="sm" icon={<PlusIcon />} onClick={insert}>
+            New project
+          </Button>
+        </div>
+      </div>
+      <ProjectGrid
+        projects={projects}
+        filter={filter}
+        selectedIds={selected}
+        onSelectedChange={(id, on) => setSelected((s) => (on ? [...s, id] : s.filter((x) => x !== id)))}
+        onClearFilter={() => setFilter("all")}
+      />
+    </div>
+  );
+}
+
+const LIVE_RECORDINGS = RECORDINGS.filter((p) => p.status === "live");
+
+function RecordingsEmptyDemo() {
+  const [filter, setFilter] = useState<ProjectFilter>("review");
+  const [selected, setSelected] = useState<string[]>([]);
+  return (
+    <div className="grid w-full gap-8">
+      <ProjectFilters value={filter} onChange={setFilter} />
+      <ProjectGrid
+        projects={LIVE_RECORDINGS}
+        filter={filter}
+        selectedIds={selected}
+        onSelectedChange={(id, on) => setSelected((s) => (on ? [...s, id] : s.filter((x) => x !== id)))}
+        onClearFilter={() => setFilter("all")}
+      />
+    </div>
+  );
+}
+
 export default function ListPage() {
   const [listKey, replayList] = useReplay();
   const [cardsKey, resetCards] = useReplay();
@@ -184,6 +277,7 @@ export default function ListPage() {
         tier="expressive"
         align="start"
         code="EntranceDemo"
+        byWorld={{ device: { demo: <RecordingsEntranceDemo key={listKey} />, title: "Recordings", code: "RecordingsEntranceDemo" } }}
         onReplay={replayList}
         caption="Each row fades in and rises from the travel token's distance to rest, on the expressive tier. Row n waits n times the stagger token. The cascade stops counting at six: rows seven and eight arrive with row six, so a long list never drags. Hover only changes the fill and a row never moves; on a touch screen the row you hold fills instead. Press Replay to watch it again."
       >
@@ -196,6 +290,7 @@ export default function ListPage() {
         size="lg"
         align="start"
         code="CardsDemo"
+        byWorld={{ device: { demo: <RecordingsCardsDemo key={cardsKey} />, code: "RecordingsCardsDemo" } }}
         onReplay={resetCards}
         replayLabel="Reset"
         caption="Pick a filter and the grid re-flows. Cards that stay slide to their new place on the responsive tier, as position only so text never stretches. Cards that leave fade and shrink to 0.98 with no travel. New project adds a card at the start on the same tier, because the list above holds this page's one expressive moment. Hover steps the hairline and the cover fill. The checkbox only turns the ring to the focus color."
@@ -208,6 +303,7 @@ export default function ListPage() {
         tier="responsive"
         align="start"
         code="EmptyDemo"
+        byWorld={{ device: { demo: <RecordingsEmptyDemo key={emptyKey} />, code: "RecordingsEmptyDemo" } }}
         onReplay={resetEmpty}
         replayLabel="Reset"
         caption="A filter with no results says so in one line, gives a hint, and offers the way out. It waits for the leaving cards to fade before it appears. Clear filter brings the cards back on the responsive tier. Switch between Live and Review to see both."

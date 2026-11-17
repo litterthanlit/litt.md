@@ -141,6 +141,83 @@ function NarrowDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): what the recorder has to tell you ---------- */
+
+function RecordKeyTipDemo() {
+  return (
+    <div className="w-full max-w-xl">
+      <Callout
+        icon={<LightbulbIcon />}
+        title="Press R to start a take"
+        description="31 takes started from the screen this week. The key takes one press."
+        action={<Kbd>R</Kbd>}
+      />
+    </div>
+  );
+}
+
+function RecorderTonesDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <Callout title="Links to a take expire after 7 days" description="Share the library link when the edit needs it for longer." />
+      <Callout tone="success" title="take_04.wav is backed up" description="Copied to the library in 38 s, with its safety track." />
+      <Callout tone="warning" title="Card A has 12M left" description="At 48 kHz · 24 bit. Put Card B in before the next scene." />
+      <Callout tone="danger" title="Channel 2 clipped at +0.4 dB" description="In take_05.wav at 00M 09S 14F. Its safety track, 12 dB lower, is clean." />
+    </div>
+  );
+}
+
+function FormatCardDemo() {
+  const [open, setOpen] = useState(true);
+  if (!open) return <p className="text-small text-fg-subtle">Dismissed. The callout is gone from the page.</p>;
+  return (
+    <div className="w-full max-w-xl">
+      <Callout
+        tone="warning"
+        title="Card B was last formatted 30 days ago"
+        description="Its 214 takes are in the library. Format it in the recorder before the next shoot day, so it starts clean."
+        action={<Button size="sm">Format card</Button>}
+        onDismiss={() => setOpen(false)}
+      />
+    </div>
+  );
+}
+
+function MixReadyNote() {
+  const [open, setOpen] = useState(true);
+  if (!open) {
+    return (
+      <Button size="sm" variant="ghost" onClick={() => setOpen(true)}>
+        Show the note again
+      </Button>
+    );
+  }
+  return (
+    <Callout
+      tone="success"
+      title="Mix · take_04 is ready"
+      description="Bounced at −14 LUFS, with 4 stems."
+      action={<Button size="sm">Send to the edit</Button>}
+      onDismiss={() => setOpen(false)}
+    />
+  );
+}
+
+function MixNarrowDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-8">
+      <div className="grid gap-2">
+        <p className="text-caption font-normal text-fg-subtle">A callout 36rem wide</p>
+        <MixReadyNote />
+      </div>
+      <div className="grid w-full max-w-80 gap-2">
+        <p className="text-caption font-normal text-fg-subtle">A callout 20rem wide</p>
+        <MixReadyNote />
+      </div>
+    </div>
+  );
+}
+
 export default function CalloutPage() {
   const [renewalKey, showRenewal] = useReplay();
   return (
@@ -149,6 +226,7 @@ export default function CalloutPage() {
         title="A tip with a key"
         align="start"
         code="TipDemo"
+        byWorld={{ device: { demo: <RecordKeyTipDemo />, code: "RecordKeyTipDemo" } }}
         caption="A tip sits in the page flow on a raised surface, with no shadow and no rail. The lightbulb replaces the default icon and stays in the neutral tone. The key at the end is a Kbd, so it is a hint and not a button, and it hides on a phone. Nothing moves."
       >
         <TipDemo />
@@ -158,6 +236,7 @@ export default function CalloutPage() {
         title="The four tones"
         align="start"
         code="TonesDemo"
+        byWorld={{ device: { demo: <RecorderTonesDemo />, code: "RecorderTonesDemo" } }}
         caption="Only the icon takes the status color: fg-subtle for neutral, then success, warning and danger. The box, the title and the description stay neutral, so a row of them stays calm. A screen reader hears a hidden word before the title, so the color never says it alone."
       >
         <TonesDemo />
@@ -167,6 +246,16 @@ export default function CalloutPage() {
         title="An action and a close button"
         align="start"
         code="RenewalDemo"
+        byWorld={{
+          device: {
+            demo: (
+              <div key={renewalKey} className="w-full">
+                <FormatCardDemo />
+              </div>
+            ),
+            code: "FormatCardDemo",
+          },
+        }}
         onReplay={showRenewal}
         replayLabel="Show again"
         caption="The action is an sm Button at the end, lined up with the title's first line, and the close button sits at the top end. Closing calls your handler and the callout unmounts at once, with no exit. The button grows to 44px on a phone."
@@ -180,6 +269,7 @@ export default function CalloutPage() {
         title="A narrow callout"
         align="start"
         code="NarrowDemo"
+        byWorld={{ device: { demo: <MixNarrowDemo />, code: "MixNarrowDemo" } }}
         caption="The callout measures itself, not the window. Under 28rem the action drops below the text and lines up with it, and the close button stays at the top end. In a sidebar or on a phone nothing is squeezed."
       >
         <NarrowDemo />

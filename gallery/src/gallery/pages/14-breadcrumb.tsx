@@ -274,6 +274,141 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a take on the card, and the recorder's manual ---------- */
+
+const TAKE_TRAIL: BreadcrumbItem[] = [
+  { label: "Library", href: "/library" },
+  { label: "Card A", href: "/library/card-a" },
+  { label: "Scene 12", href: "/library/card-a/scene-12" },
+  { label: "take_04.wav", href: "/library/card-a/scene-12/take-04" },
+];
+
+const MANUAL_TRAIL: BreadcrumbItem[] = [
+  { label: "Manual", href: "/manual" },
+  { label: "Recording", href: "/manual/recording" },
+  { label: "Inputs", href: "/manual/recording/inputs" },
+  { label: "Phantom power", href: "/manual/recording/inputs/phantom" },
+  { label: "Per channel", href: "/manual/recording/inputs/phantom/channel" },
+  { label: "48 V", href: "/manual/recording/inputs/phantom/channel/48v" },
+  { label: "Turn on 48 V phantom power for one channel", href: "/manual/recording/inputs/phantom/channel/48v/on" },
+];
+
+function TakeTrailDemo() {
+  const router = useDemoRouter();
+  return (
+    <div className="grid w-full max-w-lg gap-4">
+      <Breadcrumb items={TAKE_TRAIL} renderLink={router.renderLink} />
+      <Status>{router.went}</Status>
+    </div>
+  );
+}
+
+function ManualTrailDemo() {
+  const router = useDemoRouter();
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <Breadcrumb items={MANUAL_TRAIL} label="Manual breadcrumb" renderLink={router.renderLink} onNavigate={router.onNavigate} />
+      <Status>{router.went}</Status>
+    </div>
+  );
+}
+
+const TAKE_SECTIONS: { title: string; rows: [string, string][] }[] = [
+  {
+    title: "Take",
+    rows: [
+      ["Name", "take_04.wav"],
+      ["Scene", "Scene 12"],
+      ["Length", "00M 14S 06F"],
+    ],
+  },
+  {
+    title: "Format",
+    rows: [
+      ["Sample rate", "48 kHz"],
+      ["Bit depth", "24 bit"],
+      ["Channels", "2, linked"],
+    ],
+  },
+  {
+    title: "Inputs",
+    rows: [
+      ["Channel 1", "Lavalier · −18 dB"],
+      ["Channel 2", "Boom · 48 V"],
+      ["Low cut", "80 Hz"],
+    ],
+  },
+  {
+    title: "Card",
+    rows: [
+      ["Card", "Card A"],
+      ["Left", "3H 12M"],
+      ["Backed up", "2 hours ago"],
+    ],
+  },
+];
+
+/** The take's page under the bar, in the same rows as the shared demo's settings. */
+function TakePage() {
+  return (
+    <div className="grid gap-12 px-gutter pt-12 pb-24">
+      <div className="grid max-w-[46ch] gap-2">
+        <h3 className="text-h3 text-fg">take_04.wav</h3>
+        <p className="text-body text-fg-muted">Everything about this take, from its format to the card it sits on.</p>
+      </div>
+      {TAKE_SECTIONS.map((s, i) => (
+        <section key={s.title} data-under-glass={i === 1 ? "" : undefined} className="grid gap-4">
+          <h4 className="text-body text-fg">{s.title}</h4>
+          <dl className="grid">
+            {s.rows.map(([k, v]) => (
+              <div key={k} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
+                <dt className="text-small text-fg-subtle">{k}</dt>
+                <dd className="min-w-0 truncate text-small tabular-nums text-fg">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function TakeBarDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useDemoRouter();
+  useStartUnderBar(frame);
+  return (
+    <div className="grid w-full gap-4">
+      <Frame ref={frame} label="take_04.wav page" className="h-112 max-sm:[--gutter:var(--space-4)]">
+        <div className="litt-glass sticky top-0 z-10 flex h-(--header-h) items-center gap-3 rounded-none px-gutter">
+          <Breadcrumb items={TAKE_TRAIL} renderLink={router.renderLink} onNavigate={router.onNavigate} menuOffset={24} className="flex-1" />
+          <Button
+            iconOnly
+            size="sm"
+            variant="ghost"
+            aria-label="Share take"
+            className="pointer-coarse:h-control-md pointer-coarse:w-control-md"
+          >
+            <ShareIcon />
+          </Button>
+        </div>
+        <TakePage />
+      </Frame>
+      <Status>{router.went}</Status>
+    </div>
+  );
+}
+
+function TakePhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <div className="mx-auto w-full max-w-sm [--gutter:var(--space-4)]">
+        <TakeBarDemo />
+      </div>
+    </DeviceProvider>
+  );
+}
+
 export default function BreadcrumbPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -282,6 +417,7 @@ export default function BreadcrumbPage() {
         tier="instant"
         align="start"
         code="SettingsTrailDemo"
+        byWorld={{ device: { demo: <TakeTrailDemo />, title: "Where a take sits", code: "TakeTrailDemo" } }}
         caption="Each level is a link in muted text that turns to the full text color on hover, on the instant tier, with no underline and no fill. A slash in the subtle color sits between levels, because a chevron reads as something that opens. The current page is plain text in the full color and the browser hears aria-current. Nothing moves."
       >
         <SettingsTrailDemo />
@@ -293,6 +429,7 @@ export default function BreadcrumbPage() {
         size="lg"
         align="start"
         code="DocsTrailDemo"
+        byWorld={{ device: { demo: <ManualTrailDemo />, code: "ManualTrailDemo" } }}
         caption="Past four levels the middle ones fold into a round ghost button. It opens litt's Menu of them in order, on the responsive tier, and its rows are real links. The first level and the last three stay. The current page is long here, so it truncates with an ellipsis instead of wrapping onto a second line."
       >
         <DocsTrailDemo />
@@ -303,6 +440,14 @@ export default function BreadcrumbPage() {
         tier="instant"
         size="lg"
         code="GlassBarDemo"
+        byWorld={{
+          device: {
+            demo: <TakeBarDemo />,
+            code: "TakeBarDemo",
+            caption:
+              "A breadcrumb at the top of a take's page, in a sticky glass bar beside a share button. The take's format and inputs scroll under the glass. The bar owns no motion, and the breadcrumb keeps one line however long the take's name is.",
+          },
+        }}
         caption="A breadcrumb at the top of a page, in a sticky glass bar beside a share button. The settings scroll under the glass. The bar owns no motion, and the breadcrumb keeps one line however long the page title is."
       >
         <GlassBarDemo />
@@ -313,6 +458,7 @@ export default function BreadcrumbPage() {
         tier="responsive"
         size="lg"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <TakePhoneDemo />, code: "TakePhoneDemo" } }}
         caption="On a narrow screen only the current page and its parent show. The rest fold into the button, which opens the Menu beside it. On a touch screen every link and the button take a 44px hit area through an invisible layer, so the text never moves. This stage forces the phone behavior, so a mouse can try it."
       >
         <PhoneDemo />

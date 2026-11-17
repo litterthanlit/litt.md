@@ -178,12 +178,122 @@ function NarrowDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a take, a recorder, a take that loads and an export that failed ---------- */
+
+function TakeDetailsDemo() {
+  return (
+    <Details title="take_04.wav" description="Scene 12, kept" action={<Button size="sm">Play</Button>} className="w-full max-w-lg">
+      <DetailsItem label="Status">
+        <Tag status="success">Backed up</Tag>
+      </DetailsItem>
+      <DetailsItem label="Library" copy="library/scene-12/take_04">
+        <DetailsLink href="#details">library/scene-12/take_04</DetailsLink>
+      </DetailsItem>
+      <DetailsItem label="Timecode" mono copy="10:42:17:06">
+        10:42:17:06
+      </DetailsItem>
+      <DetailsItem label="Format">48 kHz · 24 bit</DetailsItem>
+      <DetailsItem label="Length">00M 14S 06F</DetailsItem>
+      <DetailsItem label="Recorded by">
+        <span className="inline-flex items-center gap-2">
+          <Avatar name="Ines Duarte" size="sm" decorative />
+          Ines Duarte, today at 10:42
+        </span>
+      </DetailsItem>
+    </Details>
+  );
+}
+
+function RecorderDetailsDemo() {
+  return (
+    <Details title="Bag recorder 1" description="In service since March 2024" layout="grid" columns={4} className="w-full max-w-3xl">
+      <DetailsItem label="Format">48 kHz · 24 bit</DetailsItem>
+      <DetailsItem label="Inputs">4 XLR, 2 with 48 V</DetailsItem>
+      <DetailsItem label="Cards">2 slots, mirrored</DetailsItem>
+      <DetailsItem label="Kit">
+        <Tag>Field</Tag>
+      </DetailsItem>
+      <DetailsItem label="Recordist">Ines Duarte</DetailsItem>
+      <DetailsItem label="Email" copy="sound@example.com">
+        sound@example.com
+      </DetailsItem>
+      <DetailsItem label="Serial" mono copy="RC-8J2L-M4QX">
+        RC-8J2L-M4QX
+      </DetailsItem>
+      <DetailsItem label="Time zone">Lisbon</DetailsItem>
+      <DetailsItem label="Notes" wide>
+        The low cut on channel 2 sticks at 80 Hz. Send it in for service after the shoot, and keep the cart recorder as the spare
+        until it is back.
+      </DetailsItem>
+    </Details>
+  );
+}
+
+function TakeStatesDemo() {
+  return (
+    <div className="grid w-full max-w-3xl items-start gap-6 md:grid-cols-2">
+      <Details title="take_031.wav" loading>
+        <DetailsItem label="Scene" />
+        <DetailsItem label="Length" />
+        <DetailsItem label="Recorded" />
+        <DetailsItem label="Card" />
+      </Details>
+      <Details title="take_030.wav">
+        <DetailsItem label="Scene">Scene 13</DetailsItem>
+        <DetailsItem label="Length">00M 41S 12F</DetailsItem>
+        <DetailsItem label="Recorded">2 Oct 2026</DetailsItem>
+        <DetailsItem label="Note" />
+      </Details>
+    </div>
+  );
+}
+
+function ExportNarrowDemo() {
+  return (
+    <div className="grid w-full max-w-3xl items-start gap-8 sm:grid-cols-[18rem_minmax(0,1fr)]">
+      <div className="grid gap-2">
+        <p className="text-caption font-normal text-fg-subtle">A card 18rem wide</p>
+        <Details title="Export">
+          <DetailsItem label="Status">
+            <Tag status="danger">Failed</Tag>
+          </DetailsItem>
+          <DetailsItem label="Step">Writing the stems</DetailsItem>
+          <DetailsItem label="Log" mono copy="exp_6tQw91Hc2zR">
+            exp_6tQw91Hc2zR
+          </DetailsItem>
+        </Details>
+      </div>
+      <div className="grid gap-2">
+        <p className="text-caption font-normal text-fg-subtle">Bare, on a panel that is already a surface</p>
+        <div className="rounded-surface bg-surface-2 px-4 py-1 shadow-[inset_0_0_0_1px_var(--line)]">
+          <Details bare>
+            <DetailsItem label="File">WAV</DetailsItem>
+            <DetailsItem label="Sample rate">48 kHz</DetailsItem>
+            <DetailsItem label="Output" mono>
+              stems/
+            </DetailsItem>
+          </Details>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DetailsPage() {
   return (
     <Page meta={meta} docs={docs}>
       <Stage
         title="A deployment"
         code="DeploymentDemo"
+        byWorld={{
+          device: {
+            demo: <TakeDetailsDemo />,
+            title: "A take",
+            code: "TakeDetailsDemo",
+            caption:
+              "Rows of facts under a take's name, with one action at the end of the header. The labels share one column, so the values line up, and each label sits on its value's first line. The library path and the timecode can be copied: the icon swaps for a check at once and a screen reader hears it. Nothing else moves, and the card has no hover because it links nowhere.",
+          },
+        }}
         caption="Rows of facts under a title, with one action at the end of the header. The labels share one column, so the values line up, and each label sits on its value's first line. The domain and the commit can be copied: the icon swaps for a check at once and a screen reader hears it. Nothing else moves, and the card has no hover because it links nowhere."
       >
         <DeploymentDemo />
@@ -192,6 +302,7 @@ export default function DetailsPage() {
       <Stage
         title="A client at a glance"
         code="ClientDemo"
+        byWorld={{ device: { demo: <RecorderDetailsDemo />, title: "A recorder at a glance", code: "RecorderDetailsDemo" } }}
         caption="The grid puts each label above its value, in columns that measure the card: four across here, two in a narrow card, one under 20rem. The note takes the whole row. A long value wraps rather than truncating, so nothing is hidden."
       >
         <ClientDemo />
@@ -200,6 +311,7 @@ export default function DetailsPage() {
       <Stage
         title="Loading and not set"
         code="StatesDemo"
+        byWorld={{ device: { demo: <TakeStatesDemo />, code: "TakeStatesDemo" } }}
         caption="While the facts load, each value is a still bar one line tall, so the card keeps its height when they arrive. Nothing pulses. A fact with no value says Not set in the subtle grey, never a dash."
       >
         <StatesDemo />
@@ -209,6 +321,7 @@ export default function DetailsPage() {
         title="Narrow, and bare"
         align="start"
         code="NarrowDemo"
+        byWorld={{ device: { demo: <ExportNarrowDemo />, code: "ExportNarrowDemo" } }}
         caption="The card measures its own width. Under 20rem each label moves above its value, so a phone or a side column never squeezes the words. Bare drops the raised surface for a list that already sits on one, such as a dialog or a side panel."
       >
         <NarrowDemo />

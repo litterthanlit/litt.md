@@ -220,6 +220,99 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): how long a take waits on the card, and how long a mix takes to export ---------- */
+
+const SLOWEST = 1980; // 33 h, the take that waited longest this fortnight
+const CARD_A = logNormal(11, 152, 38, 0.95, 3, 1300);
+const CARD_B = [...logNormal(12, 259, 100, 1.1, 3, 1700), SLOWEST];
+/* Card A's takes reach the library sooner than card B's. */
+const BACKUPS = { all: [...CARD_A, ...CARD_B], a: CARD_A, b: CARD_B };
+const WAIT_TICKS = [
+  { value: 5, label: "5m" },
+  { value: 60, label: "1h" },
+  { value: 240, label: "4h" },
+  { value: 1440, label: "1d" },
+  { value: 2880, label: "2d" },
+];
+type Slot = keyof typeof BACKUPS;
+
+function BackupWaitDemo() {
+  const [slot, setSlot] = useState<Slot>("all");
+  const values = BACKUPS[slot];
+  return (
+    <div className="grid w-full max-w-3xl gap-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <p className="grid gap-1">
+          <span className="text-small text-fg-subtle">Time from REC to the library, 14 days</span>
+          <span className="flex items-baseline gap-2">
+            <span className="text-h3 tabular-nums text-fg">{duration(middle(values))}</span>
+            <span className="text-small text-fg-subtle">median</span>
+          </span>
+        </p>
+        <Segmented
+          legend="Takes from"
+          size="sm"
+          value={slot}
+          onValueChange={setSlot}
+          options={[
+            { value: "all", label: "All" },
+            { value: "a", label: "Card A" },
+            { value: "b", label: "Card B" },
+          ]}
+        />
+      </div>
+      <DotPlot
+        label="Time to backup"
+        values={values}
+        scale="log"
+        domain={[3, 4320]}
+        ticks={WAIT_TICKS}
+        formatValue={duration}
+        unit={["take", "takes"]}
+        goal={240}
+        goalLabel="4 h goal"
+        markers={slot === "a" ? [] : [{ value: SLOWEST, label: "take_112 · 33 h" }]}
+      />
+    </div>
+  );
+}
+
+const EXPORTS = logNormal(7, 240, 41, 0.2, 18, 90);
+
+function ExportTimesDemo() {
+  return (
+    <div className="grid w-full max-w-3xl gap-8">
+      <p className="grid gap-1">
+        <span className="text-small text-fg-subtle">Mix exports, 14 days</span>
+        <span className="flex items-baseline gap-2">
+          <span className="text-h3 tabular-nums text-fg">{Math.round(middle(EXPORTS))} s</span>
+          <span className="text-small text-fg-subtle">median</span>
+        </span>
+      </p>
+      <DotPlot label="Export times" values={EXPORTS} domain={[20, 80]} formatValue={(v) => `${Math.round(v)} s`} unit={["export", "exports"]} />
+    </div>
+  );
+}
+
+function BackupPhoneDemo() {
+  return (
+    <div className="w-full max-w-[22.375rem]">
+      <DotPlot
+        label="Time to backup"
+        values={BACKUPS.all}
+        scale="log"
+        domain={[3, 4320]}
+        ticks={WAIT_TICKS}
+        formatValue={duration}
+        unit={["take", "takes"]}
+        goal={240}
+        goalLabel="4 h goal"
+        markers={[{ value: SLOWEST, label: "take_112 · 33 h" }]}
+      />
+    </div>
+  );
+}
+
 export default function DotPlotPage() {
   const [reply, replayReply] = useReplay();
   const [build, replayBuild] = useReplay();
@@ -230,6 +323,15 @@ export default function DotPlotPage() {
         tier="responsive"
         size="lg"
         code="ReplySpeedDemo"
+        byWorld={{
+          device: {
+            demo: <BackupWaitDemo key={reply} />,
+            title: "Time to backup",
+            code: "BackupWaitDemo",
+            caption:
+              "How long each take waited on the card before it reached the library. Each column is a slice of that wait on a log axis, so minutes and days share the plot, and its dots stack out from the centre line. The goal splits them: within four hours, and past it. The median is a line. take_112 sat on a card for 33 hours, so it is one dot, ringed and named. Hover or arrow to a column for its range and count. The switch redraws at once. The plot fades in once, on the responsive tier. Replay it to watch.",
+          },
+        }}
         onReplay={replayReply}
         caption="Each column is a slice of reply time on a log axis, so minutes and days share the plot, and its dots stack out from the center line. Blue is within the four hour goal and gray is past it. The blue line is the median. Rui's reply is one dot, ringed and named. Hover or arrow to a column for its range and count. The switch redraws at once. The plot fades in once, on the responsive tier. Replay it to watch."
       >
@@ -241,6 +343,15 @@ export default function DotPlotPage() {
         tier="responsive"
         size="lg"
         code="BuildTimesDemo"
+        byWorld={{
+          device: {
+            demo: <ExportTimesDemo key={build} />,
+            title: "Export times",
+            code: "ExportTimesDemo",
+            caption:
+              "With no goal there is nothing to split, so every dot is the ink. The axis is linear, in seconds. When a column holds more items than the plot is tall, a dot stands for several and the legend says how many.",
+          },
+        }}
         onReplay={replayBuild}
         caption="With no goal there is nothing to split, so every dot takes the hue, here teal. The axis is linear, in seconds. When a column holds more items than the plot is tall, a dot stands for several and the legend says how many."
       >
@@ -252,6 +363,7 @@ export default function DotPlotPage() {
         tier="instant"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <BackupPhoneDemo />, code: "BackupPhoneDemo" } }}
         caption="The plot fills its container, so a phone gets fewer, wider columns, and each dot stands for more replies. Tick labels that would touch are left out, and the marker's label stays inside the plot. Touch the plot and drag along it: the column under your finger shows its tooltip, which stays until you touch elsewhere. A vertical drag still scrolls the page."
       >
         <PhoneDemo />
