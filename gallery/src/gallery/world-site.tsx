@@ -8,6 +8,10 @@
  * - #device/components: the world's gallery view (world-gallery.tsx), every component in the world as a live tile.
  * - #device/<component>: that component's page, drawn in the world, with a row back to the player.
  * - #device/about: the world's system page (world.tsx): its scenes, foundations, Only here and Install.
+ * - #device/sound: Device's four voices, to hear and tune by ear (sound-page.tsx, plans/021), a page of the gallery's own.
+ * - Device's top row also holds the mute (mute.tsx, plans/021): a key, and M where M is no page's own. Device starts
+ *   with sound on; the mute reaches every page under it through SoundProvider. The player's mute is the recorder's,
+ *   later (its body draws its own keys).
  */
 import { Suspense, useEffect, useRef, type ReactNode } from "react";
 import { useDark } from "./customize-state";
@@ -18,6 +22,9 @@ import { hasNavigated, useRoute } from "./route";
 import { WorldContext } from "./kit";
 import { World } from "./world";
 import { WorldGallery } from "./world-gallery";
+import { SoundProvider } from "@/motion/sound";
+import { MuteKey, useMuted, useMuteKey } from "./mute";
+import { SoundPage } from "./sound-page";
 
 export const HOME = "https://www.litt.design/systems/";
 
@@ -25,7 +32,10 @@ const LINK =
   "litt-target inline-flex h-control-sm items-center rounded-control px-2 text-small font-title text-fg-muted hover:text-fg " +
   "aria-[current=page]:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md";
 
-type Here = "player" | "components" | "about" | "page";
+/** A world's pages of the gallery's own beside about and components: Device's voices (plans/021). No page id may be one. */
+const OWN_PAGES: Partial<Record<Material, string[]>> = { device: ["sound"] };
+
+type Here = "player" | "components" | "about" | "own" | "page";
 
 /** Home, the world's name (which leads back to its player), its gallery view and its About page. */
 function Lead({ material, here }: { material: Material; here: Here }) {
@@ -67,10 +77,14 @@ export function WorldSite({ material }: { material: Material }) {
   const route = useRoute();
   const dark = useDark();
   const sub = route.split("/").slice(1).join("/");
-  const page = sub && sub !== "about" && sub !== "components" ? pages.find((p) => p.id === sub && p.group && p.group !== "Worlds" && !p.world && inWorld(p, material)) : undefined;
-  const here: Here = !sub ? "player" : sub === "about" ? "about" : sub === "components" ? "components" : "page";
+  const own = !!sub && !!OWN_PAGES[material]?.includes(sub);
+  const page = sub && sub !== "about" && sub !== "components" && !own ? pages.find((p) => p.id === sub && p.group && p.group !== "Worlds" && !p.world && inWorld(p, material)) : undefined;
+  const here: Here = !sub ? "player" : sub === "about" ? "about" : sub === "components" ? "components" : own ? "own" : "page";
   const main = useFocusOnArrival(route);
   const world = materialOf(material);
+  const [muted, setMuted] = useMuted();
+  const sounds = material === "device";
+  useMuteKey(muted, setMuted, sounds && here !== "player");
 
   let body: ReactNode;
   if (here === "player")
@@ -84,6 +98,7 @@ export function WorldSite({ material }: { material: Material }) {
     );
   else if (here === "about") body = <World material={material} />;
   else if (here === "components") body = <WorldGallery material={material} />;
+  else if (here === "own") body = <SoundPage />;
   else if (page)
     body = (
       <Suspense fallback={null}>
@@ -106,12 +121,15 @@ export function WorldSite({ material }: { material: Material }) {
     <div data-world={material} className="min-h-dvh bg-canvas text-fg">
       <div className="mx-auto grid w-full max-w-wide gap-6 px-gutter py-6">
         {here !== "player" && (
-          <header className="flex items-center justify-between gap-4">
-            <Lead material={material} here={here} />
+          <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <Lead material={material} here={here === "own" ? "page" : here} />
+            {sounds && <MuteKey muted={muted} setMuted={setMuted} />}
           </header>
         )}
         <main ref={main} id="main" tabIndex={-1} className="min-w-0 outline-none">
-          <WorldContext.Provider value={material}>{body}</WorldContext.Provider>
+          <WorldContext.Provider value={material}>
+            <SoundProvider muted={muted}>{body}</SoundProvider>
+          </WorldContext.Provider>
         </main>
       </div>
     </div>

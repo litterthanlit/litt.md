@@ -83,6 +83,11 @@
  *               outline reaches 3:1 on the paper and the panels, which carries the fill. At night the amber is its own
  *               words and ring, as the selected row's.
  *               Check 5 runs every pair again under Heat.
+ * 17. Sound:   Device's voice (plans/021). The --sound-<voice>-pitch, -length and -level tokens live in Device's block
+ *               alone (nothing outside Device sounds), every voice has all three, its pitch is in Hz within hearing
+ *               (20 to 20000), its length in ms above 0 and at most 120ms, and its level a plain number of dBFS at
+ *               most -12 (quiet: the components repo's key peaks near -18). gallery/src/motion/sound.ts clamps to the
+ *               same bounds (SOUND_LIMITS): change both together.
  *
  * Exits 1 if anything fails.
  */
@@ -1061,6 +1066,40 @@ console.log('Heat (data-material="heat")');
     }
   }
   heatFails.length ? heatFails.forEach(fail) : ok(`heat: ${HEAT_MAPPED.length} tokens mapped in both themes, after Rack, square, flat outlines, nothing sinks or glows, Blue 4, pink and mono restated, amber a fill by day`);
+}
+
+// 17. Sound ---------------------------------------------------------------
+console.log("Sound (Device's voice)");
+{
+  const soundFails = [];
+  /* gallery/src/motion/sound.ts mirrors these (SOUND_LIMITS): change both together. */
+  const SOUND_LEVEL_MAX = -12, SOUND_LENGTH_MAX = 120;
+  const devBody = block(/:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{(?=\s*--canvas)/) || "";
+  const voices = new Map();
+  for (const [, voice, part, value] of strip(devBody).matchAll(/(?<![\w-])--sound-([\w-]+)-(pitch|length|level)\s*:\s*([^;]+);/g))
+    voices.set(voice, { ...voices.get(voice), [part]: value.trim() });
+  const everywhere = [...strip(css).matchAll(/(?<![\w-])--sound-[\w-]+\s*:/g)].length;
+  const inDevice = [...strip(devBody).matchAll(/(?<![\w-])--sound-[\w-]+\s*:/g)].length;
+  if (everywhere !== inDevice) soundFails.push(`${everywhere - inDevice} --sound-* token(s) are declared outside Device's block; only Device sounds`);
+  if (!voices.size) soundFails.push("Device's block declares no --sound-* voice");
+  for (const [voice, v] of voices) {
+    for (const part of ["pitch", "length", "level"]) if (v[part] === undefined) soundFails.push(`--sound-${voice}-${part} is missing`);
+    if (v.pitch !== undefined) {
+      const m = /^([\d.]+)Hz$/.exec(v.pitch);
+      if (!m || +m[1] < 20 || +m[1] > 20000) soundFails.push(`--sound-${voice}-pitch is "${v.pitch}", not a pitch in Hz from 20 to 20000`);
+    }
+    if (v.length !== undefined) {
+      const m = /^([\d.]+)ms$/.exec(v.length);
+      if (!m || !(+m[1] > 0)) soundFails.push(`--sound-${voice}-length is "${v.length}", not a length in ms`);
+      else if (+m[1] > SOUND_LENGTH_MAX) soundFails.push(`--sound-${voice}-length is ${m[1]}ms, over its ${SOUND_LENGTH_MAX}ms bound`);
+    }
+    if (v.level !== undefined) {
+      const m = /^(-?[\d.]+)$/.exec(v.level);
+      if (!m) soundFails.push(`--sound-${voice}-level is "${v.level}", not a plain number of dBFS`);
+      else if (+m[1] > SOUND_LEVEL_MAX) soundFails.push(`--sound-${voice}-level is ${m[1]} dBFS, over its ${SOUND_LEVEL_MAX} dBFS bound`);
+    }
+  }
+  soundFails.length ? soundFails.forEach(fail) : ok(`sound: ${voices.size} voices in Device's block, each a pitch in Hz, a length at most ${SOUND_LENGTH_MAX}ms and a level at most ${SOUND_LEVEL_MAX} dBFS`);
 }
 
 console.log(failures.length ? `\n${failures.length} check(s) failed.` : `\nAll checks passed${warnings.length ? ` (${warnings.length} warning(s))` : ""}.`);

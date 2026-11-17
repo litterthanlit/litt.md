@@ -1863,6 +1863,26 @@
   --radius-chip: 0.4em;
   /* No light falls in the orange (plans/024): orange is a hand on it, never a wash on a card or a hero. */
   --light-strength: 0%;
+  /* Device's voice (plans/021; litt-principles.md, Device: "Sound answers a key"). Only Device sounds, only in answer to
+     a hand, synthesized, quiet and dry. Each voice is its pitch (its body, in Hz), its length (to the end of its longest
+     envelope) and its level (its peak, in dBFS), after the components repo's sound.ts at its tuned level: a key goes
+     down with a low thock and comes up lighter, a switch clacks twice, a slider's notch is the detent's tick, a code's
+     digit beeps behind the glass. Check 17 holds every level at -12 dBFS at most and every length at 120ms. */
+  --sound-key-down-pitch: 175Hz;
+  --sound-key-down-length: 46ms;
+  --sound-key-down-level: -18;
+  --sound-key-up-pitch: 320Hz;
+  --sound-key-up-length: 13ms;
+  --sound-key-up-level: -24;
+  --sound-switch-pitch: 700Hz;
+  --sound-switch-length: 25ms;
+  --sound-switch-level: -21;
+  --sound-notch-pitch: 2900Hz;
+  --sound-notch-length: 6ms;
+  --sound-notch-level: -27;
+  --sound-digit-pitch: 880Hz;
+  --sound-digit-length: 53ms;
+  --sound-digit-level: -26;
 
   --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--focus);
   --data-blue-tint: color-mix(in oklab, var(--data-blue) var(--tint-strength), var(--surface-1));

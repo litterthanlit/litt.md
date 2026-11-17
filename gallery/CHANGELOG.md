@@ -6,6 +6,11 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-11-17 · Device's materials
 
+Later the same day, Device's voice (plans/021, phase 1): its values only. Nothing in the registry plays them yet.
+
+- **added** `litt`: Device's four voices as tokens, under `data-material="device"` alone: `--litt-sound-<voice>-pitch` (its body, in Hz), `-length` (in ms) and `-level` (its peak, in dBFS) for `key-down`, `key-up`, `switch`, `notch` and `digit`. Levels stop at −12 dBFS and lengths at 120ms. No other world has them, and nothing in your code has to change.
+- **added** `device-litt`: the same, in Device's own install.
+
 Device's parts take Device's materials and its color rule (plans/024, Device, phase 2; Nick: "all yes"). Nothing changes outside Device.
 
 - **added** `litt`: Device's material tokens: `--litt-frame` and `--litt-frame-edge`, `--litt-plate-face` (the plate's gradient), `--litt-plate-edge` and `--litt-plate-grain`, `--litt-lcd` (the LCD's sheen), `--litt-lcd-edge` and `--litt-lcd-dim`, `--litt-chip` and `--litt-chip-ink`, `--litt-bezel` and `--litt-bezel-edge`, `--litt-lamp-on`, `--litt-lamp-off`, `--litt-lamp-recess` and `--litt-lamp-glow`, `--litt-legend-quiet`, and `--litt-select` with `--litt-select-ink` (the one blue on the glass). And Device's em radii, R9's exception: `--litt-radius-plate` (1.25em), `--litt-radius-well` (1.05em), `--litt-radius-key` (0.7em) and `--litt-radius-chip` (0.4em). Tailwind gains `rounded-litt-plate`, `-well`, `-key` and `-chip`, and `bg-litt-chip`, `text-litt-lcd-dim`, `bg-litt-lamp-on`, `bg-litt-lamp-off`, `text-litt-legend-quiet` and `bg-litt-select`. Every world gets the names, each one its material in that world's own terms (a surface, the field, the ink, the accent, litt's radii), so nothing changes outside Device, where they are its own. Nothing in your code has to change.

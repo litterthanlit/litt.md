@@ -38,6 +38,7 @@
     "test:home": "node scripts/home.mjs",
     "test:worlds": "node scripts/worlds.mjs",
     "test:materials": "node scripts/materials.mjs",
+    "test:sound": "node scripts/sound.mjs",
     "test:playground": "node scripts/playground.mjs",
     "test:study": "node scripts/study.mjs",
     "test:look": "node scripts/test-look.mjs",
