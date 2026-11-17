@@ -71,6 +71,28 @@ What the audit found in litt, across all six worlds:
 | 5 | How many stages on a component page? | **One per world, at the top, by name. Variants move under it, quietly, behind Code.** | The components repo's pages are stripped to the name. litt's stages are a teaching set; an agent needs them in `docs/<page>.md`, not the reader on the page. |
 | 6 | Do Device's studies run by themselves? (`litt-principles.md`, Open 3) | **Ask Nick at Device's STOP, with both shot side by side.** | It is the components repo's strongest trait and against R4; it should be decided by eye. |
 
+## Phase 0. A presentation pass first (gallery chrome only, 2026-11-16)
+
+Nick: "should we dial in the presentation first or individual worlds first? like these components look the same for
+all no?" A small pass on the chrome first, then world by world. Nothing in `src/components`, `src/worlds`,
+`src/motion` or `tokens.css` changed, and no world's look.
+
+- [x] One page, one stage: a component page is its name and its lead stage (the demo its tile uses), Code and Replay
+      under it, and one disclosure, Variants (a real `button`, `aria-expanded`), holding the lead's caption, the other
+      stages and Try it (Decision 5, as a disclosure rather than behind Code). Tier chips, "How it works" and the lede
+      left the page; the tiers and the summary stay in `docs/<page>.md` and `llms.txt`, whose output is byte for byte
+      what 62c0240 wrote. About, the docs and the install follow, quieter. The mosaic still deals every stage.
+- [x] A demo can differ per world (Decision 4's mechanism): `byWorld` on `Stage`, `tileByWorld` on `Page`, read from
+      `WorldContext` (set by `world-site.tsx`); a world without its own draws the shared demo. One example: Device's
+      Gauge, "Card left", 3H 12M of 8H at 48 kHz, 24 bit. The registry ships the shared demo as before.
+- [x] Quiet tiles and chrome: no counts on the overview's filter, a world's jump links or its group titles, no
+      explanation line under a world's gallery view or the wall's headings. A tile is the object and its name.
+- [x] Checks green, unchanged but `test:motion`, which now opens Variants before it presses a page's triggers.
+
+**STOP**: Nick looks at the before and after sheets (`#device/gauge`, `#press/slider`, `#flat/card`, `#heat/menu`,
+both gallery views, the overview, Device's Gauge dark) and says whether Variants as one disclosure is right, and
+whether Device's Gauge reads as the way every world's stages should go, before Device's phase 1 starts.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.

@@ -41,3 +41,16 @@ export function routes({ only = [] } = {}) {
   if (!only.length) return all;
   return all.filter((r) => only.includes(r) || only.includes(r.split("/").pop()) || only.includes(r.split("/")[0]));
 }
+
+/**
+ * A component page holds its other stages and Try it under one disclosure, Variants (kit.tsx, plans/024 phase 0). A
+ * check that reads a page's main opens it first, so what it holds is checked as it was when it lay open, and waits for
+ * what it loads (Try it reads the docs layer).
+ */
+export async function openVariants(pg) {
+  const button = pg.locator('main button[data-variants][aria-expanded="false"]');
+  if (!(await button.count())) return;
+  await button.first().click({ timeout: 2000 });
+  await pg.waitForLoadState("networkidle");
+  await pg.waitForTimeout(100);
+}

@@ -1,10 +1,12 @@
 /**
- * Gallery kit: the building blocks every page uses. Pages are airy (Nick's
- * call): one idea per stage, generous stages. A page shows before it explains:
- * the title and a one-line lede, then the first demo; each stage's caption folds
- * behind "How it works", and the full summary waits under the demos.
- * Text spacing follows foundations.md (Type, Text spacing): stages sit 48px apart,
- * the page title 16px above its summary, and a stage's title 4px above its caption.
+ * Gallery kit: the building blocks every page uses. A component page is stripped to the name (plans/024, phase 0,
+ * after the components repo's DESIGN.md): the name, then one stage, the page's lead demo (the one its wall tile uses).
+ * Under the stage sit its Code switch and Replay, and one disclosure, Variants, which holds the lead's caption and the
+ * page's other stages and Try it, out of sight until it is opened. About, the docs and the install follow, quieter.
+ * The lede and the tiers stay in meta, for the player, search, the Copy prompt and docs/<page>.md, and leave the page.
+ * A page's stage or tile can draw a different demo per world (`byWorld` on Stage, `tileByWorld` on Page): the same
+ * component and contract props in the world's words; a world without one draws the shared demo.
+ * Text spacing follows foundations.md (Type, Text spacing).
  */
 import { Children, cloneElement, createContext, Fragment, isValidElement, lazy, Suspense, useContext, useId, useState, type MouseEvent, type ReactElement, type ReactNode } from "react";
 import { DeviceProvider, StillMotion, useFun, type Tier } from "@/motion";
@@ -13,7 +15,6 @@ import { Framed } from "@/components/framed";
 import { ChevronDownIcon, SparkleIcon } from "@/components/icons";
 import type { Material } from "./look";
 import { Tabs, TabsList, TabsPanel, TabsPanels, TabsTrigger } from "@/components/tabs";
-import { Tag } from "@/components/tag";
 
 /** The sidebar's groups, in the order they appear. */
 /** Blocks come last: whole screens built from the components in the groups above them. */
@@ -151,12 +152,25 @@ export type PageDocs = {
   a11y: string[];
 };
 
-const TIER_LABEL: Record<Tier, string> = { instant: "Instant", responsive: "Responsive", expressive: "Expressive" };
+/**
+ * The world a page is drawn in: set by a world's site (world-site.tsx) around everything under #<world>, so a page at
+ * #device/gauge, and its tile in Device's gallery view and player, read "device". Null on the gallery's own pages (the
+ * overview's wall), which draw the shared demos.
+ */
+export const WorldContext = createContext<Material | null>(null);
 
-export function TierChip({ tier }: { tier: Tier }) {
-  return (
-    <Tag>{TIER_LABEL[tier]}</Tag>
-  );
+/**
+ * A stage's demo in one world (Stage's `byWorld`): the same component with the same contract props, in the world's own
+ * words. `title` and `caption` replace the stage's where the demo says something else, and `code` names its function
+ * in the page file for the Code view, as Stage's `code` does. Whatever is left out is the shared stage's.
+ */
+export type WorldDemo = { demo: ReactNode; title?: string; caption?: ReactNode; code?: string };
+
+/** A stage's props with its world's demo laid over them, or as they are in a world without one. */
+function inWorldOf(props: StageProps, world: Material | null): StageProps {
+  const alt = world ? props.byWorld?.[world] : undefined;
+  if (!alt) return props;
+  return { ...props, children: alt.demo, title: alt.title ?? props.title, caption: alt.caption ?? props.caption, code: alt.code ?? props.code };
 }
 
 /* The docs layer loads only for pages that pass `docs`: it carries the generated docs
@@ -182,12 +196,12 @@ export const PreviewContext = createContext<boolean | "tile" | "mosaic">(false);
  * wrapper (a page may wrap its stages in a <Toaster>), and keeps the wrapper around the demo, because the demo may
  * need what it provides. Null when the page has no stage.
  */
-function firstDemo(children: ReactNode): ReactNode | null {
+function firstDemo(children: ReactNode, world: Material | null): ReactNode | null {
   for (const child of Children.toArray(children)) {
     if (!isValidElement<{ children?: ReactNode }>(child)) continue;
-    if (child.type === Stage) return (child as ReactElement<StageProps>).props.children;
+    if (child.type === Stage) return inWorldOf((child as ReactElement<StageProps>).props, world).children;
     if (child.props.children === undefined) continue;
-    const found = firstDemo(child.props.children);
+    const found = firstDemo(child.props.children, world);
     if (found === null) continue;
     return child.type === Fragment ? found : cloneElement(child, undefined, found);
   }
@@ -217,6 +231,35 @@ function onlyStages(children: ReactNode): ReactNode[] {
 /** Which page a Stage sits in, so its Code tab can find the page file. */
 const PageIdContext = createContext<string | null>(null);
 
+/**
+ * The page's one disclosure, Variants: whether it is open, the id each slot's region takes, and how many slots and
+ * stages the page has. The lead stage (slot 0) draws the button; every later Stage and Try it is hidden until it opens.
+ */
+type VariantsState = { open: boolean; toggle: () => void; idOf: (slot: number) => string; slots: number; stages: number };
+const VariantsContext = createContext<VariantsState | null>(null);
+
+/** Internal: where a Stage or Try it sits on its page, set by Page (withSlots). 0 is the lead. */
+type Slotted = { slot?: number };
+
+/**
+ * The page's children with each Stage and Try it numbered in reading order (the first Stage is 0, the lead), through
+ * fragments and wrappers (a Toaster) as firstDemo looks. The tree keeps its shape, so a wrapper still mounts once.
+ */
+function withSlots(children: ReactNode, next: { slot: number; stages: number }): ReactNode {
+  return Children.map(children, (child) => {
+    if (!isValidElement<{ children?: ReactNode }>(child)) return child;
+    if (child.type === Stage) {
+      next.stages++;
+      return cloneElement(child as ReactElement<Slotted>, { slot: next.slot++ });
+    }
+    /* A Try it before the first Stage stays in the open: the lead's disclosure could never reach it. */
+    if (child.type === TryIt && next.stages > 0) return cloneElement(child as ReactElement<Slotted>, { slot: next.slot++ });
+    if (child.props.children === undefined) return child;
+    const inner = withSlots(child.props.children, next);
+    return child.type === Fragment ? <>{inner}</> : cloneElement(child, undefined, inner);
+  });
+}
+
 /** With fun mode on (and only then, so never under reduced motion), what to try on this page. */
 function FunHint({ text }: { text?: string }) {
   const fun = useFun();
@@ -236,6 +279,7 @@ export function Page({
   docs,
   study,
   tile,
+  tileByWorld,
   children,
 }: {
   meta: PageMeta;
@@ -248,65 +292,84 @@ export function Page({
    * touch, and no accent fill: the Button tile carries the wall's one. Leave it out and the tile is the first demo.
    */
   tile?: ReactNode;
+  /**
+   * The tile in a world's own words, by world: the same component and contract props as `tile`. A world without one
+   * draws `tile`, or with no `tile` the first stage's demo in that world, so a lead stage's `byWorld` reaches the tile.
+   */
+  tileByWorld?: Partial<Record<Material, ReactNode>>;
   children: ReactNode;
 }) {
   const preview = useContext(PreviewContext);
+  const world = useContext(WorldContext);
+  const [open, setOpen] = useState(false);
+  const base = useId();
   if (preview === "mosaic") return <>{onlyStages(children)}</>;
-  if (preview === "tile" && tile !== undefined) return <>{tile}</>;
-  if (preview) return <>{firstDemo(children)}</>;
+  if (preview === "tile") {
+    const own = world ? tileByWorld?.[world] : undefined;
+    if (own !== undefined) return <>{own}</>;
+    if (tile !== undefined) return <>{tile}</>;
+  }
+  if (preview) return <>{firstDemo(children, world)}</>;
+  const count = { slot: 0, stages: 0 };
+  const slotted = withSlots(children, count);
+  const variants: VariantsState = { open, toggle: () => setOpen((o) => !o), idOf: (slot) => `${base}-slot-${slot}`, slots: count.slot, stages: count.stages };
   return (
     <PageIdContext.Provider value={meta.id}>
-      <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">
-        <header data-arrive="head" className="grid gap-6">
-          <PageTitle id={`page-${meta.id}`} title={meta.title} lede={meta.lede} />
-          <FunHint text={meta.fun} />
-          {/* The tiers and the docs actions share one row, so the first demo comes up sooner. */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-            {/* A page with no tiers (nothing moves) leaves no empty group, so the actions start at the edge. */}
-            {meta.tiers.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {meta.tiers.map((t) => (
-                  <TierChip key={t} tier={t} />
-                ))}
+      <VariantsContext.Provider value={variants}>
+        <article aria-labelledby={`page-${meta.id}`} className="grid gap-12 pb-24">
+          {/* Stripped to the name. The lede and the tiers stay in meta: the player, the Copy prompt and docs/<page>.md read them. */}
+          <header data-arrive="head" className="grid gap-6">
+            <h1 id={`page-${meta.id}`} tabIndex={-1} className="text-h1 text-balance text-fg outline-none">
+              {meta.title}
+            </h1>
+            <FunHint text={meta.fun} />
+          </header>
+          {slotted}
+          {study && (
+            <Suspense fallback={<div aria-hidden="true" className="min-h-[40svh]" />}>
+              <StudySections meta={meta} docs={docs} study={study} />
+            </Suspense>
+          )}
+          <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4 border-t border-line pt-12">
+            <h2 id={`about-${meta.id}`} className={QUIET_HEADING}>
+              About
+            </h2>
+            <p className="max-w-(--measure) text-small text-fg-muted">{meta.summary}</p>
+            {(docs || meta.block) && (
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+                {docs && (
+                  /* Holds the row's height while the docs chunk loads, so nothing below jumps. */
+                  <Suspense fallback={<div aria-hidden="true" className="h-control-sm" />}>
+                    <DocsActions meta={meta} docs={docs} />
+                  </Suspense>
+                )}
+                {meta.block && (
+                  <Suspense fallback={<div aria-hidden="true" className="h-control-sm" />}>
+                    <BlockActions block={meta.block} />
+                  </Suspense>
+                )}
               </div>
             )}
-            {docs && (
-              /* Holds the row's height while the docs chunk loads, so nothing below jumps. */
-              <Suspense fallback={<div aria-hidden="true" className="h-control-sm" />}>
-                <DocsActions meta={meta} docs={docs} />
-              </Suspense>
-            )}
-            {meta.block && (
-              <Suspense fallback={<div aria-hidden="true" className="h-control-sm" />}>
-                <BlockActions block={meta.block} />
-              </Suspense>
-            )}
-          </div>
-        </header>
-        {children}
-        {study && (
-          <Suspense fallback={<div aria-hidden="true" className="min-h-[40svh]" />}>
-            <StudySections meta={meta} docs={docs} study={study} />
-          </Suspense>
-        )}
-        <section aria-labelledby={`about-${meta.id}`} className="grid content-start gap-4">
-          <h2 id={`about-${meta.id}`} className="-mb-3 text-h3 text-fg">About</h2>
-          <p className="max-w-(--measure) text-reading text-fg-muted">{meta.summary}</p>
-        </section>
-        {docs && (
-          <Suspense fallback={<div aria-hidden="true" className="min-h-[60svh]" />}>
-            <DocsSections docs={docs} />
-          </Suspense>
-        )}
-      </article>
+          </section>
+          {docs && (
+            <Suspense fallback={<div aria-hidden="true" className="min-h-[60svh]" />}>
+              <DocsSections docs={docs} />
+            </Suspense>
+          )}
+        </article>
+      </VariantsContext.Provider>
     </PageIdContext.Provider>
   );
 }
 
+/** A section's title under the stage, as quiet as the components repo's Source label: small, muted, the title weight. */
+export const QUIET_HEADING = "-mb-3 text-small font-title text-fg-muted text-balance";
+
 /**
  * A page's title and lede as one sentence in two inks, at the title size: the name in
  * --fg at the title weight, then the lede in the grey at the text weight (R8). The h1
- * stays the name alone, so the page's landmark is still called "Button".
+ * stays the name alone, so the page's landmark is still called "Button". The gallery's
+ * own pages (Systems, AI, Changelog) use it; a component page is stripped to the name.
  */
 export function PageTitle({ id, title, lede, className = "" }: { id: string; title: string; lede: string; className?: string }) {
   return (
@@ -363,6 +426,7 @@ type StageProps = {
   title: string;
   /** What moves, how, and why. Plain words. */
   caption: ReactNode;
+  /** The tier the demo moves on. Not drawn since plans/024 phase 0; the page's Motion docs (meta.tiers) say it. */
   tier?: Tier;
   onReplay?: () => void;
   replayLabel?: string;
@@ -377,8 +441,14 @@ type StageProps = {
    * must be declared at the top level of the page file.
    */
   code?: string;
+  /**
+   * The demo in a world's own words, by world (WorldDemo): the same component with the same contract props. A world
+   * without one draws `children`, the shared demo. On the lead stage it reaches the tile too, unless the page has a
+   * `tile` (then give the page `tileByWorld`).
+   */
+  byWorld?: Partial<Record<Material, WorldDemo>>;
   children: ReactNode;
-};
+} & Slotted;
 
 /* Try it reads the generated docs data, so it loads with the docs layer, not with every page. */
 const LazyTryIt = lazy(() => import("./docs/try-it").then((m) => ({ default: m.TryIt })));
@@ -388,11 +458,19 @@ const LazyTryIt = lazy(() => import("./docs/try-it").then((m) => ({ default: m.T
  * page's stages. The controls come from the prop types in the generated docs, so name the export (`of`), pass the
  * component, and pass the props it always needs (`props`), such as its children or a label.
  */
-export function TryIt(props: import("./docs/try-it").TryItProps) {
-  return (
+export function TryIt({ slot, ...props }: import("./docs/try-it").TryItProps & Slotted) {
+  const variants = useContext(VariantsContext);
+  const body = (
     <Suspense fallback={<div aria-hidden="true" className="min-h-80" />}>
       <LazyTryIt {...props} />
     </Suspense>
+  );
+  /* On its page it sits in Variants, with the stages after the lead. */
+  if (!variants || slot === undefined) return body;
+  return (
+    <div id={variants.idOf(slot)} hidden={!variants.open} className="grid">
+      {variants.open && body}
+    </div>
   );
 }
 
@@ -438,108 +516,149 @@ function MosaicPiece({ title, size, place, onReplay, replayLabel, children }: { 
   );
 }
 
-export function Stage({ title, caption, tier, onReplay, replayLabel = "Replay", size = "md", align = "center", code, children }: StageProps) {
+/**
+ * The quiet disclosure under the lead stage: one real button with aria-expanded, controlling the lead's caption and
+ * every later Stage and Try it on the page. "Variants" when there are other stages, "Notes" when there is only the
+ * caption. The chevron turns half a turn on the responsive tier, as the Accordion's does; what it opens appears at once.
+ */
+function VariantsButton({ variants }: { variants: VariantsState }) {
+  const controls = Array.from({ length: variants.slots }, (_, k) => variants.idOf(k)).join(" ");
+  const more = variants.stages - 1;
+  return (
+    <button
+      type="button"
+      data-variants=""
+      aria-expanded={variants.open}
+      aria-controls={controls}
+      onClick={variants.toggle}
+      className="group/notes litt-target relative -mx-2 flex h-control-sm items-center gap-1 justify-self-start rounded-control px-2 text-small text-fg-subtle select-none [-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus pointer-coarse:h-control-md"
+    >
+      {more > 0 ? "Variants" : "Notes"}
+      <ChevronDownIcon className="transition-[rotate] duration-(--dur-responsive) ease-responsive group-aria-expanded/notes:rotate-180" />
+    </button>
+  );
+}
+
+export function Stage(props: StageProps) {
   const preview = useContext(PreviewContext);
   const pageId = useContext(PageIdContext);
+  const world = useContext(WorldContext);
+  const variants = useContext(VariantsContext);
   const [view, setView] = useState<View>("preview");
-  const [notes, setNotes] = useState(false);
-  const notesId = useId();
+  const { title, caption, onReplay, replayLabel = "Replay", size = "md", align = "center", code, children, slot } = inWorldOf(props, world);
   const place = align === "center" ? "place-items-center" : align === "start" ? "place-items-start" : "place-items-end";
   const height = size === "lg" ? "min-h-112" : "min-h-80";
   if (preview === "mosaic") return <MosaicPiece title={title} size={size} place={place} onReplay={onReplay} replayLabel={replayLabel}>{children}</MosaicPiece>;
 
-  /* The caption folds behind "How it works", so the demo speaks first. The chevron turns half a
-     turn on the responsive tier, as in the Accordion; the text itself appears at once. */
-  const heading = (
-    <div className="grid max-w-[60ch] gap-1">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h2 className="text-body font-title text-fg">{title}</h2>
-        {tier && <TierChip tier={tier} />}
-        <button
-          type="button"
-          aria-expanded={notes}
-          aria-controls={notesId}
-          onClick={() => setNotes((n) => !n)}
-          className="group/notes litt-target relative -mx-2 flex h-control-sm items-center gap-1 rounded-control px-2 text-small text-fg-subtle in-[[data-material=flat]]:mx-0 in-[[data-material=flat]]:bg-block in-[[data-material=flat]]:px-3 in-[[data-material=flat]]:text-fg-muted select-none [-webkit-tap-highlight-color:transparent] transition-colors duration-(--dur-instant) ease-litt hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-        >
-          How it works
-          <ChevronDownIcon className="transition-[rotate] duration-(--dur-responsive) ease-responsive group-aria-expanded/notes:rotate-180" />
-        </button>
-      </div>
-      <p id={notesId} hidden={!notes} className="text-small text-fg-subtle">
-        {caption}
-      </p>
+  /* The lead (slot 0, or a Stage outside a Page) is the page's one stage: no title on screen, its name on the region.
+     A later stage is a variant, inside the disclosure, with its title and caption in the open. */
+  const lead = !variants || slot === undefined || slot === 0;
+  const id = variants && slot !== undefined ? variants.idOf(slot) : undefined;
+  const open = variants?.open ?? false;
+
+  const replay = onReplay && (
+    <Button
+      size="sm"
+      variant="ghost"
+      onClick={() => {
+        setView("preview"); // a replay of something you cannot see would do nothing
+        onReplay();
+      }}
+    >
+      {replayLabel}
+    </Button>
+  );
+
+  const box = (body: ReactNode, padded: boolean) => (
+    <div
+      className={
+        "litt-raised relative col-span-2 row-start-1 grid overflow-visible rounded-surface text-fg in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " +
+        (padded ? "p-4 min-[24rem]:p-8 sm:p-12 " + place + " " : "") +
+        height
+      }
+    >
+      {body}
     </div>
   );
 
-  if (code === undefined) {
-    return (
-      <section data-arrive="stage" className="grid gap-6" aria-label={title}>
-        <div className={"litt-raised relative grid overflow-visible rounded-surface text-fg p-4 min-[24rem]:p-8 sm:p-12 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " + place + " " + height}>{children}</div>
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          {heading}
-          {onReplay && (
-            <Button size="sm" variant="secondary" onClick={onReplay}>
-              {replayLabel}
-            </Button>
+  const views = code !== undefined && (
+    <TabsList aria-label={`${title} view`}>
+      <TabsTrigger value="preview">Preview</TabsTrigger>
+      {/* Start fetching the code view as soon as someone reaches for it. */}
+      <TabsTrigger value="code" onPointerEnter={() => void loadStageCode()} onFocus={() => void loadStageCode()}>
+        Code
+      </TabsTrigger>
+    </TabsList>
+  );
+
+  const panels = (
+    <TabsPanels className="grid min-w-0">
+      {/* The preview remounts when you come back to it, so a replay always starts clean. */}
+      <TabsPanel value="preview" tabIndex={-1} className={"grid p-4 min-[24rem]:p-8 sm:p-12 " + place}>
+        {children}
+      </TabsPanel>
+      <TabsPanel value="code" tabIndex={-1} className="min-w-0">
+        <Suspense fallback={<div aria-hidden="true" className="min-h-40" />}>
+          {pageId && code ? (
+            <StageCode pageId={pageId} name={code} title={title} />
+          ) : (
+            <p role="alert" className="p-2 text-small text-danger">
+              A Stage with a code prop must sit inside a Page.
+            </p>
           )}
+        </Suspense>
+      </TabsPanel>
+    </TabsPanels>
+  );
+
+  /* The stage, its switch and Replay. With a code view the tabs root wraps the switch and the panels (`contents` keeps
+     it out of the grid), and the switch comes first in the DOM, last on screen: after you pick Code with the arrow keys,
+     Tab lands in the code, and a screen reader hears the switch, then the demo. */
+  const stage =
+    code === undefined ? (
+      <>
+        {box(children, true)}
+        {replay && <div className="col-start-2 row-start-2 flex items-center justify-end gap-2">{replay}</div>}
+      </>
+    ) : (
+      <Tabs value={view} onValueChange={(v) => setView(v as View)} variant="segmented" size="sm" className="contents">
+        <div className="col-start-2 row-start-2 flex items-center justify-end gap-2">
+          {views}
+          {replay}
         </div>
+        {box(panels, false)}
+      </Tabs>
+    );
+
+  if (lead) {
+    return (
+      <section data-arrive="stage" aria-label={title} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-3">
+        {stage}
+        {variants && (
+          <div className="col-start-1 row-start-2 flex min-w-0 items-center">
+            <VariantsButton variants={variants} />
+          </div>
+        )}
+        {variants && id && (
+          <p id={id} hidden={!open} className="col-span-2 row-start-3 max-w-[65ch] text-small text-fg-subtle">
+            {caption}
+          </p>
+        )}
       </section>
     );
   }
 
   return (
-    <section data-arrive="stage" className="grid gap-6" aria-label={title}>
-      {/* The tabs root wraps both the box and the caption row, so the switch can sit in the
-          caption row while its panels sit in the box. `contents` keeps it out of the layout.
-          The caption row comes first in the DOM and last on screen (order), so the tab list
-          is followed by its panel: after you pick Code with the arrow keys, Tab lands in the
-          code, and a screen reader hears the title, the switch, then the demo. */}
-      <Tabs value={view} onValueChange={(v) => setView(v as View)} variant="segmented" size="sm" className="contents">
-        <div className="order-2 flex flex-wrap items-start justify-between gap-4">
-          {heading}
-          <div className="flex items-center gap-3">
-            <TabsList aria-label={`${title} view`}>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
-              {/* Start fetching the code view as soon as someone reaches for it. */}
-              <TabsTrigger value="code" onPointerEnter={() => void loadStageCode()} onFocus={() => void loadStageCode()}>
-                Code
-              </TabsTrigger>
-            </TabsList>
-            {onReplay && (
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => {
-                  setView("preview"); // a replay of something you cannot see would do nothing
-                  onReplay();
-                }}
-              >
-                {replayLabel}
-              </Button>
-            )}
+    <section id={id} hidden={!open} data-arrive="stage" aria-label={title} className="grid grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-3">
+      {open && (
+        <>
+          {stage}
+          <div className="col-start-1 row-start-2 grid max-w-[65ch] content-start gap-1">
+            <h2 className="text-small font-title text-fg">{title}</h2>
+            <p className="text-small text-fg-subtle">{caption}</p>
           </div>
-        </div>
-        <div className={"litt-raised relative order-1 grid overflow-visible rounded-surface text-fg in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " + height}>
-          <TabsPanels className="grid min-w-0">
-            {/* The preview remounts when you come back to it, so a replay always starts clean. */}
-            <TabsPanel value="preview" tabIndex={-1} className={"grid p-4 min-[24rem]:p-8 sm:p-12 " + place}>
-              {children}
-            </TabsPanel>
-            <TabsPanel value="code" tabIndex={-1} className="min-w-0">
-              <Suspense fallback={<div aria-hidden="true" className="min-h-40" />}>
-                {pageId ? (
-                  <StageCode pageId={pageId} name={code} title={title} />
-                ) : (
-                  <p role="alert" className="p-2 text-small text-danger">
-                    A Stage with a code prop must sit inside a Page.
-                  </p>
-                )}
-              </Suspense>
-            </TabsPanel>
-          </TabsPanels>
-        </div>
-      </Tabs>
+        </>
+      )}
     </section>
   );
 }

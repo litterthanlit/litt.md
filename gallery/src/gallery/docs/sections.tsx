@@ -4,7 +4,7 @@
  * linked. (The gallery routes by hash, so a bare #props would open a page called
  * "props". The ids are there for in-page use until the router learns sections.)
  *
- * Weight by role (R8): section titles at 500, text at 400, table headers at the label weight.
+ * Weight by role (R8): section titles at 500, small and muted (quiet, plans/024 phase 0), text at 400, table headers at the label weight.
  * Hierarchy comes from weight and ink, and spacing follows foundations.md (Text spacing):
  * sections 48px apart, blocks 16px apart, and a section's title 4px above its first content.
  */
@@ -22,7 +22,7 @@ import { PropsTable } from "./props-table";
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section aria-labelledby={id} className="grid content-start gap-4">
-      <h2 id={id} className="-mb-3 scroll-mt-24 text-h3 text-fg text-balance">
+      <h2 id={id} className="-mb-3 scroll-mt-24 text-small font-title text-fg-muted text-balance">
         {title}
       </h2>
       {children}
@@ -35,7 +35,7 @@ function Rows({ items, label }: { items: string[]; label?: string }) {
   return (
     <ul aria-label={label} className="max-w-[65ch] divide-y divide-line border-y border-line">
       {items.map((item) => (
-        <li key={item} className="py-3 text-body text-fg-muted">
+        <li key={item} className="py-3 text-small text-fg-muted">
           {item}
         </li>
       ))}

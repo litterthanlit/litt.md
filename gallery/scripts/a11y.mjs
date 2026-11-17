@@ -21,7 +21,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { routes } from "./routes.mjs";
+import { openVariants, routes } from "./routes.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -100,6 +100,7 @@ async function check(ctx, id, theme, label) {
     await pg.goto(`http://localhost:${port}/index.html#${id}`, { waitUntil: "networkidle" });
     await pg.evaluate(() => document.fonts.ready);
     await pg.waitForSelector("h1", { timeout: 10_000 });
+    await openVariants(pg);
     await pg.waitForTimeout(400); // let entrances settle, so axe reads the resting colors
     await pg.evaluate(quiet, QUIET);
     await pg.addScriptTag({ content: axeSource });

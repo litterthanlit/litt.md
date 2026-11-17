@@ -15,6 +15,7 @@ import { materialOf, type Material } from "./look";
 import { PlayObject } from "./play-object/contract";
 import { inWorld, pages } from "./registry";
 import { hasNavigated, useRoute } from "./route";
+import { WorldContext } from "./kit";
 import { World } from "./world";
 import { WorldGallery } from "./world-gallery";
 
@@ -110,7 +111,7 @@ export function WorldSite({ material }: { material: Material }) {
           </header>
         )}
         <main ref={main} id="main" tabIndex={-1} className="min-w-0 outline-none">
-          {body}
+          <WorldContext.Provider value={material}>{body}</WorldContext.Provider>
         </main>
       </div>
     </div>
