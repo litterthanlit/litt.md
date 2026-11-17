@@ -26,6 +26,7 @@ import { FlatHand } from "./flat-look-hand";
 import { FlatBounceExpressive, FlatBounceResponsive } from "./flat-bounce";
 import { PressColumnPreview, type PressColumn } from "./press";
 import { PressCallPreview, type PressCallId } from "./press-calls";
+import { PressRound2Preview, type PressRound2Id } from "./press-round2";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -213,6 +214,16 @@ const PRESS_CALLS: { call: PressCallId; name: string }[] = [
   { call: 8, name: "Press call 8 · card covers, a deploy's preview" },
   { call: 9, name: "Press call 9 · one name per job" },
 ];
+/* Press, round 2 (press-round2.tsx): building on Press's materials after Nick's look at the calls. A block of its own
+   to the right of the calls (which end at x 3600), from their top: the table and the tags, then the three charts. */
+const R2 = { x: 3600 + 240, y: CALLS_Y, width: 1120, gap: 120, heights: [720, 1280] };
+const PRESS_ROUND2: { item: PressRound2Id; name: string; row: number; col: number; height?: number }[] = [
+  { item: "table", name: "Press round 2 · table, rows on one tray", row: 0, col: 0 },
+  { item: "tags", name: "Press round 2 · status tags, kept", row: 0, col: 1, height: 400 },
+  { item: "chart-blocks", name: "Press round 2 · chart, blocks in a tray", row: 1, col: 0 },
+  { item: "chart-glass", name: "Press round 2 · chart, a trace on a glass readout", row: 1, col: 1 },
+  { item: "chart-slots", name: "Press round 2 · chart, slots cut into the plate", row: 1, col: 2 },
+];
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
@@ -342,6 +353,17 @@ export const ITEMS: CanvasItem[] = [
       width: CALL.width,
       height: CALL.heights[Math.floor(i / 3)],
       render: () => <PressCallPreview call={call} />,
+    }),
+  ),
+  ...PRESS_ROUND2.map(
+    ({ item, name, row, col, height }): CanvasItem => ({
+      id: `press-round2-${item}`,
+      name,
+      x: R2.x + col * (R2.width + R2.gap),
+      y: R2.y + R2.heights.slice(0, row).reduce((sum, h) => sum + h + R2.gap, 0),
+      width: R2.width,
+      height: height ?? R2.heights[row],
+      render: () => <PressRound2Preview item={item} />,
     }),
   ),
 ];

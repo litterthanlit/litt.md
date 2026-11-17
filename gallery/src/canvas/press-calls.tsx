@@ -29,7 +29,7 @@ export type PressCallId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 /* ---------------------------------------------------------------- the frame */
 
 /** One Press frame in light or dark, with the candidates its side switches on. */
-function PressFrame({ dark, call, children }: { dark: boolean; call?: string; children: ReactNode }) {
+export function PressFrame({ dark, call, children }: { dark: boolean; call?: string; children: ReactNode }) {
   return (
     <MaterialProvider material="press">
       <div
@@ -45,9 +45,9 @@ function PressFrame({ dark, call, children }: { dark: boolean; call?: string; ch
   );
 }
 
-type Side = { label: string; call?: string; render: () => ReactNode };
+export type Side = { label: string; call?: string; render: () => ReactNode };
 
-function Column({ side, pick }: { side: Side; pick: boolean }) {
+export function Column({ side, pick }: { side: Side; pick: boolean }) {
   return (
     <div className="grid min-w-0 content-start gap-3">
       <span className={"text-small font-title " + (pick ? "text-fg" : "text-fg-subtle")}>{side.label}</span>
@@ -70,7 +70,7 @@ const DEPLOYS: Deploy[] = [
   { site: "Founder landing", status: "Ready", seconds: 52 },
 ];
 
-function DeployTable() {
+export function DeployTable() {
   const [sort, setSort] = useState<SortDirection>("none");
   const rows = sort === "none" ? DEPLOYS : [...DEPLOYS].sort((a, b) => (sort === "ascending" ? a.seconds - b.seconds : b.seconds - a.seconds));
   const next = () => setSort((s) => (s === "ascending" ? "descending" : "ascending"));
@@ -100,9 +100,9 @@ function DeployTable() {
   );
 }
 
-const WEEK = [24, 29, 26, 31, 30, 34, 38];
+export const WEEK = [24, 29, 26, 31, 30, 34, 38];
 
-function DeployStat({ hue }: { hue: boolean }) {
+export function DeployStat({ hue }: { hue: boolean }) {
   return (
     <Stat
       label="Deploys this week"
@@ -114,7 +114,7 @@ function DeployStat({ hue }: { hue: boolean }) {
   );
 }
 
-function Statuses({ building }: { building: "tint" | "word" }) {
+export function Statuses({ building }: { building: "tint" | "word" }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Tag status="success">Ready</Tag>
@@ -137,7 +137,7 @@ function DeployButtons() {
   );
 }
 
-function DeployChart() {
+export function DeployChart() {
   return (
     <LineChart
       label="Deploys per day, last 7 days"
