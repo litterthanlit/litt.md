@@ -261,7 +261,15 @@ the components repo's screen has none.
 
 ## Press
 
-### Phase 1. Materials, colour, voice and part kinds (drafted, waiting for Nick, 2026-11-17)
+### Phase 1. Materials, colour, voice and part kinds (drafted; paused, 2026-11-17)
+
+**Paused (2026-11-17).** Nick, on the nine calls live on `#canvas`: "I think we're taking away from what press is. for
+example the tags look cool here but each line being pressed is a bit much. the materials we have are brilliant, let's
+build on them. I hate the chart, it doesnt fit kinda I feel like". Round 2 went up beside them (`press-round2.tsx`: the
+table's rows on one tray with the tags kept raised, today's tags kept with Building as a word on a block, and three
+charts made of Press's materials: blocks in a tray, a trace on glass, slots cut into the plate). Then: "I cant decide
+now, maybe current look isn't so bad. maybe we should jump into the new flat." Press stays as it ships; nothing below
+is decided, and both rounds stay on the canvas for when Press comes back. Flat goes next.
 
 Read-only on code: nothing in `gallery/`, `tokens.css` or `taste/` changed. Drafted from plan 022 (the first Press is the
 measure; a raised thing says it is raised once; no outline round a button), `litt-principles.md` (Press), the journal
