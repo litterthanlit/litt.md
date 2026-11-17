@@ -29,6 +29,13 @@
  * corners where two of them meet. Each page is read at rest at every shape, then with every slider at its start and at
  * its end, where only the slider's own parts are judged (a tuning slider at its end restyles a demo past any real use).
  *
+ * Under Device (plans/024; R9's exception) a part nests the components repo's radii in em of its own size: a plate at
+ * 1.25em, a well 1.05em, a key or LCD 0.7em, a chip 0.4em (DEVICE_RADII_EM in rules.ts). The concentric rules above
+ * hold them as they hold any corner; on top, on every Device page, each element marked data-part="plate", "well", "key",
+ * "lcd" or "chip" must draw one of litt's corners (0, the control, the surface, round by its size) or one of the four em
+ * radii at its own font size, or one of them less the 2, 4 or 8px it is set into another, within half a pixel. Any
+ * other corner on a Device part fails. `--self-test` also puts a key at 0.85em on Device's Button page.
+ *
  * Needs Playwright, found as a11y.mjs finds it (A11Y_TOOLS, then here, then the cloud container's global copy).
  */
 import http from "node:http";
@@ -44,7 +51,7 @@ const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
 const selfTest = args.includes("--self-test");
-const only = (get("pages", selfTest ? "flat/button" : "") || "").split(",").filter(Boolean);
+const only = (get("pages", selfTest ? "flat/button,device/button" : "") || "").split(",").filter(Boolean);
 const CONCURRENCY = Number(get("concurrency", "4"));
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
@@ -63,7 +70,7 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
 
 /* The shapes, from rules.ts itself (bundled, as test-rules.mjs does), so a new stop is checked without touching this. */
 const bundle = await build({ entryPoints: [path.join(here, "../src/motion/rules.ts")], bundle: true, format: "esm", platform: "neutral", write: false, logLevel: "silent" });
-const { SHAPES, shapeName, shapeSurface } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString("base64")}`);
+const { SHAPES, shapeName, shapeSurface, DEVICE_RADII_EM } = await import(`data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString("base64")}`);
 const shapes = (get("shapes", "") ? get("shapes").split(",").map(Number) : SHAPES.filter((r) => r > 0));
 /* Each world is closed (plans/019) and shows only its own shape, so a page in a world is checked there; the gallery's
    own world, Flat, is checked at every shape, as the Customize panel once offered them, since a host can still reshape
@@ -78,6 +85,12 @@ if (!shapes.length || shapes.some((r) => !SHAPES.includes(r))) { console.error(`
 /* Breaks the check knows about and has not fixed yet: each prints, and none fails the run, but one that no longer happens
    does, so the entry goes when the fix lands. Anything else that rubs a curve fails as usual. */
 const KNOWN = [
+  {
+    page: "rule-builder",
+    radius: 4,
+    what: /spans <div\.@container\.rounded-\[min\(var\(--radius-control\)/,
+    why: "under Device a condition row keeps the control radius while the Select and the Input inside it are Device's readout and glass in a well at its em radius (plans/024, phase 2), so the readout is rounder than the row it fills; fixing it means a Device body for the rule builder's row",
+  },
   {
     page: "rule-builder",
     radius: 6,
@@ -221,6 +234,25 @@ const browser = await chromium.launch();
 const failures = [];
 /* Each page loads once and takes each shape in turn, written on <body> as the Customize panel writes it
    (customize-state.tsx): the control radius and the surface radius that goes with it. */
+/* Read in a Device page: every material part whose corner is off litt's scale and off Device's em radii. */
+function deviceCorners(EM) {
+  const out = [];
+  const control = parseFloat(getComputedStyle(document.body).getPropertyValue("--radius-control")) || 0;
+  const surface = parseFloat(getComputedStyle(document.body).getPropertyValue("--radius-surface")) || 0;
+  for (const el of document.querySelectorAll('main :is([data-part="plate"], [data-part="well"], [data-part="key"], [data-part="lcd"], [data-part="chip"])')) {
+    const r = el.getBoundingClientRect();
+    if (r.width < 4 || r.height < 4) continue;
+    const s = getComputedStyle(el);
+    const px = parseFloat(s.borderTopLeftRadius) || 0;
+    const size = parseFloat(s.fontSize);
+    if (px >= Math.min(r.width, r.height) / 2 - 0.5) continue; // round by its size
+    const scale = [0, control, surface, control - 2].some((v) => Math.abs(px - v) <= 0.5);
+    const em = Object.values(EM).some((e) => [0, 2, 4, 8].some((inset) => Math.abs(px - (e * size - inset)) <= 0.5));
+    if (!scale && !em) out.push(`<${el.tagName.toLowerCase()} data-part=${el.getAttribute("data-part")}> "${(el.textContent || "").trim().slice(0, 24)}" has a ${px.toFixed(1)}px corner at ${size}px type: neither litt's corners nor Device's em radii (${Object.values(EM).join(", ")}em)`);
+  }
+  return out;
+}
+
 async function checkPage(id) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: "light", reducedMotion: "reduce" });
   if (selfTest) {
@@ -252,6 +284,13 @@ async function checkPage(id) {
         cover.style.cssText = "position:absolute;left:4px;right:4px;top:4px;height:120px;border-radius:0;background:black";
         card.append(cover);
         main.append(card);
+        if (document.documentElement.dataset.material === "device") {
+          const key = document.createElement("div");
+          key.setAttribute("data-part", "key");
+          key.setAttribute("data-corners-self-test", "em");
+          key.style.cssText = "width:120px;height:40px;font-size:14px;border-radius:0.85em;background:gray";
+          main.append(key);
+        }
       }).observe(document, { childList: true, subtree: true });
     });
   }
@@ -284,6 +323,7 @@ async function checkPage(id) {
     for (const radius of shapesFor(id)) {
       await shape(radius);
       for (const what of await pg.evaluate(measure)) failures.push({ id, radius, what });
+      if (id.startsWith("device/")) for (const what of await pg.evaluate(deviceCorners, DEVICE_RADII_EM)) failures.push({ id, radius, what: selfTest && /11\.9px/.test(what) ? `self-test em ${what}` : what });
     }
     /* A slider's cap rests mid-track in the demos, but its ends are where the curve is: every slider at both. */
     for (const key of sliders ? ["Home", "End"] : []) {
@@ -314,9 +354,9 @@ const took = `${Math.round((Date.now() - started) / 1000)}s`;
 const shapeWords = shapes.map((r) => shapeName(r)).join(", ");
 
 if (selfTest) {
-  const kinds = { rub: "the Slider's old cap on a pill", layer: "a 22px row in a 16px group", sharp: "a square cover 4px into a 16px card" };
+  const kinds = { rub: "the Slider's old cap on a pill", layer: "a 22px row in a 16px group", sharp: "a square cover 4px into a 16px card", em: "a Device key at 0.85em, off its em radii" };
   const keys = new Set(failures.flatMap((f) => { const m = /^self-test (\w+) /.exec(f.what); return m ? [`${f.id} ${f.radius} ${m[1]}`] : []; }));
-  const missed = pages.flatMap((id) => shapesFor(id).flatMap((r) => Object.keys(kinds).map((k) => `${id} ${r} ${k}`))).filter((k) => !keys.has(k));
+  const missed = pages.flatMap((id) => shapesFor(id).flatMap((r) => Object.keys(kinds).filter((k) => k !== "em" || id.startsWith("device/")).map((k) => `${id} ${r} ${k}`))).filter((k) => !keys.has(k));
   const broken = failures.filter((f) => /running the check/.test(f.what));
   for (const [k, words] of Object.entries(kinds)) console.log(`corners self-test: ${words} was caught on ${[...keys].filter((x) => x.endsWith(` ${k}`)).length} of ${runs} runs (${took}).`);
   for (const f of broken) console.log(`✗ ${f.id} at ${shapeName(f.radius)}: ${f.what}`);

@@ -9,9 +9,10 @@
  *   (--block mixed 55% toward --tray) and inset-shaded with --tray-shade, its lamp lit. A hidden series is a key
  *   standing up, its lamp a dim ring and its word a step down. The word never changes, so the state is said by
  *   aria-pressed and by the key's height, not by the lamp alone.
- * - Lamps carry the data (R7): a lit lamp is in its series' data hue, the same hue the chart draws it in, and a dim one
- *   is the ring in --fg-disabled. With `lines` the lamp is the 12 by 4px rail cut as the chart dashes the line, so a
- *   series is never told by color alone (WCAG 1.4.1).
+ * - Lamps (`data-part="light"`, in a recess, --lamp-recess): a lit lamp is the ink, --lamp-on, at its series' level
+ *   (100, 55 or 30%, as the chart lights it), with no glow, since only a signal glows; an unlit one is --lamp-off.
+ *   Under Device's color rule (plans/024) a series is never a hue; its word names it, and with `lines` the lamp is the
+ *   12 by 4px rail cut as the chart dashes the line (WCAG 1.4.1). The well is `data-part="well"`, a key `"key"`.
  * - The last shown key cannot be let up: it stays down, with aria-disabled and the hidden note.
  * - Motion: nothing glides. A key switches in place in three steps on the instant tier (100ms); reduced motion zeroes
  *   the tier, so it switches at once.
@@ -28,20 +29,20 @@ const detent: CSSProperties = {
   transitionTimingFunction: `${STEPS}, ${STEPS}, ${STEPS}, ${STEPS}`,
 };
 
-/* A lit lamp in its series' hue (literal classes, so Tailwind sees them and the registry renames them). */
+/* A lit lamp at its series' level: the chart's order (blue, amber, teal, then violet and rose) steps 100, 55, 30%. */
 const LAMP: Record<LegendHue, string> = {
-  blue: "bg-data-blue shadow-[0_0_6px_var(--data-blue)]",
-  amber: "bg-data-amber shadow-[0_0_6px_var(--data-amber)]",
-  teal: "bg-data-teal shadow-[0_0_6px_var(--data-teal)]",
-  violet: "bg-data-violet shadow-[0_0_6px_var(--data-violet)]",
-  rose: "bg-data-rose shadow-[0_0_6px_var(--data-rose)]",
+  blue: "bg-lamp-on",
+  amber: "bg-[color-mix(in_oklab,var(--lamp-on)_55%,transparent)]",
+  teal: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  violet: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  rose: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
 };
 const LINE: Record<LegendHue, string> = {
-  blue: "stroke-data-blue",
-  amber: "stroke-data-amber",
-  teal: "stroke-data-teal",
-  violet: "stroke-data-violet",
-  rose: "stroke-data-rose",
+  blue: "stroke-lamp-on",
+  amber: "stroke-[color-mix(in_oklab,var(--lamp-on)_55%,transparent)]",
+  teal: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  violet: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  rose: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
 };
 const LINE_OFF = "stroke-fg-disabled";
 const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2" };
@@ -56,6 +57,7 @@ export function LegendDeviceBody({ label, items, lines, className, noteId, note,
   return (
     <div
       data-body="device"
+      data-part="well"
       role="group"
       aria-label={label}
       className={
@@ -72,6 +74,7 @@ export function LegendDeviceBody({ label, items, lines, className, noteId, note,
             aria-disabled={last || undefined}
             aria-describedby={last ? noteId : undefined}
             aria-keyshortcuts="Alt+Enter"
+            data-part="key"
             style={detent}
             className={
               "litt-target relative inline-flex h-9.5 grow items-center gap-1.5 rounded-[calc(var(--radius-control)-2px)] px-2.5 font-field font-title text-caption litt-legend " +
@@ -89,9 +92,10 @@ export function LegendDeviceBody({ label, items, lines, className, noteId, note,
             ) : (
               <span
                 aria-hidden="true"
+                data-part="light"
                 className={
-                  "size-1.5 shrink-0 rounded-pill forced-colors:border " +
-                  (shown ? LAMP[hue] + " forced-colors:bg-[Highlight]" : "shadow-[inset_0_0_0_1px_var(--fg-disabled)] forced-colors:bg-transparent")
+                  "size-1.5 shrink-0 rounded-pill shadow-(--lamp-recess) forced-colors:border " +
+                  (shown ? LAMP[hue] + " forced-colors:bg-[Highlight]" : "bg-lamp-off forced-colors:bg-transparent")
                 }
               />
             )}

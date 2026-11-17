@@ -209,6 +209,10 @@ const field =
   "in-[[data-material=flat]]:aria-invalid:enabled:active:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
   "in-[[data-material=flat]]:aria-invalid:data-[state=open]:shadow-[0_0_0_2px_var(--canvas),0_0_0_4px_var(--danger)] " +
   "in-[[data-material=flat]]:disabled:shadow-none " +
+  /* Device (plans/024): a readout, not a white key. LCD glass under its sheen, its words the glass's ink, set 4px
+     into a well drawn round it (--tray, a dark rim), the well at Device's well radius and the glass at it less 4px.
+     A readout does not sink; focus rings the well. */
+  "in-[[data-material=device]]:rounded-[calc(var(--radius-well)-4px)] in-[[data-material=device]]:bg-field in-[[data-material=device]]:[background-image:var(--lcd)] in-[[data-material=device]]:font-field in-[[data-material=device]]:text-field-ink in-[[data-material=device]]:data-placeholder:text-field-ink-subtle in-[[data-material=device]]:hover:bg-field in-[[data-material=device]]:enabled:pointer-coarse:active:bg-field in-[[data-material=device]]:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_5px_color-mix(in_oklab,black_10%,transparent)] in-[[data-material=device]]:enabled:active:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_5px_color-mix(in_oklab,black_10%,transparent)] in-[[data-material=device]]:data-[state=open]:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_5px_color-mix(in_oklab,black_10%,transparent)] in-[[data-material=device]]:aria-invalid:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_6px_var(--danger)] in-[[data-material=device]]:aria-invalid:enabled:active:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_6px_var(--danger)] in-[[data-material=device]]:aria-invalid:data-[state=open]:shadow-[var(--field-shade),0_0_0_4px_var(--tray),0_0_0_6px_var(--danger)] in-[[data-material=device]]:active:translate-y-0 in-[[data-material=device]]:data-[state=open]:translate-y-0 in-[[data-material=device]]:focus-visible:outline-offset-6 in-[[data-material=device]]:disabled:bg-surface-2 in-[[data-material=device]]:disabled:[background-image:none] in-[[data-material=device]]:disabled:text-fg-disabled in-[[data-material=device]]:disabled:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border";
 
 export type ColorPickerSize = "sm" | "md" | "lg";
@@ -633,7 +637,9 @@ export function ColorPicker({
           e.preventDefault();
           trigger.current?.focus();
         }}
-        className={"text-small font-title " + (disabled ? "text-fg-disabled" : "text-fg")}
+        className={"text-small font-title " +
+        /* Under Device the label is lettering engraved on the plate, as the Input's is (plans/024): capitals by CSS, tracked, its 1px lip. */
+        "in-[[data-material=device]]:text-caption in-[[data-material=device]]:[text-transform:var(--label-case)] in-[[data-material=device]]:[letter-spacing:var(--label-tracking)] in-[[data-material=device]]:[text-shadow:var(--engrave)] " + (disabled ? "text-fg-disabled" : "text-fg")}
       >
         {label}
       </label>

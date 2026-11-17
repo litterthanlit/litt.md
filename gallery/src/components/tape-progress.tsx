@@ -5,8 +5,8 @@
  *
  * - Anatomy: the label and the reading above, as Progress has them, then a smoked window (200 by 110 in its own units,
  *   at most 440px wide): the supply reel on the left emptying, the take-up on the right filling, the tape between them
- *   over two guides and across a head, and a record light that is lit while the work runs (the accent, the one small
- *   light in the view).
+ *   over two guides and across a head, and a record light that is lit while the work runs (red, --signal: REC under
+ *   Device's color rule, plans/024), `data-part="light"` in the window, `data-part="window"`.
  * - The reels are discs. A reel's pack is a disc whose radius follows the value by area: the supply is
  *   sqrt(hub^2 + (1 - p) * span) and the take-up sqrt(hub^2 + p * span), both 15 to 38, so the tape on one is the tape
  *   gone from the other. Each reel sets two local properties, --tape-r (the pack radius) and --tape-a (the hub's angle),
@@ -187,6 +187,7 @@ export function TapeProgress({ label, value, max = 100, valueText, status = "act
         aria-valuemax={max}
         aria-valuenow={known ? Math.round(share * max) : undefined}
         aria-valuetext={reading}
+        data-part="window"
         className="relative aspect-[200/110] w-full max-w-[27.5rem] overflow-hidden rounded-control bg-field shadow-[inset_0_0_0_1px_var(--field-line),var(--field-shade)] forced-colors:border"
       >
         <svg viewBox="0 0 200 110" aria-hidden="true" className="absolute inset-0 size-full">
@@ -195,7 +196,7 @@ export function TapeProgress({ label, value, max = 100, valueText, status = "act
             <circle key={g.x} cx={g.x} cy={g.y} r={5} fill="none" strokeWidth={1} className="stroke-[color-mix(in_oklab,var(--field-ink)_30%,transparent)]" />
           ))}
           <rect x={91} y={TAPE_Y} width={18} height={9} className="fill-[color-mix(in_oklab,var(--field-ink)_25%,transparent)]" />
-          <circle cx={114} cy={96} r={1.6} className={recording ? "fill-accent" : "fill-[color-mix(in_oklab,var(--field-ink)_18%,transparent)]"} />
+          <circle data-part="light" cx={114} cy={96} r={1.6} className={recording ? "fill-signal" : "fill-[color-mix(in_oklab,var(--field-ink)_18%,transparent)]"} />
         </svg>
         {reelOf(SUPPLY, true, supply)}
         {reelOf(TAKE_UP, false, takeUp)}

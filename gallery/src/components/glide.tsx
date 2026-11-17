@@ -265,7 +265,9 @@ export function useGlide(options: GlideOptions = {}) {
       aria-hidden="true"
       data-ring="false"
       className={
-        "pointer-events-none absolute top-0 left-0 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] data-[ring=true]:shadow-[inset_0_0_0_1px_var(--focus)]" +
+        "pointer-events-none absolute top-0 left-0 rounded-control in-[[data-material=flat]]:rounded-[calc(var(--radius-surface)-4px)] bg-[color-mix(in_oklab,var(--fg)_7%,transparent)] data-[ring=true]:shadow-[inset_0_0_0_1px_var(--focus)] " +
+        /* Under Device, on a screen (a menu's or a command menu's glass), the highlight is the one blue (plans/024). */
+        "in-[[data-material=device]]:in-[.litt-glass]:bg-select" +
         (options.forcedHighlight === false ? "" : " forced-colors:bg-[Highlight] forced-colors:[forced-color-adjust:none]")
       }
       style={fun ? { y, opacity, scaleY, originY: 0 } : { y, opacity }}

@@ -17,6 +17,9 @@
  *   (control + 4) or the pill, and a block set 2px into a
  *   control the control radius less 2px (it follows the
  *   control, so nothing here changes for it)                -> control, RADIUS_PILL, cornerRule
+ * - R9's one exception for parts: under Device, the
+ *   components repo's em radii, plate 1.25, well 1.05, key
+ *   or LCD 0.7 and chip 0.4, in Device's block alone        -> DEVICE_RADII_EM, cornerRule(px, s, { world, em })
  * - the last linear() stop is 1 and responsive never passes
  *   1                                                        -> spring.ts toCss
  *
@@ -163,12 +166,28 @@ export const shapeName = (control: number) => (control === 0 ? "Square" : contro
 /** --radius-pill in px: avatars and icon-only buttons. Not PILL, the Customize panel's pill for controls. */
 export const RADIUS_PILL = 999;
 
-/** One component corner (check 7): 0, the control radius, the surface radius or the pill. */
-export function cornerRule(px: number, subject: string): RuleRow {
+/**
+ * R9's exception (Nick, 2026-11-17: "all yes"): Device nests the components repo's em radii, in em of the part's own
+ * size, so a part scales as one piece. Only Device takes them; check 7 holds tokens.css's --radius-plate, -well, -key and
+ * -chip to these values, in Device's block alone, and npm run test:rules to this table.
+ */
+export const DEVICE_RADII_EM = { plate: 1.25, well: 1.05, key: 0.7, chip: 0.4 } as const;
+
+/**
+ * One component corner (check 7): 0, the control radius, the surface radius or the pill. Under Device (`world`
+ * "device", with `em`, the part's font size in px) the four em radii at that size fit too, within half a pixel; in any
+ * other world they are off the scale.
+ */
+export function cornerRule(px: number, subject: string, at?: { world?: Material; em?: number }): RuleRow {
   const surface = surfaceRadius(LIMITS.control);
+  const device = at?.world === "device" && at.em ? Object.entries(DEVICE_RADII_EM).find(([, e]) => Math.abs(e * at.em! - px) <= 0.5) : undefined;
+  const scale = px === 0 || px === LIMITS.control || px === surface || px === RADIUS_PILL;
   return {
-    ok: px === 0 || px === LIMITS.control || px === surface || px === RADIUS_PILL,
-    text: `${subject} on litt's corners, 0, ${LIMITS.control}px, ${surface}px or the pill: ${px === RADIUS_PILL ? "the pill" : `${px}px`}`,
+    ok: scale || !!device,
+    text:
+      at?.world === "device"
+        ? `${subject} on Device's corners, 0, ${LIMITS.control}px, ${surface}px, the pill or its em radii (${Object.values(DEVICE_RADII_EM).join(", ")}em): ${device ? `${device[1]}em, the ${device[0]}` : px === RADIUS_PILL ? "the pill" : `${px}px`}`
+        : `${subject} on litt's corners, 0, ${LIMITS.control}px, ${surface}px or the pill: ${px === RADIUS_PILL ? "the pill" : `${px}px`}`,
   };
 }
 

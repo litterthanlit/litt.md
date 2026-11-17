@@ -186,6 +186,31 @@ the element that draws the material. Kinds not in this list fail under Device.
 
 **STOP**: Nick reads Device's materials, color and voice in `litt-principles.md`, and Open 6, before phase 2 starts.
 
+Nick, 2026-11-17, on the sheet of the eight calls: "all yes, thank you for this visual. this is what I mean diving into
+the world!" Open 6 is closed.
+
+### Phase 2. Every Device part in Device's materials and color rule (done, 2026-11-17, waiting for Nick)
+
+- [x] Tokens first, through Propagate: Device's frame, a part's plate (gradient, edge, grain), the LCD's sheen, edge
+      and dim units, its chip, a bezel, lamps on and off with their recess and glow, a quiet legend, the one blue on the
+      glass, and links in the ink (`--device-accent-text` is `--device-fg`). Values from the components repo's
+      `tokens.css` where they fit (frame, body edge, LCD, rim, meter, recess, its accent as the selection blue); the
+      plate a step lighter and the quiet legend a step darker, to keep 3:1 and 4.5:1. A chart's hues and the statuses
+      are greys under Device. Every other world gets the names as aliases of its own. Check 12 holds the rule.
+- [x] R9's exception for Device's em radii (plate 1.25, well 1.05, key 0.7, chip 0.4), `taste:` commit `7ae583d`;
+      check 7, `rules.ts` (`DEVICE_RADII_EM`), the lint (gallery and host), `test:rules` and `test:corners` hold them
+      to Device, each with a case that fails elsewhere.
+- [x] Breaches 1 to 16 fixed (17, the player body, is phase 4), each part marked with its `data-part` kind.
+- [x] `test:materials` (after `check:anatomy`): Device's kinds only, orange only in a lamp, no data hue, green or
+      amber, every stage and gallery tile a plate. Its self-test puts back an orange primary key, a teal gauge, a Press
+      part's kind and a dark stage. `KNOWN` is empty. In CI beside `test:worlds`.
+- [x] Press, Flat, Plain, Rack and Heat compared page by page against the base commit, light and dark, at
+      deviceScaleFactor 1.
+- Left: the rule builder's condition row keeps the control radius around Device's select well (`test:corners`
+      `KNOWN`); code input's cells are not in a well; demo strings are phase 3.
+
+**STOP**: Nick looks at the before and after sheet of the sixteen breaches before phase 3 starts.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.

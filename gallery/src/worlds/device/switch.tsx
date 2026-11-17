@@ -9,8 +9,9 @@
  *   nearer side, like the other bodies.
  * - The hand: press and the key sinks the whole --press-depth (2px) onto its well and its skirt goes with it.
  * - Its word ("Off", "On") sits on a small LCD beside the key, in the mono at the caption size (--field, --field-ink,
- *   --field-shade). A lamp on the glass lights when on: the accent for tone="accent", else the glass's own ink, so a
- *   list of switches stays one accent fill at most (R6).
+ *   --field-shade). A lamp on the glass lights orange when on, whatever the tone (Device's color rule, plans/024: a
+ *   switch that is on is a hand on it, and its lamp is the one place the orange shows); it is a light, never a fill.
+ *   The well is `data-part="well"`, the key `"key"`, the glass `"lcd"` and the lamp `"light"`.
  * - Forced colors drops shadows and fills, so the well, the key and the glass get real borders, the lamp is a system
  *   highlight when lit and an outline when not, and the key's side says the rest.
  */
@@ -65,12 +66,13 @@ const follow: CSSProperties = {
 };
 
 /** Device, the toggle key: a key that flips in a well with a detent, its word and a lamp on LCD glass beside it. */
-export function SwitchDeviceBody({ shown, disabled, dragging, x, tone, words, root, className }: SwitchBodyProps) {
+export function SwitchDeviceBody({ shown, disabled, dragging, x, words, root, className }: SwitchBodyProps) {
   const lit = !disabled && shown;
   return (
     <SwitchPrimitive.Root {...root} data-body="device" className={housing + className}>
-      <span aria-hidden="true" className={well + (disabled ? wellDisabled : wellOn)}>
+      <span aria-hidden="true" data-part="well" className={well + (disabled ? wellDisabled : wellOn)}>
         <SwitchPrimitive.Thumb
+          data-part="key"
           className={keyBase + (disabled ? " " + keyDisabled : "")}
           style={{ ...(dragging ? follow : flip), translate: `${x} 0` }}
         >
@@ -78,12 +80,13 @@ export function SwitchDeviceBody({ shown, disabled, dragging, x, tone, words, ro
           <span className={grip} />
         </SwitchPrimitive.Thumb>
       </span>
-      <span aria-hidden="true" className={glass + (disabled ? " opacity-50" : "")}>
+      <span aria-hidden="true" data-part="lcd" className={glass + (disabled ? " opacity-50" : "")}>
         <span
+          data-part="light"
           className={
             lamp +
             (lit
-              ? (tone === "accent" ? " bg-accent shadow-[0_0_6px_var(--accent)]" : " bg-field-ink shadow-[0_0_6px_var(--field-ink)]") + " forced-colors:bg-[Highlight]"
+              ? " bg-accent shadow-[0_0_0.45em_var(--accent)] forced-colors:bg-[Highlight]"
               : " bg-field-line forced-colors:bg-transparent")
           }
         />

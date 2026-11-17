@@ -69,6 +69,16 @@ const concentricInset = (v, prefix) => {
 /* A world's object (the Playground's, plans/018) takes --object-radius, the one radius past the scale (R9), and the
    boxes set inside it take it less their inset, as above. */
 const objectRadius = (v, prefix) => v === `var(--${prefix}object-radius)`;
+/* R9's exception (Nick, 2026-11-17: "all yes"): Device nests the components repo's em radii, plate 1.25, well 1.05, key
+   or LCD 0.7 and chip 0.4 (rounded-plate, -well, -key, -chip), in Device alone: a body in worlds/device/ (installed as
+   <part>.device.tsx), a part only Device has, or a class behind Device's variant. Anywhere else they fail. */
+const DEVICE_RADII = ["plate", "well", "key", "chip"];
+/* Each by name, or one less a step of the spacing scale for a part set that far into another (the glass 4px into a well). */
+const deviceRadius = (v, prefix) =>
+  new RegExp(`^rounded(?:-(?:t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(?:${prefix}(?:${DEVICE_RADII.join("|")})|\\[calc\\(var\\(--${prefix}radius-(?:${DEVICE_RADII.join("|")})\\)-(?:2|4|8)px\\)\\])$`).test(v);
+const DEVICE_ONLY_PARTS = ["agent-indicator", "tape-progress", "seven-segment", "copy-button"];
+const deviceFile = (f) => /[\\/]worlds[\\/]device[\\/]/.test(f) || /\.device\.tsx$/.test(f) || DEVICE_ONLY_PARTS.includes(path.basename(f).replace(/\.tsx$/, ""));
+const DEVICE_VARIANT = /(?:^|:)in-\[\[data-material=device\]\]:/;
 /* Then the caps that keep a box from growing rounder than what it holds or what holds it. */
 const CONCENTRIC = [
   "min(var(--radius-control),calc(var(--control-sm)/2))", // a control that wraps (a field of tokens, a rule row): its
@@ -149,6 +159,12 @@ function lintGallery(files, root) {
         const v = m[0];
         if (v === "rounded" && !/class(Name)?=|\bcn\(|\bclsx\(/.test(line)) continue; // the word in prose
         if (CONCENTRIC.some((c) => v === `rounded-[${c}]`) || concentricInset(v.replace(/^rounded-\[(.*)\]$/, "$1"), "") || objectRadius(v.replace(/^rounded-\[(.*)\]$/, "$1"), "")) continue;
+        if (deviceRadius(v, "")) {
+          const token = line.slice(0, m.index).split(/[\s"'`]/).pop() + v;
+          if (deviceFile(f) || DEVICE_VARIANT.test(token)) continue;
+          fail("radius", `${v}: Device's em radii (R9's exception) belong to Device alone: a body in worlds/device/, a Device part, or behind in-[[data-material=device]]:`);
+          continue;
+        }
         if (!/^rounded(-(t|b|l|r|s|e|ss|se|es|ee|tl|tr|bl|br))?-(pill|none|control|surface)$/.test(v)) fail("radius", `${v}: use rounded-control (controls, rows, inputs), rounded-surface (cards, menus, dialogs, toasts) or rounded-pill (avatars, icon-only buttons)`);
       }
       if (/borderRadius\s*:\s*['"]?(?!0\b|999|9999|var\(--radius-(pill|control|surface)\))[\d.]/.test(line)) fail("radius", "borderRadius: use the radius tokens");
@@ -554,7 +570,8 @@ function checkToken(t, scope, add, isClassContext) {
   // radius
   if ((m = RADIUS_RE.exec(b))) {
     const rest = m[2];
-    const ok = rest !== undefined && (RADIUS_OK.has(rest) || rest === "[inherit]" || CONCENTRIC_HOST.some((c) => rest === `[${c}]`) || concentricInset(rest.replace(/^\[(.*)\]$/, "$1"), "litt-") || objectRadius(rest.replace(/^\[(.*)\]$/, "$1"), "litt-") || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
+    const device = deviceRadius(b, "litt-") && (deviceFile(hostFile) || t.variants.includes("in-[[data-material=device]]"));
+    const ok = rest !== undefined && (device || RADIUS_OK.has(rest) || rest === "[inherit]" || CONCENTRIC_HOST.some((c) => rest === `[${c}]`) || concentricInset(rest.replace(/^\[(.*)\]$/, "$1"), "litt-") || objectRadius(rest.replace(/^\[(.*)\]$/, "$1"), "litt-") || /^\[var\(--litt-radius-(?:control|surface|pill)\)\]$/.test(rest) || /^\(--litt-radius-(?:control|surface|pill)\)$/.test(rest));
     if (!ok && (rest !== undefined || isClassContext())) {
       add("radius", `${b}: ${HOST_ADVICE.radius}${rest === "full" ? ". rounded-full is rounded-litt-pill" : ""}`);
     }
@@ -655,7 +672,10 @@ const LITERAL_MAYBE = /(?:^[ \t]*|[{,]\s*)(duration|delay|mass|bounce)\s*:\s*-?[
 const HOST_MOTION_PROPS = /\b(?:initial|animate|exit|whileHover|whileTap|whileFocus|whileInView|whileDrag|variants)=\{\{/g;
 const HOST_LAYOUT_KEYS = /(^|[\s,{'"])(width|height|minWidth|maxWidth|minHeight|maxHeight|top|left|right|bottom|inset|gap|margin\w*|padding\w*|fontWeight|fontSize|lineHeight|letterSpacing|borderRadius|borderWidth|filter|backdropFilter|boxShadow|backgroundImage)['"]?\s*:/;
 
+/** The host file being linted, so a radius rule can tell a Device body (<part>.device.tsx) from the rest. */
+let hostFile = "";
 function lintHostFile(file, text, rel) {
+  hostFile = file;
   const fails = [], warns = [];
   const css = /\.css$/i.test(file);
   const sc = scanSource(text, css);
