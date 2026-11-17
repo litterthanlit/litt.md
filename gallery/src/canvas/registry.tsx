@@ -25,6 +25,7 @@ import { FlatLookFrame } from "./flat-look";
 import { FlatHand } from "./flat-look-hand";
 import { FlatBounceExpressive, FlatBounceResponsive } from "./flat-bounce";
 import { PressColumnPreview, type PressColumn } from "./press";
+import { PressCallPreview, type PressCallId } from "./press-calls";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -197,6 +198,22 @@ const NO_UI: { screen: NoUiScreen; name: string; height: number }[] = [
   { screen: "search", name: "search", height: 1000 },
   { screen: "preferences", name: "preferences", height: 960 },
 ];
+/* Press, phase 1's nine calls (press-calls.tsx, plans/024, Press): a block of their own under the No UI row (its tallest
+   item ends at 11000), three across and three down, each the shipping part today beside the proposal, light over dark. */
+const CALLS_Y = NO_UI_Y + 1320 + 240;
+const CALL = { width: 1120, gap: 120, heights: [1140, 1180, 1560] };
+const PRESS_CALLS: { call: PressCallId; name: string }[] = [
+  { call: 1, name: "Press call 1 · raised only where a hand presses" },
+  { call: 2, name: "Press call 2 · only a fault takes colour" },
+  { call: 3, name: "Press call 3 · the primary, Blue 4, raised once, no glow" },
+  { call: 4, name: "Press call 4 · keep the shallow cut for fields" },
+  { call: 5, name: "Press call 5 · a stage stays the surface, not a plate" },
+  { call: 6, name: "Press call 6 · charts keep five hues, one quantity is the ink" },
+  { call: 7, name: "Press call 7 · voice, the deploy dashboard" },
+  { call: 8, name: "Press call 8 · card covers, a deploy's preview" },
+  { call: 9, name: "Press call 9 · one name per job" },
+];
+const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
@@ -315,5 +332,16 @@ export const ITEMS: CanvasItem[] = [
         render: () => <NoUiPreview screen={row.screen} column={column} />,
       }),
     ),
+  ),
+  ...PRESS_CALLS.map(
+    ({ call, name }, i): CanvasItem => ({
+      id: `press-call-${call}`,
+      name,
+      x: (i % 3) * (CALL.width + CALL.gap),
+      y: callRowY(Math.floor(i / 3)),
+      width: CALL.width,
+      height: CALL.heights[Math.floor(i / 3)],
+      render: () => <PressCallPreview call={call} />,
+    }),
   ),
 ];
