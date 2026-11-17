@@ -9,11 +9,11 @@
  *   does a click on the tile's empty ground (data-open-zone, never the component itself). Without it, neither.
  * - The name is a heading (h2 on the wall, h3 under a group's h2), so the headings inside a component sit under it.
  */
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useContext, useEffect, useRef, useState } from "react";
 import { StillMotion } from "@/motion";
 import { Button } from "@/components/button";
 import { ExpandIcon } from "@/components/icons";
-import { PreviewContext } from "./kit";
+import { DEVICE_PLATE, PreviewContext, WorldContext } from "./kit";
 import type { PageEntry } from "./registry";
 
 /** Pages whose tile is two rows tall beside two short ones: their component needs the height. */
@@ -70,6 +70,7 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
   }, [near]);
   const wake = () => setAwake(true);
   const zone = onOpen ? "" : undefined;
+  const device = useContext(WorldContext) === "device";
   return (
     <div
       ref={ref}
@@ -83,7 +84,8 @@ export function WallTile({ page, href, onOpen, onFollow, heading: Heading = "h2"
       onFocus={(e) => !e.target.closest("[data-tile-foot]") && wake()}
       onClick={onOpen && ((e) => (e.target as HTMLElement).hasAttribute("data-open-zone") && ref.current && onOpen(ref.current, button.current))}
       data-open-zone={zone}
-      className="group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] rounded-surface bg-well"
+      data-part={device ? "plate" : undefined}
+      className={"group/tile grid min-w-0 grid-cols-[minmax(0,1fr)_auto] grid-rows-[minmax(0,1fr)_auto] " + (device ? DEVICE_PLATE : "rounded-surface bg-well")}
     >
       <div inert={!settled} data-open-zone={zone} className="col-span-2 grid min-h-80 min-w-0 place-items-center p-6 sm:p-10 md:min-h-96">
         {near && (

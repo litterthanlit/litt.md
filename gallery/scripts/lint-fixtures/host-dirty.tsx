@@ -50,6 +50,11 @@ export function Radii() {
       <div
         className="md:rounded-sm bg-litt-surface-1" // expect: radius
       />
+      {/* Device's em radii belong to a Device body (<part>.device.tsx) or Device's variant. */}
+      <div
+        className="rounded-litt-key bg-litt-surface-1" // expect: radius
+      />
+      <div className="in-[[data-material=device]]:rounded-litt-chip bg-litt-surface-1" />
       <div
         className="rounded-control bg-litt-surface-1" // expect: radius
       />

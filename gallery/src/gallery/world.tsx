@@ -7,7 +7,8 @@
  * - Arriving writes your look (decision 1): the page's material becomes the gallery's, from an effect, once. The
  *   current world is look.material and there is no other state, so the deck's Material control and a world page can
  *   never disagree.
- * - The Install button is the page's one accent fill (R6). The hero block comes after the header with a screen of
+ * - The Install button is the page's one accent fill (R6); under Device it is the ink key, since orange is a hand on it
+ *   (Device's color rule, plans/024). The hero block comes after the header with a screen of
  *   room, so its own fill (the Agent's Allow or Send) is never on screen with it.
  * - WorldHero is shared with the overview's home hero, which shows the current world's block under the same rules.
  * - The rail's links are anchors on the page's own route: the hash is the route here, so a click scrolls and focuses

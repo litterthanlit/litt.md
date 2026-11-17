@@ -46,6 +46,17 @@
   --color-dial: var(--dial);           /* a world object's dial (plans/018): Device's in the body's opposite finish */
   --color-dial-ink: var(--dial-ink);
   --color-signal: var(--signal);       /* a light that fires, never a fill: Device's red */
+  /* Device's materials (plans/024, phase 2): the chip on the LCD, its dim units, the bezel, a lamp lit with no signal
+     and one that is off, a quiet legend and the one blue on the glass. Set under Device only. */
+  --color-chip: var(--chip);
+  --color-chip-ink: var(--chip-ink);
+  --color-lcd-dim: var(--lcd-dim);
+  --color-bezel: var(--bezel);
+  --color-lamp-on: var(--lamp-on);
+  --color-lamp-off: var(--lamp-off);
+  --color-legend-quiet: var(--legend-quiet);
+  --color-select: var(--select);
+  --color-select-ink: var(--select-ink);
   --color-block: var(--block);
   /* The slider's post (R3): a slot cut into a plate, its pulled-out fill, the cap and its grip, and the notches. */
   --color-slot: var(--slot);
@@ -169,6 +180,11 @@
   --radius-control: var(--radius-control);
   --radius-surface: var(--radius-surface);
   --radius-pill: var(--radius-pill);
+  /* Device's em radii (R9's exception): rounded-plate, -well, -key and -chip, set under Device only. */
+  --radius-plate: var(--radius-plate);
+  --radius-well: var(--radius-well);
+  --radius-key: var(--radius-key);
+  --radius-chip: var(--radius-chip);
 
   /* Depth (R3): zero-offset glow + 1px ring, floating surfaces only.
      shadow-glow is the accent glow, one per view (R6). */

@@ -2,8 +2,9 @@
  * Token input, the Device body (proposals/worlds.md, Bodies; material.md, 8): the Input's glass, with the tokens as lit
  * cells on it.
  *
- * - The field is the Input's: a bezel well (--tray, --tray-shade, 2px of body between the glass and the wall) around a
- *   pane of LCD glass (--field, --field-shade, the mono through font-field). It grows by whole rows of cells as they
+ * - The field is the Input's: a well pressed into the plate (`data-part="well"`: --tray, --tray-shade, Device's well
+ *   radius, 4px of it between the glass and the wall) around a pane of LCD glass (`data-part="lcd"`: --field under the
+ *   LCD's sheen, --field-shade, the mono through font-field), its corners the well's less those 4px. It grows by whole rows of cells as they
  *   wrap, never under the control height (32, 44, 56). Focus and an error ring the well, not the glass.
  * - A token is an inverted cell: the glass lit in --field-ink with its words dark on it, in the mono at the caption
  *   size. At its right end sits a small key (--block, --key-lift) that removes it. The key is a real button named
@@ -30,18 +31,18 @@ const stepsKey: CSSProperties = { transitionProperty: "transform,box-shadow,colo
 
 /* The bezel. It carries the field's state through :has and data, because the element inside is the one that takes focus. */
 const WELL =
-  "relative flex w-full min-w-0 cursor-text bg-tray p-0.5 shadow-(--tray-shade) " +
+  "relative flex w-full min-w-0 cursor-text bg-tray p-1 shadow-(--tray-shade) " +
   "has-[input:focus-visible]:shadow-[var(--tray-shade),var(--focus-ring)] " +
   "data-[invalid]:shadow-[var(--tray-shade),0_0_0_2px_var(--danger)] " +
   "data-[invalid]:has-[input:focus-visible]:shadow-[var(--tray-shade),0_0_0_2px_var(--danger),var(--focus-ring)] " +
   "data-[disabled]:cursor-not-allowed data-[disabled]:bg-surface-2 data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)] " +
   "forced-colors:border forced-colors:has-[input:focus-visible]:outline-2 forced-colors:has-[input:focus-visible]:outline-solid forced-colors:has-[input:focus-visible]:outline-offset-2";
 
-/* The well's corners: the control radius, never past half the one-line height, so a field that wraps keeps the corners it had on one line. The glass's are the same less the 2px of bezel. */
+/* The well's corners: Device's well radius, in em of the field's type, so it carries the type size; the glass's are the same less the 4px of well. */
 const RADIUS = {
-  sm: "rounded-[min(var(--radius-control),calc(var(--control-sm)/2))] pointer-coarse:rounded-[min(var(--radius-control),calc(var(--control-md)/2))]",
-  md: "rounded-[min(var(--radius-control),calc(var(--control-md)/2))]",
-  lg: "rounded-[min(var(--radius-control),calc(var(--control-lg)/2))]",
+  sm: "rounded-well text-small",
+  md: "rounded-well text-body",
+  lg: "rounded-well text-(length:--control-text-lg)",
 };
 const WELL_SIZE = {
   sm: "min-h-control-sm pointer-coarse:min-h-control-md",
@@ -49,17 +50,12 @@ const WELL_SIZE = {
   lg: "min-h-control-lg",
 };
 
-/* The glass, concentric with the well: its radius less the 2px of bezel. Its air plus a 24px row of cells fills the well. */
-const GLASS_RADIUS = {
-  sm: "calc(min(var(--radius-control), calc(var(--control-sm) / 2)) - 2px)",
-  md: "calc(min(var(--radius-control), calc(var(--control-md) / 2)) - 2px)",
-  lg: "calc(min(var(--radius-control), calc(var(--control-lg) / 2)) - 2px)",
-};
-const glassRadius = (size: "sm" | "md" | "lg", coarse: boolean): CSSProperties => ({ borderRadius: GLASS_RADIUS[size === "sm" && coarse ? "md" : size] });
+/* The glass, concentric with the well: its radius less the 4px of well. Its air plus a 24px row of cells fills the well. */
+const glassRadius = (_size: "sm" | "md" | "lg", _coarse: boolean): CSSProperties => ({ borderRadius: "calc(var(--radius-well) - 4px)" });
 const GLASS_SIZE = {
-  sm: "px-1 py-0.5",
-  md: "px-2 py-2",
-  lg: "px-4 py-3.5",
+  sm: "px-1 py-0",
+  md: "px-2 py-1.5",
+  lg: "px-4 py-3",
 };
 const TEXT_SIZE = {
   sm: "text-small",
@@ -67,8 +63,8 @@ const TEXT_SIZE = {
   lg: "text-(length:--control-text-lg)",
 };
 const GLASS =
-  "flex min-w-0 flex-1 items-center bg-field font-field text-field-ink shadow-(--field-shade) forced-colors:border " +
-  "data-[disabled]:bg-transparent data-[disabled]:shadow-none";
+  "flex min-w-0 flex-1 items-center bg-field [background-image:var(--lcd)] font-field text-field-ink shadow-(--field-shade) forced-colors:border " +
+  "data-[disabled]:bg-transparent data-[disabled]:[background-image:none] data-[disabled]:shadow-none";
 
 /* The cell sits 8px in from the glass's walls (4px at sm), the key 2px in from the cell's. */
 const CELL_RADIUS = "rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))]";
@@ -117,7 +113,7 @@ export function TokenInputDeviceBody({ size, invalid, disabled, className, label
   const { coarse } = useDevice();
   return (
     <div data-body="device" className={"grid gap-2 " + className}>
-      <label id={labelId} htmlFor={inputId} className={"litt-legend text-caption font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
+      <label id={labelId} htmlFor={inputId} data-part="lettering" className={"litt-legend text-caption font-title " + (disabled ? "text-fg-disabled" : "text-fg")}>
         {label}
       </label>
 
@@ -125,13 +121,14 @@ export function TokenInputDeviceBody({ size, invalid, disabled, className, label
         ref={field.ref}
         data-invalid={invalid ? "" : undefined}
         data-disabled={disabled ? "" : undefined}
+        data-part="well"
         className={[WELL, RADIUS[size], WELL_SIZE[size]].join(" ")}
         style={steps}
         onMouseDown={field.onMouseDown}
         onFocus={field.onFocus}
         onBlur={field.onBlur}
       >
-        <div data-disabled={disabled ? "" : undefined} style={glassRadius(size, coarse)} className={[GLASS,GLASS_SIZE[size], TEXT_SIZE[size], "pointer-coarse:text-(length:--control-text-lg)"].join(" ")}>
+        <div data-part="lcd" data-disabled={disabled ? "" : undefined} style={glassRadius(size, coarse)} className={[GLASS,GLASS_SIZE[size], TEXT_SIZE[size], "pointer-coarse:text-(length:--control-text-lg)"].join(" ")}>
           <div className="relative flex min-w-0 flex-1 flex-wrap items-center gap-1">
             {list(SKIN)}
             {input}
@@ -144,7 +141,7 @@ export function TokenInputDeviceBody({ size, invalid, disabled, className, label
         <p id={noteId} className="flex max-w-full items-center gap-2 font-field text-caption">
           {/* The error's lamp sits on the body beside the glass, clear of the glass's curve. */}
           {invalid && (
-            <span aria-hidden="true" className="size-1.5 shrink-0 rounded-pill bg-danger shadow-[0_0_6px_var(--danger)] forced-colors:bg-[Highlight]" />
+            <span aria-hidden="true" data-part="light" className="size-1.5 shrink-0 rounded-pill bg-signal shadow-[0_0_0.45em_var(--signal)] forced-colors:bg-[Highlight]" />
           )}
           <span
             className={

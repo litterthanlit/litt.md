@@ -641,7 +641,9 @@ export function SelectField({
           e.preventDefault();
           document.getElementById(id)?.focus();
         }}
-        className={"text-small font-title " + (rest.disabled ? "text-fg-disabled" : "text-fg")}
+        className={"text-small font-title " +
+        /* Under Device the label is lettering engraved on the plate, as the Input's is (plans/024): capitals by CSS, tracked, its 1px lip. */
+        "in-[[data-material=device]]:text-caption in-[[data-material=device]]:[text-transform:var(--label-case)] in-[[data-material=device]]:[letter-spacing:var(--label-tracking)] in-[[data-material=device]]:[text-shadow:var(--engrave)] " + (rest.disabled ? "text-fg-disabled" : "text-fg")}
       >
         {label}
       </label>

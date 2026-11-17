@@ -2,8 +2,9 @@
  * File drop, the Device body (proposals/worlds.md, Bodies; material.md, 8): a slot in the body, with a key to choose.
  *
  * - The area is an engraved legend (litt-legend: capitals, tracked, --engrave) over a slot: LCD glass (--field,
- *   --field-shade, the mono) set in a bezel well (--tray, --tray-shade) with the hint on it, and a Choose key (the
- *   Button's, --block on its 2px skirt) beside it. Nothing is framed round them: the body is the page.
+ *   --field-shade, the mono, under the LCD's sheen; `data-part="lcd"`) set 4px into a well (`data-part="well"`:
+ *   --tray, --tray-shade, Device's well radius, the glass at it less 4px) with the hint on it, and a Choose key (the
+ *   Button's, --block on its 2px skirt) beside it. The plate under them is the stage's (plans/024).
  * - Dragging: the legend changes to say what a drop will do, the bezel takes the focus ring, the glass brightens to
  *   its ink and a lamp at its end lights (--field-ink with a little glow, never the accent, R6). The lamp never says
  *   it alone: the words do. They switch in three steps on the instant tier, never a fade.
@@ -40,13 +41,13 @@ export function FileDropDeviceBody({ area, words, hint, hintId, dragging, disabl
       data-body="device"
       className={"grid grid-cols-[minmax(0,1fr)] gap-2 " + (disabled ? "cursor-not-allowed" : "cursor-pointer")}
     >
-      <p className={"litt-legend text-caption font-title " + (disabled ? "text-fg-subtle" : "text-fg")} style={stepped}>
+      <p data-part="lettering" className={"litt-legend text-caption font-title " + (disabled ? "text-fg-subtle" : "text-fg")} style={stepped}>
         {words}
       </p>
       <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
         <div
           className={
-            "flex min-h-control-md min-w-48 flex-1 basis-48 rounded-control p-0.5 forced-colors:border " +
+            "flex min-h-control-md min-w-48 flex-1 basis-48 rounded-well p-1 text-caption forced-colors:border " +
             (disabled
               ? "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]"
               : dragging
@@ -54,11 +55,13 @@ export function FileDropDeviceBody({ area, words, hint, hintId, dragging, disabl
                 : "bg-tray shadow-(--tray-shade)")
           }
           style={stepped}
+          data-part="well"
         >
           <div
+            data-part="lcd"
             className={
-              "relative flex min-w-0 flex-1 items-center rounded-[calc(var(--radius-control)-2px)] py-1 pr-6 pl-3 font-field text-caption forced-colors:border " +
-              (disabled ? "bg-transparent text-fg-subtle" : "bg-field shadow-(--field-shade) " + (dragging ? "text-field-ink" : "text-field-ink-subtle"))
+              "relative flex min-w-0 flex-1 items-center rounded-[calc(var(--radius-well)-4px)] py-1 pr-6 pl-3 font-field text-caption forced-colors:border " +
+              (disabled ? "bg-transparent text-fg-subtle" : "bg-field [background-image:var(--lcd)] shadow-(--field-shade) " + (dragging ? "text-field-ink" : "text-field-ink-subtle"))
             }
             style={stepped}
           >
@@ -69,6 +72,7 @@ export function FileDropDeviceBody({ area, words, hint, hintId, dragging, disabl
             )}
             <span
               aria-hidden="true"
+              data-part="light"
               className={
                 "absolute top-1/2 right-2 size-1.5 -translate-y-1/2 rounded-pill forced-colors:border " +
                 (dragging && !disabled ? "bg-field-ink shadow-[0_0_6px_var(--field-ink)] forced-colors:bg-[Highlight]" : "bg-field-line forced-colors:bg-transparent")
@@ -147,7 +151,7 @@ export function FileRowDeviceBody({ name, size, progress, error, uploading, onRe
       </div>
       {error && (
         <p id={messageId} className="flex items-center gap-3 rounded-control bg-field py-1.5 pr-4 pl-4 font-field text-caption text-field-ink shadow-(--field-shade) forced-colors:border">
-          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-pill bg-danger forced-colors:border" />
+          <span aria-hidden="true" data-part="light" className="size-1.5 shrink-0 rounded-none bg-signal forced-colors:border" />
           <span>{error}</span>
         </p>
       )}

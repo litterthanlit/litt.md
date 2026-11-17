@@ -8,6 +8,8 @@
  * - SPACE_SCALE is not tokens.css's --space-* steps, in order, with the same names and px,
  * - RADIUS_PILL is not --radius-pill, or LIMITS.control is not --radius-control,
  * - cornerRule turns down 0, the control, the surface or the pill, or accepts a corner check.mjs refuses,
+ * - DEVICE_RADII_EM is not Device's --radius-plate, -well, -key and -chip in tokens.css (R9's exception), or cornerRule
+ *   accepts an em radius in any world but Device, or turns one down under Device, or lets Device past its four,
  * - spaceRule turns down a step of the scale, or accepts a value foundations.md calls off the scale,
  *   or names the wrong steps beside it,
  * - EXPRESSIVE_BOUNCE is not check.mjs's per-world cap (BOUNCE_CAP, BOUNCE_DEFAULT), a world's own
@@ -46,6 +48,21 @@ for (const corner of [0, control, surface, pill]) check(R.cornerRule(corner, "Co
 /* check.mjs: there are no other radii, "no 6, 12 or 16". */
 for (const corner of [2, 6, 12, 16, 24]) check(!R.cornerRule(corner, "Corner").ok, `cornerRule turns down ${corner}px`);
 check(R.cornerRule(pill, "Corner").text === `Corner on litt's corners, 0, ${control}px, ${surface}px or the pill: the pill`, `cornerRule says the pill in words: "${R.cornerRule(pill, "Corner").text}"`);
+
+/* R9's exception: Device's em radii, read from Device's block in tokens.css. */
+const devBlock = /:root\[data-material="device"\],\s*\[data-material="device"\]\s*\{(?=\s*--canvas)([\s\S]*?)\n\}/.exec(tokens)?.[1] ?? "";
+const devEm = Object.fromEntries([...devBlock.matchAll(/--radius-(plate|well|key|chip)\s*:\s*([\d.]+)em\s*;/g)].map((m) => [m[1], Number(m[2])]));
+check(JSON.stringify(R.DEVICE_RADII_EM) === JSON.stringify(devEm), `DEVICE_RADII_EM is Device's block in tokens.css: ${JSON.stringify(R.DEVICE_RADII_EM)} (tokens.css: ${JSON.stringify(devEm)})`);
+for (const [name, em] of Object.entries(R.DEVICE_RADII_EM)) {
+  for (const size of [12, 14, 16]) {
+    const corner = Math.round(em * size * 10) / 10;
+    check(R.cornerRule(corner, "Corner", { world: "device", em: size }).ok, `cornerRule fits Device's ${name}, ${em}em at ${size}px (${corner}px)`);
+    for (const world of ["press", "flat", "plain", "rack", "heat", undefined])
+      if (![0, control, surface, pill].includes(corner)) check(!R.cornerRule(corner, "Corner", { world, em: size }).ok, `cornerRule turns down ${corner}px (Device's ${name} at ${size}px) in ${world ?? "no world"}`);
+  }
+}
+for (const corner of [2, 6, 12, 16, 24]) check(!R.cornerRule(corner, "Corner", { world: "device", em: 13 }).ok || Object.values(R.DEVICE_RADII_EM).some((e) => Math.abs(e * 13 - corner) <= 0.5), `cornerRule under Device still turns down ${corner}px at 13px`);
+check(!R.cornerRule(14, "Corner", { world: "device", em: 14 }).ok, "cornerRule under Device turns down 1em (14px at 14px), past its four");
 
 for (const [step] of spaces) check(R.spaceRule(step, "Gap").ok, `spaceRule fits ${step}px`);
 check(R.spaceRule(0, "Gap").ok, "spaceRule fits no space at all");

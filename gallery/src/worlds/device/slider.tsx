@@ -1,7 +1,8 @@
 /**
  * The Slider's Device body (proposals/worlds.md, Bodies; proposals/device.md): a fader. The body is the aluminium, so
- * there is no plate. A well is cut into it (--slot, --slot-shade), its pulled-out part lit, the way a meter lights:
- * in the accent, which is Device's orange, or the ink under Monochrome. Under the well, small engraved ticks (--notch,
+ * there is no plate. A well is cut into it (--slot, --slot-shade; `data-part="slot"`), its pulled-out part lit, the way
+ * a meter lights: in the ink, --lamp-on (Device's color rule, plans/024: a level is the ink; orange is a hand on it).
+ * The cap is `data-part="cap"`. Under the well, small engraved ticks (--notch,
  * --engrave) at the marks, or at every tenth of the track when there are none, and a longer one at home. The cap is a
  * key (--key-lift) with a line across its face, standing a little proud of the well. Held, it sinks the whole
  * --press-depth, 2px, onto its skirt, and the key's shade steps down (--block-press). The value is not here: the Slider's
@@ -25,9 +26,9 @@ const well =
   "group-data-disabled:bg-surface-3 group-data-disabled:shadow-none forced-colors:border";
 const capTravel = "pointer-events-none absolute inset-y-0";
 const fillTravel = "absolute inset-y-0 left-2.5 right-2.5";
-/* Lit like a meter: the accent. Disabled, it goes dark. */
+/* Lit like a meter: the ink. Disabled, it goes dark. */
 const fillLook =
-  "bg-accent shadow-(--slot-fill-shade) " +
+  "bg-lamp-on shadow-(--slot-fill-shade) " +
   "group-data-disabled:bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] group-data-disabled:shadow-none forced-colors:bg-[Highlight]";
 const glides = " transition-transform duration-(--dur-responsive) ease-responsive";
 /* The cap: a key 14px wide and 28px tall, 6px from the top, centered on its rail's right edge. It sinks while held. */
@@ -57,7 +58,7 @@ function ticksOf(notches: SliderBodyProps["notches"]) {
 export function SliderDevice({ range, caps, fill, notches, glide, held, plateRef, root, thumbs }: SliderBodyProps) {
   return (
     <RadixSlider.Root ref={plateRef} {...root} data-body="device" data-no-drag="" data-held={held ? "" : undefined} className={rootLook}>
-      <span aria-hidden="true" className={well} style={insetX(10)}>
+      <span aria-hidden="true" data-part="slot" className={well} style={insetX(10)}>
         <span className={fillTravel + (range ? " origin-left" : "") + (glide ? glides : "")} style={fill}>
           <span className={(range ? "absolute inset-0 " : "absolute inset-y-0 right-0 w-[calc(100%+0.625rem)] ") + fillLook} />
         </span>
@@ -76,7 +77,7 @@ export function SliderDevice({ range, caps, fill, notches, glide, held, plateRef
       {caps.map((cap, i) => (
         <span key={i} aria-hidden="true" className={capTravel + (glide ? glides : "")} style={{ ...insetX(), transform: `translateX(${((cap.p - 1) * 100).toFixed(3)}%)` }}>
           <span className={capBox} style={{ transform: `translateY(${cap.held ? "var(--press-depth)" : "0px"})` }}>
-            <span className={capFace(cap.held) + (range ? (cap.ring ? ringOf : "") : ringOne)} />
+            <span data-part="cap" className={capFace(cap.held) + (range ? (cap.ring ? ringOf : "") : ringOne)} />
             <span className={capLine} />
           </span>
         </span>

@@ -116,7 +116,7 @@ jobs:
               npm run test:focus --prefix gallery
               npm run test:focus --prefix gallery -- --self-test
           - { name: "Corners", run: "npm run test:corners --prefix gallery && npm run test:corners --prefix gallery -- --self-test" }
-          - name: Gaps, home and worlds
+          - name: Gaps, home, worlds and materials
             run: |
               set -e
               npm run test:gaps --prefix gallery
@@ -124,6 +124,8 @@ jobs:
               npm run test:home --prefix gallery
               npm run test:worlds --prefix gallery
               npm run test:worlds --prefix gallery -- --self-test
+              npm run test:materials --prefix gallery
+              npm run test:materials --prefix gallery -- --self-test
           # Each world's player; the self-test opens only the worlds its breaks land in.
           - { name: "Playground", run: "npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test" }
           # The wall: every material, size and theme with every tile mounted, one accent fill, nothing sideways or empty.

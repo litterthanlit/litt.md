@@ -2,8 +2,9 @@
  * Select, the Device body (proposals/worlds.md, Bodies; material.md, 8): an LCD readout with step keys, and a list drawn
  * as a screen.
  *
- * - The trigger is a readout: the value in the mono on LCD glass (--field, --field-shade, --field-ink), at the Input's
- *   sizes. Pressing the readout opens the list, as Radix's trigger does. Its end carries a pair of small keys
+ * - The trigger is a readout in a well (`data-part="well"`: --tray, --tray-shade, Device's well radius, 4px of it
+ *   round what it holds): the value in the mono on LCD glass (--field under the LCD's sheen, --field-ink), at the
+ *   Input's sizes, its corners the well's less those 4px. Pressing the readout opens the list, as Radix's trigger does. Its end carries a pair of small keys
  *   (--block, --key-lift) that step to the previous and the next option without opening the list. They sit side by side, each
  *   a real key the full height of the glass (40px wide, 28px tall at sm and 40px at md), and 44px wide with a 44px
  *   target on a coarse pointer. They sink the whole
@@ -14,8 +15,9 @@
  * - The list is a screen: LCD glass at the control radius with the float shadow under it, rows in the mono. The current
  *   row is marked by a lamp at its start, lit in the glass's ink (the accent is the view's one fill, R6), an unlit lamp
  *   a dim dot on the other rows, so the lamp never says the state alone: the word stays, and aria-selected says it.
- * - The highlight is not a glide. It switches from row to row in place, a tint of the ink behind the row, in steps on the
- *   instant tier. The list itself switches on and off in steps where it stands (useOverlayMotion), with no slide.
+ * - The highlight is not a glide. It switches from row to row in place, the one blue on the screen behind the row
+ *   (--select, its words --select-ink: Device's color rule, plans/024), in steps on the instant tier. The readout and the
+ *   list are `data-part="lcd"`, a step key `data-part="key"`, a row's lamp `data-part="light"`. The list itself switches on and off in steps where it stands (useOverlayMotion), with no slide.
  * - Forced colors drops shadows and fills, so the readout, the keys and the screen get real borders, a lit lamp is a
  *   system highlight and an unlit one an outline, and the highlighted row is Highlight with HighlightText.
  * - The contract (props, roles, keys, the exit) is select.tsx's.
@@ -26,16 +28,16 @@ import type { CSSProperties } from "react";
 import type { SelectListBodyProps, SelectRowBodyProps, SelectSize, SelectTriggerBodyProps } from "@/components/select";
 
 
-/* The readout is the glass; the trigger and the keys sit in it, 2px in, so their corners are the glass's less 2px. */
+/* The well holds the readout's glass and the keys, 4px in, so their corners are the well's less 4px. */
 /* Device changes in place, in three steps on the instant tier: the class names the tier, this is the step. */
 const STEPS = "steps(3, end)";
 const stepped: CSSProperties = { transitionTimingFunction: `${STEPS}` };
 
 const glass =
-  "group/readout relative flex w-full min-w-0 items-stretch gap-0.5 rounded-control bg-field p-0.5 font-field text-field-ink " +
-  "shadow-(--field-shade) forced-colors:border " +
+  "group/readout relative flex w-full min-w-0 items-stretch gap-1 rounded-well bg-tray p-1 font-field text-field-ink " +
+  "shadow-(--tray-shade) forced-colors:border " +
   "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus " +
-  "data-[invalid]:shadow-[inset_0_0_0_1px_var(--danger),var(--field-shade)] " +
+  "data-[invalid]:shadow-[var(--tray-shade),0_0_0_2px_var(--danger)] " +
   "data-[disabled]:bg-surface-2 data-[disabled]:text-fg-disabled data-[disabled]:shadow-[inset_0_0_0_1px_var(--line)]";
 
 const sizes: Record<SelectSize, string> = {
@@ -50,16 +52,16 @@ const pads: Record<SelectSize, string> = {
 };
 
 const readout =
-  "flex h-full min-w-0 flex-1 cursor-pointer items-center rounded-[calc(var(--radius-control)-2px)] text-left font-normal text-field-ink outline-none " +
+  "flex h-full min-w-0 flex-1 cursor-pointer items-center rounded-[calc(var(--radius-well)-4px)] bg-field [background-image:var(--lcd)] shadow-(--field-shade) text-left font-normal text-field-ink outline-none " +
   "data-placeholder:text-field-ink-subtle pointer-coarse:text-(length:--control-text-lg) " +
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt " +
-  "hover:bg-[color-mix(in_oklab,var(--field-ink)_8%,transparent)] data-[state=open]:bg-[color-mix(in_oklab,var(--field-ink)_14%,transparent)] " +
-  "disabled:cursor-not-allowed disabled:text-fg-disabled disabled:hover:bg-transparent";
+  "hover:bg-[color-mix(in_oklab,var(--field-ink)_8%,var(--field))] data-[state=open]:bg-[color-mix(in_oklab,var(--field-ink)_14%,var(--field))] " +
+  "disabled:cursor-not-allowed disabled:bg-transparent disabled:[background-image:none] disabled:text-fg-disabled disabled:shadow-none disabled:hover:bg-transparent";
 
 const keys = "flex shrink-0 gap-0.5";
 const keyBox =
-  "litt-target relative grid w-10 cursor-pointer place-items-center rounded-[calc(var(--radius-control)-2px)] bg-block text-fg-muted shadow-(--key-lift) " +
+  "litt-target relative grid w-10 cursor-pointer place-items-center rounded-[calc(var(--radius-well)-4px)] bg-block text-fg-muted shadow-(--key-lift) " +
   "pointer-coarse:w-11 [-webkit-tap-highlight-color:transparent] " +
   "transition-[transform,box-shadow,color,background-color] duration-(--dur-instant) ease-litt " +
   "enabled:hover:bg-(--block-hover) enabled:hover:text-fg " +
@@ -86,6 +88,7 @@ function Key({ up, onPress, disabled }: { up?: boolean; onPress: () => void; dis
       /* A press never takes focus from the readout, and never starts a drag on the page behind. */
       onMouseDown={(e) => e.preventDefault()}
       onClick={onPress}
+      data-part="key"
       className={keyBox}
       style={stepped}
     >
@@ -101,9 +104,10 @@ export function SelectDeviceTrigger({ root, size, className, invalid, disabled, 
       data-body="device"
       data-invalid={invalid ? "" : undefined}
       data-disabled={disabled ? "" : undefined}
+      data-part="well"
       className={[glass, sizes[size], className].join(" ")}
     >
-      <SelectPrimitive.Trigger {...root} className={[readout, pads[size]].join(" ")} style={stepped}>
+      <SelectPrimitive.Trigger {...root} data-part="lcd" className={[readout, pads[size]].join(" ")} style={stepped}>
         <span className="min-w-0 flex-1 truncate">
           <SelectPrimitive.Value placeholder={placeholder}>{selected}</SelectPrimitive.Value>
         </span>
@@ -122,6 +126,7 @@ export function SelectDeviceList({ root, glide, children }: SelectListBodyProps)
     <motion.div
       {...root}
       data-body="device"
+      data-part="lcd"
       className={
         "group/list relative z-50 max-h-(--radix-select-content-available-height) max-w-(--radix-select-content-available-width) " +
         "min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin) rounded-control bg-field font-field text-field-ink outline-none " +
@@ -143,19 +148,19 @@ const row =
   "[-webkit-tap-highlight-color:transparent] " +
   "transition-colors duration-(--dur-instant) ease-litt " +
   "text-field-ink-subtle data-[state=checked]:text-field-ink " +
-  "group-data-[quiet=false]/list:data-[highlighted]:text-field-ink group-data-[quiet=false]/list:data-[highlighted]:bg-[color-mix(in_oklab,var(--field-ink)_16%,transparent)] " +
+  "group-data-[quiet=false]/list:data-[highlighted]:text-select-ink group-data-[quiet=false]/list:data-[highlighted]:bg-select " +
   "forced-colors:group-data-[quiet=false]/list:data-[highlighted]:[forced-color-adjust:none] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:bg-[Highlight] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:text-[HighlightText] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:**:text-[HighlightText] " +
   "data-[disabled]:pointer-events-none data-[disabled]:opacity-40 " +
   "pointer-coarse:active:bg-[color-mix(in_oklab,var(--field-ink)_16%,transparent)] pointer-coarse:active:text-field-ink";
 
 const unlit = "size-1.5 rounded-pill bg-field-line forced-colors:border forced-colors:bg-transparent";
-const lit = "size-1.5 rounded-pill bg-field-ink shadow-[0_0_6px_var(--field-ink)] forced-colors:bg-[Highlight]";
+const lit = "size-1.5 rounded-pill bg-current forced-colors:bg-[Highlight]";
 
 /** Device, a row: a lamp at its start, lit on the current option, and the word in the mono. */
 export function SelectDeviceRow({ item, option }: SelectRowBodyProps) {
   return (
     <SelectPrimitive.Item {...item} className={row} style={stepped}>
-      <span aria-hidden="true" className="relative grid size-4 shrink-0 place-items-center">
+      <span aria-hidden="true" data-part="light" className="relative grid size-4 shrink-0 place-items-center">
         <span className={unlit} />
         <SelectPrimitive.ItemIndicator className="absolute inset-0 grid place-items-center">
           <span className={lit} />
