@@ -492,6 +492,290 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a field recorder's monitor, export and takes ---------- */
+
+/** "−6 dB", "0 dB", "+6 dB": a true minus and a sign on a boost. */
+const formatDb = (v: number) => `${v < 0 ? "−" : v > 0 ? "+" : ""}${Math.abs(v)} dB`;
+const formatKbps = (v: number) => `${v} kbps`;
+const formatS = (v: number) => `${v} s`;
+/** 41 becomes "00M 41S", as the recorder's clock reads. */
+const formatClock = (v: number) => `${String(Math.floor(v / 60)).padStart(2, "0")}M ${String(v % 60).padStart(2, "0")}S`;
+
+function MonitorLevelDemo() {
+  const [level, setLevel] = useState(0);
+  const [saved, setSaved] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Slider
+        label="Monitor level"
+        help="How loud the headphones play. The take records the same."
+        min={-24}
+        max={12}
+        step={1}
+        value={level}
+        onValueChange={setLevel}
+        onValueCommit={(v) => setSaved(`Saved ${formatDb(v)} for the headphones.`)}
+        marks={[-24, -12, 12]}
+        home={0}
+        minLabel="Quieter"
+        maxLabel="Louder"
+        formatValue={formatDb}
+      />
+      <div className="flex flex-wrap items-center gap-4">
+        <Button
+          size="sm"
+          disabled={level === 0}
+          onClick={() => {
+            setLevel(0);
+            setSaved(`Saved ${formatDb(0)} for the headphones.`);
+          }}
+        >
+          Reset to 0 dB
+        </Button>
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {saved}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function BitrateDemo() {
+  const [status, setStatus] = useState<string | null>(null);
+  return (
+    <form
+      className="grid w-full max-w-sm gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const bitrate = new FormData(e.currentTarget).get("bitrate");
+        setStatus(`Exporting 14 takes from card A. The form sent bitrate=${bitrate}.`);
+      }}
+    >
+      <Slider
+        name="bitrate"
+        label="MP3 bitrate"
+        help="A lower bitrate makes the files quicker to send."
+        min={128}
+        max={320}
+        step={32}
+        defaultValue={256}
+        marks={[128, 192, 256, 320]}
+        minLabel="Smaller files"
+        maxLabel="Closer to the take"
+        formatValue={formatKbps}
+      />
+      <div className="grid gap-3">
+        <Button type="submit" className="justify-self-start">
+          Export 14 takes
+        </Button>
+        <p role="status" className="min-h-10 text-small text-fg-subtle">
+          {status}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+/** Card A's takes, newest first: the builds' dates and lengths, so the span finds the same 14 of 24. */
+const TAKES = BUILDS.map((b, i) => ({ id: b.id, name: `take_${String(BUILDS.length - i).padStart(2, "0")}.wav`, at: b.at, seconds: b.seconds }));
+
+function takeMatchText(count: number) {
+  if (count === 0) return "No takes match";
+  return count === 1 ? "1 take matches" : `${count} takes match`;
+}
+
+function TakeLengthDemo() {
+  const [span, setSpan] = useState<[number, number]>([20, 80]);
+  /* A polite note for screen readers. It changes when a key moves a thumb or a drag ends, never on every pixel of a drag. */
+  const [said, setSaid] = useState("");
+  const [from, to] = span;
+  const matches = TAKES.filter((t) => t.seconds >= from && t.seconds <= to);
+
+  return (
+    <div className="grid w-full min-w-0 max-w-xl grid-cols-1 gap-8">
+      <RangeSlider
+        label="Take length"
+        min={0}
+        max={120}
+        value={span}
+        onValueChange={setSpan}
+        onValueCommit={([a, b]) => setSaid(takeMatchText(TAKES.filter((t) => t.seconds >= a && t.seconds <= b).length))}
+        minLabel="Shorter"
+        maxLabel="Longer"
+        showValue
+        formatValue={formatS}
+      />
+      <div className="grid min-w-0 grid-cols-1 content-start gap-4">
+        <p aria-hidden="true" className="flex flex-wrap items-baseline justify-between gap-x-4 text-small">
+          <span className="tabular-nums text-fg">{takeMatchText(matches.length)}</span>
+          {matches.length > LISTED && <span className="text-caption font-normal text-fg-subtle">The {LISTED} newest are listed</span>}
+        </p>
+        <p role="status" className="sr-only">
+          {said}
+        </p>
+        <div className="min-h-80 min-w-0">
+          <Table label="Takes in the span">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Take</TableHead>
+                <TableHead numeric>Recorded</TableHead>
+                <TableHead numeric>Length</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {matches.slice(0, LISTED).map((t) => (
+                <TableRow key={t.id}>
+                  <TableCell primary>{t.name}</TableCell>
+                  <TableCell numeric>
+                    <time dateTime={t.at}>{shortDate(t.at)}</time>
+                  </TableCell>
+                  <TableCell numeric>{formatS(t.seconds)}</TableCell>
+                </TableRow>
+              ))}
+              {matches.length === 0 && (
+                <TableEmpty columns={3}>
+                  No takes between {formatS(from)} and {formatS(to)}.
+                </TableEmpty>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LoopRegionDemo() {
+  const [status, setStatus] = useState<string | null>(null);
+  return (
+    <form
+      className="grid w-full max-w-sm gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const [from, to] = new FormData(e.currentTarget).getAll("loop");
+        setStatus(`Looping take_04 from ${formatClock(Number(from))} to ${formatClock(Number(to))}. The form sent loop=${from} and loop=${to}.`);
+      }}
+    >
+      <RangeSlider
+        name="loop"
+        label="Loop"
+        help="The two ends stay at least 2 s apart."
+        min={0}
+        max={60}
+        step={1}
+        minStepsBetweenThumbs={2}
+        defaultValue={[12, 41]}
+        minLabel="Start of take"
+        maxLabel="End"
+        showValue
+        formatValue={formatClock}
+      />
+      <div className="grid gap-3">
+        <Button type="submit" className="justify-self-start">
+          Loop take
+        </Button>
+        <p role="status" className="min-h-15 text-small text-fg-subtle">
+          {status}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+function RecorderDisabledDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-x-12 gap-y-8 sm:grid-cols-2">
+      <Slider label="Input gain" min={0} max={60} step={1} defaultValue={32} formatValue={formatDb} help="Applies to the next take." />
+      <Slider label="Input gain" min={0} max={60} step={1} defaultValue={40} formatValue={formatDb} disabled help="Locked while REC is on." />
+      <RangeSlider label="Take length" min={0} max={120} defaultValue={[20, 80]} showValue formatValue={formatS} help="Filters the list of takes." />
+      <RangeSlider
+        label="Take length"
+        min={0}
+        max={120}
+        defaultValue={[20, 80]}
+        showValue
+        formatValue={formatS}
+        disabled
+        help="Locked while the card is read."
+      />
+    </div>
+  );
+}
+
+function MonitorSheetDemo() {
+  const [open, setOpen] = useState(false);
+  const [level, setLevel] = useState(0);
+  const [blend, setBlend] = useState(50);
+  const [status, setStatus] = useState<string | null>(null);
+
+  return (
+    <div className="grid justify-items-center gap-4">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button icon={<SettingsIcon />}>Monitor settings</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Monitor settings"
+          description="Applies to both headphone outputs."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setOpen(false);
+                  setStatus(`Saved ${formatDb(level)} and ${formatQuality(blend)} input for the headphones.`);
+                }}
+              >
+                Save settings
+              </Button>
+            </>
+          }
+        >
+          <div className="grid gap-6">
+            <Slider
+              label="Monitor level"
+              min={-24}
+              max={12}
+              step={1}
+              value={level}
+              onValueChange={setLevel}
+              minLabel="Quieter"
+              maxLabel="Louder"
+              formatValue={formatDb}
+            />
+            <Slider
+              label="Input and playback"
+              min={0}
+              max={100}
+              step={5}
+              value={blend}
+              onValueChange={setBlend}
+              minLabel="All playback"
+              maxLabel="All input"
+              formatValue={formatQuality}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {status}
+      </p>
+    </div>
+  );
+}
+
+/** The same sheet, forced to the phone path so a desktop can preview it. A real phone needs no wrapper. */
+function MonitorPhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <MonitorSheetDemo />
+    </DeviceProvider>
+  );
+}
+
 export default function SliderPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -499,6 +783,15 @@ export default function SliderPage() {
         title="Animation speed"
         tier="responsive"
         code="SpeedDemo"
+        byWorld={{
+          device: {
+            demo: <MonitorLevelDemo />,
+            title: "Monitor level",
+            code: "MonitorLevelDemo",
+            caption:
+              "How loud the headphones play, from −24 dB to +12 dB. Take the cap and push: it follows your hand 1:1 along the slot, and the slot lights in the ink up to it. Press the slot and the cap goes there on the responsive spring, as it does on the arrow keys. A notch marks −12 dB and the ends, and 0 dB, unity, holds the cap a little, so it is easy to find again. The label row says the level with a true minus, and a screen reader says the same. The save note appears on release, from onValueCommit.",
+          },
+        }}
         caption="Take the cap and push: it follows your hand 1:1, sinks half a pixel and its cast tightens, and pushed fast it leans into the move. Press the slot and the cap goes there on the responsive spring, as it does on the arrow keys. A notch marks each half step, and 1.0x, the default, holds the cap a little, so it is easy to find again. The label row says 1.0x, and a screen reader says the same. The save note appears on release, from onValueCommit."
       >
         <SpeedDemo />
@@ -508,6 +801,13 @@ export default function SliderPage() {
         title="In a form"
         tier="instant"
         code="QualityDemo"
+        byWorld={{
+          device: {
+            demo: <BitrateDemo />,
+            code: "BitrateDemo",
+            caption: "The slider steps by 32 kbps, snaps as you drag, and sends its name and value with the form, like a native field. Press Export to see what was sent.",
+          },
+        }}
         caption="The slider steps in fives, snaps as you drag, and sends its name and value with the form, like a native field. Press Export to see what was sent."
       >
         <QualityDemo />
@@ -518,6 +818,15 @@ export default function SliderPage() {
         tier="instant"
         size="lg"
         code="BuildsDemo"
+        byWorld={{
+          device: {
+            demo: <TakeLengthDemo />,
+            title: "Takes by length",
+            code: "TakeLengthDemo",
+            caption:
+              "Two caps in one slot, the fill between them. Take either cap, or focus one and use the arrow keys. The count and the table follow at once. The ends never cross and stay one step apart. The value reads 20 s to 80 s, and each end tells a screen reader its own value. A screen reader hears how many takes match once per key press or released drag, not on every move.",
+          },
+        }}
         caption="Two caps in one slot, the fill between them. Take either cap, or focus one and use the arrow keys. The count and the table follow at once. The ends never cross and stay one step apart. The value reads 20s to 80s, in words, and each end tells a screen reader its own value. A screen reader hears how many builds match once per key press or released drag, not on every move."
       >
         <BuildsDemo />
@@ -527,6 +836,15 @@ export default function SliderPage() {
         title="A price in a form"
         tier="instant"
         code="PriceDemo"
+        byWorld={{
+          device: {
+            demo: <LoopRegionDemo />,
+            title: "A loop in a form",
+            code: "LoopRegionDemo",
+            caption:
+              "In a form, both ends send their value under one name, so the form holds loop twice, from first. The ends read the recorder's clock and stay two steps apart, and the help text says so. Press Loop take to see what was sent.",
+          },
+        }}
         caption="In a form, both ends send their value under one name, so the form holds price twice, from first. This one stays two steps apart, and the help text says so. Press Show templates to see what was sent."
       >
         <PriceDemo />
@@ -536,6 +854,7 @@ export default function SliderPage() {
         title="Disabled"
         tier="instant"
         code="DisabledDemo"
+        byWorld={{ device: { demo: <RecorderDisabledDemo />, code: "RecorderDisabledDemo" } }}
         caption="The disabled slider lies flat, with nothing to push: the plate and the cap go to surface-2 with hairlines, the slot to surface-3, and the value stays readable. A range does the same. Tab skips it, and the help text says why it is locked."
       >
         <DisabledDemo />
@@ -545,6 +864,7 @@ export default function SliderPage() {
         title="In a phone sheet"
         tier="instant"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <MonitorPhoneDemo />, code: "MonitorPhoneDemo" } }}
         size="lg"
         caption="Open the sheet and push a cap sideways: only the cap moves. A drag that starts on a slider never moves the sheet, and a vertical swipe on it still scrolls the sheet's body. The plate is 44px tall, so a finger finds it."
       >

@@ -204,15 +204,138 @@ function BrandTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a channel's colour on the recorder's screen ---------- */
+
+/** Track colours, clear of the recorder's red, orange and blue: those are its signals (Device's colour rule). */
+const TRACK_COLOURS: ColorSwatch[] = [
+  { label: "Teal", value: "#1d5c5a" }, // litt-allow: user data, a track's colour
+  { label: "Moss", value: "#5b7a3a" }, // litt-allow: user data
+  { label: "Ochre", value: "#d9a441" }, // litt-allow: user data
+  { label: "Plum", value: "#6b3d6e" }, // litt-allow: user data
+  { label: "Sage", value: "#8fa58a" }, // litt-allow: user data
+  { label: "Sand", value: "#c9b48a" }, // litt-allow: user data
+  { label: "Graphite", value: "#3a3a3c" }, // litt-allow: user data
+  { label: "Chalk", value: "#ece9e2" }, // litt-allow: user data
+];
+
+/** Channel 1's strip on the recorder's screen, in the track's colour with ink picked to read on it. */
+function ChannelStrip({ colour }: { colour: string }) {
+  return (
+    <div className="overflow-hidden rounded-surface shadow-[inset_0_0_0_1px_var(--line)]" aria-label="Preview of channel 1 on the screen" role="img">
+      <div className="flex h-12 items-center justify-between px-4 text-small tabular-nums" style={{ backgroundColor: colour, color: getContrastInk(colour) }}>
+        <span className="font-title">CH 1 · Dialogue</span>
+        <span>take_04 · 00M 14S 06F</span>
+      </div>
+    </div>
+  );
+}
+
+function TrackColourDemo() {
+  const [colour, setColour] = useState<string | null>("#1d5c5a"); // litt-allow: user data
+  const [sent, setSent] = useState("");
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSent(`Sent colour=${new FormData(e.currentTarget).get("colour")}`);
+  };
+  return (
+    <form onSubmit={submit} className="grid w-full max-w-sm gap-6">
+      <ColorPicker
+        label="Track colour"
+        name="colour"
+        value={colour}
+        onValueChange={(hex) => {
+          setColour(hex);
+          setSent("");
+        }}
+        swatches={TRACK_COLOURS}
+        hint="Paints channel 1 and its takes on the screen."
+      />
+      {colour && <ChannelStrip colour={colour} />}
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Save colour
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function ExportCoverDemo() {
+  const [cover, setCover] = useState("#5b7a3a"); // litt-allow: user data
+  const [saved, setSaved] = useState("");
+  return (
+    <div className="flex w-full max-w-xl flex-wrap items-start gap-8">
+      <ColorPanel
+        label="Cover colour"
+        className="w-64"
+        value={cover}
+        onValueChange={setCover}
+        onValueCommit={(hex) => setSaved(`Saved to the export: ${describeColor(hex).toLowerCase()}, ${hex}`)}
+        swatches={TRACK_COLOURS.slice(0, 6)}
+      />
+      <div className="grid min-w-48 flex-1 content-start gap-3">
+        <div
+          role="img"
+          aria-label={`Export cover in ${describeColor(cover).toLowerCase()}`}
+          className="grid aspect-4/3 place-items-end rounded-surface p-4"
+          style={{ backgroundColor: cover, color: getContrastInk(cover) }}
+        >
+          <span className="text-h4">Valley, dawn chorus</span>
+        </div>
+        <p className="text-small text-fg-muted">Field recordings, volume 2 · 14 takes · 48 kHz · 24 bit</p>
+        <Status>{saved}</Status>
+      </div>
+    </div>
+  );
+}
+
+const SCENE_COLOUR = "#d9a441"; // litt-allow: user data
+
+function LabelStatesDemo() {
+  const [label, setLabel] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <ColorPicker
+        label="Card label colour"
+        size="sm"
+        value={label}
+        onValueChange={setLabel}
+        error={label ? undefined : "Choose a colour for card A's label."}
+      />
+      <ColorPicker label="Scene colour" defaultValue={SCENE_COLOUR} disabled hint="Set by the production. Ask them to change it." />
+    </div>
+  );
+}
+
+function TrackColourTile() {
+  const [colour, setColour] = useState<string | null>(TRACK_COLOURS[0]!.value);
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <ColorPicker label="Track colour" name="colour" value={colour} onValueChange={setColour} swatches={TRACK_COLOURS} />
+      {colour && <ChannelStrip colour={colour} />}
+    </div>
+  );
+}
+
 export default function ColorPickerPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<BrandTile />}>
+    <Page meta={meta} docs={docs} tile={<BrandTile />} tileByWorld={{ device: <TrackColourTile /> }}>
       <Stage
         title="A brand color for a Framer site"
         tier="responsive"
         size="lg"
         align="start"
         code="BrandColorDemo"
+        byWorld={{
+          device: {
+            demo: <TrackColourDemo />,
+            title: "A track's colour on the screen",
+            code: "TrackColourDemo",
+            caption:
+              "A recorder colours each channel so you can tell them apart on the screen. The field holds a chip of the colour and its hex, and it stays pressed while the panel is open. Press it and the panel opens in a popover. Drag the area or the hue and channel 1's strip under the field changes at once, with no easing. A swatch picks in one click. The swatches keep clear of red, orange and blue, the recorder's own signals. The words on the strip are black or white, whichever reads.",
+          },
+        }}
         caption="The field is the Select's raised trigger with a chip of the color and its hex, held pressed while the panel is open. Click it and the panel grows out of it in a popover, on the responsive tier. Drag the area or the hue and the header under the field changes at once, with no easing. A swatch picks in one click. The text on the header is black or white, whichever reads."
       >
         <BrandColorDemo />
@@ -223,6 +346,7 @@ export default function ColorPickerPage() {
         tier="responsive"
         align="start"
         code="CoverColorDemo"
+        byWorld={{ device: { demo: <ExportCoverDemo />, title: "An export's cover", code: "ExportCoverDemo" } }}
         caption="The panel on its own, beside what it colors. The area and the hue are cut into the panel, and their thumbs are caps seen from above, a ring that stands over any color. Tab once to reach the area, then the arrows move the thumb and Shift makes them ten steps. Type a hex and press Enter, or paste one with three digits. The line under the cover is written on release, from onValueCommit. Nothing here moves on its own."
       >
         <CoverColorDemo />
@@ -233,6 +357,7 @@ export default function ColorPickerPage() {
         tier="responsive"
         align="start"
         code="StatesDemo"
+        byWorld={{ device: { demo: <LabelStatesDemo />, code: "LabelStatesDemo" } }}
         caption="With no color the field says so in the quiet ink, and the error under it says what to do until a color is picked. The locked field keeps its chip and hex readable, with a hint that says why it is locked."
       >
         <StatesDemo />

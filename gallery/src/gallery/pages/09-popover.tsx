@@ -560,6 +560,409 @@ function PhoneDemo() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a take shared, filed, scheduled and renamed ---------- */
+
+const TAKE_LINK = "https://takes.example/take_04-8f2c";
+
+function ShareTakeDemo() {
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+  /* On a phone the label is the sheet's heading, so the panel's own heading would say it twice. */
+  const { compact } = useDevice();
+
+  useEffect(() => {
+    if (state !== "copied") return;
+    const t = setTimeout(() => setState("idle"), 2000);
+    return () => clearTimeout(t);
+  }, [state]);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(TAKE_LINK);
+      setState("copied");
+    } catch {
+      setState("failed"); // the field selects itself on focus, so the person can press the shortcut
+    }
+  };
+
+  return (
+    <Popover onOpenChange={(open) => open && setState("idle")}>
+      <PopoverTrigger asChild>
+        <Button icon={<ShareIcon />} iconRight={<ChevronDownIcon />}>
+          Share
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent label="Share a take" size="lg">
+        <div className="grid gap-4">
+          <div className="grid gap-1">
+            {!compact && <p className="text-body font-title text-fg">Share take_04</p>}
+            <p className="text-small text-fg-subtle">
+              Anyone with the link can play take_04.wav · 48 kHz · 24 bit. It stops working when you delete the take.
+            </p>
+          </div>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
+            <TextField
+              label="Link to the take"
+              readOnly
+              spellCheck={false}
+              value={TAKE_LINK}
+              onFocus={(e) => e.currentTarget.select()}
+            />
+            <Button
+              variant="primary"
+              className="w-28"
+              data-autofocus
+              icon={state === "copied" ? <CheckIcon /> : <CopyIcon />}
+              onClick={copy}
+            >
+              {state === "copied" ? "Copied" : "Copy"}
+            </Button>
+          </div>
+          <p role="status" className={state === "failed" ? "text-small text-danger" : "sr-only"}>
+            {state === "copied" && "Link copied."}
+            {state === "failed" && "The browser would not copy it. Select the link and press the copy shortcut."}
+          </p>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+function CrewCardDemo() {
+  const [last, setLast] = useState("Nothing opened yet");
+  return (
+    <div className="flex items-center gap-4">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button icon={<UserIcon />}>Nina Morgan</Button>
+        </PopoverTrigger>
+        <PopoverContent label="Crew details">
+          <div className="grid gap-4">
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden="true"
+                className="grid size-10 shrink-0 place-items-center rounded-pill bg-surface-3 text-small text-fg"
+              >
+                NM
+              </span>
+              <div className="grid min-w-0">
+                <p className="truncate text-body font-title text-fg">Nina Morgan</p>
+                <p className="truncate text-small text-fg-subtle">Boom operator, scene 12</p>
+              </div>
+            </div>
+            <dl className="grid gap-3 border-t border-line pt-4">
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="text-small text-fg-subtle">Takes today</dt>
+                <dd className="text-small tabular-nums text-fg">14</dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="text-small text-fg-subtle">Last take</dt>
+                <dd className="text-small tabular-nums text-fg">00M 41S, 12 min ago</dd>
+              </div>
+              <div className="flex items-baseline justify-between gap-4">
+                <dt className="text-small text-fg-subtle">Email</dt>
+                <dd className="min-w-0 truncate text-caption font-normal text-fg">nina@studio.com</dd>
+              </div>
+            </dl>
+            <PopoverClose asChild>
+              <Button block onClick={() => setLast("Showing Nina Morgan’s takes")}>
+                Show her takes
+              </Button>
+            </PopoverClose>
+          </div>
+        </PopoverContent>
+      </Popover>
+      <Status>{last}</Status>
+    </div>
+  );
+}
+
+const CARD_TAKES = [
+  { name: "take_01.wav", scene: "Scene 12", mark: "Keep" },
+  { name: "take_02.wav", scene: "Scene 12", mark: "To review" },
+  { name: "take_03.wav", scene: "Room tone", mark: "To review" },
+  { name: "take_04.wav", scene: "Room tone", mark: "Discard" },
+  { name: "take_05.wav", scene: "Foley", mark: "Keep" },
+  { name: "take_06.wav", scene: "Foley", mark: "Discard" },
+  { name: "take_07.wav", scene: "Foley", mark: "Keep" },
+] as const;
+const MARKS = ["Keep", "To review", "Discard"];
+const SCENES = ["Scene 12", "Room tone", "Foley"];
+
+function TakeFiltersDemo() {
+  const [mark, setMark] = useState<string[]>(["Keep", "To review"]);
+  const [scene, setScene] = useState<string[]>([]);
+  const toggle = (list: string[], set: (next: string[]) => void) => (value: string) =>
+    set(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
+  const shown = CARD_TAKES.filter((t) => (!mark.length || mark.includes(t.mark)) && (!scene.length || scene.includes(t.scene)));
+  return (
+    <div className="flex items-center gap-4">
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button icon={<SlidersIcon />} iconRight={<ChevronDownIcon />}>
+            Filters
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent label="Filter takes" size="lg" padded={false}>
+          <div className="grid grid-cols-2">
+            <FilterGroup legend="Marked" options={MARKS} picked={mark} onToggle={toggle(mark, setMark)} />
+            <FilterGroup legend="Scene" options={SCENES} picked={scene} onToggle={toggle(scene, setScene)} />
+          </div>
+          <div className="-mx-1 my-1 h-px bg-line" />
+          <Button
+            variant="ghost"
+            block
+            onClick={() => {
+              setMark([]);
+              setScene([]);
+            }}
+          >
+            Clear filters
+          </Button>
+        </PopoverContent>
+      </Popover>
+      <Status>
+        {shown.length} of {CARD_TAKES.length} takes
+      </Status>
+    </div>
+  );
+}
+
+function CrewAndFilters() {
+  return (
+    <div className="flex flex-wrap items-center gap-x-12 gap-y-6">
+      <CrewCardDemo />
+      <TakeFiltersDemo />
+    </div>
+  );
+}
+
+const MIX_OPTIONS = [
+  { value: "rough", label: "Rough" },
+  { value: "review", label: "In review" },
+  { value: "mixed", label: "Mixed" },
+] as const;
+type MixState = (typeof MIX_OPTIONS)[number]["value"];
+
+const dayGB = (iso: string) => new Date(`${iso}T00:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+
+/** The form is mounted fresh each time the popover opens, so it always starts from the saved values. */
+function MixForm({ due, state, onSave }: { due: string; state: MixState; onSave: (due: string, state: MixState) => void }) {
+  const [nextDue, setNextDue] = useState(due);
+  const [nextState, setNextState] = useState(state);
+  const name = useId();
+  return (
+    <form
+      noValidate
+      className="grid gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave(nextDue, nextState);
+      }}
+    >
+      <TextField label="Mix due" type="date" value={nextDue} onChange={(e) => setNextDue(e.target.value)} />
+      <fieldset className="grid gap-2">
+        <legend className="mb-2 text-small font-title text-fg">Mix</legend>
+        <div className="-mx-3 flex">
+          {MIX_OPTIONS.map((o) => (
+            <Choice key={o.value} type="radio" name={name} checked={nextState === o.value} onChange={() => setNextState(o.value)}>
+              {o.label}
+            </Choice>
+          ))}
+        </div>
+      </fieldset>
+      <div className="flex justify-end gap-3">
+        <PopoverClose asChild>
+          <Button>Cancel</Button>
+        </PopoverClose>
+        <Button variant="primary" type="submit">
+          Save
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function MixDueDemo() {
+  const [open, setOpen] = useState(false);
+  const [due, setDue] = useState("2026-10-30");
+  const [state, setState] = useState<MixState>("review");
+  const [boundary, setBoundary] = useState<Element | null>(null);
+  /* The stage is the collision boundary, so the popover flips up every time, wherever the page is scrolled. */
+  const ref = useCallback((el: HTMLDivElement | null) => setBoundary(el?.parentElement ?? null), []);
+  const label = MIX_OPTIONS.find((o) => o.value === state)!.label;
+  return (
+    <div ref={ref} className="flex items-center gap-6">
+      <div className="grid justify-items-end">
+        <span className="text-small font-title text-fg">Mix · take_04</span>
+        <span role="status" className="text-caption text-fg-subtle">
+          {label}
+        </span>
+      </div>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button icon={<CalendarIcon />}>Due {dayGB(due)}</Button>
+        </PopoverTrigger>
+        <PopoverContent label="Mix due date and state" align="end" collisionBoundary={boundary}>
+          <MixForm
+            due={due}
+            state={state}
+            onSave={(nextDue, nextState) => {
+              setDue(nextDue);
+              setState(nextState);
+              setOpen(false);
+            }}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
+
+const CARD_ACCESS = [
+  { value: "link", title: "Anyone with the link", note: "Can play the takes without signing in." },
+  { value: "crew", title: "People on the crew", note: "Needs a crew account." },
+  { value: "invited", title: "Only people you invite", note: "Each person gets an email with a link." },
+] as const;
+type CardAccess = (typeof CARD_ACCESS)[number]["value"];
+
+function CardAccessDemo() {
+  const [access, setAccess] = useState<CardAccess>("link");
+  const { compact } = useDevice();
+  const group = useId();
+  const current = CARD_ACCESS.find((a) => a.value === access)!;
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button icon={<UserIcon />} iconRight={<ChevronDownIcon />}>
+          Access
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent label="Card access">
+        <div className="grid gap-6">
+          <div className="grid gap-4">
+            {!compact && <p className="text-body font-title text-fg">Card A access</p>}
+            <div className="grid gap-2">
+              <span className="text-small font-title text-fg">Who can listen</span>
+              {/* Opened from inside a glass popover, so this panel is solid. */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button block iconRight={<ChevronDownIcon />}>
+                    {current.title}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent label="Who can listen" padded={false}>
+                  <fieldset>
+                    <legend className="sr-only">Who can listen</legend>
+                    {CARD_ACCESS.map((a) => (
+                      <label
+                        key={a.value}
+                        className={
+                          "flex min-h-control-md cursor-pointer items-start gap-2 rounded-control px-3 py-3 " +
+                          "transition-colors duration-(--dur-instant) ease-litt " +
+                          "hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
+                          "has-focus-visible:outline-2 has-focus-visible:-outline-offset-2 has-focus-visible:outline-focus"
+                        }
+                      >
+                        <input
+                          type="radio"
+                          name={group}
+                          className="mt-0.5 size-4 shrink-0 cursor-pointer accent-accent focus-visible:outline-none"
+                          checked={access === a.value}
+                          onChange={() => setAccess(a.value)}
+                        />
+                        <span className="grid min-w-0">
+                          <span className="text-small font-title text-fg">{a.title}</span>
+                          <span className="text-caption font-normal text-fg-subtle">{a.note}</span>
+                        </span>
+                      </label>
+                    ))}
+                  </fieldset>
+                </PopoverContent>
+              </Popover>
+              <p className="text-small text-fg-subtle">{current.note}</p>
+            </div>
+          </div>
+          <PopoverClose asChild>
+            <Button variant="primary" block>
+              Done
+            </Button>
+          </PopoverClose>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/** A short form with a text field: the reason a phone gets a sheet. Mounted fresh on each open, so it starts from the saved name. */
+function RenameTakeForm({ name, onSave }: { name: string; onSave: (name: string) => void }) {
+  const [next, setNext] = useState(name);
+  const empty = next.trim() === "";
+  return (
+    <form
+      noValidate
+      className="grid gap-6"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!empty) onSave(next.trim());
+      }}
+    >
+      <TextField
+        label="Take name"
+        mono
+        spellCheck={false}
+        value={next}
+        autoComplete="off"
+        error={empty ? "A take needs a name." : undefined}
+        onChange={(e) => setNext(e.target.value)}
+      />
+      <div className="flex justify-end gap-3">
+        <PopoverClose asChild>
+          <Button>Cancel</Button>
+        </PopoverClose>
+        <Button variant="primary" type="submit">
+          Save name
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+function RenameTakeDemo() {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("take_04");
+  return (
+    <div className="flex items-center gap-4">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button icon={<FolderIcon />}>Rename</Button>
+        </PopoverTrigger>
+        <PopoverContent label="Rename take">
+          <RenameTakeForm
+            name={name}
+            onSave={(next) => {
+              setName(next);
+              setOpen(false);
+            }}
+          />
+        </PopoverContent>
+      </Popover>
+      <Status>{name}</Status>
+    </div>
+  );
+}
+
+/** The same popovers forced to the phone path so a desktop can preview them. A real phone needs no wrapper. */
+function TakePhoneDemo() {
+  return (
+    <DeviceProvider mode="phone">
+      <div className="flex flex-wrap items-center gap-x-12 gap-y-6">
+        <RenameTakeDemo />
+        <TakeFiltersDemo />
+      </div>
+    </DeviceProvider>
+  );
+}
+
 export default function PopoverPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -569,6 +972,7 @@ export default function PopoverPage() {
         size="lg"
         align="start"
         code="ShareDemo"
+        byWorld={{ device: { demo: <ShareTakeDemo />, title: "Share a take", code: "ShareTakeDemo" } }}
         caption="The panel fades in, grows from the press scale out of the trigger's corner and slides a quarter of the travel token, on the responsive tier. Focus lands on Copy, so Enter copies at once. Esc closes it and focus goes back to Share. A click outside closes it too, and focus stays where you clicked."
       >
         <ShareDemo />
@@ -580,6 +984,15 @@ export default function PopoverPage() {
         size="lg"
         align="start"
         code="ClientAndFilters"
+        byWorld={{
+          device: {
+            demo: <CrewAndFilters />,
+            title: "A crew card and a filter set",
+            code: "CrewAndFilters",
+            caption:
+              "A popover holds any content. The card is read-only text and one key. The filters are native checkboxes in 44px rows, so the whole row is the target, and they apply as you tick them, so there is nothing to confirm. Both open on a press, never on hover, so touch gets the same thing.",
+          },
+        }}
         caption="A popover holds any content. The card is read-only text and one button. The filters are native checkboxes in 44px rows, so the whole row is the target, and they apply as you tick them, so there is nothing to confirm. Both open on click or tap, never on hover, so touch gets the same thing."
       >
         <ClientAndFilters />
@@ -591,6 +1004,7 @@ export default function PopoverPage() {
         size="lg"
         align="end"
         code="ScheduleDemo"
+        byWorld={{ device: { demo: <MixDueDemo />, code: "MixDueDemo" } }}
         caption="This trigger sits in the bottom-right corner, so the popover flips up. The entrance follows the side it opens on: it rises out of the trigger and grows from the bottom-right corner. Save and Cancel are md, as in a dialog. Cancel throws the edits away, and focus goes back to the trigger either way."
       >
         <ScheduleDemo />
@@ -602,6 +1016,7 @@ export default function PopoverPage() {
         size="lg"
         align="start"
         code="AccessDemo"
+        byWorld={{ device: { demo: <CardAccessDemo />, code: "CardAccessDemo" } }}
         caption="Glass never sits on glass. The picker is opened from inside a glass popover, so its panel is solid: surface 2 with the float shadow, as Menu's submenus are. It finds that out from its trigger when it opens, and solid forces it. A popover opened from a dialog or the glass header turns solid the same way. Options change live and the picker stays open, like Menu's radio rows, so Esc closes only the picker."
       >
         <AccessDemo />
@@ -612,6 +1027,7 @@ export default function PopoverPage() {
         tier="expressive"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <TakePhoneDemo />, code: "TakePhoneDemo" } }}
         caption="On a phone a popover is a bottom sheet, because a form needs the width and a place above the keyboard. The same content shows, under label as a heading. It rises from the bottom edge on the expressive tier and leaves the same way, and it follows your finger when you drag it down. Close, Esc and a tap on the dimmed page do the same thing. A touch screen puts focus on the sheet, so the keyboard waits until you tap the field."
       >
         <PhoneDemo />

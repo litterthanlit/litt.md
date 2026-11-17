@@ -201,14 +201,160 @@ function ProjectNameTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): the fields of a field recorder's take ---------- */
+
+function TakeFieldsDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-x-6 gap-y-8 sm:grid-cols-2">
+      <TextField label="Take name" mono defaultValue="take_04" spellCheck={false} help="Saved to the card as take_04.wav." />
+      <TextField
+        label="Scene"
+        mono
+        defaultValue="scene a"
+        spellCheck={false}
+        error="Use letters, numbers and underscores only, like scene_a."
+      />
+      <TextField label="Send takes to" type="email" inputMode="email" placeholder="name@studio.com" help="A link to each take goes here." />
+      <TextField label="Recorder" mono defaultValue="FR-2 · 0418" disabled help="Read from the recorder, so it cannot change." />
+    </div>
+  );
+}
+
+function TakeSizesDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <Input size="sm" aria-label="Filter takes" placeholder="Filter takes" />
+      <div className="grid grid-cols-[1fr_auto] items-center gap-2">
+        <Input size="md" mono aria-label="Take name" defaultValue="take_04" />
+        <Button size="md">Rename</Button>
+      </div>
+      <div className="grid grid-cols-[1fr_auto] items-center gap-2">
+        <Input size="lg" type="email" aria-label="Email" placeholder="you@studio.com" />
+        <Button size="lg" variant="primary">
+          Send take
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function ManualFormDemo() {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState<string | null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const noteId = useId();
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!EMAIL.test(email.trim())) {
+      setSent(null);
+      setError("Enter a full address, like nina@studio.com.");
+      input.current?.focus(); // the field reads its label and its error together
+      return;
+    }
+    setError(null);
+    setSent(`Sent. The field manual is on its way to ${email.trim()}.`);
+  };
+
+  return (
+    <form onSubmit={submit} noValidate aria-label="Get the field manual" className="grid w-full max-w-xl gap-2">
+      <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
+        <Input
+          ref={input}
+          size="lg"
+          type="email"
+          inputMode="email"
+          autoComplete="email"
+          aria-label="Email"
+          aria-describedby={error ? noteId : undefined}
+          placeholder="you@studio.com"
+          value={email}
+          invalid={!!error}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (error) setError(null);
+          }}
+        />
+        <Button size="lg" variant="primary" type="submit">
+          Get the manual
+        </Button>
+      </div>
+      <p id={noteId} role="status" className={"min-h-5 text-small " + (error ? "text-danger" : "text-fg-subtle")}>
+        {error ?? sent}
+      </p>
+    </form>
+  );
+}
+
+function TakeNotesDemo() {
+  const [notes, setNotes] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (notes.trim().length < 40) {
+      setSaved(false);
+      setError("Add a little more: what you recorded, where, and what to fix in the mix.");
+      e.currentTarget.querySelector("textarea")?.focus();
+      return;
+    }
+    setError(null);
+    setSaved(true);
+  };
+
+  return (
+    <form onSubmit={submit} noValidate className="grid w-full max-w-lg gap-6">
+      <Textarea
+        label="Take notes"
+        rows={5}
+        placeholder="Room tone in the kitchen, mic 2 m from the window. Fridge off, a car at 00M 41S."
+        help="What you recorded, where, and what to fix in the mix."
+        value={notes}
+        error={error}
+        onChange={(e) => {
+          setNotes(e.target.value);
+          if (error) setError(null);
+        }}
+      />
+      <div className="flex flex-wrap items-center gap-4">
+        <Button variant="primary" type="submit">
+          Save notes
+        </Button>
+        <p role="status" className="text-small text-fg-subtle">
+          {saved ? "Saved with take_04.wav." : ""}
+        </p>
+      </div>
+    </form>
+  );
+}
+
+function TakeNameTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <TextField label="Take name" mono defaultValue="take_04" spellCheck={false} help="Saved to the card as take_04.wav." />
+    </div>
+  );
+}
+
 export default function InputPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ProjectNameTile />}>
+    <Page meta={meta} docs={docs} tile={<ProjectNameTile />} tileByWorld={{ device: <TakeNameTile /> }}>
       <Stage
         title="Fields"
         tier="instant"
         caption="Label above, hint below. Each field is the cut: a floor a hair below the page, the control line around it and the shade of its top wall, never a grey floor. Click into a field and the line turns to the focus color with a ring. The error turns the line to danger and says how to fix it. The disabled field lies flat on surface-2, muted and skipped by Tab. Each change fades on the instant tier, and the box never moves."
         code="StatesDemo"
+        byWorld={{
+          device: {
+            demo: <TakeFieldsDemo />,
+            title: "A take's fields",
+            code: "TakeFieldsDemo",
+            caption:
+              "The fields a recorder asks for when you name a take. The label is engraved on the plate above, and each field is LCD glass in a well pressed into it, the take's name in the glass's mono. The hint is a dim line on the glass. Focus rings the well, and an error rings it in red, lights a lamp and says how to fix it in words. The recorder's serial is read from the hardware, so the field lies flat and Tab skips it. Each change steps on the instant tier, and the box never moves.",
+          },
+        }}
       >
         <StatesDemo />
       </Stage>
@@ -218,6 +364,7 @@ export default function InputPage() {
         tier="instant"
         caption="Small is 32, medium is 44 and large is 56, the same scale as Button, so a field and a button of one size sit flush. Use small in tables and toolbars, and large beside a large button. On a touch screen every field uses 16px text, so iOS does not zoom, and the small field grows to 44."
         code="SizesDemo"
+        byWorld={{ device: { demo: <TakeSizesDemo />, code: "TakeSizesDemo" } }}
       >
         <SizesDemo />
       </Stage>
@@ -227,6 +374,7 @@ export default function InputPage() {
         tier="instant"
         caption="A large input and a large primary button, side by side from 640px and stacked full width below it. The label is an aria-label, because the button says what the field is for. Try sending an invalid address: the line turns to danger, the message is linked to the field and focus returns to it."
         code="InlineFormDemo"
+        byWorld={{ device: { demo: <ManualFormDemo />, code: "ManualFormDemo" } }}
       >
         <InlineFormDemo />
       </Stage>
@@ -236,6 +384,7 @@ export default function InputPage() {
         tier="instant"
         caption="For longer text. The spec has no textarea, so this one reuses the Input rules exactly: the same cut, focus ring, error and label. The height comes from rows, and you can drag the corner to make it taller."
         code="BriefDemo"
+        byWorld={{ device: { demo: <TakeNotesDemo />, code: "TakeNotesDemo" } }}
       >
         <BriefDemo />
       </Stage>

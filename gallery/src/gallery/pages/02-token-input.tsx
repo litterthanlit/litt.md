@@ -146,14 +146,92 @@ function SendersTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a field recorder's routing rule, its sends and its tags ---------- */
+
+function RoutingRuleDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <TokenInput
+        label="Takes from"
+        defaultValue={["Input 1", "Input 2", "Input 3"]}
+        collapseAfter={1}
+        placeholder="Add an input"
+        hint="Press Enter or a comma to add one. Click the field to see them all."
+      />
+      <TextField label="Named like" mono spellCheck={false} defaultValue="take_" />
+      <p className="flex items-center gap-2 text-small text-fg-muted">
+        Go to <Tag>Scene 12</Tag>
+      </p>
+    </div>
+  );
+}
+
+function SendTakesDemo() {
+  const [to, setTo] = useState(["nina@studio.com", "mix@soundhouse.co"]);
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <TokenInput
+        label="Send the takes to"
+        value={to}
+        onValueChange={setTo}
+        placeholder="name@studio.com"
+        hint="Paste a list from your contacts, or type and press Enter."
+        validate={(v) => EMAIL.test(v) || `${v} is not a full address. Use the form name@studio.com.`}
+      />
+      <p role="status" className="text-small text-fg-subtle">
+        {to.length === 0 ? "Add at least one address." : `The takes go to ${to.length} ${to.length === 1 ? "address" : "addresses"}.`}
+      </p>
+    </div>
+  );
+}
+
+function TakeTagsDemo() {
+  return (
+    <form className="grid w-full max-w-xl gap-4" aria-label="Take settings" onSubmit={(e) => e.preventDefault()}>
+      <TokenInput
+        name="tags"
+        label="Tags on take_04"
+        defaultValue={["room-tone", "exterior", "wind", "keep"]}
+        max={5}
+        placeholder="Add a tag"
+        hint="Lowercase letters, numbers and dashes. Up to 5."
+        validate={(v) => /^[a-z0-9-]+$/.test(v) || "Use lowercase letters, numbers and dashes, like room-tone."}
+      />
+    </form>
+  );
+}
+
+function RoutingTile() {
+  return (
+    <div className="w-full max-w-sm">
+      <TokenInput
+        label="Takes from"
+        defaultValue={["Input 1", "Input 2", "Input 3"]}
+        collapseAfter={1}
+        placeholder="Add an input"
+        hint="Press Enter or a comma to add one."
+      />
+    </div>
+  );
+}
+
 export default function TokenInputPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SendersTile />}>
+    <Page meta={meta} docs={docs} tile={<SendersTile />} tileByWorld={{ device: <RoutingTile /> }}>
       <Stage
         title="Senders"
         tier="responsive"
         caption="A mail rule. The field shows the first sender and a bare +N for the rest, and opens to all of them when you focus it. Each sender is a token with its own remove button. The tokens that appear fade in and slide, and they fold back when focus leaves."
         code="SendersDemo"
+        byWorld={{
+          device: {
+            demo: <RoutingRuleDemo />,
+            title: "A routing rule",
+            code: "RoutingRuleDemo",
+            caption:
+              "A rule that files takes as they are recorded. The field shows the first input and a bare +N for the rest, and opens to all of them when you focus it. Each input is a token with its own remove button. The tokens that appear come in and slide, and they fold back when focus leaves.",
+          },
+        }}
       >
         <SendersDemo />
       </Stage>
@@ -163,6 +241,7 @@ export default function TokenInputPage() {
         tier="responsive"
         caption="Type an address and press Enter or a comma, or paste a list. An address that is not whole stays in the input, the line turns to danger and the message says how to fix it, until you change the text. A new token fades in, and a removed one fades out while its neighbors close the gap."
         code="RecipientsDemo"
+        byWorld={{ device: { demo: <SendTakesDemo />, title: "Where the takes go", code: "SendTakesDemo" } }}
       >
         <RecipientsDemo />
       </Stage>
@@ -172,6 +251,15 @@ export default function TokenInputPage() {
         tier="responsive"
         caption="Tags for a Framer project, in a form. Five is the limit: at the fifth the input stops adding and the hint says so, and removing one opens it again. Each tag posts under the same name."
         code="TagsDemo"
+        byWorld={{
+          device: {
+            demo: <TakeTagsDemo />,
+            title: "Tags on a take",
+            code: "TakeTagsDemo",
+            caption:
+              "Tags for a take, in a form. Five is the limit: at the fifth the input stops adding and the hint says so, and removing one opens it again. Each tag posts under the same name.",
+          },
+        }}
       >
         <TagsDemo />
       </Stage>

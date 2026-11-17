@@ -321,15 +321,243 @@ function RoleTile() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a field recorder's settings, inputs and shared card ---------- */
+
+const RATES: SelectOption[] = [
+  { value: "44.1", label: "44.1 kHz" },
+  { value: "48", label: "48 kHz" },
+  { value: "96", label: "96 kHz" },
+  { value: "192", label: "192 kHz" },
+];
+
+const INPUTS: SelectOption[] = [
+  { value: "in-1", label: "Input 1" },
+  { value: "in-2", label: "Input 2" },
+  { value: "pair-1-2", label: "Inputs 1 and 2, stereo" },
+];
+
+const TAKE_SORTS: SelectOption[] = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "name", label: "Name A to Z" },
+  { value: "longest", label: "Longest take" },
+];
+
+const EXPORT_TO: SelectOption[] = [
+  { value: "card", label: "Card A" },
+  { value: "phone", label: "Phone" },
+  { value: "drive", label: "Studio drive" },
+];
+
+const FORMATS: SelectOption[] = [
+  { value: "wav", label: "WAV, 24 bit" },
+  { value: "bwf", label: "Broadcast WAV, with timecode" },
+  { value: "flac", label: "FLAC" },
+  { value: "mp3", label: "MP3, 320 kbps", disabled: true },
+];
+
+const CLOCKS: SelectOption[] = [
+  { value: "internal", label: "Internal" },
+  { value: "timecode", label: "Timecode in" },
+];
+
+const FOLDERS: SelectOption[] = [
+  { value: "today", label: "Today" },
+  { value: "scene-12", label: "Mossgrove Hotel, lobby, night ambience and room tone for scene 12 (second pass)" },
+  { value: "archive", label: "Archive" },
+];
+
+const ACCESS: SelectOption[] = [
+  { value: "listen", label: "Listen only" },
+  { value: "tag", label: "Listen and tag" },
+  { value: "export", label: "Edit and export" },
+];
+
+function RecorderSettingsDemo() {
+  const [sent, setSent] = useState("");
+  const send = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    setSent(`Sent rate=${data.get("rate")}`);
+  };
+  return (
+    <form onSubmit={send} className="grid w-full max-w-sm gap-6">
+      <SelectField label="Sample rate" name="rate" options={RATES} defaultValue="48" help="Every new take records at this rate." />
+      <TextField label="Recorder name" name="name" defaultValue="Mara’s FR-2" />
+      <TextField label="File prefix" name="prefix" mono spellCheck={false} defaultValue="take_" />
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Save settings
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function TakeListSizesDemo() {
+  const [sort, setSort] = useState("newest");
+  const [input, setInput] = useState("pair-1-2");
+  return (
+    <div className="grid w-full max-w-xl gap-8">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="w-44">
+          <Select size="sm" aria-label="Sort takes by" options={TAKE_SORTS} value={sort} onValueChange={setSort} />
+        </div>
+        <Button size="sm">Export list</Button>
+      </div>
+      <div className="grid grid-cols-[1fr_auto] items-center gap-2">
+        <Select size="md" aria-label="Input" options={INPUTS} value={input} onValueChange={setInput} />
+        <Button size="md">Arm track</Button>
+      </div>
+      <div className="grid grid-cols-[1fr_auto] items-center gap-2">
+        <Select size="lg" aria-label="Export to" options={EXPORT_TO} defaultValue="card" />
+        <Button size="lg" variant="primary">
+          Export
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function RecorderStatesDemo() {
+  const [format, setFormat] = useState("");
+  const [error, setError] = useState<string | null>("Choose a format for the export.");
+  return (
+    <div className="grid w-full max-w-2xl gap-x-6 gap-y-8 sm:grid-cols-2">
+      <SelectField label="Input" options={INPUTS} defaultValue="pair-1-2" help="New takes record from this input." />
+      <SelectField
+        label="File format"
+        options={FORMATS}
+        placeholder="Choose a format"
+        value={format}
+        error={error}
+        help="WAV keeps every bit of the take."
+        onValueChange={(next) => {
+          setFormat(next);
+          setError(null);
+        }}
+      />
+      <SelectField label="Clock" options={CLOCKS} defaultValue="timecode" disabled help="Set by the timecode box, so it cannot change." />
+      <SelectField label="Folder" options={FOLDERS} defaultValue="scene-12" help="A long value ends in an ellipsis." />
+    </div>
+  );
+}
+
+function ShareCardDemo() {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [access, setAccess] = useState("listen");
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState("");
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!EMAIL.test(email.trim())) {
+      setError("Enter a full address, like nina@studio.com.");
+      e.currentTarget.querySelector("input")?.focus();
+      return;
+    }
+    setOpen(false);
+    setStatus(`Card A shared with ${email.trim()} (${ACCESS.find((a) => a.value === access)?.label}).`);
+  };
+
+  return (
+    <div className="flex items-center gap-4">
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          if (next) {
+            setEmail("");
+            setAccess("listen");
+            setError(null);
+          }
+          setOpen(next);
+        }}
+      >
+        <DialogTrigger asChild>
+          <Button>Share the card</Button>
+        </DialogTrigger>
+        <DialogContent
+          title="Share the card"
+          description="They get an email with a link to every take on card A."
+          footer={
+            <>
+              <DialogClose asChild>
+                <Button>Cancel</Button>
+              </DialogClose>
+              <Button variant="primary" type="submit" form="share-card-form">
+                Send invite
+              </Button>
+            </>
+          }
+        >
+          <form id="share-card-form" onSubmit={submit} noValidate className="grid gap-6">
+            <TextField
+              label="Email"
+              type="email"
+              autoComplete="off"
+              placeholder="nina@studio.com"
+              value={email}
+              error={error}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (error) setError(null);
+              }}
+            />
+            <SelectField label="Access" options={ACCESS} value={access} onValueChange={setAccess} />
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Status>{status}</Status>
+    </div>
+  );
+}
+
+function InputPhoneDemo() {
+  const [input, setInput] = useState("pair-1-2");
+  return (
+    <DeviceProvider mode="phone">
+      <div className="w-full max-w-sm">
+        <SelectField
+          label="Input"
+          name="input"
+          options={INPUTS}
+          value={input}
+          onValueChange={setInput}
+          help="The list stays beside the field. It is not a sheet."
+        />
+      </div>
+    </DeviceProvider>
+  );
+}
+
+function SampleRateTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <SelectField label="Sample rate" name="rate" options={RATES} defaultValue="48" help="Every new take records at this rate." />
+    </div>
+  );
+}
+
 export default function SelectPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<RoleTile />}>
+    <Page meta={meta} docs={docs} tile={<RoleTile />} tileByWorld={{ device: <SampleRateTile /> }}>
       <Stage
         title="A role in an account form"
         tier="responsive"
         size="lg"
         align="start"
         code="AccountFormDemo"
+        byWorld={{
+          device: {
+            demo: <RecorderSettingsDemo />,
+            title: "A sample rate in the recorder's settings",
+            code: "RecorderSettingsDemo",
+            caption:
+              "The sample rate sits in the settings like any other field: its label engraved above, the help below, at the inputs' height. The select is a readout in a well, the value on LCD glass, with two small keys at its end that step the rate without opening the list. Press the readout, or press Space, and the list switches on where it stands, a screen of rows in the mono. The chosen row has a lamp lit at its start, and the row under the keyboard sits on the one blue. Save sends the value through the field's name.",
+          },
+        }}
         caption="The role field sits in the form like any other: label above, help below, at the inputs' height. You type into an input, so it is cut into the page; you press the select, so it is raised, like a button. Click it, or press Space, and the list grows out of the trigger and slides a quarter of the travel token from the side it opens on, on the responsive tier. The check marks Designer. Save sends the value through the field's name."
       >
         <AccountFormDemo />
@@ -340,6 +568,14 @@ export default function SelectPage() {
         tier="responsive"
         caption="Small is 32, medium is 44 and large is 56, the same scale as Button, so a select and a button of one size sit flush. Small goes in a toolbar and large beside a large button. The trigger and the list are the same width at least, and the list is a tray of slats with one gliding highlight."
         code="SizesDemo"
+        byWorld={{
+          device: {
+            demo: <TakeListSizesDemo />,
+            code: "TakeListSizesDemo",
+            caption:
+              "Small is 32, medium is 44 and large is 56, the same scale as Button, so a select and a key of one size sit flush. Small goes in a toolbar, over the list of takes, and large beside a large key. The list is at least as wide as the readout.",
+          },
+        }}
       >
         <SizesDemo />
       </Stage>
@@ -349,6 +585,14 @@ export default function SelectPage() {
         tier="instant"
         caption="Focus draws the 2px focus ring around the block, as on a button. An error draws a danger edge inside it and the block keeps its cast. The error replaces the help text and says how to fix it. Pick a region and it clears. The disabled select lies flat, muted and skipped by Tab, and a long value ends in an ellipsis. The up and down mark never turns."
         code="StatesDemo"
+        byWorld={{
+          device: {
+            demo: <RecorderStatesDemo />,
+            code: "RecorderStatesDemo",
+            caption:
+              "Focus draws the 2px focus ring around the well. An error rings it in red, and the words under it replace the help and say how to fix it; pick a format and it clears. MP3 needs a firmware update, so its row is disabled and the arrows skip it. The clock is set by the timecode box, so its select lies flat, muted and skipped by Tab, and a long folder name ends in an ellipsis.",
+          },
+        }}
       >
         <StatesDemo />
       </Stage>
@@ -358,6 +602,7 @@ export default function SelectPage() {
         tier="responsive"
         align="start"
         code="InviteDemo"
+        byWorld={{ device: { demo: <ShareCardDemo />, code: "ShareCardDemo" } }}
         caption="Glass never sits on glass. The dialog is glass, so the list opens solid: surface 2 with the float shadow. It finds that out from its trigger when it opens. Esc closes only the list, and a second Esc closes the dialog. The dialog's fields are medium."
       >
         <InviteDemo />
@@ -368,6 +613,7 @@ export default function SelectPage() {
         tier="responsive"
         align="start"
         code="PhoneDemo"
+        byWorld={{ device: { demo: <InputPhoneDemo />, code: "InputPhoneDemo" } }}
         caption="On a phone the list stays anchored, as a dropdown menu does. The trigger is full width, so the list is too, and its rows are already 44px. It is not a sheet, so nothing else has to be learned. A tap opens it without picking the row under the finger, and a pressed row fills."
       >
         <PhoneDemo />

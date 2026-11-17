@@ -108,6 +108,20 @@ const ANSWER: Block[] = [
 
 const DONE: Block[] = [{ p: ["Done. ", { code: "hero-loop.mov" }, " is now 71 MB, and the Halo build finished in 38 seconds. The site is live again."] }];
 
+/* Device's own (plans/024, phase 3): the same thread about a take that clips, not a site build. */
+const TAKE_ANSWER: Block[] = [
+  { p: ["take_04 clips at 00M 41S, when the car passes. The input peaks at +0.0 dB for 6 frames on both channels:"] },
+  {
+    ul: [
+      [{ code: "take_04.wav" }, " was recorded at +32 dB of gain, and the limiter on input 1 was off."],
+      ["The safety track at −12 dB holds the same moment clean, peaking at −11.8 dB."],
+    ],
+  },
+  { p: ["Swap the safety track in from 00M 40S to 00M 43S, then run ", { code: "rec normalize take_04" }, ". The peaks are in the ", { link: "level log", href: "#level-log" }, "."] },
+];
+
+const TAKE_DONE: Block[] = [{ p: ["Done. ", { code: "take_04.wav" }, " now peaks at −1.0 dB, and the swap is marked at 00M 40S. Nothing clips."] }];
+
 /** One token per word, and one per code span or link. */
 function tokensOf(runs: Run[]): Run[] {
   return runs.flatMap((r): Run[] => (typeof r === "string" ? (r.match(/\s*\S+\s*/g) ?? []) : [r]));
@@ -235,6 +249,34 @@ function ThreadDemo() {
 }
 
 /** `replayed`: the page loads with the turn already there, so nothing is mid-fade when it is read; a Replay brings it in after a beat. */
+function TakeThreadDemo() {
+  const [names, setNames] = useState(false);
+  const person = (who: string) => (names ? { name: who, avatar: <Avatar name={who} size="sm" decorative /> } : {});
+  const litt = names ? { name: "Litt", avatar: <Avatar name="Litt" size="sm" hue="neutral" decorative /> } : {};
+  return (
+    <div className="grid w-full gap-6">
+      <Switch label="Show names" checked={names} onCheckedChange={setNames} />
+      <Frame>
+        <Conversation label="Thread about take_04">
+          <Message from="user" {...person("Ines Duarte")}>
+            Why does take_04 clip at 00M 41S?
+          </Message>
+          <Message {...litt} actions={<MessageActions copyText={markdownOf(TAKE_ANSWER)} onRetry={noop} />}>
+            <Answer blocks={TAKE_ANSWER} />
+          </Message>
+          <Message from="user" {...person("Nick")}>
+            Swap in the safety track and normalize it.
+          </Message>
+          <Message {...litt} actions={<MessageActions copyText={markdownOf(TAKE_DONE)} onRetry={noop} />}>
+            <p className="text-small text-fg-subtle">The thinking and tool call rows sit here.</p>
+            <Answer blocks={TAKE_DONE} />
+          </Message>
+        </Conversation>
+      </Frame>
+    </div>
+  );
+}
+
 function StreamDemo({ replayed = false }: { replayed?: boolean }) {
   const count = total(ANSWER);
   const [started, setStarted] = useState(!replayed);
@@ -540,6 +582,7 @@ export default function MessagePage() {
         tier="instant"
         size="lg"
         code="ThreadDemo"
+        byWorld={{ device: { demo: <TakeThreadDemo />, title: "A thread about a take", code: "TakeThreadDemo" } }}
         caption="Litt's words sit on the page in fg-muted with no bubble, and the person's turn is a raised bubble on the right. The actions under the latest answer are always there. Hover the older answer, or tab into it, to see its actions. Turn on names to see the optional heading and sm avatar. Nothing moves when the thread loads."
       >
         <ThreadDemo />

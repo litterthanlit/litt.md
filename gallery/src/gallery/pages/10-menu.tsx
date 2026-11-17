@@ -215,6 +215,107 @@ function FlipMenu() {
   );
 }
 
+/* ---------- Device's own (plans/024, phase 3): a take's actions on the recorder ---------- */
+
+const TAKE_FOLDERS = ["Scene 12", "Room tone", "Foley", "Archive 2025"];
+
+function TakeMenu() {
+  const [last, setLast] = useState("Nothing picked yet");
+  const pick = (what: string) => () => setLast(what);
+  return (
+    <div className="grid w-full max-w-md gap-4">
+      <div className="flex items-center justify-between gap-4 bg-surface-2 p-4 pl-6 shadow-[inset_0_0_0_1px_var(--line)] rounded-surface">
+        <div className="grid min-w-0 gap-1">
+          <span className="truncate text-body font-title text-fg">take_04.wav</span>
+          <span className="truncate text-small tabular-nums text-fg-subtle">48 kHz · 24 bit · 00M 14S 06F</span>
+        </div>
+        <Menu
+          label="Take actions"
+          align="end"
+          trigger={
+            <Button iconOnly variant="ghost" aria-label="More actions">
+              <MoreIcon />
+            </Button>
+          }
+        >
+          <MenuItem icon={<FileIcon />} shortcut="↵" onSelect={pick("Playing take_04.wav")}>Play</MenuItem>
+          <MenuItem icon={<CopyIcon />} shortcut="⌘D" onSelect={pick("Duplicated take_04.wav")}>Duplicate</MenuItem>
+          <MenuItem icon={<ShareIcon />} shortcut="⌘E" onSelect={pick("Exported take_04.wav")}>Export</MenuItem>
+          <MenuSub icon={<FolderIcon />} label="Move to">
+            {TAKE_FOLDERS.map((f) => (
+              <MenuItem key={f} icon={<FolderIcon />} onSelect={pick(`Moved to ${f}`)}>{f}</MenuItem>
+            ))}
+          </MenuSub>
+          <MenuSeparator />
+          <MenuItem icon={<ArchiveIcon />} onSelect={pick("Archived take_04.wav")}>Archive</MenuItem>
+          <MenuItem icon={<TrashIcon />} destructive onSelect={pick("Deleted take_04.wav")}>Delete take</MenuItem>
+        </Menu>
+      </div>
+      <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
+    </div>
+  );
+}
+
+function TakeListViewMenu() {
+  const [density, setDensity] = useState("comfortable");
+  const [waveforms, setWaveforms] = useState(true);
+  const [markers, setMarkers] = useState(true);
+  const [archived, setArchived] = useState(false);
+  const shown = [waveforms && "waveforms", markers && "markers", archived && "archived takes"].filter(Boolean).join(", ") || "nothing extra";
+  return (
+    <div className="grid justify-items-start gap-4">
+      <Menu
+        label="View options"
+        trigger={
+          <Button icon={<SlidersIcon />} iconRight={<ChevronDownIcon />}>
+            View
+          </Button>
+        }
+      >
+        <MenuLabel>Density</MenuLabel>
+        <MenuRadioGroup value={density} onValueChange={setDensity}>
+          <MenuRadioItem value="comfortable">Comfortable</MenuRadioItem>
+          <MenuRadioItem value="compact">Compact</MenuRadioItem>
+        </MenuRadioGroup>
+        <MenuSeparator />
+        <MenuLabel>Show</MenuLabel>
+        <MenuCheckboxItem checked={waveforms} onCheckedChange={setWaveforms}>Waveforms</MenuCheckboxItem>
+        <MenuCheckboxItem checked={markers} onCheckedChange={setMarkers}>Markers</MenuCheckboxItem>
+        <MenuCheckboxItem checked={archived} onCheckedChange={setArchived}>Archived takes</MenuCheckboxItem>
+      </Menu>
+      <p className="text-caption font-normal text-fg-subtle" role="status">
+        {density} · {shown}
+      </p>
+    </div>
+  );
+}
+
+function ShareTakeMenu() {
+  const [boundary, setBoundary] = useState<Element | null>(null);
+  /* The stage is the collision boundary, so the menu flips up every time, wherever the page is scrolled. */
+  const ref = useCallback((el: HTMLDivElement | null) => setBoundary(el?.parentElement ?? null), []);
+  return (
+    <div ref={ref}>
+      <Menu
+        label="Share"
+        align="end"
+        collisionBoundary={boundary}
+        trigger={
+          <Button icon={<ShareIcon />} iconRight={<ChevronDownIcon />}>
+            Share
+          </Button>
+        }
+      >
+        <MenuItem icon={<CopyIcon />} shortcut="⌘L">Copy link to take</MenuItem>
+        <MenuItem icon={<FileIcon />}>Play a preview</MenuItem>
+        <MenuItem icon={<FolderIcon />}>Add to a folder</MenuItem>
+        <MenuSeparator />
+        <MenuItem icon={<TrashIcon />} destructive>Stop sharing</MenuItem>
+      </Menu>
+    </div>
+  );
+}
+
 export default function MenuPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -224,6 +325,7 @@ export default function MenuPage() {
         size="lg"
         align="start"
         code="ProjectMenu"
+        byWorld={{ device: { demo: <TakeMenu />, title: "Take actions", code: "TakeMenu" } }}
         caption="The panel fades and scales from 0.98 out of the trigger's corner, and slides a quarter of the travel. One highlight glides between rows on the responsive tier. Open it with the pointer and nothing is lit until you move; open it with Enter or ArrowDown and the first row lights with a focus ring. Hover Move to for the submenu: it is solid, because glass never sits on glass."
       >
         <ProjectMenu />
@@ -236,6 +338,16 @@ export default function MenuPage() {
         align="start"
         code="ProjectMenu"
         caption="On a narrow screen the menu still opens beside its button, but a submenu does not fly out sideways, where it would land off the screen. Open Move to: the list is replaced inside the same panel, with a Back row first. The two lists cross-fade and slide the way Tabs panels do, and the panel snaps to the height of the new list. On a touch screen a row also fills while it is pressed and the shortcut hints go. This stage forces the phone behavior, so a mouse can try it."
+        byWorld={{
+          device: {
+            demo: (
+              <DeviceProvider mode="phone">
+                <TakeMenu />
+              </DeviceProvider>
+            ),
+            code: "TakeMenu",
+          },
+        }}
       >
         <DeviceProvider mode="phone">
           <ProjectMenu />
@@ -247,6 +359,7 @@ export default function MenuPage() {
         tier="responsive"
         align="start"
         code="ViewMenu"
+        byWorld={{ device: { demo: <TakeListViewMenu />, code: "TakeListViewMenu" } }}
         caption="The check lives in a fixed 16px cell, so toggling an option never shifts a label. The menu stays open while you change several options, and the highlight keeps gliding."
       >
         <ViewMenu />
@@ -258,6 +371,7 @@ export default function MenuPage() {
         size="lg"
         align="end"
         code="FlipMenu"
+        byWorld={{ device: { demo: <ShareTakeMenu />, code: "ShareTakeMenu" } }}
         caption="This trigger sits in the bottom-right corner, so the menu flips up. The entrance follows the side it opens on: it rises out of the trigger instead of sinking, and the scale grows from the bottom-right corner."
       >
         <FlipMenu />
