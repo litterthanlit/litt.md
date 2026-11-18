@@ -41,7 +41,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 
 `area` is one of: type, color, material, motion, layout, component, interaction, process.
 
-## The nine rules (profile v1.0)
+## The ten rules (profile v1.0, R10 v1.19)
 
 1. **R1 Precise instruments.** Screens are exact and quiet; the controls are objects you can hold. Nothing is decorated, and every state of every object is designed (default, hover, pressed, focus, disabled, and empty, loading or error).
 2. **R2 Light from the top.** One light from above. Raised things catch it on their top edge (`--highlight`), cut things (a slot, a tray) on their lower wall, floating things glow evenly. Each theme has its own light and material values. Material is still unless a hand is on it: glow, grain and gradients never animate.
@@ -52,6 +52,7 @@ Append to `taste/journal.md` when the skill directory is a writable git checkout
 7. **R7 Color carries data.** Beyond the one accent, color only says something: a series, a category, a heat step, a side of a goal, an identity. Five data hues in a fixed order (blue, amber, teal, violet, rose), each with a mark tone, a `-text` tone and a tint, never on chrome.
 8. **R8 Weight, ink and space rank.** Text at 400 (`--weight`), titles, buttons, tabs and words in a control at 500 (`--weight-title`), 12px labels at 600 (`--weight-label`), nothing else. Two inks. Nearly everything 14px, one 18px title, nothing above 18. Lockups 4px, blocks 16px, sections 48px. Figures are tabular; the mono is for code only, except under Device, where every word is in it and 12px labels are engraved capitals (`.litt-legend`).
 9. **R9 Exact, with room.** 8px grid (4px inside components), 1px hairlines, radii 4 / 8 / pill nested. Controls share 32 / 44 / 56 with trimmed labels (sm pad 12, md 16, an lg button 32); lg for hero CTAs only; touch targets at least 44px. Airy pages (128 / 96 / 64px between sections), compact tools.
+10. **R10 Easy, and felt.** Easy first: the main task is plain at a glance and done with no explanation. Then felt: each design makes someone feel something, named in one line, and earns it through its world's own means (Flat's Candy data and bounce, Press's weight, Device's machined parts), never decoration or color on chrome.
 
 Each rule's Check line, the generic-AI tells and the open questions are in `taste/profile.md`.
 

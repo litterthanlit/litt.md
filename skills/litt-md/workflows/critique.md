@@ -28,6 +28,7 @@ Mark each line ✅ pass, ❌ fail or `n/a`. Every ❌ needs a one-line reason th
 - [ ] Radius is on the scale: 4px controls, 8px surfaces (a surface is a control plus the 4px inset), pills only on avatars and icon-only buttons (tags and chips are 4px), and a block set into a control takes the control radius less its inset.
 - [ ] **R9** Buttons and inputs sit on 32 / 44 / 56. Side padding is about equal to the air around the label. Hero CTAs are lg; a page form's buttons and a dialog's fields and actions are md.
 - [ ] Cards used only for independent objects, not as the default layout.
+- [ ] **R10** Easy first: the main task is plain at a glance and done with no help text. Then felt: name in one line what it should make someone feel and which parts do it, through the world's own means, never decoration.
 
 **C. Themes**
 - [ ] **R2** Both themes exist and each is tuned (material strengths differ). Neither is a mechanical inversion of the other.
