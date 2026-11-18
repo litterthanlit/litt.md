@@ -50,8 +50,8 @@ import { useExit, useFun, useTransition, useTravel } from "@/motion";
 /** How a step stands. Running is a half-filled circle that stays still. */
 export type TimelineStatus = "done" | "running" | "pending" | "skipped" | "failed";
 
-/** The five data hues, in their fixed order (R7). A phase takes one, and it means that phase everywhere in the view. */
-export type TimelineHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). A phase takes one, and it means that phase everywhere in the view. */
+export type TimelineHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** How a run ended: success, danger, or neither. It sets the result's color and a hidden word. */
 export type TimelineTone = "success" | "danger" | "neutral";
@@ -65,6 +65,9 @@ const MARK: Record<TimelineHue, string> = {
   teal: "bg-data-teal",
   violet: "bg-data-violet",
   rose: "bg-data-rose",
+  sky: "bg-data-sky",
+  bubblegum: "bg-data-bubblegum",
+  sun: "bg-data-sun",
 };
 /** With no hue, a mark is the foreground at 55%, as in the Chart. */
 const MARK_FG = "bg-[color-mix(in_oklab,var(--fg)_55%,transparent)]";
@@ -230,7 +233,7 @@ export type TimelinePhaseProps = {
   label: string;
   /** The phase's total at the end of its heading. A number is seconds ("24s", read as "24 seconds"); a string is shown as given. Leave it out while the phase has not run. */
   duration?: number | string;
-  /** The phase's data hue (R7). It colors this phase's rail bars and its segments in a TimelineBar. Without one they are the foreground at 55%. */
+  /** The phase's data hue (R7). It colors this phase's rail bars and its segments in a TimelineBar. Without one they are the foreground at 55%. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: TimelineHue;
   /** The phase's TimelineSteps. */
   children: ReactNode;
@@ -462,7 +465,7 @@ export type TimelineBarStep = {
 export type TimelineBarPhase = {
   /** The phase's name, shown above its span with its total: "Build · 24s". */
   label: string;
-  /** The phase's data hue. Use the same hue as the TimelinePhase it matches. */
+  /** The phase's data hue. Use the same hue as the TimelinePhase it matches. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: TimelineHue;
   /** The phase's steps, in order. */
   steps: TimelineBarStep[];

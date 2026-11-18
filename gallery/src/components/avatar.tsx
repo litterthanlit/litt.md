@@ -38,8 +38,8 @@
  */
 import { Children, createContext, isValidElement, useContext, useLayoutEffect, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
 
-/** The five data hues in their fixed order (R7), and neutral for a mark with no identity color. */
-export type AvatarHue = "blue" | "amber" | "teal" | "violet" | "rose" | "neutral";
+/** The data hues in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber); and neutral for a mark with no identity color. */
+export type AvatarHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun" | "neutral";
 
 /** What shows with no photo: the initials, or a picture drawn from the name. */
 export type AvatarLook = "initials" | "fluid" | "film" | "thermal";
@@ -54,6 +54,9 @@ const FILL: Record<AvatarHue, string> = {
   teal: "bg-data-teal-tint text-data-teal-text",
   violet: "bg-data-violet-tint text-data-violet-text",
   rose: "bg-data-rose-tint text-data-rose-text",
+  sky: "bg-data-sky-tint text-data-sky-text",
+  bubblegum: "bg-data-bubblegum-tint text-data-bubblegum-text",
+  sun: "bg-data-sun-tint text-data-sun-text",
   neutral: "bg-surface-2 text-fg-muted in-[[data-material=flat]]:bg-block",
 };
 
@@ -65,6 +68,9 @@ const EDGE: Record<AvatarHue, string> = {
   teal: "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-teal)_24%,transparent),var(--highlight)]",
   violet: "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-violet)_24%,transparent),var(--highlight)]",
   rose: "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-rose)_24%,transparent),var(--highlight)]",
+  sky: "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-sky)_24%,transparent),var(--highlight)]",
+  bubblegum: "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-bubblegum)_24%,transparent),var(--highlight)]",
+  sun: "shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-sun)_24%,transparent),var(--highlight)]",
   neutral: "shadow-[inset_0_0_0_1px_var(--line)]",
 };
 const PHOTO_EDGE = "shadow-[inset_0_0_0_1px_var(--line)]";
@@ -114,7 +120,7 @@ type Palette = { ink: Lab; cream: Lab; hue: Record<AvatarHue, Lab> };
 type Stop = [number, Lab];
 
 /* A contrasting partner for each hue, warm against cool, for thermal's cool parts. */
-const PARTNER: Record<AvatarHue, AvatarHue> = { blue: "amber", amber: "violet", teal: "rose", violet: "teal", rose: "blue", neutral: "neutral" };
+const PARTNER: Record<AvatarHue, AvatarHue> = { blue: "amber", amber: "violet", teal: "rose", violet: "teal", rose: "blue", sky: "sun", bubblegum: "teal", sun: "sky", neutral: "neutral" };
 
 /** mulberry32: a small seeded generator, so a name always places its art the same way. */
 function seeded(seed: number): () => number {
@@ -225,6 +231,9 @@ function paletteOf(): Palette {
     teal: read("--data-teal"),
     violet: read("--data-violet"),
     rose: read("--data-rose"),
+    sky: read("--data-sky"),
+    bubblegum: read("--data-bubblegum"),
+    sun: read("--data-sun"),
     neutral: read("--line-control"),
   };
   palette = { ink: read("--fg"), cream: mixLab(read("--canvas"), amber, 0.18), hue };
@@ -414,7 +423,7 @@ export type AvatarProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
   src?: string;
   /** Sm is 24, md is 32 and lg is 44. Inside an AvatarGroup the group's size wins. */
   size?: Size;
-  /** One of the five data hues, or neutral. Leave it out and the name picks one, the same one every time. */
+  /** One of the data hues, or neutral. Leave it out and the name picks one of the first five, the same one every time. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: AvatarHue;
   /** What shows with no photo: the initials, or a picture drawn from the name in its hue, the same one every time. Fluid and film use the hue alone; thermal adds its partner. */
   look?: AvatarLook;

@@ -33,8 +33,8 @@ import { useLayoutEffect, useRef, type ReactNode } from "react";
 import { animate, motion, useTransform } from "motion/react";
 import { useFun, useFunValue } from "@/motion";
 
-/** The five data hues, in their fixed order (R7). */
-export type BarListHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type BarListHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** Whether a change is good news, bad news or neither. It sets the delta's color, and a hidden word for screen readers. */
 type Tone = "good" | "bad" | "neutral";
@@ -46,6 +46,9 @@ const HUE: Record<BarListHue, string> = {
   teal: "bg-data-teal",
   violet: "bg-data-violet",
   rose: "bg-data-rose",
+  sky: "bg-data-sky",
+  bubblegum: "bg-data-bubblegum",
+  sun: "bg-data-sun",
 };
 
 const TONE: Record<Tone, string> = {
@@ -70,7 +73,7 @@ export type BarListItem = {
   delta?: string;
   /** Whether the change is good news, bad news or neither. A fall in errors is good, so this is not the direction. */
   tone?: Tone;
-  /** This row's own data hue, when the rows are kinds and each kind keeps its color on the page (video in violet). It overrides the list's hue. One hue per kind. */
+  /** This row's own data hue, when the rows are kinds and each kind keeps its color on the page (video in violet). It overrides the list's hue. One hue per kind. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: BarListHue;
 };
 
@@ -85,7 +88,7 @@ export type BarListProps = {
   formatValue?: (value: number) => string;
   /** What the values count, said after the number to screen readers: "times". Pass ["commit", "commits"] to say the first for exactly 1. Leave it out when the label says it. */
   unit?: string | [one: string, other: string];
-  /** Colors the bars with one of the five data hues. Leave it out for the quiet foreground default. */
+  /** Colors the bars with one of the data hues. Leave it out for the quiet foreground default. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: BarListHue;
   /** Makes rows without an `href` buttons, and is called with the row and its index when any row is pressed. */
   onSelect?: (item: BarListItem, index: number) => void;

@@ -25,6 +25,9 @@ const HUE: Record<TagHue, string> = {
   teal: "bg-data-teal-tint text-data-teal-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-teal)_40%,transparent)]",
   violet: "bg-data-violet-tint text-data-violet-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-violet)_40%,transparent)]",
   rose: "bg-data-rose-tint text-data-rose-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-rose)_40%,transparent)]",
+  sky: "bg-data-sky-tint text-data-sky-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-sky)_40%,transparent)]",
+  bubblegum: "bg-data-bubblegum-tint text-data-bubblegum-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-bubblegum)_40%,transparent)]",
+  sun: "bg-data-sun-tint text-data-sun-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-sun)_40%,transparent)]",
 };
 
 const PLAIN = "rounded-control bg-surface-3 text-fg-muted";

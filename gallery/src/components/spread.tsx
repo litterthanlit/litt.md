@@ -32,8 +32,8 @@
  */
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
-/** The five data hues, in their fixed order (R7). */
-export type SpreadHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type SpreadHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 type SpreadFromValues = {
   /** What the row is, in a few words: "Halo site". It truncates when the row is narrow. */
@@ -75,7 +75,7 @@ export type SpreadProps = {
   formatValue?: (value: number) => string;
   /** What the values are, said after a number to screen readers when formatValue does not already say it: "seconds". Pass ["second", "seconds"] to say the first for exactly 1. */
   unit?: string | [one: string, other: string];
-  /** The data hue of the middle half and the median: blue, amber, teal, violet or rose. One hue means the measure, so it does not change for a row past the goal. */
+  /** The data hue of the middle half and the median: blue, amber, teal, violet, rose, sky, bubblegum or sun. One hue means the measure, so it does not change for a row past the goal. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: SpreadHue;
   /** Draws a 1px dashed line through every rail at this value, and names a row whose median is past it. Leave it out for no line. */
   goal?: number;
@@ -97,6 +97,9 @@ const HUE: Record<SpreadHue, { mark: string; tick: string; name: string }> = {
   teal: { mark: "bg-data-teal", tick: "bg-data-teal-text", name: "Teal" },
   violet: { mark: "bg-data-violet", tick: "bg-data-violet-text", name: "Violet" },
   rose: { mark: "bg-data-rose", tick: "bg-data-rose-text", name: "Rose" },
+  sky: { mark: "bg-data-sky", tick: "bg-data-sky-text", name: "Sky" },
+  bubblegum: { mark: "bg-data-bubblegum", tick: "bg-data-bubblegum-text", name: "Bubblegum" },
+  sun: { mark: "bg-data-sun", tick: "bg-data-sun-text", name: "Sun" },
 };
 
 /** The Meter's track, and the range laid over it. */

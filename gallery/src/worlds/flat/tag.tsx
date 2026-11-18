@@ -22,6 +22,9 @@ const HUE: Record<TagHue, string> = {
   teal: "bg-data-teal-tint text-data-teal-text",
   violet: "bg-data-violet-tint text-data-violet-text",
   rose: "bg-data-rose-tint text-data-rose-text",
+  sky: "bg-data-sky-tint text-data-sky-text",
+  bubblegum: "bg-data-bubblegum-tint text-data-bubblegum-text",
+  sun: "bg-data-sun-tint text-data-sun-text",
 };
 
 const PLAIN = "rounded-control bg-block ";

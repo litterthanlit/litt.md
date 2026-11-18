@@ -39,8 +39,8 @@ import { TagRackBody } from "@/worlds/rack/tag";
 
 export type TagStatus = "success" | "warning" | "danger" | "neutral";
 
-/** The five data hues, in their fixed order (R7). */
-export type TagHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type TagHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 const STATUS: Record<TagStatus, string> = {
   success: "text-success",
@@ -55,6 +55,9 @@ const HUE: Record<TagHue, string> = {
   teal: "bg-data-teal-tint text-data-teal-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-teal)_24%,transparent),var(--highlight)]",
   violet: "bg-data-violet-tint text-data-violet-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-violet)_24%,transparent),var(--highlight)]",
   rose: "bg-data-rose-tint text-data-rose-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-rose)_24%,transparent),var(--highlight)]",
+  sky: "bg-data-sky-tint text-data-sky-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-sky)_24%,transparent),var(--highlight)]",
+  bubblegum: "bg-data-bubblegum-tint text-data-bubblegum-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-bubblegum)_24%,transparent),var(--highlight)]",
+  sun: "bg-data-sun-tint text-data-sun-text shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--data-sun)_24%,transparent),var(--highlight)]",
 };
 
 const PLAIN = "rounded-control bg-block shadow-(--block-lift) ";
@@ -64,7 +67,7 @@ const RAISED = "rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radi
 export type TagProps = HTMLAttributes<HTMLSpanElement> & {
   /** Leave it out for a plain label. Set it for a status: the text takes that color, and the fill never does. */
   status?: TagStatus;
-  /** Files the thing under a category with one of the five data hues: a tinted fill and the hue's text tone. Use one hue per category in a view, and never for a status. */
+  /** Files the thing under a category with one of the data hues: a tinted fill and the hue's text tone. Use one hue per category in a view, and never for a status. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: TagHue;
   /** Draws a plain tag as a raised block, for a tag you can lift out of a field: Combobox uses it for its picks. Ignored with a hue. */
   raised?: boolean;

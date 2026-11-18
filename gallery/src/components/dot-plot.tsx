@@ -44,8 +44,8 @@ import { useExit, useTransition, useTravel } from "@/motion";
 
 /* ----------------------------------------------------------------- types */
 
-/** The five data hues, in their fixed order (R7). */
-export type DotPlotHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type DotPlotHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 export type DotPlotProps = {
   /** The plot's name, in a few words: "Reply times". It labels the image, the bin group and the table, and starts the generated summary. */
@@ -66,7 +66,7 @@ export type DotPlotProps = {
   goal?: number;
   /** The text at the goal line's foot, such as "4 h goal". Left out, it reads the goal and the word goal. */
   goalLabel?: string;
-  /** The data hue of the dots (and of the median): blue, amber, teal, violet or rose. Use one hue for one meaning on a view. */
+  /** The data hue of the dots (and of the median): blue, amber, teal, violet, rose, sky, bubblegum or sun. Use one hue for one meaning on a view. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: DotPlotHue;
   /** Draws the median as a 2px line in the hue's text tone, labelled above it. */
   median?: boolean;
@@ -107,6 +107,9 @@ const HUE: Record<DotPlotHue, { mark: string; text: string; line: string }> = {
   teal: { mark: "fill-data-teal", text: "fill-data-teal-text", line: "stroke-data-teal-text" },
   violet: { mark: "fill-data-violet", text: "fill-data-violet-text", line: "stroke-data-violet-text" },
   rose: { mark: "fill-data-rose", text: "fill-data-rose-text", line: "stroke-data-rose-text" },
+  sky: { mark: "fill-data-sky", text: "fill-data-sky-text", line: "stroke-data-sky-text" },
+  bubblegum: { mark: "fill-data-bubblegum", text: "fill-data-bubblegum-text", line: "stroke-data-bubblegum-text" },
+  sun: { mark: "fill-data-sun", text: "fill-data-sun-text", line: "stroke-data-sun-text" },
 };
 const OVER = { mark: "fill-fg-subtle", text: "fill-fg" };
 
