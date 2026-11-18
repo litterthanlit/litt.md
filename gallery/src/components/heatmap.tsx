@@ -4,7 +4,9 @@
  * of the week. Plain DOM and CSS, no chart library.
  *
  * - Color (components.md, Heatmap): zero is an empty dot at fg 8%. The four steps are the hue's mark tone over
- *   transparent at 30, 55, 80 and 100%, so one hue carries one quantity (R7) and the dots fit any surface.
+ *   transparent at 30, 55, 80 and 100%, so one hue carries one quantity (R7) and the dots fit any surface. With no
+ *   `hue`, the steps are the world's sequential ramp where it has one (Flat's, Candy's bubblegum, v1.18)
+ *   and blue's four mixes in every other world, as before.
  *   `null` (no data: a day still to come, a day the month does not have) draws nothing. The default steps are
  *   the quartiles of the non-zero values, so the four levels hold about the same number of dots. The legend
  *   under the grid is "Less", the five levels as dots, "More".
@@ -47,12 +49,12 @@
  */
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { animate, AnimatePresence, motion, spring, useMotionValue, useMotionValueEvent, useSpring } from "motion/react";
-import { countText, FUN_SPRINGS, useExit, useFun, useTransition, useTravel } from "@/motion";
+import { byWorld, countText, FUN_SPRINGS, useExit, useFun, useMaterial, useTransition, useTravel } from "@/motion";
 
 /* ----------------------------------------------------------------- types */
 
-/** The five data hues, in their fixed order (R7). */
-export type HeatmapHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type HeatmapHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** One row of dots: a label, one value per column, and an optional total. */
 export type HeatmapRow = {
@@ -73,7 +75,7 @@ export type HeatmapProps = {
   columns?: string[];
   /** Labels over chosen columns, such as month names over a year of weeks: `{ index: 4, label: "Nov" }`. Keep them at least a label's width apart. */
   columnTicks?: { index: number; label: string }[];
-  /** The one data hue the steps are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. */
+  /** The one data hue the steps are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. Leave it out for the world's sequential ramp: Flat's bubblegum ramp, or blue's four steps in a world with no ramp. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
   hue?: HeatmapHue;
   /** Where each of the four levels starts, lowest first. Zero is always the empty dot, and a value under the first step is still the lightest level. The default is the quartiles of the non-zero values. */
   steps?: [number, number, number, number];
@@ -141,7 +143,28 @@ const HUE: Record<HeatmapHue, readonly [string, string, string, string]> = {
     "bg-[color-mix(in_oklab,var(--data-rose)_80%,transparent)]",
     "bg-data-rose",
   ],
+  sky: [
+    "bg-[color-mix(in_oklab,var(--data-sky)_30%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-sky)_55%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-sky)_80%,transparent)]",
+    "bg-data-sky",
+  ],
+  bubblegum: [
+    "bg-[color-mix(in_oklab,var(--data-bubblegum)_30%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-bubblegum)_55%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-bubblegum)_80%,transparent)]",
+    "bg-data-bubblegum",
+  ],
+  sun: [
+    "bg-[color-mix(in_oklab,var(--data-sun)_30%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-sun)_55%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-sun)_80%,transparent)]",
+    "bg-data-sun",
+  ],
 };
+
+/** With no hue, under Flat: its sequential ramp (v1.18), Candy's bubblegum. Every other world has none and draws blue's four steps. */
+const RAMP = ["bg-[color:var(--data-seq-1)]", "bg-[color:var(--data-seq-2)]", "bg-[color:var(--data-seq-3)]", "bg-[color:var(--data-seq-4)]"] as const;
 
 const groupDigits = (n: number) => n.toLocaleString("en-GB", { maximumFractionDigits: 2 });
 
@@ -182,7 +205,7 @@ export function Heatmap({
   rows,
   columns,
   columnTicks,
-  hue = "blue",
+  hue,
   steps,
   formatValue,
   unit,
@@ -191,6 +214,9 @@ export function Heatmap({
   className = "",
 }: HeatmapProps) {
   const fmt = formatValue ?? groupDigits;
+  /* The four steps: the hue's mixes, or with no hue the world's ramp (Flat's), else blue's as before. */
+  const ramp = byWorld(useMaterial(), { press: HUE.blue, flat: RAMP });
+  const fills = hue ? HUE[hue] : ramp;
   const cell = Math.max(4, Math.round(cellProp));
   const pitch = cell + GAP;
   /* Labels are 16px tall, so rows closer than that name every nth row, counted from the first. */
@@ -298,7 +324,7 @@ export function Heatmap({
     const probe = probeRef.current;
     if (!fun || !el || !ctx || !probe) return setArriving(false);
     /* The tokens, resolved by the browser: the empty dot and the four steps, in the current theme. */
-    const colors = [EMPTY, ...HUE[hue]].map((cls) => {
+    const colors = [EMPTY, ...fills].map((cls) => {
       probe.className = cls + " hidden";
       return getComputedStyle(probe).backgroundColor;
     });
@@ -611,7 +637,7 @@ export function Heatmap({
                         "shrink-0 rounded-pill transition-[background-color] duration-(--dur-instant) ease-litt " +
                         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
                         (ringed ? "outline-1 outline-offset-1 outline-fg " : "") +
-                        (level < 0 ? "" : level === 0 ? EMPTY : HUE[hue][level - 1])
+                        (level < 0 ? "" : level === 0 ? EMPTY : fills[level - 1])
                       }
                     />
                   );
@@ -664,7 +690,7 @@ export function Heatmap({
         </div>
       )}
 
-      <Legend hue={hue} cell={cell} />
+      <Legend fills={fills} cell={cell} />
 
       <AnimatePresence>
         {active && tip && (
@@ -699,12 +725,12 @@ function CountingTotal({ text }: { text: string }) {
 
 /* ----------------------------------------------------------------- legend */
 
-function Legend({ hue, cell }: { hue: HeatmapHue; cell: number }) {
+function Legend({ fills, cell }: { fills: readonly string[]; cell: number }) {
   return (
     <div aria-hidden="true" className="col-start-2 col-end-3 mt-3 flex items-center gap-2 justify-self-end text-caption font-normal whitespace-nowrap text-fg-subtle">
       <span>Less</span>
       <span className="flex items-center" style={{ gap: GAP }}>
-        {[EMPTY, ...HUE[hue]].map((fill, i) => (
+        {[EMPTY, ...fills].map((fill, i) => (
           <span key={i} className={"rounded-pill " + fill} style={{ width: cell, height: cell }} />
         ))}
       </span>

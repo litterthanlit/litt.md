@@ -9,8 +9,9 @@
  *   and the figures do too. Both inks pass 4.5:1, and no value is set quieter for being low: color is never the
  *   only signal.
  * - Color (components.md, Heatmap): zero is an empty dot at fg 8%. The four steps are the hue's mark tone over
- *   transparent at 30, 55, 80 and 100%. The default steps are the quartiles of the non-zero values, as in the
- *   Heatmap. A missing or `null` value (a cohort too young for that period) is an empty cell: no dot, no number,
+ *   transparent at 30, 55, 80 and 100%. With no `hue`, the steps are the world's sequential ramp where it has one
+ *   (Flat's, Candy's bubblegum, v1.18) and teal's four mixes in every other world, as before. The default steps are
+ *   the quartiles of the non-zero values, as in the Heatmap. A missing or `null` value (a cohort too young for that period) is an empty cell: no dot, no number,
  *   and "no data" for a screen reader. The legend under the table is "Less", the five levels, "More", hidden from
  *   screen readers because the numbers already say it.
  * - Average: `average` adds a last row in a <tfoot>, over a `--line-strong` hairline. For shares it is "All
@@ -32,9 +33,10 @@
  * - Motion: none. Static, like the Meter and the Breakdown.
  */
 import { useEffect, useId, useRef, useState } from "react";
+import { byWorld, useMaterial } from "@/motion";
 
-/** The five data hues, in their fixed order (R7). */
-export type CohortHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type CohortHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** One cohort: the people who signed up in one period, and how many of them were still active in each period after. */
 export type Cohort = {
@@ -61,7 +63,7 @@ export type CohortGridProps = {
   sizeLabel?: string;
   /** Whether the values are shares of the cohort (0 to 100, written "42%") or counts of people (written "1,240"). */
   valueType?: "percent" | "count";
-  /** The one data hue the dots are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. */
+  /** The one data hue the dots are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. Leave it out for the world's sequential ramp: Flat's bubblegum ramp, or teal's four steps in a world with no ramp. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
   hue?: CohortHue;
   /** Where each of the four dot levels starts, lowest first. Zero is always the empty dot, and a value under the first step is still the lightest level. The default is the quartiles of the non-zero values. */
   steps?: [number, number, number, number];
@@ -110,7 +112,28 @@ const HUE: Record<CohortHue, readonly [string, string, string, string]> = {
     "bg-[color-mix(in_oklab,var(--data-rose)_80%,transparent)]",
     "bg-data-rose",
   ],
+  sky: [
+    "bg-[color-mix(in_oklab,var(--data-sky)_30%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-sky)_55%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-sky)_80%,transparent)]",
+    "bg-data-sky",
+  ],
+  bubblegum: [
+    "bg-[color-mix(in_oklab,var(--data-bubblegum)_30%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-bubblegum)_55%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-bubblegum)_80%,transparent)]",
+    "bg-data-bubblegum",
+  ],
+  sun: [
+    "bg-[color-mix(in_oklab,var(--data-sun)_30%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-sun)_55%,transparent)]",
+    "bg-[color-mix(in_oklab,var(--data-sun)_80%,transparent)]",
+    "bg-data-sun",
+  ],
 };
+
+/** With no hue, under Flat: its sequential ramp (v1.18), Candy's bubblegum. Every other world has none and draws teal's four steps. */
+const RAMP = ["bg-[color:var(--data-seq-1)]", "bg-[color:var(--data-seq-2)]", "bg-[color:var(--data-seq-3)]", "bg-[color:var(--data-seq-4)]"] as const;
 
 const groupDigits = (n: number) => n.toLocaleString("en-GB", { maximumFractionDigits: 0 });
 const wholePercent = (n: number) => `${Math.round(n)}%`;
@@ -197,7 +220,7 @@ export function CohortGrid({
   cohortLabel = "Cohort",
   sizeLabel = "Users",
   valueType = "percent",
-  hue = "teal",
+  hue,
   steps,
   formatValue,
   average = false,
@@ -212,9 +235,12 @@ export function CohortGrid({
   const count = Math.max(periods?.length ?? 0, ...cohorts.map((c) => c.values.length));
   const headers = Array.from({ length: count }, (_, p) => periods?.[p] ?? `${periodLabel} ${p}`);
   const scale = steps ?? quartileSteps(cohorts);
+  /* The four steps: the hue's mixes, or with no hue the world's ramp (Flat's), else teal's as before. */
+  const ramp = byWorld(useMaterial(), { press: HUE.teal, flat: RAMP });
+  const fills = hue ? HUE[hue] : ramp;
   const fillOf = (v: number) => {
     const level = levelOf(v, scale);
-    return level === 0 ? EMPTY : HUE[hue][level - 1]!;
+    return level === 0 ? EMPTY : fills[level - 1]!;
   };
   const summary = average && cohorts.length > 0 ? averageRow(cohorts, count, valueType) : null;
   /* The longest value as written, in tabular figures, so every number takes the same width and the dots form columns. */
@@ -291,7 +317,7 @@ export function CohortGrid({
           {summary && <tfoot>{row(summary, "border-t border-line-strong in-[[data-material=flat]]:border-transparent", "summary")}</tfoot>}
         </table>
       </div>
-      <Legend hue={hue} />
+      <Legend fills={fills} />
     </div>
   );
 }
@@ -299,12 +325,12 @@ export function CohortGrid({
 /* ----------------------------------------------------------------- legend */
 
 /** "Less", the five levels, "More", under the table at its end. Hidden from screen readers: the numbers carry it. */
-function Legend({ hue }: { hue: CohortHue }) {
+function Legend({ fills }: { fills: readonly string[] }) {
   return (
     <div aria-hidden="true" className={"flex items-center gap-2 justify-self-end whitespace-nowrap text-fg-subtle " + figures}>
       <span>Less</span>
       <span className="flex items-center gap-1">
-        {[EMPTY, ...HUE[hue]].map((fill, i) => (
+        {[EMPTY, ...fills].map((fill, i) => (
           <span key={i} className={"size-2 rounded-pill " + fill} />
         ))}
       </span>

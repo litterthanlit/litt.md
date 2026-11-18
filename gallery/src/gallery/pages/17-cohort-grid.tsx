@@ -171,7 +171,7 @@ const READERS_BY_WEEK: Cohort[] = [
 ];
 
 function ReadersWeeklyDemo() {
-  return <CohortGrid className="w-full max-w-3xl" label="Readers still opening the letter, by the week they subscribed" hue="teal" cohorts={READERS_BY_WEEK} />;
+  return <CohortGrid className="w-full max-w-3xl" label="Readers still opening the letter, by the week they subscribed" cohorts={READERS_BY_WEEK} />;
 }
 
 export default function CohortGridPage() {
@@ -186,7 +186,7 @@ export default function CohortGridPage() {
             title: "Readers who stay",
             code: "ReadersWeeklyDemo",
             caption:
-              "A row per week readers subscribed, oldest first, and a column per issue since: the share of them that opened it. Each cell has its share in tabular figures and a dot in front of it in teal's four steps, so the eye finds where readers stay without losing the numbers. Younger weeks have fewer issues behind them, so their rows end sooner.",
+              "A row per week readers subscribed, oldest first, and a column per issue since: the share of them that opened it. Each cell has its share in tabular figures and a dot in front of it on Flat's ramp, bubblegum from light to deep, since no hue is passed, so the eye finds where readers stay without losing the numbers. Younger weeks have fewer issues behind them, so their rows end sooner.",
           },
           device: {
             demo: <RecorderWeeklyDemo />,

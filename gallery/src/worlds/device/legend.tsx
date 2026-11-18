@@ -29,13 +29,16 @@ const detent: CSSProperties = {
   transitionTimingFunction: `${STEPS}, ${STEPS}, ${STEPS}, ${STEPS}`,
 };
 
-/* A lit lamp at its series' level: the chart's order (blue, amber, teal, then violet and rose) steps 100, 55, 30%. */
+/* A lit lamp at its series' level: the chart's order (blue, amber, teal, then violet, rose and Flat's three more) steps 100, 55, 30%. */
 const LAMP: Record<LegendHue, string> = {
   blue: "bg-lamp-on",
   amber: "bg-[color-mix(in_oklab,var(--lamp-on)_55%,transparent)]",
   teal: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
   violet: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
   rose: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  sky: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  bubblegum: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  sun: "bg-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
 };
 const LINE: Record<LegendHue, string> = {
   blue: "stroke-lamp-on",
@@ -43,9 +46,12 @@ const LINE: Record<LegendHue, string> = {
   teal: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
   violet: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
   rose: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  sky: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  bubblegum: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
+  sun: "stroke-[color-mix(in_oklab,var(--lamp-on)_30%,transparent)]",
 };
 const LINE_OFF = "stroke-fg-disabled";
-const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2" };
+const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2", sky: "8 2", bubblegum: "4 1 1 1 1 1", sun: "1 1" };
 
 const up = "bg-block text-fg-subtle shadow-(--key-lift)";
 const down = "bg-[color-mix(in_oklab,var(--block),var(--tray)_55%)] text-fg shadow-(--tray-shade) [transform:translateY(var(--press-depth))]";

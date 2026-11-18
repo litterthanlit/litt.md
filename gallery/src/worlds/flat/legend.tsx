@@ -20,6 +20,9 @@ const MARK: Record<LegendHue, string> = {
   teal: "bg-data-teal",
   violet: "bg-data-violet",
   rose: "bg-data-rose",
+  sky: "bg-data-sky",
+  bubblegum: "bg-data-bubblegum",
+  sun: "bg-data-sun",
 };
 const LINE: Record<LegendHue, string> = {
   blue: "stroke-data-blue",
@@ -27,8 +30,11 @@ const LINE: Record<LegendHue, string> = {
   teal: "stroke-data-teal",
   violet: "stroke-data-violet",
   rose: "stroke-data-rose",
+  sky: "stroke-data-sky",
+  bubblegum: "stroke-data-bubblegum",
+  sun: "stroke-data-sun",
 };
-const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2" };
+const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2", sky: "8 2", bubblegum: "4 1 1 1 1 1", sun: "1 1" };
 
 /** Flat: words with a hue dot, a hidden one grey with an outline dot. */
 export function LegendFlatBody({ label, items, lines, className, noteId, note, press, keyDown }: LegendBodyProps) {

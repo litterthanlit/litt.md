@@ -13,6 +13,11 @@
  *   natural size and the whole drawing scales down to fit a narrower container. It never exceeds its container.
  *   The tick length follows the size. Under about 200px there is room for a short label and the figure, not a caption.
  * - Color: a hue is one meaning (R7): here, the quantity itself. Without one the gauge is foreground only.
+ * - Ramp (`ramp`, v1.18): the lit ticks walk the world's sequential ramp along the arc, so how far round says how much
+ *   twice: the first third of the arc in the ramp's second step, the middle third in its third, the last third and the
+ *   marking tick in its fourth (the first step, a heatmap's faintest, sits under 3:1, so a tick never takes it). Only
+ *   Flat sets a ramp (Candy's bubblegum); in a world without one the ticks keep the hue, or the
+ *   foreground, exactly as without `ramp`.
  * - Semantics: role="meter" with the label as its name, a min, a max, a now and the value text; the caption is its
  *   description. The ticks and the text over them are hidden from assistive tech, so nothing is read twice.
  * - Motion: none. Static, like the Meter: no entrance, no hover, no focus stop. A value that changes just changes.
@@ -23,10 +28,10 @@
  */
 import { useId, useState } from "react";
 import { useMotionValueEvent } from "motion/react";
-import { countText, useFun, useFunValue } from "@/motion";
+import { byWorld, countText, useFun, useFunValue, useMaterial } from "@/motion";
 
-/** The five data hues, in their fixed order (R7). */
-export type GaugeHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type GaugeHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** The mark tone fills the ticks up to the value. The -text tone is the stronger one that marks the value itself. */
 const HUE: Record<GaugeHue, { mark: string; value: string }> = {
@@ -35,8 +40,18 @@ const HUE: Record<GaugeHue, { mark: string; value: string }> = {
   teal: { mark: "stroke-data-teal", value: "stroke-data-teal-text" },
   violet: { mark: "stroke-data-violet", value: "stroke-data-violet-text" },
   rose: { mark: "stroke-data-rose", value: "stroke-data-rose-text" },
+  sky: { mark: "stroke-data-sky", value: "stroke-data-sky-text" },
+  bubblegum: { mark: "stroke-data-bubblegum", value: "stroke-data-bubblegum-text" },
+  sun: { mark: "stroke-data-sun", value: "stroke-data-sun-text" },
 };
 const QUIET = { mark: "stroke-fg", value: "stroke-fg" };
+/** With `ramp`, under Flat: its ramp's steps two to four for the lit ticks by thirds of the arc, and its fourth for the
+    marking tick (v1.18). Every other world has no ramp, so `ramp` there keeps the hue. Literal strings, so Tailwind sees them. */
+type Ramp = { ticks: readonly [string, string, string]; value: string };
+const RAMP: Ramp = {
+  ticks: ["stroke-[color:var(--data-seq-2)]", "stroke-[color:var(--data-seq-3)]", "stroke-[color:var(--data-seq-4)]"],
+  value: "stroke-[color:var(--data-seq-4)]",
+};
 const REST = "stroke-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
 
 const TICK = 2; // tick width in px
@@ -59,8 +74,10 @@ export type GaugeProps = {
   figure?: string;
   /** A line under the figure in fg-subtle, such as "2k a day on average". It describes the meter. Leave it out under about 200px. */
   caption?: string;
-  /** Colors the ticks up to the value with one of the five data hues. Leave it out for the quiet foreground default. */
+  /** Colors the ticks up to the value with one of the data hues. Leave it out for the quiet foreground default. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
   hue?: GaugeHue;
+  /** Lets the lit ticks walk the world's sequential ramp along the arc, deeper toward the end, so the arc reads as a heat scale. Only Flat has a ramp (its bubblegum); in a world without one the ticks keep `hue` (or the foreground), as if it were off. Off by default. */
+  ramp?: boolean;
   /** The width in px. The gauge scales down to fit a narrower container and never exceeds it. */
   size?: number;
   /** How many ticks make up the arc. */
@@ -72,7 +89,7 @@ export type GaugeProps = {
 const round = (n: number) => Math.round(n * 100) / 100;
 
 /** One semicircle of fine ticks with the figure in its opening. Static: it never animates. */
-export function Gauge({ label, value, min = 0, max = 100, valueText, figure, caption, hue, size = 240, ticks = 48, className = "" }: GaugeProps) {
+export function Gauge({ label, value, min = 0, max = 100, valueText, figure, caption, hue, ramp = false, size = 240, ticks = 48, className = "" }: GaugeProps) {
   const captionId = useId();
   const count = Math.max(2, Math.round(ticks));
   const span = max - min;
@@ -107,6 +124,10 @@ export function Gauge({ label, value, min = 0, max = 100, valueText, figure, cap
   };
 
   const tone = hue ? HUE[hue] : QUIET;
+  const worldRamp = byWorld<Ramp | null>(useMaterial(), { press: null, flat: RAMP });
+  const steps = ramp ? worldRamp : null;
+  /* The ramp's three bands, by where a tick sits on the arc: [start, end) for each third. */
+  const band = (b: number) => [Math.floor((b * count) / 3), Math.floor(((b + 1) * count) / 3)] as const;
   /* The opening: the text keeps clear of the inner ends of the ticks. A share of the width, so it scales with the SVG. */
   const pad = `${round(((EDGE + length + OPENING_GAP) / size) * 100)}%`;
 
@@ -125,8 +146,14 @@ export function Gauge({ label, value, min = 0, max = 100, valueText, figure, cap
       <svg viewBox={`0 0 ${size} ${Math.ceil(half) + 1}`} width={size} height={Math.ceil(half) + 1} aria-hidden="true" focusable="false" className="block h-auto w-full">
         <g fill="none" strokeWidth={TICK} strokeLinecap="butt">
           <path d={run(lit, count)} className={REST} />
-          {lit > 1 && <path d={run(0, lit - 1)} className={tone.mark} />}
-          {lit > 0 && <path d={tick(lit - 1, inner, outer + REACH)} className={tone.value} />}
+          {lit > 1 && !steps && <path d={run(0, lit - 1)} className={tone.mark} />}
+          {lit > 1 &&
+            steps &&
+            steps.ticks.map((cls, b) => {
+              const [from, to] = band(b);
+              return from < Math.min(to, lit - 1) ? <path key={b} d={run(from, Math.min(to, lit - 1))} className={cls} /> : null;
+            })}
+          {lit > 0 && <path d={tick(lit - 1, inner, outer + REACH)} className={steps ? steps.value : tone.value} />}
         </g>
       </svg>
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-1 text-center" style={{ paddingInline: pad }}>

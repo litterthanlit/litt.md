@@ -10,10 +10,12 @@
  *   told by color alone (WCAG 1.4.1); blue and amber, solid lines, keep the plain rail.
  * - Hues: assigned exactly as the Chart's `paints(series, true)` does with `hues` on, so a Legend and a BarChart or
  *   LineChart given the same list always agree: an item with `hue` keeps it, and every item without one takes the
- *   next hue in the fixed order (blue, amber, teal, violet, rose), counting only items without one. The order comes
+ *   next hue in the fixed order (blue, amber, teal, violet, rose; under Flat sky, bubblegum and sun after them),
+ *   counting only items without one. The order comes
  *   from the full list, never the shown one, so hiding a series never repaints the others. A chart counts only the
  *   series it is given, so pass it the shown series with their hues pinned: `legendHues(items)` gives each name its
- *   hue. Five items at most, as in the Chart: past five the order would start again.
+ *   hue. Five items at most, as in the Chart, eight under Flat: past those the order would start again. Flat's three
+ *   more swatches are cut long-dashed, dash-dot-dotted and short-dashed with `lines`.
  * - States (R8, state without shift): shown is the hue's swatch and the name in `--fg`, and `aria-pressed="true"`.
  *   Hidden is the swatch as the Meter's track (fg at 12%) and the name in `--fg-subtle`. Only color changes, on the
  *   instant tier: nothing moves, the box never changes size, and the weight stays 400.
@@ -44,11 +46,11 @@ import { LegendFlatBody } from "@/worlds/flat/legend";
 import { LegendDeviceBody } from "@/worlds/device/legend";
 import { LegendRackBody } from "@/worlds/rack/legend";
 
-/** The five data hues, in their fixed order (R7). The same names as the Chart's and the Breakdown's. */
-export type LegendHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). The same names as the Chart's and the Breakdown's. */
+export type LegendHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** The order an item without a hue takes them in: the Chart's `HUE_ORDER`. */
-const HUE_ORDER: LegendHue[] = ["blue", "amber", "teal", "violet", "rose"];
+const HUE_ORDER: LegendHue[] = ["blue", "amber", "teal", "violet", "rose", "sky", "bubblegum", "sun"];
 
 /** A hue's mark tone fills the swatch, as literal classes so Tailwind sees them and the registry can rename them. */
 const MARK: Record<LegendHue, string> = {
@@ -57,6 +59,9 @@ const MARK: Record<LegendHue, string> = {
   teal: "bg-data-teal",
   violet: "bg-data-violet",
   rose: "bg-data-rose",
+  sky: "bg-data-sky",
+  bubblegum: "bg-data-bubblegum",
+  sun: "bg-data-sun",
 };
 /** A hidden series' swatch: the Meter's track. */
 const TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
@@ -66,15 +71,18 @@ const LINE: Record<LegendHue, string> = {
   teal: "stroke-data-teal",
   violet: "stroke-data-violet",
   rose: "stroke-data-rose",
+  sky: "stroke-data-sky",
+  bubblegum: "stroke-data-bubblegum",
+  sun: "stroke-data-sun",
 };
 const LINE_TRACK = "stroke-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
 /** The LineChart's dashes (its HUE_DASH: dashed, dotted, dash-dotted) cut into this swatch's 12 by 4px rail. */
-const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2" };
+const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2", sky: "8 2", bubblegum: "4 1 1 1 1 1", sun: "1 1" };
 
 export type LegendItem = {
   /** The series' name, exactly as the chart's series is named: "Builds". It is the button's text and the key in `hidden`, so keep names unique. */
   name: string;
-  /** Pins the series to one of the five data hues. Give the chart's series the same hue, or use `legendHues` to read them. */
+  /** Pins the series to one of the data hues. Give the chart's series the same hue, or use `legendHues` to read them. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: LegendHue;
   /** A reading shown after the name in tabular figures, such as the series' total: "1,240". Leave it out when the name is enough. */
   value?: string;
@@ -83,7 +91,7 @@ export type LegendItem = {
 export type LegendProps = {
   /** Names the group for assistive tech, such as "Series" or "Kinds of build". It is not shown. */
   label: string;
-  /** The series, in the chart's order. Five at most. */
+  /** The series, in the chart's order. Five at most, eight under Flat. */
   items: LegendItem[];
   /** The names of the hidden series, when you control it. Pair it with `onHiddenChange`. */
   hidden?: string[];
@@ -100,12 +108,14 @@ export type LegendProps = {
 /**
  * Each item's hue by name, assigned the way the Chart assigns them with `hues`: a set hue is kept, and every item
  * without one takes the next hue in the fixed order. Pin these on the series you pass to a chart, so a series keeps
- * its color when others are hidden.
+ * its color when others are hidden. `slots` is how many hues the world hands out before the order starts again: 5,
+ * or 8 under Flat, as the Chart and the Legend count (pass `8` when the chart is in Flat).
  */
-export function legendHues(items: LegendItem[]): Record<string, LegendHue> {
+export function legendHues(items: LegendItem[], slots = 5): Record<string, LegendHue> {
   let next = 0;
   const out: Record<string, LegendHue> = {};
-  for (const item of items) out[item.name] = item.hue ?? HUE_ORDER[next++ % HUE_ORDER.length]!;
+  const count = Math.max(1, Math.min(HUE_ORDER.length, Math.round(slots)));
+  for (const item of items) out[item.name] = item.hue ?? HUE_ORDER[next++ % count]!;
   return out;
 }
 
@@ -219,7 +229,9 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
   const noteId = useId();
   const [inner, setInner] = useState<string[]>(defaultHidden);
   const hidden = hiddenProp ?? inner;
-  const hues = legendHues(items);
+  const material = useMaterial();
+  /* Five hues before the order starts again, and Flat's eight (v1.18), as the Chart counts. */
+  const hues = legendHues(items, byWorld(material, { press: 5, flat: 8 }));
   const isShown = (name: string) => !hidden.includes(name);
   const shownCount = items.filter((item) => isShown(item.name)).length;
 
@@ -242,7 +254,7 @@ export function Legend({ label, items, hidden: hiddenProp, defaultHidden = [], o
     commit([...others, ...items.map((item) => item.name).filter((n) => n !== name)]);
   };
 
-  const Body = byWorld(useMaterial(), { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody, rack: LegendRackBody });
+  const Body = byWorld(material, { press: PressBody, flat: LegendFlatBody, device: LegendDeviceBody, rack: LegendRackBody });
 
   return (
     <Body

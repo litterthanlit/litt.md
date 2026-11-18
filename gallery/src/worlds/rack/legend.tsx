@@ -20,6 +20,9 @@ const CLIP: Record<LegendHue, string> = {
   teal: "bg-data-teal-tint border-data-teal",
   violet: "bg-data-violet-tint border-data-violet",
   rose: "bg-data-rose-tint border-data-rose",
+  sky: "bg-data-sky-tint border-data-sky",
+  bubblegum: "bg-data-bubblegum-tint border-data-bubblegum",
+  sun: "bg-data-sun-tint border-data-sun",
 };
 const EMPTY = "bg-transparent border-fg-subtle";
 const LINE: Record<LegendHue, string> = {
@@ -28,8 +31,11 @@ const LINE: Record<LegendHue, string> = {
   teal: "stroke-data-teal",
   violet: "stroke-data-violet",
   rose: "stroke-data-rose",
+  sky: "stroke-data-sky",
+  bubblegum: "stroke-data-bubblegum",
+  sun: "stroke-data-sun",
 };
-const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2" };
+const DASH: Partial<Record<LegendHue, string>> = { teal: "5 2", violet: "2 2", rose: "6 2 2 2", sky: "8 2", bubblegum: "4 1 1 1 1 1", sun: "1 1" };
 
 /** Rack: a small clip beside each name, a hidden one an empty outline. */
 export function LegendRackBody({ label, items, lines, className, noteId, note, press, keyDown }: LegendBodyProps) {
