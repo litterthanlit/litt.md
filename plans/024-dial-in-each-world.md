@@ -456,6 +456,35 @@ Nick, 2026-11-18: "all yes". The vocabulary is in `taste/` (v1.17).
 Left for 2b: the ink card (call 4) and the 35 tiles whose structure does not say Flat. Left for 3: Flat's voice in
 the demos (call 9), the shared captions and ledes that still describe Flat's old grey (the tag's lede among them).
 
+### Phase 2b. The ink card and the tiles that did not say Flat (done, 2026-11-18, waiting for Nick)
+
+- [x] Call 4, the ink card: `Card tone="ink"`, which is `.litt-ink` (tokens.css, Flat's block of rules alone). Under Flat
+      the card is the ink (`--flat-fg`) with the paper's color for its words (`--flat-paper`), Flat's disabled grey for
+      its quiet words (7.1:1 on black, 5.5:1 on white) and the first data hue on its data, the line's dot included; no
+      ring and no shadow. Outside Flat it is the world's own card, unchanged. Check 11 holds its pairs and its empty
+      shadow; `test:wall` fails on a second ink card in a view. It shows on `#flat/card` (Variants, "The ink card, and
+      no link", byWorld) and as Flat's stat tile on `#flat/components` (tileByWorld), both holding the readers stat at
+      the figure size. No new token: the opposite theme's face is built from Flat's own greys.
+- [x] Re-shot `#flat/components` in greyscale after 2a: 2a had already put rule builder, time scrubber, tune's and the
+      inspector's panels, cart, resizable, details, composer, log view, code block and the charts on paper with no edge.
+      Changed now, each Flat-only (`in-[[data-material=flat]]:` in the contract, so every other world is unchanged):
+      kbd (a pill cap, white on the ground, the grey bubble in a tooltip or the command menu), pad, spring editor and
+      curve editor (the well has no edge), inspector and tune (no lines between the groups), list cover (no hairlines:
+      paper panels on a 4% ink wash, so header, action bar, list, scroll area and carousel covers are bold flat shapes),
+      timeline (the result's word in the ink after a status circle), stat (the delta in the quiet ink after a status
+      circle), tag (a status is its circle and its word with no pill: Nick, 2026-11-18, on the Hypher comparison, "I
+      like the tags", amending call 6; a `taste:` commit). Gallery demos, Flat-only classes: context menu and states (rows on paper, no lines between them),
+      message and app shell (no window outline), header (no frame edge, no lines between the work), scroll area (no
+      cover hairline).
+- [x] Press, Device, Plain, Rack and Heat compared page by page against `da7bd82`, light and dark, at deviceScaleFactor 1: a
+      first pass (1/8 of the pages) and the final build's 1/12 identical but animations caught at different frames (the
+      log view's stream); the rest of the compare was stopped, and CI's page checks cover the PR.
+- Left, judged on the sheet and needing Nick's eye rather than a sweep: the timeline's rail (a line between steps, or
+  the run's data?); the drawn covers are still drawings, since a real picture in `ProjectCover`/`Project` is a new prop
+  (a contract change, a STOP); product card's matted pictures (content); hover card, menu and context menu's own
+  menu keep their float shadow (Flat's Float); steps' segments are progress, not lines; the charts keep grey marks and
+  the first data hue for a series, not the ink. Flat's voice (call 9) is still phase 3.
+
 **Open candidate: a fun icon set for Flat (trial, not decided).** Nick, 2026-11-18, with a reference of chunky outline
 icons: "also maybe we could trial a fun icon set for flat sort of like this". On the canvas as `Flat icons · …`
 (`gallery/src/canvas/flat-icons.tsx`): every one of `icons.tsx`'s 99 names, StatusIcon's five marks and ten fun ones
@@ -463,6 +492,25 @@ for Flat's voice (post, issue, reader, coffee, heart, ghost, paw, smiley…), dr
 outline with round caps and joins and every corner rounded, beside today's set and in real Flat parts. If Nick takes
 it, it becomes Flat's body of the same `Icon` names in phase 2 (R8's "one solid set" would then hold for every world but
 Flat); until then nothing ships and every world keeps `icons.tsx`.
+
+**Open comparison: Flat as Hypher (not decided).** Nick, 2026-11-18: "I like the design in https://www.hypher.app/
+which world would it fit?" (the answer was Flat), then "put it on canvas, let 2b finish". On the canvas
+(`gallery/src/canvas/flat-hypher.tsx`, `flat-hypher.css`), to the right of the calls (x 3840 to 7960, y 15840 to
+18500): `Flat · today (after 2a)`, `Flat · the new Flat, all calls` and `Flat · as Hypher`, one screen in the
+reader's voice (eyebrow, two-line headline, lede, Subscribe and Read the letter, the spring series with the gallery's
+Open water plate, the week's readers, issue 14, the posts with statuses, a field row), light over dark each; then
+`Flat · as Hypher, the differences`, each choice alone on the new Flat so Nick can take some and leave others:
+A paper has an edge and a soft wide shadow (the ground nearly white, `--flat-well`; a hairline and two wide zero-offset
+blurs), B controls are rounded rectangles (the 6px step of `SHAPES`, surfaces 10px) with the secondary outlined,
+C a mono spaced eyebrow and a two-tone headline at the figure size in an editorial header, D the picture behind paper,
+E a status is a dot and a word with no pill, F the dark panel stays dark in dark. Hypher is a direction, not a source:
+none of its words, marks or pictures. A and B undo calls 1 and 2's "nothing outlined, nothing cast" and the pill, so
+taking them is a `taste:` change through `evolve.md`. Nothing ships until Nick picks, and 2b goes on as planned.
+
+Nick looked (2026-11-18): "ok you took it too literally, but I like the tags". Taken: **E**, a status is a dot and a
+word with no pill (a change to call 6, which kept the pill), to build after 2b and through `evolve.md` since it amends
+an approved call. Left: A, B, C, D and F; Flat stays as the nine calls have it. The lesson for the next reference: take
+the feeling it gives, shown on Flat's own parts, not a list of its features side by side.
 
 ## The order of work inside a world
 

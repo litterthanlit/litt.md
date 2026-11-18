@@ -28,6 +28,7 @@
  * - Keyboard: the Pad's. Two visually hidden range inputs, Time (in the tab order) and Bounce (tabindex -1, still
  *   reachable by a screen reader). ← → change the time, ↑ ↓ the bounce, Shift makes it 10 steps, Page Up and Page Down
  *   move the bounce by 10 steps, Home and End take the time to its ends.
+ * - Flat (v1.17): the well is paper on the grey ground with no edge, as a Flat field is; disabled keeps its hairline.
  * - Disabled: everything lies flat, as the Pad's: the well and its plates --surface-2 with the --line hairline, the
  *   cap --surface-2 with a --line edge, the curve --fg-disabled, no pointer and no tab stop. The value and the words
  *   step down to --fg-subtle, as the Slider's value does, because they are still read.
@@ -107,7 +108,7 @@ function describe(spring: Spring) {
 /* ----------------------------------------------------------------- styles */
 
 const well = "relative w-full touch-none select-none overflow-hidden rounded-surface forced-colors:border ";
-const wellOn = "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]";
+const wellOn = "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] in-[[data-material=flat]]:shadow-none";
 const wellOff = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 const thumb = "pointer-events-none absolute block size-5 -translate-x-1/2 rounded-pill forced-colors:border ";
 const thumbUp = "-translate-y-1/2 bg-cap shadow-(--cap-lift) forced-colors:bg-[Highlight]";

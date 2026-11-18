@@ -153,7 +153,7 @@ function CoverStripDemo() {
                 href="#scroll-area"
                 className="group/work grid gap-2 rounded-control focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
               >
-                <span className="relative block aspect-[8/5] overflow-hidden rounded-control bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] transition-colors duration-(--dur-instant) ease-litt group-hover/work:bg-surface-3 pointer-coarse:group-active/work:bg-surface-3">
+                <span className="relative block aspect-[8/5] overflow-hidden rounded-control bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none transition-colors duration-(--dur-instant) ease-litt group-hover/work:bg-surface-3 pointer-coarse:group-active/work:bg-surface-3">
                   <ProjectCover name={work.cover} />
                 </span>
                 <span className="grid gap-0.5 px-0.5 pb-1">
@@ -346,7 +346,7 @@ function TakeStripDemo() {
                 href="#scroll-area"
                 className="group/work grid gap-2 rounded-control focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
               >
-                <span className="relative block aspect-[8/5] overflow-hidden rounded-control bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] transition-colors duration-(--dur-instant) ease-litt group-hover/work:bg-surface-3 pointer-coarse:group-active/work:bg-surface-3">
+                <span className="relative block aspect-[8/5] overflow-hidden rounded-control bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none transition-colors duration-(--dur-instant) ease-litt group-hover/work:bg-surface-3 pointer-coarse:group-active/work:bg-surface-3">
                   <Waveform seed={take.seed} />
                 </span>
                 <span className="grid gap-0.5 px-0.5 pb-1">

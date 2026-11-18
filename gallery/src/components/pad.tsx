@@ -32,6 +32,7 @@
  *   aria-valuetext. Native adjustments (a screen reader's swipe) go through onChange.
  * - Focus: when an input is focus-visible, the thumb gets the 2px focus ring, 2px away. A press focuses the x input
  *   without the ring.
+ * - Flat (v1.17): the well is paper on the grey ground with no edge, as a Flat field is; disabled keeps its hairline.
  * - Disabled: everything lies flat (nothing to reach into or push): the well and the word plates --surface-2 with the
  *   plain --line hairline, the thumb --surface-2 with a --line edge, the crosshairs at --line, every word in
  *   --fg-disabled, no pointer and no tab stop.
@@ -161,7 +162,7 @@ function placeTip(cx: number, cy: number, w: number, h: number, width: number, h
 
 /* The well: the cut, or flat when disabled. Forced colors drops box-shadow, so the edge becomes a real border. */
 const well = "relative w-full touch-none select-none rounded-surface forced-colors:border ";
-const wellOn = "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]";
+const wellOn = "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] in-[[data-material=flat]]:shadow-none";
 const wellOff = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 
 /* The round cap. The pad never has a hover fill: the tooltip is the hover cue. Held, it sinks: the translate that

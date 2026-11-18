@@ -2,6 +2,8 @@ import { Button } from "@/components/button";
 import { Card, CardBody, CardCover, CardDescription, CardLink, CardTitle } from "@/components/card";
 import { ArrowUpRightIcon } from "@/components/icons";
 import { ProjectCover, type CoverName } from "@/components/list-cover";
+import { Sparkline } from "@/components/sparkline";
+import { Stat } from "@/components/stat";
 import { Tag } from "@/components/tag";
 import { GRAPHITE, SERIES, SILK, type Plate } from "@/gallery/plates";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
@@ -309,6 +311,38 @@ function FlatCoverStylesDemo() {
   );
 }
 
+/** Readers a day for 14 days; the last seven add up to the 1,204 on the card. */
+const READERS = [142, 160, 151, 170, 158, 149, 166, 171, 158, 180, 166, 175, 190, 164];
+
+/** Flat's ink card (call 4): one per view, the ink as a rounded square holding one live thing, its one color the first
+    data hue on its line. Beside it a card with no link, paper on the ground. */
+function FlatInkDemo() {
+  return (
+    <ul className="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      <Card as="li" tone="ink">
+        <Stat
+          label="Readers this week"
+          value="1,204"
+          delta="Up 86 on last week"
+          trend={<Sparkline label="Readers a day, last 14 days" values={READERS} hue="blue" />}
+        />
+      </Card>
+
+      <Card as="li">
+        <CardBody>
+          <CardTitle>Next issue</CardTitle>
+          <CardDescription>Issue 14 goes out Friday at 9:00.</CardDescription>
+          <p className="mt-6 text-h4 font-normal tabular-nums text-fg">412 subscribers</p>
+          {/* No CardLink, so this card is a surface: it has no hover, and the button inside is its own target. */}
+          <div className="pt-6">
+            <Button size="sm">Edit the letter</Button>
+          </div>
+        </CardBody>
+      </Card>
+    </ul>
+  );
+}
+
 function FlatCardTile() {
   const site = SITES[0]!;
   return (
@@ -551,7 +585,16 @@ export default function CardPage() {
         size="lg"
         align="start"
         code="LightDemo"
-        byWorld={{ device: { demo: <TakeLightDemo />, code: "TakeLightDemo" } }}
+        byWorld={{
+          device: { demo: <TakeLightDemo />, code: "TakeLightDemo" },
+          flat: {
+            demo: <FlatInkDemo />,
+            title: "The ink card, and no link",
+            code: "FlatInkDemo",
+            caption:
+              "One card per view can be the ink card: Card with tone=\"ink\", black on a light page and white on a dark one, with no ring and no shadow. It holds one live thing, here this week's readers, with the figure standing up, and its one color is the first data hue, on the line only. Its words are the page's paper, and its quiet words keep 4.5:1. Beside it, a card with no CardLink is just paper on the ground: no hover, and the button inside is the only target.",
+          },
+        }}
         caption="A card can carry its own light and grain from the top, on the card or on its cover. It is static, and this gallery's page already has one light, so it is the exception, not the rule. A card with no CardLink is just a surface: no hover, and the button inside is the only target."
       >
         <LightDemo />

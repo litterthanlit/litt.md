@@ -29,7 +29,7 @@ export type FlatCallId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 /* ---------------------------------------------------------------- the frame */
 
 /** Whether the frame around a part is dark, so the ink card can take the opposite theme. */
-const DarkContext = createContext(false);
+export const DarkContext = createContext(false);
 
 /** One Flat frame in light or dark, with the candidates its side switches on. */
 export function FlatFrame({ dark, call, style, children }: { dark: boolean; call?: string; style?: CSSProperties; children: ReactNode }) {
@@ -52,7 +52,7 @@ export function FlatFrame({ dark, call, style, children }: { dark: boolean; call
 
 /** The ink card: the ink as a rounded square, so it takes the opposite theme (black on a light ground, white on a dark
     one), Flat's frame inside it. Its one colour is a data hue, on its data only. No ring, no cast. */
-function InkCard({ children }: { children: ReactNode }) {
+export function InkCard({ children }: { children: ReactNode }) {
   const dark = useContext(DarkContext);
   return (
     <MaterialProvider material="flat">
@@ -98,7 +98,7 @@ const STUDIO = {
 } as const;
 
 /** The proposed voice: a person who keeps a small site and a letter, and the people who read it. */
-const READERS = {
+export const READERS = {
   card: { title: "Spring series", text: "Twelve pictures from the coast · 4 min read" },
   card2: { title: "Issue 14", text: "Goes out Friday at 9:00" },
   stat: { label: "Readers this week", value: "1,204", delta: "Up 86 on last week" },
@@ -114,9 +114,9 @@ const READERS = {
 } as const;
 
 type Voice = typeof STUDIO | typeof READERS;
-const WEEK = [820, 904, 870, 990, 1040, 1118, 1204];
+export const WEEK = [820, 904, 870, 990, 1040, 1118, 1204];
 
-function PlateCover({ plate }: { plate: Plate }) {
+export function PlateCover({ plate }: { plate: Plate }) {
   return <img src={plate.src} srcSet={plate.srcSet} sizes="320px" alt="" className="absolute inset-0 size-full object-cover" />;
 }
 
@@ -233,7 +233,7 @@ function Controls() {
 
 /* ---------------------------------------------------------------- the new Flat, all calls together */
 
-const ALL = "ground paper status-dot big-figure";
+export const ALL = "ground paper status-dot big-figure";
 
 /** One small screen: two cards, a stat, a list, a form row and the primary action. */
 function Screen({ now }: { now: boolean }) {

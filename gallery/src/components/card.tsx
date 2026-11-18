@@ -21,6 +21,11 @@
  *   offset, and the link's own outline is removed so the two never stack.
  * - Light: `lit` adds `.litt-lit .litt-grain` as the card's own top light. It is optional and static (R2).
  *   The page already has one light source (R2), so use it on one card, not on a set.
+ * - Ink (`tone="ink"`, Flat's ink card, v1.17 call 4): at most one per view, the ink as a rounded square holding one
+ *   live thing (a Stat, a live run, a timer). Black on a light page, white on a dark one, with no ring and no shadow;
+ *   its words are the paper's color and its one color is the first data hue, on its data only, so give what it holds
+ *   no tone and no link. It is `.litt-ink` (tokens.css), which does nothing outside Flat: in every other world an ink
+ *   card is that world's own card, unchanged.
  * - Motion: none of its own. The entrance cascade for a set of cards belongs to the page (see List and cards).
  */
 import { createContext, useContext, type ComponentProps, type HTMLAttributes, type ReactNode } from "react";
@@ -51,6 +56,8 @@ export type CardProps = HTMLAttributes<HTMLElement> & {
   cover?: "inset" | "bleed";
   /** Adds the card's own light: a soft accent falloff from the top, with a trace of grain. Keep it to one card per page. */
   lit?: boolean;
+  /** "ink" makes it Flat's ink card: the ink as a rounded square for one live thing, at most one per view, its one color the first data hue on its data. Outside Flat it is the world's own card. Leave it out for paper. */
+  tone?: "ink";
   /** The card's parts: a CardCover, then a CardBody with a CardTitle and a CardDescription. */
   children?: ReactNode;
   /** Extra classes for the card, such as a max width. */
@@ -58,11 +65,14 @@ export type CardProps = HTMLAttributes<HTMLElement> & {
 };
 
 /** A raised card. A linked card holds a CardLink; its whole surface is the target and its fill steps on hover. */
-export function Card({ as: Tag = "article", cover, lit = false, className = "", children, ...rest }: CardProps) {
+export function Card({ as: Tag = "article", cover, lit = false, tone, className = "", children, ...rest }: CardProps) {
   const style: CoverStyle = cover ?? "none";
   return (
     <CoverContext.Provider value={style}>
-      <Tag className={[card, cardPadding[style], lit ? "litt-lit litt-grain" : "", className].join(" ")} {...rest}>
+      <Tag
+        className={[card, cardPadding[style], lit ? "litt-lit litt-grain" : "", tone === "ink" ? "litt-ink" : "", className].join(" ")}
+        {...rest}
+      >
         {children}
       </Tag>
     </CoverContext.Provider>

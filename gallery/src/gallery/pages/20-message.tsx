@@ -207,7 +207,7 @@ function Answer({ blocks }: { blocks: Block[] }) {
 /** A window onto the app: the page's own canvas with a hairline, so the person's bubble reads as it does in an app. */
 function Frame({ className = "", children }: { className?: string; children: ReactNode }) {
   return (
-    <div className={"flex w-full flex-col overflow-hidden rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line " + className}>
+    <div className={"flex w-full flex-col overflow-hidden rounded-surface bg-canvas outline-1 -outline-offset-1 outline-line in-[[data-material=flat]]:outline-0 " + className}>
       {children}
     </div>
   );

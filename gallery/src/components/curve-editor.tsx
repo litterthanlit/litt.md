@@ -23,6 +23,7 @@
  * - Keyboard: each handle is one tab stop with two visually hidden range inputs (time in the tab order, progress
  *   tabindex -1), as on the Pad. ← → move the handle in time, ↑ ↓ in progress, Shift makes it 10 steps, Page Up and
  *   Page Down move progress by 10 steps, Home and End take time to its ends.
+ * - Flat (v1.17): the well is paper on the grey ground with no edge, as a Flat field is; disabled keeps its hairline.
  * - Disabled: everything lies flat, as the Pad's, with the curve in --fg-disabled. The CSS and the words step down to
  *   --fg-subtle, as the Slider's value does, because they are still read.
  * - Motion: the handles, the arms and the curve follow the pointer and the keys at once, with no easing (R4).
@@ -107,7 +108,7 @@ const pathOf = ([x1, y1, x2, y2]: CubicBezier) => `M${point(0, 0)}C${point(x1, y
 /* ----------------------------------------------------------------- styles */
 
 const well = "relative w-full touch-none select-none overflow-hidden rounded-surface forced-colors:border ";
-const wellOn = "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)]";
+const wellOn = "bg-cut shadow-[inset_0_0_0_1px_var(--line-control),var(--cut-shade)] in-[[data-material=flat]]:shadow-none";
 const wellOff = "bg-surface-2 shadow-[inset_0_0_0_1px_var(--line)]";
 const thumb = "pointer-events-none absolute block size-5 -translate-x-1/2 rounded-pill forced-colors:border ";
 const thumbUp = "-translate-y-1/2 bg-cap shadow-(--cap-lift) forced-colors:bg-[Highlight]";
