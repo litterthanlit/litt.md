@@ -437,6 +437,14 @@ Media, carousel and lightbox are content.
 **STOP**: Nick answers the nine calls on the canvas ("all yes" takes every recommendation) before the vocabulary goes
 into `taste/` and phase 2 starts.
 
+**Open candidate: a fun icon set for Flat (trial, not decided).** Nick, 2026-11-18, with a reference of chunky outline
+icons: "also maybe we could trial a fun icon set for flat sort of like this". On the canvas as `Flat icons · …`
+(`gallery/src/canvas/flat-icons.tsx`): every one of `icons.tsx`'s 99 names, StatusIcon's five marks and ten fun ones
+for Flat's voice (post, issue, reader, coffee, heart, ghost, paw, smiley…), drawn new on the same 16 grid as one 1.75
+outline with round caps and joins and every corner rounded, beside today's set and in real Flat parts. If Nick takes
+it, it becomes Flat's body of the same `Icon` names in phase 2 (R8's "one solid set" would then hold for every world but
+Flat); until then nothing ships and every world keeps `icons.tsx`.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.

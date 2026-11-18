@@ -28,6 +28,7 @@ import { PressColumnPreview, type PressColumn } from "./press";
 import { PressCallPreview, type PressCallId } from "./press-calls";
 import { PressRound2Preview, type PressRound2Id } from "./press-round2";
 import { FlatCallPreview, FlatTogetherPreview, type FlatCallId } from "./flat-calls";
+import { FlatIconComposition, FlatIconPairs, FlatIconSet, FlatIconsInUse } from "./flat-icons";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -241,6 +242,11 @@ const FLAT_CALLS: { call: FlatCallId; name: string }[] = [
   { call: 8, name: "Flat call 8 · fun at rest is a figure that stands up" },
   { call: 9, name: "Flat call 9 · voice, a site and its readers" },
 ];
+/* Flat icons, a trial (flat-icons.tsx, Nick 2026-11-18): a fun outline set for Flat, nothing ships. A block of its own
+   under Flat's calls (their last row ends near y 21720), four across on Flat's column grid: the set, today beside it,
+   in use, and the composition. */
+const ICONS_Y = 21720 + 480;
+const ICONS = { width: 1120, gap: 120 };
 const flatRowY = (row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
@@ -396,4 +402,8 @@ export const ITEMS: CanvasItem[] = [
       render: () => <FlatCallPreview call={call} />,
     }),
   ),
+  { id: "flat-icons-set", name: "Flat icons · the set", x: 0, y: ICONS_Y, width: ICONS.width, height: 3040, render: () => <FlatIconSet /> },
+  { id: "flat-icons-pairs", name: "Flat icons · today and fun, side by side", x: ICONS.width + ICONS.gap, y: ICONS_Y, width: ICONS.width, height: 1100, render: () => <FlatIconPairs /> },
+  { id: "flat-icons-in-use", name: "Flat icons · in use", x: 2 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 1580, render: () => <FlatIconsInUse /> },
+  { id: "flat-icons-composition", name: "Flat icons · the composition", x: 3 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 880, render: () => <FlatIconComposition /> },
 ];
