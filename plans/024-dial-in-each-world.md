@@ -478,6 +478,11 @@ E a status is a dot and a word with no pill, F the dark panel stays dark in dark
 none of its words, marks or pictures. A and B undo calls 1 and 2's "nothing outlined, nothing cast" and the pill, so
 taking them is a `taste:` change through `evolve.md`. Nothing ships until Nick picks, and 2b goes on as planned.
 
+Nick looked (2026-11-18): "ok you took it too literally, but I like the tags". Taken: **E**, a status is a dot and a
+word with no pill (a change to call 6, which kept the pill), to build after 2b and through `evolve.md` since it amends
+an approved call. Left: A, B, C, D and F; Flat stays as the nine calls have it. The lesson for the next reference: take
+the feeling it gives, shown on Flat's own parts, not a list of its features side by side.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
