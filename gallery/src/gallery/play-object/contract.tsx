@@ -38,6 +38,7 @@ export const TAKE_MS = 4000;
 
 /** The bodies drawn so far, loaded on demand. A world not here, or one whose body fails to load, draws bare. */
 const BODIES: Partial<Record<Material, () => Promise<PlayObjectBody>>> = {
+  flat: () => import("./bodies/flat").then((m) => m.flat),
   device: () => import("./bodies/device").then((m) => m.device),
 };
 

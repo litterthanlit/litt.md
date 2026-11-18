@@ -1,6 +1,6 @@
 # litt principles
 
-What litt believes, in two layers: a short floor every world shares, and each world's own principles, written for the people that world is for. The nine rules (`taste/profile.md`) say what to check. This file says why, so that an agent given room inside a world uses it well.
+What litt believes, in two layers: a short floor every world shares, and each world's own principles, written for the people that world is for. The ten rules (`taste/profile.md`) say what to check. This file says why, so that an agent given room inside a world uses it well.
 
 Read it before you build or change a body, a world-only part or a study, and when a critique turns on a world.
 
@@ -8,7 +8,7 @@ Read it before you build or change a body, a world-only part or a study, and whe
 
 ## What every world shares
 
-Six principles. A world's own principles may go further than these, never against them.
+Seven principles. A world's own principles may go further than these, never against them.
 
 **1. A world is one object.** Every part in a world is a part of one thing, built from its materials, and speaks in that world's words. An object makes polish legible: "a lit edge, a recess or a 2px base is either right or it isn't" (*components*). So a part is never a card that could sit in any world, and never a second frame inside the frame. R1.
 
@@ -21,6 +21,8 @@ Six principles. A world's own principles may go further than these, never agains
 **5. Accessibility is native.** "A hardware metaphor is no excuse for a div" (*components*). A part is the real role it looks like. One tab stop per composite. Focus follows the hand without a ring and comes back for the keyboard. A change of state is said once. Reduced motion lands everything at once (`system/foundations.md`, 7).
 
 **6. The craft speaks for itself.** A part is something teams ship. The world is the polish, the product pattern is the subject (*components*). No debug overlays, no explanatory chrome, no label that points at what to admire.
+
+**7. Easy, then felt.** A person should finish what they came for without thinking, and leave having felt something. Ease is never traded for feeling; once the task is easy, the world's own materials, color on its data and motion give the feeling. Each world's principles below say what it should make someone feel. R10.
 
 ## Each world's own
 
