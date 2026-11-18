@@ -314,7 +314,7 @@ export default function TagPage() {
           flat: {
             demo: <StatusDemo />,
             caption:
-              "A status is its word in the ink after a small circle in the status color, and the pill stays, so a row of tags stays calm. The color sits only on the circle; every tag says its state in words, and neutral Draft and Idea differ by theirs.",
+              "A status is a small circle in the status color and its word in the ink, with no pill, so a row of tags stays calm. The color sits only on the circle; every tag says its state in words, and neutral Draft and Idea differ by theirs.",
           },
           device: {
             demo: <TakeStatusDemo />,

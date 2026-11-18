@@ -144,7 +144,7 @@ function Frame({
       aria-label={label}
       tabIndex={0}
       className={
-        "@container relative scroll-pt-[calc(var(--header-h)+var(--space-6))] w-full overflow-y-auto overscroll-contain rounded-surface bg-canvas shadow-[inset_0_0_0_1px_var(--line)] " +
+        "@container relative scroll-pt-[calc(var(--header-h)+var(--space-6))] w-full overflow-y-auto overscroll-contain rounded-surface bg-canvas shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none " +
         "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus " +
         className
       }
@@ -217,7 +217,7 @@ function StudioPage() {
         <h3 className="text-h3 text-fg">Services</h3>
         <ul className="grid gap-6 @min-[48rem]:grid-cols-3">
           {SERVICES.map(([title, text]) => (
-            <li key={title} className="grid content-start gap-2 border-t border-line pt-4">
+            <li key={title} className="grid content-start gap-2 border-t border-line in-[[data-material=flat]]:border-transparent pt-4">
               <p className="text-body font-title text-fg">{title}</p>
               <p className="text-small text-fg-subtle">{text}</p>
             </li>
@@ -229,7 +229,7 @@ function StudioPage() {
         <h3 className="text-h3 text-fg">Journal</h3>
         <ul>
           {JOURNAL.map(([title, date]) => (
-            <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
+            <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line in-[[data-material=flat]]:border-transparent py-3 first:border-t">
               <span className="text-body font-title text-fg">{title}</span>
               <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{date}</span>
             </li>
@@ -484,7 +484,7 @@ function LibraryPage() {
         <h3 className="text-h3 text-fg">Scenes</h3>
         <ul className="grid gap-6 @min-[48rem]:grid-cols-3">
           {SCENES.map(([title, text]) => (
-            <li key={title} className="grid content-start gap-2 border-t border-line pt-4">
+            <li key={title} className="grid content-start gap-2 border-t border-line in-[[data-material=flat]]:border-transparent pt-4">
               <p className="text-body font-title text-fg">{title}</p>
               <p className="text-small text-fg-subtle">{text}</p>
             </li>
@@ -496,7 +496,7 @@ function LibraryPage() {
         <h3 className="text-h3 text-fg">Cards</h3>
         <ul>
           {CARDS.map(([title, left]) => (
-            <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line py-3 first:border-t">
+            <li key={title} className="flex items-baseline justify-between gap-4 border-b border-line in-[[data-material=flat]]:border-transparent py-3 first:border-t">
               <span className="text-body font-title text-fg">{title}</span>
               <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{left}</span>
             </li>

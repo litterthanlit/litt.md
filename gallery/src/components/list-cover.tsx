@@ -7,6 +7,10 @@
  *
  * The viewBox is 320 x 200 and the card's cover is 8:5, so nothing crops.
  * Strokes use non-scaling-stroke so every hairline stays 1px at any size.
+ *
+ * Flat (v1.17): no lines between things, so the hairlines and the panels' edges are clear and the cover is bold, flat
+ * shapes on grey: paper panels, grey bars and one ink block, over a 4% wash of the ink so the panels stand off the
+ * cover's own fill (which still steps on hover). The blank cover keeps its dashed edge and plus: a project to come.
  */
 import type { ReactNode } from "react";
 
@@ -22,7 +26,7 @@ export type CoverName =
   | "blank";
 
 const tone = {
-  panel: "fill-surface-1 stroke-line-strong",
+  panel: "fill-surface-1 stroke-line-strong in-[[data-material=flat]]:stroke-transparent",
   bar: "fill-line-strong",
   soft: "fill-line",
   ink: "fill-fg-subtle",
@@ -40,7 +44,7 @@ function L({ x1, y1, x2, y2, dash }: { x1: number; y1: number; x2: number; y2: n
       y1={y1}
       x2={x2}
       y2={y2}
-      className="stroke-line-strong"
+      className="stroke-line-strong in-[[data-material=flat]]:stroke-transparent"
       strokeDasharray={dash}
       vectorEffect="non-scaling-stroke"
     />
@@ -180,8 +184,8 @@ const art: Record<CoverName, ReactNode> = {
   blank: (
     <>
       <rect x={24} y={24} width={272} height={152} className="fill-none stroke-line-strong" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
-      <L x1={152} y1={100} x2={168} y2={100} />
-      <L x1={160} y1={92} x2={160} y2={108} />
+      {/* The plus stays in every world: it is the one mark, not a line between things. */}
+      <path d="M152 100h16M160 92v16" className="stroke-line-strong" vectorEffect="non-scaling-stroke" />
     </>
   ),
 };
@@ -201,7 +205,7 @@ export function ProjectCover({
       viewBox="0 0 320 200"
       preserveAspectRatio="xMidYMid slice"
       shapeRendering="crispEdges"
-      className={"absolute inset-0 size-full " + className}
+      className={"absolute inset-0 size-full in-[[data-material=flat]]:bg-[color-mix(in_oklab,var(--fg)_4%,transparent)] " + className}
       aria-hidden="true"
       focusable="false"
     >

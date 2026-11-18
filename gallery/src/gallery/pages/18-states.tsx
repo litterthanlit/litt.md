@@ -106,7 +106,7 @@ function FirstProject() {
 function DeploysCard() {
   return (
     <section aria-label="Deploys" className="litt-raised grid content-start self-start rounded-surface">
-      <h3 className="border-b border-line px-6 py-4 text-small text-fg">Deploys</h3>
+      <h3 className="border-b border-line in-[[data-material=flat]]:border-transparent px-6 py-4 text-small text-fg">Deploys</h3>
       <div className="p-6">
         <Empty bare title="No deploys yet." action={<Button iconRight={<ArrowUpRightIcon />}>Open in Framer</Button>}>
           Publish from Framer and each deploy is listed here.
@@ -127,13 +127,13 @@ function EmptyDemo() {
 
 /* -------------------------------------------------------------- loading */
 
-const LIST_BOX = "w-full max-w-3xl rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]";
+const LIST_BOX = "litt-paper w-full max-w-3xl rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none";
 const SAMPLE = PROJECTS.slice(0, 5);
 
 /** One row at ProjectList's size: 64px tall, 16px sides, the name and client, a status tag and a date. */
 function RowSkeleton() {
   return (
-    <div className="h-16 border-b border-line last:border-b-0">
+    <div className="h-16 border-b border-line in-[[data-material=flat]]:border-transparent last:border-b-0">
       <div className="flex size-full items-center gap-4 px-4">
         <div className="grid min-w-0 flex-1 gap-1">
           <Skeleton text="body" className="w-3/5 max-w-60" />
@@ -237,7 +237,7 @@ function DeployFailed() {
   return (
     <div
       role="status"
-      className="flex flex-wrap items-center gap-3 rounded-surface bg-surface-2 p-8 shadow-[inset_0_0_0_1px_var(--line)]"
+      className="flex flex-wrap items-center gap-3 rounded-surface bg-surface-2 p-8 shadow-[inset_0_0_0_1px_var(--line)] litt-paper in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none"
     >
       {phase === "retrying" ? (
         <>
@@ -270,7 +270,7 @@ function SyncFailed() {
 
   return (
     <section aria-label="Framer sync" className="litt-raised grid rounded-surface">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-line px-6 py-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-line in-[[data-material=flat]]:border-transparent px-6 py-4">
         <h3 className="text-small text-fg">Framer sync</h3>
         <p className="text-caption text-fg-subtle">Last synced 12 min ago</p>
       </div>
@@ -349,7 +349,7 @@ function FirstMix() {
 function ExportsCard() {
   return (
     <section aria-label="Exports" className="litt-raised grid content-start self-start rounded-surface">
-      <h3 className="border-b border-line px-6 py-4 text-small text-fg">Exports</h3>
+      <h3 className="border-b border-line in-[[data-material=flat]]:border-transparent px-6 py-4 text-small text-fg">Exports</h3>
       <div className="p-6">
         <Empty bare title="No exports yet." action={<Button iconRight={<ArrowUpRightIcon />}>Open the library</Button>}>
           Export a take from the recorder and each file is listed here.
@@ -429,7 +429,7 @@ function ExportFailed() {
   }
   // The retry hands over to a status line in the same panel. A Button's loading look would vanish on this surface-2 fill.
   return (
-    <div role="status" className="flex flex-wrap items-center gap-3 rounded-surface bg-surface-2 p-8 shadow-[inset_0_0_0_1px_var(--line)]">
+    <div role="status" className="flex flex-wrap items-center gap-3 rounded-surface bg-surface-2 p-8 shadow-[inset_0_0_0_1px_var(--line)] litt-paper in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none">
       {phase === "retrying" ? (
         <>
           <span className="text-fg-subtle">
@@ -461,7 +461,7 @@ function StudioSyncFailed() {
 
   return (
     <section aria-label="Studio sync" className="litt-raised grid rounded-surface">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-line px-6 py-4">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-line in-[[data-material=flat]]:border-transparent px-6 py-4">
         <h3 className="text-small text-fg">Studio sync</h3>
         <p className="text-caption text-fg-subtle">Last synced 12 min ago</p>
       </div>

@@ -23,6 +23,8 @@
  * - Tokens: pass tokens and the footer has Copy tokens (a secondary sm button that says Copied for two seconds), with
  *   a Tokens group that shows them in mono, since they are code. Where the clipboard is refused, the text is selected
  *   instead, so a copy shortcut finishes the job.
+ * - Flat (v1.17): no lines between things, so the hairlines between the groups and around the tokens are clear and
+ *   space parts them.
  * - No accent fill (R6): the inspector is chrome around the page's one main action, never the action itself.
  * - A Select inside it opens solid (--surface-2), never glass on glass.
  */
@@ -134,7 +136,7 @@ export function InspectorGroup({ title, summary, defaultOpen = true, children }:
   const id = useId().replace(/[^\w-]/g, "");
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-t border-line">
+    <div className="border-t border-line in-[[data-material=flat]]:border-transparent">
       <button type="button" id={`${id}-row`} aria-expanded={open} aria-controls={`${id}-body`} onClick={() => setOpen((o) => !o)} className={row}>
         <span className="min-w-0 flex-1 truncate">{title}</span>
         {summary !== undefined && <span className="shrink-0 text-caption font-normal tabular-nums text-fg-subtle">{summary}</span>}
@@ -273,7 +275,7 @@ export function Inspector<T>({
 
       {open && (
         <Fold id={bodyId} labelledBy={titleId} className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-          <div className="flex items-center gap-2 border-t border-line px-3 py-3">
+          <div className="flex items-center gap-2 border-t border-line in-[[data-material=flat]]:border-transparent px-3 py-3">
             <div className="min-w-0 flex-1">
               <Select
                 size="sm"
@@ -317,7 +319,7 @@ export function Inspector<T>({
                 id={tokensId}
                 tabIndex={0}
                 aria-label="Tokens to paste"
-                className="max-h-64 overflow-auto rounded-control bg-surface-2 p-3 font-mono text-caption font-normal whitespace-pre text-fg-muted shadow-[inset_0_0_0_1px_var(--line)]"
+                className="max-h-64 overflow-auto rounded-control bg-surface-2 p-3 font-mono text-caption font-normal whitespace-pre text-fg-muted shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:shadow-none"
               >
                 {text}
               </pre>
@@ -325,7 +327,7 @@ export function Inspector<T>({
           )}
 
           {tokens && (
-            <div className="border-t border-line p-3">
+            <div className="border-t border-line in-[[data-material=flat]]:border-transparent p-3">
               <Button size="sm" block icon={copied ? <CheckIcon /> : <CopyIcon />} onClick={copy}>
                 {copied ? "Copied" : "Copy tokens"}
               </Button>

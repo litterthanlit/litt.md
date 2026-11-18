@@ -6,7 +6,8 @@
  * - The label is small and grey. The figure is the page's ink and stands up: Flat's one figure per object
  *   (--type-figure-size, 40px, R8's exception, v1.17), at the title weight with tabular numbers, its unit after it in
  *   grey. Fun at rest is that size, not decoration.
- * - The delta and the trend are as in every body: a word and the number at the caption size, the trend at the foot.
+ * - The delta is a word and the number at the caption size in the quiet ink; good or bad news is an 8px circle before
+ *   it in the status color (v1.17, call 6: color on the circle only, never the whole word). The trend is at the foot.
  */
 import type { StatBodyProps } from "@/components/stat";
 
@@ -21,7 +22,8 @@ export function StatFlatBody({ label, figure, unit, delta, toneClass, toneWord, 
           {unit && <span className="text-fg-subtle">{unit}</span>}
         </span>
         {delta && (
-          <span className={"text-caption " + toneClass}>
+          <span className="inline-flex items-center gap-2 text-caption text-fg-subtle">
+            {toneWord && <span aria-hidden="true" className={"size-2 shrink-0 rounded-pill bg-current " + toneClass} />}
             {delta}
             <span className="sr-only">{toneWord}</span>
           </span>

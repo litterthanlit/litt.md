@@ -163,13 +163,13 @@ function ProjectRowsDemo() {
   const [last, setLast] = useState("Nothing picked yet");
   return (
     <div className="grid w-full max-w-xl gap-4">
-      <ul aria-label="Projects" className="w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
+      <ul aria-label="Projects" className="litt-paper w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none">
         {PROJECTS.map((p) => (
           <ContextMenu
             key={p.id}
             label={`${p.name} actions`}
             trigger={
-              <li className="group h-16 border-b border-line last:border-b-0">
+              <li className="group h-16 border-b border-line in-[[data-material=flat]]:border-transparent last:border-b-0">
                 <div className={rowFill}>
                   <button type="button" className={rowButton} onClick={() => setLast(`Opened ${p.name}`)}>
                     <span className="grid min-w-0 flex-1 gap-1">
@@ -285,7 +285,7 @@ function FileGridDemo() {
       <ContextMenu
         label="Assets folder options"
         trigger={
-          <section aria-label="Assets folder" className="grid gap-4 rounded-surface p-4 shadow-[inset_0_0_0_1px_var(--line)]">
+          <section aria-label="Assets folder" className="litt-paper grid gap-4 rounded-surface p-4 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none">
             <div className="flex items-center justify-between gap-4">
               <div className="grid min-w-0 gap-1">
                 <h3 className="truncate text-body text-fg">Assets</h3>
@@ -384,13 +384,13 @@ function TakeRowsDemo() {
   const [last, setLast] = useState("Nothing picked yet");
   return (
     <div className="grid w-full max-w-xl gap-4">
-      <ul aria-label="Takes on card A" className="w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)]">
+      <ul aria-label="Takes on card A" className="litt-paper w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none">
         {TAKES.map((t) => (
           <ContextMenu
             key={t.id}
             label={`${t.name} actions`}
             trigger={
-              <li className="group h-16 border-b border-line last:border-b-0">
+              <li className="group h-16 border-b border-line in-[[data-material=flat]]:border-transparent last:border-b-0">
                 <div className={rowFill}>
                   <button type="button" className={rowButton} onClick={() => setLast(`Playing ${t.name}`)}>
                     <span className="grid min-w-0 flex-1 gap-1">
@@ -461,7 +461,7 @@ function CardFolderDemo() {
       <ContextMenu
         label="Card A folder options"
         trigger={
-          <section aria-label="Card A folder" className="grid gap-4 rounded-surface p-4 shadow-[inset_0_0_0_1px_var(--line)]">
+          <section aria-label="Card A folder" className="litt-paper grid gap-4 rounded-surface p-4 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none">
             <div className="flex items-center justify-between gap-4">
               <div className="grid min-w-0 gap-1">
                 <h3 className="truncate text-body text-fg">Card A</h3>

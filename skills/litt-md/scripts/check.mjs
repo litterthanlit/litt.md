@@ -42,7 +42,8 @@
  * 11. Flat:    data-material="flat" (proposals/flat.md). Every --flat-* neutral is its stone twin at chroma 0 and the
  *               same OKLCH lightness, in both themes; the flat block maps every neutral onto its mirror and comes
  *               after monochrome; nothing in it casts, blurs, sinks or is "none"; it restates the focus ring and the
- *               data tints. Check 5 runs every pair again under Flat.
+ *               data tints. Check 5 runs every pair again under Flat. The ink card (.litt-ink, v1.17) casts nothing, and
+ *               its words reach 4.5:1 and its first data hue's mark and dot 3:1 on its face, in both themes.
  * 12. Device:  data-material="device" (proposals/device.md). Every --device-* value is defined in both themes; the
  *               device block maps every neutral and press token onto its --device-* twin, comes after Flat, sinks 2px
  *               and restates the focus ring and the data tints; pink and monochrome are restated on Device after it; reduced
@@ -752,8 +753,28 @@ else {
   if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) flatFails.push(`flat: --focus-ring must restate the ring with var(--focus), never a literal (is "${ring}")`);
   for (const h of ["blue", "amber", "teal", "violet", "rose"])
     if (!/var\(--surface-1\)/.test(flat.get(`--data-${h}-tint`) || "")) flatFails.push(`flat: --data-${h}-tint is not restated over var(--surface-1)`);
+  /* The ink card (v1.17, call 4): .litt-ink under Flat maps its face, words and data onto Flat's own tokens, casts
+     nothing, and in each theme its words reach 4.5:1 and its data hue's mark and dot 3:1 on its face. */
+  const inkRule = /\[data-material="flat"\] \.litt-ink,\s*\.litt-ink\[data-material="flat"\]\s*\{([^}]*)\}/.exec(css);
+  if (!inkRule) flatFails.push('tokens.css has no [data-material="flat"] .litt-ink rule (the ink card)');
+  else {
+    const ink = decls(inkRule[1]);
+    const inkShadow = (/(?<![\w-])box-shadow\s*:\s*([^;]+);/.exec(inkRule[1]) || [])[1]?.trim();
+    if (inkShadow !== "inset 0 0 0 0 transparent") flatFails.push(`the ink card's box-shadow is ${inkShadow ?? "unset"}, not empty (no ring, no shadow)`);
+    for (const [theme, base] of [["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)]]) {
+      const at = (n) => { const v = ink.get(n); const m = /^var\((--[\w-]+)\)$/.exec(v || ""); return m ? base.get(m[1]) : base.get(n); };
+      const face = at("--surface-1");
+      for (const [fg, min, note] of [["--fg", 4.5, "words"], ["--fg-muted", 4.5, "words"], ["--fg-subtle", 4.5, "quiet words"], ["--data-blue", 3, "its data's mark"], ["--data-blue-text", 3, "its line's dot"]]) {
+        const f = at(fg);
+        if (!/^#[0-9a-f]{6}$/i.test(f || "") || !/^#[0-9a-f]{6}$/i.test(face || "")) { flatFails.push(`${theme}: the ink card's ${fg} or face is not a six-digit hex`); continue; }
+        contrastChecks++;
+        const r = ratio(f, face);
+        if (r < min) flatFails.push(`${theme}: the ink card's ${fg} on its face is ${r.toFixed(2)}:1, needs ${min}:1 (${note})`);
+      }
+    }
+  }
 }
-flatFails.length ? flatFails.forEach(fail) : ok(`flat: ${FLAT_NEUTRALS.length} neutrals at chroma 0 in both themes, mapped last, nothing casts, lit or sinks`);
+flatFails.length ? flatFails.forEach(fail) : ok(`flat: ${FLAT_NEUTRALS.length} neutrals at chroma 0 in both themes, mapped last, nothing casts, lit or sinks; the ink card's words and data hue pass on its face`);
 
 // 12. Device --------------------------------------------------------------
 console.log('Device (data-material="device")');
