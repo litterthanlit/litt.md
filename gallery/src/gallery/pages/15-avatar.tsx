@@ -422,14 +422,67 @@ function CrewTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the readers who wrote back ---------- */
+
+const REPLIES = [
+  { name: "Mara Lindqvist", said: "The dusk picture is going on my wall.", when: "9:41" },
+  { name: "Tomas Berg", said: "Which pier was this? I want to walk there.", when: "9:12" },
+  { name: "Ava Okafor", said: "Shared it with my dad, who fishes there.", when: "Yesterday" },
+  { name: "Rui Matos", said: "More of the slow shutter ones, please.", when: "Yesterday" },
+  { name: "Lena Voss", said: "First letter I have read to the end in months.", when: "Mon" },
+];
+
+function RepliesDemo() {
+  return (
+    <ul aria-label="Replies to issue 13" className="w-full max-w-2xl">
+      {REPLIES.map((m) => (
+        <li key={m.name} className="flex items-center gap-4 border-b border-line py-3 last:border-b-0">
+          <Avatar name={m.name} decorative />
+          <div className="grid min-w-0 flex-1 gap-1 sm:flex sm:items-center sm:gap-4">
+            <span className="truncate text-small font-title text-fg sm:w-28 sm:shrink-0">{m.name}</span>
+            <span className="truncate text-small text-fg-subtle sm:min-w-0 sm:flex-1">{m.said}</span>
+          </div>
+          <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{m.when}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ReadersTile() {
+  return (
+    <div className="grid justify-items-center gap-4">
+      <AvatarGroup label="New readers this week, 86 people" total={86} ring="surface-1" size="lg">
+        {TILE_TEAM.map((n) => (
+          <Avatar key={n} name={n} />
+        ))}
+      </AvatarGroup>
+      <div className="flex items-center gap-3">
+        <Avatar name="Mara Lindqvist" decorative />
+        <span className="grid">
+          <span className="text-small font-title text-fg">Mara Lindqvist</span>
+          <span className="text-caption font-normal text-fg-subtle">Reader since issue 2</span>
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function AvatarPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<AvatarTile />} tileByWorld={{ device: <CrewTile /> }}>
+    <Page meta={meta} docs={docs} tile={<AvatarTile />} tileByWorld={{ device: <CrewTile />, flat: <ReadersTile /> }}>
       <Stage
         title="Senders in an inbox"
         align="start"
         code="InboxDemo"
         byWorld={{
+          flat: {
+            demo: <RepliesDemo />,
+            title: "Readers who wrote back",
+            code: "RepliesDemo",
+            caption:
+              "The replies to issue 13, newest first. The name is written beside each avatar, so the avatar is decorative and a screen reader hears the name once. Each reader keeps the hue their name gives them, so Mara is the same color here as in every other list. Nothing moves.",
+          },
           device: {
             demo: <TakeActivityDemo />,
             title: "Who touched the take",

@@ -209,6 +209,60 @@ function TakesStripDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a series and the posts around it ---------- */
+
+function SpringSeriesDemo() {
+  return (
+    <Carousel label="Spring series, six pictures from the coast" className="w-full max-w-3xl">
+      <CarouselContent>
+        {SERIES.map((image) => (
+          <CarouselItem key={image.id} label={image.name}>
+            <Media src={image.src} srcSet={image.srcSet} sizes="(min-width: 48rem) 40rem, 90vw" alt={image.alt} ratio="16/9" caption={image.name} />
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselControls />
+    </Carousel>
+  );
+}
+
+const POSTS: { id: string; name: string; note: string }[] = [
+  { id: "open-water", name: "Open water", note: "The first of the spring series. 4 min read." },
+  { id: "dusk-tide", name: "Dusk tide", note: "Twenty minutes after sunset, from the pier. 3 min read." },
+  { id: "silk", name: "Notes on a slow shutter", note: "How the water turns to silk. 6 min read." },
+  { id: "red-sun", name: "A red sun in March", note: "One picture and a short letter. 2 min read." },
+  { id: "sprig", name: "What the garden did", note: "Buds, rust and a week of rain. 5 min read." },
+  { id: "graphite", name: "Drawing the tide line", note: "Pencil studies before the series. 4 min read." },
+];
+
+function PostStripDemo() {
+  return (
+    <Carousel label="Recent posts" perView="three" className="w-full">
+      <CarouselContent>
+        {POSTS.map((post, i) => {
+          const plate = SERIES[i % SERIES.length]!;
+          return (
+            <CarouselItem key={post.id} label={post.name}>
+              <Card cover="inset" className="h-full">
+                <CardCover>
+                  <img src={plate.src} srcSet={plate.srcSet} sizes="20rem" alt={plate.alt} className="absolute inset-0 size-full object-cover" />
+                </CardCover>
+                <CardBody>
+                  <CardTitle>
+                    <CardLink href="#carousel">{post.name}</CardLink>
+                  </CardTitle>
+                  <CardDescription>{post.note}</CardDescription>
+                </CardBody>
+              </Card>
+            </CarouselItem>
+          );
+        })}
+      </CarouselContent>
+      <CarouselControls />
+    </Carousel>
+  );
+}
+
 export default function CarouselPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -217,6 +271,7 @@ export default function CarouselPage() {
         size="lg"
         align="start"
         code="SeriesDemo"
+        byWorld={{ flat: { demo: <SpringSeriesDemo />, title: "A series, one at a time", code: "SpringSeriesDemo" } }}
         caption="One slide fills the box and the next peeks at the end, which is how it says there is more. Swipe, scroll sideways with a trackpad, drag with a mouse, or press Next: each slide comes to rest at the start edge. The range under it is in words, and nothing moves until you move it."
       >
         <SeriesDemo />
@@ -227,7 +282,7 @@ export default function CarouselPage() {
         size="lg"
         align="start"
         code="CardsDemo"
-        byWorld={{ device: { demo: <TakesStripDemo />, title: "A strip of takes", code: "TakesStripDemo" } }}
+        byWorld={{ flat: { demo: <PostStripDemo />, title: "A strip of posts", code: "PostStripDemo" }, device: { demo: <TakesStripDemo />, title: "A strip of takes", code: "TakesStripDemo" } }}
         caption="Three cards in a wide box, two in a middling one, one and a peek on a phone; the box decides, not the screen. Next moves a whole page, so the first card not wholly in view comes to the start, and the range reads 4 to 6 of 6. At the end Next is disabled and hands its focus to Previous."
       >
         <CardsDemo />

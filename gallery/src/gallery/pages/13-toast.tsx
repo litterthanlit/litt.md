@@ -312,6 +312,86 @@ function PhoneTakeBurstDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a draft, a letter, a post ---------- */
+
+function DraftSavedDemo() {
+  const { toast } = useToast();
+  return (
+    <Launcher>
+      <Button onClick={() => toast({ title: "Draft saved", description: "Issue 14 goes out Friday at 9:00.", tone: "success" })}>
+        Save draft
+      </Button>
+    </Launcher>
+  );
+}
+
+function PublishedDemo() {
+  const { toast } = useToast();
+  const [opened, setOpened] = useState<string | null>(null);
+  return (
+    <Launcher note={opened}>
+      <Button
+        onClick={() => {
+          setOpened(null);
+          toast({
+            title: "Post published",
+            description: "Open water is on lowtide.site.",
+            tone: "success",
+            action: { label: "View", onClick: () => setOpened("Opened Open water on the site.") },
+          });
+        }}
+      >
+        Publish post
+      </Button>
+    </Launcher>
+  );
+}
+
+const SENT_BURST = [
+  { title: "Issue 14 sent", description: "To 412 subscribers.", tone: "success" as const },
+  { title: "Posted to the site", description: "The issue is under Letter.", tone: "success" as const },
+  { title: "First reply in", description: "Mara Lindqvist wrote back." },
+];
+
+function SentBurstDemo() {
+  const { toast, dismissAll } = useToast();
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach((t) => window.clearTimeout(t)), []);
+
+  const fire = () => {
+    timers.current.forEach((t) => window.clearTimeout(t));
+    timers.current = SENT_BURST.map((b, i) => window.setTimeout(() => toast(b), i * 180));
+  };
+
+  return (
+    <Launcher note="Hover or tap the stack, or press F8 and Tab through it.">
+      <Button onClick={fire}>Send issue 14</Button>
+      <Button variant="ghost" onClick={dismissAll}>
+        Clear all
+      </Button>
+    </Launcher>
+  );
+}
+
+function PictureTooLargeDemo() {
+  const { toast } = useToast();
+  return (
+    <Launcher>
+      <Button
+        onClick={() =>
+          toast({
+            title: "That picture is too large: 42 MB",
+            description: "Pictures can be up to 20 MB. Export a smaller one and add it again.",
+            tone: "error",
+          })
+        }
+      >
+        Add a picture
+      </Button>
+    </Launcher>
+  );
+}
+
 export default function ToastPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -322,6 +402,7 @@ export default function ToastPage() {
           code="SavedDemo"
           caption="The toast rises from the travel token's distance below its place while it fades in and settles from 0.98, on the expressive tier. It dismisses itself after about five seconds."
           byWorld={{
+            flat: { demo: <DraftSavedDemo />, title: "Draft saved", code: "DraftSavedDemo" },
             device: {
               demo: <SceneSavedDemo />,
               title: "Scene saved",
@@ -339,7 +420,7 @@ export default function ToastPage() {
           tier="expressive"
           code="DeployDemo"
           caption="The action is a small ghost button next to the round close button. Using it dismisses the toast. Hover pauses the clock, and so does keyboard focus or a hidden tab."
-          byWorld={{ device: { demo: <ExportedDemo />, code: "ExportedDemo" } }}
+          byWorld={{ flat: { demo: <PublishedDemo />, code: "PublishedDemo" }, device: { demo: <ExportedDemo />, code: "ExportedDemo" } }}
         >
           <DeployDemo />
         </Stage>
@@ -350,6 +431,12 @@ export default function ToastPage() {
           code="BurstDemo"
           caption="Three toasts in a row. The newest sits in front, the others fall back 8px and 16px, smaller and fainter. Hover or tab in and they open into a list with gaps. That is transform only, on the responsive tier. More than three wait out of sight."
           byWorld={{
+            flat: {
+              demo: <SentBurstDemo />,
+              code: "SentBurstDemo",
+              caption:
+                "Sending an issue says three things at once: it went out, it is on the site, and the first reader wrote back. The newest sits in front, the others fall back 8px and 16px, smaller and fainter. Hover or tab in and they open into a list with gaps. That is transform only, on the responsive tier. More than three wait out of sight.",
+            },
             device: {
               demo: <TakeBurstDemo />,
               code: "TakeBurstDemo",
@@ -366,7 +453,7 @@ export default function ToastPage() {
           tier="expressive"
           code="ErrorDemo"
           caption="Errors stay until you dismiss them, and they are announced assertively. Escape dismisses the toast that has focus. The exit slides right by the travel distance and fades, with no bounce. On a phone it drops down instead."
-          byWorld={{ device: { demo: <CardFullDemo />, code: "CardFullDemo" } }}
+          byWorld={{ flat: { demo: <PictureTooLargeDemo />, code: "PictureTooLargeDemo" }, device: { demo: <CardFullDemo />, code: "CardFullDemo" } }}
         >
           <ErrorDemo />
         </Stage>

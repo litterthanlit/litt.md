@@ -99,6 +99,26 @@ function ShapesDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a series as a reader sees it on the site ---------- */
+
+const SPRING: LightboxItem[] = SERIES.map(({ src, srcSet, alt, name, width, height }, i) => ({ src, srcSet, alt, caption: `${name}, spring series, ${i + 1} of ${SERIES.length}`, width, height }));
+
+function SpringGridDemo() {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <>
+      <ul aria-label="Spring series" className="grid w-full max-w-3xl grid-cols-2 gap-4 sm:grid-cols-3">
+        {SPRING.map((photo, i) => (
+          <li key={photo.alt}>
+            <Media src={photo.src} srcSet={photo.srcSet} sizes="(min-width: 40rem) 16rem, 50vw" alt={photo.alt} ratio="1/1" onOpen={() => setOpen(i)} />
+          </li>
+        ))}
+      </ul>
+      <Lightbox label="Spring series" items={SPRING} index={open} onIndexChange={setOpen} />
+    </>
+  );
+}
+
 export default function LightboxPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -107,6 +127,7 @@ export default function LightboxPage() {
         tier="expressive"
         align="start"
         code="GridDemo"
+        byWorld={{ flat: { demo: <SpringGridDemo />, title: "A series on the site", code: "SpringGridDemo" } }}
         caption="Press an image. It rises by the travel token and settles from 0.98 on the expressive tier, on the canvas at 97%, so the page behind is a trace and the image is the only surface. Use the arrow keys, Previous and Next, or on a phone swipe it; the next one fades in from the side it comes from on the responsive tier. Esc, Close or a click around the image closes it, and focus goes back to the one you pressed."
       >
         <GridDemo />

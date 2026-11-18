@@ -531,9 +531,132 @@ function TakeTabsTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's dashboard ---------- */
+
+function IssueResult({ tone }: { tone: "success" | "warning" | "muted" }) {
+  return (
+    <span className="flex w-20 shrink-0">
+      {tone === "success" ? <Tag status="success">Sent</Tag> : tone === "warning" ? <Tag status="warning">Friday</Tag> : <Tag status="neutral">Draft</Tag>}
+    </span>
+  );
+}
+
+const SITE_STATS: [string, string][] = [
+  ["Readers, last 7 days", "1,204"],
+  ["Subscribers", "412"],
+  ["Last post", "2 days ago"],
+  ["Posts", "38"],
+];
+
+const SITE_ACTIVITY: [string, string][] = [
+  ["Mara Lindqvist subscribed", "5 h ago"],
+  ["Published Open water", "2 days ago"],
+  ["Issue 13 sent to 408 readers", "Friday"],
+  ["Started the spring series", "March"],
+];
+
+const ISSUES: { n: number; title: string; when: string; tone: "success" | "warning" | "muted" }[] = [
+  { n: 15, title: "A new series, maybe", when: "No date", tone: "muted" },
+  { n: 14, title: "The last of the spring series", when: "Fri 9:00", tone: "warning" },
+  { n: 13, title: "A red sun in March", when: "14 Nov", tone: "success" },
+  { n: 12, title: "What the garden did", when: "7 Nov", tone: "success" },
+  { n: 11, title: "Notes on a slow shutter", when: "31 Oct", tone: "success" },
+];
+
+const SITE_SETTINGS: [string, string][] = [
+  ["Address", "lowtide.site"],
+  ["Letter", "Fridays at 9:00"],
+  ["Visibility", "Public"],
+  ["Replies", "On"],
+];
+
+function SiteTabs() {
+  return (
+    <Tabs defaultValue="overview" className="w-full max-w-xl">
+      <TabsList aria-label="Low Tide">
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="activity">Activity</TabsTrigger>
+        <TabsTrigger value="letter">Letter</TabsTrigger>
+        <TabsTrigger value="settings">Settings</TabsTrigger>
+      </TabsList>
+      <TabsPanels className="min-h-72 px-control-pad-md pt-6">
+        <TabsPanel value="overview">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
+            {SITE_STATS.map(([label, value]) => (
+              <div key={label} className="grid gap-1">
+                <dt className="text-small text-fg-subtle">{label}</dt>
+                <dd className="text-h3 text-fg">{value}</dd>
+              </div>
+            ))}
+          </dl>
+        </TabsPanel>
+        <TabsPanel value="activity">
+          <Rows>
+            {SITE_ACTIVITY.map(([what, when]) => (
+              <li key={what} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg">{what}</span>
+                <span className="shrink-0 text-fg-subtle">{when}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="letter">
+          <Rows>
+            {ISSUES.map((issue) => (
+              <li key={issue.n} className="flex min-h-control-md items-center gap-3 py-2 text-small">
+                <IssueResult tone={issue.tone} />
+                <span className="tabular-nums text-caption font-normal text-fg-subtle">Issue {issue.n}</span>
+                <span className="min-w-0 flex-1 truncate text-fg">{issue.title}</span>
+                <span className="shrink-0 tabular-nums text-caption font-normal text-fg-subtle">{issue.when}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="settings">
+          <Rows>
+            {SITE_SETTINGS.map(([label, value]) => (
+              <li key={label} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg-subtle">{label}</span>
+                <span className="text-fg">{value}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+      </TabsPanels>
+    </Tabs>
+  );
+}
+
+const SITE_TILE_TABS = ["Overview", "Readers", "Letter"];
+const SITE_TILE_TEXT = ["1,204 readers in the last 7 days.", "Mara Lindqvist subscribed 5 hours ago.", "Issue 14 goes out Friday at 9:00."];
+
+function SiteTabsTile() {
+  const [ref, step] = useLoop<HTMLDivElement>(SITE_TILE_TABS.length, 2200, 0);
+  const [own, setOwn] = useState<string | null>(null);
+  const value = own ?? SITE_TILE_TABS[step]!;
+  return (
+    <div ref={ref} className="w-full max-w-sm">
+      <Tabs value={value} onValueChange={setOwn}>
+        <TabsList aria-label="Low Tide">
+          {SITE_TILE_TABS.map((t) => (
+            <TabsTrigger key={t} value={t}>{t}</TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsPanels className="min-h-16 px-control-pad-md pt-4">
+          {SITE_TILE_TABS.map((t, i) => (
+            <TabsPanel key={t} value={t}>
+              <p className="text-small text-fg-muted">{SITE_TILE_TEXT[i]}</p>
+            </TabsPanel>
+          ))}
+        </TabsPanels>
+      </Tabs>
+    </div>
+  );
+}
+
 export default function TabsPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<TabsTile />} tileByWorld={{ device: <TakeTabsTile /> }}>
+    <Page meta={meta} docs={docs} tile={<TabsTile />} tileByWorld={{ device: <TakeTabsTile />, flat: <SiteTabsTile /> }}>
       <Stage
         title="Project tabs"
         tier="responsive"
@@ -541,6 +664,13 @@ export default function TabsPage() {
         caption="Pick a tab. The chosen face (a tab standing on the plate in Press, a grey bubble in Flat) slides to it on the responsive tier while the label only changes color, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way."
         code="ProjectTabs"
         byWorld={{
+          flat: {
+            demo: <SiteTabs />,
+            title: "A site's tabs",
+            code: "SiteTabs",
+            caption:
+              "A small site's dashboard: its overview, what happened, its letter and its settings. Pick a tab. The grey bubble slides to it on the responsive tier while the label only changes color, on the instant tier. The new panel fades in from the side you chose, about half the travel distance, and the old one fades out the other way.",
+          },
           device: {
             demo: <TakeTabs />,
             title: "A take's tabs",

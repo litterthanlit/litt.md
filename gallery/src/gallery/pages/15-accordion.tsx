@@ -401,6 +401,117 @@ function SceneCardDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a reader's questions, the site's settings ---------- */
+
+const READER_QUESTIONS = [
+  {
+    id: "when",
+    q: "When does the letter go out?",
+    a: "Every Friday at 9:00, your time. It holds the week's posts, one picture that did not make it and a few lines about the next series.",
+  },
+  {
+    id: "cost",
+    q: "Does it cost anything?",
+    a: "No. The letter and every post on the site are free to read. If you want to help, a print from the shop pays for the next series.",
+  },
+  {
+    id: "past",
+    q: "Can I read past issues?",
+    a: "Yes. Every issue is on the site under Letter, newest first, from issue 1 in January to this week's issue 14.",
+  },
+  {
+    id: "reply",
+    q: "Can I write back?",
+    a: "Please do. Reply to any issue and it comes to my inbox. I read every one, and some end up in the next letter, with your name only if you say yes.",
+  },
+  {
+    id: "stop",
+    q: "How do I stop it?",
+    a: "Every letter ends with an unsubscribe link. One press and you are off the list, with no questions and no last email.",
+  },
+];
+
+function ReaderQuestionsDemo() {
+  return (
+    <Accordion defaultValue="when" className="w-full max-w-xl">
+      {READER_QUESTIONS.map(({ id, q, a }) => (
+        <AccordionItem key={id} value={id}>
+          <AccordionTrigger>{q}</AccordionTrigger>
+          <AccordionContent>{a}</AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
+  );
+}
+
+const SITE_GROUPS: Record<string, string> = {
+  address: "Address",
+  private: "Private posts",
+  readers: "Readers",
+  links: "Old links",
+};
+
+const OLD_LINKS = [
+  ["/blog/*", "/posts/*"],
+  ["/newsletter", "/letter"],
+  ["/photos", "/series"],
+];
+
+function LowTideSettingsDemo() {
+  const [open, setOpen] = useState<string[]>(["address", "readers"]);
+  const names = Object.keys(SITE_GROUPS)
+    .filter((key) => open.includes(key))
+    .map((key) => SITE_GROUPS[key]);
+
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <p className="text-small font-title text-fg">Settings for lowtide.site</p>
+      <Accordion type="multiple" value={open} onValueChange={setOpen}>
+        <AccordionItem value="address">
+          <AccordionTrigger>Address</AccordionTrigger>
+          <AccordionContent className="grid gap-3">
+            <p>lowtide.site is yours, and the www address goes to it.</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Tag status="success">Connected</Tag>
+              <Tag>Renews 2 January</Tag>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="private">
+          <AccordionTrigger>Private posts</AccordionTrigger>
+          <AccordionContent className="max-w-none">
+            <Switch align="end" label="Ask for a password" description="For drafts you want a friend to read before they go out." />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="readers">
+          <AccordionTrigger>Readers</AccordionTrigger>
+          <AccordionContent className="max-w-none">
+            <Switch align="end" label="Count readers" description="No cookies, so there is no banner." defaultChecked />
+            <Switch align="end" label="Show the reader count on the site" />
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="links">
+          <AccordionTrigger>Old links</AccordionTrigger>
+          <AccordionContent>
+            <ul className="grid gap-2 font-mono text-small">
+              {OLD_LINKS.map(([from, to]) => (
+                <li key={from} className="flex flex-wrap gap-x-2">
+                  <span className="text-fg">{from}</span>
+                  <span className="text-fg-subtle">to</span>
+                  <span>{to}</span>
+                </li>
+              ))}
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+      <p role="status" className="min-h-5 text-small text-fg-subtle">
+        {names.length ? `Open: ${names.join(", ")}` : "All closed"}
+      </p>
+    </div>
+  );
+}
+
 export default function AccordionPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -410,7 +521,7 @@ export default function AccordionPage() {
         size="lg"
         align="start"
         code="StudioQuestionsDemo"
-        byWorld={{ device: { demo: <RecorderQuestionsDemo />, title: "Recorder questions", code: "RecorderQuestionsDemo" } }}
+        byWorld={{ flat: { demo: <ReaderQuestionsDemo />, title: "Reader questions", code: "ReaderQuestionsDemo" }, device: { demo: <RecorderQuestionsDemo />, title: "Recorder questions", code: "RecorderQuestionsDemo" } }}
         caption="Press a question. Its answer snaps into place, then fades in and drops a little, while the questions below slide down by transform and the chevron turns half a turn, all on the responsive tier. Opening another closes this one: its answer fades on the exit token as the rows below rise. No height is animated, so no text stretches and the page never jumps."
       >
         <StudioQuestionsDemo />
@@ -422,7 +533,7 @@ export default function AccordionPage() {
         size="lg"
         align="start"
         code="SiteSettingsDemo"
-        byWorld={{ device: { demo: <ChannelSettingsDemo />, title: "Channel settings", code: "ChannelSettingsDemo" } }}
+        byWorld={{ flat: { demo: <LowTideSettingsDemo />, code: "LowTideSettingsDemo" }, device: { demo: <ChannelSettingsDemo />, title: "Channel settings", code: "ChannelSettingsDemo" } }}
         caption="With type multiple, several sections stay open and the value is a list. Each one opens and closes with the same motion. The settings inside keep their own: a switch's thumb slides on the instant tier, and the rows around it stay still."
       >
         <SiteSettingsDemo />
