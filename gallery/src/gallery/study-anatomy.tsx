@@ -15,7 +15,10 @@ import type { PageStudy } from "./kit";
 
 /** The stage box of `Stage`, so the object sits where a stage's demo does. */
 export const STAGE_BOX =
-  "litt-raised relative grid overflow-visible rounded-surface text-fg p-4 min-[24rem]:p-8 sm:p-12 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none";
+  "litt-raised relative grid overflow-visible rounded-surface text-fg p-4 min-[24rem]:p-8 sm:p-12 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none " +
+  /* Under Flat the box is the ground, not paper, so what sits on it stays white (v1.17). */
+  "in-[[data-material=flat]]:[--block:var(--surface-1)] in-[[data-material=flat]]:[--cut:var(--surface-1)] in-[[data-material=flat]]:[--slot:var(--surface-1)] " +
+  "in-[[data-material=flat]]:[--block-hover:color-mix(in_oklab,var(--surface-1),var(--fg)_2.5%)]";
 
 /** The wrapper every drawing of the object shares, in Anatomy and under each material, so it renders the same. */
 export const OBJECT_WRAP = "relative grid min-w-0 place-items-center";

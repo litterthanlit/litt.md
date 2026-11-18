@@ -157,7 +157,7 @@ export function Plan({ label, steps, bare = false, className = "" }: PlanProps) 
   });
 
   return (
-    <div className={(bare ? "" : "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:p-4 in-[[data-material=flat]]:forced-colors:border ") + className}>
+    <div className={(bare ? "" : "litt-paper in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:p-4 in-[[data-material=flat]]:forced-colors:border ") + className}>
       {bare ? (
         <span id={id} className="sr-only">
           {label}

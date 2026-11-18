@@ -115,7 +115,7 @@ export function Details({
   ...rest
 }: DetailsProps) {
   const header = title !== undefined || action !== undefined;
-  const surface = bare ? "" : `litt-raised rounded-surface in-[[data-material=flat]]:shadow-(--shadow-float) ${header ? PADDING[layout].header : PADDING[layout].plain}`;
+  const surface = bare ? "" : `litt-raised rounded-surface ${header ? PADDING[layout].header : PADDING[layout].plain}`;
   return (
     <DetailsContext.Provider value={{ layout, loading }}>
       <Tag aria-busy={loading || undefined} className={`@container min-w-0 ${surface} ${className}`} {...rest}>

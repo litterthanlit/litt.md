@@ -54,7 +54,7 @@ const FILL: Record<AvatarHue, string> = {
   teal: "bg-data-teal-tint text-data-teal-text",
   violet: "bg-data-violet-tint text-data-violet-text",
   rose: "bg-data-rose-tint text-data-rose-text",
-  neutral: "bg-surface-2 text-fg-muted in-[[data-material=flat]]:bg-surface-3",
+  neutral: "bg-surface-2 text-fg-muted in-[[data-material=flat]]:bg-block",
 };
 
 /* The edge sits on its own layer above the fill and any photo, so the ring a group draws on the

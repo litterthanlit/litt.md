@@ -1,6 +1,6 @@
 /**
  * Flat's scenes (scene.ts): the page. A studio's site: a case study, its selected work, a newsletter, a contact form and
- * an essay. Ink on paper, grey is the object, nothing casts, and the pill is what a hand touches.
+ * an essay. Ink on paper, grey is the ground, nothing casts, and the pill is what a hand touches.
  */
 import { useState } from "react";
 import { Avatar } from "@/components/avatar";

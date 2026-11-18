@@ -18,7 +18,7 @@ export function SlideConfirmFlatBody({ label, confirmedLabel, done, disabled, tr
       data-no-drag=""
       className={
         "relative isolate flex w-full items-center overflow-hidden rounded-pill p-1 transition-colors duration-(--dur-instant) ease-litt select-none forced-colors:border " +
-        (done ? "bg-fg " : disabled ? "bg-surface-2 " : "bg-surface-3 ") +
+        (done ? "bg-fg " : disabled ? "bg-surface-2 " : "bg-slot ") +
         track
       }
     >

@@ -3,7 +3,8 @@
  * build or an invoice. It is a few small parts you compose: Card, CardCover, CardBody, CardTitle,
  * CardDescription and CardLink.
  *
- * - Flat: the float shadow in place of the hairline (a bleed cover loses its stand-in hairline too); the inset cover stays concentric.
+ * - Flat: paper on the grey ground, with no ring and no shadow (v1.17; a bleed cover loses its stand-in hairline too); the
+ *   inset cover stays concentric.
  * - Surface (components.md, Card): `.litt-raised`. The surface radius, surface-1, an inset hairline and the
  *   top highlight, and no outer shadow (R3). Never glass (R3), never an accent rail.
  * - Padding follows the cover. A plain card pads space-6. With an inset cover the card pads space-1 (4px),
@@ -39,7 +40,7 @@ const cardPadding: Record<CoverStyle, string> = {
 };
 
 const card =
-  "litt-raised group/card relative flex min-w-0 flex-col rounded-surface in-[[data-material=flat]]:shadow-float " +
+  "litt-raised group/card relative flex min-w-0 flex-col rounded-surface " +
   "transition-[background-color] duration-(--dur-instant) ease-litt " +
   "has-[[data-card-link]]:hover:bg-surface-2";
 

@@ -1024,13 +1024,13 @@ export function readExpectedAccent(tokensCssPath) {
     pink: tones(declsOf((p) => p.includes('[data-accent="pink"]'), 'data-accent="pink"')),
     mono: tones(declsOf((p) => p.includes('[data-accent="mono"]'), 'data-accent="mono"')),
     /* Flat's greys in each theme, from the --flat-* mirrors every theme block declares: what data-material="flat" maps
-       the canvas, a raised block (surface-3) and the ink onto. */
+       the canvas (the grey ground, --flat-ground), a raised block (paper, --flat-paper) and the ink onto (v1.17). */
     flat: Object.fromEntries(
       Object.keys(themes).map((t) => [
         t,
         {
-          canvas: rgbIn(t, "--flat-canvas", themes[t]["--flat-canvas"]),
-          block: rgbIn(t, "--flat-surface-3", themes[t]["--flat-surface-3"]),
+          canvas: rgbIn(t, "--flat-ground", themes[t]["--flat-ground"]),
+          block: rgbIn(t, "--flat-paper", themes[t]["--flat-paper"]),
           fg: rgbIn(t, "--flat-fg", themes[t]["--flat-fg"]),
         },
       ]),
@@ -1778,8 +1778,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             });
           const tray = await page.evaluate(() => {
             const probe = document.createElement("span");
-            // The Press switch's tray is a slot, cut deeper than a group's tray.
-            probe.style.backgroundColor = "var(--litt-slot)";
+            // The Press switch's tray is a group's tray (--tray, the boards of 26 October, plans/022).
+            probe.style.backgroundColor = "var(--litt-tray)";
             document.body.append(probe);
             const c = getComputedStyle(probe).backgroundColor;
             probe.remove();
@@ -1787,7 +1787,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           });
           const on = await look();
           if (on.word !== "On") throw new Error(`an on switch's block says "${on.word}", not On`);
-          if (on.tray !== tray) throw new Error(`the tray is ${on.tray}, not --litt-slot (${tray})`);
+          if (on.tray !== tray) throw new Error(`the tray is ${on.tray}, not --litt-tray (${tray})`);
           await sw.click();
           await page.waitForTimeout(600);
           if ((await sw.getAttribute("aria-checked")) !== "false") throw new Error("a click did not turn it off");
@@ -1797,7 +1797,7 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
           await page.keyboard.press("Space");
           await page.waitForTimeout(600);
           if ((await sw.getAttribute("aria-checked")) !== "true") throw new Error("Space did not turn it back on");
-          return `On at ${on.x}px, Off at ${off.x}px, on --litt-slot`;
+          return `On at ${on.x}px, Off at ${off.x}px, on --litt-tray`;
         });
       }
       if (has("accordion")) {
@@ -2450,7 +2450,8 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             return `Flat: line ${h.line}, dot ${h.dot}`;
           });
 
-          /* Device: a row of lit dots on LCD glass: no path, a lit dot per column, today's strongest, the hue on the lit dots. */
+          /* Device: a row of lit dots on LCD glass: no path, a lit dot per column, today's strongest, every dot in the glass's ink
+             whatever the hue (Device's color rule, plans/024: a chart is the ink, never a hue). */
           const deviceMarks = (loc) =>
             loc.evaluate((svg) => {
               const dots = [...svg.querySelectorAll("circle[data-dot]")];
@@ -2463,15 +2464,15 @@ export async function runSmoke({ browser, url, shotsDir, tag, rendered, litt, ac
             if (h.path) throw new Error("Device draws a path; it lights dots");
             if (!h.lit.length) throw new Error("Device lit no dots");
             if (Math.abs(h.svg - h.box) > 1) throw new Error(`the glass drawing is ${h.svg}px wide in a ${h.box}px box`);
-            const off = h.lit.filter((d) => d.fill !== blue);
-            if (off.length) throw new Error(`a hued trace has lit dots in ${off[0].fill}, not --litt-data-blue (${blue})`);
+            const off = h.lit.filter((d) => d.fill !== fieldInk);
+            if (off.length) throw new Error(`a hued trace has lit dots in ${off[0].fill}, not the glass's ink, --litt-field-ink (${fieldInk})`);
             const strong = h.lit.filter((d) => d.opacity === "1").length;
-            const trace = h.lit.filter((d) => d.opacity === "0.75").length;
+            const trace = h.lit.filter((d) => d.opacity === "0.6").length;
             /* Today is the dot at the line's height with the one above and the one below, fewer when it sits on the top or bottom row. */
-            if (strong < 2 || strong > 3 || !trace) throw new Error(`a hued trace has ${strong} dot(s) at full strength and ${trace} at 75%, not two or three and some`);
+            if (strong < 2 || strong > 3 || !trace) throw new Error(`a hued trace has ${strong} dot(s) at full strength and ${trace} at 60%, not two or three and some`);
             const q = await deviceMarks(quiet);
             if (!q.lit.some((d) => d.opacity === "0.3" && d.fill === fieldInk)) throw new Error("the baseline is not lit at 30% in the glass's ink");
-            return `Device: ${h.lit.length} lit dots in ${blue}`;
+            return `Device: ${h.lit.length} lit dots in ${fieldInk}`;
           });
 
           const empty = box.locator("[data-testid=spark-empty] svg[role=img]");
@@ -4342,8 +4343,8 @@ const READ_MATERIAL = `(() => {
 
 /**
  * The material a host sets in its markup, data-material="flat" on <html>: in light, under .dark and in the system's
- * dark the canvas is Flat's grey (on <html> and on a node appended to <body>), the secondary Button is a surface-3 fill
- * that casts nothing, and removing the attribute at runtime gives the press material back.
+ * dark the canvas is Flat's grey ground (on <html> and on a node appended to <body>), the secondary Button is paper on it
+ * that casts nothing (v1.17), and removing the attribute at runtime gives the press material back.
  */
 async function materialContract(browser, url, { accent }, record) {
   const { context, page } = await openPage(browser, url, "light");
@@ -4371,8 +4372,8 @@ async function materialContract(browser, url, { accent }, record) {
         const got = await page.evaluate(READ_MATERIAL);
         const bad = [];
         if (c.drop) {
-          /* Flat's canvas sits within a step of the stone one, so the block tells the two apart. */
-          if (near(got.block, c.want.block)) bad.push(`the secondary Button is still Flat's rgb(${got.block.slice(0, 3)})`);
+          /* Flat's block is paper, white as Press's is, so the ground tells the two apart. */
+          if (near(got.canvas, c.want.canvas)) bad.push(`the canvas is still Flat's ground rgb(${got.canvas.slice(0, 3)})`);
           if (!got.seen) bad.push("the secondary Button casts nothing in Press");
         } else {
           if (got.attr !== "flat") bad.push(`<html> carries ${got.attr === null ? "no data-material" : `data-material="${got.attr}"`}`);

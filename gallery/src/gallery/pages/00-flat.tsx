@@ -4,7 +4,7 @@ import type { PageMeta } from "../kit";
 export const meta: PageMeta = {
   id: "flat",
   title: "Flat",
-  lede: "Grey is the object. Nothing casts.",
+  lede: "Grey is the ground. Nothing casts.",
   order: 0.2,
   group: "Worlds",
   world: "flat",

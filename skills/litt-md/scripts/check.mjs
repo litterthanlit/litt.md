@@ -193,17 +193,22 @@ const inkAccent = (out) => {
 };
 
 /* Flat (proposals/flat.md): data-material="flat" maps each neutral onto its --flat-* mirror, which every theme block
-   declares. A theme under Flat is that theme's map with the mirrors swapped in, and the fills Flat gives the press
-   tokens: a block is surface-3, a cut surface-1, and a tray has no fill, so what shows through it is the canvas. */
+   declares, but for the ground and paper (v1.17, plans/024): the canvas and the well are --flat-ground, and surface-1
+   is --flat-paper, each one of the mirrors in every theme block. A theme under Flat is that theme's map with them
+   swapped in, and the fills Flat gives the press tokens: a block and a cut are paper, and a tray has no fill, so what
+   shows through it is the ground. */
 const FLAT_NEUTRALS = ["--canvas", "--well", "--surface-1", "--surface-2", "--surface-3", "--line", "--line-strong", "--line-control", "--fg", "--fg-muted", "--fg-subtle", "--fg-disabled"];
+const FLAT_ROLES = { "--canvas": "--flat-ground", "--well": "--flat-ground", "--surface-1": "--flat-paper" };
 const flatName = (n) => `--flat-${n.slice(2)}`;
 const flatOf = (theme, map) => {
   const out = new Map(map);
   for (const n of FLAT_NEUTRALS) {
-    if (map.has(flatName(n))) out.set(n, map.get(flatName(n)));
-    else fail(`${theme}: ${flatName(n)} is missing`);
+    const name = FLAT_ROLES[n] ?? flatName(n);
+    if (map.has(name)) out.set(n, map.get(name));
+    else fail(`${theme}: ${name} is missing`);
   }
-  out.set("--block", out.get("--surface-3"));
+  for (const [k, v] of map) if (k.startsWith("--flat-data-")) out.set(`--data-${k.slice(12)}`, v); // a step deeper in light (v1.17)
+  out.set("--block", out.get("--surface-1"));
   out.set("--cut", out.get("--surface-1"));
   out.set("--tray", out.get("--canvas"));
   return inkAccent(out); // Flat's own accent is the ink (decision 14); Blue 4 and pink run as --accent-blue and --accent-pink
@@ -419,7 +424,7 @@ for (const [n, want] of Object.entries(ROLE_WEIGHTS)) {
   const v = (tokenDecls.match(new RegExp(`(?<![\\w-])${n}\\s*:\\s*([^;]+);`)) || [])[1]?.trim();
   if (Number(v) !== want) weightFails.push(`tokens.css: ${n} is ${v ?? "missing"}, must be ${want}`);
 }
-const TITLE_STEPS = ["display", "h1", "h2", "h3", "h4"];
+const TITLE_STEPS = ["display", "h1", "h2", "h3", "h4", "figure"];
 const captionSize = (v) => /^var\(--type-caption-size\)$/.test(v) || /^(?:0?\.75rem|12px|1[01]px|[0-9]px)$/.test(v);
 for (const f of assetFiles) {
   const text = strip(read(f));
@@ -719,7 +724,19 @@ if (flatAt < 0) flatFails.push('tokens.css has no :root[data-material="flat"], [
 else {
   const flat = decls(block(flatRe));
   if (flatAt < css.search(/:root\[data-accent="mono"\],\s*\[data-accent="mono"\]\s*\{/)) flatFails.push("the flat block comes before monochrome; it goes last, so it wins on order");
-  for (const n of FLAT_NEUTRALS) if (flat.get(n) !== `var(${flatName(n)})`) flatFails.push(`the flat block maps ${n} to ${flat.get(n) ?? "nothing"}, not var(${flatName(n)})`);
+  for (const n of FLAT_NEUTRALS) {
+    const name = FLAT_ROLES[n] ?? flatName(n);
+    if (flat.get(n) !== `var(${name})`) flatFails.push(`the flat block maps ${n} to ${flat.get(n) ?? "nothing"}, not var(${name})`);
+  }
+  /* The ground and paper are each one of Flat's mirrors in every theme block, so they stay chroma 0 (v1.17). */
+  const mirrors = new Set(FLAT_NEUTRALS.map(flatName));
+  for (const [theme, raw] of [["light", rawLight], ["dark", rawDark]])
+    for (const role of new Set(Object.values(FLAT_ROLES))) {
+      const m = /^var\((--[\w-]+)\)$/.exec(raw.get(role) || "");
+      if (!m || !mirrors.has(m[1])) flatFails.push(`${theme}: ${role} is ${raw.get(role) ?? "unset"}, not one of Flat's neutrals (var(--flat-…))`);
+    }
+  /* Paper has no edge (v1.17): the raised surface's ring is transparent under Flat. */
+  if (flat.get("--raised-line") !== "transparent") flatFails.push(`flat: --raised-line is ${flat.get("--raised-line") ?? "unset"}, must be transparent (paper has no ring)`);
   for (const [k, v] of flat) {
     if (k !== "--light" && /(^|[\s,(])none($|[\s,)])/.test(v)) flatFails.push(`flat: ${k} is "${v}" (an empty shadow is 0 0 0 0 transparent; none voids a comma list)`);
     if (!/^--(?:highlight|[\w-]+-(?:shade|lift|press))$/.test(k)) continue;
