@@ -1,102 +1,157 @@
 /**
- * Flat's scenes (scene.ts): the page. A studio's site: a case study, its selected work, a newsletter, a contact form and
- * an essay. Ink on paper, grey is the ground, nothing casts, and the pill is what a hand touches.
+ * Flat's scenes (scene.ts): a small site and its letter, and the people who read them (plans/024, call 9). Ink on paper,
+ * the grey is the ground, nothing casts, and the pill is what a hand touches. Colour is the data and who a reader is,
+ * in Candy: the week's reads on the sunset ramp, a kind of post in its own hue, a reader's avatar (R7, R10). Nothing
+ * moves on its own; what moves answers a hand (a pill's bubble, a heatmap's lens).
  */
 import { useState } from "react";
-import { Avatar } from "@/components/avatar";
+import { Avatar, AvatarGroup, type AvatarHue } from "@/components/avatar";
+import { BarList, type BarListHue } from "@/components/bar-list";
 import { Button } from "@/components/button";
-import { Checkbox } from "@/components/checkbox";
-import { SelectField } from "@/components/select";
+import { Gauge } from "@/components/gauge";
+import { Heatmap } from "@/components/heatmap";
 import { Media } from "@/components/media";
 import { Segmented } from "@/components/segmented";
+import { Stat } from "@/components/stat";
 import { Tag } from "@/components/tag";
-import { TextField, Textarea } from "@/components/input";
+import { TextField } from "@/components/input";
+import { DUSK_TIDE } from "@/gallery/plates";
 import type { Scene, SystemScenes } from "./scene";
 
-/* ------------------------------------------------------------ a case study */
+/* ------------------------------------------------------------- this week */
 
-const FACTS = [
-  ["Year", "2026"],
-  ["Role", "Identity, web"],
-  ["Scope", "14 weeks"],
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+/* Two hours a column, from midnight. */
+const SLOTS = ["00:00", "02:00", "04:00", "06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00", "22:00"];
+const SLOT_TICKS = [
+  { index: 0, label: "00:00" },
+  { index: 3, label: "06:00" },
+  { index: 6, label: "12:00" },
+  { index: 9, label: "18:00" },
+];
+/* A reader's day: quiet at night, a morning coffee, a lunch dip, the evening read. */
+const SHAPE = [1, 0, 0, 3, 9, 7, 6, 5, 6, 10, 12, 6];
+/** Reads for a week: the day's shape, Friday's swell when the letter goes out, a little noise that never changes. */
+function week(scale: number, friday: number): number[][] {
+  return DAYS.map((_, d) =>
+    SHAPE.map((v, h) => {
+      const wobble = v > 2 ? ((d * 7 + h * 13) % 5) - 2 : 0;
+      const swell = d === 4 && h >= 4 && h <= 6 ? friday : 0;
+      return Math.max(0, Math.round((v * scale + wobble + swell) * 2));
+    }),
+  );
+}
+const WEEKS = {
+  this: { label: "This week", reads: week(1.4, 14), readers: 1204, delta: "Up 86 on last week", tone: "good" as const },
+  last: { label: "Last week", reads: week(1.1, 9), readers: 1118, delta: "Up 40 on the week before", tone: "good" as const },
+};
+type WeekId = keyof typeof WEEKS;
+
+/* Readers who wrote back, each in their own hue (who they are, R7). */
+const WROTE_BACK: { name: string; hue: AvatarHue }[] = [
+  { name: "Maya Lindqvist", hue: "sky" },
+  { name: "Theo Okafor", hue: "violet" },
+  { name: "Ines Duarte", hue: "amber" },
+  { name: "Ravi Menon", hue: "teal" },
+  { name: "June Park", hue: "bubblegum" },
 ];
 
-function CaseStudy() {
+function ThisWeek() {
+  const [id, setId] = useState<WeekId>("this");
+  const w = WEEKS[id];
   return (
     <div className="grid gap-5">
-      <Media alt="" ratio={2.4} radius="surface">
-        <div className="grid size-full place-items-center bg-surface-3 text-caption text-fg-muted">Hero, Bakehouse Nord</div>
-      </Media>
-      <header className="grid gap-1">
-        <p className="text-caption text-fg-muted">Client: Bakehouse Nord, Copenhagen</p>
-        <h3 className="text-h3 font-title text-fg text-balance">A bakery that sells bread by the hour</h3>
-      </header>
-      <dl className="grid grid-cols-3 gap-3">
-        {FACTS.map(([k, v]) => (
-          <div key={k} className="grid min-w-0 gap-0.5">
-            <dt className="text-caption text-fg-muted">{k}</dt>
-            <dd className="text-small font-label text-fg">{v}</dd>
-          </div>
-        ))}
-      </dl>
-      <ul className="flex flex-wrap gap-2" aria-label="Services">
-        {["Identity", "Web design", "Packaging", "Signage"].map((s) => (
-          <li key={s}>
-            <Tag>{s}</Tag>
-          </li>
-        ))}
-      </ul>
-      <div>
-        <Button variant="secondary">Read the full study</Button>
+      <Segmented
+        legend="Week"
+        value={id}
+        onValueChange={setId}
+        block
+        options={(Object.keys(WEEKS) as WeekId[]).map((k) => ({ value: k, label: WEEKS[k].label }))}
+      />
+      <Stat label="Readers" value={w.readers.toLocaleString("en-US")} delta={w.delta} tone={w.tone} />
+      <Heatmap
+        label={`Reads by the hour, ${w.label.toLowerCase()}`}
+        rows={DAYS.map((d, i) => ({ label: d, values: w.reads[i]! }))}
+        columns={SLOTS}
+        columnTicks={SLOT_TICKS}
+        cell={16}
+        steps={[4, 12, 20, 28]}
+        unit={["read", "reads"]}
+      />
+      <div className="flex items-center gap-3">
+        <AvatarGroup label="Readers who wrote back, 23 people" size="sm" max={5} total={23}>
+          {WROTE_BACK.map((r) => (
+            <Avatar key={r.name} name={r.name} hue={r.hue} look="fluid" size="sm" />
+          ))}
+        </AvatarGroup>
+        <span className="text-small text-fg-muted">23 readers wrote back</span>
       </div>
     </div>
   );
 }
 
-/* ------------------------------------------------------------ selected work */
+/* ------------------------------------------------------------------ a post */
 
-type Kind = "Brand" | "Web" | "Print";
-const WORK: { name: string; year: number; kind: Kind }[] = [
-  { name: "Bakehouse Nord", year: 2026, kind: "Brand" },
-  { name: "Halden Quarterly", year: 2026, kind: "Print" },
-  { name: "Mireille Atelier", year: 2025, kind: "Web" },
-  { name: "Tidewater Records", year: 2025, kind: "Brand" },
-  { name: "Okonkwo & Lind", year: 2024, kind: "Web" },
-  { name: "The Long Table", year: 2024, kind: "Print" },
-  { name: "Fieldnote", year: 2023, kind: "Web" },
+function Post() {
+  return (
+    <div className="grid gap-4">
+      <Media src={DUSK_TIDE.src} srcSet={DUSK_TIDE.srcSet} sizes="28rem" alt={DUSK_TIDE.alt} ratio={16 / 9} radius="surface" />
+      <header className="grid gap-1">
+        <p className="text-caption text-fg-muted">Spring series · picture 7 of 12 · 4 min read</p>
+        <h3 className="text-h3 font-title text-fg text-balance">Dusk tide, the evening the water went pink</h3>
+      </header>
+      <ul className="flex flex-wrap gap-2" aria-label="Filed under">
+        <li>
+          <Tag hue="sky">Pictures</Tag>
+        </li>
+        <li>
+          <Tag hue="bubblegum">The coast</Tag>
+        </li>
+      </ul>
+      <div>
+        <Button variant="secondary">Read the post</Button>
+      </div>
+    </div>
+  );
+}
+
+/* --------------------------------------------------------------- your posts */
+
+type Kind = "Pictures" | "Letters" | "Notes";
+/* One hue per kind of post, the same wherever the kind shows (R7). */
+const KIND_HUE: Record<Kind, BarListHue> = { Pictures: "sky", Letters: "bubblegum", Notes: "sun" };
+const POSTS: { title: string; kind: Kind; reads: number }[] = [
+  { title: "Issue 13: the long way round", kind: "Letters", reads: 856 },
+  { title: "Dusk tide", kind: "Pictures", reads: 712 },
+  { title: "Open water", kind: "Pictures", reads: 640 },
+  { title: "What I read in March", kind: "Notes", reads: 388 },
+  { title: "Issue 12: a quiet month", kind: "Letters", reads: 352 },
+  { title: "On keeping a small site", kind: "Notes", reads: 214 },
 ];
 
-function SelectedWork() {
+function YourPosts() {
   const [filter, setFilter] = useState<"All" | Kind>("All");
-  const rows = WORK.filter((w) => filter === "All" || w.kind === filter);
+  const rows = POSTS.filter((p) => filter === "All" || p.kind === filter);
   return (
     <div className="grid gap-4">
       <Segmented
-        legend="Discipline"
+        legend="Kind"
         value={filter}
         onValueChange={setFilter}
         block
-        options={(["All", "Brand", "Web", "Print"] as const).map((v) => ({ value: v, label: v }))}
+        options={(["All", "Pictures", "Letters", "Notes"] as const).map((v) => ({ value: v, label: v }))}
       />
-      <ul className="grid" aria-label="Selected work">
-        {rows.map((w) => (
-          <li key={w.name} className="flex items-baseline gap-3 py-3">
-            <span className="min-w-0 flex-1 truncate text-small font-title text-fg">{w.name}</span>
-            <span className="text-caption text-fg-muted">{w.kind}</span>
-            <span className="w-10 text-right text-caption tabular-nums text-fg-muted">{w.year}</span>
-          </li>
-        ))}
-      </ul>
+      <BarList label="Reads this month" unit={["read", "reads"]} items={rows.map((p) => ({ label: p.title, value: p.reads, hue: KIND_HUE[p.kind] }))} />
       <p className="text-caption text-fg-muted" aria-live="polite">
-        {rows.length} of {WORK.length} projects
+        {rows.length} of {POSTS.length} posts
       </p>
     </div>
   );
 }
 
-/* --------------------------------------------------------------- newsletter */
+/* --------------------------------------------------------------- the letter */
 
-function Newsletter() {
+function Letter() {
   const [sent, setSent] = useState(false);
   const [email, setEmail] = useState("");
   return (
@@ -108,15 +163,18 @@ function Newsletter() {
       }}
     >
       <div className="grid gap-1">
-        <h3 className="text-h3 font-title text-fg">Field notes, monthly</h3>
-        <p className="text-small text-fg-muted">One letter on a project we are making, what went wrong, and what we read. No news, no sales.</p>
+        <h3 className="text-h3 font-title text-fg">Issue 14 goes out Friday at 9:00</h3>
+        <p className="text-small text-fg-muted">One letter a week: the pictures, what went wrong making them, and what I read.</p>
+      </div>
+      <div className="grid justify-items-center">
+        <Gauge label="Issue 13 opened" value={71} valueText="71 percent, 856 of 1,204 readers" figure="71%" caption="856 of 1,204 readers" ramp size={240} />
       </div>
       <TextField
         label="Email"
         type="email"
         name="email"
         autoComplete="email"
-        placeholder="you@studio.com"
+        placeholder="you@example.com"
         value={email}
         onChange={(e) => {
           setEmail(e.target.value);
@@ -129,45 +187,7 @@ function Newsletter() {
           Subscribe
         </Button>
         <span className="text-caption text-fg-muted" role="status">
-          {sent ? `Thanks. Check ${email || "your inbox"} to confirm.` : "First Thursday of the month."}
-        </span>
-      </div>
-      <p className="text-caption text-fg-muted">Leave with one click at the foot of any letter.</p>
-    </form>
-  );
-}
-
-/* ------------------------------------------------------------------ contact */
-
-const BUDGETS = [
-  { value: "s", label: "Under 20k" },
-  { value: "m", label: "20k to 60k" },
-  { value: "l", label: "60k to 150k" },
-  { value: "xl", label: "Over 150k" },
-];
-
-function Contact() {
-  const [sent, setSent] = useState(false);
-  return (
-    <form
-      className="grid gap-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSent(true);
-      }}
-    >
-      <h3 className="text-h3 font-title text-fg">Start a project</h3>
-      <TextField label="Name" name="name" autoComplete="name" placeholder="Ana Reyes" />
-      <TextField label="Email" type="email" name="email" autoComplete="email" placeholder="ana@halden.com" />
-      <SelectField label="Budget" name="budget" options={BUDGETS} placeholder="Choose a range" />
-      <Textarea label="Message" name="message" rows={3} placeholder="What are you making, and by when?" />
-      <Checkbox label="I agree to be contacted about this enquiry" description="We keep your note for 90 days, then delete it." />
-      <div className="flex flex-wrap items-center gap-3">
-        <Button type="submit" variant="secondary">
-          Send
-        </Button>
-        <span className="text-caption text-fg-muted" role="status">
-          {sent ? "Sent. We reply within two working days." : "We reply within two working days."}
+          {sent ? `You're reader 1,205. Check ${email || "your inbox"} to confirm.` : "Leave with one click at the foot of any letter."}
         </span>
       </div>
     </form>
@@ -176,28 +196,28 @@ function Contact() {
 
 /* ------------------------------------------------------------------ reading */
 
-/* The essays either side of this one, as words: an article reads on to the next one, it is not a page of rows. */
+/* The posts either side of this one, as words: a post reads on to the next one, it is not a page of rows. */
 const AROUND = [
-  { dir: "Previous", title: "The case for slow type" },
-  { dir: "Next", title: "Margins are content" },
+  { dir: "Previous", title: "Open water" },
+  { dir: "Next", title: "Red sun" },
 ];
 
 function Reading() {
   return (
     <div className="grid gap-4">
       <div className="flex items-center gap-3">
-        <Avatar name="Ines Duarte" size="md" decorative />
+        <Avatar name="June Park" hue="bubblegum" size="md" decorative />
         <div className="grid min-w-0">
-          <span className="text-small font-label text-fg">Ines Duarte</span>
+          <span className="text-small font-label text-fg">June Park</span>
           <span className="text-caption text-fg-muted">
-            <time dateTime="2026-10-14">14 October 2026</time> · 6 min read
+            <time dateTime="2026-11-14">14 November 2026</time> · 4 min read
           </span>
         </div>
       </div>
-      <h3 className="text-h3 font-title text-fg text-balance">The grid is a promise to the reader</h3>
-      <p className="text-body text-fg-muted">Every layout makes a quiet bargain about where the eye will land next. Most of our work is keeping it.</p>
-      <p className="text-small text-fg">When a page repeats itself well, nobody notices. Margins hold, captions sit where captions sit, and the reader spends their attention on the words.</p>
-      <p className="text-small text-fg">Break the pattern once, on purpose, and it speaks. Break it by accident and it only apologises.</p>
+      <h3 className="text-h3 font-title text-fg text-balance">Why I keep a small site</h3>
+      <p className="text-body text-fg-muted">A place of my own, where a picture can sit for a week and nobody asks it to perform.</p>
+      <p className="text-small text-fg">Every Friday a letter goes to the people who asked for it. Some write back. Those notes are the best part of the week.</p>
+      <p className="text-small text-fg">The site is small on purpose: twelve pictures a season, a few words with each, and room around them.</p>
       <div className="mt-2 grid grid-cols-2 gap-4">
         {AROUND.map((a) => (
           <a
@@ -210,7 +230,7 @@ function Reading() {
               "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
             }
           >
-            <span className="text-caption text-fg-muted">{a.dir} essay</span>
+            <span className="text-caption text-fg-muted">{a.dir} post</span>
             <span className="text-fg underline decoration-transparent underline-offset-4 transition-colors duration-(--dur-instant) ease-litt hover:decoration-line">{a.title}</span>
           </a>
         ))}
@@ -220,11 +240,11 @@ function Reading() {
 }
 
 const scenes: Scene[] = [
-  { id: "case-study", title: "A case study", line: "A project told as a page top, with a grey plate for the image, ink for the words and a pill for each service.", Render: CaseStudy },
-  { id: "selected-work", title: "Selected work", line: "A plain list of projects that a grey pill filters, with no rules and no frames.", Render: SelectedWork },
-  { id: "newsletter", title: "Newsletter", line: "A short pitch and one field, with the secondary button as the only ask.", Render: Newsletter },
-  { id: "contact", title: "Contact", line: "A whole form on paper: fields that are grey fills, never outlines.", Render: Contact },
-  { id: "reading", title: "Reading", line: "An essay's top in ink, with the author, a standfirst and a pager to step on.", Render: Reading },
+  { id: "this-week", title: "This week", line: "Your readers by the hour, on the sunset ramp that warms where they read; a pill switches the week, and the people who wrote back each wear their own colour.", Render: ThisWeek },
+  { id: "a-post", title: "A post", line: "A post's top: a real picture on paper, the words in ink, and a tag for each thing it is filed under, in that thing's colour.", Render: Post },
+  { id: "your-posts", title: "Your posts", line: "The posts read most this month, each bar in its kind's colour, and a pill that filters them; no rules and no frames.", Render: YourPosts },
+  { id: "the-letter", title: "The letter", line: "Friday's letter: the last issue's opens walk the sunset round the arc, and one white field on the ground to join.", Render: Letter },
+  { id: "reading", title: "Reading", line: "A post's top in ink, with who wrote it, a standfirst and a pager to step on.", Render: Reading },
 ];
 
-export const flat: SystemScenes = { scenes, cover: "case-study" };
+export const flat: SystemScenes = { scenes, cover: "this-week" };
