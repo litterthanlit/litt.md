@@ -7,7 +7,7 @@
  *   node scripts/a11y.mjs --shard 2/4                a quarter of the pages by weight (CI runs several shards at once)
  *   node scripts/a11y.mjs --shard 2/4 --list         print the shard's pages and stop
  *   node scripts/a11y.mjs --record-costs             write each page's seconds to page-costs.json (run every page)
- *   node scripts/a11y.mjs --concurrency 2            tabs open at once (default 4)
+ *   node scripts/a11y.mjs --concurrency 2            tabs open at once (default 6)
  *
  * Runs the WCAG 2.0, 2.1 and 2.2 A and AA rules and exits 1 on any violation, printing each one with
  * its page, theme, viewport and the selectors it hit. Pages come from src/gallery/pages (the file is
@@ -32,7 +32,10 @@ const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i
 const dist = path.resolve(get("dist", "dist"));
 const only = (get("pages", "") || "").split(",").filter(Boolean);
 const { shard, shards } = parseShard(get("shard", "1/1"));
-const CONCURRENCY = Number(get("concurrency", "4"));
+/* Six tabs: each run spends much of its time waiting (network idle, the settle), so four left a quarter of a 4-core
+   runner idle; six took a shard from 334s to 254s on 2026-11-18. axe reads the page at rest, so a busier CPU only
+   slows it. reduced-motion.mjs stays at four, since it times frames. */
+const CONCURRENCY = Number(get("concurrency", "6"));
 
 /* Dealt by weight (shard.mjs), longest first, so no shard stacks up the heavy pages. */
 const pages = shardOf(routes({ only }), { shard, shards, costs: costsOf("a11y") });

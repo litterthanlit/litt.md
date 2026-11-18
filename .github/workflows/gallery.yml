@@ -95,7 +95,7 @@ jobs:
         include:
           # Every page in every world (scripts/routes.mjs, about 640 addresses). GitHub runs at most 20 jobs at once and
           # check takes one, so the checks fill 19 jobs of about five minutes each.
-          # axe on every page, light and dark, desktop and phone, four tabs at once, dealt by weight across six shards.
+          # axe on every page, light and dark, desktop and phone, six tabs at once, dealt by weight across six shards.
           - { name: "Accessibility 1/6", run: "npm run test:a11y --prefix gallery -- --shard 1/6" }
           - { name: "Accessibility 2/6", run: "npm run test:a11y --prefix gallery -- --shard 2/6" }
           - { name: "Accessibility 3/6", run: "npm run test:a11y --prefix gallery -- --shard 3/6" }
@@ -170,7 +170,7 @@ jobs:
       # libraries, so it resolves them afresh) and Playwright version. Move the key's version with the one below.
       - name: Playwright cache key
         id: pw
-        run: echo "key=playwright-1.56.1-debs2-$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
+        run: echo "key=playwright-1.56.1-debs3-$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache@v4
         with:
@@ -179,27 +179,28 @@ jobs:
             ~/playwright-debs
           key: ${{ steps.pw.outputs.key }}
 
-      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them. A cold cache
-      # installs the system packages from the mirror with apt's archive in ~/playwright-debs, so every .deb it fetched
-      # is kept for the next job; a warm one installs those .debs from disk, then checks every package Playwright lists
-      # and goes to the mirror only if one is missing.
+      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them. The system
+      # packages Playwright lists are fetched into ~/playwright-debs with --download-only on a cold cache, and every job
+      # installs them from there with dpkg -i (apt-get install ./x.deb fetches from the mirror anyway whenever its lists
+      # carry the same version). Then every package is checked, and the mirror is used only if one is still missing.
       - name: Install Playwright and axe-core
         run: |
           npm install --prefix "$RUNNER_TEMP/a11y" --no-save --no-package-lock playwright@1.56.1 axe-core@4.10.3
           PW="$RUNNER_TEMP/a11y/node_modules/.bin/playwright"
-          if ls ~/playwright-debs/*.deb > /dev/null 2>&1; then
-            sudo apt-get install -y --no-install-recommends ~/playwright-debs/*.deb
-          else
-            mkdir -p ~/playwright-debs/partial
-            echo "Dir::Cache::Archives \"$HOME/playwright-debs/\"; APT::Keep-Downloaded-Packages \"true\";" | sudo tee /etc/apt/apt.conf.d/99playwright-debs
-          fi
           PKGS=$("$PW" install-deps --dry-run chromium | sed -n 's/.*--no-install-recommends \([^"]*\)".*/\1/p')
           test -n "$PKGS" || { echo "::error::could not read Playwright's package list"; exit 1; }
-          MISSING=$(for p in $PKGS; do dpkg -s "$p" > /dev/null 2>&1 || echo "$p"; done)
-          if [ -n "$MISSING" ]; then echo "Not installed yet: $MISSING"; "$PW" install-deps chromium; fi
-          sudo rm -f /etc/apt/apt.conf.d/99playwright-debs ~/playwright-debs/lock
-          sudo rm -rf ~/playwright-debs/partial
-          sudo chown -R "$USER" ~/playwright-debs 2> /dev/null || true
+          missing() { for p in $PKGS; do [ "$(dpkg-query -W -f='${Status}' "$p" 2> /dev/null)" = "install ok installed" ] || echo "$p"; done; }
+          if ! ls ~/playwright-debs/*.deb > /dev/null 2>&1 && [ -n "$(missing)" ]; then
+            mkdir -p ~/playwright-debs/partial
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends --download-only -o Dir::Cache::Archives="$HOME/playwright-debs/" $PKGS
+            sudo rm -rf ~/playwright-debs/partial ~/playwright-debs/lock
+            sudo chown -R "$USER" ~/playwright-debs
+          fi
+          echo "$(ls ~/playwright-debs/*.deb 2> /dev/null | wc -l) cached .debs"
+          if ls ~/playwright-debs/*.deb > /dev/null 2>&1; then sudo dpkg -i ~/playwright-debs/*.deb; fi
+          MISSING=$(missing)
+          if [ -n "$MISSING" ]; then echo "::warning::not in the cache, from the mirror: $(echo $MISSING)"; "$PW" install-deps chromium; fi
           "$PW" install chromium
 
       - name: ${{ matrix.name }}
