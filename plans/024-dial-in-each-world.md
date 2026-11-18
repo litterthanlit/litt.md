@@ -437,6 +437,25 @@ Media, carousel and lightbox are content.
 **STOP**: Nick answers the nine calls on the canvas ("all yes" takes every recommendation) before the vocabulary goes
 into `taste/` and phase 2 starts.
 
+Nick, 2026-11-18: "all yes". The vocabulary is in `taste/` (v1.17).
+
+### Phase 2a. The system-wide calls in shipping Flat (done, 2026-11-18)
+
+- [x] Call 1: `--flat-ground` and `--flat-paper` (light, dark, auto-dark); under Flat the canvas and the well are the
+      ground, surface-1 is paper, and a block, a cut and a slot are paper on the ground and the grey bubble inside
+      `.litt-raised`, `.litt-glass` or `.litt-paper`. Flat's data hues a step deeper in light (`--flat-data-*`) so every
+      pair in `check.mjs` passes on the grey. A stage or a tile is the ground, so it no longer shows as a box.
+- [x] Call 2: `.litt-raised`'s ring is `--raised-line`, transparent under Flat; cards, details and lists drop the float
+      shadow. Menus, popovers, dialogs, toasts and the select's list keep theirs.
+- [x] Call 3: the card page's demos and tile under Flat use the gallery's plates.
+- [x] Calls 5 and 7 hold as they were. Call 6: a status tag is its word in the ink after an 8px circle. Call 8:
+      `--type-figure-size`, 40px under Flat, on the stat's figure.
+- [x] Press, Device, Plain, Rack and Heat compared page by page against `446faa7`, light and dark: identical but the
+      version stamps of items whose shared files changed and animations caught at different frames.
+
+Left for 2b: the ink card (call 4) and the 35 tiles whose structure does not say Flat. Left for 3: Flat's voice in
+the demos (call 9), the shared captions and ledes that still describe Flat's old grey (the tag's lede among them).
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
