@@ -317,6 +317,7 @@ A round mark for a person, a client or a company, and a group that stacks them.
 - A cover is `--radius-control` when the card pads it by 4px, and takes the card's `--radius-surface` when full-bleed. Optionally `.litt-lit .litt-grain` as the card's own top light.
 - Hover (when the card links somewhere): the fill moves one step (`--surface-2`). No lift, no shadow growth, no scale. On coarse screens a press shows the same step.
 - Cards are never glass (R3), never have an accent rail, and are not the default layout for features.
+- **Ink card** (`tone="ink"`, `.litt-ink`, Flat only, v1.17): at most one per view, the ink as a rounded square holding one live thing (a stat, a live run, a timer). Its face is `--flat-fg`, its words `--flat-paper` and its quiet words `--flat-fg-disabled`; its one color is `--data-blue`, on its data only. No ring and no shadow. Outside Flat it is the world's own card.
 
 ## Media
 One picture in a frame: a screenshot, a photograph, a poster. Every image in the page flow sits in one, and so do a card's cover, a carousel's slide and the lightbox's image.

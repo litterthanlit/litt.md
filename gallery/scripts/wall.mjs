@@ -23,6 +23,7 @@
  * - the page's material is not the one set (data-material on <html> is the material's attribute, none for Press),
  * - the page or a tile scrolls sideways,
  * - a tile draws nothing,
+ * - the wall or a view shows more than one ink card (Flat's call 4, `.litt-ink`: at most one per view),
  * - the page has more than one main or h1, two landmarks share a name, or a tile's name is not its h2 (so the headings
  *   inside a component sit under it),
  * - the page throws.
@@ -116,7 +117,9 @@ function inspect(heading) {
   const mains = [...document.querySelectorAll("main, [role=main]")].filter(shown).length;
   const h1s = [...document.querySelectorAll("h1")].filter(shown).length;
   const names = tiles.filter((t) => t.querySelector(`:scope > ${heading}`) === null).map((t) => name(t));
-  return { material: document.documentElement.dataset.material, tileNames: tiles.map((t) => t.dataset.tile), count: tiles.length, fills, close, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
+  /* Flat's ink card (v1.17, call 4) is at most one per view. */
+  const inks = [...document.querySelectorAll("main .litt-ink")].filter((el) => !el.closest("[aria-hidden=true]")).map((el) => name(el));
+  return { material: document.documentElement.dataset.material, tileNames: tiles.map((t) => t.dataset.tile), count: tiles.length, fills, inks, close, sideways, empty, pageWide: document.documentElement.scrollWidth > innerWidth, twice, mains, h1s, names };
 }
 
 const browser = await chromium.launch();
@@ -163,6 +166,7 @@ for (const { world, material, accent, width, height, label, theme } of COMBOS) {
     const absent = WALL_PAGES.filter((p) => onWall(p, world) && !r.tileNames.includes(p.id)).map((p) => p.id);
     if (absent.length) problems.push(`${where}: pages in ${world} with no tile: ${absent.join(", ")}`);
     if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, a view allows one: ${r.fills.join(", ")}`);
+    if (r.inks.length > 1) problems.push(`${where}: ${r.inks.length} ink cards, a view allows one: ${r.inks.join(", ")}`);
     for (const c of r.close) problems.push(`${where}: two accent fills within one screen (R6): ${c}`);
     if (r.pageWide) problems.push(`${where}: the page scrolls sideways`);
     if (r.mains !== 1) problems.push(`${where}: ${r.mains} main landmarks`);
@@ -201,6 +205,7 @@ for (const { world, material, accent, width, height, label, theme } of COMBOS) {
     const worldTiles = r.tileNames.filter((n) => Object.hasOwn(ATTRIBUTE, n.toLowerCase()));
     if (worldTiles.length) problems.push(`${where}: the wall holds world tiles (${worldTiles.join(", ")}); a world is a page, not a component`);
     if (r.fills.length > 1) problems.push(`${where}: ${r.fills.length} accent fills, the wall allows one: ${r.fills.join(", ")}`);
+    if (r.inks.length > 1) problems.push(`${where}: ${r.inks.length} ink cards, the wall allows one: ${r.inks.join(", ")}`);
     for (const c of r.close) problems.push(`${where}: two accent fills within one screen (R6): ${c}`);
     if (r.pageWide) problems.push(`${where}: the page scrolls sideways`);
     if (r.mains !== 1) problems.push(`${where}: ${r.mains} main landmarks; the page has one (AppShell's mainLandmark={false} in a tile)`);

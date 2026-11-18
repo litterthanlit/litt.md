@@ -2767,6 +2767,23 @@
     --block-hover: color-mix(in oklab, var(--surface-3), var(--fg) 2.5%);
   }
 
+  /* The ink card under Flat (v1.17, call 4): at most one per view, the ink as a rounded square holding one live thing.
+     It takes the other theme's face from Flat's own greys: the ink (black in light, white in dark) is its paper, the
+     paper is its words, and Flat's disabled grey, the other theme's quiet ink, is its quiet words (7.1:1 on black,
+     5.5:1 on white). Its one color is the first data hue, on its data only: the mark and a line's dot (the -text
+     tone takes the mark, 5.3:1 and 3.2:1). No ring, no shadow. Outside Flat .litt-ink does nothing. */
+  [data-material="flat"] .litt-ink,
+  .litt-ink[data-material="flat"] {
+    --surface-1: var(--flat-fg);
+    --fg: var(--flat-paper);
+    --fg-muted: var(--flat-fg-disabled);
+    --fg-subtle: var(--flat-fg-disabled);
+    --data-blue-text: var(--data-blue);
+    background: var(--surface-1);
+    color: var(--fg);
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+
   /* A touch target: on a coarse pointer, an invisible ::before grows the place a finger can land to at least
      44 by 44px around the control, without changing how it looks or the room it takes. Put it on a positioned
      control (relative or absolute) that does not use ::before itself. */

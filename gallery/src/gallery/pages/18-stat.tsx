@@ -1,3 +1,4 @@
+import { Card } from "@/components/card";
 import { Sparkline } from "@/components/sparkline";
 import { Stat, StatGroup } from "@/components/stat";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta } from "../kit";
@@ -165,6 +166,23 @@ function StatTile() {
   );
 }
 
+/* ---------- Flat's tile: the stat in the ink card (call 4), one per view, its one color on its line ---------- */
+
+const TILE_READERS = [142, 160, 151, 170, 158, 149, 166, 171, 158, 180, 166, 175, 190, 164];
+
+function ReadersTile() {
+  return (
+    <Card tone="ink" className="w-full max-w-xs">
+      <Stat
+        label="Readers this week"
+        value="1,204"
+        delta="Up 86 on last week"
+        trend={<Sparkline label="Readers a day, last 14 days" values={TILE_READERS} hue="blue" />}
+      />
+    </Card>
+  );
+}
+
 /* ---------- Device's own (plans/024, phase 3): a shoot's week in figures ---------- */
 
 function ShootStatsDemo() {
@@ -257,7 +275,7 @@ function TakesTile() {
 
 export default function StatPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<StatTile />} tileByWorld={{ device: <TakesTile /> }}>
+    <Page meta={meta} docs={docs} tile={<StatTile />} tileByWorld={{ device: <TakesTile />, flat: <ReadersTile /> }}>
       <Stage
         title="The studio this week"
         code="StudioStatsDemo"
