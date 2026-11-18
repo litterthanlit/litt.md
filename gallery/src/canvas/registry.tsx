@@ -31,6 +31,8 @@ import { FlatCallPreview, FlatTogetherPreview, type FlatCallId } from "./flat-ca
 import { HypherDifferences, HypherTakePreview, type HypherTake } from "./flat-hypher";
 import { FlatIconComposition, FlatIconPairs, FlatIconSet, FlatIconsInUse } from "./flat-icons";
 import { FlatDirectionPreview, FlatNewParts, type FlatDirection } from "./flat-directions";
+import { FlatDataPalette, FlatDataScreen, FlatDataToday } from "./flat-data";
+import type { DataPaletteId } from "./flat-data-palettes";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -267,7 +269,16 @@ const FLAT_DIRECTIONS: { dir: FlatDirection; name: string }[] = [
   { dir: "pops", name: "Flat · B colour pops" },
   { dir: "playful", name: "Flat · C playful" },
 ];
-const flatRowY = (row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
+/* Flat's data in colour (flat-data.tsx; Nick 2026-11-18, after the directions: "I meant the data visualization and
+   just overall, guages, heatmap, etc, should be colorful"): right of the directions and the new parts (which end at
+   x 8800), on their row. Today, three candidate palettes and one screen, light over dark each. */
+const DATA = { x: DIRS.x + 4 * (DIRS.width + DIRS.gap) + 120, y: DIRS.y, width: 1120, gap: 120, today: 6140, height: 7240, screen: 3120 };
+const FLAT_DATA: { palette: DataPaletteId; name: string }[] = [
+  { palette: "candy", name: "Flat · data, palette 1 (Candy)" },
+  { palette: "spectrum", name: "Flat · data, palette 2 (Spectrum)" },
+  { palette: "studio", name: "Flat · data, palette 3 (Studio)" },
+];
+const flatRowY =(row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
@@ -462,6 +473,19 @@ export const ITEMS: CanvasItem[] = [
     height: DIRS.parts,
     render: () => <FlatNewParts />,
   },
+  { id: "flat-data-today", name: "Flat · data, today", x: DATA.x, y: DATA.y, width: DATA.width, height: DATA.today, render: () => <FlatDataToday /> },
+  ...FLAT_DATA.map(
+    ({ palette, name }, i): CanvasItem => ({
+      id: `flat-data-${palette}`,
+      name,
+      x: DATA.x + (i + 1) * (DATA.width + DATA.gap),
+      y: DATA.y,
+      width: DATA.width,
+      height: DATA.height,
+      render: () => <FlatDataPalette palette={palette} />,
+    }),
+  ),
+  { id: "flat-data-screen", name: "Flat · data in a screen", x: DATA.x + 4 * (DATA.width + DATA.gap), y: DATA.y, width: DATA.width, height: DATA.screen, render: () => <FlatDataScreen /> },
   { id: "flat-icons-set", name: "Flat icons · the set", x: 0, y: ICONS_Y, width: ICONS.width, height: 3040, render: () => <FlatIconSet /> },
   { id: "flat-icons-pairs", name: "Flat icons · today and fun, side by side", x: ICONS.width + ICONS.gap, y: ICONS_Y, width: ICONS.width, height: 1100, render: () => <FlatIconPairs /> },
   { id: "flat-icons-in-use", name: "Flat icons · in use", x: 2 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 1580, render: () => <FlatIconsInUse /> },

@@ -1,0 +1,17 @@
+/* Flat's data in colour (flat-data.tsx): the sequential ramp on the Heatmap's and the Cohort grid's dots. Both parts
+   draw their four levels as one hue mixed at 30, 55, 80 and 100% over transparent, and no prop takes a ramp; inside a
+   frame's [data-fd-ramp] wrapper these rules swap the four mixes of the blue hue (the slot the frame's parts are given)
+   for the palette's four steps (--fd-seq-1 to 4, set on the frame). The legend under the heatmap uses the same classes,
+   so it follows. A study, not a part: picking a palette makes this a contract change (a ramp the parts read). */
+[data-fd-ramp] [class*="var(--data-blue)_30%"] {
+  background-color: var(--fd-seq-1);
+}
+[data-fd-ramp] [class*="var(--data-blue)_55%"] {
+  background-color: var(--fd-seq-2);
+}
+[data-fd-ramp] [class*="var(--data-blue)_80%"] {
+  background-color: var(--fd-seq-3);
+}
+[data-fd-ramp] .bg-data-blue {
+  background-color: var(--fd-seq-4);
+}
