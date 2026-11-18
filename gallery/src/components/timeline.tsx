@@ -22,7 +22,7 @@
  *   phase's mark tone. With `previousSeconds` a ghost bar at fg 12% shows the last run's length beside it, with
  *   "was 31s" at its foot. A step whose bar would be shorter than a row keeps the thin line. A failed step's bar is
  *   danger, the one status color a mark takes.
- * - Flat: done and now are ink marks (the tick cut from an ink disc, the half-filled ring), waiting and skipped take the line-control edge, and the result row has no rule.
+ * - Flat: done and now are ink marks (the tick cut from an ink disc, the half-filled ring), waiting and skipped take the line-control edge, and the result row has no rule; its word is the ink after an 8px circle in the status color (v1.17, call 6).
  * - Result: the closing row under a hairline. The label is body size in success, danger or fg by `tone`, the total
  *   is tabular in fg at the end, and the tone is said in hidden text.
  * - Bar: a strip of the whole run from data, not children. 32px tall at the control radius with overflow hidden,
@@ -77,9 +77,13 @@ const ICON_TONE: Record<TimelineStatus, string> = {
   skipped: "text-fg-subtle in-[[data-material=flat]]:text-line-control",
   failed: "text-danger",
 };
+/* Flat (v1.17, call 6): a status is its word in the ink after an 8px circle in the status color. */
+const FLAT_DOT =
+  "in-[[data-material=flat]]:text-fg in-[[data-material=flat]]:before:mr-2 in-[[data-material=flat]]:before:inline-block " +
+  "in-[[data-material=flat]]:before:size-2 in-[[data-material=flat]]:before:rounded-pill ";
 const RESULT_TONE: Record<TimelineTone, string> = {
-  success: "text-success",
-  danger: "text-danger",
+  success: "text-success " + FLAT_DOT + "in-[[data-material=flat]]:before:bg-success",
+  danger: "text-danger " + FLAT_DOT + "in-[[data-material=flat]]:before:bg-danger",
   neutral: "text-fg",
 };
 const RESULT_WORD: Record<TimelineTone, string> = { success: ", success", danger: ", error", neutral: "" };

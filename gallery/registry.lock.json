@@ -56,7 +56,7 @@
     },
     "card": {
       "version": "2026.11.18",
-      "hash": "22983a42ff5d9373"
+      "hash": "84066d08fc23afa5"
     },
     "card-picker": {
       "version": "2026.11.15",
@@ -123,8 +123,8 @@
       "hash": "c15f59e2c204cc14"
     },
     "curve-editor": {
-      "version": "2026.10.27",
-      "hash": "bb2b40e9c5cad2cd"
+      "version": "2026.11.18",
+      "hash": "4ad43a88310f6786"
     },
     "dashboard": {
       "version": "2026.11.03",
@@ -184,7 +184,7 @@
     },
     "device-card": {
       "version": "2026.11.18",
-      "hash": "22983a42ff5d9373"
+      "hash": "84066d08fc23afa5"
     },
     "device-card-picker": {
       "version": "2026.11.16",
@@ -243,8 +243,8 @@
       "hash": "c15f59e2c204cc14"
     },
     "device-curve-editor": {
-      "version": "2026.11.16",
-      "hash": "bb2b40e9c5cad2cd"
+      "version": "2026.11.18",
+      "hash": "4ad43a88310f6786"
     },
     "device-date-picker": {
       "version": "2026.11.17",
@@ -311,12 +311,12 @@
       "hash": "e6a2348cd15e78f7"
     },
     "device-inspector": {
-      "version": "2026.11.16",
-      "hash": "17b1c571481f44cc"
+      "version": "2026.11.18",
+      "hash": "4d0e84de897c5158"
     },
     "device-kbd": {
-      "version": "2026.11.16",
-      "hash": "a6fe723819d955b7"
+      "version": "2026.11.18",
+      "hash": "17d1840b1643cf07"
     },
     "device-legend": {
       "version": "2026.11.17",
@@ -331,8 +331,8 @@
       "hash": "d479e2493fa8ddfc"
     },
     "device-list-cover": {
-      "version": "2026.11.16",
-      "hash": "c05d8979d2f10a6c"
+      "version": "2026.11.18",
+      "hash": "dd147264254ab4bb"
     },
     "device-litt": {
       "version": "2026.11.18",
@@ -367,8 +367,8 @@
       "hash": "ba67a4bbfc913a7b"
     },
     "device-pad": {
-      "version": "2026.11.16",
-      "hash": "93e06b2d83651151"
+      "version": "2026.11.18",
+      "hash": "c3478b038b3ec13a"
     },
     "device-pagination": {
       "version": "2026.11.16",
@@ -463,8 +463,8 @@
       "hash": "520a17ad30ad6dbd"
     },
     "device-spring-editor": {
-      "version": "2026.11.16",
-      "hash": "cccb6de00c7237f6"
+      "version": "2026.11.18",
+      "hash": "1925454f8d693be6"
     },
     "device-stat": {
       "version": "2026.11.16",
@@ -511,8 +511,8 @@
       "hash": "8db6c27292d3d192"
     },
     "device-timeline": {
-      "version": "2026.11.16",
-      "hash": "fbab116e5a8bd8e3"
+      "version": "2026.11.18",
+      "hash": "23e3024561563a81"
     },
     "device-toast": {
       "version": "2026.11.16",
@@ -535,8 +535,8 @@
       "hash": "76d264c7857cff66"
     },
     "device-tune": {
-      "version": "2026.11.16",
-      "hash": "e1ade42f739bae1a"
+      "version": "2026.11.18",
+      "hash": "033401331cff1fb6"
     },
     "dialog": {
       "version": "2026.11.15",
@@ -592,7 +592,7 @@
     },
     "flat-card": {
       "version": "2026.11.18",
-      "hash": "22983a42ff5d9373"
+      "hash": "84066d08fc23afa5"
     },
     "flat-card-picker": {
       "version": "2026.11.16",
@@ -647,8 +647,8 @@
       "hash": "c1a658e43874c0f3"
     },
     "flat-curve-editor": {
-      "version": "2026.11.16",
-      "hash": "bb2b40e9c5cad2cd"
+      "version": "2026.11.18",
+      "hash": "4ad43a88310f6786"
     },
     "flat-date-picker": {
       "version": "2026.11.17",
@@ -715,12 +715,12 @@
       "hash": "c9583ec95884df3a"
     },
     "flat-inspector": {
-      "version": "2026.11.16",
-      "hash": "17b1c571481f44cc"
+      "version": "2026.11.18",
+      "hash": "4d0e84de897c5158"
     },
     "flat-kbd": {
-      "version": "2026.11.16",
-      "hash": "a6fe723819d955b7"
+      "version": "2026.11.18",
+      "hash": "17d1840b1643cf07"
     },
     "flat-legend": {
       "version": "2026.11.16",
@@ -735,12 +735,12 @@
       "hash": "d479e2493fa8ddfc"
     },
     "flat-list-cover": {
-      "version": "2026.11.16",
-      "hash": "c05d8979d2f10a6c"
+      "version": "2026.11.18",
+      "hash": "dd147264254ab4bb"
     },
     "flat-litt": {
       "version": "2026.11.18",
-      "hash": "f029987daac0ca9f"
+      "hash": "b8cb312bc059a79c"
     },
     "flat-log-view": {
       "version": "2026.11.18",
@@ -771,8 +771,8 @@
       "hash": "0d9caf855398dae0"
     },
     "flat-pad": {
-      "version": "2026.11.16",
-      "hash": "93e06b2d83651151"
+      "version": "2026.11.18",
+      "hash": "c3478b038b3ec13a"
     },
     "flat-pagination": {
       "version": "2026.11.18",
@@ -863,12 +863,12 @@
       "hash": "520a17ad30ad6dbd"
     },
     "flat-spring-editor": {
-      "version": "2026.11.16",
-      "hash": "cccb6de00c7237f6"
+      "version": "2026.11.18",
+      "hash": "1925454f8d693be6"
     },
     "flat-stat": {
       "version": "2026.11.18",
-      "hash": "66152e0bd2b3d2e7"
+      "hash": "7b4124f734be8536"
     },
     "flat-states": {
       "version": "2026.11.18",
@@ -907,8 +907,8 @@
       "hash": "8db6c27292d3d192"
     },
     "flat-timeline": {
-      "version": "2026.11.16",
-      "hash": "fbab116e5a8bd8e3"
+      "version": "2026.11.18",
+      "hash": "23e3024561563a81"
     },
     "flat-toast": {
       "version": "2026.11.16",
@@ -931,8 +931,8 @@
       "hash": "76d264c7857cff66"
     },
     "flat-tune": {
-      "version": "2026.11.16",
-      "hash": "e1ade42f739bae1a"
+      "version": "2026.11.18",
+      "hash": "033401331cff1fb6"
     },
     "form": {
       "version": "2026.11.06",
@@ -1000,7 +1000,7 @@
     },
     "heat-card": {
       "version": "2026.11.18",
-      "hash": "22983a42ff5d9373"
+      "hash": "84066d08fc23afa5"
     },
     "heat-card-picker": {
       "version": "2026.11.16",
@@ -1055,8 +1055,8 @@
       "hash": "c1a658e43874c0f3"
     },
     "heat-curve-editor": {
-      "version": "2026.11.16",
-      "hash": "bb2b40e9c5cad2cd"
+      "version": "2026.11.18",
+      "hash": "4ad43a88310f6786"
     },
     "heat-date-picker": {
       "version": "2026.11.17",
@@ -1123,12 +1123,12 @@
       "hash": "9c84b35e57d37b8f"
     },
     "heat-inspector": {
-      "version": "2026.11.16",
-      "hash": "17b1c571481f44cc"
+      "version": "2026.11.18",
+      "hash": "4d0e84de897c5158"
     },
     "heat-kbd": {
-      "version": "2026.11.16",
-      "hash": "a6fe723819d955b7"
+      "version": "2026.11.18",
+      "hash": "17d1840b1643cf07"
     },
     "heat-legend": {
       "version": "2026.11.16",
@@ -1143,8 +1143,8 @@
       "hash": "d479e2493fa8ddfc"
     },
     "heat-list-cover": {
-      "version": "2026.11.16",
-      "hash": "c05d8979d2f10a6c"
+      "version": "2026.11.18",
+      "hash": "dd147264254ab4bb"
     },
     "heat-litt": {
       "version": "2026.11.18",
@@ -1179,8 +1179,8 @@
       "hash": "895d73afb747d5fa"
     },
     "heat-pad": {
-      "version": "2026.11.16",
-      "hash": "93e06b2d83651151"
+      "version": "2026.11.18",
+      "hash": "c3478b038b3ec13a"
     },
     "heat-pagination": {
       "version": "2026.11.16",
@@ -1271,8 +1271,8 @@
       "hash": "520a17ad30ad6dbd"
     },
     "heat-spring-editor": {
-      "version": "2026.11.16",
-      "hash": "cccb6de00c7237f6"
+      "version": "2026.11.18",
+      "hash": "1925454f8d693be6"
     },
     "heat-stat": {
       "version": "2026.11.16",
@@ -1315,8 +1315,8 @@
       "hash": "8db6c27292d3d192"
     },
     "heat-timeline": {
-      "version": "2026.11.16",
-      "hash": "fbab116e5a8bd8e3"
+      "version": "2026.11.18",
+      "hash": "23e3024561563a81"
     },
     "heat-toast": {
       "version": "2026.11.16",
@@ -1339,8 +1339,8 @@
       "hash": "76d264c7857cff66"
     },
     "heat-tune": {
-      "version": "2026.11.16",
-      "hash": "e1ade42f739bae1a"
+      "version": "2026.11.18",
+      "hash": "033401331cff1fb6"
     },
     "heatmap": {
       "version": "2026.10.26",
@@ -1363,12 +1363,12 @@
       "hash": "9653011af1dede93"
     },
     "inspector": {
-      "version": "2026.10.27",
-      "hash": "17b1c571481f44cc"
+      "version": "2026.11.18",
+      "hash": "4d0e84de897c5158"
     },
     "kbd": {
-      "version": "2026.11.06",
-      "hash": "a6fe723819d955b7"
+      "version": "2026.11.18",
+      "hash": "17d1840b1643cf07"
     },
     "legend": {
       "version": "2026.11.17",
@@ -1383,12 +1383,12 @@
       "hash": "d479e2493fa8ddfc"
     },
     "list-cover": {
-      "version": "2026.10.26",
-      "hash": "c05d8979d2f10a6c"
+      "version": "2026.11.18",
+      "hash": "dd147264254ab4bb"
     },
     "litt": {
       "version": "2026.11.18",
-      "hash": "9a9ac58774bf1091"
+      "hash": "eec5947b11b5b402"
     },
     "log-view": {
       "version": "2026.11.18",
@@ -1419,8 +1419,8 @@
       "hash": "23c29d041653e4a2"
     },
     "pad": {
-      "version": "2026.10.26",
-      "hash": "93e06b2d83651151"
+      "version": "2026.11.18",
+      "hash": "c3478b038b3ec13a"
     },
     "pagination": {
       "version": "2026.11.18",
@@ -1464,7 +1464,7 @@
     },
     "plain-card": {
       "version": "2026.11.18",
-      "hash": "22983a42ff5d9373"
+      "hash": "84066d08fc23afa5"
     },
     "plain-card-picker": {
       "version": "2026.11.16",
@@ -1519,8 +1519,8 @@
       "hash": "c1a658e43874c0f3"
     },
     "plain-curve-editor": {
-      "version": "2026.11.16",
-      "hash": "bb2b40e9c5cad2cd"
+      "version": "2026.11.18",
+      "hash": "4ad43a88310f6786"
     },
     "plain-date-picker": {
       "version": "2026.11.17",
@@ -1587,12 +1587,12 @@
       "hash": "917ac1cfdf1263a5"
     },
     "plain-inspector": {
-      "version": "2026.11.16",
-      "hash": "17b1c571481f44cc"
+      "version": "2026.11.18",
+      "hash": "4d0e84de897c5158"
     },
     "plain-kbd": {
-      "version": "2026.11.16",
-      "hash": "a6fe723819d955b7"
+      "version": "2026.11.18",
+      "hash": "17d1840b1643cf07"
     },
     "plain-legend": {
       "version": "2026.11.16",
@@ -1607,8 +1607,8 @@
       "hash": "d479e2493fa8ddfc"
     },
     "plain-list-cover": {
-      "version": "2026.11.16",
-      "hash": "c05d8979d2f10a6c"
+      "version": "2026.11.18",
+      "hash": "dd147264254ab4bb"
     },
     "plain-litt": {
       "version": "2026.11.18",
@@ -1643,8 +1643,8 @@
       "hash": "895d73afb747d5fa"
     },
     "plain-pad": {
-      "version": "2026.11.16",
-      "hash": "93e06b2d83651151"
+      "version": "2026.11.18",
+      "hash": "c3478b038b3ec13a"
     },
     "plain-pagination": {
       "version": "2026.11.16",
@@ -1735,8 +1735,8 @@
       "hash": "520a17ad30ad6dbd"
     },
     "plain-spring-editor": {
-      "version": "2026.11.16",
-      "hash": "cccb6de00c7237f6"
+      "version": "2026.11.18",
+      "hash": "1925454f8d693be6"
     },
     "plain-stat": {
       "version": "2026.11.16",
@@ -1779,8 +1779,8 @@
       "hash": "8db6c27292d3d192"
     },
     "plain-timeline": {
-      "version": "2026.11.16",
-      "hash": "fbab116e5a8bd8e3"
+      "version": "2026.11.18",
+      "hash": "23e3024561563a81"
     },
     "plain-toast": {
       "version": "2026.11.16",
@@ -1803,8 +1803,8 @@
       "hash": "76d264c7857cff66"
     },
     "plain-tune": {
-      "version": "2026.11.16",
-      "hash": "e1ade42f739bae1a"
+      "version": "2026.11.18",
+      "hash": "033401331cff1fb6"
     },
     "plan": {
       "version": "2026.11.18",
@@ -1852,7 +1852,7 @@
     },
     "press-card": {
       "version": "2026.11.18",
-      "hash": "22983a42ff5d9373"
+      "hash": "84066d08fc23afa5"
     },
     "press-card-picker": {
       "version": "2026.11.16",
@@ -1907,8 +1907,8 @@
       "hash": "c1a658e43874c0f3"
     },
     "press-curve-editor": {
-      "version": "2026.11.16",
-      "hash": "bb2b40e9c5cad2cd"
+      "version": "2026.11.18",
+      "hash": "4ad43a88310f6786"
     },
     "press-date-picker": {
       "version": "2026.11.17",
@@ -1975,12 +1975,12 @@
       "hash": "ae10aa6334c8899e"
     },
     "press-inspector": {
-      "version": "2026.11.16",
-      "hash": "17b1c571481f44cc"
+      "version": "2026.11.18",
+      "hash": "4d0e84de897c5158"
     },
     "press-kbd": {
-      "version": "2026.11.16",
-      "hash": "a6fe723819d955b7"
+      "version": "2026.11.18",
+      "hash": "17d1840b1643cf07"
     },
     "press-legend": {
       "version": "2026.11.16",
@@ -1995,8 +1995,8 @@
       "hash": "d479e2493fa8ddfc"
     },
     "press-list-cover": {
-      "version": "2026.11.16",
-      "hash": "c05d8979d2f10a6c"
+      "version": "2026.11.18",
+      "hash": "dd147264254ab4bb"
     },
     "press-litt": {
       "version": "2026.11.18",
@@ -2031,8 +2031,8 @@
       "hash": "895d73afb747d5fa"
     },
     "press-pad": {
-      "version": "2026.11.16",
-      "hash": "93e06b2d83651151"
+      "version": "2026.11.18",
+      "hash": "c3478b038b3ec13a"
     },
     "press-pagination": {
       "version": "2026.11.16",
@@ -2123,8 +2123,8 @@
       "hash": "520a17ad30ad6dbd"
     },
     "press-spring-editor": {
-      "version": "2026.11.16",
-      "hash": "cccb6de00c7237f6"
+      "version": "2026.11.18",
+      "hash": "1925454f8d693be6"
     },
     "press-stat": {
       "version": "2026.11.16",
@@ -2167,8 +2167,8 @@
       "hash": "8db6c27292d3d192"
     },
     "press-timeline": {
-      "version": "2026.11.16",
-      "hash": "fbab116e5a8bd8e3"
+      "version": "2026.11.18",
+      "hash": "23e3024561563a81"
     },
     "press-toast": {
       "version": "2026.11.16",
@@ -2191,8 +2191,8 @@
       "hash": "76d264c7857cff66"
     },
     "press-tune": {
-      "version": "2026.11.16",
-      "hash": "e1ade42f739bae1a"
+      "version": "2026.11.18",
+      "hash": "033401331cff1fb6"
     },
     "price": {
       "version": "2026.10.24",
@@ -2252,7 +2252,7 @@
     },
     "rack-card": {
       "version": "2026.11.18",
-      "hash": "22983a42ff5d9373"
+      "hash": "84066d08fc23afa5"
     },
     "rack-card-picker": {
       "version": "2026.11.16",
@@ -2307,8 +2307,8 @@
       "hash": "c1a658e43874c0f3"
     },
     "rack-curve-editor": {
-      "version": "2026.11.16",
-      "hash": "bb2b40e9c5cad2cd"
+      "version": "2026.11.18",
+      "hash": "4ad43a88310f6786"
     },
     "rack-date-picker": {
       "version": "2026.11.17",
@@ -2375,12 +2375,12 @@
       "hash": "246a071a006bcbd9"
     },
     "rack-inspector": {
-      "version": "2026.11.16",
-      "hash": "17b1c571481f44cc"
+      "version": "2026.11.18",
+      "hash": "4d0e84de897c5158"
     },
     "rack-kbd": {
-      "version": "2026.11.16",
-      "hash": "a6fe723819d955b7"
+      "version": "2026.11.18",
+      "hash": "17d1840b1643cf07"
     },
     "rack-legend": {
       "version": "2026.11.16",
@@ -2395,8 +2395,8 @@
       "hash": "d479e2493fa8ddfc"
     },
     "rack-list-cover": {
-      "version": "2026.11.16",
-      "hash": "c05d8979d2f10a6c"
+      "version": "2026.11.18",
+      "hash": "dd147264254ab4bb"
     },
     "rack-litt": {
       "version": "2026.11.18",
@@ -2431,8 +2431,8 @@
       "hash": "4323444820dc454d"
     },
     "rack-pad": {
-      "version": "2026.11.16",
-      "hash": "93e06b2d83651151"
+      "version": "2026.11.18",
+      "hash": "c3478b038b3ec13a"
     },
     "rack-pagination": {
       "version": "2026.11.16",
@@ -2523,8 +2523,8 @@
       "hash": "520a17ad30ad6dbd"
     },
     "rack-spring-editor": {
-      "version": "2026.11.16",
-      "hash": "cccb6de00c7237f6"
+      "version": "2026.11.18",
+      "hash": "1925454f8d693be6"
     },
     "rack-stat": {
       "version": "2026.11.16",
@@ -2567,8 +2567,8 @@
       "hash": "8db6c27292d3d192"
     },
     "rack-timeline": {
-      "version": "2026.11.16",
-      "hash": "fbab116e5a8bd8e3"
+      "version": "2026.11.18",
+      "hash": "23e3024561563a81"
     },
     "rack-toast": {
       "version": "2026.11.16",
@@ -2591,8 +2591,8 @@
       "hash": "76d264c7857cff66"
     },
     "rack-tune": {
-      "version": "2026.11.16",
-      "hash": "e1ade42f739bae1a"
+      "version": "2026.11.18",
+      "hash": "033401331cff1fb6"
     },
     "range-chart": {
       "version": "2026.11.06",
@@ -2671,12 +2671,12 @@
       "hash": "520a17ad30ad6dbd"
     },
     "spring-editor": {
-      "version": "2026.11.16",
-      "hash": "cccb6de00c7237f6"
+      "version": "2026.11.18",
+      "hash": "1925454f8d693be6"
     },
     "stat": {
       "version": "2026.11.18",
-      "hash": "af6ec0b602bb1bf7"
+      "hash": "997f7cb122efabeb"
     },
     "states": {
       "version": "2026.11.18",
@@ -2723,8 +2723,8 @@
       "hash": "8db6c27292d3d192"
     },
     "timeline": {
-      "version": "2026.11.06",
-      "hash": "fbab116e5a8bd8e3"
+      "version": "2026.11.18",
+      "hash": "23e3024561563a81"
     },
     "toast": {
       "version": "2026.11.15",
@@ -2747,8 +2747,8 @@
       "hash": "76d264c7857cff66"
     },
     "tune": {
-      "version": "2026.11.16",
-      "hash": "e1ade42f739bae1a"
+      "version": "2026.11.18",
+      "hash": "033401331cff1fb6"
     },
     "usage": {
       "version": "2026.10.26",

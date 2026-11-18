@@ -19,6 +19,7 @@
  *   toasts. It shows them in a development build only, unless enabled says otherwise. Hidden, it draws nothing and
  *   every useTune returns its defaults, but the code still ships wherever tune is imported: tune is scaffolding, and
  *   the copied tokens replace it.
+ * - Flat (v1.17): no lines between things; the hairlines between a panel's groups and above its actions are clear.
  * - No accent fill (R6): actions are secondary buttons and toggles neutral switches.
  */
 import { createContext, Fragment, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
@@ -625,7 +626,7 @@ function Panel({ store, name, startFolded, className }: { store: TuneStore; name
       className={className}
     >
       {stacked.length > 0 && (
-        <div className="grid gap-5 border-t border-line px-3 pt-3 pb-4">
+        <div className="grid gap-5 border-t border-line in-[[data-material=flat]]:border-transparent px-3 pt-3 pb-4">
           {stacked.map((f) => (
             <Fragment key={f.key}>{bound(f).control(f.label, write(f))}</Fragment>
           ))}
@@ -637,7 +638,7 @@ function Panel({ store, name, startFolded, className }: { store: TuneStore; name
         </InspectorGroup>
       ))}
       {c.actions.length > 0 && (
-        <div className="flex flex-wrap gap-2 border-t border-line p-3">
+        <div className="flex flex-wrap gap-2 border-t border-line in-[[data-material=flat]]:border-transparent p-3">
           {c.actions.map((a) => (
             <Button key={a.key} size="sm" onClick={() => store.run(name, a.key)}>
               {a.label}
