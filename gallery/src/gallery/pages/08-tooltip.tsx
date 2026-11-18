@@ -303,6 +303,32 @@ function SafetyTrackText() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a post's toolbar ---------- */
+
+function PostToolbar() {
+  return (
+    <div role="group" aria-label="Post actions" className="flex flex-wrap items-center justify-center gap-1">
+      <Tooltip content="Copy link" shortcut="⇧⌘C">
+        <Button iconOnly variant="ghost" aria-label="Copy link"><CopyIcon /></Button>
+      </Tooltip>
+      <Tooltip content="Share" shortcut="⇧⌘S">
+        <Button iconOnly variant="ghost" aria-label="Share"><ShareIcon /></Button>
+      </Tooltip>
+      <Divider />
+      <Tooltip content="Hide from the site" shortcut="E">
+        <Button iconOnly variant="ghost" aria-label="Hide from the site"><ArchiveIcon /></Button>
+      </Tooltip>
+      <Tooltip content="Post settings" shortcut="⌘,">
+        <Button iconOnly variant="ghost" aria-label="Post settings"><SettingsIcon /></Button>
+      </Tooltip>
+      <Divider />
+      <Tooltip content="Delete post" shortcut="⌫">
+        <Button iconOnly variant="ghost" aria-label="Delete post"><TrashIcon /></Button>
+      </Tooltip>
+    </div>
+  );
+}
+
 export default function TooltipPage() {
   const [pinned, setPinned] = useState(false);
   return (
@@ -314,6 +340,7 @@ export default function TooltipPage() {
           caption="Rest on an icon and its tooltip opens after 200ms. Once one has shown, sweep across the bar: the next opens at once, for 300ms after the last one closes. Keyboard focus opens it instantly too. Only the first one fades and scales in from its trigger; the ones you sweep onto, and the ones focus opens, appear in place."
           code="Toolbar"
           byWorld={{
+            flat: { demo: <PostToolbar />, title: "A post's toolbar", code: "PostToolbar" },
             device: {
               demo: <TakeToolbar />,
               title: "A take's toolbar",

@@ -540,9 +540,48 @@ function SampleRateTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): how often the letter goes out ---------- */
+
+const EVERY: SelectOption[] = [
+  { value: "week", label: "Every week" },
+  { value: "two-weeks", label: "Every two weeks" },
+  { value: "month", label: "Every month" },
+  { value: "post", label: "When I post" },
+];
+
+function LetterFormDemo() {
+  const [sent, setSent] = useState("");
+  const send = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    setSent(`Sent every=${data.get("every")}`);
+  };
+  return (
+    <form onSubmit={send} className="grid w-full max-w-sm gap-6">
+      <SelectField label="Send the letter" name="every" options={EVERY} defaultValue="week" help="Readers see this on the sign-up page." />
+      <TextField label="From" name="from" defaultValue="Low Tide" />
+      <TextField label="Replies go to" name="reply" type="email" autoComplete="email" defaultValue="hello@lowtide.site" />
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Save letter
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function EveryTile() {
+  return (
+    <div className="w-full max-w-xs">
+      <SelectField label="Send the letter" name="every" options={EVERY} defaultValue="week" help="Readers see this on the sign-up page." />
+    </div>
+  );
+}
+
 export default function SelectPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<RoleTile />} tileByWorld={{ device: <SampleRateTile /> }}>
+    <Page meta={meta} docs={docs} tile={<RoleTile />} tileByWorld={{ device: <SampleRateTile />, flat: <EveryTile /> }}>
       <Stage
         title="A role in an account form"
         tier="responsive"
@@ -550,6 +589,13 @@ export default function SelectPage() {
         align="start"
         code="AccountFormDemo"
         byWorld={{
+          flat: {
+            demo: <LetterFormDemo />,
+            title: "How often the letter goes out",
+            code: "LetterFormDemo",
+            caption:
+              "The select sits in the form like any other field: label above, help below, at the inputs' height. It is a white pill on the grey ground, like the fields beside it. Click it, or press Space, and the list grows out of the trigger and slides a quarter of the travel token from the side it opens on, on the responsive tier. The check marks Every week. Save letter sends the value through the field's name.",
+          },
           device: {
             demo: <RecorderSettingsDemo />,
             title: "A sample rate in the recorder's settings",

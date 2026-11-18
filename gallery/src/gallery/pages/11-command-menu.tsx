@@ -413,6 +413,76 @@ function RecorderPhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's posts, pages and actions ---------- */
+
+const SITE_GROUPS: CommandGroup[] = [
+  {
+    id: "pages",
+    heading: "Pages",
+    items: [
+      { id: "posts", label: "Posts", icon: <FileIcon /> },
+      { id: "series", label: "Series", icon: <FolderIcon /> },
+      { id: "letter", label: "Letter", icon: <FileIcon /> },
+      { id: "settings", label: "Settings", icon: <SettingsIcon />, shortcut: "⌘," },
+    ],
+  },
+  {
+    id: "posts",
+    heading: "Posts",
+    items: [
+      { id: "open-water", label: "Open water", icon: <FileIcon /> },
+      { id: "dusk-tide", label: "Dusk tide", icon: <FileIcon /> },
+      { id: "silk", label: "Notes on a slow shutter", icon: <FileIcon /> },
+      { id: "garden", label: "What the garden did", icon: <FileIcon /> },
+    ],
+  },
+  {
+    id: "actions",
+    heading: "Actions",
+    items: [
+      { id: "new", label: "New post", icon: <PlusIcon />, shortcut: "⌘N" },
+      { id: "link", label: "Copy the site's link", icon: <CopyIcon />, shortcut: "⌘L" },
+      { id: "theme", label: "Switch theme", icon: <SunIcon /> },
+      { id: "reader", label: "Add a reader", icon: <UserIcon /> },
+      { id: "send", label: "Send issue 14 now", icon: <ArrowUpRightIcon />, disabled: true },
+    ],
+  },
+];
+
+function SiteOpenDemo() {
+  const [open, setOpen] = useState(false);
+  const [openedBy, setOpenedBy] = useState<"keyboard" | "pointer">("keyboard");
+  const [last, setLast] = useState("Nothing picked yet");
+
+  useCommandShortcut(() => {
+    setOpenedBy("keyboard");
+    setOpen((o) => !o);
+  });
+
+  return (
+    <div className="grid justify-items-center gap-6">
+      <Button
+        icon={<SearchIcon />}
+        iconRight={<Kbd>⌘K</Kbd>}
+        onClick={(e) => {
+          setOpenedBy(e.detail === 0 ? "keyboard" : "pointer");
+          setOpen(true);
+        }}
+      >
+        Search
+      </Button>
+      <p className="text-caption font-normal text-fg-subtle" role="status">{last}</p>
+      <CommandMenu
+        open={open}
+        onOpenChange={setOpen}
+        groups={SITE_GROUPS}
+        openedBy={openedBy}
+        onSelect={(item: CommandItem) => setLast(`Picked ${item.label}`)}
+      />
+    </div>
+  );
+}
+
 export default function CommandMenuPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -421,7 +491,7 @@ export default function CommandMenuPage() {
         tier="responsive"
         caption="⌘K or Ctrl+K opens it while this page is open, at once and with no animation, and closes it the same way. A click on Search animates it: the overlay fades on opacity only, the panel arrives in the material's way on the responsive tier and leaves with the quicker exit."
         code="OpenDemo"
-        byWorld={{ device: { demo: <RecorderOpenDemo />, code: "RecorderOpenDemo" } }}
+        byWorld={{ flat: { demo: <SiteOpenDemo />, code: "SiteOpenDemo" }, device: { demo: <RecorderOpenDemo />, code: "RecorderOpenDemo" } }}
       >
         <OpenDemo />
       </Stage>

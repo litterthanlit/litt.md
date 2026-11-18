@@ -433,9 +433,116 @@ function TakeCardInspectorTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the note a small site shows when an issue goes out, and a post's card ---------- */
+
+/** The sent note, leaving on its exit and entering on its spring each time `run` changes. */
+function TunedSentNote({ look, run }: { look: ToastLook; run: number }) {
+  const travel = useTravel();
+  const { reduced } = useMotionDial();
+  const still = useTransition("instant");
+  const [shown, setShown] = useState(true);
+  useEffect(() => {
+    if (run) setShown(false);
+  }, [run]);
+  const ownEnter: Transition = { type: "spring", visualDuration: look.enter.time, bounce: look.enter.bounce }; // litt-allow: the note runs on the motion being tuned
+  const ownExit: Transition = { type: "tween", duration: look.enter.time * LIMITS.exit, ease: look.exit }; // litt-allow: the note runs on the motion being tuned
+  const enter = reduced ? still : ownEnter;
+  const exit = reduced ? still : ownExit;
+  return (
+    <div className="grid min-h-28 w-full place-items-center">
+      <AnimatePresence onExitComplete={() => setShown(true)}>
+        {shown && (
+          <motion.div
+            key="note"
+            initial={{ opacity: 0, y: travel }}
+            animate={{ opacity: 1, y: 0, transition: enter }}
+            exit={{ opacity: 0, y: travel / 2, transition: exit }}
+            className={"flex w-full max-w-xs items-center gap-3 bg-surface-1 " + (look.float ? "shadow-float" : "shadow-[inset_0_0_0_1px_var(--line)]")}
+            style={{ borderRadius: look.radius, padding: look.padding }}
+          >
+            <CheckCircleIcon className="shrink-0 text-success" />
+            <p className="text-small text-fg">Issue 14 went out to 412 subscribers.</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function SentNoteInspectorDemo() {
+  const { locked } = useMotionDial();
+  const material = useMaterial();
+  const litt = useLittToast();
+  const surface = surfaceRadius(locked.radius);
+  const presets: InspectorVersion<ToastLook>[] = [
+    { label: "litt's note", value: litt },
+    { label: "Lively", value: LIVELY },
+  ];
+  const [look, setLook] = useState<ToastLook>(LIVELY);
+  const [run, setRun] = useState(0);
+  const replay = () => setRun((r) => r + 1);
+  const set = (patch: Partial<ToastLook>) => setLook((l) => ({ ...l, ...patch }));
+
+  return (
+    <div className="@container w-full">
+      <div className="grid w-full items-start gap-6 @2xl:grid-cols-[1fr_auto]">
+        <div className="grid gap-4 justify-items-center pt-4">
+          <TunedSentNote look={look} run={run} />
+          <Button size="sm" variant="ghost" icon={<RetryIcon />} onClick={replay}>
+            Replay
+          </Button>
+        </div>
+        <Inspector
+          title="Sent note"
+          value={look}
+          onValueChange={(v) => {
+            setLook(v);
+            replay();
+          }}
+          defaultValue={litt}
+          presets={presets}
+          checks={(v) => toastChecks(v, surface, material)}
+          tokens={toastTokens}
+          className="justify-self-center"
+        >
+          <InspectorGroup title="Shape" summary={`${look.radius}px, ${look.padding}px in`}>
+            <Slider label="Corner radius" value={look.radius} onValueChange={(radius) => set({ radius })} min={0} max={24} step={2} home={surface} formatValue={px} />
+            <Slider label="Padding" value={look.padding} onValueChange={(padding) => set({ padding })} min={8} max={32} step={2} home={16} formatValue={px} />
+          </InspectorGroup>
+          <InspectorGroup title="Depth" summary={look.float ? "Floats" : "Flat"}>
+            <Switch label="Float shadow" description="Lifts the note off the page." align="end" checked={look.float} onCheckedChange={(float) => set({ float })} />
+          </InspectorGroup>
+          <InspectorGroup title="Entrance" summary={`${Math.round(look.enter.time * 1000)}ms, ${num(look.enter.bounce)}`}>
+            <SpringEditor label="Spring" value={look.enter} onValueChange={(enter) => set({ enter })} onValueCommit={replay} tier="expressive" checks={false} defaultMark={litt.enter} height={128} preview={false} />
+          </InspectorGroup>
+          <InspectorGroup title="Exit" defaultOpen={false}>
+            <CurveEditor label="Easing" value={look.exit} onValueChange={(exit) => set({ exit })} onValueCommit={replay} defaultMark={litt.exit} height={160} preview={false} />
+          </InspectorGroup>
+        </Inspector>
+      </div>
+    </div>
+  );
+}
+
+function PostCardInspectorTile() {
+  const [card, setCard] = useState<CardLook>({ radius: 12, padding: 20, float: true });
+  return (
+    <div className="w-full max-w-xs">
+      <Inspector title="Post card" value={card} onValueChange={setCard} defaultValue={CARD_DEFAULT}>
+        <InspectorGroup title="Shape" summary={`${card.radius}px`}>
+          <Slider label="Corner radius" value={card.radius} onValueChange={(radius) => setCard({ ...card, radius })} min={0} max={24} step={2} home={8} formatValue={px} />
+        </InspectorGroup>
+        <InspectorGroup title="Depth" summary={card.float ? "Floats" : "On the page"} defaultOpen={false}>
+          <Switch label="Float shadow" align="end" checked={card.float} onCheckedChange={(float) => setCard({ ...card, float })} />
+        </InspectorGroup>
+      </Inspector>
+    </div>
+  );
+}
+
 export default function InspectorPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<InspectorTile />} tileByWorld={{ device: <TakeCardInspectorTile /> }}>
+    <Page meta={meta} docs={docs} tile={<InspectorTile />} tileByWorld={{ device: <TakeCardInspectorTile />, flat: <PostCardInspectorTile /> }}>
       <Stage
         title="Tune a toast"
         tier="responsive"
@@ -444,6 +551,13 @@ export default function InspectorPage() {
         align="start"
         caption="Every value of the toast in one panel: its corners and padding on Sliders, its shadow on a Switch, its entrance on a Spring editor and its exit on a Curve editor, which starts folded. Let go of a spring or a curve and the toast leaves on the exit and enters on the spring. The Rules group checks every value against litt and says Fits or Change; Lively breaks five of them. Pick litt's toast from the version list and every row fits. Copy tokens hands over CSS custom properties, and the Tokens group shows them. The chevrons turn on the responsive tier; a group snaps open and fades in, and nothing animates its height."
         byWorld={{
+          flat: {
+            demo: <SentNoteInspectorDemo />,
+            title: "Tune a sent note",
+            code: "SentNoteInspectorDemo",
+            caption:
+              "Every value of the note a small site shows when an issue goes out, in one panel: its corners and padding on Sliders, its shadow on a Switch, its entrance on a Spring editor and its exit on a Curve editor, which starts folded. Let go of a spring or a curve and the note leaves on the exit and enters on the spring. The Rules group checks every value against litt and says Fits or Change; Lively breaks five of them. Pick litt's note from the version list and every row fits. Copy tokens hands over CSS custom properties. A group snaps open, and nothing animates its height.",
+          },
           device: {
             demo: <NoticeInspectorDemo />,
             title: "Tune an export notice",

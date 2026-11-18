@@ -168,6 +168,39 @@ function TakesTodayDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): replay the sending of an issue ---------- */
+
+const SENDING: (LogLine & { at: number })[] = [
+  { at: 0, time: "+0.0s", text: "Issue 14, the last of the spring series, to 412 subscribers" },
+  { at: 1.6, time: "+1.6s", text: "Made the web copy at lowtide.site/letter/14" },
+  { at: 3.2, time: "+3.2s", level: "warn", text: "Picture 3 is 6.2 MB; it will go out smaller." },
+  { at: 6.4, time: "+6.4s", text: "Sending, 100 at a time" },
+  { at: 14.8, time: "+14.8s", text: "Sent 200 of 412" },
+  { at: 22.5, time: "+22.5s", level: "error", text: "3 addresses bounced: the mailbox is full or gone" },
+  { at: 22.7, time: "+22.7s", text: "Will try the full mailboxes again tomorrow" },
+  { at: 31.4, time: "+31.4s", text: "Sent 409 of 412" },
+  { at: 33, time: "+33.0s", level: "success", text: "Issue 14 sent" },
+  { at: 47.6, time: "+47.6s", level: "success", text: "First reply, from Mara Lindqvist" },
+];
+
+const SENDING_MARKS: TimeScrubberMark[] = [
+  { at: 3.2, label: "Picture 3 is 6.2 MB", tone: "warning" },
+  { at: 22.5, label: "3 addresses bounced", tone: "danger" },
+  { at: 33, label: "Issue 14 sent", tone: "success" },
+  { at: 47.6, label: "First reply", tone: "success" },
+];
+
+function SendingLogDemo() {
+  const [at, setAt] = useState(48);
+  const lines = useMemo(() => SENDING.filter((l) => l.at <= at), [at]);
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <TimeScrubber label="Issue 14" max={48} value={at} onValueChange={setAt} formatValue={(s) => `+${s}s`} marks={SENDING_MARKS} />
+      <LogView label="Sending issue 14, replayed" height="14rem" lines={lines} />
+    </div>
+  );
+}
+
 export default function TimeScrubberPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -178,6 +211,13 @@ export default function TimeScrubberPage() {
         code="ReplayDemo"
         caption="Drag the ruler and the log shows the run up to the needle. It follows the pointer one to one; let go and it settles on the nearest second, or on an event let go within half a step of it, on the responsive tier. Press the ruler to go to the time under the pointer. Tab to it, then Page Up and Page Down go from the warning to the failure to the deploy."
         byWorld={{
+          flat: {
+            demo: <SendingLogDemo />,
+            title: "Replay a sent issue",
+            code: "SendingLogDemo",
+            caption:
+              "Drag the ruler and the log shows the sending of issue 14 up to the needle. It follows the pointer one to one; let go and it settles on the nearest second, or on an event let go within half a step of it, on the responsive tier. Press the ruler to go to the time under the pointer. Tab to it, then Page Up and Page Down go from the large picture to the bounces to the send and the first reply.",
+          },
           device: {
             demo: <TakeLogDemo />,
             title: "Replay a take's log",

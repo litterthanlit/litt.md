@@ -225,9 +225,67 @@ function NoticeSpringTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the note that says an issue went out ---------- */
+
+/** The sent note, entering on the spring each time `run` changes. */
+function SentNotePreview({ spring, run }: { spring: Spring; run: number }) {
+  const travel = useTravel();
+  const { reduced } = useMotionDial();
+  const still = useTransition("instant");
+  const own: Transition = { type: "spring", visualDuration: spring.time, bounce: spring.bounce }; // litt-allow: the note enters on the spring being edited
+  return (
+    <motion.div
+      key={run}
+      initial={{ opacity: 0, y: travel }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={reduced ? still : own}
+      className="flex items-center gap-3 rounded-surface bg-surface-1 p-4 shadow-float"
+    >
+      <CheckCircleIcon className="shrink-0 text-success" />
+      <p className="text-small text-fg">Issue 14 went out to 412 subscribers.</p>
+    </motion.div>
+  );
+}
+
+function SentNoteSpringDemo() {
+  const { locked } = useMotionDial();
+  const home = locked.dial.expressive;
+  const [spring, setSpring] = useState<Spring>(BOUNCY);
+  const [run, setRun] = useState(0);
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <SentNotePreview spring={spring} run={run} />
+      <SpringEditor
+        label="Sent note"
+        help="The note replays on the spring each time you let go."
+        value={spring}
+        onValueChange={setSpring}
+        onValueCommit={() => setRun((r) => r + 1)}
+        tier="expressive"
+        defaultMark={home}
+        preview={false}
+      />
+      <div className="flex justify-start">
+        <Button size="sm" variant="secondary" disabled={spring.time === home.time && spring.bounce === home.bounce} onClick={() => { setSpring(home); setRun((r) => r + 1); }}>
+          Back to litt's spring
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function PostSpringTile() {
+  const [spring, setSpring] = useState<Spring>(CARD);
+  return (
+    <div className="w-full max-w-sm">
+      <SpringEditor label="A new post's entrance" value={spring} onValueChange={setSpring} height={128} />
+    </div>
+  );
+}
+
 export default function SpringEditorPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SpringTile />} tileByWorld={{ device: <NoticeSpringTile /> }}>
+    <Page meta={meta} docs={docs} tile={<SpringTile />} tileByWorld={{ device: <NoticeSpringTile />, flat: <PostSpringTile /> }}>
       <Stage
         title="A toast's entrance"
         tier="instant"
@@ -235,6 +293,13 @@ export default function SpringEditorPage() {
         size="lg"
         caption="Press anywhere in the well, drag, or use the arrow keys. The cap is the Pad's: right is a longer visual time, up is more bounce, and the curve on the floor redraws under your hand at once, with no easing. The dashed line down through the cap is where the curve should look arrived. Let go and the toast above enters on the spring you drew. The floor beyond 350ms and above the world's bounce cap (0.12, or Flat's 0.28) is washed: that is outside litt's expressive tier, and the rows under the words say which rule to change. The dashed circle is litt's own expressive spring, and a double-click goes back to it."
         byWorld={{
+          flat: {
+            demo: <SentNoteSpringDemo />,
+            title: "A sent note",
+            code: "SentNoteSpringDemo",
+            caption:
+              "The note a small site shows when an issue goes out. Press anywhere in the well, drag, or use the arrow keys: right is a longer visual time, up is more bounce, and the curve on the floor redraws under your hand at once, with no easing. Let go and the note above enters on the spring you drew. The floor beyond 350ms and above Flat's bounce cap of 0.28 is washed: that is outside litt's expressive tier, and the rows under the words say which rule to change. The dashed circle is litt's own expressive spring, and a double-click goes back to it.",
+          },
           device: {
             demo: <ExportNoticeSpringDemo />,
             title: "An export notice",

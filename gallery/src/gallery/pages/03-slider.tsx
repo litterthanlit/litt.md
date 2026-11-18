@@ -776,6 +776,49 @@ function MonitorPhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): how large a post's words are ---------- */
+
+const formatPx = (v: number) => `${v} px`;
+
+function TextSizeDemo() {
+  const [size, setSize] = useState(18);
+  const [saved, setSaved] = useState<string | null>(null);
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Slider
+        label="Text size"
+        help="How large the words of a post are on lowtide.site."
+        min={14}
+        max={22}
+        step={1}
+        value={size}
+        onValueChange={setSize}
+        onValueCommit={(v) => setSaved(`Saved ${formatPx(v)} for lowtide.site.`)}
+        marks={[14, 22]}
+        home={18}
+        minLabel="Smaller"
+        maxLabel="Larger"
+        formatValue={formatPx}
+      />
+      <div className="flex flex-wrap items-center gap-4">
+        <Button
+          size="sm"
+          disabled={size === 18}
+          onClick={() => {
+            setSize(18);
+            setSaved(`Saved ${formatPx(18)} for lowtide.site.`);
+          }}
+        >
+          Reset to 18 px
+        </Button>
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {saved}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function SliderPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -784,6 +827,13 @@ export default function SliderPage() {
         tier="responsive"
         code="SpeedDemo"
         byWorld={{
+          flat: {
+            demo: <TextSizeDemo />,
+            title: "Text size",
+            code: "TextSizeDemo",
+            caption:
+              "How large the words of a post are, from 14 px to 22 px. Take the knob and push: it follows your hand 1:1, and the track fills up to it. Press the track and the knob goes there on the responsive spring, as it does on the arrow keys. A notch marks each end, and 18 px, the default, holds the knob a little, so it is easy to find again. The label row says 18 px, and a screen reader says the same. The save note appears on release, from onValueCommit.",
+          },
           device: {
             demo: <MonitorLevelDemo />,
             title: "Monitor level",

@@ -180,9 +180,45 @@ function FadeTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): how a picture comes in as a reader scrolls ---------- */
+
+function PictureFadeDemo() {
+  const [curve, setCurve] = useState<CubicBezier>([0.2, 0.7, 0.3, 1]);
+  const preset = PRESETS.find((p) => p.curve.every((n, i) => n === curve[i]));
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Segmented
+        legend="Start from"
+        size="sm"
+        block
+        options={PRESETS.map(({ value, label }) => ({ value, label }))}
+        value={preset?.value ?? ""}
+        onValueChange={(v) => setCurve(PRESETS.find((p) => p.value === v)!.curve)}
+      />
+      <CurveEditor
+        label="Pictures coming in on Low Tide"
+        help="Plays for 480ms as a reader scrolls to a picture."
+        value={curve}
+        onValueChange={setCurve}
+        defaultMark={PRESETS[0].curve}
+        duration={480}
+      />
+    </div>
+  );
+}
+
+function PictureFadeTile() {
+  const [curve, setCurve] = useState<CubicBezier>([0.2, 0.7, 0.3, 1]);
+  return (
+    <div className="w-full max-w-sm">
+      <CurveEditor label="Pictures coming in" value={curve} onValueChange={setCurve} height={144} preview={false} />
+    </div>
+  );
+}
+
 export default function CurveEditorPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<CurveTile />} tileByWorld={{ device: <FadeTile /> }}>
+    <Page meta={meta} docs={docs} tile={<CurveTile />} tileByWorld={{ device: <FadeTile />, flat: <PictureFadeTile /> }}>
       <Stage
         title="A hero's exit"
         tier="instant"
@@ -190,6 +226,7 @@ export default function CurveEditorPage() {
         size="lg"
         caption="Take a handle and drag it, or press anywhere and the nearer handle comes to you. The curve, its arms and the CSS under it follow at once, with no easing. The words say what the curve does, and when you let go a dot crosses the rail on it, for 480ms. The dashed curve is the default, and a double-click goes back to it. The Segmented control above sets a starting point; once you move a handle, none of them is picked."
         byWorld={{
+          flat: { demo: <PictureFadeDemo />, title: "How a picture comes in", code: "PictureFadeDemo" },
           device: {
             demo: <FadeOutDemo />,
             title: "A take's fade",

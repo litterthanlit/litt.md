@@ -318,9 +318,71 @@ function TrackColourTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the color of a small site ---------- */
+
+/** The same colors, named as a site's owner would name them. */
+const SITE_NAMES = ["Sea blue", "Deep teal", "Clay", "Ochre", "Moss", "Plum", "Ink", "Paper"];
+const SITE_PALETTE: ColorSwatch[] = PALETTE.map((swatch, i) => ({ ...swatch, label: SITE_NAMES[i] ?? swatch.label }));
+
+function SiteColorDemo() {
+  const [color, setColor] = useState<string | null>(SITE_PALETTE[0]!.value);
+  const [sent, setSent] = useState("");
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSent(`Sent color=${new FormData(e.currentTarget).get("color")}`);
+  };
+  return (
+    <form onSubmit={submit} className="grid w-full max-w-sm gap-6">
+      <ColorPicker
+        label="Site color"
+        name="color"
+        value={color}
+        onValueChange={(hex) => {
+          setColor(hex);
+          setSent("");
+        }}
+        swatches={SITE_PALETTE}
+        hint="Fills the top of every page on Low Tide."
+      />
+      {color && (
+        <div className="overflow-hidden rounded-surface shadow-[inset_0_0_0_1px_var(--line)]" aria-label="Preview of the top of the site" role="img">
+          <div className="flex h-12 items-center justify-between px-4 text-small" style={{ backgroundColor: color, color: getContrastInk(color) }}>
+            <span className="font-title">Low Tide</span>
+            <span>Posts · Series · Letter</span>
+          </div>
+          <p className="p-4 text-small text-fg-muted">Pictures and notes from the coast, every week.</p>
+        </div>
+      )}
+      <div className="grid gap-3">
+        <Button variant="primary" type="submit">
+          Save color
+        </Button>
+        <Status>{sent}</Status>
+      </div>
+    </form>
+  );
+}
+
+function SiteColorTile() {
+  const [color, setColor] = useState<string | null>(SITE_PALETTE[1]!.value);
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <ColorPicker label="Site color" name="color" value={color} onValueChange={setColor} swatches={SITE_PALETTE} />
+      {color && (
+        <div className="overflow-hidden rounded-surface shadow-[inset_0_0_0_1px_var(--line)]" aria-label="Preview of the top of the site" role="img">
+          <div className="flex h-12 items-center justify-between px-4 text-small" style={{ backgroundColor: color, color: getContrastInk(color) }}>
+            <span className="font-title">Low Tide</span>
+            <span>Posts · Series · Letter</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ColorPickerPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<BrandTile />} tileByWorld={{ device: <TrackColourTile /> }}>
+    <Page meta={meta} docs={docs} tile={<BrandTile />} tileByWorld={{ device: <TrackColourTile />, flat: <SiteColorTile /> }}>
       <Stage
         title="A brand color for a Framer site"
         tier="responsive"
@@ -328,6 +390,13 @@ export default function ColorPickerPage() {
         align="start"
         code="BrandColorDemo"
         byWorld={{
+          flat: {
+            demo: <SiteColorDemo />,
+            title: "A small site's color",
+            code: "SiteColorDemo",
+            caption:
+              "The field holds a chip of the color and its hex, held pressed while the panel is open. Click it and the panel grows out of it in a popover, on the responsive tier. Drag the area or the hue and the top of the site under the field changes at once, with no easing. A swatch picks in one click. The words on it are black or white, whichever reads.",
+          },
           device: {
             demo: <TrackColourDemo />,
             title: "A track's colour on the screen",
