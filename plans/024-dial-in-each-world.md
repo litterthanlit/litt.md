@@ -595,6 +595,30 @@ Nick saw the study and the recommendation: "yes I love this all! open a pr! keep
   Tag, Avatar and Timeline (their hue types still name five); the study files keep Candy's first blue and call today's
   hues muted, as a record.
 
+### Phase 4. The page in a grey frame (done, 2026-11-18, waiting for Nick)
+
+018's row for Flat, from Flat's materials only (`play-object/bodies/flat.tsx`). Nick, the same day: "make sure our designs
+make people feel something ... ease of use and invoke emotion".
+
+- [x] No body: grey is the object. The frame (`frame`) is a grey a step of ink off the ground (5% `--fg` into the
+      canvas), at `--object-radius` (the surface's, 16px, outside Device), with the screen 8px into it at 8px. Nothing
+      cast, no outline. The screen holds the take alone (`rail: false`), on Flat's ground; the set is on Home, behind Index
+      and on the pills.
+- [x] The readout is a caption under the frame, in the ink: the take's place as the one figure that stands up (call 8,
+      `text-figure`), `/ 12` in the quiet ink, and its name.
+- [x] The selector is a row of pills, Home and then the set. On the ground chosen is white, so the current pill is paper
+      with its name in the ink (not an ink fill: in Flat the ink is the accent, and the take on the screen holds the
+      view's one primary action, R6; `test:playground` reads it). The paper travels pill to pill on the expressive spring,
+      Flat's 0.28 bounce, the view's one moment; under reduced motion it lands at once. Play is a white circle at the
+      row's end. On a phone the strip (caption, Play, a scrolling row of pills) sits over the screen, the current pill kept
+      in view.
+- [x] `flat` in `OBJECTS`; `test:playground` holds every claim for Flat (no rail, no accent fill, Tab order, Play).
+- Marked `frame` and `lettering` only: Flat's own kinds (`pill`, `circle`, `paper`, `ink`, `ground`; phase 1's list) are
+  not in `KINDS` (`materials.mjs`, Device's), so the pills and Play are unmarked until Flat's kinds join a check.
+- Flat's set holds no data part (no gauge, heatmap or chart), so Candy shows on the player only in the pictures; whether
+  a data part joins the set is Nick's call.
+- The take's arrival stays instant: the contract owns it ("a take change is instant in every motion").
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
