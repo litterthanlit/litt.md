@@ -53,7 +53,7 @@ They combine in one order: **ground, then paper, then part.** The ground is the 
 |---|---|---|---|
 | Ground | The grey everything sits on. Nothing is drawn on it but objects and words. | `--canvas` under Flat is `--flat-ground` (light: Flat's surface-3; dark: Flat's surface-2). A part shown on its own (`--well`) stands on the ground too. | None |
 | Paper | A white rounded square on the ground (black in dark): a card, a panel, a table's sheet. No edge and nothing cast: on grey the fill is the edge (call 2). | `--surface-1` under Flat is `--flat-paper` (light: white; dark: Flat's canvas, the black); `.litt-raised` loses its ring under Flat. | `--radius-surface` (16) |
-| Pill | What a hand presses or types into: a button, a field, a segment, a tag, the switch. White on the ground, so it reads as paper. | `--block`, `--cut` and `--slot` are paper under Flat; `--radius-control` | `--radius-control` (28) |
+| Pill | What a hand presses or types into: a button, a field, a segment, a label tag, the switch (a status has no pill). White on the ground, so it reads as paper. | `--block`, `--cut` and `--slot` are paper under Flat; `--radius-control` | `--radius-control` (28) |
 | Circle | A key with one symbol, a checkbox, a radio, a knob, an avatar, a status's mark (call 6). | `--radius-pill` | Round |
 | Bubble | What is chosen inside paper: a grey fill (the current segment, row or tab). | `--surface-3` | The shape it sits in, less its inset |
 | Ink | What is on, and the one primary action: black on light, white on dark. | `--fg`, `--accent` (the ink, call 5), `--accent-fg` on it | The shape it fills |
@@ -74,7 +74,7 @@ Two fills on a grey ground, and color only where it says something (R6, R7).
 | White and black | Paper and the ink: everything a hand uses, and the words | — |
 | The ink (`--accent`) | What is on, and the view's one primary action (call 5: Flat keeps the ink as its accent) | A second fill per view (R6) |
 | One data hue | The ink card's data, a chart's series in R7's order, one hue per object | Chrome, a button, a status word |
-| Success, warning, danger | A status, on its small circle only, the word after it in the ink (call 6); danger's words on a destructive action | A whole word in color, a tinted field |
+| Success, warning, danger | A status, on its small circle only, the word after it in the ink and no pill (call 6, amended 2026-11-18: "I like the tags"); danger's words on a destructive action | A whole word in color, a tinted field |
 | A cover's own colors | A cover is content | — |
 
 #### Flat's voice
@@ -220,4 +220,4 @@ Plain, precise and quiet, in every world. "Write it the way you would say it to 
 4. **Spelling.** The components repo is British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
 5. **Values.** The components repo's curves and springs differ from litt's tiers, and one preset bounces past R4's bound. This file brings no values. A value Device should take comes in through Propagate (`workflows/evolve.md`, 4).
 6. **Device's phase 1 (plan 024). Closed, 2026-11-17.** Nick: "all yes". The focus ring stays orange, as the keyboard's hand; a link under Device is the ink, underlined; Device's statuses are the chip's glyphs and words, not green and amber; charts are the ink's three levels; a part's stage is a plate, not a dark screen; Device's demos spell British with -ize; a switch that is on lights an orange lamp; and Device takes the reference's em radii (1.25, 1.05, 0.7, 0.4) as an exception to R9, as its object did, which phase 2 carries into R9, check 7 and `rules.ts` through evolve.
-7. **Flat's phase 1 (plan 024). Closed, 2026-11-18.** Nick, on the nine calls live on the canvas: "all yes". A grey ground with white and the ink on it; paper has no edge, and only what floats keeps a shadow; covers are real pictures; the ink card enters Flat, at most one per view; the accent stays the ink; a status is its word in the ink after a small circle in the status color, in the pill; off keeps its outline; one figure per object stands above 18px; and Flat speaks for a site and its readers.
+7. **Flat's phase 1 (plan 024). Closed, 2026-11-18.** Nick, on the nine calls live on the canvas: "all yes". A grey ground with white and the ink on it; paper has no edge, and only what floats keeps a shadow; covers are real pictures; the ink card enters Flat, at most one per view; the accent stays the ink; a status is its word in the ink after a small circle in the status color, in the pill (amended the same day, on the Hypher comparison, "I like the tags": a dot and the word, with no pill); off keeps its outline; one figure per object stands above 18px; and Flat speaks for a site and its readers.
