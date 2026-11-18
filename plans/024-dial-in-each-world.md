@@ -619,6 +619,45 @@ make people feel something ... ease of use and invoke emotion".
   a data part joins the set is Nick's call.
 - The take's arrival stays instant: the contract owns it ("a take change is instant in every motion").
 
+### Phase 5. Measure (done, 2026-11-18)
+
+Re-shot at `89028e6` the way the audit did (1440 by 1000, `#flat` on Home, take 1 and take 5, `#flat/components`,
+`#flat/about`), light and dark, beside the audit's commit `8862c94` rebuilt and shot the same way, and beside
+`sheet-reference.png`. Flat goes from **4 to 7**; under 8 on four traits, so it goes back before Nick's STOP.
+
+| Trait | Score | Read |
+|---|---|---|
+| 1. One object, one vocabulary | 6 | Ground, paper and ink hold in light: fields, pills and the file drop are paper on grey, no ring, no shadow. In dark they collapse: paper and ground sit 1.1:1 apart (the code input's empty cells are 22 on a 23 ground, invisible; fields and the chosen pill barely read). Only `frame` and `lettering` are marked; Flat's kinds are in no check. Wireframe covers survive in the Action bar tile's grid of posts (call 3 reached the card page only). |
+| 2. Studies, not demos | 6 | The set and most leads speak the letter (Subscribe, Issue 14, readers, posts). Left in the studio's words: About's scenes (Bakehouse Nord as a client, Selected work, "Start a project"), the combobox ("Accents are optional: zurich finds Zürich"). Kbd and Icons open the wall as shared demos. Nothing moves in the first frame of any of the three surfaces; the reference's studies do. |
+| 3. Restraint | 8 | One ink fill per view (Subscribe, Install); colour lives in the data (Candy) and a status's dot, and one ink card on the wall. Only the player's frame, a 5% ink ring round a ground screen, reads as an outline where Flat says nothing is outlined. |
+| 4. Stripped to the name | 6 | Player: the rail is gone and the readout is one figure, good. Gallery view: with the tiles' fill gone, a tile is ground on ground, so each name floats about 200px under its object and belongs to it only by position; the first shelf is still Actions (Button, Kbd, Icons). About: the case study's hero is the words "Hero, Bakehouse Nord" on ground in light (no plate at all now), and three scene captions describe the old grey ("fields that are grey fills", "a grey pill filters", "a grey plate for the image"), now false. |
+| 5. One scale | 7 | Pill and circle everywhere, 16 then 8 on the player, the 40px figure the one tall number. But the player's Home and pills are caption size (about 11px) under a screen that is half empty, and a wall tile is 360 by 260 round a 100px object, so the scale of the view is mostly air. |
+
+**R10.** Easy: mostly. In light the player is plain at a glance (the paper pill says where you are, `05 / 12` says how
+far), but in dark the code input cannot be used by sight, the wall's names have to be matched to objects by guess, and
+About opens on an empty hero. Felt: what Flat should make someone feel is light, bright, a small happy surprise. It is
+earned by the paper pill landing on Flat's 0.28 bounce and by Candy (the bubblegum gauge, the dot plot, the blue
+beeswarm, the ink card's line), but Candy sits about 15,000px down the wall and nowhere in the player or on About, and
+the first screen of all three surfaces is grey with black words: on first look it reads as "clean", which R10 fails.
+
+**Left, by phase:**
+
+- Phase 1 (taste, `evolve.md`): dark paper. Flat's paper and ground at 1.1:1 in dark leave empty cells, fields and the
+  chosen pill without an edge; a step between them, or an edge rule for an empty well in dark, is Nick's call first.
+- Phase 2: Flat's kinds (`ground`, `paper`, `pill`, `circle`, `ink`) join `test:materials` and mark the parts (the
+  player's pills and Play first). The gauge's label crosses its arc's first ticks on the wall.
+- Phase 3: the wall's tile under Flat needs an edge or its name beside the object (today the name floats off it); the
+  first shelf the set, not Actions; the Action bar's wireframe covers become the gallery's plates; About's scenes in
+  the letter's voice, the case study's hero a plate picture, and the three captions that describe the old grey
+  rewritten; the combobox's lead in Flat's words; something in Candy and in motion in the first frame of the wall and
+  About.
+- Phase 4: the player's frame without a ring that reads as an outline; Home and the pills above caption size, the
+  screen not half empty; a data part in the set so Candy is on the player (Nick's call, from phase 4).
+
+Sheets (scratchpad, not kept): `flat-player-light.png`, `flat-player-dark.png`, `flat-gallery-light.png`,
+`flat-gallery-dark.png`, `flat-about-light.png`, `flat-about-dark.png` (before beside after), the whole wall after
+(`flat-gallery-<theme>-whole-after.png`) and `flat-vs-reference.png`.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
