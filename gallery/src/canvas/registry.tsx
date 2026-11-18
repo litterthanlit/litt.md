@@ -27,6 +27,7 @@ import { FlatBounceExpressive, FlatBounceResponsive } from "./flat-bounce";
 import { PressColumnPreview, type PressColumn } from "./press";
 import { PressCallPreview, type PressCallId } from "./press-calls";
 import { PressRound2Preview, type PressRound2Id } from "./press-round2";
+import { FlatCallPreview, FlatTogetherPreview, type FlatCallId } from "./flat-calls";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -224,6 +225,23 @@ const PRESS_ROUND2: { item: PressRound2Id; name: string; row: number; col: numbe
   { item: "chart-glass", name: "Press round 2 · chart, a trace on a glass readout", row: 1, col: 1 },
   { item: "chart-slots", name: "Press round 2 · chart, slots cut into the plate", row: 1, col: 2 },
 ];
+/* Flat, phase 1's calls (flat-calls.tsx, plans/024, Flat): a block of their own under Press's calls (which end at
+   y 15360) and round 2 (x 3840 to 7440): the new Flat, all calls together, first and alone on its row, then the nine
+   calls three across, each today beside the proposal, light over dark. */
+const FLAT_Y = 15360 + 480;
+const FLAT = { width: 1120, gap: 120, together: 1880, heights: [1000, 1000, 1640] };
+const FLAT_CALLS: { call: FlatCallId; name: string }[] = [
+  { call: 1, name: "Flat call 1 · the grey ground, white and ink on it" },
+  { call: 2, name: "Flat call 2 · paper has no edge, no ring, no shadow" },
+  { call: 3, name: "Flat call 3 · a real cover, not a wireframe" },
+  { call: 4, name: "Flat call 4 · the ink card, one vivid colour" },
+  { call: 5, name: "Flat call 5 · the accent stays the ink" },
+  { call: 6, name: "Flat call 6 · a status is a word after a circle" },
+  { call: 7, name: "Flat call 7 · off keeps its outline" },
+  { call: 8, name: "Flat call 8 · fun at rest is a figure that stands up" },
+  { call: 9, name: "Flat call 9 · voice, a site and its readers" },
+];
+const flatRowY = (row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
@@ -364,6 +382,18 @@ export const ITEMS: CanvasItem[] = [
       width: R2.width,
       height: height ?? R2.heights[row],
       render: () => <PressRound2Preview item={item} />,
+    }),
+  ),
+  { id: "flat-together", name: "Flat · the new Flat, all calls together", x: 0, y: FLAT_Y, width: FLAT.width, height: FLAT.together, render: () => <FlatTogetherPreview /> },
+  ...FLAT_CALLS.map(
+    ({ call, name }, i): CanvasItem => ({
+      id: `flat-call-${call}`,
+      name,
+      x: (i % 3) * (FLAT.width + FLAT.gap),
+      y: flatRowY(Math.floor(i / 3)),
+      width: FLAT.width,
+      height: FLAT.heights[Math.floor(i / 3)],
+      render: () => <FlatCallPreview call={call} />,
     }),
   ),
 ];

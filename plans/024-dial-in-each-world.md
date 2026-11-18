@@ -345,6 +345,98 @@ context menu's statuses. Lightbox, media and carousel are content.
 **STOP**: Nick answers the nine calls ("all yes" takes every recommendation) before the vocabulary goes into `taste/`
 and phase 2 starts.
 
+## Flat
+
+### Phase 1. Materials, colour, voice and part kinds (drafted, waiting for Nick, 2026-11-18)
+
+Nick: "maybe we should jump into the new flat." Press's lesson taken: build on what Flat already is (the pill, an outline
+means off, ink means on, the grey bubble, no lines, the 0.28 bounce) and on Nick's direction of 16 November ("light,
+easy to use, airy, flat - no complications, fun"), not strip it. Read-only on code but the canvas: nothing in
+`src/components`, `src/worlds`, `tokens.css` or `taste/` changed. The calls are live on `#canvas` (`flat-calls.tsx`,
+`flat-calls.css`): `Flat · the new Flat, all calls together` at x 0, y 15840, and `Flat call 1` to `9` three across
+under it (x 0 to 3600, y 17840 to 21756), each today beside the proposal, light over dark, every proposal on call 1's
+ground. The vocabulary goes into `taste/litt-principles.md` as a `taste:` commit only after Nick's answers (`evolve.md`).
+
+Audit: main at `8862c94`, `#flat/components` light, dark and in greyscale (88 tiles), the player, About, and card,
+button, table, stat and input, at 1440 by 1000. Score **4 / 10**, as on 16 November. What it shows:
+
+- The ground is white (`--flat-canvas` in light) and a stage or tile is a hair off it (`--well`); the objects are
+  grey. The direction is the other way round: grey ground, white and ink on it.
+- `#flat/card`: a hairline ring and the float shadow on every card (`litt-raised` plus `shadow-float` under Flat), and
+  X-crossed wireframes for covers. The invoice card is the same ring with no cover.
+- Statuses are green, amber and red words in grey pills (table, card, list); the stat's deltas are green and red; the
+  error field is a pink tint.
+- The words are the studio's that every world shares (Halo site, Start a project, Deploys this week, Northwind site ·
+  Framer). Variants' captions describe Press ("the cut: a floor a hair below the page, the control line", "carries the
+  glow", "raised once by its cast").
+- Player `bare`: a hairline box, the set as a list of names and lines, a text transport.
+
+**Materials**, in the order they combine:
+
+| Material | One line | Tokens today | Radius |
+|---|---|---|---|
+| Ground | The grey everything sits on. Nothing is drawn on it but objects and words. | `--canvas` (call 1: `--flat-surface-3` light, `--flat-surface-2` dark) | none |
+| Paper | A white rounded square on the ground (black in dark): a card, a panel, a table, a field. No edge, nothing cast. | `--surface-1`, `--block`, `--cut` (call 1 maps them to white, or `--flat-canvas` in dark) | `--radius-surface` |
+| Pill | What a hand presses or types into: a button, a field, a segment, a tag, the switch. | `--block`, `--cut`, `--radius-control` | `--radius-control` (28) |
+| Circle | A key with one symbol, a checkbox, a radio, a knob, an avatar, a status's mark (call 6). | `--radius-pill` | round |
+| Bubble | What is chosen inside paper: a grey fill (the current segment, row, tab). On the ground, chosen is white. | `--surface-3` | the shape it sits in, less its inset |
+| Ink | What is on, and the one primary action: black on light, white on dark. | `--fg`, `--accent` (the ink), `--canvas` on it | the shape it fills |
+| Ink card | One per view: the ink as a rounded square holding one live thing, in one data hue (call 4). | the opposite theme's `--canvas` and `--fg`; `--data-blue` | `--radius-surface` |
+| Outline | Only what is off: a switch, an unticked box, a step to come (kept, call 7). | `--line-control` at 1.5px | the control's |
+| Float | Only what floats over the page keeps a shadow: a menu, a dialog, a toast. | `--shadow-float`, `--shadow-modal` | `--radius-surface` |
+| Lettering | Geist, three weights by role; one figure per object may stand above 18px (call 8). | `--font-sans`, `--weight*`, `--type-*` | none |
+
+**Colour rule.**
+
+| Colour | Means | Never |
+|---|---|---|
+| Grey | The ground; inside paper, what is chosen | An edge, a frame, a line between things |
+| White and black | Paper and the ink: everything a hand uses, and words | — |
+| The ink (`--accent`) | What is on, and the view's one primary action | A second fill per view (R6) |
+| One data hue | The ink card's data, a chart's series in R7's order, one hue per object | Chrome, a button, a status word |
+| Success, warning, danger | A status, on its circle only (call 6); danger's words on a destructive action | A whole word in colour, a tinted field |
+| A plate's own colours | A cover is content | — |
+
+**Voice.** Flat's audience is "sites, portfolios and reading"; for "light, airy, fun", the person who keeps a small
+site and a letter, and the people who read it (call 9). Nouns: site, post, issue, letter, reader, subscriber, series,
+picture, draft, week. Demo strings: `Spring series · twelve pictures from the coast`, `Issue 14 goes out Friday at
+9:00`, `1,204 readers this week`, `4 min read`, `Subscribe` / `Read the letter`. Plain and friendly, sentence case, a
+unit on every number, status in words. Spelling waits on Open 4.
+
+**`data-part` kinds**, after the materials: `ground`, `paper`, `pill`, `circle`, `bubble`, `ink`, `ink-card`,
+`outline`, `float`, `mark` (a tick, a status's circle), `figure`, `lettering`.
+
+**Token gaps** (each a question, through Propagate): the ground needs a name of its own (`--ground`) once picked, since
+it re-maps the canvas; in light it is `--flat-surface-3`, close to litt.design's own grey, and whether a step
+between surface-2 and -3 is wanted is Nick's eye. In dark the ground `--flat-surface-2` and black paper `--flat-canvas`
+stand only 1.1:1 apart (light's white on grey is 1.18:1): the words carry them, as Flat's grey field does today. A
+figure size above 18px (call 8, R8, Open 1). The status circle needs no token (8px, `--radius-pill`).
+
+**Calls for Nick** (live on `#canvas`, today beside the proposal):
+
+| # | Call | Recommend | Why |
+|---|---|---|---|
+| 1 | The ground: grey ground with white and ink on it, against today's white ground with grey objects | grey ground (light surface-3 under white and ink; dark surface-2 under black and white) | 16 November: "bold, simple shapes on grey". The grey moves from the object to the ground; the bubble stays for chosen. |
+| 2 | Paper has no edge: no hairline ring and no float shadow on a card or a panel | yes; only what floats keeps its shadow | Both references and Flat's rules: nothing outlined, nothing cast. On grey the fill is the edge. |
+| 3 | Covers: a real picture (the gallery's plates), not an X-crossed wireframe | yes | A placeholder is not the work (R1); Flat is for sites and portfolios. |
+| 4 | The black card with one vivid colour enters Flat as the ink card, one per view (a stat, a live run, a timer), its colour the first data hue on its data | yes | The second reference, kept to R6 and R7: one hue per object, no shadow (the references' shadows were rejected on 16 November). In dark it is white, as the ink is. |
+| 5 | Flat keeps the ink as its accent (plan 012's violet shown as the alternative) | keep the ink | Colour now lives in data and the ink card; no hue plan 012 found is clear of Blue 4, danger and the data hues but the violet, and the primary as black on white is the reference. |
+| 6 | A status is its word in the ink after a small circle in the status colour; the pill stays | yes | A circle is one of Flat's shapes, and colour sits where it says something; the word still says it (R5). |
+| 7 | Off keeps its outline (the reference's filled half shown as the alternative) | keep the outline | 6 November: "Feels so easy on the eye!". It also keeps the 3:1 edge on the grey ground. |
+| 8 | Fun at rest is a figure that stands up: one figure per object above 18px (40px shown); fun in motion stays the 0.28 bounce on arrival | yes; the size is Nick's | Both references: the one figure is several times its label. No token above 18px today. |
+| 9 | Voice: a site and its readers (post, issue, reader, series), not the studio's client work every world shares | yes | Flat is for sites, portfolios and reading, and light and airy wants plain friendly words. |
+
+**Tiles whose structure does not say Flat** (greyscale, one face; 35 of 88), phase 2's list: kbd (key caps), pad,
+spring editor, curve editor, time scrubber, rule builder, inspector and tune (hairline panels), hover card, menu,
+context menu (white panels with a ring on white), header and action bar (wireframe covers), app shell, card, product
+card and cart (ring and shadow, wireframes), resizable and scroll area (hairline frames), states, details, message and
+composer (ringed panels), log view and code block (boxed), timeline and steps (rails, lines between things), chart,
+legend, range chart, dot plot, spread, heatmap and cohort grid (gridlines; ink marks on grey would say Flat), gauge.
+Media, carousel and lightbox are content.
+
+**STOP**: Nick answers the nine calls on the canvas ("all yes" takes every recommendation) before the vocabulary goes
+into `taste/` and phase 2 starts.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
