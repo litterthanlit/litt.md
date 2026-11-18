@@ -86,6 +86,9 @@ function ThisWeek() {
         </AvatarGroup>
         <span className="text-small text-fg-muted">23 readers wrote back</span>
       </div>
+      <div>
+        <Button variant="secondary">Read their notes</Button>
+      </div>
     </div>
   );
 }
