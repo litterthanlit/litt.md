@@ -28,11 +28,11 @@
     },
     "avatar": {
       "version": "2026.11.18",
-      "hash": "3fb26864c8c912b6"
+      "hash": "837ca518c613c059"
     },
     "bar-list": {
       "version": "2026.11.18",
-      "hash": "f18cf8b30ce66b30"
+      "hash": "e37a0c21ecb32d72"
     },
     "base-styles": {
       "version": "2026.11.17",
@@ -92,7 +92,7 @@
     },
     "cohort-grid": {
       "version": "2026.11.18",
-      "hash": "c34eb73a96e2a2ff"
+      "hash": "ee85faa7f6c9a9db"
     },
     "collection": {
       "version": "2026.11.03",
@@ -160,11 +160,11 @@
     },
     "device-avatar": {
       "version": "2026.11.18",
-      "hash": "3fb26864c8c912b6"
+      "hash": "837ca518c613c059"
     },
     "device-bar-list": {
       "version": "2026.11.18",
-      "hash": "f18cf8b30ce66b30"
+      "hash": "e37a0c21ecb32d72"
     },
     "device-breadcrumb": {
       "version": "2026.11.16",
@@ -216,7 +216,7 @@
     },
     "device-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "device-color-picker": {
       "version": "2026.11.17",
@@ -259,8 +259,8 @@
       "hash": "8615d3ab119d5ef0"
     },
     "device-dot-plot": {
-      "version": "2026.11.16",
-      "hash": "2daa045705db87cf"
+      "version": "2026.11.18",
+      "hash": "5348914944485c67"
     },
     "device-file-changes": {
       "version": "2026.11.18",
@@ -279,12 +279,12 @@
       "hash": "4e6ae75229c48c9d"
     },
     "device-funnel": {
-      "version": "2026.11.16",
-      "hash": "21d1efc2ba25379b"
+      "version": "2026.11.18",
+      "hash": "0119f83c1d806bd0"
     },
     "device-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "device-glide": {
       "version": "2026.11.17",
@@ -296,7 +296,7 @@
     },
     "device-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "device-hover-card": {
       "version": "2026.11.16",
@@ -336,7 +336,7 @@
     },
     "device-litt": {
       "version": "2026.11.18",
-      "hash": "9558ed429f1ee8a0"
+      "hash": "0b0c4ca8c8e5b66e"
     },
     "device-log-view": {
       "version": "2026.11.18",
@@ -455,12 +455,12 @@
       "hash": "239cf493222e03b8"
     },
     "device-sparkline": {
-      "version": "2026.11.17",
-      "hash": "92e43d8a840e22fc"
+      "version": "2026.11.18",
+      "hash": "bdad34fdd943cca4"
     },
     "device-spread": {
-      "version": "2026.11.16",
-      "hash": "520a17ad30ad6dbd"
+      "version": "2026.11.18",
+      "hash": "025cca7319b37365"
     },
     "device-spring-editor": {
       "version": "2026.11.18",
@@ -495,8 +495,8 @@
       "hash": "cdf0f920cb5478f5"
     },
     "device-tag": {
-      "version": "2026.11.17",
-      "hash": "903ef0a292a9b408"
+      "version": "2026.11.18",
+      "hash": "ac25932f48a3664c"
     },
     "device-tape-progress": {
       "version": "2026.11.17",
@@ -512,7 +512,7 @@
     },
     "device-timeline": {
       "version": "2026.11.18",
-      "hash": "23e3024561563a81"
+      "hash": "fa00a3e4b4f0e221"
     },
     "device-toast": {
       "version": "2026.11.16",
@@ -543,8 +543,8 @@
       "hash": "8615d3ab119d5ef0"
     },
     "dot-plot": {
-      "version": "2026.11.03",
-      "hash": "2daa045705db87cf"
+      "version": "2026.11.18",
+      "hash": "5348914944485c67"
     },
     "file-changes": {
       "version": "2026.11.18",
@@ -568,11 +568,11 @@
     },
     "flat-avatar": {
       "version": "2026.11.18",
-      "hash": "3fb26864c8c912b6"
+      "hash": "837ca518c613c059"
     },
     "flat-bar-list": {
       "version": "2026.11.18",
-      "hash": "f18cf8b30ce66b30"
+      "hash": "e37a0c21ecb32d72"
     },
     "flat-breadcrumb": {
       "version": "2026.11.16",
@@ -624,7 +624,7 @@
     },
     "flat-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "20d08a56b18e284f"
+      "hash": "3617284cf43bb4f3"
     },
     "flat-color-picker": {
       "version": "2026.11.17",
@@ -663,8 +663,8 @@
       "hash": "8615d3ab119d5ef0"
     },
     "flat-dot-plot": {
-      "version": "2026.11.16",
-      "hash": "2daa045705db87cf"
+      "version": "2026.11.18",
+      "hash": "5348914944485c67"
     },
     "flat-file-changes": {
       "version": "2026.11.18",
@@ -683,12 +683,12 @@
       "hash": "4e6ae75229c48c9d"
     },
     "flat-funnel": {
-      "version": "2026.11.16",
-      "hash": "21d1efc2ba25379b"
+      "version": "2026.11.18",
+      "hash": "0119f83c1d806bd0"
     },
     "flat-gauge": {
       "version": "2026.11.18",
-      "hash": "22c7ba7897642b8e"
+      "hash": "6e0337bb487e0226"
     },
     "flat-glide": {
       "version": "2026.11.17",
@@ -700,7 +700,7 @@
     },
     "flat-heatmap": {
       "version": "2026.11.18",
-      "hash": "3e7b9b013ee39f7c"
+      "hash": "aec882e54f380aa1"
     },
     "flat-hover-card": {
       "version": "2026.11.16",
@@ -740,7 +740,7 @@
     },
     "flat-litt": {
       "version": "2026.11.18",
-      "hash": "01ba35b319379026"
+      "hash": "f38fca7fe204571c"
     },
     "flat-log-view": {
       "version": "2026.11.18",
@@ -855,12 +855,12 @@
       "hash": "239cf493222e03b8"
     },
     "flat-sparkline": {
-      "version": "2026.11.16",
-      "hash": "4d101dec7a25c7af"
+      "version": "2026.11.18",
+      "hash": "b2401978cb45d117"
     },
     "flat-spread": {
-      "version": "2026.11.16",
-      "hash": "520a17ad30ad6dbd"
+      "version": "2026.11.18",
+      "hash": "025cca7319b37365"
     },
     "flat-spring-editor": {
       "version": "2026.11.18",
@@ -896,7 +896,7 @@
     },
     "flat-tag": {
       "version": "2026.11.18",
-      "hash": "34d6a4a0e3f12c81"
+      "hash": "cd4ea77c29ae81b7"
     },
     "flat-thinking": {
       "version": "2026.11.18",
@@ -908,7 +908,7 @@
     },
     "flat-timeline": {
       "version": "2026.11.18",
-      "hash": "23e3024561563a81"
+      "hash": "fa00a3e4b4f0e221"
     },
     "flat-toast": {
       "version": "2026.11.16",
@@ -943,12 +943,12 @@
       "hash": "4e6ae75229c48c9d"
     },
     "funnel": {
-      "version": "2026.10.26",
-      "hash": "21d1efc2ba25379b"
+      "version": "2026.11.18",
+      "hash": "0119f83c1d806bd0"
     },
     "gauge": {
       "version": "2026.11.18",
-      "hash": "b41bbc9f47cbda84"
+      "hash": "88493ccaa0ca7346"
     },
     "glide": {
       "version": "2026.11.17",
@@ -976,11 +976,11 @@
     },
     "heat-avatar": {
       "version": "2026.11.18",
-      "hash": "3fb26864c8c912b6"
+      "hash": "837ca518c613c059"
     },
     "heat-bar-list": {
       "version": "2026.11.18",
-      "hash": "f18cf8b30ce66b30"
+      "hash": "e37a0c21ecb32d72"
     },
     "heat-breadcrumb": {
       "version": "2026.11.16",
@@ -1032,7 +1032,7 @@
     },
     "heat-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "heat-color-picker": {
       "version": "2026.11.17",
@@ -1071,8 +1071,8 @@
       "hash": "8615d3ab119d5ef0"
     },
     "heat-dot-plot": {
-      "version": "2026.11.16",
-      "hash": "2daa045705db87cf"
+      "version": "2026.11.18",
+      "hash": "5348914944485c67"
     },
     "heat-file-changes": {
       "version": "2026.11.18",
@@ -1091,12 +1091,12 @@
       "hash": "4e6ae75229c48c9d"
     },
     "heat-funnel": {
-      "version": "2026.11.16",
-      "hash": "21d1efc2ba25379b"
+      "version": "2026.11.18",
+      "hash": "0119f83c1d806bd0"
     },
     "heat-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "heat-glide": {
       "version": "2026.11.17",
@@ -1108,7 +1108,7 @@
     },
     "heat-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "heat-hover-card": {
       "version": "2026.11.16",
@@ -1148,7 +1148,7 @@
     },
     "heat-litt": {
       "version": "2026.11.18",
-      "hash": "1d05026e543df67e"
+      "hash": "23d0ed8d4d50c1fa"
     },
     "heat-log-view": {
       "version": "2026.11.18",
@@ -1263,12 +1263,12 @@
       "hash": "239cf493222e03b8"
     },
     "heat-sparkline": {
-      "version": "2026.11.16",
-      "hash": "7e61b28ade7b789f"
+      "version": "2026.11.18",
+      "hash": "ec66b86fe97ad288"
     },
     "heat-spread": {
-      "version": "2026.11.16",
-      "hash": "520a17ad30ad6dbd"
+      "version": "2026.11.18",
+      "hash": "025cca7319b37365"
     },
     "heat-spring-editor": {
       "version": "2026.11.18",
@@ -1303,8 +1303,8 @@
       "hash": "53062a120151c579"
     },
     "heat-tag": {
-      "version": "2026.11.16",
-      "hash": "c482475ad31b3562"
+      "version": "2026.11.18",
+      "hash": "20e4d16a67c495ee"
     },
     "heat-thinking": {
       "version": "2026.11.18",
@@ -1316,7 +1316,7 @@
     },
     "heat-timeline": {
       "version": "2026.11.18",
-      "hash": "23e3024561563a81"
+      "hash": "fa00a3e4b4f0e221"
     },
     "heat-toast": {
       "version": "2026.11.16",
@@ -1344,7 +1344,7 @@
     },
     "heatmap": {
       "version": "2026.11.18",
-      "hash": "1ce1bb69630ca74c"
+      "hash": "fe8ced325d8ddccd"
     },
     "hover-card": {
       "version": "2026.11.15",
@@ -1388,7 +1388,7 @@
     },
     "litt": {
       "version": "2026.11.18",
-      "hash": "011323239091a640"
+      "hash": "eca8f8728737e647"
     },
     "log-view": {
       "version": "2026.11.18",
@@ -1440,11 +1440,11 @@
     },
     "plain-avatar": {
       "version": "2026.11.18",
-      "hash": "3fb26864c8c912b6"
+      "hash": "837ca518c613c059"
     },
     "plain-bar-list": {
       "version": "2026.11.18",
-      "hash": "f18cf8b30ce66b30"
+      "hash": "e37a0c21ecb32d72"
     },
     "plain-breadcrumb": {
       "version": "2026.11.16",
@@ -1496,7 +1496,7 @@
     },
     "plain-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "plain-color-picker": {
       "version": "2026.11.17",
@@ -1535,8 +1535,8 @@
       "hash": "8615d3ab119d5ef0"
     },
     "plain-dot-plot": {
-      "version": "2026.11.16",
-      "hash": "2daa045705db87cf"
+      "version": "2026.11.18",
+      "hash": "5348914944485c67"
     },
     "plain-file-changes": {
       "version": "2026.11.18",
@@ -1555,12 +1555,12 @@
       "hash": "4e6ae75229c48c9d"
     },
     "plain-funnel": {
-      "version": "2026.11.16",
-      "hash": "21d1efc2ba25379b"
+      "version": "2026.11.18",
+      "hash": "0119f83c1d806bd0"
     },
     "plain-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "plain-glide": {
       "version": "2026.11.17",
@@ -1572,7 +1572,7 @@
     },
     "plain-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "plain-hover-card": {
       "version": "2026.11.16",
@@ -1612,7 +1612,7 @@
     },
     "plain-litt": {
       "version": "2026.11.18",
-      "hash": "7d39903281515f0b"
+      "hash": "fc513d6ca87433fb"
     },
     "plain-log-view": {
       "version": "2026.11.18",
@@ -1727,12 +1727,12 @@
       "hash": "239cf493222e03b8"
     },
     "plain-sparkline": {
-      "version": "2026.11.16",
-      "hash": "7e61b28ade7b789f"
+      "version": "2026.11.18",
+      "hash": "ec66b86fe97ad288"
     },
     "plain-spread": {
-      "version": "2026.11.16",
-      "hash": "520a17ad30ad6dbd"
+      "version": "2026.11.18",
+      "hash": "025cca7319b37365"
     },
     "plain-spring-editor": {
       "version": "2026.11.18",
@@ -1767,8 +1767,8 @@
       "hash": "adb0c12fceda1f8b"
     },
     "plain-tag": {
-      "version": "2026.11.16",
-      "hash": "c482475ad31b3562"
+      "version": "2026.11.18",
+      "hash": "20e4d16a67c495ee"
     },
     "plain-thinking": {
       "version": "2026.11.18",
@@ -1780,7 +1780,7 @@
     },
     "plain-timeline": {
       "version": "2026.11.18",
-      "hash": "23e3024561563a81"
+      "hash": "fa00a3e4b4f0e221"
     },
     "plain-toast": {
       "version": "2026.11.16",
@@ -1828,11 +1828,11 @@
     },
     "press-avatar": {
       "version": "2026.11.18",
-      "hash": "3fb26864c8c912b6"
+      "hash": "837ca518c613c059"
     },
     "press-bar-list": {
       "version": "2026.11.18",
-      "hash": "f18cf8b30ce66b30"
+      "hash": "e37a0c21ecb32d72"
     },
     "press-breadcrumb": {
       "version": "2026.11.16",
@@ -1884,7 +1884,7 @@
     },
     "press-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "press-color-picker": {
       "version": "2026.11.17",
@@ -1923,8 +1923,8 @@
       "hash": "8615d3ab119d5ef0"
     },
     "press-dot-plot": {
-      "version": "2026.11.16",
-      "hash": "2daa045705db87cf"
+      "version": "2026.11.18",
+      "hash": "5348914944485c67"
     },
     "press-file-changes": {
       "version": "2026.11.18",
@@ -1943,12 +1943,12 @@
       "hash": "4e6ae75229c48c9d"
     },
     "press-funnel": {
-      "version": "2026.11.16",
-      "hash": "21d1efc2ba25379b"
+      "version": "2026.11.18",
+      "hash": "0119f83c1d806bd0"
     },
     "press-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "press-glide": {
       "version": "2026.11.17",
@@ -1960,7 +1960,7 @@
     },
     "press-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "press-hover-card": {
       "version": "2026.11.16",
@@ -2000,7 +2000,7 @@
     },
     "press-litt": {
       "version": "2026.11.18",
-      "hash": "d2f8c50a405fc447"
+      "hash": "906cf18d67866fe6"
     },
     "press-log-view": {
       "version": "2026.11.18",
@@ -2115,12 +2115,12 @@
       "hash": "239cf493222e03b8"
     },
     "press-sparkline": {
-      "version": "2026.11.16",
-      "hash": "7e61b28ade7b789f"
+      "version": "2026.11.18",
+      "hash": "ec66b86fe97ad288"
     },
     "press-spread": {
-      "version": "2026.11.16",
-      "hash": "520a17ad30ad6dbd"
+      "version": "2026.11.18",
+      "hash": "025cca7319b37365"
     },
     "press-spring-editor": {
       "version": "2026.11.18",
@@ -2155,8 +2155,8 @@
       "hash": "53062a120151c579"
     },
     "press-tag": {
-      "version": "2026.11.16",
-      "hash": "c482475ad31b3562"
+      "version": "2026.11.18",
+      "hash": "20e4d16a67c495ee"
     },
     "press-thinking": {
       "version": "2026.11.18",
@@ -2168,7 +2168,7 @@
     },
     "press-timeline": {
       "version": "2026.11.18",
-      "hash": "23e3024561563a81"
+      "hash": "fa00a3e4b4f0e221"
     },
     "press-toast": {
       "version": "2026.11.16",
@@ -2228,11 +2228,11 @@
     },
     "rack-avatar": {
       "version": "2026.11.18",
-      "hash": "3fb26864c8c912b6"
+      "hash": "837ca518c613c059"
     },
     "rack-bar-list": {
       "version": "2026.11.18",
-      "hash": "f18cf8b30ce66b30"
+      "hash": "e37a0c21ecb32d72"
     },
     "rack-breadcrumb": {
       "version": "2026.11.16",
@@ -2284,7 +2284,7 @@
     },
     "rack-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "rack-color-picker": {
       "version": "2026.11.17",
@@ -2323,8 +2323,8 @@
       "hash": "8615d3ab119d5ef0"
     },
     "rack-dot-plot": {
-      "version": "2026.11.16",
-      "hash": "2daa045705db87cf"
+      "version": "2026.11.18",
+      "hash": "5348914944485c67"
     },
     "rack-file-changes": {
       "version": "2026.11.18",
@@ -2343,12 +2343,12 @@
       "hash": "4e6ae75229c48c9d"
     },
     "rack-funnel": {
-      "version": "2026.11.16",
-      "hash": "21d1efc2ba25379b"
+      "version": "2026.11.18",
+      "hash": "0119f83c1d806bd0"
     },
     "rack-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "rack-glide": {
       "version": "2026.11.17",
@@ -2360,7 +2360,7 @@
     },
     "rack-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "rack-hover-card": {
       "version": "2026.11.16",
@@ -2400,7 +2400,7 @@
     },
     "rack-litt": {
       "version": "2026.11.18",
-      "hash": "d0957026b0c4307c"
+      "hash": "db6b5ff4d5b2cf6d"
     },
     "rack-log-view": {
       "version": "2026.11.18",
@@ -2515,12 +2515,12 @@
       "hash": "239cf493222e03b8"
     },
     "rack-sparkline": {
-      "version": "2026.11.16",
-      "hash": "a679e2ebfa9899ef"
+      "version": "2026.11.18",
+      "hash": "db85baa5c3c2c01b"
     },
     "rack-spread": {
-      "version": "2026.11.16",
-      "hash": "520a17ad30ad6dbd"
+      "version": "2026.11.18",
+      "hash": "025cca7319b37365"
     },
     "rack-spring-editor": {
       "version": "2026.11.18",
@@ -2555,8 +2555,8 @@
       "hash": "276d2e5532eba40e"
     },
     "rack-tag": {
-      "version": "2026.11.16",
-      "hash": "a1e95049fd1aaa9e"
+      "version": "2026.11.18",
+      "hash": "639dd9932b20215f"
     },
     "rack-thinking": {
       "version": "2026.11.18",
@@ -2568,7 +2568,7 @@
     },
     "rack-timeline": {
       "version": "2026.11.18",
-      "hash": "23e3024561563a81"
+      "hash": "fa00a3e4b4f0e221"
     },
     "rack-toast": {
       "version": "2026.11.16",
@@ -2663,12 +2663,12 @@
       "hash": "239cf493222e03b8"
     },
     "sparkline": {
-      "version": "2026.11.17",
-      "hash": "6ca16311c0847a67"
+      "version": "2026.11.18",
+      "hash": "4eb8cea70b33f7b1"
     },
     "spread": {
-      "version": "2026.10.26",
-      "hash": "520a17ad30ad6dbd"
+      "version": "2026.11.18",
+      "hash": "025cca7319b37365"
     },
     "spring-editor": {
       "version": "2026.11.18",
@@ -2704,7 +2704,7 @@
     },
     "tag": {
       "version": "2026.11.18",
-      "hash": "9e6c85be2ddcf181"
+      "hash": "81620827849732c9"
     },
     "tape-progress": {
       "version": "2026.11.17",
@@ -2724,7 +2724,7 @@
     },
     "timeline": {
       "version": "2026.11.18",
-      "hash": "23e3024561563a81"
+      "hash": "fa00a3e4b4f0e221"
     },
     "toast": {
       "version": "2026.11.15",

@@ -193,7 +193,7 @@ export default function GaugePage() {
       tile={<Gauge label="Credits left" value={20830} max={30000} valueText="20,830 credits" figure="20,830" caption="2k a day on average" hue="teal" size={200} />}
       tileByWorld={{
         device: <Gauge label="Card left" value={192} max={480} valueText="3 hours 12 minutes of recording left, of 8 hours" figure="3H 12M" caption="of 8H at 48 kHz · 24 bit" size={200} />,
-        flat: <Gauge label="Emails left this month" value={1648} max={2500} valueText="1,648 emails left this month, of 2,500" figure="1,648" caption="412 a letter" ramp size={200} />,
+        flat: <Gauge label="Emails left" value={1648} max={2500} valueText="1,648 emails left this month, of 2,500" figure="1,648" caption="of 2,500 this month" ramp size={200} />,
       }}
     >
       <Stage
@@ -206,7 +206,7 @@ export default function GaugePage() {
             title: "Emails left",
             code: "EmailsLeftDemo",
             caption:
-              "A free plan's emails for the month, with the letter's cost in words under the figure. Forty-eight fine ticks over a half circle, and with `ramp` the lit ones walk Flat's sequential ramp along the arc: the first third in a light bubblegum, the middle third deeper, the last third and the marking tick deepest, so how far round says how much twice. The rest are the foreground at 12%, and the last filled tick reaches 4px further out, where a needle would have been. Every lit tick holds 3:1 on its surface. Nothing glows and nothing moves.",
+              "A free plan's emails for the month, with the letter's cost in words under the figure. Forty-eight fine ticks over a half circle, and with `ramp` the lit ones walk Flat's sequential ramp along the arc, a sunset, each tick its own place on it: gold, then tangerine and crimson, to plum at the end (in dark plum through magenta and coral to gold), so how far round says how much twice. The rest are the foreground at 12%, and the last filled tick reaches 4px further out, where a needle would have been. The figure says the value in words, so the arc's faint start never has to. Nothing glows and nothing moves.",
           },
           device: {
             demo: <CardLeftDemo />,

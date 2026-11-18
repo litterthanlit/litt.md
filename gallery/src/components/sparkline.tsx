@@ -45,8 +45,8 @@ import { SparklineFlatBody } from "@/worlds/flat/sparkline";
 import { SparklineDeviceBody } from "@/worlds/device/sparkline";
 import { SparklineRackBody } from "@/worlds/rack/sparkline";
 
-/** The five data hues, in their fixed order (R7). */
-export type SparklineHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type SparklineHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** The surface the sparkline sits on, which the dot's ring matches. */
 type Surface = "canvas" | "surface-1" | "surface-2";
@@ -72,6 +72,9 @@ const HUE: Record<SparklineHue, SparklineTone> = {
   teal: { line: "stroke-data-teal", dot: "fill-data-teal-text", core: "bg-data-teal-text", lit: "fill-data-teal", clip: "bg-data-teal-tint" },
   violet: { line: "stroke-data-violet", dot: "fill-data-violet-text", core: "bg-data-violet-text", lit: "fill-data-violet", clip: "bg-data-violet-tint" },
   rose: { line: "stroke-data-rose", dot: "fill-data-rose-text", core: "bg-data-rose-text", lit: "fill-data-rose", clip: "bg-data-rose-tint" },
+  sky: { line: "stroke-data-sky", dot: "fill-data-sky-text", core: "bg-data-sky-text", lit: "fill-data-sky", clip: "bg-data-sky-tint" },
+  bubblegum: { line: "stroke-data-bubblegum", dot: "fill-data-bubblegum-text", core: "bg-data-bubblegum-text", lit: "fill-data-bubblegum", clip: "bg-data-bubblegum-tint" },
+  sun: { line: "stroke-data-sun", dot: "fill-data-sun-text", core: "bg-data-sun-text", lit: "fill-data-sun", clip: "bg-data-sun-tint" },
 };
 /* The quiet default: the line at fg 55% and the dot at full fg, as the single-series Chart does. */
 const QUIET: SparklineTone = { line: "stroke-[color-mix(in_oklab,var(--fg)_55%,transparent)]", dot: "fill-fg", core: "bg-fg", lit: "fill-field-ink", clip: "bg-surface-3" };
@@ -103,7 +106,7 @@ export type SparklineProps = {
   label: string;
   /** The values, oldest first. Zero or more; the last one is the latest and carries the dot. Numbers that are not finite are ignored. */
   values: number[];
-  /** Draws the line in one of the five data hues. Leave it out for the quiet foreground, which is right for a single quantity. */
+  /** Draws the line in one of the data hues. Leave it out for the quiet foreground, which is right for a single quantity. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: SparklineHue;
   /** Height of the box in px. The width is the container's. */
   height?: number;

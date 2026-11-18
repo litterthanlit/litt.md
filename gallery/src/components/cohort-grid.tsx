@@ -10,7 +10,7 @@
  *   only signal.
  * - Color (components.md, Heatmap): zero is an empty dot at fg 8%. The four steps are the hue's mark tone over
  *   transparent at 30, 55, 80 and 100%. With no `hue`, the steps are the world's sequential ramp where it has one
- *   (Flat's, Candy's bubblegum, v1.18) and teal's four mixes in every other world, as before. The default steps are
+ *   (Flat's sunset, v1.20) and teal's four mixes in every other world, as before. The default steps are
  *   the quartiles of the non-zero values, as in the Heatmap. A missing or `null` value (a cohort too young for that period) is an empty cell: no dot, no number,
  *   and "no data" for a screen reader. The legend under the table is "Less", the five levels, "More", hidden from
  *   screen readers because the numbers already say it.
@@ -63,7 +63,7 @@ export type CohortGridProps = {
   sizeLabel?: string;
   /** Whether the values are shares of the cohort (0 to 100, written "42%") or counts of people (written "1,240"). */
   valueType?: "percent" | "count";
-  /** The one data hue the dots are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. Leave it out for the world's sequential ramp: Flat's bubblegum ramp, or teal's four steps in a world with no ramp. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
+  /** The one data hue the dots are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. Leave it out for the world's sequential ramp: Flat's sunset ramp, or teal's four steps in a world with no ramp. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
   hue?: CohortHue;
   /** Where each of the four dot levels starts, lowest first. Zero is always the empty dot, and a value under the first step is still the lightest level. The default is the quartiles of the non-zero values. */
   steps?: [number, number, number, number];
@@ -132,7 +132,7 @@ const HUE: Record<CohortHue, readonly [string, string, string, string]> = {
   ],
 };
 
-/** With no hue, under Flat: its sequential ramp (v1.18), Candy's bubblegum. Every other world has none and draws teal's four steps. */
+/** With no hue, under Flat: its sequential ramp (v1.20), the sunset. Every other world has none and draws teal's four steps. */
 const RAMP = ["bg-[color:var(--data-seq-1)]", "bg-[color:var(--data-seq-2)]", "bg-[color:var(--data-seq-3)]", "bg-[color:var(--data-seq-4)]"] as const;
 
 const groupDigits = (n: number) => n.toLocaleString("en-GB", { maximumFractionDigits: 0 });

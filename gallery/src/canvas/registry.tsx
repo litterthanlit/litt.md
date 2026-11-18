@@ -33,6 +33,7 @@ import { FlatIconComposition, FlatIconPairs, FlatIconSet, FlatIconsInUse } from 
 import { FlatDirectionPreview, FlatNewParts, type FlatDirection } from "./flat-directions";
 import { FlatDataPalette, FlatDataScreen, FlatDataToday } from "./flat-data";
 import type { DataPaletteId } from "./flat-data-palettes";
+import { FEEL_OPTIONS, FlatFeelIntro, FlatFeelOption } from "./flat-feel";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -278,6 +279,10 @@ const FLAT_DATA: { palette: DataPaletteId; name: string }[] = [
   { palette: "spectrum", name: "Flat · data, palette 2 (Spectrum)" },
   { palette: "studio", name: "Flat · data, palette 3 (Studio)" },
 ];
+/* Flat, full of feel (flat-feel.tsx; Nick 2026-11-18: "make components full of feel and that cotton candy vibe.
+   vivid."): right of the data study (which ends at x 15040), on its row: the intro, then each option that would bend an
+   approved call, light beside dark, one under another. */
+const FEEL = { x: DATA.x + 5 * (DATA.width + DATA.gap) + 120, y: DATA.y, width: 1240, intro: 240, height: 560, gap: 120 };
 const flatRowY =(row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
@@ -486,6 +491,19 @@ export const ITEMS: CanvasItem[] = [
     }),
   ),
   { id: "flat-data-screen", name: "Flat · data in a screen", x: DATA.x + 4 * (DATA.width + DATA.gap), y: DATA.y, width: DATA.width, height: DATA.screen, render: () => <FlatDataScreen /> },
+  { id: "flat-feel-intro", name: "Flat · full of feel, options for Nick", x: FEEL.x, y: FEEL.y, width: FEEL.width, height: FEEL.intro, render: () => <FlatFeelIntro /> },
+  ...Array.from(
+    { length: FEEL_OPTIONS },
+    (_, i): CanvasItem => ({
+      id: `flat-feel-${i + 1}`,
+      name: `Flat · feel, option ${"ABCDEF"[i]}`,
+      x: FEEL.x,
+      y: FEEL.y + FEEL.intro + FEEL.gap + i * (FEEL.height + FEEL.gap),
+      width: FEEL.width,
+      height: FEEL.height,
+      render: () => <FlatFeelOption index={i} />,
+    }),
+  ),
   { id: "flat-icons-set", name: "Flat icons · the set", x: 0, y: ICONS_Y, width: ICONS.width, height: 3040, render: () => <FlatIconSet /> },
   { id: "flat-icons-pairs", name: "Flat icons · today and fun, side by side", x: ICONS.width + ICONS.gap, y: ICONS_Y, width: ICONS.width, height: 1100, render: () => <FlatIconPairs /> },
   { id: "flat-icons-in-use", name: "Flat icons · in use", x: 2 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 1580, render: () => <FlatIconsInUse /> },

@@ -186,7 +186,7 @@ export default function CohortGridPage() {
             title: "Readers who stay",
             code: "ReadersWeeklyDemo",
             caption:
-              "A row per week readers subscribed, oldest first, and a column per issue since: the share of them that opened it. Each cell has its share in tabular figures and a dot in front of it on Flat's ramp, bubblegum from light to deep, since no hue is passed, so the eye finds where readers stay without losing the numbers. Younger weeks have fewer issues behind them, so their rows end sooner.",
+              "A row per week readers subscribed, oldest first, and a column per issue since: the share of them that opened it. Each cell has its share in tabular figures and a dot in front of it on Flat's ramp, a sunset from gold to plum, since no hue is passed, so the eye finds where readers stay without losing the numbers. Younger weeks have fewer issues behind them, so their rows end sooner.",
           },
           device: {
             demo: <RecorderWeeklyDemo />,

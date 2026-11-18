@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/button";
 import { ArrowUpRightIcon, CopyIcon, MoreIcon, PlusIcon, SettingsIcon, TrashIcon } from "@/components/icons";
-import { useMotionDial } from "@/motion";
+import { motion } from "motion/react";
+import { Avatar, AvatarGroup, type AvatarHue } from "@/components/avatar";
+import { useMotionDial, useTransition } from "@/motion";
 import { Page, Stage, TryIt, type PageDocs, type PageMeta, type PageStudy } from "../kit";
 
 export const meta: PageMeta = {
@@ -209,13 +211,45 @@ function TakeIconsDemo() {
 
 /* ---------- Flat's own (plans/024, phase 3): a small site and its letter ---------- */
 
+/* The letter's readers, each in their own Candy hue (R7: who a reader is). */
+const READERS: { name: string; hue: AvatarHue }[] = [
+  { name: "Maya Lindqvist", hue: "sky" },
+  { name: "Theo Okafor", hue: "violet" },
+  { name: "Ines Duarte", hue: "amber" },
+  { name: "Ravi Menon", hue: "teal" },
+];
+
+/** A letter's sign-up row, live: Subscribe welcomes you into the readers, your avatar arriving at the front on Flat's
+    expressive spring (its 0.28 bounce, the view's one moment, on a hand only; at once under reduced motion). */
 function SubscribeDemo() {
+  const [joined, setJoined] = useState(false);
+  const spring = useTransition("expressive");
+  const count = joined ? 1205 : 1204;
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <Button variant="primary">Subscribe</Button>
-      <Button variant="secondary">Read the letter</Button>
-      <Button variant="ghost">Not now</Button>
-      <Button disabled>Send issue 14</Button>
+    <div className="grid justify-items-start gap-4">
+      <div className="flex flex-wrap items-center gap-3">
+        <Button variant="primary" aria-pressed={joined} onClick={() => setJoined((j) => !j)}>
+          {joined ? "Subscribed" : "Subscribe"}
+        </Button>
+        <Button variant="secondary">Read the letter</Button>
+        <Button variant="ghost">Not now</Button>
+        <Button disabled>Send issue 14</Button>
+      </div>
+      <div className="flex items-center gap-3">
+        <AvatarGroup label={`Readers, ${count.toLocaleString("en-US")} people`} size="sm" max={5}>
+          {joined && (
+            <motion.span key="you" className="inline-flex" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={spring}>
+              <Avatar name="You" hue="bubblegum" look="fluid" size="sm" />
+            </motion.span>
+          )}
+          {READERS.map((r) => (
+            <Avatar key={r.name} name={r.name} hue={r.hue} look="fluid" size="sm" />
+          ))}
+        </AvatarGroup>
+        <p className="text-small text-fg-muted" aria-live="polite">
+          {joined ? "You're reader 1,205. Issue 14 comes Friday." : "1,204 readers get the letter."}
+        </p>
+      </div>
     </div>
   );
 }
@@ -272,7 +306,7 @@ export default function ButtonPage() {
             demo: <SubscribeDemo />,
             code: "SubscribeDemo",
             caption:
-              "A letter's sign-up row. Subscribe is the primary, the ink: the one fill in a view. Read the letter is a white pill on the grey ground, with no edge and nothing cast. Not now is words alone, and Send issue 14, disabled, fades back. There is no block to push: under the hand a pill goes a step darker on the instant tier and does not move, like pressing paper.",
+              "A letter's sign-up row. Subscribe is the primary, the ink: the one fill in a view. Read the letter is a white pill on the grey ground, with no edge and nothing cast. Not now is words alone, and Send issue 14, disabled, fades back. Under the hand a pill goes a step darker on the instant tier and does not move, like pressing paper. Press Subscribe: it says Subscribed, and you join the readers at the front of the row, your avatar arriving on Flat's expressive spring with its little bounce, each reader in their own Candy hue. Press it again to leave. Under reduced motion you arrive at once.",
           },
           device: {
             demo: <ExportTakeDemo />,

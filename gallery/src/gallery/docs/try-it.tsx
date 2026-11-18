@@ -31,7 +31,7 @@ import { DocsBoundary } from "./page-docs";
 export type ControlSpec =
   | string
   | { name: string; type: "boolean" | "text" | "number"; min?: number; max?: number; step?: number }
-  | { name: string; options: string[] };
+  | { name: string; options: string[]; optional?: boolean };
 
 export type TryItProps = {
   /** The export to show, as docs.json names it: "Button". */
@@ -92,7 +92,7 @@ function buildControls(props: PropDoc[], start: Record<string, unknown>, asked?:
   if (asked) {
     return asked.flatMap((spec): Control[] => {
       if (typeof spec !== "string") {
-        if ("options" in spec) return [{ kind: "choice", name: spec.name, options: spec.options, optional: false }];
+        if ("options" in spec) return [{ kind: "choice", name: spec.name, options: spec.options, optional: spec.optional ?? false }];
         if (spec.type === "number") return [{ kind: "number", name: spec.name, min: spec.min, max: spec.max, step: spec.step }];
         return [{ kind: spec.type, name: spec.name }];
       }
