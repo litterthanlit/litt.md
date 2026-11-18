@@ -605,7 +605,7 @@ export default function AvatarPage() {
         <PhotosDemo />
       </Stage>
 
-      <TryIt of="Avatar" component={Avatar} props={{ name: "Mira Halden" }} controls={["name", "size", "hue", "look", "decorative"]} />
+      <TryIt of="Avatar" component={Avatar} props={{ name: "Mira Halden" }} controls={["name", "size", { name: "hue", options: ["blue", "amber", "teal", "violet", "rose", "sky", "bubblegum", "sun", "neutral"], optional: true }, "look", "decorative"]} />
     </Page>
   );
 }

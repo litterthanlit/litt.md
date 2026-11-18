@@ -423,7 +423,7 @@ export type AvatarProps = Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
   src?: string;
   /** Sm is 24, md is 32 and lg is 44. Inside an AvatarGroup the group's size wins. */
   size?: Size;
-  /** One of the data hues, or neutral. Leave it out and the name picks one of the first five, the same one every time. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
+  /** One of the data hues (blue, amber, teal, violet, rose, sky, bubblegum, sun) or neutral. Leave it out and the name picks one of the first five, the same one every time. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: AvatarHue;
   /** What shows with no photo: the initials, or a picture drawn from the name in its hue, the same one every time. Fluid and film use the hue alone; thermal adds its partner. */
   look?: AvatarLook;
