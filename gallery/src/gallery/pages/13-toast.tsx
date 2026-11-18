@@ -335,7 +335,7 @@ function PublishedDemo() {
           setOpened(null);
           toast({
             title: "Post published",
-            description: "Open water is on lowtide.site.",
+            description: "Open water is on your site.",
             tone: "success",
             action: { label: "View", onClick: () => setOpened("Opened Open water on the site.") },
           });

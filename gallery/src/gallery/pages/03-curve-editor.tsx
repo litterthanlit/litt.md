@@ -196,7 +196,7 @@ function PictureFadeDemo() {
         onValueChange={(v) => setCurve(PRESETS.find((p) => p.value === v)!.curve)}
       />
       <CurveEditor
-        label="Pictures coming in on Low Tide"
+        label="Pictures coming in on your site"
         help="Plays for 480ms as a reader scrolls to a picture."
         value={curve}
         onValueChange={setCurve}

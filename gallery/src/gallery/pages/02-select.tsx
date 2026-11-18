@@ -559,8 +559,8 @@ function LetterFormDemo() {
   return (
     <form onSubmit={send} className="grid w-full max-w-sm gap-6">
       <SelectField label="Send the letter" name="every" options={EVERY} defaultValue="week" help="Readers see this on the sign-up page." />
-      <TextField label="From" name="from" defaultValue="Low Tide" />
-      <TextField label="Replies go to" name="reply" type="email" autoComplete="email" defaultValue="hello@lowtide.site" />
+      <TextField label="From" name="from" defaultValue="Your name" />
+      <TextField label="Replies go to" name="reply" type="email" autoComplete="email" defaultValue="hello@example.com" />
       <div className="grid gap-3">
         <Button variant="primary" type="submit">
           Save letter

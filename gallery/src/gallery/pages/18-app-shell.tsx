@@ -405,12 +405,12 @@ function SiteNav({ page, onPage }: { page: SitePageName; onPage: (p: SitePageNam
 function SiteDashboardDemo() {
   const [page, setPage] = useState<SitePageName>("Overview");
   return (
-    <Frame label="Low Tide dashboard, desktop" className="[--gutter:var(--space-8)]">
+    <Frame label="Your site's dashboard, desktop" className="[--gutter:var(--space-8)]">
       <AppShell
         viewportHeight="34rem"
-        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Low Tide</a>}
+        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Your site</a>}
         nav={<SiteNav page={page} onPage={setPage} />}
-        footer={<p className="px-3 py-2 text-caption text-fg-subtle">lowtide.site · 412 subscribers</p>}
+        footer={<p className="px-3 py-2 text-caption text-fg-subtle">example.com · 412 subscribers</p>}
       >
         <SiteDemoPage page={page} />
       </AppShell>
@@ -421,13 +421,13 @@ function SiteDashboardDemo() {
 function SiteDashboardTile() {
   const [page, setPage] = useState<SitePageName>("Overview");
   return (
-    <Frame label="Low Tide dashboard, desktop" className="[--gutter:var(--space-8)]">
+    <Frame label="Your site's dashboard, desktop" className="[--gutter:var(--space-8)]">
       <AppShell
         viewportHeight="34rem"
         mainLandmark={false}
-        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Low Tide</a>}
+        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Your site</a>}
         nav={<SiteNav page={page} onPage={setPage} />}
-        footer={<p className="px-3 py-2 text-caption text-fg-subtle">lowtide.site · 412 subscribers</p>}
+        footer={<p className="px-3 py-2 text-caption text-fg-subtle">example.com · 412 subscribers</p>}
       >
         <SiteDemoPage page={page} title="h3" />
       </AppShell>

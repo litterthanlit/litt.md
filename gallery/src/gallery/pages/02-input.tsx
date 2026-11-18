@@ -343,10 +343,10 @@ function TakeNameTile() {
 function SiteFieldsDemo() {
   return (
     <div className="grid w-full max-w-2xl gap-x-6 gap-y-8 sm:grid-cols-2">
-      <TextField label="Site name" defaultValue="Low Tide" help="Shown at the top of every page and in the browser tab." />
-      <TextField label="Address" defaultValue="low tide" spellCheck={false} error="Use letters, numbers and dots only, like lowtide.site." />
+      <TextField label="Site name" defaultValue="Notes from the coast" help="Shown at the top of every page and in the browser tab." />
+      <TextField label="Address" defaultValue="notes from the coast" spellCheck={false} error="Use letters, numbers and dots only, like example.com." />
       <TextField label="Your email" type="email" inputMode="email" placeholder="name@example.com" help="Replies from readers come here." />
-      <TextField label="Letter sender" mono defaultValue="letter@lowtide.site" disabled help="Set when you made the site, so it cannot change." />
+      <TextField label="Letter sender" mono defaultValue="letter@example.com" disabled help="Set when you made the site, so it cannot change." />
     </div>
   );
 }
@@ -354,7 +354,7 @@ function SiteFieldsDemo() {
 function SiteNameTile() {
   return (
     <div className="w-full max-w-xs">
-      <TextField label="Site name" defaultValue="Low Tide" help="Shown at the top of every page and in the browser tab." />
+      <TextField label="Site name" defaultValue="Notes from the coast" help="Shown at the top of every page and in the browser tab." />
     </div>
   );
 }

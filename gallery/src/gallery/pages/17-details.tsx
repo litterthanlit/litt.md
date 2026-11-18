@@ -281,7 +281,7 @@ function ExportNarrowDemo() {
 
 /* ---------- Flat's own (plans/024, phase 3): a post at a glance ---------- */
 
-const POST = { address: "lowtide.site/open-water", url: "https://lowtide.site/open-water" };
+const POST = { address: "example.com/open-water", url: "https://example.com/open-water" };
 
 function PostDetailsDemo() {
   return (

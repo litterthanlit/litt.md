@@ -236,7 +236,7 @@ const START_SAYS = [
   "Name the site and say in one line what it is about.",
   "Write a first post. A picture and a few lines are enough.",
   "Pick the day the letter goes out, and what it is called.",
-  "Choose an address, like lowtide.site.",
+  "Choose an address, like example.com.",
 ];
 
 function StartSiteDemo() {

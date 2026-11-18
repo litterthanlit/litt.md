@@ -412,7 +412,7 @@ function TakePhoneDemo() {
 /* ---------- Flat's own (plans/024, phase 3): where a post sits on a small site ---------- */
 
 const POST_TRAIL: BreadcrumbItem[] = [
-  { label: "Low Tide", href: "/" },
+  { label: "Your site", href: "/" },
   { label: "Series", href: "/series" },
   { label: "Spring series", href: "/series/spring" },
   { label: "Open water", href: "/series/spring/open-water" },

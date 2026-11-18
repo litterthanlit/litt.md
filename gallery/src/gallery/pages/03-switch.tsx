@@ -338,7 +338,7 @@ function SubscribeFormDemo() {
     >
       <div className="grid justify-items-start">
         <Switch name="letter" label="The weekly letter" description="One email on Friday morning with the week's posts." />
-        <Checkbox name="agreed" label="I agree to get email from Low Tide" />
+        <Checkbox name="agreed" label="I agree to get the letter by email" />
       </div>
       <div className="grid gap-3">
         <Button type="submit" variant="primary">
@@ -360,8 +360,8 @@ function SiteLiveDemo() {
       <Switch
         tone="accent"
         align="end"
-        label="Low Tide is public"
-        description={live ? "Anyone can read lowtide.site." : "Only you can see lowtide.site."}
+        label="Your site is public"
+        description={live ? "Anyone can read it." : "Only you can see it."}
         checked={live}
         onCheckedChange={setLive}
       />

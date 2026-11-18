@@ -175,7 +175,7 @@ function StoppedDemo() {
 const SENDING: LogLine[] = [
   { text: "Issue 14, the last of the spring series, to 412 subscribers" },
   { text: "Checked every link in the letter: 9 links, all fine", level: "debug" },
-  { text: "Made the web copy at lowtide.site/letter/14" },
+  { text: "Made the web copy at example.com/letter/14" },
   { text: "Making each picture smaller for email" },
   { text: "Picture 3 is 6.2 MB; it will go out at 1.1 MB.", level: "warn" },
   { text: "Saved 9.4 MB across 6 pictures", level: "debug" },
