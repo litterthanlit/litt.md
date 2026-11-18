@@ -445,7 +445,7 @@ export function SourceList({ sources, label = "Sources", hideLabel = false, clas
   return (
     <div
       className={
-        "grid min-w-0 font-sans whitespace-normal in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:p-2 " +
+        "litt-paper grid min-w-0 font-sans whitespace-normal in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:p-2 " +
         "in-[[data-material=flat]]:forced-colors:border " +
         className
       }

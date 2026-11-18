@@ -254,7 +254,7 @@ export function ProjectCard({ project, selected = false, onSelectedChange, onOpe
   return (
     <article
       data-selected={selected || undefined}
-      className={"litt-raised group relative flex h-full flex-col rounded-surface p-1 in-[[data-material=flat]]:shadow-float " + className}
+      className={"litt-raised group relative flex h-full flex-col rounded-surface p-1 " + className}
     >
       {/* The ring. It changes color only, on the instant tier. */}
       <span

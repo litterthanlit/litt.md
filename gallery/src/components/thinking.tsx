@@ -228,7 +228,7 @@ export function Thinking({
     <div
       data-state={open ? "open" : "closed"}
       className={
-        "relative in-[[data-material=flat]]:max-w-(--measure) in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-1 " +
+        "litt-paper relative in-[[data-material=flat]]:max-w-(--measure) in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-1 " +
         "in-[[data-material=flat]]:forced-colors:border " +
         className
       }

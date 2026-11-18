@@ -17,7 +17,7 @@ const rootLook =
   "[--sl-pad:10px] pl-(--sl-pad) data-held:cursor-grabbing " +
   "data-disabled:cursor-not-allowed forced-colors:border";
 const track =
-  "pointer-events-none absolute top-4.75 h-1.5 overflow-hidden rounded-pill bg-surface-3 " +
+  "pointer-events-none absolute top-4.75 h-1.5 overflow-hidden rounded-pill bg-slot " +
   "group-data-disabled:bg-surface-2 forced-colors:border";
 const capTravel = "pointer-events-none absolute inset-y-0";
 const fillTravel = "absolute inset-y-0 left-2 right-2";

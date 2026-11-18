@@ -10,7 +10,7 @@
 import type { TableDress } from "@/components/table";
 
 export const tableFlatDress: TableDress = {
-  region: "rounded-surface border border-transparent bg-surface-1",
+  region: "litt-paper rounded-surface border border-transparent bg-surface-1",
   head: "border-b border-transparent bg-surface-1 text-caption font-label litt-legend",
   selectHead: "group-hover/row:bg-surface-3 group-data-selected/row:bg-surface-3 first:rounded-l-control last:rounded-r-control border-b border-transparent",
   /* The bubble is painted on the cells so its ends can round; the row itself stays clear. */

@@ -208,7 +208,7 @@ export function AccordionItem({ value, disabled = false, className = "", childre
     <ItemContext.Provider value={item}>
       <AccordionPrimitive.Item value={value} disabled={disabled} asChild>
         {/* relative: the content that leaves is placed against the row (popLayout). */}
-        <motion.div layout="position" transition={enter} className={"relative border-b border-line in-[[data-material=flat]]:border-b-0 in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:data-[state=open]:bg-surface-3 transition-colors duration-(--dur-instant) ease-litt " + className}>
+        <motion.div layout="position" transition={enter} className={"relative border-b border-line in-[[data-material=flat]]:border-b-0 in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:data-[state=open]:bg-surface-1 transition-colors duration-(--dur-instant) ease-litt " + className}>
           {children}
         </motion.div>
       </AccordionPrimitive.Item>
@@ -222,16 +222,17 @@ export function AccordionItem({ value, disabled = false, className = "", childre
 
 const trigger =
   "group/trigger flex min-h-control-lg w-full cursor-pointer items-center gap-4 rounded-control py-4 text-left text-body text-fg font-title " +
-  "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-3 in-[[data-material=flat]]:hover:bg-surface-3 " +
+  "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-3 in-[[data-material=flat]]:hover:bg-surface-1 " +
   "[-webkit-tap-highlight-color:transparent] transition-[background-color] duration-(--dur-instant) ease-litt " +
   "enabled:pointer-coarse:active:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)] " +
   "disabled:cursor-not-allowed disabled:text-fg-disabled " +
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus";
 
-/* Flat: the chevron sits on a round grey key that turns with it; on an open card the key lifts to surface-1. */
+/* Flat: the chevron sits on a round white key on the ground that turns with it; on an open card (paper) the key is the
+   grey bubble. */
 const KEY =
-  "in-[[data-material=flat]]:size-8 in-[[data-material=flat]]:place-items-center in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-surface-3 " +
-  "in-[[data-material=flat]]:group-data-[state=open]/trigger:bg-surface-1";
+  "in-[[data-material=flat]]:size-8 in-[[data-material=flat]]:place-items-center in-[[data-material=flat]]:rounded-pill in-[[data-material=flat]]:bg-surface-1 " +
+  "in-[[data-material=flat]]:group-data-[state=open]/trigger:bg-surface-3";
 
 export type AccordionTriggerProps = {
   /** The section's name, at the body size. It is the button's accessible name, so keep it short and plain. */

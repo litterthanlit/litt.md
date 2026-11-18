@@ -61,20 +61,23 @@ What a hand presses or moves is an object: something raised, sitting in or on so
 - **Never:** a block that casts sideways, a shade that comes from below, light on the top edge of something cut, or the press material on something a hand does not move.
 
 ### 7. Flat: `[data-material="flat"]` (R3)
-The same depth ladder said by fill alone, on neutral greys, after the work slider on litt.design (journal, 2026-11-01). Grey is the object, a hairline is the place: nothing casts, nothing catches the light, nothing sinks. A project chooses it with the attribute on `<html>`; Press stays the default (Q17).
+The same depth ladder said by fill alone, on neutral greys, after the work slider on litt.design (journal, 2026-11-01). Since v1.17 (Nick, on plan 024's nine calls for Flat: "all yes") grey is the ground and what sits on it is white or the ink: the canvas is `--flat-ground`, and paper (`--surface-1`, `--flat-paper`) is a card, a panel or a field with no ring and no shadow. Nothing casts but what floats, nothing catches the light, nothing sinks. A project chooses it with the attribute on `<html>`; Press stays the default (Q17).
 
 | Depth | Press | Flat |
 |---|---|---|
 | Sunken: a tray | `--tray`, a hairline and the top wall's shade | no fill, a `--line-strong` hairline inside |
-| Sunken: a cut | `--cut` and its top wall's shade, inside the control line | `--surface-1` inside the control line, no shade |
-| Sunken: a slot | `--slot`, both walls, the fill a step darker | `--surface-3`, no shade, the fill a step darker |
-| Flat: canvas and surfaces | a hairline and the top highlight | a hairline, no highlight |
-| Raised: a block | white or a warm grey, a contact line and a cast | a `--surface-3` fill, no cast; hover a step darker |
-| A block under a pointer | `--block-hover`: 4% ink mixed into the block | `--block-hover`: 2.5% ink, so a grey block's words keep 4.5:1 |
+| Sunken: a cut | `--cut` and its top wall's shade, inside the control line | paper (`--surface-1`), no line, no shade; on paper the grey bubble (`--surface-3`) |
+| Sunken: a slot | `--slot`, both walls, the fill a step darker | paper, no shade, the fill a step darker; on paper the grey bubble |
+| Flat: canvas and surfaces | a hairline and the top highlight | the grey ground (`--flat-ground`) and paper on it (`--flat-paper`), no ring (`--raised-line` is transparent), no highlight |
+| Raised: a block | white or a warm grey, a contact line and a cast | paper, no cast; on paper the grey bubble; hover a step darker |
+| A block under a pointer | `--block-hover`: 4% ink mixed into the block | `--block-hover`: 2.5% ink, so the words keep 4.5:1, white or grey |
 | Raised: a cap and its plate | taller, a cast up to 3px | a mid grey cap, no cast |
 | Floating | glass, a zero-offset glow, a ring | unchanged, minus the top highlight |
 
-- **The greys.** Each theme block declares `--flat-canvas` to `--flat-fg-disabled`, each the stone neutral at its OKLCH lightness and chroma 0, and the flat block maps the live names onto them. The check runs every contrast pair again under Flat.
+- **The greys.** Each theme block declares `--flat-canvas` to `--flat-fg-disabled`, each the stone neutral at its OKLCH lightness and chroma 0, and the flat block maps the live names onto them, but for the ground and paper: `--flat-ground` (light: Flat's surface-3; dark: its surface-2) is the canvas and the well, and `--flat-paper` (light: white; dark: Flat's canvas, the black) is surface-1, each one of the greys. In dark the two stand 1.1:1 apart, and the words carry them. The check runs every contrast pair again under Flat.
+- **Ground, then paper.** On the ground a field, a block, a slot and a pill are paper. Inside paper (`.litt-raised`, `.litt-glass`, or any panel marked `.litt-paper`) they are the grey bubble again, so a field in a card reads as it always has. `.litt-paper` does nothing outside Flat.
+- **Its data hues.** A step deeper in light (`--flat-data-*`), so a mark keeps 3:1 and its words 4.5:1 on the grey ground; in dark they are the stone ones.
+- **One figure stands up.** One figure per object (a stat's value) sets at `--type-figure-size`, 40px, Flat's alone (R8's exception); elsewhere the step is h1.
 - **An empty shadow is `0 0 0 0 transparent`, never `none`.** Components put these tokens in comma lists (an error ring plus `--block-lift`), and `none` there voids the whole shadow.
 - **Its own accent and face.** Flat's accent is the ink, monochrome's tones restated in its block, and its face is Geist (`proposals/worlds.md`, decision 14). `data-accent="blue"` or `"pink"` on the same element asks for that accent instead, restated after the flat block so it wins on `<html>`.
 - **Nested themes.** An element that sets its own theme (`class="dark"`, `data-theme`) redeclares the stone neutrals, the press tokens, Blue 4 and Helvetica Neue, so it needs `data-material="flat"` too, as it needs `data-accent`.

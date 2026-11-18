@@ -431,7 +431,7 @@ export function FileChanges({
     <div
       className={
         "@container min-w-0 " +
-        (summary ? "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:p-4 in-[[data-material=flat]]:forced-colors:border " : "") +
+        (summary ? "litt-paper in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:p-4 in-[[data-material=flat]]:forced-colors:border " : "") +
         className
       }
     >

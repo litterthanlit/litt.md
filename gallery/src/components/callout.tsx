@@ -85,7 +85,7 @@ export function Callout({
   const closeAt = action ? "col-start-4 @max-[28rem]:col-start-3" : "col-start-3";
   return (
     <div role={role} className={`@container ${className}`} {...rest}>
-      <div className={`litt-raised in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none grid items-start gap-x-3 p-4 ${cols}`}>
+      <div className={`litt-raised in-[[data-material=flat]]:shadow-none grid items-start gap-x-3 p-4 ${cols}`}>
         <span className={`flex h-[1lh] items-center text-body [&>svg]:size-4 [&>svg]:shrink-0 ${COLOR[tone]}`}>
           {icon ?? ICON[tone]}
         </span>

@@ -24,7 +24,7 @@ const END =
   "enabled:pointer-coarse:active:bg-(--block-hover) disabled:cursor-not-allowed disabled:bg-surface-3 disabled:text-fg-disabled disabled:forced-colors:border";
 const PAGE = PILL + " min-w-8 px-2 font-normal tabular-nums pointer-coarse:min-w-11";
 const CURRENT = "bg-block text-fg forced-colors:border-2";
-const OTHER = "bg-transparent text-fg-muted hover:bg-surface-3 hover:text-fg pointer-coarse:active:bg-surface-3 pointer-coarse:active:text-fg";
+const OTHER = "bg-transparent text-fg-muted hover:bg-block hover:text-fg pointer-coarse:active:bg-block pointer-coarse:active:text-fg";
 
 /** Flat, the page: the range in ink words, grey word pills for the ends, bare numbers between. */
 export function PaginationFlatBody({ label, className, range, current, count, items, previous, next, onPage }: PaginationBodyProps) {

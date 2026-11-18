@@ -283,7 +283,7 @@ export function RunCard({
             role="group"
             aria-labelledby={titleId}
             className={
-              "litt-raised @container grid gap-4 p-4 in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:forced-colors:border " +
+              "litt-raised @container grid gap-4 p-4 in-[[data-material=flat]]:shadow-none in-[[data-material=flat]]:forced-colors:border " +
               className
             }
           >
