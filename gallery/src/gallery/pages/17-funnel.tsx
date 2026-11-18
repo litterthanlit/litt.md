@@ -218,6 +218,23 @@ function FirmwareEdgeDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): from a post to a subscriber ---------- */
+
+function ReaderPathDemo() {
+  return (
+    <Funnel
+      className="w-full max-w-md"
+      label="From a post to the letter, this month"
+      steps={[
+        { label: "Read a post", value: 5240 },
+        { label: "Read to the end", value: 2910 },
+        { label: "Opened the sign-up", value: 610 },
+        { label: "Subscribed", value: 186 },
+      ]}
+    />
+  );
+}
+
 export default function FunnelPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -225,6 +242,7 @@ export default function FunnelPage() {
         title="A product funnel"
         code="StoreDemo"
         byWorld={{
+          flat: { demo: <ReaderPathDemo />, title: "From a post to the letter", code: "ReaderPathDemo" },
           device: {
             demo: <RecorderAppDemo />,
             title: "From install to a backed-up card",

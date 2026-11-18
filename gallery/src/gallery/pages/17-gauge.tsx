@@ -169,6 +169,22 @@ function BatterySizesDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the emails a free plan has left this month ---------- */
+
+function EmailsLeftDemo() {
+  return (
+    <Gauge
+      label="Emails left this month"
+      value={1648}
+      max={2500}
+      valueText="1,648 emails left this month, of 2,500"
+      figure="1,648"
+      caption="412 a letter, so 4 more letters"
+      hue="teal"
+    />
+  );
+}
+
 export default function GaugePage() {
   return (
     <Page
@@ -177,6 +193,7 @@ export default function GaugePage() {
       tile={<Gauge label="Credits left" value={20830} max={30000} valueText="20,830 credits" figure="20,830" caption="2k a day on average" hue="teal" size={200} />}
       tileByWorld={{
         device: <Gauge label="Card left" value={192} max={480} valueText="3 hours 12 minutes of recording left, of 8 hours" figure="3H 12M" caption="of 8H at 48 kHz · 24 bit" size={200} />,
+        flat: <Gauge label="Emails left this month" value={1648} max={2500} valueText="1,648 emails left this month, of 2,500" figure="1,648" caption="412 a letter" hue="teal" size={200} />,
       }}
     >
       <Stage
@@ -184,6 +201,13 @@ export default function GaugePage() {
         code="CreditsDemo"
         caption="Forty-eight fine ticks over a half circle. The ticks up to the value are the teal mark tone, the rest are the foreground at 12%, and the last filled tick reaches 4px further out in the stronger teal text tone, where a needle would have been. The label sits above the figure and a caption below, in the opening. Teal says this is the quantity, and the figure and the words say how much. Nothing glows and nothing moves."
         byWorld={{
+          flat: {
+            demo: <EmailsLeftDemo />,
+            title: "Emails left",
+            code: "EmailsLeftDemo",
+            caption:
+              "A free plan's emails for the month, with the letter's cost in words under the figure. Forty-eight fine ticks over a half circle. The ticks up to the value are the teal mark tone, the rest are the foreground at 12%, and the last filled tick reaches 4px further out in the stronger teal text tone, where a needle would have been. Teal says this is the quantity, and the figure and the words say how much. Nothing glows and nothing moves.",
+          },
           device: {
             demo: <CardLeftDemo />,
             title: "Card left",

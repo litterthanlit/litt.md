@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Spinner } from "@/components/button";
 import { ArrowUpRightIcon, PlusIcon } from "@/components/icons";
+import { CopyIcon } from "@/components/icons";
 import { ProjectGrid, ProjectList, type Project } from "@/components/list";
 import { Empty, ErrorState, Loading, Skeleton } from "@/components/states";
 import { Tag } from "@/components/tag";
@@ -491,6 +492,64 @@ function ExportErrorDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a new site with no posts and no readers yet ---------- */
+
+const FIRST_POST: Project = {
+  id: "first-post",
+  name: "Hello, and what this is",
+  client: "No series yet",
+  deploy: "Not published",
+  status: "draft",
+  updated: "2026-11-18",
+  description: "A first post: who you are and what comes next.",
+  tags: ["Notes"],
+  cover: "blank",
+};
+
+function FirstPost() {
+  const [started, setStarted] = useState(false);
+  return (
+    <section aria-label="Posts" className="grid content-start">
+      {started ? (
+        <ProjectList projects={[FIRST_POST]} entrance={false} />
+      ) : (
+        <Empty
+          title="No posts yet."
+          action={
+            <Button variant="primary" icon={<PlusIcon />} onClick={() => setStarted(true)}>
+              New post
+            </Button>
+          }
+        >
+          A new post starts as a draft and shows up here.
+        </Empty>
+      )}
+    </section>
+  );
+}
+
+function ReadersCard() {
+  return (
+    <section aria-label="Readers" className="litt-raised grid content-start self-start rounded-surface">
+      <h3 className="border-b border-line in-[[data-material=flat]]:border-transparent px-6 py-4 text-small text-fg">Readers</h3>
+      <div className="p-6">
+        <Empty bare title="No readers yet." action={<Button icon={<CopyIcon />}>Copy the sign-up link</Button>}>
+          Share the link and each new subscriber is listed here.
+        </Empty>
+      </div>
+    </section>
+  );
+}
+
+function NewSiteEmptyDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-4xl gap-8 md:grid-cols-2">
+      <FirstPost />
+      <ReadersCard />
+    </div>
+  );
+}
+
 export default function StatesPage() {
   const [emptyKey, resetEmpty] = useReplay();
   const [listKey, resetList] = useReplay();
@@ -501,7 +560,7 @@ export default function StatesPage() {
       meta={meta}
       docs={docs}
       tile={<div className="grid w-full max-w-xs"><DeploysCard /></div>}
-      tileByWorld={{ device: <div className="grid w-full max-w-xs"><ExportsCard /></div> }}
+      tileByWorld={{ device: <div className="grid w-full max-w-xs"><ExportsCard /></div>, flat: <div className="grid w-full max-w-xs"><ReadersCard /></div> }}
     >
       <Stage
         title="Empty"
@@ -511,6 +570,13 @@ export default function StatesPage() {
         onReplay={resetEmpty}
         replayLabel="Reset"
         byWorld={{
+          flat: {
+            demo: <NewSiteEmptyDemo key={emptyKey} />,
+            title: "A new site",
+            code: "NewSiteEmptyDemo",
+            caption:
+              "Empty says what will appear in one sentence and gives one action to make it appear. It is left-aligned, with no illustration. The first panel is boxed; the second sits bare in a card that already has its box. New post fills the list, and the row appears at once, because this state does not move.",
+          },
           device: {
             demo: <MixesEmptyDemo key={emptyKey} />,
             code: "MixesEmptyDemo",

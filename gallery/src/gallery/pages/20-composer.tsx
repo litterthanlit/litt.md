@@ -450,6 +450,68 @@ function TakesPhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): ask about this week's letter ---------- */
+
+function LetterChatDemo() {
+  const [files, setFiles] = useState<ComposerFile[]>([
+    { id: "draft", name: "issue-14-draft.md", size: 18432 },
+    { id: "picture", name: "dusk-tide.jpg", progress: 64 },
+  ]);
+  const [streaming, setStreaming] = useState(false);
+  const [note, setNote] = useState("Type a message, then press Enter or Send.");
+  const answer = useRef<number | undefined>(undefined);
+  const live = useRef(new Set<string>()); // only files added in this demo keep uploading
+
+  const busy = files.some((f) => live.current.has(f.id) && (f.progress ?? 100) < 100);
+  useEffect(() => {
+    if (!busy) return;
+    const tick = window.setInterval(() => {
+      setFiles((all) =>
+        all.map((f) => (live.current.has(f.id) && (f.progress ?? 100) < 100 ? { ...f, progress: Math.min(100, (f.progress ?? 0) + 8) } : f)),
+      );
+    }, 250);
+    return () => window.clearInterval(tick);
+  }, [busy]);
+  useEffect(() => () => window.clearTimeout(answer.current), []);
+
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <p role="status" className="truncate text-small text-fg-subtle">
+        {note}
+      </p>
+      <Composer
+        placeholder="Ask about a post or the letter"
+        hint="Litt can be wrong. Read it before it goes out."
+        streaming={streaming}
+        onSend={(text) => {
+          setStreaming(true);
+          setNote(`Litt is answering: “${text}”`);
+          answer.current = window.setTimeout(() => {
+            setStreaming(false);
+            setNote("Litt answered. Send another message.");
+          }, 4000);
+        }}
+        onStop={() => {
+          window.clearTimeout(answer.current);
+          setStreaming(false);
+          setNote("Stopped. Litt keeps what it had written.");
+        }}
+        files={files}
+        onFiles={(picked) => {
+          const added = picked.map((file): ComposerFile => {
+            const id = `upload-${++uploads}`;
+            live.current.add(id);
+            return { id, name: file.name, size: file.size, progress: 0 };
+          });
+          setFiles((all) => [...all, ...added]);
+        }}
+        onRemoveFile={(file) => setFiles((all) => all.filter((f) => f.id !== file.id))}
+        tools={<ModelSelect />}
+      />
+    </div>
+  );
+}
+
 export default function ComposerPage() {
   const [empty, replayEmpty] = useReplay();
   return (
@@ -460,6 +522,13 @@ export default function ComposerPage() {
         size="lg"
         code="StudioDemo"
         byWorld={{
+          flat: {
+            demo: <LetterChatDemo />,
+            title: "Ask about the letter",
+            code: "LetterChatDemo",
+            caption:
+              "A message to Litt about this week's issue, with the draft and a picture attached. The box is white paper on the grey ground, the text field inside it, and a row under it holds Attach, the model picker and Send. Each attached file is a chip with its size, and one is still uploading at 64%. Send stays off while the field is empty. Send a message and it becomes Stop for a few seconds, or press Esc in the field to stop it. The two swap at once. Drop or paste a file to add a chip. The field grows a line at a time and snaps, never eases.",
+          },
           device: {
             demo: <TakesChatDemo />,
             title: "Ask about a take",

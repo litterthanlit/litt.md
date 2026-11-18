@@ -215,6 +215,29 @@ function LastChannelDemo() {
   return <Legend label="Channels" defaultHidden={["Boom", "Room"]} items={[{ name: "Lavalier" }, { name: "Boom" }, { name: "Room" }]} />;
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's weeks ---------- */
+
+const SITE_WEEKS: ChartSeries[] = [
+  { name: "Posts read", values: [820, 760, 910, 880, 1020, 960, 1140, 1204] },
+  { name: "Letters opened", values: [240, 252, 248, 261, 270, 266, 279, 281] },
+  { name: "Replies", values: [9, 14, 8, 12, 17, 11, 15, 21] },
+  { name: "New readers", values: [31, 28, 44, 39, 52, 47, 61, 86] },
+];
+
+function SiteWeeksDemo() {
+  const items: LegendItem[] = SITE_WEEKS.map((s) => ({ name: s.name }));
+  const hues = legendHues(items);
+  const [hidden, setHidden] = useState<string[]>([]);
+  /* Pin each series' hue from the whole list, so Letters opened keeps its hue when Posts read is hidden. */
+  const shown = SITE_WEEKS.filter((s) => !hidden.includes(s.name)).map((s) => ({ ...s, hue: hues[s.name] }));
+  return (
+    <div className="grid w-full max-w-2xl gap-4">
+      <Legend label="Series" items={items} hidden={hidden} onHiddenChange={setHidden} />
+      <BarChart label="Low Tide per week, last 8 weeks" labels={WEEKS} series={shown} unit="times" xTitle="Week" hues legend={false} />
+    </div>
+  );
+}
+
 export default function LegendPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -223,6 +246,13 @@ export default function LegendPage() {
         tier="instant"
         code="ChartDemo"
         byWorld={{
+          flat: {
+            demo: <SiteWeeksDemo />,
+            title: "Driving a site's chart",
+            code: "SiteWeeksDemo",
+            caption:
+              "The Legend holds which series are hidden, and the page passes the shown ones to the chart. Hide Posts read, and Letters opened keeps its hue, because each series keeps the hue it took from the whole list. Then the smaller series have the chart's height to themselves. A press changes color only, on the instant tier.",
+          },
           device: {
             demo: <TakeKindsDemo />,
             code: "TakeKindsDemo",

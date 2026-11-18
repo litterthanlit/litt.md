@@ -210,6 +210,43 @@ function PairingStatesDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a reader confirms their email ---------- */
+
+function ConfirmSubscribeDemo() {
+  const [round, setRound] = useState(0);
+  const [result, setResult] = useState<"idle" | "checking" | "wrong" | "right">("idle");
+  return (
+    <div className="grid w-full max-w-sm gap-6">
+      <CodeInput
+        key={round}
+        label="Your code"
+        help={`We sent six digits to mara@example.com, so we know it is you. Try ${RIGHT}.`}
+        error={result === "wrong" ? "That code is not right. Check it, or send a new one." : undefined}
+        onValueChange={() => result === "wrong" && setResult("idle")}
+        onComplete={(code) => {
+          setResult("checking");
+          window.setTimeout(() => setResult(code === RIGHT ? "right" : "wrong"), 500);
+        }}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <p role="status" className="min-h-5 text-small text-fg-subtle">
+          {result === "checking" ? "Checking the code…" : result === "right" ? "You are subscribed. Issue 14 comes Friday." : ""}
+        </p>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => {
+            setRound((r) => r + 1);
+            setResult("idle");
+          }}
+        >
+          Send a new code
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function CodeInputPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -220,6 +257,12 @@ export default function CodeInputPage() {
         code="VerifyDemo"
         caption={`Type or paste six digits; "246 810" pastes as 246810, because spaces and dashes are dropped. The cell the next digit goes into has the focus edge and a still caret. The sixth digit runs onComplete, which checks the code: ${RIGHT} signs in, anything else shows the error under the cells, and typing again clears it.`}
         byWorld={{
+          flat: {
+            demo: <ConfirmSubscribeDemo />,
+            title: "Confirm a subscription",
+            code: "ConfirmSubscribeDemo",
+            caption: `A new reader confirms their email before the first letter. Type or paste six digits; "246 810" pastes as 246810, because spaces and dashes are dropped. The cell the next digit goes into has the focus edge and a still caret. The sixth digit runs onComplete, which checks the code: ${RIGHT} subscribes, anything else shows the error under the cells, and typing again clears it.`,
+          },
           device: {
             demo: <PairRecorderDemo />,
             title: "Pair the recorder",

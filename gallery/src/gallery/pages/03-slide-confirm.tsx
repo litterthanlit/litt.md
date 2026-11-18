@@ -264,6 +264,41 @@ function FirmwareDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): delete a series from the site ---------- */
+
+function DeleteSeriesDemo() {
+  const [round, setRound] = useState(0);
+  const [said, setSaid] = useState("");
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <div className="grid gap-1">
+        <p className="text-body font-title text-fg">Delete the spring series</p>
+        <p className="text-small text-fg-muted">Its 6 posts, their 214 replies and the series page go for good. Past letters keep their copy.</p>
+      </div>
+      <SlideConfirm
+        key={round}
+        label="Slide to delete the spring series"
+        confirmedLabel="Deleting the spring series"
+        onConfirm={() => setSaid("onConfirm ran: deleting spring-series")}
+      />
+      <div className="flex items-center justify-between gap-4">
+        <Status>{said}</Status>
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!said}
+          onClick={() => {
+            setRound((r) => r + 1);
+            setSaid("");
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function SlideConfirmPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -274,6 +309,7 @@ export default function SlideConfirmPage() {
         code="DeleteProjectDemo"
         caption="Drag the thumb. It follows the pointer one to one and the words fade as it goes; the part it has passed fills at fg 6%. Let go before the end and it springs back on the responsive tier, with no bounce. Reach the end and it stays there with a check, and onConfirm runs once. Tab to the thumb and press Enter to confirm by key; a mouse click alone does nothing."
         byWorld={{
+          flat: { demo: <DeleteSeriesDemo />, title: "Delete a series", code: "DeleteSeriesDemo" },
           device: {
             demo: <EraseCardDemo />,
             title: "Erase a card",

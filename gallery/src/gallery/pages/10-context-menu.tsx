@@ -515,6 +515,91 @@ function CardFolderDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the posts of a small site ---------- */
+
+const SITE_POSTS: { id: string; name: string; note: string; status: TagStatus; word: string }[] = [
+  { id: "open-water", name: "Open water", note: "Spring series · 4 min read", status: "success", word: "Published" },
+  { id: "dusk-tide", name: "Dusk tide", note: "Spring series · 3 min read", status: "warning", word: "Friday" },
+  { id: "silk", name: "Notes on a slow shutter", note: "No series yet · 6 min read", status: "neutral", word: "Draft" },
+  { id: "garden", name: "What the garden did", note: "The garden · 5 min read", status: "success", word: "Published" },
+];
+const SERIES_NAMES = ["Spring series", "The garden", "Pencil studies", "No series"];
+
+function PostActions({ name, pick }: { name: string; pick: (what: string) => void }) {
+  return (
+    <>
+      <MenuItem icon={<FileIcon />} shortcut="↵" onSelect={() => pick(`Opened ${name}`)}>
+        Open
+      </MenuItem>
+      <MenuItem icon={<EditIcon />} onSelect={() => pick(`Renaming ${name}`)}>
+        Rename
+      </MenuItem>
+      <MenuItem icon={<CopyIcon />} shortcut="⌘D" onSelect={() => pick(`Duplicated ${name}`)}>
+        Duplicate
+      </MenuItem>
+      <MenuSub icon={<FolderIcon />} label="Move to">
+        {SERIES_NAMES.map((s) => (
+          <MenuItem key={s} icon={<FolderIcon />} onSelect={() => pick(`Moved ${name} to ${s}`)}>
+            {s}
+          </MenuItem>
+        ))}
+      </MenuSub>
+      <MenuSeparator />
+      <MenuItem icon={<ArchiveIcon />} onSelect={() => pick(`Hid ${name} from the site`)}>
+        Hide from the site
+      </MenuItem>
+      <MenuItem icon={<TrashIcon />} destructive onSelect={() => pick(`Deleted ${name}`)}>
+        Delete post
+      </MenuItem>
+    </>
+  );
+}
+
+function PostRowsDemo() {
+  const [last, setLast] = useState("Nothing picked yet");
+  return (
+    <div className="grid w-full max-w-xl gap-4">
+      <ul aria-label="Posts" className="litt-paper w-full rounded-surface p-1 shadow-[inset_0_0_0_1px_var(--line)] in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none">
+        {SITE_POSTS.map((p) => (
+          <ContextMenu
+            key={p.id}
+            label={`${p.name} actions`}
+            trigger={
+              <li className="group h-16 border-b border-line in-[[data-material=flat]]:border-transparent last:border-b-0">
+                <div className={rowFill}>
+                  <button type="button" className={rowButton} onClick={() => setLast(`Opened ${p.name}`)}>
+                    <span className="grid min-w-0 flex-1 gap-1">
+                      <span className="truncate text-body font-title text-fg">{p.name}</span>
+                      <span className="truncate text-caption text-fg-subtle">{p.note}</span>
+                    </span>
+                    <Tag status={p.status} className="shrink-0">{p.word}</Tag>
+                  </button>
+                  <Menu
+                    label={`${p.name} actions`}
+                    align="end"
+                    trigger={
+                      <Button iconOnly variant="ghost" aria-label={`More actions for ${p.name}`}>
+                        <MoreIcon />
+                      </Button>
+                    }
+                  >
+                    <PostActions name={p.name} pick={setLast} />
+                  </Menu>
+                </div>
+              </li>
+            }
+          >
+            <PostActions name={p.name} pick={setLast} />
+          </ContextMenu>
+        ))}
+      </ul>
+      <p role="status" className="text-caption font-normal text-fg-subtle">
+        {last}
+      </p>
+    </div>
+  );
+}
+
 export default function ContextMenuPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -526,6 +611,13 @@ export default function ContextMenuPage() {
         code="ProjectRowsDemo"
         caption="Right-click a row, or focus one and press Shift+F10. It is the Menu, opened at the pointer: the same glass and rows, and one highlight that glides between them. It grows from the pointer's corner and slides a quarter of the travel from the side it opens on. Move to opens a solid submenu. The row keeps its fill while its menu is open. Every action is also on the row's ⋯ button, because a context menu is a shortcut that touch and keyboard users may never find."
         byWorld={{
+          flat: {
+            demo: <PostRowsDemo />,
+            title: "Right-click a post",
+            code: "PostRowsDemo",
+            caption:
+              "A small site's posts. Right-click a row, or focus one and press Shift+F10. It is the Menu, opened at the pointer, and one highlight glides between its rows. It grows from the pointer's corner and slides a quarter of the travel from the side it opens on. Move to opens a submenu of series. The row keeps its fill while its menu is open. Every action is also on the row's ⋯ button, because a context menu is a shortcut that touch and keyboard users may never find.",
+          },
           device: {
             demo: <TakeRowsDemo />,
             title: "Right-click a take",

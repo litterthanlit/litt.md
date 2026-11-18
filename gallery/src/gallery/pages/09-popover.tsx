@@ -963,6 +963,73 @@ function TakePhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): share a draft before it goes out ---------- */
+
+const DRAFT_LINK = "https://lowtide.site/drafts/issue-14";
+
+function ShareDraftDemo() {
+  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+  /* On a phone the label is the sheet's heading, so the panel's own heading would say it twice. */
+  const { compact } = useDevice();
+
+  useEffect(() => {
+    if (state !== "copied") return;
+    const t = setTimeout(() => setState("idle"), 2000);
+    return () => clearTimeout(t);
+  }, [state]);
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(DRAFT_LINK);
+      setState("copied");
+    } catch {
+      setState("failed"); // the field selects itself on focus, so the person can press the shortcut
+    }
+  };
+
+  return (
+    <Popover onOpenChange={(open) => open && setState("idle")}>
+      <PopoverTrigger asChild>
+        <Button icon={<ShareIcon />} iconRight={<ChevronDownIcon />}>
+          Share
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent label="Share the draft" size="lg">
+        <div className="grid gap-4">
+          <div className="grid gap-1">
+            {!compact && <p className="text-body font-title text-fg">Share the draft</p>}
+            <p className="text-small text-fg-subtle">
+              Anyone with the link can read issue 14 before Friday. It stops working once the letter goes out.
+            </p>
+          </div>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
+            <TextField
+              label="Draft link"
+              readOnly
+              spellCheck={false}
+              value={DRAFT_LINK}
+              onFocus={(e) => e.currentTarget.select()}
+            />
+            <Button
+              variant="primary"
+              className="w-28"
+              data-autofocus
+              icon={state === "copied" ? <CheckIcon /> : <CopyIcon />}
+              onClick={copy}
+            >
+              {state === "copied" ? "Copied" : "Copy"}
+            </Button>
+          </div>
+          <p role="status" className={state === "failed" ? "text-small text-danger" : "sr-only"}>
+            {state === "copied" && "Link copied."}
+            {state === "failed" && "The browser would not copy it. Select the link and press the copy shortcut."}
+          </p>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export default function PopoverPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -972,7 +1039,7 @@ export default function PopoverPage() {
         size="lg"
         align="start"
         code="ShareDemo"
-        byWorld={{ device: { demo: <ShareTakeDemo />, title: "Share a take", code: "ShareTakeDemo" } }}
+        byWorld={{ flat: { demo: <ShareDraftDemo />, title: "Share a draft", code: "ShareDraftDemo" }, device: { demo: <ShareTakeDemo />, title: "Share a take", code: "ShareTakeDemo" } }}
         caption="The panel fades in, grows from the press scale out of the trigger's corner and slides a quarter of the travel token, on the responsive tier. Focus lands on Copy, so Enter copies at once. Esc closes it and focus goes back to Share. A click outside closes it too, and focus stays where you clicked."
       >
         <ShareDemo />

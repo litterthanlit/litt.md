@@ -540,9 +540,104 @@ function ReviewTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): who gets the welcome letter ---------- */
+
+const READER_FIELDS: RuleBuilderField[] = [
+  {
+    id: "status",
+    label: "Reader status",
+    type: "choice",
+    options: [
+      { value: "subscribed", label: "Subscribed" },
+      { value: "confirmed", label: "Confirmed" },
+      { value: "paused", label: "Paused" },
+      { value: "left", label: "Left" },
+    ],
+  },
+  {
+    id: "source",
+    label: "Signed up from",
+    type: "choice",
+    options: [
+      { value: "front", label: "The front page" },
+      { value: "post", label: "A post" },
+      { value: "friend", label: "A friend's link" },
+      { value: "import", label: "An import" },
+    ],
+  },
+  {
+    id: "series",
+    label: "Came for",
+    type: "choice",
+    options: [
+      { value: "spring", label: "The spring series" },
+      { value: "garden", label: "The garden" },
+      { value: "pencil", label: "Pencil studies" },
+    ],
+  },
+  { id: "post", label: "First post read", type: "text" },
+  { id: "opened", label: "Issues opened", type: "number" },
+];
+
+const WELCOME: RuleBuilderGroup = {
+  kind: "group",
+  id: "welcome",
+  join: "and",
+  children: [
+    { kind: "condition", id: "trigger", field: "status", operator: "is", value: "confirmed", locked: true },
+    { kind: "condition", id: "source", field: "source", operator: "is-not", value: "import" },
+    {
+      kind: "group",
+      id: "came-for",
+      join: "or",
+      children: [
+        { kind: "condition", id: "series", field: "series", operator: "any-of", value: ["spring", "pencil"] },
+        { kind: "condition", id: "post", field: "post", operator: "is", value: "Open water" },
+        { kind: "condition", id: "friend", field: "source", operator: "is", value: "friend" },
+      ],
+    },
+  ],
+};
+
+function WelcomeLetterDemo() {
+  const [rule, setRule] = useState(WELCOME);
+  return (
+    <div className="grid w-full max-w-2xl gap-6">
+      <RuleBuilder label="Welcome letter" fields={READER_FIELDS} value={rule} onValueChange={setRule} />
+      <p className="max-w-[60ch] text-small text-fg-subtle">A new reader gets the spring series welcome when {reads(rule, READER_FIELDS)}.</p>
+    </div>
+  );
+}
+
+const WELCOME_TILE: RuleBuilderGroup = {
+  kind: "group",
+  id: "tile",
+  join: "and",
+  children: [
+    { kind: "condition", id: "source", field: "source", operator: "is-not", value: "import" },
+    {
+      kind: "group",
+      id: "came-for",
+      join: "or",
+      children: [
+        { kind: "condition", id: "post", field: "post", operator: "is", value: "Open water" },
+        { kind: "condition", id: "friend", field: "source", operator: "is", value: "friend" },
+      ],
+    },
+  ],
+};
+
+function WelcomeTile() {
+  return (
+    <div className="w-full max-w-md">
+      <RuleBuilder label="Welcome letter" fields={READER_FIELDS} defaultValue={WELCOME_TILE} />
+    </div>
+  );
+}
+
 export default function RuleBuilderPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<PolicyTile />} tileByWorld={{ device: <ReviewTile /> }}>
+    <Page meta={meta} docs={docs} tile={<PolicyTile />} tileByWorld={{ device: <ReviewTile />, flat: <WelcomeTile /> }}>
       <Stage
         title="An expense policy"
         tier="responsive"
@@ -551,6 +646,13 @@ export default function RuleBuilderPage() {
         code="ExpensePolicyDemo"
         caption="Take a row by its handle: it rises into a raised block at once and follows your hand one to one, and the rows it passes make room, each settling on the responsive spring. Let go and it settles into its place; only then does the rule change, once, so the sentence under it changes as the rows come to rest. The first row is the trigger: it is locked, never moves, and nothing passes above it. Rows stay in their own group. With the keys, Space picks a row up, the arrows move it and Space drops it."
         byWorld={{
+          flat: {
+            demo: <WelcomeLetterDemo />,
+            title: "Who gets the welcome letter",
+            code: "WelcomeLetterDemo",
+            caption:
+              "Which new readers get the spring series welcome. Take a row by its handle: it rises at once and follows your hand one to one, and the rows it passes make room, each settling on the responsive spring. Let go and it settles into its place; only then does the rule change, once, so the sentence under it changes as the rows come to rest. The first row is the trigger: it is locked, never moves, and nothing passes above it. Rows stay in their own group. With the keys, Space picks a row up, the arrows move it and Space drops it.",
+          },
           device: {
             demo: <TakeReviewDemo />,
             title: "Takes to review",

@@ -333,6 +333,29 @@ function TakesViewTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): how the front page shows the posts ---------- */
+
+type FrontPage = "pictures" | "grid" | "words";
+
+const FRONT_PAGES: { value: FrontPage; label: string; description: string; detail: string }[] = [
+  { value: "pictures", label: "Pictures", description: "Each post as one large picture.", detail: "1 a row" },
+  { value: "grid", label: "Grid", description: "Pictures with their titles under them.", detail: "3 a row" },
+  { value: "words", label: "Words", description: "Titles and the first line, no pictures.", detail: "10 a page" },
+];
+
+function FrontPageDemo() {
+  const [layout, setLayout] = useState<FrontPage>("grid");
+  const picked = FRONT_PAGES.find((p) => p.value === layout);
+  return (
+    <div className="grid w-full max-w-3xl gap-3">
+      <CardPicker legend="Front page" name="front" value={layout} onValueChange={setLayout} options={FRONT_PAGES} />
+      <p role="status" className="text-small text-fg-subtle">
+        {picked?.label}, {picked?.detail}. Readers see it on their next visit.
+      </p>
+    </div>
+  );
+}
+
 export default function CardPickerPage() {
   return (
     <Page meta={meta} docs={docs} tile={<LayoutTile />} tileByWorld={{ device: <TakesViewTile /> }}>
@@ -343,6 +366,13 @@ export default function CardPickerPage() {
         code="PlanDemo"
         caption="Three plans, each a card with a title, a line and a price. In Press they are plates seated in one tray and the picked one rises out of it, lit along its top edge, never the accent. Every card has the same size, so nothing changes shape between picks and the prices line up. The cards sit in a row while each gets 12rem of the picker's own width, and stack as rows below that, as on a phone."
         byWorld={{
+          flat: {
+            demo: <FrontPageDemo />,
+            title: "The front page",
+            code: "FrontPageDemo",
+            caption:
+              "Three ways for the site's front page to show the posts, each a card with a title, a line and how many sit together. Every card has the same size, so nothing changes shape between picks and the lines line up. The cards sit in a row while each gets 12rem of the picker's own width, and stack as rows below that, as on a phone.",
+          },
           device: {
             demo: <FormatDemo />,
             title: "A recording format",

@@ -354,14 +354,63 @@ function ExportCodeTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): the letter's sign-up box, to paste into another site ---------- */
+
+const SIGN_UP = `export function SignUp() {
+  // Paste this where readers should find the letter.
+  return (
+    <form action="https://lowtide.site/subscribe" method="post">
+      <label htmlFor="email">Your email</label>
+      <input id="email" name="email" type="email" required />
+      <button type="submit">Subscribe</button>
+      <p>One letter every Friday. Leave any time.</p>
+    </form>
+  );
+}`;
+
+const TEST_SEND = [
+  "$ lowtide send --test issue-14",
+  "",
+  "Issue 14, the last of the spring series",
+  "To: you, only",
+  "6 pictures, made smaller for email: 9.4 MB saved",
+  "9 links, all fine",
+  "",
+  "Sent a test to hello@lowtide.site. It goes to 412 readers on Friday at 9:00.",
+].join("\n");
+
+function SignUpFilesDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-2xl gap-6">
+      <CodeBlock lang="tsx" filename="SignUp.tsx" code={SIGN_UP} />
+      <CodeBlock lang="shell" label="A test send of issue 14" code={TEST_SEND} />
+    </div>
+  );
+}
+
+function SignUpTile() {
+  return (
+    <div className="w-full max-w-md">
+      <CodeBlock filename="SignUp.tsx" lang="tsx" lineNumbers code={SIGN_UP} />
+    </div>
+  );
+}
+
 export default function CodeBlockPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<CodeBlockTile />} tileByWorld={{ device: <ExportCodeTile /> }}>
+    <Page meta={meta} docs={docs} tile={<CodeBlockTile />} tileByWorld={{ device: <ExportCodeTile />, flat: <SignUpTile /> }}>
       <Stage
         title="A file and a shell session"
         align="start"
         code="FilesDemo"
         byWorld={{
+          flat: {
+            demo: <SignUpFilesDemo />,
+            title: "A sign-up box and a test send",
+            code: "SignUpFilesDemo",
+            caption:
+              "The letter's sign-up box, to paste into another site, sits on a quiet surface with its file name in the header. Keywords and signs step back to fg-muted, comments to fg-subtle, and strings take a hint of the accent text, so the code stays calm and no data hue appears. The test send is a shell session, so it shows plain. Nothing moves, and Copy swaps its icon at once.",
+          },
           device: {
             demo: <RecorderFilesDemo />,
             code: "RecorderFilesDemo",

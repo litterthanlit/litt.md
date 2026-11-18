@@ -348,15 +348,102 @@ function LibraryTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site's dashboard ---------- */
+
+const SITE_PAGES = ["Overview", "Posts", "Letter", "Settings"] as const;
+type SitePageName = (typeof SITE_PAGES)[number];
+
+const SITE_POSTS = [
+  ["Open water", "Spring series · published 2 days ago · 612 readers this week."],
+  ["Notes on a slow shutter", "A draft, 6 min read. Last edited this morning."],
+  ["Dusk tide", "Spring series · published last week · 341 readers."],
+  ["Issue 14", "The last of the spring series. Goes out Friday at 9:00."],
+  ["What the garden did", "The garden · published in October · 188 readers."],
+  ["A winter series", "An idea: the same pier, in the cold."],
+];
+
+function SiteDemoPage({ page, title: Title = "h1" }: { page: SitePageName; title?: "h1" | "h3" }) {
+  return (
+    <div className="grid gap-6">
+      <Title className="text-h3 text-fg">{page}</Title>
+      <ul className="grid gap-4">
+        {SITE_POSTS.map(([name, text]) => (
+          <li key={name}>
+            <Card as="div">
+              <CardBody>
+                <CardTitle as={Title === "h1" ? "h2" : "h4"}>{name}</CardTitle>
+                <CardDescription>{text}</CardDescription>
+              </CardBody>
+            </Card>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function SiteNav({ page, onPage }: { page: SitePageName; onPage: (p: SitePageName) => void }) {
+  return (
+    <SidebarNav label="Main">
+      {SITE_PAGES.map((p) => (
+        <SidebarLink
+          key={p}
+          href={`#${p.toLowerCase()}`}
+          current={p === page}
+          onClick={(e) => {
+            e.preventDefault(); // this is a demo: do not move the gallery's own hash
+            onPage(p);
+          }}
+        >
+          {p}
+        </SidebarLink>
+      ))}
+    </SidebarNav>
+  );
+}
+
+function SiteDashboardDemo() {
+  const [page, setPage] = useState<SitePageName>("Overview");
+  return (
+    <Frame label="Low Tide dashboard, desktop" className="[--gutter:var(--space-8)]">
+      <AppShell
+        viewportHeight="34rem"
+        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Low Tide</a>}
+        nav={<SiteNav page={page} onPage={setPage} />}
+        footer={<p className="px-3 py-2 text-caption text-fg-subtle">lowtide.site · 412 subscribers</p>}
+      >
+        <SiteDemoPage page={page} />
+      </AppShell>
+    </Frame>
+  );
+}
+
+function SiteDashboardTile() {
+  const [page, setPage] = useState<SitePageName>("Overview");
+  return (
+    <Frame label="Low Tide dashboard, desktop" className="[--gutter:var(--space-8)]">
+      <AppShell
+        viewportHeight="34rem"
+        mainLandmark={false}
+        wordmark={<a href="#overview" onClick={(e) => { e.preventDefault(); setPage("Overview"); }}>Low Tide</a>}
+        nav={<SiteNav page={page} onPage={setPage} />}
+        footer={<p className="px-3 py-2 text-caption text-fg-subtle">lowtide.site · 412 subscribers</p>}
+      >
+        <SiteDemoPage page={page} title="h3" />
+      </AppShell>
+    </Frame>
+  );
+}
+
 export default function AppShellPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ShellTile />} tileByWorld={{ device: <LibraryTile /> }}>
+    <Page meta={meta} docs={docs} tile={<ShellTile />} tileByWorld={{ device: <LibraryTile />, flat: <SiteDashboardTile /> }}>
       <Stage
         title="Desktop"
         tier="instant"
         size="lg"
         code="ShellDemo"
-        byWorld={{ device: { demo: <LibraryDemo />, code: "LibraryDemo" } }}
+        byWorld={{ flat: { demo: <SiteDashboardDemo />, title: "A site's dashboard", code: "SiteDashboardDemo" }, device: { demo: <LibraryDemo />, code: "LibraryDemo" } }}
         caption="The sidebar is 240px on surface-1 with a hairline on its edge. Scroll the page inside the frame: the main area moves and the sidebar's links stay in view, because its content is sticky and as tall as the window. Its column runs the full height of the page, so on a long page the sidebar still reaches the bottom. The current page is fg on a surface-2 fill, and hover fills a link at fg 6%. Nothing is a dot or an accent."
       >
         <ShellDemo />

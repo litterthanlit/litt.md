@@ -279,6 +279,34 @@ function ExportNarrowDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a post at a glance ---------- */
+
+const POST = { address: "lowtide.site/open-water", url: "https://lowtide.site/open-water" };
+
+function PostDetailsDemo() {
+  return (
+    <Details title="Open water" description="Spring series, the first of six" action={<Button size="sm">View</Button>} className="w-full max-w-lg">
+      <DetailsItem label="Status">
+        <Tag status="success">Published</Tag>
+      </DetailsItem>
+      <DetailsItem label="Address" copy={POST.address}>
+        <DetailsLink href={POST.url} target="_blank" rel="noreferrer">
+          {POST.address}
+        </DetailsLink>
+      </DetailsItem>
+      <DetailsItem label="Reading time">4 min</DetailsItem>
+      <DetailsItem label="Pictures">6</DetailsItem>
+      <DetailsItem label="Readers">612 this week</DetailsItem>
+      <DetailsItem label="Replies">
+        <span className="inline-flex items-center gap-2">
+          <Avatar name="Mara Lindqvist" size="sm" decorative />
+          14, the latest from Mara
+        </span>
+      </DetailsItem>
+    </Details>
+  );
+}
+
 export default function DetailsPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -286,6 +314,13 @@ export default function DetailsPage() {
         title="A deployment"
         code="DeploymentDemo"
         byWorld={{
+          flat: {
+            demo: <PostDetailsDemo />,
+            title: "A post",
+            code: "PostDetailsDemo",
+            caption:
+              "Rows of facts under a post's title, with one action at the end of the header. The labels share one column, so the values line up, and each label sits on its value's first line. The address can be copied: the icon swaps for a check at once and a screen reader hears it. Nothing else moves, and the card has no hover because it links nowhere.",
+          },
           device: {
             demo: <TakeDetailsDemo />,
             title: "A take",

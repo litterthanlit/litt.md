@@ -438,6 +438,63 @@ function CrewPanelDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): what happened when an issue went out ---------- */
+
+const SENT_LOG: [at: string, line: string][] = [
+  ["09:00:00", "Issue 14 is due, to 412 subscribers"],
+  ["09:00:01", "Made the web copy at lowtide.site/letter/14"],
+  ["09:00:02", "Made each picture smaller for email, 6 pictures"],
+  ["09:00:04", "Saved 9.4 MB across 6 pictures"],
+  ["09:00:04", "Sending, 100 at a time"],
+  ["09:00:12", "Sent 100 of 412"],
+  ["09:00:19", "Sent 200 of 412"],
+  ["09:00:26", "Sent 300 of 412"],
+  ["09:00:31", "3 addresses bounced: the mailbox is full or gone"],
+  ["09:00:33", "Sent 409 of 412"],
+  ["09:00:33", "Will try the full mailboxes again tomorrow"],
+  ["09:00:34", "Posted issue 14 under Letter on the site"],
+  ["09:02:10", "First open, from Malmö"],
+  ["09:05:41", "100 readers have opened it"],
+  ["09:11:02", "First reply, from Mara Lindqvist"],
+  ["09:20:00", "182 readers have opened it"],
+  ["09:31:44", "Second reply, from Tomas Berg"],
+  ["09:45:00", "240 readers have opened it"],
+  ["10:00:00", "An hour in: 268 opens, 2 replies, no one left"],
+];
+
+function SentLogDemo() {
+  const viewport = useRef<HTMLDivElement>(null);
+  /* A log starts at its newest line. */
+  useLayoutEffect(() => {
+    const el = viewport.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, []);
+
+  return (
+    <section aria-labelledby="sent-log-title" className="litt-raised w-full max-w-xl overflow-hidden rounded-surface">
+      <header className="flex items-center justify-between gap-3 px-4 pt-4 pb-3">
+        <div className="grid min-w-0 gap-0.5">
+          <h3 id="sent-log-title" className="truncate text-small text-fg">
+            Issue 14, the last of the spring series
+          </h3>
+          <p className="text-caption text-fg-subtle">Sent Friday at 9:00, in 34 s</p>
+        </div>
+        <Tag status="success">Sent</Tag>
+      </header>
+      <ScrollArea label="Issue 14's log" className="h-64 rounded-b-surface" viewportRef={viewport}>
+        <ol className="grid gap-1 px-4 pt-3 pb-4 font-mono text-caption font-normal">
+          {SENT_LOG.map(([at, line], i) => (
+            <li key={i} className="grid grid-cols-[auto_1fr] gap-x-4 pr-2">
+              <span className="text-fg-subtle tabular-nums">{at}</span>
+              <span className="min-w-0 break-words text-fg-muted">{line}</span>
+            </li>
+          ))}
+        </ol>
+      </ScrollArea>
+    </section>
+  );
+}
+
 export default function ScrollAreaPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -446,7 +503,7 @@ export default function ScrollAreaPage() {
         tier="instant"
         size="lg"
         code="DeployLogDemo"
-        byWorld={{ device: { demo: <BackupLogDemo />, title: "A backup log", code: "BackupLogDemo" } }}
+        byWorld={{ flat: { demo: <SentLogDemo />, title: "An issue's log", code: "SentLogDemo" }, device: { demo: <BackupLogDemo />, title: "A backup log", code: "BackupLogDemo" } }}
         caption="The log starts at its newest line, so its top edge has a hairline: there is more above. Scroll it and the thumb fades in on the instant tier, then out after a short pause. Reach the top and that hairline goes, and one shows at the bottom. Nothing shows or fades before you reach for it."
       >
         <DeployLogDemo />

@@ -160,12 +160,33 @@ function PinnedDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): what a small site keeps ---------- */
+
+function SiteStorageDemo() {
+  return (
+    <Breakdown
+      className="w-full max-w-md"
+      label="Your site's space"
+      total={10}
+      totalText="7.2 of 10 GB"
+      formatValue={gb}
+      items={[
+        { label: "Pictures", value: 5.1, hue: "violet" },
+        { label: "Smaller copies for the letter", value: 1.4, hue: "teal" },
+        { label: "Drafts", value: 0.4, hue: "blue" },
+        { label: "Past letters", value: 0.3, hue: "amber" },
+      ]}
+    />
+  );
+}
+
 export default function BreakdownPage() {
   return (
     <Page meta={meta} docs={docs}>
       <Stage
         title="Storage by kind"
         code="StorageDemo"
+        byWorld={{ flat: { demo: <SiteStorageDemo />, title: "A site's space", code: "SiteStorageDemo" } }}
         caption="A 4px split rail has a segment per part, as wide as its share of the plan, with 2px of air between them. The last grey segment is the free space. Under it each part is a row in the Meter's anatomy: the label, the reading with its share, and a thin rail filled in the part's hue. The track, the words and the numbers stay neutral, so color only says which part is which. The rows follow the segments' order, so the order says it too. Nothing animates."
       >
         <StorageDemo />

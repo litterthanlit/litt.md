@@ -244,6 +244,24 @@ function LatencyDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): how long readers stay on a post, by series ---------- */
+
+const TIME_ON_A_POST: SpreadItem[] = [
+  { label: "Spring series", values: logNormal(21, 48, 4, 0.32, 1, 12) },
+  { label: "The garden", values: logNormal(22, 40, 3, 0.36, 1, 12) },
+  { label: "Pencil studies", values: logNormal(23, 36, 5, 0.3, 1, 12) },
+  { label: "Notes", values: logNormal(24, 30, 6, 0.4, 1, 12) },
+  { label: "The letter on the site", values: logNormal(25, 44, 2, 0.34, 1, 12) },
+];
+
+function TimeOnAPostDemo() {
+  return (
+    <div className="w-full max-w-xl">
+      <Spread label="Time on a post, by series" items={TIME_ON_A_POST} formatValue={(v) => `${Math.round(v)} min`} />
+    </div>
+  );
+}
+
 export default function SpreadPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -252,6 +270,13 @@ export default function SpreadPage() {
         size="lg"
         code="BuildTimesDemo"
         byWorld={{
+          flat: {
+            demo: <TimeOnAPostDemo />,
+            title: "Time on a post, by series",
+            code: "TimeOnAPostDemo",
+            caption:
+              "Each row is one series of posts. The faint rail is its full range, the blue rail over it is the middle half of its readers, and the tick is the median, which is also the number at the end. Every rail sits on the same scale, so a series read quickly and one read slowly show at a glance. The rails start and end at the same place and the medians line up. Nothing moves.",
+          },
           device: {
             demo: <TakeLengthsDemo />,
             title: "Take lengths by scene",

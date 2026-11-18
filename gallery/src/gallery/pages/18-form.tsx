@@ -855,9 +855,147 @@ function SlateTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a reader sends something in for the letter ---------- */
+
+const SEND_IN_IDS = {
+  name: "send-in-name",
+  email: "send-in-email",
+  place: "send-in-place",
+  kind: "send-in-kind",
+  note: "send-in-note",
+  consent: "send-in-consent",
+} as const;
+type SendInField = keyof typeof SEND_IN_IDS;
+type SendInValues = { name: string; email: string; place: string; kind: string; note: string; consent: boolean };
+type SendInErrors = Partial<Record<SendInField, string>>;
+
+const SEND_IN_FIELDS = Object.keys(SEND_IN_IDS) as SendInField[];
+const NO_SEND_IN: SendInValues = { name: "", email: "", place: "", kind: "", note: "", consent: false };
+
+/** What is wrong with one field of the send-in form, or nothing. Each message says how to fix it. */
+function checkSendIn(field: SendInField, v: SendInValues): string | undefined {
+  switch (field) {
+    case "name":
+      return v.name.trim() ? undefined : "Enter your name, so the letter can thank you.";
+    case "email":
+      if (!v.email.trim()) return "Enter your email so I can write back.";
+      return EMAIL.test(v.email.trim()) ? undefined : "Use a full address, like mara@example.com.";
+    case "kind":
+      return v.kind ? undefined : "Pick the one that is closest.";
+    case "note":
+      return v.note.trim().length >= 40 ? undefined : "Add a little more: what it is, and where and when.";
+    case "consent":
+      return v.consent ? undefined : "Check the box so I know I can print it.";
+    default:
+      return undefined;
+  }
+}
+
+function SendInDemo() {
+  const [values, setValues] = useState<SendInValues>(NO_SEND_IN);
+  const [errors, setErrors] = useState<SendInErrors>({});
+  const [failedSubmits, setFailedSubmits] = useState(0);
+  const { saving, save } = useSave(() =>
+    toast({ title: "Thank you", description: "It may be in a coming issue. I read every one.", tone: "success" }),
+  );
+
+  /* A field that is already wrong is checked again as it changes, so fixing it clears it. */
+  const change = (key: SendInField, value: string | boolean) => {
+    const next = { ...values, [key]: value };
+    setValues(next);
+    if (errors[key]) setErrors({ ...errors, [key]: checkSendIn(key, next) });
+  };
+
+  const send = (e: FormEvent) => {
+    e.preventDefault();
+    if (saving) return;
+    const found: SendInErrors = {};
+    for (const key of SEND_IN_FIELDS) {
+      const message = checkSendIn(key, values);
+      if (message) found[key] = message;
+    }
+    setErrors(found);
+    if (Object.keys(found).length) return setFailedSubmits((n) => n + 1);
+    save(); // the values stay in the form
+  };
+
+  const summary = SEND_IN_FIELDS.filter((key) => errors[key]).map((key) => ({ id: SEND_IN_IDS[key], message: errors[key] }));
+
+  return (
+    <form onSubmit={send} noValidate aria-label="Send something in" className="grid w-full max-w-100 gap-6">
+      <ErrorSummary errors={summary} focusKey={failedSubmits} />
+      <TextField
+        id={SEND_IN_IDS.name}
+        label="Name"
+        autoComplete="name"
+        value={values.name}
+        error={errors.name}
+        onChange={(e) => change("name", e.target.value)}
+      />
+      <TextField
+        id={SEND_IN_IDS.email}
+        label="Email"
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        value={values.email}
+        error={errors.email}
+        onChange={(e) => change("email", e.target.value)}
+      />
+      <TextField
+        id={SEND_IN_IDS.place}
+        label={
+          <>
+            Where it was
+            <Optional />
+          </>
+        }
+        value={values.place}
+        onChange={(e) => change("place", e.target.value)}
+      />
+      <RadioGroup legend="What it is" className="my-6" value={values.kind} onValueChange={(v) => change("kind", v)} error={errors.kind}>
+        <Radio id={SEND_IN_IDS.kind} value="picture" label="A picture" />
+        <Radio value="story" label="A short story" />
+        <Radio value="question" label="A question" />
+      </RadioGroup>
+      <Textarea
+        id={SEND_IN_IDS.note}
+        label="A few lines"
+        rows={5}
+        help="What it is, and where and when."
+        value={values.note}
+        error={errors.note}
+        onChange={(e) => change("note", e.target.value)}
+      />
+      <Checkbox
+        id={SEND_IN_IDS.consent}
+        label="Low Tide may print it in the letter, with my first name"
+        checked={values.consent}
+        invalid={!!errors.consent}
+        description={errors.consent}
+        onChange={(e) => change("consent", e.target.checked)}
+      />
+      <Button type="submit" variant="primary" block loading={saving}>
+        Send it in
+      </Button>
+    </form>
+  );
+}
+
+function ReaderTile() {
+  return (
+    <div className="w-full max-w-md">
+      <FormSection title="Your details" description="Used only to send you the letter." headingLevel={3}>
+        <TextField label="Name" autoComplete="name" defaultValue="Mara Lindqvist" />
+        <TextField label="Email" type="email" inputMode="email" autoComplete="email" defaultValue="mara@example.com" />
+      </FormSection>
+    </div>
+  );
+}
+
 export default function FormPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<ProfileTile />} tileByWorld={{ device: <SlateTile /> }}>
+    <Page meta={meta} docs={docs} tile={<ProfileTile />} tileByWorld={{ device: <SlateTile />, flat: <ReaderTile /> }}>
       <Toaster>
         <Stage
           title="Start a project"
@@ -865,6 +1003,13 @@ export default function FormPage() {
           align="start"
           code="StartProjectDemo"
           byWorld={{
+            flat: {
+              demo: <SendInDemo />,
+              title: "Send something in",
+              code: "SendInDemo",
+              caption:
+                "A reader sends a picture, a story or a question for the letter. A narrow column of md fields, a consent box above a full-width lg submit. Send it empty: each wrong field shows its error under it, and the summary on top takes focus. Its links move focus to the fields. Typing in a wrong field checks it again, so its error and its summary line clear as soon as the value is fine. A good send shows the button's loading state, then a toast, and keeps what you typed.",
+            },
             device: {
               demo: <RepairDemo />,
               title: "Report a fault",

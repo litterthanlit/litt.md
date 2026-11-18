@@ -498,11 +498,71 @@ function LavsReviewTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): Litt mends the spring series' picture links ---------- */
+
+const OPEN_WATER_DIFF = `@@ -3,7 +3,7 @@
+ The first of the spring series. I stood on the north pier
+ for forty minutes before the light came.
+
+-![Open water](/photos/open-water.jpg)
++![Deep blue water in long ripples](/pictures/open-water.jpg)
+
+ Six pictures follow, one for each week of the series.`;
+
+const DUSK_DIFF = `@@ -1,4 +1,4 @@
+ # Dusk tide
+
+-![](/photos/dusk-tide.jpg)
++![Violet water, pink light on the crests](/pictures/dusk-tide.jpg)
+ Twenty minutes after sunset, from the same pier.`;
+
+const LINKS_DIFF = `@@ -0,0 +1,3 @@
++/photos/*      /pictures/*
++/blog/*        /posts/*
++/newsletter    /letter`;
+
+const OLD_DIFF = `@@ -1,3 +0,0 @@
+-# Coming soon
+-
+-Pictures from the coast, once the spring series starts.`;
+
+const SPRING: FileChange[] = [
+  { id: "open-water", path: "posts/spring/open-water.md", kind: "modified", diff: OPEN_WATER_DIFF },
+  { id: "dusk-tide", path: "posts/spring/dusk-tide.md", kind: "modified", diff: DUSK_DIFF },
+  { id: "links", path: "old-links.txt", kind: "added", diff: LINKS_DIFF },
+  { id: "soon", path: "posts/coming-soon.md", kind: "deleted", diff: OLD_DIFF },
+];
+
+function PicturesTurnDemo() {
+  const [changes, decide] = useReview(SPRING);
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-6">
+      <div className="grid gap-3">
+        <p className="text-body text-fg-muted">
+          The pictures show again. They moved from /photos to /pictures, so I pointed both posts at the new place, wrote what each picture shows for readers
+          who cannot see it, sent the old links on, and took away the old Coming soon page.
+        </p>
+        <FileChanges changes={changes} onDecide={decide} />
+      </div>
+      <Composer placeholder="Message Litt" label="Message Litt" className="w-full" />
+    </div>
+  );
+}
+
+function PicturesReviewTile() {
+  const [changes, decide] = useReview(SPRING);
+  return (
+    <div className="w-full max-w-md">
+      <FileChanges changes={changes} onDecide={decide} />
+    </div>
+  );
+}
+
 export default function FileChangesPage() {
   const [turnKey, resetTurn] = useReplay();
   const [reviewKey, resetReview] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<ReviewTile />} tileByWorld={{ device: <LavsReviewTile /> }}>
+    <Page meta={meta} docs={docs} tile={<ReviewTile />} tileByWorld={{ device: <LavsReviewTile />, flat: <PicturesReviewTile /> }}>
       <Stage
         title="The end of a turn"
         tier="responsive"
@@ -512,6 +572,13 @@ export default function FileChangesPage() {
         onReplay={resetTurn}
         replayLabel="Reset"
         byWorld={{
+          flat: {
+            demo: <PicturesTurnDemo key={turnKey} />,
+            title: "Mended picture links",
+            code: "PicturesTurnDemo",
+            caption:
+              "Litt mended the spring series' pictures and lists what it changed: one row per file with its kind and its lines added and removed. Press Keep or Undo on a row and it settles at once: the verbs give way to the word, the path steps back on the instant tier, and the count of what is left rolls down on the responsive tier. Keep all and Undo all then say the rest, and act on the files still pending only. When every file is decided the header becomes a receipt.",
+          },
           device: {
             demo: <LavsTurnDemo key={turnKey} />,
             code: "LavsTurnDemo",

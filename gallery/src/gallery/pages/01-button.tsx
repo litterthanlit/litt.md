@@ -207,6 +207,58 @@ function TakeIconsDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a small site and its letter ---------- */
+
+function SubscribeDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary">Subscribe</Button>
+      <Button variant="secondary">Read the letter</Button>
+      <Button variant="ghost">Not now</Button>
+      <Button disabled>Send issue 14</Button>
+    </div>
+  );
+}
+
+function DeletePostDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="danger" icon={<TrashIcon />}>Delete post</Button>
+      <Button variant="danger" size="sm">Remove reader</Button>
+      <Button variant="danger" disabled>Delete post</Button>
+    </div>
+  );
+}
+
+function SaveDraftDemo() {
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => setLoading(false), 1600);
+    return () => clearTimeout(t);
+  }, [loading]);
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button variant="primary" loading={loading} onClick={() => setLoading(true)}>Save draft</Button>
+      <Button loading={loading} onClick={() => setLoading(true)}>Send a test</Button>
+    </div>
+  );
+}
+
+function PostIconsDemo() {
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <Button icon={<PlusIcon />}>New post</Button>
+      <Button><CopyIcon /> Copy link</Button>
+      <Button variant="ghost" iconRight={<ArrowUpRightIcon />}>View the site</Button>
+      <Button iconOnly aria-label="Copy link"><CopyIcon /></Button>
+      <Button iconOnly variant="ghost" aria-label="Settings"><SettingsIcon /></Button>
+      <Button iconOnly variant="ghost" aria-label="More actions"><MoreIcon /></Button>
+      <Button iconOnly variant="ghost" size="sm" aria-label="Delete post"><TrashIcon /></Button>
+    </div>
+  );
+}
+
 export default function ButtonPage() {
   return (
     <Page meta={meta} docs={docs} study={study}>
@@ -216,6 +268,12 @@ export default function ButtonPage() {
         caption="Primary is the one accent fill in a view and carries the glow. Secondary is a block raised once by its cast, with no outline. Ghost and a disabled button lie flat: nothing to push. Hover swaps the fill over the instant duration; a press sinks the block at once: the cast tightens and the label drops half a pixel. To feel other durations, open the Playground."
         code="VariantsDemo"
         byWorld={{
+          flat: {
+            demo: <SubscribeDemo />,
+            code: "SubscribeDemo",
+            caption:
+              "A letter's sign-up row. Subscribe is the primary, the ink: the one fill in a view. Read the letter is a white pill on the grey ground, with no edge and nothing cast. Not now is words alone, and Send issue 14, disabled, fades back. There is no block to push: under the hand a pill goes a step darker on the instant tier and does not move, like pressing paper.",
+          },
           device: {
             demo: <ExportTakeDemo />,
             code: "ExportTakeDemo",
@@ -233,6 +291,12 @@ export default function ButtonPage() {
         caption="A destructive action is the secondary block with its words in the danger color, so the red word is the only loud thing. It is not filled red and has no glow. Disabled, it lies flat and loses the red. The one red fill is the confirm of the dialog that asks: the same variant, in the dialog's footer. Open the Dialog page to see it light up."
         code="DangerDemo"
         byWorld={{
+          flat: {
+            demo: <DeletePostDemo />,
+            code: "DeletePostDemo",
+            caption:
+              "A destructive action is the white pill with its words in red, so the word that names the loss is the only loud thing: Delete post, Remove reader. It is never filled red. Disabled, it fades back and loses the red. The one red fill is the confirm of the dialog that asks.",
+          },
           device: {
             demo: <DeleteTakeDemo />,
             code: "DeleteTakeDemo",
@@ -248,11 +312,11 @@ export default function ButtonPage() {
         <SizesDemo />
       </Stage>
 
-      <Stage title="Loading" tier="instant" caption="The label stays mounted at opacity 0 while the spinner shows, so the button keeps its exact width. Press either button." code="LoadingDemo" byWorld={{ device: { demo: <SaveSceneDemo />, code: "SaveSceneDemo" } }}>
+      <Stage title="Loading" tier="instant" caption="The label stays mounted at opacity 0 while the spinner shows, so the button keeps its exact width. Press either button." code="LoadingDemo" byWorld={{ flat: { demo: <SaveDraftDemo />, code: "SaveDraftDemo" }, device: { demo: <SaveSceneDemo />, code: "SaveSceneDemo" } }}>
         <LoadingDemo />
       </Stage>
 
-      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo" byWorld={{ device: { demo: <TakeIconsDemo />, code: "TakeIconsDemo" } }}>
+      <Stage title="Icons" tier="instant" caption="16px solid icons, 8px from the label. Pass one as the icon prop, or as a child before the label, as shadcn writes it: both sit the same. Icon-only buttons are round and labelled for screen readers. An arrow appears only when a button leaves the site." code="IconsDemo" byWorld={{ flat: { demo: <PostIconsDemo />, code: "PostIconsDemo" }, device: { demo: <TakeIconsDemo />, code: "TakeIconsDemo" } }}>
         <IconsDemo />
       </Stage>
 

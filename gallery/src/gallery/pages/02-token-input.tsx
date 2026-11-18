@@ -215,15 +215,56 @@ function RoutingTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): a post's tags ---------- */
+
+function PostTagsDemo() {
+  return (
+    <div className="grid w-full max-w-xl gap-6">
+      <TokenInput
+        label="Tags"
+        defaultValue={["coast", "long exposure", "morning"]}
+        collapseAfter={1}
+        placeholder="Add a tag"
+        hint="Press Enter or a comma to add one. Click the field to see them all."
+      />
+      <TextField label="Post title" defaultValue="Open water" />
+      <p className="flex items-center gap-2 text-small text-fg-muted">
+        Part of <Tag>Spring series</Tag>
+      </p>
+    </div>
+  );
+}
+
+function PostTagsTile() {
+  return (
+    <div className="w-full max-w-sm">
+      <TokenInput
+        label="Tags"
+        defaultValue={["coast", "long exposure", "morning"]}
+        collapseAfter={1}
+        placeholder="Add a tag"
+        hint="Press Enter or a comma to add one."
+      />
+    </div>
+  );
+}
+
 export default function TokenInputPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SendersTile />} tileByWorld={{ device: <RoutingTile /> }}>
+    <Page meta={meta} docs={docs} tile={<SendersTile />} tileByWorld={{ device: <RoutingTile />, flat: <PostTagsTile /> }}>
       <Stage
         title="Senders"
         tier="responsive"
         caption="A mail rule. The field shows the first sender and a bare +N for the rest, and opens to all of them when you focus it. Each sender is a token with its own remove button. The tokens that appear fade in and slide, and they fold back when focus leaves."
         code="SendersDemo"
         byWorld={{
+          flat: {
+            demo: <PostTagsDemo />,
+            title: "A post's tags",
+            code: "PostTagsDemo",
+            caption:
+              "The tags a reader can browse a post by. The field shows the first tag and a bare +N for the rest, and opens to all of them when you focus it. Each tag is a token with its own remove button. The tokens that appear fade in and slide, and they fold back when focus leaves.",
+          },
           device: {
             demo: <RoutingRuleDemo />,
             title: "A routing rule",
