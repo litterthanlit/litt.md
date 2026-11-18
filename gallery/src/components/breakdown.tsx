@@ -16,7 +16,8 @@
  *   in the hue at the control radius, the label (small, fg) and the value (tabular, caption, fg-subtle).
  * - Hues (R7): a part without a hue takes the next free one in the fixed order (blue, amber, teal, violet, rose).
  *   Parts past the fifth fold into one "Other" part in fg at 55% (their values summed), so the hues are never cycled
- *   and a sixth never gets one. A hue the caller sets is never reused for another part in the same Breakdown: if it
+ *   and a sixth never gets one. Flat has eight slots (v1.18): sky, bubblegum and sun follow rose, and only parts past
+ *   the eighth fold. Every other world keeps five, since there the three are its own teal, rose and amber. A hue the caller sets is never reused for another part in the same Breakdown: if it
  *   would be, development logs a console error and the part takes the next free hue.
  * - Semantics: the split rail is `role="img"` named by a summary ("Storage, 91 of 100 GB: Video 58 GB, ..., 9 GB
  *   free"). In rows, each row is a list item whose rail is `role="meter"` named by the row's label, with the value,
@@ -25,12 +26,13 @@
  * - Motion: none. Static, like the Meter: no entrance, no hover, no focus stop. A value that changes just changes.
  */
 import { useEffect, useId } from "react";
+import { byWorld, useMaterial } from "@/motion";
 
-/** The five data hues, in their fixed order (R7). */
-export type BreakdownHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type BreakdownHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** The hues in the order a part without one takes them. */
-const ORDER: BreakdownHue[] = ["blue", "amber", "teal", "violet", "rose"];
+const ORDER: BreakdownHue[] = ["blue", "amber", "teal", "violet", "rose", "sky", "bubblegum", "sun"];
 
 /** A hue's mark tone fills a segment, a swatch and a row's rail. */
 const MARK: Record<BreakdownHue, string> = {
@@ -39,14 +41,15 @@ const MARK: Record<BreakdownHue, string> = {
   teal: "bg-data-teal",
   violet: "bg-data-violet",
   rose: "bg-data-rose",
+  sky: "bg-data-sky",
+  bubblegum: "bg-data-bubblegum",
+  sun: "bg-data-sun",
 };
 /** The folded part is the quiet foreground, the way a sixth series is in chart.tsx. */
 const OTHER = "bg-[color-mix(in_oklab,var(--fg)_55%,transparent)]";
 /** The Meter's track, and the free space in the split rail. */
 const FREE = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)]";
 
-/** How many parts get a hue before the rest fold into Other. */
-const HUED = ORDER.length;
 /** The least a drawn segment is wide, in px: the rail's own height, so a tiny part is still a dot. */
 const SEGMENT_MIN = 4;
 /** The air between segments, in px. */
@@ -61,14 +64,14 @@ export type BreakdownItem = {
   label: string;
   /** The part's quantity, zero or more. It sets the segment's width and the row's fill. */
   value: number;
-  /** Pins this part to one of the five data hues, so a kind keeps its color wherever it appears. Never reuse one hue for two parts in the same Breakdown. */
+  /** Pins this part to one of the data hues, so a kind keeps its color wherever it appears. Never reuse one hue for two parts in the same Breakdown. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber, so do not pin one beside those there. */
   hue?: BreakdownHue;
 };
 
 export type BreakdownProps = {
   /** The whole that is split, at the start of the header: "Storage". It names the list and the split rail for assistive tech. */
   label: string;
-  /** The parts, in the order to show them. Sort them yourself, largest first: the Breakdown does not. Past the fifth they fold into Other. */
+  /** The parts, in the order to show them. Sort them yourself, largest first: the Breakdown does not. Past the fifth (the eighth under Flat) they fold into Other. */
   items: BreakdownItem[];
   /** The whole, such as the plan's 100 GB. When it is more than the sum of the parts, the rest shows as free space. Defaults to the sum, and is never less than it. */
   total?: number;
@@ -87,13 +90,13 @@ export type BreakdownProps = {
 type Part = { label: string; value: number; fill: string };
 
 /**
- * Cuts the items into drawn parts: the first five keep their own hue, the rest fold into Other. Hues the caller set
- * are reserved first, then every part without one takes the next free hue in the fixed order, so pinning one part
- * never repaints the others by position.
+ * Cuts the items into drawn parts: the first five (eight under Flat) keep their own hue, the rest fold into Other. Hues
+ * the caller set are reserved first, then every part without one takes the next free hue in the fixed order, so
+ * pinning one part never repaints the others by position.
  */
-function plan(items: BreakdownItem[], name: string) {
-  const shown = items.slice(0, HUED);
-  const folded = items.slice(HUED);
+function plan(items: BreakdownItem[], name: string, slots: number) {
+  const shown = items.slice(0, slots);
+  const folded = items.slice(slots);
   const taken = new Set<BreakdownHue>();
   const problems: string[] = [];
   const pinned = shown.map((item) => {
@@ -110,7 +113,7 @@ function plan(items: BreakdownItem[], name: string) {
   const parts: Part[] = shown.map((item, i) => {
     let hue = pinned[i];
     if (!hue) {
-      hue = ORDER.find((h) => !taken.has(h)) ?? ORDER[0];
+      hue = ORDER.slice(0, slots).find((h) => !taken.has(h)) ?? ORDER[0];
       taken.add(hue);
     }
     return { label: item.label, value: clean(item.value), fill: MARK[hue] };
@@ -139,7 +142,8 @@ export function Breakdown({ label, items, total, totalText, formatValue, unit, l
   const unitFor = (v: number) => (Array.isArray(unit) ? (v === 1 ? unit[0] : unit[1]) : unit);
   const withUnit = (v: number) => fmt(v) + (unit ? ` ${unitFor(v)}` : "");
 
-  const { parts, problems } = plan(items, label);
+  /* How many parts get a hue before the rest fold into Other: five, and Flat's eight (v1.18). */
+  const { parts, problems } = plan(items, label, byWorld(useMaterial(), { press: 5, flat: 8 }));
   useEffect(() => {
     if (problems.length && inDevelopment()) for (const problem of problems) console.error(problem);
   }, [problems.join("\n")]);

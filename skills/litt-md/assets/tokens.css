@@ -271,16 +271,30 @@
   --flat-paper: var(--flat-surface-1);
   /* Flat's data hues (v1.17): a step deeper than the stone ones in light, so a mark keeps 3:1 and its words 4.5:1 on
      the grey ground. */
-  --flat-data-blue: #258ae3;
-  --flat-data-blue-text: #006dbd;
-  --flat-data-amber: #be7700;
-  --flat-data-amber-text: #965e00;
-  --flat-data-teal: #009790;
-  --flat-data-teal-text: #007871;
-  --flat-data-violet: #9074e9;
-  --flat-data-violet-text: #7456c8;
-  --flat-data-rose: #dc598e;
-  --flat-data-rose-text: #b93a70;
+  --flat-data-blue: #3688f0;
+  --flat-data-blue-text: #266bbb;
+  --flat-data-amber: #da6203;
+  --flat-data-amber-text: #af4d01;
+  --flat-data-teal: #019964;
+  --flat-data-teal-text: #007a4f;
+  --flat-data-violet: #b15afe;
+  --flat-data-violet-text: #9730e4;
+  --flat-data-rose: #ff3148;
+  --flat-data-rose-text: #d50230;
+  /* The ink card's mark: the other theme's step, so it holds 3:1 on the ink (light's card is black, dark's white). */
+  --flat-data-blue-ink: #4792fe;
+  /* Slots six to eight (v1.18): a breakdown or a chart shows eight before Other. */
+  --flat-data-sky: #0090bf;
+  --flat-data-sky-text: #047297;
+  --flat-data-bubblegum: #f92797;
+  --flat-data-bubblegum-text: #cd057a;
+  --flat-data-sun: #a68105;
+  --flat-data-sun-text: #846604;
+  /* The sequential ramp, Candy's bubblegum: how much, light to deep. */
+  --flat-data-seq-1: #ec7db5;
+  --flat-data-seq-2: #e44499;
+  --flat-data-seq-3: #c90f78;
+  --flat-data-seq-4: #a00358;
 
   /* Device's values (data-material="device", below; proposals/device.md): the components studies' hardware, a cool
      aluminium body with plates on it, wells cut into it, keys standing on it and fields behind LCD glass. The neutrals
@@ -754,16 +768,30 @@
   --flat-ground: var(--flat-surface-2);
   --flat-paper: var(--flat-canvas);
   /* Flat's data hues (v1.17): in dark, the stone ones, which already keep 3:1 and 4.5:1 on the grey ground. */
-  --flat-data-blue: #2c90e8;
-  --flat-data-blue-text: #5aa8f4;
-  --flat-data-amber: #c07b03;
-  --flat-data-amber-text: #d79540;
-  --flat-data-teal: #09a198;
-  --flat-data-teal-text: #42b4ab;
-  --flat-data-violet: #8f78df;
-  --flat-data-violet-text: #a896ef;
-  --flat-data-rose: #d55c8c;
-  --flat-data-rose-text: #eb81a7;
+  --flat-data-blue: #4792fe;
+  --flat-data-blue-text: #74acfe;
+  --flat-data-amber: #e86904;
+  --flat-data-amber-text: #fe843d;
+  --flat-data-teal: #03af73;
+  --flat-data-teal-text: #0bca86;
+  --flat-data-violet: #b564ff;
+  --flat-data-violet-text: #c48cff;
+  --flat-data-rose: #ff4451;
+  --flat-data-rose-text: #ff7e7d;
+  /* The ink card's mark: the other theme's step, so it holds 3:1 on the ink (light's card is black, dark's white). */
+  --flat-data-blue-ink: #3688f0;
+  /* Slots six to eight (v1.18): a breakdown or a chart shows eight before Other. */
+  --flat-data-sky: #03a1d5;
+  --flat-data-sky-text: #0cbaf4;
+  --flat-data-bubblegum: #fd2d9b;
+  --flat-data-bubblegum-text: #ff74b0;
+  --flat-data-sun: #b68e0a;
+  --flat-data-sun-text: #d2a408;
+  /* The sequential ramp, Candy's bubblegum: how much, dim to bright. */
+  --flat-data-seq-1: #982b5a;
+  --flat-data-seq-2: #d43b86;
+  --flat-data-seq-3: #f971b3;
+  --flat-data-seq-4: #febad9;
 
   /* Device's values (data-material="device", below; proposals/device.md). */
   --device-canvas: #1d1f22;
@@ -1185,16 +1213,30 @@
     --flat-ground: var(--flat-surface-2);
     --flat-paper: var(--flat-canvas);
     /* Flat's data hues (v1.17): in dark, the stone ones, which already keep 3:1 and 4.5:1 on the grey ground. */
-    --flat-data-blue: #2c90e8;
-    --flat-data-blue-text: #5aa8f4;
-    --flat-data-amber: #c07b03;
-    --flat-data-amber-text: #d79540;
-    --flat-data-teal: #09a198;
-    --flat-data-teal-text: #42b4ab;
-    --flat-data-violet: #8f78df;
-    --flat-data-violet-text: #a896ef;
-    --flat-data-rose: #d55c8c;
-    --flat-data-rose-text: #eb81a7;
+    --flat-data-blue: #4792fe;
+    --flat-data-blue-text: #74acfe;
+    --flat-data-amber: #e86904;
+    --flat-data-amber-text: #fe843d;
+    --flat-data-teal: #03af73;
+    --flat-data-teal-text: #0bca86;
+    --flat-data-violet: #b564ff;
+    --flat-data-violet-text: #c48cff;
+    --flat-data-rose: #ff4451;
+    --flat-data-rose-text: #ff7e7d;
+    /* The ink card's mark: the other theme's step, so it holds 3:1 on the ink (light's card is black, dark's white). */
+    --flat-data-blue-ink: #3688f0;
+    /* Slots six to eight (v1.18): a breakdown or a chart shows eight before Other. */
+    --flat-data-sky: #03a1d5;
+    --flat-data-sky-text: #0cbaf4;
+    --flat-data-bubblegum: #fd2d9b;
+    --flat-data-bubblegum-text: #ff74b0;
+    --flat-data-sun: #b68e0a;
+    --flat-data-sun-text: #d2a408;
+    /* The sequential ramp, Candy's bubblegum: how much, dim to bright. */
+    --flat-data-seq-1: #982b5a;
+    --flat-data-seq-2: #d43b86;
+    --flat-data-seq-3: #f971b3;
+    --flat-data-seq-4: #febad9;
 
     /* Device's values (data-material="device", below; proposals/device.md). */
     --device-canvas: #1d1f22;
@@ -1602,6 +1644,17 @@
   --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+  /* Slots six to eight (v1.18) are Flat's; here they are this world's own teal, rose and amber. No ramp is set (--data-seq-1
+     to 4 are Flat's alone), so a part mixes its one hue as it always has. */
+  --data-sky: var(--data-teal);
+  --data-sky-text: var(--data-teal-text);
+  --data-sky-tint: var(--data-teal-tint);
+  --data-bubblegum: var(--data-rose);
+  --data-bubblegum-text: var(--data-rose-text);
+  --data-bubblegum-tint: var(--data-rose-tint);
+  --data-sun: var(--data-amber);
+  --data-sun-text: var(--data-amber-text);
+  --data-sun-tint: var(--data-amber-tint);
   /* What you type into (R3's cut, the field). Press and Flat draw it as the cut in the page's inks and the sans;
      Device sets it behind LCD glass, in the mono (--field-font, which only Device sets: font-field falls back to
      the sans where the field is drawn, so a face picked on <body> still reaches it). Checkboxes, radios and wells keep --cut. */
@@ -1782,6 +1835,20 @@
   --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+  /* Slots six to eight and the bubblegum ramp (v1.18). */
+  --data-sky: var(--flat-data-sky);
+  --data-sky-text: var(--flat-data-sky-text);
+  --data-sky-tint: color-mix(in oklab, var(--data-sky) var(--tint-strength), var(--surface-1));
+  --data-bubblegum: var(--flat-data-bubblegum);
+  --data-bubblegum-text: var(--flat-data-bubblegum-text);
+  --data-bubblegum-tint: color-mix(in oklab, var(--data-bubblegum) var(--tint-strength), var(--surface-1));
+  --data-sun: var(--flat-data-sun);
+  --data-sun-text: var(--flat-data-sun-text);
+  --data-sun-tint: color-mix(in oklab, var(--data-sun) var(--tint-strength), var(--surface-1));
+  --data-seq-1: var(--flat-data-seq-1);
+  --data-seq-2: var(--flat-data-seq-2);
+  --data-seq-3: var(--flat-data-seq-3);
+  --data-seq-4: var(--flat-data-seq-4);
 }
 
 /* Blue 4 and pink on a Flat element: restated after Flat, so on <html> with both attributes the accent still wins
@@ -1972,6 +2039,17 @@
   --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+  /* Slots six to eight (v1.18) are Flat's; here they are this world's own teal, rose and amber. No ramp is set (--data-seq-1
+     to 4 are Flat's alone), so a part mixes its one hue as it always has. */
+  --data-sky: var(--data-teal);
+  --data-sky-text: var(--data-teal-text);
+  --data-sky-tint: var(--data-teal-tint);
+  --data-bubblegum: var(--data-rose);
+  --data-bubblegum-text: var(--data-rose-text);
+  --data-bubblegum-tint: var(--data-rose-tint);
+  --data-sun: var(--data-amber);
+  --data-sun-text: var(--data-amber-text);
+  --data-sun-tint: var(--data-amber-tint);
 }
 
 /* Blue 4, pink and monochrome on a Device element: restated after Device, so on <html> with both attributes the accent
@@ -2102,6 +2180,17 @@
   --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+  /* Slots six to eight (v1.18) are Flat's; here they are this world's own teal, rose and amber. No ramp is set (--data-seq-1
+     to 4 are Flat's alone), so a part mixes its one hue as it always has. */
+  --data-sky: var(--data-teal);
+  --data-sky-text: var(--data-teal-text);
+  --data-sky-tint: var(--data-teal-tint);
+  --data-bubblegum: var(--data-rose);
+  --data-bubblegum-text: var(--data-rose-text);
+  --data-bubblegum-tint: var(--data-rose-tint);
+  --data-sun: var(--data-amber);
+  --data-sun-text: var(--data-amber-text);
+  --data-sun-tint: var(--data-amber-tint);
 }
 
 :is([data-material="device"][data-accent="blue"], [data-material="device"] [data-accent="blue"], [data-accent="blue"] [data-material="device"]) :is(.litt-raised, .litt-glass) {
@@ -2240,6 +2329,17 @@
   --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+  /* Slots six to eight (v1.18) are Flat's; here they are this world's own teal, rose and amber. No ramp is set (--data-seq-1
+     to 4 are Flat's alone), so a part mixes its one hue as it always has. */
+  --data-sky: var(--data-teal);
+  --data-sky-text: var(--data-teal-text);
+  --data-sky-tint: var(--data-teal-tint);
+  --data-bubblegum: var(--data-rose);
+  --data-bubblegum-text: var(--data-rose-text);
+  --data-bubblegum-tint: var(--data-rose-tint);
+  --data-sun: var(--data-amber);
+  --data-sun-text: var(--data-amber-text);
+  --data-sun-tint: var(--data-amber-tint);
 }
 
 /* Blue 4, pink and monochrome on a Plain element: restated after Plain, so on <html> with both attributes the accent
@@ -2377,6 +2477,17 @@
   --data-teal-tint: var(--rack-data-teal-tint);
   --data-violet-tint: var(--rack-data-violet-tint);
   --data-rose-tint: var(--rack-data-rose-tint);
+  /* Slots six to eight (v1.18) are Flat's; here they are this world's own teal, rose and amber. No ramp is set (--data-seq-1
+     to 4 are Flat's alone), so a part mixes its one hue as it always has. */
+  --data-sky: var(--data-teal);
+  --data-sky-text: var(--data-teal-text);
+  --data-sky-tint: var(--data-teal-tint);
+  --data-bubblegum: var(--data-rose);
+  --data-bubblegum-text: var(--data-rose-text);
+  --data-bubblegum-tint: var(--data-rose-tint);
+  --data-sun: var(--data-amber);
+  --data-sun-text: var(--data-amber-text);
+  --data-sun-tint: var(--data-amber-tint);
 }
 
 /* Blue 4, pink and monochrome on a Rack element: restated after Rack, so on <html> with both attributes the accent
@@ -2525,6 +2636,17 @@
   --data-teal-tint: color-mix(in oklab, var(--data-teal) var(--tint-strength), var(--surface-1));
   --data-violet-tint: color-mix(in oklab, var(--data-violet) var(--tint-strength), var(--surface-1));
   --data-rose-tint: color-mix(in oklab, var(--data-rose) var(--tint-strength), var(--surface-1));
+  /* Slots six to eight (v1.18) are Flat's; here they are this world's own teal, rose and amber. No ramp is set (--data-seq-1
+     to 4 are Flat's alone), so a part mixes its one hue as it always has. */
+  --data-sky: var(--data-teal);
+  --data-sky-text: var(--data-teal-text);
+  --data-sky-tint: var(--data-teal-tint);
+  --data-bubblegum: var(--data-rose);
+  --data-bubblegum-text: var(--data-rose-text);
+  --data-bubblegum-tint: var(--data-rose-tint);
+  --data-sun: var(--data-amber);
+  --data-sun-text: var(--data-amber-text);
+  --data-sun-tint: var(--data-amber-tint);
 }
 
 /* Blue 4, pink and monochrome on a Heat element: restated after Heat, so on <html> with both attributes the accent
@@ -2640,6 +2762,9 @@
     --data-teal-tint: var(--surface-2);
     --data-violet-tint: var(--surface-2);
     --data-rose-tint: var(--surface-2);
+    --data-sky-tint: var(--surface-2);
+    --data-bubblegum-tint: var(--surface-2);
+    --data-sun-tint: var(--surface-2);
   }
 }
 
@@ -2770,15 +2895,17 @@
   /* The ink card under Flat (v1.17, call 4): at most one per view, the ink as a rounded square holding one live thing.
      It takes the other theme's face from Flat's own greys: the ink (black in light, white in dark) is its paper, the
      paper is its words, and Flat's disabled grey, the other theme's quiet ink, is its quiet words (7.1:1 on black,
-     5.5:1 on white). Its one color is the first data hue, on its data only: the mark and a line's dot (the -text
-     tone takes the mark, 5.3:1 and 3.2:1). No ring, no shadow. Outside Flat .litt-ink does nothing. */
+     5.5:1 on white). Its one color is the first data hue, on its data only: the mark and a line's dot, both the other
+     theme's mark step (--flat-data-blue-ink), since the card is the other theme's face (6.2:1 on black, 3.3:1 on
+     white). No ring, no shadow. Outside Flat .litt-ink does nothing. */
   [data-material="flat"] .litt-ink,
   .litt-ink[data-material="flat"] {
     --surface-1: var(--flat-fg);
     --fg: var(--flat-paper);
     --fg-muted: var(--flat-fg-disabled);
     --fg-subtle: var(--flat-fg-disabled);
-    --data-blue-text: var(--data-blue);
+    --data-blue: var(--flat-data-blue-ink);
+    --data-blue-text: var(--flat-data-blue-ink);
     background: var(--surface-1);
     color: var(--fg);
     box-shadow: inset 0 0 0 0 transparent;

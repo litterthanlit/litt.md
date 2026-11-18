@@ -43,7 +43,10 @@
  *               same OKLCH lightness, in both themes; the flat block maps every neutral onto its mirror and comes
  *               after monochrome; nothing in it casts, blurs, sinks or is "none"; it restates the focus ring and the
  *               data tints. Check 5 runs every pair again under Flat. The ink card (.litt-ink, v1.17) casts nothing, and
- *               its words reach 4.5:1 and its first data hue's mark and dot 3:1 on its face, in both themes.
+ *               its words reach 4.5:1 and its first data hue's mark and dot 3:1 on its face, in both themes. Flat's ramp
+ *               (--flat-data-seq-1 to 4, v1.18) steps away from the ground, and steps two to four reach 3:1 on it and
+ *               on paper. Check 5 runs slots six to eight (sky, bubblegum, sun) in every theme, as Flat's own hues
+ *               or as the teal, rose and amber they alias elsewhere.
  * 12. Device:  data-material="device" (proposals/device.md). Every --device-* value is defined in both themes; the
  *               device block maps every neutral and press token onto its --device-* twin, comes after Flat, sinks 2px
  *               and restates the focus ring and the data tints; pink and monochrome are restated on Device after it; reduced
@@ -277,7 +280,17 @@ missing.length ? missing.forEach((k) => fail(`${k} is defined in only one theme`
 // 5. Contrast -------------------------------------------------------------
 console.log("Contrast");
 // Every pair runs in each theme, then again under Flat and under Device (checks 11 and 12 hold the mirrors themselves).
-const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)], ["device light", deviceOf(light)], ["device dark", deviceOf(dark)], ["device screen", screenOf(light)], ["plain light", plainOf(light)], ["plain dark", plainOf(dark)], ["rack light", rackOf(light)], ["rack dark", rackOf(dark)], ["heat light", heatOf(light)], ["heat dark", heatOf(dark)]];
+/* Slots six to eight (v1.18) are Flat's own hues; every other world names them as its teal, rose and amber, so where a
+   theme has no value of its own they are checked as those. */
+const EXTRA_HUES = { sky: "teal", bubblegum: "rose", sun: "amber" };
+const HUES = ["blue", "amber", "teal", "violet", "rose", ...Object.keys(EXTRA_HUES)];
+const withSlots = (map) => {
+  for (const [h, from] of Object.entries(EXTRA_HUES))
+    for (const tone of ["", "-text", "-tint"])
+      if (!/^#[0-9a-f]{6}$/i.test(map.get(`--data-${h}${tone}`) || "") && map.has(`--data-${from}${tone}`)) map.set(`--data-${h}${tone}`, map.get(`--data-${from}${tone}`));
+  return map;
+};
+const THEMES = [["light", light], ["dark", dark], ["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)], ["device light", deviceOf(light)], ["device dark", deviceOf(dark)], ["device screen", screenOf(light)], ["plain light", plainOf(light)], ["plain dark", plainOf(dark)], ["rack light", rackOf(light)], ["rack dark", rackOf(dark)], ["heat light", heatOf(light)], ["heat dark", heatOf(dark)]].map(([t, m]) => [t, t.startsWith("flat") ? m : withSlots(new Map(m))]);
 const pairs = [
   // [foreground, backgrounds, minimum, note]
   ["--fg", ["--canvas", "--well", "--surface-1", "--surface-2", "--surface-3", "--block"], 4.5, "text"],
@@ -301,7 +314,7 @@ const pairs = [
   ["--success", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--warning", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
   ["--danger", ["--canvas", "--surface-1", "--surface-2"], 4.5, "status text and tags"],
-  ...["blue", "amber", "teal", "violet", "rose"].flatMap((h) => [
+  ...HUES.flatMap((h) => [
     [`--data-${h}`, ["--canvas", "--surface-1", "--surface-2"], 3, "a data mark (R7)"],
     [`--data-${h}-text`, ["--canvas", "--surface-1", "--surface-2"], 4.5, "a data hue as text (R7)"],
   ]),
@@ -331,7 +344,7 @@ for (const [theme, map] of THEMES) {
 for (const [theme, map] of THEMES) {
   const t = parseFloat(map.get("--tint-strength")) / 100;
   if (!(t > 0)) { fail(`${theme}: --tint-strength is missing or not a percentage`); continue; }
-  for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
+  for (const h of HUES) {
     const hue = map.get(`--data-${h}`), text = map.get(`--data-${h}-text`), s1 = map.get("--surface-1");
     if (![hue, text, s1].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { fail(`${theme}: --data-${h}, its -text or --surface-1 is not a six-digit hex`); continue; }
     const [A, B] = [toLab(hue), toLab(s1)];
@@ -347,7 +360,7 @@ for (const [theme, map] of THEMES) {
 const apart = (a, b) => { const [A, B] = [toLab(a), toLab(b)]; return Math.hypot(A[0] - B[0], A[1] - B[1], A[2] - B[2]); };
 let apartChecks = 0, apartFails = 0;
 for (const [theme, map] of THEMES) {
-  for (const h of ["blue", "amber", "teal", "violet", "rose"]) {
+  for (const h of HUES) {
     for (const [ours, theirs] of [["--accent", `--data-${h}`], ["--accent-text", `--data-${h}-text`], ["--accent-pink", `--data-${h}`], ["--accent-pink-text", `--data-${h}-text`], ["--accent-blue", `--data-${h}`], ["--accent-blue-text", `--data-${h}-text`]]) {
       const a = map.get(ours), b = map.get(theirs);
       if (![a, b].every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { fail(`${theme}: ${ours} or ${theirs} is not a six-digit hex`); continue; }
@@ -753,6 +766,22 @@ else {
   if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) flatFails.push(`flat: --focus-ring must restate the ring with var(--focus), never a literal (is "${ring}")`);
   for (const h of ["blue", "amber", "teal", "violet", "rose"])
     if (!/var\(--surface-1\)/.test(flat.get(`--data-${h}-tint`) || "")) flatFails.push(`flat: --data-${h}-tint is not restated over var(--surface-1)`);
+  /* Flat's ramp (v1.18): four steps of one hue, light to deep in light and dim to bright in dark, so each step stands
+     further from the ground than the last; steps two to four are a gauge's lit ticks, so they reach 3:1 on the ground
+     and on paper. The first is a heatmap's faintest step, beside its legend, as the 30% mix it replaces. */
+  for (const [theme, base] of [["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)]]) {
+    const steps = [1, 2, 3, 4].map((i) => base.get(`--data-seq-${i}`));
+    if (!steps.every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { flatFails.push(`${theme}: --flat-data-seq-1 to 4 are not all six-digit hexes`); continue; }
+    const ground = base.get("--canvas");
+    for (let i = 1; i < 4; i++)
+      if (ratio(steps[i], ground) <= ratio(steps[i - 1], ground)) flatFails.push(`${theme}: --flat-data-seq-${i + 1} does not stand further from the ground than step ${i}`);
+    for (const i of [2, 3, 4])
+      for (const bg of ["--canvas", "--surface-1", "--surface-2"]) {
+        contrastChecks++;
+        const r = ratio(steps[i - 1], base.get(bg));
+        if (r < 3) flatFails.push(`${theme}: --flat-data-seq-${i} on ${bg} is ${r.toFixed(2)}:1, needs 3:1 (a gauge's lit tick)`);
+      }
+  }
   /* The ink card (v1.17, call 4): .litt-ink under Flat maps its face, words and data onto Flat's own tokens, casts
      nothing, and in each theme its words reach 4.5:1 and its data hue's mark and dot 3:1 on its face. */
   const inkRule = /\[data-material="flat"\] \.litt-ink,\s*\.litt-ink\[data-material="flat"\]\s*\{([^}]*)\}/.exec(css);

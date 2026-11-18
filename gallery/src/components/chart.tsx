@@ -22,9 +22,11 @@
  *   every series without one the next hue in the fixed order. Color follows the series, never its place, so a
  *   filter that drops a series never repaints the others. A hue series rests in the hue's mark tone (3:1 on every
  *   surface) and its emphasised mark takes the hue's text tone, a step stronger, so no mark falls under 3:1 and
- *   none needs an edge. Up to five hue series. Color alone must not tell five lines apart (WCAG 1.4.1), so the
- *   third, fourth and fifth hues' lines are dashed, dotted and dash-dotted, in the legend swatch too; blue and
- *   amber stay solid. The dash follows the hue, as the color does.
+ *   none needs an edge. Up to five hue series, eight under Flat (v1.18: sky, bubblegum and sun follow rose, Flat's
+ *   own; in every other world they are its teal, rose and amber, so `hues` there stops at five and starts again).
+ *   Color alone must not tell five lines apart (WCAG 1.4.1), so the third, fourth and fifth hues' lines are dashed,
+ *   dotted and dash-dotted, and the sixth, seventh and eighth long-dashed, dash-dot-dotted and short-dashed, in the
+ *   legend swatch too; blue and amber stay solid. The dash follows the hue, as the color does.
  * - Anatomy: horizontal gridlines only (line), the zero baseline in line-strong, three to five lines in all. Axis
  *   labels are caption-size in fg-subtle with tabular numbers. When categories are too close for their
  *   labels, every nth label shows, counted back from the last mark so the current one keeps its label. Bars are at
@@ -65,8 +67,8 @@ import { ChartRackBody } from "@/worlds/rack/chart";
 
 /* ----------------------------------------------------------------- types */
 
-/** The five data hues, in their fixed order (R7). */
-export type ChartHue = "blue" | "amber" | "teal" | "violet" | "rose";
+/** The data hues, in their fixed order (R7): the five, then slots six to eight, Flat's own (elsewhere its teal, rose and amber). */
+export type ChartHue = "blue" | "amber" | "teal" | "violet" | "rose" | "sky" | "bubblegum" | "sun";
 
 /** One named run of values, one per category. Values are zero or more. */
 export type ChartSeries = {
@@ -74,7 +76,7 @@ export type ChartSeries = {
   name: string;
   /** One value per label, in the same order as `labels`. */
   values: number[];
-  /** Draws this series in one of the five data hues instead of the foreground. Keep a series' hue the same wherever it appears. */
+  /** Draws this series in one of the data hues instead of the foreground. Keep a series' hue the same wherever it appears. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; in every other world they are its teal, rose and amber. */
   hue?: ChartHue;
 };
 
@@ -97,7 +99,7 @@ type ChartBaseProps = {
   summary?: string;
   /** The category with the emphasis: an index, "last" (the default) or "none". Only a single series takes it; a hovered or focused mark replaces it. */
   highlight?: number | "last" | "none";
-  /** Gives every series without its own hue the next data hue in the fixed order: blue, amber, teal, violet, rose. Leave it off for the quiet foreground. */
+  /** Gives every series without its own hue the next data hue in the fixed order: blue, amber, teal, violet, rose, and under Flat sky, bubblegum and sun after them. Leave it off for the quiet foreground. */
   hues?: boolean;
   /** Plays the entrance on the responsive tier when the chart mounts. Remount with a new key to replay. */
   entrance?: boolean;
@@ -142,9 +144,12 @@ const HUE_DASH: Partial<Record<ChartHue, Dash>> = {
   teal: DASHED,
   violet: { line: "0.5 5", swatch: "2 2" },
   rose: { line: "8 4 0.5 4", swatch: "6 2 2 2" },
+  sky: { line: "14 4", swatch: "7 2" },
+  bubblegum: { line: "8 4 0.5 4 0.5 4", swatch: "5 1 1 1 1 1" },
+  sun: { line: "2 5", swatch: "1 1" },
 };
 
-const HUE_ORDER: ChartHue[] = ["blue", "amber", "teal", "violet", "rose"];
+const HUE_ORDER: ChartHue[] = ["blue", "amber", "teal", "violet", "rose", "sky", "bubblegum", "sun"];
 /* Literal names, so Tailwind sees the classes and the registry can rename the variables: the mark tone at rest, the
    text tone for the emphasised mark, then the same two as colors for a line and its marker. */
 const HUE_PAINT: Record<ChartHue, [rest: string, strong: string, stroke: string, marker: string]> = {
@@ -153,15 +158,18 @@ const HUE_PAINT: Record<ChartHue, [rest: string, strong: string, stroke: string,
   teal: ["fill-data-teal", "fill-data-teal-text", "var(--data-teal)", "var(--data-teal-text)"],
   violet: ["fill-data-violet", "fill-data-violet-text", "var(--data-violet)", "var(--data-violet-text)"],
   rose: ["fill-data-rose", "fill-data-rose-text", "var(--data-rose)", "var(--data-rose-text)"],
+  sky: ["fill-data-sky", "fill-data-sky-text", "var(--data-sky)", "var(--data-sky-text)"],
+  bubblegum: ["fill-data-bubblegum", "fill-data-bubblegum-text", "var(--data-bubblegum)", "var(--data-bubblegum-text)"],
+  sun: ["fill-data-sun", "fill-data-sun-text", "var(--data-sun)", "var(--data-sun-text)"],
 };
 
 /** How one series is painted: its bar fills at rest and emphasised, its line and marker colors, and the cues past color. */
 type Paint = { rest: string; strong: string; stroke: string; marker: string; edge: boolean; dash?: Dash };
 
-function paints(series: ChartSeries[], hues: boolean): Paint[] {
+function paints(series: ChartSeries[], hues: boolean, slots: number): Paint[] {
   let next = 0;
   return series.map((s, j) => {
-    const hue = s.hue ?? (hues ? HUE_ORDER[next++ % HUE_ORDER.length] : undefined);
+    const hue = s.hue ?? (hues ? HUE_ORDER[next++ % slots] : undefined);
     if (hue) {
       const [rest, strong, stroke, marker] = HUE_PAINT[hue];
       return { rest, strong, stroke, marker, edge: false, dash: HUE_DASH[hue] };
@@ -283,9 +291,12 @@ function Chart({
   const n = labels.length;
   const stacked = kind === "stack";
   const many = series.length > 1;
-  const paint = useMemo(() => paints(series, hues || stacked), [series, hues, stacked]);
+  const material = useMaterial();
+  /* How many hues `hues` hands out: five, and Flat's eight (v1.18). */
+  const slots = byWorld(material, { press: 5, flat: 8 });
+  const paint = useMemo(() => paints(series, hues || stacked, slots), [series, hues, stacked, slots]);
   /* A world without a chart body of its own (Plain) draws Press's (byWorld). */
-  const body: World = byWorld<World>(useMaterial(), { press: "press", flat: "flat", device: "device", rack: "rack" });
+  const body: World = byWorld<World>(material, { press: "press", flat: "flat", device: "device", rack: "rack" });
   const [boxRef, width] = useWidth();
   const g = useMemo(
     () => layout(width, height, labels, series, fmt, stacked, FRAME[body]),
@@ -995,7 +1006,7 @@ export type MeterProps = {
   max?: number;
   /** The reading at the end of the row, in tabular figures: "42 of 100 GB". Defaults to the percentage. */
   valueText?: string;
-  /** Fills the rail with one of the five data hues instead of the foreground, when the color says which thing this is (R7). */
+  /** Fills the rail with one of the data hues instead of the foreground, when the color says which thing this is (R7). `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
   hue?: ChartHue;
   /** A value to aim for or stay under, such as a budget. A 2px tick crosses the rail there, in fg-subtle, and screen readers hear it after the reading. */
   target?: number;
@@ -1013,6 +1024,9 @@ const METER_FILL: Record<ChartHue, string> = {
   teal: "bg-data-teal",
   violet: "bg-data-violet",
   rose: "bg-data-rose",
+  sky: "bg-data-sky",
+  bubblegum: "bg-data-bubblegum",
+  sun: "bg-data-sun",
 };
 
 const TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] in-[[data-material=flat]]:bg-slot";

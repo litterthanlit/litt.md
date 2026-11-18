@@ -307,14 +307,59 @@ function MinutesTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, Flat, v1.18): your site's readers, on Flat's ramp ---------- */
+
+/** Reads of your site by hour, a row a day: quiet nights, a morning and an evening swell, more on Friday when the
+    letter goes out. Deterministic, so the build and the tests see the same dots. */
+const READ_ROWS: HeatmapRow[] = WEEKDAYS.map((label, d) => ({
+  label,
+  values: HOURS.map((_, h) => {
+    if (h < 6) return h === 0 && d === 4 ? 2 : 0;
+    const morning = Math.exp(-((h - 8) ** 2) / 4) * 14;
+    const evening = Math.exp(-((h - 20) ** 2) / 6) * 18;
+    const letter = d === 4 ? Math.exp(-((h - 9) ** 2) / 3) * 22 : 0;
+    const wobble = ((d * 7 + h * 13) % 5) - 2;
+    return Math.max(0, Math.round(morning + evening + letter + 3 + wobble + (d >= 5 ? 3 : 0)));
+  }),
+}));
+
+function ReadsWeekDemo() {
+  return <Heatmap label="Reads by hour, this week" rows={READ_ROWS} columns={HOURS} columnTicks={HOUR_TICKS} cell={12} unit={["read", "reads"]} />;
+}
+
+function ReadsTile() {
+  return (
+    <div className="w-full overflow-x-auto">
+      <Heatmap
+        label="Reads per day"
+        cell={12}
+        columns={TILE_DAYS.map((d) => `day ${d + 1}`)}
+        unit={["read", "reads"]}
+        rows={[
+          { label: "August", values: tileRow(1.7), total: "25,998" },
+          { label: "September", values: tileRow(2.3), total: "24,310" },
+          { label: "October", values: tileRow(3.1).map((v, d) => (d > 19 ? null : v)), total: "16,402" },
+        ]}
+      />
+    </div>
+  );
+}
+
 export default function HeatmapPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<HeatmapTile />} tileByWorld={{ device: <MinutesTile /> }}>
+    <Page meta={meta} docs={docs} tile={<HeatmapTile />} tileByWorld={{ device: <MinutesTile />, flat: <ReadsTile /> }}>
       <Stage
         title="Usage by month"
         tier="responsive"
         code="UsageDemo"
         byWorld={{
+          flat: {
+            demo: <ReadsWeekDemo />,
+            title: "The week on the ramp",
+            code: "ReadsWeekDemo",
+            caption:
+              "Reads of your site by hour, a row a day, with Friday's swell when the letter goes out. No hue is passed, so the four steps are Flat's sequential ramp: bubblegum from light to deep (dim to bright in dark), one hue for one quantity, and the deepest dots are the busiest hours. The legend under the grid walks the same steps. Hover a dot, or arrow to it, and a ring and a tooltip name the hour and the reads. Nothing moves on arrival.",
+          },
           device: {
             demo: <MinutesDemo />,
             title: "Minutes recorded",

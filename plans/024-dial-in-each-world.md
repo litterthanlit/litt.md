@@ -565,6 +565,36 @@ data part, and `Flat · data in a screen`. Nothing ships until Nick picks; the p
 through `evolve.md`, and slots six to eight, a ramp the Heatmap and Cohort grid read, and a diverging pair are contract
 changes.
 
+### Flat's data in Candy (done, 2026-11-18, waiting for Nick)
+
+Nick saw the study and the recommendation: "yes I love this all! open a pr! keep going!". Candy ships.
+
+- [x] Step 1, `taste:` (v1.18): Flat's five `--flat-data-*` hues and `-text` tones are Candy's, light and dark. Candy's
+      light blue sat 0.107 from Blue 4 (R6 asks 0.12), so it moved a little toward the sky, keeping its hue and chroma
+      as near as passing allows (its mark and text tone in light; tokens.css has the values). The ink card's
+      mark and dot take the other theme's step (`--flat-data-blue-ink`): 6.2:1 on black, 3.3:1 on white (was 2.9:1).
+      R7, Flat's color rule, the journal, `material.md` and SKILL.md say so; `check.mjs` runs the new slots in every
+      theme and Flat's ramp (each step further from the ground, steps two to four 3:1 on ground and paper).
+- [x] Step 2, the contract, Flat only: slots six to eight (`sky`, `bubblegum`, `sun`) are hue names Breakdown, Chart
+      (series and Meter), Legend, Heatmap, Cohort grid and Gauge accept; every other world aliases them to its teal,
+      rose and amber. Under Flat a Breakdown shows eight before Other and `hues` hands out eight (lines six to eight
+      dashed long, dash-dot-dot and short); elsewhere five, unchanged (`byWorld(useMaterial(), { press: 5, flat: 8 })`).
+      `--flat-data-seq-1..4`, Candy's bubblegum ramp, read as `--data-seq-*` only under Flat: a Heatmap or Cohort grid
+      with no `hue` walks it (elsewhere blue's and teal's mixes, as before), and `Gauge ramp` lets the lit ticks walk
+      steps two to four by thirds of the arc (elsewhere it keeps the hue). The ramp is picked by `byWorld`, so a world's
+      own install never names a token its CSS lacks. Flat's demos: the heatmap's lead and tile (reads by hour, a week,
+      on the ramp), the gauge's lead and tile (`ramp`), the breakdown's second stage (ten places, eight before Other),
+      and the cohort grid's lead (no hue, so the ramp).
+- [x] Validator (dataviz, on the final tokens): light marks on the ground and on paper, dark on the ground and on paper,
+      all eight in order: every check passes (worst adjacent CVD ΔE 9.7 protan light, 10.1 deutan dark; normal-vision
+      floor 25.8 and 27.4). The first three pass all pairs; four do not (blue and grape 2.2 under deutan), so a
+      scatter-style form keeps to three. Both ramps pass the ordinal checks (monotone, steps 0.06 apart, one hue).
+- [x] `#device/heatmap`, `#press/gauge`, `#heat/breakdown` and `#rack/stat`, light, with Variants shut and open:
+      pixel-equal to the build before down to the docs table, which now lists the new props and hue names.
+- Left: the diverging pair (no part takes one yet); slots six to eight in Bar list, Sparkline, Funnel, Spread, Dot plot,
+  Tag, Avatar and Timeline (their hue types still name five); the study files keep Candy's first blue and call today's
+  hues muted, as a record.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.
