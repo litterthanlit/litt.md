@@ -359,7 +359,7 @@ function ExportCodeTile() {
 const SIGN_UP = `export function SignUp() {
   // Paste this where readers should find the letter.
   return (
-    <form action="https://lowtide.site/subscribe" method="post">
+    <form action="https://example.com/subscribe" method="post">
       <label htmlFor="email">Your email</label>
       <input id="email" name="email" type="email" required />
       <button type="submit">Subscribe</button>
@@ -369,14 +369,14 @@ const SIGN_UP = `export function SignUp() {
 }`;
 
 const TEST_SEND = [
-  "$ lowtide send --test issue-14",
+  "$ letter send --test issue-14",
   "",
   "Issue 14, the last of the spring series",
   "To: you, only",
   "6 pictures, made smaller for email: 9.4 MB saved",
   "9 links, all fine",
   "",
-  "Sent a test to hello@lowtide.site. It goes to 412 readers on Friday at 9:00.",
+  "Sent a test to hello@example.com. It goes to 412 readers on Friday at 9:00.",
 ].join("\n");
 
 function SignUpFilesDemo() {

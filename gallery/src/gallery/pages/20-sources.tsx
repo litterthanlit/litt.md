@@ -496,8 +496,8 @@ function TakeSourcesTile() {
 const ISSUE_13: Source = {
   id: "issue-13",
   title: "letter/issue-13.md",
-  url: "https://lowtide.site/letter/13",
-  site: "lowtide.site",
+  url: "https://example.com/letter/13",
+  site: "example.com",
   kind: "file",
   passage: "![A red sun, low over a white ground](/pictures/red-sun.jpg)\n![The same sun, ten minutes later](/pictures/red-sun-2.jpg)",
   readAt: "just now",
@@ -506,8 +506,8 @@ const ISSUE_13: Source = {
 const LETTER_PICTURES: Source = {
   id: "letter-pictures",
   title: "Pictures in the letter",
-  url: "https://lowtide.site/help/letter-pictures",
-  site: "lowtide.site",
+  url: "https://example.com/help/letter-pictures",
+  site: "example.com",
   passage: "Pictures in the letter are made 1200 px wide, so the letter opens fast on a phone. The site keeps every picture at its full size.",
   readAt: "2 minutes ago",
 };
@@ -515,8 +515,8 @@ const LETTER_PICTURES: Source = {
 const FULL_SIZE: Source = {
   id: "full-size",
   title: "Letter settings: picture size",
-  url: "https://lowtide.site/settings/letter",
-  site: "lowtide.site",
+  url: "https://example.com/settings/letter",
+  site: "example.com",
   passage: "Picture size in the letter: Smaller (1200 px), Large (2000 px). Large letters take longer to open.",
   readAt: "a minute ago",
 };

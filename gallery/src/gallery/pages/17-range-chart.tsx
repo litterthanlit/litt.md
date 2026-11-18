@@ -351,7 +351,7 @@ const SERIES_SEGMENTS: RangeChartSegment[] = [
 function ReadersDemo() {
   return (
     <div className="w-full max-w-2xl">
-      <RangeChart label="Readers of lowtide.site" unit="readers" bars={READERS} segments={SERIES_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} />
+      <RangeChart label="Readers of your site" unit="readers" bars={READERS} segments={SERIES_SEGMENTS} axis={MONTH_TICKS} defaultValue={LAUNCH_RANGE} />
     </div>
   );
 }
@@ -369,7 +369,7 @@ export default function RangeChartPage() {
         align="start"
         code="VisitorsDemo"
         byWorld={{
-          flat: { demo: <ReadersDemo />, title: "Readers of lowtide.site", code: "ReadersDemo" },
+          flat: { demo: <ReadersDemo />, title: "Readers of your site", code: "ReadersDemo" },
           device: {
             demo: <TakesDemo />,
             title: "Takes recorded",

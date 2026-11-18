@@ -965,7 +965,7 @@ function TakePhoneDemo() {
 
 /* ---------- Flat's own (plans/024, phase 3): share a draft before it goes out ---------- */
 
-const DRAFT_LINK = "https://lowtide.site/drafts/issue-14";
+const DRAFT_LINK = "https://example.com/drafts/issue-14";
 
 function ShareDraftDemo() {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");

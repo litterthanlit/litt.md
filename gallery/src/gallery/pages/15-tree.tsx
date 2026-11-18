@@ -147,7 +147,7 @@ function SitePagesDemo() {
   const [selected, setSelected] = useState<string | null>("posts/spring/open-water");
   return (
     <div className="grid w-full max-w-xs gap-4">
-      <Tree label="Low Tide" items={SITE} defaultExpanded={["posts", "posts/spring"]} selected={selected} onSelect={(id, node) => !node.children && setSelected(id)} />
+      <Tree label="Your site" items={SITE} defaultExpanded={["posts", "posts/spring"]} selected={selected} onSelect={(id, node) => !node.children && setSelected(id)} />
       <p className="text-caption font-normal text-fg-subtle">{selected ?? "No page open"}</p>
     </div>
   );

@@ -233,7 +233,7 @@ function SiteWeeksDemo() {
   return (
     <div className="grid w-full max-w-2xl gap-4">
       <Legend label="Series" items={items} hidden={hidden} onHiddenChange={setHidden} />
-      <BarChart label="Low Tide per week, last 8 weeks" labels={WEEKS} series={shown} unit="times" xTitle="Week" hues legend={false} />
+      <BarChart label="Your site per week, last 8 weeks" labels={WEEKS} series={shown} unit="times" xTitle="Week" hues legend={false} />
     </div>
   );
 }

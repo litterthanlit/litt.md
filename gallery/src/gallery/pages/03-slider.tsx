@@ -787,13 +787,13 @@ function TextSizeDemo() {
     <div className="grid w-full max-w-sm gap-4">
       <Slider
         label="Text size"
-        help="How large the words of a post are on lowtide.site."
+        help="How large the words of a post are on your site."
         min={14}
         max={22}
         step={1}
         value={size}
         onValueChange={setSize}
-        onValueCommit={(v) => setSaved(`Saved ${formatPx(v)} for lowtide.site.`)}
+        onValueCommit={(v) => setSaved(`Saved ${formatPx(v)} for your site.`)}
         marks={[14, 22]}
         home={18}
         minLabel="Smaller"
@@ -806,7 +806,7 @@ function TextSizeDemo() {
           disabled={size === 18}
           onClick={() => {
             setSize(18);
-            setSaved(`Saved ${formatPx(18)} for lowtide.site.`);
+            setSaved(`Saved ${formatPx(18)} for your site.`);
           }}
         >
           Reset to 18 px

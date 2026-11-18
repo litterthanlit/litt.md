@@ -488,15 +488,15 @@ the demos (call 9), the shared captions and ledes that still describe Flat's old
 ### Phase 3. Every Flat page in Flat's words (done, 2026-11-18, waiting for Nick)
 
 Nick: "go". Device's phase 3, copied: each page keeps its component and contract props and gets Flat's own stage
-through `byWorld` (and `tileByWorld` where the page has a `tile`), in call 9's voice: a small site, Low Tide
-(lowtide.site), its posts and series of pictures, and the Friday letter and its readers. Plain and friendly, sentence
+through `byWorld` (and `tileByWorld` where the page has a `tile`), in call 9's voice: a small site (with no
+name since 2026-11-18; see the note below), its posts and series of pictures, and the Friday letter and its readers. Plain and friendly, sentence
 case, a unit on every number, status in words. Every other world draws the shared demo, unchanged, and Device's
 entries stay as they were.
 
 - [x] Flat's set first, lead stage and tile: button (Subscribe, Read the letter), switch (the letter's settings), media
       (pictures in a post), carousel (the spring series, a strip of posts), lightbox (the series on the site), card (posts
       with their pictures; the shared client words the 2a covers kept are gone), accordion (reader questions), avatar
-      (readers who wrote back), header (Low Tide under the glass bar, its pictures under it), tabs (the site's
+      (readers who wrote back), header (the site under the glass bar, its pictures under it), tabs (the site's
       dashboard), popover (share a draft), toast (draft saved, post published, issue sent). Their Variants too: button's
       danger, loading and icons, switch's form, accent and disabled, carousel's strip, card's cover styles, accordion's
       settings, avatar's sizes and stack, header's phone and current page, tabs' view switch and keyboard, toast's
@@ -516,7 +516,11 @@ entries stay as they were.
   chart, form's settings and sign-in, popover, command menu, dialog, message, plan, run list, sources, thinking, tool
   call and others), the next sweep if Nick wants them; a page's `TryIt` props and `study` objects, which take no
   per-world demo; the drawn covers of `ProjectCover` in list and action bar (a real picture there is a new prop, a
-  contract change). No new noun was needed in `taste/`; Low Tide is a demo's name, not a noun of the voice.
+  contract change). No new noun was needed in `taste/`.
+- Nick rejected the site's invented name on 2026-11-18. The demos now use no site name: they
+  say "your site", or name the thing itself (Issue 14, the spring series, Open water), and example.com stands in
+  where a URL or an address is truly needed. Everything else in them is unchanged, and the registry and agent docs
+  stayed byte-identical.
 - Spelling waits on Open 4: the demos follow the shared spelling (American: color, gray, grayscale, center in captions
   that describe the part) and avoid the words that differ where they could (harbour, ticked).
 

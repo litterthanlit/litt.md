@@ -969,7 +969,7 @@ function SendInDemo() {
       />
       <Checkbox
         id={SEND_IN_IDS.consent}
-        label="Low Tide may print it in the letter, with my first name"
+        label="You may print it in the letter, with my first name"
         checked={values.consent}
         invalid={!!errors.consent}
         description={errors.consent}

@@ -240,9 +240,9 @@ function PlateCover({ plate }: { plate: Plate }) {
 
 /* Flat's voice (plans/024, phase 3): the posts of a small site, each with its picture. */
 const POSTS: { id: string; name: string; note: string; status: string; tone: Site["tone"]; url: string }[] = [
-  { id: "open-water", name: "Open water", note: "The first of the spring series. 4 min read.", status: "Published", tone: "success", url: "https://lowtide.site/open-water" },
-  { id: "dusk-tide", name: "Dusk tide", note: "Twenty minutes after sunset, from the pier. 3 min read.", status: "Goes out Friday", tone: "warning", url: "https://lowtide.site/dusk-tide" },
-  { id: "silk", name: "Notes on a slow shutter", note: "How the water turns to silk. 6 min read.", status: "Draft", tone: "neutral", url: "https://lowtide.site/silk" },
+  { id: "open-water", name: "Open water", note: "The first of the spring series. 4 min read.", status: "Published", tone: "success", url: "https://example.com/open-water" },
+  { id: "dusk-tide", name: "Dusk tide", note: "Twenty minutes after sunset, from the pier. 3 min read.", status: "Goes out Friday", tone: "warning", url: "https://example.com/dusk-tide" },
+  { id: "silk", name: "Notes on a slow shutter", note: "How the water turns to silk. 6 min read.", status: "Draft", tone: "neutral", url: "https://example.com/silk" },
 ];
 
 function FlatClientCardsDemo() {

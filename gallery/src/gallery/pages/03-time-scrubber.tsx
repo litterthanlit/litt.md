@@ -172,7 +172,7 @@ function TakesTodayDemo() {
 
 const SENDING: (LogLine & { at: number })[] = [
   { at: 0, time: "+0.0s", text: "Issue 14, the last of the spring series, to 412 subscribers" },
-  { at: 1.6, time: "+1.6s", text: "Made the web copy at lowtide.site/letter/14" },
+  { at: 1.6, time: "+1.6s", text: "Made the web copy at example.com/letter/14" },
   { at: 3.2, time: "+3.2s", level: "warn", text: "Picture 3 is 6.2 MB; it will go out smaller." },
   { at: 6.4, time: "+6.4s", text: "Sending, 100 at a time" },
   { at: 14.8, time: "+14.8s", text: "Sent 200 of 412" },

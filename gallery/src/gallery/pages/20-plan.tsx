@@ -420,7 +420,7 @@ const ISSUE_RUN: (Omit<PlanStep, "status"> & { doing: string; did: string; targe
   { id: "posts", label: "Gather the week's posts", doing: "Reading", did: "Read", target: "posts/spring", seconds: 0.4 },
   { id: "opening", label: "Draft the opening lines", doing: "Writing", did: "Wrote", target: "letter/issue-14.md", seconds: 2.1 },
   { id: "smaller", label: "Make the pictures smaller", doing: "Resizing", did: "Resized", target: "6 pictures", seconds: 6 },
-  { id: "test", label: "Send a test to you", doing: "Sending", did: "Sent", target: "hello@lowtide.site", seconds: 3 },
+  { id: "test", label: "Send a test to you", doing: "Sending", did: "Sent", target: "hello@example.com", seconds: 3 },
 ];
 
 function IssuePlanTile() {

@@ -442,7 +442,7 @@ function CrewPanelDemo() {
 
 const SENT_LOG: [at: string, line: string][] = [
   ["09:00:00", "Issue 14 is due, to 412 subscribers"],
-  ["09:00:01", "Made the web copy at lowtide.site/letter/14"],
+  ["09:00:01", "Made the web copy at example.com/letter/14"],
   ["09:00:02", "Made each picture smaller for email, 6 pictures"],
   ["09:00:04", "Saved 9.4 MB across 6 pictures"],
   ["09:00:04", "Sending, 100 at a time"],

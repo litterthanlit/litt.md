@@ -457,7 +457,7 @@ const OLD_LINKS = [
   ["/photos", "/series"],
 ];
 
-function LowTideSettingsDemo() {
+function YourSiteSettingsDemo() {
   const [open, setOpen] = useState<string[]>(["address", "readers"]);
   const names = Object.keys(SITE_GROUPS)
     .filter((key) => open.includes(key))
@@ -465,12 +465,12 @@ function LowTideSettingsDemo() {
 
   return (
     <div className="grid w-full max-w-xl gap-4">
-      <p className="text-small font-title text-fg">Settings for lowtide.site</p>
+      <p className="text-small font-title text-fg">Settings for your site</p>
       <Accordion type="multiple" value={open} onValueChange={setOpen}>
         <AccordionItem value="address">
           <AccordionTrigger>Address</AccordionTrigger>
           <AccordionContent className="grid gap-3">
-            <p>lowtide.site is yours, and the www address goes to it.</p>
+            <p>example.com is yours, and the www address goes to it.</p>
             <div className="flex flex-wrap items-center gap-2">
               <Tag status="success">Connected</Tag>
               <Tag>Renews 2 January</Tag>
@@ -533,7 +533,7 @@ export default function AccordionPage() {
         size="lg"
         align="start"
         code="SiteSettingsDemo"
-        byWorld={{ flat: { demo: <LowTideSettingsDemo />, code: "LowTideSettingsDemo" }, device: { demo: <ChannelSettingsDemo />, title: "Channel settings", code: "ChannelSettingsDemo" } }}
+        byWorld={{ flat: { demo: <YourSiteSettingsDemo />, code: "YourSiteSettingsDemo" }, device: { demo: <ChannelSettingsDemo />, title: "Channel settings", code: "ChannelSettingsDemo" } }}
         caption="With type multiple, several sections stay open and the value is a list. Each one opens and closes with the same motion. The settings inside keep their own: a switch's thumb slides on the instant tier, and the rows around it stay still."
       >
         <SiteSettingsDemo />

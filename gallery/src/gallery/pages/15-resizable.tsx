@@ -211,7 +211,7 @@ function PostSplitDemo() {
     <div className="litt-raised h-80 w-full overflow-hidden rounded-surface">
       <ResizablePanelGroup direction="horizontal" className="h-full">
         <ResizablePanel defaultSize={32} minSize={20} maxSize={50} className="p-2">
-          <Tree label="Low Tide" items={SITE_FILES} on="surface-1" defaultExpanded={["posts"]} selected={page} onSelect={(id, node) => !node.children && setPage(id)} />
+          <Tree label="Your site" items={SITE_FILES} on="surface-1" defaultExpanded={["posts"]} selected={page} onSelect={(id, node) => !node.children && setPage(id)} />
         </ResizablePanel>
         <ResizableHandle label="Resize the list of pages" />
         <ResizablePanel minSize={40} className="grid content-start gap-3 p-4">

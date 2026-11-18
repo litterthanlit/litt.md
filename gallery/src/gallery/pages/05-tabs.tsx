@@ -564,7 +564,7 @@ const ISSUES: { n: number; title: string; when: string; tone: "success" | "warni
 ];
 
 const SITE_SETTINGS: [string, string][] = [
-  ["Address", "lowtide.site"],
+  ["Address", "example.com"],
   ["Letter", "Fridays at 9:00"],
   ["Visibility", "Public"],
   ["Replies", "On"],
@@ -573,7 +573,7 @@ const SITE_SETTINGS: [string, string][] = [
 function SiteTabs() {
   return (
     <Tabs defaultValue="overview" className="w-full max-w-xl">
-      <TabsList aria-label="Low Tide">
+      <TabsList aria-label="Your site">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="activity">Activity</TabsTrigger>
         <TabsTrigger value="letter">Letter</TabsTrigger>
@@ -739,7 +739,7 @@ function SiteTabsTile() {
   return (
     <div ref={ref} className="w-full max-w-sm">
       <Tabs value={value} onValueChange={setOwn}>
-        <TabsList aria-label="Low Tide">
+        <TabsList aria-label="Your site">
           {SITE_TILE_TABS.map((t) => (
             <TabsTrigger key={t} value={t}>{t}</TabsTrigger>
           ))}
