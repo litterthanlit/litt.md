@@ -627,6 +627,108 @@ function SiteTabs() {
   );
 }
 
+const SITE_POSTS: { name: string; kind: string; when: string; time: string }[] = [
+  { name: "Open water", kind: "Spring series", when: "2 days ago", time: "08:10" },
+  { name: "Dusk tide", kind: "Spring series", when: "Last week", time: "19:42" },
+  { name: "What the garden did", kind: "The garden", when: "October", time: "07:05" },
+  { name: "Drawing the tide line", kind: "Pencil studies", when: "October", time: "11:30" },
+];
+
+function PostViewSwitch() {
+  return (
+    <Tabs defaultValue="list" variant="segmented" className="grid w-full max-w-md gap-6">
+      <TabsList aria-label="View">
+        <TabsTrigger value="list">List</TabsTrigger>
+        <TabsTrigger value="grid">Grid</TabsTrigger>
+        <TabsTrigger value="timeline">Timeline</TabsTrigger>
+      </TabsList>
+      <TabsPanels className="min-h-64">
+        <TabsPanel value="list">
+          <Rows>
+            {SITE_POSTS.map((p) => (
+              <li key={p.name} className="flex min-h-control-md items-center justify-between gap-4 py-2 text-small">
+                <span className="text-fg">{p.name}</span>
+                <span className="text-fg-subtle">{p.kind}</span>
+              </li>
+            ))}
+          </Rows>
+        </TabsPanel>
+        <TabsPanel value="grid">
+          <ul className="grid grid-cols-2 gap-3">
+            {SITE_POSTS.map((p) => (
+              <li key={p.name} className="grid h-28 content-between rounded-surface bg-surface-2 p-4">
+                <span className="text-small font-title text-fg">{p.name}</span>
+                <span className="text-caption text-fg-subtle">{p.kind}</span>
+              </li>
+            ))}
+          </ul>
+        </TabsPanel>
+        <TabsPanel value="timeline">
+          <ol className="relative grid gap-5 before:absolute before:top-2 before:bottom-2 before:left-[3px] before:w-px before:bg-line">
+            {SITE_POSTS.map((p) => (
+              <li key={p.name} className="relative flex items-center gap-4 text-small">
+                <span aria-hidden="true" className="relative h-px w-2 shrink-0 bg-fg-subtle" />
+                <span className="tabular-nums text-caption font-normal text-fg-subtle">{p.time}</span>
+                <span className="text-fg">{p.name}</span>
+                <span className="text-fg-subtle">{p.when}</span>
+              </li>
+            ))}
+          </ol>
+        </TabsPanel>
+      </TabsPanels>
+    </Tabs>
+  );
+}
+
+const ISSUE_PHASES: [string, string][] = [
+  ["draft", "The opening lines are written. Two posts and one picture to add."],
+  ["pictures", "Six pictures picked. Each gets a line saying what it shows."],
+  ["read", "Read it aloud once. One sentence in the second post is too long."],
+  ["test", "A test went to you. The links all work on a phone."],
+  ["send", "Goes out Friday at 9:00 to 412 subscribers."],
+];
+
+function IssueStepsDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-8">
+      <Tabs defaultValue="pictures" size="sm">
+        <TabsList aria-label="Issue 14">
+          {ISSUE_PHASES.map(([id]) => (
+            <TabsTrigger key={id} value={id}>
+              {id[0].toUpperCase() + id.slice(1)}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <TabsPanels className="min-h-20 px-control-pad-sm pt-4">
+          {ISSUE_PHASES.map(([id, text]) => (
+            <TabsPanel key={id} value={id}>
+              <p className="text-small text-fg-muted">{text}</p>
+            </TabsPanel>
+          ))}
+        </TabsPanels>
+      </Tabs>
+      <dl className="grid gap-3 text-small text-fg-subtle">
+        {(
+          [
+            [["←", "→"], "Move to the previous or next tab"],
+            [["Home", "End"], "Jump to the first or last tab"],
+            [["Tab"], "Leave the list for the panel"],
+          ] as [string[], string][]
+        ).map(([keys, label]) => (
+          <div key={label} className="flex items-center gap-3">
+            <dt className="flex min-w-24 gap-1">
+              {keys.map((k) => (
+                <Kbd key={k}>{k}</Kbd>
+              ))}
+            </dt>
+            <dd>{label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
 const SITE_TILE_TABS = ["Overview", "Readers", "Letter"];
 const SITE_TILE_TEXT = ["1,204 readers in the last 7 days.", "Mara Lindqvist subscribed 5 hours ago.", "Issue 14 goes out Friday at 9:00."];
 
@@ -688,7 +790,7 @@ export default function TabsPage() {
         tier="responsive"
         caption="The segmented style uses the same sliding face as a raised block in a tray (Press) or a bubble behind the word (Flat). Pick a view and the preview crossfades. Labels never change weight or size, so the group keeps its exact box. On a touch screen a tab you hold fills."
         code="ViewSwitch"
-        byWorld={{ device: { demo: <TakesViewSwitch />, code: "TakesViewSwitch" } }}
+        byWorld={{ flat: { demo: <PostViewSwitch />, code: "PostViewSwitch" }, device: { demo: <TakesViewSwitch />, code: "TakesViewSwitch" } }}
       >
         <ViewSwitch />
       </Stage>
@@ -698,7 +800,7 @@ export default function TabsPage() {
         tier="responsive"
         caption="Arrow keys move between tabs and select them, Home and End jump to the first and last, and Tab leaves the list for the panel. The indicator and the panel move the same way they do for a click."
         code="KeyboardDemo"
-        byWorld={{ device: { demo: <TakeStepsDemo />, code: "TakeStepsDemo" } }}
+        byWorld={{ flat: { demo: <IssueStepsDemo />, code: "IssueStepsDemo" }, device: { demo: <TakeStepsDemo />, code: "TakeStepsDemo" } }}
       >
         <KeyboardDemo />
       </Stage>

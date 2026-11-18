@@ -300,12 +300,53 @@ function ShootRunTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): what Litt is doing for a small site ---------- */
+
+const SITE_RUNS: AgentRun[] = [
+  { id: "series", title: "Making the spring series page", status: "running", detail: "Step 2 of 3", progress: 0.45, updated: "Just now" },
+  { id: "issue", title: "Get issue 14 ready", status: "needs-you", detail: "Approve the opening lines", updated: "1m ago" },
+  { id: "pictures", title: "Make the pictures smaller", status: "running", detail: "Step 3 of 5", progress: 0.62, updated: "4m ago" },
+  { id: "links", title: "Mend the old picture links", status: "failed", detail: "Step 2: a picture is missing", updated: "12m ago" },
+  { id: "alt", title: "Describe every picture for readers", status: "done", detail: "38 pictures", updated: "1h ago" },
+  { id: "tags", title: "Tag the garden posts", status: "stopped", detail: "At step 2 of 4", updated: "Yesterday" },
+];
+
+function SiteSidebarDemo() {
+  const { runs, stop, archive } = useStudio(SITE_RUNS);
+  const [runId, setRunId] = useState("series");
+  const open = runs.find((r) => r.id === runId);
+  return (
+    <div className="grid w-full max-w-3xl items-start gap-8 md:grid-cols-[18rem_minmax(0,1fr)]">
+      <RunList runs={runs} selectedId={runId} onSelect={(run) => setRunId(run.id)} onStop={stop} onArchive={archive} />
+      <div className="grid min-h-64 content-start gap-1 rounded-surface p-6 shadow-[inset_0_0_0_1px_var(--line)] max-md:hidden">
+        {open ? (
+          <>
+            <p className="text-body font-title text-fg">{open.title}</p>
+            <p className="text-small text-fg-muted">{open.detail}</p>
+          </>
+        ) : (
+          <p className="text-small text-fg-muted">Pick a run to open it here.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SiteRunTile() {
+  const [runId, setRunId] = useState("series");
+  return (
+    <div className="w-full max-w-72">
+      <RunList runs={SITE_RUNS.slice(0, 2).concat(SITE_RUNS[3]!)} selectedId={runId} onSelect={(run) => setRunId(run.id)} />
+    </div>
+  );
+}
+
 export default function RunListPage() {
   const [sidebarKey, resetSidebar] = useReplay();
   const [liveKey, replayLive] = useReplay();
   const [inboxKey, resetInbox] = useReplay();
   return (
-    <Page meta={meta} docs={docs} tile={<RunTile />} tileByWorld={{ device: <ShootRunTile /> }}>
+    <Page meta={meta} docs={docs} tile={<RunTile />} tileByWorld={{ device: <ShootRunTile />, flat: <SiteRunTile /> }}>
       <Stage
         title="Runs in a sidebar"
         tier="responsive"
@@ -315,6 +356,17 @@ export default function RunListPage() {
         onReplay={resetSidebar}
         replayLabel="Reset"
         byWorld={{
+          flat: {
+            demo: (
+              <div key={sidebarKey} className="w-full">
+                <SiteSidebarDemo />
+              </div>
+            ),
+            title: "A site's runs in a sidebar",
+            code: "SiteSidebarDemo",
+            caption:
+              "Six runs for a small site. This week's issue waits for your approval, so it sits above the rest under Needs you, and the others keep the order they came in. Press a run and the raised block glides to it on the responsive tier, while the hover highlight moves from row to row under it. Pick a status in the filter and the rows that stay glide to their new places as the others fade in, on the responsive tier. Stop and Archive show when you point at a row or move to it.",
+          },
           device: {
             demo: (
               <div key={sidebarKey} className="w-full">

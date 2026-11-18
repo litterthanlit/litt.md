@@ -775,6 +775,84 @@ function LowTideDesktopDemo() {
   );
 }
 
+function LowTidePhoneDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const router = useSiteRouter("/series");
+  useStartUnderBar(frame);
+  return (
+    <div className="mx-auto w-full max-w-sm [--gutter:var(--space-4)]">
+      <Frame ref={frame} label="Low Tide home page, phone" className="h-136">
+        <Header
+          wordmark={<a href="/posts" onClick={router.home}>Low Tide</a>}
+          navLabel="Low Tide, phone"
+          links={router.links}
+          onNavigate={router.onNavigate}
+          actions={<SubscribeButton />}
+        />
+        <LowTidePage />
+      </Frame>
+    </div>
+  );
+}
+
+function LowTideCurrentDemo() {
+  const frame = useRef<HTMLDivElement>(null);
+  const [path, setPath] = useState("/posts");
+  useStartUnderBar(frame);
+
+  /* Where each section starts, and how much room the bar takes above it. */
+  const top = (href: string) => frame.current?.querySelector<HTMLElement>(`[data-section="${href}"]`)?.offsetTop ?? 0;
+  const room = () => parseFloat(getComputedStyle(frame.current!).scrollPaddingTop);
+  const go = (href: string) => frame.current?.scrollTo({ top: top(href) - room() });
+
+  /* Scroll by hand and current follows: the last section whose top has passed the bar. */
+  const follow = () => {
+    const box = frame.current!;
+    const atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
+    const passed = SITE_NAV.filter((l) => top(l.href) - room() <= box.scrollTop + 1);
+    setPath(atEnd ? SITE_NAV[SITE_NAV.length - 1]!.href : (passed[passed.length - 1]?.href ?? ""));
+  };
+
+  return (
+    <div className="grid w-full gap-4">
+      <Frame ref={frame} onScroll={follow} label="Low Tide home page, with jump links" className="h-120">
+        <Header
+          wordmark={
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                frame.current?.scrollTo({ top: 0 });
+              }}
+            >
+              Low Tide
+            </a>
+          }
+          navLabel="Low Tide, jump links"
+          navFrom="sm"
+          links={SITE_NAV.map((l) => ({ ...l, current: l.href === path }))}
+          renderLink={(l, props) => (
+            <a
+              href={l.href}
+              {...props}
+              onClick={(e) => {
+                e.preventDefault();
+                go(l.href);
+              }}
+            />
+          )}
+          onNavigate={(l) => go(l.href)}
+          actions={<SubscribeButton />}
+        />
+        <LowTidePage />
+      </Frame>
+      <p role="status" className="text-caption font-normal text-fg-subtle">
+        {path ? `aria-current="page" on ${SITE_NAV.find((l) => l.href === path)?.label}` : "No link is current at the top of the page"}
+      </p>
+    </div>
+  );
+}
+
 function LowTideTile() {
   const frame = useRef<HTMLDivElement>(null);
   const router = useSiteRouter("/posts");
@@ -830,6 +908,14 @@ export default function HeaderPage() {
         size="lg"
         code="PhoneDemo"
         byWorld={{
+          flat: {
+            demo: (
+              <DeviceProvider mode="phone">
+                <LowTidePhoneDemo />
+              </DeviceProvider>
+            ),
+            code: "LowTidePhoneDemo",
+          },
           device: {
             demo: (
               <DeviceProvider mode="phone">
@@ -851,7 +937,7 @@ export default function HeaderPage() {
         tier="instant"
         size="lg"
         code="CurrentDemo"
-        byWorld={{ device: { demo: <LibraryCurrentDemo />, code: "LibraryCurrentDemo" } }}
+        byWorld={{ flat: { demo: <LowTideCurrentDemo />, code: "LowTideCurrentDemo" }, device: { demo: <LibraryCurrentDemo />, code: "LibraryCurrentDemo" } }}
         caption="Click a link and the page scrolls to its section, stopping below the bar because the frame sets scroll-padding-top. Scroll by hand and the current link follows. The header stays mounted and only current changes, which is all a router has to pass in. The current link wears the selected segment, a raised fill with a hairline, and the browser hears aria-current. At the very top no link is current. Only the fill and the color change, so no link moves or resizes."
       >
         <CurrentDemo />

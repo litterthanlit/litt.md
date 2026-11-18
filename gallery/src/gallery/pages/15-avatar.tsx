@@ -449,6 +449,76 @@ function RepliesDemo() {
   );
 }
 
+const READER_HUES: { hue: AvatarHue; name: string }[] = [
+  { hue: "blue", name: "Mara Lindqvist" },
+  { hue: "amber", name: "Tomas Berg" },
+  { hue: "teal", name: "Ava Okafor" },
+  { hue: "violet", name: "Rui Matos" },
+  { hue: "rose", name: "Lena Voss" },
+  { hue: "neutral", name: "A reader" },
+];
+
+function ReaderSizesDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <div className="flex flex-wrap items-end gap-8">
+        {(["sm", "md", "lg"] as const).map((size, i) => (
+          <div key={size} className="grid justify-items-center gap-2">
+            <Avatar name="Mara Lindqvist" size={size} />
+            <span className="tabular-nums text-caption font-normal text-fg-subtle">{["24", "32", "44"][i]}</span>
+          </div>
+        ))}
+      </div>
+      <ul aria-label="Hues" className="flex flex-wrap gap-8">
+        {READER_HUES.map(({ hue, name }) => (
+          <li key={hue} className="grid justify-items-center gap-2">
+            <Avatar name={name} hue={hue} size="lg" />
+            <span className="text-caption font-normal text-fg-subtle">{hue}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ReplyStackDemo() {
+  return (
+    <div className="grid w-full max-w-2xl gap-8">
+      <div className="litt-raised flex items-center justify-between gap-4 rounded-surface p-4">
+        <div className="grid min-w-0 gap-1">
+          <span className="truncate text-body font-title text-fg">Open water</span>
+          <span className="truncate text-small text-fg-subtle">Spring series, 26 replies</span>
+        </div>
+        <AvatarGroup label="Readers who replied, 26 people" total={26} ring="surface-1" className="shrink-0">
+          {TEAM.map((name) => (
+            <Avatar key={name} name={name} />
+          ))}
+        </AvatarGroup>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        {(
+          [
+            { ring: "canvas", tile: "bg-canvas" },
+            { ring: "surface-1", tile: "bg-surface-1" },
+            { ring: "surface-2", tile: "bg-surface-2" },
+          ] as const
+        ).map(({ ring, tile }) => (
+          <div key={ring} className="grid gap-3">
+            <div className={`grid place-items-center rounded-surface p-6 shadow-[inset_0_0_0_1px_var(--line)] ${tile}`}>
+              <AvatarGroup label={`Readers on ${ring}`} ring={ring} max={3}>
+                {TEAM.map((name) => (
+                  <Avatar key={name} name={name} />
+                ))}
+              </AvatarGroup>
+            </div>
+            <span className="text-center font-mono text-caption font-normal text-fg-subtle">ring=&quot;{ring}&quot;</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ReadersTile() {
   return (
     <div className="grid justify-items-center gap-4">
@@ -500,7 +570,7 @@ export default function AvatarPage() {
         title="Sizes and hues"
         align="start"
         code="SizesAndHuesDemo"
-        byWorld={{ device: { demo: <CrewSizesDemo />, code: "CrewSizesDemo" } }}
+        byWorld={{ flat: { demo: <ReaderSizesDemo />, code: "ReaderSizesDemo" }, device: { demo: <CrewSizesDemo />, code: "CrewSizesDemo" } }}
         caption="Small is 24 for dense rows and md is 32 for list rows. Large is 44 for a profile header. Initials step from caption to small to body, always at weight 400. The fill is the hue's tint, the letters are its text tone, and a hairline of the hue edges the circle, like a hue tag. Neutral is for a mark with no identity color."
       >
         <SizesAndHuesDemo />
@@ -520,7 +590,7 @@ export default function AvatarPage() {
         title="A team stack"
         align="start"
         code="TeamDemo"
-        byWorld={{ device: { demo: <CrewDemo />, title: "A crew stack", code: "CrewDemo" } }}
+        byWorld={{ flat: { demo: <ReplyStackDemo />, title: "A stack of readers", code: "ReplyStackDemo" }, device: { demo: <CrewDemo />, title: "A crew stack", code: "CrewDemo" } }}
         caption="Avatars overlap by a quarter of their size with the first on top. Each has a 2px ring in the surface it sits on, drawn as a zero-offset shadow, so the box never changes. The group shows the first few and counts the rest, from the total when only some are passed. Match the ring to the surface, or the cut-out shows."
       >
         <TeamDemo />

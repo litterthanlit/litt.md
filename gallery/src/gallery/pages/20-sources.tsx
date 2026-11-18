@@ -491,9 +491,82 @@ function TakeSourcesTile() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): why the pictures in the letter look soft ---------- */
+
+const ISSUE_13: Source = {
+  id: "issue-13",
+  title: "letter/issue-13.md",
+  url: "https://lowtide.site/letter/13",
+  site: "lowtide.site",
+  kind: "file",
+  passage: "![A red sun, low over a white ground](/pictures/red-sun.jpg)\n![The same sun, ten minutes later](/pictures/red-sun-2.jpg)",
+  readAt: "just now",
+};
+
+const LETTER_PICTURES: Source = {
+  id: "letter-pictures",
+  title: "Pictures in the letter",
+  url: "https://lowtide.site/help/letter-pictures",
+  site: "lowtide.site",
+  passage: "Pictures in the letter are made 1200 px wide, so the letter opens fast on a phone. The site keeps every picture at its full size.",
+  readAt: "2 minutes ago",
+};
+
+const FULL_SIZE: Source = {
+  id: "full-size",
+  title: "Letter settings: picture size",
+  url: "https://lowtide.site/settings/letter",
+  site: "lowtide.site",
+  passage: "Picture size in the letter: Smaller (1200 px), Large (2000 px). Large letters take longer to open.",
+  readAt: "a minute ago",
+};
+
+const LETTER_SOURCES: Source[] = [ISSUE_13, LETTER_PICTURES, FULL_SIZE];
+
+function LetterCitedDemo() {
+  return (
+    <div className="grid w-full min-w-0 max-w-xl gap-3">
+      <p className="text-small text-fg-subtle">Litt is looking at why issue 13's pictures look soft</p>
+      <Sources sources={LETTER_SOURCES}>
+        <MessageText>
+          <p>
+            Issue 13 holds two pictures of the red sun, and both are full-size files on the site
+            <Citation source="issue-13" />. The letter makes every picture 1200 px wide so it opens fast on a phone, and the site keeps the full
+            size
+            <Citation source="letter-pictures" />.
+          </p>
+          <p>
+            On a large screen 1200 px looks soft. The letter's settings can send pictures at 2000 px instead
+            <Citation source="full-size" quote="Large (2000 px)" />, and the letter takes a little longer to open
+            <Citation source="full-size" />.
+          </p>
+        </MessageText>
+        <SourceList />
+      </Sources>
+    </div>
+  );
+}
+
+function LetterSourcesTile() {
+  return (
+    <div className="grid w-full max-w-md gap-3">
+      <Sources sources={[LETTER_PICTURES, FULL_SIZE]}>
+        <MessageText>
+          <p>
+            The letter makes every picture 1200 px wide
+            <Citation source="letter-pictures" />, and its settings can send them at 2000 px
+            <Citation source="full-size" />.
+          </p>
+        </MessageText>
+        <SourceList />
+      </Sources>
+    </div>
+  );
+}
+
 export default function SourcesPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<SourcesTile />} tileByWorld={{ device: <TakeSourcesTile /> }}>
+    <Page meta={meta} docs={docs} tile={<SourcesTile />} tileByWorld={{ device: <TakeSourcesTile />, flat: <LetterSourcesTile /> }}>
       <Stage
         title="An answer and its sources"
         tier="instant"
@@ -501,6 +574,13 @@ export default function SourcesPage() {
         align="start"
         code="CitedDemo"
         byWorld={{
+          flat: {
+            demo: <LetterCitedDemo />,
+            title: "Why the pictures look soft",
+            code: "LetterCitedDemo",
+            caption:
+              "Each claim ends in a quiet numbered chip, and the same numbers lead the rows under the answer. Rest on a chip: its row lights, and so does the other chip that cites the same page. Run the pointer down the list and the chips in the text light in turn. The light is color only, on the instant tier, and nothing moves. Rest a little longer and the card grows from the chip on the responsive tier: the site, the title, the passage and when Litt read it. The first mark of the settings page quotes the line that claim leans on. The chip is a link to the source, and so is the row.",
+          },
           device: {
             demo: <TakeCitedDemo />,
             code: "TakeCitedDemo",

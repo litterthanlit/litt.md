@@ -409,6 +409,47 @@ function ExportPhoneDemo() {
   );
 }
 
+/* ---------- Flat's own (plans/024, phase 3): why the letter was opened less this week ---------- */
+
+const OPENS_REASONING = [
+  "Issue 13 was opened by 64% of readers in its first day. The six before it reached 68% to 71%, so this one is lower, but not by much.",
+  "It went out at 9:00 as always. The subject line was the post's title, A red sun in March, and the others named the series in their first words.",
+  "Twelve readers opened it on Saturday instead, which brings it to 68% by Sunday. So readers did come; they came later.",
+  "I will say that plainly, and suggest naming the series in the subject line again.",
+];
+
+const OPENS_ANSWER =
+  "Fewer readers opened issue 13 on Friday, but by Sunday it had caught up to 68%, like the others. The subject line did not name the spring series; naming it again should bring the Friday opens back.";
+
+/** A turn about the letter's opens: thinks while the reasoning streams in, then stops and lets the answer begin. */
+function OpensTurn() {
+  const { shown, done } = useStream(OPENS_REASONING, 48);
+  const [thinking, setThinking] = useState(true);
+  useEffect(() => {
+    if (!done) return;
+    const id = setTimeout(() => setThinking(false), 500);
+    return () => clearTimeout(id);
+  }, [done]);
+  return (
+    <div className="grid w-full gap-3">
+      <Thinking active={thinking}>
+        {shown.map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
+        ))}
+      </Thinking>
+      {!thinking && <p className="text-body text-fg-muted">{OPENS_ANSWER}</p>}
+    </div>
+  );
+}
+
+function OpensThoughtDemo() {
+  return (
+    <div className="w-full max-w-xl">
+      <OpensTurn />
+    </div>
+  );
+}
+
 export default function ThinkingPage() {
   const [liveKey, replayLive] = useReplay();
   const [phoneKey, replayPhone] = useReplay();
@@ -422,6 +463,16 @@ export default function ThinkingPage() {
         code="LiveDemo"
         onReplay={replayLive}
         byWorld={{
+          flat: {
+            demo: (
+              <div key={liveKey} className="w-full">
+                <OpensThoughtDemo />
+              </div>
+            ),
+            code: "OpensThoughtDemo",
+            caption:
+              "Litt thinks about why fewer readers opened this week's letter. The row reads Thinking with a clock that counts whole seconds, and nothing else moves: no shimmer, no pulse. The reasoning streams in with no fade per word. When the thought ends the clock stops, the row reads Thought for, and the body closes by itself as the answer starts. The body fades in and travels a little on the responsive tier, and its height snaps.",
+          },
           device: {
             demo: (
               <div key={liveKey} className="w-full">
