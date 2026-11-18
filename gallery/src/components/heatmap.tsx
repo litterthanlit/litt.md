@@ -5,7 +5,7 @@
  *
  * - Color (components.md, Heatmap): zero is an empty dot at fg 8%. The four steps are the hue's mark tone over
  *   transparent at 30, 55, 80 and 100%, so one hue carries one quantity (R7) and the dots fit any surface. With no
- *   `hue`, the steps are the world's sequential ramp where it has one (Flat's, Candy's bubblegum, v1.18)
+ *   `hue`, the steps are the world's sequential ramp where it has one (Flat's sunset, v1.20)
  *   and blue's four mixes in every other world, as before.
  *   `null` (no data: a day still to come, a day the month does not have) draws nothing. The default steps are
  *   the quartiles of the non-zero values, so the four levels hold about the same number of dots. The legend
@@ -75,7 +75,7 @@ export type HeatmapProps = {
   columns?: string[];
   /** Labels over chosen columns, such as month names over a year of weeks: `{ index: 4, label: "Nov" }`. Keep them at least a label's width apart. */
   columnTicks?: { index: number; label: string }[];
-  /** The one data hue the steps are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. Leave it out for the world's sequential ramp: Flat's bubblegum ramp, or blue's four steps in a world with no ramp. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
+  /** The one data hue the steps are made of. Pick it for what the grid is about and keep it the same for the same thing across a view. Leave it out for the world's sequential ramp: Flat's sunset ramp, or blue's four steps in a world with no ramp. `sky`, `bubblegum` and `sun` are Flat's slots six to eight; elsewhere its teal, rose and amber. */
   hue?: HeatmapHue;
   /** Where each of the four levels starts, lowest first. Zero is always the empty dot, and a value under the first step is still the lightest level. The default is the quartiles of the non-zero values. */
   steps?: [number, number, number, number];
@@ -163,7 +163,7 @@ const HUE: Record<HeatmapHue, readonly [string, string, string, string]> = {
   ],
 };
 
-/** With no hue, under Flat: its sequential ramp (v1.18), Candy's bubblegum. Every other world has none and draws blue's four steps. */
+/** With no hue, under Flat: its sequential ramp (v1.20), the sunset. Every other world has none and draws blue's four steps. */
 const RAMP = ["bg-[color:var(--data-seq-1)]", "bg-[color:var(--data-seq-2)]", "bg-[color:var(--data-seq-3)]", "bg-[color:var(--data-seq-4)]"] as const;
 
 const groupDigits = (n: number) => n.toLocaleString("en-GB", { maximumFractionDigits: 2 });

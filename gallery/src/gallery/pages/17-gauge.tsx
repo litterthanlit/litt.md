@@ -206,7 +206,7 @@ export default function GaugePage() {
             title: "Emails left",
             code: "EmailsLeftDemo",
             caption:
-              "A free plan's emails for the month, with the letter's cost in words under the figure. Forty-eight fine ticks over a half circle, and with `ramp` the lit ones walk Flat's sequential ramp along the arc: the first third in a light bubblegum, the middle third deeper, the last third and the marking tick deepest, so how far round says how much twice. The rest are the foreground at 12%, and the last filled tick reaches 4px further out, where a needle would have been. Every lit tick holds 3:1 on its surface. Nothing glows and nothing moves.",
+              "A free plan's emails for the month, with the letter's cost in words under the figure. Forty-eight fine ticks over a half circle, and with `ramp` the lit ones walk Flat's sequential ramp along the arc, a sunset, each tick its own place on it: gold, then tangerine and crimson, to plum at the end (in dark plum through magenta and coral to gold), so how far round says how much twice. The rest are the foreground at 12%, and the last filled tick reaches 4px further out, where a needle would have been. The figure says the value in words, so the arc's faint start never has to. Nothing glows and nothing moves.",
           },
           device: {
             demo: <CardLeftDemo />,

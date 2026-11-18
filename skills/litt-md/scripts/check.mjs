@@ -44,7 +44,7 @@
  *               after monochrome; nothing in it casts, blurs, sinks or is "none"; it restates the focus ring and the
  *               data tints. Check 5 runs every pair again under Flat. The ink card (.litt-ink, v1.17) casts nothing, and
  *               its words reach 4.5:1 and its first data hue's mark and dot 3:1 on its face, in both themes. Flat's ramp
- *               (--flat-data-seq-1 to 4, v1.18) steps away from the ground, and steps two to four reach 3:1 on it and
+ *               (--flat-data-seq-1 to 4, v1.18; a sunset since v1.20) steps away from the ground, and steps two to four reach 3:1 on it and
  *               on paper. Check 5 runs slots six to eight (sky, bubblegum, sun) in every theme, as Flat's own hues
  *               or as the teal, rose and amber they alias elsewhere.
  * 12. Device:  data-material="device" (proposals/device.md). Every --device-* value is defined in both themes; the
@@ -766,9 +766,10 @@ else {
   if (!/var\(--focus\)/.test(ring) || /#|rgb/.test(ring)) flatFails.push(`flat: --focus-ring must restate the ring with var(--focus), never a literal (is "${ring}")`);
   for (const h of ["blue", "amber", "teal", "violet", "rose"])
     if (!/var\(--surface-1\)/.test(flat.get(`--data-${h}-tint`) || "")) flatFails.push(`flat: --data-${h}-tint is not restated over var(--surface-1)`);
-  /* Flat's ramp (v1.18): four steps of one hue, light to deep in light and dim to bright in dark, so each step stands
-     further from the ground than the last; steps two to four are a gauge's lit ticks, so they reach 3:1 on the ground
-     and on paper. The first is a heatmap's faintest step, beside its legend, as the 30% mix it replaces. */
+  /* Flat's ramp (v1.18; a sunset since v1.20, its hue walking with its lightness): four steps, light to deep in light
+     and dim to bright in dark, so each step stands further from the ground than the last; steps two to four hold most
+     of a gauge's arc, so they reach 3:1 on the ground and on paper. The first is a heatmap's faintest step, beside its
+     legend, as the 30% mix it replaces, and the start of a gauge's arc, which blends up out of it. */
   for (const [theme, base] of [["flat light", flatOf("light", light)], ["flat dark", flatOf("dark", dark)]]) {
     const steps = [1, 2, 3, 4].map((i) => base.get(`--data-seq-${i}`));
     if (!steps.every((v) => /^#[0-9a-f]{6}$/i.test(v || ""))) { flatFails.push(`${theme}: --flat-data-seq-1 to 4 are not all six-digit hexes`); continue; }

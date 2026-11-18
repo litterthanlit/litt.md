@@ -6,6 +6,13 @@ To update an item, read the entries since your version, then reinstall it with `
 
 ## 2026-11-18 · Flat's ground
 
+Later the same day, Flat's sunset ramp (plans/024, Flat; Nick, on the Spectrum palette's ramp on a Heatmap and a Gauge: "this was also cool"). Nothing changes outside Flat.
+
+- **changed** `litt`: under Flat the sequential ramp (`--litt-flat-data-seq-1` to `4`, read as `--litt-data-seq-1` to `4`) is a sunset in place of Candy's bubblegum: gold, tangerine, crimson and plum, light to deep, in light; plum, magenta, coral and gold, dim to bright, in dark. Its hue walks with its lightness, so each step still stands further from the ground than the last, and steps two to four keep 3:1 on the ground and on paper. A Flat heatmap, cohort grid or ramped gauge takes it with no change in your code.
+- **changed** `flat-litt`, `press-litt`, `device-litt`, `plain-litt`, `rack-litt`, `heat-litt`: the same values ride along in `:root`; only Flat reads them, so nothing changes in the other worlds.
+- **changed** `gauge`, `press-gauge`, `flat-gauge`, `device-gauge`, `plain-gauge`, `rack-gauge`, `heat-gauge`: with `ramp`, under Flat, each lit tick takes its own place on the arc read off all four steps of the ramp, blended in OKLab, so the arc walks the whole sunset (plum to gold in dark) and the marking tick is its own place's colour. Every other world has no ramp, so `ramp` there keeps the hue, unchanged. Props are unchanged.
+- **changed** `heatmap`, `press-heatmap`, `flat-heatmap`, `device-heatmap`, `plain-heatmap`, `rack-heatmap`, `heat-heatmap`, `cohort-grid`, `press-cohort-grid`, `flat-cohort-grid`, `device-cohort-grid`, `plain-cohort-grid`, `rack-cohort-grid`, `heat-cohort-grid`: their notes name the sunset ramp. What they draw is unchanged outside Flat.
+
 Later the same day, Flat's data in colour (plans/024, Flat; Nick: "yes I love this all!"): the surfaces stay grey and white, and the data is bright Candy. Nothing changes outside Flat.
 
 - **changed** `litt`: under Flat the five data hues are Candy's, at the most chroma the screen holds (`--litt-flat-data-blue` to `--litt-flat-data-rose` and their `-text` tones, light and dark), each mark 3:1 and each `-text` tone 4.5:1 on the grey ground and on paper; the blue sits a little off Candy's in light so it keeps 0.12 from Blue 4. The ink card's mark and its line's dot take the other theme's step (`--litt-flat-data-blue-ink`), so they keep 3:1 on the ink in dark too (3.3:1 on white, was 2.9:1). Nothing in your code has to change.

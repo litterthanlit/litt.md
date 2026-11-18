@@ -92,7 +92,7 @@
     },
     "cohort-grid": {
       "version": "2026.11.18",
-      "hash": "c34eb73a96e2a2ff"
+      "hash": "ee85faa7f6c9a9db"
     },
     "collection": {
       "version": "2026.11.03",
@@ -216,7 +216,7 @@
     },
     "device-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "device-color-picker": {
       "version": "2026.11.17",
@@ -284,7 +284,7 @@
     },
     "device-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "device-glide": {
       "version": "2026.11.17",
@@ -296,7 +296,7 @@
     },
     "device-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "device-hover-card": {
       "version": "2026.11.16",
@@ -336,7 +336,7 @@
     },
     "device-litt": {
       "version": "2026.11.18",
-      "hash": "9558ed429f1ee8a0"
+      "hash": "0b0c4ca8c8e5b66e"
     },
     "device-log-view": {
       "version": "2026.11.18",
@@ -624,7 +624,7 @@
     },
     "flat-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "20d08a56b18e284f"
+      "hash": "3617284cf43bb4f3"
     },
     "flat-color-picker": {
       "version": "2026.11.17",
@@ -688,7 +688,7 @@
     },
     "flat-gauge": {
       "version": "2026.11.18",
-      "hash": "22c7ba7897642b8e"
+      "hash": "6e0337bb487e0226"
     },
     "flat-glide": {
       "version": "2026.11.17",
@@ -700,7 +700,7 @@
     },
     "flat-heatmap": {
       "version": "2026.11.18",
-      "hash": "3e7b9b013ee39f7c"
+      "hash": "aec882e54f380aa1"
     },
     "flat-hover-card": {
       "version": "2026.11.16",
@@ -740,7 +740,7 @@
     },
     "flat-litt": {
       "version": "2026.11.18",
-      "hash": "01ba35b319379026"
+      "hash": "f38fca7fe204571c"
     },
     "flat-log-view": {
       "version": "2026.11.18",
@@ -948,7 +948,7 @@
     },
     "gauge": {
       "version": "2026.11.18",
-      "hash": "b41bbc9f47cbda84"
+      "hash": "88493ccaa0ca7346"
     },
     "glide": {
       "version": "2026.11.17",
@@ -1032,7 +1032,7 @@
     },
     "heat-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "heat-color-picker": {
       "version": "2026.11.17",
@@ -1096,7 +1096,7 @@
     },
     "heat-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "heat-glide": {
       "version": "2026.11.17",
@@ -1108,7 +1108,7 @@
     },
     "heat-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "heat-hover-card": {
       "version": "2026.11.16",
@@ -1148,7 +1148,7 @@
     },
     "heat-litt": {
       "version": "2026.11.18",
-      "hash": "1d05026e543df67e"
+      "hash": "23d0ed8d4d50c1fa"
     },
     "heat-log-view": {
       "version": "2026.11.18",
@@ -1344,7 +1344,7 @@
     },
     "heatmap": {
       "version": "2026.11.18",
-      "hash": "1ce1bb69630ca74c"
+      "hash": "fe8ced325d8ddccd"
     },
     "hover-card": {
       "version": "2026.11.15",
@@ -1388,7 +1388,7 @@
     },
     "litt": {
       "version": "2026.11.18",
-      "hash": "011323239091a640"
+      "hash": "eca8f8728737e647"
     },
     "log-view": {
       "version": "2026.11.18",
@@ -1496,7 +1496,7 @@
     },
     "plain-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "plain-color-picker": {
       "version": "2026.11.17",
@@ -1560,7 +1560,7 @@
     },
     "plain-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "plain-glide": {
       "version": "2026.11.17",
@@ -1572,7 +1572,7 @@
     },
     "plain-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "plain-hover-card": {
       "version": "2026.11.16",
@@ -1612,7 +1612,7 @@
     },
     "plain-litt": {
       "version": "2026.11.18",
-      "hash": "7d39903281515f0b"
+      "hash": "fc513d6ca87433fb"
     },
     "plain-log-view": {
       "version": "2026.11.18",
@@ -1884,7 +1884,7 @@
     },
     "press-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "press-color-picker": {
       "version": "2026.11.17",
@@ -1948,7 +1948,7 @@
     },
     "press-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "press-glide": {
       "version": "2026.11.17",
@@ -1960,7 +1960,7 @@
     },
     "press-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "press-hover-card": {
       "version": "2026.11.16",
@@ -2000,7 +2000,7 @@
     },
     "press-litt": {
       "version": "2026.11.18",
-      "hash": "d2f8c50a405fc447"
+      "hash": "906cf18d67866fe6"
     },
     "press-log-view": {
       "version": "2026.11.18",
@@ -2284,7 +2284,7 @@
     },
     "rack-cohort-grid": {
       "version": "2026.11.18",
-      "hash": "11a4c4b85b570671"
+      "hash": "08a0776b700f2d68"
     },
     "rack-color-picker": {
       "version": "2026.11.17",
@@ -2348,7 +2348,7 @@
     },
     "rack-gauge": {
       "version": "2026.11.18",
-      "hash": "3ec32bff34775b32"
+      "hash": "e14524f0d2b716fc"
     },
     "rack-glide": {
       "version": "2026.11.17",
@@ -2360,7 +2360,7 @@
     },
     "rack-heatmap": {
       "version": "2026.11.18",
-      "hash": "2ce2c0af54b46808"
+      "hash": "dc365d55a4a6e737"
     },
     "rack-hover-card": {
       "version": "2026.11.16",
@@ -2400,7 +2400,7 @@
     },
     "rack-litt": {
       "version": "2026.11.18",
-      "hash": "d0957026b0c4307c"
+      "hash": "db6b5ff4d5b2cf6d"
     },
     "rack-log-view": {
       "version": "2026.11.18",
