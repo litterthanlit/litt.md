@@ -1,9 +1,10 @@
 /**
  * Tag, the Flat body (proposals/worlds.md, Bodies; material.md, 7): the word in a pill, 24px tall, nothing raised.
  * The block for a plain tag (white on the ground, the grey bubble on paper, v1.17), the hue's tint for a category, a
- * --surface-1 pill for a value raised out of a field. No hairline and no shadow. A status tag is its word in the ink after a small circle in the status's color
- * (v1.17, Flat's call 6): the color sits only where it says something, and the word says the status (R5). Forced colors
- * drops fills, so the pill keeps a border and the circle takes the text color.
+ * --surface-1 pill for a value raised out of a field. No hairline and no shadow. A status tag is a small circle in the
+ * status's color and its word in the ink, with no pill (v1.17, Flat's call 6; Nick, 2026-11-18, "I like the tags"):
+ * the color sits only where it says something, and the word says the status (R5). Forced colors drops fills, so a pill
+ * keeps a border and the circle takes the text color.
  */
 import type { TagBodyProps, TagHue, TagStatus } from "@/components/tag";
 
@@ -26,13 +27,17 @@ const HUE: Record<TagHue, string> = {
 const PLAIN = "rounded-control bg-block ";
 const RAISED = "rounded-[max(calc(var(--radius-control)-4px),min(calc(var(--radius-control)-2px),2px))] bg-surface-1 forced-colors:border ";
 
-/** Flat, the grey chip. */
+/** Flat: a pill for a label or a value, a circle and a word for a status. */
 export function TagFlatBody({ status, hue, raised, label, rest, className }: TagBodyProps) {
-  const ink = status ? "gap-2 text-fg" : raised ? "text-fg" : "text-fg-muted";
+  const shape = hue
+    ? "px-3 forced-colors:border rounded-control " + HUE[hue]
+    : status
+      ? "gap-2 text-fg"
+      : "px-3 forced-colors:border " + (raised ? RAISED + "text-fg" : PLAIN + "text-fg-muted");
   return (
     <span
       data-body="flat"
-      className={"inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap px-3 text-caption forced-colors:border " + (hue ? "rounded-control " + HUE[hue] : (raised ? RAISED : PLAIN) + ink) + " " + className}
+      className={"inline-flex h-6 max-w-full shrink-0 items-center whitespace-nowrap text-caption " + shape + " " + className}
       {...rest}
     >
       {status && !hue && (
