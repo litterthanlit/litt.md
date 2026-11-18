@@ -414,9 +414,9 @@ const PROSE = [
   "[&_blockquote]:grid [&_blockquote]:gap-3 [&_blockquote]:ps-4 [&_blockquote]:text-fg-subtle",
   "[&_hr]:my-1 [&_hr]:border-line",
   "[&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-surface",
-  /* Flat: the answer is a grey bubble (the person's is the ink one), and inline code lifts to a white pill inside it. */
-  "in-[[data-material=flat]]:w-fit in-[[data-material=flat]]:self-start in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-4 in-[[data-material=flat]]:text-fg",
-  "in-[[data-material=flat]]:[&_code]:bg-surface-1 in-[[data-material=flat]]:[&_code]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:[&_pre_code]:rounded-none in-[[data-material=flat]]:[&_pre]:bg-surface-1 in-[[data-material=flat]]:[&_pre]:shadow-none in-[[data-material=flat]]:[&_tr]:border-0 in-[[data-material=flat]]:[&_hr]:border-0",
+  /* Flat: the answer is paper on the ground (the person's is the ink one), and inline code is a grey pill inside it. */
+  "in-[[data-material=flat]]:w-fit in-[[data-material=flat]]:self-start in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-4 in-[[data-material=flat]]:text-fg",
+  "in-[[data-material=flat]]:[&_code]:bg-surface-3 in-[[data-material=flat]]:[&_code]:rounded-[calc(var(--radius-surface)-4px)] in-[[data-material=flat]]:[&_pre_code]:rounded-none in-[[data-material=flat]]:[&_pre]:bg-surface-3 in-[[data-material=flat]]:[&_pre]:shadow-none in-[[data-material=flat]]:[&_tr]:border-0 in-[[data-material=flat]]:[&_hr]:border-0",
   /* A table: hairlines between rows, headings in --fg, cells that wrap instead of scrolling. */
   "[&_table]:w-full [&_table]:border-collapse [&_table]:text-small [&_tr]:border-b [&_tr]:border-line",
   "[&_th]:py-2 [&_th]:pe-4 [&_th]:text-start [&_th]:text-caption [&_th]:text-fg [&_td]:py-2 [&_td]:pe-4 [&_td]:align-top [&_:is(th,td)]:[overflow-wrap:anywhere]",

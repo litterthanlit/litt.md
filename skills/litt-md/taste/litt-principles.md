@@ -41,7 +41,50 @@ For sites, portfolios and reading. Nick, 2026-11-16: "I want it light, easy to u
 - **Light, airy and easy.** No complications: one clear thing at a time, room around it, nothing to work out.
 - **Bold, simple shapes on grey.** Grey is the ground. What sits on it is a pill, a circle or a rounded square in the ink or in white, with no outline and nothing cast, and a small pop of color only where it says something.
 - **Things come from where you touched them.** A set deals out of what opened it and gathers back; an overlay grows from its opener. A reader never loses where they were.
-- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap, picked by eye on the canvas (Nick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good"): where something arrives on the expressive spring it bounces 0.28, where every other world keeps 0.12. Small moves and exits never bounce.
+- **Fun, and it moves that way.** Motion is quick and playful, to match, and Flat bounces more than the other worlds do (Nick, 2026-11-16: "yes flat should be more bouncy I feel like"). It is Flat's own exception to R4's bounce cap, picked by eye on the canvas (Nick, 2026-11-16: "0.28 at 350ms, no bounce on small moves looks good"): where something arrives on the expressive spring it bounces 0.28, where every other world keeps 0.12. Small moves and exits never bounce. At rest the fun is a figure that stands up: one figure per object may be large (call 8).
+
+#### Flat's materials
+
+Written 2026-11-18 for plan 024, phase 1, from Nick's direction of 16 November and the two references (`taste/inspirations.md`), and confirmed the same day on the nine calls (Nick: "all yes"). Built on what Flat already is: the pill, an outline means off, ink means on, the grey bubble, no lines between things, the 0.28 bounce. Each material names the tokens that draw it; phase 2 brings the new ones through Propagate (`workflows/evolve.md`, 4).
+
+They combine in one order: **ground, then paper, then part.** The ground is the grey everything sits on. Paper sits on the ground; pills, circles and words sit on the ground or on paper. What is chosen inside paper is a grey bubble; on the ground, chosen is white. Only what floats casts. Every part steps in from what holds it, and its corner is the outer radius less the inset (`system/foundations.md`, Concentric).
+
+| Material | One line | Tokens | Radius |
+|---|---|---|---|
+| Ground | The grey everything sits on. Nothing is drawn on it but objects and words. | `--canvas` under Flat is `--flat-ground` (light: Flat's surface-3; dark: Flat's surface-2). A part shown on its own (`--well`) stands on the ground too. | None |
+| Paper | A white rounded square on the ground (black in dark): a card, a panel, a table's sheet. No edge and nothing cast: on grey the fill is the edge (call 2). | `--surface-1` under Flat is `--flat-paper` (light: white; dark: Flat's canvas, the black); `.litt-raised` loses its ring under Flat. | `--radius-surface` (16) |
+| Pill | What a hand presses or types into: a button, a field, a segment, a tag, the switch. White on the ground, so it reads as paper. | `--block`, `--cut` and `--slot` are paper under Flat; `--radius-control` | `--radius-control` (28) |
+| Circle | A key with one symbol, a checkbox, a radio, a knob, an avatar, a status's mark (call 6). | `--radius-pill` | Round |
+| Bubble | What is chosen inside paper: a grey fill (the current segment, row or tab). | `--surface-3` | The shape it sits in, less its inset |
+| Ink | What is on, and the one primary action: black on light, white on dark. | `--fg`, `--accent` (the ink, call 5), `--accent-fg` on it | The shape it fills |
+| Ink card | At most one per view: the ink as a rounded square holding one live thing (a stat, a live run, a timer), its one color the first data hue on its data only. No shadow; white in dark (call 4). | The opposite theme on the square (`data-theme` flipped), and `--data-blue` on its data | `--radius-surface` |
+| Outline | Only what is off: a switch, an unticked box, a step to come. It also keeps the 3:1 edge on the grey ground (call 7). | `--line-control` at 1.5px | The control's |
+| Float | Only what floats over the page keeps a shadow: a menu, a popover, a dialog, a toast. | `--shadow-float`, `--shadow-modal` | `--radius-surface` |
+| Lettering | Geist, three weights by role. One figure per object may stand above 18px (call 8). | `--font-sans`, `--weight*`, `--type-*`; the figure `--type-figure-size` | None |
+
+In dark the ground and black paper stand only 1.1:1 apart (light's white on grey, 1.18:1): the words and what is on the paper carry it, as Flat's grey field always has. A cover is a real picture, never an X-crossed wireframe (call 3): a placeholder is not the work (R1), and Flat is for sites and portfolios.
+
+#### Flat's color
+
+Two fills on a grey ground, and color only where it says something (R6, R7).
+
+| Color | Means | Never |
+|---|---|---|
+| Grey | The ground; inside paper, what is chosen | An edge, a frame, a line between things |
+| White and black | Paper and the ink: everything a hand uses, and the words | — |
+| The ink (`--accent`) | What is on, and the view's one primary action (call 5: Flat keeps the ink as its accent) | A second fill per view (R6) |
+| One data hue | The ink card's data, a chart's series in R7's order, one hue per object | Chrome, a button, a status word |
+| Success, warning, danger | A status, on its small circle only, the word after it in the ink (call 6); danger's words on a destructive action | A whole word in color, a tinted field |
+| A cover's own colors | A cover is content | — |
+
+#### Flat's voice
+
+Flat is for sites, portfolios and reading. Light and airy wants plain, friendly words: the person who keeps a small site and a newsletter, and the people who read it (call 9), not the studio's client work every world shares.
+
+- **Nouns:** site, post, issue, letter, newsletter, reader, subscriber, series, picture, draft, week.
+- **Demo strings:** `Spring series · twelve pictures from the coast`, `Issue 14 goes out Friday at 9:00`, `1,204 readers this week`, `4 min read`, `Subscribe` and `Read the letter`.
+- **Plain and friendly.** Sentence case, a unit on every number, a status in words.
+- **Spelling** waits on Open 4.
 
 ### Device, the machine
 
@@ -171,9 +214,10 @@ Plain, precise and quiet, in every world. "Write it the way you would say it to 
 
 ## Open, for Nick
 
-1. **Flat's bounce and size.** The bounce is answered (2026-11-16): the expressive spring at 0.28, the responsive at 0, in R4. Still unanswered: Nick's references for Flat have figures larger than 18px. May Flat set type above 18px (R8)?
+1. **Flat's bounce and size. Closed, 2026-11-18.** The bounce is answered (2026-11-16): the expressive spring at 0.28, the responsive at 0, in R4. The size is answered on Flat's call 8 ("all yes"): one figure per object may stand above 18px, at 40px as shown (`--type-figure-size`, Flat's block alone), R8's exception.
 2. **Device's sound.** Answered: it starts on. Not built yet; litt has no sound engine.
 3. **Running by itself.** In the components repo every study moves in its first four seconds, untouched. Here nothing moves on its own (R2, R4). May Device's studies and its object run by themselves, while the other worlds stay still? Until Nick says, none does.
 4. **Spelling.** The components repo is British with -ize (colour, centre, synthesized). The skill writes color. Which is litt's?
 5. **Values.** The components repo's curves and springs differ from litt's tiers, and one preset bounces past R4's bound. This file brings no values. A value Device should take comes in through Propagate (`workflows/evolve.md`, 4).
 6. **Device's phase 1 (plan 024). Closed, 2026-11-17.** Nick: "all yes". The focus ring stays orange, as the keyboard's hand; a link under Device is the ink, underlined; Device's statuses are the chip's glyphs and words, not green and amber; charts are the ink's three levels; a part's stage is a plate, not a dark screen; Device's demos spell British with -ize; a switch that is on lights an orange lamp; and Device takes the reference's em radii (1.25, 1.05, 0.7, 0.4) as an exception to R9, as its object did, which phase 2 carries into R9, check 7 and `rules.ts` through evolve.
+7. **Flat's phase 1 (plan 024). Closed, 2026-11-18.** Nick, on the nine calls live on the canvas: "all yes". A grey ground with white and the ink on it; paper has no edge, and only what floats keeps a shadow; covers are real pictures; the ink card enters Flat, at most one per view; the accent stays the ink; a status is its word in the ink after a small circle in the status color, in the pill; off keeps its outline; one figure per object stands above 18px; and Flat speaks for a site and its readers.

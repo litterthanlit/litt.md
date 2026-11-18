@@ -72,6 +72,12 @@
   --type-caption-leading: 1rem;  /* 16 */
   --type-caption-tracking: -0.005em;
 
+  /* The one figure per object (a stat's value, a timer). The h1 step in every world but Flat, whose block sets it
+     above the ceiling: fun at rest is a figure that stands up (R8's exception, v1.17). */
+  --type-figure-size: var(--type-h1-size);
+  --type-figure-leading: var(--type-h1-leading);
+  --type-figure-tracking: var(--type-h1-tracking);
+
   --measure: 65ch;
 
   /* Space: 4px base, 8px grid. Names match Tailwind's multiplier (space-6 = p-6 = 24px). */
@@ -259,6 +265,22 @@
   --flat-fg-muted: #676767;
   --flat-fg-subtle: #676767;
   --flat-fg-disabled: #9e9e9e;
+  /* Flat's ground and paper (v1.17, plans/024): the grey everything sits on, and the white a card, a field or a pill
+     is. Each is one of the neutrals above, so check 11 holds it at chroma 0. */
+  --flat-ground: var(--flat-surface-3);
+  --flat-paper: var(--flat-surface-1);
+  /* Flat's data hues (v1.17): a step deeper than the stone ones in light, so a mark keeps 3:1 and its words 4.5:1 on
+     the grey ground. */
+  --flat-data-blue: #258ae3;
+  --flat-data-blue-text: #006dbd;
+  --flat-data-amber: #be7700;
+  --flat-data-amber-text: #965e00;
+  --flat-data-teal: #009790;
+  --flat-data-teal-text: #007871;
+  --flat-data-violet: #9074e9;
+  --flat-data-violet-text: #7456c8;
+  --flat-data-rose: #dc598e;
+  --flat-data-rose-text: #b93a70;
 
   /* Device's values (data-material="device", below; proposals/device.md): the components studies' hardware, a cool
      aluminium body with plates on it, wells cut into it, keys standing on it and fields behind LCD glass. The neutrals
@@ -726,6 +748,22 @@
   --flat-fg-muted: #c6c6c6;
   --flat-fg-subtle: #c6c6c6;
   --flat-fg-disabled: #656565;
+  /* Flat's ground and paper (v1.17, plans/024): the grey everything sits on, and the black a card, a field or a pill
+     is. Each is one of the neutrals above, so check 11 holds it at chroma 0. They stand 1.1:1 apart; the words carry
+     them. */
+  --flat-ground: var(--flat-surface-2);
+  --flat-paper: var(--flat-canvas);
+  /* Flat's data hues (v1.17): in dark, the stone ones, which already keep 3:1 and 4.5:1 on the grey ground. */
+  --flat-data-blue: #2c90e8;
+  --flat-data-blue-text: #5aa8f4;
+  --flat-data-amber: #c07b03;
+  --flat-data-amber-text: #d79540;
+  --flat-data-teal: #09a198;
+  --flat-data-teal-text: #42b4ab;
+  --flat-data-violet: #8f78df;
+  --flat-data-violet-text: #a896ef;
+  --flat-data-rose: #d55c8c;
+  --flat-data-rose-text: #eb81a7;
 
   /* Device's values (data-material="device", below; proposals/device.md). */
   --device-canvas: #1d1f22;
@@ -1141,6 +1179,22 @@
     --flat-fg-muted: #c6c6c6;
     --flat-fg-subtle: #c6c6c6;
     --flat-fg-disabled: #656565;
+    /* Flat's ground and paper (v1.17, plans/024): the grey everything sits on, and the black a card, a field or a pill
+       is. Each is one of the neutrals above, so check 11 holds it at chroma 0. They stand 1.1:1 apart; the words carry
+       them. */
+    --flat-ground: var(--flat-surface-2);
+    --flat-paper: var(--flat-canvas);
+    /* Flat's data hues (v1.17): in dark, the stone ones, which already keep 3:1 and 4.5:1 on the grey ground. */
+    --flat-data-blue: #2c90e8;
+    --flat-data-blue-text: #5aa8f4;
+    --flat-data-amber: #c07b03;
+    --flat-data-amber-text: #d79540;
+    --flat-data-teal: #09a198;
+    --flat-data-teal-text: #42b4ab;
+    --flat-data-violet: #8f78df;
+    --flat-data-violet-text: #a896ef;
+    --flat-data-rose: #d55c8c;
+    --flat-data-rose-text: #eb81a7;
 
     /* Device's values (data-material="device", below; proposals/device.md). */
     --device-canvas: #1d1f22;
@@ -1626,18 +1680,32 @@
 
 /* --------------------------------------------------------------------------
    Flat (R3, proposals/flat.md): data-material="flat" on <html> says the depth
-   ladder by fill alone, on neutral greys. Grey is the object, a hairline is the
-   place: a tray is a hairline, a raised block a grey fill, and nothing casts,
-   catches the light or sinks. Glass and its glow stay. An empty shadow is
+   ladder by fill alone, on neutral greys. Grey is the ground (v1.17, plans/024):
+   the canvas is --flat-ground, and paper (a card, a field, a pill, a block) is
+   --flat-paper on it with no ring, no shadow and no highlight, since on grey the
+   fill is the edge. Nothing casts, catches the light or sinks; only what floats
+   keeps its glass and glow. An empty shadow is
    0 0 0 0 transparent, never none, since components put these in comma lists.
    Last in the file, so on an element with both attributes it wins on order; the
    derived tokens that read a neutral are restated, as pink's are.
    -------------------------------------------------------------------------- */
 :root[data-material="flat"],
 [data-material="flat"] {
-  --canvas: var(--flat-canvas);
-  --well: var(--flat-well);
-  --surface-1: var(--flat-surface-1);
+  /* The ground and paper: the canvas is the grey ground, and a part shown on its own stands on it too. */
+  --canvas: var(--flat-ground);
+  --well: var(--flat-ground);
+  --surface-1: var(--flat-paper);
+  /* Its data hues, a step deeper in light for the grey ground. */
+  --data-blue: var(--flat-data-blue);
+  --data-blue-text: var(--flat-data-blue-text);
+  --data-amber: var(--flat-data-amber);
+  --data-amber-text: var(--flat-data-amber-text);
+  --data-teal: var(--flat-data-teal);
+  --data-teal-text: var(--flat-data-teal-text);
+  --data-violet: var(--flat-data-violet);
+  --data-violet-text: var(--flat-data-violet-text);
+  --data-rose: var(--flat-data-rose);
+  --data-rose-text: var(--flat-data-rose-text);
   --surface-2: var(--flat-surface-2);
   --surface-3: var(--flat-surface-3);
   --line: var(--flat-line);
@@ -1668,16 +1736,23 @@
   --tray: transparent;
   /* No frame around a group (rule 2): a tray is the place, and only a control that is off keeps an edge. */
   --tray-shade: inset 0 0 0 0 transparent;
-  /* A field is a grey pill (rule 4), no outline. */
-  --cut: var(--surface-3);
+  /* A field and a block are paper on the ground (v1.17), no outline. */
+  --cut: var(--surface-1);
   --cut-shade: inset 0 0 0 0 transparent;
-  --block: var(--surface-3);
+  --block: var(--surface-1);
   --block-lift: 0 0 0 0 transparent;
   --block-press: 0 0 0 0 transparent;
   --key-lift: 0 0 0 0 transparent;
-  --slot: var(--surface-3);
+  --slot: var(--surface-1);
   --slot-shade: inset 0 0 0 0 transparent;
   --slot-fill: color-mix(in oklab, var(--surface-3), var(--fg) 14%);
+  /* Paper has no edge (v1.17): .litt-raised draws no ring under Flat. Only what floats keeps a shadow. */
+  --raised-line: transparent;
+  /* Fun at rest: one figure per object stands up (R8's exception, v1.17, Nick on call 8: 40px). Its leading is a
+     ratio, so it grows with the reader's text size. */
+  --type-figure-size: 2.5rem;    /* 40 */
+  --type-figure-leading: 1.1;
+  --type-figure-tracking: -0.03em;
   --slot-fill-shade: inset 0 0 0 0 transparent;
   --plate-lift: 0 0 0 0 transparent;
   --cap: color-mix(in oklab, var(--surface-3), var(--fg) 45%);
@@ -1686,7 +1761,8 @@
   --cap-press: 0 0 0 0 transparent;
   --cap-grip: var(--surface-3);
   --press-depth: 0px;
-  /* A grey block takes a lighter hover than a white one, so the words on it keep 4.5:1 (check 5). */
+  /* A block takes a light hover, so the words on it keep 4.5:1 (check 5); on paper it is the grey bubble again, with the
+     same share (.litt-paper, below). */
   --block-hover: color-mix(in oklab, var(--block), var(--fg) 2.5%);
 
   /* Flat bounces more (R4, plans/023): its expressive spring at bounce 0.28, Flat's own cap, where every other world
@@ -2672,11 +2748,23 @@
   }
 
   /* A solid raised surface: cards in the page flow. Surface radius, no shadow
-     (R3): a hairline and the top highlight carry the depth. */
+     (R3): a hairline and the top highlight carry the depth. Under Flat the ring is
+     transparent (--raised-line): paper has no edge. */
   .litt-raised {
     background: var(--surface-1);
     border-radius: var(--radius-surface);
-    box-shadow: inset 0 0 0 1px var(--line), var(--highlight);
+    box-shadow: inset 0 0 0 1px var(--raised-line, var(--line)), var(--highlight);
+  }
+
+  /* Paper under Flat (v1.17): on the grey ground what a hand uses is white, and on paper (a raised surface, a floating
+     sheet, or any panel marked .litt-paper) it is the grey bubble again, so a field, a block or a slot set into a card
+     reads as it always has. Outside Flat .litt-paper does nothing. */
+  [data-material="flat"] :is(.litt-raised, .litt-glass, .litt-paper),
+  :is(.litt-raised, .litt-glass, .litt-paper)[data-material="flat"] {
+    --block: var(--surface-3);
+    --cut: var(--surface-3);
+    --slot: var(--surface-3);
+    --block-hover: color-mix(in oklab, var(--surface-3), var(--fg) 2.5%);
   }
 
   /* A touch target: on a coarse pointer, an invisible ::before grows the place a finger can land to at least

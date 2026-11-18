@@ -291,7 +291,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
       {/* The components, by group, drilling down in place. */}
       <section aria-labelledby="menu-components" className="grid">
         <Label id="menu-components">Components</Label>
-        <div className="litt-raised relative overflow-hidden rounded-surface p-1 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none">
+        <div className="litt-raised relative overflow-hidden rounded-surface p-1 in-[[data-material=flat]]:shadow-none">
           <AnimatePresence mode="popLayout" initial={false} custom={dir}>
             {shown ? (
               <motion.div key={shown.group} custom={dir} variants={slide} initial="in" animate="still" exit="out" className="grid">
@@ -342,7 +342,7 @@ function Panel({ current, theme, links, onClose }: Omit<MobileMenuProps, "open">
 
       <section aria-labelledby="menu-more" className="grid">
         <Label id="menu-more">More</Label>
-        <div className="litt-raised grid rounded-surface p-1 in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none">
+        <div className="litt-raised grid rounded-surface p-1 in-[[data-material=flat]]:shadow-none">
           {links.map((l) => (
             <a key={l.href} href={l.href} target="_blank" rel="noreferrer" className={rowBase + "h-control-md text-body " + rowIdle}>
               {l.lead}

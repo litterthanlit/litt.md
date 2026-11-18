@@ -149,7 +149,7 @@ function Row({
         aria-hidden="true"
         className="col-start-[bar] row-start-1 px-4 @max-[28rem]:col-start-[label] @max-[28rem]:col-end-[end] @max-[28rem]:row-start-2 @max-[28rem]:px-0 @max-[28rem]:pt-1"
       >
-        <span className="block h-1 overflow-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] in-[[data-material=flat]]:bg-surface-3">
+        <span className="block h-1 overflow-hidden rounded-control bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] in-[[data-material=flat]]:bg-slot">
           {grow.moving ? (
             <motion.span className={"block h-full w-full rounded-control " + fill} style={{ x: slide }} />
           ) : (

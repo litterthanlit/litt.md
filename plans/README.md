@@ -32,6 +32,7 @@ honor its STOP conditions, and update your row when done.
 | 022  | [Press goes back to its first boards, and a button has no outline](022-press-goes-back-to-its-first-board.md) | P1 | M | — | TODO (phase 1 is read-only, then Nick picks) |
 | 023  | [Flat bounces more than the other worlds](023-flat-bounces-more.md) | P2 | M | — | DONE (0.28 at 350ms in Flat, responsive 0) |
 | 024  | [Each world is dialled in to the components repo's bar: its materials written, every part built from them, its own studies, then its player body](024-dial-in-each-world.md) | P1 | XL | — | IN PROGRESS (phase 0, the presentation pass, done; STOP for Nick before Device; STOP after every world) |
+| 025  | [Components are interactive: every part does what it shows, once the design is settled](025-components-are-interactive.md) | P1 | L | 024 (every world done) | TODO (waits for 024; phase 0 agrees the scope with Nick) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale — finding fixed independently or approach abandoned)
 

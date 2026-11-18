@@ -1,0 +1,29 @@
+/*
+ * Press, round 2 (press-round2.tsx): candidates scoped to a frame by data-press-call, as press-calls.css does. Every
+ * value is a token that exists today; nothing in src/components or tokens.css changes for them. Plain CSS is
+ * unlayered, so these win over the components' utilities.
+ */
+
+/* The table's rows on one tray. The tray and the header rail stay; a body cell draws no slat of its own, the rows sit on
+   the tray's floor with a hairline between them, and the hand darkens its row a step instead of lifting it. */
+[data-press-call~="r2-one-tray"] [data-body="press"] > table tbody :is(td, th)::before {
+  display: none;
+}
+[data-press-call~="r2-one-tray"] [data-body="press"] > table tbody tr:not(:last-child) > :is(td, th) {
+  border-bottom-color: var(--line-strong);
+}
+[data-press-call~="r2-one-tray"] [data-body="press"] > table tbody tr:hover > :is(td, th) {
+  background: color-mix(in oklab, var(--fg) 5%, var(--tray));
+}
+
+/* The status Building as a word on a block, as the other statuses are: the block it already is, the blue word. */
+[data-r2-building] {
+  color: var(--data-blue-text);
+}
+
+/* The line chart's well as glass: the pane floating over the frame, glowing evenly, in place of the tray. */
+[data-press-call~="r2-glass"] [data-well] {
+  background: var(--glass-bg);
+  box-shadow: inset 0 0 0 1px var(--glass-border), var(--highlight), var(--shadow-float);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+}

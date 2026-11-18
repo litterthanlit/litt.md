@@ -25,6 +25,10 @@ import { FlatLookFrame } from "./flat-look";
 import { FlatHand } from "./flat-look-hand";
 import { FlatBounceExpressive, FlatBounceResponsive } from "./flat-bounce";
 import { PressColumnPreview, type PressColumn } from "./press";
+import { PressCallPreview, type PressCallId } from "./press-calls";
+import { PressRound2Preview, type PressRound2Id } from "./press-round2";
+import { FlatCallPreview, FlatTogetherPreview, type FlatCallId } from "./flat-calls";
+import { FlatIconComposition, FlatIconPairs, FlatIconSet, FlatIconsInUse } from "./flat-icons";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
 import {
@@ -197,6 +201,54 @@ const NO_UI: { screen: NoUiScreen; name: string; height: number }[] = [
   { screen: "search", name: "search", height: 1000 },
   { screen: "preferences", name: "preferences", height: 960 },
 ];
+/* Press, phase 1's nine calls (press-calls.tsx, plans/024, Press): a block of their own under the No UI row (its tallest
+   item ends at 11000), three across and three down, each the shipping part today beside the proposal, light over dark. */
+const CALLS_Y = NO_UI_Y + 1320 + 240;
+const CALL = { width: 1120, gap: 120, heights: [1140, 1180, 1560] };
+const PRESS_CALLS: { call: PressCallId; name: string }[] = [
+  { call: 1, name: "Press call 1 · raised only where a hand presses" },
+  { call: 2, name: "Press call 2 · only a fault takes colour" },
+  { call: 3, name: "Press call 3 · the primary, Blue 4, raised once, no glow" },
+  { call: 4, name: "Press call 4 · keep the shallow cut for fields" },
+  { call: 5, name: "Press call 5 · a stage stays the surface, not a plate" },
+  { call: 6, name: "Press call 6 · charts keep five hues, one quantity is the ink" },
+  { call: 7, name: "Press call 7 · voice, the deploy dashboard" },
+  { call: 8, name: "Press call 8 · card covers, a deploy's preview" },
+  { call: 9, name: "Press call 9 · one name per job" },
+];
+/* Press, round 2 (press-round2.tsx): building on Press's materials after Nick's look at the calls. A block of its own
+   to the right of the calls (which end at x 3600), from their top: the table and the tags, then the three charts. */
+const R2 = { x: 3600 + 240, y: CALLS_Y, width: 1120, gap: 120, heights: [720, 1280] };
+const PRESS_ROUND2: { item: PressRound2Id; name: string; row: number; col: number; height?: number }[] = [
+  { item: "table", name: "Press round 2 · table, rows on one tray", row: 0, col: 0 },
+  { item: "tags", name: "Press round 2 · status tags, kept", row: 0, col: 1, height: 400 },
+  { item: "chart-blocks", name: "Press round 2 · chart, blocks in a tray", row: 1, col: 0 },
+  { item: "chart-glass", name: "Press round 2 · chart, a trace on a glass readout", row: 1, col: 1 },
+  { item: "chart-slots", name: "Press round 2 · chart, slots cut into the plate", row: 1, col: 2 },
+];
+/* Flat, phase 1's calls (flat-calls.tsx, plans/024, Flat): a block of their own under Press's calls (which end at
+   y 15360) and round 2 (x 3840 to 7440): the new Flat, all calls together, first and alone on its row, then the nine
+   calls three across, each today beside the proposal, light over dark. */
+const FLAT_Y = 15360 + 480;
+const FLAT = { width: 1120, gap: 120, together: 1880, heights: [1000, 1000, 1640] };
+const FLAT_CALLS: { call: FlatCallId; name: string }[] = [
+  { call: 1, name: "Flat call 1 · the grey ground, white and ink on it" },
+  { call: 2, name: "Flat call 2 · paper has no edge, no ring, no shadow" },
+  { call: 3, name: "Flat call 3 · a real cover, not a wireframe" },
+  { call: 4, name: "Flat call 4 · the ink card, one vivid colour" },
+  { call: 5, name: "Flat call 5 · the accent stays the ink" },
+  { call: 6, name: "Flat call 6 · a status is a word after a circle" },
+  { call: 7, name: "Flat call 7 · off keeps its outline" },
+  { call: 8, name: "Flat call 8 · fun at rest is a figure that stands up" },
+  { call: 9, name: "Flat call 9 · voice, a site and its readers" },
+];
+/* Flat icons, a trial (flat-icons.tsx, Nick 2026-11-18): a fun outline set for Flat, nothing ships. A block of its own
+   under Flat's calls (their last row ends near y 21720), four across on Flat's column grid: the set, today beside it,
+   in use, and the composition. */
+const ICONS_Y = 21720 + 480;
+const ICONS = { width: 1120, gap: 120 };
+const flatRowY = (row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
+const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
   { id: "blues", name: "Accent · six blues and today", x: 0, y: 0, width: 1040, height: 380, render: () => <AccentBlues /> },
   { id: "material", name: "Material · flat, raised, sunken", x: 1120, y: 0, width: 680, height: 200, render: () => <MaterialDepths /> },
@@ -316,4 +368,42 @@ export const ITEMS: CanvasItem[] = [
       }),
     ),
   ),
+  ...PRESS_CALLS.map(
+    ({ call, name }, i): CanvasItem => ({
+      id: `press-call-${call}`,
+      name,
+      x: (i % 3) * (CALL.width + CALL.gap),
+      y: callRowY(Math.floor(i / 3)),
+      width: CALL.width,
+      height: CALL.heights[Math.floor(i / 3)],
+      render: () => <PressCallPreview call={call} />,
+    }),
+  ),
+  ...PRESS_ROUND2.map(
+    ({ item, name, row, col, height }): CanvasItem => ({
+      id: `press-round2-${item}`,
+      name,
+      x: R2.x + col * (R2.width + R2.gap),
+      y: R2.y + R2.heights.slice(0, row).reduce((sum, h) => sum + h + R2.gap, 0),
+      width: R2.width,
+      height: height ?? R2.heights[row],
+      render: () => <PressRound2Preview item={item} />,
+    }),
+  ),
+  { id: "flat-together", name: "Flat · the new Flat, all calls together", x: 0, y: FLAT_Y, width: FLAT.width, height: FLAT.together, render: () => <FlatTogetherPreview /> },
+  ...FLAT_CALLS.map(
+    ({ call, name }, i): CanvasItem => ({
+      id: `flat-call-${call}`,
+      name,
+      x: (i % 3) * (FLAT.width + FLAT.gap),
+      y: flatRowY(Math.floor(i / 3)),
+      width: FLAT.width,
+      height: FLAT.heights[Math.floor(i / 3)],
+      render: () => <FlatCallPreview call={call} />,
+    }),
+  ),
+  { id: "flat-icons-set", name: "Flat icons · the set", x: 0, y: ICONS_Y, width: ICONS.width, height: 3040, render: () => <FlatIconSet /> },
+  { id: "flat-icons-pairs", name: "Flat icons · today and fun, side by side", x: ICONS.width + ICONS.gap, y: ICONS_Y, width: ICONS.width, height: 1100, render: () => <FlatIconPairs /> },
+  { id: "flat-icons-in-use", name: "Flat icons · in use", x: 2 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 1580, render: () => <FlatIconsInUse /> },
+  { id: "flat-icons-composition", name: "Flat icons · the composition", x: 3 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 880, render: () => <FlatIconComposition /> },
 ];

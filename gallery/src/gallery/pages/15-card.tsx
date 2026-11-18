@@ -3,6 +3,7 @@ import { Card, CardBody, CardCover, CardDescription, CardLink, CardTitle } from 
 import { ArrowUpRightIcon } from "@/components/icons";
 import { ProjectCover, type CoverName } from "@/components/list-cover";
 import { Tag } from "@/components/tag";
+import { GRAPHITE, SERIES, SILK, type Plate } from "@/gallery/plates";
 import { Page, Stage, type PageDocs, type PageMeta } from "../kit";
 
 export const meta: PageMeta = {
@@ -228,6 +229,115 @@ function LightDemo() {
   );
 }
 
+/* ---------- Flat's covers: a real picture, never a wireframe (Flat's call 3, v1.17) ---------- */
+
+/** A plate as a card's cover. The words stay the shared demo's until Flat's voice (plan 024, phase 3). */
+function PlateCover({ plate }: { plate: Plate }) {
+  return <img src={plate.src} srcSet={plate.srcSet} sizes="20rem" alt={plate.alt} className="absolute inset-0 size-full object-cover" />;
+}
+
+function FlatClientCardsDemo() {
+  return (
+    <ul className="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      {SITES.map((site, i) => (
+        <Card key={site.id} as="li" cover="inset">
+          <CardCover>
+            <PlateCover plate={SERIES[i % SERIES.length]!} />
+          </CardCover>
+          <CardBody>
+            <CardTitle>
+              <CardLink href="#card">{site.name}</CardLink>
+            </CardTitle>
+            <CardDescription>{site.note}</CardDescription>
+            <div className="mt-auto flex items-center justify-between pt-4">
+              <Status tone={site.tone}>{site.status}</Status>
+              <a
+                href={site.url}
+                className="relative inline-flex h-control-sm items-center gap-1 text-caption text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
+              >
+                Visit site
+                <ArrowUpRightIcon />
+              </a>
+            </div>
+          </CardBody>
+        </Card>
+      ))}
+    </ul>
+  );
+}
+
+function FlatCoverStylesDemo() {
+  return (
+    <ul className="grid w-full grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-4">
+      <Card as="li" cover="inset">
+        <CardCover>
+          <PlateCover plate={SILK} />
+        </CardCover>
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">Inset cover</CardLink>
+          </CardTitle>
+          <CardDescription>Padded by 4px. The cover takes the control radius, so the corners nest.</CardDescription>
+        </CardBody>
+      </Card>
+
+      <Card as="li" cover="bleed">
+        <CardCover>
+          <PlateCover plate={GRAPHITE} />
+        </CardCover>
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">Full-bleed cover</CardLink>
+          </CardTitle>
+          <CardDescription>Runs to the edges and takes the card's own radius at the top.</CardDescription>
+        </CardBody>
+      </Card>
+
+      <Card as="li">
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">INV-0412</CardLink>
+          </CardTitle>
+          <CardDescription>Halden Gallery, due 24 Oct</CardDescription>
+          <p className="mt-6 text-h4 font-normal tabular-nums text-fg">€4,800.00</p>
+          <div className="mt-auto pt-4">
+            <Status tone="warning">Sent</Status>
+          </div>
+        </CardBody>
+      </Card>
+    </ul>
+  );
+}
+
+function FlatCardTile() {
+  const site = SITES[0]!;
+  return (
+    <ul className="grid w-full max-w-xs">
+      <Card as="li" cover="inset">
+        <CardCover>
+          <PlateCover plate={SERIES[0]!} />
+        </CardCover>
+        <CardBody>
+          <CardTitle>
+            <CardLink href="#card">{site.name}</CardLink>
+          </CardTitle>
+          <CardDescription>{site.note}</CardDescription>
+          <div className="mt-auto flex items-center justify-between pt-4">
+            <Status tone={site.tone}>{site.status}</Status>
+            <a
+              href={site.url}
+              className="relative inline-flex h-control-sm items-center gap-1 text-caption text-fg-subtle transition-colors duration-(--dur-instant) ease-litt hover:text-fg pointer-coarse:h-control-md"
+            >
+              Visit site
+              <ArrowUpRightIcon />
+            </a>
+          </div>
+        </CardBody>
+      </Card>
+    </ul>
+  );
+}
+
 /* ---------- the overview's tile ---------- */
 
 function CardTile() {
@@ -401,7 +511,7 @@ function TakeCardTile() {
 
 export default function CardPage() {
   return (
-    <Page meta={meta} docs={docs} tile={<CardTile />} tileByWorld={{ device: <TakeCardTile /> }}>
+    <Page meta={meta} docs={docs} tile={<CardTile />} tileByWorld={{ device: <TakeCardTile />, flat: <FlatCardTile /> }}>
       <Stage
         title="Linked cards"
         tier="instant"
@@ -409,6 +519,7 @@ export default function CardPage() {
         align="start"
         code="ClientCardsDemo"
         byWorld={{
+          flat: { demo: <FlatClientCardsDemo />, code: "FlatClientCardsDemo" },
           device: {
             demo: <TakeCardsDemo />,
             title: "Takes in the library",
@@ -428,7 +539,7 @@ export default function CardPage() {
         size="lg"
         align="start"
         code="CoverStylesDemo"
-        byWorld={{ device: { demo: <TakeCoverStylesDemo />, code: "TakeCoverStylesDemo" } }}
+        byWorld={{ flat: { demo: <FlatCoverStylesDemo />, code: "FlatCoverStylesDemo" }, device: { demo: <TakeCoverStylesDemo />, code: "TakeCoverStylesDemo" } }}
         caption="A plain card pads 24px. An inset cover pads the card by 4px and gives the cover the control radius, then the text pads 16px above and at the sides and 12px below. A full-bleed cover takes the card's radius at the top and the text pads 24px. Same hover on all three."
       >
         <CoverStylesDemo />

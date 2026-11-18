@@ -146,7 +146,7 @@ export function LogView({
   }, [lines]);
 
   return (
-    <div className={"relative grid min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)] rounded-surface bg-surface-2 in-[[data-material=flat]]:bg-surface-3 " + className}>
+    <div className={"relative grid min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)] rounded-surface bg-surface-2 litt-paper in-[[data-material=flat]]:bg-surface-1 " + className}>
       <div className="flex h-control-sm items-center justify-between gap-2 pr-1 pl-4 pointer-coarse:h-control-md">
         <span className="min-w-0 truncate text-caption font-normal text-fg-subtle">{label}</span>
         <div className="flex shrink-0 items-center gap-1">

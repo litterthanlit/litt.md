@@ -1,12 +1,13 @@
 /**
  * Select, the Flat body (proposals/worlds.md, Bodies; proposals/flat-pill.md): ink on paper.
  *
- * - The trigger is a grey pill (--block is --surface-3) with no outline, no shade and no window: the value in ink and a
+ * - The trigger is a pill (--block: white on the ground, grey on paper) with no outline, no shade and no window: the value in ink and a
  *   plain chevron after it. Under the hand it takes a lighter grey, and while its list is open a darker one. Nothing sinks.
  *   Focus is the ink ring (--focus-ring), an error the danger ring, and disabled lies flat on --surface-2.
- * - The list is a sheet, not a tray: one solid grey card (--surface-3) with no glass, no shadow and no ring, which grows from
- *   the trigger. Inside glass it is the same sheet. Its rows are words parted by space, with nothing between them.
- * - The current row is the grey bubble: a darker grey behind it, its word in the title weight and its check at the end,
+ * - The list is a sheet, not a tray: paper (--surface-1) with no glass and no ring, and the float shadow, since it floats
+ *   over the ground (v1.17), which grows from the trigger. Inside glass it is the same sheet. Its rows are words parted by
+ *   space, with nothing between them.
+ * - The current row is the grey bubble (--surface-3) behind it, its word in the title weight and its check at the end,
  *   so it is never the fill alone. The hand's highlight is the same family, a lighter bubble that glides under the pointer.
  * - Rows are pills (the control radius less the sheet's 4px padding). The bubble is a pseudo-element behind the row, so the
  *   gliding highlight and its keyboard ring still show over it.
@@ -59,7 +60,7 @@ export function SelectFlatList({ root, glide, children }: SelectListBodyProps) {
       data-body="flat"
       className={
         "group/list relative z-50 max-h-(--radix-select-content-available-height) max-w-(--radix-select-content-available-width) " +
-        "min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin) rounded-control bg-surface-3 outline-none forced-colors:border"
+        "min-w-(--radix-select-trigger-width) origin-(--radix-select-content-transform-origin) litt-paper rounded-control bg-surface-1 shadow-float outline-none forced-colors:border"
       }
     >
       <SelectPrimitive.Viewport
@@ -77,7 +78,7 @@ const row =
   "relative flex h-control-md w-full scroll-my-1 cursor-pointer select-none items-center gap-3 rounded-[calc(var(--radius-control)-4px)] px-4 text-small outline-none " +
   "[-webkit-tap-highlight-color:transparent] " +
   "before:absolute before:inset-0 before:-z-10 before:rounded-[calc(var(--radius-control)-4px)] " +
-  "data-[state=checked]:before:bg-[color-mix(in_oklab,var(--surface-3),var(--fg)_12%)] forced-colors:data-[state=checked]:before:border " +
+  "data-[state=checked]:before:bg-surface-3 forced-colors:data-[state=checked]:before:border " +
   "transition-colors duration-(--dur-instant) ease-litt " +
   "text-fg-muted data-[state=checked]:font-title data-[state=checked]:text-fg group-data-[quiet=false]/list:data-[highlighted]:text-fg " +
   "forced-colors:group-data-[quiet=false]/list:data-[highlighted]:[forced-color-adjust:none] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:text-[HighlightText] forced-colors:group-data-[quiet=false]/list:data-[highlighted]:**:text-[HighlightText] " +

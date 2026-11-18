@@ -290,6 +290,11 @@ export default function TagPage() {
         align="start"
         code="LabelsDemo"
         byWorld={{
+          flat: {
+            demo: <LabelsDemo />,
+            caption:
+              "A plain tag is 24px tall at the control radius: the word in a pill, in the sans at the caption size and the label weight in fg-muted. The pill is white on the grey ground and the grey bubble inside a card. It names a kind or a platform and never asks to be pressed. Nothing moves.",
+          },
           device: {
             demo: <TakeLabelsDemo />,
             code: "TakeLabelsDemo",
@@ -306,6 +311,11 @@ export default function TagPage() {
         caption="Only the text takes the status color. The fill stays the tag's own, so a row of tags stays calm. Device adds a lamp in the status color, but every tag says its state in words, and neutral Draft and Idea differ by theirs."
         code="StatusDemo"
         byWorld={{
+          flat: {
+            demo: <StatusDemo />,
+            caption:
+              "A status is its word in the ink after a small circle in the status color, and the pill stays, so a row of tags stays calm. The color sits only on the circle; every tag says its state in words, and neutral Draft and Idea differ by theirs.",
+          },
           device: {
             demo: <TakeStatusDemo />,
             code: "TakeStatusDemo",

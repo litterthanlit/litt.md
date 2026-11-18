@@ -1,0 +1,71 @@
+/*
+ * Flat, phase 1's calls (flat-calls.tsx, plans/024, Flat): the proposals and alternatives, scoped to a frame by
+ * data-flat-call (a space-separated list, so a frame can carry more than one). Every value is a token that exists
+ * today, re-mapped; nothing in src/components or tokens.css changes for them. Plain CSS is unlayered, so these win over
+ * the components' utilities. The one value no token holds yet (call 8's figure) carries litt-allow.
+ */
+
+/* Call 1, the grey ground. Light: the ground is Flat's surface-3 grey and what sits on it is white (paper, a block, a
+   field, the slider's track) or the ink. Dark: the ground is Flat's surface-2 and what sits on it is the black of
+   Flat's canvas, or the ink (white). The grey bubble for what is chosen inside a white or black thing stays surface-3.
+   Two attributes, so it wins over the theme's and Flat's own blocks whatever the order. */
+[data-flat-call~="ground"][data-theme="light"] {
+  --canvas: var(--flat-surface-3);
+  --well: var(--flat-surface-2);
+  --block: var(--flat-surface-1);
+  --cut: var(--flat-surface-1);
+  --slot: var(--flat-surface-1);
+}
+[data-flat-call~="ground"][data-theme="dark"] {
+  --canvas: var(--flat-surface-2);
+  --well: var(--flat-surface-1);
+  --surface-1: var(--flat-canvas);
+  --block: var(--flat-canvas);
+  --cut: var(--flat-canvas);
+  --slot: var(--flat-canvas);
+}
+
+/* Call 2, paper has no edge: a card (any .litt-raised panel) is a fill on the ground, with no hairline ring and no
+   float shadow. Only what floats (a menu, a dialog) keeps its shadow. */
+[data-flat-call~="paper"] .litt-raised {
+  box-shadow: none;
+}
+
+/* Call 6's proposal, a status is its word in the ink after a small circle in the status's colour. The pill stays the
+   grey one inside paper; colour sits only on the circle, where it says something. */
+[data-flat-call~="status-dot"] span[data-body="flat"]:is(.text-success, .text-warning, .text-danger, .text-fg-subtle) {
+  gap: var(--space-2);
+  color: var(--fg);
+}
+[data-flat-call~="status-dot"] span[data-body="flat"]:is(.text-success, .text-warning, .text-danger, .text-fg-subtle)::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--fg-subtle);
+}
+[data-flat-call~="status-dot"] span[data-body="flat"].text-success::before {
+  background: var(--success);
+}
+[data-flat-call~="status-dot"] span[data-body="flat"].text-warning::before {
+  background: var(--warning);
+}
+[data-flat-call~="status-dot"] span[data-body="flat"].text-danger::before {
+  background: var(--danger);
+}
+
+/* Call 7's alternative, the reference's filled half: a switch that is off is a fill on the ground (white in light,
+   black in dark) with no outline, its knob the grey it has today. */
+[data-flat-call~="filled-off"] button[data-body="flat"][data-state="unchecked"] > span:first-child {
+  background: var(--surface-1);
+  box-shadow: none;
+}
+
+/* Call 8, fun at rest is size: the one figure on an object stands well above 18px. No token holds a size above 18px
+   (R8, litt-principles.md Open 1), so the value is a candidate. */
+[data-flat-call~="big-figure"] [data-body="flat"] > dd > span:first-child {
+  font-size: 40px; /* litt-allow: candidate size, no type token above 18px yet (Open 1) */
+  line-height: 44px; /* litt-allow: candidate leading for the 40px figure */
+  letter-spacing: -0.03em;
+}

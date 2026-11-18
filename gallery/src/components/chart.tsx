@@ -1015,7 +1015,7 @@ const METER_FILL: Record<ChartHue, string> = {
   rose: "bg-data-rose",
 };
 
-const TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] in-[[data-material=flat]]:bg-surface-3";
+const TRACK = "bg-[color-mix(in_oklab,var(--fg)_12%,transparent)] in-[[data-material=flat]]:bg-slot";
 
 /** A thin rail for one value against a limit, with an optional target tick or steps. Static, never the accent. */
 export function Meter({ label, value, max = 100, valueText, hue, target, targetText, steps, className = "" }: MeterProps) {

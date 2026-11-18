@@ -581,7 +581,7 @@ export function Stage(props: StageProps) {
     <div
       data-part={world === "device" ? "plate" : undefined}
       className={
-        (world === "device" ? DEVICE_PLATE : "litt-raised rounded-surface in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none") +
+        (world === "device" ? DEVICE_PLATE : "rounded-surface bg-surface-1 shadow-[inset_0_0_0_1px_var(--raised-line,var(--line)),var(--highlight)] in-[[data-material=flat]]:bg-well in-[[data-material=flat]]:shadow-none") +
         " relative col-span-2 row-start-1 grid overflow-visible text-fg " +
         (padded ? "p-4 min-[24rem]:p-8 sm:p-12 " + place + " " : "") +
         height

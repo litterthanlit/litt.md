@@ -103,9 +103,10 @@ const given = (node: ReactNode) => node !== undefined && node !== null && node !
 /** True inside a ToolCallGroup, where a call is a list item. */
 const InGroup = createContext(false);
 
-/* Flat: a call (or a run of them) is a grey card with no frame, rows part by space (flat-pill.md, rules 4 and 5). */
+/* Flat: a call (or a run of them) is paper on the ground with no frame, rows part by space (flat-pill.md, rules 4 and 5;
+   v1.17). */
 const CARD =
-  "in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-1 " +
+  "litt-paper in-[[data-material=flat]]:rounded-surface in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:px-4 in-[[data-material=flat]]:py-1 " +
   "in-[[data-material=flat]]:[[data-tool-call]+&]:mt-1 in-[[data-material=flat]]:forced-colors:border ";
 
 const ROW =
@@ -199,7 +200,7 @@ function Block({ caption, name, children }: { caption: string; name: string | un
         className={
           "max-h-64 overflow-auto rounded-[calc(var(--radius-surface)-4px)] bg-surface-2 p-3 font-mono text-caption font-normal text-fg " +
           "whitespace-pre-wrap [overflow-wrap:anywhere] shadow-[inset_0_0_0_1px_var(--line)] " +
-          "in-[[data-material=flat]]:bg-surface-1 in-[[data-material=flat]]:shadow-none " +
+          "in-[[data-material=flat]]:bg-surface-3 in-[[data-material=flat]]:shadow-none " +
           "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus"
         }
       >
@@ -476,7 +477,7 @@ export function ToolApproval({
         {said}
       </div>
       {decision === "pending" ? (
-        <div role="group" aria-labelledby={titleId} className="litt-raised grid gap-3 p-4 in-[[data-material=flat]]:shadow-float">
+        <div role="group" aria-labelledby={titleId} className="litt-raised grid gap-3 p-4">
           <p id={titleId} className="text-body font-title text-fg">
             {title}
           </p>

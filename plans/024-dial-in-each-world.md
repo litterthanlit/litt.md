@@ -259,6 +259,211 @@ sound is another agent's, and Decision 6 is still Nick's.
 Nick looked at the before and after sheet (2026-11-17): "6 no, keep the bezel, open the pr". The bezel stays though
 the components repo's screen has none.
 
+## Press
+
+### Phase 1. Materials, colour, voice and part kinds (drafted; paused, 2026-11-17)
+
+**Paused (2026-11-17).** Nick, on the nine calls live on `#canvas`: "I think we're taking away from what press is. for
+example the tags look cool here but each line being pressed is a bit much. the materials we have are brilliant, let's
+build on them. I hate the chart, it doesnt fit kinda I feel like". Round 2 went up beside them (`press-round2.tsx`: the
+table's rows on one tray with the tags kept raised, today's tags kept with Building as a word on a block, and three
+charts made of Press's materials: blocks in a tray, a trace on glass, slots cut into the plate). Then: "I cant decide
+now, maybe current look isn't so bad. maybe we should jump into the new flat." Press stays as it ships; nothing below
+is decided, and both rounds stay on the canvas for when Press comes back. Flat goes next.
+
+Read-only on code: nothing in `gallery/`, `tokens.css` or `taste/` changed. Drafted from plan 022 (the first Press is the
+measure; a raised thing says it is raised once; no outline round a button), `litt-principles.md` (Press), the journal
+(26 October, 13 and 16 November), R3 and `material.md` 6, and the components repo's bar. Audit: main at `01225e3`,
+`#press/components` light, dark and in greyscale with one face, the player, About and eight component pages, at 1440 by
+1000. Score **5 / 10**, as on 16 November (phase 0's chrome since). The sheet of the nine calls goes to Nick; the
+vocabulary goes into `taste/litt-principles.md` as a `taste:` commit only after Nick's answers (`evolve.md`).
+
+- [x] Materials, in the order they combine: surface, then what is pressed into it (tray, cut), then what stands on it
+      (block; the plate with its slot and cap), then glass over everything; one light from the top on all of it. Drafted,
+      waiting for Nick.
+- [x] The colour rule. Drafted, waiting for Nick.
+- [x] The voice: ten nouns, five demo strings. Drafted, waiting for Nick.
+- [x] The `data-part` kinds. Drafted, waiting for Nick.
+
+**Materials.**
+
+| Material | One line | Tokens today | Radius |
+|---|---|---|---|
+| Surface | Where content sits: flat, a hairline and the top highlight, never a cast. | `--canvas`, `--surface-1` to `-3`, `--line`, `--highlight`, `--well` | `--radius-surface` |
+| Tray | Holds choices: a floor one step down, its top wall's shade. | `--tray`, `--tray-shade` | `--radius-control` |
+| Cut | What you type or put a mark into: the shallowest step, inside the 3:1 line. | `--cut`, `--cut-shade`, `--line-control` (as `--field-*`) | `--radius-control`; a radio round |
+| Block | What you press: raised once by its cast, sinks half a pixel. Selected is raised. No outline. | `--block`, `--block-lift`, `--block-press`, `--block-hover`, `--press-depth`, `--key-lift` | `--radius-control`, less 2px in a tray |
+| Plate, slot and cap | What you hold and move: a taller plate with a slot cut into it and a cap riding in it. The slider, and the object. | `--plate-lift`, `--slot`, `--slot-shade`, `--slot-fill`, `--slot-fill-shade`, `--cap`, `--cap-held`, `--cap-lift`, `--cap-press`, `--cap-grip`, `--notch`, `--notch-home` | plate `--radius-control`; slot and cap less 2px |
+| Glass | What floats over content, glowing evenly on every side. Never glass on glass. | `.litt-glass`, `--glass-bg`, `--glass-border`, `--glass-blur`, `--glass-saturate`, `--shadow-tooltip`, `--shadow-float`, `--shadow-modal` | `--radius-surface` |
+| Light | One, from the top: the edge highlight, the accent's light, grain. | `--light`, `--highlight`, `--glow`, `--grain`, `--grain-opacity` | none |
+| Lettering | Helvetica Neue, three weights by role, sentence case, no engraving. | `--font-sans`, `--weight`, `--weight-title`, `--weight-label`, `--label-case` | none |
+
+**Colour rule.**
+
+| Colour | Means | Never |
+|---|---|---|
+| Warm stone and the ink | Everything else: surfaces, blocks, words, ticks and radios, a switch's On, a status that is fine | — |
+| Blue 4 (`--accent`) | The view's one primary action, or its one main switch. As light: the focus ring and links | A second fill, a status, a tint behind a tag, a series |
+| Red (`--danger`) | A fault and a destructive action's words; one fill, on a destructive dialog's confirm | Decoration |
+| Green, amber | Nothing, if call 2 is taken | A status chip |
+| Data hues | A chart's series, in R7's order; a single quantity stays the ink | Chrome |
+| Selection | Not a colour: the raised block; a menu row's fg 7% | The accent |
+
+**Voice.** Press's audience is "product UI, settings and dashboards", and `#press/about`'s scenes already speak it.
+Nouns: deploy, build, branch, commit, preview, production, environment, region, seat, plan. Demo strings: `harbor-web`,
+`main · 4f9c2e1 · Add pricing page`, `Building (68%)`, `1m 42s · 312 files · fra1`, `3 seats left on Pro`. Plain product
+English, sentence case, units on every number, status in words. Spelling waits on Open 4 (About writes "Optimising").
+
+**`data-part` kinds**, named after Press's Anatomy callouts (the block, the plate, the slot, the pulled-out part, the
+notches, the cap): `surface`, `tray`, `cut`, `block`, `plate`, `slot`, `fill`, `cap`, `notch`, `mark` (a tick, a bead),
+`glass`, `lettering`.
+
+**Token gaps.** None for the vocabulary. Calls 2 and 3 change rules, not values: `--success` and `--warning` would go
+unused under Press, and `--glow` would be none under Press (through Propagate).
+
+**Calls for Nick** (the sheet, today beside the proposal):
+
+| # | Call | Recommend | Why |
+|---|---|---|---|
+| 1 | Raised only where a hand presses: statuses (tag, table, list, card, context menu), the stat's figure and table rows leave their blocks | yes | They read as buttons. "Depth says what a thing does"; `material.md` 6, "Where not". |
+| 2 | Status: only a fault takes colour (red); Ready, Live, In review and Building are the ink word | yes | Green, amber and a blue tint all mean "status". Narrows R7 under Press only. |
+| 3 | The primary is Blue 4, raised once by its cast, with no glow | yes | Fill, cast and halo are three cues on one block, loudest in dark. An R6 exception for Press. |
+| 4 | Keep the shallow cut for fields (not a deeper one) | yes | The audit found it faint, but Nick turned down the sunken well on 26 October and 022 put the shallow cut back. |
+| 5 | A stage stays the surface, not a plate (unlike Device) | yes | A plate round a block is the outline 022 took off. The plate stays the slider's and the object's. |
+| 6 | Charts keep R7's five hues; a single quantity (a stat's sparkline, its "Up 12%") is the ink | yes | Press is for dashboards, so series keep their hues; one quantity needs none. |
+| 7 | Voice: the deploy dashboard of About's scenes, not the web studio (Northwind site · Framer, Halo site, Animation speed on litt.design) | yes | It is Press's stated audience, and About already speaks it. |
+| 8 | Card covers: a real preview, not an X-crossed wireframe | yes | A placeholder is not the work (R1). The card's ring and surface stay. |
+| 9 | One name per job in the words: surface, tray, cut, block, plate (slot and cap in it), glass; a key is a block, a field is the cut | yes | 13 November: "no material recipe repeats another under a new name". Token names stay. Whether a key keeps its darker lower edge (`--key-lift`) is the one second cue left. |
+
+**Tiles whose structure does not say Press** (greyscale, one face; 38 of 88), phase 2's list: icons, tooltip, hover
+card, menu, breadcrumb, steps, header, app shell, tree, card, avatar, callout, accordion, scroll area, resizable,
+details, timeline, log view, gauge, sparkline, range chart, breakdown, bar list, funnel, dot plot, spread, heatmap,
+cohort grid, message, thinking, sources, plan, run card, code block, pad, curve editor, spring editor, price. The other
+way round, raised where no hand presses: tag, the table's and list's statuses, the stat's figure, card statuses, the
+context menu's statuses. Lightbox, media and carousel are content.
+
+**STOP**: Nick answers the nine calls ("all yes" takes every recommendation) before the vocabulary goes into `taste/`
+and phase 2 starts.
+
+## Flat
+
+### Phase 1. Materials, colour, voice and part kinds (drafted, waiting for Nick, 2026-11-18)
+
+Nick: "maybe we should jump into the new flat." Press's lesson taken: build on what Flat already is (the pill, an outline
+means off, ink means on, the grey bubble, no lines, the 0.28 bounce) and on Nick's direction of 16 November ("light,
+easy to use, airy, flat - no complications, fun"), not strip it. Read-only on code but the canvas: nothing in
+`src/components`, `src/worlds`, `tokens.css` or `taste/` changed. The calls are live on `#canvas` (`flat-calls.tsx`,
+`flat-calls.css`): `Flat · the new Flat, all calls together` at x 0, y 15840, and `Flat call 1` to `9` three across
+under it (x 0 to 3600, y 17840 to 21756), each today beside the proposal, light over dark, every proposal on call 1's
+ground. The vocabulary goes into `taste/litt-principles.md` as a `taste:` commit only after Nick's answers (`evolve.md`).
+
+Audit: main at `8862c94`, `#flat/components` light, dark and in greyscale (88 tiles), the player, About, and card,
+button, table, stat and input, at 1440 by 1000. Score **4 / 10**, as on 16 November. What it shows:
+
+- The ground is white (`--flat-canvas` in light) and a stage or tile is a hair off it (`--well`); the objects are
+  grey. The direction is the other way round: grey ground, white and ink on it.
+- `#flat/card`: a hairline ring and the float shadow on every card (`litt-raised` plus `shadow-float` under Flat), and
+  X-crossed wireframes for covers. The invoice card is the same ring with no cover.
+- Statuses are green, amber and red words in grey pills (table, card, list); the stat's deltas are green and red; the
+  error field is a pink tint.
+- The words are the studio's that every world shares (Halo site, Start a project, Deploys this week, Northwind site ·
+  Framer). Variants' captions describe Press ("the cut: a floor a hair below the page, the control line", "carries the
+  glow", "raised once by its cast").
+- Player `bare`: a hairline box, the set as a list of names and lines, a text transport.
+
+**Materials**, in the order they combine:
+
+| Material | One line | Tokens today | Radius |
+|---|---|---|---|
+| Ground | The grey everything sits on. Nothing is drawn on it but objects and words. | `--canvas` (call 1: `--flat-surface-3` light, `--flat-surface-2` dark) | none |
+| Paper | A white rounded square on the ground (black in dark): a card, a panel, a table, a field. No edge, nothing cast. | `--surface-1`, `--block`, `--cut` (call 1 maps them to white, or `--flat-canvas` in dark) | `--radius-surface` |
+| Pill | What a hand presses or types into: a button, a field, a segment, a tag, the switch. | `--block`, `--cut`, `--radius-control` | `--radius-control` (28) |
+| Circle | A key with one symbol, a checkbox, a radio, a knob, an avatar, a status's mark (call 6). | `--radius-pill` | round |
+| Bubble | What is chosen inside paper: a grey fill (the current segment, row, tab). On the ground, chosen is white. | `--surface-3` | the shape it sits in, less its inset |
+| Ink | What is on, and the one primary action: black on light, white on dark. | `--fg`, `--accent` (the ink), `--canvas` on it | the shape it fills |
+| Ink card | One per view: the ink as a rounded square holding one live thing, in one data hue (call 4). | the opposite theme's `--canvas` and `--fg`; `--data-blue` | `--radius-surface` |
+| Outline | Only what is off: a switch, an unticked box, a step to come (kept, call 7). | `--line-control` at 1.5px | the control's |
+| Float | Only what floats over the page keeps a shadow: a menu, a dialog, a toast. | `--shadow-float`, `--shadow-modal` | `--radius-surface` |
+| Lettering | Geist, three weights by role; one figure per object may stand above 18px (call 8). | `--font-sans`, `--weight*`, `--type-*` | none |
+
+**Colour rule.**
+
+| Colour | Means | Never |
+|---|---|---|
+| Grey | The ground; inside paper, what is chosen | An edge, a frame, a line between things |
+| White and black | Paper and the ink: everything a hand uses, and words | — |
+| The ink (`--accent`) | What is on, and the view's one primary action | A second fill per view (R6) |
+| One data hue | The ink card's data, a chart's series in R7's order, one hue per object | Chrome, a button, a status word |
+| Success, warning, danger | A status, on its circle only (call 6); danger's words on a destructive action | A whole word in colour, a tinted field |
+| A plate's own colours | A cover is content | — |
+
+**Voice.** Flat's audience is "sites, portfolios and reading"; for "light, airy, fun", the person who keeps a small
+site and a letter, and the people who read it (call 9). Nouns: site, post, issue, letter, reader, subscriber, series,
+picture, draft, week. Demo strings: `Spring series · twelve pictures from the coast`, `Issue 14 goes out Friday at
+9:00`, `1,204 readers this week`, `4 min read`, `Subscribe` / `Read the letter`. Plain and friendly, sentence case, a
+unit on every number, status in words. Spelling waits on Open 4.
+
+**`data-part` kinds**, after the materials: `ground`, `paper`, `pill`, `circle`, `bubble`, `ink`, `ink-card`,
+`outline`, `float`, `mark` (a tick, a status's circle), `figure`, `lettering`.
+
+**Token gaps** (each a question, through Propagate): the ground needs a name of its own (`--ground`) once picked, since
+it re-maps the canvas; in light it is `--flat-surface-3`, close to litt.design's own grey, and whether a step
+between surface-2 and -3 is wanted is Nick's eye. In dark the ground `--flat-surface-2` and black paper `--flat-canvas`
+stand only 1.1:1 apart (light's white on grey is 1.18:1): the words carry them, as Flat's grey field does today. A
+figure size above 18px (call 8, R8, Open 1). The status circle needs no token (8px, `--radius-pill`).
+
+**Calls for Nick** (live on `#canvas`, today beside the proposal):
+
+| # | Call | Recommend | Why |
+|---|---|---|---|
+| 1 | The ground: grey ground with white and ink on it, against today's white ground with grey objects | grey ground (light surface-3 under white and ink; dark surface-2 under black and white) | 16 November: "bold, simple shapes on grey". The grey moves from the object to the ground; the bubble stays for chosen. |
+| 2 | Paper has no edge: no hairline ring and no float shadow on a card or a panel | yes; only what floats keeps its shadow | Both references and Flat's rules: nothing outlined, nothing cast. On grey the fill is the edge. |
+| 3 | Covers: a real picture (the gallery's plates), not an X-crossed wireframe | yes | A placeholder is not the work (R1); Flat is for sites and portfolios. |
+| 4 | The black card with one vivid colour enters Flat as the ink card, one per view (a stat, a live run, a timer), its colour the first data hue on its data | yes | The second reference, kept to R6 and R7: one hue per object, no shadow (the references' shadows were rejected on 16 November). In dark it is white, as the ink is. |
+| 5 | Flat keeps the ink as its accent (plan 012's violet shown as the alternative) | keep the ink | Colour now lives in data and the ink card; no hue plan 012 found is clear of Blue 4, danger and the data hues but the violet, and the primary as black on white is the reference. |
+| 6 | A status is its word in the ink after a small circle in the status colour; the pill stays | yes | A circle is one of Flat's shapes, and colour sits where it says something; the word still says it (R5). |
+| 7 | Off keeps its outline (the reference's filled half shown as the alternative) | keep the outline | 6 November: "Feels so easy on the eye!". It also keeps the 3:1 edge on the grey ground. |
+| 8 | Fun at rest is a figure that stands up: one figure per object above 18px (40px shown); fun in motion stays the 0.28 bounce on arrival | yes; the size is Nick's | Both references: the one figure is several times its label. No token above 18px today. |
+| 9 | Voice: a site and its readers (post, issue, reader, series), not the studio's client work every world shares | yes | Flat is for sites, portfolios and reading, and light and airy wants plain friendly words. |
+
+**Tiles whose structure does not say Flat** (greyscale, one face; 35 of 88), phase 2's list: kbd (key caps), pad,
+spring editor, curve editor, time scrubber, rule builder, inspector and tune (hairline panels), hover card, menu,
+context menu (white panels with a ring on white), header and action bar (wireframe covers), app shell, card, product
+card and cart (ring and shadow, wireframes), resizable and scroll area (hairline frames), states, details, message and
+composer (ringed panels), log view and code block (boxed), timeline and steps (rails, lines between things), chart,
+legend, range chart, dot plot, spread, heatmap and cohort grid (gridlines; ink marks on grey would say Flat), gauge.
+Media, carousel and lightbox are content.
+
+**STOP**: Nick answers the nine calls on the canvas ("all yes" takes every recommendation) before the vocabulary goes
+into `taste/` and phase 2 starts.
+
+Nick, 2026-11-18: "all yes". The vocabulary is in `taste/` (v1.17).
+
+### Phase 2a. The system-wide calls in shipping Flat (done, 2026-11-18)
+
+- [x] Call 1: `--flat-ground` and `--flat-paper` (light, dark, auto-dark); under Flat the canvas and the well are the
+      ground, surface-1 is paper, and a block, a cut and a slot are paper on the ground and the grey bubble inside
+      `.litt-raised`, `.litt-glass` or `.litt-paper`. Flat's data hues a step deeper in light (`--flat-data-*`) so every
+      pair in `check.mjs` passes on the grey. A stage or a tile is the ground, so it no longer shows as a box.
+- [x] Call 2: `.litt-raised`'s ring is `--raised-line`, transparent under Flat; cards, details and lists drop the float
+      shadow. Menus, popovers, dialogs, toasts and the select's list keep theirs.
+- [x] Call 3: the card page's demos and tile under Flat use the gallery's plates.
+- [x] Calls 5 and 7 hold as they were. Call 6: a status tag is its word in the ink after an 8px circle. Call 8:
+      `--type-figure-size`, 40px under Flat, on the stat's figure.
+- [x] Press, Device, Plain, Rack and Heat compared page by page against `446faa7`, light and dark: identical but the
+      version stamps of items whose shared files changed and animations caught at different frames.
+
+Left for 2b: the ink card (call 4) and the 35 tiles whose structure does not say Flat. Left for 3: Flat's voice in
+the demos (call 9), the shared captions and ledes that still describe Flat's old grey (the tag's lede among them).
+
+**Open candidate: a fun icon set for Flat (trial, not decided).** Nick, 2026-11-18, with a reference of chunky outline
+icons: "also maybe we could trial a fun icon set for flat sort of like this". On the canvas as `Flat icons · …`
+(`gallery/src/canvas/flat-icons.tsx`): every one of `icons.tsx`'s 99 names, StatusIcon's five marks and ten fun ones
+for Flat's voice (post, issue, reader, coffee, heart, ghost, paw, smiley…), drawn new on the same 16 grid as one 1.75
+outline with round caps and joins and every corner rounded, beside today's set and in real Flat parts. If Nick takes
+it, it becomes Flat's body of the same `Icon` names in phase 2 (R8's "one solid set" would then hold for every world but
+Flat); until then nothing ships and every world keeps `icons.tsx`.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.

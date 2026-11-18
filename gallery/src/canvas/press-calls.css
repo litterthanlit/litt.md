@@ -1,0 +1,54 @@
+/*
+ * Press, phase 1's calls (plans/024, Press): the proposals and alternatives, scoped to a frame by data-press-call (a
+ * space-separated list, so a frame can carry more than one). Every value is a token that exists today; nothing in
+ * src/components or tokens.css changes for them. Plain CSS is unlayered, so these win over the components' utilities.
+ */
+
+/* Call 1, raised only where a hand presses. A tag (a status) is a word on the surface: no block, no cast. */
+[data-press-call~="unraised"] span[data-body="press"] {
+  background: none;
+  box-shadow: none;
+  padding-inline: 0;
+}
+/* The stat's figure leaves its raised face and stands on the tile. */
+[data-press-call~="unraised"] [data-body="press"] > dd > span:first-child {
+  background: none;
+  box-shadow: none;
+  padding: 0;
+}
+/* The table is rows on the surface: no tray, no rail, no slats; a hairline under each row, and the fg 6% fill under the
+   hand that a ghost button takes. */
+[data-press-call~="unraised"] [data-body="press"]:has(> table) {
+  background: none;
+  box-shadow: none;
+}
+[data-press-call~="unraised"] [data-body="press"] > table th,
+[data-press-call~="unraised"] [data-body="press"] > table td {
+  background: var(--canvas);
+  border-bottom-color: var(--line);
+}
+[data-press-call~="unraised"] [data-body="press"] > table th::before,
+[data-press-call~="unraised"] [data-body="press"] > table td::before {
+  display: none;
+}
+[data-press-call~="unraised"] [data-body="press"] > table tbody tr:hover > * {
+  background: color-mix(in oklab, var(--fg) 6%, var(--canvas));
+}
+
+/* Call 2, only a fault takes colour: a status that is fine is the ink word; danger keeps its red, and the word. */
+[data-press-call~="ink-status"] span[data-body="press"]:is(.text-success, .text-warning, .text-fg-muted) {
+  color: var(--fg);
+}
+
+/* Call 3, the primary raised once: its glow is the block's cast, as Mono's is. Two attributes, so it wins over the
+   [data-theme] block that sets --glow whatever the order. */
+[data-press-call~="no-glow"][data-theme] {
+  --glow: var(--block-lift);
+}
+
+/* Call 4's alternative, the deeper well (turned down on 26 October): the slot's floor and its shade under the
+   cut's, as Heat keeps it. Today's tokens only. */
+[data-press-call~="deep-cut"][data-theme] {
+  --field: var(--slot);
+  --field-shade: var(--slot-shade), var(--cut-shade);
+}
