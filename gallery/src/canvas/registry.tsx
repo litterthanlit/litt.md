@@ -28,6 +28,7 @@ import { PressColumnPreview, type PressColumn } from "./press";
 import { PressCallPreview, type PressCallId } from "./press-calls";
 import { PressRound2Preview, type PressRound2Id } from "./press-round2";
 import { FlatCallPreview, FlatTogetherPreview, type FlatCallId } from "./flat-calls";
+import { HypherDifferences, HypherTakePreview, type HypherTake } from "./flat-hypher";
 import { FlatIconComposition, FlatIconPairs, FlatIconSet, FlatIconsInUse } from "./flat-icons";
 import { NoUiPreview, type NoUiColumn, type NoUiScreen } from "./no-ui";
 import { StreakCuts, StreakHero, StreakPairs, StreakPalettes, StreakPrints } from "./streaks";
@@ -247,6 +248,15 @@ const FLAT_CALLS: { call: FlatCallId; name: string }[] = [
    in use, and the composition. */
 const ICONS_Y = 21720 + 480;
 const ICONS = { width: 1120, gap: 120 };
+/* Flat as Hypher (flat-hypher.tsx, plans/024, Flat, an open comparison): to the right of Flat's calls (which end at
+   x 3600), from their top (y 15840), in the space under Press round 2 (which ends at y 13360) and above the icons (from
+   y 22200): the three takes, light over dark each, then the differences. */
+const HYPHER = { x: 3600 + 240, y: FLAT_Y, width: 880, gap: 120, height: 2010 };
+const HYPHER_TAKES: { take: HypherTake; name: string }[] = [
+  { take: "today", name: "Flat · today (after 2a)" },
+  { take: "new", name: "Flat · the new Flat, all calls" },
+  { take: "hypher", name: "Flat · as Hypher" },
+];
 const flatRowY = (row: number) => FLAT_Y + FLAT.together + FLAT.gap + FLAT.heights.slice(0, row).reduce((sum, h) => sum + h + FLAT.gap, 0);
 const callRowY = (row: number) => CALLS_Y + CALL.heights.slice(0, row).reduce((sum, h) => sum + h + CALL.gap, 0);
 export const ITEMS: CanvasItem[] = [
@@ -402,6 +412,26 @@ export const ITEMS: CanvasItem[] = [
       render: () => <FlatCallPreview call={call} />,
     }),
   ),
+  ...HYPHER_TAKES.map(
+    ({ take, name }, i): CanvasItem => ({
+      id: `flat-hypher-${take}`,
+      name,
+      x: HYPHER.x + i * (HYPHER.width + HYPHER.gap),
+      y: HYPHER.y,
+      width: HYPHER.width,
+      height: HYPHER.height,
+      render: () => <HypherTakePreview take={take} />,
+    }),
+  ),
+  {
+    id: "flat-hypher-differences",
+    name: "Flat · as Hypher, the differences",
+    x: HYPHER.x + 3 * (HYPHER.width + HYPHER.gap),
+    y: HYPHER.y,
+    width: 1120,
+    height: 2640,
+    render: () => <HypherDifferences />,
+  },
   { id: "flat-icons-set", name: "Flat icons · the set", x: 0, y: ICONS_Y, width: ICONS.width, height: 3040, render: () => <FlatIconSet /> },
   { id: "flat-icons-pairs", name: "Flat icons · today and fun, side by side", x: ICONS.width + ICONS.gap, y: ICONS_Y, width: ICONS.width, height: 1100, render: () => <FlatIconPairs /> },
   { id: "flat-icons-in-use", name: "Flat icons · in use", x: 2 * (ICONS.width + ICONS.gap), y: ICONS_Y, width: ICONS.width, height: 1580, render: () => <FlatIconsInUse /> },

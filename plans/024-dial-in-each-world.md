@@ -464,6 +464,20 @@ outline with round caps and joins and every corner rounded, beside today's set a
 it, it becomes Flat's body of the same `Icon` names in phase 2 (R8's "one solid set" would then hold for every world but
 Flat); until then nothing ships and every world keeps `icons.tsx`.
 
+**Open comparison: Flat as Hypher (not decided).** Nick, 2026-11-18: "I like the design in https://www.hypher.app/
+which world would it fit?" (the answer was Flat), then "put it on canvas, let 2b finish". On the canvas
+(`gallery/src/canvas/flat-hypher.tsx`, `flat-hypher.css`), to the right of the calls (x 3840 to 7960, y 15840 to
+18500): `Flat · today (after 2a)`, `Flat · the new Flat, all calls` and `Flat · as Hypher`, one screen in the
+reader's voice (eyebrow, two-line headline, lede, Subscribe and Read the letter, the spring series with the gallery's
+Open water plate, the week's readers, issue 14, the posts with statuses, a field row), light over dark each; then
+`Flat · as Hypher, the differences`, each choice alone on the new Flat so Nick can take some and leave others:
+A paper has an edge and a soft wide shadow (the ground nearly white, `--flat-well`; a hairline and two wide zero-offset
+blurs), B controls are rounded rectangles (the 6px step of `SHAPES`, surfaces 10px) with the secondary outlined,
+C a mono spaced eyebrow and a two-tone headline at the figure size in an editorial header, D the picture behind paper,
+E a status is a dot and a word with no pill, F the dark panel stays dark in dark. Hypher is a direction, not a source:
+none of its words, marks or pictures. A and B undo calls 1 and 2's "nothing outlined, nothing cast" and the pill, so
+taking them is a `taste:` change through `evolve.md`. Nothing ships until Nick picks, and 2b goes on as planned.
+
 ## The order of work inside a world
 
 The same five phases for every world. A phase is not started until the one before it is committed.

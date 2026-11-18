@@ -1,0 +1,79 @@
+/*
+ * Flat as Hypher (flat-hypher.tsx, plans/024, Flat, an open comparison): Hypher's direction as six separate choices on
+ * the new Flat, each switched on by its word in data-flat-hypher. Every colour is a token that exists today; the few
+ * values no token holds carry litt-allow as candidates. Plain CSS is unlayered, so these win over the components'
+ * utilities, and each frame rule names two attributes so it wins over Flat's own block and flat-calls.css's ground.
+ */
+
+/* F, the dark panel stays dark (flat-hypher.tsx, DarkPanel): the panel is Flat's dark ground in both themes, with a
+   hairline so it holds on a dark ground too. Before A, so A's shadow wins where both are on. */
+[data-flat-hypher~="panel"] [data-hy-panel] {
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+/* A, paper has an edge. The ground goes nearly white (Flat's well grey, a hair off white; in dark, Flat's black), and
+   paper (a card, a table, the dark panel) takes a hairline and a faint, wide shadow. litt's shadows have no offset,
+   so the softness comes from two wide blurs, not a drop. The shade is the ink in light and black in dark. */
+[data-flat-hypher~="paper"][data-theme="light"] {
+  --canvas: var(--flat-well);
+  --well: var(--flat-well);
+  --hy-shade: var(--flat-fg);
+}
+[data-flat-hypher~="paper"][data-theme="dark"] {
+  --canvas: var(--flat-canvas);
+  --well: var(--flat-canvas);
+  --surface-1: var(--flat-surface-1);
+  --block: var(--flat-surface-1);
+  --cut: var(--flat-surface-1);
+  --slot: var(--flat-surface-1);
+  --hy-shade: var(--flat-canvas);
+}
+[data-flat-hypher~="paper"] :is(.litt-raised, .litt-paper, [data-hy-panel]) {
+  /* litt-allow: candidate shadow, a hairline and two wide zero-offset blurs at 4% and 6% */
+  box-shadow: 0 0 0 1px var(--line), 0 0 24px color-mix(in oklab, var(--hy-shade) 4%, transparent), 0 0 64px color-mix(in oklab, var(--hy-shade) 6%, transparent);
+}
+/* A table's rows take hairlines, the last one none (the paper's edge closes it). */
+[data-flat-hypher~="paper"] .litt-paper :is(thead th, tbody tr:not(:last-child) > td) {
+  border-bottom-color: var(--line);
+}
+
+/* B, controls are rounded rectangles: litt's 6px step (SHAPES in rules.ts) and its concentric surface, 10px, in place
+   of Flat's pill and 16px. The secondary and a field are paper with a hairline, as an outlined button. */
+[data-flat-hypher~="buttons"][data-material],
+[data-flat-hypher~="buttons"] [data-hy-panel] {
+  --radius-control: 6px; /* litt-allow: candidate, the 6px step of SHAPES */
+  --radius-surface: 10px; /* litt-allow: candidate, surfaceRadius(6) */
+}
+[data-flat-hypher~="buttons"] button[data-hy-secondary] {
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+[data-flat-hypher~="buttons"] input.bg-field:not(:focus-visible) {
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+}
+
+/* C, an eyebrow and a two-tone headline. The eyebrow (and a table's heads) in Geist Mono at the caption size, in
+   capitals, spaced; the headline at the figure size, its second line in the quiet ink. */
+[data-flat-hypher~="type"] :is([data-hy-eyebrow], .litt-paper thead th) {
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: 0.06em; /* litt-allow: candidate tracking for mono capitals */
+  text-transform: uppercase; /* litt-allow: candidate, capitals for the eyebrow only (Q1 is open) */
+  color: var(--fg-subtle);
+}
+[data-flat-hypher~="type"] [data-hy-headline] {
+  font-size: var(--type-figure-size);
+  line-height: var(--type-figure-leading);
+  letter-spacing: var(--type-figure-tracking);
+}
+[data-flat-hypher~="type"] [data-hy-second] {
+  color: var(--fg-subtle);
+}
+
+/* D, the picture behind paper, is structure (flat-hypher.tsx, Series): nothing to restyle. */
+
+/* E, a status is a dot and a word: the pill around them goes, the circle and the ink word stay. */
+[data-flat-hypher~="status"] span[data-body="flat"]:has(> [data-status-mark]) {
+  background: transparent;
+  padding-inline: 0;
+}
