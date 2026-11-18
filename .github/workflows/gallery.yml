@@ -170,7 +170,7 @@ jobs:
       # libraries, so it resolves them afresh) and Playwright version. Move the key's version with the one below.
       - name: Playwright cache key
         id: pw
-        run: echo "key=playwright-1.56.1-$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
+        run: echo "key=playwright-1.56.1-debs2-$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache@v4
         with:
@@ -179,8 +179,10 @@ jobs:
             ~/playwright-debs
           key: ${{ steps.pw.outputs.key }}
 
-      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them. A warm cache
-      # installs the same .debs from disk; a cold one goes to the mirror and keeps what it fetched for the next job.
+      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them. A cold cache
+      # installs the system packages from the mirror with apt's archive in ~/playwright-debs, so every .deb it fetched
+      # is kept for the next job; a warm one installs those .debs from disk, then checks every package Playwright lists
+      # and goes to the mirror only if one is missing.
       - name: Install Playwright and axe-core
         run: |
           npm install --prefix "$RUNNER_TEMP/a11y" --no-save --no-package-lock playwright@1.56.1 axe-core@4.10.3
@@ -188,10 +190,16 @@ jobs:
           if ls ~/playwright-debs/*.deb > /dev/null 2>&1; then
             sudo apt-get install -y --no-install-recommends ~/playwright-debs/*.deb
           else
-            "$PW" install-deps chromium
-            mkdir -p ~/playwright-debs
-            cp /var/cache/apt/archives/*.deb ~/playwright-debs/ 2> /dev/null || echo "::warning::apt kept no .debs to cache; the next job will use the mirror again."
+            mkdir -p ~/playwright-debs/partial
+            echo "Dir::Cache::Archives \"$HOME/playwright-debs/\"; APT::Keep-Downloaded-Packages \"true\";" | sudo tee /etc/apt/apt.conf.d/99playwright-debs
           fi
+          PKGS=$("$PW" install-deps --dry-run chromium | sed -n 's/.*--no-install-recommends \([^"]*\)".*/\1/p')
+          test -n "$PKGS" || { echo "::error::could not read Playwright's package list"; exit 1; }
+          MISSING=$(for p in $PKGS; do dpkg -s "$p" > /dev/null 2>&1 || echo "$p"; done)
+          if [ -n "$MISSING" ]; then echo "Not installed yet: $MISSING"; "$PW" install-deps chromium; fi
+          sudo rm -f /etc/apt/apt.conf.d/99playwright-debs ~/playwright-debs/lock
+          sudo rm -rf ~/playwright-debs/partial
+          sudo chown -R "$USER" ~/playwright-debs 2> /dev/null || true
           "$PW" install chromium
 
       - name: ${{ matrix.name }}
