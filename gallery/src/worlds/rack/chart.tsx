@@ -34,8 +34,11 @@ const TONE: Record<ChartHue, Tone> = {
   teal: { tint: "fill-data-teal-tint", markFill: "fill-data-teal", textFill: "fill-data-teal-text", markStroke: "stroke-data-teal", textStroke: "stroke-data-teal-text" },
   violet: { tint: "fill-data-violet-tint", markFill: "fill-data-violet", textFill: "fill-data-violet-text", markStroke: "stroke-data-violet", textStroke: "stroke-data-violet-text" },
   rose: { tint: "fill-data-rose-tint", markFill: "fill-data-rose", textFill: "fill-data-rose-text", markStroke: "stroke-data-rose", textStroke: "stroke-data-rose-text" },
+  sky: { tint: "fill-data-sky-tint", markFill: "fill-data-sky", textFill: "fill-data-sky-text", markStroke: "stroke-data-sky", textStroke: "stroke-data-sky-text" },
+  bubblegum: { tint: "fill-data-bubblegum-tint", markFill: "fill-data-bubblegum", textFill: "fill-data-bubblegum-text", markStroke: "stroke-data-bubblegum", textStroke: "stroke-data-bubblegum-text" },
+  sun: { tint: "fill-data-sun-tint", markFill: "fill-data-sun", textFill: "fill-data-sun-text", markStroke: "stroke-data-sun", textStroke: "stroke-data-sun-text" },
 };
-const HUE = /^fill-data-(blue|amber|teal|violet|rose)/;
+const HUE = /^fill-data-(blue|amber|teal|violet|rose|sky|bubblegum|sun)/;
 /** The data hue a paint class names, or null for the quiet ink. */
 const hueOf = (fill: string): ChartHue | null => (HUE.exec(fill)?.[1] as ChartHue | undefined) ?? null;
 

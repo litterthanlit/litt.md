@@ -180,6 +180,29 @@ function SiteStorageDemo() {
   );
 }
 
+/** Readers by where they are: ten places, so Flat's eight hues show and the last two fold into Other. */
+function ReadersByPlaceDemo() {
+  return (
+    <Breakdown
+      className="w-full max-w-md"
+      label="Readers by where they are"
+      unit={["reader", "readers"]}
+      items={[
+        { label: "Portugal", value: 312 },
+        { label: "Nigeria", value: 192 },
+        { label: "Finland", value: 156 },
+        { label: "Brazil", value: 132 },
+        { label: "Japan", value: 108 },
+        { label: "Canada", value: 84 },
+        { label: "India", value: 72 },
+        { label: "Mexico", value: 60 },
+        { label: "Kenya", value: 48 },
+        { label: "Iceland", value: 36 },
+      ]}
+    />
+  );
+}
+
 export default function BreakdownPage() {
   return (
     <Page meta={meta} docs={docs}>
@@ -195,6 +218,15 @@ export default function BreakdownPage() {
       <Stage
         title="Credits by feature"
         code="CreditsDemo"
+        byWorld={{
+          flat: {
+            demo: <ReadersByPlaceDemo />,
+            title: "Eight before Other",
+            code: "ReadersByPlaceDemo",
+            caption:
+              "Your 1,200 readers by where they are, so the whole is the sum and there is no free space. Under Flat a part without a hue takes the next of eight in the fixed order: blue, tangerine, mint, grape and cherry, then sky, bubblegum and sun. None is cycled, so the ninth and tenth places fold into Other, in the foreground at 55%. Every other world keeps five, since there the last three are its own teal, rose and amber. The words and the numbers stay neutral; color only says which place is which.",
+          },
+        }}
         caption="No total is passed, so the whole is the sum and there is no free space. Parts without a hue take the next one in the fixed order: blue, amber, teal, violet, rose. Only five exist and none is cycled, so the sixth feature folds into Other, in the foreground at 55%. Sort the parts largest first, because the ones past the fifth are the ones that fold."
       >
         <CreditsDemo />
