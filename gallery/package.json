@@ -43,7 +43,8 @@
     "test:study": "node scripts/study.mjs",
     "test:look": "node scripts/test-look.mjs",
     "test:rules": "node scripts/test-rules.mjs",
-    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s gen:llms && npm run -s typecheck && npm run -s lint:litt && npm run -s test:lint && npm run -s lint:collisions && npm run -s test:collisions && npm run -s test:check && npm run -s test:look && npm run -s test:rules",
+    "test:shards": "node scripts/test-shards.mjs",
+    "verify": "npm run -s sync:tokens && npm run -s gen:docs && npm run -s gen:registry && npm run -s gen:llms && npm run -s typecheck && npm run -s lint:litt && npm run -s test:lint && npm run -s lint:collisions && npm run -s test:collisions && npm run -s test:check && npm run -s test:look && npm run -s test:rules && npm run -s test:shards && npm run -s test:shards -- --self-test",
     "test:check": "node ../skills/litt-md/scripts/litt-check.mjs --self-test"
   },
   "dependencies": {

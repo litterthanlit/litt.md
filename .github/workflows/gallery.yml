@@ -6,6 +6,16 @@
 # shard rather than the sum: in series they take well over an hour. GitHub's free plan runs at most 20 jobs at once, so
 # more shards than that only queue; make a check faster before giving it another shard. A job that grows past about
 # 6 minutes gets rebalanced (a11y.mjs, reduced-motion.mjs, wall.mjs, study.mjs and playground.mjs take --shard k/n).
+# Read the job's steps before rebalancing: a slow job is often a slow install, not a slow check.
+#
+# a11y.mjs and reduced-motion.mjs deal pages by weight (scripts/shard.mjs): each page weighs the seconds it took last
+# time (scripts/page-costs.json), longest first to the lightest shard, the same split in every job. test:shards (part of
+# verify) reads the --shard jobs below and fails unless every page lands in exactly one. Re-measure when the shards
+# drift: npm run test:a11y --prefix gallery -- --record-costs, and the same for test:motion, then commit the file.
+#
+# Playwright's system packages come from the Ubuntu mirror, which can crawl (58 kB/s, ten minutes for one job, on
+# 2026-11-18). So the browser and the .debs it pulls are cached per runner image and Playwright version, and a warm job
+# installs the .debs from disk without touching the mirror.
 #
 # A pull request that changes nothing the gallery is built from (taste/, proposals/, evals/, notes) skips the page
 # checks; check still runs. A push to main always runs everything.
@@ -85,14 +95,14 @@ jobs:
         include:
           # Every page in every world (scripts/routes.mjs, about 640 addresses). GitHub runs at most 20 jobs at once and
           # check takes one, so the checks fill 19 jobs of about five minutes each.
-          # axe on every page, light and dark, desktop and phone, four tabs at once, dealt round-robin across six shards.
+          # axe on every page, light and dark, desktop and phone, four tabs at once, dealt by weight across six shards.
           - { name: "Accessibility 1/6", run: "npm run test:a11y --prefix gallery -- --shard 1/6" }
           - { name: "Accessibility 2/6", run: "npm run test:a11y --prefix gallery -- --shard 2/6" }
           - { name: "Accessibility 3/6", run: "npm run test:a11y --prefix gallery -- --shard 3/6" }
           - { name: "Accessibility 4/6", run: "npm run test:a11y --prefix gallery -- --shard 4/6" }
           - { name: "Accessibility 5/6", run: "npm run test:a11y --prefix gallery -- --shard 5/6" }
           - { name: "Accessibility 6/6", run: "npm run test:a11y --prefix gallery -- --shard 6/6" }
-          # Nothing moves on any page or overlay, desktop and phone. The self-test runs with motion allowed and must
+          # Nothing moves on any page or overlay, desktop and phone, dealt by weight. The self-test runs with motion allowed and must
           # see motion, so a check that has gone blind fails too; it loads only the four pages it judges.
           - { name: "Reduced motion 1/5", run: "npm run test:motion --prefix gallery -- --shard 1/5 && npm run test:motion --prefix gallery -- --self-test" }
           - { name: "Reduced motion 2/5", run: "npm run test:motion --prefix gallery -- --shard 2/5" }
@@ -101,33 +111,33 @@ jobs:
           - { name: "Reduced motion 5/5", run: "npm run test:motion --prefix gallery -- --shard 5/5" }
           # The WCAG regressions and the page checks, each with its self-test, paired to about five minutes a job.
           # One command a line under set -e, so any failure fails the job (a failure inside `a && b` in a loop does not).
-          - name: Reflow and forced colors
+          # Seconds of each check on 2026-11-18, with its self-test, to pair them: reflow and forced colors 245, text zoom
+          # and focus 278, corners 317, gaps 276, home 13, worlds 74, materials 115, sound 61, studies 253 and 171.
+          - name: Reflow, forced colors and worlds
             run: |
               set -e
               npm run test:reflow --prefix gallery
               npm run test:reflow --prefix gallery -- --self-test
               npm run test:forced-colors --prefix gallery
               npm run test:forced-colors --prefix gallery -- --self-test
-          - name: Text zoom and focus
+              npm run test:worlds --prefix gallery
+              npm run test:worlds --prefix gallery -- --self-test
+          - name: Text zoom, focus and sound
             run: |
               set -e
               npm run test:text-zoom --prefix gallery
               npm run test:text-zoom --prefix gallery -- --self-test
               npm run test:focus --prefix gallery
               npm run test:focus --prefix gallery -- --self-test
+              npm run test:sound --prefix gallery
+              npm run test:sound --prefix gallery -- --self-test
           - { name: "Corners", run: "npm run test:corners --prefix gallery && npm run test:corners --prefix gallery -- --self-test" }
-          - name: Gaps, home, worlds, materials and sound
+          - name: Gaps and home
             run: |
               set -e
               npm run test:gaps --prefix gallery
               npm run test:gaps --prefix gallery -- --self-test
               npm run test:home --prefix gallery
-              npm run test:worlds --prefix gallery
-              npm run test:worlds --prefix gallery -- --self-test
-              npm run test:materials --prefix gallery
-              npm run test:materials --prefix gallery -- --self-test
-              npm run test:sound --prefix gallery
-              npm run test:sound --prefix gallery -- --self-test
           # Each world's player; the self-test opens only the worlds its breaks land in.
           - { name: "Playground", run: "npm run test:playground --prefix gallery && npm run test:playground --prefix gallery -- --self-test" }
           # The wall: every material, size and theme with every tile mounted, one accent fill, nothing sideways or empty.
@@ -135,7 +145,12 @@ jobs:
           # Every study page has its sections, anatomy parts resolve, the material frame matches pixel for pixel.
           # The self-test runs unsharded, on the Button study.
           - { name: "Studies 1/2", run: "npm run test:study --prefix gallery -- --shard 1/2 && npm run test:study --prefix gallery -- --self-test" }
-          - { name: "Studies 2/2", run: "npm run test:study --prefix gallery -- --shard 2/2" }
+          - name: Studies 2/2 and materials
+            run: |
+              set -e
+              npm run test:study --prefix gallery -- --shard 2/2
+              npm run test:materials --prefix gallery
+              npm run test:materials --prefix gallery -- --self-test
     steps:
       - uses: actions/checkout@v4
 
@@ -151,11 +166,33 @@ jobs:
       - name: Build
         run: npm run build --prefix gallery
 
-      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them.
+      # The browser and the system packages Playwright installs, per runner image (a new image may carry newer
+      # libraries, so it resolves them afresh) and Playwright version. Move the key's version with the one below.
+      - name: Playwright cache key
+        id: pw
+        run: echo "key=playwright-1.56.1-$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/ms-playwright
+            ~/playwright-debs
+          key: ${{ steps.pw.outputs.key }}
+
+      # Playwright and axe-core stay out of the gallery's package.json, so Vercel never installs them. A warm cache
+      # installs the same .debs from disk; a cold one goes to the mirror and keeps what it fetched for the next job.
       - name: Install Playwright and axe-core
         run: |
           npm install --prefix "$RUNNER_TEMP/a11y" --no-save --no-package-lock playwright@1.56.1 axe-core@4.10.3
-          "$RUNNER_TEMP/a11y/node_modules/.bin/playwright" install --with-deps chromium
+          PW="$RUNNER_TEMP/a11y/node_modules/.bin/playwright"
+          if ls ~/playwright-debs/*.deb > /dev/null 2>&1; then
+            sudo apt-get install -y --no-install-recommends ~/playwright-debs/*.deb
+          else
+            "$PW" install-deps chromium
+            mkdir -p ~/playwright-debs
+            cp /var/cache/apt/archives/*.deb ~/playwright-debs/ 2> /dev/null || echo "::warning::apt kept no .debs to cache; the next job will use the mirror again."
+          fi
+          "$PW" install chromium
 
       - name: ${{ matrix.name }}
         run: ${{ matrix.run }}

@@ -4,8 +4,10 @@
  *
  *   npm run build && npm run test:a11y               # every page in dist/
  *   node scripts/a11y.mjs --dist dist --pages button,menu
- *   node scripts/a11y.mjs --shard 2/4                every fourth page, from the second (CI runs several shards at once)
- *   node scripts/a11y.mjs --concurrency 2            pages checked at once in each theme and size (default 4)
+ *   node scripts/a11y.mjs --shard 2/4                a quarter of the pages by weight (CI runs several shards at once)
+ *   node scripts/a11y.mjs --shard 2/4 --list         print the shard's pages and stop
+ *   node scripts/a11y.mjs --record-costs             write each page's seconds to page-costs.json (run every page)
+ *   node scripts/a11y.mjs --concurrency 2            tabs open at once (default 4)
  *
  * Runs the WCAG 2.0, 2.1 and 2.2 A and AA rules and exits 1 on any violation, printing each one with
  * its page, theme, viewport and the selectors it hit. Pages come from src/gallery/pages (the file is
@@ -22,14 +24,20 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { openVariants, routes } from "./routes.mjs";
+import { costsOf, parseShard, recordCosts, shardOf } from "./shard.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
 const only = (get("pages", "") || "").split(",").filter(Boolean);
-const [shard, shards] = (get("shard", "1/1")).split("/").map(Number);
+const { shard, shards } = parseShard(get("shard", "1/1"));
 const CONCURRENCY = Number(get("concurrency", "4"));
+
+/* Dealt by weight (shard.mjs), longest first, so no shard stacks up the heavy pages. */
+const pages = shardOf(routes({ only }), { shard, shards, costs: costsOf("a11y") });
+if (!pages.length) { console.error("No pages matched."); process.exit(1); }
+if (args.includes("--list")) { console.log(pages.join("\n")); process.exit(0); }
 
 /* Resolve a tool from A11Y_TOOLS, then this package, then a global folder. */
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
@@ -47,9 +55,6 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
   process.exit(1);
 }
 
-const pages = routes({ only })
-  .filter((_, i) => i % shards === shard - 1); // dealt round-robin, so the heavy pages spread across shards
-if (!pages.length) { console.error("No pages matched."); process.exit(1); }
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2" };
 const server = http.createServer((req, res) => {
@@ -90,9 +95,12 @@ const quiet = ({ still, most }) =>
 const browser = await chromium.launch();
 const found = [];
 let runs = 0;
+const seconds = {}; // page -> seconds in a tab, summed over its four runs
+const started = performance.now();
 /* One page in a tab of its own, loaded once: a fresh tab carries nothing over from the last page (a hash change alone
    would keep its state), so no reload is needed, and several tabs check pages at once. */
 async function check(ctx, id, theme, label) {
+  const t0 = performance.now();
   const pg = await ctx.newPage();
   const errors = [];
   pg.on("pageerror", (e) => errors.push(String(e)));
@@ -115,20 +123,23 @@ async function check(ctx, id, theme, label) {
   }
   for (const e of errors) found.push({ page: id, theme, viewport: label, id: "page-error", impact: "critical", help: e, nodes: [] });
   await pg.close();
+  seconds[id] = (seconds[id] ?? 0) + (performance.now() - t0) / 1000;
 }
 
-for (const [width, height, label] of [[1440, 900, "desktop"], [390, 844, "phone"]]) {
-  for (const theme of ["light", "dark"]) {
-    const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" });
-    const queue = [...pages];
-    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
-      while (queue.length) await check(ctx, queue.shift(), theme, label);
-    }));
-    await ctx.close();
-  }
-}
+/* Every page in every theme and size, one queue across the four contexts, heaviest page first: the tabs stay busy to
+   the end instead of waiting at each context's last slow page. */
+const RUNS = [[1440, 900, "desktop"], [390, 844, "phone"]].flatMap(([width, height, label]) => ["light", "dark"].map((theme) => ({ width, height, label, theme })));
+const contexts = await Promise.all(RUNS.map(({ width, height, label, theme }) =>
+  browser.newContext({ viewport: { width, height }, colorScheme: theme, hasTouch: label === "phone", isMobile: label === "phone" })));
+const queue = pages.flatMap((id) => RUNS.map((run, i) => ({ id, run, ctx: contexts[i] })));
+await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
+  while (queue.length) { const { id, run, ctx } = queue.shift(); await check(ctx, id, run.theme, run.label); }
+}));
+await Promise.all(contexts.map((c) => c.close()));
 await browser.close();
 server.close();
+if (args.includes("--record-costs")) recordCosts("a11y", seconds);
+console.log(`a11y: ${Math.round((performance.now() - started) / 1000)}s for ${pages.length} pages; slowest ${Object.entries(seconds).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([p, s]) => `${p} ${s.toFixed(1)}s`).join(", ")}.`);
 
 if (!found.length) {
   console.log(`a11y${shards > 1 ? ` (shard ${shard}/${shards})` : ""}: ${pages.length} pages, ${runs} runs (light and dark, desktop and phone), no violations.`);

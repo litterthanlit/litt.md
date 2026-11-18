@@ -5,7 +5,9 @@
  *
  *   npm run build && npm run test:motion
  *   node scripts/reduced-motion.mjs --dist dist --pages menu,dialog
- *   node scripts/reduced-motion.mjs --shard 1/2       every other page, from the first (CI runs two shards at once)
+ *   node scripts/reduced-motion.mjs --shard 1/2       half the pages by weight (CI runs several shards at once)
+ *   node scripts/reduced-motion.mjs --shard 1/2 --list   print the shard's pages and stop
+ *   node scripts/reduced-motion.mjs --record-costs    write each page's seconds to page-costs.json (run every page)
  *   node scripts/reduced-motion.mjs --self-test       with motion allowed it must see motion (dialog, menu, toast, list)
  *
  * On each page it watches every element's transform and opacity frame by frame while the page loads, then clicks
@@ -29,12 +31,13 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { routes } from "./routes.mjs";
+import { costsOf, parseShard, recordCosts, shardOf } from "./shard.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
 const get = (k, d) => { const i = args.indexOf(`--${k}`); return i >= 0 ? args[i + 1] : d; };
 const dist = path.resolve(get("dist", "dist"));
-const [shard, shards] = (get("shard", "1/1")).split("/").map(Number);
+const { shard, shards } = parseShard(get("shard", "1/1"));
 const CONCURRENCY = Number(get("concurrency", "4"));
 const MAX_TRIGGERS = Number(get("triggers", "8"));
 /* --self-test runs with motion allowed and must find motion, so a check that has gone blind fails too. */
@@ -42,6 +45,11 @@ const selfTest = args.includes("--self-test");
 /* The self-test judges only the pages where motion is certain, so it loads only those unless --pages says otherwise. */
 const SURE_TO_MOVE = ["dialog", "menu", "toast", "list"];
 const only = (get("pages", "") || (selfTest ? SURE_TO_MOVE.join(",") : "")).split(",").filter(Boolean);
+
+/* Dealt by weight (shard.mjs), longest first, so no shard stacks up the heavy pages. */
+const pages = shardOf(routes({ only }), { shard, shards, costs: costsOf("motion") });
+if (!pages.length) { console.error("No pages matched."); process.exit(1); }
+if (args.includes("--list")) { console.log(pages.join("\n")); process.exit(0); }
 
 const roots = [process.env.A11Y_TOOLS, path.join(here, ".."), "/opt/node22/lib"].filter(Boolean);
 function resolveTool(id) {
@@ -57,9 +65,6 @@ if (!fs.existsSync(path.join(dist, "index.html"))) {
   process.exit(1);
 }
 
-const pages = routes({ only })
-  .filter((_, i) => i % shards === shard - 1); // dealt round-robin, so the heavy pages spread across shards
-if (!pages.length) { console.error("No pages matched."); process.exit(1); }
 
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".json": "application/json", ".woff2": "font/woff2", ".md": "text/markdown", ".txt": "text/plain" };
 const server = http.createServer((req, res) => {
@@ -213,8 +218,11 @@ const VIEWPORTS = [
 const browser = await chromium.launch();
 const found = [];
 let actions = 0;
+const seconds = {}; // page -> seconds in a tab, summed over the desktop and the phone
+const started = performance.now();
 
 async function checkPage(ctx, id, label) {
+  const t0 = performance.now();
   const pg = await ctx.newPage();
   const errors = [];
   pg.on("pageerror", (e) => errors.push(String(e)));
@@ -261,19 +269,25 @@ async function checkPage(ctx, id, label) {
   }
   for (const e of errors) found.push({ page: id, viewport: label, when: "page error", what: e });
   await pg.close();
+  seconds[id] = (seconds[id] ?? 0) + (performance.now() - t0) / 1000;
 }
 
-for (const v of VIEWPORTS) {
+/* Every page on the desktop and the phone, one queue across both contexts, heaviest page first: the tabs stay busy to
+   the end instead of waiting at the desktop's last slow page before the phone starts. */
+const contexts = await Promise.all(VIEWPORTS.map(async (v) => {
   const ctx = await browser.newContext({ viewport: v.viewport, reducedMotion: selfTest ? "no-preference" : "reduce", hasTouch: !!v.hasTouch, isMobile: !!v.isMobile });
   await ctx.addInitScript(install);
-  const queue = [...pages];
-  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
-    while (queue.length) await checkPage(ctx, queue.shift(), v.label);
-  }));
-  await ctx.close();
-}
+  return ctx;
+}));
+const queue = pages.flatMap((id) => VIEWPORTS.map((v, i) => ({ id, label: v.label, ctx: contexts[i] })));
+await Promise.all(Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
+  while (queue.length) { const { id, label, ctx } = queue.shift(); await checkPage(ctx, id, label); }
+}));
+await Promise.all(contexts.map((c) => c.close()));
 await browser.close();
 server.close();
+if (args.includes("--record-costs") && !selfTest) recordCosts("motion", seconds);
+console.log(`reduced motion: ${Math.round((performance.now() - started) / 1000)}s for ${pages.length} pages; slowest ${Object.entries(seconds).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([p, s]) => `${p} ${s.toFixed(1)}s`).join(", ")}.`);
 
 if (selfTest) {
   // Only the frame sampler counts here: every page has instant transitions, so the duration check alone would always "see" motion.
